@@ -1,4 +1,4 @@
-package rri.fixbot.ruleset.huawei.utils
+package rri.fixbot.ruleset.huawei.huawei.utils
 
 import org.jetbrains.kotlin.lexer.KtTokens.KEYWORDS
 import org.jetbrains.kotlin.lexer.KtTokens.SOFT_KEYWORDS
