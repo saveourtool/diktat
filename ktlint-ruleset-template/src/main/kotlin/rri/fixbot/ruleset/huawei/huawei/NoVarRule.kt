@@ -1,4 +1,4 @@
-package yourpkgname
+package rri.fixbot.ruleset.huawei.huawei
 
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.VAR_KEYWORD
