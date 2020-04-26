@@ -5,6 +5,7 @@ import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.isLeaf
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import rri.fixbot.ruleset.huawei.constants.Warnings.*
+import rri.fixbot.ruleset.huawei.huawei.utils.isASCIILettersAndDigits
 import rri.fixbot.ruleset.huawei.huawei.utils.isJavaKeyWord
 import rri.fixbot.ruleset.huawei.huawei.utils.isKotlinKeyWord
 
@@ -48,6 +49,11 @@ class PackageNaming1s3r : Rule("package-naming") {
         }
     }
 
+    /**
+     * FixMe: need to support auto correction of:
+     * 1) directory should match with package name
+     * 2) if package in incorrect case -> transform to lower
+     */
     private fun checkPackageName(
         node: ASTNode,
         autoCorrect: Boolean,
@@ -73,18 +79,17 @@ class PackageNaming1s3r : Rule("package-naming") {
 
     private fun isLowerCaseOrDigit(word: String): Boolean = !word.any { !(it.isLowerCase() || it.isDigit()) }
 
-    private fun isLatinLettersAndDigits(word: String): Boolean = !word.any { !(it.isDigit() || it in 'A'..'Z' || it in 'a'..'z') }
 
     /**
      * only letters, digits and underscore are allowed
      */
     private fun correctSymbolsAreUsed(word: String): Boolean {
-        if (isLatinLettersAndDigits(word)) {
+        if (word.isASCIILettersAndDigits()) {
             return true
         } else {
             // underscores are allowed in some cases - see "exceptionForUnderscore"
             val wordFromPackage = word.replace("_", "")
-            if (isLatinLettersAndDigits(wordFromPackage) && exceptionForUnderscore(wordFromPackage)) {
+            if (word.isASCIILettersAndDigits() && exceptionForUnderscore(wordFromPackage)) {
                 return true
             }
         }
