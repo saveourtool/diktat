@@ -6,8 +6,11 @@ plugins {
 dependencies {
   implementation project(':ktlint-core')
   implementation deps.kotlin.stdlib
+  implementation 'com.google.guava:guava:29.0-jre'
 
   testImplementation project(':ktlint-test')
   testImplementation deps.junit
   testImplementation deps.assertj
+
+
 }
