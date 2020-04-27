@@ -4,6 +4,7 @@ import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.isLeaf
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import rri.fixbot.ruleset.huawei.constants.Warnings.*
 import rri.fixbot.ruleset.huawei.huawei.utils.isASCIILettersAndDigits
 import rri.fixbot.ruleset.huawei.huawei.utils.isJavaKeyWord
@@ -34,7 +35,7 @@ class PackageNaming1s3r : Rule("package-naming") {
         if (node.elementType == ElementType.PACKAGE_DIRECTIVE) {
             if (node.isLeaf()) {
                 emit(node.startOffset, PACKAGE_NAME_MISSING.text, true)
-
+                // FixMe: can be fixed automatically by checking current directory
                 return
             }
 
@@ -61,19 +62,37 @@ class PackageNaming1s3r : Rule("package-naming") {
         emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit
     ) {
 
+        var wordsInPackageNameConverted = wordsInPackageName
+
         // all words should be in a lower case (lower case letters/digits/underscore)
-        if (wordsInPackageName.any { word -> !isLowerCaseOrDigit(word.replace("_", "")) }) {
+        if (wordsInPackageNameConverted.any { word -> !isLowerCaseOrDigit(word.replace("_", "")) }) {
             emit(node.startOffset, PACKAGE_NAME_INCORRECT_CASE.text, true)
+            if (autoCorrect) {
+                // FixMe: cover with tests
+                wordsInPackageNameConverted = wordsInPackageNameConverted.map { it.toLowerCase() }
+                (node as LeafPsiElement).rawReplaceWithText(wordsInPackageNameConverted.joinToString(PACKAGE_SEPARATOR))
+            }
         }
 
         // package name should start from a company's domain name
-        if (!isDomainMatches(wordsInPackageName)) {
+        if (!isDomainMatches(wordsInPackageNameConverted)) {
+
             emit(node.startOffset, "${PACKAGE_NAME_INCORRECT_PREFIX.text} $DOMAIN_NAME", true)
+            if (autoCorrect) {
+                // FixMe: cover with tests
+                wordsInPackageNameConverted = wordsInPackageNameConverted.map { it.toLowerCase() }
+                (node as LeafPsiElement).rawReplaceWithText("$DOMAIN_NAME.${wordsInPackageNameConverted.joinToString(PACKAGE_SEPARATOR)}")
+            }
         }
 
         // all words should contain only letters or digits
-        if (wordsInPackageName.any { word -> !correctSymbolsAreUsed(word) }) {
+        if (wordsInPackageNameConverted.any { word -> !correctSymbolsAreUsed(word) }) {
             emit(node.startOffset, PACKAGE_NAME_INCORRECT_SYMBOLS.text, true)
+            if (autoCorrect) {
+                // FixMe: cover with tests
+                wordsInPackageNameConverted = wordsInPackageNameConverted.map { it.replace("_", ".").replace("-", ".") }
+                (node as LeafPsiElement).rawReplaceWithText(wordsInPackageNameConverted.joinToString(PACKAGE_SEPARATOR))
+            }
         }
     }
 
@@ -89,7 +108,7 @@ class PackageNaming1s3r : Rule("package-naming") {
         } else {
             // underscores are allowed in some cases - see "exceptionForUnderscore"
             val wordFromPackage = word.replace("_", "")
-            if (word.isASCIILettersAndDigits() && exceptionForUnderscore(wordFromPackage)) {
+            if (wordFromPackage.isASCIILettersAndDigits() && exceptionForUnderscore(wordFromPackage)) {
                 return true
             }
         }
