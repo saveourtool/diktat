@@ -54,7 +54,6 @@ class IdentifierNaming1s2r : Rule("identifier-naming") {
         val variableName: ASTNode? = node.getIdentifierName()
 
         if (!ONE_CHAR_IDENTIFIERS.contains(variableName!!.text)) {
-
             // generally variables with prefixes are not allowed (like mVariable)
             if (variableName.text.hasPrefix()) {
                 emit(variableName.startOffset,
