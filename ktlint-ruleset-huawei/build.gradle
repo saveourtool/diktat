@@ -8,6 +8,8 @@ dependencies {
   implementation deps.kotlin.stdlib
   implementation 'com.google.guava:guava:29.0-jre'
 
+  compile project(":diktat-test-framework")
+
   testImplementation project(':ktlint-test')
   testImplementation deps.junit
   testImplementation deps.assertj

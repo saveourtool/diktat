@@ -44,7 +44,6 @@ fun Rule.format(
             script = script,
             cb = cb
         )
-
     )
 }
 

@@ -69,8 +69,8 @@ class PackageNaming1s3r : Rule("package-naming") {
             .forEach {
                 emit(it.startOffset, "${PACKAGE_NAME_INCORRECT_CASE.text} ${it.text}", true)
                 if (autoCorrect) {
-                    (it as LeafPsiElement).replaceWithText(it.text.toLowerCase())
                     // FixMe: cover with tests
+                    (it as LeafPsiElement).replaceWithText(it.text.toLowerCase())
                 }
             }
 

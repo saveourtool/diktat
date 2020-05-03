@@ -7,10 +7,9 @@ import org.junit.Test
 import rri.fixbot.ruleset.huawei.PackageNaming1s3r
 import rri.fixbot.ruleset.huawei.constants.Warnings.*
 
-class PackageNaming1s3rTest {
-
+class PackageNaming1s3rWarnTest {
     @Test
-    fun `missing package name`() {
+    fun `missing package name (check)`() {
         assertThat(
             PackageNaming1s3r().lint(
                 """
