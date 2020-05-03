@@ -6,6 +6,7 @@ import com.pinterest.ktlint.core.ast.isLeaf
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import rri.fixbot.ruleset.huawei.constants.Warnings.*
+import rri.fixbot.ruleset.huawei.huawei.utils.getAllLLeafsWithSpecificType
 import rri.fixbot.ruleset.huawei.huawei.utils.isASCIILettersAndDigits
 import rri.fixbot.ruleset.huawei.huawei.utils.isJavaKeyWord
 import rri.fixbot.ruleset.huawei.huawei.utils.isKotlinKeyWord
@@ -29,24 +30,26 @@ class PackageNaming1s3r : Rule("package-naming") {
     override fun visit(
         node: ASTNode,
         autoCorrect: Boolean,
-        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit
-    ) {
+        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
 
         if (node.elementType == ElementType.PACKAGE_DIRECTIVE) {
+            // if node isLeaf - this means that there is no package name declared
             if (node.isLeaf()) {
                 emit(node.startOffset, PACKAGE_NAME_MISSING.text, true)
                 // FixMe: can be fixed automatically by checking current directory
                 return
             }
 
-            val wordsInPackageName = node.getChildren(null)
+            val packageName: List<ASTNode> = node.getChildren(null)
                 // get the package name after removing whitespaces and package keyword
-                .filter { it.elementType != ElementType.PACKAGE_KEYWORD && !it.chars.toString().isBlank() }[0]
-                // get the value from node and split by a package separator (dot)
-                .chars.toString()
-                .split(PACKAGE_SEPARATOR)
+                .filter { it.elementType == ElementType.DOT_QUALIFIED_EXPRESSION }
 
-            checkPackageName(node, autoCorrect, wordsInPackageName, emit)
+            // getting all identifiers from package name into the list like [com, huawei, project]
+            val wordsInPackageName = mutableListOf<ASTNode>()
+            node.getAllLLeafsWithSpecificType(ElementType.IDENTIFIER, wordsInPackageName)
+
+            // no need to check that packageIdentifiers is empty, because in this case parsing will fail
+            checkPackageName(autoCorrect, wordsInPackageName, emit)
         }
     }
 
@@ -56,47 +59,43 @@ class PackageNaming1s3r : Rule("package-naming") {
      * 2) if package in incorrect case -> transform to lower
      */
     private fun checkPackageName(
-        node: ASTNode,
         autoCorrect: Boolean,
-        wordsInPackageName: List<String>,
-        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit
-    ) {
-
-        var wordsInPackageNameConverted = wordsInPackageName
+        wordsInPackageName: List<ASTNode>,
+        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
 
         // all words should be in a lower case (lower case letters/digits/underscore)
-        if (wordsInPackageNameConverted.any { word -> !isLowerCaseOrDigit(word.replace("_", "")) }) {
-            emit(node.startOffset, PACKAGE_NAME_INCORRECT_CASE.text, true)
-            if (autoCorrect) {
-                // FixMe: cover with tests
-                wordsInPackageNameConverted = wordsInPackageNameConverted.map { it.toLowerCase() }
-                (node as LeafPsiElement).rawReplaceWithText(wordsInPackageNameConverted.joinToString(PACKAGE_SEPARATOR))
+        wordsInPackageName
+            .filter { word -> hasUppercaseLetter(word.text) }
+            .forEach {
+                emit(it.startOffset, "${PACKAGE_NAME_INCORRECT_CASE.text} ${it.text}", true)
+                if (autoCorrect) {
+                    // FixMe: cover with tests
+                    (it as LeafPsiElement).replaceWithText(it.text.toLowerCase())
+                }
             }
-        }
 
         // package name should start from a company's domain name
-        if (!isDomainMatches(wordsInPackageNameConverted)) {
-
-            emit(node.startOffset, "${PACKAGE_NAME_INCORRECT_PREFIX.text} $DOMAIN_NAME", true)
-            if (autoCorrect) {
+        if (!isDomainMatches(wordsInPackageName)) {
+            emit(wordsInPackageName[0].startOffset, "${PACKAGE_NAME_INCORRECT_PREFIX.text} $DOMAIN_NAME", true)
+            /*    if (autoCorrect) {
                 // FixMe: cover with tests
                 wordsInPackageNameConverted = wordsInPackageNameConverted.map { it.toLowerCase() }
                 (node as LeafPsiElement).rawReplaceWithText("$DOMAIN_NAME.${wordsInPackageNameConverted.joinToString(PACKAGE_SEPARATOR)}")
-            }
+            }*/
         }
 
         // all words should contain only letters or digits
-        if (wordsInPackageNameConverted.any { word -> !correctSymbolsAreUsed(word) }) {
-            emit(node.startOffset, PACKAGE_NAME_INCORRECT_SYMBOLS.text, true)
-            if (autoCorrect) {
+        wordsInPackageName.filter { word -> !correctSymbolsAreUsed(word.text) }.forEach {
+            emit(it.startOffset, "${PACKAGE_NAME_INCORRECT_SYMBOLS.text} ${it.text}", true)
+            /*   if (autoCorrect) {
                 // FixMe: cover with tests
                 wordsInPackageNameConverted = wordsInPackageNameConverted.map { it.replace("_", ".").replace("-", ".") }
                 (node as LeafPsiElement).rawReplaceWithText(wordsInPackageNameConverted.joinToString(PACKAGE_SEPARATOR))
-            }
+            }*/
         }
     }
 
-    private fun isLowerCaseOrDigit(word: String): Boolean = !word.any { !(it.isLowerCase() || it.isDigit()) }
+    private fun hasUppercaseLetter(word: String): Boolean = word.any { it.isUpperCase() }
 
 
     /**
@@ -131,13 +130,12 @@ class PackageNaming1s3r : Rule("package-naming") {
     /**
      * function simply checks that package name starts with a proper domain name, for example from "com.huawei"
      */
-    private fun isDomainMatches(packageNameParts: List<String>): Boolean {
+    private fun isDomainMatches(packageNameParts: List<ASTNode>): Boolean {
         val packageNamePrefix = DOMAIN_NAME.split(PACKAGE_SEPARATOR)
-
         if (packageNameParts.size < packageNamePrefix.size) return false
 
         for (i in packageNamePrefix.indices) {
-            if (packageNameParts[i] != packageNamePrefix[i]) {
+            if (packageNameParts[i].text != packageNamePrefix[i]) {
                 return false
             }
         }
