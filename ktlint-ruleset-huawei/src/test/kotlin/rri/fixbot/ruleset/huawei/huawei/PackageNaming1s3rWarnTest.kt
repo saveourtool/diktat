@@ -7,10 +7,9 @@ import org.junit.Test
 import rri.fixbot.ruleset.huawei.PackageNaming1s3r
 import rri.fixbot.ruleset.huawei.constants.Warnings.*
 
-class PackageNaming1s3rTest {
-
+class PackageNaming1s3rWarnTest {
     @Test
-    fun `missing package name`() {
+    fun `missing package name (check)`() {
         assertThat(
             PackageNaming1s3r().lint(
                 """
@@ -33,7 +32,7 @@ class PackageNaming1s3rTest {
         assertThat(
             PackageNaming1s3r().lint(
                 """
-                    package com.huawei.SPECIALTEST
+                    package /* AAA */ com.huawei.SPECIALTEST.test
 
                     import com.huawei.a.b.c
 
@@ -44,7 +43,7 @@ class PackageNaming1s3rTest {
 
                 """.trimIndent()
             )
-        ).containsExactly(LintError(1, 1, "package-naming", PACKAGE_NAME_INCORRECT_CASE.text))
+        ).containsExactly(LintError(1, 30, "package-naming", "${PACKAGE_NAME_INCORRECT_CASE.text} SPECIALTEST"))
     }
 
     @Test
@@ -63,7 +62,7 @@ class PackageNaming1s3rTest {
 
                 """.trimIndent()
             )
-        ).containsExactly(LintError(1, 1, "package-naming", "${PACKAGE_NAME_INCORRECT_PREFIX.text} com.huawei"))
+        ).containsExactly(LintError(1, 9, "package-naming", "${PACKAGE_NAME_INCORRECT_PREFIX.text} com.huawei"))
     }
 
     @Test
@@ -82,7 +81,7 @@ class PackageNaming1s3rTest {
 
                 """.trimIndent()
             )
-        ).containsExactly(LintError(1, 1, "package-naming", PACKAGE_NAME_INCORRECT_SYMBOLS.text))
+        ).containsExactly(LintError(1, 27, "package-naming", "${PACKAGE_NAME_INCORRECT_SYMBOLS.text} test_"))
     }
 
     @Test
@@ -101,7 +100,7 @@ class PackageNaming1s3rTest {
 
                 """.trimIndent()
             )
-        ).containsExactly(LintError(1, 1, "package-naming", PACKAGE_NAME_INCORRECT_SYMBOLS.text))
+        ).containsExactly(LintError(1, 27, "package-naming", "${PACKAGE_NAME_INCORRECT_SYMBOLS.text} testш"))
     }
 
     @Test
