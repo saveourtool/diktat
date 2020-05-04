@@ -8,9 +8,10 @@ import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 fun ASTNode.checkLength(range: IntRange): Boolean = this.textLength in range
 
 fun ASTNode.getIdentifierName(): ASTNode? =
-    this.getChildren(null)
-        .find { it.elementType == ElementType.IDENTIFIER }
+    this.getChildren(null).find { it.elementType == ElementType.IDENTIFIER }
 
+fun ASTNode.getTypeParameterList(): ASTNode? =
+    this.getChildren(null).find { it.elementType == ElementType.TYPE_PARAMETER_LIST }
 
 // applicable for PROPERTY element type only
 fun ASTNode.isVariableFromCompanionObject(): Boolean {
@@ -36,8 +37,6 @@ fun ASTNode.isVarProperty() =
  */
 fun ASTNode.getAllLLeafsWithSpecificType(elementType: IElementType, result: MutableList<ASTNode>) {
     // if statements here have the only right order - don't change it
-    println(this.javaClass.name)
-   // println(this.elementType )
     if (this.isLeaf()) {
         if (this.elementType == elementType) {
             result.add(this)

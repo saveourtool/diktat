@@ -31,11 +31,16 @@ class IdentifierNaming1s2r : Rule("identifier-naming") {
         // isVariable will be used in future like a workaround to check corner case with variables that have length == 1
         val (identifierNodes, isVariable) = when (node.elementType) {
             // covers interface, class, enum class and annotation class names
-            ElementType.CLASS -> Pair(checkCLassName(node, autoCorrect, emit), false)
+            ElementType.CLASS -> Pair(checkCLassNamings(node, autoCorrect, emit), false)
             // covers variables and constants
             ElementType.PROPERTY -> Pair(checkVariableName(node, autoCorrect, emit), true)
             // covers enum values
             ElementType.ENUM_ENTRY -> Pair(checkEnumValues(node, autoCorrect, emit), false)
+            // covers generic type of classes
+            /* ElementType.CLA -> {
+                 println(node)
+                 Pair(null, false)
+             }*/
             else -> Pair(null, true)
         }
 
@@ -95,10 +100,18 @@ class IdentifierNaming1s2r : Rule("identifier-naming") {
     /**
      * basic check for class naming (PascalCase)
      */
-    private fun checkCLassName(node: ASTNode,
-                               autoCorrect: Boolean,
-                               emit: (offset: Int, errorMessage: String,
+    private fun checkCLassNamings(node: ASTNode,
+                                  autoCorrect: Boolean,
+                                  emit: (offset: Int, errorMessage: String,
                                       canBeAutoCorrected: Boolean) -> Unit): List<ASTNode> {
+        val genericType: ASTNode? = node.getTypeParameterList()
+        if (genericType != null && !validGenericTypeName(genericType.text)) {
+            emit(genericType.startOffset,
+                "${GENERIC_NAME.text} ${genericType.text}",
+                true
+            )
+        }
+
         val className: ASTNode? = node.getIdentifierName()
         if (!(className!!.text.isUpperCamelCase())) {
             emit(className.startOffset,
@@ -108,23 +121,6 @@ class IdentifierNaming1s2r : Rule("identifier-naming") {
         }
 
         return listOf(className)
-    }
-
-    /**
-     * identifier name length should not be longer than 64 symbols and shorter than 2 symbols
-     */
-    private fun checkIdentifierLength(nodes: List<ASTNode>,
-                                      isVariable: Boolean,
-                                      autoCorrect: Boolean,
-                                      emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
-        nodes.forEach {
-            if (!(it.checkLength(2..64) || (ONE_CHAR_IDENTIFIERS.contains(it.text)) && isVariable)) {
-                emit(it.startOffset,
-                    "${IDENTIFIER_LENGTH.text} ${it.text}",
-                    true
-                )
-            }
-        }
     }
 
     /**
@@ -146,5 +142,36 @@ class IdentifierNaming1s2r : Rule("identifier-naming") {
             }
         }
         return enumValues
+    }
+
+    /**
+     * check that generic name has single capital letter, can be followed by a number
+     * this method will check it for both generic classes and generic methods
+     */
+    private fun validGenericTypeName(generic: String): Boolean {
+        // removing whitespaces and <>
+        val genericName = generic.replace(">","").replace("<", "").trim()
+        // first letter should always be a capital
+        return genericName[0] in 'A'.. 'Z' &&
+            // other letters - are digits
+            (genericName.length == 1 || genericName.substring(1).isDigits())
+    }
+
+
+    /**
+     * identifier name length should not be longer than 64 symbols and shorter than 2 symbols
+     */
+    private fun checkIdentifierLength(nodes: List<ASTNode>,
+                                      isVariable: Boolean,
+                                      autoCorrect: Boolean,
+                                      emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
+        nodes.forEach {
+            if (!(it.checkLength(2..64) || (ONE_CHAR_IDENTIFIERS.contains(it.text)) && isVariable)) {
+                emit(it.startOffset,
+                    "${IDENTIFIER_LENGTH.text} ${it.text}",
+                    true
+                )
+            }
+        }
     }
 }

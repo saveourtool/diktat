@@ -4,7 +4,9 @@ package rri.fixbot.ruleset.huawei.huawei.utils
 fun String.isJavaKeyWord() = Keywords.isJavaKeyWord(this)
 fun String.isKotlinKeyWord() = Keywords.isKotlinKeyWord(this)
 
-fun String.isASCIILettersAndDigits(): Boolean = !this.any { !(it.isDigit() || it in 'A'..'Z' || it in 'a'..'z') }
+fun String.isASCIILettersAndDigits(): Boolean = this.all { it.isDigit() || it in 'A'..'Z' || it in 'a'..'z' }
+
+fun String.isDigits(): Boolean = this.all { it.isDigit() }
 
 fun String.isUpperCamelCase(): Boolean = this.matches("([A-Z][a-z0-9]+)+".toRegex())
 
