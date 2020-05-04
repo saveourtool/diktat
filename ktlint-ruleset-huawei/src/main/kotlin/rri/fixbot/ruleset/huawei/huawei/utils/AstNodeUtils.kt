@@ -36,6 +36,8 @@ fun ASTNode.isVarProperty() =
  */
 fun ASTNode.getAllLLeafsWithSpecificType(elementType: IElementType, result: MutableList<ASTNode>) {
     // if statements here have the only right order - don't change it
+    println(this.javaClass.name)
+   // println(this.elementType )
     if (this.isLeaf()) {
         if (this.elementType == elementType) {
             result.add(this)

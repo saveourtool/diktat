@@ -12,10 +12,18 @@ class PackageNaming1s3rFixTest {
     val testComparatorUnit = TestComparatorUnit("test/paragraph1/rule3", ::format)
 
     @Test
-    fun `missing package name (check)`() {
+    fun `incorrect case of package name (fix)`() {
         assertThat(
             testComparatorUnit
-                .compareFilesFromResources("a.kt", "b.kt")
+                .compareFilesFromResources("fixUpperExpected.kt", "fixUpperTest.kt")
+        ).isEqualTo(true)
+    }
+
+    @Test
+    fun `missing company name (fix)`() {
+        assertThat(
+            testComparatorUnit
+                .compareFilesFromResources("fixUpperExpected.kt", "fixUpperTest.kt")
         ).isEqualTo(true)
     }
 
