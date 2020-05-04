@@ -3,8 +3,12 @@ package rri.fixbot.ruleset.huawei
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.isLeaf
+import com.pinterest.ktlint.core.ast.prevLeaf
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.com.intellij.psi.PsiElement
+import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
+import org.jetbrains.kotlin.org.jdom.Element
 import rri.fixbot.ruleset.huawei.constants.Warnings.*
 import rri.fixbot.ruleset.huawei.huawei.utils.getAllLLeafsWithSpecificType
 import rri.fixbot.ruleset.huawei.huawei.utils.isASCIILettersAndDigits
@@ -40,9 +44,6 @@ class PackageNaming1s3r : Rule("package-naming") {
                 return
             }
 
-            val packageName: List<ASTNode> = node.getChildren(null)
-                // get the package name after removing whitespaces and package keyword
-                .filter { it.elementType == ElementType.DOT_QUALIFIED_EXPRESSION }
 
             // getting all identifiers from package name into the list like [com, huawei, project]
             val wordsInPackageName = mutableListOf<ASTNode>()
@@ -69,7 +70,6 @@ class PackageNaming1s3r : Rule("package-naming") {
             .forEach {
                 emit(it.startOffset, "${PACKAGE_NAME_INCORRECT_CASE.text} ${it.text}", true)
                 if (autoCorrect) {
-                    // FixMe: cover with tests
                     (it as LeafPsiElement).replaceWithText(it.text.toLowerCase())
                 }
             }
@@ -77,11 +77,17 @@ class PackageNaming1s3r : Rule("package-naming") {
         // package name should start from a company's domain name
         if (!isDomainMatches(wordsInPackageName)) {
             emit(wordsInPackageName[0].startOffset, "${PACKAGE_NAME_INCORRECT_PREFIX.text} $DOMAIN_NAME", true)
-            /*    if (autoCorrect) {
-                // FixMe: cover with tests
-                wordsInPackageNameConverted = wordsInPackageNameConverted.map { it.toLowerCase() }
-                (node as LeafPsiElement).rawReplaceWithText("$DOMAIN_NAME.${wordsInPackageNameConverted.joinToString(PACKAGE_SEPARATOR)}")
-            }*/
+            if (autoCorrect) {
+                // FixMe: .treeParent.treeParent is called to get DOT_QUALIFIED_EXPRESSION - it can be done in more elegant way
+                // also need to move this autofix to a new function
+                val parentNodeToInsert = wordsInPackageName[0].treeParent.treeParent
+                createNodesForDomainName().forEach { packageName ->
+                    val compositeElementWithNameAndDot = CompositeElement(ElementType.REFERENCE_EXPRESSION)
+                    parentNodeToInsert.addChild(compositeElementWithNameAndDot, wordsInPackageName[0].treeParent)
+                    compositeElementWithNameAndDot.addChild(packageName)
+                    compositeElementWithNameAndDot.addChild(LeafPsiElement(ElementType.DOT, "."))
+                }
+            }
         }
 
         // all words should contain only letters or digits
@@ -140,5 +146,18 @@ class PackageNaming1s3r : Rule("package-naming") {
             }
         }
         return true
+    }
+
+    //FixMe: check if proper line/char numbers are added
+   private fun createNodesForDomainName(): List<ASTNode> {
+        return DOMAIN_NAME
+            .split(PACKAGE_SEPARATOR)
+            .map { name -> LeafPsiElement(ElementType.IDENTIFIER, name) }
+           /* .map{ name  ->
+                val dotReferenceExpression = CompositeElement(ElementType.REFERENCE_EXPRESSION)
+                dotReferenceExpression.addChild(name)
+                dotReferenceExpression.addChild(LeafPsiElement(ElementType.DOT, "."))
+                dotReferenceExpression
+            }*/
     }
 }

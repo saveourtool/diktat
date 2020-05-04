@@ -19,8 +19,6 @@ class TestComparatorUnit(private val resourceFilePath: String, private val funct
 
         val actualResult = function(readFile(copyTestFile.absolutePath).joinToString("\n"))
 
-        println(actualResult)
-
         return FileComparator(expectedFile, actualResult.split("\n")).compareFilesEqual()
     }
 
