@@ -1,5 +1,6 @@
 package rri.fixbot.ruleset.huawei
 
+import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
@@ -15,7 +16,7 @@ import rri.fixbot.ruleset.huawei.huawei.utils.*
  *  exceptions: variables like i,j,k
  * 2) constants from object companion should have UPPER_SNAKE_CASE
  * 3) fields/variables should have lowerCamelCase and should not contain prefixes
- * 4) interfaces/classes/annotations/enums names should be in PascalCase
+ * 4) interfaces/classes/annotations/enums/object names should be in PascalCase
  *
  */
 class IdentifierNaming1s2r : Rule("identifier-naming") {
@@ -29,6 +30,7 @@ class IdentifierNaming1s2r : Rule("identifier-naming") {
     override fun visit(
         node: ASTNode,
         autoCorrect: Boolean,
+        params: KtLint.Params,
         emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit
     ) {
 
@@ -36,6 +38,8 @@ class IdentifierNaming1s2r : Rule("identifier-naming") {
         val (identifierNodes, isVariable) = when (node.elementType) {
             // covers interface, class, enum class and annotation class names
             ElementType.CLASS -> Pair(checkCLassNamings(node, autoCorrect, emit), false)
+            // covers "object" code blocks
+            ElementType.OBJECT_DECLARATION -> Pair(checkObjectNaming(node, autoCorrect, emit), false)
             // covers variables and constants
             ElementType.PROPERTY, ElementType.VALUE_PARAMETER -> Pair(checkVariableName(node, autoCorrect, emit), true)
             // covers case of enum values
@@ -104,6 +108,7 @@ class IdentifierNaming1s2r : Rule("identifier-naming") {
 
     /**
      * basic check for class naming (PascalCase)
+     * and checks for generic type declared for this class
      */
     private fun checkCLassNamings(node: ASTNode,
                                   autoCorrect: Boolean,
@@ -126,6 +131,27 @@ class IdentifierNaming1s2r : Rule("identifier-naming") {
         }
 
         return listOf(className)
+    }
+
+    /**
+     * basic check for object naming of code blocks (PascalCase)
+     *
+     */
+    private fun checkObjectNaming(node: ASTNode,
+                                  autoCorrect: Boolean,
+                                  emit: (offset: Int, errorMessage: String,
+                                         canBeAutoCorrected: Boolean) -> Unit): List<ASTNode> {
+        val objectName: ASTNode? = node.getIdentifierName()
+        // checking object naming, the only extension is "companion" keyword
+        // FixMe: need to find a constant with "companion" string in Kotlin core and remove hardcode
+        if (!(objectName!!.text.isUpperCamelCase()) && objectName.text != "companion") {
+            emit(objectName.startOffset,
+                "${OBJECT_NAME_INCORRECT.text} ${objectName.text}",
+                true
+            )
+        }
+
+        return listOf(objectName)
     }
 
     /**
@@ -198,7 +224,6 @@ class IdentifierNaming1s2r : Rule("identifier-naming") {
             // other letters - are digits
             (genericName.length == 1 || genericName.substring(1).isDigits())
     }
-
 
     /**
      * identifier name length should not be longer than 64 symbols and shorter than 2 symbols
