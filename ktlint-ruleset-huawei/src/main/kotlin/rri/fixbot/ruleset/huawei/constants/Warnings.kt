@@ -14,5 +14,7 @@ enum class Warnings(val text: String, val id: Int) {
     VARIABLE_HAS_PREFIX("variable has prefix (like mVariable or M_VARIABLE), generally it is a bad code style (Android - is the only exception) : ", 9),
     IDENTIFIER_LENGTH("identifier length is incorrect, identifiers should be in range [2, 64] symbols: ", 10),
     ENUM_VALUE("in the same way as constants, enum values should be in UPPER_CASE snake format: ", 11),
-    GENERIC_NAME("generic name should contain only one single capital letter, it can be followed by a number:", 12)
+    GENERIC_NAME("generic name should contain only one single capital letter, it can be followed by a number:", 12),
+    FUNCTION_NAME_INCORRECT_CASE("function/method name should be in lowerCamelCase: ", 13),
+    FUNCTION_BOOLEAN_PREFIX("functions that return the value of Boolean type should have <is> or <has> prefix", 14)
 }

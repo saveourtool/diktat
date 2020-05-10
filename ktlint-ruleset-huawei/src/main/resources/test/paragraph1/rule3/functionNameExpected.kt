@@ -1,7 +1,6 @@
-package /* AAAAAA */    com.huawei.ktlint.ruleset.standarddd
+package com.huawei.ktlint.ruleset.standarddd
 
 import com.huawei.ktlint.CORE.Rule
-
 
 /**
  * Alphabetical with capital letters before lower case letters (e.g. Z before a).
@@ -11,5 +10,15 @@ import com.huawei.ktlint.CORE.Rule
  * https://developer.android.com/kotlin/style-guide#import_statements
  */
 class TestPackageName {
-    var dfsGGGG =""
+    fun METHOD1() {
+
+    }
+
+    fun method_two() {
+
+    }
+
+    fun methODTREE() {
+
+    }
 }

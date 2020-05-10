@@ -148,16 +148,10 @@ class PackageNaming1s3r : Rule("package-naming") {
         return true
     }
 
-    //FixMe: check if proper line/char numbers are added
+    // FixMe: check if proper line/char numbers are added
    private fun createNodesForDomainName(): List<ASTNode> {
         return DOMAIN_NAME
             .split(PACKAGE_SEPARATOR)
             .map { name -> LeafPsiElement(ElementType.IDENTIFIER, name) }
-           /* .map{ name  ->
-                val dotReferenceExpression = CompositeElement(ElementType.REFERENCE_EXPRESSION)
-                dotReferenceExpression.addChild(name)
-                dotReferenceExpression.addChild(LeafPsiElement(ElementType.DOT, "."))
-                dotReferenceExpression
-            }*/
     }
 }
