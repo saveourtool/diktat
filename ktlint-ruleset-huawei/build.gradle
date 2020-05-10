@@ -7,6 +7,8 @@ dependencies {
   implementation project(':ktlint-core')
   implementation deps.kotlin.stdlib
   implementation 'com.google.guava:guava:29.0-jre'
+  implementation "org.slf4j:slf4j-api:1.7.5"
+  implementation "org.slf4j:slf4j-log4j12:1.7.5"
 
   compile project(":diktat-test-framework")
 
