@@ -1,6 +1,7 @@
 package rri.fixbot.ruleset.huawei.huawei.utils
 
 import com.pinterest.ktlint.core.ast.ElementType
+import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.isLeaf
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
@@ -59,7 +60,7 @@ fun ASTNode.findChildAfter(afterThisNodeType: IElementType, childNodeType: IElem
 }
 
 // applicable for PROPERTY element type only
-fun ASTNode.isVariableFromCompanionObject(): Boolean {
+fun ASTNode.isNodeFromCompanionObject(): Boolean {
     val parent = this.treeParent
     if (parent.elementType == ElementType.CLASS_BODY) {
         if (parent.treeParent.elementType == ElementType.OBJECT_DECLARATION) {
@@ -68,6 +69,8 @@ fun ASTNode.isVariableFromCompanionObject(): Boolean {
     }
     return false
 }
+
+fun ASTNode.isNodeFromFileLevel(): Boolean = this.treeParent.elementType == FILE
 
 fun ASTNode.isValProperty() =
     this.getChildren(null)
