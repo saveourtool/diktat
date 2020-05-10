@@ -31,16 +31,18 @@ class IdentifierNaming1s2r : Rule("identifier-naming") {
         autoCorrect: Boolean,
         emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit
     ) {
+
         // isVariable will be used in future like a workaround to check corner case with variables that have length == 1
         val (identifierNodes, isVariable) = when (node.elementType) {
             // covers interface, class, enum class and annotation class names
             ElementType.CLASS -> Pair(checkCLassNamings(node, autoCorrect, emit), false)
             // covers variables and constants
-            ElementType.PROPERTY -> Pair(checkVariableName(node, autoCorrect, emit), true)
-            // covers enum values
+            ElementType.PROPERTY, ElementType.VALUE_PARAMETER -> Pair(checkVariableName(node, autoCorrect, emit), true)
+            // covers case of enum values
             ElementType.ENUM_ENTRY -> Pair(checkEnumValues(node, autoCorrect, emit), false)
             // covers global functions, extensions and class methods
             ElementType.FUN -> Pair(checkFunctionName(node, autoCorrect, emit), false)
+            // covers arguments of functionsa and constructors/declaration of classes
             else -> Pair(null, true)
         }
 
@@ -68,12 +70,20 @@ class IdentifierNaming1s2r : Rule("identifier-naming") {
                 )
             }
 
-            // check for constant variables - check for val from companion object
-            // it should be in UPPER_CASE
-            if (node.isVariableFromCompanionObject() && node.isValProperty()) {
-                if (!variableName.text.isUpperSnakeCase()) {
+            // variable should not contain only one letter in it's name. This is a bad example: b512
+            // but no need to raise a warning here if length of a variable. In this case we will raise IDENTIFIER_LENGTH
+            if (variableName.text.containsOneLetterOrZero() && variableName.text.length > 1) {
+                emit(variableName.startOffset,
+                    "${VARIABLE_NAME_INCORRECT.text} ${variableName.text}",
+                    true)
+            }
+
+            // check for constant variables - check for val from companion object or on global file level
+            // it should be in UPPER_CASE, no need to raise this warning if it is one-letter variable
+            if ((node.isNodeFromCompanionObject() || node.isNodeFromFileLevel()) && node.isValProperty()) {
+                if (!variableName.text.isUpperSnakeCase() && variableName.text.length > 1) {
                     emit(variableName.startOffset,
-                        "${CONSTANT_COMPANION_UPPERCASE.text} ${variableName.text}",
+                        "${CONSTANT_UPPERCASE.text} ${variableName.text}",
                         true
                     )
                 }
@@ -88,12 +98,6 @@ class IdentifierNaming1s2r : Rule("identifier-naming") {
                 )
             }
 
-            // variable should not contain only one letter in it's name. This is a bad example: b512
-            if (variableName.text.containsOneLetterOrZero()) {
-                emit(variableName.startOffset,
-                    "${VARIABLE_NAME_INCORRECT.text} ${variableName.text}",
-                    true)
-            }
         }
         return listOf(variableName)
     }
