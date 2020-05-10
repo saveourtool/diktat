@@ -95,7 +95,7 @@ This specification applies to all software coded in Kotlin language within the c
 Whether it is a 'rule' or a 'recommendation', you must understand the reason why it is needed and why it's better for you to use it.
 However, there may be exceptions to some rules and recommendations.
 
-Depending on your situation or personal habbits in your project you can violate part of these rules.
+Depending on your situation or personal habits in your project you can violate part of these rules.
 But remember that one exception leads to many and can completely destroy the consistency of the code. 
 There should be very few exceptions to the 'rules'. It is strongly recommended to follow both 'rules' and 'recommendations'. 
 
@@ -142,7 +142,7 @@ Typical examples of camel case naming：
 
 | Type | Naming style |
 | ---- | ---- |
-| Interfaces, classes, annotations, enumerated types | Camel case starting with capital letter, test classes have Test suffix, the filename is 'TopClassName'.kt  |
+| Interfaces, classes, annotations, enumerated types, object type names | Camel case starting with capital letter, test classes have Test suffix, the filename is 'TopClassName'.kt  |
 | Class fields, local variables, methods, method parameters| Camel case starting with small letter, test methods may be underlines with '_'|
 | Static constants, enumerated values | Only uppercase underlined with '_' |
 | Generic type variable | Single capital letter, can be followed by a number, for example: E, T, U, X, T2 |
@@ -215,7 +215,7 @@ The format is as follows:
  d) has + Noun / adjective ()
 
  e) verb()
-The verb is mainly used on the object of the action itself, such as document.print ();
+    The verb is mainly used on the object of the action itself, such as document.print ();
 
  f) verb + noun() 
 
