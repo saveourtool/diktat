@@ -2,6 +2,9 @@ package rri.fixbot.ruleset.huawei
 
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
+import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
+import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
+import org.jetbrains.kotlin.builtins.PrimitiveType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import rri.fixbot.ruleset.huawei.constants.Warnings.*
 import rri.fixbot.ruleset.huawei.huawei.utils.*
@@ -20,6 +23,7 @@ class IdentifierNaming1s2r : Rule("identifier-naming") {
     companion object {
         // FixMe: this should be moved to properties
         val ONE_CHAR_IDENTIFIERS = setOf("i", "j", "k", "x", "y", "z")
+        val BOOLEAN_METHOD_PREFIXES = setOf("has", "is")
     }
 
     override fun visit(
@@ -27,7 +31,6 @@ class IdentifierNaming1s2r : Rule("identifier-naming") {
         autoCorrect: Boolean,
         emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit
     ) {
-
         // isVariable will be used in future like a workaround to check corner case with variables that have length == 1
         val (identifierNodes, isVariable) = when (node.elementType) {
             // covers interface, class, enum class and annotation class names
@@ -36,11 +39,8 @@ class IdentifierNaming1s2r : Rule("identifier-naming") {
             ElementType.PROPERTY -> Pair(checkVariableName(node, autoCorrect, emit), true)
             // covers enum values
             ElementType.ENUM_ENTRY -> Pair(checkEnumValues(node, autoCorrect, emit), false)
-            // covers generic type of classes
-            /* ElementType.CLA -> {
-                 println(node)
-                 Pair(null, false)
-             }*/
+            // covers global functions, extensions and class methods
+            ElementType.FUN -> Pair(checkFunctionName(node, autoCorrect, emit), false)
             else -> Pair(null, true)
         }
 
@@ -58,6 +58,7 @@ class IdentifierNaming1s2r : Rule("identifier-naming") {
                                          canBeAutoCorrected: Boolean) -> Unit): List<ASTNode> {
         val variableName: ASTNode? = node.getIdentifierName()
 
+        // no need to do checks if variables are in a special list with exceptions
         if (!ONE_CHAR_IDENTIFIERS.contains(variableName!!.text)) {
             // generally variables with prefixes are not allowed (like mVariable)
             if (variableName.text.hasPrefix()) {
@@ -103,7 +104,7 @@ class IdentifierNaming1s2r : Rule("identifier-naming") {
     private fun checkCLassNamings(node: ASTNode,
                                   autoCorrect: Boolean,
                                   emit: (offset: Int, errorMessage: String,
-                                      canBeAutoCorrected: Boolean) -> Unit): List<ASTNode> {
+                                         canBeAutoCorrected: Boolean) -> Unit): List<ASTNode> {
         val genericType: ASTNode? = node.getTypeParameterList()
         if (genericType != null && !validGenericTypeName(genericType.text)) {
             emit(genericType.startOffset,
@@ -145,14 +146,51 @@ class IdentifierNaming1s2r : Rule("identifier-naming") {
     }
 
     /**
+     * Check function name:
+     * 1) function names should be in camel case
+     * 2) methods that return boolean value should have "is"/"has" prefix
+     * 3) FixMe: The function name is usually a verb or verb phrase (need to add check/fix for it)
+     */
+    private fun checkFunctionName(node: ASTNode,
+                                  autoCorrect: Boolean,
+                                  emit: (offset: Int, errorMessage: String,
+                                         canBeAutoCorrected: Boolean) -> Unit): List<ASTNode> {
+        val functionName = node.getIdentifierName()
+
+        // basic check for camel case
+        if (!functionName!!.text.isLowerCamelCase()) {
+            emit(functionName.startOffset,
+                "${FUNCTION_NAME_INCORRECT_CASE.text} ${functionName.text}",
+                true
+            )
+        }
+
+        // check for methods that return Boolean
+        val functionReturnType = node.findChildAfter(VALUE_PARAMETER_LIST, TYPE_REFERENCE)?.text
+
+        // if function has Boolean return type in 99% of cases it is much better to name it with isXXX or hasXXX prefix
+        if (functionReturnType != null && functionReturnType == PrimitiveType.BOOLEAN.typeName.asString()) {
+            if (!(BOOLEAN_METHOD_PREFIXES.any { functionReturnType.startsWith(it) })) {
+                emit(functionName.startOffset,
+                    "${FUNCTION_BOOLEAN_PREFIX.text} ${functionName.text}",
+                    true
+                )
+            }
+        }
+
+        return listOf(functionName)
+    }
+
+
+    /**
      * check that generic name has single capital letter, can be followed by a number
      * this method will check it for both generic classes and generic methods
      */
     private fun validGenericTypeName(generic: String): Boolean {
         // removing whitespaces and <>
-        val genericName = generic.replace(">","").replace("<", "").trim()
+        val genericName = generic.replace(">", "").replace("<", "").trim()
         // first letter should always be a capital
-        return genericName[0] in 'A'.. 'Z' &&
+        return genericName[0] in 'A'..'Z' &&
             // other letters - are digits
             (genericName.length == 1 || genericName.substring(1).isDigits())
     }
