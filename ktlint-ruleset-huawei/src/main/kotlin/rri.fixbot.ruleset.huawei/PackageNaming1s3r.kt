@@ -1,5 +1,6 @@
 package rri.fixbot.ruleset.huawei
 
+import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.isLeaf
@@ -34,8 +35,8 @@ class PackageNaming1s3r : Rule("package-naming") {
     override fun visit(
         node: ASTNode,
         autoCorrect: Boolean,
+        params: KtLint.Params,
         emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
-
         if (node.elementType == ElementType.PACKAGE_DIRECTIVE) {
             // if node isLeaf - this means that there is no package name declared
             if (node.isLeaf()) {
@@ -149,7 +150,7 @@ class PackageNaming1s3r : Rule("package-naming") {
     }
 
     // FixMe: check if proper line/char numbers are added
-   private fun createNodesForDomainName(): List<ASTNode> {
+    private fun createNodesForDomainName(): List<ASTNode> {
         return DOMAIN_NAME
             .split(PACKAGE_SEPARATOR)
             .map { name -> LeafPsiElement(ElementType.IDENTIFIER, name) }

@@ -171,7 +171,39 @@ class IdentifierNaming1s2rWarnTest {
                 """.trimIndent()
             )
         ).containsExactly(
-            LintError(1, 9, "identifier-naming", "${FUNCTION_BOOLEAN_PREFIX.text} SOMENAME")
+            LintError(1, 9, "identifier-naming", "${VARIABLE_NAME_INCORRECT_FORMAT.text} SOMENAME")
+        )
+    }
+
+    @Test
+    fun `check case for enum values (check - negative)`() {
+        assertThat(
+            IdentifierNaming1s2r().lint(
+                """
+                  enum class TEST_ONE {
+                    first_value, secondValue, thirdVALUE
+                  }
+                """.trimIndent()
+            )
+        ).containsExactly(
+            LintError(1, 12, "identifier-naming", "${CLASS_NAME_INCORRECT.text} TEST_ONE"),
+            LintError(2, 3, "identifier-naming", "${ENUM_VALUE.text} first_value"),
+            LintError(2, 16, "identifier-naming", "${ENUM_VALUE.text} secondValue"),
+            LintError(2, 29, "identifier-naming", "${ENUM_VALUE.text} thirdVALUE")
+        )
+    }
+
+    @Test
+    fun `check case for object (check - negative)`() {
+        assertThat(
+            IdentifierNaming1s2r().lint(
+                """
+                  object TEST_ONE {
+                  }
+                """.trimIndent()
+            )
+        ).containsExactly(
+            LintError(1, 8, "identifier-naming", "${OBJECT_NAME_INCORRECT.text} TEST_ONE")
         )
     }
 }
