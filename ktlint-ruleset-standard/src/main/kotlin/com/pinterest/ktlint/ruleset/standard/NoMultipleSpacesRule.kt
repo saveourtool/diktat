@@ -1,5 +1,6 @@
 package com.pinterest.ktlint.ruleset.standard
 
+import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
@@ -10,6 +11,7 @@ class NoMultipleSpacesRule : Rule("no-multi-spaces") {
     override fun visit(
         node: ASTNode,
         autoCorrect: Boolean,
+        params: KtLint.Params,
         emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit
     ) {
         if (node is PsiWhiteSpace && !node.textContains('\n') && node.getTextLength() > 1) {
