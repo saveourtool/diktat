@@ -151,6 +151,7 @@ Typical examples of camel case naming：
 ### <a name="c1.2"></a>Packages naming
 
 ### <a name="r1.3"></a> Rule 1.3: package name is in lower case and separated by dots, code developed internally in Huawei should start with com.huawei, and the package name is allowed to have numbers
+File name should be in PascalCase (CamelCase that starts from Upper case letter).
 
 Package names are all lowercase, consecutive words are simply concatenated together (no underscores) plus it should contain product name and module name.
 Also it should contain department or team name to prevent conflicts with other teams.
