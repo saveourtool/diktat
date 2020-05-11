@@ -19,6 +19,11 @@ fun String.containsOneLetterOrZero(): Boolean {
     return count == 1 || count == 0
 }
 
+fun String.splitPathToDirs(): List<String> =
+    this.replace("\\", "/")
+        .replace("//", "/")
+        .split("/")
+
 // method checks that string has prefix like:
 // mFunction, kLength or M_VAR
 fun String.hasPrefix(): Boolean {

@@ -63,6 +63,7 @@ object KtLint {
      * @param script true if this is a Kotlin script file
      * @param editorConfigPath optional path of the .editorconfig file (otherwise will use working directory)
      * @param debug True if invoked with the --debug flag
+     * @param projectBaseDir base directory of the project, it will be used for autofixing of a package name
      */
     data class Params(
         val fileName: String? = null,
@@ -72,7 +73,9 @@ object KtLint {
         val cb: (e: LintError, corrected: Boolean) -> Unit,
         val script: Boolean = false,
         val editorConfigPath: String? = null,
-        val debug: Boolean = false
+        val debug: Boolean = false,
+        // FixMe: basePath should be added as argument to this application
+        val projectBaseDir: String? = null
     )
 
     init {
