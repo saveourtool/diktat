@@ -54,6 +54,8 @@ class PackageNaming1s3r : Rule("package-naming") {
             if (node.isLeaf()) {
                 emit(node.startOffset, PACKAGE_NAME_MISSING.text, true)
                 if (autoCorrect) {
+                    // FixMe: need to add package name directive here
+                    // node.addChildren()
                     formAndInsertPackageName(node, null, realPackageName)
                 }
                 return
@@ -65,7 +67,7 @@ class PackageNaming1s3r : Rule("package-naming") {
 
             // no need to check that packageIdentifiers is empty, because in this case parsing will fail
             checkPackageName(autoCorrect, wordsInPackageName, emit)
-            checkFilePathMatchesWithPackage(wordsInPackageName, params)
+            checkFilePathMatchesWithPackage(wordsInPackageName, realPackageName, autoCorrect, emit)
         }
     }
 
@@ -171,7 +173,16 @@ class PackageNaming1s3r : Rule("package-naming") {
             }
     }
 
-    //FixMe: check to compare real package name with generated
-    private fun checkFilePathMatchesWithPackage(packageNameParts: List<ASTNode>, params: KtLint.Params) {
+    // FixMe: check to compare real package name with generated
+    private fun checkFilePathMatchesWithPackage(packageNameParts: List<ASTNode>,
+                                                realName: List<String>?,
+                                                autoCorrect: Boolean,
+                                                emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
+        if (realName != null && packageNameParts.map { node -> node.text } != realName)
+            emit(packageNameParts[0].startOffset,
+                "${PACKAGE_NAME_INCORRECT.text} ${realName.joinToString(PACKAGE_SEPARATOR)} ", true)
+        if (autoCorrect) {
+            // FixMe: need to support fixing of package name here
+        }
     }
 }
