@@ -4,14 +4,14 @@ import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.test.lint
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import rri.fixbot.ruleset.huawei.IdentifierNaming1s2r
+import rri.fixbot.ruleset.huawei.IdentifierNaming
 import rri.fixbot.ruleset.huawei.constants.Warnings.*
 
 class MethodNaming1s5rWarnTest {
     @Test
     fun `method name incorrect, part 1`() {
         assertThat(
-            IdentifierNaming1s2r().lint(
+            IdentifierNaming().lint(
                 """
                   class SomeClass {
                     fun /* */ methODTREE(): String {
@@ -26,7 +26,7 @@ class MethodNaming1s5rWarnTest {
     @Test
     fun `method name incorrect, part 2`() {
         assertThat(
-            IdentifierNaming1s2r().lint(
+            IdentifierNaming().lint(
                 """
                   class TestPackageName {
                     fun method_two(): String {
@@ -41,7 +41,7 @@ class MethodNaming1s5rWarnTest {
     @Test
     fun `method name incorrect, part 3`() {
         assertThat(
-            IdentifierNaming1s2r().lint(
+            IdentifierNaming().lint(
                 """
                     fun String.methODTREE(): String {
                         fun TEST(): Unit {
@@ -59,7 +59,7 @@ class MethodNaming1s5rWarnTest {
     @Test
     fun `method name incorrect, part 4`() {
         assertThat(
-            IdentifierNaming1s2r().lint(
+            IdentifierNaming().lint(
                 """
                   class TestPackageName {
                     fun methODTREE(): String {
@@ -73,7 +73,7 @@ class MethodNaming1s5rWarnTest {
     @Test
     fun `method name incorrect, part 5`() {
         assertThat(
-            IdentifierNaming1s2r().lint(
+            IdentifierNaming().lint(
                 """
                   class TestPackageName {
                     fun methODTREE() {
@@ -87,7 +87,7 @@ class MethodNaming1s5rWarnTest {
     @Test
     fun `boolean method name incorrect`() {
         assertThat(
-            IdentifierNaming1s2r().lint(
+            IdentifierNaming().lint(
                 """
                  fun someBooleanCheck(): Boolean {
                      return false

@@ -73,9 +73,7 @@ object KtLint {
         val cb: (e: LintError, corrected: Boolean) -> Unit,
         val script: Boolean = false,
         val editorConfigPath: String? = null,
-        val debug: Boolean = false,
-        // FixMe: basePath should be added as argument to this application
-        val projectBaseDir: String? = null
+        val debug: Boolean = false
     )
 
     init {
