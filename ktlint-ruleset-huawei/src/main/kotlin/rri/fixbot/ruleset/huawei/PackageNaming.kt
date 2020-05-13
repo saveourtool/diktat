@@ -7,6 +7,7 @@ import com.pinterest.ktlint.core.ast.isLeaf
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
+import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import rri.fixbot.ruleset.huawei.constants.Warnings.*
 import rri.fixbot.ruleset.huawei.huawei.utils.*
 import org.slf4j.LoggerFactory
@@ -20,13 +21,14 @@ import org.slf4j.LoggerFactory
  * package a.b.c.D -> then class D should be placed in a/b/c/ directories
  */
 
-class PackageNaming1s3r : Rule("package-naming") {
+class PackageNaming : Rule("package-naming") {
     companion object {
         // FixMe: these constants should be moved to configuration file
         const val PACKAGE_SEPARATOR = "."
         const val DOMAIN_NAME = "com.huawei"
-        val TECHNICAL_DIR_NAMES = listOf("src", "main", "java", "kotlin")
-        private val log = LoggerFactory.getLogger(PackageNaming1s3r::class.java)
+        const val PACKAGE_PATH_ANCHOR = "src"
+        val LANGUAGE_DIR_NAMES = listOf("src", "main", "java", "kotlin")
+        private val log = LoggerFactory.getLogger(PackageNaming::class.java)
     }
 
     override fun visit(
@@ -36,27 +38,17 @@ class PackageNaming1s3r : Rule("package-naming") {
         emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
 
         if (node.elementType == ElementType.PACKAGE_DIRECTIVE) {
-            val filePathParts = params.fileName?.splitPathToDirs()
-            val basePath = params.projectBaseDir
-
-            val realPackageName = if (filePathParts == null || basePath == null) {
-                log.error("Not able to determine a path of a scanned file or basic path ")
-                null
-            } else {
-                // creating a real package name:
-                // 1) getting a path after the base project directory
-                // 2) removing src/main/kotlin/java/e.t.c dirs
-                filePathParts.subList(filePathParts.indexOf(basePath), filePathParts.size)
-                    .filter { !TECHNICAL_DIR_NAMES.contains(it) }
-            }
+            val realPackageName = calculateRealPackageName(params)
 
             // if node isLeaf - this means that there is no package name declared
             if (node.isLeaf()) {
                 emit(node.startOffset, PACKAGE_NAME_MISSING.text, true)
                 if (autoCorrect) {
-                    // FixMe: need to add package name directive here
-                    // node.addChildren()
-                    formAndInsertPackageName(node, null, realPackageName)
+                    // FixMe: need to find proper constant in kotlin for "package" keyword
+                    node.addChild(LeafPsiElement(ElementType.PACKAGE_KEYWORD, "package"), null)
+                    node.addChild(PsiWhiteSpaceImpl(" "), null)
+                    createAndInsertPackageName(node, null, realPackageName)
+                    node.addChild(PsiWhiteSpaceImpl("\n"), null)
                 }
                 return
             }
@@ -67,7 +59,26 @@ class PackageNaming1s3r : Rule("package-naming") {
 
             // no need to check that packageIdentifiers is empty, because in this case parsing will fail
             checkPackageName(autoCorrect, wordsInPackageName, emit)
-            checkFilePathMatchesWithPackage(wordsInPackageName, realPackageName, autoCorrect, emit)
+            // fix in checkFilePathMatchesWithPackageName is much more agressive than fixes in checkPackageName, they can conflict
+            checkFilePathMatchesWithPackageName(wordsInPackageName, realPackageName, autoCorrect, emit)
+        }
+    }
+
+    private fun calculateRealPackageName(params: KtLint.Params): List<String> {
+        val filePathParts = params.fileName?.splitPathToDirs()
+
+        return if (filePathParts == null || !filePathParts.contains(PACKAGE_PATH_ANCHOR)) {
+            log.error("Not able to determine a path to a scanned file or src directory cannot be found in it's path." +
+                " Will not be able to determine correct package name. ")
+            listOf()
+        } else {
+            // creating a real package name:
+            // 1) getting a path after the base project directory (after "src" directory)
+            // 2) removing src/main/kotlin/java/e.t.c dirs and removing file name
+            // 3) adding company's domain name at the beginning
+            DOMAIN_NAME.split(PACKAGE_SEPARATOR) +
+                filePathParts.subList(filePathParts.lastIndexOf(PACKAGE_PATH_ANCHOR), filePathParts.size - 1)
+                    .filter { !LANGUAGE_DIR_NAMES.contains(it) }
         }
     }
 
@@ -97,18 +108,17 @@ class PackageNaming1s3r : Rule("package-naming") {
             if (autoCorrect) {
                 // FixMe: .treeParent.treeParent is called to get DOT_QUALIFIED_EXPRESSION - it can be done in more elegant way
                 val parentNodeToInsert = wordsInPackageName[0].treeParent.treeParent
-                formAndInsertPackageName(parentNodeToInsert, wordsInPackageName[0].treeParent, DOMAIN_NAME.split(PACKAGE_SEPARATOR))
+                createAndInsertPackageName(parentNodeToInsert, wordsInPackageName[0].treeParent, DOMAIN_NAME.split(PACKAGE_SEPARATOR))
             }
         }
 
         // all words should contain only letters or digits
         wordsInPackageName.filter { word -> !correctSymbolsAreUsed(word.text) }.forEach {
             emit(it.startOffset, "${PACKAGE_NAME_INCORRECT_SYMBOLS.text} ${it.text}", true)
-            /*   if (autoCorrect) {
+            if (autoCorrect) {
                 // FixMe: cover with tests
-                wordsInPackageNameConverted = wordsInPackageNameConverted.map { it.replace("_", ".").replace("-", ".") }
-                (node as LeafPsiElement).rawReplaceWithText(wordsInPackageNameConverted.joinToString(PACKAGE_SEPARATOR))
-            }*/
+                // FixMe: add different auto corrections for incorrect separators, letters, e.t.c
+            }
         }
     }
 
@@ -160,29 +170,45 @@ class PackageNaming1s3r : Rule("package-naming") {
     }
 
     // FixMe: check if proper line/char numbers are added
-    private fun formAndInsertPackageName(parentNode: ASTNode, insertBeforeNode: ASTNode?, packageParts: List<String>?) {
-        packageParts
-            ?.map { name -> LeafPsiElement(ElementType.IDENTIFIER, name) }
-            ?.forEach { packagePart ->
-                // creating Composite object = ((IDENTIFIER) + (DOT))
-                val compositeElementWithNameAndDot = CompositeElement(ElementType.REFERENCE_EXPRESSION)
-                // putting it parent tree and adding IDENTIFIER and DOT as children to it
-                parentNode.addChild(compositeElementWithNameAndDot, insertBeforeNode)
-                compositeElementWithNameAndDot.addChild(packagePart)
-                compositeElementWithNameAndDot.addChild(LeafPsiElement(ElementType.DOT, PACKAGE_SEPARATOR))
-            }
+    /**
+     * method for creating and inserting package name into the parentNode
+     * Will create composite object = (Identifier + Dot) and insert it into the children list of parent node
+     */
+    private fun createAndInsertPackageName(parentNode: ASTNode, insertBeforeNode: ASTNode?, packageNameToInsert: List<String>) {
+        var compositeElementWithNameAndDot: CompositeElement? = null
+        var childDot: LeafPsiElement? = null
+        var childPackageNamePart: LeafPsiElement?
+
+        packageNameToInsert.forEach { name ->
+            // creating Composite object = ((IDENTIFIER) + (DOT))
+            compositeElementWithNameAndDot = CompositeElement(ElementType.REFERENCE_EXPRESSION)
+            childDot = LeafPsiElement(ElementType.DOT, PACKAGE_SEPARATOR)
+            childPackageNamePart = LeafPsiElement(ElementType.IDENTIFIER, name)
+
+            // putting composite node first int the parent tree and adding IDENTIFIER and DOT as children to it after
+            parentNode.addChild(compositeElementWithNameAndDot!!, insertBeforeNode)
+            compositeElementWithNameAndDot!!.addChild(childPackageNamePart!!)
+            compositeElementWithNameAndDot!!.addChild(childDot!!)
+        }
+
+        // removing extra DOT that is not needed if we were inserting the whole package name (not just a part) to the parent
+        if (insertBeforeNode == null) {
+            compositeElementWithNameAndDot!!.removeChild(childDot!!)
+        }
     }
 
     // FixMe: check to compare real package name with generated
-    private fun checkFilePathMatchesWithPackage(packageNameParts: List<ASTNode>,
-                                                realName: List<String>?,
-                                                autoCorrect: Boolean,
-                                                emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
-        if (realName != null && packageNameParts.map { node -> node.text } != realName)
+    private fun checkFilePathMatchesWithPackageName(packageNameParts: List<ASTNode>,
+                                                    realName: List<String>,
+                                                    autoCorrect: Boolean,
+                                                    emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
+        if (realName.isNotEmpty() && packageNameParts.map { node -> node.text } != realName)
             emit(packageNameParts[0].startOffset,
-                "${PACKAGE_NAME_INCORRECT.text} ${realName.joinToString(PACKAGE_SEPARATOR)} ", true)
+                "${PACKAGE_NAME_INCORRECT.text} ${realName.joinToString(PACKAGE_SEPARATOR)}", true)
         if (autoCorrect) {
-            // FixMe: need to support fixing of package name here
+            val parentNode = packageNameParts[0].treeParent.treeParent
+            parentNode.getChildren(null).forEach { node -> parentNode.removeChild(node) }
+            createAndInsertPackageName(parentNode, null, realName)
         }
     }
 }

@@ -20,7 +20,7 @@ import java.io.File
  * 4) interfaces/classes/annotations/enums/object names should be in PascalCase
  *
  */
-class IdentifierNaming1s2r : Rule("identifier-naming") {
+class IdentifierNaming : Rule("identifier-naming") {
 
     companion object {
         // FixMe: this should be moved to properties
@@ -54,8 +54,6 @@ class IdentifierNaming1s2r : Rule("identifier-naming") {
         if (identifierNodes != null) {
             checkIdentifierLength(identifierNodes, isVariable, autoCorrect, emit)
         }
-
-        checkFileNaming(params, emit)
     }
 
     /**
@@ -245,19 +243,5 @@ class IdentifierNaming1s2r : Rule("identifier-naming") {
         }
     }
 
-    private fun checkFileNaming(params: KtLint.Params,
-                                emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
-        if (params.fileName != null) {
-            val file = File(params.fileName!!)
-            val fileName = file.name
-            if (!fileName.isUpperCamelCase() || !fileName.endsWith(".kt")) {
-                emit(0,
-                    "${FILE_NAME_INCORRECT.text} $fileName",
-                    false
-                )
 
-                // FixMe: we can add an autocorrect here in future, but is there any purpose?
-            }
-        }
-    }
 }

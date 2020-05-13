@@ -4,15 +4,15 @@ import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.test.lint
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import rri.fixbot.ruleset.huawei.IdentifierNaming1s2r
+import rri.fixbot.ruleset.huawei.IdentifierNaming
 import rri.fixbot.ruleset.huawei.constants.Warnings.*
 
-class IdentifierNaming1s2rWarnTest {
+class IdentifierNamingWarnTest {
     // ======== checks for generics ========
     @Test
     fun `generic class - single capital letter, can be followed by a number  (check - positive1)`() {
         assertThat(
-            IdentifierNaming1s2r().lint(
+            IdentifierNaming().lint(
                 """
                     package com.huawei.test
 
@@ -26,7 +26,7 @@ class IdentifierNaming1s2rWarnTest {
     @Test
     fun `generic class - single capital letter, can be followed by a number  (check - positive2)`() {
         assertThat(
-            IdentifierNaming1s2r().lint(
+            IdentifierNaming().lint(
                 """
                     package com.huawei.test
 
@@ -40,7 +40,7 @@ class IdentifierNaming1s2rWarnTest {
     @Test
     fun `generic class - single capital letter, can be followed by a number  (check - negative1)`() {
         assertThat(
-            IdentifierNaming1s2r().lint(
+            IdentifierNaming().lint(
                 """
                     package com.huawei.test
 
@@ -56,7 +56,7 @@ class IdentifierNaming1s2rWarnTest {
     @Test
     fun `generic class - single capital letter, can be followed by a number  (check - negative2)`() {
         assertThat(
-            IdentifierNaming1s2r().lint(
+            IdentifierNaming().lint(
                 """
                     package com.huawei.test
 
@@ -73,7 +73,7 @@ class IdentifierNaming1s2rWarnTest {
     @Test
     fun `generic method - single capital letter, can be followed by a number  (check)`() {
         assertThat(
-            IdentifierNaming1s2r().lint(
+            IdentifierNaming().lint(
                 """
                    package com.huawei.test
 
@@ -93,7 +93,7 @@ class IdentifierNaming1s2rWarnTest {
     @Test
     fun `check identifiers case format (check - negative)`() {
         assertThat(
-            IdentifierNaming1s2r().lint(
+            IdentifierNaming().lint(
                 """
                   var SOMEtest = "TEST"
                   val thisConstantShouldBeUpper = "CONST"
@@ -127,7 +127,7 @@ class IdentifierNaming1s2rWarnTest {
     @Test
     fun `check variable length (check - negative)`() {
         assertThat(
-            IdentifierNaming1s2r().lint(
+            IdentifierNaming().lint(
                 """
                   val r = 0
                   val x256 = 256
@@ -150,7 +150,7 @@ class IdentifierNaming1s2rWarnTest {
     @Test
     fun `check value parameters in dataclasses (check - negative)`() {
         assertThat(
-            IdentifierNaming1s2r().lint(
+            IdentifierNaming().lint(
                 """
                     data class ClassName(val FIRST: String, var SECOND: String)
                 """.trimIndent()
@@ -164,7 +164,7 @@ class IdentifierNaming1s2rWarnTest {
     @Test
     fun `check value parameters in functions (check - negative)`() {
         assertThat(
-            IdentifierNaming1s2r().lint(
+            IdentifierNaming().lint(
                 """
                     fun foo(SOMENAME: String) {
                     }
@@ -178,7 +178,7 @@ class IdentifierNaming1s2rWarnTest {
     @Test
     fun `check case for enum values (check - negative)`() {
         assertThat(
-            IdentifierNaming1s2r().lint(
+            IdentifierNaming().lint(
                 """
                   enum class TEST_ONE {
                     first_value, secondValue, thirdVALUE
@@ -196,7 +196,7 @@ class IdentifierNaming1s2rWarnTest {
     @Test
     fun `check case for object (check - negative)`() {
         assertThat(
-            IdentifierNaming1s2r().lint(
+            IdentifierNaming().lint(
                 """
                   object TEST_ONE {
                   }
