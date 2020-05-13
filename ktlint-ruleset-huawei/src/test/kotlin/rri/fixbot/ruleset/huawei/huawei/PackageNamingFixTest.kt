@@ -5,17 +5,17 @@ import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleSet
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import rri.fixbot.ruleset.huawei.PackageNaming1s3r
+import rri.fixbot.ruleset.huawei.PackageNaming
 import test_framework.processing.TestComparatorUnit
 
-class PackageNaming1s3rFixTest {
-    val testComparatorUnit = TestComparatorUnit("test/paragraph1/rule3", ::format)
+class PackageNamingFixTest {
+    val testComparatorUnit = TestComparatorUnit("test/paragraph1/naming", ::format)
 
     @Test
     fun `incorrect case of package name (fix)`() {
         assertThat(
             testComparatorUnit
-                .compareFilesFromResources("fixUpperExpected.kt", "fixUpperTest.kt")
+                .compareFilesFromResources("fixIncorrectExpected.kt", "fixUpperTest.kt")
         ).isEqualTo(true)
     }
 
@@ -23,11 +23,11 @@ class PackageNaming1s3rFixTest {
     fun `missing company name (fix)`() {
         assertThat(
             testComparatorUnit
-                .compareFilesFromResources("fixUpperExpected.kt", "fixUpperTest.kt")
+                .compareFilesFromResources("fixIncorrectExpected.kt", "fixUpperTest.kt")
         ).isEqualTo(true)
     }
 
-    private fun format(text: String): String = PackageNaming1s3r().format(text)
+    private fun format(text: String): String = PackageNaming().format(text)
 
     private fun Rule.format(text: String): String {
         return KtLint.format(

@@ -7,7 +7,8 @@ class HuaweiRuleSetProvider : RuleSetProvider {
 
     override fun get(): RuleSet = RuleSet(
         "huawei-codestyle",
-        PackageNaming1s3r(),
-        IdentifierNaming1s2r()
+        FileNaming(),
+        PackageNaming(),
+        IdentifierNaming()
     )
 }
