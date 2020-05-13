@@ -120,9 +120,9 @@ Explanation: Each valid name of identifier should match regular expression \ w {
 {2,64} means that the length of the name is from 2 to 64 characters, also the length of the variable name should be proportional to its life range,
  functionality and responsibility. It depends on the project, but generally it is suggested to have length of names less than 31 symbols. Otherwise
  for example class declaration with generics or inheritance from a super class can cause line breaking.
-
 No special prefix or suffix should be used in these names. For example, the following are inappropriate: name_, mName, s_name, and kName.
-For files choose names that describe the content of this file, use camel case and .kt extension.
+
+For files choose names that describe the content of this file, use camel case (PascalCase) and .kt extension. 
 
 Typical examples of camel case naming：
 
@@ -151,7 +151,6 @@ Typical examples of camel case naming：
 ### <a name="c1.2"></a>Packages naming
 
 ### <a name="r1.3"></a> Rule 1.3: package name is in lower case and separated by dots, code developed internally in Huawei should start with com.huawei, and the package name is allowed to have numbers
-File name should be in PascalCase (CamelCase that starts from Upper case letter).
 
 Package names are all lowercase, consecutive words are simply concatenated together (no underscores) plus it should contain product name and module name.
 Also it should contain department or team name to prevent conflicts with other teams.

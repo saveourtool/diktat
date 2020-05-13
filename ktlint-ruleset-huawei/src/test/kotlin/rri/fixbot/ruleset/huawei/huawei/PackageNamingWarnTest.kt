@@ -4,14 +4,14 @@ import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.test.lint
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import rri.fixbot.ruleset.huawei.PackageNaming1s3r
+import rri.fixbot.ruleset.huawei.PackageNaming
 import rri.fixbot.ruleset.huawei.constants.Warnings.*
 
-class PackageNaming1s3rWarnTest {
+class PackageNamingWarnTest {
     @Test
     fun `missing package name (check)`() {
         assertThat(
-            PackageNaming1s3r().lint(
+            PackageNaming().lint(
                 """
                     import com.huawei.a.b.c
 
@@ -30,7 +30,7 @@ class PackageNaming1s3rWarnTest {
     @Test
     fun `package name should be in a lower case`() {
         assertThat(
-            PackageNaming1s3r().lint(
+            PackageNaming().lint(
                 """
                     package /* AAA */ com.huawei.SPECIALTEST.test
 
@@ -49,7 +49,7 @@ class PackageNaming1s3rWarnTest {
     @Test
     fun `package name should start from domain name`() {
         assertThat(
-            PackageNaming1s3r().lint(
+            PackageNaming().lint(
                 """
                     package some.incorrect.domain.test
 
@@ -68,7 +68,7 @@ class PackageNaming1s3rWarnTest {
     @Test
     fun `underscore exceptions - incorrect underscore case`() {
         assertThat(
-            PackageNaming1s3r().lint(
+            PackageNaming().lint(
                 """
                     package com.huawei.domain.test_
 
@@ -87,7 +87,7 @@ class PackageNaming1s3rWarnTest {
     @Test
     fun `underscore exceptions - incorrect symbol`() {
         assertThat(
-            PackageNaming1s3r().lint(
+            PackageNaming().lint(
                 """
                     package com.huawei.domain.testш
 
@@ -106,7 +106,7 @@ class PackageNaming1s3rWarnTest {
     @Test
     fun `underscore exceptions - positive case - keyword`() {
         assertThat(
-            PackageNaming1s3r().lint(
+            PackageNaming().lint(
                 """
                     package com.huawei.domain.int_
 

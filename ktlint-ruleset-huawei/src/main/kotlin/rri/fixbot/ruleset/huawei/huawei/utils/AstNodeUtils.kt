@@ -7,7 +7,6 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import rri.fixbot.ruleset.huawei.IdentifierNaming1s2r
 
 val log: Logger = LoggerFactory.getLogger(ASTNode::class.java)
 

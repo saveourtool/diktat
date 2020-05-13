@@ -60,7 +60,7 @@ internal fun lintFile(
                 lintErrorCallback(e)
             },
             debug = debug
-        )
+    )
     )
 }
 
