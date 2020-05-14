@@ -30,6 +30,20 @@ fun ASTNode.getTypeParameterList(): ASTNode? =
 fun ASTNode.getAllIdentifierChildren(): List<ASTNode> =
     this.getChildren(null).filter { it.elementType == ElementType.IDENTIFIER }
 
+
+/**
+* obviously returns list with children that match particular element type
+ */
+fun ASTNode.getAllChildrenWithType(elementType: IElementType): List<ASTNode> =
+    this.getChildren(null).filter { it.elementType == elementType }
+
+/**
+ * obviously returns first child that match particular element type
+ */
+fun ASTNode.getFirstChildWithType(elementType: IElementType): ASTNode? =
+    this.getChildren(null).find { it.elementType == elementType }
+
+
 /**
  *
  */
