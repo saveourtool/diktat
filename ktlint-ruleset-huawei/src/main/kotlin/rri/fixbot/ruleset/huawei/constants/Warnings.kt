@@ -21,5 +21,6 @@ enum class Warnings(val text: String, val id: Int) {
     FUNCTION_NAME_INCORRECT_CASE("function/method name should be in lowerCamelCase: ", 15),
     FUNCTION_BOOLEAN_PREFIX("functions that return the value of Boolean type should have <is> or <has> prefix", 16),
 
-    FILE_NAME_INCORRECT("file name is incorrect - it should end with .kt extension and be in PascalCase: ", 17)
+    FILE_NAME_INCORRECT("file name is incorrect - it should end with .kt extension and be in PascalCase: ", 17),
+    FILE_NAME_MATCH_CLASS("file name is incorrect - it should match with the class described in it if there is the only one class declared: ", 18)
 }
