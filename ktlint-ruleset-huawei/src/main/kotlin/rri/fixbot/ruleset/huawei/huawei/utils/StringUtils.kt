@@ -8,7 +8,7 @@ fun String.isASCIILettersAndDigits(): Boolean = this.all { it.isDigit() || it in
 
 fun String.isDigits(): Boolean = this.all { it.isDigit() }
 
-fun String.isUpperCamelCase(): Boolean = this.matches("([A-Z][a-z0-9]+)+".toRegex())
+fun String.isPascalCase(): Boolean = this.matches("([A-Z][a-z0-9]+)+".toRegex())
 
 fun String.isLowerCamelCase(): Boolean = this.matches("[a-z]([a-z0-9])*([A-Z][a-z0-9]+)*".toRegex())
 

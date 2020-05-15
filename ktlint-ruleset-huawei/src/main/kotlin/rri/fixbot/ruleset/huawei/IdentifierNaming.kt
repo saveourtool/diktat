@@ -9,7 +9,6 @@ import org.jetbrains.kotlin.builtins.PrimitiveType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import rri.fixbot.ruleset.huawei.constants.Warnings.*
 import rri.fixbot.ruleset.huawei.huawei.utils.*
-import java.io.File
 
 /**
  * This visitor covers rule 1.2 of Huawei code style. It covers following rules:
@@ -124,7 +123,7 @@ class IdentifierNaming : Rule("identifier-naming") {
         }
 
         val className: ASTNode? = node.getIdentifierName()
-        if (!(className!!.text.isUpperCamelCase())) {
+        if (!(className!!.text.isPascalCase())) {
             emit(className.startOffset,
                 "${CLASS_NAME_INCORRECT.text} ${className.text}",
                 true
@@ -145,7 +144,7 @@ class IdentifierNaming : Rule("identifier-naming") {
         val objectName: ASTNode? = node.getIdentifierName()
         // checking object naming, the only extension is "companion" keyword
         // FixMe: need to find a constant with "companion" string in Kotlin core and remove hardcode
-        if (!(objectName!!.text.isUpperCamelCase()) && objectName.text != "companion") {
+        if (!(objectName!!.text.isPascalCase()) && objectName.text != "companion") {
             emit(objectName.startOffset,
                 "${OBJECT_NAME_INCORRECT.text} ${objectName.text}",
                 true
