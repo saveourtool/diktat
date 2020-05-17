@@ -97,12 +97,13 @@ class IdentifierNamingWarnTest {
             IdentifierNaming().lint(
                 """
                   var SOMEtest = "TEST"
-                  val thisConstantShouldBeUpper = "CONST"
+                  const val thisConstantShouldBeUpper = "CONST"
                   class className {
                       data class badClassName(val FIRST: String, var SECOND: String)
 
                       object companion {
-                          val incorrect_case = ""
+                          const val incorrect_case = ""
+                          val correctCase
                           var INCORRECT = ""
                       }
 
@@ -113,15 +114,15 @@ class IdentifierNamingWarnTest {
             )
         ).containsExactly(
             LintError(1, 5, "identifier-naming", "${VARIABLE_NAME_INCORRECT_FORMAT.text} SOMEtest"),
-            LintError(2, 5, "identifier-naming", "${CONSTANT_UPPERCASE.text} thisConstantShouldBeUpper"),
+            LintError(2, 11, "identifier-naming", "${CONSTANT_UPPERCASE.text} thisConstantShouldBeUpper"),
             LintError(3, 7, "identifier-naming", "${CLASS_NAME_INCORRECT.text} className"),
             LintError(4, 16, "identifier-naming", "${CLASS_NAME_INCORRECT.text} badClassName"),
             LintError(4, 33, "identifier-naming", "${VARIABLE_NAME_INCORRECT_FORMAT.text} FIRST"),
             LintError(4, 52, "identifier-naming", "${VARIABLE_NAME_INCORRECT_FORMAT.text} SECOND"),
-            LintError(7, 13, "identifier-naming", "${CONSTANT_UPPERCASE.text} incorrect_case"),
-            LintError(8, 13, "identifier-naming", "${VARIABLE_NAME_INCORRECT_FORMAT.text} INCORRECT"),
-            LintError(11, 9, "identifier-naming", "${VARIABLE_NAME_INCORRECT_FORMAT.text} check_me"),
-            LintError(12, 9, "identifier-naming", "${VARIABLE_NAME_INCORRECT_FORMAT.text} CHECK_ME")
+            LintError(7, 19, "identifier-naming", "${CONSTANT_UPPERCASE.text} incorrect_case"),
+            LintError(9, 13, "identifier-naming", "${VARIABLE_NAME_INCORRECT_FORMAT.text} INCORRECT"),
+            LintError(12, 9, "identifier-naming", "${VARIABLE_NAME_INCORRECT_FORMAT.text} check_me"),
+            LintError(13, 9, "identifier-naming", "${VARIABLE_NAME_INCORRECT_FORMAT.text} CHECK_ME")
         )
     }
 
