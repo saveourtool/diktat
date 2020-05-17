@@ -1,4 +1,4 @@
-package rri.fixbot.ruleset.huawei.huawei
+package rri.fixbot.ruleset.huawei.huawei.chapter1
 
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
@@ -9,13 +9,13 @@ import rri.fixbot.ruleset.huawei.PackageNaming
 import test_framework.processing.TestComparatorUnit
 
 class PackageNamingFixTest {
-    val testComparatorUnit = TestComparatorUnit("test/paragraph1/naming", ::format)
+    val testComparatorUnit = TestComparatorUnit("test/paragraph1/naming/package", ::format)
 
     @Test
     fun `incorrect case of package name (fix)`() {
         assertThat(
             testComparatorUnit
-                .compareFilesFromResources("fixIncorrectExpected.kt", "fixUpperTest.kt")
+                .compareFilesFromResources("FixUpperExpected.kt", "FixUpperTest.kt")
         ).isEqualTo(true)
     }
 
@@ -23,7 +23,7 @@ class PackageNamingFixTest {
     fun `missing company name (fix)`() {
         assertThat(
             testComparatorUnit
-                .compareFilesFromResources("fixIncorrectExpected.kt", "fixUpperTest.kt")
+                .compareFilesFromResources("FixUpperExpected.kt", "FixUpperTest.kt")
         ).isEqualTo(true)
     }
 

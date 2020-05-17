@@ -109,3 +109,17 @@ fun ASTNode.getAllLLeafsWithSpecificType(elementType: IElementType, result: Muta
         }
     }
 }
+
+/**
+ * This util method does tree traversal and returns first node that matches specific type
+ */
+fun ASTNode.findLeafWithSpecificType(elementType: IElementType): ASTNode? {
+    if (this.elementType == elementType) return this
+    if (this.isLeaf()) return null
+
+    this.getChildren(null).forEach {
+        val result = it.findLeafWithSpecificType(elementType)
+        if (result != null) return result
+    }
+    return null
+}

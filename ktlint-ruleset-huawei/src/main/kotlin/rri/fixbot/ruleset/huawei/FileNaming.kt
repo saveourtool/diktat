@@ -63,7 +63,7 @@ class FileNaming : Rule("file-naming") {
         if (params.fileName != null) {
             val (fileName, extension) = getFileParts(params)
             val classes = fileLevelNode.getAllChildrenWithType(CLASS)
-            if (classes.size == 1 ) {
+            if (classes.size == 1) {
                 val className = classes[0].getFirstChildWithType(IDENTIFIER)!!.text
                 if (className != fileName) {
                     emit(0,
