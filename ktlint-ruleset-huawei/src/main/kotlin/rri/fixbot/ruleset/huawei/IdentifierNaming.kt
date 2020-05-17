@@ -11,13 +11,14 @@ import rri.fixbot.ruleset.huawei.constants.Warnings.*
 import rri.fixbot.ruleset.huawei.huawei.utils.*
 
 /**
- * This visitor covers rule 1.2 of Huawei code style. It covers following rules:
+ * This visitor covers rules:  1.2, 1.3, 1.4, 1.5 of Huawei code style. It covers following rules:
  * 1) All identifiers should use only ASCII letters or digits, and the names should match regular expressions \w{2,64}
  *  exceptions: variables like i,j,k
  * 2) constants from object companion should have UPPER_SNAKE_CASE
  * 3) fields/variables should have lowerCamelCase and should not contain prefixes
  * 4) interfaces/classes/annotations/enums/object names should be in PascalCase
- *
+ * 5) methods: function names should be in camel case, methods that return boolean value should have "is"/"has" prefix
+ * 6) custom exceptions: PascalCase and Exception suffix
  */
 class IdentifierNaming : Rule("identifier-naming") {
 
@@ -130,7 +131,40 @@ class IdentifierNaming : Rule("identifier-naming") {
             )
         }
 
+        checkExceptionSuffix(node, autoCorrect, emit)
+
         return listOf(className)
+    }
+
+    /**
+     * all exceptions should have Exception suffix
+     *
+     */
+    private fun checkExceptionSuffix(node: ASTNode,
+                                     autoCorrect: Boolean,
+                                     emit: (offset: Int, errorMessage: String,
+                                            canBeAutoCorrected: Boolean) -> Unit) {
+
+        fun hasExceptionSuffix(text: String) = text.toLowerCase().endsWith("exception")
+
+        val classNameNode: ASTNode? = node.getIdentifierName()
+        // getting super class name
+        val superClassName: String? = node
+            .getFirstChildWithType(ElementType.SUPER_TYPE_LIST)
+            ?.findLeafWithSpecificType(TYPE_REFERENCE)
+            ?.text
+
+        if (superClassName != null && hasExceptionSuffix(superClassName) && !hasExceptionSuffix(classNameNode!!.text)) {
+            emit(classNameNode.startOffset,
+                "${EXCEPTION_SUFFIX.text} ${classNameNode.text}",
+                true
+            )
+
+            if (autoCorrect) {
+
+            }
+        }
+
     }
 
     /**
