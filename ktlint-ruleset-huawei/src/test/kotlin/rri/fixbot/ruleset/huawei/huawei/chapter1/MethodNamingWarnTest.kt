@@ -1,4 +1,4 @@
-package rri.fixbot.ruleset.huawei.huawei
+package rri.fixbot.ruleset.huawei.huawei.chapter1
 
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.test.lint
@@ -7,7 +7,7 @@ import org.junit.Test
 import rri.fixbot.ruleset.huawei.IdentifierNaming
 import rri.fixbot.ruleset.huawei.constants.Warnings.*
 
-class MethodNaming1s5rWarnTest {
+class MethodNamingWarnTest {
     @Test
     fun `method name incorrect, part 1`() {
         assertThat(

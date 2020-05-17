@@ -1,4 +1,4 @@
-package rri.fixbot.ruleset.huawei.huawei
+package rri.fixbot.ruleset.huawei.huawei.chapter1
 
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.test.lint
@@ -6,6 +6,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import rri.fixbot.ruleset.huawei.IdentifierNaming
 import rri.fixbot.ruleset.huawei.constants.Warnings.*
+import java.lang.Exception
 
 class IdentifierNamingWarnTest {
     // ======== checks for generics ========
@@ -204,6 +205,48 @@ class IdentifierNamingWarnTest {
             )
         ).containsExactly(
             LintError(1, 8, "identifier-naming", "${OBJECT_NAME_INCORRECT.text} TEST_ONE")
+        )
+    }
+
+    // ======== exception case and suffix ========
+    @Test
+    fun `check exception case format`() {
+        assertThat(
+            IdentifierNaming().lint(
+                """
+                    class incorrect_case_Exception(message: String) : Exception(message)
+                """.trimIndent()
+            )
+        ).containsExactly(
+            LintError(1, 7, "identifier-naming", "${OBJECT_NAME_INCORRECT.text} TEST_ONE")
+        )
+    }
+
+    @Test
+    fun `check exception case and suffix (with type call entry) - negative`() {
+        assertThat(
+            IdentifierNaming().lint(
+                """
+                    class Custom(message: String) : Exception(message)
+                """.trimIndent()
+            )
+        ).containsExactly(
+            LintError(1, 7, "identifier-naming", "${EXCEPTION_SUFFIX.text} Custom")
+        )
+    }
+
+    @Test
+    fun `check exception case and suffix (only parent name inheritance) - negative`() {
+        assertThat(
+            IdentifierNaming().lint(
+                """
+                    class Custom: Exception {
+                        constructor(msg: String) : super(msg)
+                    }
+                """.trimIndent()
+            )
+        ).containsExactly(
+            LintError(1, 7, "identifier-naming", "${EXCEPTION_SUFFIX.text} Custom")
         )
     }
 }

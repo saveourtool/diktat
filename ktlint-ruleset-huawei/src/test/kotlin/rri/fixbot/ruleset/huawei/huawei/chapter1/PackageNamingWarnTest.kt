@@ -1,4 +1,4 @@
-package rri.fixbot.ruleset.huawei.huawei
+package rri.fixbot.ruleset.huawei.huawei.chapter1
 
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.test.lint
