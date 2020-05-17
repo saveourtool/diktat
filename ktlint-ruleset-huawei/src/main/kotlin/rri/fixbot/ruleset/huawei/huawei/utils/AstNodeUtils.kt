@@ -1,6 +1,7 @@
 package rri.fixbot.ruleset.huawei.huawei.utils
 
 import com.pinterest.ktlint.core.ast.ElementType
+import com.pinterest.ktlint.core.ast.ElementType.CONST_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.isLeaf
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -32,7 +33,7 @@ fun ASTNode.getAllIdentifierChildren(): List<ASTNode> =
 
 
 /**
-* obviously returns list with children that match particular element type
+ * obviously returns list with children that match particular element type
  */
 fun ASTNode.getAllChildrenWithType(elementType: IElementType): List<ASTNode> =
     this.getChildren(null).filter { it.elementType == elementType }
@@ -88,6 +89,8 @@ fun ASTNode.isNodeFromFileLevel(): Boolean = this.treeParent.elementType == FILE
 fun ASTNode.isValProperty() =
     this.getChildren(null)
         .any { it.elementType == ElementType.VAL_KEYWORD }
+
+fun ASTNode.isConst() = this.findLeafWithSpecificType(CONST_KEYWORD) != null
 
 fun ASTNode.isVarProperty() =
     this.getChildren(null)
