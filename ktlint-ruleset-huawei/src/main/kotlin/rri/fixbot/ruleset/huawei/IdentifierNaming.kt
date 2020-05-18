@@ -85,7 +85,7 @@ class IdentifierNaming : Rule("identifier-naming") {
 
             // check for constant variables - check for val from companion object or on global file level
             // it should be in UPPER_CASE, no need to raise this warning if it is one-letter variable
-            if ((node.isNodeFromCompanionObject() || node.isNodeFromFileLevel()) && node.isValProperty()) {
+            if ((node.isNodeFromCompanionObject() || node.isNodeFromFileLevel()) && node.isValProperty() && node.isConst()) {
                 if (!variableName.text.isUpperSnakeCase() && variableName.text.length > 1) {
                     emit(variableName.startOffset,
                         "${CONSTANT_UPPERCASE.text} ${variableName.text}",
