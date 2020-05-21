@@ -9,6 +9,9 @@ include ':ktlint-reporter-plain'
 include ':ktlint-ruleset-experimental'
 include ':ktlint-ruleset-standard'
 include ':ktlint-ruleset-template'
-include ':ktlint-ruleset-huawei'
 include ':ktlint-test'
+
 include ':diktat-test-framework'
+include ':diktat-huawei-rules'
+include ':diktat-common'
+
