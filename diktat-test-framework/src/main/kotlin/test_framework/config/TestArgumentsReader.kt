@@ -3,7 +3,7 @@ package test_framework.config
 import cli.CliArgument
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import common.JsonResourceConfigReader
+import config.reader.JsonResourceConfigReader
 import org.apache.commons.cli.*
 import org.slf4j.LoggerFactory
 import java.io.File

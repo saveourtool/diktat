@@ -1,0 +1,135 @@
+[
+  {
+    "name": "CLASS_NAME_INCORRECT",
+    "enabled": "",
+    "help": "",
+    "warningText": "class/enum/interface name should be in PascalCase and should contain only latin (ASCII) letters or numbers: ",
+    "configuration": ""
+  },
+  {
+    "name": "CONSTANT_UPPERCASE",
+    "enabled": "",
+    "help": "",
+    "warningText": "<val> properties from companion object or on file level mostly in all cases are constants - please use upper snake case for them: ",
+    "configuration": ""
+  },
+  {
+    "name": "ENUM_VALUE",
+    "enabled": "",
+    "help": "",
+    "warningText": "in the same way as constants, enum values should be in UPPER_CASE snake format: ",
+    "configuration": ""
+  },
+  {
+    "name": "EXCEPTION_SUFFIX",
+    "enabled": "",
+    "help": "",
+    "warningText": "all exception classes should have \"Exception\" suffix:",
+    "configuration": ""
+  },
+  {
+    "name": "FILE_NAME_INCORRECT",
+    "enabled": "",
+    "help": "",
+    "warningText": "file name is incorrect - it should end with .kt extension and be in PascalCase: ",
+    "configuration": ""
+  },
+  {
+    "name": "FILE_NAME_MATCH_CLASS",
+    "enabled": "",
+    "help": "",
+    "warningText": "file name is incorrect - it should match with the class described in it if there is the only one class declared: ",
+    "configuration": ""
+  },
+  {
+    "name": "FUNCTION_BOOLEAN_PREFIX",
+    "enabled": "",
+    "help": "",
+    "warningText": "functions that return the value of Boolean type should have <is> or <has> prefix",
+    "configuration": ""
+  },
+  {
+    "name": "FUNCTION_NAME_INCORRECT_CASE",
+    "enabled": "",
+    "help": "",
+    "warningText": "function/method name should be in lowerCamelCase: ",
+    "configuration": ""
+  },
+  {
+    "name": "GENERIC_NAME",
+    "enabled": "",
+    "help": "",
+    "warningText": "generic name should contain only one single capital letter, it can be followed by a number:",
+    "configuration": ""
+  },
+  {
+    "name": "IDENTIFIER_LENGTH",
+    "enabled": "",
+    "help": "",
+    "warningText": "identifier's length is incorrect, it should be in range of [2, 64] symbols: ",
+    "configuration": ""
+  },
+  {
+    "name": "OBJECT_NAME_INCORRECT",
+    "enabled": "",
+    "help": "",
+    "warningText": "object structure name should be in PascalCase and should contain only latin (ASCII) letters or numbers: ",
+    "configuration": ""
+  },
+  {
+    "name": "PACKAGE_NAME_INCORRECT",
+    "enabled": "",
+    "help": "",
+    "warningText": "package name does not match the directory hierarchy for this file, the path to the file is:",
+    "configuration": ""
+  },
+  {
+    "name": "PACKAGE_NAME_INCORRECT_CASE",
+    "enabled": "",
+    "help": "",
+    "warningText": "package name should be completely in a lower case:",
+    "configuration": ""
+  },
+  {
+    "name": "PACKAGE_NAME_INCORRECT_PREFIX",
+    "enabled": "",
+    "help": "",
+    "warningText": "package name should start from company's domain:",
+    "configuration": ""
+  },
+  {
+    "name": "PACKAGE_NAME_INCORRECT_SYMBOLS",
+    "enabled": "",
+    "help": "",
+    "warningText": "package name should contain only latin (ASCII) letters or numbers. For separation of words use dot: ",
+    "configuration": ""
+  },
+  {
+    "name": "PACKAGE_NAME_MISSING",
+    "enabled": "",
+    "help": "",
+    "warningText": "no package name declared in a file",
+    "configuration": ""
+  },
+  {
+    "name": "VARIABLE_HAS_PREFIX",
+    "enabled": "",
+    "help": "",
+    "warningText": "variable has prefix (like mVariable or M_VARIABLE), generally it is a bad code style (Android - is the only exception) : ",
+    "configuration": ""
+  },
+  {
+    "name": "VARIABLE_NAME_INCORRECT",
+    "enabled": "",
+    "help": "",
+    "warningText": "variable name should contain more than one letter: ",
+    "configuration": ""
+  },
+  {
+    "name": "VARIABLE_NAME_INCORRECT_FORMAT",
+    "enabled": "",
+    "help": "",
+    "warningText": "variable name should be in camel case (correct: checkIpConfig, incorrect: CheckIPConfig) should contain only latin (ASCII) letters or numbers and should start from lower letter: ",
+    "configuration": ""
+  }
+]

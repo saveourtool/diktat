@@ -1,7 +1,7 @@
 package test_framework.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import common.JsonResourceConfigReader
+import config.reader.JsonResourceConfigReader
 import java.io.File
 import java.io.IOException
 
