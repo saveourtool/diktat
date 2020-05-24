@@ -1,15 +1,16 @@
-package rri.fixbot.ruleset.huawei
+package rri.fixbot.ruleset.huawei.rules
 
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
+import config.rules.RulesConfig
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import rri.fixbot.ruleset.huawei.constants.Warnings.*
-import rri.fixbot.ruleset.huawei.huawei.utils.getAllChildrenWithType
-import rri.fixbot.ruleset.huawei.huawei.utils.getFirstChildWithType
-import rri.fixbot.ruleset.huawei.huawei.utils.isPascalCase
+import rri.fixbot.ruleset.huawei.utils.getAllChildrenWithType
+import rri.fixbot.ruleset.huawei.utils.getFirstChildWithType
+import rri.fixbot.ruleset.huawei.utils.isPascalCase
 import java.io.File
 
 /**
@@ -26,12 +27,16 @@ class FileNaming : Rule("file-naming") {
         val VALID_EXTENSIONS = listOf(".kt")
     }
 
+    private var confiRules: List<RulesConfig>? = emptyList()
+
     override fun visit(
         node: ASTNode,
         autoCorrect: Boolean,
         params: KtLint.Params,
         emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit
     ) {
+        confiRules = params.rulesConfigList!!
+
         if (node.elementType == FILE) {
             checkFileNaming(params, autoCorrect, emit)
             checkClassNameMatchesWithFile(node, params, autoCorrect, emit)
@@ -45,7 +50,7 @@ class FileNaming : Rule("file-naming") {
             val (name, extension) = getFileParts(params)
             if (!name.isPascalCase() || !VALID_EXTENSIONS.contains(extension)) {
                 emit(0,
-                    "${FILE_NAME_INCORRECT.text} $name$extension",
+                    "${FILE_NAME_INCORRECT.warnText} $name$extension",
                     false
                 )
 
@@ -67,7 +72,7 @@ class FileNaming : Rule("file-naming") {
                 val className = classes[0].getFirstChildWithType(IDENTIFIER)!!.text
                 if (className != fileName) {
                     emit(0,
-                        "${FILE_NAME_MATCH_CLASS.text} $fileName$extension vs $className",
+                        "${FILE_NAME_MATCH_CLASS.warnText} $fileName$extension vs $className",
                         false
                     )
 
