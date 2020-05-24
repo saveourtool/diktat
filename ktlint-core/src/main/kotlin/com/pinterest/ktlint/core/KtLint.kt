@@ -2,6 +2,7 @@ package com.pinterest.ktlint.core
 
 import com.pinterest.ktlint.core.ast.prevLeaf
 import com.pinterest.ktlint.core.internal.EditorConfigInternal
+import config.rules.RulesConfig
 import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -73,7 +74,8 @@ object KtLint {
         val cb: (e: LintError, corrected: Boolean) -> Unit,
         val script: Boolean = false,
         val editorConfigPath: String? = null,
-        val debug: Boolean = false
+        val debug: Boolean = false,
+        val rulesConfigList: List<RulesConfig>? = emptyList()
     )
 
     init {

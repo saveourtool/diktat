@@ -28,6 +28,8 @@ dependencies {
   implementation project(':ktlint-ruleset-experimental')
   implementation project(':ktlint-ruleset-standard')
   implementation project(':ktlint-test')
+  implementation project(":diktat-common")
+
 
   implementation project(':diktat-huawei-rules')
 
