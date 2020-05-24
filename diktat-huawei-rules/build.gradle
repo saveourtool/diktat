@@ -10,8 +10,9 @@ dependencies {
   implementation "org.slf4j:slf4j-api:1.7.5"
   implementation "org.slf4j:slf4j-log4j12:1.7.5"
 
-  compile project(":diktat-test-framework")
+  implementation project(":diktat-common")
 
+  testImplementation project(":diktat-test-framework")
   testImplementation project(':ktlint-test')
   testImplementation deps.junit
   testImplementation deps.assertj

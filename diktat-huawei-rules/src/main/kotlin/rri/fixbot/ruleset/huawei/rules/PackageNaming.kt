@@ -1,15 +1,16 @@
-package rri.fixbot.ruleset.huawei
+package rri.fixbot.ruleset.huawei.rules
 
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.isLeaf
+import config.rules.RulesConfig
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import rri.fixbot.ruleset.huawei.constants.Warnings.*
-import rri.fixbot.ruleset.huawei.huawei.utils.*
+import rri.fixbot.ruleset.huawei.utils.*
 import org.slf4j.LoggerFactory
 
 /**
@@ -31,18 +32,23 @@ class PackageNaming : Rule("package-naming") {
         private val log = LoggerFactory.getLogger(PackageNaming::class.java)
     }
 
+    private var confiRules: List<RulesConfig>? = emptyList()
+
+
     override fun visit(
         node: ASTNode,
         autoCorrect: Boolean,
         params: KtLint.Params,
         emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
 
+        confiRules = params.rulesConfigList!!
+
         if (node.elementType == ElementType.PACKAGE_DIRECTIVE) {
             val realPackageName = calculateRealPackageName(params)
 
             // if node isLeaf - this means that there is no package name declared
             if (node.isLeaf()) {
-                emit(node.startOffset, PACKAGE_NAME_MISSING.text, true)
+                emit(node.startOffset, PACKAGE_NAME_MISSING.warnText, true)
                 if (autoCorrect) {
                     // FixMe: need to find proper constant in kotlin for "package" keyword
                     node.addChild(LeafPsiElement(ElementType.PACKAGE_KEYWORD, "package"), null)
@@ -96,7 +102,7 @@ class PackageNaming : Rule("package-naming") {
         wordsInPackageName
             .filter { word -> hasUppercaseLetter(word.text) }
             .forEach {
-                emit(it.startOffset, "${PACKAGE_NAME_INCORRECT_CASE.text} ${it.text}", true)
+                emit(it.startOffset, "${PACKAGE_NAME_INCORRECT_CASE.warnText} ${it.text}", true)
                 if (autoCorrect) {
                     (it as LeafPsiElement).replaceWithText(it.text.toLowerCase())
                 }
@@ -104,7 +110,7 @@ class PackageNaming : Rule("package-naming") {
 
         // package name should start from a company's domain name
         if (!isDomainMatches(wordsInPackageName)) {
-            emit(wordsInPackageName[0].startOffset, "${PACKAGE_NAME_INCORRECT_PREFIX.text} $DOMAIN_NAME", true)
+            emit(wordsInPackageName[0].startOffset, "${PACKAGE_NAME_INCORRECT_PREFIX.warnText} $DOMAIN_NAME", true)
             if (autoCorrect) {
                 // FixMe: .treeParent.treeParent is called to get DOT_QUALIFIED_EXPRESSION - it can be done in more elegant way
                 val parentNodeToInsert = wordsInPackageName[0].treeParent.treeParent
@@ -114,7 +120,7 @@ class PackageNaming : Rule("package-naming") {
 
         // all words should contain only letters or digits
         wordsInPackageName.filter { word -> !correctSymbolsAreUsed(word.text) }.forEach {
-            emit(it.startOffset, "${PACKAGE_NAME_INCORRECT_SYMBOLS.text} ${it.text}", true)
+            emit(it.startOffset, "${PACKAGE_NAME_INCORRECT_SYMBOLS.warnText} ${it.text}", true)
             if (autoCorrect) {
                 // FixMe: cover with tests
                 // FixMe: add different auto corrections for incorrect separators, letters, e.t.c
@@ -204,7 +210,7 @@ class PackageNaming : Rule("package-naming") {
                                                     emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
         if (realName.isNotEmpty() && packageNameParts.map { node -> node.text } != realName)
             emit(packageNameParts[0].startOffset,
-                "${PACKAGE_NAME_INCORRECT.text} ${realName.joinToString(PACKAGE_SEPARATOR)}", true)
+                "${PACKAGE_NAME_INCORRECT.warnText} ${realName.joinToString(PACKAGE_SEPARATOR)}", true)
         if (autoCorrect) {
             val parentNode = packageNameParts[0].treeParent.treeParent
             parentNode.getChildren(null).forEach { node -> parentNode.removeChild(node) }

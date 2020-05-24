@@ -4,6 +4,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.IOException
+import java.net.URL
 
 /**
  * @param <T> - class name parameter that will be used in calculation of classpath
@@ -13,7 +14,7 @@ interface JsonResourceConfigReader<T> {
      * @param resourceFileName - related path to a file from resources
      */
     fun readResource(resourceFileName: String): T? {
-        val fileURL = javaClass.classLoader.getResource(resourceFileName)
+        val fileURL = getConfigFile(resourceFileName)
         if (fileURL == null) {
             log.error("Not able to open file $resourceFileName from the resources")
         } else {
@@ -25,6 +26,10 @@ interface JsonResourceConfigReader<T> {
             }
         }
         return null
+    }
+
+    fun getConfigFile(resourceFileName: String): URL? {
+        return javaClass.classLoader.getResource(resourceFileName);
     }
 
     fun parseResource(file: File): T

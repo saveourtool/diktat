@@ -1,4 +1,4 @@
-package rri.fixbot.ruleset.huawei.huawei.utils
+package rri.fixbot.ruleset.huawei.utils
 
 
 fun String.isJavaKeyWord() = Keywords.isJavaKeyWord(this)

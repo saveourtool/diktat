@@ -5,7 +5,7 @@ import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleSet
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import rri.fixbot.ruleset.huawei.PackageNaming
+import rri.fixbot.ruleset.huawei.rules.PackageNaming
 import test_framework.processing.TestComparatorUnit
 
 class PackageNamingFixTest {

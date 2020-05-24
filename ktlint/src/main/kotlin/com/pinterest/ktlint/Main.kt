@@ -21,6 +21,7 @@ import com.pinterest.ktlint.internal.lintFile
 import com.pinterest.ktlint.internal.location
 import com.pinterest.ktlint.internal.printHelpOrVersionUsage
 import com.pinterest.ktlint.reporter.plain.internal.Color
+import config.rules.RulesConfigReader
 import java.io.File
 import java.io.IOException
 import java.io.PrintStream
@@ -113,6 +114,13 @@ Flags:""",
     versionProvider = KtlintVersionProvider::class
 )
 class KtlintCommandLine {
+    // FixMe: fast hack while we do not yet have our own framework and CLI - one day we will have our own implementation
+    // but now we are writing visitors
+    @Option(
+        names = ["--config", "-c"],
+        description = ["Absolute path to a file where configuration for rules is stored"]
+    )
+    var config: String = ""
 
     @Option(
         names = ["--android", "-a"],
@@ -320,6 +328,8 @@ class KtlintCommandLine {
         ruleSetProviders: Map<String, RuleSetProvider>,
         userData: Map<String, String>
     ): List<LintErrorWithCorrectionInfo> {
+        val rulesConfigList = if (config.isEmpty()) emptyList() else RulesConfigReader().readResource(config)
+
         if (debug) {
             val fileLocation = if (fileName != KtLint.STDIN_FILE) File(fileName).location(relative) else fileName
             System.err.println("[DEBUG] Checking $fileLocation")
@@ -333,7 +343,8 @@ class KtlintCommandLine {
                     ruleSetProviders.map { it.value.get() },
                     userData,
                     editorConfigPath,
-                    debug
+                    debug,
+                    rulesConfigList
                 ) { err, corrected ->
                     if (!corrected) {
                         result.add(LintErrorWithCorrectionInfo(err, corrected))
@@ -360,7 +371,8 @@ class KtlintCommandLine {
                     ruleSetProviders.map { it.value.get() },
                     userData,
                     editorConfigPath,
-                    debug
+                    debug,
+                    rulesConfigList
                 ) { err ->
                     result.add(LintErrorWithCorrectionInfo(err, false))
                     tripped.set(true)
