@@ -45,6 +45,18 @@ class RulesConfigReader : JsonResourceConfigReader<List<RulesConfig>> {
     }
 }
 
+
+// ================== utils for List<RulesConfig> from json config
+
 fun List<RulesConfig>.getRuleConfig(rule: Rule): RulesConfig? {
-    return this.find { it.name == rule.text()}
+    return this.find { it.name == rule.text() }
+}
+
+/**
+ * checking if in json config particular rule is enabled or disabled
+ * (!) the default value is "true" (in case there is no config specified)
+ */
+fun List<RulesConfig>.isRuleEnabled(rule: Rule): Boolean {
+    val ruleMatched = getRuleConfig(rule)
+    return ruleMatched?.enabled ?: true
 }

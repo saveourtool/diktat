@@ -5,6 +5,7 @@ import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.isLeaf
 import config.rules.RulesConfig
+import config.rules.isRuleEnabled
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -32,7 +33,7 @@ class PackageNaming : Rule("package-naming") {
         private val log = LoggerFactory.getLogger(PackageNaming::class.java)
     }
 
-    private var confiRules: List<RulesConfig>? = emptyList()
+    private var confiRules: List<RulesConfig> = emptyList()
 
 
     override fun visit(
@@ -48,13 +49,15 @@ class PackageNaming : Rule("package-naming") {
 
             // if node isLeaf - this means that there is no package name declared
             if (node.isLeaf()) {
-                emit(node.startOffset, PACKAGE_NAME_MISSING.warnText, true)
-                if (autoCorrect) {
-                    // FixMe: need to find proper constant in kotlin for "package" keyword
-                    node.addChild(LeafPsiElement(ElementType.PACKAGE_KEYWORD, "package"), null)
-                    node.addChild(PsiWhiteSpaceImpl(" "), null)
-                    createAndInsertPackageName(node, null, realPackageName)
-                    node.addChild(PsiWhiteSpaceImpl("\n"), null)
+                if (confiRules.isRuleEnabled(PACKAGE_NAME_MISSING)) {
+                    emit(node.startOffset, PACKAGE_NAME_MISSING.warnText, true)
+                    if (autoCorrect) {
+                        // FixMe: need to find proper constant in kotlin for "package" keyword
+                        node.addChild(LeafPsiElement(ElementType.PACKAGE_KEYWORD, "package"), null)
+                        node.addChild(PsiWhiteSpaceImpl(" "), null)
+                        createAndInsertPackageName(node, null, realPackageName)
+                        node.addChild(PsiWhiteSpaceImpl("\n"), null)
+                    }
                 }
                 return
             }
@@ -102,28 +105,34 @@ class PackageNaming : Rule("package-naming") {
         wordsInPackageName
             .filter { word -> hasUppercaseLetter(word.text) }
             .forEach {
-                emit(it.startOffset, "${PACKAGE_NAME_INCORRECT_CASE.warnText} ${it.text}", true)
-                if (autoCorrect) {
-                    (it as LeafPsiElement).replaceWithText(it.text.toLowerCase())
+                if (confiRules.isRuleEnabled(PACKAGE_NAME_INCORRECT_CASE)) {
+                    emit(it.startOffset, "${PACKAGE_NAME_INCORRECT_CASE.warnText} ${it.text}", true)
+                    if (autoCorrect) {
+                        (it as LeafPsiElement).replaceWithText(it.text.toLowerCase())
+                    }
                 }
             }
 
         // package name should start from a company's domain name
         if (!isDomainMatches(wordsInPackageName)) {
-            emit(wordsInPackageName[0].startOffset, "${PACKAGE_NAME_INCORRECT_PREFIX.warnText} $DOMAIN_NAME", true)
-            if (autoCorrect) {
-                // FixMe: .treeParent.treeParent is called to get DOT_QUALIFIED_EXPRESSION - it can be done in more elegant way
-                val parentNodeToInsert = wordsInPackageName[0].treeParent.treeParent
-                createAndInsertPackageName(parentNodeToInsert, wordsInPackageName[0].treeParent, DOMAIN_NAME.split(PACKAGE_SEPARATOR))
+            if (confiRules.isRuleEnabled(PACKAGE_NAME_INCORRECT_PREFIX)) {
+                emit(wordsInPackageName[0].startOffset, "${PACKAGE_NAME_INCORRECT_PREFIX.warnText} $DOMAIN_NAME", true)
+                if (autoCorrect) {
+                    // FixMe: .treeParent.treeParent is called to get DOT_QUALIFIED_EXPRESSION - it can be done in more elegant way
+                    val parentNodeToInsert = wordsInPackageName[0].treeParent.treeParent
+                    createAndInsertPackageName(parentNodeToInsert, wordsInPackageName[0].treeParent, DOMAIN_NAME.split(PACKAGE_SEPARATOR))
+                }
             }
         }
 
         // all words should contain only letters or digits
         wordsInPackageName.filter { word -> !correctSymbolsAreUsed(word.text) }.forEach {
-            emit(it.startOffset, "${PACKAGE_NAME_INCORRECT_SYMBOLS.warnText} ${it.text}", true)
-            if (autoCorrect) {
-                // FixMe: cover with tests
-                // FixMe: add different auto corrections for incorrect separators, letters, e.t.c
+            if (confiRules.isRuleEnabled(PACKAGE_NAME_INCORRECT_SYMBOLS)) {
+                emit(it.startOffset, "${PACKAGE_NAME_INCORRECT_SYMBOLS.warnText} ${it.text}", true)
+                if (autoCorrect) {
+                    // FixMe: cover with tests
+                    // FixMe: add different auto corrections for incorrect separators, letters, e.t.c
+                }
             }
         }
     }
@@ -203,18 +212,21 @@ class PackageNaming : Rule("package-naming") {
         }
     }
 
-    // FixMe: check to compare real package name with generated
     private fun checkFilePathMatchesWithPackageName(packageNameParts: List<ASTNode>,
                                                     realName: List<String>,
                                                     autoCorrect: Boolean,
                                                     emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
-        if (realName.isNotEmpty() && packageNameParts.map { node -> node.text } != realName)
-            emit(packageNameParts[0].startOffset,
-                "${PACKAGE_NAME_INCORRECT.warnText} ${realName.joinToString(PACKAGE_SEPARATOR)}", true)
-        if (autoCorrect) {
-            val parentNode = packageNameParts[0].treeParent.treeParent
-            parentNode.getChildren(null).forEach { node -> parentNode.removeChild(node) }
-            createAndInsertPackageName(parentNode, null, realName)
+        if (realName.isNotEmpty() && packageNameParts.map { node -> node.text } != realName) {
+            if (confiRules.isRuleEnabled(PACKAGE_NAME_INCORRECT)) {
+                emit(packageNameParts[0].startOffset,
+                    "${PACKAGE_NAME_INCORRECT.warnText} ${realName.joinToString(PACKAGE_SEPARATOR)}", true)
+
+                if (autoCorrect) {
+                    val parentNode = packageNameParts[0].treeParent.treeParent
+                    parentNode.getChildren(null).forEach { node -> parentNode.removeChild(node) }
+                    createAndInsertPackageName(parentNode, null, realName)
+                }
+            }
         }
     }
 }
