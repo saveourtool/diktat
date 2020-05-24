@@ -6,6 +6,7 @@ import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import config.rules.RulesConfig
+import config.rules.isRuleEnabled
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import rri.fixbot.ruleset.huawei.constants.Warnings.*
 import rri.fixbot.ruleset.huawei.utils.getAllChildrenWithType
@@ -27,7 +28,7 @@ class FileNaming : Rule("file-naming") {
         val VALID_EXTENSIONS = listOf(".kt")
     }
 
-    private var confiRules: List<RulesConfig>? = emptyList()
+    private var confiRules: List<RulesConfig> = emptyList()
 
     override fun visit(
         node: ASTNode,
@@ -49,13 +50,15 @@ class FileNaming : Rule("file-naming") {
         if (params.fileName != null) {
             val (name, extension) = getFileParts(params)
             if (!name.isPascalCase() || !VALID_EXTENSIONS.contains(extension)) {
-                emit(0,
-                    "${FILE_NAME_INCORRECT.warnText} $name$extension",
-                    false
-                )
+                if (confiRules.isRuleEnabled(FILE_NAME_INCORRECT)) {
+                    emit(0,
+                        "${FILE_NAME_INCORRECT.warnText} $name$extension",
+                        false
+                    )
 
-                if (autoCorrect) {
-                    // FixMe: we can add an autocorrect here in future, but is there any purpose to change file or class name?
+                    if (autoCorrect) {
+                        // FixMe: we can add an autocorrect here in future, but is there any purpose to change file or class name?
+                    }
                 }
             }
         }
@@ -71,13 +74,15 @@ class FileNaming : Rule("file-naming") {
             if (classes.size == 1) {
                 val className = classes[0].getFirstChildWithType(IDENTIFIER)!!.text
                 if (className != fileName) {
-                    emit(0,
-                        "${FILE_NAME_MATCH_CLASS.warnText} $fileName$extension vs $className",
-                        false
-                    )
+                    if (confiRules.isRuleEnabled(FILE_NAME_MATCH_CLASS)) {
+                        emit(0,
+                            "${FILE_NAME_MATCH_CLASS.warnText} $fileName$extension vs $className",
+                            false
+                        )
 
-                    if (autoCorrect) {
-                        // FixMe: we can add an autocorrect here in future, but is there any purpose to change file name?
+                        if (autoCorrect) {
+                            // FixMe: we can add an autocorrect here in future, but is there any purpose to change file name?
+                        }
                     }
                 }
             }
