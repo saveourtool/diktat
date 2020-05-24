@@ -1,4 +1,4 @@
-package rri.fixbot.ruleset.huawei.huawei.utils
+package rri.fixbot.ruleset.huawei.utils
 
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.CONST_KEYWORD

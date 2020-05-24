@@ -1,4 +1,4 @@
-package rri.fixbot.ruleset.huawei
+package rri.fixbot.ruleset.huawei.rules
 
 import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.RuleSetProvider
