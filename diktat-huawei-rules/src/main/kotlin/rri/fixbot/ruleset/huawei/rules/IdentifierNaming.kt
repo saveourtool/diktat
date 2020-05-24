@@ -6,6 +6,7 @@ import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import config.rules.RulesConfig
+import config.rules.isRuleEnabled
 import org.jetbrains.kotlin.builtins.PrimitiveType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import rri.fixbot.ruleset.huawei.constants.Warnings.*
@@ -73,38 +74,46 @@ class IdentifierNaming : Rule("identifier-naming") {
         if (!ONE_CHAR_IDENTIFIERS.contains(variableName!!.text)) {
             // generally variables with prefixes are not allowed (like mVariable)
             if (variableName.text.hasPrefix()) {
-                emit(variableName.startOffset,
-                    "${VARIABLE_HAS_PREFIX.warnText} ${variableName.text}",
-                    true
-                )
+                if (confiRules.isRuleEnabled(VARIABLE_HAS_PREFIX)) {
+                    emit(variableName.startOffset,
+                        "${VARIABLE_HAS_PREFIX.warnText} ${variableName.text}",
+                        true
+                    )
+                }
             }
 
             // variable should not contain only one letter in it's name. This is a bad example: b512
             // but no need to raise a warning here if length of a variable. In this case we will raise IDENTIFIER_LENGTH
             if (variableName.text.containsOneLetterOrZero() && variableName.text.length > 1) {
-                emit(variableName.startOffset,
-                    "${VARIABLE_NAME_INCORRECT.warnText} ${variableName.text}",
-                    true)
+                if (confiRules.isRuleEnabled(VARIABLE_NAME_INCORRECT)) {
+                    emit(variableName.startOffset,
+                        "${VARIABLE_NAME_INCORRECT.warnText} ${variableName.text}",
+                        true)
+                }
             }
 
             // check for constant variables - check for val from companion object or on global file level
             // it should be in UPPER_CASE, no need to raise this warning if it is one-letter variable
             if ((node.isNodeFromCompanionObject() || node.isNodeFromFileLevel()) && node.isValProperty() && node.isConst()) {
                 if (!variableName.text.isUpperSnakeCase() && variableName.text.length > 1) {
-                    emit(variableName.startOffset,
-                        "${CONSTANT_UPPERCASE.warnText} ${variableName.text}",
-                        true
-                    )
+                    if (confiRules.isRuleEnabled(CONSTANT_UPPERCASE)) {
+                        emit(variableName.startOffset,
+                            "${CONSTANT_UPPERCASE.warnText} ${variableName.text}",
+                            true
+                        )
+                    }
                 }
                 return listOf(variableName)
             }
 
             // variable name should be in camel case. The only exception is a list of industry standard variables like i, j, k.
             if (!variableName.text.isLowerCamelCase()) {
-                emit(variableName.startOffset,
-                    "${VARIABLE_NAME_INCORRECT_FORMAT.warnText} ${variableName.text}",
-                    true
-                )
+                if (confiRules.isRuleEnabled(VARIABLE_NAME_INCORRECT_FORMAT)) {
+                    emit(variableName.startOffset,
+                        "${VARIABLE_NAME_INCORRECT_FORMAT.warnText} ${variableName.text}",
+                        true
+                    )
+                }
             }
 
         }
@@ -121,18 +130,22 @@ class IdentifierNaming : Rule("identifier-naming") {
                                          canBeAutoCorrected: Boolean) -> Unit): List<ASTNode> {
         val genericType: ASTNode? = node.getTypeParameterList()
         if (genericType != null && !validGenericTypeName(genericType.text)) {
-            emit(genericType.startOffset,
-                "${GENERIC_NAME.warnText} ${genericType.text}",
-                true
-            )
+            if (confiRules.isRuleEnabled(GENERIC_NAME)) {
+                emit(genericType.startOffset,
+                    "${GENERIC_NAME.warnText} ${genericType.text}",
+                    true
+                )
+            }
         }
 
         val className: ASTNode? = node.getIdentifierName()
         if (!(className!!.text.isPascalCase())) {
-            emit(className.startOffset,
-                "${CLASS_NAME_INCORRECT.warnText} ${className.text}",
-                true
-            )
+            if (confiRules.isRuleEnabled(CLASS_NAME_INCORRECT)) {
+                emit(className.startOffset,
+                    "${CLASS_NAME_INCORRECT.warnText} ${className.text}",
+                    true
+                )
+            }
         }
 
         checkExceptionSuffix(node, autoCorrect, emit)
@@ -159,13 +172,14 @@ class IdentifierNaming : Rule("identifier-naming") {
             ?.text
 
         if (superClassName != null && hasExceptionSuffix(superClassName) && !hasExceptionSuffix(classNameNode!!.text)) {
-            emit(classNameNode.startOffset,
-                "${EXCEPTION_SUFFIX.warnText} ${classNameNode.text}",
-                true
-            )
+            if (confiRules.isRuleEnabled(EXCEPTION_SUFFIX)) {
+                emit(classNameNode.startOffset,
+                    "${EXCEPTION_SUFFIX.warnText} ${classNameNode.text}",
+                    true
+                )
 
-            if (autoCorrect) {
-
+                if (autoCorrect) {
+                }
             }
         }
 
@@ -183,10 +197,12 @@ class IdentifierNaming : Rule("identifier-naming") {
         // checking object naming, the only extension is "companion" keyword
         // FixMe: need to find a constant with "companion" string in Kotlin core and remove hardcode
         if (!(objectName!!.text.isPascalCase()) && objectName.text != "companion") {
-            emit(objectName.startOffset,
-                "${OBJECT_NAME_INCORRECT.warnText} ${objectName.text}",
-                true
-            )
+            if (confiRules.isRuleEnabled(OBJECT_NAME_INCORRECT)) {
+                emit(objectName.startOffset,
+                    "${OBJECT_NAME_INCORRECT.warnText} ${objectName.text}",
+                    true
+                )
+            }
         }
 
         return listOf(objectName)
@@ -204,10 +220,12 @@ class IdentifierNaming : Rule("identifier-naming") {
         val enumValues: List<ASTNode> = node.getChildren(null).filter { it.elementType == ElementType.IDENTIFIER }
         enumValues.forEach { value ->
             if (!value.text.isUpperSnakeCase()) {
-                emit(value.startOffset,
-                    "${ENUM_VALUE.warnText} ${value.text}",
-                    true
-                )
+                if (confiRules.isRuleEnabled(ENUM_VALUE)) {
+                    emit(value.startOffset,
+                        "${ENUM_VALUE.warnText} ${value.text}",
+                        true
+                    )
+                }
             }
         }
         return enumValues
@@ -227,10 +245,12 @@ class IdentifierNaming : Rule("identifier-naming") {
 
         // basic check for camel case
         if (!functionName!!.text.isLowerCamelCase()) {
-            emit(functionName.startOffset,
-                "${FUNCTION_NAME_INCORRECT_CASE.warnText} ${functionName.text}",
-                true
-            )
+            if (confiRules.isRuleEnabled(FUNCTION_NAME_INCORRECT_CASE)) {
+                emit(functionName.startOffset,
+                    "${FUNCTION_NAME_INCORRECT_CASE.warnText} ${functionName.text}",
+                    true
+                )
+            }
         }
 
         // check for methods that return Boolean
@@ -239,10 +259,12 @@ class IdentifierNaming : Rule("identifier-naming") {
         // if function has Boolean return type in 99% of cases it is much better to name it with isXXX or hasXXX prefix
         if (functionReturnType != null && functionReturnType == PrimitiveType.BOOLEAN.typeName.asString()) {
             if (!(BOOLEAN_METHOD_PREFIXES.any { functionReturnType.startsWith(it) })) {
-                emit(functionName.startOffset,
-                    "${FUNCTION_BOOLEAN_PREFIX.warnText} ${functionName.text}",
-                    true
-                )
+                if (confiRules.isRuleEnabled(FUNCTION_NAME_INCORRECT_CASE)) {
+                    emit(functionName.startOffset,
+                        "${FUNCTION_BOOLEAN_PREFIX.warnText} ${functionName.text}",
+                        true
+                    )
+                }
             }
         }
 
@@ -272,10 +294,12 @@ class IdentifierNaming : Rule("identifier-naming") {
                                       emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
         nodes.forEach {
             if (!(it.checkLength(2..64) || (ONE_CHAR_IDENTIFIERS.contains(it.text)) && isVariable)) {
-                emit(it.startOffset,
-                    "${IDENTIFIER_LENGTH.warnText} ${it.text}",
-                    true
-                )
+                if (confiRules.isRuleEnabled(IDENTIFIER_LENGTH)) {
+                    emit(it.startOffset,
+                        "${IDENTIFIER_LENGTH.warnText} ${it.text}",
+                        true
+                    )
+                }
             }
         }
     }
