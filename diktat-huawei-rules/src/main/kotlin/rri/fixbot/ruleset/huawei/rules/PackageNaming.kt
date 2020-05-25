@@ -108,7 +108,7 @@ class PackageNaming : Rule("package-naming") {
                 if (confiRules.isRuleEnabled(PACKAGE_NAME_INCORRECT_CASE)) {
                     emit(it.startOffset, "${PACKAGE_NAME_INCORRECT_CASE.warnText} ${it.text}", true)
                     if (autoCorrect) {
-                        (it as LeafPsiElement).replaceWithText(it.text.toLowerCase())
+                        (it as LeafPsiElement).`replaceWithText`(it.text.toLowerCase())
                     }
                 }
             }
