@@ -249,4 +249,19 @@ class IdentifierNamingWarnTest {
             LintError(1, 7, "identifier-naming", "${EXCEPTION_SUFFIX.warnText} Custom")
         )
     }
+
+    @Test
+    fun `checking that there should be no prefixes in variable name`() {
+        assertThat(
+            IdentifierNaming().lint(
+                """
+                    const val M_GLOB = ""
+                    val aPrefix = ""
+                """.trimIndent()
+            )
+        ).containsExactly(
+            LintError(1, 11, "identifier-naming", "${VARIABLE_HAS_PREFIX.warnText} M_GLOB"),
+            LintError(2, 5, "identifier-naming", "${VARIABLE_HAS_PREFIX.warnText} aPrefix")
+        )
+    }
 }
