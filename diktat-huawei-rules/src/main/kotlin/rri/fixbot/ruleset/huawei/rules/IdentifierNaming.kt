@@ -9,6 +9,7 @@ import config.rules.RulesConfig
 import config.rules.isRuleEnabled
 import org.jetbrains.kotlin.builtins.PrimitiveType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import rri.fixbot.ruleset.huawei.constants.Warnings.*
 import rri.fixbot.ruleset.huawei.utils.*
 
@@ -79,6 +80,10 @@ class IdentifierNaming : Rule("identifier-naming") {
                         "${VARIABLE_HAS_PREFIX.warnText} ${variableName.text}",
                         true
                     )
+                    if (autoCorrect) {
+                        // FixMe: this correction should be done only after we  checked variable case (below)
+                       (variableName as LeafPsiElement).replaceWithText(variableName.text.removePrefix())
+                    }
                 }
             }
 
@@ -88,7 +93,7 @@ class IdentifierNaming : Rule("identifier-naming") {
                 if (confiRules.isRuleEnabled(VARIABLE_NAME_INCORRECT)) {
                     emit(variableName.startOffset,
                         "${VARIABLE_NAME_INCORRECT.warnText} ${variableName.text}",
-                        true)
+                        false)
                 }
             }
 
@@ -101,6 +106,10 @@ class IdentifierNaming : Rule("identifier-naming") {
                             "${CONSTANT_UPPERCASE.warnText} ${variableName.text}",
                             true
                         )
+
+                        if (autoCorrect) {
+                            (variableName as LeafPsiElement).replaceWithText(variableName.text.toUpperCase())
+                        }
                     }
                 }
                 return listOf(variableName)
@@ -113,6 +122,10 @@ class IdentifierNaming : Rule("identifier-naming") {
                         "${VARIABLE_NAME_INCORRECT_FORMAT.warnText} ${variableName.text}",
                         true
                     )
+
+                    if (autoCorrect) {
+                        (variableName as LeafPsiElement).replaceWithText(variableName.text.toLowerCamelCase())
+                    }
                 }
             }
 
