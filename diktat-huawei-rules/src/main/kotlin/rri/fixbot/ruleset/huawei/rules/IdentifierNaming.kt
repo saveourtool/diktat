@@ -53,7 +53,7 @@ class IdentifierNaming : Rule("identifier-naming") {
             ElementType.ENUM_ENTRY -> Pair(checkEnumValues(node, autoCorrect, emit), false)
             // covers global functions, extensions and class methods
             ElementType.FUN -> Pair(checkFunctionName(node, autoCorrect, emit), false)
-            // covers arguments of functionsa and constructors/declaration of classes
+            // covers arguments of functions and constructors/declaration of classes
             else -> Pair(null, true)
         }
 
