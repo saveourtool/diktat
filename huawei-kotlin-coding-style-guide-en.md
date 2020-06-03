@@ -333,14 +333,14 @@ fun hasNext()
  ## <a name="c2"></a>Chapter 2  comments
 
   The best practice is to begin your comment with a short summary, it can be an abstract in one sentence and it can be detailed later.
-  You should balance between writting no comments at all and obvious comments for most each line of code.
+  You should balance between writing no comments at all and obvious comments for most each line of code.
   Comments should be accurate, express clearly, they should not simply repeat the name of the class / interface / method.  
-  Do not think that commenting of bad code will fix it. Fix it immediately when you see an issue or plan to fix it.
+  Do not think that commenting of bad code will fix it. Fix it immediately when you see an issue or plan to fix it (at least put TODO with a number of Jira where you plan to fix it).. 
   Comments should first accurately reflect the design ideas and code logic; second, they should describe the business logic, so that other programmers can quickly understand the information behind the code.
   Imagine that you are writting comments for yourself from the future. It will help you even after a long time when you will return to the code to understand the ideas.
-  Also comments are also very usefull for your successors, who will be able easily get into your code.
+  Also comments are also very useful for your successors, who will be able easily get into your code.
  
- ### <a name="c2.1"></a> Geberal form of Kdoc 
+ ### <a name="c2.1"></a> General form of Kdoc 
  
 KDoc is a combination of JavaDoc's block tags syntax (extended to support specific constructions of Kotlin) and Markdown's inline markup.
 The basic format of KDoc is shown in the following example:
@@ -423,132 +423,128 @@ Good examples：
  ```
 
 ### <a name="r2.3"></a>Rule 2.3: There is only one space between the Kdoc tag and the content, tags are arranged in the following order: @param, @return, @throws
+This is how Kdoc should look like and what it should contain:
+ - Functional and technical description, explaining the principles, intentions, contracts, API, etc.
+ - The function description and @tags (implSpec, apiNote, implNote) **require an empty line** after them.
+ - @implSpec, a specification related to API implementation, it should let the implementer decide whether to override it.
+ - @apiNote, explain the API precautions, including whether to allow null, whether the method is thread safe, algorithm complexity, input and output range, exceptions, etc.
+ - @implNote, a some note related to API implementation, that implementers should keep in mind.
+ - **Then empty 1 line**, followed by regular @param, @return, @throws and other comments.
+ - These conventional standard "block labels" are arranged in order: @param, @return, @throws;
+ - no empty descriptions in tag blocks are allowed, better not to write Kdoc at all than to waste code line on empty tags
+ - there should be no empty lines between the method/class declaration and the end of Kdoc (*/ symbols)
+ - (!) KDoc does not support the @deprecated tag. Instead, please use the @Deprecated annotation.
+ 
+  If the description of a tag block cannot fit a single line and is split to several lines, then the content of the new line should be indented by 4 spaces from the '@' position to align ('@' itself counts as 1, plus 3).
+  **Exception: ** When the description text in a tag block is too long to wrap, it is also possible to indent the alignment with the previous line of description text.
+   The description text of multiple tags does not need to be aligned, see [Recommendation 3.8 should not insert spaces horizontally aligned] (#s3.8).     
+## <a name="c2.2"></a>Comments to the file header
 
- - 功能描述，说明API的原理、意图、契约（前置与后置条件）等。
- - 功能描述与下面的各种@标签**需要空1行**。
- - @implSpec，特定于API实现的规格说明，让实现者决定是否覆盖。
- - @apiNote, 说明API的注意事项，包括是否允许null、是否线程安全、算法复杂度、输入输出范围、非受检异常等。
- - @implNote，特定于API实现的备注，让实现者参考。
- - **然后空1行**，下面接着常规的@param，@return等注释。
-   这几个常规的标准“块标签”按顺序排列：@param， @return，@throws；如果作废接着放@deprecated；且不允许空的描述出现，并与方法签名严格对应（签名中有才写）。
+### <a name="r2.4"></a>Rule 2.4 The file header comments must include copyright information, should NOT contain creation date and author name (it is antipattern - use VCS for history management). Files that contain multiple or no classes should also contain some description of what is inside of this file.
+File header comments should be stored BEFORE package name and imports. 
+If you need to add other content to the file header comment, you can add it later in the same format.
 
- 这些标签单行放不下有多行时，新行内容将从@位置缩进4个空格来对齐（@本身算1，再加3）。
- **例外：** 业界流行工具Android Studio（查看是否去选Settings - Align parameter descriptions）、IDEA等，一个tag中的描述文字过长换行时，缩进与上一行描述文字对齐，也是可以的。多个tag的描述文字不用对齐，参见[建议3.8 不应插入空格水平对齐](#s3.8)。
-
-## <a name="c2.2"></a>文件头注释
-
-### <a name="r2.4"></a>规则2.4 文件头注释必须包含版权许可，顶层public类头有功能说明、创建日期
-文件头注释必须放在package和import之前，顶层public类头按顺序包含上述二项。  
-
-如果需要在文件头注释中增加其他内容，可以后面以相同格式补充。 
-比如：作者、创建日期、注意事项等等。
-
-版权许可内容及格式必须如下，中文版：
+The content and format of the copyright license must be as follows, the Chinese version:
 `版权所有 (c) 华为技术有限公司 2012-2020` 
-英文版： 
+English version:
 `Copyright (c) Huawei Technologies Co., Ltd. 2012-2020. All rights reserved.`
 
-关于版本说明，应注意：
+Regarding the release notes, see examples below:
 
-- 2012-2020 根据实际需要可以修改。
-  2012 是文件首次创建年份，而 2020 是最后文件修改年份。二者可以一样，如 "2020-2020"。
-  对文件有重大修改时，必须更新后面年份，如特性扩展，重大重构等。
-- 版权说明可以使用华为子公司。
-  如：版权所有 (c) 海思半导体 2012-2020
-  或英文：Copyright (c) Hisilicon Technologies Co., Ltd. 2012-2020. All rights reserved.
+-2012-2020 can be modified according to actual needs. 2012 is the year the file was first created, and 2020 is the year the file was last modified. The two can be the same, such as "2020-2020".
+  When there are major changes to the file such as feature extensions, major refactorings, etc, then the subsequent years must be updated.
+- -The copyright statement can use Huawei subsidiaries.
+  On Chinese：版权所有 (c) 海思半导体 2012-2020
+  On English：Copyright (c) Hisilicon Technologies Co., Ltd. 2012-2020. All rights reserved.
 
-最简文件头注释举例：
-版权不应该使用KDoc样式或单行样式的注释，必须从文件顶头开始。 
+Copyright should not use KDoc style or single line style comments, it must start from the beginning of the file.
+Example of a minimal Copyright comment without other functional comments:
 
 ```java
 /*
- * Copyright (c) Huawei Technologies Co., Ltd. 2012-2019. All rights reserved.
+ * Copyright (c) Huawei Technologies Co., Ltd. 2012-2018. All rights reserved.
  */
 ```
 
-顶层public类头要有功能说明、@since；作者可选（含名字、邮箱和工号），用KDoc格式；顶层函数头注释中的@since、@author 可选；日期格式为Java 8 time包中的[ISO_DATE](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ISO_DATE),例如 '2011-12-03' or '2011-12-03+01:00'。
-可参考：
+In Kotlin compared to Java you are able to put several classes inside one file so each class should have a Kdoc formatted comment.
+This comment should contain @since tag. The good style is to write the version when this functionality was released after a since tag.
+Examples：
 
 ```java
 /**
- * 功能描述
+ * Description of functionality
  *
- * @author 王二 
- * @since 2012-12-22（或版本号）
+ * @since 1.6
  */
 ```
 
-可增加其它的KDoc tag标签（例如@param 类型参数、@see等），包含了 `@apiNote` 顶层类头格式如下：
-
+Other KDoc tags (such as @param type parameters, @see, etc.) can be added as follow:
 ```java
 /**
- * 功能描述
+ * Description of functionality
  *
  * @apiNote: 特别需要注意的信息
  *
- * @author 王二 
- * @since 2012-12-22（或版本号）
+ * @since 1.6
  */
 ```
 
-编写文件头或顶层类头注释应注意：
+Note the following when writing file header or comments for top-level classes:
+- File header comments must start from the top of the file. If it is a top-level file comment - there should be a blank line after ending Kdoc '*/' symbol.
+  If it is the comment for top-level class - then class declaration should start immediately without any newline.
 
-- 文件头注释必须从文件顶头开始。
-  如果包含“关键资产说明”类注释，则应紧随其后。
+- Maintain a unified format. The specific format can be formulated by the project (for example in opensource), need to follow it.
 
-- 保持统一格式。
-  具体格式由项目或更大范围统一制定。格式可参考上面举例。
+- In a top-level file Kdoc need to include copyrigth and functional description, especially if the number of top-level classes in a file is not equal to 1.
 
-- 必须首先包含“版权许可”与“功能说明”。
-  其他选项按需添加，并保持格式统一。    
+- It is forbidden to have empty comment blockst.
+     As in the above example, if there is no content after the option `@apiNote`, the entire tag block should be deleted.
 
-- 禁止空有格式，无内容。
-  如上述例子，如果选项 `@apiNote` 后面无内容，则应整行删除。
-
-- 业界Java源码中一般没有History信息，History在配置库里面可以查询，不建议在Java源码的注释中包含History
+- Industry is not using any history information in comments. History can be found in VCS (git/svn/e.t.c). It is not recommended to include historical data in the comments of the Kotlin source code.
 
 
-## <a name="c2.3"></a>函数头注释
+## <a name="c2.3"></a>Function header comments
 
-### <a name="r2.5"></a>规则2.5 禁止空有格式的函数头注释
+### <a name="r2.5"></a>Rule 2.5 Prohibit empty or useless function comments
 
-函数头注释统一放在函数声明或定义上方。
-选择并统一使用以上[KDoc](#c2.1)风格注释。  
+Function header comments are placed above function declarations or definitions. There should be no newline between a function declaration and it's Kdoc. 
+Use the above [KDoc](#c2.1) style rules.  
 
-函数尽量通过函数名自注释，**按需**写函数头注释。
-不要写无用、信息冗余的函数头；不要写空有格式的函数头。
+In Chapter 1 of current code style we stated that function name should self commend it's functionality as much as possible. So in the Kdoc try to mention things that are not stored in function name.
+Avoid dummy useless comments. 
 
-函数头注释内容**可选**，但不限于：功能说明、返回值，性能约束、用法、内存约定、算法实现、可重入的要求等等。 
-模块对外接口声明，其函数头注释，应当将重要、有用的信息表达清楚。
+The function header comment content is optional, but not limited to: function description, return value, performance constraints, usage, memory conventions, algorithm implementation, reentrant requirements, etc.
+The module's external interface declaration and its comments should clearly convey important and useful information.
 
-## <a name="c2.4"></a>代码注释
+## <a name="c2.4"></a>Code comments
 
-### <a name="r2.6"></a>规则2.6 注释正文与其下的各个tag之间加1个空行；类级成员注释与上面的代码之间有一个空行；注释符与注释内容间要有1空格；右置注释与前面代码至少1空格
-说明：KDoc注释正文（一般是功能描述），与其下的各个KDoc tag之间加1个空行；类级成员（一般是类或接口中的字段、方法，嵌套类/内部类依次类推），注释与上面的代码之间加一个空行，但是如果上面已经是本范围（一般是个大括号），则不用加空行。
-1. 在方法内部（语句级），注释与上面的代码之间可以考虑加一个空行，以便更加清晰，但工具不作扫描。空行不会作为NBNC计数。
-详述如下推荐的示例。 
+### <a name="r2.6"></a>Rule 2.6 Add a blank line between the body of the comment and Kdoc tag-blocks; there must be 1 space between the comment character and the content of the comment; there must be a newline between a Kdoc and the previous code above
+1. Add a blank line between the body of the comment and Kdoc tag-blocks; there must be 1 space between the comment character and the content of the comment; there must be a newline between a Kdoc and the previous code above.
+ No need to add a blank line before a first comment in this particular name space (code block), for example between function declaration and first comment in a function body.  
+
+Examples: 
 ```kotlin
 /** 
  * This is the short overview comment for the example interface.
- *                   /* 注释正文与其下的各个KDoc tag之间加1个空行 */
- * @since 2019-01-01
+ *                   /* Add a blank line between the general comment text and each KDoc tag */
+ * @since 1.6
  */
  public interface Example {
-    // Some comments  /* 由于是本范围的第1个成员定义，这儿不用加空行 */
+    // Some comments  /* Since it is the first member definition in this code block, there is no need to add a blank line here */
     val aField: String = ...
-                      /* 注释上面加1个空行 */
+                     /* Add a blank line above the comment */
     // Some comments
     val bField: String = ...
-                      /* 注释上面加1个空行 */
+                      /* Add a blank line above the comment */
     /**
      * This is a long comment with whitespace that should be split in 
      * multiple line comments in case the line comment formatting is enabled.
-     *                 /* 注释正文与其下的各个KDoc tag之间加1个空行 */
+     *                /* blank line between description and Kdoc tag */
      * @param fox A quick brown fox jumps over the lazy dog
      * @return the rounds of battle of fox and dog 
      */
     fun foo(Fox fox)
-                      /* 注释上面加1个空行 */ 
+                      /* Add a blank line above the comment */
      /**
       * These possibilities include: Formatting of header comments
       *                /* 注释正文与其下的各个KDoc tag之间加1个空行 */
@@ -556,28 +552,33 @@ Good examples：
       * @throws ProblemException if lazy dog wins
       */
     fun bar() throws ProblemException {
-        // Some comments  /* 由于是本范围的第1个成员定义，这儿不用加空行 */ 
+        // Some comments  /* Since it is the first member definition in this range, there is no need to add a blank line here */
         var aVar = ...
 
-        // Some comments  /* 注释上面加1个空行 */                 
+        // Some comments  /* Add a blank line above the comment */            
         fun doSome()
     }
  }
 ```
 
-2. 代码右边的注释，与代码之间，至少留1空格，建议不超过4空格。
-通常使用扩展后的 TAB 键即可实现 1-4 空格的缩进。
-`if else if`场景下的条件注释，为了更清晰，考虑注释放在`else if`同行或者在块内都行，但不是在`else if`之前，避免以为注释是关于它所在块的，但工具不作扫描。  
-
-选择并统一使用如下风格之一：
+2. Leave one single space between the comment on the right side of the code and the code.
+Conditional comments in the `if-else-if` scenario:
+ For a better understanding, put the comments inside `else if` branch or in the conditional block, but not before the `else if`. 
+ When the if-block is used with curly braces - the comment should be on the next line after opening curly brace.
+ 
+In Kotlin compared to Java the if statement returns value, that's why there can be a comment block that is describing whole if statement.  
+  
+Use the following style:
 ```kotlin
-val foo = 100  // 放右边的注释
-val bar = 200  /* 放右边的注释 */
+val foo = 100  // right-side comment
+val bar = 200  /* right-side comment */
 
-if (nr % 15 == 0) { // when nr is a multiple of both 3 and 5
+// general comment for the value and for the whole if-else condition
+val someVal = if (nr % 15 == 0) {
+    // when nr is a multiple of both 3 and 5
     println("fizzbuzz")
-    // when nr is a multiple of 3, but not 5  /* 这行注释是关于本条件还是下个条件的? */
-} else if (nr % 3 == 0) { // when nr is a multiple of 3, but not 5
+} else if (nr % 3 == 0) {
+    // when nr is a multiple of 3, but not 5
     // We print "fizz", only.
     println("fizz")
 } else if (nr % 5 == 0) {
@@ -590,26 +591,24 @@ if (nr % 15 == 0) { // when nr is a multiple of both 3 and 5
 }
 ```
 
-### <a name="r2.7"></a>规则2.7 不用的代码段包括import，直接删除，不要注释掉
+### <a name="r2.7"></a>Rule 2.7 Do not comment unused code blocks (including imports). Delete them immediately.
 
-不用的import，增加了代码的耦合度，不利于维护。
-被注释掉的代码，无法被正常维护；当企图恢复使用这段代码时，极有可能引入易被忽略的缺陷。  
-正确的做法是，不需要的代码直接删除掉。若再需要时，考虑移植或重写这段代码。
+Code - is not a history storage. For history use git, svn or other VCS tools.
+Unused imports increase the coupling of the code and are not conducive to maintenance. The commented out code cannot be maintained normally; when attempting to resume using this code, it is very likely to introduce defects that can be easily missed.
+The correct approach is to delete the unnecessary code directly and immediately when it becomes unused. If you need it again, consider porting or rewriting this code. Things could have changed during the time when code was commented.
 
-这里说的注释掉代码，包括用 /\*\* \*/， /\* \*/ 和 // 等等。
+### <a name="s2.1"></a>Recommendation 2.1 The code formally delivered to the client generally should not contain TODO / FIXME comments
 
-### <a name="s2.1"></a>建议2.1 正式交付给客户的代码不应包含TODO/FIXME 注释
-
-TODO 注释一般用来描述已知待改进、待补充的修改点  
-FIXME 注释一般用来描述已知缺陷  
-它们都应该有统一风格，方便文本搜索统一处理。如：
+TODO notes are generally used to describe known modification points that need to be improved and added. For example refactoring
+FIXME comments are generally used to describe known defects and bugs that will be fixed later and now are not critical for an application.
+They should all have a unified style to facilitate the unified processing of text search. For example:
 
 ```java
-// TODO(<author-name>): 补充XX处理
-// FIXME: XX缺陷
+// TODO(<author-name>): Jira-XXX - support new json format
+// FIXME: Jira-XXX - fix NPE in this code block
 ```
 
-在版本开发阶段，可以使用此类注释用于突出标注；交付前应该全部处理掉。
+In the version development stage, such annotations can be used to highlight the issues in code, but all of them should be fixed before release of a new production version.
 
  ## <a name="c3"></a>3  排版
 
