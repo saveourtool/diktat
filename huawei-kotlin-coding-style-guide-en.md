@@ -333,14 +333,14 @@ fun hasNext()
  ## <a name="c2"></a>Chapter 2  comments
 
   The best practice is to begin your comment with a short summary, it can be an abstract in one sentence and it can be detailed later.
-  You should balance between writting no comments at all and obvious comments for most each line of code.
+  You should balance between writing no comments at all and obvious comments for most each line of code.
   Comments should be accurate, express clearly, they should not simply repeat the name of the class / interface / method.  
-  Do not think that commenting of bad code will fix it. Fix it immediately when you see an issue or plan to fix it.
+  Do not think that commenting of bad code will fix it. Fix it immediately when you see an issue or plan to fix it (at least put TODO with a number of Jira where you plan to fix it).. 
   Comments should first accurately reflect the design ideas and code logic; second, they should describe the business logic, so that other programmers can quickly understand the information behind the code.
   Imagine that you are writting comments for yourself from the future. It will help you even after a long time when you will return to the code to understand the ideas.
-  Also comments are also very usefull for your successors, who will be able easily get into your code.
+  Also comments are also very useful for your successors, who will be able easily get into your code.
  
- ### <a name="c2.1"></a> Geberal form of Kdoc 
+ ### <a name="c2.1"></a> General form of Kdoc 
  
 KDoc is a combination of JavaDoc's block tags syntax (extended to support specific constructions of Kotlin) and Markdown's inline markup.
 The basic format of KDoc is shown in the following example:
@@ -539,7 +539,7 @@ Examples:
     /**
      * This is a long comment with whitespace that should be split in 
      * multiple line comments in case the line comment formatting is enabled.
-     *                 /* 注释正文与其下的各个KDoc tag之间加1个空行 */
+     *                /* blank line between description and Kdoc tag */
      * @param fox A quick brown fox jumps over the lazy dog
      * @return the rounds of battle of fox and dog 
      */
@@ -591,26 +591,24 @@ val someVal = if (nr % 15 == 0) {
 }
 ```
 
-### <a name="r2.7"></a>规则2.7 不用的代码段包括import，直接删除，不要注释掉
+### <a name="r2.7"></a>Rule 2.7 Do not comment unused code blocks (including imports). Delete them immediately.
 
-不用的import，增加了代码的耦合度，不利于维护。
-被注释掉的代码，无法被正常维护；当企图恢复使用这段代码时，极有可能引入易被忽略的缺陷。  
-正确的做法是，不需要的代码直接删除掉。若再需要时，考虑移植或重写这段代码。
+Code - is not a history storage. For history use git, svn or other VCS tools.
+Unused imports increase the coupling of the code and are not conducive to maintenance. The commented out code cannot be maintained normally; when attempting to resume using this code, it is very likely to introduce defects that can be easily missed.
+The correct approach is to delete the unnecessary code directly and immediately when it becomes unused. If you need it again, consider porting or rewriting this code. Things could have changed during the time when code was commented.
 
-这里说的注释掉代码，包括用 /\*\* \*/， /\* \*/ 和 // 等等。
+### <a name="s2.1"></a>Recommendation 2.1 The code formally delivered to the client generally should not contain TODO / FIXME comments
 
-### <a name="s2.1"></a>建议2.1 正式交付给客户的代码不应包含TODO/FIXME 注释
-
-TODO 注释一般用来描述已知待改进、待补充的修改点  
-FIXME 注释一般用来描述已知缺陷  
-它们都应该有统一风格，方便文本搜索统一处理。如：
+TODO notes are generally used to describe known modification points that need to be improved and added. For example refactoring
+FIXME comments are generally used to describe known defects and bugs that will be fixed later and now are not critical for an application.
+They should all have a unified style to facilitate the unified processing of text search. For example:
 
 ```java
-// TODO(<author-name>): 补充XX处理
-// FIXME: XX缺陷
+// TODO(<author-name>): Jira-XXX - support new json format
+// FIXME: Jira-XXX - fix NPE in this code block
 ```
 
-在版本开发阶段，可以使用此类注释用于突出标注；交付前应该全部处理掉。
+In the version development stage, such annotations can be used to highlight the issues in code, but all of them should be fixed before release of a new production version.
 
  ## <a name="c3"></a>3  排版
 

@@ -45,6 +45,7 @@ class PackageNaming : Rule("package-naming") {
         confiRules = params.rulesConfigList!!
 
         if (node.elementType == ElementType.PACKAGE_DIRECTIVE) {
+            // calculating package name based on the directory where the file is placed
             val realPackageName = calculateRealPackageName(params)
 
             // if node isLeaf - this means that there is no package name declared
@@ -56,6 +57,7 @@ class PackageNaming : Rule("package-naming") {
                         node.addChild(LeafPsiElement(ElementType.PACKAGE_KEYWORD, "package"), null)
                         node.addChild(PsiWhiteSpaceImpl(" "), null)
                         createAndInsertPackageName(node, null, realPackageName)
+                        node.addChild(PsiWhiteSpaceImpl("\n"), null)
                         node.addChild(PsiWhiteSpaceImpl("\n"), null)
                     }
                 }
@@ -108,7 +110,7 @@ class PackageNaming : Rule("package-naming") {
                 if (confiRules.isRuleEnabled(PACKAGE_NAME_INCORRECT_CASE)) {
                     emit(it.startOffset, "${PACKAGE_NAME_INCORRECT_CASE.warnText} ${it.text}", true)
                     if (autoCorrect) {
-                        (it as LeafPsiElement).`replaceWithText`(it.text.toLowerCase())
+                        (it as LeafPsiElement).replaceWithText(it.text.toLowerCase())
                     }
                 }
             }
@@ -217,9 +219,9 @@ class PackageNaming : Rule("package-naming") {
                                                     autoCorrect: Boolean,
                                                     emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
         if (realName.isNotEmpty() && packageNameParts.map { node -> node.text } != realName) {
-            if (confiRules.isRuleEnabled(PACKAGE_NAME_INCORRECT)) {
+            if (confiRules.isRuleEnabled(PACKAGE_NAME_INCORRECT_PATH)) {
                 emit(packageNameParts[0].startOffset,
-                    "${PACKAGE_NAME_INCORRECT.warnText} ${realName.joinToString(PACKAGE_SEPARATOR)}", true)
+                    "${PACKAGE_NAME_INCORRECT_PATH.warnText} ${realName.joinToString(PACKAGE_SEPARATOR)}", true)
 
                 if (autoCorrect) {
                     val parentNode = packageNameParts[0].treeParent.treeParent

@@ -1,6 +1,6 @@
-package /* AAAAAA */    test.paragraph1
+package com.huawei.some.name
 
-import com.huawei.some.name
+import com.huawei.ktlint.core.Rule
 
 class TestPackageName {
 }

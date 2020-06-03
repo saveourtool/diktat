@@ -28,7 +28,7 @@ class PackageNamingWarnTest {
     }
 
     @Test
-    fun `package name should be in a lower case`() {
+    fun `package name should be in a lower case (check)`() {
         assertThat(
             PackageNaming().lint(
                 """
@@ -47,7 +47,7 @@ class PackageNamingWarnTest {
     }
 
     @Test
-    fun `package name should start from domain name`() {
+    fun `package name should start from domain name (check)`() {
         assertThat(
             PackageNaming().lint(
                 """
@@ -85,7 +85,7 @@ class PackageNamingWarnTest {
     }
 
     @Test
-    fun `underscore exceptions - incorrect symbol`() {
+    fun `incorrect symbol in package name`() {
         assertThat(
             PackageNaming().lint(
                 """

@@ -25,7 +25,8 @@ import java.io.File
 class FileNaming : Rule("file-naming") {
 
     companion object {
-        val VALID_EXTENSIONS = listOf(".kt")
+        // FixMe: should be moved to properties
+        val VALID_EXTENSIONS = listOf(".kt", ".kts")
     }
 
     private var confiRules: List<RulesConfig> = emptyList()

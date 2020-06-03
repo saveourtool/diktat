@@ -215,6 +215,9 @@ class IdentifierNaming : Rule("identifier-naming") {
                     "${OBJECT_NAME_INCORRECT.warnText} ${objectName.text}",
                     true
                 )
+
+                if (autoCorrect) {
+                }
             }
         }
 
@@ -238,6 +241,9 @@ class IdentifierNaming : Rule("identifier-naming") {
                         "${ENUM_VALUE.warnText} ${value.text}",
                         true
                     )
+
+                    if (autoCorrect) {
+                    }
                 }
             }
         }
@@ -263,6 +269,9 @@ class IdentifierNaming : Rule("identifier-naming") {
                     "${FUNCTION_NAME_INCORRECT_CASE.warnText} ${functionName.text}",
                     true
                 )
+
+                if (autoCorrect) {
+                }
             }
         }
 
@@ -277,6 +286,9 @@ class IdentifierNaming : Rule("identifier-naming") {
                         "${FUNCTION_BOOLEAN_PREFIX.warnText} ${functionName.text}",
                         true
                     )
+
+                    if (autoCorrect) {
+                    }
                 }
             }
         }
@@ -312,6 +324,9 @@ class IdentifierNaming : Rule("identifier-naming") {
                         "${IDENTIFIER_LENGTH.warnText} ${it.text}",
                         true
                     )
+
+                    if (autoCorrect) {
+                    }
                 }
             }
         }
