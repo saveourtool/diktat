@@ -8,30 +8,23 @@ import org.junit.Test
 import rri.fixbot.ruleset.huawei.rules.PackageNaming
 import test_framework.processing.TestComparatorUnit
 
-class PackageNamingFixTest {
-    val testComparatorUnit = TestComparatorUnit("test/paragraph1/naming/package", ::format)
+class PackagePathFixTest {
+    val testComparatorUnit = TestComparatorUnit("test/paragraph1/naming/package/src/main/kotlin/some/name", ::format)
+
 
     @Test
-    fun `incorrect case of package name (fix)`() {
+    fun `fixing package name that differs from a path (fix)`() {
         assertThat(
             testComparatorUnit
-                .compareFilesFromResources("FixUpperExpected.kt", "FixUpperTest.kt")
+                .compareFilesFromResources("FixIncorrectExpected.kt", "FixIncorrectTest.kt")
         ).isEqualTo(true)
     }
 
     @Test
-    fun `fixing incorrect case (fix)`() {
+    fun `fix missing package name with a proper location (fix)`() {
         assertThat(
             testComparatorUnit
-                .compareFilesFromResources("FixUpperExpected.kt", "FixUpperTest.kt")
-        ).isEqualTo(true)
-    }
-
-    @Test
-    fun `fixing incorrect domain name (fix)`() {
-        assertThat(
-            testComparatorUnit
-                .compareFilesFromResources("FixUpperExpected.kt", "FixUpperTest.kt")
+                .compareFilesFromResources("FixMissingExpected.kt", "FixMissingTest.kt")
         ).isEqualTo(true)
     }
 

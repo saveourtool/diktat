@@ -1,4 +1,4 @@
-package /* AAAAAA */    com.huawei.ktlint.ruleset.standarDDD
+package /* AAAAAA */    ktlint.ruleset.standarddd
 
 import com.huawei.ktlint.CORE.Rule
 

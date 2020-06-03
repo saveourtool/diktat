@@ -7,7 +7,7 @@ enum class Warnings(val warnText: String, val id: Int): Rule {
     PACKAGE_NAME_INCORRECT_CASE("package name should be completely in a lower case:", 2),
     PACKAGE_NAME_INCORRECT_PREFIX ("package name should start from company's domain:", 3),
     PACKAGE_NAME_INCORRECT_SYMBOLS ("package name should contain only latin (ASCII) letters or numbers. For separation of words use dot: ", 4),
-    PACKAGE_NAME_INCORRECT("package name does not match the directory hierarchy for this file, the path to the file is:", 5),
+    PACKAGE_NAME_INCORRECT_PATH("package name does not match the directory hierarchy for this file, the path to the file is:", 5),
 
     CLASS_NAME_INCORRECT("class/enum/interface name should be in PascalCase and should contain only latin (ASCII) letters or numbers: ", 6),
     OBJECT_NAME_INCORRECT("object structure name should be in PascalCase and should contain only latin (ASCII) letters or numbers: ", 7),
