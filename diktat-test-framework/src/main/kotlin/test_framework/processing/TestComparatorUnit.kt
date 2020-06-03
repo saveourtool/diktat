@@ -11,7 +11,7 @@ import java.nio.file.Paths
 import java.util.ArrayList
 import java.util.stream.Collectors
 
-class TestComparatorUnit(private val resourceFilePath: String, private val function: (f: String) -> String) {
+class TestComparatorUnit(private val resourceFilePath: String, private val function: (path: String, testFile: String) -> String) {
     companion object {
         val log: Logger = LoggerFactory.getLogger(TestComparatorUnit::class.java)
     }
@@ -30,7 +30,7 @@ class TestComparatorUnit(private val resourceFilePath: String, private val funct
         val copyTestFile = File("${testFile.absolutePath}_copy")
         FileUtils.copyFile(testFile, copyTestFile)
 
-        val actualResult = function(readFile(copyTestFile.absolutePath).joinToString("\n"))
+        val actualResult = function(readFile(copyTestFile.absolutePath).joinToString("\n"), copyTestFile.absolutePath)
 
         return FileComparator(expectedFile, actualResult.split("\n")).compareFilesEqual()
     }
