@@ -10,14 +10,6 @@ fun String.isASCIILettersAndDigits(): Boolean = this.all { it.isDigit() || it in
 
 fun String.isDigits(): Boolean = this.all { it.isDigit() }
 
-fun String.isPascalCase(): Boolean = this.matches("([A-Z][a-z0-9]+)+".toRegex())
-
-fun String.isLowerCamelCase(): Boolean = this.matches("[a-z]([a-z0-9])*([A-Z][a-z0-9]+)*".toRegex())
-
-fun String.isUpperSnakeCase(): Boolean = this.matches("(([A-Z]+)_*)+[A-Z]*".toRegex())
-
-fun String.isLowerSnakeCase(): Boolean = this.matches("(([a-z]+)_*)+[a-z]*".toRegex())
-
 fun String.containsOneLetterOrZero(): Boolean {
     val count = this.count { it.isLetter() }
     return count == 1 || count == 0
@@ -51,33 +43,5 @@ fun String.removePrefix(): String {
 }
 
 
-/**
- * removing the prefix in the word
- * M_VAR -> VAR
- * mVariable -> variable
- */
-fun String.toUpperCase(): String {
-    // PascalCase -> PASCAL_CASE
-    if (this.isPascalCase()) return CaseFormat.UPPER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, this)
-    // lower -> LOWER
-    if (this.all{it.isLowerCase()}) return this.toUpperCase()
-    // lowerCamel -> LOWER_CAMEL
-    if (this.isLowerCamelCase()) return CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, this)
-    // lower_snake -> LOWER_SNAKE
-    if (this.isLowerSnakeCase()) return CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_UNDERSCORE, this)
 
-    return this
-}
 
-fun String.toLowerCamelCase(): String {
-    // PascalCase -> PASCAL_CASE
-    if (this.isPascalCase()) return CaseFormat.UPPER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, this)
-    // lower -> LOWER
-    if (this.all{it.isUpperCase()}) return this.toLowerCase()
-    // lowerCamel -> LOWER_CAMEL
-    if (this.isUpperSnakeCase()) return CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_UNDERSCORE, this)
-    // lower_snake -> LOWER_SNAKE
-    if (this.isLowerSnakeCase()) return CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_UNDERSCORE, this)
-
-    return this
-}

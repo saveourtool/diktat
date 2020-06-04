@@ -114,7 +114,7 @@ The ASCII horizontal space character (0x20, that is, space) is the only white sp
 ### <a name="c1.1"></a>Identifiers
 
 ### <a name="r1.2"></a> Rule 1.2:
-All identifiers should use only ASCII letters or digits, and the names should match regular expressions \w{2,64}
+1. All identifiers should use only ASCII letters or digits, and the names should match regular expressions \w{2,64}
 
 Explanation: Each valid name of identifier should match regular expression \ w {2,64}. 
 {2,64} means that the length of the name is from 2 to 64 characters, also the length of the variable name should be proportional to its life range,
@@ -122,9 +122,9 @@ Explanation: Each valid name of identifier should match regular expression \ w {
  for example class declaration with generics or inheritance from a super class can cause line breaking.
 No special prefix or suffix should be used in these names. For example, the following are inappropriate: name_, mName, s_name, and kName.
 
-For files choose names that describe the content of this file, use camel case (PascalCase) and .kt extension. 
+2. For files choose names that describe the content of this file, use camel case (PascalCase) and .kt extension. 
 
-Typical examples of camel case naming：
+3. Typical examples of camel case naming：
 
 | Meaning | Correct |Incorrect|
 | ---- | ---- | ---- |
@@ -133,6 +133,12 @@ Typical examples of camel case naming：
 | "inner stopwatch" | innerStopwatch | innerStopWatch |
 | "supports IPv6 on iOS" | supportsIpv6OnIos | supportsIPv6OnIOS |
 | "YouTube importer" | YouTubeImporter | YoutubeImporter |
+
+4. Usage of `` and free naming for functions and identifiers are prohibited. For example - not recommended to use: 
+    ```kotlin
+       val "my dummy name-with-minus" = "value" 
+   ```
+   The only exception can be - is function names in Unit tests.
 
 
  **Exceptions**
