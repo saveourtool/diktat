@@ -22,6 +22,7 @@ import rri.fixbot.ruleset.huawei.utils.*
  * 4) interfaces/classes/annotations/enums/object names should be in PascalCase
  * 5) methods: function names should be in camel case, methods that return boolean value should have "is"/"has" prefix
  * 6) custom exceptions: PascalCase and Exception suffix
+ * 7) FixMe: should prohibit identifiers with free format with `` (except test functions)
  */
 class IdentifierNaming : Rule("identifier-naming") {
 
@@ -158,6 +159,10 @@ class IdentifierNaming : Rule("identifier-naming") {
                     "${CLASS_NAME_INCORRECT.warnText} ${className.text}",
                     true
                 )
+
+                if (autoCorrect) {
+                    (className as LeafPsiElement).replaceWithText(className.text.toPascalCase())
+                }
             }
         }
 
