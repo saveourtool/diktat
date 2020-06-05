@@ -91,6 +91,21 @@ class IdentifierNamingWarnTest {
 
     // ======== checks for variables and class names ========
     @Test
+    fun `check class name (check)`() {
+        assertThat(
+            IdentifierNaming().lint(
+                """
+                    class incorrectNAME {}
+                    class IncorrectNAME {}
+                """
+            )
+        ).containsExactly(
+            LintError(2, 27, "identifier-naming", "${CLASS_NAME_INCORRECT.warnText} incorrectNAME"),
+            LintError(3, 27, "identifier-naming", "${CLASS_NAME_INCORRECT.warnText} IncorrectNAME")
+        )
+    }
+
+    @Test
     fun `check identifiers case format (check - negative)`() {
         assertThat(
             IdentifierNaming().lint(
