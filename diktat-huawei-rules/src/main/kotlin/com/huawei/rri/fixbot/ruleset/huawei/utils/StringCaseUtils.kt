@@ -1,4 +1,4 @@
-package rri.fixbot.ruleset.huawei.utils
+package com.huawei.rri.fixbot.ruleset.huawei.utils
 
 import com.google.common.base.CaseFormat
 
@@ -70,15 +70,29 @@ fun String.toPascalCase(): String {
     // any other format -> PascalCase
     // changing first letter to uppercase and replacing several uppercase letters in raw to lowercase:
     // example of change: [p]a[SC]a[_]l -> [P]a[Sc]a[L]
+    // FixMe: there is some discussion on how PascalN_Case should be resolved: to PascalNcase or to PascalnCase or PascalNCase (current version)
     var isPreviousLetterCapital = true
+    var isPreviousLetterUnderscore = false
     return this[0].toUpperCase().toString() + this.substring(1).map {
         return@map if (it.isUpperCase()) {
-            val result = if (isPreviousLetterCapital) it.toLowerCase() else it
+            val result = if (isPreviousLetterCapital && !isPreviousLetterUnderscore) it.toLowerCase() else it
             isPreviousLetterCapital = true
+            isPreviousLetterUnderscore = false
             result
         } else {
-            isPreviousLetterCapital = false
-            it
+            val result = if (it == '_') {
+                isPreviousLetterUnderscore = true
+                ""
+            } else if (isPreviousLetterUnderscore) {
+                isPreviousLetterCapital = true
+                isPreviousLetterUnderscore = false
+                it.toUpperCase()
+            } else {
+                isPreviousLetterCapital = false
+                isPreviousLetterUnderscore = false
+                it
+            }
+            result
         }
     }.joinToString("")
 }

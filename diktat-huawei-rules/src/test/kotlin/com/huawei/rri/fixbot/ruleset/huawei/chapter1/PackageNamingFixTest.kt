@@ -1,30 +1,37 @@
-package rri.fixbot.ruleset.huawei.huawei.chapter1
+package com.huawei.rri.fixbot.ruleset.huawei.chapter1
 
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleSet
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import rri.fixbot.ruleset.huawei.rules.PackageNaming
+import com.huawei.rri.fixbot.ruleset.huawei.rules.PackageNaming
 import test_framework.processing.TestComparatorUnit
 
-class PackagePathFixTest {
-    val testComparatorUnit = TestComparatorUnit("test/paragraph1/naming/package/src/main/kotlin/some/name", ::format)
-
+class PackageNamingFixTest {
+    val testComparatorUnit = TestComparatorUnit("test/paragraph1/naming/package", ::format)
 
     @Test
-    fun `fixing package name that differs from a path (fix)`() {
+    fun `incorrect case of package name (fix)`() {
         assertThat(
             testComparatorUnit
-                .compareFilesFromResources("FixIncorrectExpected.kt", "FixIncorrectTest.kt")
+                .compareFilesFromResources("FixUpperExpected.kt", "FixUpperTest.kt")
         ).isEqualTo(true)
     }
 
     @Test
-    fun `fix missing package name with a proper location (fix)`() {
+    fun `fixing incorrect case (fix)`() {
         assertThat(
             testComparatorUnit
-                .compareFilesFromResources("FixMissingExpected.kt", "FixMissingTest.kt")
+                .compareFilesFromResources("FixUpperExpected.kt", "FixUpperTest.kt")
+        ).isEqualTo(true)
+    }
+
+    @Test
+    fun `fixing incorrect domain name (fix)`() {
+        assertThat(
+            testComparatorUnit
+                .compareFilesFromResources("FixUpperExpected.kt", "FixUpperTest.kt")
         ).isEqualTo(true)
     }
 

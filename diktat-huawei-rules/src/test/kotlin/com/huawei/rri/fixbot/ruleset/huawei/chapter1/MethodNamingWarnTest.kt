@@ -1,11 +1,11 @@
-package rri.fixbot.ruleset.huawei.huawei.chapter1
+package com.huawei.rri.fixbot.ruleset.huawei.chapter1
 
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.test.lint
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import rri.fixbot.ruleset.huawei.rules.IdentifierNaming
-import rri.fixbot.ruleset.huawei.constants.Warnings.*
+import com.huawei.rri.fixbot.ruleset.huawei.rules.IdentifierNaming
+import com.huawei.rri.fixbot.ruleset.huawei.constants.Warnings.*
 
 class MethodNamingWarnTest {
     @Test

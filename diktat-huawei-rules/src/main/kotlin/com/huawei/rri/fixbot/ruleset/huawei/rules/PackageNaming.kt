@@ -1,4 +1,4 @@
-package rri.fixbot.ruleset.huawei.rules
+package com.huawei.rri.fixbot.ruleset.huawei.rules
 
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
@@ -10,8 +10,8 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
-import rri.fixbot.ruleset.huawei.constants.Warnings.*
-import rri.fixbot.ruleset.huawei.utils.*
+import com.huawei.rri.fixbot.ruleset.huawei.constants.Warnings.*
+import com.huawei.rri.fixbot.ruleset.huawei.utils.*
 import org.slf4j.LoggerFactory
 
 /**
