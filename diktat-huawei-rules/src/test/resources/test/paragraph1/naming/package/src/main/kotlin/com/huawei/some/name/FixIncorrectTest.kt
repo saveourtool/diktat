@@ -1,4 +1,4 @@
-package /* AAAAAA */    some.buggy.way
+package /* AAAAAA */    some.buggy.way.to
 
 import com.huawei.ktlint.core.Rule
 
