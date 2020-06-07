@@ -24,9 +24,9 @@ fun String.splitPathToDirs(): List<String> =
 // mFunction, kLength or M_VAR
 fun String.hasPrefix(): Boolean {
     // checking cases like mFunction
-    if (this.isLowerCamelCase() && this.length >= 2 && this.substring(0, 1).count { it in 'a'..'z' } == 1) return true
+    if (this.isLowerCamelCase() && this.length >= 2 && this.substring(0, 2).count { it in 'A'..'Z' } == 1) return true
     // checking cases like M_VAL
-    if (this.isUpperSnakeCase() && this.length >= 2 && this.substring(0, 1).count { it in 'A'..'Z' } == 1) return true
+    if (this.isUpperSnakeCase() && this.length >= 2 && this.substring(0, 2).contains('_')) return true
     return false
 }
 

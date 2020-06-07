@@ -206,7 +206,7 @@ class IdentifierNaming : Rule("identifier-naming") {
 
     /**
      * basic check for object naming of code blocks (PascalCase)
-     *
+     * fix: fixing object name to PascalCase
      */
     private fun checkObjectNaming(node: ASTNode,
                                   autoCorrect: Boolean,
@@ -214,7 +214,6 @@ class IdentifierNaming : Rule("identifier-naming") {
                                          canBeAutoCorrected: Boolean) -> Unit): List<ASTNode> {
         val objectName: ASTNode? = node.getIdentifierName()
         // checking object naming, the only extension is "companion" keyword
-        // FixMe: need to find a constant with "companion" string in Kotlin core and remove hardcode
         if (!(objectName!!.text.isPascalCase()) && objectName.text != "companion") {
             if (confiRules.isRuleEnabled(OBJECT_NAME_INCORRECT)) {
                 emit(objectName.startOffset,
@@ -223,6 +222,7 @@ class IdentifierNaming : Rule("identifier-naming") {
                 )
 
                 if (autoCorrect) {
+                    (objectName as LeafPsiElement).replaceWithText(objectName.text.toPascalCase())
                 }
             }
         }
