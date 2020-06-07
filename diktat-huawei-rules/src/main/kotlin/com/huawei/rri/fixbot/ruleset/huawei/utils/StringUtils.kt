@@ -1,4 +1,4 @@
-package rri.fixbot.ruleset.huawei.utils
+package com.huawei.rri.fixbot.ruleset.huawei.utils
 
 import com.google.common.base.CaseFormat
 

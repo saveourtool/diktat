@@ -1,0 +1,97 @@
+[
+  {
+    "name": "CLASS_NAME_INCORRECT",
+    "enabled": true,
+    "configuration": ""
+  },
+  {
+    "name": "CONSTANT_UPPERCASE",
+    "enabled": true,
+    "configuration": ""
+  },
+  {
+    "name": "ENUM_VALUE",
+    "enabled": true,
+    "configuration": ""
+  },
+  {
+    "name": "EXCEPTION_SUFFIX",
+    "enabled": true,
+    "configuration": ""
+  },
+  {
+    "name": "FILE_NAME_INCORRECT",
+    "enabled": true,
+    "configuration": ""
+  },
+  {
+    "name": "FILE_NAME_MATCH_CLASS",
+    "enabled": true,
+    "configuration": ""
+  },
+  {
+    "name": "FUNCTION_BOOLEAN_PREFIX",
+    "enabled": true,
+    "configuration": ""
+  },
+  {
+    "name": "FUNCTION_NAME_INCORRECT_CASE",
+    "enabled": true,
+    "configuration": ""
+  },
+  {
+    "name": "GENERIC_NAME",
+    "enabled": true,
+    "configuration": ""
+  },
+  {
+    "name": "IDENTIFIER_LENGTH",
+    "enabled": true,
+    "configuration": ""
+  },
+  {
+    "name": "OBJECT_NAME_INCORRECT",
+    "enabled": true,
+    "configuration": ""
+  },
+  {
+    "name": "PACKAGE_NAME_INCORRECT",
+    "enabled": true,
+    "configuration": ""
+  },
+  {
+    "name": "PACKAGE_NAME_INCORRECT_CASE",
+    "enabled": true,
+    "configuration": ""
+  },
+  {
+    "name": "PACKAGE_NAME_INCORRECT_PREFIX",
+    "enabled": true,
+    "configuration": ""
+  },
+  {
+    "name": "PACKAGE_NAME_INCORRECT_SYMBOLS",
+    "enabled": true,
+    "configuration": ""
+  },
+  {
+    "name": "PACKAGE_NAME_MISSING",
+    "enabled": true,
+    "configuration": ""
+  },
+  {
+    "name": "VARIABLE_HAS_PREFIX",
+    "enabled": true,
+    "configuration": ""
+  },
+  {
+    "name": "VARIABLE_NAME_INCORRECT",
+    "enabled": true,
+    "configuration": ""
+  },
+  {
+    "name": "VARIABLE_NAME_INCORRECT_FORMAT",
+    "enabled": true,
+    "configuration": ""
+  }
+]

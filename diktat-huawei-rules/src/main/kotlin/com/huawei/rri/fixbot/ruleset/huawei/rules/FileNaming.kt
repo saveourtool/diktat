@@ -1,4 +1,4 @@
-package rri.fixbot.ruleset.huawei.rules
+package com.huawei.rri.fixbot.ruleset.huawei.rules
 
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
@@ -8,10 +8,10 @@ import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import config.rules.RulesConfig
 import config.rules.isRuleEnabled
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import rri.fixbot.ruleset.huawei.constants.Warnings.*
-import rri.fixbot.ruleset.huawei.utils.getAllChildrenWithType
-import rri.fixbot.ruleset.huawei.utils.getFirstChildWithType
-import rri.fixbot.ruleset.huawei.utils.isPascalCase
+import com.huawei.rri.fixbot.ruleset.huawei.constants.Warnings.*
+import com.huawei.rri.fixbot.ruleset.huawei.utils.getAllChildrenWithType
+import com.huawei.rri.fixbot.ruleset.huawei.utils.getFirstChildWithType
+import com.huawei.rri.fixbot.ruleset.huawei.utils.isPascalCase
 import java.io.File
 
 /**

@@ -43,7 +43,7 @@ class FileComparator {
                     .forEach { delta -> deltasJoiner.add(delta) }
 
             log.error("""Expected result from <${expectedResultFile.name}> and actual formatted are different.
-|                        See difference below: ${System.lineSeparator()}$deltasJoiner""".trimMargin())
+|                        See difference below:   Expected  vs  Actual ${System.lineSeparator()}$deltasJoiner""".trimMargin())
 
         } catch (e: DiffException) {
             log.error("Not able to prepare diffs between <${expectedResultFile.name}> and <${actualResultList}>", e)

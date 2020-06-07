@@ -1,4 +1,4 @@
-package rri.fixbot.ruleset.huawei.constants
+package com.huawei.rri.fixbot.ruleset.huawei.constants
 
 import config.rules.Rule
 
