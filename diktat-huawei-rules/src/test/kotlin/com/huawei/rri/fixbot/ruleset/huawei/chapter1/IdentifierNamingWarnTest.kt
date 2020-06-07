@@ -156,7 +156,6 @@ class IdentifierNamingWarnTest {
         ).containsExactly(
             LintError(1, 5, "identifier-naming", "${IDENTIFIER_LENGTH.warnText} r"),
             LintError(2, 5, "identifier-naming", "${VARIABLE_NAME_INCORRECT.warnText} x256"),
-            LintError(2, 5, "identifier-naming", "${CONSTANT_UPPERCASE.warnText} x256"),
             LintError(4, 7, "identifier-naming", "${IDENTIFIER_LENGTH.warnText} LongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongName"),
             LintError(5, 9, "identifier-naming", "${IDENTIFIER_LENGTH.warnText} veryLongveryLongveryLongveryLongveryLongveryLongveryLongveryLongveryLongName")
         )
@@ -233,7 +232,7 @@ class IdentifierNamingWarnTest {
                 """.trimIndent()
             )
         ).containsExactly(
-            LintError(1, 7, "identifier-naming", "${OBJECT_NAME_INCORRECT.warnText} TEST_ONE")
+            LintError(1, 7, "identifier-naming", "${CLASS_NAME_INCORRECT.warnText} incorrect_case_Exception")
         )
     }
 

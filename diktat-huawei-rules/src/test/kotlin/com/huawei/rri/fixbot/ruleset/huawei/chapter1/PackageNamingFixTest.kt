@@ -20,18 +20,10 @@ class PackageNamingFixTest {
     }
 
     @Test
-    fun `fixing incorrect case (fix)`() {
-        assertThat(
-            testComparatorUnit
-                .compareFilesFromResources("FixUpperExpected.kt", "FixUpperTest.kt")
-        ).isEqualTo(true)
-    }
-
-    @Test
     fun `fixing incorrect domain name (fix)`() {
         assertThat(
             testComparatorUnit
-                .compareFilesFromResources("FixUpperExpected.kt", "FixUpperTest.kt")
+                .compareFilesFromResources("MissingDomainNameExpected.kt", "MissingDomainNameTest.kt")
         ).isEqualTo(true)
     }
 
