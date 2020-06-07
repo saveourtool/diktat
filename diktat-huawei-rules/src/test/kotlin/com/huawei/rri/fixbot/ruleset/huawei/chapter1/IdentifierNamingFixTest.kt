@@ -11,13 +11,19 @@ import config.rules.RulesConfig
 import test_framework.processing.TestComparatorUnit
 
 class IdentifierNamingFixTest {
-    private val testComparatorUnit = TestComparatorUnit("test/paragraph1/naming/class_", ::format)
-
     @Test
     fun `incorrect class name (fix)`() {
         assertThat(
-            testComparatorUnit
+            TestComparatorUnit("test/paragraph1/naming/class_", ::format)
                 .compareFilesFromResources("IncorrectClassNameExpected.kt", "IncorrectClassNameTest.kt")
+        ).isEqualTo(true)
+    }
+
+    @Test
+    fun `incorrect object name (fix)`() {
+        assertThat(
+            TestComparatorUnit("test/paragraph1/naming/object_", ::format)
+                .compareFilesFromResources("IncorrectObjectNameExpected.kt", "IncorrectObjectNameTest.kt")
         ).isEqualTo(true)
     }
 

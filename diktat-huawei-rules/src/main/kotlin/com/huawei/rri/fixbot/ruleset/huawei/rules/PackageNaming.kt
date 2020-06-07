@@ -12,6 +12,7 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import com.huawei.rri.fixbot.ruleset.huawei.constants.Warnings.*
 import com.huawei.rri.fixbot.ruleset.huawei.utils.*
+import com.pinterest.ktlint.core.ast.parent
 import org.slf4j.LoggerFactory
 
 /**
@@ -80,16 +81,18 @@ class PackageNaming : Rule("package-naming") {
 
         return if (filePathParts == null || !filePathParts.contains(PACKAGE_PATH_ANCHOR)) {
             log.error("Not able to determine a path to a scanned file or src directory cannot be found in it's path." +
-                " Will not be able to determine correct package name. ")
+                " Will not be able to determine correct package name. It cn happen due to missing <src> directory is missing")
             listOf()
         } else {
             // creating a real package name:
             // 1) getting a path after the base project directory (after "src" directory)
             // 2) removing src/main/kotlin/java/e.t.c dirs and removing file name
             // 3) adding company's domain name at the beginning
-            DOMAIN_NAME.split(PACKAGE_SEPARATOR) +
-                filePathParts.subList(filePathParts.lastIndexOf(PACKAGE_PATH_ANCHOR), filePathParts.size - 1)
-                    .filter { !LANGUAGE_DIR_NAMES.contains(it) }
+            val fileSubDir = filePathParts.subList(filePathParts.lastIndexOf(PACKAGE_PATH_ANCHOR), filePathParts.size - 1)
+                .filter { !LANGUAGE_DIR_NAMES.contains(it) }
+            // no need to add DOMAIN_NAME to the package name if it is already in path
+            val domainPrefix = if (!fileSubDir.joinToString(PACKAGE_SEPARATOR).startsWith(DOMAIN_NAME)) DOMAIN_NAME.split(PACKAGE_SEPARATOR) else listOf()
+            domainPrefix + fileSubDir
         }
     }
 
@@ -202,7 +205,7 @@ class PackageNaming : Rule("package-naming") {
             childDot = LeafPsiElement(ElementType.DOT, PACKAGE_SEPARATOR)
             childPackageNamePart = LeafPsiElement(ElementType.IDENTIFIER, name)
 
-            // putting composite node first int the parent tree and adding IDENTIFIER and DOT as children to it after
+            // putting composite node first in the parent tree and adding IDENTIFIER and DOT as children to it after
             parentNode.addChild(compositeElementWithNameAndDot!!, insertBeforeNode)
             compositeElementWithNameAndDot!!.addChild(childPackageNamePart!!)
             compositeElementWithNameAndDot!!.addChild(childDot!!)
@@ -224,7 +227,13 @@ class PackageNaming : Rule("package-naming") {
                     "${PACKAGE_NAME_INCORRECT_PATH.warnText} ${realName.joinToString(PACKAGE_SEPARATOR)}", true)
 
                 if (autoCorrect) {
-                    val parentNode = packageNameParts[0].treeParent.treeParent
+                    // need to get first top-level DOT-QUALIFIED-EXPRESSION
+                    // -- PACKAGE_DIRECTIVE
+                    //    -- DOT_QUALIFIED_EXPRESSION
+                    val parentNode = packageNameParts[0]
+                        .parent(ElementType.PACKAGE_DIRECTIVE)!!
+                        .findChildByType(ElementType.DOT_QUALIFIED_EXPRESSION)!!
+
                     parentNode.getChildren(null).forEach { node -> parentNode.removeChild(node) }
                     createAndInsertPackageName(parentNode, null, realName)
                 }

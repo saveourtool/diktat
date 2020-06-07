@@ -1,3 +1,5 @@
+package com.huawei.test
+
 import config.rules.RulesConfig
 import config.rules.RulesConfigReader
 import org.junit.Test
