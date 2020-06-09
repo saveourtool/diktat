@@ -93,5 +93,10 @@
     "name": "VARIABLE_NAME_INCORRECT_FORMAT",
     "enabled": true,
     "configuration": ""
+  },
+  {
+    "name": "MISSING_KDOC",
+    "enabled": true,
+    "configuration": ""
   }
 ]

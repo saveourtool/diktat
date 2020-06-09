@@ -3,6 +3,7 @@ package com.huawei.rri.fixbot.ruleset.huawei.constants
 import config.rules.Rule
 
 enum class Warnings(val warnText: String, val id: Int): Rule {
+    // ======== chapter 1 ========
     PACKAGE_NAME_MISSING("no package name declared in a file", 1),
     PACKAGE_NAME_INCORRECT_CASE("package name should be completely in a lower case:", 2),
     PACKAGE_NAME_INCORRECT_PREFIX ("package name should start from company's domain:", 3),
@@ -26,7 +27,10 @@ enum class Warnings(val warnText: String, val id: Int): Rule {
     FILE_NAME_INCORRECT("file name is incorrect - it should end with .kt extension and be in PascalCase: ", 17),
     FILE_NAME_MATCH_CLASS("file name is incorrect - it should match with the class described in it if there is the only one class declared: ", 18),
 
-    EXCEPTION_SUFFIX("all exception classes should have \"Exception\" suffix:", 19)
+    EXCEPTION_SUFFIX("all exception classes should have \"Exception\" suffix:", 19),
+
+    // ======== chapter 2 ========
+    MISSING_KDOC_TOP_LEVEL("all public and internal top-level classes and functions should have Kdoc: ", 20)
     ;
 
     override fun text(): String = this.name
