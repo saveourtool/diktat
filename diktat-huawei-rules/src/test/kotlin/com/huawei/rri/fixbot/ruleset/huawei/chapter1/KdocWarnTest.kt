@@ -13,25 +13,27 @@ class KdocWarnTest {
         assertThat(
             KdocComments().lint(
                 """
-                    class SomeGoodName() {
+                    class SomeGoodName {
+                        private class InternalClass {
+                        }
                     }
 
-                    public open class SomeOtherGoodName() {
+                    public open class SomeOtherGoodName {
                     }
 
-                    open class SomeNewGoodName() {
+                    open class SomeNewGoodName {
                     }
 
-                    public class SomeOtherNewGoodName() {
+                    public class SomeOtherNewGoodName {
                     }
 
                 """.trimIndent()
             )
         ).containsExactly(
             LintError(1, 1, "kdoc-comments", "${MISSING_KDOC_TOP_LEVEL.warnText} SomeGoodName"),
-            LintError(4, 1, "kdoc-comments", "${MISSING_KDOC_TOP_LEVEL.warnText} SomeOtherGoodName"),
-            LintError(7, 1, "kdoc-comments", "${MISSING_KDOC_TOP_LEVEL.warnText} SomeNewGoodName"),
-            LintError(10, 1, "kdoc-comments", "${MISSING_KDOC_TOP_LEVEL.warnText} SomeOtherNewGoodName")
+            LintError(6, 1, "kdoc-comments", "${MISSING_KDOC_TOP_LEVEL.warnText} SomeOtherGoodName"),
+            LintError(9, 1, "kdoc-comments", "${MISSING_KDOC_TOP_LEVEL.warnText} SomeNewGoodName"),
+            LintError(12, 1, "kdoc-comments", "${MISSING_KDOC_TOP_LEVEL.warnText} SomeOtherNewGoodName")
         )
     }
 
@@ -40,7 +42,7 @@ class KdocWarnTest {
         assertThat(
             KdocComments().lint(
                 """
-                    internal class SomeGoodName() {
+                    internal class SomeGoodName {
                     }
                 """.trimIndent()
             )
@@ -85,7 +87,78 @@ class KdocWarnTest {
         assertThat(
             KdocComments().lint(
                 """
-                    private class SomeGoodName() {
+                    private class SomeGoodName {
+                    }
+                """.trimIndent()
+            )
+        ).isEmpty()
+    }
+
+    @Test
+    fun `Kdoc should present for each class element`() {
+        assertThat(
+            KdocComments().lint(
+                """
+                    /**
+                    * class that contains fields, functions and public subclasses
+                    **/
+                    class SomeGoodName {
+                        val variable: String = ""
+                        private val privateVariable: String = ""
+                        fun perfectFunction() {
+                        }
+
+                        private fun privateFunction() {
+                        }
+
+                        class InternalClass {
+                        }
+
+                        private class InternalClass {
+                        }
+                    }
+                """.trimIndent()
+            )
+        ).containsExactly(
+            LintError(5, 5, "kdoc-comments", "${MISSING_KDOC_CLASS_ELEMENTS.warnText} variable"),
+            LintError(7, 5, "kdoc-comments", "${MISSING_KDOC_CLASS_ELEMENTS.warnText} perfectFunction"),
+            LintError(13, 5, "kdoc-comments", "${MISSING_KDOC_CLASS_ELEMENTS.warnText} InternalClass")
+        )
+    }
+
+    @Test
+    fun `Kdoc should present for each class element (positive)`() {
+        assertThat(
+            KdocComments().lint(
+                """
+                    /**
+                    * class that contains fields, functions and public subclasses
+                    **/
+                    class SomeGoodName {
+                        /**
+                        * class that contains fields, functions and public subclasses
+                        **/
+                        val variable: String = ""
+
+                        private val privateVariable: String = ""
+
+                        /**
+                        * class that contains fields, functions and public subclasses
+                        **/
+                        fun perfectFunction() {
+                        }
+
+                        private fun privateFunction() {
+                        }
+
+                        /**
+                        * class that contains fields, functions and public subclasses
+                        **/
+                        class InternalClass {
+                        }
+
+                        private class InternalClass {
+                        }
                     }
                 """.trimIndent()
             )
