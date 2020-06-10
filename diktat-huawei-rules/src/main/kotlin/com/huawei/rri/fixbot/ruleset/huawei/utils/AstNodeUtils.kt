@@ -3,6 +3,7 @@ package com.huawei.rri.fixbot.ruleset.huawei.utils
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.CONST_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.FILE
+import com.pinterest.ktlint.core.ast.children
 import com.pinterest.ktlint.core.ast.isLeaf
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
@@ -125,4 +126,15 @@ fun ASTNode.findLeafWithSpecificType(elementType: IElementType): ASTNode? {
         if (result != null) return result
     }
     return null
+}
+
+/**
+ * Converts this AST node and all its children to pretty string representation
+ */
+fun ASTNode.prettyPrint(): String {
+    val result = StringBuilder("${this.elementType}: \"${this.text}\"").appendln()
+    this.getChildren(null).forEachIndexed { idx, child ->
+        result.append("${"-".repeat(idx + 1)} ${child.elementType}: \"${child.text}\"").appendln()
+    }
+    return result.toString()
 }
