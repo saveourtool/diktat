@@ -48,7 +48,7 @@ fun ASTNode.getFirstChildWithType(elementType: IElementType): ASTNode? =
  * checks if the node has corresponding child with elementTyp
  */
 fun ASTNode.hasChildOfType(elementType: IElementType): Boolean =
-    this.getFirstChildWithType(elementType) == null
+    this.getFirstChildWithType(elementType) != null
 
 /**
  *
