@@ -13,6 +13,8 @@ import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.INTERNAL_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
+import com.pinterest.ktlint.core.ast.ElementType.PRIVATE_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.PROTECTED_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PUBLIC_KEYWORD
 import config.rules.isRuleEnabled
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -57,6 +59,7 @@ class KdocComments : Rule("kdoc-comments") {
             modifierList.hasChildOfType(PUBLIC_KEYWORD) ||
             modifierList.hasChildOfType(INTERNAL_KEYWORD) ||
             // default == public modifier
-            (!modifierList.hasChildOfType(PUBLIC_KEYWORD) && !modifierList.hasChildOfType(INTERNAL_KEYWORD))
+            (!modifierList.hasChildOfType(PUBLIC_KEYWORD) && !modifierList.hasChildOfType(INTERNAL_KEYWORD) &&
+                !modifierList.hasChildOfType(PROTECTED_KEYWORD) && !modifierList.hasChildOfType(PRIVATE_KEYWORD))
     }
 }

@@ -67,4 +67,28 @@ class KdocWarnTest {
             LintError(4, 1, "kdoc-comments", "${MISSING_KDOC_TOP_LEVEL.warnText} someGoodNameNew")
         )
     }
+
+    @Test
+    fun `all internal and public functions on top-level should be documented with Kdoc (positive case)`() {
+        assertThat(
+            KdocComments().lint(
+                """
+                    private fun someGoodName() {
+                    }
+                """.trimIndent()
+            )
+        ).isEmpty()
+    }
+
+    @Test
+    fun `positive Kdoc case with private class`() {
+        assertThat(
+            KdocComments().lint(
+                """
+                    private class SomeGoodName() {
+                    }
+                """.trimIndent()
+            )
+        ).isEmpty()
+    }
 }
