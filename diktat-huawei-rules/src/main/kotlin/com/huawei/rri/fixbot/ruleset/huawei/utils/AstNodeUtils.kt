@@ -44,6 +44,11 @@ fun ASTNode.getAllChildrenWithType(elementType: IElementType): List<ASTNode> =
 fun ASTNode.getFirstChildWithType(elementType: IElementType): ASTNode? =
     this.getChildren(null).find { it.elementType == elementType }
 
+/**
+ * checks if the node has corresponding child with elementTyp
+ */
+fun ASTNode.hasChildOfType(elementType: IElementType): Boolean =
+    this.getFirstChildWithType(elementType) != null
 
 /**
  *
