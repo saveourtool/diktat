@@ -95,7 +95,27 @@
     "configuration": ""
   },
   {
-    "name": "MISSING_KDOC",
+    "name": "MISSING_KDOC_TOP_LEVEL",
+    "enabled": true,
+    "configuration": ""
+  },
+  {
+    "name": "MISSING_KDOC_CLASS_ELEMENTS",
+    "enabled": true,
+    "configuration": ""
+  },
+  {
+    "name": "KDOC_WITHOUT_PARAM_TAG",
+    "enabled": true,
+    "configuration": ""
+  },
+  {
+    "name": "KDOC_WITHOUT_RETURN_TAG",
+    "enabled": true,
+    "configuration": ""
+  },
+  {
+    "name": "KDOC_WITHOUT_THROWS_TAG",
     "enabled": true,
     "configuration": ""
   }

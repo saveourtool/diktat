@@ -1,27 +1,26 @@
 package com.huawei.rri.fixbot.ruleset.huawei.rules
 
 import com.huawei.rri.fixbot.ruleset.huawei.constants.Warnings
-import com.huawei.rri.fixbot.ruleset.huawei.constants.Warnings.MISSING_KDOC_TOP_LEVEL
 import com.huawei.rri.fixbot.ruleset.huawei.constants.Warnings.MISSING_KDOC_CLASS_ELEMENTS
-import com.huawei.rri.fixbot.ruleset.huawei.utils.*
+import com.huawei.rri.fixbot.ruleset.huawei.constants.Warnings.MISSING_KDOC_TOP_LEVEL
+import com.huawei.rri.fixbot.ruleset.huawei.utils.getAllChildrenWithType
+import com.huawei.rri.fixbot.ruleset.huawei.utils.getFirstChildWithType
+import com.huawei.rri.fixbot.ruleset.huawei.utils.getIdentifierName
+import com.huawei.rri.fixbot.ruleset.huawei.utils.isAccessibleOutside
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FUN
-import com.pinterest.ktlint.core.ast.ElementType.INTERNAL_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
-import com.pinterest.ktlint.core.ast.ElementType.PRIVATE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
-import com.pinterest.ktlint.core.ast.ElementType.PROTECTED_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.PUBLIC_KEYWORD
 import config.rules.isRuleEnabled
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 /**
- * Rules for comments from chapter 2. Mainly focused on KDocs
+ * This rule checks the following features in KDocs:
  * 1) All top-level (file level) functions and classes with public or internal access should have KDoc
  * 2) All internal elements in class like class, property or function should be documented with KDoc
  */
@@ -78,15 +77,5 @@ class KdocComments : Rule("kdoc-comments") {
                 false
             )
         }
-    }
-
-    private fun isAccessibleOutside(modifierList: ASTNode?): Boolean {
-        return modifierList == null ||
-            modifierList.hasChildOfType(PUBLIC_KEYWORD) ||
-            modifierList.hasChildOfType(INTERNAL_KEYWORD) ||
-            modifierList.hasChildOfType(PROTECTED_KEYWORD) ||
-            // default == public modifier
-            (!modifierList.hasChildOfType(PUBLIC_KEYWORD) && !modifierList.hasChildOfType(INTERNAL_KEYWORD) &&
-                !modifierList.hasChildOfType(PROTECTED_KEYWORD) && !modifierList.hasChildOfType(PRIVATE_KEYWORD))
     }
 }
