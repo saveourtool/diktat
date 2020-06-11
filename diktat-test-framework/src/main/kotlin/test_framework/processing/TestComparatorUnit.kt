@@ -3,7 +3,6 @@ package test_framework.processing
 import org.apache.commons.io.FileUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import test_framework.config.TestArgumentsReader
 import java.io.File
 import java.io.IOException
 import java.nio.file.Files
@@ -32,6 +31,7 @@ class TestComparatorUnit(private val resourceFilePath: String, private val funct
 
         val actualResult = function(readFile(copyTestFile.absolutePath).joinToString("\n"), copyTestFile.absolutePath)
 
+        // fixme: actualResult is separated by KtLint#determineLneSeparator, should be split by it here too
         return FileComparator(expectedFile, actualResult.split("\n")).compareFilesEqual()
     }
 
