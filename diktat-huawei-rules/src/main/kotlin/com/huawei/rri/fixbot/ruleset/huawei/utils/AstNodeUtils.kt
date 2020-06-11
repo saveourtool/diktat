@@ -3,8 +3,8 @@ package com.huawei.rri.fixbot.ruleset.huawei.utils
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.CONST_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.FILE
-import com.pinterest.ktlint.core.ast.children
 import com.pinterest.ktlint.core.ast.isLeaf
+import org.jetbrains.kotlin.com.google.common.base.Preconditions
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.slf4j.Logger
@@ -136,10 +136,29 @@ fun ASTNode.findLeafWithSpecificType(elementType: IElementType): ASTNode? {
 /**
  * Converts this AST node and all its children to pretty string representation
  */
-fun ASTNode.prettyPrint(): String {
+fun ASTNode.prettyPrint(level: Int = 0, maxLevel: Int = -1): String {
     val result = StringBuilder("${this.elementType}: \"${this.text}\"").appendln()
-    this.getChildren(null).forEachIndexed { idx, child ->
-        result.append("${"-".repeat(idx + 1)} ${child.elementType}: \"${child.text}\"").appendln()
+    if (maxLevel != 0) {
+        this.getChildren(null).forEach { child ->
+            result.append("${"-".repeat(level + 1)} " +
+                child.prettyPrint(level + 1, maxLevel - 1)).appendln()
+        }
     }
     return result.toString()
+}
+
+/**
+ * Checks if this modifier list corresponds to accessible outside entity
+ * @param modifierList ASTNode with ElementType.MODIFIER_LIST, can be null if entity has no modifier list
+ */
+fun isAccessibleOutside(modifierList: ASTNode?): Boolean {
+    Preconditions.checkArgument(modifierList == null || modifierList.elementType == ElementType.MODIFIER_LIST,
+        "The parameter should be ASTNode with ElementType.MODIFIER_LIST")
+    return modifierList == null ||
+        modifierList.hasChildOfType(ElementType.PUBLIC_KEYWORD) ||
+        modifierList.hasChildOfType(ElementType.INTERNAL_KEYWORD) ||
+        modifierList.hasChildOfType(ElementType.PROTECTED_KEYWORD) ||
+        // default == public modifier
+        (!modifierList.hasChildOfType(ElementType.PUBLIC_KEYWORD) && !modifierList.hasChildOfType(ElementType.INTERNAL_KEYWORD) &&
+            !modifierList.hasChildOfType(ElementType.PROTECTED_KEYWORD) && !modifierList.hasChildOfType(ElementType.PRIVATE_KEYWORD))
 }

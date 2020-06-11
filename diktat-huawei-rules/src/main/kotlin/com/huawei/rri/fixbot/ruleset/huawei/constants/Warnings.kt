@@ -31,7 +31,10 @@ enum class Warnings(val warnText: String, val id: Int): Rule {
 
     // ======== chapter 2 ========
     MISSING_KDOC_TOP_LEVEL("all public and internal top-level classes and functions should have Kdoc: ", 20),
-    MISSING_KDOC_CLASS_ELEMENTS("all public, internal and protected classes, functions and variables inside the class should have Kdoc: ", 21)
+    MISSING_KDOC_CLASS_ELEMENTS("all public, internal and protected classes, functions and variables inside the class should have Kdoc: ", 21),
+    KDOC_WITHOUT_PARAM_TAG("all methods which take arguments should have @param tags in KDoc, the following parameters are missing: ", 22),
+    KDOC_WITHOUT_RETURN_TAG("all methods which return values should have @return tag in KDoc", 23),
+    KDOC_WITHOUT_THROWS_TAG("all methods which throw exceptions should have @throws tag in KDoc", 24)
     ;
 
     override fun text(): String = this.name

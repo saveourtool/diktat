@@ -13,14 +13,18 @@ class ASTNodeUtilsTest {
      * output:
      *  CLASS: "class Test"
      *  - class: "class"
-     *  -- WHITE_SPACE: " "
-     *  --- IDENTIFIER: "Test"
+     *  - WHITE_SPACE: " "
+     *  - IDENTIFIER: "Test"
      */
     @Test
     fun `pretty print ASTNode`() {
         val code = """
             class Test {
-                val foo = 1
+                /**
+                * test method
+                * @param a - dummy int
+                */
+                fun foo(a: Int): Int = 2 * a
             }
         """.trimIndent()
         KtLint.lint(
@@ -36,7 +40,7 @@ class ASTNodeUtilsTest {
 private class PrettyPrintingVisitor : Rule("print-ast") {
     override fun visit(node: ASTNode, autoCorrect: Boolean, params: KtLint.Params, emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
         println("=== Beginning of node representation ===")
-        print(node.prettyPrint())
+        print(node.prettyPrint(maxLevel = 2))
         println("=== End of node representation ===")
     }
 }
