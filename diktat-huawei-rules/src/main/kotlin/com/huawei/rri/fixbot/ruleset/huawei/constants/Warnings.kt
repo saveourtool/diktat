@@ -30,7 +30,8 @@ enum class Warnings(val warnText: String, val id: Int): Rule {
     EXCEPTION_SUFFIX("all exception classes should have \"Exception\" suffix:", 19),
 
     // ======== chapter 2 ========
-    MISSING_KDOC_TOP_LEVEL("all public and internal top-level classes and functions should have Kdoc: ", 20)
+    MISSING_KDOC_TOP_LEVEL("all public and internal top-level classes and functions should have Kdoc: ", 20),
+    MISSING_KDOC_CLASS_ELEMENTS("all public, internal and protected classes, functions and variables inside the class should have Kdoc: ", 21)
     ;
 
     override fun text(): String = this.name
