@@ -20,7 +20,7 @@ class MethodNamingWarnTest {
                   }
                 """.trimIndent()
             )
-        ).containsExactly(LintError(2, 13, "identifier-naming", "${FUNCTION_NAME_INCORRECT_CASE.warnText} methODTREE"))
+        ).containsExactly(LintError(2, 13, "identifier-naming", "${FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREE"))
     }
 
     @Test
@@ -35,7 +35,7 @@ class MethodNamingWarnTest {
                   }
                 """.trimIndent()
             )
-        ).containsExactly(LintError(2, 7, "identifier-naming", "${FUNCTION_NAME_INCORRECT_CASE.warnText} method_two"))
+        ).containsExactly(LintError(2, 7, "identifier-naming", "${FUNCTION_NAME_INCORRECT_CASE.warnText()} method_two"))
     }
 
     @Test
@@ -51,8 +51,8 @@ class MethodNamingWarnTest {
                 """.trimIndent()
             )
         ).containsExactly(
-            LintError(1, 12, "identifier-naming", "${FUNCTION_NAME_INCORRECT_CASE.warnText} methODTREE"),
-            LintError(2, 9, "identifier-naming", "${FUNCTION_NAME_INCORRECT_CASE.warnText} TEST")
+            LintError(1, 12, "identifier-naming", "${FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREE"),
+            LintError(2, 9, "identifier-naming", "${FUNCTION_NAME_INCORRECT_CASE.warnText()} TEST")
         )
     }
 
@@ -67,7 +67,7 @@ class MethodNamingWarnTest {
                   }
                 """.trimIndent()
             )
-        ).containsExactly(LintError(2, 7, "identifier-naming", "${FUNCTION_NAME_INCORRECT_CASE.warnText} methODTREE"))
+        ).containsExactly(LintError(2, 7, "identifier-naming", "${FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREE"))
     }
 
     @Test
@@ -81,7 +81,7 @@ class MethodNamingWarnTest {
                   }
                 """.trimIndent()
             )
-        ).containsExactly(LintError(2, 7, "identifier-naming", "${FUNCTION_NAME_INCORRECT_CASE.warnText} methODTREE"))
+        ).containsExactly(LintError(2, 7, "identifier-naming", "${FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREE"))
     }
 
     @Test
@@ -94,6 +94,6 @@ class MethodNamingWarnTest {
                  }
                 """.trimIndent()
             )
-        ).containsExactly(LintError(1, 5, "identifier-naming", "${FUNCTION_BOOLEAN_PREFIX.warnText} someBooleanCheck"))
+        ).containsExactly(LintError(1, 5, "identifier-naming", "${FUNCTION_BOOLEAN_PREFIX.warnText()} someBooleanCheck"))
     }
 }

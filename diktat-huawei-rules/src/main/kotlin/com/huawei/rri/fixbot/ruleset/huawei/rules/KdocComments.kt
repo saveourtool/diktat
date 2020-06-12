@@ -73,7 +73,7 @@ class KdocComments : Rule("kdoc-comments") {
 
         if (params.rulesConfigList!!.isRuleEnabled(warning) && isAccessibleOutside(modifier) && kDoc == null) {
             emit(node.startOffset,
-                "${warning.warnText} ${name!!.text}",
+                "${warning.warnText()} ${name!!.text}",
                 false
             )
         }

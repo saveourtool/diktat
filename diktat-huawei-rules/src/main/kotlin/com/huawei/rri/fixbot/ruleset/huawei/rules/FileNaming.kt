@@ -6,7 +6,6 @@ import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import config.rules.RulesConfig
-import config.rules.isRuleEnabled
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import com.huawei.rri.fixbot.ruleset.huawei.constants.Warnings.*
 import com.huawei.rri.fixbot.ruleset.huawei.utils.getAllChildrenWithType
@@ -29,72 +28,56 @@ class FileNaming : Rule("file-naming") {
         val VALID_EXTENSIONS = listOf(".kt", ".kts")
     }
 
-    private var confiRules: List<RulesConfig> = emptyList()
+    private lateinit var confiRules: List<RulesConfig>
+    private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
+    private var fileName: String? = null
+    private var isFixed: Boolean = false
 
-    override fun visit(
-        node: ASTNode,
-        autoCorrect: Boolean,
-        params: KtLint.Params,
-        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit
-    ) {
+    override fun visit(node: ASTNode,
+                       autoCorrect: Boolean,
+                       params: KtLint.Params,
+                       emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
         confiRules = params.rulesConfigList!!
+        fileName = params.fileName
+        emitWarn = emit
+        isFixed = autoCorrect
 
         if (node.elementType == FILE) {
-            checkFileNaming(params, autoCorrect, emit)
-            checkClassNameMatchesWithFile(node, params, autoCorrect, emit)
+            checkFileNaming()
+            checkClassNameMatchesWithFile(node)
         }
     }
 
-    private fun checkFileNaming(params: KtLint.Params,
-                                autoCorrect: Boolean,
-                                emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
-        if (params.fileName != null) {
-            val (name, extension) = getFileParts(params)
+    private fun checkFileNaming() {
+        if (fileName != null) {
+            val (name, extension) = getFileParts()
             if (!name.isPascalCase() || !VALID_EXTENSIONS.contains(extension)) {
-                if (confiRules.isRuleEnabled(FILE_NAME_INCORRECT)) {
-                    emit(0,
-                        "${FILE_NAME_INCORRECT.warnText} $name$extension",
-                        false
-                    )
-
-                    if (autoCorrect) {
-                        // FixMe: we can add an autocorrect here in future, but is there any purpose to change file or class name?
-                    }
+                FILE_NAME_INCORRECT.warnAndFix(confiRules, emitWarn, isFixed, "$name$extension", 0) {
+                    // FixMe: we can add an autocorrect here in future, but is there any purpose to change file or class name?
                 }
             }
         }
     }
 
-    private fun checkClassNameMatchesWithFile(fileLevelNode: ASTNode,
-                                              params: KtLint.Params,
-                                              autoCorrect: Boolean,
-                                              emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
-        if (params.fileName != null) {
-            val (fileName, extension) = getFileParts(params)
+    private fun checkClassNameMatchesWithFile(fileLevelNode: ASTNode) {
+        if (fileName != null) {
+            val (fileNameWithoutSuffix, fileNameSuffix) = getFileParts()
             val classes = fileLevelNode.getAllChildrenWithType(CLASS)
             if (classes.size == 1) {
                 val className = classes[0].getFirstChildWithType(IDENTIFIER)!!.text
-                if (className != fileName) {
-                    if (confiRules.isRuleEnabled(FILE_NAME_MATCH_CLASS)) {
-                        emit(0,
-                            "${FILE_NAME_MATCH_CLASS.warnText} $fileName$extension vs $className",
-                            false
-                        )
-
-                        if (autoCorrect) {
-                            // FixMe: we can add an autocorrect here in future, but is there any purpose to change file name?
-                        }
+                if (className != fileNameWithoutSuffix) {
+                    FILE_NAME_MATCH_CLASS.warnAndFix(confiRules, emitWarn, isFixed, "$fileNameWithoutSuffix$fileNameSuffix vs $className", 0) {
+                        // FixMe: we can add an autocorrect here in future, but is there any purpose to change file name?
                     }
                 }
             }
         }
     }
 
-    private fun getFileParts(params: KtLint.Params): Pair<String, String> {
-        val file = File(params.fileName!!)
+    private fun getFileParts(): Pair<String, String> {
+        val file = File(fileName!!)
         val fileNameWithoutSuffix = file.name.replace(Regex("\\..*"), "")
         val fileNameSuffix = file.name.replace(fileNameWithoutSuffix, "")
-
         return Pair(fileNameWithoutSuffix, fileNameSuffix)
     }
 }

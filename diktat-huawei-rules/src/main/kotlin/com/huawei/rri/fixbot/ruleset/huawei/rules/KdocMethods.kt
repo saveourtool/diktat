@@ -4,7 +4,14 @@ import com.huawei.rri.fixbot.ruleset.huawei.constants.Warnings
 import com.huawei.rri.fixbot.ruleset.huawei.utils.*
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.ast.ElementType
+import com.pinterest.ktlint.core.ast.ElementType.BLOCK
+import com.pinterest.ktlint.core.ast.ElementType.FUN
+import com.pinterest.ktlint.core.ast.ElementType.FUN_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.KDOC
+import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
+import com.pinterest.ktlint.core.ast.ElementType.THROW_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
+import config.rules.RulesConfig
 import config.rules.isRuleEnabled
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -18,51 +25,52 @@ import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
  * and only throws from this methods body for `@throws` check.
  */
 class KdocMethods : Rule("kdoc-methods") {
+
+    private lateinit var confiRules: List<RulesConfig>
+    private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
+    private var isFixed: Boolean = false
+
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
                        params: KtLint.Params,
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
-        if (node.elementType == ElementType.FUN
-            && isAccessibleOutside(node.getFirstChildWithType(ElementType.MODIFIER_LIST))) {
-            checkSignatureDescription(node, params, autoCorrect, emit)
+
+        confiRules = params.rulesConfigList!!
+        isFixed = autoCorrect
+        emitWarn = emit
+
+        if (node.elementType == FUN && isAccessibleOutside(node.getFirstChildWithType(MODIFIER_LIST))) {
+            checkSignatureDescription(node)
         }
     }
 
-    private fun checkSignatureDescription(
-        node: ASTNode,
-        params: KtLint.Params,
-        autoCorrect: Boolean,
-        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit
-    ) {
-        val kDoc = node.getFirstChildWithType(ElementType.KDOC)
+    private fun checkSignatureDescription(node: ASTNode) {
+        val kDoc = node.getFirstChildWithType(KDOC)
         val kDocTags = node.kDocTags()
 
-        val missingParameters = getMissingParameters(params, node, kDocTags)
+        val missingParameters = getMissingParameters(node, kDocTags)
 
         val paramCheckFailed = missingParameters.isNotEmpty()
-        val returnCheckFailed = checkReturnCheckFailed(params, node, kDocTags)
-        val throwsCheckFailed = checkThrowsCheckFailed(params, node, kDocTags)
+        val returnCheckFailed = checkReturnCheckFailed(node, kDocTags)
+        val throwsCheckFailed = checkThrowsCheckFailed(node, kDocTags)
 
         if (paramCheckFailed) {
-            emit(node.startOffset,
-                "${Warnings.KDOC_WITHOUT_PARAM_TAG.warnText} ${missingParameters.joinToString()}",
-                kDoc == null
-            )
+            Warnings.KDOC_WITHOUT_PARAM_TAG.warnAndFix(confiRules, emitWarn, isFixed, missingParameters.joinToString(), node.startOffset) {
+                // FixMe: add separate fix here if any parametr is missing
+            }
         }
         if (returnCheckFailed) {
-            emit(node.startOffset,
-                Warnings.KDOC_WITHOUT_RETURN_TAG.warnText,
-                kDoc == null
-            )
+            Warnings.KDOC_WITHOUT_RETURN_TAG.warnAndFix(confiRules, emitWarn, isFixed, "", node.startOffset) {
+                // FixMe: add separate fix here if any return tag is missing
+            }
         }
         if (throwsCheckFailed) {
-            emit(node.startOffset,
-                Warnings.KDOC_WITHOUT_THROWS_TAG.warnText,
-                kDoc == null
-            )
+            Warnings.KDOC_WITHOUT_THROWS_TAG.warnAndFix(confiRules, emitWarn, isFixed, "", node.startOffset) {
+                // FixMe: add separate fix here if throws tag is missing
+            }
         }
 
-        if (kDoc == null && autoCorrect) {
+        if (kDoc == null && isFixed) {
             val kDocTemplate = "/**\n" +
                 missingParameters.joinToString("") { " * @param $it\n" } +
                 (if (returnCheckFailed) " * @return\n" else "") +
@@ -70,15 +78,12 @@ class KdocMethods : Rule("kdoc-methods") {
                 " */\n"
 
             // we must ensure that KDoc is inserted before `fun` keyword
-            val methodNode = node.getFirstChildWithType(ElementType.FUN_KEYWORD)
-            node.addChild(LeafPsiElement(ElementType.KDOC, kDocTemplate), methodNode)
+            val methodNode = node.getFirstChildWithType(FUN_KEYWORD)
+            node.addChild(LeafPsiElement(KDOC, kDocTemplate), methodNode)
         }
     }
 
-    private fun getMissingParameters(params: KtLint.Params, node: ASTNode, kDocTags: Collection<KDocTag>?): Collection<String?> {
-        if (!params.rulesConfigList!!.isRuleEnabled(Warnings.KDOC_WITHOUT_PARAM_TAG)) {
-            return listOf()
-        }
+    private fun getMissingParameters(node: ASTNode, kDocTags: Collection<KDocTag>?): Collection<String?> {
         val parameterNames = node.parameterNames()
         val kDocParameterNames = kDocTags?.filter { it.knownTag == KDocKnownTag.PARAM }
             ?.map { it.getSubjectName() }
@@ -91,26 +96,19 @@ class KdocMethods : Rule("kdoc-methods") {
         }
     }
 
-    private fun checkReturnCheckFailed(params: KtLint.Params, node: ASTNode, kDocTags: Collection<KDocTag>?): Boolean {
-        return if (params.rulesConfigList!!.isRuleEnabled(Warnings.KDOC_WITHOUT_RETURN_TAG)) {
-            // fixme: how to get return type for function with expression body?
-            val explicitReturnType = node.getFirstChildWithType(ElementType.TYPE_REFERENCE)
-            val hasExplicitNotUnitReturnType = explicitReturnType != null && explicitReturnType.text != "Unit"
-            val hasReturnKDoc = kDocTags != null && kDocTags.hasKnownKDocTag(KDocKnownTag.RETURN)
-            hasExplicitNotUnitReturnType && !hasReturnKDoc
-        } else {
-            false
-        }
+    private fun checkReturnCheckFailed(node: ASTNode, kDocTags: Collection<KDocTag>?): Boolean {
+        // fixme: how to get return type for function with expression body?
+        val explicitReturnType = node.getFirstChildWithType(TYPE_REFERENCE)
+        val hasExplicitNotUnitReturnType = explicitReturnType != null && explicitReturnType.text != "Unit"
+        val hasReturnKDoc = kDocTags != null && kDocTags.hasKnownKDocTag(KDocKnownTag.RETURN)
+        return hasExplicitNotUnitReturnType && !hasReturnKDoc
+
     }
 
-    private fun checkThrowsCheckFailed(params: KtLint.Params, node: ASTNode, kDocTags: Collection<KDocTag>?): Boolean {
-        return if (params.rulesConfigList!!.isRuleEnabled(Warnings.KDOC_WITHOUT_THROWS_TAG)) {
-            val codeBlock = node.getFirstChildWithType(ElementType.BLOCK)
-            val hasThrowInMethodBody = codeBlock != null && codeBlock.findLeafWithSpecificType(ElementType.THROW_KEYWORD) != null
-            val hasThrowsInKdoc = kDocTags != null && kDocTags.hasKnownKDocTag(KDocKnownTag.THROWS)
-            hasThrowInMethodBody && !hasThrowsInKdoc
-        } else {
-            false
-        }
+    private fun checkThrowsCheckFailed(node: ASTNode, kDocTags: Collection<KDocTag>?): Boolean {
+        val codeBlock = node.getFirstChildWithType(BLOCK)
+        val hasThrowInMethodBody = codeBlock != null && codeBlock.findLeafWithSpecificType(THROW_KEYWORD) != null
+        val hasThrowsInKdoc = kDocTags != null && kDocTags.hasKnownKDocTag(KDocKnownTag.THROWS)
+        return hasThrowInMethodBody && !hasThrowsInKdoc
     }
 }

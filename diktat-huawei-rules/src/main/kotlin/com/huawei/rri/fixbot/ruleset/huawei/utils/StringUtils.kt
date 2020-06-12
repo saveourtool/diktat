@@ -1,14 +1,13 @@
 package com.huawei.rri.fixbot.ruleset.huawei.utils
 
-import com.google.common.base.CaseFormat
-
-
 fun String.isJavaKeyWord() = Keywords.isJavaKeyWord(this)
 fun String.isKotlinKeyWord() = Keywords.isKotlinKeyWord(this)
 
 fun String.isASCIILettersAndDigits(): Boolean = this.all { it.isDigit() || it in 'A'..'Z' || it in 'a'..'z' }
 
 fun String.isDigits(): Boolean = this.all { it.isDigit() }
+
+fun String.hasUppercaseLetter(): Boolean = this.any { it.isUpperCase() }
 
 fun String.containsOneLetterOrZero(): Boolean {
     val count = this.count { it.isLetter() }
@@ -20,8 +19,10 @@ fun String.splitPathToDirs(): List<String> =
         .replace("//", "/")
         .split("/")
 
-// method checks that string has prefix like:
-// mFunction, kLength or M_VAR
+/**
+ * method checks that string has prefix like:
+ * mFunction, kLength or M_VAR
+ */
 fun String.hasPrefix(): Boolean {
     // checking cases like mFunction
     if (this.isLowerCamelCase() && this.length >= 2 && this.substring(0, 2).count { it in 'A'..'Z' } == 1) return true

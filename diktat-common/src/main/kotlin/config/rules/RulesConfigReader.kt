@@ -10,7 +10,7 @@ import java.io.File
 import java.net.URL
 
 interface Rule {
-    fun text(): String
+    fun ruleName(): String
 }
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -49,7 +49,7 @@ class RulesConfigReader : JsonResourceConfigReader<List<RulesConfig>> {
 // ================== utils for List<RulesConfig> from json config
 
 fun List<RulesConfig>.getRuleConfig(rule: Rule): RulesConfig? {
-    return this.find { it.name == rule.text() }
+    return this.find { it.name == rule.ruleName() }
 }
 
 /**
