@@ -30,10 +30,10 @@ class KdocWarnTest {
                 """.trimIndent()
             )
         ).containsExactly(
-            LintError(1, 1, "kdoc-comments", "${MISSING_KDOC_TOP_LEVEL.warnText} SomeGoodName"),
-            LintError(6, 1, "kdoc-comments", "${MISSING_KDOC_TOP_LEVEL.warnText} SomeOtherGoodName"),
-            LintError(9, 1, "kdoc-comments", "${MISSING_KDOC_TOP_LEVEL.warnText} SomeNewGoodName"),
-            LintError(12, 1, "kdoc-comments", "${MISSING_KDOC_TOP_LEVEL.warnText} SomeOtherNewGoodName")
+            LintError(1, 1, "kdoc-comments", "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeGoodName"),
+            LintError(6, 1, "kdoc-comments", "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeOtherGoodName"),
+            LintError(9, 1, "kdoc-comments", "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeNewGoodName"),
+            LintError(12, 1, "kdoc-comments", "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeOtherNewGoodName")
         )
     }
 
@@ -47,7 +47,7 @@ class KdocWarnTest {
                 """.trimIndent()
             )
         ).containsExactly(LintError(
-            1, 1, "kdoc-comments", "${MISSING_KDOC_TOP_LEVEL.warnText} SomeGoodName")
+            1, 1, "kdoc-comments", "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeGoodName")
         )
     }
 
@@ -65,8 +65,8 @@ class KdocWarnTest {
                 """.trimIndent()
             )
         ).containsExactly(
-            LintError(1, 1, "kdoc-comments", "${MISSING_KDOC_TOP_LEVEL.warnText} someGoodName"),
-            LintError(4, 1, "kdoc-comments", "${MISSING_KDOC_TOP_LEVEL.warnText} someGoodNameNew")
+            LintError(1, 1, "kdoc-comments", "${MISSING_KDOC_TOP_LEVEL.warnText()} someGoodName"),
+            LintError(4, 1, "kdoc-comments", "${MISSING_KDOC_TOP_LEVEL.warnText()} someGoodNameNew")
         )
     }
 
@@ -120,9 +120,9 @@ class KdocWarnTest {
                 """.trimIndent()
             )
         ).containsExactly(
-            LintError(5, 5, "kdoc-comments", "${MISSING_KDOC_CLASS_ELEMENTS.warnText} variable"),
-            LintError(7, 5, "kdoc-comments", "${MISSING_KDOC_CLASS_ELEMENTS.warnText} perfectFunction"),
-            LintError(13, 5, "kdoc-comments", "${MISSING_KDOC_CLASS_ELEMENTS.warnText} InternalClass")
+            LintError(5, 5, "kdoc-comments", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} variable"),
+            LintError(7, 5, "kdoc-comments", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} perfectFunction"),
+            LintError(13, 5, "kdoc-comments", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} InternalClass")
         )
     }
 

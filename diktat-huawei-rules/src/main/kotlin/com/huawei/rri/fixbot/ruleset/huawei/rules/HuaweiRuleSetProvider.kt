@@ -7,6 +7,7 @@ class HuaweiRuleSetProvider : RuleSetProvider {
     override fun get(): RuleSet = RuleSet(
         "huawei-codestyle",
         KdocComments(),
+        KdocMethods(),
         FileNaming(),
         PackageNaming(),
         IdentifierNaming()

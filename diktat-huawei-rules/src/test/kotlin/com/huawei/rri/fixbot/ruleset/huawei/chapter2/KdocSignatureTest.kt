@@ -72,7 +72,7 @@ class KdocSignatureTest {
         """.trimIndent()
 
         lintMethod(invalidCode, LintError(1, 13, "kdoc-methods",
-            "${Warnings.KDOC_WITHOUT_PARAM_TAG.warnText} a")
+            "${Warnings.KDOC_WITHOUT_PARAM_TAG.warnText()} a")
         )
     }
 
@@ -92,7 +92,7 @@ class KdocSignatureTest {
         """.trimIndent()
 
         lintMethod(invalidCode, LintError(1, 13, "kdoc-methods",
-            "${Warnings.KDOC_WITHOUT_PARAM_TAG.warnText} b")
+            "${Warnings.KDOC_WITHOUT_PARAM_TAG.warnText()} b")
         )
     }
 
@@ -111,7 +111,7 @@ class KdocSignatureTest {
         """.trimIndent()
 
         lintMethod(invalidCode, LintError(1, 13, "kdoc-methods",
-            Warnings.KDOC_WITHOUT_RETURN_TAG.warnText))
+            Warnings.KDOC_WITHOUT_RETURN_TAG.warnText()))
     }
 
     @Test
@@ -129,7 +129,7 @@ class KdocSignatureTest {
         """.trimIndent()
 
         lintMethod(invalidCode, LintError(1, 13, "kdoc-methods",
-            Warnings.KDOC_WITHOUT_THROWS_TAG.warnText))
+            Warnings.KDOC_WITHOUT_THROWS_TAG.warnText()))
     }
 
     @Test

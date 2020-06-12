@@ -25,7 +25,7 @@ fun String.isLowerSnakeCase(): Boolean = this.matches("(([a-z]+)_*)+[a-z]*".toRe
 /**
  * detecting the case of _this_ String and converting it to the right UpperSnakeCase (UPPER_UNDERSCORE) case
  */
-fun String.toUpperCase(): String {
+fun String.toUpperSnakeCase(): String {
     // PascalCase -> PASCAL_CASE
     if (this.isPascalCase()) return CaseFormat.UPPER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, this)
     // lower -> LOWER
@@ -43,15 +43,19 @@ fun String.toUpperCase(): String {
  */
 fun String.toLowerCamelCase(): String {
     // PascalCase -> PASCAL_CASE
-    if (this.isPascalCase()) return CaseFormat.UPPER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, this)
+    if (this.isPascalCase()) return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, this)
     // lower -> LOWER
     if (this.all { it.isUpperCase() }) return this.toLowerCase()
     // lowerCamel -> LOWER_CAMEL
-    if (this.isUpperSnakeCase()) return CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_UNDERSCORE, this)
+    if (this.isUpperSnakeCase()) return CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, this)
     // lower_snake -> LOWER_SNAKE
-    if (this.isLowerSnakeCase()) return CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_UNDERSCORE, this)
+    if (this.isLowerSnakeCase()) return CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, this)
 
-    return this
+    // any other format -> camelCase
+    // changing first letter to uppercase and replacing several uppercase letters in raw to lowercase:
+    // example of change: [P]a[SC]a[_]l -> [p]a[Sc]a[L]
+    // FixMe: there is some discussion on how lowerN_Case should be resolved: to lowerNcase or to lowernCase or lowerNCase (current version)
+    return this[0].toLowerCase().toString() + convertUnknownCaseToCamel(this.substring(1), false)
 }
 
 /**
@@ -71,9 +75,13 @@ fun String.toPascalCase(): String {
     // changing first letter to uppercase and replacing several uppercase letters in raw to lowercase:
     // example of change: [p]a[SC]a[_]l -> [P]a[Sc]a[L]
     // FixMe: there is some discussion on how PascalN_Case should be resolved: to PascalNcase or to PascalnCase or PascalNCase (current version)
-    var isPreviousLetterCapital = true
+    return this[0].toUpperCase().toString() + convertUnknownCaseToCamel(this.substring(1), true)
+}
+
+private fun convertUnknownCaseToCamel(str: String, isFirstLetterCapital: Boolean): String {
+    var isPreviousLetterCapital = isFirstLetterCapital
     var isPreviousLetterUnderscore = false
-    return this[0].toUpperCase().toString() + this.substring(1).map {
+    return str.map {
         return@map if (it.isUpperCase()) {
             val result = if (isPreviousLetterCapital && !isPreviousLetterUnderscore) it.toLowerCase() else it
             isPreviousLetterCapital = true

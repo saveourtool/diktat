@@ -49,7 +49,7 @@ class IdentifierNamingWarnTest {
                 """.trimIndent()
             )
         ).containsExactly(LintError(
-            3, 15, "identifier-naming", "${GENERIC_NAME.warnText} <a>")
+            3, 15, "identifier-naming", "${GENERIC_NAME.warnText()} <a>")
         )
     }
 
@@ -65,7 +65,7 @@ class IdentifierNamingWarnTest {
                 """.trimIndent()
             )
         ).containsExactly(LintError(
-            3, 15, "identifier-naming", "${GENERIC_NAME.warnText} <TBBB>")
+            3, 15, "identifier-naming", "${GENERIC_NAME.warnText()} <TBBB>")
         )
     }
 
@@ -100,8 +100,8 @@ class IdentifierNamingWarnTest {
                 """
             )
         ).containsExactly(
-            LintError(2, 27, "identifier-naming", "${CLASS_NAME_INCORRECT.warnText} incorrectNAME"),
-            LintError(3, 27, "identifier-naming", "${CLASS_NAME_INCORRECT.warnText} IncorrectNAME")
+            LintError(2, 27, "identifier-naming", "${CLASS_NAME_INCORRECT.warnText()} incorrectNAME"),
+            LintError(3, 27, "identifier-naming", "${CLASS_NAME_INCORRECT.warnText()} IncorrectNAME")
         )
     }
 
@@ -127,16 +127,16 @@ class IdentifierNamingWarnTest {
                 """.trimIndent()
             )
         ).containsExactly(
-            LintError(1, 5, "identifier-naming", "${VARIABLE_NAME_INCORRECT_FORMAT.warnText} SOMEtest"),
-            LintError(2, 11, "identifier-naming", "${CONSTANT_UPPERCASE.warnText} thisConstantShouldBeUpper"),
-            LintError(3, 7, "identifier-naming", "${CLASS_NAME_INCORRECT.warnText} className"),
-            LintError(4, 16, "identifier-naming", "${CLASS_NAME_INCORRECT.warnText} badClassName"),
-            LintError(4, 33, "identifier-naming", "${VARIABLE_NAME_INCORRECT_FORMAT.warnText} FIRST"),
-            LintError(4, 52, "identifier-naming", "${VARIABLE_NAME_INCORRECT_FORMAT.warnText} SECOND"),
-            LintError(7, 19, "identifier-naming", "${CONSTANT_UPPERCASE.warnText} incorrect_case"),
-            LintError(9, 13, "identifier-naming", "${VARIABLE_NAME_INCORRECT_FORMAT.warnText} INCORRECT"),
-            LintError(12, 9, "identifier-naming", "${VARIABLE_NAME_INCORRECT_FORMAT.warnText} check_me"),
-            LintError(13, 9, "identifier-naming", "${VARIABLE_NAME_INCORRECT_FORMAT.warnText} CHECK_ME")
+            LintError(1, 5, "identifier-naming", "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} SOMEtest"),
+            LintError(2, 11, "identifier-naming", "${CONSTANT_UPPERCASE.warnText()} thisConstantShouldBeUpper"),
+            LintError(3, 7, "identifier-naming", "${CLASS_NAME_INCORRECT.warnText()} className"),
+            LintError(4, 16, "identifier-naming", "${CLASS_NAME_INCORRECT.warnText()} badClassName"),
+            LintError(4, 33, "identifier-naming", "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} FIRST"),
+            LintError(4, 52, "identifier-naming", "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} SECOND"),
+            LintError(7, 19, "identifier-naming", "${CONSTANT_UPPERCASE.warnText()} incorrect_case"),
+            LintError(9, 13, "identifier-naming", "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} INCORRECT"),
+            LintError(12, 9, "identifier-naming", "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} check_me"),
+            LintError(13, 9, "identifier-naming", "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} CHECK_ME")
         )
     }
 
@@ -154,10 +154,10 @@ class IdentifierNamingWarnTest {
                 """.trimIndent()
             )
         ).containsExactly(
-            LintError(1, 5, "identifier-naming", "${IDENTIFIER_LENGTH.warnText} r"),
-            LintError(2, 5, "identifier-naming", "${VARIABLE_NAME_INCORRECT.warnText} x256"),
-            LintError(4, 7, "identifier-naming", "${IDENTIFIER_LENGTH.warnText} LongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongName"),
-            LintError(5, 9, "identifier-naming", "${IDENTIFIER_LENGTH.warnText} veryLongveryLongveryLongveryLongveryLongveryLongveryLongveryLongveryLongName")
+            LintError(1, 5, "identifier-naming", "${IDENTIFIER_LENGTH.warnText()} r"),
+            LintError(2, 5, "identifier-naming", "${VARIABLE_NAME_INCORRECT.warnText()} x256"),
+            LintError(4, 7, "identifier-naming", "${IDENTIFIER_LENGTH.warnText()} LongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongName"),
+            LintError(5, 9, "identifier-naming", "${IDENTIFIER_LENGTH.warnText()} veryLongveryLongveryLongveryLongveryLongveryLongveryLongveryLongveryLongName")
         )
     }
 
@@ -171,8 +171,8 @@ class IdentifierNamingWarnTest {
                 """.trimIndent()
             )
         ).containsExactly(
-            LintError(1, 26, "identifier-naming", "${VARIABLE_NAME_INCORRECT_FORMAT.warnText} FIRST"),
-            LintError(1, 45, "identifier-naming", "${VARIABLE_NAME_INCORRECT_FORMAT.warnText} SECOND")
+            LintError(1, 26, "identifier-naming", "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} FIRST"),
+            LintError(1, 45, "identifier-naming", "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} SECOND")
         )
     }
 
@@ -186,7 +186,7 @@ class IdentifierNamingWarnTest {
                 """.trimIndent()
             )
         ).containsExactly(
-            LintError(1, 9, "identifier-naming", "${VARIABLE_NAME_INCORRECT_FORMAT.warnText} SOMENAME")
+            LintError(1, 9, "identifier-naming", "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} SOMENAME")
         )
     }
 
@@ -201,10 +201,10 @@ class IdentifierNamingWarnTest {
                 """.trimIndent()
             )
         ).containsExactly(
-            LintError(1, 12, "identifier-naming", "${CLASS_NAME_INCORRECT.warnText} TEST_ONE"),
-            LintError(2, 3, "identifier-naming", "${ENUM_VALUE.warnText} first_value"),
-            LintError(2, 16, "identifier-naming", "${ENUM_VALUE.warnText} secondValue"),
-            LintError(2, 29, "identifier-naming", "${ENUM_VALUE.warnText} thirdVALUE")
+            LintError(1, 12, "identifier-naming", "${CLASS_NAME_INCORRECT.warnText()} TEST_ONE"),
+            LintError(2, 3, "identifier-naming", "${ENUM_VALUE.warnText()} first_value"),
+            LintError(2, 16, "identifier-naming", "${ENUM_VALUE.warnText()} secondValue"),
+            LintError(2, 29, "identifier-naming", "${ENUM_VALUE.warnText()} thirdVALUE")
         )
     }
 
@@ -218,7 +218,7 @@ class IdentifierNamingWarnTest {
                 """.trimIndent()
             )
         ).containsExactly(
-            LintError(1, 8, "identifier-naming", "${OBJECT_NAME_INCORRECT.warnText} TEST_ONE")
+            LintError(1, 8, "identifier-naming", "${OBJECT_NAME_INCORRECT.warnText()} TEST_ONE")
         )
     }
 
@@ -232,7 +232,7 @@ class IdentifierNamingWarnTest {
                 """.trimIndent()
             )
         ).containsExactly(
-            LintError(1, 7, "identifier-naming", "${CLASS_NAME_INCORRECT.warnText} incorrect_case_Exception")
+            LintError(1, 7, "identifier-naming", "${CLASS_NAME_INCORRECT.warnText()} incorrect_case_Exception")
         )
     }
 
@@ -245,7 +245,7 @@ class IdentifierNamingWarnTest {
                 """.trimIndent()
             )
         ).containsExactly(
-            LintError(1, 7, "identifier-naming", "${EXCEPTION_SUFFIX.warnText} Custom")
+            LintError(1, 7, "identifier-naming", "${EXCEPTION_SUFFIX.warnText()} Custom")
         )
     }
 
@@ -260,7 +260,7 @@ class IdentifierNamingWarnTest {
                 """.trimIndent()
             )
         ).containsExactly(
-            LintError(1, 7, "identifier-naming", "${EXCEPTION_SUFFIX.warnText} Custom")
+            LintError(1, 7, "identifier-naming", "${EXCEPTION_SUFFIX.warnText()} Custom")
         )
     }
 
@@ -274,8 +274,8 @@ class IdentifierNamingWarnTest {
                 """.trimIndent()
             )
         ).containsExactly(
-            LintError(1, 11, "identifier-naming", "${VARIABLE_HAS_PREFIX.warnText} M_GLOB"),
-            LintError(2, 5, "identifier-naming", "${VARIABLE_HAS_PREFIX.warnText} aPrefix")
+            LintError(1, 11, "identifier-naming", "${VARIABLE_HAS_PREFIX.warnText()} M_GLOB"),
+            LintError(2, 5, "identifier-naming", "${VARIABLE_HAS_PREFIX.warnText()} aPrefix")
         )
     }
 }
