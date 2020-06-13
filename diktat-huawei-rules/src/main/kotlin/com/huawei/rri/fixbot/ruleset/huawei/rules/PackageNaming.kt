@@ -2,17 +2,21 @@ package com.huawei.rri.fixbot.ruleset.huawei.rules
 
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.isLeaf
 import config.rules.RulesConfig
-import config.rules.isRuleEnabled
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import com.huawei.rri.fixbot.ruleset.huawei.constants.Warnings.*
 import com.huawei.rri.fixbot.ruleset.huawei.utils.*
+import com.pinterest.ktlint.core.ast.ElementType.DOT
+import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
+import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
+import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.parent
+import org.jetbrains.kotlin.lexer.KtTokens.PACKAGE_KEYWORD
 import org.slf4j.LoggerFactory
 
 /**
@@ -34,54 +38,63 @@ class PackageNaming : Rule("package-naming") {
         private val log = LoggerFactory.getLogger(PackageNaming::class.java)
     }
 
-    private var confiRules: List<RulesConfig> = emptyList()
+    private lateinit var confiRules: List<RulesConfig>
+    private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
+    private var isFixMode: Boolean = false
 
-
-    override fun visit(
-        node: ASTNode,
-        autoCorrect: Boolean,
-        params: KtLint.Params,
-        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
+    override fun visit(node: ASTNode,
+                       autoCorrect: Boolean,
+                       params: KtLint.Params,
+                       emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
 
         confiRules = params.rulesConfigList!!
+        isFixMode = autoCorrect
+        emitWarn = emit
 
-        if (node.elementType == ElementType.PACKAGE_DIRECTIVE) {
+        if (node.elementType == PACKAGE_DIRECTIVE) {
             // calculating package name based on the directory where the file is placed
             val realPackageName = calculateRealPackageName(params)
 
             // if node isLeaf - this means that there is no package name declared
             if (node.isLeaf()) {
-                if (confiRules.isRuleEnabled(PACKAGE_NAME_MISSING)) {
-                    emit(node.startOffset, PACKAGE_NAME_MISSING.warnText, true)
-                    if (autoCorrect) {
-                        // FixMe: need to find proper constant in kotlin for "package" keyword
-                        node.addChild(LeafPsiElement(ElementType.PACKAGE_KEYWORD, "package"), null)
-                        node.addChild(PsiWhiteSpaceImpl(" "), null)
-                        createAndInsertPackageName(node, null, realPackageName)
-                        node.addChild(PsiWhiteSpaceImpl("\n"), null)
-                        node.addChild(PsiWhiteSpaceImpl("\n"), null)
-                    }
-                }
+                checkMissingPackageName(node, realPackageName)
                 return
             }
 
-            // getting all identifiers from package name into the list like [com, huawei, project]
+            // getting all identifiers from existing package name into the list like [com, huawei, project]
             val wordsInPackageName = mutableListOf<ASTNode>()
-            node.getAllLLeafsWithSpecificType(ElementType.IDENTIFIER, wordsInPackageName)
+            node.getAllLLeafsWithSpecificType(IDENTIFIER, wordsInPackageName)
 
             // no need to check that packageIdentifiers is empty, because in this case parsing will fail
-            checkPackageName(autoCorrect, wordsInPackageName, emit)
-            // fix in checkFilePathMatchesWithPackageName is much more agressive than fixes in checkPackageName, they can conflict
-            checkFilePathMatchesWithPackageName(wordsInPackageName, realPackageName, autoCorrect, emit)
+            checkPackageName(wordsInPackageName)
+            // fix in checkFilePathMatchesWithPackageName is much more aggressive than fixes in checkPackageName, they can conflict
+            checkFilePathMatchesWithPackageName(wordsInPackageName, realPackageName)
         }
     }
 
+    /**
+     * checking and fixing the case when package directive is missing in the file
+     */
+    private fun checkMissingPackageName(packageDirectiveNode: ASTNode, realPackageName: List<String>) {
+        PACKAGE_NAME_MISSING.warnAndFix(confiRules, emitWarn, isFixMode, "", packageDirectiveNode.startOffset) {
+            packageDirectiveNode.addChild(LeafPsiElement(PACKAGE_KEYWORD, PACKAGE_KEYWORD.toString()), null)
+            packageDirectiveNode.addChild(PsiWhiteSpaceImpl(" "), null)
+            createAndInsertPackageName(packageDirectiveNode, null, realPackageName)
+            packageDirectiveNode.addChild(PsiWhiteSpaceImpl("\n"), null)
+            packageDirectiveNode.addChild(PsiWhiteSpaceImpl("\n"), null)
+        }
+    }
+
+    /**
+     * calculating real package name based on the directory path where the file is stored
+     * @return - list with words that are parts of package name like [com, huawei, name]
+     */
     private fun calculateRealPackageName(params: KtLint.Params): List<String> {
         val filePathParts = params.fileName?.splitPathToDirs()
 
         return if (filePathParts == null || !filePathParts.contains(PACKAGE_PATH_ANCHOR)) {
             log.error("Not able to determine a path to a scanned file or src directory cannot be found in it's path." +
-                " Will not be able to determine correct package name. It cn happen due to missing <src> directory is missing")
+                " Will not be able to determine correct package name. It can happen due to missing <src> directory is missing")
             listOf()
         } else {
             // creating a real package name:
@@ -101,49 +114,29 @@ class PackageNaming : Rule("package-naming") {
      * 1) directory should match with package name
      * 2) if package in incorrect case -> transform to lower
      */
-    private fun checkPackageName(
-        autoCorrect: Boolean,
-        wordsInPackageName: List<ASTNode>,
-        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
-
+    private fun checkPackageName(wordsInPackageName: List<ASTNode>) {
         // all words should be in a lower case (lower case letters/digits/underscore)
         wordsInPackageName
-            .filter { word -> hasUppercaseLetter(word.text) }
+            .filter { word -> word.text.hasUppercaseLetter() }
             .forEach {
-                if (confiRules.isRuleEnabled(PACKAGE_NAME_INCORRECT_CASE)) {
-                    emit(it.startOffset, "${PACKAGE_NAME_INCORRECT_CASE.warnText} ${it.text}", true)
-                    if (autoCorrect) {
-                        (it as LeafPsiElement).replaceWithText(it.text.toLowerCase())
-                    }
+                PACKAGE_NAME_INCORRECT_CASE.warnAndFix(confiRules, emitWarn, isFixMode, it.text, it.startOffset) {
+                    it.toLower()
                 }
             }
 
         // package name should start from a company's domain name
         if (!isDomainMatches(wordsInPackageName)) {
-            if (confiRules.isRuleEnabled(PACKAGE_NAME_INCORRECT_PREFIX)) {
-                emit(wordsInPackageName[0].startOffset, "${PACKAGE_NAME_INCORRECT_PREFIX.warnText} $DOMAIN_NAME", true)
-                if (autoCorrect) {
-                    // FixMe: .treeParent.treeParent is called to get DOT_QUALIFIED_EXPRESSION - it can be done in more elegant way
-                    val parentNodeToInsert = wordsInPackageName[0].treeParent.treeParent
-                    createAndInsertPackageName(parentNodeToInsert, wordsInPackageName[0].treeParent, DOMAIN_NAME.split(PACKAGE_SEPARATOR))
-                }
+            PACKAGE_NAME_INCORRECT_PREFIX.warnAndFix(confiRules, emitWarn, isFixMode, DOMAIN_NAME, wordsInPackageName[0].startOffset) {
+                val parentNodeToInsert = wordsInPackageName[0].parent(DOT_QUALIFIED_EXPRESSION)!!
+                createAndInsertPackageName(parentNodeToInsert, wordsInPackageName[0].treeParent, DOMAIN_NAME.split(PACKAGE_SEPARATOR))
             }
         }
 
         // all words should contain only letters or digits
-        wordsInPackageName.filter { word -> !correctSymbolsAreUsed(word.text) }.forEach {
-            if (confiRules.isRuleEnabled(PACKAGE_NAME_INCORRECT_SYMBOLS)) {
-                emit(it.startOffset, "${PACKAGE_NAME_INCORRECT_SYMBOLS.warnText} ${it.text}", true)
-                if (autoCorrect) {
-                    // FixMe: cover with tests
-                    // FixMe: add different auto corrections for incorrect separators, letters, e.t.c
-                }
-            }
-        }
+        wordsInPackageName
+            .filter { word -> !correctSymbolsAreUsed(word.text) }
+            .forEach { PACKAGE_NAME_INCORRECT_SYMBOLS.warn(confiRules, emitWarn, isFixMode, it.text, it.startOffset) }
     }
-
-    private fun hasUppercaseLetter(word: String): Boolean = word.any { it.isUpperCase() }
-
 
     /**
      * only letters, digits and underscore are allowed
@@ -189,10 +182,10 @@ class PackageNaming : Rule("package-naming") {
         return true
     }
 
-    // FixMe: check if proper line/char numbers are added
     /**
      * method for creating and inserting package name into the parentNode
      * Will create composite object = (Identifier + Dot) and insert it into the children list of parent node
+     * FixMe: check if proper line/char numbers are added
      */
     private fun createAndInsertPackageName(parentNode: ASTNode, insertBeforeNode: ASTNode?, packageNameToInsert: List<String>) {
         var compositeElementWithNameAndDot: CompositeElement? = null
@@ -201,9 +194,9 @@ class PackageNaming : Rule("package-naming") {
 
         packageNameToInsert.forEach { name ->
             // creating Composite object = ((IDENTIFIER) + (DOT))
-            compositeElementWithNameAndDot = CompositeElement(ElementType.REFERENCE_EXPRESSION)
-            childDot = LeafPsiElement(ElementType.DOT, PACKAGE_SEPARATOR)
-            childPackageNamePart = LeafPsiElement(ElementType.IDENTIFIER, name)
+            compositeElementWithNameAndDot = CompositeElement(REFERENCE_EXPRESSION)
+            childDot = LeafPsiElement(DOT, PACKAGE_SEPARATOR)
+            childPackageNamePart = LeafPsiElement(IDENTIFIER, name)
 
             // putting composite node first in the parent tree and adding IDENTIFIER and DOT as children to it after
             parentNode.addChild(compositeElementWithNameAndDot!!, insertBeforeNode)
@@ -217,26 +210,21 @@ class PackageNaming : Rule("package-naming") {
         }
     }
 
-    private fun checkFilePathMatchesWithPackageName(packageNameParts: List<ASTNode>,
-                                                    realName: List<String>,
-                                                    autoCorrect: Boolean,
-                                                    emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
+    /**
+     * checking and fixing package directive if it does not match with the directory where the file is stored
+     */
+    private fun checkFilePathMatchesWithPackageName(packageNameParts: List<ASTNode>, realName: List<String>) {
         if (realName.isNotEmpty() && packageNameParts.map { node -> node.text } != realName) {
-            if (confiRules.isRuleEnabled(PACKAGE_NAME_INCORRECT_PATH)) {
-                emit(packageNameParts[0].startOffset,
-                    "${PACKAGE_NAME_INCORRECT_PATH.warnText} ${realName.joinToString(PACKAGE_SEPARATOR)}", true)
+            PACKAGE_NAME_INCORRECT_PATH.warnAndFix(confiRules, emitWarn, isFixMode, realName.joinToString(PACKAGE_SEPARATOR), packageNameParts[0].startOffset) {
+                // need to get first top-level DOT-QUALIFIED-EXPRESSION
+                // -- PACKAGE_DIRECTIVE
+                //    -- DOT_QUALIFIED_EXPRESSION
+                val parentNode = packageNameParts[0]
+                    .parent(PACKAGE_DIRECTIVE)!!
+                    .findChildByType(DOT_QUALIFIED_EXPRESSION)!!
 
-                if (autoCorrect) {
-                    // need to get first top-level DOT-QUALIFIED-EXPRESSION
-                    // -- PACKAGE_DIRECTIVE
-                    //    -- DOT_QUALIFIED_EXPRESSION
-                    val parentNode = packageNameParts[0]
-                        .parent(ElementType.PACKAGE_DIRECTIVE)!!
-                        .findChildByType(ElementType.DOT_QUALIFIED_EXPRESSION)!!
-
-                    parentNode.getChildren(null).forEach { node -> parentNode.removeChild(node) }
-                    createAndInsertPackageName(parentNode, null, realName)
-                }
+                parentNode.getChildren(null).forEach { node -> parentNode.removeChild(node) }
+                createAndInsertPackageName(parentNode, null, realName)
             }
         }
     }
