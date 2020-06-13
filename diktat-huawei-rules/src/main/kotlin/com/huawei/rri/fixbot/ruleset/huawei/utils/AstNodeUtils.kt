@@ -6,6 +6,7 @@ import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.isLeaf
 import org.jetbrains.kotlin.com.google.common.base.Preconditions
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -101,6 +102,8 @@ fun ASTNode.isConst() = this.findLeafWithSpecificType(CONST_KEYWORD) != null
 fun ASTNode.isVarProperty() =
     this.getChildren(null)
         .any { it.elementType == ElementType.VAR_KEYWORD }
+
+fun ASTNode.toLower() { (this as LeafPsiElement).replaceWithText(this.text.toLowerCase()) }
 
 /**
  * This util method does tree traversal and stores to the result all tree leaf node of particular type (elementType).
