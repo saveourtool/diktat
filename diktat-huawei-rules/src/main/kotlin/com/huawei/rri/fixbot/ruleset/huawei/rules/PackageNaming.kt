@@ -4,7 +4,6 @@ import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.isLeaf
 import config.rules.RulesConfig
-import config.rules.isRuleEnabled
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -41,7 +40,7 @@ class PackageNaming : Rule("package-naming") {
 
     private lateinit var confiRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
-    private var isFixed: Boolean = false
+    private var isFixMode: Boolean = false
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
@@ -49,7 +48,7 @@ class PackageNaming : Rule("package-naming") {
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
 
         confiRules = params.rulesConfigList!!
-        isFixed = autoCorrect
+        isFixMode = autoCorrect
         emitWarn = emit
 
         if (node.elementType == PACKAGE_DIRECTIVE) {
@@ -77,7 +76,7 @@ class PackageNaming : Rule("package-naming") {
      * checking and fixing the case when package directive is missing in the file
      */
     private fun checkMissingPackageName(packageDirectiveNode: ASTNode, realPackageName: List<String>) {
-        PACKAGE_NAME_MISSING.warnAndFix(confiRules, emitWarn, isFixed, "", packageDirectiveNode.startOffset) {
+        PACKAGE_NAME_MISSING.warnAndFix(confiRules, emitWarn, isFixMode, "", packageDirectiveNode.startOffset) {
             packageDirectiveNode.addChild(LeafPsiElement(PACKAGE_KEYWORD, PACKAGE_KEYWORD.toString()), null)
             packageDirectiveNode.addChild(PsiWhiteSpaceImpl(" "), null)
             createAndInsertPackageName(packageDirectiveNode, null, realPackageName)
@@ -120,14 +119,14 @@ class PackageNaming : Rule("package-naming") {
         wordsInPackageName
             .filter { word -> word.text.hasUppercaseLetter() }
             .forEach {
-                PACKAGE_NAME_INCORRECT_CASE.warnAndFix(confiRules, emitWarn, isFixed, it.text, it.startOffset) {
+                PACKAGE_NAME_INCORRECT_CASE.warnAndFix(confiRules, emitWarn, isFixMode, it.text, it.startOffset) {
                     it.toLower()
                 }
             }
 
         // package name should start from a company's domain name
         if (!isDomainMatches(wordsInPackageName)) {
-            PACKAGE_NAME_INCORRECT_PREFIX.warnAndFix(confiRules, emitWarn, isFixed, DOMAIN_NAME, wordsInPackageName[0].startOffset) {
+            PACKAGE_NAME_INCORRECT_PREFIX.warnAndFix(confiRules, emitWarn, isFixMode, DOMAIN_NAME, wordsInPackageName[0].startOffset) {
                 val parentNodeToInsert = wordsInPackageName[0].parent(DOT_QUALIFIED_EXPRESSION)!!
                 createAndInsertPackageName(parentNodeToInsert, wordsInPackageName[0].treeParent, DOMAIN_NAME.split(PACKAGE_SEPARATOR))
             }
@@ -136,7 +135,7 @@ class PackageNaming : Rule("package-naming") {
         // all words should contain only letters or digits
         wordsInPackageName
             .filter { word -> !correctSymbolsAreUsed(word.text) }
-            .forEach { PACKAGE_NAME_INCORRECT_SYMBOLS.warn(confiRules, emitWarn, isFixed, it.text, it.startOffset) }
+            .forEach { PACKAGE_NAME_INCORRECT_SYMBOLS.warn(confiRules, emitWarn, isFixMode, it.text, it.startOffset) }
     }
 
     /**
@@ -216,7 +215,7 @@ class PackageNaming : Rule("package-naming") {
      */
     private fun checkFilePathMatchesWithPackageName(packageNameParts: List<ASTNode>, realName: List<String>) {
         if (realName.isNotEmpty() && packageNameParts.map { node -> node.text } != realName) {
-            PACKAGE_NAME_INCORRECT_PATH.warnAndFix(confiRules, emitWarn, isFixed, realName.joinToString(PACKAGE_SEPARATOR), packageNameParts[0].startOffset) {
+            PACKAGE_NAME_INCORRECT_PATH.warnAndFix(confiRules, emitWarn, isFixMode, realName.joinToString(PACKAGE_SEPARATOR), packageNameParts[0].startOffset) {
                 // need to get first top-level DOT-QUALIFIED-EXPRESSION
                 // -- PACKAGE_DIRECTIVE
                 //    -- DOT_QUALIFIED_EXPRESSION

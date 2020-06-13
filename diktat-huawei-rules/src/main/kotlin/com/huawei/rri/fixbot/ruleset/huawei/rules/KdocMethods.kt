@@ -12,7 +12,6 @@ import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.THROW_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import config.rules.RulesConfig
-import config.rules.isRuleEnabled
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
@@ -28,7 +27,7 @@ class KdocMethods : Rule("kdoc-methods") {
 
     private lateinit var confiRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
-    private var isFixed: Boolean = false
+    private var isFixMode: Boolean = false
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
@@ -36,7 +35,7 @@ class KdocMethods : Rule("kdoc-methods") {
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
 
         confiRules = params.rulesConfigList!!
-        isFixed = autoCorrect
+        isFixMode = autoCorrect
         emitWarn = emit
 
         if (node.elementType == FUN && isAccessibleOutside(node.getFirstChildWithType(MODIFIER_LIST))) {
@@ -55,22 +54,22 @@ class KdocMethods : Rule("kdoc-methods") {
         val throwsCheckFailed = checkThrowsCheckFailed(node, kDocTags)
 
         if (paramCheckFailed) {
-            Warnings.KDOC_WITHOUT_PARAM_TAG.warnAndFix(confiRules, emitWarn, isFixed, missingParameters.joinToString(), node.startOffset) {
+            Warnings.KDOC_WITHOUT_PARAM_TAG.warnAndFix(confiRules, emitWarn, isFixMode, missingParameters.joinToString(), node.startOffset) {
                 // FixMe: add separate fix here if any parametr is missing
             }
         }
         if (returnCheckFailed) {
-            Warnings.KDOC_WITHOUT_RETURN_TAG.warnAndFix(confiRules, emitWarn, isFixed, "", node.startOffset) {
+            Warnings.KDOC_WITHOUT_RETURN_TAG.warnAndFix(confiRules, emitWarn, isFixMode, "", node.startOffset) {
                 // FixMe: add separate fix here if any return tag is missing
             }
         }
         if (throwsCheckFailed) {
-            Warnings.KDOC_WITHOUT_THROWS_TAG.warnAndFix(confiRules, emitWarn, isFixed, "", node.startOffset) {
+            Warnings.KDOC_WITHOUT_THROWS_TAG.warnAndFix(confiRules, emitWarn, isFixMode, "", node.startOffset) {
                 // FixMe: add separate fix here if throws tag is missing
             }
         }
 
-        if (kDoc == null && isFixed) {
+        if (kDoc == null && isFixMode) {
             val kDocTemplate = "/**\n" +
                 missingParameters.joinToString("") { " * @param $it\n" } +
                 (if (returnCheckFailed) " * @return\n" else "") +

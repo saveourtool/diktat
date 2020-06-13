@@ -34,8 +34,8 @@ enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean
     EXCEPTION_SUFFIX(19, true, "all exception classes should have \"Exception\" suffix"),
 
     // ======== chapter 2 ========
-    MISSING_KDOC_TOP_LEVEL(20, true, "all public and internal top-level classes and functions should have Kdoc"),
-    MISSING_KDOC_CLASS_ELEMENTS(21, true, "all public, internal and protected classes, functions and variables inside the class should have Kdoc"),
+    MISSING_KDOC_TOP_LEVEL(20, false, "all public and internal top-level classes and functions should have Kdoc"),
+    MISSING_KDOC_CLASS_ELEMENTS(21, false, "all public, internal and protected classes, functions and variables inside the class should have Kdoc"),
     KDOC_WITHOUT_PARAM_TAG(22, true, "all methods which take arguments should have @param tags in KDoc, the following parameters are missing"),
     KDOC_WITHOUT_RETURN_TAG(23, true, "all methods which return values should have @return tag in KDoc"),
     KDOC_WITHOUT_THROWS_TAG(24, true, "all methods which throw exceptions should have @throws tag in KDoc")
@@ -46,20 +46,20 @@ enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean
     fun warnText(): String = "[${this.id}] ${this.warn}:"
 
     fun warnAndFix(configRules: List<RulesConfig>,
-        emit: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit),
-        isFix: Boolean,
-        freeText: String,
-        offset: Int,
-        autoFix: () -> Unit) {
+                   emit: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit),
+                   isFixMode: Boolean,
+                   freeText: String,
+                   offset: Int,
+                   autoFix: () -> Unit) {
         warn(configRules, emit, this.canBeAutoCorrected, freeText, offset)
-        fix(configRules, autoFix, isFix)
+        fix(configRules, autoFix, isFixMode)
     }
 
     fun warn(configs: List<RulesConfig>,
-        emit: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit),
-        autoCorrected: Boolean,
-        freeText: String,
-        offset: Int) {
+                     emit: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit),
+                     autoCorrected: Boolean,
+                     freeText: String,
+                     offset: Int) {
         if (configs.isRuleEnabled(this)) {
             emit(offset,
                 "${this.warnText()} $freeText",
@@ -68,7 +68,7 @@ enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean
         }
     }
 
-    inline fun fix(configs: List<RulesConfig>, autoFix: () -> Unit, isFix: Boolean) {
+    private inline fun fix(configs: List<RulesConfig>, autoFix: () -> Unit, isFix: Boolean) {
         if (configs.isRuleEnabled(this) && isFix) {
             autoFix()
         }
