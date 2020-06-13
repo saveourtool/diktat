@@ -34,7 +34,7 @@ class IdentifierNaming : Rule("identifier-naming") {
 
     private lateinit var confiRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
-    private var isFixed: Boolean = false
+    private var isFixMode: Boolean = false
 
     override fun visit(
         node: ASTNode,
@@ -43,7 +43,7 @@ class IdentifierNaming : Rule("identifier-naming") {
         emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit
     ) {
         confiRules = params.rulesConfigList!!
-        isFixed = autoCorrect
+        isFixMode = autoCorrect
         emitWarn = emit
 
         // isVariable will be used in future like a workaround to check corner case with variables that have length == 1
@@ -77,7 +77,7 @@ class IdentifierNaming : Rule("identifier-naming") {
         if (!ONE_CHAR_IDENTIFIERS.contains(variableName!!.text)) {
             // generally variables with prefixes are not allowed (like mVariable)
             if (variableName.text.hasPrefix()) {
-                VARIABLE_HAS_PREFIX.warnAndFix(confiRules, emitWarn, isFixed, variableName.text, variableName.startOffset) {
+                VARIABLE_HAS_PREFIX.warnAndFix(confiRules, emitWarn, isFixMode, variableName.text, variableName.startOffset) {
                     // FixMe: this correction should be done only after we checked variable case (below)
                     (variableName as LeafPsiElement).replaceWithText(variableName.text.removePrefix())
                 }
@@ -86,7 +86,7 @@ class IdentifierNaming : Rule("identifier-naming") {
             // variable should not contain only one letter in it's name. This is a bad example: b512
             // but no need to raise a warning here if length of a variable. In this case we will raise IDENTIFIER_LENGTH
             if (variableName.text.containsOneLetterOrZero() && variableName.text.length > 1) {
-                VARIABLE_NAME_INCORRECT.warnAndFix(confiRules, emitWarn, isFixed, variableName.text, variableName.startOffset) {
+                VARIABLE_NAME_INCORRECT.warnAndFix(confiRules, emitWarn, isFixMode, variableName.text, variableName.startOffset) {
                 }
             }
 
@@ -94,7 +94,7 @@ class IdentifierNaming : Rule("identifier-naming") {
             // it should be in UPPER_CASE, no need to raise this warning if it is one-letter variable
             if ((node.isNodeFromCompanionObject() || node.isNodeFromFileLevel()) && node.isValProperty() && node.isConst()) {
                 if (!variableName.text.isUpperSnakeCase() && variableName.text.length > 1) {
-                    CONSTANT_UPPERCASE.warnAndFix(confiRules, emitWarn, isFixed, variableName.text, variableName.startOffset) {
+                    CONSTANT_UPPERCASE.warnAndFix(confiRules, emitWarn, isFixMode, variableName.text, variableName.startOffset) {
                         (variableName as LeafPsiElement).replaceWithText(variableName.text.toUpperCase())
                     }
                 }
@@ -103,7 +103,7 @@ class IdentifierNaming : Rule("identifier-naming") {
 
             // variable name should be in camel case. The only exception is a list of industry standard variables like i, j, k.
             if (!variableName.text.isLowerCamelCase()) {
-                VARIABLE_NAME_INCORRECT_FORMAT.warnAndFix(confiRules, emitWarn, isFixed, variableName.text, variableName.startOffset) {
+                VARIABLE_NAME_INCORRECT_FORMAT.warnAndFix(confiRules, emitWarn, isFixMode, variableName.text, variableName.startOffset) {
                     // FixMe: cover fixes with tests
                     (variableName as LeafPsiElement).replaceWithText(variableName.text.toLowerCamelCase())
                 }
@@ -120,14 +120,14 @@ class IdentifierNaming : Rule("identifier-naming") {
     private fun checkCLassNamings(node: ASTNode): List<ASTNode> {
         val genericType: ASTNode? = node.getTypeParameterList()
         if (genericType != null && !validGenericTypeName(genericType.text)) {
-            GENERIC_NAME.warnAndFix(confiRules, emitWarn, isFixed, genericType.text, genericType.startOffset) {
+            GENERIC_NAME.warnAndFix(confiRules, emitWarn, isFixMode, genericType.text, genericType.startOffset) {
                 // FixMe: should fix generic name here
             }
         }
 
         val className: ASTNode? = node.getIdentifierName()
         if (!(className!!.text.isPascalCase())) {
-            CLASS_NAME_INCORRECT.warnAndFix(confiRules, emitWarn, isFixed, className.text, className.startOffset) {
+            CLASS_NAME_INCORRECT.warnAndFix(confiRules, emitWarn, isFixMode, className.text, className.startOffset) {
                 (className as LeafPsiElement).replaceWithText(className.text.toPascalCase())
             }
         }
@@ -153,7 +153,7 @@ class IdentifierNaming : Rule("identifier-naming") {
             ?.text
 
         if (superClassName != null && hasExceptionSuffix(superClassName) && !hasExceptionSuffix(classNameNode!!.text)) {
-            EXCEPTION_SUFFIX.warnAndFix(confiRules, emitWarn, isFixed, classNameNode.text, classNameNode.startOffset) {
+            EXCEPTION_SUFFIX.warnAndFix(confiRules, emitWarn, isFixMode, classNameNode.text, classNameNode.startOffset) {
                 // FixMe: need to add tests for this
                 (classNameNode as LeafPsiElement).replaceWithText(classNameNode.text + "Exception")
             }
@@ -168,7 +168,7 @@ class IdentifierNaming : Rule("identifier-naming") {
         val objectName: ASTNode? = node.getIdentifierName()
         // checking object naming, the only extension is "companion" keyword
         if (!(objectName!!.text.isPascalCase()) && objectName.text != "companion") {
-            OBJECT_NAME_INCORRECT.warnAndFix(confiRules, emitWarn, isFixed, objectName.text, objectName.startOffset) {
+            OBJECT_NAME_INCORRECT.warnAndFix(confiRules, emitWarn, isFixMode, objectName.text, objectName.startOffset) {
                 (objectName as LeafPsiElement).replaceWithText(objectName.text.toPascalCase())
 
             }
@@ -185,7 +185,7 @@ class IdentifierNaming : Rule("identifier-naming") {
         val enumValues: List<ASTNode> = node.getChildren(null).filter { it.elementType == ElementType.IDENTIFIER }
         enumValues.forEach { value ->
             if (!value.text.isUpperSnakeCase()) {
-                ENUM_VALUE.warnAndFix(confiRules, emitWarn, isFixed, value.text, value.startOffset) {
+                ENUM_VALUE.warnAndFix(confiRules, emitWarn, isFixMode, value.text, value.startOffset) {
                     // FixMe: add tests for this
                     (value as LeafPsiElement).replaceWithText(value.text.toUpperSnakeCase())
                 }
@@ -205,7 +205,7 @@ class IdentifierNaming : Rule("identifier-naming") {
 
         // basic check for camel case
         if (!functionName!!.text.isLowerCamelCase()) {
-            FUNCTION_NAME_INCORRECT_CASE.warnAndFix(confiRules, emitWarn, isFixed, functionName.text, functionName.startOffset) {
+            FUNCTION_NAME_INCORRECT_CASE.warnAndFix(confiRules, emitWarn, isFixMode, functionName.text, functionName.startOffset) {
                 // FixMe: add tests for this
                 (functionName as LeafPsiElement).replaceWithText(functionName.text.toLowerCamelCase())
             }
@@ -217,7 +217,7 @@ class IdentifierNaming : Rule("identifier-naming") {
         // if function has Boolean return type in 99% of cases it is much better to name it with isXXX or hasXXX prefix
         if (functionReturnType != null && functionReturnType == PrimitiveType.BOOLEAN.typeName.asString()) {
             if (!(BOOLEAN_METHOD_PREFIXES.any { functionReturnType.startsWith(it) })) {
-                FUNCTION_BOOLEAN_PREFIX.warnAndFix(confiRules, emitWarn, isFixed, functionName.text, functionName.startOffset) {
+                FUNCTION_BOOLEAN_PREFIX.warnAndFix(confiRules, emitWarn, isFixMode, functionName.text, functionName.startOffset) {
                     // FixMe: add agressive autofix for this
                 }
             }
@@ -247,8 +247,7 @@ class IdentifierNaming : Rule("identifier-naming") {
                                       isVariable: Boolean) {
         nodes.forEach {
             if (!(it.checkLength(2..64) || (ONE_CHAR_IDENTIFIERS.contains(it.text)) && isVariable)) {
-                IDENTIFIER_LENGTH.warnAndFix(confiRules, emitWarn, isFixed, it.text, it.startOffset) {
-                }
+                IDENTIFIER_LENGTH.warn(confiRules, emitWarn, isFixMode, it.text, it.startOffset)
             }
         }
     }
