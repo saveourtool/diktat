@@ -118,5 +118,10 @@
     "name": "KDOC_WITHOUT_THROWS_TAG",
     "enabled": true,
     "configuration": ""
+  },
+  {
+    "name": "KDOC_WITHOUT_THROWS_TAG",
+    "enabled": true,
+    "configuration": ""
   }
 ]

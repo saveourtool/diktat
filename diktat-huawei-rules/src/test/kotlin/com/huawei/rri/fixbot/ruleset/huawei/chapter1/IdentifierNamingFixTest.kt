@@ -27,6 +27,15 @@ class IdentifierNamingFixTest {
         ).isEqualTo(true)
     }
 
+    @Test
+    fun `incorrect enum values case (fix)`() {
+        assertThat(
+            TestComparatorUnit("test/paragraph1/naming/enum_", ::format)
+                .compareFilesFromResources("EnumValueCaseExpected.kt", "EnumValueCaseTest.kt")
+        ).isEqualTo(true)
+
+    }
+
     private fun format(text: String, fileName: String): String = IdentifierNaming().format(text, fileName)
 
     private fun Rule.format(text: String, fileName: String): String {

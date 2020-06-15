@@ -35,6 +35,14 @@ fun String.toUpperSnakeCase(): String {
     // lower_snake -> LOWER_SNAKE
     if (this.isLowerSnakeCase()) return CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_UNDERSCORE, this)
 
+    val idx = getFirstLetterOrDigit()
+    if (idx != -1) {
+        // any other format -> UPPER_SNAKE_CASE
+        // [p]a[SC]a[_]l -> [P]A_[SC]_A_[L]
+        return this[idx].toUpperCase().toString() + convertUnknownCaseToUpperSnake(this.substring(idx + 1), true)
+    }
+
+    log.error("Not able to fix case format for: $this")
     return this
 }
 
@@ -51,11 +59,17 @@ fun String.toLowerCamelCase(): String {
     // lower_snake -> LOWER_SNAKE
     if (this.isLowerSnakeCase()) return CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, this)
 
-    // any other format -> camelCase
-    // changing first letter to uppercase and replacing several uppercase letters in raw to lowercase:
-    // example of change: [P]a[SC]a[_]l -> [p]a[Sc]a[L]
-    // FixMe: there is some discussion on how lowerN_Case should be resolved: to lowerNcase or to lowernCase or lowerNCase (current version)
-    return this[0].toLowerCase().toString() + convertUnknownCaseToCamel(this.substring(1), false)
+    val idx = getFirstLetterOrDigit()
+    if (idx != -1) {
+        // any other format -> camelCase
+        // changing first letter to uppercase and replacing several uppercase letters in raw to lowercase:
+        // example of change: [P]a[SC]a[_]l -> [p]a[Sc]a[L]
+        // FixMe: there is some discussion on how lowerN_Case should be resolved: to lowerNcase or to lowernCase or lowerNCase (current version)
+        return this[idx].toLowerCase().toString() + convertUnknownCaseToCamel(this.substring(idx + 1), false)
+    }
+
+    log.error("Not able to fix case format for: $this")
+    return this
 }
 
 /**
@@ -71,18 +85,25 @@ fun String.toPascalCase(): String {
     // lower_snake -> LowerSnake
     if (this.isLowerSnakeCase()) return CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, this)
 
-    // any other format -> PascalCase
-    // changing first letter to uppercase and replacing several uppercase letters in raw to lowercase:
-    // example of change: [p]a[SC]a[_]l -> [P]a[Sc]a[L]
-    // FixMe: there is some discussion on how PascalN_Case should be resolved: to PascalNcase or to PascalnCase or PascalNCase (current version)
-    return this[0].toUpperCase().toString() + convertUnknownCaseToCamel(this.substring(1), true)
+    val idx = getFirstLetterOrDigit()
+    if (idx != -1) {
+        // any other format -> PascalCase
+        // changing first letter to uppercase and replacing several uppercase letters in raw to lowercase:
+        // example of change: [p]a[SC]a[_]l -> [P]a[Sc]a[L]
+        // FixMe: there is some discussion on how PascalN_Case should be resolved: to PascalNcase or to PascalnCase or PascalNCase (current version)
+        return this[idx].toUpperCase().toString() + convertUnknownCaseToCamel(this.substring(idx + 1), true)
+    }
+
+    log.error("Not able to fix case format for: $this")
+    return this
 }
 
 private fun convertUnknownCaseToCamel(str: String, isFirstLetterCapital: Boolean): String {
+    // [p]a[SC]a[_]l -> [P]a[Sc]a[L]
     var isPreviousLetterCapital = isFirstLetterCapital
     var isPreviousLetterUnderscore = false
     return str.map {
-        return@map if (it.isUpperCase()) {
+        if (it.isUpperCase()) {
             val result = if (isPreviousLetterCapital && !isPreviousLetterUnderscore) it.toLowerCase() else it
             isPreviousLetterCapital = true
             isPreviousLetterUnderscore = false
@@ -104,3 +125,25 @@ private fun convertUnknownCaseToCamel(str: String, isFirstLetterCapital: Boolean
         }
     }.joinToString("")
 }
+
+private fun convertUnknownCaseToUpperSnake(str: String, isFirstLetterCapital: Boolean): String {
+    // [p]a[SC]a[_]l -> [P]A_[SC]_A_[L]
+    var alreadyInsertedUnderscore = isFirstLetterCapital
+    return str.map {
+        if (it.isUpperCase()) {
+            if (!alreadyInsertedUnderscore) {
+                alreadyInsertedUnderscore = true
+                "_$it"
+            } else {
+                it
+            }
+        } else {
+            alreadyInsertedUnderscore = (it == '_')
+            it.toUpperCase()
+        }
+
+    }.joinToString("")
+}
+
+private fun String.getFirstLetterOrDigit() =
+    indexOfFirst { it.isLetterOrDigit() }
