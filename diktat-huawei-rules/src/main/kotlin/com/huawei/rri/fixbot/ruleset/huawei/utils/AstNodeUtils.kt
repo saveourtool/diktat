@@ -3,6 +3,12 @@ package com.huawei.rri.fixbot.ruleset.huawei.utils
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.CONST_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.FILE
+import com.pinterest.ktlint.core.ast.ElementType.INTERNAL_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
+import com.pinterest.ktlint.core.ast.ElementType.PRIVATE_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.PROTECTED_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.PUBLIC_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isLeaf
 import org.jetbrains.kotlin.com.google.common.base.Preconditions
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -51,6 +57,9 @@ fun ASTNode.getFirstChildWithType(elementType: IElementType): ASTNode? =
  */
 fun ASTNode.hasChildOfType(elementType: IElementType): Boolean =
     this.getFirstChildWithType(elementType) != null
+
+fun ASTNode.hasAnyChildOfTypes(vararg elementType: IElementType): Boolean =
+    elementType.any { this.hasChildOfType(it) }
 
 /**
  *
@@ -103,7 +112,9 @@ fun ASTNode.isVarProperty() =
     this.getChildren(null)
         .any { it.elementType == ElementType.VAR_KEYWORD }
 
-fun ASTNode.toLower() { (this as LeafPsiElement).replaceWithText(this.text.toLowerCase()) }
+fun ASTNode.toLower() {
+    (this as LeafPsiElement).replaceWithText(this.text.toLowerCase())
+}
 
 /**
  * This util method does tree traversal and stores to the result all tree leaf node of particular type (elementType).
@@ -154,14 +165,19 @@ fun ASTNode.prettyPrint(level: Int = 0, maxLevel: Int = -1): String {
  * Checks if this modifier list corresponds to accessible outside entity
  * @param modifierList ASTNode with ElementType.MODIFIER_LIST, can be null if entity has no modifier list
  */
-fun isAccessibleOutside(modifierList: ASTNode?): Boolean {
-    Preconditions.checkArgument(modifierList == null || modifierList.elementType == ElementType.MODIFIER_LIST,
-        "The parameter should be ASTNode with ElementType.MODIFIER_LIST")
-    return modifierList == null ||
-        modifierList.hasChildOfType(ElementType.PUBLIC_KEYWORD) ||
-        modifierList.hasChildOfType(ElementType.INTERNAL_KEYWORD) ||
-        modifierList.hasChildOfType(ElementType.PROTECTED_KEYWORD) ||
-        // default == public modifier
-        (!modifierList.hasChildOfType(ElementType.PUBLIC_KEYWORD) && !modifierList.hasChildOfType(ElementType.INTERNAL_KEYWORD) &&
-            !modifierList.hasChildOfType(ElementType.PROTECTED_KEYWORD) && !modifierList.hasChildOfType(ElementType.PRIVATE_KEYWORD))
+fun ASTNode?.isAccessibleOutside(): Boolean =
+    if (this != null) {
+        assert(this.elementType == MODIFIER_LIST)
+        this.hasAnyChildOfTypes(PUBLIC_KEYWORD, PROTECTED_KEYWORD, INTERNAL_KEYWORD) ||
+            !this.hasAnyChildOfTypes(PUBLIC_KEYWORD, INTERNAL_KEYWORD, PROTECTED_KEYWORD, PRIVATE_KEYWORD)
+    } else {
+        true
+    }
+
+/**
+ * removing all newlines in WHITE_SPACE node and replacing it to a one newline saving the initial indenting format
+ */
+fun ASTNode.leaveOnlyOneNewLine() {
+    assert(this.elementType == WHITE_SPACE)
+    (this as LeafPsiElement).replaceWithText("\n${this.text.replace("\n", "")}")
 }
