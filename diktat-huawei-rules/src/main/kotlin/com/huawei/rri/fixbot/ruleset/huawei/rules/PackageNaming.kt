@@ -132,26 +132,34 @@ class PackageNaming : Rule("package-naming") {
             }
         }
 
-        // all words should contain only letters or digits
+        // all words should contain only ASCII letters or digits
         wordsInPackageName
             .filter { word -> !correctSymbolsAreUsed(word.text) }
             .forEach { PACKAGE_NAME_INCORRECT_SYMBOLS.warn(confiRules, emitWarn, isFixMode, it.text, it.startOffset) }
+
+        // all words should contain only ASCII letters or digits
+        wordsInPackageName.forEach { correctPackageWordSeparatorsUsed(it) }
     }
 
     /**
      * only letters, digits and underscore are allowed
      */
     private fun correctSymbolsAreUsed(word: String): Boolean {
-        if (word.isASCIILettersAndDigits()) {
-            return true
-        } else {
-            // underscores are allowed in some cases - see "exceptionForUnderscore"
-            val wordFromPackage = word.replace("_", "")
-            if (wordFromPackage.isASCIILettersAndDigits() && exceptionForUnderscore(wordFromPackage)) {
-                return true
+        // underscores are allowed in some cases - see "exceptionForUnderscore"
+        val wordFromPackage = word.replace("_", "")
+        return wordFromPackage.isASCIILettersAndDigits()
+    }
+
+    /**
+     * in package name no other separators except dot should be used, package words (parts) should be concatenated
+     * without any symbols or should use dot symbol - this is the only way
+     */
+    private fun correctPackageWordSeparatorsUsed(word: ASTNode) {
+        if (word.text.contains("_") && !exceptionForUnderscore(word.text)) {
+            INCORRECT_PACKAGE_SEPARATOR.warnAndFix(confiRules, emitWarn, isFixMode, word.text, word.startOffset) {
+                (word as LeafPsiElement).replaceWithText(word.text.replace("_", ""))
             }
         }
-        return false
     }
 
     /** Underscores! In some cases, if the package name starts with a number or other characters,

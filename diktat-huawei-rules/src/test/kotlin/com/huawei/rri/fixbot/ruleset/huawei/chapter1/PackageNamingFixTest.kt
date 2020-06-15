@@ -27,6 +27,14 @@ class PackageNamingFixTest {
         ).isEqualTo(true)
     }
 
+    @Test
+    fun `incorrect usage of package separator (fix)`() {
+        assertThat(
+            testComparatorUnit
+                .compareFilesFromResources("FixUnderscoreExpected.kt", "FixUnderscoreTest.kt")
+        ).isEqualTo(true)
+    }
+
 
     private fun format(text: String, fileName: String): String = PackageNaming().format(text, fileName)
 

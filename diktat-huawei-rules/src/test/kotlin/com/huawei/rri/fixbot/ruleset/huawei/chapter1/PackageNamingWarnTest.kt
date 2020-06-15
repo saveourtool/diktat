@@ -81,7 +81,7 @@ class PackageNamingWarnTest {
 
                 """.trimIndent()
             )
-        ).containsExactly(LintError(1, 27, "package-naming", "${PACKAGE_NAME_INCORRECT_SYMBOLS.warnText()} test_"))
+        ).containsExactly(LintError(1, 27, "package-naming", "${INCORRECT_PACKAGE_SEPARATOR.warnText()} test_"))
     }
 
     @Test
