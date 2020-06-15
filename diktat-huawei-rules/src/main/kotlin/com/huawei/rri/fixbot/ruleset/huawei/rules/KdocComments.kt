@@ -51,7 +51,7 @@ class KdocComments : Rule("kdoc-comments") {
         val classBody = node.getFirstChildWithType(CLASS_BODY)
 
         // if parent class is public or internal than we can check it's internal code elements
-        if (classBody != null && isAccessibleOutside(modifier)) {
+        if (classBody != null && modifier.isAccessibleOutside()) {
             (classBody.getAllChildrenWithType(CLASS) + classBody.getAllChildrenWithType(FUN) + classBody.getAllChildrenWithType(PROPERTY))
                 .forEach { checkDoc(it, MISSING_KDOC_CLASS_ELEMENTS) }
         }
@@ -71,7 +71,7 @@ class KdocComments : Rule("kdoc-comments") {
         val modifier = node.getFirstChildWithType(MODIFIER_LIST)
         val name = node.getIdentifierName()
 
-        if (isAccessibleOutside(modifier) && kDoc == null) {
+        if (modifier.isAccessibleOutside() && kDoc == null) {
             warning.warn(confiRules, emitWarn, isFixMode, name!!.text, node.startOffset)
         }
     }
