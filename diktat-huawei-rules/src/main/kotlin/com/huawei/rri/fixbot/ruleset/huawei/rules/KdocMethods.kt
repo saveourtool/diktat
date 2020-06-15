@@ -38,7 +38,7 @@ class KdocMethods : Rule("kdoc-methods") {
         isFixMode = autoCorrect
         emitWarn = emit
 
-        if (node.elementType == FUN && isAccessibleOutside(node.getFirstChildWithType(MODIFIER_LIST))) {
+        if (node.elementType == FUN && node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside()) {
             checkSignatureDescription(node)
         }
     }

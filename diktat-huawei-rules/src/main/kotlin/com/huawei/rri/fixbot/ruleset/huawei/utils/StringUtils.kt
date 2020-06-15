@@ -14,6 +14,8 @@ fun String.containsOneLetterOrZero(): Boolean {
     return count == 1 || count == 0
 }
 
+fun String.countSubStringOccurrences(sub: String) = this.split(sub).size - 1
+
 fun String.splitPathToDirs(): List<String> =
     this.replace("\\", "/")
         .replace("//", "/")

@@ -39,9 +39,10 @@ enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean
     KDOC_WITHOUT_PARAM_TAG(22, true, "all methods which take arguments should have @param tags in KDoc, the following parameters are missing"),
     KDOC_WITHOUT_RETURN_TAG(23, true, "all methods which return values should have @return tag in KDoc"),
     KDOC_WITHOUT_THROWS_TAG(24, true, "all methods which throw exceptions should have @throws tag in KDoc"),
-
+    BLANK_LINE_AFTER_KDOC(25, true, "there should be no empty line between Kdoc and code it is describing"),
+    
     // ====== incorrect place and warn number ====
-    INCORRECT_PACKAGE_SEPARATOR(25, true, "package name parts should be separated only by dots - there should be no other symbols like underscores (_)")
+    INCORRECT_PACKAGE_SEPARATOR(26, true, "package name parts should be separated only by dots - there should be no other symbols like underscores (_)")
     ;
 
     override fun ruleName(): String = this.name

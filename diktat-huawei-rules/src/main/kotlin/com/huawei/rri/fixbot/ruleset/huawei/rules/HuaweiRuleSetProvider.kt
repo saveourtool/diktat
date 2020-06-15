@@ -8,6 +8,7 @@ class HuaweiRuleSetProvider : RuleSetProvider {
         "huawei-codestyle",
         KdocComments(),
         KdocMethods(),
+        KdocFormatting(),
         FileNaming(),
         PackageNaming(),
         IdentifierNaming()
