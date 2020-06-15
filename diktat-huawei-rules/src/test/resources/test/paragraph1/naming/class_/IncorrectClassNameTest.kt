@@ -9,3 +9,5 @@ class Pascalcase6 {}
 class PascAl_Case7 {}
 class PascaL_Case8 {}
 class PascAL_Case9 {}
+class _PascAL_Case10 {}
+class PascAL_Case11_ {}
