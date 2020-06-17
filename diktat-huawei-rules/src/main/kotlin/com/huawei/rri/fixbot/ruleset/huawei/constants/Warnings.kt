@@ -40,9 +40,14 @@ enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean
     KDOC_WITHOUT_RETURN_TAG(23, true, "all methods which return values should have @return tag in KDoc"),
     KDOC_WITHOUT_THROWS_TAG(24, true, "all methods which throw exceptions should have @throws tag in KDoc"),
     BLANK_LINE_AFTER_KDOC(25, true, "there should be no empty line between Kdoc and code it is describing"),
-    
+    KDOC_WRONG_SPACES_AFTER_TAG(26, true, "there should be exactly one white space after tag name in KDoc"),
+    KDOC_WRONG_TAGS_ORDER(27, true, "in KDoc standard tags are arranged in order @param, @return, @throws, but are"),
+    KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS(28, true, "in KDoc there should be exactly one empty line after special tags"),
+    KDOC_NO_EMPTY_TAGS(29, false, "no empty descriptions in tag blocks are allowed"),
+    KDOC_NO_DEPRECATED_TAG(30, false, "KDoc doesn't support @deprecated tag, use @Deprecated annotation instead"),
+
     // ====== incorrect place and warn number ====
-    INCORRECT_PACKAGE_SEPARATOR(26, true, "package name parts should be separated only by dots - there should be no other symbols like underscores (_)")
+    INCORRECT_PACKAGE_SEPARATOR(31, true, "package name parts should be separated only by dots - there should be no other symbols like underscores (_)")
     ;
 
     override fun ruleName(): String = this.name

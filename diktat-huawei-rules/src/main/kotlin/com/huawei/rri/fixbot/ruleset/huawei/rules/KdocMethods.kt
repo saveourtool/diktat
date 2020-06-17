@@ -45,7 +45,7 @@ class KdocMethods : Rule("kdoc-methods") {
 
     private fun checkSignatureDescription(node: ASTNode) {
         val kDoc = node.getFirstChildWithType(KDOC)
-        val kDocTags = node.kDocTags()
+        val kDocTags = kDoc?.kDocTags()
 
         val missingParameters = getMissingParameters(node, kDocTags)
 
@@ -55,7 +55,7 @@ class KdocMethods : Rule("kdoc-methods") {
 
         if (paramCheckFailed) {
             Warnings.KDOC_WITHOUT_PARAM_TAG.warnAndFix(confiRules, emitWarn, isFixMode, missingParameters.joinToString(), node.startOffset) {
-                // FixMe: add separate fix here if any parametr is missing
+                // FixMe: add separate fix here if any parameter is missing
             }
         }
         if (returnCheckFailed) {
