@@ -120,12 +120,32 @@
     "configuration": ""
   },
   {
-    "name": "KDOC_WITHOUT_THROWS_TAG",
+    "name": "INCORRECT_PACKAGE_SEPARATOR",
     "enabled": true,
     "configuration": ""
   },
   {
-    "name": "INCORRECT_PACKAGE_SEPARATOR",
+    "name": "KDOC_NO_DEPRECATED_TAG",
+    "enabled": true,
+    "configuration": ""
+  },
+  {
+    "name": "KDOC_NO_EMPTY_TAGS",
+    "enabled": true,
+    "configuration": ""
+  },
+  {
+    "name": "KDOC_WRONG_SPACES_AFTER_TAG",
+    "enabled": true,
+    "configuration": ""
+  },
+  {
+    "name": "KDOC_WRONG_TAGS_ORDER",
+    "enabled": true,
+    "configuration": ""
+  },
+  {
+    "name": "KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS",
     "enabled": true,
     "configuration": ""
   }
