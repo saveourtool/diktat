@@ -10,7 +10,7 @@ import java.nio.file.Paths
 import java.util.ArrayList
 import java.util.stream.Collectors
 
-class TestComparatorUnit(private val resourceFilePath: String, private val function: (path: String, testFile: String) -> String) {
+class TestComparatorUnit(private val resourceFilePath: String, private val function: (expectedText: String, testFilePath: String) -> String) {
     companion object {
         val log: Logger = LoggerFactory.getLogger(TestComparatorUnit::class.java)
     }
