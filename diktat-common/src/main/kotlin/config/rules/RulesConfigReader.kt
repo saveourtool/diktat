@@ -41,7 +41,7 @@ class RulesConfigReader : JsonResourceConfigReader<List<RulesConfig>> {
      * if the path is provided, else will read the hardcoded file 'rules-config.json' from the package
      */
     override fun getConfigFile(resourceFileName: String): URL? {
-        return File(resourceFileName).toURL()
+        return File(resourceFileName).toURI().toURL()
     }
 }
 

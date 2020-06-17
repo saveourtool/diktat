@@ -1,6 +1,8 @@
 package com.huawei.rri.fixbot.ruleset.huawei.chapter2
 
 import com.huawei.rri.fixbot.ruleset.huawei.constants.Warnings
+import com.huawei.rri.fixbot.ruleset.huawei.constants.Warnings.KDOC_WITHOUT_RETURN_TAG
+import com.huawei.rri.fixbot.ruleset.huawei.constants.Warnings.KDOC_WITHOUT_THROWS_TAG
 import com.huawei.rri.fixbot.ruleset.huawei.rules.KdocMethods
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.LintError
@@ -111,7 +113,7 @@ class KdocSignatureTest {
         """.trimIndent()
 
         lintMethod(invalidCode, LintError(1, 13, "kdoc-methods",
-            Warnings.KDOC_WITHOUT_RETURN_TAG.warnText()))
+            "${KDOC_WITHOUT_RETURN_TAG.warnText()} "))
     }
 
     @Test
@@ -129,7 +131,7 @@ class KdocSignatureTest {
         """.trimIndent()
 
         lintMethod(invalidCode, LintError(1, 13, "kdoc-methods",
-            Warnings.KDOC_WITHOUT_THROWS_TAG.warnText()))
+            "${KDOC_WITHOUT_THROWS_TAG.warnText()} "))
     }
 
     @Test
