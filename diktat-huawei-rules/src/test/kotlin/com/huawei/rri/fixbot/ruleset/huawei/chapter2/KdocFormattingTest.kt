@@ -1,7 +1,11 @@
 package com.huawei.rri.fixbot.ruleset.huawei.chapter2
 
-import com.huawei.rri.fixbot.ruleset.huawei.constants.Warnings
-import com.huawei.rri.fixbot.ruleset.huawei.constants.Warnings.*
+import com.huawei.rri.fixbot.ruleset.huawei.constants.Warnings.BLANK_LINE_AFTER_KDOC
+import com.huawei.rri.fixbot.ruleset.huawei.constants.Warnings.KDOC_NO_DEPRECATED_TAG
+import com.huawei.rri.fixbot.ruleset.huawei.constants.Warnings.KDOC_NO_EMPTY_TAGS
+import com.huawei.rri.fixbot.ruleset.huawei.constants.Warnings.KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS
+import com.huawei.rri.fixbot.ruleset.huawei.constants.Warnings.KDOC_WRONG_SPACES_AFTER_TAG
+import com.huawei.rri.fixbot.ruleset.huawei.constants.Warnings.KDOC_WRONG_TAGS_ORDER
 import com.huawei.rri.fixbot.ruleset.huawei.rules.KdocFormatting
 import com.huawei.rri.fixbot.ruleset.huawei.utils.lintMethod
 import com.pinterest.ktlint.core.LintError
@@ -51,11 +55,11 @@ class KdocFormattingTest {
                 """.trimIndent()
             )
         ).containsExactly(
-            LintError(5, 4, "kdoc-formatting", "${Warnings.BLANK_LINE_AFTER_KDOC.warnText()} SUPER_CONSTANT"),
-            LintError(11, 4, "kdoc-formatting", "${Warnings.BLANK_LINE_AFTER_KDOC.warnText()} SomeName"),
-            LintError(16, 8, "kdoc-formatting", "${Warnings.BLANK_LINE_AFTER_KDOC.warnText()} variable"),
-            LintError(22, 8, "kdoc-formatting", "${Warnings.BLANK_LINE_AFTER_KDOC.warnText()} somePublicFunction"),
-            LintError(31, 4, "kdoc-formatting", "${Warnings.BLANK_LINE_AFTER_KDOC.warnText()} someFunction")
+            LintError(5, 4, "kdoc-formatting", "${BLANK_LINE_AFTER_KDOC.warnText()} SUPER_CONSTANT"),
+            LintError(11, 4, "kdoc-formatting", "${BLANK_LINE_AFTER_KDOC.warnText()} SomeName"),
+            LintError(16, 8, "kdoc-formatting", "${BLANK_LINE_AFTER_KDOC.warnText()} variable"),
+            LintError(22, 8, "kdoc-formatting", "${BLANK_LINE_AFTER_KDOC.warnText()} somePublicFunction"),
+            LintError(31, 4, "kdoc-formatting", "${BLANK_LINE_AFTER_KDOC.warnText()} someFunction")
         )
     }
 
@@ -158,7 +162,7 @@ class KdocFormattingTest {
 
         lintMethod(KdocFormatting(), invalidCode,
             LintError(2, 16, "kdoc-formatting",
-                "${Warnings.KDOC_WRONG_TAGS_ORDER.warnText()} @return, @throws, @param", true))
+                "${KDOC_WRONG_TAGS_ORDER.warnText()} @return, @throws, @param", true))
     }
 
     @Test
@@ -192,7 +196,7 @@ class KdocFormattingTest {
 
         lintMethod(KdocFormatting(), invalidCode,
             LintError(2, 16, "kdoc-formatting",
-                "${Warnings.KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS.warnText()} @implSpec, @apiNote, @implNote", true))
+                "${KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS.warnText()} @implSpec, @apiNote, @implNote", true))
     }
 
     @Test
@@ -214,6 +218,6 @@ class KdocFormattingTest {
 
         lintMethod(KdocFormatting(), invalidCode,
             LintError(2, 16, "kdoc-formatting",
-                "${Warnings.KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS.warnText()} @implSpec, @apiNote, @implNote", true))
+                "${KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS.warnText()} @implSpec, @apiNote, @implNote", true))
     }
 }
