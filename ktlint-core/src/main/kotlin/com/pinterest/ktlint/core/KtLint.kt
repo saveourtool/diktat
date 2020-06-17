@@ -110,7 +110,7 @@ object KtLint {
                     val constructor = ReflectionFactory.getReflectionFactory().newConstructorForSerialization(
                         aspect, Any::class.java.getDeclaredConstructor(*arrayOfNulls<Class<*>>(0))
                     )
-                    return constructor.newInstance(*emptyArray()) as T
+                    return constructor.newInstance() as T
                 }
                 return null
             }
@@ -213,8 +213,8 @@ object KtLint {
             }
             return (
                 editorConfig.of(Paths.get(fileName).parent)
-                    ?.onlyIf({ debug }) {
-                        printEditorConfigChain(it) {
+                    ?.onlyIf({ debug }) { ec ->
+                        printEditorConfigChain(ec) {
                             editorConfigSet.put(it.path, true) != true
                         }
                     }
@@ -270,10 +270,10 @@ object KtLint {
                     continue
                 }
                 val fqr = fqRuleId to rule
-                when {
-                    rule is Rule.Modifier.Last -> fqrsExpectedToBeExecutedLast.add(fqr)
-                    rule is Rule.Modifier.RestrictToRootLast -> fqrsExpectedToBeExecutedLastOnRoot.add(fqr)
-                    rule is Rule.Modifier.RestrictToRoot -> fqrsRestrictedToRoot.add(fqr)
+                when (rule) {
+                    is Rule.Modifier.Last -> fqrsExpectedToBeExecutedLast.add(fqr)
+                    is Rule.Modifier.RestrictToRootLast -> fqrsExpectedToBeExecutedLastOnRoot.add(fqr)
+                    is Rule.Modifier.RestrictToRoot -> fqrsRestrictedToRoot.add(fqr)
                     else -> fqrs.add(fqr)
                 }
             }
@@ -298,7 +298,7 @@ object KtLint {
             for ((fqRuleId, rule) in fqrsExpectedToBeExecutedLastOnRoot) {
                 visit(rootNode, rule, fqRuleId)
             }
-            if (!fqrsExpectedToBeExecutedLast.isEmpty()) {
+            if (fqrsExpectedToBeExecutedLast.isNotEmpty()) {
                 if (concurrent) {
                     rootNode.visit { node ->
                         for ((fqRuleId, rule) in fqrsExpectedToBeExecutedLast) {
@@ -346,7 +346,7 @@ object KtLint {
             if (listOfHints.isEmpty()) nullSuppression else { offset, ruleId, root ->
                 if (root) {
                     val h = listOfHints[0]
-                    h.range.endInclusive == 0 && (h.disabledRules.isEmpty() || h.disabledRules.contains(ruleId))
+                    h.range.last == 0 && (h.disabledRules.isEmpty() || h.disabledRules.contains(ruleId))
                 } else {
                     listOfHints.any { (range, disabledRules) ->
                         (disabledRules.isEmpty() || disabledRules.contains(ruleId)) && range.contains(offset)
@@ -480,7 +480,7 @@ object KtLint {
                                         val openingHint = open.removeAt(openHintIndex)
                                         result.add(
                                             SuppressionHint(
-                                                IntRange(openingHint.range.start, node.startOffset),
+                                                IntRange(openingHint.range.first, node.startOffset),
                                                 disabledRules
                                             )
                                         )
