@@ -4,6 +4,7 @@ import com.huawei.rri.fixbot.ruleset.huawei.constants.Warnings
 import com.huawei.rri.fixbot.ruleset.huawei.constants.Warnings.KDOC_WITHOUT_RETURN_TAG
 import com.huawei.rri.fixbot.ruleset.huawei.constants.Warnings.KDOC_WITHOUT_THROWS_TAG
 import com.huawei.rri.fixbot.ruleset.huawei.rules.KdocMethods
+import com.huawei.rri.fixbot.ruleset.huawei.utils.lintMethod
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.RuleSet
@@ -33,14 +34,14 @@ class KdocSignatureTest {
             $funCode
         """.trimIndent()
 
-        lintMethod(validCode)
+        lintMethod(KdocMethods(), validCode)
     }
 
     @Test
     fun `Warning should not be triggered for private functions`() {
         val validCode = "private $funCode"
 
-        lintMethod(validCode)
+        lintMethod(KdocMethods(), validCode)
     }
 
     @Test
@@ -56,7 +57,7 @@ class KdocSignatureTest {
             }
         """.trimIndent()
 
-        lintMethod(validCode)
+        lintMethod(KdocMethods(), validCode)
     }
 
     @Test
@@ -73,7 +74,7 @@ class KdocSignatureTest {
             $funCode
         """.trimIndent()
 
-        lintMethod(invalidCode, LintError(1, 13, "kdoc-methods",
+        lintMethod(KdocMethods(), invalidCode, LintError(1, 13, "kdoc-methods",
             "${Warnings.KDOC_WITHOUT_PARAM_TAG.warnText()} a")
         )
     }
@@ -93,7 +94,7 @@ class KdocSignatureTest {
             fun addInts(a: Int, b: Int): Int = a + b
         """.trimIndent()
 
-        lintMethod(invalidCode, LintError(1, 13, "kdoc-methods",
+        lintMethod(KdocMethods(), invalidCode, LintError(1, 13, "kdoc-methods",
             "${Warnings.KDOC_WITHOUT_PARAM_TAG.warnText()} b")
         )
     }
@@ -112,7 +113,7 @@ class KdocSignatureTest {
             $funCode
         """.trimIndent()
 
-        lintMethod(invalidCode, LintError(1, 13, "kdoc-methods",
+        lintMethod(KdocMethods(), invalidCode, LintError(1, 13, "kdoc-methods",
             "${KDOC_WITHOUT_RETURN_TAG.warnText()} "))
     }
 
@@ -130,7 +131,7 @@ class KdocSignatureTest {
             $funCode
         """.trimIndent()
 
-        lintMethod(invalidCode, LintError(1, 13, "kdoc-methods",
+        lintMethod(KdocMethods(), invalidCode, LintError(1, 13, "kdoc-methods",
             "${KDOC_WITHOUT_THROWS_TAG.warnText()} "))
     }
 
@@ -151,7 +152,7 @@ class KdocSignatureTest {
             }
         """.trimIndent()
 
-        lintMethod(invalidCode)
+        lintMethod(KdocMethods(), invalidCode)
     }
 
     @Test
@@ -170,14 +171,6 @@ class KdocSignatureTest {
         assertTrue(
             testComparatorUnit
                 .compareFilesFromResources("EmptyKdocFixed.kt", "EmptyKdocTest.kt")
-        )
-    }
-
-    private fun lintMethod(code: String, vararg lintErrors: LintError) {
-        assertThat(
-            KdocMethods().lint(code)
-        ).containsExactly(
-            *lintErrors
         )
     }
 }
