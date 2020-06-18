@@ -4,15 +4,10 @@ import com.huawei.rri.fixbot.ruleset.huawei.constants.Warnings
 import com.huawei.rri.fixbot.ruleset.huawei.constants.Warnings.KDOC_WITHOUT_RETURN_TAG
 import com.huawei.rri.fixbot.ruleset.huawei.constants.Warnings.KDOC_WITHOUT_THROWS_TAG
 import com.huawei.rri.fixbot.ruleset.huawei.rules.KdocMethods
+import com.huawei.rri.fixbot.ruleset.huawei.utils.FixTestBase
 import com.huawei.rri.fixbot.ruleset.huawei.utils.lintMethod
-import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.LintError
-import com.pinterest.ktlint.core.RuleSet
-import com.pinterest.ktlint.test.lint
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.Assert.assertTrue
 import org.junit.Test
-import test_framework.processing.TestComparatorUnit
 
 class KdocSignatureTest {
     private val funCode = """
@@ -154,23 +149,11 @@ class KdocSignatureTest {
 
         lintMethod(KdocMethods(), invalidCode)
     }
+}
 
+class KdocSignatureFixTest : FixTestBase("test/paragraph2/kdoc", KdocMethods()) {
     @Test
     fun `Rule should suggest KDoc template for missing KDocs`() {
-        val testComparatorUnit = TestComparatorUnit("test/paragraph2/kdoc") { text, fileName ->
-            KtLint.format(
-                KtLint.Params(
-                    text = text,
-                    ruleSets = listOf(RuleSet("huawei-codestyle", KdocMethods())),
-                    fileName = fileName,
-                    cb = { _, _ -> }
-                )
-            )
-        }
-
-        assertTrue(
-            testComparatorUnit
-                .compareFilesFromResources("EmptyKdocFixed.kt", "EmptyKdocTest.kt")
-        )
+        fixAndCompare("EmptyKdocFixed.kt", "EmptyKdocTest.kt")
     }
 }
