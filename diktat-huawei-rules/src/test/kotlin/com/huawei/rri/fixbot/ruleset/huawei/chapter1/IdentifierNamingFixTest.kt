@@ -1,42 +1,31 @@
 package com.huawei.rri.fixbot.ruleset.huawei.chapter1
 
 import com.huawei.rri.fixbot.ruleset.huawei.rules.IdentifierNaming
-import com.huawei.rri.fixbot.ruleset.huawei.utils.format
+import com.huawei.rri.fixbot.ruleset.huawei.utils.FixTestBase
 import config.rules.RulesConfig
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import test_framework.processing.TestComparatorUnit
 
-class IdentifierNamingFixTest {
+class IdentifierNamingFixTest : FixTestBase(
+    "test/paragraph1/naming",
+    IdentifierNaming(),
+    listOf(
+        RulesConfig("PACKAGE_NAME_INCORRECT", false, ""),
+        RulesConfig("PACKAGE_NAME_INCORRECT_PREFIX", false, "")
+    )
+) {
+
     @Test
     fun `incorrect class name (fix)`() {
-        assertThat(
-            TestComparatorUnit("test/paragraph1/naming/class_", ::format)
-                .compareFilesFromResources("IncorrectClassNameExpected.kt", "IncorrectClassNameTest.kt")
-        ).isEqualTo(true)
+        fixAndCompare("class_/IncorrectClassNameExpected.kt", "class_/IncorrectClassNameTest.kt")
     }
 
     @Test
     fun `incorrect object name (fix)`() {
-        assertThat(
-            TestComparatorUnit("test/paragraph1/naming/object_", ::format)
-                .compareFilesFromResources("IncorrectObjectNameExpected.kt", "IncorrectObjectNameTest.kt")
-        ).isEqualTo(true)
+        fixAndCompare("object_/IncorrectObjectNameExpected.kt", "object_/IncorrectObjectNameTest.kt")
     }
 
     @Test
     fun `incorrect enum values case (fix)`() {
-        assertThat(
-            TestComparatorUnit("test/paragraph1/naming/enum_", ::format)
-                .compareFilesFromResources("EnumValueCaseExpected.kt", "EnumValueCaseTest.kt")
-        ).isEqualTo(true)
-
+        fixAndCompare("enum_/EnumValueCaseExpected.kt", "enum_/EnumValueCaseTest.kt")
     }
-
-    private fun format(text: String, fileName: String): String = IdentifierNaming().format(text, fileName,
-        listOf(
-            RulesConfig("PACKAGE_NAME_INCORRECT", false, ""),
-            RulesConfig("PACKAGE_NAME_INCORRECT_PREFIX", false, "")
-        )
-    )
 }
