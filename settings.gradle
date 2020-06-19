@@ -8,7 +8,6 @@ include ':ktlint-reporter-html'
 include ':ktlint-reporter-plain'
 include ':ktlint-ruleset-experimental'
 include ':ktlint-ruleset-standard'
-include ':ktlint-ruleset-template'
 include ':ktlint-test'
 
 include ':diktat-test-framework'
