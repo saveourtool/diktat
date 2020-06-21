@@ -4,6 +4,7 @@ import com.huawei.rri.fixbot.ruleset.huawei.constants.Warnings
 import com.huawei.rri.fixbot.ruleset.huawei.utils.*
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.FUN_KEYWORD
@@ -20,10 +21,16 @@ import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
 /**
  * This rule checks that whenever the method has arguments, return value, can throw exceptions,
  * KDoc block should contain `@param`, `@return`, `@throws`.
- * Currently only methods with explicit return type are supported for `@return` check,
- * and only throws from this methods body for `@throws` check.
+ * For `@return` check methods with explicit return type are supported and methods with inferred return
+ * type are supported the following way: they should either declare return type `Unit` or have `@return` tag.
+ * Currently only `throw` keyword from this methods body is supported for `@throws` check.
  */
 class KdocMethods : Rule("kdoc-methods") {
+    // expression body of function can have a lot of 'ElementType's, this list might be not full
+    private val expressionBodyTypes = setOf(ElementType.BINARY_EXPRESSION, ElementType.CALL_EXPRESSION,
+        ElementType.LAMBDA_EXPRESSION, ElementType.REFERENCE_EXPRESSION, ElementType.CALLABLE_REFERENCE_EXPRESSION,
+        ElementType.SAFE_ACCESS_EXPRESSION, ElementType.WHEN_CONDITION_WITH_EXPRESSION,
+        ElementType.COLLECTION_LITERAL_EXPRESSION)
 
     private lateinit var confiRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
@@ -96,12 +103,13 @@ class KdocMethods : Rule("kdoc-methods") {
     }
 
     private fun checkReturnCheckFailed(node: ASTNode, kDocTags: Collection<KDocTag>?): Boolean {
-        // fixme: how to get return type for function with expression body?
         val explicitReturnType = node.getFirstChildWithType(TYPE_REFERENCE)
         val hasExplicitNotUnitReturnType = explicitReturnType != null && explicitReturnType.text != "Unit"
+        val hasExplicitUnitReturnType = explicitReturnType != null && explicitReturnType.text == "Unit"
+        val isFunWithExpressionBody = expressionBodyTypes.any { node.hasChildOfType(it) }
         val hasReturnKDoc = kDocTags != null && kDocTags.hasKnownKDocTag(KDocKnownTag.RETURN)
-        return hasExplicitNotUnitReturnType && !hasReturnKDoc
-
+        return (hasExplicitNotUnitReturnType || isFunWithExpressionBody && !hasExplicitUnitReturnType)
+            && !hasReturnKDoc
     }
 
     private fun checkThrowsCheckFailed(node: ASTNode, kDocTags: Collection<KDocTag>?): Boolean {

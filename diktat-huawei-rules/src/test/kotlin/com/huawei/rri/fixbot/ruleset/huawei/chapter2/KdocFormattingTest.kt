@@ -3,6 +3,7 @@ package com.huawei.rri.fixbot.ruleset.huawei.chapter2
 import com.huawei.rri.fixbot.ruleset.huawei.constants.Warnings.BLANK_LINE_AFTER_KDOC
 import com.huawei.rri.fixbot.ruleset.huawei.constants.Warnings.KDOC_NO_DEPRECATED_TAG
 import com.huawei.rri.fixbot.ruleset.huawei.constants.Warnings.KDOC_NO_EMPTY_TAGS
+import com.huawei.rri.fixbot.ruleset.huawei.constants.Warnings.KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS
 import com.huawei.rri.fixbot.ruleset.huawei.constants.Warnings.KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS
 import com.huawei.rri.fixbot.ruleset.huawei.constants.Warnings.KDOC_WRONG_SPACES_AFTER_TAG
 import com.huawei.rri.fixbot.ruleset.huawei.constants.Warnings.KDOC_WRONG_TAGS_ORDER
@@ -80,7 +81,7 @@ class KdocFormattingTest {
         """.trimIndent()
 
         lintMethod(KdocFormatting(), invalidCode, LintError(2, 4, "kdoc-formatting",
-        "${KDOC_NO_DEPRECATED_TAG.warnText()} @deprecated use foo instead"))
+            "${KDOC_NO_DEPRECATED_TAG.warnText()} @deprecated use foo instead"))
     }
 
     @Test
@@ -95,8 +96,8 @@ class KdocFormattingTest {
         """.trimIndent()
 
         lintMethod(KdocFormatting(), invalidCode,
-        LintError(3, 16, "kdoc-formatting",
-            "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
+            LintError(3, 16, "kdoc-formatting",
+                "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
             LintError(3, 16, "kdoc-formatting",
                 "${KDOC_WRONG_SPACES_AFTER_TAG.warnText()} @return", false))
     }
@@ -120,6 +121,7 @@ class KdocFormattingTest {
         val invalidCode = """
             /**
              * @param  a dummy int
+             * @param b   dummy int
              * @return  doubled value
              * @throws${'\t'}IllegalStateException
              */
@@ -130,8 +132,10 @@ class KdocFormattingTest {
             LintError(2, 16, "kdoc-formatting",
                 "${KDOC_WRONG_SPACES_AFTER_TAG.warnText()} @param", true),
             LintError(3, 16, "kdoc-formatting",
-                "${KDOC_WRONG_SPACES_AFTER_TAG.warnText()} @return", true),
+                "${KDOC_WRONG_SPACES_AFTER_TAG.warnText()} @param", true),
             LintError(4, 16, "kdoc-formatting",
+                "${KDOC_WRONG_SPACES_AFTER_TAG.warnText()} @return", true),
+            LintError(5, 16, "kdoc-formatting",
                 "${KDOC_WRONG_SPACES_AFTER_TAG.warnText()} @throws", true))
     }
 
@@ -163,6 +167,26 @@ class KdocFormattingTest {
         lintMethod(KdocFormatting(), invalidCode,
             LintError(2, 16, "kdoc-formatting",
                 "${KDOC_WRONG_TAGS_ORDER.warnText()} @return, @throws, @param", true))
+    }
+
+    @Test
+    fun `newlines are not allowed between basic tags`() {
+        val invalidCode = """
+            /**
+             * @param a dummy int
+             *
+             * @return doubled value
+
+             * @throws IllegalStateException
+             */
+             $funCode
+        """.trimIndent()
+
+        lintMethod(KdocFormatting(), invalidCode,
+            LintError(2, 16, "kdoc-formatting",
+                "${KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS.warnText()} @param", true),
+            LintError(4, 16, "kdoc-formatting",
+                "${KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS.warnText()} @return", true))
     }
 
     @Test
