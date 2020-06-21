@@ -57,7 +57,7 @@ class PackageNaming : Rule("package-naming") {
 
             // if node isLeaf - this means that there is no package name declared
             if (node.isLeaf()) {
-                checkMissingPackageName(node, realPackageName)
+                checkMissingPackageName(node, realPackageName, params.fileName!!)
                 return
             }
 
@@ -75,13 +75,15 @@ class PackageNaming : Rule("package-naming") {
     /**
      * checking and fixing the case when package directive is missing in the file
      */
-    private fun checkMissingPackageName(packageDirectiveNode: ASTNode, realPackageName: List<String>) {
-        PACKAGE_NAME_MISSING.warnAndFix(confiRules, emitWarn, isFixMode, "", packageDirectiveNode.startOffset) {
-            packageDirectiveNode.addChild(LeafPsiElement(PACKAGE_KEYWORD, PACKAGE_KEYWORD.toString()), null)
-            packageDirectiveNode.addChild(PsiWhiteSpaceImpl(" "), null)
-            createAndInsertPackageName(packageDirectiveNode, null, realPackageName)
-            packageDirectiveNode.addChild(PsiWhiteSpaceImpl("\n"), null)
-            packageDirectiveNode.addChild(PsiWhiteSpaceImpl("\n"), null)
+    private fun checkMissingPackageName(packageDirectiveNode: ASTNode, realPackageName: List<String>, fileName: String) {
+        PACKAGE_NAME_MISSING.warnAndFix(confiRules, emitWarn, isFixMode, fileName, packageDirectiveNode.startOffset) {
+            if (realPackageName.isNotEmpty()) {
+                packageDirectiveNode.addChild(LeafPsiElement(PACKAGE_KEYWORD, PACKAGE_KEYWORD.toString()), null)
+                packageDirectiveNode.addChild(PsiWhiteSpaceImpl(" "), null)
+                createAndInsertPackageName(packageDirectiveNode, null, realPackageName)
+                packageDirectiveNode.addChild(PsiWhiteSpaceImpl("\n"), null)
+                packageDirectiveNode.addChild(PsiWhiteSpaceImpl("\n"), null)
+            }
         }
     }
 
@@ -94,7 +96,7 @@ class PackageNaming : Rule("package-naming") {
 
         return if (filePathParts == null || !filePathParts.contains(PACKAGE_PATH_ANCHOR)) {
             log.error("Not able to determine a path to a scanned file or src directory cannot be found in it's path." +
-                " Will not be able to determine correct package name. It can happen due to missing <src> directory is missing")
+                " Will not be able to determine correct package name. It can happen due to missing <src> directory in the path")
             listOf()
         } else {
             // creating a real package name:

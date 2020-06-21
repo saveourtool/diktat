@@ -1,16 +1,18 @@
 plugins {
   id 'org.jetbrains.kotlin.jvm'
   id 'com.vanniktech.maven.publish'
+  id 'maven-publish'
 }
 
 dependencies {
   implementation project(':ktlint-core')
+  implementation project(":diktat-common")
+
   implementation deps.kotlin.stdlib
   implementation 'com.google.guava:guava:29.0-jre'
   implementation "org.slf4j:slf4j-api:1.7.5"
   implementation "org.slf4j:slf4j-log4j12:1.7.5"
 
-  implementation project(":diktat-common")
 
   testImplementation project(":diktat-test-framework")
   testImplementation project(':ktlint-test')
