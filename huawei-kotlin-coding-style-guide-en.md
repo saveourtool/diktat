@@ -501,7 +501,7 @@ Note the following when writing file header or comments for top-level classes:
 
 - Maintain a unified format. The specific format can be formulated by the project (for example in opensource), need to follow it.
 
-- In a top-level file Kdoc need to include copyrigth and functional description, especially if the number of top-level classes in a file is not equal to 1.
+- In a top-level file Kdoc need to include copyright and functional description, especially if the number of top-level classes in a file is not equal to 1.
 
 - It is forbidden to have empty comment blockst.
      As in the above example, if there is no content after the option `@apiNote`, the entire tag block should be deleted.

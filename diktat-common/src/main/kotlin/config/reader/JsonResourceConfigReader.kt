@@ -29,7 +29,7 @@ interface JsonResourceConfigReader<T> {
     }
 
     fun getConfigFile(resourceFileName: String): URL? {
-        return javaClass.classLoader.getResource(resourceFileName);
+        return javaClass.classLoader.getResource(resourceFileName)
     }
 
     fun parseResource(file: File): T
