@@ -9,15 +9,21 @@ import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_LEADING_ASTERISK
+import com.pinterest.ktlint.core.ast.ElementType.KDOC_SECTION
+import com.pinterest.ktlint.core.ast.ElementType.KDOC_TAG
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_TAG_NAME
+import com.pinterest.ktlint.core.ast.ElementType.KDOC_TEXT
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.nextSibling
 import com.pinterest.ktlint.core.ast.prevSibling
 import config.rules.RulesConfig
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
+import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
 import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
+import org.jetbrains.kotlin.psi.psiUtil.startOffset
 
 /**
  * Formatting visitor for Kdoc:
@@ -28,6 +34,8 @@ import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
  * 5) ensuring tags @param, @return, @throws are arranged in this order
  */
 class KdocFormatting : Rule("kdoc-formatting") {
+    private val basicTagsList = listOf(KDocKnownTag.PARAM, KDocKnownTag.RETURN, KDocKnownTag.THROWS)
+    private val specialTagNames = setOf("implSpec", "implNote", "apiNote")
 
     private lateinit var confiRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
@@ -49,12 +57,11 @@ class KdocFormatting : Rule("kdoc-formatting") {
         }
 
         if (node.elementType == KDOC) {
-            val kDocTags = node.kDocTags()
-
-            checkNoDeprecatedTag(kDocTags)
-            checkEmptyTags(kDocTags)
-            checkSpaceAfterTag(kDocTags)
-            checkBasicTagsOrder(node, kDocTags)
+            checkNoDeprecatedTag(node)
+            checkEmptyTags(node.kDocTags())
+            checkSpaceAfterTag(node.kDocTags())
+            checkEmptyLinesAfterBasicTags(node)
+            checkBasicTagsOrder(node)
             checkNewLineAfterSpecialTags(node)
         }
     }
@@ -70,12 +77,21 @@ class KdocFormatting : Rule("kdoc-formatting") {
         }
     }
 
-    private fun checkNoDeprecatedTag(kDocTags: Collection<KDocTag>?) {
+    private fun checkNoDeprecatedTag(node: ASTNode) {
+        val kDocTags = node.kDocTags()
         kDocTags?.find { it.name == "deprecated" }
-            ?.let {
-                // fixme possible fix would be to remove tag and add annotation, but description should be kept
-                //  also annotation supports different fields, which ideally should be properly filled
-                KDOC_NO_DEPRECATED_TAG.warn(confiRules, emitWarn, isFixMode, it.text, it.node.startOffset)
+            ?.let { kDocTag ->
+                KDOC_NO_DEPRECATED_TAG.warnAndFix(confiRules, emitWarn, isFixMode, kDocTag.text, kDocTag.node.startOffset) {
+                    val kDocSection = kDocTag.node.treeParent
+                    val deprecatedTagNode = kDocSection.getChildren(TokenSet.create(KDOC_TAG))
+                        .find { "@deprecated" in it.text }!!
+                    kDocSection.removeRange(deprecatedTagNode.prevSibling { it.elementType == WHITE_SPACE }!!,
+                        deprecatedTagNode.nextSibling { it.elementType == WHITE_SPACE }
+                    )
+                    node.treeParent.addChild(LeafPsiElement(ElementType.ANNOTATION,
+                        "@Deprecated(message = \"${kDocTag.getContent()}\")"), node.treeNext)
+                    node.treeParent.addChild(node.nextSibling { it.elementType == WHITE_SPACE }!!.copyElement(), node.treeNext)  // copy to get all necessary indentatios
+                }
             }
     }
 
@@ -88,30 +104,42 @@ class KdocFormatting : Rule("kdoc-formatting") {
     }
 
     private fun checkSpaceAfterTag(kDocTags: Collection<KDocTag>?) {
-        kDocTags?.filter {
-            it.node.findChildAfter(KDOC_TAG_NAME, WHITE_SPACE)?.text != " "
-        }?.forEach {
+        // tags can have 'parameters' and content, either can be missing
+        // we always can find white space after tag name, but after tag parameters only if content is present
+        kDocTags?.filter { tag ->
+            tag.node.findChildBefore(KDOC_TEXT, WHITE_SPACE)?.let { it.text != " " } ?: false
+                || tag.node.findChildAfter(KDOC_TAG_NAME, WHITE_SPACE)?.text != " "
+        }?.forEach { tag ->
             KDOC_WRONG_SPACES_AFTER_TAG.warnAndFix(confiRules, emitWarn, isFixMode,
-                "@${it.name!!}", it.node.startOffset) {
-                val whitespaceNode = it.node.findChildAfter(KDOC_TAG_NAME, WHITE_SPACE)
-                if (whitespaceNode != null) {
-                    it.node.replaceChild(whitespaceNode, LeafPsiElement(WHITE_SPACE, " "))
-                }
+                "@${tag.name!!}", tag.node.startOffset) {
+                tag.node.findChildBefore(KDOC_TEXT, WHITE_SPACE)
+                    ?.let { tag.node.replaceChild(it, LeafPsiElement(WHITE_SPACE, " ")) }
+                tag.node.findChildAfter(KDOC_TAG_NAME, WHITE_SPACE)
+                    ?.let { tag.node.replaceChild(it, LeafPsiElement(WHITE_SPACE, " ")) }
             }
         }
     }
 
-    private fun checkBasicTagsOrder(node: ASTNode, kDocTags: Collection<KDocTag>?) {
-        // basic tags which are present in current KDoc, in proper order
-        val basicTagsOrdered = listOf(KDocKnownTag.PARAM, KDocKnownTag.RETURN, KDocKnownTag.THROWS)
-            .filter { basicTag -> kDocTags?.find { it.knownTag == basicTag } != null }
+    private fun checkBasicTagsOrder(node: ASTNode) {
+        val kDocTags = node.kDocTags()
+        // distinct basic tags which are present in current KDoc, in proper order
+        val basicTagsOrdered = basicTagsList.filter { basicTag ->
+            kDocTags?.find { it.knownTag == basicTag } != null
+        }
+        // all basic tags from curent KDoc
         val basicTags = kDocTags?.filter { basicTagsOrdered.contains(it.knownTag) }
-        val isTagsInCorrectOrder = basicTags?.map { it.knownTag }?.equals(basicTagsOrdered)
+        val isTagsInCorrectOrder = basicTags
+            ?.fold(mutableListOf<KDocTag>()) { acc, kDocTag ->
+                if (acc.size > 0 && acc.last().knownTag != kDocTag.knownTag) acc.add(kDocTag)
+                else if (acc.size == 0) acc.add(kDocTag)
+                acc
+            }
+            ?.map { it.knownTag }?.equals(basicTagsOrdered)
 
         if (kDocTags != null && !isTagsInCorrectOrder!!) {
             KDOC_WRONG_TAGS_ORDER.warnAndFix(confiRules, emitWarn, isFixMode,
                 basicTags.joinToString(", ") { "@${it.name}" }, basicTags.first().node.startOffset) {
-                val kDocSection = node.getFirstChildWithType(ElementType.KDOC_SECTION)!!
+                val kDocSection = node.getFirstChildWithType(KDOC_SECTION)!!
                 val basicTagChildren = kDocTags
                     .filter { basicTagsOrdered.contains(it.knownTag) }
                     .map { it.node }
@@ -125,11 +153,33 @@ class KdocFormatting : Rule("kdoc-formatting") {
         }
     }
 
-    private fun checkNewLineAfterSpecialTags(node: ASTNode) {
-        val specialTagNames = listOf("implSpec", "implNote", "apiNote")
+    private fun checkEmptyLinesAfterBasicTags(node: ASTNode) {
+        val kDocTags = node.kDocTags()
+        val basicTags = kDocTags?.filter { basicTagsList.contains(it.knownTag) }
 
-        val presentSpecialTagNodes = node.getFirstChildWithType(ElementType.KDOC_SECTION)
-            ?.getAllChildrenWithType(ElementType.KDOC_TAG)
+        val tagsWithRedundantEmptyLines = basicTags?.dropLast(1)?.filterNot { tag ->
+            val nextWhiteSpace = tag.node.nextSibling { it.elementType == WHITE_SPACE }
+            val noEmptyKdocLines = tag.node.getChildren(TokenSet.create(KDOC_LEADING_ASTERISK))
+                .filter { it.treeNext == null || it.treeNext.elementType == WHITE_SPACE }
+                .count() == 0
+            nextWhiteSpace?.text?.count { it == '\n' } == 1 && noEmptyKdocLines
+        }
+
+        tagsWithRedundantEmptyLines?.forEach { tag ->
+            KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS.warnAndFix(confiRules, emitWarn, isFixMode,
+                "@${tag.name}", tag.startOffset) {
+                tag.node.nextSibling { it.elementType == WHITE_SPACE }?.leaveOnlyOneNewLine()
+                // the first asterisk before tag is not included inside KDOC_TAG node
+                // we look for the second and take its previous which should be WHITE_SPACE with newline
+                tag.node.getAllChildrenWithType(KDOC_LEADING_ASTERISK).firstOrNull()
+                    ?.let { tag.node.removeRange(it.treePrev, null) }
+            }
+        }
+    }
+
+    private fun checkNewLineAfterSpecialTags(node: ASTNode) {
+        val presentSpecialTagNodes = node.getFirstChildWithType(KDOC_SECTION)
+            ?.getAllChildrenWithType(KDOC_TAG)
             ?.filter { (it.psi as KDocTag).name in specialTagNames }
 
         val poorlyFormattedTagNodes = presentSpecialTagNodes?.filterNot { specialTagNode ->
