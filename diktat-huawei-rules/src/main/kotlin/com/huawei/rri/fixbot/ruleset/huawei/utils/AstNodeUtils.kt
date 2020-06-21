@@ -64,8 +64,19 @@ fun ASTNode.hasAnyChildOfTypes(vararg elementType: IElementType): Boolean =
 /**
  *
  */
-fun ASTNode.findChildBefore(beforeThisNodeType: IElementType, childNodeType: IElementType) =
-    this.findChildAfter(childNodeType, beforeThisNodeType)
+fun ASTNode.findChildBefore(beforeThisNodeType: IElementType, childNodeType: IElementType): ASTNode? {
+    val anchorNode = getChildren(null).find { it.elementType == beforeThisNodeType }
+    getChildren(null).toList().let {
+        if (anchorNode != null)
+            it.subList(0, it.indexOf(anchorNode))
+        else it
+    }.reversed()
+        .find { it.elementType == childNodeType }
+        ?.let { return it }
+
+    log.warn("Not able to find a node with type $childNodeType before $beforeThisNodeType")
+    return null
+}
 
 /**
  * method that is trying to find and return FIRST node that matches these conditions:
@@ -85,7 +96,7 @@ fun ASTNode.findChildAfter(afterThisNodeType: IElementType, childNodeType: IElem
         }
     }
 
-    log.warn("Not able to find a node with type ${childNodeType} after ${afterThisNodeType}")
+    log.warn("Not able to find a node with type $childNodeType after $afterThisNodeType")
     return null
 }
 

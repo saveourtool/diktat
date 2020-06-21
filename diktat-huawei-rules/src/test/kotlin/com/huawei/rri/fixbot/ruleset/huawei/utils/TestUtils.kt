@@ -24,7 +24,9 @@ internal fun Rule.format(text: String, fileName: String,
             ruleSets = listOf(RuleSet("huawei-codestyle", this@format)),
             fileName = fileName,
             rulesConfigList = rulesConfigList,
-            cb = { _, _ -> }
+            cb = { lintError, _ ->
+                log.warn("Received linting error: $lintError")
+            }
         )
     )
 }

@@ -113,6 +113,30 @@ class KdocSignatureTest {
     }
 
     @Test
+    fun `All methods with expression body should have @return tag or explicitly set return type to Unit`() {
+        val kdocWithoutReturn = """
+            /**
+            * Test method
+            * @param a - dummy integer
+            * @throws IllegalStateException
+            */
+        """.trimIndent()
+
+        val invalidCode = """
+            $kdocWithoutReturn
+            fun foo(a: Int) = bar(2 * a)
+
+            $kdocWithoutReturn
+            fun bar(a: Int): Unit = this.list.add(a)
+
+            private val list = mutableListOf<Int>()
+        """.trimIndent()
+
+        lintMethod(KdocMethods(), invalidCode, LintError(1, 13, "kdoc-methods",
+            "${KDOC_WITHOUT_RETURN_TAG.warnText()} "))
+    }
+
+    @Test
     fun `All methods with throw in method body should have @throws KDoc`() {
         val invalidKDoc = """
             /**
