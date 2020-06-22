@@ -1,0 +1,3 @@
+rootProject.name = 'ktlint'
+
+include ':diktat-test-framework'

@@ -11,6 +11,6 @@ include ':ktlint-ruleset-standard'
 include ':ktlint-test'
 
 include ':diktat-test-framework'
-include ':diktat-huawei-rules'
+include ':diktat-rules'
 include ':diktat-common'
 
