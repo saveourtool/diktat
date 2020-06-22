@@ -29,7 +29,7 @@ dependencies {
   implementation project(':ktlint-ruleset-standard')
   implementation project(':ktlint-test')
   implementation project(":diktat-common")
-  implementation project(':diktat-huawei-rules')
+  implementation project(':diktat-rules')
 
   implementation deps.kotlin.stdlib
   implementation deps.kotlin.compiler
