@@ -2,96 +2,103 @@
   {
     "name": "CLASS_NAME_INCORRECT",
     "enabled": true,
-    "configuration": ""
+    "configuration": {}
   },
   {
     "name": "CONSTANT_UPPERCASE",
     "enabled": true,
-    "configuration": ""
+    "configuration": {}
   },
   {
     "name": "ENUM_VALUE",
     "enabled": true,
-    "configuration": ""
+    "configuration": {}
   },
   {
     "name": "EXCEPTION_SUFFIX",
     "enabled": true,
-    "configuration": ""
+    "configuration": {}
   },
   {
     "name": "FILE_NAME_INCORRECT",
     "enabled": true,
-    "configuration": ""
+    "configuration": {}
   },
   {
     "name": "FILE_NAME_MATCH_CLASS",
     "enabled": true,
-    "configuration": ""
+    "configuration": {}
   },
   {
     "name": "FUNCTION_BOOLEAN_PREFIX",
     "enabled": true,
-    "configuration": ""
+    "configuration": {}
   },
   {
     "name": "FUNCTION_NAME_INCORRECT_CASE",
     "enabled": true,
-    "configuration": ""
+    "configuration": {}
   },
   {
     "name": "GENERIC_NAME",
     "enabled": true,
-    "configuration": ""
+    "configuration": {}
   },
   {
     "name": "IDENTIFIER_LENGTH",
     "enabled": true,
-    "configuration": ""
+    "configuration": {}
   },
   {
     "name": "OBJECT_NAME_INCORRECT",
     "enabled": true,
-    "configuration": ""
+    "configuration": {}
   },
   {
     "name": "PACKAGE_NAME_INCORRECT",
     "enabled": true,
-    "configuration": ""
+    "configuration": {}
   },
   {
     "name": "PACKAGE_NAME_INCORRECT_CASE",
     "enabled": true,
-    "configuration": ""
+    "configuration": {}
   },
   {
     "name": "PACKAGE_NAME_INCORRECT_PREFIX",
     "enabled": true,
-    "configuration": ""
+    "configuration": {}
   },
   {
     "name": "PACKAGE_NAME_INCORRECT_SYMBOLS",
     "enabled": true,
-    "configuration": ""
+    "configuration": {}
   },
   {
     "name": "PACKAGE_NAME_MISSING",
     "enabled": true,
-    "configuration": ""
+    "configuration": {}
   },
   {
     "name": "VARIABLE_HAS_PREFIX",
     "enabled": true,
-    "configuration": ""
+    "configuration": {}
   },
   {
     "name": "VARIABLE_NAME_INCORRECT",
     "enabled": true,
-    "configuration": ""
+    "configuration": {}
   },
   {
     "name": "VARIABLE_NAME_INCORRECT_FORMAT",
     "enabled": true,
-    "configuration": ""
+    "configuration": {}
+  },
+  {
+    "name": "HEADER_MISSING_OR_WRONG_COPYRIGHT",
+    "enabled": true,
+    "configuration": {
+      "isCopyrightMandatory": true
+    }
   }
 ]
