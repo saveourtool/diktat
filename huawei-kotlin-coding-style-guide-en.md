@@ -444,6 +444,30 @@ This is how Kdoc should look like and what it should contain:
   If the description of a tag block cannot fit a single line and is split to several lines, then the content of the new line should be indented by 4 spaces from the '@' position to align ('@' itself counts as 1, plus 3).
   **Exception: ** When the description text in a tag block is too long to wrap, it is also possible to indent the alignment with the previous line of description text.
    The description text of multiple tags does not need to be aligned, see [Recommendation 3.8 should not insert spaces horizontally aligned] (#s3.8).     
+
+In Kotlin compared to Java you are able to put several classes inside one file so each class should have a Kdoc 
+formatted comment (this is also stated in rule 2.1).
+This comment should contain @since tag. The good style is to write the version when this functionality was released after a since tag.
+Examples：
+
+```java
+/**
+ * Description of functionality
+ *
+ * @since 1.6
+ */
+```
+
+Other KDoc tags (such as @param type parameters, @see, etc.) can be added as follow:
+```java
+/**
+ * Description of functionality
+ *
+ * @apiNote: 特别需要注意的信息
+ *
+ * @since 1.6
+ */
+```
 ## <a name="c2.2"></a>Comments to the file header
 
 ### <a name="r2.4"></a>Rule 2.4 The file header comments must include copyright information, should NOT contain creation date and author name (it is antipattern - use VCS for history management). Files that contain multiple or no classes should also contain some description of what is inside of this file.
@@ -469,29 +493,6 @@ Example of a minimal Copyright comment without other functional comments:
 ```java
 /*
  * Copyright (c) Huawei Technologies Co., Ltd. 2012-2018. All rights reserved.
- */
-```
-
-In Kotlin compared to Java you are able to put several classes inside one file so each class should have a Kdoc formatted comment.
-This comment should contain @since tag. The good style is to write the version when this functionality was released after a since tag.
-Examples：
-
-```java
-/**
- * Description of functionality
- *
- * @since 1.6
- */
-```
-
-Other KDoc tags (such as @param type parameters, @see, etc.) can be added as follow:
-```java
-/**
- * Description of functionality
- *
- * @apiNote: 特别需要注意的信息
- *
- * @since 1.6
  */
 ```
 
