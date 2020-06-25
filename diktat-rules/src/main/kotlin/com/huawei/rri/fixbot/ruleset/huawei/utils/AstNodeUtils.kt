@@ -10,7 +10,6 @@ import com.pinterest.ktlint.core.ast.ElementType.PROTECTED_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PUBLIC_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isLeaf
-import org.jetbrains.kotlin.com.google.common.base.Preconditions
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
@@ -146,6 +145,7 @@ fun ASTNode.getAllLLeafsWithSpecificType(elementType: IElementType, result: Muta
 
 /**
  * This util method does tree traversal and returns first node that matches specific type
+ * This node isn't necessarily a leaf though method name implies it
  */
 fun ASTNode.findLeafWithSpecificType(elementType: IElementType): ASTNode? {
     if (this.elementType == elementType) return this
@@ -156,6 +156,16 @@ fun ASTNode.findLeafWithSpecificType(elementType: IElementType): ASTNode? {
         if (result != null) return result
     }
     return null
+}
+
+/**
+ * This method performs tree traversal and returns all nodes with specific element type
+ */
+fun ASTNode.findAllNodesWithSpecificType(elementType: IElementType): List<ASTNode> {
+    val initialAcc = if (this.elementType == elementType) mutableListOf(this) else mutableListOf()
+    return initialAcc + this.getChildren(null).flatMap {
+        it.findAllNodesWithSpecificType(elementType)
+    }
 }
 
 /**

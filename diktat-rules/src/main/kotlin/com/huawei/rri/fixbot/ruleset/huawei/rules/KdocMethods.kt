@@ -1,7 +1,18 @@
 package com.huawei.rri.fixbot.ruleset.huawei.rules
 
-import com.huawei.rri.fixbot.ruleset.huawei.constants.Warnings
-import com.huawei.rri.fixbot.ruleset.huawei.utils.*
+import com.huawei.rri.fixbot.ruleset.huawei.constants.Warnings.KDOC_WITHOUT_PARAM_TAG
+import com.huawei.rri.fixbot.ruleset.huawei.constants.Warnings.KDOC_WITHOUT_RETURN_TAG
+import com.huawei.rri.fixbot.ruleset.huawei.constants.Warnings.KDOC_WITHOUT_THROWS_TAG
+import com.huawei.rri.fixbot.ruleset.huawei.constants.Warnings.MISSING_KDOC_ON_FUNCTION
+import com.huawei.rri.fixbot.ruleset.huawei.utils.findAllNodesWithSpecificType
+import com.huawei.rri.fixbot.ruleset.huawei.utils.getFirstChildWithType
+import com.huawei.rri.fixbot.ruleset.huawei.utils.getIdentifierName
+import com.huawei.rri.fixbot.ruleset.huawei.utils.hasChildOfType
+import com.huawei.rri.fixbot.ruleset.huawei.utils.hasKnownKDocTag
+import com.huawei.rri.fixbot.ruleset.huawei.utils.insertTagBefore
+import com.huawei.rri.fixbot.ruleset.huawei.utils.isAccessibleOutside
+import com.huawei.rri.fixbot.ruleset.huawei.utils.kDocTags
+import com.huawei.rri.fixbot.ruleset.huawei.utils.parameterNames
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
@@ -9,12 +20,17 @@ import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.FUN_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
+import com.pinterest.ktlint.core.ast.ElementType.KDOC_TAG_NAME
+import com.pinterest.ktlint.core.ast.ElementType.KDOC_TEXT
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
-import com.pinterest.ktlint.core.ast.ElementType.THROW_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.THROW
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
+import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.prevSibling
 import config.rules.RulesConfig
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
+import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
 import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
 
@@ -56,36 +72,73 @@ class KdocMethods : Rule("kdoc-methods") {
 
         val missingParameters = getMissingParameters(node, kDocTags)
 
+        val explicitlyThrownExceptions = getExplicitlyThrownExceptions(node)
+        val missingExceptions = explicitlyThrownExceptions
+            .minus(kDocTags
+                ?.filter { it.knownTag == KDocKnownTag.THROWS }
+                ?.map { it.getSubjectName() }
+                ?.toSet() ?: setOf()
+            )
+
         val paramCheckFailed = missingParameters.isNotEmpty()
         val returnCheckFailed = checkReturnCheckFailed(node, kDocTags)
-        val throwsCheckFailed = checkThrowsCheckFailed(node, kDocTags)
+        val throwsCheckFailed = missingExceptions.isNotEmpty()
 
+        val name = node.getIdentifierName()!!.text
         if (paramCheckFailed) {
-            Warnings.KDOC_WITHOUT_PARAM_TAG.warnAndFix(confiRules, emitWarn, isFixMode, missingParameters.joinToString(), node.startOffset) {
-                // FixMe: add separate fix here if any parameter is missing
+            KDOC_WITHOUT_PARAM_TAG.warnAndFix(confiRules, emitWarn, isFixMode,
+                "$name (${missingParameters.joinToString()})", node.startOffset) {
+                val beforeTag = kDocTags?.find { it.knownTag == KDocKnownTag.RETURN }
+                     ?: kDocTags?.find { it.knownTag == KDocKnownTag.THROWS }
+                missingParameters.forEach {
+                    kDoc?.insertTagBefore(beforeTag?.node) {
+                        addChild(LeafPsiElement(KDOC_TAG_NAME, "@param"))
+                        addChild(PsiWhiteSpaceImpl(" "))
+                        addChild(LeafPsiElement(KDOC_TEXT, it))
+                    }
+                }
             }
         }
         if (returnCheckFailed) {
-            Warnings.KDOC_WITHOUT_RETURN_TAG.warnAndFix(confiRules, emitWarn, isFixMode, "", node.startOffset) {
-                // FixMe: add separate fix here if any return tag is missing
+            KDOC_WITHOUT_RETURN_TAG.warnAndFix(confiRules, emitWarn, isFixMode, name, node.startOffset) {
+                val beforeTag = kDocTags?.find { it.knownTag == KDocKnownTag.THROWS }
+                kDoc?.insertTagBefore(beforeTag?.node) {
+                    addChild(LeafPsiElement(KDOC_TAG_NAME, "@return"))
+                }
             }
         }
         if (throwsCheckFailed) {
-            Warnings.KDOC_WITHOUT_THROWS_TAG.warnAndFix(confiRules, emitWarn, isFixMode, "", node.startOffset) {
-                // FixMe: add separate fix here if throws tag is missing
+            KDOC_WITHOUT_THROWS_TAG.warnAndFix(confiRules, emitWarn, isFixMode,
+                "$name (${missingExceptions.joinToString()})", node.startOffset) {
+                explicitlyThrownExceptions.forEach {
+                    kDoc?.insertTagBefore(null) {
+                        addChild(LeafPsiElement(KDOC_TAG_NAME, "@throws"))
+                        addChild(LeafPsiElement(KDOC_TEXT, " "))
+                        addChild(LeafPsiElement(KDOC_TEXT, it))
+                    }
+                }
             }
         }
 
-        if (kDoc == null && isFixMode) {
-            val kDocTemplate = "/**\n" +
-                missingParameters.joinToString("") { " * @param $it\n" } +
-                (if (returnCheckFailed) " * @return\n" else "") +
-                (if (throwsCheckFailed) " * @throws\n" else "") +
-                " */\n"
+        // if no tag failed, we have too little information to suggest KDoc - it would just be empty
+        val anyTagFailed = paramCheckFailed || returnCheckFailed || throwsCheckFailed
+        if (kDoc == null && anyTagFailed) {
+            MISSING_KDOC_ON_FUNCTION.warnAndFix(confiRules, emitWarn, isFixMode,
+                node.getIdentifierName()!!.text, node.startOffset) {
+                val indent = node.prevSibling { it.elementType == WHITE_SPACE }?.text
+                    ?.substringAfterLast("\n")?.count { it == ' ' } ?: 0
+                val kDocTemplate = "/**\n" +
+                    (missingParameters.joinToString("") { " * @param $it\n" } +
+                        (if (returnCheckFailed) " * @return\n" else "") +
+                        explicitlyThrownExceptions.joinToString("") { " * @throws $it\n" } +
+                        " */\n"
+                        ).prependIndent(" ".repeat(indent))
 
-            // we must ensure that KDoc is inserted before `fun` keyword
-            val methodNode = node.getFirstChildWithType(FUN_KEYWORD)
-            node.addChild(LeafPsiElement(KDOC, kDocTemplate), methodNode)
+                // we must ensure that KDoc is inserted before `fun` keyword
+                val methodNode = node.getFirstChildWithType(FUN_KEYWORD)
+                // fixme could be added as proper CompositeElement
+                node.addChild(LeafPsiElement(KDOC, kDocTemplate), methodNode)
+            }
         }
     }
 
@@ -112,10 +165,13 @@ class KdocMethods : Rule("kdoc-methods") {
             && !hasReturnKDoc
     }
 
-    private fun checkThrowsCheckFailed(node: ASTNode, kDocTags: Collection<KDocTag>?): Boolean {
+    private fun getExplicitlyThrownExceptions(node: ASTNode): Set<String> {
         val codeBlock = node.getFirstChildWithType(BLOCK)
-        val hasThrowInMethodBody = codeBlock != null && codeBlock.findLeafWithSpecificType(THROW_KEYWORD) != null
-        val hasThrowsInKdoc = kDocTags != null && kDocTags.hasKnownKDocTag(KDocKnownTag.THROWS)
-        return hasThrowInMethodBody && !hasThrowsInKdoc
+        val throwKeywords = codeBlock?.findAllNodesWithSpecificType(THROW)
+        return throwKeywords?.map {
+            // fixme probably `throws` can have other expression types
+            it.findChildByType(ElementType.CALL_EXPRESSION)
+                ?.findChildByType(ElementType.REFERENCE_EXPRESSION)?.text!!
+        }?.toSet() ?: setOf()
     }
 }
