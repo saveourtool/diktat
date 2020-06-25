@@ -46,9 +46,13 @@ enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean
     KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS(29, true, "in KDoc there should be exactly one empty line after special tags"),
     KDOC_NO_EMPTY_TAGS(30, false, "no empty descriptions in tag blocks are allowed"),
     KDOC_NO_DEPRECATED_TAG(31, true, "KDoc doesn't support @deprecated tag, use @Deprecated annotation instead"),
+    HEADER_WRONG_FORMAT(32, true, "file header comments should be properly formatted"),
+    HEADER_MISSING_OR_WRONG_COPYRIGHT(33, true, "file header comment must include copyright information inside a block comment"),
+    HEADER_CONTAINS_DATE_OR_AUTHOR(34, false, "file header comment should not contain creation date and author name"),
+    HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE(35, false, "files that contain multiple or no classes should contain description of what is inside of this file"),
 
     // ====== incorrect place and warn number ====
-    INCORRECT_PACKAGE_SEPARATOR(32, true, "package name parts should be separated only by dots - there should be no other symbols like underscores (_)")
+    INCORRECT_PACKAGE_SEPARATOR(36, true, "package name parts should be separated only by dots - there should be no other symbols like underscores (_)")
     ;
 
     override fun ruleName(): String = this.name
