@@ -17,8 +17,11 @@ interface Rule {
 data class RulesConfig(
     var name: String,
     var enabled: Boolean,
-    var configuration: String
+    var configuration: Map<String, String>
 )
+
+abstract class RuleConfiguration(protected val config: Map<String, String>)
+object EmptyConfiguration: RuleConfiguration(mapOf())
 
 /**
  * class returns the list of configurations that we have read from a json: rules-config.json

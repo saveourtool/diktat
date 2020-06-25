@@ -9,8 +9,8 @@ class IdentifierNamingFixTest : FixTestBase(
     "test/paragraph1/naming",
     IdentifierNaming(),
     listOf(
-        RulesConfig("PACKAGE_NAME_INCORRECT", false, ""),
-        RulesConfig("PACKAGE_NAME_INCORRECT_PREFIX", false, "")
+        RulesConfig("PACKAGE_NAME_INCORRECT", false, mapOf()),
+        RulesConfig("PACKAGE_NAME_INCORRECT_PREFIX", false, mapOf())
     )
 ) {
 
