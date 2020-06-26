@@ -1,6 +1,6 @@
-package com.huawei.some
+package org.diktat.some
 
-import com.huawei.ktlint.core.Rule
+import org.diktat.ktlint.core.Rule
 
 class TestPackageName {
 }

@@ -4,7 +4,7 @@ import com.github.shyiko.klob.Glob
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.RuleSet
-import config.rules.RulesConfig
+import org.diktat.common.config.rules.RulesConfig
 import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths

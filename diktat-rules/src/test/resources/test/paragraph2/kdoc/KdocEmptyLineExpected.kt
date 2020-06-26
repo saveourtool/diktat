@@ -1,4 +1,4 @@
-package com.huawei.test.resources.test.paragraph2.kdoc
+package org.diktat.test.resources.test.paragraph2.kdoc
 
 /**
  * declaration for some constant

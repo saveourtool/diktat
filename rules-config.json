@@ -77,7 +77,9 @@
   {
     "name": "PACKAGE_NAME_MISSING",
     "enabled": true,
-    "configuration": {}
+    "configuration": {
+      "domainName": "org.diktat"
+    }
   },
   {
     "name": "VARIABLE_HAS_PREFIX",

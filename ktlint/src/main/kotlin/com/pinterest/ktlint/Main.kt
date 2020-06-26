@@ -21,7 +21,7 @@ import com.pinterest.ktlint.internal.lintFile
 import com.pinterest.ktlint.internal.location
 import com.pinterest.ktlint.internal.printHelpOrVersionUsage
 import com.pinterest.ktlint.reporter.plain.internal.Color
-import config.rules.RulesConfigReader
+import org.diktat.common.config.rules.RulesConfigReader
 import java.io.File
 import java.io.IOException
 import java.io.PrintStream

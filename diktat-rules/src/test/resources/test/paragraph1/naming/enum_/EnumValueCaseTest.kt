@@ -1,4 +1,4 @@
-package com.huawei.test.resources.test.paragraph1.naming.enum_
+package org.diktat.test.resources.test.paragraph1.naming.enum_
 
 enum class EnumValueCaseTest {
     paSC_SAl_l,
