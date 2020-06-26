@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>diktat-rules</artifactId>
     <name>diktat-rules</name>
-    <description>The ruleset with Huawei specific rules</description>
+    <description>The main diktat ruleset</description>
 
     <parent>
         <groupId>org.diktat</groupId>

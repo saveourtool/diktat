@@ -1,4 +1,4 @@
-package com.huawei.test.paragraph1.naming.generic
+package org.diktat.test.paragraph1.naming.generic
 
 private class ClassName<T> {
     private fun <Template, T> lock(body: ((Template?) -> T?)?, value: Template?): T? {

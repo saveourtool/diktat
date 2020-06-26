@@ -2,7 +2,7 @@ package com.pinterest.ktlint.core
 
 import com.pinterest.ktlint.core.ast.prevLeaf
 import com.pinterest.ktlint.core.internal.EditorConfigInternal
-import config.rules.RulesConfig
+import org.diktat.common.config.rules.RulesConfig
 import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths

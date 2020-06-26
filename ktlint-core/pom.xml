@@ -24,7 +24,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.huawei</groupId>
+            <groupId>org.diktat</groupId>
             <artifactId>diktat-common</artifactId>
             <version>${parent.version}</version>
         </dependency>
