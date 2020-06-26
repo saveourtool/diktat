@@ -1,4 +1,4 @@
-package com.huawei.test.resources.test.paragraph1.naming.object_
+package org.diktat.test.resources.test.paragraph1.naming.object_
 
 object PaScalCase1 {}
 object Pascal_Case2 {}

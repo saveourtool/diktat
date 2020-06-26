@@ -1,4 +1,4 @@
-package com.huawei.test.paragraph1.naming.class_
+package org.diktat.test.paragraph1.naming.class_
 
 class PaScalCase1 {}
 class PascalCase2 {}

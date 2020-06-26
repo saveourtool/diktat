@@ -1,6 +1,6 @@
-package /* AAAAAA */    com.huawei.ktlint.ruleset.standarddd
+package /* AAAAAA */    org.diktat.ktlint.ruleset.standarddd
 
-import com.huawei.ktlint.CORE.Rule
+import org.diktat.ktlint.CORE.Rule
 
 
 /**

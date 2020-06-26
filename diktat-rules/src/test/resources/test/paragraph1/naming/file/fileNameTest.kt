@@ -1,4 +1,4 @@
-package com.huawei.resources.test.paragraph1.naming.file.resources.test.paragraph1.naming.file.naming.file
+package org.diktat.resources.test.paragraph1.naming.file.resources.test.paragraph1.naming.file.naming.file
 
 fun foo () {
 
