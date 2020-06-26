@@ -1,6 +1,6 @@
-package com.huawei.ktlint.ruleset.standarddd
+package org.diktat.ktlint.ruleset.standarddd
 
-import com.huawei.ktlint.CORE.Rule
+import org.diktat.ktlint.CORE.Rule
 
 /**
  * Alphabetical with capital letters before lower case letters (e.g. Z before a).

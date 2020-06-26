@@ -1,4 +1,4 @@
-package com.huawei.ktlint.ruleset
+package org.diktat.ktlint.ruleset
 
 import com.sun.org.apache.xpath.internal.operations.Bool
 

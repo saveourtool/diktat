@@ -1,1 +1,1 @@
-com.huawei.rri.fixbot.ruleset.huawei.rules.HuaweiRuleSetProvider
+org.diktat.ruleset.rules.DiktatRuleSetProvider

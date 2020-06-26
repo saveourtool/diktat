@@ -1,6 +1,6 @@
 package /* AAAAAA */    buggy.path
 
-import com.huawei.ktlint.core.Rule
+import org.diktat.ktlint.core.Rule
 
 class TestPackageName {
 }
