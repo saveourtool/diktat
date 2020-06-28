@@ -1,6 +1,6 @@
-package org.diktat.ktlint.ruleset.standarddd
+package org.cqfn.diktat.ktlint.ruleset.standarddd
 
-import org.diktat.ktlint.CORE.Rule
+import org.cqfn.diktat.ktlint.CORE.Rule
 
 /**
  * Alphabetical with capital letters before lower case letters (e.g. Z before a).
