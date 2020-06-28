@@ -1,6 +1,6 @@
-package /* AAAAAA */    org.diktat.some
+package /* AAAAAA */    org.cqfn.diktat.some
 
-import org.diktat.ktlint.core.Rule
+import org.cqfn.diktat.ktlint.core.Rule
 
 class TestPackageName {
 }

@@ -1,6 +1,6 @@
-package /* AAAAAA */    org.diktat.ktlint.ruleset.standarDDD
+package /* AAAAAA */    org.cqfn.diktat.ktlint.ruleset.standarDDD
 
-import org.diktat.ktlint.CORE.Rule
+import org.cqfn.diktat.ktlint.CORE.Rule
 
 
 /**
