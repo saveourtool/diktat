@@ -78,7 +78,7 @@
     "name": "PACKAGE_NAME_MISSING",
     "enabled": true,
     "configuration": {
-      "domainName": "org.diktat"
+      "domainName": "org.cqfn"
     }
   },
   {
