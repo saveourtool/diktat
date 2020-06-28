@@ -1,4 +1,4 @@
-package org.diktat.test.resources.test.paragraph2.kdoc
+package org.cqfn.diktat.test.resources.test.paragraph2.kdoc
 
 /**
  * declaration for some constant

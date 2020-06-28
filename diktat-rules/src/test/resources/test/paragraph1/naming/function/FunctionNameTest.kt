@@ -1,6 +1,4 @@
-package org.diktat.ktlint.ruleset
-
-import com.sun.org.apache.xpath.internal.operations.Bool
+package org.cqfn.diktat.ktlint.ruleset
 
 class TestPackageName {
     fun /* */ METHOD1(someName: String): Unit {

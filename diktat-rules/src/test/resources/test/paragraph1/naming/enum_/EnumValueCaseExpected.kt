@@ -1,4 +1,4 @@
-package org.diktat.test.resources.test.paragraph1.naming.enum_
+package org.cqfn.diktat.test.resources.test.paragraph1.naming.enum_
 
 enum class EnumValueCaseTest {
     PA_SC_SAL_L,

@@ -23,7 +23,7 @@
     </developers>
 
     <parent>
-        <groupId>org.diktat</groupId>
+        <groupId>org.cqfn.diktat</groupId>
         <artifactId>diktat-parent</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
