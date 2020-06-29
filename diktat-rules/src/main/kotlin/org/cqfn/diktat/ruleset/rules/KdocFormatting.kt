@@ -17,6 +17,7 @@ import com.pinterest.ktlint.core.ast.nextSibling
 import com.pinterest.ktlint.core.ast.prevSibling
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.BLANK_LINE_AFTER_KDOC
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_EMPTY_KDOC
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_DEPRECATED_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_EMPTY_TAGS
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS
@@ -28,13 +29,18 @@ import org.cqfn.diktat.ruleset.utils.findChildAfter
 import org.cqfn.diktat.ruleset.utils.findChildBefore
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
+import org.cqfn.diktat.ruleset.utils.getIdentifierName
+import org.cqfn.diktat.ruleset.utils.hasChildMatching
 import org.cqfn.diktat.ruleset.utils.kDocTags
 import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
+import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
 import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
+import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
 
 /**
@@ -52,6 +58,7 @@ class KdocFormatting : Rule("kdoc-formatting") {
     private lateinit var confiRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
+    private var fileName: String = ""
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
@@ -61,6 +68,7 @@ class KdocFormatting : Rule("kdoc-formatting") {
         confiRules = params.rulesConfigList!!
         isFixMode = autoCorrect
         emitWarn = emit
+        fileName = params.fileName ?: ""
 
         val declarationTypes = setOf(CLASS, FUN, PROPERTY)
 
@@ -68,7 +76,7 @@ class KdocFormatting : Rule("kdoc-formatting") {
             checkBlankLineAfterKdoc(node)
         }
 
-        if (node.elementType == KDOC) {
+        if (node.elementType == KDOC && checkKdocNotEmpty(node)) {
             checkNoDeprecatedTag(node)
             checkEmptyTags(node.kDocTags())
             checkSpaceAfterTag(node.kDocTags())
@@ -89,6 +97,20 @@ class KdocFormatting : Rule("kdoc-formatting") {
         }
     }
 
+    private fun checkKdocNotEmpty(node: ASTNode): Boolean {
+        val isKdocNotEmpty = node.getFirstChildWithType(KDOC_SECTION)
+            ?.hasChildMatching {
+            it.elementType != KDOC_LEADING_ASTERISK && it.elementType != WHITE_SPACE
+        } ?: false
+        if (!isKdocNotEmpty) {
+            KDOC_EMPTY_KDOC.warn(confiRules, emitWarn, isFixMode,
+                node.treeParent.getIdentifierName()?.text
+                    ?: node.nextSibling { it.elementType in KtTokens.KEYWORDS }?.text
+                    ?: fileName, node.startOffset)
+        }
+        return isKdocNotEmpty
+    }
+
     private fun checkNoDeprecatedTag(node: ASTNode) {
         val kDocTags = node.kDocTags()
         kDocTags?.find { it.name == "deprecated" }
@@ -102,7 +124,7 @@ class KdocFormatting : Rule("kdoc-formatting") {
                     )
                     node.treeParent.addChild(LeafPsiElement(ElementType.ANNOTATION,
                         "@Deprecated(message = \"${kDocTag.getContent()}\")"), node.treeNext)
-                    node.treeParent.addChild(node.nextSibling { it.elementType == WHITE_SPACE }!!.copyElement(), node.treeNext)  // copy to get all necessary indentatios
+                    node.treeParent.addChild(node.nextSibling { it.elementType == WHITE_SPACE }!!.clone() as PsiWhiteSpaceImpl, node.treeNext)  // copy to get all necessary indentatios
                 }
             }
     }
@@ -119,7 +141,10 @@ class KdocFormatting : Rule("kdoc-formatting") {
         // tags can have 'parameters' and content, either can be missing
         // we always can find white space after tag name, but after tag parameters only if content is present
         kDocTags?.filter { tag ->
-            tag.node.findChildBefore(KDOC_TEXT, WHITE_SPACE)?.let { it.text != " " } ?: false
+            val hasSubject = tag.getSubjectName()?.isNotBlank() ?: false
+            if (!hasSubject && tag.getContent().isBlank()) return@filter false
+
+            hasSubject && tag.node.findChildBefore(KDOC_TEXT, WHITE_SPACE)?.text != " "
                 || tag.node.findChildAfter(KDOC_TAG_NAME, WHITE_SPACE)?.text != " "
         }?.forEach { tag ->
             KDOC_WRONG_SPACES_AFTER_TAG.warnAndFix(confiRules, emitWarn, isFixMode,
@@ -158,7 +183,7 @@ class KdocFormatting : Rule("kdoc-formatting") {
 
                 basicTagsOrdered.forEachIndexed { index, tag ->
                     val tagNode = kDocTags.find { it.knownTag == tag }?.node
-                    kDocSection.addChild(tagNode!!.copyElement(), basicTagChildren[index])
+                    kDocSection.addChild(tagNode!!.clone() as CompositeElement, basicTagChildren[index])
                     kDocSection.removeChild(basicTagChildren[index])
                 }
             }

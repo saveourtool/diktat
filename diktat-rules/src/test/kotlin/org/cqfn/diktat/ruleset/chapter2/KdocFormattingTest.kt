@@ -12,6 +12,7 @@ import org.cqfn.diktat.ruleset.utils.lintMethod
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.test.lint
 import org.assertj.core.api.Assertions
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_EMPTY_KDOC
 import org.junit.Test
 
 class KdocFormattingTest {
@@ -72,6 +73,54 @@ class KdocFormattingTest {
     """.trimIndent()
 
     @Test
+    fun `empty KDocs are not allowed - example with empty KDOC_SECTION`() {
+        lintMethod(KdocFormatting(),
+            """/**
+               | *${" ".repeat(5)}
+               | */
+               |fun foo() = Unit
+            """.trimMargin(),
+            LintError(1, 1, "kdoc-formatting", "${KDOC_EMPTY_KDOC.warnText()} foo", false)
+        )
+    }
+
+    @Test
+    fun `empty KDocs are not allowed - example with no KDOC_SECTION`() {
+        lintMethod(KdocFormatting(),
+            """/**
+               | */
+               |fun foo() = Unit
+            """.trimMargin(),
+            LintError(1, 1, "kdoc-formatting", "${KDOC_EMPTY_KDOC.warnText()} foo", false)
+        )
+    }
+
+    @Test
+    fun `empty KDocs are not allowed - without bound identifier`() {
+        lintMethod(KdocFormatting(),
+            """/**
+               | *
+               | */
+            """.trimMargin(),
+            LintError(1, 1, "kdoc-formatting", "${KDOC_EMPTY_KDOC.warnText()} ", false)
+        )
+    }
+
+    @Test
+    fun `empty KDocs are not allowed - with anonymous entity`() {
+        lintMethod(KdocFormatting(),
+            """class Example {
+               |    /**
+               |      *
+               |      */
+               |    companion object { }
+               |}
+            """.trimMargin(),
+            LintError(2, 5, "kdoc-formatting", "${KDOC_EMPTY_KDOC.warnText()} object", false)
+        )
+    }
+
+    @Test
     fun `@deprecated tag is not allowed`() {
         val invalidCode = """
             /**
@@ -97,9 +146,7 @@ class KdocFormattingTest {
 
         lintMethod(KdocFormatting(), invalidCode,
             LintError(3, 16, "kdoc-formatting",
-                "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
-            LintError(3, 16, "kdoc-formatting",
-                "${KDOC_WRONG_SPACES_AFTER_TAG.warnText()} @return", false))
+                "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false))
     }
 
     @Test
