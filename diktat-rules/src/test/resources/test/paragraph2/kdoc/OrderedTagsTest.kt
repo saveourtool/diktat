@@ -4,6 +4,7 @@ class OrderedTags {
 
     /**
      * Empty function to test KDocs
+     *
      * @return Unit
      * @throws RuntimeException never
      * @param a useless integer

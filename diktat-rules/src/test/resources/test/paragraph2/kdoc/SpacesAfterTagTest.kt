@@ -4,6 +4,7 @@ class SpacesAfterTag {
 
     /**
      * Empty function to test KDocs
+     *
      * @param  a useless integer
      * @return
      * @throws    RuntimeException never

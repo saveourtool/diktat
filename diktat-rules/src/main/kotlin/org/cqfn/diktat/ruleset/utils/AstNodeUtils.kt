@@ -14,6 +14,7 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.psi.psiUtil.siblings
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -99,6 +100,9 @@ fun ASTNode.findChildAfter(afterThisNodeType: IElementType, childNodeType: IElem
     log.warn("Not able to find a node with type $childNodeType after $afterThisNodeType")
     return null
 }
+
+fun ASTNode.allSiblings(withSelf: Boolean = false): List<ASTNode> =
+    siblings(false).toList() + (if (withSelf) listOf(this) else listOf()) + siblings(true)
 
 // applicable for PROPERTY element type only
 fun ASTNode.isNodeFromCompanionObject(): Boolean {

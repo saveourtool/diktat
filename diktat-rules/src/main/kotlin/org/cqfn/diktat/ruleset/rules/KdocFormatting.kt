@@ -17,6 +17,7 @@ import com.pinterest.ktlint.core.ast.nextSibling
 import com.pinterest.ktlint.core.ast.prevSibling
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.BLANK_LINE_AFTER_KDOC
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NEWLINES_BEFORE_BASIC_TAGS
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_EMPTY_KDOC
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_DEPRECATED_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_EMPTY_TAGS
@@ -24,6 +25,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_NEWLINES_BETWEEN_BASIC
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WRONG_SPACES_AFTER_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WRONG_TAGS_ORDER
+import org.cqfn.diktat.ruleset.utils.allSiblings
 import org.cqfn.diktat.ruleset.utils.countSubStringOccurrences
 import org.cqfn.diktat.ruleset.utils.findChildAfter
 import org.cqfn.diktat.ruleset.utils.findChildBefore
@@ -37,6 +39,7 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
+import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
 import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
@@ -80,7 +83,8 @@ class KdocFormatting : Rule("kdoc-formatting") {
             checkNoDeprecatedTag(node)
             checkEmptyTags(node.kDocTags())
             checkSpaceAfterTag(node.kDocTags())
-            checkEmptyLinesAfterBasicTags(node)
+            node.kDocBasicTags()?.let { checkEmptyLineBeforeBasicTags(it) }
+            node.kDocBasicTags()?.let { checkEmptyLinesBetweenBasicTags(it) }
             checkBasicTagsOrder(node)
             checkNewLineAfterSpecialTags(node)
         }
@@ -190,11 +194,48 @@ class KdocFormatting : Rule("kdoc-formatting") {
         }
     }
 
-    private fun checkEmptyLinesAfterBasicTags(node: ASTNode) {
-        val kDocTags = node.kDocTags()
-        val basicTags = kDocTags?.filter { basicTagsList.contains(it.knownTag) }
+    private fun checkEmptyLineBeforeBasicTags(basicTags: List<KDocTag>) {
+        val firstBasicTag = basicTags.firstOrNull()
+        if (firstBasicTag != null) {
+            val hasContentBefore = firstBasicTag.node.allSiblings(true)
+                .let { it.subList(0, it.indexOf(firstBasicTag.node)) }
+                .any { it.elementType !in arrayOf(WHITE_SPACE, KDOC_LEADING_ASTERISK) && it.text.isNotBlank() }
 
-        val tagsWithRedundantEmptyLines = basicTags?.dropLast(1)?.filterNot { tag ->
+            val previousTag = firstBasicTag.node.prevSibling { it.elementType == KDOC_TAG }
+            val hasEmptyLineBefore = previousTag?.hasEmptyLineAfter()
+                ?: (firstBasicTag.node.previousAsterisk()
+                    ?.previousAsterisk()
+                    ?.treeNext?.elementType == WHITE_SPACE)
+
+            if (hasContentBefore xor hasEmptyLineBefore) {
+                KDOC_NEWLINES_BEFORE_BASIC_TAGS.warnAndFix(confiRules, emitWarn, isFixMode,
+                    "@${firstBasicTag.name!!}", firstBasicTag.node.startOffset) {
+                    if (hasContentBefore) {
+                        if (previousTag != null) {
+                            previousTag.applyToPrevSibling(KDOC_LEADING_ASTERISK) {
+                                    previousTag.addChild(treePrev.clone() as ASTNode, null)
+                                    previousTag.addChild(this.clone() as ASTNode, null)
+                                }
+                        } else {
+                            firstBasicTag.node.applyToPrevSibling(KDOC_LEADING_ASTERISK) {
+                                    treeParent.addChild(treePrev.clone() as ASTNode, this)
+                                    treeParent.addChild(this.clone() as ASTNode, treePrev)
+                                }
+                        }
+                    } else {
+                        firstBasicTag.node.apply {
+                            val asteriskNode = previousAsterisk()!!
+                            treeParent.removeChild(asteriskNode.treePrev)
+                            treeParent.removeChild(asteriskNode.treePrev)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun checkEmptyLinesBetweenBasicTags(basicTags: List<KDocTag>) {
+        val tagsWithRedundantEmptyLines = basicTags.dropLast(1).filterNot { tag ->
             val nextWhiteSpace = tag.node.nextSibling { it.elementType == WHITE_SPACE }
             val noEmptyKdocLines = tag.node.getChildren(TokenSet.create(KDOC_LEADING_ASTERISK))
                 .filter { it.treeNext == null || it.treeNext.elementType == WHITE_SPACE }
@@ -202,7 +243,7 @@ class KdocFormatting : Rule("kdoc-formatting") {
             nextWhiteSpace?.text?.count { it == '\n' } == 1 && noEmptyKdocLines
         }
 
-        tagsWithRedundantEmptyLines?.forEach { tag ->
+        tagsWithRedundantEmptyLines.forEach { tag ->
             KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS.warnAndFix(confiRules, emitWarn, isFixMode,
                 "@${tag.name}", tag.startOffset) {
                 tag.node.nextSibling { it.elementType == WHITE_SPACE }?.leaveOnlyOneNewLine()
@@ -248,5 +289,21 @@ class KdocFormatting : Rule("kdoc-formatting") {
                 }
             }
         }
+    }
+
+    // fixme this method can be improved and extracted to utils
+    private fun ASTNode.hasEmptyLineAfter(): Boolean {
+        require(this.elementType == KDOC_TAG) { "This check is only for KDOC_TAG" }
+        return lastChildNode.elementType == KDOC_LEADING_ASTERISK
+            && (treeNext == null || treeNext.elementType == WHITE_SPACE
+            && treeNext.text.count { it == '\n' } == 1)
+    }
+
+    private fun ASTNode.kDocBasicTags() = kDocTags()?.filter { basicTagsList.contains(it.knownTag) }
+
+    private fun ASTNode.previousAsterisk() = prevSibling { it.elementType == KDOC_LEADING_ASTERISK }
+
+    private fun ASTNode.applyToPrevSibling(elementType: IElementType, f: ASTNode.() -> Unit) {
+        prevSibling { it.elementType == elementType }?.apply(f)
     }
 }
