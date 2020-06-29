@@ -1,6 +1,10 @@
 package org.cqfn.diktat.ruleset.chapter2
 
+import com.pinterest.ktlint.core.LintError
+import com.pinterest.ktlint.test.lint
+import org.assertj.core.api.Assertions
 import org.cqfn.diktat.ruleset.constants.Warnings.BLANK_LINE_AFTER_KDOC
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NEWLINES_BEFORE_BASIC_TAGS
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_DEPRECATED_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_EMPTY_TAGS
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS
@@ -9,9 +13,6 @@ import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WRONG_SPACES_AFTER_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WRONG_TAGS_ORDER
 import org.cqfn.diktat.ruleset.rules.KdocFormatting
 import org.cqfn.diktat.ruleset.utils.lintMethod
-import com.pinterest.ktlint.core.LintError
-import com.pinterest.ktlint.test.lint
-import org.assertj.core.api.Assertions
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_EMPTY_KDOC
 import org.junit.Test
 
@@ -234,6 +235,47 @@ class KdocFormattingTest {
                 "${KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS.warnText()} @param", true),
             LintError(4, 16, "kdoc-formatting",
                 "${KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS.warnText()} @return", true))
+    }
+
+    @Test
+    fun `basic tags block should have empty line before if there is other KDoc content (positive example)`() {
+        lintMethod(KdocFormatting(),
+            """/**
+               | * Lorem ipsum
+               | * dolor sit amet
+               | *
+               | * @param a integer parameter
+               | */
+               |fun test(a: Int): Unit = Unit
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    fun `basic tags block shouldn't have empty line before if there is no other KDoc content`() {
+        lintMethod(KdocFormatting(),
+            """/**
+               | *
+               | * @param a integer parameter
+               | */
+               |fun test(a: Int): Unit = Unit
+            """.trimMargin(),
+            LintError(3, 4, "kdoc-formatting", "${KDOC_NEWLINES_BEFORE_BASIC_TAGS.warnText()} @param", true)
+        )
+    }
+
+    @Test
+    fun `basic tags block should have empty line before if there is other KDoc content`() {
+        lintMethod(KdocFormatting(),
+            """/**
+               | * Lorem ipsum
+               | * dolor sit amet
+               | * @param a integer parameter
+               | */
+               |fun test(a: Int): Unit = Unit
+            """.trimMargin(),
+            LintError(4, 4, "kdoc-formatting", "${KDOC_NEWLINES_BEFORE_BASIC_TAGS.warnText()} @param", true)
+        )
     }
 
     @Test

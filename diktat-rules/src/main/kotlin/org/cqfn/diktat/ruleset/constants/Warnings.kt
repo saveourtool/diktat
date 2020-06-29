@@ -45,14 +45,15 @@ enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean
     KDOC_EMPTY_KDOC(28, false, "KDoc should never be empty"),
     KDOC_WRONG_SPACES_AFTER_TAG(29, true, "there should be exactly one white space after tag name in KDoc"),
     KDOC_WRONG_TAGS_ORDER(30, true, "in KDoc standard tags are arranged in order @param, @return, @throws, but are"),
-    KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS(31, true, "in KDoc standard tags @param, @return, @throws should not containt newline between them, but these tags do"),
-    KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS(32, true, "in KDoc there should be exactly one empty line after special tags"),
-    KDOC_NO_EMPTY_TAGS(33, false, "no empty descriptions in tag blocks are allowed"),
-    KDOC_NO_DEPRECATED_TAG(34, true, "KDoc doesn't support @deprecated tag, use @Deprecated annotation instead"),
-    HEADER_WRONG_FORMAT(35, true, "file header comments should be properly formatted"),
-    HEADER_MISSING_OR_WRONG_COPYRIGHT(36, true, "file header comment must include copyright information inside a block comment"),
-    HEADER_CONTAINS_DATE_OR_AUTHOR(37, false, "file header comment should not contain creation date and author name"),
-    HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE(38, false, "files that contain multiple or no classes should contain description of what is inside of this file"),
+    KDOC_NEWLINES_BEFORE_BASIC_TAGS(31, true, "in KDoc block of standard tags @param, @return, @throws should contain newline before only if there is other content before it"),
+    KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS(32, true, "in KDoc standard tags @param, @return, @throws should not containt newline between them, but these tags do"),
+    KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS(33, true, "in KDoc there should be exactly one empty line after special tags"),
+    KDOC_NO_EMPTY_TAGS(34, false, "no empty descriptions in tag blocks are allowed"),
+    KDOC_NO_DEPRECATED_TAG(35, true, "KDoc doesn't support @deprecated tag, use @Deprecated annotation instead"),
+    HEADER_WRONG_FORMAT(36, true, "file header comments should be properly formatted"),
+    HEADER_MISSING_OR_WRONG_COPYRIGHT(37, true, "file header comment must include copyright information inside a block comment"),
+    HEADER_CONTAINS_DATE_OR_AUTHOR(38, false, "file header comment should not contain creation date and author name"),
+    HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE(39, false, "files that contain multiple or no classes should contain description of what is inside of this file"),
     ;
 
     override fun ruleName(): String = this.name

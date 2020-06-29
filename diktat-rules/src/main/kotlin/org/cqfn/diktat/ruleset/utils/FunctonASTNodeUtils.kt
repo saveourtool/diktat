@@ -1,7 +1,6 @@
 package org.cqfn.diktat.ruleset.utils
 
 import com.pinterest.ktlint.core.ast.ElementType
-import org.jetbrains.kotlin.com.google.common.base.Preconditions
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
 import org.jetbrains.kotlin.psi.KtParameter
@@ -31,5 +30,6 @@ private fun ASTNode.argList(): ASTNode? {
 }
 
 private fun checkNode(node: ASTNode) =
-    Preconditions.checkArgument(node.elementType == ElementType.FUN,
-        "This utility method operates on nodes of type ElementType.FUN only")
+    require(node.elementType == ElementType.FUN) {
+        "This utility method operates on nodes of type ElementType.FUN only"
+    }
