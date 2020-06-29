@@ -4,7 +4,6 @@ import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_SECTION
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.prevSibling
-import org.jetbrains.kotlin.com.google.common.base.Preconditions
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -13,9 +12,8 @@ import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
 import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
 
 fun ASTNode.kDocTags(): Collection<KDocTag>? {
-    Preconditions.checkArgument(this.elementType == ElementType.KDOC,
-        "kDoc tags can be retrieved only from KDOC node")
-    return this.getFirstChildWithType(ElementType.KDOC_SECTION)
+    require(this.elementType == ElementType.KDOC) { "kDoc tags can be retrieved only from KDOC node" }
+    return this.getFirstChildWithType(KDOC_SECTION)
         ?.getAllChildrenWithType(ElementType.KDOC_TAG)?.map { it.psi as KDocTag }
 }
 
@@ -29,8 +27,7 @@ fun Iterable<KDocTag>.hasKnownKDocTag(knownTag: KDocKnownTag): Boolean =
  */
 inline fun ASTNode.insertTagBefore(beforeTag: ASTNode?,
                             f: CompositeElement.() -> Unit) {
-    Preconditions.checkArgument(this.elementType == ElementType.KDOC && this.hasChildOfType(KDOC_SECTION),
-        "kDoc tags can be inserted only into KDOC node")
+    require(this.elementType == ElementType.KDOC && this.hasChildOfType(KDOC_SECTION)) { "kDoc tags can be inserted only into KDOC node" }
     val kDocSection = this.getFirstChildWithType(KDOC_SECTION)!!
     val newTag = CompositeElement(ElementType.KDOC_TAG)
     val beforeTagLineStart = beforeTag?.prevSibling {

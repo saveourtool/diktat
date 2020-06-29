@@ -37,6 +37,11 @@ class KdocFormattingFixTest: FixTestBase("test/paragraph2/kdoc/", KdocFormatting
     }
 
     @Test
+    fun `Empty line should be added before block of standard tags`() {
+        fixAndCompare("BasicTagsEmptyLineBeforeExpected.kt", "BasicTagsEmptyLineBeforeTest.kt")
+    }
+
+    @Test
     fun `KdocFormatting - all warnings`() {
         fixAndCompare("KdocFormattingFullExpected.kt", "KdocFormattingFullTest.kt")
     }
