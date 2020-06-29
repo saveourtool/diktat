@@ -8,6 +8,8 @@ class Example {
      *
      * @implSpec spam
      *
+     * Another line of description
+     *
      * @param a useless integer
      * @return doubled value
      * @throws RuntimeException never

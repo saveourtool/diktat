@@ -7,6 +7,8 @@ class Example {
      * @deprecated   Use testNew
      * @apiNote stuff
      * @implSpec   spam
+     *
+     * Another line of description
      * @param   a   useless integer
 
      * @throws RuntimeException never
