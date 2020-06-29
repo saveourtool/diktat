@@ -13,6 +13,7 @@ import com.pinterest.ktlint.core.ast.isLeaf
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
+import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -167,6 +168,19 @@ fun ASTNode.findAllNodesWithSpecificType(elementType: IElementType): List<ASTNod
         it.findAllNodesWithSpecificType(elementType)
     }
 }
+
+/**
+ * Finds all children of optional type which match the predicate
+ */
+fun ASTNode.findChildrenMatching(elementType: IElementType? = null, predicate: (ASTNode) -> Boolean): List<ASTNode> =
+    getChildren(elementType?.let { TokenSet.create(it) })
+        .filter(predicate)
+
+/**
+ * Check if this node has any children of optional type matching the predicate
+ */
+fun ASTNode.hasChildMatching(elementType: IElementType? = null, predicate: (ASTNode) -> Boolean): Boolean =
+    findChildrenMatching(elementType, predicate).isNotEmpty()
 
 /**
  * Converts this AST node and all its children to pretty string representation
