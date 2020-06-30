@@ -16,11 +16,16 @@ That's why we added logic for:
 
 ## How to build the project
 As Java/Kotlin community has a holywar about usage of Gradle vs Maven - we supported both. So you can:
+
 a) Use Maven:
 `mvn clean install`
 
+This will also install git hooks into your local .git directory. The hooks will restrict commit messages and branch naming.
+
 b) Use Gradle:
 `gradle build` 
+
+To install git hooks using gradle run `gradle installGitHooks`.
 
 ## Which rules does diKTat supports now and how they can be configured.
 |Rule name|Description|
