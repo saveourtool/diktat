@@ -8,17 +8,22 @@ import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule
 import org.cqfn.diktat.ruleset.utils.lintMethod
 import com.pinterest.ktlint.core.LintError
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
+import org.cqfn.diktat.ruleset.utils.TEST_FILE_NAME
 import org.junit.Test
 
 class HeaderCommentRuleTest {
+
+    private val ruleId: String = "$DIKTAT_RULE_SET_ID:header-comment"
+
     private val rulesConfigList: List<RulesConfig> = listOf(
-            RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true,
-                    mapOf("copyrightText" to "Copyright (c) Huawei Technologies Co., Ltd. 2012-2020. All rights reserved."))
+        RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true,
+            mapOf("copyrightText" to "Copyright (c) Huawei Technologies Co., Ltd. 2012-2020. All rights reserved."))
     )
 
     private val rulesConfigListCn: List<RulesConfig> = listOf(
-            RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true,
-                    mapOf("copyrightText" to "版权所有 (c) 华为技术有限公司 2012-2020"))
+        RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true,
+            mapOf("copyrightText" to "版权所有 (c) 华为技术有限公司 2012-2020"))
     )
 
     private val copyrightBlock = """
@@ -85,8 +90,8 @@ class HeaderCommentRuleTest {
             class Example2 { }
         """.trimIndent()
 
-        lintMethod(HeaderCommentRule(), invalidCode, LintError(1, 1, "header-comment",
-            "${HEADER_MISSING_OR_WRONG_COPYRIGHT.warnText()} ", false),
+        lintMethod(HeaderCommentRule(), invalidCode, LintError(1, 1, ruleId,
+            "${HEADER_MISSING_OR_WRONG_COPYRIGHT.warnText()} $TEST_FILE_NAME", false),
             rulesConfigList = rulesConfigList)
     }
 
@@ -108,8 +113,8 @@ class HeaderCommentRuleTest {
             class Example2 { }
         """.trimIndent()
 
-        lintMethod(HeaderCommentRule(), invalidCode, LintError(1, 1, "header-comment",
-            "${HEADER_MISSING_OR_WRONG_COPYRIGHT.warnText()} ", false),
+        lintMethod(HeaderCommentRule(), invalidCode, LintError(1, 1, ruleId,
+            "${HEADER_MISSING_OR_WRONG_COPYRIGHT.warnText()} $TEST_FILE_NAME", false),
             rulesConfigList = rulesConfigListCn)
     }
 
@@ -129,9 +134,9 @@ class HeaderCommentRuleTest {
             class Example2 { }
         """.trimIndent()
 
-        lintMethod(HeaderCommentRule(), invalidCode, LintError(1, 1, "header-comment",
-            "${HEADER_MISSING_OR_WRONG_COPYRIGHT.warnText()} ", false),
-        rulesConfigList = rulesConfigList)
+        lintMethod(HeaderCommentRule(), invalidCode, LintError(1, 1, ruleId,
+            "${HEADER_MISSING_OR_WRONG_COPYRIGHT.warnText()} $TEST_FILE_NAME", false),
+            rulesConfigList = rulesConfigList)
     }
 
     @Test
@@ -148,7 +153,7 @@ class HeaderCommentRuleTest {
              class Example { }
         """.trimIndent()
 
-        lintMethod(HeaderCommentRule(), invalidCode, LintError(4, 12, "header-comment",
+        lintMethod(HeaderCommentRule(), invalidCode, LintError(4, 12, ruleId,
             "${HEADER_CONTAINS_DATE_OR_AUTHOR.warnText()} * @author anonymous"),
             rulesConfigList = rulesConfigList)
     }
@@ -163,8 +168,8 @@ class HeaderCommentRuleTest {
             fun foo(): Int = 42
         """.trimIndent()
 
-        lintMethod(HeaderCommentRule(), invalidCode, LintError(1, 1, "header-comment",
-            "${HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warnText()} ", false),
+        lintMethod(HeaderCommentRule(), invalidCode, LintError(1, 1, ruleId,
+            "${HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warnText()} $TEST_FILE_NAME", false),
             rulesConfigList = rulesConfigList)
     }
 
@@ -178,8 +183,8 @@ class HeaderCommentRuleTest {
             class Example2 { }
         """.trimIndent()
 
-        lintMethod(HeaderCommentRule(), invalidCode, LintError(1, 1, "header-comment",
-            "${HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warnText()} ", false),
+        lintMethod(HeaderCommentRule(), invalidCode, LintError(1, 1, ruleId,
+            "${HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warnText()} $TEST_FILE_NAME", false),
             rulesConfigList = rulesConfigList)
     }
 
@@ -196,7 +201,7 @@ class HeaderCommentRuleTest {
             class Example { }
         """.trimIndent()
 
-        lintMethod(HeaderCommentRule(), invalidCode, LintError(4, 12, "header-comment",
+        lintMethod(HeaderCommentRule(), invalidCode, LintError(4, 12, ruleId,
             "${HEADER_WRONG_FORMAT.warnText()} header KDoc should have a new line after", true),
             rulesConfigList = rulesConfigList)
     }

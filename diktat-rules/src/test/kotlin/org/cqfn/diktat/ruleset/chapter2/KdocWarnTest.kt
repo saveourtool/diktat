@@ -5,14 +5,17 @@ import com.pinterest.ktlint.test.lint
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.cqfn.diktat.ruleset.constants.Warnings.*
+import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.KdocComments
+import org.cqfn.diktat.ruleset.utils.lintMethod
 
 class KdocWarnTest {
+    private val ruleId: String = "$DIKTAT_RULE_SET_ID:kdoc-comments"
+
     @Test
     fun `all public classes should be documented with KDoc`() {
-        assertThat(
-            KdocComments().lint(
-                """
+        val code =
+            """
                     class SomeGoodName {
                         private class InternalClass {
                         }
@@ -28,34 +31,30 @@ class KdocWarnTest {
                     }
 
                 """.trimIndent()
-            )
-        ).containsExactly(
-            LintError(1, 1, "kdoc-comments", "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeGoodName"),
-            LintError(6, 1, "kdoc-comments", "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeOtherGoodName"),
-            LintError(9, 1, "kdoc-comments", "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeNewGoodName"),
-            LintError(12, 1, "kdoc-comments", "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeOtherNewGoodName")
+        lintMethod(KdocComments(), code,
+            LintError(1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeGoodName"),
+            LintError(6, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeOtherGoodName"),
+            LintError(9, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeNewGoodName"),
+            LintError(12, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeOtherNewGoodName")
         )
     }
 
     @Test
     fun `all internal classes should be documented with KDoc`() {
-        assertThat(
-            KdocComments().lint(
-                """
+        val code =
+            """
                     internal class SomeGoodName {
                     }
                 """.trimIndent()
-            )
-        ).containsExactly(LintError(
-            1, 1, "kdoc-comments", "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeGoodName")
+        lintMethod(KdocComments(), code, LintError(
+            1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeGoodName")
         )
     }
 
     @Test
     fun `all internal and public functions on top-level should be documented with Kdoc`() {
-        assertThat(
-            KdocComments().lint(
-                """
+        val code =
+            """
                     fun someGoodName() {
                     }
 
@@ -63,42 +62,36 @@ class KdocWarnTest {
                         return " ";
                     }
                 """.trimIndent()
-            )
-        ).containsExactly(
-            LintError(1, 1, "kdoc-comments", "${MISSING_KDOC_TOP_LEVEL.warnText()} someGoodName"),
-            LintError(4, 1, "kdoc-comments", "${MISSING_KDOC_TOP_LEVEL.warnText()} someGoodNameNew")
+        lintMethod(KdocComments(), code,
+            LintError(1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} someGoodName"),
+            LintError(4, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} someGoodNameNew")
         )
     }
 
     @Test
     fun `all internal and public functions on top-level should be documented with Kdoc (positive case)`() {
-        assertThat(
-            KdocComments().lint(
-                """
+        val code =
+            """
                     private fun someGoodName() {
                     }
                 """.trimIndent()
-            )
-        ).isEmpty()
+        lintMethod(KdocComments(), code)
     }
 
     @Test
     fun `positive Kdoc case with private class`() {
-        assertThat(
-            KdocComments().lint(
-                """
+        val code =
+            """
                     private class SomeGoodName {
                     }
                 """.trimIndent()
-            )
-        ).isEmpty()
+        lintMethod(KdocComments(), code)
     }
 
     @Test
     fun `Kdoc should present for each class element`() {
-        assertThat(
-            KdocComments().lint(
-                """
+        val code =
+            """
                     /**
                     * class that contains fields, functions and public subclasses
                     **/
@@ -118,19 +111,17 @@ class KdocWarnTest {
                         }
                     }
                 """.trimIndent()
-            )
-        ).containsExactly(
-            LintError(5, 5, "kdoc-comments", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} variable"),
-            LintError(7, 5, "kdoc-comments", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} perfectFunction"),
-            LintError(13, 5, "kdoc-comments", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} InternalClass")
+        lintMethod(KdocComments(), code,
+            LintError(5, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} variable"),
+            LintError(7, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} perfectFunction"),
+            LintError(13, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} InternalClass")
         )
     }
 
     @Test
     fun `Kdoc should present for each class element (positive)`() {
-        assertThat(
-            KdocComments().lint(
-                """
+        val code =
+            """
                     /**
                     * class that contains fields, functions and public subclasses
                     **/
@@ -161,7 +152,6 @@ class KdocWarnTest {
                         }
                     }
                 """.trimIndent()
-            )
-        ).isEmpty()
+        lintMethod(KdocComments(), code)
     }
 }

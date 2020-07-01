@@ -328,8 +328,6 @@ class KtlintCommandLine {
         ruleSetProviders: Map<String, RuleSetProvider>,
         userData: Map<String, String>
     ): List<LintErrorWithCorrectionInfo> {
-        val rulesConfigList = if (config.isEmpty()) emptyList() else RulesConfigReader().readResource(config)
-
         if (debug) {
             val fileLocation = if (fileName != KtLint.STDIN_FILE) File(fileName).location(relative) else fileName
             System.err.println("[DEBUG] Checking $fileLocation")
@@ -343,8 +341,7 @@ class KtlintCommandLine {
                     ruleSetProviders.map { it.value.get() },
                     userData,
                     editorConfigPath,
-                    debug,
-                    rulesConfigList
+                    debug
                 ) { err, corrected ->
                     if (!corrected) {
                         result.add(LintErrorWithCorrectionInfo(err, corrected))
@@ -371,8 +368,7 @@ class KtlintCommandLine {
                     ruleSetProviders.map { it.value.get() },
                     userData,
                     editorConfigPath,
-                    debug,
-                    rulesConfigList
+                    debug
                 ) { err ->
                     result.add(LintErrorWithCorrectionInfo(err, false))
                     tripped.set(true)

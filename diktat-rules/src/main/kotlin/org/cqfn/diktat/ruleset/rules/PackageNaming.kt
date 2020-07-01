@@ -48,11 +48,16 @@ class PackageNaming : Rule("package-naming") {
                        params: KtLint.Params,
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
 
-        confiRules = params.rulesConfigList!!
+        confiRules = params.getDiktatConfigRules()
         isFixMode = autoCorrect
         emitWarn = emit
 
-        val configuration = PackageNamingConfiguration(confiRules.getRuleConfig(PACKAGE_NAME_MISSING)?.configuration ?: mapOf())
+        val domainNameConfiguration = confiRules.getRuleConfig(PACKAGE_NAME_MISSING)?.configuration
+        if (domainNameConfiguration == null) {
+            log.error("Not able to find an external configuration for domain name in the configuration of" +
+                " ${PACKAGE_NAME_MISSING.name} check (is it missing in json config?)")
+        }
+        val configuration = PackageNamingConfiguration(domainNameConfiguration ?: mapOf())
         domainName = configuration.domainName
 
         if (node.elementType == PACKAGE_DIRECTIVE) {
@@ -243,6 +248,9 @@ class PackageNaming : Rule("package-naming") {
         }
     }
 
+    /**
+     * this class represents json-map configuration with the only one field (domainName) - can be used for json parsing
+     */
     class PackageNamingConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
         val domainName by config
     }

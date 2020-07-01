@@ -5,10 +5,14 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.junit.Test
 import org.cqfn.diktat.ruleset.rules.PackageNaming
 import org.cqfn.diktat.ruleset.constants.Warnings.*
+import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.utils.lintMethod
 import org.junit.Ignore
 
 class PackageNamingWarnTest {
+
+    private val ruleId: String = "$DIKTAT_RULE_SET_ID:package-naming"
+
     private val rulesConfigList: List<RulesConfig> = listOf(
         RulesConfig(PACKAGE_NAME_MISSING.name, true, mapOf("domainName" to "org.cqfn.diktat"))
     )
@@ -26,7 +30,7 @@ class PackageNamingWarnTest {
                 class TestPackageName {  }
 
             """.trimIndent(),
-            LintError(1, 1, "package-naming", "${PACKAGE_NAME_MISSING.warnText()} "),
+            LintError(1, 1, ruleId, "${PACKAGE_NAME_MISSING.warnText()} "),
             rulesConfigList = rulesConfigList
         )
     }
@@ -46,7 +50,7 @@ class PackageNamingWarnTest {
                 class TestPackageName {  }
 
             """.trimIndent(),
-            LintError(1, 35, "package-naming", "${PACKAGE_NAME_INCORRECT_CASE.warnText()} SPECIALTEST"),
+            LintError(1, 35, ruleId, "${PACKAGE_NAME_INCORRECT_CASE.warnText()} SPECIALTEST"),
             rulesConfigList = rulesConfigList
         )
     }
@@ -66,7 +70,7 @@ class PackageNamingWarnTest {
                 class TestPackageName {  }
 
             """.trimIndent(),
-            LintError(1, 9, "package-naming", "${PACKAGE_NAME_INCORRECT_PREFIX.warnText()} org.cqfn.diktat"),
+            LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PREFIX.warnText()} org.cqfn.diktat"),
             rulesConfigList = rulesConfigList
         )
     }
@@ -86,7 +90,7 @@ class PackageNamingWarnTest {
                 class TestPackageName {  }
 
             """.trimIndent(),
-            LintError(1, 32, "package-naming", "${INCORRECT_PACKAGE_SEPARATOR.warnText()} test_"),
+            LintError(1, 32, ruleId, "${INCORRECT_PACKAGE_SEPARATOR.warnText()} test_"),
             rulesConfigList = rulesConfigList
         )
     }
@@ -106,7 +110,7 @@ class PackageNamingWarnTest {
                 class TestPackageName {  }
 
             """.trimIndent(),
-            LintError(1, 32, "package-naming", "${PACKAGE_NAME_INCORRECT_SYMBOLS.warnText()} testш"),
+            LintError(1, 32, ruleId, "${PACKAGE_NAME_INCORRECT_SYMBOLS.warnText()} testш"),
             rulesConfigList = rulesConfigList
         )
     }
