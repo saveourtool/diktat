@@ -18,15 +18,12 @@ class ASTNodeUtilsTest {
      *  - IDENTIFIER: "Test"
      */
     @Test
-    @Ignore("This test is for demonstration only, it doesn't actually check anything")
+//    @Ignore("This test is for demonstration only, it doesn't actually check anything")
     fun `pretty print ASTNode`() {
         val code = """
-            class Test {
-                /**
-                * test method
-                * @param a - dummy int
-                */
-                fun foo(a: Int): Int = 2 * a
+            @file:[JvmName("Foo") VisibleForTesting]
+
+            interface Test {
             }
         """.trimIndent()
         KtLint.lint(

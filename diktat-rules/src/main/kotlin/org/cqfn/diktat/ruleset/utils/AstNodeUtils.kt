@@ -220,3 +220,17 @@ fun ASTNode.leaveOnlyOneNewLine() {
     assert(this.elementType == WHITE_SPACE)
     (this as LeafPsiElement).replaceWithText("\n${this.text.replace("\n", "")}")
 }
+
+fun ASTNode.isChildAfterAnother(child: ASTNode, afterChild: ASTNode): Boolean =
+    getChildren(null).indexOf(child) > getChildren(null).indexOf(afterChild)
+fun ASTNode.isChildAfterGroup(child: ASTNode, group: List<ASTNode>): Boolean =
+    getChildren(null).indexOf(child) > (group.map { getChildren(null).indexOf(it) }.max() ?: 0)
+
+fun ASTNode.isChildBeforeAnother(child: ASTNode, beforeChild: ASTNode): Boolean = areChildrenBeforeGroup(listOf(child), listOf(beforeChild))
+fun ASTNode.isChildBeforeGroup(child: ASTNode, group: List<ASTNode>): Boolean = areChildrenBeforeGroup(listOf(child), group)
+fun ASTNode.areChildrenBeforeChild(children: List<ASTNode>, beforeChild: ASTNode): Boolean = areChildrenBeforeGroup(children, listOf(beforeChild))
+fun ASTNode.areChildrenBeforeGroup(children: List<ASTNode>, group: List<ASTNode>): Boolean {
+    require(children.isNotEmpty() && group.isNotEmpty()) { "no sense to operate on empty lists" }
+    return children.map { getChildren(null).indexOf(it) }.max()!! < group.map { getChildren(null).indexOf(it) }.min()!!
+}
+
