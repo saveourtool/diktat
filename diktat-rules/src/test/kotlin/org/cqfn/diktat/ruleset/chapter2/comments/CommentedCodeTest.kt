@@ -3,11 +3,14 @@ package org.cqfn.diktat.ruleset.chapter2.comments
 
 import com.pinterest.ktlint.core.LintError
 import org.cqfn.diktat.ruleset.constants.Warnings.COMMENTED_OUT_CODE
+import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.comments.CommentsRule
 import org.cqfn.diktat.ruleset.utils.lintMethod
 import org.junit.Test
 
 class CommentedCodeTest {
+    private val ruleId = "$DIKTAT_RULE_SET_ID:comments"
+
     @Test
     fun `Should warn if commented out import or package directive is detected (single line comments)`() {
         lintMethod(CommentsRule(),
@@ -18,8 +21,8 @@ class CommentedCodeTest {
                 |// this is an actual comment
                 |//import org.junit.Ignore
             """.trimMargin(),
-            LintError(1, 1, "comments", "${COMMENTED_OUT_CODE.warnText()} package org.cqfn.diktat.example", false),
-            LintError(5, 1, "comments", "${COMMENTED_OUT_CODE.warnText()} import org.junit.Ignore", false)
+            LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} package org.cqfn.diktat.example", false),
+            LintError(5, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} import org.junit.Ignore", false)
         )
     }
 
@@ -30,8 +33,8 @@ class CommentedCodeTest {
            |/*import org.junit.Test
            |import org.junit.Ignore*/
         """.trimMargin(),
-            LintError(1, 1, "comments", "${COMMENTED_OUT_CODE.warnText()} import org.junit.Test", false),
-            LintError(1, 1, "comments", "${COMMENTED_OUT_CODE.warnText()} import org.junit.Ignore", false)
+            LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} import org.junit.Test", false),
+            LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} import org.junit.Ignore", false)
         )
     }
 
@@ -48,8 +51,7 @@ class CommentedCodeTest {
            |    return 0
            |}
         """.trimMargin(),
-            LintError(4, 5, "comments",
-                "${COMMENTED_OUT_CODE.warnText()} println(a + 42)", false)
+            LintError(4, 5, ruleId, "${COMMENTED_OUT_CODE.warnText()} println(a + 42)", false)
         )
     }
 
@@ -65,8 +67,7 @@ class CommentedCodeTest {
            |//    return 0
            |//}
         """.trimMargin(),
-            LintError(3, 1, "comments",
-                "${COMMENTED_OUT_CODE.warnText()} fun foo(a: Int): Int {", false)
+            LintError(3, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} fun foo(a: Int): Int {", false)
         )
     }
 
@@ -83,8 +84,7 @@ class CommentedCodeTest {
            |//    return 0
            |//}
         """.trimMargin(),
-            LintError(4, 1, "comments",
-                "${COMMENTED_OUT_CODE.warnText()} fun foo(a: Int): Int {", false)
+            LintError(4, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} fun foo(a: Int): Int {", false)
         )
     }
 
@@ -100,8 +100,7 @@ class CommentedCodeTest {
            |    return 0
            |}*/
         """.trimMargin(),
-            LintError(3, 1, "comments",
-                "${COMMENTED_OUT_CODE.warnText()} fun foo(a: Int): Int {", false)
+            LintError(3, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} fun foo(a: Int): Int {", false)
         )
     }
 
@@ -121,8 +120,8 @@ class CommentedCodeTest {
                 |    //}
                 |}
             """.trimMargin(),
-            LintError(1, 1, "comments", "${COMMENTED_OUT_CODE.warnText()} import org.junit.Ignore", false),
-            LintError(6, 5, "comments", "${COMMENTED_OUT_CODE.warnText()} fun foo(a: Int): Int {", false)
+            LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} import org.junit.Ignore", false),
+            LintError(6, 5, ruleId, "${COMMENTED_OUT_CODE.warnText()} fun foo(a: Int): Int {", false)
         )
     }
 
@@ -142,8 +141,8 @@ class CommentedCodeTest {
                 |//    }
                 |}
             """.trimMargin(),
-            LintError(1, 1, "comments", "${COMMENTED_OUT_CODE.warnText()} import org.junit.Ignore", false),
-            LintError(6, 1, "comments", "${COMMENTED_OUT_CODE.warnText()} fun foo(a: Int): Int {", false)
+            LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} import org.junit.Ignore", false),
+            LintError(6, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} fun foo(a: Int): Int {", false)
         )
     }
 }

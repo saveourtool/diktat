@@ -16,7 +16,7 @@ const val DIKTAT_RULE_SET_ID = "diktat-ruleset"
 class RuleSetDiktat(val rulesConfig: List<RulesConfig>, vararg rules: Rule) : RuleSet(DIKTAT_RULE_SET_ID, *rules)
 
 fun KtLint.Params.getDiktatConfigRules(): List<RulesConfig> {
-    return (this.ruleSets.find { it.id == DIKTAT_RULE_SET_ID } as RuleSetDiktat).rulesConfig?: listOf()
+    return (this.ruleSets.find { it.id == DIKTAT_RULE_SET_ID } as RuleSetDiktat).rulesConfig
 }
 
 class DiktatRuleSetProvider(private val jsonRulesConfig: String = "rules-config.json") : RuleSetProvider {
