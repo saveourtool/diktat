@@ -10,6 +10,7 @@ class DiktatRuleSetProvider : RuleSetProvider {
         KdocMethods(),
         KdocFormatting(),
         FileNaming(),
+        FileSize(),
         PackageNaming(),
         IdentifierNaming()
     )

@@ -25,6 +25,7 @@
         <module>diktat-common</module>
         <module>diktat-rules</module>
         <module>diktat-test-framework</module>
+        <module>ktlint-ruleset-standard</module>
     </modules>
 
     <dependencyManagement>
