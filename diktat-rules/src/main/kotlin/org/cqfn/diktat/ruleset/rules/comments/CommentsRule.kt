@@ -13,23 +13,28 @@ import org.cqfn.diktat.ruleset.rules.getDiktatConfigRules
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.TokenType
+import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.KtPsiFactory
 import org.jetbrains.kotlin.resolve.ImportPath
 
 /**
- * This rule performs checks related to all comments in general
- * 1. No commented out code is allowed, including imports
- * 2. Warns if there are files with only comments (todo)
+ * This rule performs checks if there is any commented code.
+ * No commented out code is allowed, including imports.
  */
 class CommentsRule : Rule("comments") {
-    private val IMPORT_OR_PACKAGE = """(import|package) """.toRegex()
-    private val EOL_COMMENT_START = """// \S""".toRegex()
+
+    companion object {
+        private val IMPORT_KEYWORD = KtTokens.IMPORT_KEYWORD.value
+        private val PACKAGE_KEYWORD = KtTokens.PACKAGE_KEYWORD.value
+        private val IMPORT_OR_PACKAGE = """($IMPORT_KEYWORD|$PACKAGE_KEYWORD) """.toRegex()
+        private val EOL_COMMENT_START = """// \S""".toRegex()
+    }
 
     private lateinit var configRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
-    private var ktPsiFactory: KtPsiFactory? = null
+    private lateinit var ktPsiFactory: KtPsiFactory
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
@@ -41,8 +46,8 @@ class CommentsRule : Rule("comments") {
         isFixMode = autoCorrect
 
         ktPsiFactory = KtPsiFactory(node.psi.project, false)  // regarding markGenerated see KDoc in Kotlin sources
-        when (node.elementType) {
-            FILE -> checkCommentedCode(node)
+        if (node.elementType == FILE) {
+            checkCommentedCode(node)
         }
     }
 
@@ -67,12 +72,12 @@ class CommentsRule : Rule("comments") {
             }
             .map { (offset, text) ->
                 when {
-                    text.contains("import") ->
-                        offset to ktPsiFactory!!.createImportDirective(ImportPath.fromString(text.substringAfter("import "))).node
-                    text.contains("package") ->
-                        offset to ktPsiFactory!!.createPackageDirective(FqName(text.substringAfter("package "))).node
+                    text.contains(IMPORT_KEYWORD) ->
+                        offset to ktPsiFactory.createImportDirective(ImportPath.fromString(text.substringAfter("$IMPORT_KEYWORD "))).node
+                    text.contains(PACKAGE_KEYWORD) ->
+                        offset to ktPsiFactory.createPackageDirective(FqName(text.substringAfter("$PACKAGE_KEYWORD "))).node
                     else ->
-                        offset to ktPsiFactory!!.createBlockCodeFragment(text, null).node
+                        offset to ktPsiFactory.createBlockCodeFragment(text, null).node
                 }
             }
             .filter { (_, parsedNode) ->

@@ -56,6 +56,22 @@ class CommentedCodeTest {
     }
 
     @Test
+    fun `Should warn if commented out code is detected (single line comments)`() {
+        lintMethod(CommentsRule(),
+            """
+           |import org.junit.Test
+           |
+           |fun foo(a: Int): Int {
+           |//    println(a + 42)
+           |//    println("This is a test string")
+           |    return 0
+           |}
+        """.trimMargin(),
+            LintError(4, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} println(a + 42)", false)
+        )
+    }
+
+    @Test
     fun `Should warn if commented out function is detected (single line comments)`() {
         lintMethod(CommentsRule(),
             """
