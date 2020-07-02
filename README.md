@@ -1,12 +1,11 @@
-## diKTat project
-diKTat - is a rule set of Kotlin code style rules that are using [KTlint](https://ktlint.github.io/) framework.
+ diKTat project
+diKTat - is a rule set of Kotlin code style rules that are using [KTlint](https://ktlint.github.io/) framework under the hood.
 In this project we are trying to define Kotlin code style rules and implement them as visitors for AST tree provided by Ktlint.
 
 Main components are:
 1) diktat-ruleset - number of rules that are supported by diKTat
 2) diktat-test-framework - functional/unit test framework that can be used for running your code fixer on the initial code and compare it with the expected result
-3) customized fork of ktlint project - temporary added until we will publish our ideas to main repository
-4) also see our demo: diktat-demo in a separate repository
+3) also see our demo: diktat-demo in a separate repository
 
 ## What was hacked and changed in KTlint and why do we temporary need a fork of it?
 Mainly we wanted to create a common configurable mechanism that will give us a chance to enable/disable and customize all rules.
