@@ -220,3 +220,18 @@ fun ASTNode.leaveOnlyOneNewLine() {
     assert(this.elementType == WHITE_SPACE)
     (this as LeafPsiElement).replaceWithText("\n${this.text.replace("\n", "")}")
 }
+
+/**
+ * @param withNextNode whether next node after childToMove should be moved too. In most cases it corresponds to moving
+ *     the node with newline.
+ */
+fun ASTNode.moveChildBefore(childToMove: ASTNode, beforeThisNode: ASTNode?, withNextNode: Boolean = false) {
+    require(childToMove in getChildren(null)) { "can only move child of this node" }
+    require(beforeThisNode?.let { it in getChildren(null) } ?: true) { "can only place node before another child of this node" }
+    addChild(childToMove.clone() as ASTNode, beforeThisNode)
+    if (withNextNode && childToMove.treeNext != null) {
+        addChild(childToMove.treeNext.clone() as ASTNode, beforeThisNode)
+        removeChild(childToMove.treeNext)
+    }
+    removeChild(childToMove)
+}

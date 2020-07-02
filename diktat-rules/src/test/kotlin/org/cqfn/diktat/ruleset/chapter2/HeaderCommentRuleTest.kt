@@ -1,24 +1,25 @@
 package org.cqfn.diktat.ruleset.chapter2
 
+import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_CONTAINS_DATE_OR_AUTHOR
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_MISSING_OR_WRONG_COPYRIGHT
+import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_NOT_BEFORE_PACKAGE
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_WRONG_FORMAT
 import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule
 import org.cqfn.diktat.ruleset.utils.lintMethod
-import com.pinterest.ktlint.core.LintError
-import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.junit.Test
 
 class HeaderCommentRuleTest {
     private val rulesConfigList: List<RulesConfig> = listOf(
-            RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true,
-                    mapOf("copyrightText" to "Copyright (c) Huawei Technologies Co., Ltd. 2012-2020. All rights reserved."))
+        RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true,
+            mapOf("copyrightText" to "Copyright (c) Huawei Technologies Co., Ltd. 2012-2020. All rights reserved."))
     )
 
     private val rulesConfigListCn: List<RulesConfig> = listOf(
-            RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true,
-                    mapOf("copyrightText" to "版权所有 (c) 华为技术有限公司 2012-2020"))
+        RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true,
+            mapOf("copyrightText" to "版权所有 (c) 华为技术有限公司 2012-2020"))
     )
 
     private val copyrightBlock = """
@@ -131,7 +132,7 @@ class HeaderCommentRuleTest {
 
         lintMethod(HeaderCommentRule(), invalidCode, LintError(1, 1, "header-comment",
             "${HEADER_MISSING_OR_WRONG_COPYRIGHT.warnText()} ", false),
-        rulesConfigList = rulesConfigList)
+            rulesConfigList = rulesConfigList)
     }
 
     @Test
@@ -199,5 +200,26 @@ class HeaderCommentRuleTest {
         lintMethod(HeaderCommentRule(), invalidCode, LintError(4, 12, "header-comment",
             "${HEADER_WRONG_FORMAT.warnText()} header KDoc should have a new line after", true),
             rulesConfigList = rulesConfigList)
+    }
+
+    @Test
+    fun `header KDoc should be placed before package and imports`() {
+        lintMethod(HeaderCommentRule(),
+            """
+            |package org.cqfn.diktat.example
+            |
+            |import org.cqfn.diktat.example.Foo
+            |
+            |/**
+            | * This is a code snippet for tests
+            | */
+            |
+            |/**
+            | * This is an example class
+            | */
+            |class Example { }
+            """.trimMargin(),
+            LintError(5, 1, "header-comment", "${HEADER_NOT_BEFORE_PACKAGE.warnText()} ", true)
+        )
     }
 }

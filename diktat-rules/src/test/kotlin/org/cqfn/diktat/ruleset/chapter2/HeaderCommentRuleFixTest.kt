@@ -29,4 +29,9 @@ class HeaderCommentRuleFixTest : FixTestBase(
     fun `if no copyright is present and mandatoryCopyright=true, it is added`() {
         fixAndCompare("AutoCopyrightExpected.kt", "AutoCopyrightTest.kt")
     }
+
+    @Test
+    fun `header KDoc should be moved before package`() {
+        fixAndCompare("MisplacedHeaderKdocExpected.kt", "MisplacedHeaderKdocTest.kt")
+    }
 }
