@@ -4,7 +4,6 @@ import com.github.shyiko.klob.Glob
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.RuleSet
-import org.cqfn.diktat.common.config.rules.RulesConfig
 import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -47,7 +46,6 @@ internal fun lintFile(
     userData: Map<String, String> = emptyMap(),
     editorConfigPath: String? = null,
     debug: Boolean = false,
-    rulesConfigList: List<RulesConfig>? = emptyList(),
     lintErrorCallback: (LintError) -> Unit = {}
 
 ) {
@@ -62,8 +60,7 @@ internal fun lintFile(
             cb = { e, _ ->
                 lintErrorCallback(e)
             },
-            debug = debug,
-            rulesConfigList = rulesConfigList
+            debug = debug
         )
     )
 }
@@ -78,7 +75,6 @@ internal fun formatFile(
     userData: Map<String, String>,
     editorConfigPath: String?,
     debug: Boolean,
-    rulesConfigList: List<RulesConfig>? = emptyList(),
     cb: (e: LintError, corrected: Boolean) -> Unit
 ): String =
     KtLint.format(
@@ -90,8 +86,7 @@ internal fun formatFile(
             script = !fileName.endsWith(".kt", ignoreCase = true),
             editorConfigPath = editorConfigPath,
             cb = cb,
-            debug = debug,
-            rulesConfigList = rulesConfigList
+            debug = debug
         )
     )
 

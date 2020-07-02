@@ -7,6 +7,7 @@ import org.cqfn.diktat.common.config.reader.JsonResourceConfigReader
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
+import java.lang.IllegalArgumentException
 import java.net.URL
 
 interface Rule {
@@ -15,9 +16,9 @@ interface Rule {
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class RulesConfig(
-    var name: String,
-    var enabled: Boolean,
-    var configuration: Map<String, String>
+    val name: String,
+    val enabled: Boolean,
+    val configuration: Map<String, String>
 )
 
 abstract class RuleConfiguration(protected val config: Map<String, String>)
@@ -26,7 +27,7 @@ object EmptyConfiguration: RuleConfiguration(mapOf())
 /**
  * class returns the list of configurations that we have read from a json: rules-config.json
  */
-class RulesConfigReader : JsonResourceConfigReader<List<RulesConfig>> {
+class RulesConfigReader : JsonResourceConfigReader<List<RulesConfig>>() {
     companion object {
         val log: Logger = LoggerFactory.getLogger(RulesConfigReader::class.java)
     }

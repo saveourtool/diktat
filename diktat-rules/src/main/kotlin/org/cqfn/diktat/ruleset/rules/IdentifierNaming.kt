@@ -42,7 +42,7 @@ class IdentifierNaming : Rule("identifier-naming") {
         params: KtLint.Params,
         emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit
     ) {
-        confiRules = params.rulesConfigList!!
+        confiRules = params.getDiktatConfigRules()
         isFixMode = autoCorrect
         emitWarn = emit
 

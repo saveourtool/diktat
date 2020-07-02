@@ -23,7 +23,18 @@ a) Use Maven:
 This will also install git hooks into your local .git directory. The hooks will restrict commit messages and branch naming.
 
 b) Use Gradle:
-`gradle build` 
+`gradle build`
+
+## What is rules-config.json and why should I care?
+In ktlint rules can be configured via .editorconfig, but this does not give a chance to customize or enable/disable each and every rule independently.
+That is why we have supported rules-config.json that can be easily changed and help in customization of your own rule set. 
+It has simple fields: "name" - name of the rule, "enabled" (true/false) to enable or disable that rule and "configuration" - a simple map of some extra unique configurations for the rule, for example: 
+```json
+ "configuration": {
+      "isCopyrightMandatory": true,
+      "copyrightText": "Copyright (c) Huawei Technologies Co., Ltd. 2012-2020. All rights reserved."
+    }
+```
 
 To install git hooks using gradle run `gradle installGitHooks`.
 
