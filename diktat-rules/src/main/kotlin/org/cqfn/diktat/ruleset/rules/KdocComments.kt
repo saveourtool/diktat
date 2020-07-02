@@ -36,7 +36,7 @@ class KdocComments : Rule("kdoc-comments") {
         params: KtLint.Params,
         emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit
     ) {
-        configRules = params.rulesConfigList!!
+        configRules = params.getDiktatConfigRules()
         emitWarn = emit
         isFixMode = autoCorrect
 

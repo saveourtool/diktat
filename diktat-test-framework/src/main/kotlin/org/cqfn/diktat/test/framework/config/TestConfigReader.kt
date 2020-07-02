@@ -5,7 +5,7 @@ import org.cqfn.diktat.common.config.reader.JsonResourceConfigReader
 import java.io.File
 import java.io.IOException
 
-class TestConfigReader(configFilePath: String?) : JsonResourceConfigReader<TestConfig?> {
+class TestConfigReader(configFilePath: String?) : JsonResourceConfigReader<TestConfig?>() {
     val config: TestConfig? = readResource(configFilePath!!)
 
     @Throws(IOException::class)

@@ -68,7 +68,7 @@ class KdocFormatting : Rule("kdoc-formatting") {
                        params: KtLint.Params,
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
 
-        configRules = params.rulesConfigList!!
+        configRules = params.getDiktatConfigRules()
         isFixMode = autoCorrect
         emitWarn = emit
         fileName = params.fileName ?: ""

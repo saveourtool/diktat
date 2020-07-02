@@ -37,7 +37,7 @@ class FileNaming : Rule("file-naming") {
                        autoCorrect: Boolean,
                        params: KtLint.Params,
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
-        configRules = params.rulesConfigList!!
+        configRules = params.getDiktatConfigRules()
         fileName = params.fileName
         emitWarn = emit
         isFixMode = autoCorrect
