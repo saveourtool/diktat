@@ -61,3 +61,4 @@ b) Use Gradle:
 |HEADER_MISSING_OR_WRONG_COPYRIGHT|Checks: copyright exists on top of file and is properly formatted (as a block comment). Fix: adds copyright if it is missing and required|
 |HEADER_CONTAINS_DATE_OR_AUTHOR|Checks: header KDoc contains `@author` tag|
 |HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE|Check: warns if file with zero or >1 classes doesn't have header KDoc|
+|FILE_IS_TOO_LONG|Check: the number of lines in the parameter file is too high. Configuration has maxSize - maximum number of lines, ignoreFolders - files containing this folder in their path will not be checked

@@ -7,20 +7,16 @@ import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.*
-import org.cqfn.diktat.ruleset.utils.getIdentifierName
-import org.cqfn.diktat.ruleset.utils.prettyPrint
 import org.cqfn.diktat.ruleset.utils.splitPathToDirs
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.slf4j.LoggerFactory
-import java.io.File
-import kotlin.math.max
 
 class FileSize : Rule("file-size") {
 
     companion object {
         private val log = LoggerFactory.getLogger(FileSize::class.java)
-        const val MAX_SIZE = 2000L
-        private val IGNORE_FOLDER = listOf<String>()
+        const val MAX_SIZE = "2000"
+        private val IGNORE_FOLDER = emptyList<String>()
         const val IGNORE_FOLDERS_SEPARATOR = ","
         const val SRC_PATH = "src"
     }
@@ -41,15 +37,15 @@ class FileSize : Rule("file-size") {
         if (node.elementType == ElementType.FILE) {
             val configuration = FileSizeConfiguration(configRules.getRuleConfig(FILE_IS_TOO_LONG)?.configuration
                 ?: mapOf())
-            val maxSize = if (configuration.maxSize != null && configuration.maxSize!!.toLongOrNull() != null) configuration.maxSize!!.toLong() else MAX_SIZE
-            val ignoreFolders = if (configuration.ignoreFolders != null) configuration.ignoreFolders!!.split(IGNORE_FOLDERS_SEPARATOR) else IGNORE_FOLDER
+            val maxSize = configuration.maxSize.toLongOrNull() ?: MAX_SIZE.toLong()
+            val ignoreFolders = configuration.ignoreFolders
 
             val realFilePath = calculateFilePath(fileName)
 
             if (!realFilePath.contains(SRC_PATH)) {
                 log.error("src directory not found in file path")
             } else {
-                if (ignoreFolders.isEmpty()) {
+                if (ignoreFolders.none()) {
                     checkFileSize(node, maxSize)
                 } else {
                     ignoreFolders.forEach {
@@ -80,7 +76,7 @@ class FileSize : Rule("file-size") {
     }
 
     class FileSizeConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
-        val maxSize = if(config.containsKey("maxSize")) config.get("maxSize") else null
-        val ignoreFolders = if(config.containsKey("ignoreFolders")) config.get("maxSize") else null
+        val maxSize: String = config["maxSize"] ?: MAX_SIZE
+        val ignoreFolders: List<String> = config["ignoreFolders"]?.split(IGNORE_FOLDERS_SEPARATOR) ?: IGNORE_FOLDER
     }
 }
