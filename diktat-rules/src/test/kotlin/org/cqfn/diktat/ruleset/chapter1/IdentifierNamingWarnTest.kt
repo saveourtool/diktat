@@ -1,80 +1,74 @@
 package org.cqfn.diktat.ruleset.chapter1
 
 import com.pinterest.ktlint.core.LintError
-import com.pinterest.ktlint.test.lint
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.cqfn.diktat.ruleset.rules.IdentifierNaming
 import org.cqfn.diktat.ruleset.constants.Warnings.*
+import org.cqfn.diktat.ruleset.utils.lintMethod
+import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 
 class IdentifierNamingWarnTest {
+
+    private val ruleId: String = "$DIKTAT_RULE_SET_ID:identifier-naming"
+
     // ======== checks for generics ========
     @Test
     fun `generic class - single capital letter, can be followed by a number  (check - positive1)`() {
-        assertThat(
-            IdentifierNaming().lint(
-                """
+        val code =
+            """
                     package org.cqfn.diktat.test
 
                     class TreeNode<T>(val value: T?, val next: TreeNode<T>? = null)
 
                 """.trimIndent()
-            )
-        ).isEmpty()
+        lintMethod(IdentifierNaming(), code)
     }
 
     @Test
     fun `generic class - single capital letter, can be followed by a number  (check - positive2)`() {
-        assertThat(
-            IdentifierNaming().lint(
-                """
+        val code =
+            """
                     package org.cqfn.diktat.test
 
                     class TreeNode<T123>(val value: T?, val next: TreeNode<T>? = null)
 
                 """.trimIndent()
-            )
-        ).isEmpty()
+        lintMethod(IdentifierNaming(), code)
     }
 
     @Test
     fun `generic class - single capital letter, can be followed by a number  (check - negative1)`() {
-        assertThat(
-            IdentifierNaming().lint(
-                """
+        val code =
+            """
                     package org.cqfn.diktat.test
 
                     class TreeNode<a>(val value: T?, val next: TreeNode<T>? = null)
 
                 """.trimIndent()
-            )
-        ).containsExactly(LintError(
-            3, 15, "identifier-naming", "${GENERIC_NAME.warnText()} <a>")
+        lintMethod(IdentifierNaming(), code, LintError(
+            3, 15, ruleId, "${GENERIC_NAME.warnText()} <a>")
         )
     }
 
     @Test
     fun `generic class - single capital letter, can be followed by a number  (check - negative2)`() {
-        assertThat(
-            IdentifierNaming().lint(
-                """
+        val code =
+            """
                     package org.cqfn.diktat.test
 
                     class TreeNode<TBBB>(val value: T?, val next: TreeNode<T>? = null)
 
                 """.trimIndent()
-            )
-        ).containsExactly(LintError(
-            3, 15, "identifier-naming", "${GENERIC_NAME.warnText()} <TBBB>")
+        lintMethod(IdentifierNaming(), code, LintError(
+            3, 15, ruleId, "${GENERIC_NAME.warnText()} <TBBB>")
         )
     }
 
 
     @Test
     fun `generic method - single capital letter, can be followed by a number  (check)`() {
-        assertThat(
-            IdentifierNaming().lint(
-                """
+        val code =
+            """
                    package org.cqfn.diktat.test
 
                    fun <T> makeLinkedList(vararg elements: T): TreeNode<T>? {
@@ -85,31 +79,27 @@ class IdentifierNamingWarnTest {
                         return node
                     }
                 """.trimIndent()
-            )
-        ).isEmpty()
+        lintMethod(IdentifierNaming(), code)
     }
 
     // ======== checks for variables and class names ========
     @Test
     fun `check class name (check)`() {
-        assertThat(
-            IdentifierNaming().lint(
-                """
+        val code =
+            """
                     class incorrectNAME {}
                     class IncorrectNAME {}
                 """
-            )
-        ).containsExactly(
-            LintError(2, 27, "identifier-naming", "${CLASS_NAME_INCORRECT.warnText()} incorrectNAME"),
-            LintError(3, 27, "identifier-naming", "${CLASS_NAME_INCORRECT.warnText()} IncorrectNAME")
+        lintMethod(IdentifierNaming(), code,
+            LintError(2, 27, ruleId, "${CLASS_NAME_INCORRECT.warnText()} incorrectNAME"),
+            LintError(3, 27, ruleId, "${CLASS_NAME_INCORRECT.warnText()} IncorrectNAME")
         )
     }
 
     @Test
     fun `check identifiers case format (check - negative)`() {
-        assertThat(
-            IdentifierNaming().lint(
-                """
+        val code =
+            """
                   var SOMEtest = "TEST"
                   const val thisConstantShouldBeUpper = "CONST"
                   class className {
@@ -125,26 +115,25 @@ class IdentifierNamingWarnTest {
                       val CHECK_ME
                   }
                 """.trimIndent()
-            )
-        ).containsExactly(
-            LintError(1, 5, "identifier-naming", "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} SOMEtest"),
-            LintError(2, 11, "identifier-naming", "${CONSTANT_UPPERCASE.warnText()} thisConstantShouldBeUpper"),
-            LintError(3, 7, "identifier-naming", "${CLASS_NAME_INCORRECT.warnText()} className"),
-            LintError(4, 16, "identifier-naming", "${CLASS_NAME_INCORRECT.warnText()} badClassName"),
-            LintError(4, 33, "identifier-naming", "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} FIRST"),
-            LintError(4, 52, "identifier-naming", "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} SECOND"),
-            LintError(7, 19, "identifier-naming", "${CONSTANT_UPPERCASE.warnText()} incorrect_case"),
-            LintError(9, 13, "identifier-naming", "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} INCORRECT"),
-            LintError(12, 9, "identifier-naming", "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} check_me"),
-            LintError(13, 9, "identifier-naming", "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} CHECK_ME")
+
+        lintMethod(IdentifierNaming(), code,
+            LintError(1, 5, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} SOMEtest"),
+            LintError(2, 11, ruleId, "${CONSTANT_UPPERCASE.warnText()} thisConstantShouldBeUpper"),
+            LintError(3, 7, ruleId, "${CLASS_NAME_INCORRECT.warnText()} className"),
+            LintError(4, 16, ruleId, "${CLASS_NAME_INCORRECT.warnText()} badClassName"),
+            LintError(4, 33, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} FIRST"),
+            LintError(4, 52, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} SECOND"),
+            LintError(7, 19, ruleId, "${CONSTANT_UPPERCASE.warnText()} incorrect_case"),
+            LintError(9, 13, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} INCORRECT"),
+            LintError(12, 9, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} check_me"),
+            LintError(13, 9, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} CHECK_ME")
         )
     }
 
     @Test
     fun `check variable length (check - negative)`() {
-        assertThat(
-            IdentifierNaming().lint(
-                """
+        val code =
+            """
                   val r = 0
                   val x256 = 256
                   val i = 1
@@ -152,130 +141,114 @@ class IdentifierNamingWarnTest {
                       val veryLongveryLongveryLongveryLongveryLongveryLongveryLongveryLongveryLongName = ""
                   }
                 """.trimIndent()
-            )
-        ).containsExactly(
-            LintError(1, 5, "identifier-naming", "${IDENTIFIER_LENGTH.warnText()} r"),
-            LintError(2, 5, "identifier-naming", "${VARIABLE_NAME_INCORRECT.warnText()} x256"),
-            LintError(4, 7, "identifier-naming", "${IDENTIFIER_LENGTH.warnText()} LongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongName"),
-            LintError(5, 9, "identifier-naming", "${IDENTIFIER_LENGTH.warnText()} veryLongveryLongveryLongveryLongveryLongveryLongveryLongveryLongveryLongName")
+        lintMethod(IdentifierNaming(), code,
+            LintError(1, 5, ruleId, "${IDENTIFIER_LENGTH.warnText()} r"),
+            LintError(2, 5, ruleId, "${VARIABLE_NAME_INCORRECT.warnText()} x256"),
+            LintError(4, 7, ruleId, "${IDENTIFIER_LENGTH.warnText()} LongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongName"),
+            LintError(5, 9, ruleId, "${IDENTIFIER_LENGTH.warnText()} veryLongveryLongveryLongveryLongveryLongveryLongveryLongveryLongveryLongName")
         )
     }
 
 
     @Test
     fun `check value parameters in dataclasses (check - negative)`() {
-        assertThat(
-            IdentifierNaming().lint(
-                """
+        val code =
+            """
                     data class ClassName(val FIRST: String, var SECOND: String)
                 """.trimIndent()
-            )
-        ).containsExactly(
-            LintError(1, 26, "identifier-naming", "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} FIRST"),
-            LintError(1, 45, "identifier-naming", "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} SECOND")
+        lintMethod(IdentifierNaming(), code,
+            LintError(1, 26, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} FIRST"),
+            LintError(1, 45, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} SECOND")
         )
     }
 
     @Test
     fun `check value parameters in functions (check - negative)`() {
-        assertThat(
-            IdentifierNaming().lint(
-                """
+        val code =
+            """
                     fun foo(SOMENAME: String) {
                     }
                 """.trimIndent()
-            )
-        ).containsExactly(
-            LintError(1, 9, "identifier-naming", "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} SOMENAME")
+        lintMethod(IdentifierNaming(), code,
+            LintError(1, 9, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} SOMENAME")
         )
     }
 
     @Test
     fun `check case for enum values (check - negative)`() {
-        assertThat(
-            IdentifierNaming().lint(
-                """
+        val code =
+            """
                   enum class TEST_ONE {
                     first_value, secondValue, thirdVALUE
                   }
                 """.trimIndent()
-            )
-        ).containsExactly(
-            LintError(1, 12, "identifier-naming", "${CLASS_NAME_INCORRECT.warnText()} TEST_ONE"),
-            LintError(2, 3, "identifier-naming", "${ENUM_VALUE.warnText()} first_value"),
-            LintError(2, 16, "identifier-naming", "${ENUM_VALUE.warnText()} secondValue"),
-            LintError(2, 29, "identifier-naming", "${ENUM_VALUE.warnText()} thirdVALUE")
+        lintMethod(IdentifierNaming(), code,
+            LintError(1, 12, ruleId, "${CLASS_NAME_INCORRECT.warnText()} TEST_ONE"),
+            LintError(2, 3, ruleId, "${ENUM_VALUE.warnText()} first_value"),
+            LintError(2, 16, ruleId, "${ENUM_VALUE.warnText()} secondValue"),
+            LintError(2, 29, ruleId, "${ENUM_VALUE.warnText()} thirdVALUE")
         )
     }
 
     @Test
     fun `check case for object (check - negative)`() {
-        assertThat(
-            IdentifierNaming().lint(
-                """
+        val code =
+            """
                   object TEST_ONE {
                   }
                 """.trimIndent()
-            )
-        ).containsExactly(
-            LintError(1, 8, "identifier-naming", "${OBJECT_NAME_INCORRECT.warnText()} TEST_ONE")
+        lintMethod(IdentifierNaming(), code,
+            LintError(1, 8, ruleId, "${OBJECT_NAME_INCORRECT.warnText()} TEST_ONE")
         )
     }
 
     // ======== exception case and suffix ========
     @Test
     fun `check exception case format`() {
-        assertThat(
-            IdentifierNaming().lint(
-                """
+        val code =
+            """
                     class incorrect_case_Exception(message: String) : Exception(message)
                 """.trimIndent()
-            )
-        ).containsExactly(
-            LintError(1, 7, "identifier-naming", "${CLASS_NAME_INCORRECT.warnText()} incorrect_case_Exception")
+        lintMethod(IdentifierNaming(), code,
+            LintError(1, 7, ruleId, "${CLASS_NAME_INCORRECT.warnText()} incorrect_case_Exception")
         )
     }
 
     @Test
     fun `check exception case and suffix (with type call entry) - negative`() {
-        assertThat(
-            IdentifierNaming().lint(
-                """
+        val code =
+            """
                     class Custom(message: String) : Exception(message)
                 """.trimIndent()
-            )
-        ).containsExactly(
-            LintError(1, 7, "identifier-naming", "${EXCEPTION_SUFFIX.warnText()} Custom")
+        lintMethod(IdentifierNaming(), code,
+            LintError(1, 7, ruleId, "${EXCEPTION_SUFFIX.warnText()} Custom")
         )
     }
 
     @Test
     fun `check exception case and suffix (only parent name inheritance) - negative`() {
-        assertThat(
-            IdentifierNaming().lint(
-                """
+        val code =
+            """
                     class Custom: Exception {
                         constructor(msg: String) : super(msg)
                     }
                 """.trimIndent()
-            )
-        ).containsExactly(
-            LintError(1, 7, "identifier-naming", "${EXCEPTION_SUFFIX.warnText()} Custom")
+        lintMethod(IdentifierNaming(), code,
+            LintError(1, 7, ruleId, "${EXCEPTION_SUFFIX.warnText()} Custom")
         )
     }
 
     @Test
     fun `checking that there should be no prefixes in variable name`() {
-        assertThat(
-            IdentifierNaming().lint(
-                """
+        val code =
+            """
                     const val M_GLOB = ""
                     val aPrefix = ""
                 """.trimIndent()
-            )
-        ).containsExactly(
-            LintError(1, 11, "identifier-naming", "${VARIABLE_HAS_PREFIX.warnText()} M_GLOB"),
-            LintError(2, 5, "identifier-naming", "${VARIABLE_HAS_PREFIX.warnText()} aPrefix")
+
+        lintMethod(IdentifierNaming(), code,
+            LintError(1, 11, ruleId, "${VARIABLE_HAS_PREFIX.warnText()} M_GLOB"),
+            LintError(2, 5, ruleId, "${VARIABLE_HAS_PREFIX.warnText()} aPrefix")
         )
     }
 }

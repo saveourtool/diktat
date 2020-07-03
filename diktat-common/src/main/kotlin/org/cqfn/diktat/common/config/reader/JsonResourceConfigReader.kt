@@ -9,7 +9,7 @@ import java.net.URL
 /**
  * @param <T> - class name parameter that will be used in calculation of classpath
 </T> */
-interface JsonResourceConfigReader<T> {
+abstract class JsonResourceConfigReader<T> {
     /**
      * @param resourceFileName - related path to a file from resources
      */
@@ -28,11 +28,11 @@ interface JsonResourceConfigReader<T> {
         return null
     }
 
-    fun getConfigFile(resourceFileName: String): URL? {
+    protected open fun getConfigFile(resourceFileName: String): URL? {
         return javaClass.classLoader.getResource(resourceFileName)
     }
 
-    fun parseResource(file: File): T
+    protected abstract fun parseResource(file: File): T
 
     companion object {
         val log: Logger = LoggerFactory.getLogger(JsonResourceConfigReader::class.java)

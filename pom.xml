@@ -127,4 +127,31 @@
         </dependencies>
     </dependencyManagement>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.rudikershaw.gitbuildhook</groupId>
+                <artifactId>git-build-hook-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <configuration>
+                    <installHooks>
+                        <!-- The location of a git hook to install into the default hooks directory. -->
+                        <pre-commit>.git-hooks/pre-commit.sh</pre-commit>
+                        <commit-msg>.git-hooks/commit-msg.sh</commit-msg>
+                    </installHooks>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>install-git-hooks</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <!-- Install specific hooks directly to the default hooks directory. -->
+                            <goal>install</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>

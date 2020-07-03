@@ -19,7 +19,6 @@ class HeaderCommentRuleFixTest : FixTestBase(
         RulesConfig(HEADER_WRONG_FORMAT.name, true, mapOf())
     )
 ) {
-
     @Test
     fun `new line should be inserted after header KDoc`() {
         fixAndCompare("NewlineAfterHeaderKdocExpected.kt", "NewlineAfterHeaderKdocTest.kt")
