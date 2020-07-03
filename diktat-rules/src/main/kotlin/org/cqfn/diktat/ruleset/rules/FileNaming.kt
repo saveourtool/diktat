@@ -28,7 +28,7 @@ class FileNaming : Rule("file-naming") {
         val VALID_EXTENSIONS = listOf(".kt", ".kts")
     }
 
-    private lateinit var confiRules: List<RulesConfig>
+    private lateinit var configRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var fileName: String? = null
     private var isFixMode: Boolean = false
@@ -37,7 +37,7 @@ class FileNaming : Rule("file-naming") {
                        autoCorrect: Boolean,
                        params: KtLint.Params,
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
-        confiRules = params.rulesConfigList!!
+        configRules = params.getDiktatConfigRules()
         fileName = params.fileName
         emitWarn = emit
         isFixMode = autoCorrect
@@ -52,7 +52,7 @@ class FileNaming : Rule("file-naming") {
         if (fileName != null) {
             val (name, extension) = getFileParts()
             if (!name.isPascalCase() || !VALID_EXTENSIONS.contains(extension)) {
-                FILE_NAME_INCORRECT.warnAndFix(confiRules, emitWarn, isFixMode, "$name$extension", 0) {
+                FILE_NAME_INCORRECT.warnAndFix(configRules, emitWarn, isFixMode, "$name$extension", 0) {
                     // FixMe: we can add an autocorrect here in future, but is there any purpose to change file or class name?
                 }
             }
@@ -66,7 +66,7 @@ class FileNaming : Rule("file-naming") {
             if (classes.size == 1) {
                 val className = classes[0].getFirstChildWithType(IDENTIFIER)!!.text
                 if (className != fileNameWithoutSuffix) {
-                    FILE_NAME_MATCH_CLASS.warnAndFix(confiRules, emitWarn, isFixMode, "$fileNameWithoutSuffix$fileNameSuffix vs $className", 0) {
+                    FILE_NAME_MATCH_CLASS.warnAndFix(configRules, emitWarn, isFixMode, "$fileNameWithoutSuffix$fileNameSuffix vs $className", 0) {
                         // FixMe: we can add an autocorrect here in future, but is there any purpose to change file name?
                     }
                 }

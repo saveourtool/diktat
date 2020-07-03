@@ -74,8 +74,7 @@ object KtLint {
         val cb: (e: LintError, corrected: Boolean) -> Unit,
         val script: Boolean = false,
         val editorConfigPath: String? = null,
-        val debug: Boolean = false,
-        val rulesConfigList: List<RulesConfig>? = emptyList()
+        val debug: Boolean = false
     )
 
     init {

@@ -16,6 +16,7 @@ import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
+import org.cqfn.diktat.ruleset.rules.getDiktatConfigRules
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 
@@ -29,7 +30,7 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 class HeaderCommentRule : Rule("header-comment") {
     private val copyrightWords = setOf("copyright", "版权")
 
-    private lateinit var confiRules: List<RulesConfig>
+    private lateinit var configRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
     private var fileName: String = ""
@@ -38,7 +39,7 @@ class HeaderCommentRule : Rule("header-comment") {
                        autoCorrect: Boolean,
                        params: KtLint.Params,
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
-        confiRules = params.rulesConfigList!!
+        configRules = params.getDiktatConfigRules()
         isFixMode = autoCorrect
         emitWarn = emit
 
@@ -50,7 +51,7 @@ class HeaderCommentRule : Rule("header-comment") {
     }
 
     private fun checkCopyright(node: ASTNode) {
-        val configuration = CopyrightConfiguration(confiRules.getRuleConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT)?.configuration
+        val configuration = CopyrightConfiguration(configRules.getRuleConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT)?.configuration
             ?: mapOf())
         val copyrightText = configuration.getCopyrightText()
 
@@ -63,7 +64,7 @@ class HeaderCommentRule : Rule("header-comment") {
             }
 
         if (isWrongCopyright || isMissingCopyright || isCopyrightInsideKdoc) {
-            HEADER_MISSING_OR_WRONG_COPYRIGHT.warnAndFix(confiRules, emitWarn, isFixMode, fileName, node.startOffset) {
+            HEADER_MISSING_OR_WRONG_COPYRIGHT.warnAndFix(configRules, emitWarn, isFixMode, fileName, node.startOffset) {
                 if (headerComment != null) {
                     node.removeChild(headerComment)
                 }
@@ -85,20 +86,20 @@ class HeaderCommentRule : Rule("header-comment") {
         if (headerKdoc == null) {
             val nDeclaredClasses = node.getAllChildrenWithType(ElementType.CLASS).size
             if (nDeclaredClasses == 0 || nDeclaredClasses > 1) {
-                HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warn(confiRules, emitWarn, isFixMode, fileName, node.startOffset)
+                HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warn(configRules, emitWarn, isFixMode, fileName, node.startOffset)
             }
         } else {
             // fixme we should also check date of creation, but it can be in different formats
             headerKdoc.text.split('\n')
                 .filter { it.contains("@author") }
                 .forEach {
-                    HEADER_CONTAINS_DATE_OR_AUTHOR.warn(confiRules, emitWarn, isFixMode,
+                    HEADER_CONTAINS_DATE_OR_AUTHOR.warn(configRules, emitWarn, isFixMode,
                         it.trim(), headerKdoc.startOffset)
                 }
 
             if (headerKdoc.treeNext != null && headerKdoc.treeNext.elementType == WHITE_SPACE
                 && headerKdoc.treeNext.text.count { it == '\n' } != 2) {
-                HEADER_WRONG_FORMAT.warnAndFix(confiRules, emitWarn, isFixMode,
+                HEADER_WRONG_FORMAT.warnAndFix(configRules, emitWarn, isFixMode,
                     "header KDoc should have a new line after", headerKdoc.startOffset) {
                     node.replaceChild(headerKdoc.treeNext, LeafPsiElement(WHITE_SPACE, "\n\n"))
                 }

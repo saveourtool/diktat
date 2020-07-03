@@ -95,3 +95,10 @@ tasks.register("publishNewRelease", DefaultTask.class) {
   description = "Triggers uploading new archives and publish announcements"
   dependsOn announceTask
 }
+
+tasks.register("installGitHooks", Copy.class) {
+  from("$rootDir/.git-hooks/commit-msg.sh", "$rootDir/.git-hooks/pre-commit.sh")
+  into("$rootDir/.git/hooks")
+  rename("(.+).sh", '$1')
+  fileMode 0755
+}

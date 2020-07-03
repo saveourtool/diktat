@@ -16,11 +16,27 @@ That's why we added logic for:
 
 ## How to build the project
 As Java/Kotlin community has a holywar about usage of Gradle vs Maven - we supported both. So you can:
+
 a) Use Maven:
 `mvn clean install`
 
+This will also install git hooks into your local .git directory. The hooks will restrict commit messages and branch naming.
+
 b) Use Gradle:
-`gradle build` 
+`gradle build`
+
+## What is rules-config.json and why should I care?
+In ktlint rules can be configured via .editorconfig, but this does not give a chance to customize or enable/disable each and every rule independently.
+That is why we have supported rules-config.json that can be easily changed and help in customization of your own rule set. 
+It has simple fields: "name" - name of the rule, "enabled" (true/false) to enable or disable that rule and "configuration" - a simple map of some extra unique configurations for the rule, for example: 
+```json
+ "configuration": {
+      "isCopyrightMandatory": true,
+      "copyrightText": "Copyright (c) Huawei Technologies Co., Ltd. 2012-2020. All rights reserved."
+    }
+```
+
+To install git hooks using gradle run `gradle installGitHooks`.
 
 ## Which rules does diKTat supports now and how they can be configured.
 |Rule name|Description|
@@ -61,3 +77,4 @@ b) Use Gradle:
 |HEADER_MISSING_OR_WRONG_COPYRIGHT|Checks: copyright exists on top of file and is properly formatted (as a block comment). Fix: adds copyright if it is missing and required|
 |HEADER_CONTAINS_DATE_OR_AUTHOR|Checks: header KDoc contains `@author` tag|
 |HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE|Check: warns if file with zero or >1 classes doesn't have header KDoc|
+|COMMENTED_OUT_CODE|Check: warns if valid kotlin code is detected in commented blocks (both single-line and block comments)|

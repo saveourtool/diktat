@@ -14,14 +14,19 @@ import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WRONG_TAGS_ORDER
 import org.cqfn.diktat.ruleset.rules.KdocFormatting
 import org.cqfn.diktat.ruleset.utils.lintMethod
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_EMPTY_KDOC
+import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
+import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule
+import org.cqfn.diktat.ruleset.utils.TEST_FILE_NAME
 import org.junit.Test
 
 class KdocFormattingTest {
+
+    private val ruleId: String = "$DIKTAT_RULE_SET_ID:kdoc-formatting"
+
     @Test
     fun `there should be no blank line between kdoc and it's declaration code`() {
-        Assertions.assertThat(
-            KdocFormatting().lint(
-                """
+        val code =
+            """
                     package org.cqfn.diktat.test.resources.test.paragraph2.kdoc
 
                     /**
@@ -56,13 +61,13 @@ class KdocFormattingTest {
 
                     fun someFunction() {}
                 """.trimIndent()
-            )
-        ).containsExactly(
-            LintError(5, 4, "kdoc-formatting", "${BLANK_LINE_AFTER_KDOC.warnText()} SUPER_CONSTANT"),
-            LintError(11, 4, "kdoc-formatting", "${BLANK_LINE_AFTER_KDOC.warnText()} SomeName"),
-            LintError(16, 8, "kdoc-formatting", "${BLANK_LINE_AFTER_KDOC.warnText()} variable"),
-            LintError(22, 8, "kdoc-formatting", "${BLANK_LINE_AFTER_KDOC.warnText()} somePublicFunction"),
-            LintError(31, 4, "kdoc-formatting", "${BLANK_LINE_AFTER_KDOC.warnText()} someFunction")
+
+        lintMethod(KdocFormatting(), code,
+            LintError(5, 4, ruleId, "${BLANK_LINE_AFTER_KDOC.warnText()} SUPER_CONSTANT"),
+            LintError(11, 4, ruleId, "${BLANK_LINE_AFTER_KDOC.warnText()} SomeName"),
+            LintError(16, 8, ruleId, "${BLANK_LINE_AFTER_KDOC.warnText()} variable"),
+            LintError(22, 8, ruleId, "${BLANK_LINE_AFTER_KDOC.warnText()} somePublicFunction"),
+            LintError(31, 4, ruleId, "${BLANK_LINE_AFTER_KDOC.warnText()} someFunction")
         )
     }
 
@@ -81,7 +86,7 @@ class KdocFormattingTest {
                | */
                |fun foo() = Unit
             """.trimMargin(),
-            LintError(1, 1, "kdoc-formatting", "${KDOC_EMPTY_KDOC.warnText()} foo", false)
+            LintError(1, 1, ruleId, "${KDOC_EMPTY_KDOC.warnText()} foo", false)
         )
     }
 
@@ -92,7 +97,7 @@ class KdocFormattingTest {
                | */
                |fun foo() = Unit
             """.trimMargin(),
-            LintError(1, 1, "kdoc-formatting", "${KDOC_EMPTY_KDOC.warnText()} foo", false)
+            LintError(1, 1, ruleId, "${KDOC_EMPTY_KDOC.warnText()} foo", false)
         )
     }
 
@@ -103,7 +108,7 @@ class KdocFormattingTest {
                | *
                | */
             """.trimMargin(),
-            LintError(1, 1, "kdoc-formatting", "${KDOC_EMPTY_KDOC.warnText()} ", false)
+            LintError(1, 1, ruleId, "${KDOC_EMPTY_KDOC.warnText()} $TEST_FILE_NAME", false)
         )
     }
 
@@ -117,7 +122,7 @@ class KdocFormattingTest {
                |    companion object { }
                |}
             """.trimMargin(),
-            LintError(2, 5, "kdoc-formatting", "${KDOC_EMPTY_KDOC.warnText()} object", false)
+            LintError(2, 5, ruleId, "${KDOC_EMPTY_KDOC.warnText()} object", false)
         )
     }
 
@@ -130,7 +135,7 @@ class KdocFormattingTest {
             fun bar() = Unit
         """.trimIndent()
 
-        lintMethod(KdocFormatting(), invalidCode, LintError(2, 4, "kdoc-formatting",
+        lintMethod(KdocFormatting(), invalidCode, LintError(2, 4, ruleId,
             "${KDOC_NO_DEPRECATED_TAG.warnText()} @deprecated use foo instead"))
     }
 
@@ -146,7 +151,7 @@ class KdocFormattingTest {
         """.trimIndent()
 
         lintMethod(KdocFormatting(), invalidCode,
-            LintError(3, 16, "kdoc-formatting",
+            LintError(3, 16, ruleId,
                 "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false))
     }
 
@@ -177,13 +182,13 @@ class KdocFormattingTest {
         """.trimIndent()
 
         lintMethod(KdocFormatting(), invalidCode,
-            LintError(2, 16, "kdoc-formatting",
+            LintError(2, 16, ruleId,
                 "${KDOC_WRONG_SPACES_AFTER_TAG.warnText()} @param", true),
-            LintError(3, 16, "kdoc-formatting",
+            LintError(3, 16, ruleId,
                 "${KDOC_WRONG_SPACES_AFTER_TAG.warnText()} @param", true),
-            LintError(4, 16, "kdoc-formatting",
+            LintError(4, 16, ruleId,
                 "${KDOC_WRONG_SPACES_AFTER_TAG.warnText()} @return", true),
-            LintError(5, 16, "kdoc-formatting",
+            LintError(5, 16, ruleId,
                 "${KDOC_WRONG_SPACES_AFTER_TAG.warnText()} @throws", true))
     }
 
@@ -213,7 +218,7 @@ class KdocFormattingTest {
         """.trimIndent()
 
         lintMethod(KdocFormatting(), invalidCode,
-            LintError(2, 16, "kdoc-formatting",
+            LintError(2, 16, ruleId,
                 "${KDOC_WRONG_TAGS_ORDER.warnText()} @return, @throws, @param", true))
     }
 
@@ -231,9 +236,9 @@ class KdocFormattingTest {
         """.trimIndent()
 
         lintMethod(KdocFormatting(), invalidCode,
-            LintError(2, 16, "kdoc-formatting",
+            LintError(2, 16, ruleId,
                 "${KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS.warnText()} @param", true),
-            LintError(4, 16, "kdoc-formatting",
+            LintError(4, 16, ruleId,
                 "${KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS.warnText()} @return", true))
     }
 
@@ -260,7 +265,7 @@ class KdocFormattingTest {
                | */
                |fun test(a: Int): Unit = Unit
             """.trimMargin(),
-            LintError(3, 4, "kdoc-formatting", "${KDOC_NEWLINES_BEFORE_BASIC_TAGS.warnText()} @param", true)
+            LintError(3, 4, ruleId, "${KDOC_NEWLINES_BEFORE_BASIC_TAGS.warnText()} @param", true)
         )
     }
 
@@ -274,7 +279,7 @@ class KdocFormattingTest {
                | */
                |fun test(a: Int): Unit = Unit
             """.trimMargin(),
-            LintError(4, 4, "kdoc-formatting", "${KDOC_NEWLINES_BEFORE_BASIC_TAGS.warnText()} @param", true)
+            LintError(4, 4, ruleId, "${KDOC_NEWLINES_BEFORE_BASIC_TAGS.warnText()} @param", true)
         )
     }
 
@@ -308,7 +313,7 @@ class KdocFormattingTest {
         """.trimIndent()
 
         lintMethod(KdocFormatting(), invalidCode,
-            LintError(2, 16, "kdoc-formatting",
+            LintError(2, 16, ruleId,
                 "${KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS.warnText()} @implSpec, @apiNote, @implNote", true))
     }
 
@@ -330,7 +335,7 @@ class KdocFormattingTest {
         """.trimIndent()
 
         lintMethod(KdocFormatting(), invalidCode,
-            LintError(2, 16, "kdoc-formatting",
+            LintError(2, 16, ruleId,
                 "${KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS.warnText()} @implSpec, @apiNote, @implNote", true))
     }
 }
