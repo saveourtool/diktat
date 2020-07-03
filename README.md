@@ -1,4 +1,4 @@
- diKTat project
+## diKTat project
 diKTat - is a rule set of Kotlin code style rules that are using [KTlint](https://ktlint.github.io/) framework under the hood.
 In this project we are trying to define Kotlin code style rules and implement them as visitors for AST tree provided by Ktlint.
 
@@ -16,13 +16,10 @@ That's why we added logic for:
 ## How to build the project
 As Java/Kotlin community has a holywar about usage of Gradle vs Maven - we supported both. So you can:
 
-a) Use Maven:
+Use Maven:
 `mvn clean install`
 
 This will also install git hooks into your local .git directory. The hooks will restrict commit messages and branch naming.
-
-b) Use Gradle:
-`gradle build`
 
 ## What is rules-config.json and why should I care?
 In ktlint rules can be configured via .editorconfig, but this does not give a chance to customize or enable/disable each and every rule independently.
