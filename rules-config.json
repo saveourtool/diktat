@@ -173,5 +173,13 @@
     "name": "HEADER_MISSING_IN_LONG_FILE",
     "enabled": true,
     "configuration": {}
+  },
+  {
+    "name": "FILE_IS_TOO_LONG",
+    "enabled": true,
+    "configuration": {
+      "maxSize": "100",
+      "ignoreFolders" : ""
+    }
   }
 ]

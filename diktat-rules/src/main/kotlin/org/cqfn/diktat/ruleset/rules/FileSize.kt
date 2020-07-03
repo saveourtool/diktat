@@ -3,19 +3,26 @@ package org.cqfn.diktat.ruleset.rules
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
+import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.*
+import org.cqfn.diktat.ruleset.utils.getIdentifierName
+import org.cqfn.diktat.ruleset.utils.prettyPrint
 import org.cqfn.diktat.ruleset.utils.splitPathToDirs
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.slf4j.LoggerFactory
+import java.io.File
+import kotlin.math.max
 
 class FileSize : Rule("file-size") {
 
     companion object {
-        var MAX_SIZE = 2000L
-        var IGNOR_FOLDER = listOf<String>()
         private val log = LoggerFactory.getLogger(FileSize::class.java)
+        const val MAX_SIZE = 2000L
+        private val IGNORE_FOLDER = listOf<String>()
+        const val IGNORE_FOLDERS_SEPARATOR = ","
+        const val SRC_PATH = "src"
     }
 
     private lateinit var configRules: List<RulesConfig>
@@ -31,47 +38,49 @@ class FileSize : Rule("file-size") {
         fileName = params.fileName
         emitWarn = emit
         isFixMode = autoCorrect
+        if (node.elementType == ElementType.FILE) {
+            val configuration = FileSizeConfiguration(configRules.getRuleConfig(FILE_IS_TOO_LONG)?.configuration
+                ?: mapOf())
+            val maxSize = if (configuration.maxSize != null && configuration.maxSize!!.toLongOrNull() != null) configuration.maxSize!!.toLong() else MAX_SIZE
+            val ignoreFolders = if (configuration.ignoreFolders != null) configuration.ignoreFolders!!.split(IGNORE_FOLDERS_SEPARATOR) else IGNORE_FOLDER
 
-        parseConfig(configRules.getRuleConfig(FILE_SIZE_LARGER)?.configuration ?: mapOf())
+            val realFilePath = calculateFilePath(fileName)
 
-        val realPackageName = calculateRealPackageName(fileName)
-
-        if (!realPackageName.containsAll(IGNOR_FOLDER)) {
-            if (node.elementType == ElementType.FILE) {
-                checkFileSize(node)
+            if (!realFilePath.contains(SRC_PATH)) {
+                log.error("src directory not found in file path")
+            } else {
+                if (ignoreFolders.isEmpty()) {
+                    checkFileSize(node, maxSize)
+                } else {
+                    ignoreFolders.forEach {
+                        if (!realFilePath.containsAll(it.split("/"))) {
+                            checkFileSize(node, maxSize)
+                        }
+                    }
+                }
             }
         }
     }
 
-    private fun calculateRealPackageName(fileName: String?): List<String> {
+    private fun calculateFilePath(fileName: String?): List<String> {
         val filePathParts = fileName?.splitPathToDirs()
         return if (filePathParts == null) {
-            log.error("Not able to determine a path to a scanned file or src directory cannot be found in it's path." +
-                " Will not be able to determine correct package name. It can happen due to missing <src> directory in the path")
+            log.error("Could not find absolute path to file")
             listOf()
         } else {
             filePathParts
         }
     }
 
-    private fun parseConfig(config: Map<String, String>){
-        if (!config.isEmpty()){
-            val ignorFolders =  config.get("ignorFolders")
-            val maxSize = config.get("maxSize")
-            if (ignorFolders != null){
-                val listIgnorFolders = ignorFolders.trim().split(",")
-                IGNOR_FOLDER = listIgnorFolders
-            }
-            if (maxSize?.toLongOrNull() != null){
-                MAX_SIZE = maxSize.toLong()
-            }
+    private fun checkFileSize(node: ASTNode, maxSize: Long){
+        val size = node.text.split("\n").size
+        if (size > maxSize){
+            FILE_IS_TOO_LONG.warn(configRules, emitWarn, isFixMode, "$size" ,node.startOffset)
         }
     }
 
-    private fun checkFileSize(node: ASTNode){
-        val size = node.text.split("\n".toRegex()).size
-        if (size > MAX_SIZE){
-            FILE_SIZE_LARGER.warn(configRules, emitWarn, isFixMode, "$size" ,node.startOffset)
-        }
+    class FileSizeConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
+        val maxSize = if(config.containsKey("maxSize")) config.get("maxSize") else null
+        val ignoreFolders = if(config.containsKey("ignoreFolders")) config.get("maxSize") else null
     }
 }

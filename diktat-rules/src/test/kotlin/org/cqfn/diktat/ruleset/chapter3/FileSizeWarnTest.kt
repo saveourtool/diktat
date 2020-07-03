@@ -8,14 +8,27 @@ import org.assertj.core.api.Assertions
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.FileSize
+import org.cqfn.diktat.ruleset.rules.KdocFormatting
 import org.junit.Test
+import java.io.File
 
 class FileSizeWarnTest{
 
-    private val rulesConfigList: List<RulesConfig> = listOf(
-        RulesConfig(Warnings.FILE_SIZE_LARGER.name, true,
-            mapOf("maxSize" to "10", "ignorFolders" to "packagee"))
+    private val rulesConfigListLarge: List<RulesConfig> = listOf(
+        RulesConfig(Warnings.FILE_IS_TOO_LONG.name, true,
+            mapOf("maxSize" to "5"))
     )
+
+    private val rulesConfigListSmall: List<RulesConfig> = listOf(
+        RulesConfig(Warnings.FILE_IS_TOO_LONG.name, true,
+            mapOf("maxSize" to "10"))
+    )
+
+    private val rulesConfigListIgnore: List<RulesConfig> = listOf(
+        RulesConfig(Warnings.FILE_IS_TOO_LONG.name, true,
+            mapOf("maxSize" to "5", "ignoreFolders" to "main"))
+    )
+
     fun lintMethod(rule: Rule,
                    fileName: String,
                    vararg lintErrors: LintError,
@@ -38,8 +51,25 @@ class FileSizeWarnTest{
     }
 
     @Test
-    fun `file larger then expected`() {
-        val path = javaClass.classLoader.getResource("test/paragrah3/FileSizeLarger.kt")!!.path
-        lintMethod(FileSize(), path, rulesConfigList = rulesConfigList)
+    fun `file larger then max with ignore`() {
+        val path = javaClass.classLoader.getResource("test/paragrah3/src/main/FileSizeLarger.kt")!!.path
+        lintMethod(FileSize(), path, rulesConfigList = rulesConfigListIgnore)
+    }
+
+    @Test
+    fun `file smaller then max`() {
+        val path = javaClass.classLoader.getResource("test/paragrah3/src/main/FileSizeLarger.kt")!!.path
+        lintMethod(FileSize(), path, rulesConfigList = rulesConfigListSmall)
+    }
+
+    @Test
+    fun `file larger then max`() {
+        val path = javaClass.classLoader.getResource("test/paragrah3/src/main/FileSizeLarger.kt")!!.path
+        val file = File(path)
+        lintMethod(FileSize(), path, rulesConfigList = rulesConfigListLarge)
+        lintMethod(FileSize(), path,
+            LintError(2, 16, "file-size",
+                Warnings.FILE_IS_TOO_LONG.warnText(), false),
+            rulesConfigList = rulesConfigListLarge)
     }
 }
