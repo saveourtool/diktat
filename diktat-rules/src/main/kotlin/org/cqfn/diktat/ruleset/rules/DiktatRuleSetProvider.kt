@@ -7,12 +7,12 @@ import com.pinterest.ktlint.core.RuleSetProvider
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
 import org.cqfn.diktat.ruleset.rules.comments.CommentsRule
+import org.cqfn.diktat.ruleset.rules.files.FileStructureRule
 
 /**
  * this constant will be used everywhere in the code to mark usage of Diktat ruleset
  */
 const val DIKTAT_RULE_SET_ID = "diktat-ruleset"
-import org.cqfn.diktat.ruleset.rules.files.FileStructureRule
 
 class RuleSetDiktat(val rulesConfig: List<RulesConfig>, vararg rules: Rule) : RuleSet(DIKTAT_RULE_SET_ID, *rules)
 

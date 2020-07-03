@@ -6,12 +6,13 @@ import org.cqfn.diktat.ruleset.constants.Warnings.FILE_CONTAINS_ONLY_COMMENTS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_INCORRECT_BLOCKS_ORDER
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NO_BLANK_LINE_BETWEEN_BLOCKS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_UNORDERED_IMPORTS
+import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.files.FileStructureRule
 import org.cqfn.diktat.ruleset.utils.lintMethod
 import org.junit.Test
 
 class FileStructureRuleTest {
-    private val ruleId = "file-structure"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:file-structure"
 
     @Test
     fun `should warn if file contains only comments`() {
@@ -27,7 +28,7 @@ class FileStructureRuleTest {
                 |
                 |// lorem ipsum
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${FILE_CONTAINS_ONLY_COMMENTS.warnText()} ", false)
+            LintError(1, 1, ruleId, "${FILE_CONTAINS_ONLY_COMMENTS.warnText()} /TestFileName.kt", false)
         )
     }
 
@@ -61,7 +62,7 @@ class FileStructureRuleTest {
                 |
                 |class Example { }
             """.trimMargin(),
-            LintError(3, 1, ruleId, "${FILE_UNORDERED_IMPORTS.warnText()} ", true)
+            LintError(3, 1, ruleId, "${FILE_UNORDERED_IMPORTS.warnText()} /TestFileName.kt", true)
         )
     }
 

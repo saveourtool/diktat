@@ -18,6 +18,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.FILE_CONTAINS_ONLY_COMMENTS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_INCORRECT_BLOCKS_ORDER
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NO_BLANK_LINE_BETWEEN_BLOCKS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_UNORDERED_IMPORTS
+import org.cqfn.diktat.ruleset.rules.getDiktatConfigRules
 import org.cqfn.diktat.ruleset.utils.findChildBefore
 import org.cqfn.diktat.ruleset.utils.isChildAfterAnother
 import org.cqfn.diktat.ruleset.utils.isChildBeforeAnother
@@ -38,14 +39,14 @@ import org.jetbrains.kotlin.psi.KtImportDirective
  */
 class FileStructureRule : Rule("file-structure") {
 
-    private lateinit var confiRules: List<RulesConfig>
+    private lateinit var configRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
     private var fileName: String = ""
 
     override fun visit(node: ASTNode, autoCorrect: Boolean, params: KtLint.Params, emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
 
-        confiRules = params.rulesConfigList!!
+        configRules = params.getDiktatConfigRules()
         isFixMode = autoCorrect
         emitWarn = emit
 
@@ -62,7 +63,7 @@ class FileStructureRule : Rule("file-structure") {
         val codeTokens = TokenSet.andNot(TokenSet.ANY, TokenSet.create(WHITE_SPACE, KDOC, BLOCK_COMMENT, EOL_COMMENT, PACKAGE_DIRECTIVE, IMPORT_LIST))
         val hasCode = node.getChildren(codeTokens).isNotEmpty()
         if (!hasCode) {
-            FILE_CONTAINS_ONLY_COMMENTS.warn(confiRules, emitWarn, isFixMode, fileName, node.startOffset)
+            FILE_CONTAINS_ONLY_COMMENTS.warn(configRules, emitWarn, isFixMode, fileName, node.startOffset)
         }
         return hasCode
     }
@@ -88,7 +89,7 @@ class FileStructureRule : Rule("file-structure") {
                 || !node.isChildBeforeAnother(astNode, beforeThisNode)
 
             if (isPositionIncorrect) {
-                FILE_INCORRECT_BLOCKS_ORDER.warnAndFix(confiRules, emitWarn, isFixMode, astNode.text.lines().first(), astNode.startOffset) {
+                FILE_INCORRECT_BLOCKS_ORDER.warnAndFix(configRules, emitWarn, isFixMode, astNode.text.lines().first(), astNode.startOffset) {
                     node.moveChildBefore(astNode, beforeThisNode, 2)
                 }
             }
@@ -98,7 +99,7 @@ class FileStructureRule : Rule("file-structure") {
         arrayOf(copyrightComment, headerKdoc, fileAnnotations, packageDirectiveNode, importsList).forEach { astNode ->
             astNode?.treeNext?.apply {
                 if (elementType == WHITE_SPACE && text.count { it == '\n' } != 2) {
-                    FILE_NO_BLANK_LINE_BETWEEN_BLOCKS.warnAndFix(confiRules, emitWarn, isFixMode, astNode.text.lines().first(), astNode.startOffset) {
+                    FILE_NO_BLANK_LINE_BETWEEN_BLOCKS.warnAndFix(configRules, emitWarn, isFixMode, astNode.text.lines().first(), astNode.startOffset) {
                         (this as LeafPsiElement).replaceWithText("\n\n${text.replace("\n", "")}")
                     }
                 }
@@ -111,12 +112,12 @@ class FileStructureRule : Rule("file-structure") {
 
         // importPath can be null if import name cannot be parsed, which should be a very rare case, therefore !! should be safe here
         imports.filter { (it.psi as KtImportDirective).importPath!!.isAllUnder }.forEach {
-            FILE_COLLAPSED_IMPORTS.warn(confiRules, emitWarn, isFixMode, it.text, it.startOffset)
+            FILE_COLLAPSED_IMPORTS.warn(configRules, emitWarn, isFixMode, it.text, it.startOffset)
         }
 
         val sortedImports = imports.sortedBy { it.text }
         if (sortedImports != imports) {
-            FILE_UNORDERED_IMPORTS.warnAndFix(confiRules, emitWarn, isFixMode, fileName, node.startOffset) {
+            FILE_UNORDERED_IMPORTS.warnAndFix(configRules, emitWarn, isFixMode, fileName, node.startOffset) {
                 // move all commented lines among import before imports block
                 node.getChildren(null).filterIndexed { index, astNode ->
                     index < node.getChildren(null).indexOf(imports.last()) && astNode.elementType == EOL_COMMENT

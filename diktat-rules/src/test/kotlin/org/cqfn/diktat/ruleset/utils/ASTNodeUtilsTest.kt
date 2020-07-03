@@ -18,7 +18,7 @@ class ASTNodeUtilsTest {
      *  - IDENTIFIER: "Test"
      */
     @Test
-//    @Ignore("This test is for demonstration only, it doesn't actually check anything")
+    @Ignore("This test is for demonstration only, it doesn't actually check anything")
     fun `pretty print ASTNode`() {
         val code = """
             @file:[JvmName("Foo") VisibleForTesting]
