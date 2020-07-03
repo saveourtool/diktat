@@ -38,7 +38,7 @@ class PackageNaming : Rule("package-naming") {
         private val log = LoggerFactory.getLogger(PackageNaming::class.java)
     }
 
-    private lateinit var confiRules: List<RulesConfig>
+    private lateinit var configRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
     private lateinit var domainName: String
@@ -48,11 +48,11 @@ class PackageNaming : Rule("package-naming") {
                        params: KtLint.Params,
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
 
-        confiRules = params.getDiktatConfigRules()
+        configRules = params.getDiktatConfigRules()
         isFixMode = autoCorrect
         emitWarn = emit
 
-        val domainNameConfiguration = confiRules.getRuleConfig(PACKAGE_NAME_MISSING)?.configuration
+        val domainNameConfiguration = configRules.getRuleConfig(PACKAGE_NAME_MISSING)?.configuration
         if (domainNameConfiguration == null) {
             log.error("Not able to find an external configuration for domain name in the configuration of" +
                 " ${PACKAGE_NAME_MISSING.name} check (is it missing in json config?)")
@@ -85,7 +85,7 @@ class PackageNaming : Rule("package-naming") {
      * checking and fixing the case when package directive is missing in the file
      */
     private fun checkMissingPackageName(packageDirectiveNode: ASTNode, realPackageName: List<String>, fileName: String) {
-        PACKAGE_NAME_MISSING.warnAndFix(confiRules, emitWarn, isFixMode, fileName, packageDirectiveNode.startOffset) {
+        PACKAGE_NAME_MISSING.warnAndFix(configRules, emitWarn, isFixMode, fileName, packageDirectiveNode.startOffset) {
             if (realPackageName.isNotEmpty()) {
                 packageDirectiveNode.addChild(LeafPsiElement(PACKAGE_KEYWORD, PACKAGE_KEYWORD.toString()), null)
                 packageDirectiveNode.addChild(PsiWhiteSpaceImpl(" "), null)
@@ -130,14 +130,14 @@ class PackageNaming : Rule("package-naming") {
         wordsInPackageName
             .filter { word -> word.text.hasUppercaseLetter() }
             .forEach {
-                PACKAGE_NAME_INCORRECT_CASE.warnAndFix(confiRules, emitWarn, isFixMode, it.text, it.startOffset) {
+                PACKAGE_NAME_INCORRECT_CASE.warnAndFix(configRules, emitWarn, isFixMode, it.text, it.startOffset) {
                     it.toLower()
                 }
             }
 
         // package name should start from a company's domain name
         if (!isDomainMatches(wordsInPackageName)) {
-            PACKAGE_NAME_INCORRECT_PREFIX.warnAndFix(confiRules, emitWarn, isFixMode, domainName, wordsInPackageName[0].startOffset) {
+            PACKAGE_NAME_INCORRECT_PREFIX.warnAndFix(configRules, emitWarn, isFixMode, domainName, wordsInPackageName[0].startOffset) {
                 val parentNodeToInsert = wordsInPackageName[0].parent(DOT_QUALIFIED_EXPRESSION)!!
                 createAndInsertPackageName(parentNodeToInsert, wordsInPackageName[0].treeParent, domainName.split(PACKAGE_SEPARATOR))
             }
@@ -146,7 +146,7 @@ class PackageNaming : Rule("package-naming") {
         // all words should contain only ASCII letters or digits
         wordsInPackageName
             .filter { word -> !correctSymbolsAreUsed(word.text) }
-            .forEach { PACKAGE_NAME_INCORRECT_SYMBOLS.warn(confiRules, emitWarn, isFixMode, it.text, it.startOffset) }
+            .forEach { PACKAGE_NAME_INCORRECT_SYMBOLS.warn(configRules, emitWarn, isFixMode, it.text, it.startOffset) }
 
         // all words should contain only ASCII letters or digits
         wordsInPackageName.forEach { correctPackageWordSeparatorsUsed(it) }
@@ -167,7 +167,7 @@ class PackageNaming : Rule("package-naming") {
      */
     private fun correctPackageWordSeparatorsUsed(word: ASTNode) {
         if (word.text.contains("_") && !exceptionForUnderscore(word.text)) {
-            INCORRECT_PACKAGE_SEPARATOR.warnAndFix(confiRules, emitWarn, isFixMode, word.text, word.startOffset) {
+            INCORRECT_PACKAGE_SEPARATOR.warnAndFix(configRules, emitWarn, isFixMode, word.text, word.startOffset) {
                 (word as LeafPsiElement).replaceWithText(word.text.replace("_", ""))
             }
         }
@@ -234,7 +234,7 @@ class PackageNaming : Rule("package-naming") {
      */
     private fun checkFilePathMatchesWithPackageName(packageNameParts: List<ASTNode>, realName: List<String>) {
         if (realName.isNotEmpty() && packageNameParts.map { node -> node.text } != realName) {
-            PACKAGE_NAME_INCORRECT_PATH.warnAndFix(confiRules, emitWarn, isFixMode, realName.joinToString(PACKAGE_SEPARATOR), packageNameParts[0].startOffset) {
+            PACKAGE_NAME_INCORRECT_PATH.warnAndFix(configRules, emitWarn, isFixMode, realName.joinToString(PACKAGE_SEPARATOR), packageNameParts[0].startOffset) {
                 // need to get first top-level DOT-QUALIFIED-EXPRESSION
                 // -- PACKAGE_DIRECTIVE
                 //    -- DOT_QUALIFIED_EXPRESSION
