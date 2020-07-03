@@ -77,3 +77,4 @@ To install git hooks using gradle run `gradle installGitHooks`.
 |HEADER_MISSING_OR_WRONG_COPYRIGHT|Checks: copyright exists on top of file and is properly formatted (as a block comment). Fix: adds copyright if it is missing and required|
 |HEADER_CONTAINS_DATE_OR_AUTHOR|Checks: header KDoc contains `@author` tag|
 |HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE|Check: warns if file with zero or >1 classes doesn't have header KDoc|
+|HEADER_NOT_BEFORE_PACKAGE|Check: warns if header KDoc if file is located not before package directive|
