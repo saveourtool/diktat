@@ -78,3 +78,8 @@ To install git hooks using gradle run `gradle installGitHooks`.
 |HEADER_CONTAINS_DATE_OR_AUTHOR|Checks: header KDoc contains `@author` tag|
 |HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE|Check: warns if file with zero or >1 classes doesn't have header KDoc|
 |COMMENTED_OUT_CODE|Check: warns if valid kotlin code is detected in commented blocks (both single-line and block comments)|
+|FILE_CONTAINS_ONLY_COMMENTS|Check: warns if file contains only comments, imports and package directive|
+|FILE_INCORRECT_BLOCKS_ORDER|Check: warns if general order of code parts is wrong. Fix: rearranges them.|
+|FILE_NO_BLANK_LINE_BETWEEN_BLOCKS|Check: warns if there is not exactly one blank line between code parts. Fix: leaves single empty line|
+|FILE_COLLAPSED_IMPORTS|Check: warns if collapsed imports are used.|
+|FILE_SINGLE_TOP_LEVEL_CLASS|Check: warns if kotlin source file contains more than one top level class or it's name doesn't match file name.|

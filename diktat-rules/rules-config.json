@@ -178,5 +178,30 @@
     "name": "COMMENTED_OUT_CODE",
     "enabled": true,
     "configuration": {}
+  },
+  {
+    "name": "FILE_CONTAINS_ONLY_COMMENTS",
+    "enabled": true,
+    "configuration": {}
+  },
+  {
+    "name": "FILE_INCORRECT_BLOCKS_ORDER",
+    "enabled": true,
+    "configuration": {}
+  },
+  {
+    "name": "FILE_NO_BLANK_LINE_BETWEEN_BLOCKS",
+    "enabled": true,
+    "configuration": {}
+  },
+  {
+    "name": "FILE_COLLAPSED_IMPORTS",
+    "enabled": true,
+    "configuration": {}
+  },
+  {
+    "name": "FILE_SINGLE_TOP_LEVEL_CLASS",
+    "enabled": true,
+    "configuration": {}
   }
 ]
