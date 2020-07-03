@@ -26,7 +26,7 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
  */
 class KdocComments : Rule("kdoc-comments") {
 
-    private lateinit var confiRules: List<RulesConfig>
+    private lateinit var configRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
 
@@ -36,7 +36,7 @@ class KdocComments : Rule("kdoc-comments") {
         params: KtLint.Params,
         emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit
     ) {
-        confiRules = params.getDiktatConfigRules()
+        configRules = params.getDiktatConfigRules()
         emitWarn = emit
         isFixMode = autoCorrect
 
@@ -72,7 +72,7 @@ class KdocComments : Rule("kdoc-comments") {
         val name = node.getIdentifierName()
 
         if (modifier.isAccessibleOutside() && kDoc == null) {
-            warning.warn(confiRules, emitWarn, isFixMode, name!!.text, node.startOffset)
+            warning.warn(configRules, emitWarn, isFixMode, name!!.text, node.startOffset)
         }
     }
 }
