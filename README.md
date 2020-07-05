@@ -1,3 +1,13 @@
+![Build and test](https://github.com/akuleshov7/diKTat/workflows/Build%20and%20test/badge.svg)
+![deteKT static analysis](https://github.com/akuleshov7/diKTat/workflows/Run%20deteKT/badge.svg)
+![License](https://img.shields.io/github/license/akuleshov7/diKtat)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fakuleshov7%2FdiKTat.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fakuleshov7%2FdiKTat?ref=badge_shield)
+![Releases](https://img.shields.io/github/v/release/akuleshov7/diKTat)
+[![Awesome Kotlin Badge](https://kotlin.link/awesome-kotlin.svg)](https://github.com/KotlinBy/awesome-kotlin)
+[![Chat on Telegram](https://img.shields.io/badge/Chat%20on-Telegram-brightgreen.svg)](https://t.me/joinchat/AAAAAFDg-ipuZFGyBGPPeg)
+ 
+
+
 ## diKTat project
 diKTat - is a rule set of Kotlin code style rules that are using [KTlint](https://ktlint.github.io/) framework under the hood.
 In this project we are trying to define Kotlin code style rules and implement them as visitors for AST tree provided by Ktlint.
