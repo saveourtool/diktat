@@ -9,7 +9,18 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.jetbrains.kotlin.builtins.PrimitiveType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
-import org.cqfn.diktat.ruleset.constants.Warnings.*
+import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_HAS_PREFIX
+import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_NAME_INCORRECT
+import org.cqfn.diktat.ruleset.constants.Warnings.CONSTANT_UPPERCASE
+import org.cqfn.diktat.ruleset.constants.Warnings.OBJECT_NAME_INCORRECT
+import org.cqfn.diktat.ruleset.constants.Warnings.FUNCTION_BOOLEAN_PREFIX
+import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_NAME_INCORRECT_FORMAT
+import org.cqfn.diktat.ruleset.constants.Warnings.GENERIC_NAME
+import org.cqfn.diktat.ruleset.constants.Warnings.EXCEPTION_SUFFIX
+import org.cqfn.diktat.ruleset.constants.Warnings.CLASS_NAME_INCORRECT
+import org.cqfn.diktat.ruleset.constants.Warnings.ENUM_VALUE
+import org.cqfn.diktat.ruleset.constants.Warnings.FUNCTION_NAME_INCORRECT_CASE
+import org.cqfn.diktat.ruleset.constants.Warnings.IDENTIFIER_LENGTH
 import org.cqfn.diktat.ruleset.utils.*
 import kotlin.text.toUpperCase
 
@@ -24,12 +35,16 @@ import kotlin.text.toUpperCase
  * 6) custom exceptions: PascalCase and Exception suffix
  * 7) FixMe: should prohibit identifiers with free format with `` (except test functions)
  */
+@Suppress("ForbiddenComment")
 class IdentifierNaming : Rule("identifier-naming") {
 
     companion object {
         // FixMe: this should be moved to properties
         val ONE_CHAR_IDENTIFIERS = setOf("i", "j", "k", "x", "y", "z")
         val BOOLEAN_METHOD_PREFIXES = setOf("has", "is")
+        const val MAX_IDENTIFIER_LENGTH = 64
+        const val MIN_IDENTIFIER_LENGTH = 2
+
     }
 
     private lateinit var configRules: List<RulesConfig>
@@ -37,10 +52,10 @@ class IdentifierNaming : Rule("identifier-naming") {
     private var isFixMode: Boolean = false
 
     override fun visit(
-        node: ASTNode,
-        autoCorrect: Boolean,
-        params: KtLint.Params,
-        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit
+            node: ASTNode,
+            autoCorrect: Boolean,
+            params: KtLint.Params,
+            emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit
     ) {
         configRules = params.getDiktatConfigRules()
         isFixMode = autoCorrect
@@ -148,9 +163,9 @@ class IdentifierNaming : Rule("identifier-naming") {
         val classNameNode: ASTNode? = node.getIdentifierName()
         // getting super class name
         val superClassName: String? = node
-            .getFirstChildWithType(ElementType.SUPER_TYPE_LIST)
-            ?.findLeafWithSpecificType(TYPE_REFERENCE)
-            ?.text
+                .getFirstChildWithType(ElementType.SUPER_TYPE_LIST)
+                ?.findLeafWithSpecificType(TYPE_REFERENCE)
+                ?.text
 
         if (superClassName != null && hasExceptionSuffix(superClassName) && !hasExceptionSuffix(classNameNode!!.text)) {
             EXCEPTION_SUFFIX.warnAndFix(configRules, emitWarn, isFixMode, classNameNode.text, classNameNode.startOffset) {
@@ -236,8 +251,8 @@ class IdentifierNaming : Rule("identifier-naming") {
         val genericName = generic.replace(">", "").replace("<", "").trim()
         // first letter should always be a capital
         return genericName[0] in 'A'..'Z' &&
-            // other letters - are digits
-            (genericName.length == 1 || genericName.substring(1).isDigits())
+                // other letters - are digits
+                (genericName.length == 1 || genericName.substring(1).isDigits())
     }
 
     /**
@@ -246,7 +261,8 @@ class IdentifierNaming : Rule("identifier-naming") {
     private fun checkIdentifierLength(nodes: List<ASTNode>,
                                       isVariable: Boolean) {
         nodes.forEach {
-            if (!(it.checkLength(2..64) || (ONE_CHAR_IDENTIFIERS.contains(it.text)) && isVariable)) {
+            if (!(it.checkLength(MIN_IDENTIFIER_LENGTH..MAX_IDENTIFIER_LENGTH) ||
+                            (ONE_CHAR_IDENTIFIERS.contains(it.text)) && isVariable)) {
                 IDENTIFIER_LENGTH.warn(configRules, emitWarn, isFixMode, it.text, it.startOffset)
             }
         }

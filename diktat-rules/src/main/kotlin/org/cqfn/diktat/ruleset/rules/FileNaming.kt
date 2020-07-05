@@ -7,7 +7,8 @@ import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import org.cqfn.diktat.ruleset.constants.Warnings.*
+import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NAME_INCORRECT
+import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NAME_MATCH_CLASS
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.isPascalCase
@@ -21,6 +22,7 @@ import java.io.File
  *
  * Aggressive: In case file contains only one class on upper level - it should be named with the same name
  */
+@Suppress("ForbiddenComment")
 class FileNaming : Rule("file-naming") {
 
     companion object {
@@ -67,6 +69,7 @@ class FileNaming : Rule("file-naming") {
                 val className = classes[0].getFirstChildWithType(IDENTIFIER)!!.text
                 if (className != fileNameWithoutSuffix) {
                     FILE_NAME_MATCH_CLASS.warnAndFix(configRules, emitWarn, isFixMode, "$fileNameWithoutSuffix$fileNameSuffix vs $className", 0) {
+
                         // FixMe: we can add an autocorrect here in future, but is there any purpose to change file name?
                     }
                 }

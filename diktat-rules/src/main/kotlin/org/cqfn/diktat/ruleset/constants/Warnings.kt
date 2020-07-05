@@ -4,6 +4,7 @@ import org.cqfn.diktat.common.config.rules.Rule
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.isRuleEnabled
 
+@Suppress("ForbiddenComment", "MagicNumber")
 enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean, private val warn: String) : Rule {
     // ======== chapter 1 ========
     PACKAGE_NAME_MISSING(1, true, "no package name declared in a file"),
@@ -62,6 +63,7 @@ enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean
 
     fun warnText(): String = "[${this.id}] ${this.warn}:"
 
+    @Suppress("LongParameterList")
     fun warnAndFix(configRules: List<RulesConfig>,
                    emit: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit),
                    isFixMode: Boolean,
