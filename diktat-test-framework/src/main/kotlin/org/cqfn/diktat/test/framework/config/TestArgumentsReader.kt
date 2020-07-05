@@ -10,7 +10,11 @@ import java.io.File
 import java.io.IOException
 import kotlin.system.exitProcess
 
-class TestArgumentsReader(private val args: Array<String>, val properties: TestFrameworkProperties) : JsonResourceConfigReader<List<CliArgument?>?>() {
+class TestArgumentsReader(
+        private val args: Array<String>,
+        val properties: TestFrameworkProperties
+) : JsonResourceConfigReader<List<CliArgument?>?>() {
+
     private val cliArguments: List<CliArgument?>? = readResource(properties.testFrameworkArgsRelativePath)
     private val cmd: CommandLine?
     fun shouldRunAllTests(): Boolean {

@@ -27,6 +27,7 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
  * 3) Ensure there are no dates or authors
  * 4) Ensure files with many or zero classes have proper description
  */
+@Suppress("ForbiddenComment")
 class HeaderCommentRule : Rule("header-comment") {
     private val copyrightWords = setOf("copyright", "版权")
 

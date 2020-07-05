@@ -123,6 +123,11 @@
                 <artifactId>jimfs</artifactId>
                 <version>1.1</version>
             </dependency>
+            <dependency>
+                <groupId>io.gitlab.arturbosch.detekt</groupId>
+                <artifactId>detekt-cli</artifactId>
+                <version>1.10.0</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -160,6 +165,20 @@
                             <!-- Install specific hooks directly to the default hooks directory. -->
                             <goal>install</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.github.ozsie</groupId>
+                <artifactId>detekt-maven-plugin</artifactId>
+                <version>1.10.0</version>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals><goal>check</goal></goals>
+                        <configuration>
+                            <config>detekt-config.yml</config>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

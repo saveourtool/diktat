@@ -41,6 +41,7 @@ import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
  * type are supported the following way: they should either declare return type `Unit` or have `@return` tag.
  * Currently only `throw` keyword from this methods body is supported for `@throws` check.
  */
+@Suppress("ForbiddenComment")
 class KdocMethods : Rule("kdoc-methods") {
     // expression body of function can have a lot of 'ElementType's, this list might be not full
     private val expressionBodyTypes = setOf(ElementType.BINARY_EXPRESSION, ElementType.CALL_EXPRESSION,
@@ -66,6 +67,7 @@ class KdocMethods : Rule("kdoc-methods") {
         }
     }
 
+    @Suppress("LongMethod")
     private fun checkSignatureDescription(node: ASTNode) {
         val kDoc = node.getFirstChildWithType(KDOC)
         val kDocTags = kDoc?.kDocTags()
