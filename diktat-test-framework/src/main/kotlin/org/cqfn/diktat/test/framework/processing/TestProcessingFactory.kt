@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import java.util.stream.Stream
 import kotlin.system.exitProcess
 
+@Suppress("ForbiddenComment")
 class TestProcessingFactory(private val argReader: TestArgumentsReader) {
     companion object {
         private val log = LoggerFactory.getLogger(TestProcessingFactory::class.java)
@@ -28,25 +29,29 @@ class TestProcessingFactory(private val argReader: TestArgumentsReader) {
             argReader.tests
         }
 
-        val testStream: Stream<String> = if (argReader.properties.isParallelMode) testList!!.parallelStream() else testList!!.stream()
+        val testStream: Stream<String> =
+                if (argReader.properties.isParallelMode) testList!!.parallelStream() else testList!!.stream()
 
         testStream.map { test: String -> findTestInResources(test) }
-                .forEach { test: TestConfig -> if (processTest(test)) passedTests.incrementAndGet()  else failedTests.incrementAndGet() }
+                .forEach { test: TestConfig ->
+                    if (processTest(test)) passedTests.incrementAndGet() else failedTests.incrementAndGet()
+                }
 
         log.info("Test processing finished. Passed tests: [${passedTests}]. Failed tests: [${failedTests}]")
     }
 
     private fun findTestInResources(test: String): TestConfig =
-        TestConfigReader("${argReader.properties.testConfigsRelativePath}/$test.json")
-            .config!!
-            .setTestName(test)
+            TestConfigReader("${argReader.properties.testConfigsRelativePath}/$test.json")
+                    .config!!
+                    .setTestName(test)
 
 
     private val allTestsFromResources: List<String>?
         get() {
             val fileURL = javaClass.getResource("/${argReader.properties.testConfigsRelativePath}")
             if (fileURL == null) {
-                log.error("Not able to get directory with test configuration files: ${argReader.properties.testConfigsRelativePath}")
+                log.error("Not able to get directory with test configuration files: " +
+                        argReader.properties.testConfigsRelativePath)
                 exitProcess(5)
             }
             val resource = File(fileURL.file)

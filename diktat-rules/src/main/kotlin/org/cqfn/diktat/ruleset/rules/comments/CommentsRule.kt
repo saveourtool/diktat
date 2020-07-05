@@ -22,6 +22,7 @@ import org.jetbrains.kotlin.resolve.ImportPath
  * This rule performs checks if there is any commented code.
  * No commented out code is allowed, including imports.
  */
+@Suppress("ForbiddenComment")
 class CommentsRule : Rule("comments") {
 
     companion object {

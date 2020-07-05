@@ -5,7 +5,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.junit.Assert
 import org.cqfn.diktat.test.framework.processing.TestComparatorUnit
 
-abstract class FixTestBase(resourceFilePath: String,
+open class FixTestBase(resourceFilePath: String,
                            protected val rule: Rule,
                            rulesConfigList: List<RulesConfig>? = emptyList()
 ) {

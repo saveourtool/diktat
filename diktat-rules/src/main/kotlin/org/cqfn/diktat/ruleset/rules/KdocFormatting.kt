@@ -54,6 +54,7 @@ import org.jetbrains.kotlin.psi.psiUtil.startOffset
  * 4) ensuring tags @apiNote, @implSpec, @implNote have one empty line after their body
  * 5) ensuring tags @param, @return, @throws are arranged in this order
  */
+@Suppress("ForbiddenComment")
 class KdocFormatting : Rule("kdoc-formatting") {
     private val basicTagsList = listOf(KDocKnownTag.PARAM, KDocKnownTag.RETURN, KDocKnownTag.THROWS)
     private val specialTagNames = setOf("implSpec", "implNote", "apiNote")
@@ -128,7 +129,8 @@ class KdocFormatting : Rule("kdoc-formatting") {
                     )
                     node.treeParent.addChild(LeafPsiElement(ElementType.ANNOTATION,
                         "@Deprecated(message = \"${kDocTag.getContent()}\")"), node.treeNext)
-                    node.treeParent.addChild(node.nextSibling { it.elementType == WHITE_SPACE }!!.clone() as PsiWhiteSpaceImpl, node.treeNext)  // copy to get all necessary indentatios
+                    // copy to get all necessary indents
+                    node.treeParent.addChild(node.nextSibling { it.elementType == WHITE_SPACE }!!.clone() as PsiWhiteSpaceImpl, node.treeNext)
                 }
             }
     }
