@@ -175,6 +175,14 @@
     "configuration": {}
   },
   {
+    "name": "FILE_IS_TOO_LONG",
+    "enabled": true,
+    "configuration": {
+      "maxSize": "100",
+      "ignoreFolders" : ""
+    }
+  },
+  {
     "name": "COMMENTED_OUT_CODE",
     "enabled": true,
     "configuration": {}

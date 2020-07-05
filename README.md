@@ -74,3 +74,4 @@ To install git hooks using gradle run `gradle installGitHooks`.
 |HEADER_CONTAINS_DATE_OR_AUTHOR|Checks: header KDoc contains `@author` tag|
 |HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE|Check: warns if file with zero or >1 classes doesn't have header KDoc|
 |COMMENTED_OUT_CODE|Check: warns if valid kotlin code is detected in commented blocks (both single-line and block comments)|
+|FILE_IS_TOO_LONG|Check: the number of lines in the parameter file is too high. Configuration has maxSize - maximum number of lines, ignoreFolders - files containing this folder in their path will not be checked
