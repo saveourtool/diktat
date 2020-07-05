@@ -1,4 +1,6 @@
 ## diKTat project
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fakuleshov7%2FdiKTat.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fakuleshov7%2FdiKTat?ref=badge_shield)
+
 diKTat - is a rule set of Kotlin code style rules that are using [KTlint](https://ktlint.github.io/) framework under the hood.
 In this project we are trying to define Kotlin code style rules and implement them as visitors for AST tree provided by Ktlint.
 
@@ -75,3 +77,7 @@ To install git hooks using gradle run `gradle installGitHooks`.
 |HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE|Check: warns if file with zero or >1 classes doesn't have header KDoc|
 |COMMENTED_OUT_CODE|Check: warns if valid kotlin code is detected in commented blocks (both single-line and block comments)|
 |FILE_IS_TOO_LONG|Check: the number of lines in the parameter file is too high. Configuration has maxSize - maximum number of lines, ignoreFolders - files containing this folder in their path will not be checked
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fakuleshov7%2FdiKTat.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fakuleshov7%2FdiKTat?ref=badge_large)
