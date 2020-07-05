@@ -48,7 +48,7 @@ class KdocMethods : Rule("kdoc-methods") {
         ElementType.SAFE_ACCESS_EXPRESSION, ElementType.WHEN_CONDITION_WITH_EXPRESSION,
         ElementType.COLLECTION_LITERAL_EXPRESSION)
 
-    private lateinit var confiRules: List<RulesConfig>
+    private lateinit var configRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
 
@@ -57,7 +57,7 @@ class KdocMethods : Rule("kdoc-methods") {
                        params: KtLint.Params,
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
 
-        confiRules = params.rulesConfigList!!
+        configRules = params.getDiktatConfigRules()
         isFixMode = autoCorrect
         emitWarn = emit
 
@@ -86,7 +86,7 @@ class KdocMethods : Rule("kdoc-methods") {
 
         val name = node.getIdentifierName()!!.text
         if (paramCheckFailed) {
-            KDOC_WITHOUT_PARAM_TAG.warnAndFix(confiRules, emitWarn, isFixMode,
+            KDOC_WITHOUT_PARAM_TAG.warnAndFix(configRules, emitWarn, isFixMode,
                 "$name (${missingParameters.joinToString()})", node.startOffset) {
                 val beforeTag = kDocTags?.find { it.knownTag == KDocKnownTag.RETURN }
                      ?: kDocTags?.find { it.knownTag == KDocKnownTag.THROWS }
@@ -100,7 +100,7 @@ class KdocMethods : Rule("kdoc-methods") {
             }
         }
         if (returnCheckFailed) {
-            KDOC_WITHOUT_RETURN_TAG.warnAndFix(confiRules, emitWarn, isFixMode, name, node.startOffset) {
+            KDOC_WITHOUT_RETURN_TAG.warnAndFix(configRules, emitWarn, isFixMode, name, node.startOffset) {
                 val beforeTag = kDocTags?.find { it.knownTag == KDocKnownTag.THROWS }
                 kDoc?.insertTagBefore(beforeTag?.node) {
                     addChild(LeafPsiElement(KDOC_TAG_NAME, "@return"))
@@ -108,7 +108,7 @@ class KdocMethods : Rule("kdoc-methods") {
             }
         }
         if (throwsCheckFailed) {
-            KDOC_WITHOUT_THROWS_TAG.warnAndFix(confiRules, emitWarn, isFixMode,
+            KDOC_WITHOUT_THROWS_TAG.warnAndFix(configRules, emitWarn, isFixMode,
                 "$name (${missingExceptions.joinToString()})", node.startOffset) {
                 explicitlyThrownExceptions.forEach {
                     kDoc?.insertTagBefore(null) {
@@ -123,7 +123,7 @@ class KdocMethods : Rule("kdoc-methods") {
         // if no tag failed, we have too little information to suggest KDoc - it would just be empty
         val anyTagFailed = paramCheckFailed || returnCheckFailed || throwsCheckFailed
         if (kDoc == null && anyTagFailed) {
-            MISSING_KDOC_ON_FUNCTION.warnAndFix(confiRules, emitWarn, isFixMode,
+            MISSING_KDOC_ON_FUNCTION.warnAndFix(configRules, emitWarn, isFixMode,
                 node.getIdentifierName()!!.text, node.startOffset) {
                 val indent = node.prevSibling { it.elementType == WHITE_SPACE }?.text
                     ?.substringAfterLast("\n")?.count { it == ' ' } ?: 0

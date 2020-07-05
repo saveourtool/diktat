@@ -1,22 +1,38 @@
 package org.cqfn.diktat.ruleset.utils
 
-import com.pinterest.ktlint.core.KtLint
-import com.pinterest.ktlint.core.LintError
-import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.RuleSet
+import com.pinterest.ktlint.core.*
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.assertj.core.api.Assertions
+import org.cqfn.diktat.common.config.rules.RulesConfigReader
+import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
+import org.cqfn.diktat.ruleset.rules.RuleSetDiktat
+
+/**
+ * simple class for emulating RuleSetProvider to inject .json rule configuration and mock this part of code
+ */
+class DiktatRuleSetProviderTest(val rule: Rule, rulesConfigList: List<RulesConfig>?) : RuleSetProvider {
+    private val rulesConfigList: List<RulesConfig>? = rulesConfigList ?: RulesConfigReader().readResource("rules-config.json")
+
+    override fun get(): RuleSet {
+        return RuleSetDiktat(
+            rulesConfigList?: listOf(),
+            rule
+        )
+    }
+}
+
+const val TEST_FILE_NAME = "/TestFileName.kt"
 
 fun lintMethod(rule: Rule,
                code: String,
                vararg lintErrors: LintError,
-               rulesConfigList: List<RulesConfig>? = emptyList()) {
+               rulesConfigList: List<RulesConfig>? = null) {
     val res = mutableListOf<LintError>()
     KtLint.lint(
         KtLint.Params(
+            fileName = TEST_FILE_NAME,
             text = code,
-            ruleSets = listOf(RuleSet("standard", rule)),
-            rulesConfigList = rulesConfigList,
+            ruleSets = listOf(DiktatRuleSetProviderTest(rule, rulesConfigList).get()),
             cb = { e, _ -> res.add(e) }
         )
     )
@@ -32,9 +48,8 @@ internal fun Rule.format(text: String, fileName: String,
     return KtLint.format(
         KtLint.Params(
             text = text,
-            ruleSets = listOf(RuleSet("diktat-test", this@format)),
+            ruleSets = listOf(DiktatRuleSetProviderTest(this, rulesConfigList).get()),
             fileName = fileName,
-            rulesConfigList = rulesConfigList,
             cb = { lintError, _ ->
                 log.warn("Received linting error: $lintError")
             }

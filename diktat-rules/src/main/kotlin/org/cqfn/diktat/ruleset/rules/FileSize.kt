@@ -29,7 +29,7 @@ class FileSize : Rule("file-size") {
                        autoCorrect: Boolean,
                        params: KtLint.Params,
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
-        configRules = params.rulesConfigList!!
+        configRules = params.getDiktatConfigRules()
         fileName = params.fileName
         emitWarn = emit
         isFixMode = autoCorrect

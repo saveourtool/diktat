@@ -7,25 +7,27 @@ import com.pinterest.ktlint.core.RuleSet
 import org.assertj.core.api.Assertions
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
+import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.FileSize
+import org.cqfn.diktat.ruleset.utils.DiktatRuleSetProviderTest
 import org.junit.Test
 import java.io.File
 
-class FileSizeWarnTest{
+class FileSizeWarnTest {
 
     private val rulesConfigListLarge: List<RulesConfig> = listOf(
-        RulesConfig(Warnings.FILE_IS_TOO_LONG.name, true,
-            mapOf("maxSize" to "5"))
+            RulesConfig(Warnings.FILE_IS_TOO_LONG.name, true,
+                    mapOf("maxSize" to "5"))
     )
 
     private val rulesConfigListSmall: List<RulesConfig> = listOf(
-        RulesConfig(Warnings.FILE_IS_TOO_LONG.name, true,
-            mapOf("maxSize" to "10"))
+            RulesConfig(Warnings.FILE_IS_TOO_LONG.name, true,
+                    mapOf("maxSize" to "10"))
     )
 
     private val rulesConfigListIgnore: List<RulesConfig> = listOf(
-        RulesConfig(Warnings.FILE_IS_TOO_LONG.name, true,
-            mapOf("maxSize" to "5", "ignoreFolders" to "main"))
+            RulesConfig(Warnings.FILE_IS_TOO_LONG.name, true,
+                    mapOf("maxSize" to "5", "ignoreFolders" to "main"))
     )
 
     fun lintMethod(rule: Rule,
@@ -35,18 +37,17 @@ class FileSizeWarnTest{
                    rulesConfigList: List<RulesConfig>? = emptyList()) {
         val res = mutableListOf<LintError>()
         KtLint.lint(
-            KtLint.Params(
-                fileName = fileName,
-                text = code,
-                ruleSets = listOf(RuleSet("standard", rule)),
-                rulesConfigList = rulesConfigList,
-                cb = { e, _ -> res.add(e) }
-            )
+                KtLint.Params(
+                        fileName = fileName,
+                        text = code,
+                        ruleSets = listOf(DiktatRuleSetProviderTest(rule, rulesConfigList).get()),
+                        cb = { e, _ -> res.add(e) }
+                )
         )
         Assertions.assertThat(
-            res
+                res
         ).containsExactly(
-            *lintErrors
+                *lintErrors
         )
     }
 
@@ -70,8 +71,8 @@ class FileSizeWarnTest{
         val file = File(path!!.file)
         val size = file.readText().split("\n").size
         lintMethod(FileSize(), file.absolutePath, file.readText(),
-            LintError(1, 1, "file-size",
-                "${Warnings.FILE_IS_TOO_LONG.warnText()} $size", false),
-            rulesConfigList = rulesConfigListLarge)
+                LintError(1, 1, "$DIKTAT_RULE_SET_ID:file-size",
+                        "${Warnings.FILE_IS_TOO_LONG.warnText()} $size", false),
+                rulesConfigList = rulesConfigListLarge)
     }
 }

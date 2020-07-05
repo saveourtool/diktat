@@ -58,7 +58,7 @@ class KdocFormatting : Rule("kdoc-formatting") {
     private val basicTagsList = listOf(KDocKnownTag.PARAM, KDocKnownTag.RETURN, KDocKnownTag.THROWS)
     private val specialTagNames = setOf("implSpec", "implNote", "apiNote")
 
-    private lateinit var confiRules: List<RulesConfig>
+    private lateinit var configRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
     private var fileName: String = ""
@@ -68,7 +68,7 @@ class KdocFormatting : Rule("kdoc-formatting") {
                        params: KtLint.Params,
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
 
-        confiRules = params.rulesConfigList!!
+        configRules = params.getDiktatConfigRules()
         isFixMode = autoCorrect
         emitWarn = emit
         fileName = params.fileName ?: ""
@@ -95,7 +95,7 @@ class KdocFormatting : Rule("kdoc-formatting") {
         val nodeAfterKdoc = kdoc?.treeNext
         val name = node.getFirstChildWithType(ElementType.IDENTIFIER)
         if (nodeAfterKdoc?.elementType == WHITE_SPACE && nodeAfterKdoc.text.countSubStringOccurrences("\n") > 1) {
-            BLANK_LINE_AFTER_KDOC.warnAndFix(confiRules, emitWarn, isFixMode, name!!.text, nodeAfterKdoc.startOffset) {
+            BLANK_LINE_AFTER_KDOC.warnAndFix(configRules, emitWarn, isFixMode, name!!.text, nodeAfterKdoc.startOffset) {
                 nodeAfterKdoc.leaveOnlyOneNewLine()
             }
         }
@@ -107,7 +107,7 @@ class KdocFormatting : Rule("kdoc-formatting") {
             it.elementType != KDOC_LEADING_ASTERISK && it.elementType != WHITE_SPACE
         } ?: false
         if (!isKdocNotEmpty) {
-            KDOC_EMPTY_KDOC.warn(confiRules, emitWarn, isFixMode,
+            KDOC_EMPTY_KDOC.warn(configRules, emitWarn, isFixMode,
                 node.treeParent.getIdentifierName()?.text
                     ?: node.nextSibling { it.elementType in KtTokens.KEYWORDS }?.text
                     ?: fileName, node.startOffset)
@@ -119,7 +119,7 @@ class KdocFormatting : Rule("kdoc-formatting") {
         val kDocTags = node.kDocTags()
         kDocTags?.find { it.name == "deprecated" }
             ?.let { kDocTag ->
-                KDOC_NO_DEPRECATED_TAG.warnAndFix(confiRules, emitWarn, isFixMode, kDocTag.text, kDocTag.node.startOffset) {
+                KDOC_NO_DEPRECATED_TAG.warnAndFix(configRules, emitWarn, isFixMode, kDocTag.text, kDocTag.node.startOffset) {
                     val kDocSection = kDocTag.node.treeParent
                     val deprecatedTagNode = kDocSection.getChildren(TokenSet.create(KDOC_TAG))
                         .find { "@deprecated" in it.text }!!
@@ -137,7 +137,7 @@ class KdocFormatting : Rule("kdoc-formatting") {
         kDocTags?.filter {
             it.getSubjectName() == null && it.getContent().isEmpty()
         }?.forEach {
-            KDOC_NO_EMPTY_TAGS.warn(confiRules, emitWarn, isFixMode, "@${it.name!!}", it.node.startOffset)
+            KDOC_NO_EMPTY_TAGS.warn(configRules, emitWarn, isFixMode, "@${it.name!!}", it.node.startOffset)
         }
     }
 
@@ -151,7 +151,7 @@ class KdocFormatting : Rule("kdoc-formatting") {
             hasSubject && tag.node.findChildBefore(KDOC_TEXT, WHITE_SPACE)?.text != " "
                 || tag.node.findChildAfter(KDOC_TAG_NAME, WHITE_SPACE)?.text != " "
         }?.forEach { tag ->
-            KDOC_WRONG_SPACES_AFTER_TAG.warnAndFix(confiRules, emitWarn, isFixMode,
+            KDOC_WRONG_SPACES_AFTER_TAG.warnAndFix(configRules, emitWarn, isFixMode,
                 "@${tag.name!!}", tag.node.startOffset) {
                 tag.node.findChildBefore(KDOC_TEXT, WHITE_SPACE)
                     ?.let { tag.node.replaceChild(it, LeafPsiElement(WHITE_SPACE, " ")) }
@@ -178,7 +178,7 @@ class KdocFormatting : Rule("kdoc-formatting") {
             ?.map { it.knownTag }?.equals(basicTagsOrdered)
 
         if (kDocTags != null && !isTagsInCorrectOrder!!) {
-            KDOC_WRONG_TAGS_ORDER.warnAndFix(confiRules, emitWarn, isFixMode,
+            KDOC_WRONG_TAGS_ORDER.warnAndFix(configRules, emitWarn, isFixMode,
                 basicTags.joinToString(", ") { "@${it.name}" }, basicTags.first().node.startOffset) {
                 val kDocSection = node.getFirstChildWithType(KDOC_SECTION)!!
                 val basicTagChildren = kDocTags
@@ -208,7 +208,7 @@ class KdocFormatting : Rule("kdoc-formatting") {
                     ?.treeNext?.elementType == WHITE_SPACE)
 
             if (hasContentBefore xor hasEmptyLineBefore) {
-                KDOC_NEWLINES_BEFORE_BASIC_TAGS.warnAndFix(confiRules, emitWarn, isFixMode,
+                KDOC_NEWLINES_BEFORE_BASIC_TAGS.warnAndFix(configRules, emitWarn, isFixMode,
                     "@${firstBasicTag.name!!}", firstBasicTag.node.startOffset) {
                     if (hasContentBefore) {
                         if (previousTag != null) {
@@ -244,7 +244,7 @@ class KdocFormatting : Rule("kdoc-formatting") {
         }
 
         tagsWithRedundantEmptyLines.forEach { tag ->
-            KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS.warnAndFix(confiRules, emitWarn, isFixMode,
+            KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS.warnAndFix(configRules, emitWarn, isFixMode,
                 "@${tag.name}", tag.startOffset) {
                 tag.node.nextSibling { it.elementType == WHITE_SPACE }?.leaveOnlyOneNewLine()
                 // the first asterisk before tag is not included inside KDOC_TAG node
@@ -271,7 +271,7 @@ class KdocFormatting : Rule("kdoc-formatting") {
         }
 
         if (presentSpecialTagNodes != null && poorlyFormattedTagNodes!!.isNotEmpty()) {
-            KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS.warnAndFix(confiRules, emitWarn, isFixMode,
+            KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS.warnAndFix(configRules, emitWarn, isFixMode,
                 poorlyFormattedTagNodes.joinToString(", ") { "@${(it.psi as KDocTag).name!!}" },
                 poorlyFormattedTagNodes.first().startOffset) {
                 poorlyFormattedTagNodes.forEach { node ->
