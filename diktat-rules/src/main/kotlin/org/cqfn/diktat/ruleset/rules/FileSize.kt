@@ -12,10 +12,9 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.slf4j.LoggerFactory
 
 class FileSize : Rule("file-size") {
-
     companion object {
         private val log = LoggerFactory.getLogger(FileSize::class.java)
-        const val MAX_SIZE = "2000"
+        const val MAX_SIZE = 2000L
         private val IGNORE_FOLDER = emptyList<String>()
         const val IGNORE_FOLDERS_SEPARATOR = ","
         const val SRC_PATH = "src"
@@ -35,22 +34,22 @@ class FileSize : Rule("file-size") {
         emitWarn = emit
         isFixMode = autoCorrect
         if (node.elementType == ElementType.FILE) {
-            val configuration = FileSizeConfiguration(configRules.getRuleConfig(FILE_IS_TOO_LONG)?.configuration
-                ?: mapOf())
-            val maxSize = configuration.maxSize.toLongOrNull() ?: MAX_SIZE.toLong()
+            val configuration = FileSizeConfiguration(
+                configRules.getRuleConfig(FILE_IS_TOO_LONG)?.configuration ?: mapOf()
+            )
             val ignoreFolders = configuration.ignoreFolders
 
             val realFilePath = calculateFilePath(fileName)
 
             if (!realFilePath.contains(SRC_PATH)) {
-                log.error("src directory not found in file path")
+                log.error("$SRC_PATH directory is not found in file path")
             } else {
                 if (ignoreFolders.none()) {
-                    checkFileSize(node, maxSize)
+                    checkFileSize(node, configuration.maxSize)
                 } else {
                     ignoreFolders.forEach {
-                        if (!realFilePath.containsAll(it.split("/"))) {
-                            checkFileSize(node, maxSize)
+                        if (!realFilePath.containsAll(it.splitPathToDirs())) {
+                            checkFileSize(node, configuration.maxSize)
                         }
                     }
                 }
@@ -68,15 +67,15 @@ class FileSize : Rule("file-size") {
         }
     }
 
-    private fun checkFileSize(node: ASTNode, maxSize: Long){
+    private fun checkFileSize(node: ASTNode, maxSize: Long) {
         val size = node.text.split("\n").size
-        if (size > maxSize){
-            FILE_IS_TOO_LONG.warn(configRules, emitWarn, isFixMode, "$size" ,node.startOffset)
+        if (size > maxSize) {
+            FILE_IS_TOO_LONG.warn(configRules, emitWarn, isFixMode, "$size", node.startOffset)
         }
     }
 
     class FileSizeConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
-        val maxSize: String = config["maxSize"] ?: MAX_SIZE
-        val ignoreFolders: List<String> = config["ignoreFolders"]?.split(IGNORE_FOLDERS_SEPARATOR) ?: IGNORE_FOLDER
+        val maxSize = config["maxSize"]?.toLongOrNull() ?: MAX_SIZE
+        val ignoreFolders = config["ignoreFolders"]?.split(IGNORE_FOLDERS_SEPARATOR) ?: IGNORE_FOLDER
     }
 }
