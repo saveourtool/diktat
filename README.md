@@ -1,12 +1,22 @@
+![Build and test](https://github.com/akuleshov7/diKTat/workflows/Build%20and%20test/badge.svg)
+![deteKT static analysis](https://github.com/akuleshov7/diKTat/workflows/Run%20deteKT/badge.svg)
+[![codecov](https://codecov.io/gh/akuleshov7/diKTat/branch/master/graph/badge.svg)](https://codecov.io/gh/akuleshov7/diKTat)
+![License](https://img.shields.io/github/license/akuleshov7/diKtat)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fakuleshov7%2FdiKTat.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fakuleshov7%2FdiKTat?ref=badge_shield)
+![Releases](https://img.shields.io/github/v/release/akuleshov7/diKTat)
+[![Awesome Kotlin Badge](https://kotlin.link/awesome-kotlin.svg)](https://github.com/KotlinBy/awesome-kotlin)
+[![Chat on Telegram](https://img.shields.io/badge/Chat%20on-Telegram-brightgreen.svg)](https://t.me/joinchat/AAAAAFDg-ipuZFGyBGPPeg)
+ 
+
+
 ## diKTat project
-diKTat - is a rule set of Kotlin code style rules that are using [KTlint](https://ktlint.github.io/) framework.
+diKTat - is a rule set of Kotlin code style rules that are using [KTlint](https://ktlint.github.io/) framework under the hood.
 In this project we are trying to define Kotlin code style rules and implement them as visitors for AST tree provided by Ktlint.
 
 Main components are:
 1) diktat-ruleset - number of rules that are supported by diKTat
 2) diktat-test-framework - functional/unit test framework that can be used for running your code fixer on the initial code and compare it with the expected result
-3) customized fork of ktlint project - temporary added until we will publish our ideas to main repository
-4) also see our demo: diktat-demo in a separate repository
+3) also see our demo: diktat-demo in a separate repository
 
 ## What was hacked and changed in KTlint and why do we temporary need a fork of it?
 Mainly we wanted to create a common configurable mechanism that will give us a chance to enable/disable and customize all rules.
@@ -17,13 +27,10 @@ That's why we added logic for:
 ## How to build the project
 As Java/Kotlin community has a holywar about usage of Gradle vs Maven - we supported both. So you can:
 
-a) Use Maven:
+Use Maven:
 `mvn clean install`
 
 This will also install git hooks into your local .git directory. The hooks will restrict commit messages and branch naming.
-
-b) Use Gradle:
-`gradle build`
 
 ## What is rules-config.json and why should I care?
 In ktlint rules can be configured via .editorconfig, but this does not give a chance to customize or enable/disable each and every rule independently.
@@ -78,6 +85,7 @@ To install git hooks using gradle run `gradle installGitHooks`.
 |HEADER_CONTAINS_DATE_OR_AUTHOR|Checks: header KDoc contains `@author` tag|
 |HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE|Check: warns if file with zero or >1 classes doesn't have header KDoc|
 |COMMENTED_OUT_CODE|Check: warns if valid kotlin code is detected in commented blocks (both single-line and block comments)|
+|FILE_IS_TOO_LONG|Check: the number of lines in the parameter file is too high. Configuration has maxSize - maximum number of lines, ignoreFolders - files containing this folder in their path will not be checked
 |FILE_CONTAINS_ONLY_COMMENTS|Check: warns if file contains only comments, imports and package directive|
 |FILE_INCORRECT_BLOCKS_ORDER|Check: warns if general order of code parts is wrong. Fix: rearranges them.|
 |FILE_NO_BLANK_LINE_BETWEEN_BLOCKS|Check: warns if there is not exactly one blank line between code parts. Fix: leaves single empty line|

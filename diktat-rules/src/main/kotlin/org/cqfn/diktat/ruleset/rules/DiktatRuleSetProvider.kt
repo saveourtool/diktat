@@ -30,7 +30,8 @@ class DiktatRuleSetProvider(private val jsonRulesConfig: String = "rules-config.
             KdocFormatting(),
             FileNaming(),
             PackageNaming(),
-            IdentifierNaming(),
+            FileSize(),
+            IdentifierNaming()
             FileStructureRule()  // this rule should be the last because it should operate on already valid code
         )
     }

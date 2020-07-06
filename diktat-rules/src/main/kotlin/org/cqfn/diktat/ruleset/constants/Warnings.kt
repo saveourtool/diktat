@@ -4,6 +4,7 @@ import org.cqfn.diktat.common.config.rules.Rule
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.isRuleEnabled
 
+@Suppress("ForbiddenComment", "MagicNumber")
 enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean, private val warn: String) : Rule {
     // ======== chapter 1 ========
     PACKAGE_NAME_MISSING(1, true, "no package name declared in a file"),
@@ -55,18 +56,20 @@ enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean
     HEADER_CONTAINS_DATE_OR_AUTHOR(38, false, "file header comment should not contain creation date and author name"),
     HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE(39, false, "files that contain multiple or no classes should contain description of what is inside of this file"),
     COMMENTED_OUT_CODE(40, false, "you should not comment out code, use VCS to save it in history and delete this block"),
-    FILE_CONTAINS_ONLY_COMMENTS(41, false, "source code files which contain only comments should be avoided"),
-    FILE_INCORRECT_BLOCKS_ORDER(42, true, "general structure of kotlin source file is wrong, parts are in incorrect order"),
-    FILE_NO_BLANK_LINE_BETWEEN_BLOCKS(43, true, "general structure of kotlin source file is wrong, general code blocks sohuld be separated by empty lines"),
-    FILE_UNORDERED_IMPORTS(44, true, "imports should be ordered alphabetically and shouldn't be separated by newlines"),
-    FILE_COLLAPSED_IMPORTS(45, false, "collapsed imports should not be used"),
-    FILE_SINGLE_TOP_LEVEL_CLASS(46, false, "Recommendation: in one .kt source file there should be only one class declaration and its name should match with the filename"),
+    FILE_IS_TOO_LONG(41, false, "file has more number of lines than expected"),
+    FILE_CONTAINS_ONLY_COMMENTS(42, false, "source code files which contain only comments should be avoided"),
+    FILE_INCORRECT_BLOCKS_ORDER(43, true, "general structure of kotlin source file is wrong, parts are in incorrect order"),
+    FILE_NO_BLANK_LINE_BETWEEN_BLOCKS(44, true, "general structure of kotlin source file is wrong, general code blocks sohuld be separated by empty lines"),
+    FILE_UNORDERED_IMPORTS(45, true, "imports should be ordered alphabetically and shouldn't be separated by newlines"),
+    FILE_COLLAPSED_IMPORTS(46, false, "collapsed imports should not be used"),
+    FILE_SINGLE_TOP_LEVEL_CLASS(47, false, "Recommendation: in one .kt source file there should be only one class declaration and its name should match with the filename"),
     ;
 
     override fun ruleName(): String = this.name
 
     fun warnText(): String = "[${this.id}] ${this.warn}:"
 
+    @Suppress("LongParameterList")
     fun warnAndFix(configRules: List<RulesConfig>,
                    emit: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit),
                    isFixMode: Boolean,

@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
  * that is used to store command line arguments
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Suppress("ForbiddenComment")
 class TestConfig @JsonCreator internal constructor(
         // command line execution command, use shell like "cmd", "bash" or other
         @param:JsonProperty("executionCommand") val executionCommand: String,

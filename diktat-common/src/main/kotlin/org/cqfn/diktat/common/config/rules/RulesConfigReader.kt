@@ -21,7 +21,7 @@ data class RulesConfig(
     val configuration: Map<String, String>
 )
 
-abstract class RuleConfiguration(protected val config: Map<String, String>)
+open class RuleConfiguration(protected val config: Map<String, String>)
 object EmptyConfiguration: RuleConfiguration(mapOf())
 
 /**
