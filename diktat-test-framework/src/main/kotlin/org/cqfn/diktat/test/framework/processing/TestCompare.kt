@@ -9,6 +9,7 @@ import org.cqfn.diktat.test.framework.config.TestConfig
 import org.cqfn.diktat.test.framework.config.TestFrameworkProperties
 import java.io.File
 
+@Suppress("ForbiddenComment")
 open class TestCompare : TestBase {
     protected open val log: Logger = LoggerFactory.getLogger(TestCompare::class.java)
     private var expectedResult: File? = null
@@ -33,7 +34,10 @@ open class TestCompare : TestBase {
 
     override fun initTestProcessor(testConfig: TestConfig?, properties: TestFrameworkProperties?): TestCompare? {
         this.testConfig = testConfig
-        this.expectedResult = buildFullPathToResource(testConfig!!.expectedResultFile, properties!!.testFilesRelativePath)
+        this.expectedResult = buildFullPathToResource(
+                testConfig!!.expectedResultFile,
+                properties!!.testFilesRelativePath
+        )
         this.testFile = buildFullPathToResource(testConfig.testFile, properties.testFilesRelativePath)
 
         return this
@@ -57,13 +61,13 @@ open class TestCompare : TestBase {
     }
 
     private fun buildFullPathToResource(resourceFile: String, resourceAbsolutePath: String): File? {
-            val fileURL = javaClass.classLoader.getResource("$resourceAbsolutePath/$resourceFile")
-            return if (fileURL != null) {
-                File(fileURL.file)
-            } else {
-                log.error("Cannot read resource file {} - it cannot be found in resources", expectedResult)
-                null
-            }
+        val fileURL = javaClass.classLoader.getResource("$resourceAbsolutePath/$resourceFile")
+        return if (fileURL != null) {
+            File(fileURL.file)
+        } else {
+            log.error("Cannot read resource file {} - it cannot be found in resources", expectedResult)
+            null
+        }
     }
 
     protected open fun getExecutionResult() = testResult!!.stdOut

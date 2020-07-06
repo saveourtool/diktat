@@ -49,6 +49,7 @@ fun String.toUpperSnakeCase(): String {
 /**
  * detecting the case of _this_ String and converting it to the right UpperSnakeCase (UPPER_UNDERSCORE) case
  */
+@Suppress("ForbiddenComment")
 fun String.toLowerCamelCase(): String {
     // PascalCase -> PASCAL_CASE
     if (this.isPascalCase()) return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, this)
@@ -75,6 +76,7 @@ fun String.toLowerCamelCase(): String {
 /**
  * detecting the case of _this_ String and converting it to the right PascalCase (UpperCamel) case
  */
+@Suppress("ForbiddenComment")
 fun String.toPascalCase(): String {
     // all letters UPPER -> Upper
     if (this.all { it.isUpperCase() }) return this[0] + this.substring(1).toLowerCase()

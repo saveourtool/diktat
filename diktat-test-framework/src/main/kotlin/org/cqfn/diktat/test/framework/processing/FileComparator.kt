@@ -28,6 +28,7 @@ class FileComparator {
      * @return true in case files are different
      * false - in case they are equals
      */
+    @Suppress("ReturnCount")
     fun compareFilesEqual(): Boolean {
         try {
             val expect = readFile(expectedResultFile.absolutePath)
@@ -43,7 +44,8 @@ class FileComparator {
                     .forEach { delta -> deltasJoiner.add(delta) }
 
             log.error("""Expected result from <${expectedResultFile.name}> and actual formatted are different.
-|                        See difference below:   Expected  vs  Actual ${System.lineSeparator()}$deltasJoiner""".trimMargin())
+|                        See difference below:
+|                           Expected  vs  Actual ${System.lineSeparator()}$deltasJoiner""".trimMargin())
 
         } catch (e: DiffException) {
             log.error("Not able to prepare diffs between <${expectedResultFile.name}> and <${actualResultList}>", e)
