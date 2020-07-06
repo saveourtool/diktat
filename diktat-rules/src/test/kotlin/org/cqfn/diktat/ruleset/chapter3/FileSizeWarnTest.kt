@@ -39,6 +39,11 @@ class FileSizeWarnTest {
                     mapOf("ignoreFolders" to "A"))
     )
 
+    private val rulesConfigListTwoIgnoreFolders: List<RulesConfig> = listOf(
+        RulesConfig(Warnings.FILE_IS_TOO_LONG.name, true,
+        mapOf("maxSize" to "8", "ignoreFolders" to "A, B"))
+    )
+
     fun lintMethod(rule: Rule,
                    fileName: String,
                    code: String,
@@ -115,5 +120,18 @@ class FileSizeWarnTest {
         val file = File(path!!.file)
         file.writeText("//hello \n".repeat(2000))
         return 2000
+    }
+
+    @Test
+    fun `ignoring two out of three folders`(){
+        var path = javaClass.classLoader.getResource("test/paragraph3/src/main/A/FileSizeA.kt")
+        var file = File(path!!.file)
+        lintMethod(FileSize(), file.absolutePath, file.readText(), rulesConfigList = rulesConfigListTwoIgnoreFolders)
+        path = javaClass.classLoader.getResource("test/paragraph3/src/main/B/FileSizeB.kt")
+        file = File(path!!.file)
+        lintMethod(FileSize(), file.absolutePath, file.readText(), rulesConfigList = rulesConfigListTwoIgnoreFolders)
+        path = javaClass.classLoader.getResource("test/paragraph3/src/main/C/FileSizeC.kt")
+        file = File(path!!.file)
+        lintMethod(FileSize(), file.absolutePath, file.readText(), rulesConfigList = rulesConfigListTwoIgnoreFolders)
     }
 }
