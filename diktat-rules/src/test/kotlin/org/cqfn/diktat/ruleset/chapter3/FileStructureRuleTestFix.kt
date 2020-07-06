@@ -28,7 +28,5 @@ class FileStructureRuleTestFix : FixTestBase("test/paragraph3/file_structure", F
 
     @Test
     @Ignore("not yet implemented")
-    fun `should reorder imports according to recommendation 3_1`() {
-
-    }
+    fun `should reorder imports according to recommendation 3_1`() = Unit
 }

@@ -79,14 +79,9 @@ class FileStructureRule : Rule("file-structure") {
 
         // checking order
         listOfNotNull(copyrightComment, headerKdoc, fileAnnotations).forEach { astNode ->
-            val (afterThisNode, beforeThisNode) = when(astNode.elementType) {
-                BLOCK_COMMENT -> null to listOfNotNull(headerKdoc, fileAnnotations, packageDirectiveNode).first()
-                KDOC -> copyrightComment to (fileAnnotations ?: packageDirectiveNode)
-                FILE_ANNOTATION_LIST -> (headerKdoc ?: copyrightComment) to packageDirectiveNode
-                else -> null to packageDirectiveNode
-            }
+            val (afterThisNode, beforeThisNode) = astNode.getSiblingBlocks(copyrightComment, headerKdoc, fileAnnotations, packageDirectiveNode)
             val isPositionIncorrect = (afterThisNode != null && !node.isChildAfterAnother(astNode, afterThisNode))
-                || !node.isChildBeforeAnother(astNode, beforeThisNode)
+                    || !node.isChildBeforeAnother(astNode, beforeThisNode)
 
             if (isPositionIncorrect) {
                 FILE_INCORRECT_BLOCKS_ORDER.warnAndFix(configRules, emitWarn, isFixMode, astNode.text.lines().first(), astNode.startOffset) {
@@ -135,6 +130,17 @@ class FileStructureRule : Rule("file-structure") {
                 }
             }
         }
+    }
+
+    private fun ASTNode.getSiblingBlocks(copyrightComment: ASTNode?,
+                                         headerKdoc: ASTNode?,
+                                         fileAnnotations: ASTNode?,
+                                         packageDirectiveNode: ASTNode
+    ): Pair<ASTNode?, ASTNode> = when (elementType) {
+        BLOCK_COMMENT -> null to listOfNotNull(headerKdoc, fileAnnotations, packageDirectiveNode).first()
+        KDOC -> copyrightComment to (fileAnnotations ?: packageDirectiveNode)
+        FILE_ANNOTATION_LIST -> (headerKdoc ?: copyrightComment) to packageDirectiveNode
+        else -> null to packageDirectiveNode
     }
 
     private fun ASTNode.moveChildBefore(child: ASTNode, beforeThis: ASTNode, nBlankLinesAfter: Int = 0) {

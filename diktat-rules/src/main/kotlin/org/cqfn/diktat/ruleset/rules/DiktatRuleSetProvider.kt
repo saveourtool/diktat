@@ -31,7 +31,7 @@ class DiktatRuleSetProvider(private val jsonRulesConfig: String = "rules-config.
             FileNaming(),
             PackageNaming(),
             FileSize(),
-            IdentifierNaming()
+            IdentifierNaming(),
             FileStructureRule()  // this rule should be the last because it should operate on already valid code
         )
     }
