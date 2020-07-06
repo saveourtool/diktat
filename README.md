@@ -1,14 +1,14 @@
+![diktat logo](diktat_small.jpg)
+
+
 ![Build and test](https://github.com/akuleshov7/diKTat/workflows/Build%20and%20test/badge.svg)
 ![deteKT static analysis](https://github.com/akuleshov7/diKTat/workflows/Run%20deteKT/badge.svg)
 ![Releases](https://img.shields.io/github/v/release/akuleshov7/diKTat)
-
 ![License](https://img.shields.io/github/license/akuleshov7/diKtat)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fakuleshov7%2FdiKTat.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fakuleshov7%2FdiKTat?ref=badge_shield)
-
 [![Awesome Kotlin Badge](https://kotlin.link/awesome-kotlin.svg)](https://github.com/KotlinBy/awesome-kotlin)
 [![ktlint](https://img.shields.io/badge/code%20style-%E2%9D%A4-FF4081.svg)](https://ktlint.github.io/)
 [![Chat on Telegram](https://img.shields.io/badge/Chat%20on-Telegram-brightgreen.svg)](https://t.me/joinchat/AAAAAFDg-ipuZFGyBGPPeg)
-
 [![Hits-of-Code](https://hitsofcode.com/github/akuleshov7/diktat)](https://hitsofcode.com/view/github/akuleshov7/diktat)
 [![codecov](https://codecov.io/gh/akuleshov7/diKTat/branch/master/graph/badge.svg)](https://codecov.io/gh/akuleshov7/diKTat)
 
@@ -23,23 +23,74 @@ Mainly we wanted to create a common configurable mechanism that will give us a c
 That's why we added logic for:
 1) Parsing .json file with configurations of rules and passing it to visitors
 2) Passing information about properties to visitors. This information is very useful, when you are trying to get, for example, a filename of file where the code is stored.
+3) We added a bunch of visitors that will extended KTlint functionaliity
 
 ## Usage
 diKTat uses KTlint framework so see it's [usage first](https://ktlint.github.io/)
 
-### How to: run default configuration of diKTat as cli application
-load KTlint:
-`curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.37.2/ktlint && chmod a+x ktlint`
+### How to: run default configuration of diKTat as CLI application
+load KTlint: 
+```shell script
+curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.37.2/ktlint && chmod a+x ktlint`
+```
 you can also download ktlint manually from [ktlint project repo](https://github.com/pinterest/ktlint/releases)
 another option for MacOS is `brew install ktlint`
 
-load diKTat:
-`curl -sSLO https://central.artipie.com/akuleshov7/diktat/org/cqfn/diktat/diktat-rules/0.0.1/diktat-rules-0.0.1-jar-with-dependencies.jar`
+load diKTat: 
+```shell script
+curl -sSLO https://central.artipie.com/akuleshov7/diktat/org/cqfn/diktat/diktat-rules/0.0.1/diktat-rules-0.0.1-jar-with-dependencies.jar
+```
 
-run KTlint with diKTat injected:
-`./ktlint -R diktat-rules-0.0.1-jar-with-dependencies.jar "src/test/**/*.kt"`
+run KTlint with diKTat injected: 
+```shell script
+./ktlint -R diktat-rules-0.0.1-jar-with-dependencies.jar "src/test/**/*.kt"
+```
 
-this will run the default configuration of diKTat in check mode. To start autofixing use `-F` option.
+this will run the default configuration of diKTat in check mode. To start autofixing use `-F` option. \
+To see any reference related to ktlint - see: [KTlint](https://ktlint.github.io/) or use: 
+`./ktlint -help`
+
+### How to: run default configuration of diKTat with maven plugin
+add this snippet to your pom.xml `<build>` section: 
+```xml
+          <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <id>ktlint</id>
+                        <phase>verify</phase>
+                        <configuration>
+                            <target name="ktlint">
+                                <java taskname="ktlint" dir="${basedir}" fork="true" failonerror="true"
+                                      classpathref="maven.plugin.classpath" classname="com.pinterest.ktlint.Main">
+                                    <arg value="src/**/*.kt"/>
+                                </java>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.pinterest</groupId>
+                        <artifactId>ktlint</artifactId>
+                        <version>0.37.2</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.cqfn.diktat</groupId>
+                        <artifactId>diktat-rules</artifactId>
+                        <version>0.0.1-SNAPSHOT</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+```
+
+in case you want to add autofixer with diktat ruleset just extend the snippet above with: `<arg value="-F"/>
+`
 
 ### How to: make deep customization of diKTat (rules-config.json)
 In ktlint rules can be configured via .editorconfig, but this does not give a chance to customize or enable/disable each and every rule independently.
@@ -63,13 +114,16 @@ Main components are:
 
 ### How to: build the project
 Download:
-`git clone https://github.com/akuleshov7/diKTat.git`
+```shell script
+git clone https://github.com/akuleshov7/diKTat.git
+```
 
 We are using maven as we tired of Gradle:
-`mvn clean install`
+```shell script
+mvn clean install
+```
 
 This will also install git hooks into your local .git directory. The hooks will restrict commit messages and branch naming.
 
 ### Contribution policy
 Please follow our [contributing policy](https://github.com/akuleshov7/diKTat/wiki/Contributing-policy)
-
