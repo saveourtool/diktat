@@ -18,4 +18,4 @@ jobs:
         with:
           java-version: 1.11
       - name: running deteKT
-        run: mvn detekt:check -Ddetekt.config=detekt-config.yml
+        run: mvn detekt:check@detekt

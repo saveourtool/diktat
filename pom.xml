@@ -145,6 +145,15 @@
     </repositories>
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.1</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>com.rudikershaw.gitbuildhook</groupId>
@@ -174,8 +183,11 @@
                 <version>1.10.0</version>
                 <executions>
                     <execution>
+                        <id>detekt</id>
                         <phase>verify</phase>
-                        <goals><goal>check</goal></goals>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
                         <configuration>
                             <config>detekt-config.yml</config>
                         </configuration>
