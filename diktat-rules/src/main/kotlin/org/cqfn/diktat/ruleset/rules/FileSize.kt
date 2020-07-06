@@ -25,7 +25,6 @@ class FileSize : Rule("file-size") {
     private var fileName: String? = null
     private var isFixMode: Boolean = false
 
-    @Suppress("NestedBlockDepth")
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
                        params: KtLint.Params,
