@@ -28,6 +28,7 @@ import org.cqfn.diktat.ruleset.utils.moveChildBefore
 import org.cqfn.diktat.ruleset.rules.getDiktatConfigRules
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
+import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 
 /**
  * Visitor for header comment in .kt file:
@@ -85,7 +86,7 @@ class HeaderCommentRule : Rule("header-comment") {
                 }
                 // do not insert empty line before header kdoc
                 val newLines = if (node.findChildBefore(PACKAGE_DIRECTIVE, KDOC) != null) "\n" else "\n\n"
-                node.addChild(LeafPsiElement(WHITE_SPACE, newLines), node.firstChildNode)
+                node.addChild(PsiWhiteSpaceImpl(newLines), node.firstChildNode)
                 node.addChild(LeafPsiElement(BLOCK_COMMENT,
                     """
                         /*
@@ -109,9 +110,13 @@ class HeaderCommentRule : Rule("header-comment") {
             if (firstKdoc != null && firstKdoc.treeParent.elementType == FILE) {
                 HEADER_NOT_BEFORE_PACKAGE.warnAndFix(configRules, emitWarn, isFixMode, fileName, firstKdoc.startOffset) {
                     node.moveChildBefore(firstKdoc, node.getFirstChildWithType(PACKAGE_DIRECTIVE), true)
-//                         remove empty line before copyright and header kdoc
+                    // ensure there is no empty line between copyright and header kdoc
                     node.findChildBefore(PACKAGE_DIRECTIVE, BLOCK_COMMENT)?.apply {
-                        nextSibling { it.elementType == WHITE_SPACE }!!.leaveOnlyOneNewLine()
+                        if (treeNext.elementType == WHITE_SPACE) {
+                            node.replaceChild(treeNext, PsiWhiteSpaceImpl("\n"))
+                        } else {
+                            node.addChild(PsiWhiteSpaceImpl("\n"), this.treeNext)
+                        }
                     }
                 }
                 if (!isFixMode) return false
@@ -140,7 +145,7 @@ class HeaderCommentRule : Rule("header-comment") {
                 && headerKdoc.treeNext.text.count { it == '\n' } != 2) {
                 HEADER_WRONG_FORMAT.warnAndFix(configRules, emitWarn, isFixMode,
                     "header KDoc should have a new line after", headerKdoc.startOffset) {
-                    node.replaceChild(headerKdoc.treeNext, LeafPsiElement(WHITE_SPACE, "\n\n"))
+                    node.replaceChild(headerKdoc.treeNext, PsiWhiteSpaceImpl("\n\n"))
                 }
             }
         }

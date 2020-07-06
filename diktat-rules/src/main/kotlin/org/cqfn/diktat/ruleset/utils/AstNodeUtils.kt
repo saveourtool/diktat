@@ -222,6 +222,7 @@ fun ASTNode.leaveOnlyOneNewLine() {
 }
 
 /**
+ * @param beforeThisNode node before which childToMove will be placed. If null, childToMove will be apeended after last child of this node.
  * @param withNextNode whether next node after childToMove should be moved too. In most cases it corresponds to moving
  *     the node with newline.
  */
