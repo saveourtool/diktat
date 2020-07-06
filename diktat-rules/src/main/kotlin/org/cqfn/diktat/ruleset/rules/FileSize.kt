@@ -39,20 +39,18 @@ class FileSize : Rule("file-size") {
                 configRules.getRuleConfig(FILE_IS_TOO_LONG)?.configuration ?: mapOf()
             )
             val ignoreFolders = configuration.ignoreFolders
-
             val realFilePath = calculateFilePath(fileName)
-
             if (!realFilePath.contains(SRC_PATH)) {
                 log.error("$SRC_PATH directory is not found in file path")
-            } else {
-                if (ignoreFolders.none()) {
+                return
+            }
+            if (ignoreFolders.none()) {
+                checkFileSize(node, configuration.maxSize)
+                return
+            }
+            ignoreFolders.forEach {
+                if (!realFilePath.containsAll(it.splitPathToDirs())) {
                     checkFileSize(node, configuration.maxSize)
-                } else {
-                    ignoreFolders.forEach {
-                        if (!realFilePath.containsAll(it.splitPathToDirs())) {
-                            checkFileSize(node, configuration.maxSize)
-                        }
-                    }
                 }
             }
         }
