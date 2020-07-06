@@ -21,3 +21,9 @@ jobs:
         run: mvn -B clean package -DskipTests
       - name: Maven Verify
         run: mvn -B verify
+      - name: Code coverage report
+        uses: codecov/codecov-action@v1
+        with:
+          file: ./*/target/site/jacoco/jacoco.xml
+          flags: unittests
+          fail_ci_if_error: true # optional (default = false)
