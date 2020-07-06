@@ -1,5 +1,6 @@
 ![Build and test](https://github.com/akuleshov7/diKTat/workflows/Build%20and%20test/badge.svg)
 ![deteKT static analysis](https://github.com/akuleshov7/diKTat/workflows/Run%20deteKT/badge.svg)
+[![codecov](https://codecov.io/gh/akuleshov7/diKTat/branch/master/graph/badge.svg)](https://codecov.io/gh/akuleshov7/diKTat)
 ![License](https://img.shields.io/github/license/akuleshov7/diKtat)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fakuleshov7%2FdiKTat.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fakuleshov7%2FdiKTat?ref=badge_shield)
 ![Releases](https://img.shields.io/github/v/release/akuleshov7/diKTat)

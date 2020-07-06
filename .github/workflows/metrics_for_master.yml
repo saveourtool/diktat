@@ -1,11 +1,13 @@
-name: Build and test
+name: Metrics for master branch
 
 on:
-  pull_request
+  push:
+    branches:
+      - 'master'
 
 jobs:
-  test:
-    name: Unit Test
+  master_flow:
+    name: Master branch update
     runs-on: ubuntu-18.04
 
     steps:
@@ -14,11 +16,9 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.11
-      - name: Maven Package
-        run: mvn -B clean package -DskipTests
-      - name: Maven Verify
-        run: mvn -B verify
-      - name: Code coverage report
+      - name: Run tests
+        run: mvn -B test
+      - name: Generate code coverage report
         uses: codecov/codecov-action@v1
         with:
           file: ./*/target/site/jacoco/jacoco.xml
