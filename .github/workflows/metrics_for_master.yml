@@ -1,4 +1,4 @@
-name: Metrics for master branch
+name: Update metrics for master branch
 
 on:
   push:
