@@ -4,12 +4,13 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.cqfn.diktat</groupId>
     <artifactId>diktat-parent</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>${diktat.version}</version>
     <name>diktat</name>
     <description>diKTat kotlin formatter and fixer</description>
     <packaging>pom</packaging>
 
     <properties>
+        <diktat.version>0.0.1</diktat.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <kotlin.version>1.3.70</kotlin.version>
@@ -133,6 +134,10 @@
     </dependencyManagement>
 
     <distributionManagement>
+        <repository>
+            <id>artipie</id>
+            <url>https://central.artipie.com/akuleshov7/diktat</url>
+        </repository>
         <snapshotRepository>
             <id>artipie</id>
             <url>https://central.artipie.com/akuleshov7/diktat</url>
@@ -169,6 +174,9 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- ========= CI/CD tools========== -->
+
             <plugin>
                 <groupId>com.github.ozsie</groupId>
                 <artifactId>detekt-maven-plugin</artifactId>
@@ -176,7 +184,9 @@
                 <executions>
                     <execution>
                         <phase>verify</phase>
-                        <goals><goal>check</goal></goals>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
                         <configuration>
                             <config>detekt-config.yml</config>
                         </configuration>
