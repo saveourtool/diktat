@@ -19,3 +19,5 @@ Brief Description
 1) Long description
 2) Long description  
 ```
+
+2) Please also do not forget to update documentation on Wiki after the merge approval and before merge.
