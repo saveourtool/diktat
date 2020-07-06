@@ -11,7 +11,6 @@ import org.cqfn.diktat.ruleset.rules.FileSize
 import org.cqfn.diktat.ruleset.utils.DiktatRuleSetProviderTest
 import org.junit.Test
 import java.io.File
-import java.lang.StringBuilder
 
 class FileSizeWarnTest {
 
@@ -87,7 +86,7 @@ class FileSizeWarnTest {
     }
 
     @Test
-    fun `configuration is empty`(){
+    fun `use default values`(){
         val path = javaClass.classLoader.getResource("test/paragraph3/src/main/FileSizeLarger.kt")
         val file = File(path!!.file)
         lintMethod(FileSize(), file.absolutePath, file.readText(), rulesConfigList = rulesConfigListEmpty)
@@ -97,7 +96,7 @@ class FileSizeWarnTest {
     fun `file has more than 2000 lines`(){
         val path = javaClass.classLoader.getResource("test/paragraph3/src/main/A/FileSize2000.kt")
         val file = File(path!!.file)
-        val size = generate2000lines() + 2
+        val size = generate2000lines() + 1
         lintMethod(FileSize(), file.absolutePath, file.readText(),
                 LintError(1, 1, "$DIKTAT_RULE_SET_ID:file-size",
                         "${Warnings.FILE_IS_TOO_LONG.warnText()} $size", false),
@@ -108,17 +107,13 @@ class FileSizeWarnTest {
     fun `config has only ignoreFolders`(){
         val path = javaClass.classLoader.getResource("test/paragraph3/src/main/A/FileSize2000.kt")
         val file = File(path!!.file)
-        val size = generate2000lines() + 2
         lintMethod(FileSize(), file.absolutePath, file.readText(), rulesConfigList = rulesConfigListOnlyIgnore)
     }
 
     private fun generate2000lines(): Int{
         val path = javaClass.classLoader.getResource("test/paragraph3/src/main/A/FileSize2000.kt")
         val file = File(path!!.file)
-        val text = StringBuilder()
-        for (i in 0..2000)
-            text.append("//hello \n")
-        file.writeText(text.toString())
+        file.writeText("//hello \n".repeat(2000))
         return 2000
     }
 }
