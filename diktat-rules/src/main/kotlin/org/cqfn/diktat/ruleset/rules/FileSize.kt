@@ -16,7 +16,7 @@ class FileSize : Rule("file-size") {
         private val log = LoggerFactory.getLogger(FileSize::class.java)
         const val MAX_SIZE = 2000L
         private val IGNORE_FOLDER = emptyList<String>()
-        const val IGNORE_FOLDERS_SEPARATOR = ","
+        const val IGNORE_FOLDERS_SEPARATOR = "[,/]"
         const val SRC_PATH = "src"
     }
 
@@ -49,10 +49,10 @@ class FileSize : Rule("file-size") {
                     checkFileSize(node, configuration.maxSize)
                 } else {
                     ignoreFolders.forEach {
-                        if (!realFilePath.containsAll(it.splitPathToDirs())) {
-                            checkFileSize(node, configuration.maxSize)
-                        }
+                        if (realFilePath.contains(it))
+                            return
                     }
+                    checkFileSize(node, configuration.maxSize)
                 }
             }
         }
@@ -77,6 +77,6 @@ class FileSize : Rule("file-size") {
 
     class FileSizeConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
         val maxSize = config["maxSize"]?.toLongOrNull() ?: MAX_SIZE
-        val ignoreFolders = config["ignoreFolders"]?.split(IGNORE_FOLDERS_SEPARATOR) ?: IGNORE_FOLDER
+        val ignoreFolders = config["ignoreFolders"]?.replace("\\s+".toRegex(),"")?.split(IGNORE_FOLDERS_SEPARATOR.toRegex()) ?: IGNORE_FOLDER
     }
 }
