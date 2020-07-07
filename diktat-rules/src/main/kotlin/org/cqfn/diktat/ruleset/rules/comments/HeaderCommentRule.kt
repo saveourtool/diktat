@@ -9,7 +9,6 @@ import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.nextSibling
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
@@ -19,13 +18,12 @@ import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_MISSING_IN_NON_SINGLE_C
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_MISSING_OR_WRONG_COPYRIGHT
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_NOT_BEFORE_PACKAGE
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_WRONG_FORMAT
+import org.cqfn.diktat.ruleset.rules.getDiktatConfigRules
 import org.cqfn.diktat.ruleset.utils.findChildAfter
 import org.cqfn.diktat.ruleset.utils.findChildBefore
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
-import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
 import org.cqfn.diktat.ruleset.utils.moveChildBefore
-import org.cqfn.diktat.ruleset.rules.getDiktatConfigRules
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl

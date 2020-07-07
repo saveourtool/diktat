@@ -9,39 +9,52 @@ import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.nextSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
+import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.junit.Assert
-import org.junit.Ignore
 import org.junit.Test
 
 class ASTNodeUtilsTest {
-    /**
-     * Demonstration of ASTNode#prettyPrint. Example output:
-     * source: "class Test"
-     * output:
-     *  CLASS: "class Test"
-     *  - class: "class"
-     *  - WHITE_SPACE: " "
-     *  - IDENTIFIER: "Test"
-     */
     @Test
-    @Ignore("This test is for demonstration only, it doesn't actually check anything")
-    fun `pretty print ASTNode`() {
+    fun `String representation of ASTNode`() {
         val code = """
             class Test {
-                /**
-                * test method
-                * @param a - dummy int
-                */
-                fun foo(a: Int): Int = 2 * a
+                val x = 0
             }
         """.trimIndent()
-        KtLint.lint(
-                KtLint.Params(
-                        text = code,
-                        ruleSets = listOf(RuleSet("test", PrettyPrintingVisitor())),
-                        cb = { _, _ -> Unit }
-                )
-        )
+        PrettyPrintingVisitor.assertStringRepr(FILE, code, 0, 2, """
+            |kotlin.FILE: "class Test {
+            |    val x = 0
+            |}"
+            |- PACKAGE_DIRECTIVE: ""
+            |- IMPORT_LIST: ""
+            |- CLASS: "class Test {
+            |    val x = 0
+            |}"
+            |-- class: "class"
+            |-- WHITE_SPACE: " "
+            |-- IDENTIFIER: "Test"
+            |-- WHITE_SPACE: " "
+            |-- CLASS_BODY: "{
+            |    val x = 0
+            |}"
+            |
+        """.trimMargin())
+
+        PrettyPrintingVisitor.assertStringRepr(FILE, """val x = 0""", expected = """
+            |kotlin.FILE: "val x = 0"
+            |- PACKAGE_DIRECTIVE: ""
+            |- IMPORT_LIST: ""
+            |- PROPERTY: "val x = 0"
+            |-- val: "val"
+            |-- WHITE_SPACE: " "
+            |-- IDENTIFIER: "x"
+            |-- WHITE_SPACE: " "
+            |-- EQ: "="
+            |-- WHITE_SPACE: " "
+            |-- INTEGER_CONSTANT: "0"
+            |--- INTEGER_LITERAL: "0"
+            |
+        """.trimMargin())
     }
 
     @Test
@@ -128,10 +141,31 @@ class ASTNodeUtilsTest {
     }
 }
 
-private class PrettyPrintingVisitor : Rule("print-ast") {
-    override fun visit(node: ASTNode, autoCorrect: Boolean, params: KtLint.Params, emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
-        println("=== Beginning of node representation ===")
-        print(node.prettyPrint(maxLevel = 2))
-        println("=== End of node representation ===")
+private class PrettyPrintingVisitor(private val elementType: IElementType,
+                                    private val level: Int,
+                                    private val maxLevel: Int,
+                                    private val expected: String) : Rule("print-ast") {
+    companion object {
+        fun assertStringRepr(elementType: IElementType, code: String, level: Int = 0, maxLevel: Int = -1, expected: String) {
+            KtLint.lint(
+                    KtLint.Params(
+                            text = code,
+                            ruleSets = listOf(RuleSet("test", PrettyPrintingVisitor(elementType, level, maxLevel, expected))),
+                            cb = { _, _ -> Unit }
+                    )
+            )
+        }
+    }
+
+    override fun visit(node: ASTNode,
+                       autoCorrect: Boolean,
+                       params: KtLint.Params,
+                       emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
+        if (node.elementType == elementType) {
+            Assert.assertEquals(
+                    expected.replace("\n", System.lineSeparator()),
+                    node.prettyPrint(level, maxLevel)
+            )
+        }
     }
 }
