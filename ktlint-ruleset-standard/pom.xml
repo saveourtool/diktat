@@ -29,7 +29,7 @@
         </dependency>
         <dependency>
             <groupId>com.pinterest.ktlint</groupId>
-            <artifactId>ktlint-core</artifactId>
+            <artifactId>ktlint-corXe</artifactId>
         </dependency>
         <dependency>
             <groupId>com.pinterest.ktlint</groupId>
