@@ -40,15 +40,9 @@ class FileSize : Rule("file-size") {
             val ignoreFolders = configuration.ignoreFolders
             val realFilePath = calculateFilePath(fileName)
             if (!realFilePath.contains(SRC_PATH)) {
-                log.error("$SRC_PATH directory is not found in file path")
-                return
-            }
-            if (ignoreFolders.none()) {
-                checkFileSize(node, configuration.maxSize)
-                return
-            }
-            ignoreFolders.forEach {
-                if (!realFilePath.containsAll(it.splitPathToDirs())) {
+                log.error("$SRC_PATH directory is not found in file path")}
+            else{
+                if (ignoreFolders.none { realFilePath.containsAll(it.splitPathToDirs()) }) {
                     checkFileSize(node, configuration.maxSize)
                 }
             }
@@ -74,6 +68,6 @@ class FileSize : Rule("file-size") {
 
     class FileSizeConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
         val maxSize = config["maxSize"]?.toLongOrNull() ?: MAX_SIZE
-        val ignoreFolders = config["ignoreFolders"]?.split(IGNORE_FOLDERS_SEPARATOR) ?: IGNORE_FOLDER
+        val ignoreFolders = config["ignoreFolders"]?.replace("\\s+".toRegex(),"")?.split(IGNORE_FOLDERS_SEPARATOR) ?: IGNORE_FOLDER
     }
 }

@@ -1,7 +1,9 @@
-package test.paragraph3.src.main.C
+package test.paragraph3.src.main.B
 
-class C {
+class B {
 
     fun tester(a: Int) = Unit
 
+
+    fun testER(a: Int) = Unit
 }
