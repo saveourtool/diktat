@@ -158,8 +158,6 @@
                     <version>2.7</version>
                     <configuration>
                         <generateBackupPoms>false</generateBackupPoms>
-<!--                        <allowAnyUpdates>true</allowAnyUpdates>-->
-                        <allowIncrementalUpdates>true</allowIncrementalUpdates>
                     </configuration>
                 </plugin>
             </plugins>
