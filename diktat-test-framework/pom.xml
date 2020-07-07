@@ -9,14 +9,14 @@
     <parent>
         <groupId>org.cqfn.diktat</groupId>
         <artifactId>diktat-parent</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>${diktat.version}</version>
     </parent>
 
     <dependencies>
         <dependency>
             <groupId>org.cqfn.diktat</groupId>
             <artifactId>diktat-common</artifactId>
-            <version>${project.version}</version>
+            <version>${diktat.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
