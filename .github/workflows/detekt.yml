@@ -1,10 +1,7 @@
 name: Run deteKT
 
 on:
-  push:
-    branches-ignore:
-      - 'master'
-      - 'release*'
+  pull_request
 
 jobs:
   test:
