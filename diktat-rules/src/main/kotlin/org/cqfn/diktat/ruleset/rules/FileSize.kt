@@ -45,13 +45,9 @@ class FileSize : Rule("file-size") {
             if (!realFilePath.contains(SRC_PATH)) {
                 log.error("$SRC_PATH directory is not found in file path")
             } else {
-                if (!ignoreFolders.none()){
-                    ignoreFolders.forEach {
-                        if (realFilePath.containsAll(it.splitPathToDirs()))
-                            return
-                    }
+                if (ignoreFolders.none { realFilePath.containsAll(it.splitPathToDirs()) }){
+                    checkFileSize(node, configuration.maxSize)
                 }
-                checkFileSize(node, configuration.maxSize)
             }
         }
     }
