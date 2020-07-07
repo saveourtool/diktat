@@ -76,6 +76,8 @@
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
+                    <finalName>diktat</finalName>
+                    <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
 
                 <executions>
