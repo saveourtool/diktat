@@ -45,7 +45,7 @@ class HeaderCommentRule : Rule("header-comment") {
         emitWarn = emit
 
         if (node.elementType == ElementType.FILE) {
-            fileName = params.fileName ?: ""
+            fileName = params.fileName!!
             checkCopyright(node)
             checkHeaderKdoc(node)
         }
