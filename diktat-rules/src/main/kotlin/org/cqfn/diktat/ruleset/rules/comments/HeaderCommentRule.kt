@@ -63,7 +63,7 @@ class HeaderCommentRule : Rule("header-comment") {
 
     private fun checkCopyright(node: ASTNode) {
         val configuration = CopyrightConfiguration(configRules.getRuleConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT)?.configuration
-            ?: mapOf())
+                ?: mapOf())
         if (!configuration.isCopyrightMandatory() && !configuration.hasCopyrightText()) return
 
         val copyrightText = configuration.getCopyrightText()
@@ -72,9 +72,9 @@ class HeaderCommentRule : Rule("header-comment") {
         val isWrongCopyright = headerComment != null && !headerComment.text.contains(copyrightText)
         val isMissingCopyright = headerComment == null && configuration.isCopyrightMandatory()
         val isCopyrightInsideKdoc = (node.getAllChildrenWithType(KDOC) + node.getAllChildrenWithType(ElementType.EOL_COMMENT))
-            .any { commentNode ->
-                copyrightWords.any { commentNode.text.contains(it, ignoreCase = true) }
-            }
+                .any { commentNode ->
+                    copyrightWords.any { commentNode.text.contains(it, ignoreCase = true) }
+                }
 
         if (isWrongCopyright || isMissingCopyright || isCopyrightInsideKdoc) {
             HEADER_MISSING_OR_WRONG_COPYRIGHT.warnAndFix(configRules, emitWarn, isFixMode, fileName, node.startOffset) {
@@ -85,12 +85,12 @@ class HeaderCommentRule : Rule("header-comment") {
                 val newLines = if (node.findChildBefore(PACKAGE_DIRECTIVE, KDOC) != null) "\n" else "\n\n"
                 node.addChild(PsiWhiteSpaceImpl(newLines), node.firstChildNode)
                 node.addChild(LeafPsiElement(BLOCK_COMMENT,
-                    """
-                        /*
-                         * $copyrightText
-                         */
-                    """.trimIndent()),
-                    node.firstChildNode
+                        """
+                            /*
+                             * $copyrightText
+                             */
+                        """.trimIndent()),
+                        node.firstChildNode
                 )
             }
         }
@@ -98,26 +98,27 @@ class HeaderCommentRule : Rule("header-comment") {
 
     /**
      * If corresponding rule is enabled, checks if header KDoc is positioned correctly and moves it in fix mode.
+     * Algorithm is as follows: if there is no KDoc at the top of file (before package directive) and the one after imports
+     * isn't bound to any identifier, than this KDoc is misplaced header KDoc.
      * @return true if position check is not needed or if header KDoc is positioned correctly or it was moved by fix mode
      */
     private fun checkHeaderKdocPosition(node: ASTNode): Boolean {
-        // AST always has PACKAGE_DIRECTIVE and IMPORT_LIST nodes, even if they are empty
-        if (configRules.isRuleEnabled(HEADER_NOT_BEFORE_PACKAGE) && node.findChildBefore(PACKAGE_DIRECTIVE, KDOC) == null) {
-            val firstKdoc = node.findChildAfter(IMPORT_LIST, KDOC)
-            if (firstKdoc != null && firstKdoc.treeParent.elementType == FILE) {
-                HEADER_NOT_BEFORE_PACKAGE.warnAndFix(configRules, emitWarn, isFixMode, fileName, firstKdoc.startOffset) {
-                    node.moveChildBefore(firstKdoc, node.getFirstChildWithType(PACKAGE_DIRECTIVE), true)
-                    // ensure there is no empty line between copyright and header kdoc
-                    node.findChildBefore(PACKAGE_DIRECTIVE, BLOCK_COMMENT)?.apply {
-                        if (treeNext.elementType == WHITE_SPACE) {
-                            node.replaceChild(treeNext, PsiWhiteSpaceImpl("\n"))
-                        } else {
-                            node.addChild(PsiWhiteSpaceImpl("\n"), this.treeNext)
-                        }
+        val firstKdoc = node.findChildAfter(IMPORT_LIST, KDOC)
+        val hasOrphanedKdocAfterImports = firstKdoc != null && firstKdoc.treeParent.elementType == FILE
+        if (configRules.isRuleEnabled(HEADER_NOT_BEFORE_PACKAGE) && node.findChildBefore(PACKAGE_DIRECTIVE, KDOC) == null
+                && hasOrphanedKdocAfterImports) {
+            HEADER_NOT_BEFORE_PACKAGE.warnAndFix(configRules, emitWarn, isFixMode, fileName, firstKdoc!!.startOffset) {
+                node.moveChildBefore(firstKdoc, node.getFirstChildWithType(PACKAGE_DIRECTIVE), true)
+                // ensure there is no empty line between copyright and header kdoc
+                node.findChildBefore(PACKAGE_DIRECTIVE, BLOCK_COMMENT)?.apply {
+                    if (treeNext.elementType == WHITE_SPACE) {
+                        node.replaceChild(treeNext, PsiWhiteSpaceImpl("\n"))
+                    } else {
+                        node.addChild(PsiWhiteSpaceImpl("\n"), this.treeNext)
                     }
                 }
-                if (!isFixMode) return false
             }
+            if (!isFixMode) return false
         }
         return true
     }
@@ -132,16 +133,16 @@ class HeaderCommentRule : Rule("header-comment") {
         } else {
             // fixme we should also check date of creation, but it can be in different formats
             headerKdoc.text.split('\n')
-                .filter { it.contains("@author") }
-                .forEach {
-                    HEADER_CONTAINS_DATE_OR_AUTHOR.warn(configRules, emitWarn, isFixMode,
-                        it.trim(), headerKdoc.startOffset)
-                }
+                    .filter { it.contains("@author") }
+                    .forEach {
+                        HEADER_CONTAINS_DATE_OR_AUTHOR.warn(configRules, emitWarn, isFixMode,
+                                it.trim(), headerKdoc.startOffset)
+                    }
 
             if (headerKdoc.treeNext != null && headerKdoc.treeNext.elementType == WHITE_SPACE
-                && headerKdoc.treeNext.text.count { it == '\n' } != 2) {
+                    && headerKdoc.treeNext.text.count { it == '\n' } != 2) {
                 HEADER_WRONG_FORMAT.warnAndFix(configRules, emitWarn, isFixMode,
-                    "header KDoc should have a new line after", headerKdoc.startOffset) {
+                        "header KDoc should have a new line after", headerKdoc.startOffset) {
                     node.replaceChild(headerKdoc.treeNext, PsiWhiteSpaceImpl("\n\n"))
                 }
             }
