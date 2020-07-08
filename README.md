@@ -1,88 +1,165 @@
-![Build and test](https://github.com/akuleshov7/diKTat/workflows/Build%20and%20test/badge.svg)
-![deteKT static analysis](https://github.com/akuleshov7/diKTat/workflows/Run%20deteKT/badge.svg)
-[![codecov](https://codecov.io/gh/akuleshov7/diKTat/branch/master/graph/badge.svg)](https://codecov.io/gh/akuleshov7/diKTat)
-![License](https://img.shields.io/github/license/akuleshov7/diKtat)
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fakuleshov7%2FdiKTat.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fakuleshov7%2FdiKTat?ref=badge_shield)
-![Releases](https://img.shields.io/github/v/release/akuleshov7/diKTat)
+<img src="/logo.svg" width="64px"/>
+
+![Build and test](https://github.com/cqfn/diKTat/workflows/Build%20and%20test/badge.svg)
+![deteKT static analysis](https://github.com/cqfn/diKTat/workflows/Run%20deteKT/badge.svg)
+[![Releases](https://img.shields.io/github/v/release/cqfn/diKTat)](https://github.com/cqfn/diKTat/releases)
+[![License](https://img.shields.io/github/license/cqfn/diKtat)](https://github.com/cqfn/diKTat/blob/master/LICENSE)
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fcqfn%2FdiKTat.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fcqfn%2FdiKTat?ref=badge_shield)
 [![Awesome Kotlin Badge](https://kotlin.link/awesome-kotlin.svg)](https://github.com/KotlinBy/awesome-kotlin)
+[![ktlint](https://img.shields.io/badge/code%20style-%E2%9D%A4-FF4081.svg)](https://ktlint.github.io/)
+[![Hits-of-Code](https://hitsofcode.com/github/cqfn/diktat)](https://hitsofcode.com/view/github/cqfn/diktat)
+[![codecov](https://codecov.io/gh/cqfn/diKTat/branch/master/graph/badge.svg)](https://codecov.io/gh/cqfn/diKTat)
+
 [![Chat on Telegram](https://img.shields.io/badge/Chat%20on-Telegram-brightgreen.svg)](https://t.me/joinchat/AAAAAFDg-ipuZFGyBGPPeg)
- 
 
+It is a collection of [Kotlin](https://kotlinlang.org/) code style rules implemented
+as AST visitors on top of [KTlint](https://ktlint.github.io/).
+The full list of rules is [here](https://github.com/cqfn/diKTat/wiki/diKTat-codestyle-guide).
 
-## diKTat project
-diKTat - is a rule set of Kotlin code style rules that are using [KTlint](https://ktlint.github.io/) framework under the hood.
-In this project we are trying to define Kotlin code style rules and implement them as visitors for AST tree provided by Ktlint.
+First, [install KTlint](https://ktlint.github.io/).
+Then, load diKTat:
 
-Main components are:
-1) diktat-ruleset - number of rules that are supported by diKTat
-2) diktat-test-framework - functional/unit test framework that can be used for running your code fixer on the initial code and compare it with the expected result
-3) also see our demo: diktat-demo in a separate repository
-
-## What was hacked and changed in KTlint and why do we temporary need a fork of it?
-Mainly we wanted to create a common configurable mechanism that will give us a chance to enable/disable and customize all rules.
-That's why we added logic for:
-1) Parsing .json file with configurations of rules and passing it to visitors
-2) Passing information about properties to visitors. This information is very useful, when you are trying to get, for example, a filename of file where the code is stored.
-
-## How to build the project
-As Java/Kotlin community has a holywar about usage of Gradle vs Maven - we supported both. So you can:
-
-Use Maven:
-`mvn clean install`
-
-This will also install git hooks into your local .git directory. The hooks will restrict commit messages and branch naming.
-
-## What is rules-config.json and why should I care?
-In ktlint rules can be configured via .editorconfig, but this does not give a chance to customize or enable/disable each and every rule independently.
-That is why we have supported rules-config.json that can be easily changed and help in customization of your own rule set. 
-It has simple fields: "name" - name of the rule, "enabled" (true/false) to enable or disable that rule and "configuration" - a simple map of some extra unique configurations for the rule, for example: 
-```json
- "configuration": {
-      "isCopyrightMandatory": true,
-      "copyrightText": "Copyright (c) Huawei Technologies Co., Ltd. 2012-2020. All rights reserved."
-    }
+```bash
+$ curl -sSLO https://central.artipie.com/akuleshov7/diktat/org/cqfn/diktat/diktat-rules/0.0.1/diktat-rules-0.0.1-jar-with-dependencies.jar
 ```
 
-To install git hooks using gradle run `gradle installGitHooks`.
+Finally, run KTlint with diKTat injected to check your `*.kt` files in `src/test`:
 
-## Which rules does diKTat supports now and how they can be configured.
-|Rule name|Description|
-| ---- | ---- |
-|PACKAGE_NAME_MISSING|Check: warns if package name is missing in a file. Fix: automatically adds package directive with the name that starts from the domain name (in example - com.huawei) and contains the real directory|
-|PACKAGE_NAME_INCORRECT_CASE|Check: warns if package name is in incorrect (non-lower) case. Fix: automatically update the case in package name|
-|PACKAGE_NAME_INCORRECT_PREFIX|Check: warns if package name does not start with the company's domain. Fix: automatically update the prefix in the package name|
-|PACKAGE_NAME_INCORRECT_SYMBOLS|Check: warns if package name has incorrect symbols like underscore or non-ASCII letters/digits. Exception: underscores that are used for differentiating of keywords in a name. Fix: no but will be|
-|PACKAGE_NAME_INCORRECT_PATH|Check: warns if the path for a file does not match with a package name. Fix: replacing incorrect package name with the name constructed from a path to the file.|
-|CLASS_NAME_INCORRECT|Check: warns if the Class/Enum/Interface name does not match Pascal case ("([A-Z][a-z0-9]+)+"). Fix: fixing the case: if the it is some fixed case (like snake/camel) - with word saving. If not - will restore PascalCase as is.|
-|INCORRECT_PACKAGE_SEPARATOR|Check: warns if underscore is incorrectly used to split package naming. Fix: fixing all nodes in AST and the package name to remove all underscores
-|OBJECT_NAME_INCORRECT|Check: warns if the object does not match Pascal case ("([A-Z][a-z0-9]+)+") Fix: fixing the case in the same way as for classes|
-|VARIABLE_NAME_INCORRECT_FORMAT|Check: warns if the name of variable is not in lowerCamelCase or contains non-ASCII letters. Fix: fixing the case format to lowerCamelCase|
-|VARIABLE_NAME_INCORRECT|Check: warns if variable contains one single letter, only exceptions are fixed names that used in industry like {i, j} Fix: no fix as we are not able to imagine good name by machine|
-|CONSTANT_UPPERCASE|Check: warns if CONSTANT (treated as const val from companion object or class level) is in non UPPER_SNAKE_CASE. Fix: name is changed to UPPER_SNAKE_CASE|
-|VARIABLE_HAS_PREFIX|Check: warns if variable has prefix (like mVariable or M_VARIABLE), generally it is a bad code style (Android - is the only exception. Fix: no fix as we are not able to imagine good name by machine|
-|IDENTIFIER_LENGTH|Check: identifier length should be in range [2,64] except names that used in industry like {i, j} Fix: no fix as we are not able to imagine good name by machine|
-|ENUM_VALUE|Check: warns if enum value is in non UPPER_SNAKE_CASE. Fix: automatically converting case to UPPER_SNAKE_CASE|
-|GENERIC_NAME|Check: warns if generic name contains more than 1 letter (capital). It can be followed by numbers, example: T12, T. Fix: no but will be|
-|FUNCTION_NAME_INCORRECT_CASE|Check: function/method name should be in lowerCamelCase. Fix:|
-|FUNCTION_BOOLEAN_PREFIX|Check: functions/methods that return boolean should have special prefix like "is/should/e.t.c" Fix:|
-|FILE_NAME_INCORRECT|Check: warns if file name does not have extension .kt/.kts Fix: no|
-|FILE_NAME_MATCH_CLASS|Check: warns if in file there is only one class that does not match the file name| Fix: no|
-|EXCEPTION_SUFFIX|Check: warns if class that extends any Exception class does not have Exception suffix. Fix: Adding suffix "Exception" to a class name|
-|MISSING_KDOC_TOP_LEVEL|Check: warns on file level internal or public class or function has missing KDoc. Fix: no|
-|MISSING_KDOC_CLASS_ELEMENTS|Check: warns if accessible internal elements (protected, public, internal) in a class are not documented. Fix: no|
-|KDOC_WITHOUT_PARAM_TAG|Check: warns if accessible method has parameters and they are not documented in KDoc. Fix: If accessible method has no KDoc, KDoc template is added|
-|KDOC_WITHOUT_RETURN_TAG|Check: warns if accessible method has explicit return type they it is not documented in KDoc. Fix: If accessible method has no KDoc, KDoc template is added|
-|KDOC_WITHOUT_THROWS_TAG|Check: warns if accessible method has throw keyword and it is not documented in KDoc. Fix: If accessible method has no KDoc, KDoc template is added|
-|BLANK_LINE_AFTER_KDOC|Check: warns if Kdoc is incorrectly separated with newlines. Fix: removing incorrect newlines between Kdoc and it's declaration|
-|KDOC_NO_EMPTY_TAG|Check: warns if KDoc tags have empty content|
-|KDOC_WRONG_SPACES_AFTER_TAG|Check: warns if there is more than one space after KDoc tag. Fix: removes redundant spaces|
-|KDOC_WRONG_TAGS_ORDER|Check: warns if basic KDoc tags are not oredered properly.Fix: reorders them `@param`, `@return`, `@throws`|
-|KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS|Check: if there is newline of empty KDoc line (with leading asterisk) between `@param`, `@return`, `@throws` tags. Fix: removes line|
-|KDOC_NO_NEWLINE_AFTER_SPECIAL_TAG|Check: warns if special tags `@apiNote`, `@implNote`, `@implSpec` don't have exactly one empty line after. Fix: removes redundant lines or adds one|
-|KDOC_NO_DEPRECATED_TAG|Check: warns if `@deprecated` is used in KDoc. Fix: adds `@Deprecated` annotation with message, removes tag|
-|HEADER_WRONG_FORMAT|Checks: warns if there is no newline after header KDoc. Fix: adds newline|
-|HEADER_MISSING_OR_WRONG_COPYRIGHT|Checks: copyright exists on top of file and is properly formatted (as a block comment). Fix: adds copyright if it is missing and required|
-|HEADER_CONTAINS_DATE_OR_AUTHOR|Checks: header KDoc contains `@author` tag|
-|HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE|Check: warns if file with zero or >1 classes doesn't have header KDoc|
-|COMMENTED_OUT_CODE|Check: warns if valid kotlin code is detected in commented blocks (both single-line and block comments)|
-|FILE_IS_TOO_LONG|Check: the number of lines in the parameter file is too high. Configuration has maxSize - maximum number of lines, ignoreFolders - files containing this folder in their path will not be checked
+```bash
+$ ./ktlint -R diktat-rules-0.0.1-jar-with-dependencies.jar "src/test/**/*.kt"
+```
+
+To autofix all violations use `-F` option.
+
+If in trouble, try this:
+
+`./ktlint -help`
+
+## Maven Plugin
+
+Currently diKTat releases are hosted on the
+[Artipie](https://www.artipie.com/),
+so you need to add lines below to your `pom.xml` file:
+
+```xml
+<project>
+  [...]
+  <distributionManagement>
+    <repository>
+      <id>artipie</id>
+      <url>https://central.artipie.com/akuleshov7/diktat</url>
+    </repository>
+    <snapshotRepository>
+      <id>artipie</id>
+      <url>https://central.artipie.com/akuleshov7/diktat</url>
+    </snapshotRepository>
+  </distributionManagement>
+  <repositories>
+    <repository>
+      <id>artipie</id>
+      <url>https://central.artipie.com/akuleshov7/diktat</url>
+    </repository>
+  </repositories>
+</project>
+```
+
+Add this snippet to your pom.xml:
+
+```xml
+<project>
+  [...]
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.8</version>
+        <executions>
+          <execution>
+            <id>ktlint</id>
+            <phase>verify</phase>
+            <configuration>
+              <target name="ktlint">
+                <java taskname="ktlint" dir="${basedir}" fork="true" failonerror="true"
+                  classpathref="maven.plugin.classpath" classname="com.pinterest.ktlint.Main">
+                  <arg value="src/**/*.kt"/>
+                </java>
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>com.pinterest</groupId>
+            <artifactId>ktlint</artifactId>
+            <version>0.37.2</version>
+          </dependency>
+          <dependency>
+            <groupId>org.cqfn.diktat</groupId>
+            <artifactId>diktat-rules</artifactId>
+            <version>0.0.1-SNAPSHOT</version> <!-- replace it with our current version -->
+          </dependency>
+        </dependencies>
+      </plugin>
+    </plugins>
+  </build>
+</project>
+```
+
+In case you want to add autofixer with diKTat ruleset just extend
+the snippet above with `<arg value="-F"/>`.
+
+## Customizations via `rules-config.json`
+
+In KTlint, rules can be configured via `.editorconfig`, but
+this does not give a chance to customize or enable/disable
+each and every rule independently.
+That is why we have supported `rules-config.json` that can be easily
+changed and help in customization of your own rule set.
+It has simple fields:
+`name` — name of the rule,
+`enabled` (true/false) — to enable or disable that rule, and
+`configuration` — a simple map of some extra unique configurations for the rule.
+For example:
+
+```json
+"configuration": {
+  "isCopyrightMandatory": true,
+  "copyrightText": "Copyright (c) Jeff Lebowski, 2012-2020. All rights reserved."
+}
+```
+
+## How to contribute?
+
+Main components are:
+1) diktat-ruleset — number of rules that are supported by diKTat;
+2) diktat-test-framework — functional/unit test framework that can be used for running your code fixer on the initial code and compare it with the expected result;
+3) also see our demo: diktat-demo in a separate repository.
+
+Mainly we wanted to create a common configurable mechanism that
+will give us a chance to enable/disable and customize all rules.
+That's why we added logic for:
+1) Parsing .json file with configurations of rules and passing it to visitors;
+2) Passing information about properties to visitors. This information is very useful, when you are trying to get, for example, a filename of file where the code is stored;
+3) We added a bunch of visitors that will extended KTlint functionaliity.
+
+Download:
+
+```bash
+$ git clone https://github.com/akuleshov7/diKTat.git
+```
+
+We are using Maven as we are tired of Gradle:
+
+```bash
+$ mvn clean install
+```
+
+This will also install git hooks into your local `.git` directory. The hooks
+will restrict commit messages and branch naming.
+
+Please follow our [contributing policy](info/CONTRIBUTING.md)
