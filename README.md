@@ -1,29 +1,22 @@
 ![diktat logo](diktat_small.jpg)
 
 
-![Build and test](https://github.com/akuleshov7/diKTat/workflows/Build%20and%20test/badge.svg)
-![deteKT static analysis](https://github.com/akuleshov7/diKTat/workflows/Run%20deteKT/badge.svg)
-![Releases](https://img.shields.io/github/v/release/akuleshov7/diKTat)
-![License](https://img.shields.io/github/license/akuleshov7/diKtat)
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fakuleshov7%2FdiKTat.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fakuleshov7%2FdiKTat?ref=badge_shield)
+![Build and test](https://github.com/cqfn/diKTat/workflows/Build%20and%20test/badge.svg)
+![deteKT static analysis](https://github.com/cqfn/diKTat/workflows/Run%20deteKT/badge.svg)
+![Releases](https://img.shields.io/github/v/release/cqfn/diKTat)
+![License](https://img.shields.io/github/license/cqfn/diKtat)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fcqfn%2FdiKTat.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fcqfn%2FdiKTat?ref=badge_shield)
 [![Awesome Kotlin Badge](https://kotlin.link/awesome-kotlin.svg)](https://github.com/KotlinBy/awesome-kotlin)
 [![ktlint](https://img.shields.io/badge/code%20style-%E2%9D%A4-FF4081.svg)](https://ktlint.github.io/)
 [![Chat on Telegram](https://img.shields.io/badge/Chat%20on-Telegram-brightgreen.svg)](https://t.me/joinchat/AAAAAFDg-ipuZFGyBGPPeg)
-[![Hits-of-Code](https://hitsofcode.com/github/akuleshov7/diktat)](https://hitsofcode.com/view/github/akuleshov7/diktat)
-[![codecov](https://codecov.io/gh/akuleshov7/diKTat/branch/master/graph/badge.svg)](https://codecov.io/gh/akuleshov7/diKTat)
+[![Hits-of-Code](https://hitsofcode.com/github/cqfn/diktat)](https://hitsofcode.com/view/github/cqfn/diktat)
+[![codecov](https://codecov.io/gh/cqfn/diKTat/branch/master/graph/badge.svg)](https://codecov.io/gh/cqfn/diKTat)
 
 ## diKTat project
 ### What is diKTat
-diKTat ([github](https://github.com/akuleshov7/diKTat)) - is a rule set of Kotlin code style rules that are using [KTlint](https://ktlint.github.io/) framework under the hood.
+diKTat ([github](https://github.com/cqfn/diKTat)) - is a rule set of Kotlin code style rules that are using [KTlint](https://ktlint.github.io/) framework under the hood.
 In this project we are trying to define Kotlin code style rules and implement them as visitors for AST tree provided by Ktlint.
-It will detect (check) and fix code style issues based on [diKTat Kotlin codestyle](https://github.com/akuleshov7/diKTat/wiki/diKTat-codestyle-guide).
-
-### What was hacked and changed in KTlint and why do we temporary need a fork of it?
-Mainly we wanted to create a common configurable mechanism that will give us a chance to enable/disable and customize all rules.
-That's why we added logic for:
-1) Parsing .json file with configurations of rules and passing it to visitors
-2) Passing information about properties to visitors. This information is very useful, when you are trying to get, for example, a filename of file where the code is stored.
-3) We added a bunch of visitors that will extended KTlint functionaliity
+It will detect (check) and fix code style issues based on [diKTat Kotlin codestyle](https://github.com/cqfn/diKTat/wiki/diKTat-codestyle-guide).
 
 ## Usage
 diKTat uses KTlint framework so see it's [usage first](https://ktlint.github.io/)
@@ -51,7 +44,27 @@ To see any reference related to ktlint - see: [KTlint](https://ktlint.github.io/
 `./ktlint -help`
 
 ### How to: run default configuration of diKTat with maven plugin
-add this snippet to your pom.xml `<build>` section: 
+Please note, that currently diKTat releases are hosted on the [Artipie](https://www.artipie.com/), so you need to add lines below to your pom.xml file:
+```xml
+<distributionManagement>
+        <repository>
+            <id>artipie</id>
+            <url>https://central.artipie.com/akuleshov7/diktat</url>
+        </repository>
+        <snapshotRepository>
+            <id>artipie</id>
+            <url>https://central.artipie.com/akuleshov7/diktat</url>
+        </snapshotRepository>
+    </distributionManagement>
+    <repositories>
+        <repository>
+            <id>artipie</id>
+            <url>https://central.artipie.com/akuleshov7/diktat</url>
+        </repository>
+    </repositories>
+```
+
+add this snippet to your pom.xml `<build>-<plugins>` section: 
 ```xml
           <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -89,8 +102,7 @@ add this snippet to your pom.xml `<build>` section:
             </plugin>
 ```
 
-in case you want to add autofixer with diktat ruleset just extend the snippet above with: `<arg value="-F"/>
-`
+in case you want to add autofixer with diktat ruleset just extend the snippet above with: `<arg value="-F"/>`
 
 ### How to: make deep customization of diKTat (rules-config.json)
 In ktlint rules can be configured via .editorconfig, but this does not give a chance to customize or enable/disable each and every rule independently.
@@ -103,7 +115,7 @@ It has simple fields: "name" - name of the rule, "enabled" (true/false) to enabl
     }
 ```
 
-To see all list of available configurations go to our wiki: [Available inspections](https://github.com/akuleshov7/diKTat/wiki/Available-inspections-supported-in-diktat)
+To see all list of available configurations go to our wiki: [Available inspections](info/available-rules.md)
 
 ## Development
 ### Main components
@@ -113,6 +125,13 @@ Main components are:
 3) also see our demo: diktat-demo in a separate repository
 
 ### How to: build the project
+### What was hacked and changed in KTlint and why do we temporary need a fork of it?
+Mainly we wanted to create a common configurable mechanism that will give us a chance to enable/disable and customize all rules.
+That's why we added logic for:
+1) Parsing .json file with configurations of rules and passing it to visitors
+2) Passing information about properties to visitors. This information is very useful, when you are trying to get, for example, a filename of file where the code is stored.
+3) We added a bunch of visitors that will extended KTlint functionaliity
+
 Download:
 ```shell script
 git clone https://github.com/akuleshov7/diKTat.git
@@ -126,4 +145,4 @@ mvn clean install
 This will also install git hooks into your local .git directory. The hooks will restrict commit messages and branch naming.
 
 ### Contribution policy
-Please follow our [contributing policy](https://github.com/akuleshov7/diKTat/wiki/Contributing-policy)
+Please follow our [contributing policy](info/CONTRIBUTING.md)
