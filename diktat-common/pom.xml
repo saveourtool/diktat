@@ -9,7 +9,7 @@
     <parent>
         <groupId>org.cqfn.diktat</groupId>
         <artifactId>diktat-parent</artifactId>
-        <version>${diktat.version}</version>
+        <version>1.0.1-SNAPSHOT</version>
     </parent>
 
     <dependencies>
