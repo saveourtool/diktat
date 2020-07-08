@@ -55,8 +55,9 @@ enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean
     HEADER_MISSING_OR_WRONG_COPYRIGHT(37, true, "file header comment must include copyright information inside a block comment"),
     HEADER_CONTAINS_DATE_OR_AUTHOR(38, false, "file header comment should not contain creation date and author name"),
     HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE(39, false, "files that contain multiple or no classes should contain description of what is inside of this file"),
-    COMMENTED_OUT_CODE(40, false, "you should not comment out code, use VCS to save it in history and delete this block"),
-    FILE_IS_TOO_LONG(41, false, "file has more number of lines than expected")
+    HEADER_NOT_BEFORE_PACKAGE(40, true, "header KDoc should be placed before package and imports"),
+    COMMENTED_OUT_CODE(41, false, "you should not comment out code, use VCS to save it in history and delete this block"),
+    FILE_IS_TOO_LONG(42, false, "file has more number of lines than expected")
     ;
 
     override fun ruleName(): String = this.name

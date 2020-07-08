@@ -122,6 +122,7 @@
                                 <source>src/test/java</source>
                                 <source>src/test/kotlin</source>
                             </sourceDirs>
+                            <jvmTarget>1.8</jvmTarget>
                         </configuration>
                     </execution>
                 </executions>
