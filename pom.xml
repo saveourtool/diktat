@@ -4,13 +4,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.cqfn.diktat</groupId>
     <artifactId>diktat-parent</artifactId>
-    <version>${diktat.version}</version>
+    <version>1.0.1-SNAPSHOT</version>
     <name>diktat</name>
     <description>diKTat kotlin formatter and fixer</description>
     <packaging>pom</packaging>
 
     <properties>
-        <diktat.version>0.0.1</diktat.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <kotlin.version>1.3.70</kotlin.version>
@@ -151,7 +150,23 @@
     </repositories>
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>versions-maven-plugin</artifactId>
+                    <version>2.7</version>
+                    <configuration>
+                        <generateBackupPoms>false</generateBackupPoms>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+            </plugin>
             <plugin>
                 <groupId>com.rudikershaw.gitbuildhook</groupId>
                 <artifactId>git-build-hook-maven-plugin</artifactId>
@@ -214,5 +229,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

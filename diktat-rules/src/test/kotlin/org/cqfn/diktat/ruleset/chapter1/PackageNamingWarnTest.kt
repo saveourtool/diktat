@@ -18,7 +18,6 @@ class PackageNamingWarnTest {
     )
 
     @Test
-    @Ignore("this test is failing because params.fileName!! throws NPE")
     fun `missing package name (check)`() {
         lintMethod(PackageNaming(),
             """
@@ -30,7 +29,7 @@ class PackageNamingWarnTest {
                 class TestPackageName {  }
 
             """.trimIndent(),
-            LintError(1, 1, ruleId, "${PACKAGE_NAME_MISSING.warnText()} "),
+            LintError(1, 1, ruleId, "${PACKAGE_NAME_MISSING.warnText()} /TestFileName.kt"),
             rulesConfigList = rulesConfigList
         )
     }

@@ -52,9 +52,8 @@ class HeaderCommentRule : Rule("header-comment") {
         isFixMode = autoCorrect
         emitWarn = emit
 
-        if (node.elementType == FILE) {
-            fileName = params.fileName
-                ?: ""  // fixme fileName is null only in unit tests, can be fixed to never be null
+        if (node.elementType == ElementType.FILE) {
+            fileName = params.fileName!!
             checkCopyright(node)
             if (checkHeaderKdocPosition(node)) {
                 checkHeaderKdoc(node)

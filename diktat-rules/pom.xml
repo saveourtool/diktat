@@ -9,7 +9,7 @@
     <parent>
         <groupId>org.cqfn.diktat</groupId>
         <artifactId>diktat-parent</artifactId>
-        <version>${diktat.version}</version>
+        <version>1.0.1-SNAPSHOT</version>
     </parent>
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -20,12 +20,12 @@
         <dependency>
             <groupId>org.cqfn.diktat</groupId>
             <artifactId>diktat-common</artifactId>
-            <version>${diktat.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.cqfn.diktat</groupId>
             <artifactId>diktat-test-framework</artifactId>
-            <version>${diktat.version}</version>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -76,6 +76,8 @@
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
+                    <finalName>diktat</finalName>
+                    <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
 
                 <executions>
