@@ -12,38 +12,24 @@
 [![Hits-of-Code](https://hitsofcode.com/github/cqfn/diktat)](https://hitsofcode.com/view/github/cqfn/diktat)
 [![codecov](https://codecov.io/gh/cqfn/diKTat/branch/master/graph/badge.svg)](https://codecov.io/gh/cqfn/diKTat)
 
-It is a rule set of Kotlin code style rules that are using
-[KTlint](https://ktlint.github.io/) framework under the hood.
-In this project we are trying to define Kotlin code style
-rules and implement them as visitors for AST tree provided by KTlint.
-It will detect (check) and fix code style issues based on
-[our custom codestyle](https://github.com/cqfn/diKTat/wiki/diKTat-codestyle-guide).
+It is a collection of [Kotlin](https://kotlinlang.org/) code style rules implemented
+as AST visitors on top of [KTlint](https://ktlint.github.io/).
+The full list of rules is [here](https://github.com/cqfn/diKTat/wiki/diKTat-codestyle-guide).
 
-Read how [KTlint](https://ktlint.github.io/) works first.
-
-First, load KTlint (you can also download it manually
-from [ktlint project repo](https://github.com/pinterest/ktlint/releases)
-or use `brew install ktlint`):
-
-```bash
-$ curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.37.2/ktlint && chmod a+x ktlint`
-```
-
+First, [install KTlint](https://ktlint.github.io/).
 Then, load diKTat:
 
 ```bash
 $ curl -sSLO https://central.artipie.com/akuleshov7/diktat/org/cqfn/diktat/diktat-rules/0.0.1/diktat-rules-0.0.1-jar-with-dependencies.jar
 ```
 
-Finally, run KTlint with diKTat injected:
+Finally, run KTlint with diKTat injected to check your `*.kt` files in `src/test`:
 
 ```bash
 $ ./ktlint -R diktat-rules-0.0.1-jar-with-dependencies.jar "src/test/**/*.kt"
 ```
 
-This will run the default configuration of diKTat in check mode.
-
-To start autofixing use `-F` option.
+To autofix all violations use `-F` option.
 
 If in trouble, try this:
 
@@ -52,7 +38,8 @@ If in trouble, try this:
 ## Maven Plugin
 
 Currently diKTat releases are hosted on the
-[Artipie](https://www.artipie.com/), so you need to add lines below to your pom.xml file:
+[Artipie](https://www.artipie.com/),
+so you need to add lines below to your `pom.xml` file:
 
 ```xml
 <project>
@@ -113,7 +100,7 @@ Add this snippet to your pom.xml:
           <dependency>
             <groupId>org.cqfn.diktat</groupId>
             <artifactId>diktat-rules</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>0.0.1-SNAPSHOT</version> <!-- replace it with our current version -->
           </dependency>
         </dependencies>
       </plugin>
@@ -122,19 +109,21 @@ Add this snippet to your pom.xml:
 </project>
 ```
 
-In case you want to add autofixer with diktat ruleset just extend
+In case you want to add autofixer with diKTat ruleset just extend
 the snippet above with `<arg value="-F"/>`.
 
 ## Customizations via `rules-config.json`
 
-In ktlint rules can be configured via `.editorconfig`, but
+In KTlint, rules can be configured via `.editorconfig`, but
 this does not give a chance to customize or enable/disable
 each and every rule independently.
 That is why we have supported `rules-config.json` that can be easily
 changed and help in customization of your own rule set.
-It has simple fields: `name` - name of the rule, `enabled` (true/false)
-to enable or disable that rule, and `configuration` - a simple map
-of some extra unique configurations for the rule, for example:
+It has simple fields:
+`name` — name of the rule,
+`enabled` (true/false) — to enable or disable that rule, and
+`configuration` — a simple map of some extra unique configurations for the rule.
+For example:
 
 ```json
 "configuration": {
@@ -146,16 +135,16 @@ of some extra unique configurations for the rule, for example:
 ## How to contribute?
 
 Main components are:
+1) diktat-ruleset — number of rules that are supported by diKTat;
+2) diktat-test-framework — functional/unit test framework that can be used for running your code fixer on the initial code and compare it with the expected result;
+3) also see our demo: diktat-demo in a separate repository.
 
-1) diktat-ruleset - number of rules that are supported by diKTat
-2) diktat-test-framework - functional/unit test framework that can be used for running your code fixer on the initial code and compare it with the expected result
-3) also see our demo: diktat-demo in a separate repository
-
-Mainly we wanted to create a common configurable mechanism that will give us a chance to enable/disable and customize all rules.
+Mainly we wanted to create a common configurable mechanism that
+will give us a chance to enable/disable and customize all rules.
 That's why we added logic for:
-1) Parsing .json file with configurations of rules and passing it to visitors
-2) Passing information about properties to visitors. This information is very useful, when you are trying to get, for example, a filename of file where the code is stored.
-3) We added a bunch of visitors that will extended KTlint functionaliity
+1) Parsing .json file with configurations of rules and passing it to visitors;
+2) Passing information about properties to visitors. This information is very useful, when you are trying to get, for example, a filename of file where the code is stored;
+3) We added a bunch of visitors that will extended KTlint functionaliity.
 
 Download:
 
@@ -163,11 +152,13 @@ Download:
 $ git clone https://github.com/akuleshov7/diKTat.git
 ```
 
-We are using maven as we tired of Gradle:
+We are using Maven as we are tired of Gradle:
+
 ```bash
 $ mvn clean install
 ```
 
-This will also install git hooks into your local .git directory. The hooks will restrict commit messages and branch naming.
+This will also install git hooks into your local `.git` directory. The hooks
+will restrict commit messages and branch naming.
 
 Please follow our [contributing policy](info/CONTRIBUTING.md)
