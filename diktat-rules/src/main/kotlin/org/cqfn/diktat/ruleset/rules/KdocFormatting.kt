@@ -72,7 +72,7 @@ class KdocFormatting : Rule("kdoc-formatting") {
         configRules = params.getDiktatConfigRules()
         isFixMode = autoCorrect
         emitWarn = emit
-        fileName = params.fileName ?: ""
+        fileName = params.fileName!!
 
         val declarationTypes = setOf(CLASS, FUN, PROPERTY)
 
