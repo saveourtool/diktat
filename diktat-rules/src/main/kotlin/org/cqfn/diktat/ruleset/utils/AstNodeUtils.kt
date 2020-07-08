@@ -190,14 +190,18 @@ fun ASTNode.hasChildMatching(elementType: IElementType? = null, predicate: (ASTN
  * Converts this AST node and all its children to pretty string representation
  */
 fun ASTNode.prettyPrint(level: Int = 0, maxLevel: Int = -1): String {
-    val result = StringBuilder("${this.elementType}: \"${this.text}\"").appendln()
-    if (maxLevel != 0) {
-        this.getChildren(null).forEach { child ->
-            result.append("${"-".repeat(level + 1)} " +
-                child.prettyPrint(level + 1, maxLevel - 1)).appendln()
+    // AST operates with \n only, so we need to build the whole string representation and then change line separator
+    fun ASTNode.doPrettyPrint(level: Int, maxLevel: Int): String {
+        val result = StringBuilder("${this.elementType}: \"${this.text}\"").append('\n')
+        if (maxLevel != 0) {
+            this.getChildren(null).forEach { child ->
+                result.append("${"-".repeat(level + 1)} " +
+                        child.doPrettyPrint(level + 1, maxLevel - 1))
+            }
         }
+        return result.toString()
     }
-    return result.toString()
+    return doPrettyPrint(level, maxLevel).replace("\n", System.lineSeparator())
 }
 
 /**
@@ -219,4 +223,20 @@ fun ASTNode?.isAccessibleOutside(): Boolean =
 fun ASTNode.leaveOnlyOneNewLine() {
     assert(this.elementType == WHITE_SPACE)
     (this as LeafPsiElement).replaceWithText("\n${this.text.replace("\n", "")}")
+}
+
+/**
+ * @param beforeThisNode node before which childToMove will be placed. If null, childToMove will be apeended after last child of this node.
+ * @param withNextNode whether next node after childToMove should be moved too. In most cases it corresponds to moving
+ *     the node with newline.
+ */
+fun ASTNode.moveChildBefore(childToMove: ASTNode, beforeThisNode: ASTNode?, withNextNode: Boolean = false) {
+    require(childToMove in getChildren(null)) { "can only move child of this node" }
+    require(beforeThisNode?.let { it in getChildren(null) } ?: true) { "can only place node before another child of this node" }
+    addChild(childToMove.clone() as ASTNode, beforeThisNode)
+    if (withNextNode && childToMove.treeNext != null) {
+        addChild(childToMove.treeNext.clone() as ASTNode, beforeThisNode)
+        removeChild(childToMove.treeNext)
+    }
+    removeChild(childToMove)
 }
