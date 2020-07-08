@@ -61,8 +61,7 @@ enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean
     FILE_INCORRECT_BLOCKS_ORDER(43, true, "general structure of kotlin source file is wrong, parts are in incorrect order"),
     FILE_NO_BLANK_LINE_BETWEEN_BLOCKS(44, true, "general structure of kotlin source file is wrong, general code blocks sohuld be separated by empty lines"),
     FILE_UNORDERED_IMPORTS(45, true, "imports should be ordered alphabetically and shouldn't be separated by newlines"),
-    FILE_COLLAPSED_IMPORTS(46, false, "collapsed imports should not be used"),
-    FILE_SINGLE_TOP_LEVEL_CLASS(47, false, "Recommendation: in one .kt source file there should be only one class declaration and its name should match with the filename"),
+    FILE_WILDCARD_IMPORTS(46, false, "collapsed imports should not be used"),
     ;
 
     override fun ruleName(): String = this.name

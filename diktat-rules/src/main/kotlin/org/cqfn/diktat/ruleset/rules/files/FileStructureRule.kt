@@ -1,5 +1,6 @@
 package org.cqfn.diktat.ruleset.rules.files
 
+import com.google.common.annotations.VisibleForTesting
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
@@ -13,7 +14,7 @@ import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.nextSibling
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.Warnings.FILE_COLLAPSED_IMPORTS
+import org.cqfn.diktat.ruleset.constants.Warnings.FILE_WILDCARD_IMPORTS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_CONTAINS_ONLY_COMMENTS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_INCORRECT_BLOCKS_ORDER
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NO_BLANK_LINE_BETWEEN_BLOCKS
@@ -35,7 +36,7 @@ import org.jetbrains.kotlin.psi.KtImportDirective
  *    top class header and top function header comments, top-level classes or top-level functions
  * 3. Ensures there is a blank line between these blocks
  * 4. Ensures imports are ordered alphabetically without blank lines
- * 5. Ensures there are no collapsed imports
+ * 5. Ensures there are no wildcard imports
  */
 class FileStructureRule : Rule("file-structure") {
 
@@ -44,7 +45,10 @@ class FileStructureRule : Rule("file-structure") {
     private var isFixMode: Boolean = false
     private var fileName: String = ""
 
-    override fun visit(node: ASTNode, autoCorrect: Boolean, params: KtLint.Params, emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
+    override fun visit(node: ASTNode,
+                       autoCorrect: Boolean,
+                       params: KtLint.Params,
+                       emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
 
         configRules = params.getDiktatConfigRules()
         isFixMode = autoCorrect
@@ -107,31 +111,36 @@ class FileStructureRule : Rule("file-structure") {
 
         // importPath can be null if import name cannot be parsed, which should be a very rare case, therefore !! should be safe here
         imports.filter { (it.psi as KtImportDirective).importPath!!.isAllUnder }.forEach {
-            FILE_COLLAPSED_IMPORTS.warn(configRules, emitWarn, isFixMode, it.text, it.startOffset)
+            FILE_WILDCARD_IMPORTS.warn(configRules, emitWarn, isFixMode, it.text, it.startOffset)
         }
 
         val sortedImports = imports.sortedBy { it.text }
         if (sortedImports != imports) {
             FILE_UNORDERED_IMPORTS.warnAndFix(configRules, emitWarn, isFixMode, fileName, node.startOffset) {
-                // move all commented lines among import before imports block
-                node.getChildren(null).filterIndexed { index, astNode ->
-                    index < node.getChildren(null).indexOf(imports.last()) && astNode.elementType == EOL_COMMENT
-                }.forEach {
-                    node.treeParent.addChild(it.clone() as ASTNode, node)
-                    node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node)
-                }
-
-                node.removeRange(imports.first(), imports.last())
-                sortedImports.forEachIndexed { index, importNode ->
-                    if (index != 0) {
-                        node.addChild(PsiWhiteSpaceImpl("\n"), null)
-                    }
-                    node.addChild(importNode, null)
-                }
+                rearrangeImports(node, imports, sortedImports)
             }
         }
     }
 
+    private fun rearrangeImports(node: ASTNode, imports: List<ASTNode>, sortedImports: List<ASTNode>) {
+        // move all commented lines among import before imports block
+        node.getChildren(null).filterIndexed { index, astNode ->
+            index < node.getChildren(null).indexOf(imports.last()) && astNode.elementType == EOL_COMMENT
+        }.forEach {
+            node.treeParent.addChild(it.clone() as ASTNode, node)
+            node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node)
+        }
+
+        node.removeRange(imports.first(), imports.last())
+        sortedImports.forEachIndexed { index, importNode ->
+            if (index != 0) {
+                node.addChild(PsiWhiteSpaceImpl("\n"), null)
+            }
+            node.addChild(importNode, null)
+        }
+    }
+
+    @VisibleForTesting
     private fun ASTNode.getSiblingBlocks(copyrightComment: ASTNode?,
                                          headerKdoc: ASTNode?,
                                          fileAnnotations: ASTNode?,
@@ -153,8 +162,8 @@ class FileStructureRule : Rule("file-structure") {
     // fixme recommended order (see Recommendation 3.1) of imports can be checked by custom comparator
     private val recommendedComparator = Comparator<ASTNode> { import1, import2 ->
         require(import1.elementType == IMPORT_DIRECTIVE && import2.elementType == IMPORT_DIRECTIVE) { "This comparator is for sorting imports" }
-        val segments1 = (import1.psi as KtImportDirective).importPath!!.fqName.pathSegments()
-        val segments2 = (import2.psi as KtImportDirective).importPath!!.fqName.pathSegments()
+        val pathSegments1 = (import1.psi as KtImportDirective).importPath!!.fqName.pathSegments()
+        val pathSegments2 = (import2.psi as KtImportDirective).importPath!!.fqName.pathSegments()
 
         return@Comparator 0
     }

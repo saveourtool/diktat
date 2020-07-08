@@ -63,7 +63,10 @@ fun ASTNode.hasAnyChildOfTypes(vararg elementType: IElementType): Boolean =
     elementType.any { this.hasChildOfType(it) }
 
 /**
- *
+ * Method that is trying to find and return child of this node, which
+ * 1) stands before the node with type @beforeThisNodeType
+ * 2) has type @childNodeType
+ * 2) is closest to node with @beforeThisNodeType (i.e. is first in reversed list of children, starting at @beforeThisNodeType)
  */
 fun ASTNode.findChildBefore(beforeThisNodeType: IElementType, childNodeType: IElementType): ASTNode? {
     val anchorNode = getChildren(null).find { it.elementType == beforeThisNodeType }

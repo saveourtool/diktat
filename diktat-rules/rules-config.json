@@ -203,12 +203,7 @@
     "configuration": {}
   },
   {
-    "name": "FILE_COLLAPSED_IMPORTS",
-    "enabled": true,
-    "configuration": {}
-  },
-  {
-    "name": "FILE_SINGLE_TOP_LEVEL_CLASS",
+    "name": "FILE_WILDCARD_IMPORTS",
     "enabled": true,
     "configuration": {}
   }

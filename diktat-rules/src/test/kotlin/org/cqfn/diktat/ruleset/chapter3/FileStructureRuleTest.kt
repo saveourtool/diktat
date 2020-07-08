@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter3
 
 import com.pinterest.ktlint.core.LintError
-import org.cqfn.diktat.ruleset.constants.Warnings.FILE_COLLAPSED_IMPORTS
+import org.cqfn.diktat.ruleset.constants.Warnings.FILE_WILDCARD_IMPORTS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_CONTAINS_ONLY_COMMENTS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_INCORRECT_BLOCKS_ORDER
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NO_BLANK_LINE_BETWEEN_BLOCKS
@@ -67,7 +67,7 @@ class FileStructureRuleTest {
     }
 
     @Test
-    fun `should warn if collapsed imports are used`() {
+    fun `should warn if wildcard imports are used`() {
         lintMethod(FileStructureRule(),
             """
                 |package org.cqfn.diktat.example
@@ -76,7 +76,7 @@ class FileStructureRuleTest {
                 |
                 |class Example { }
             """.trimMargin(),
-            LintError(3, 1, ruleId, "${FILE_COLLAPSED_IMPORTS.warnText()} import org.cqfn.diktat.example.*", false)
+            LintError(3, 1, ruleId, "${FILE_WILDCARD_IMPORTS.warnText()} import org.cqfn.diktat.example.*", false)
         )
     }
 
