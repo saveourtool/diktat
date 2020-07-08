@@ -32,29 +32,13 @@ $ ./ktlint -R diktat-rules-0.0.1-jar-with-dependencies.jar "src/test/**/*.kt"
 
 To autofix all violations use `-F` option.
 
-If in trouble, try this:
-
-`./ktlint -help`
-
 ## Maven Plugin
 
-Currently diKTat releases are hosted on the
-[Artipie](https://www.artipie.com/),
-so you need to add lines below to your `pom.xml` file:
+First, add this to your `pom.xml` file:
 
 ```xml
 <project>
   [...]
-  <distributionManagement>
-    <repository>
-      <id>artipie</id>
-      <url>https://central.artipie.com/akuleshov7/diktat</url>
-    </repository>
-    <snapshotRepository>
-      <id>artipie</id>
-      <url>https://central.artipie.com/akuleshov7/diktat</url>
-    </snapshotRepository>
-  </distributionManagement>
   <repositories>
     <repository>
       <id>artipie</id>
@@ -64,7 +48,7 @@ so you need to add lines below to your `pom.xml` file:
 </project>
 ```
 
-Add this snippet to your pom.xml:
+Then, add this plugin:
 
 ```xml
 <project>
@@ -143,23 +127,14 @@ Main components are:
 Mainly we wanted to create a common configurable mechanism that
 will give us a chance to enable/disable and customize all rules.
 That's why we added logic for:
-1) Parsing .json file with configurations of rules and passing it to visitors;
-2) Passing information about properties to visitors. This information is very useful, when you are trying to get, for example, a filename of file where the code is stored;
+1) Parsing `.json` file with configurations of rules and passing it to visitors;
+2) Passing information about properties to visitors.
+This information is very useful, when you are trying to get,
+for example, a filename of file where the code is stored;
 3) We added a bunch of visitors that will extended KTlint functionaliity.
 
-Download:
-
-```bash
-$ git clone https://github.com/akuleshov7/diKTat.git
-```
-
-We are using Maven as we are tired of Gradle:
+Before you make a pull request, make sure the build is clean:
 
 ```bash
 $ mvn clean install
 ```
-
-This will also install git hooks into your local `.git` directory. The hooks
-will restrict commit messages and branch naming.
-
-Please follow our [contributing policy](info/CONTRIBUTING.md)
