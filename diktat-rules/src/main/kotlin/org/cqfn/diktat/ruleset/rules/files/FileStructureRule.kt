@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.rules.files
 
-import com.google.common.annotations.VisibleForTesting
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
@@ -12,17 +11,17 @@ import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.nextSibling
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.Warnings.FILE_WILDCARD_IMPORTS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_CONTAINS_ONLY_COMMENTS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_INCORRECT_BLOCKS_ORDER
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NO_BLANK_LINE_BETWEEN_BLOCKS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_UNORDERED_IMPORTS
+import org.cqfn.diktat.ruleset.constants.Warnings.FILE_WILDCARD_IMPORTS
 import org.cqfn.diktat.ruleset.rules.getDiktatConfigRules
 import org.cqfn.diktat.ruleset.utils.findChildBefore
 import org.cqfn.diktat.ruleset.utils.isChildAfterAnother
 import org.cqfn.diktat.ruleset.utils.isChildBeforeAnother
+import org.cqfn.diktat.ruleset.utils.moveChildBefore
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -89,7 +88,8 @@ class FileStructureRule : Rule("file-structure") {
 
             if (isPositionIncorrect) {
                 FILE_INCORRECT_BLOCKS_ORDER.warnAndFix(configRules, emitWarn, isFixMode, astNode.text.lines().first(), astNode.startOffset) {
-                    node.moveChildBefore(astNode, beforeThisNode, 2)
+                    node.moveChildBefore(astNode, beforeThisNode, true)
+                    astNode.treeNext?.let { node.replaceChild(it, PsiWhiteSpaceImpl("\n\n")) }
                 }
             }
         }
@@ -140,7 +140,6 @@ class FileStructureRule : Rule("file-structure") {
         }
     }
 
-    @VisibleForTesting
     private fun ASTNode.getSiblingBlocks(copyrightComment: ASTNode?,
                                          headerKdoc: ASTNode?,
                                          fileAnnotations: ASTNode?,
@@ -150,13 +149,6 @@ class FileStructureRule : Rule("file-structure") {
         KDOC -> copyrightComment to (fileAnnotations ?: packageDirectiveNode)
         FILE_ANNOTATION_LIST -> (headerKdoc ?: copyrightComment) to packageDirectiveNode
         else -> null to packageDirectiveNode
-    }
-
-    private fun ASTNode.moveChildBefore(child: ASTNode, beforeThis: ASTNode, nBlankLinesAfter: Int = 0) {
-        addChild(child.clone() as ASTNode, beforeThis)
-        if (nBlankLinesAfter > 0) addChild(PsiWhiteSpaceImpl("\n".repeat(nBlankLinesAfter)), beforeThis)
-        if (nBlankLinesAfter > 0) child.nextSibling { it.elementType == WHITE_SPACE }?.let { removeChild(it) }
-        removeChild(child)
     }
 
     // fixme recommended order (see Recommendation 3.1) of imports can be checked by custom comparator
