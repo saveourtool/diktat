@@ -55,10 +55,10 @@ class FileStructureRule : Rule("file-structure") {
 
         if (node.elementType == ElementType.FILE) {
             fileName = params.fileName!!
+            checkImportsOrder(node.findChildByType(IMPORT_LIST)!!)
             if (checkFileHasCode(node)) {
                 checkCodeBlocksOrderAndEmptyLines(node)
             }
-            checkImportsOrder(node.findChildByType(IMPORT_LIST)!!)
         }
     }
 
@@ -72,6 +72,7 @@ class FileStructureRule : Rule("file-structure") {
     }
 
     private fun checkCodeBlocksOrderAndEmptyLines(node: ASTNode) {
+        // fixme handle other elements that could be present before package (other comments)
         val copyrightComment = node.findChildBefore(PACKAGE_DIRECTIVE, BLOCK_COMMENT)
         val headerKdoc = node.findChildBefore(PACKAGE_DIRECTIVE, KDOC)
         val fileAnnotations = node.findChildByType(FILE_ANNOTATION_LIST)
@@ -126,7 +127,6 @@ class FileStructureRule : Rule("file-structure") {
         require(node.elementType == IMPORT_LIST)
         // move all commented lines among import before imports block
         node.getChildren(TokenSet.create(EOL_COMMENT))
-                .filter { node.isChildBeforeAnother(it, imports.last()) }
                 .forEach {
                     node.treeParent.addChild(it.clone() as ASTNode, node)
                     node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node)
