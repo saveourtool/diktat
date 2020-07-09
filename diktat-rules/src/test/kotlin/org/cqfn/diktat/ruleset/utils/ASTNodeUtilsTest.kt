@@ -136,11 +136,18 @@ class ASTNodeUtilsTest {
 
                 Assert.assertTrue(node.isChildAfterAnother(zero, valNode))
                 Assert.assertTrue(node.isChildAfterGroup(zero, listOf(identifier, eq)))
+                Assert.assertFalse(node.isChildAfterAnother(valNode, zero))
+                Assert.assertFalse(node.isChildAfterGroup(identifier, listOf(zero, eq)))
 
                 Assert.assertTrue(node.isChildBeforeAnother(identifier, zero))
                 Assert.assertTrue(node.isChildBeforeGroup(identifier, listOf(eq, zero)))
                 Assert.assertTrue(node.areChildrenBeforeChild(listOf(valNode, identifier, eq), zero))
                 Assert.assertTrue(node.areChildrenBeforeGroup(listOf(valNode, identifier), listOf(eq, zero)))
+
+                Assert.assertFalse(node.isChildBeforeAnother(zero, identifier))
+                Assert.assertFalse(node.isChildBeforeGroup(zero, listOf(identifier, eq)))
+                Assert.assertFalse(node.areChildrenBeforeChild(listOf(identifier, eq, zero), valNode))
+                Assert.assertFalse(node.areChildrenBeforeGroup(listOf(eq, zero), listOf(valNode, identifier)))
             }
         }
     }

@@ -7,8 +7,13 @@ import org.junit.Test
 
 class FileStructureRuleTestFix : FixTestBase("test/paragraph3/file_structure", FileStructureRule()) {
     @Test
-    fun `should move @file targeted annotations before package directive`() {
+    fun `should move @file targeted annotations after header KDoc`() {
         fixAndCompare("FileAnnotationExpected.kt", "FileAnnotationTest.kt")
+    }
+
+    @Test
+    fun `should move copyright comment before @file targeted annotations`() {
+        fixAndCompare("CopyrightCommentPositionExpected.kt", "CopyrightCommentPositionTest.kt")
     }
 
     @Test

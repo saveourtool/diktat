@@ -54,7 +54,7 @@ class FileStructureRule : Rule("file-structure") {
         emitWarn = emit
 
         if (node.elementType == ElementType.FILE) {
-            fileName = params.fileName ?: ""
+            fileName = params.fileName!!
             if (checkFileHasCode(node)) {
                 checkCodeBlocksOrderAndEmptyLines(node)
             }
@@ -123,13 +123,14 @@ class FileStructureRule : Rule("file-structure") {
     }
 
     private fun rearrangeImports(node: ASTNode, imports: List<ASTNode>, sortedImports: List<ASTNode>) {
+        require(node.elementType == IMPORT_LIST)
         // move all commented lines among import before imports block
-        node.getChildren(null).filterIndexed { index, astNode ->
-            index < node.getChildren(null).indexOf(imports.last()) && astNode.elementType == EOL_COMMENT
-        }.forEach {
-            node.treeParent.addChild(it.clone() as ASTNode, node)
-            node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node)
-        }
+        node.getChildren(TokenSet.create(EOL_COMMENT))
+                .filter { node.isChildBeforeAnother(it, imports.last()) }
+                .forEach {
+                    node.treeParent.addChild(it.clone() as ASTNode, node)
+                    node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node)
+                }
 
         node.removeRange(imports.first(), imports.last())
         sortedImports.forEachIndexed { index, importNode ->
@@ -148,15 +149,6 @@ class FileStructureRule : Rule("file-structure") {
         BLOCK_COMMENT -> null to listOfNotNull(headerKdoc, fileAnnotations, packageDirectiveNode).first()
         KDOC -> copyrightComment to (fileAnnotations ?: packageDirectiveNode)
         FILE_ANNOTATION_LIST -> (headerKdoc ?: copyrightComment) to packageDirectiveNode
-        else -> null to packageDirectiveNode
-    }
-
-    // fixme recommended order (see Recommendation 3.1) of imports can be checked by custom comparator
-    private val recommendedComparator = Comparator<ASTNode> { import1, import2 ->
-        require(import1.elementType == IMPORT_DIRECTIVE && import2.elementType == IMPORT_DIRECTIVE) { "This comparator is for sorting imports" }
-        val pathSegments1 = (import1.psi as KtImportDirective).importPath!!.fqName.pathSegments()
-        val pathSegments2 = (import2.psi as KtImportDirective).importPath!!.fqName.pathSegments()
-
-        return@Comparator 0
+        else -> error("Only BLOCK_COMMENT, KDOC and FILE_ANNOTATION_LIST are valid inputs.")
     }
 }
