@@ -4,8 +4,12 @@ import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
+import com.pinterest.ktlint.core.ast.ElementType.EQ
 import com.pinterest.ktlint.core.ast.ElementType.FILE
+import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
+import com.pinterest.ktlint.core.ast.ElementType.INTEGER_CONSTANT
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
+import com.pinterest.ktlint.core.ast.ElementType.VAL_KEYWORD
 import com.pinterest.ktlint.core.ast.nextSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -117,6 +121,33 @@ class ASTNodeUtilsTest {
                     |
                     """.trimMargin()
                 )
+            }
+        }
+    }
+
+    @Test
+    fun `isChildAfterGroup test`() {
+        applyToCode("val x = 0") { node ->
+            if (node.elementType == PROPERTY) {
+                val valNode = node.getFirstChildWithType(VAL_KEYWORD)!!
+                val identifier = node.getFirstChildWithType(IDENTIFIER)!!
+                val eq = node.getFirstChildWithType(EQ)!!
+                val zero = node.getFirstChildWithType(INTEGER_CONSTANT)!!
+
+                Assert.assertTrue(node.isChildAfterAnother(zero, valNode))
+                Assert.assertTrue(node.isChildAfterGroup(zero, listOf(identifier, eq)))
+                Assert.assertFalse(node.isChildAfterAnother(valNode, zero))
+                Assert.assertFalse(node.isChildAfterGroup(identifier, listOf(zero, eq)))
+
+                Assert.assertTrue(node.isChildBeforeAnother(identifier, zero))
+                Assert.assertTrue(node.isChildBeforeGroup(identifier, listOf(eq, zero)))
+                Assert.assertTrue(node.areChildrenBeforeChild(listOf(valNode, identifier, eq), zero))
+                Assert.assertTrue(node.areChildrenBeforeGroup(listOf(valNode, identifier), listOf(eq, zero)))
+
+                Assert.assertFalse(node.isChildBeforeAnother(zero, identifier))
+                Assert.assertFalse(node.isChildBeforeGroup(zero, listOf(identifier, eq)))
+                Assert.assertFalse(node.areChildrenBeforeChild(listOf(identifier, eq, zero), valNode))
+                Assert.assertFalse(node.areChildrenBeforeGroup(listOf(eq, zero), listOf(valNode, identifier)))
             }
         }
     }

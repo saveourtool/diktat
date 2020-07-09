@@ -63,7 +63,10 @@ fun ASTNode.hasAnyChildOfTypes(vararg elementType: IElementType): Boolean =
     elementType.any { this.hasChildOfType(it) }
 
 /**
- *
+ * Method that is trying to find and return child of this node, which
+ * 1) stands before the node with type @beforeThisNodeType
+ * 2) has type @childNodeType
+ * 2) is closest to node with @beforeThisNodeType (i.e. is first in reversed list of children, starting at @beforeThisNodeType)
  */
 fun ASTNode.findChildBefore(beforeThisNodeType: IElementType, childNodeType: IElementType): ASTNode? {
     val anchorNode = getChildren(null).find { it.elementType == beforeThisNodeType }
@@ -240,3 +243,17 @@ fun ASTNode.moveChildBefore(childToMove: ASTNode, beforeThisNode: ASTNode?, with
     }
     removeChild(childToMove)
 }
+
+fun ASTNode.isChildAfterAnother(child: ASTNode, afterChild: ASTNode): Boolean =
+    getChildren(null).indexOf(child) > getChildren(null).indexOf(afterChild)
+fun ASTNode.isChildAfterGroup(child: ASTNode, group: List<ASTNode>): Boolean =
+    getChildren(null).indexOf(child) > (group.map { getChildren(null).indexOf(it) }.max() ?: 0)
+
+fun ASTNode.isChildBeforeAnother(child: ASTNode, beforeChild: ASTNode): Boolean = areChildrenBeforeGroup(listOf(child), listOf(beforeChild))
+fun ASTNode.isChildBeforeGroup(child: ASTNode, group: List<ASTNode>): Boolean = areChildrenBeforeGroup(listOf(child), group)
+fun ASTNode.areChildrenBeforeChild(children: List<ASTNode>, beforeChild: ASTNode): Boolean = areChildrenBeforeGroup(children, listOf(beforeChild))
+fun ASTNode.areChildrenBeforeGroup(children: List<ASTNode>, group: List<ASTNode>): Boolean {
+    require(children.isNotEmpty() && group.isNotEmpty()) { "no sense to operate on empty lists" }
+    return children.map { getChildren(null).indexOf(it) }.max()!! < group.map { getChildren(null).indexOf(it) }.min()!!
+}
+
