@@ -17,6 +17,13 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.11
+      - name: Cache local Maven repository
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-release-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-release-
       - name: Set environment variables
         run: echo ::set-env name=RELEASE_VERSION::${GITHUB_REF#'refs/tags/v'}
       - name: Set version
