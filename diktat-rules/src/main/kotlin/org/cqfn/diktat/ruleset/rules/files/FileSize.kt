@@ -1,4 +1,4 @@
-package org.cqfn.diktat.ruleset.rules
+package org.cqfn.diktat.ruleset.rules.files
 
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
@@ -7,6 +7,7 @@ import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_IS_TOO_LONG
+import org.cqfn.diktat.ruleset.rules.getDiktatConfigRules
 import org.cqfn.diktat.ruleset.utils.splitPathToDirs
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.slf4j.LoggerFactory
@@ -35,7 +36,7 @@ class FileSize : Rule("file-size") {
         isFixMode = autoCorrect
         if (node.elementType == ElementType.FILE) {
             val configuration = FileSizeConfiguration(
-                configRules.getRuleConfig(FILE_IS_TOO_LONG)?.configuration ?: mapOf()
+                    configRules.getRuleConfig(FILE_IS_TOO_LONG)?.configuration ?: mapOf()
             )
             val ignoreFolders = configuration.ignoreFolders
 

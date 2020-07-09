@@ -3,7 +3,7 @@ package org.cqfn.diktat.ruleset.chapter2
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_RETURN_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_THROWS_TAG
-import org.cqfn.diktat.ruleset.rules.KdocMethods
+import org.cqfn.diktat.ruleset.rules.kdoc.KdocMethods
 import org.cqfn.diktat.ruleset.utils.lintMethod
 import com.pinterest.ktlint.core.LintError
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID

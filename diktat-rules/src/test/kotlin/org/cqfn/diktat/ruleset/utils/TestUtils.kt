@@ -1,11 +1,10 @@
 package org.cqfn.diktat.ruleset.utils
 
-import com.pinterest.ktlint.core.*
-import org.cqfn.diktat.common.config.rules.RulesConfig
+import com.pinterest.ktlint.core.KtLint
+import com.pinterest.ktlint.core.LintError
+import com.pinterest.ktlint.core.Rule
 import org.assertj.core.api.Assertions
-import org.cqfn.diktat.common.config.rules.RulesConfigReader
-import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
-import org.cqfn.diktat.ruleset.rules.RuleSetDiktat
+import org.cqfn.diktat.common.config.rules.RulesConfig
 
 const val TEST_FILE_NAME = "/TestFileName.kt"
 
