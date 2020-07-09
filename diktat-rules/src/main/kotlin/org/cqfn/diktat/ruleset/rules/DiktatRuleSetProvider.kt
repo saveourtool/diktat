@@ -7,6 +7,7 @@ import com.pinterest.ktlint.core.RuleSetProvider
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
 import org.cqfn.diktat.ruleset.rules.comments.CommentsRule
+import org.cqfn.diktat.ruleset.rules.files.FileStructureRule
 
 /**
  * this constant will be used everywhere in the code to mark usage of Diktat ruleset
@@ -30,7 +31,8 @@ class DiktatRuleSetProvider(private val jsonRulesConfig: String = "rules-config.
             FileNaming(),
             PackageNaming(),
             FileSize(),
-            IdentifierNaming()
+            IdentifierNaming(),
+            FileStructureRule()  // this rule should be the last because it should operate on already valid code
         )
     }
 }
