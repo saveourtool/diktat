@@ -134,7 +134,8 @@ class BracesRuleWarnTest {
                     |    }
                     |}
                 """.trimMargin(),
-                LintError(7, 9, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} WHEN", true)
+                LintError(7, 21, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} WHEN", true),
+                LintError(8, 21, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} WHEN", true)
         )
     }
 

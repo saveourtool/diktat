@@ -90,9 +90,10 @@ class BracesInConditionalsAndLoopsRule : Rule("braces-rule") {
             NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnAndFix(configRules, emitWarn, isFixMode, node.elementType.toString(), node.startOffset) {
                 // fixme proper way to calculate indent? or get step size (instead of hardcoded 4)
                 val indent = node.prevSibling { it.elementType == WHITE_SPACE }!!.text.lines().last().count { it == ' ' }
+                val indentStep = 4
                 if (loopBody != null) {
                     loopBody.astReplace(KtBlockExpression(
-                            "{\n${" ".repeat(indent + 4)}${loopBody.text}\n${" ".repeat(indent)}}"
+                            "{\n${" ".repeat(indent + indentStep)}${loopBody.text}\n${" ".repeat(indent)}}"
                     ))
                 } else {
                     // this corresponds to do-while with empty body
