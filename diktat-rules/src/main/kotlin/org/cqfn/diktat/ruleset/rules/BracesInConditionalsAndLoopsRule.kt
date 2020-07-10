@@ -56,11 +56,7 @@ class BracesInConditionalsAndLoopsRule : Rule("braces-rule") {
         val thenNode = ifPsi.then?.node
         val elseNode = ifPsi.`else`?.node
 
-        // check if it is a single-line `if` statement
-        if (node.treeParent.let { it.elementType != IF && it.elementType != ELSE }) {
-            val hasSingleElse = elseNode != null && elseNode?.elementType != IF
-            if (hasSingleElse && node.text.lines().size == 1) return
-        }
+        if (isSingleLineIfElse(node, elseNode)) return
 
         val hasBraceInThen = thenNode?.elementType == BLOCK && thenNode.firstChildNode.elementType == LBRACE
         if (!hasBraceInThen) {
@@ -79,6 +75,14 @@ class BracesInConditionalsAndLoopsRule : Rule("braces-rule") {
                 }
             }
         }
+    }
+
+    private fun isSingleLineIfElse(node: ASTNode, elseNode: ASTNode?): Boolean {
+        if (node.treeParent.let { it.elementType != IF && it.elementType != ELSE }) {
+            val hasSingleElse = elseNode != null && elseNode.elementType != IF
+            if (hasSingleElse && node.text.lines().size == 1) return true
+        }
+        return false
     }
 
     private fun checkLoop(node: ASTNode) {
