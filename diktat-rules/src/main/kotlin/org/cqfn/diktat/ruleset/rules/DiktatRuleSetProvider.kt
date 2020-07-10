@@ -27,17 +27,17 @@ fun KtLint.Params.getDiktatConfigRules(): List<RulesConfig> {
 class DiktatRuleSetProvider(private val jsonRulesConfig: String = "rules-config.json") : RuleSetProvider {
     override fun get(): RuleSet {
         return RuleSetDiktat(
-                RulesConfigReader().readResource(jsonRulesConfig) ?: listOf(),
-                CommentsRule(),
-                KdocComments(),
-                KdocMethods(),
-                KdocFormatting(),
-                FileNaming(),
-                PackageNaming(),
-                FileSize(),
-                IdentifierNaming(),
-                BracesInConditionalsAndLoopsRule(),
-                FileStructureRule()  // this rule should be the last because it should operate on already valid code
+            RulesConfigReader().readResource(jsonRulesConfig) ?: listOf(),
+            CommentsRule(),
+            KdocComments(),
+            KdocMethods(),
+            KdocFormatting(),
+            FileNaming(),
+            PackageNaming(),
+            FileSize(),
+            IdentifierNaming(),
+            BracesInConditionalsAndLoopsRule(),
+            FileStructureRule()  // this rule should be the last because it should operate on already valid code
         )
     }
 }
