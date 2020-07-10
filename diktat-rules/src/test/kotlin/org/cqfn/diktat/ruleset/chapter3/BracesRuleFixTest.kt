@@ -7,7 +7,6 @@ import org.junit.Test
 
 class BracesRuleFixTest : FixTestBase("test/paragraph3/braces", BracesInConditionalsAndLoopsRule()) {
     @Test
-    @Ignore("Not yet implemented")
     fun `should add braces to if-else statements - 1`() {
         fixAndCompare("IfElseBraces1Expected.kt", "IfElseBraces1Test.kt")
     }
