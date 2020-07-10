@@ -11,6 +11,35 @@ class BracesRuleWarnTest {
     private val ruleId = "$DIKTAT_RULE_SET_ID:braces-rule"
 
     @Test
+    fun `should check braces in if statement without else branch - positive example`() {
+        lintMethod(BracesInConditionalsAndLoopsRule(),
+                """
+                    |fun foo() {
+                    |    if (x > 0) {
+                    |        bar()
+                    |    }
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    fun `should check braces in if statement without else branch`() {
+        lintMethod(BracesInConditionalsAndLoopsRule(),
+                """
+                    |fun foo() {
+                    |    if (x > 0)
+                    |        bar()
+                    |        
+                    |    if (y < 0) baz()
+                    |}
+                """.trimMargin(),
+                LintError(2, 5, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} IF", true),
+                LintError(5, 5, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} IF", true)
+        )
+    }
+
+    @Test
     fun `should check braces in if statements - positive example`() {
         lintMethod(BracesInConditionalsAndLoopsRule(),
                 """
@@ -114,7 +143,7 @@ class BracesRuleWarnTest {
         lintMethod(BracesInConditionalsAndLoopsRule(),
                 """
                     |fun foo() {
-                    |    for (val i in 1..100) {
+                    |    for (i in 1..100) {
                     |        println(i)
                     |    }
                     |}
@@ -127,7 +156,7 @@ class BracesRuleWarnTest {
         lintMethod(BracesInConditionalsAndLoopsRule(),
                 """
                     |fun foo() {
-                    |    for (val i in 1..100)
+                    |    for (i in 1..100)
                     |        println(i)
                     |}
                 """.trimMargin(),
@@ -180,6 +209,18 @@ class BracesRuleWarnTest {
                 """
                     |fun foo() {
                     |    do println(i) while (condition)
+                    |}
+                """.trimMargin(),
+                LintError(2, 5, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} DO_WHILE", true)
+        )
+    }
+
+    @Test
+    fun `do-while loops should have braces - empty body`() {
+        lintMethod(BracesInConditionalsAndLoopsRule(),
+                """
+                    |fun foo() {
+                    |    do while (condition)
                     |}
                 """.trimMargin(),
                 LintError(2, 5, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} DO_WHILE", true)

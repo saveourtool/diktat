@@ -9,18 +9,15 @@ import com.pinterest.ktlint.core.ast.ElementType.ELSE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.FOR
 import com.pinterest.ktlint.core.ast.ElementType.IF
 import com.pinterest.ktlint.core.ast.ElementType.IF_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.WHEN
 import com.pinterest.ktlint.core.ast.ElementType.WHILE
 import com.pinterest.ktlint.core.ast.prevSibling
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.NO_BRACES_IN_CONDITIONALS_AND_LOOPS
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import org.jetbrains.kotlin.psi.KtDoWhileExpression
-import org.jetbrains.kotlin.psi.KtForExpression
 import org.jetbrains.kotlin.psi.KtIfExpression
+import org.jetbrains.kotlin.psi.KtLoopExpression
 import org.jetbrains.kotlin.psi.KtWhenExpression
-import org.jetbrains.kotlin.psi.KtWhileExpression
 
 class BracesInConditionalsAndLoopsRule : Rule("braces-rule") {
 
@@ -39,9 +36,7 @@ class BracesInConditionalsAndLoopsRule : Rule("braces-rule") {
         when (node.elementType) {
             IF -> checkIfNode(node)
             WHEN -> checkWhenBranches(node)
-            FOR -> checkLoop(node)
-            DO_WHILE -> checkLoop(node)
-            WHILE -> checkLoop(node)
+            FOR, WHILE, DO_WHILE -> checkLoop(node)
         }
     }
 
@@ -54,45 +49,34 @@ class BracesInConditionalsAndLoopsRule : Rule("braces-rule") {
 
         val ifPsi = node.psi as KtIfExpression
         val thenNode = ifPsi.then?.node
+        val hasElseBranch = ifPsi.elseKeyword != null
         val elseNode = ifPsi.`else`?.node
 
         if (isSingleLineIfElse(node, elseNode)) return
 
-        val hasBraceInThen = thenNode?.elementType == BLOCK && thenNode.firstChildNode.elementType == LBRACE
-        if (!hasBraceInThen) {
+        if (thenNode?.elementType != BLOCK) {
             NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnAndFix(configRules, emitWarn, isFixMode, "IF",
                     (thenNode?.prevSibling { it.elementType == IF_KEYWORD } ?: node).startOffset) {
                 // todo
             }
         }
 
-        if (elseNode != null && elseNode.elementType != IF) {
-            val hasBraceInElseBlock = elseNode.elementType == BLOCK && elseNode.firstChildNode.elementType == LBRACE
-            if (!hasBraceInElseBlock) {
-                NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnAndFix(configRules, emitWarn, isFixMode, "ELSE",
-                        (elseNode.treeParent.prevSibling { it.elementType == ELSE_KEYWORD } ?: node).startOffset) {
-                    // todo
-                }
+        if (hasElseBranch && elseNode?.elementType != IF && elseNode?.elementType != BLOCK) {
+            NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnAndFix(configRules, emitWarn, isFixMode, "ELSE",
+                    (elseNode?.treeParent?.prevSibling { it.elementType == ELSE_KEYWORD } ?: node).startOffset) {
+                // todo
             }
         }
     }
 
     private fun isSingleLineIfElse(node: ASTNode, elseNode: ASTNode?): Boolean {
-        if (node.treeParent.let { it.elementType != IF && it.elementType != ELSE }) {
-            val hasSingleElse = elseNode != null && elseNode.elementType != IF
-            if (hasSingleElse && node.text.lines().size == 1) return true
-        }
-        return false
+        val hasSingleElse = elseNode != null && elseNode.elementType != IF
+        return node.treeParent.elementType != ELSE && hasSingleElse && node.text.lines().size == 1
     }
 
     private fun checkLoop(node: ASTNode) {
         require(node.elementType in arrayOf(FOR, WHILE, DO_WHILE))
-        val loopBodyNode = when (node.elementType) {
-            FOR -> (node.psi as KtForExpression).body?.node
-            WHILE -> (node.psi as KtWhileExpression).body?.node
-            DO_WHILE -> (node.psi as KtDoWhileExpression).body?.node
-            else -> error("Invalid element type ${node.elementType}")
-        }
+        val loopBodyNode = (node.psi as KtLoopExpression).body?.node
         if (loopBodyNode == null || loopBodyNode.elementType != BLOCK) {
             NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnAndFix(configRules, emitWarn, isFixMode, node.elementType.toString(), node.startOffset) {
                 // todo

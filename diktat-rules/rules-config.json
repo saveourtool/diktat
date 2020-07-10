@@ -206,5 +206,10 @@
     "name": "FILE_WILDCARD_IMPORTS",
     "enabled": true,
     "configuration": {}
+  },
+  {
+    "name": "NO_BRACES_IN_CONDITIONALS_AND_LOOPS",
+    "enabled": true,
+    "configuration": {}
   }
 ]
