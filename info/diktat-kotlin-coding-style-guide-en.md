@@ -1,16 +1,7 @@
-<!-- <center><br><br><br><br><br><br><br> -->
-<big><big><big><big><big><big><big><strong>Kotlin programming language code style</strong>
-V1.0</big></big></big></big></big></big></big>
-<!-- <br><br><br><br><br><br><br><br><br><br><br><br><br><br> -->
 
-![img](/img/huawei-logo-small.jpg)
+![img](diktat.jpg)
 
-<big><big><big><big><big>Copyright Huawei Technologies Co., Ltd.</big></big></big></big><big>
-<!-- <br><br><br></center> -->
-
-
-
-#目录
+#Content
 
 | Chapter                | Content                                                         |
 | ------------------- | ------------------------------------------------------------ |
@@ -156,7 +147,7 @@ No special prefix or suffix should be used in these names. For example, the foll
 
 ### <a name="c1.2"></a>Packages naming
 
-### <a name="r1.3"></a> Rule 1.3: package name is in lower case and separated by dots, code developed internally in Huawei should start with com.huawei, and the package name is allowed to have numbers
+### <a name="r1.3"></a> Rule 1.3: package name is in lower case and separated by dots, code developed internally in your company should start with your.company.domain, and the package name is allowed to have numbers
 
 Package names are all lowercase, consecutive words are simply concatenated together (no underscores) plus it should contain product name and module name.
 Also it should contain department or team name to prevent conflicts with other teams.
@@ -164,13 +155,13 @@ Package names are allowed to have numbers, like org.apache.commons.lang3, xxx.yy
 
 **Exceptions：** 
 
-- In some special cases, such as open source projects or commercial cooperation, package naming should not start with com.huawei
+- In some special cases, such as open source projects or commercial cooperation, package naming should not start with your.company.domain
 - In some cases, if the package name starts with a number or other characters, but these characters cannot be used at the beginning of the Java/Kotlin package name, or the package name contains reserved Java keywords, underscores are allowed.
    For example: `org.example.hyphenated_name`,` int_.example`, `com.example._123name`
 
 Valid example: 
  ```kotlin
- com.huawei.mobilecontrol.views
+ your.company.domain.mobilecontrol.views
  ```
 
 ### <a name="c1.3"></a> Classes, enumerations and interfaces
@@ -474,7 +465,7 @@ Other KDoc tags (such as @param type parameters, @see, etc.) can be added as fol
 File header comments should be stored BEFORE package name and imports. 
 If you need to add other content to the file header comment, you can add it later in the same format.
 
-The content and format of the copyright license must be as follows, the Chinese version:
+The content and format of the copyright license must be as follows, the Chinese version. For example if your company is Huawei:
 `版权所有 (c) 华为技术有限公司 2012-2020` 
 English version:
 `Copyright (c) Huawei Technologies Co., Ltd. 2012-2020. All rights reserved.`
@@ -483,12 +474,12 @@ Regarding the release notes, see examples below:
 
 -2012-2020 can be modified according to actual needs. 2012 is the year the file was first created, and 2020 is the year the file was last modified. The two can be the same, such as "2020-2020".
   When there are major changes to the file such as feature extensions, major refactorings, etc, then the subsequent years must be updated.
-- -The copyright statement can use Huawei subsidiaries.
+- -The copyright statement can use your company's subsidiaries. For example:
   On Chinese：版权所有 (c) 海思半导体 2012-2020
   On English：Copyright (c) Hisilicon Technologies Co., Ltd. 2012-2020. All rights reserved.
 
 Copyright should not use KDoc style or single line style comments, it must start from the beginning of the file.
-Example of a minimal Copyright comment without other functional comments:
+For example if your company is Huawei - below is a minimal Copyright comment without other functional comments:
 
 ```java
 /*
@@ -634,45 +625,46 @@ a) The order should be the following:
 2. @file annotation 
 3. package name
 4. Import statements
-5. A top-level classes or top-level functions;
-
-Note: kotlin compiler itself allows imports to be located only in the beginning of the file, and package directive before imports.
-So order 3, 4, 5 is enforced by compiler.
+5. Top class header and top function header comments
+6. A top-level classes or top-level functions;
 
 b) Each of the above code blocks should be separated by a blank line.
 c) Import statements are ordered alphabetically, without line breaks, and are not using wildcards *
 d) Recommendation: in one .kt source file there should be only one class declaration and its name should match with the filename
 
-### <a name="s3.1"></a>Recommendation 3.1: import statements should appear in the following order: Android, internal company imports, external commercial organizations, other open source third parties, net/org open source organizations, kotlin core dependencies and finally java core dependencies.
+### <a name="s3.1"></a>Recommendation 3.1: import statements should appear in the following order: Android, internal company imports, external commercial organizations, other open source third parties, net/org open source organizations, and finally java core dependencies. Each group should be separated by a blank line.
 
 Note: Static imports are placed above all other imports (using the same sorting method as for regular imports). 
 From top to bottom, the order is the following:
-1. Android
-2. Imports of packages used internally in your organization
-3. Other commercial organizations
-4. Open source imports
-5. net/org open source dependencies
-6. javacard
-7. java core packages
+1. static imports
+2. Android
+3. Imports of packages used internally in your organization
+4. Other commercial organizations
+5. Open source imports
+6. net/org open source dependencies
+7. javacard
+8. java core packages
 
 Each category sorted in alphabetical order. This style is compatible with [Android import order] (https://source.android.com/setup/contribute/code-style#order-import-statements). 
 
-Recommended example (note that * are for demonstration only and are not allowed in real code)：
+Recommended example：
 
-```kotlin
-import android.* // android
+```java
+import static all.other.imports; // static imports
 
-import androidx.* // android
+import android.*; // android
 
-import com.android.* // android
+import androidx.*; // android
 
-import huawei.* // huawei
+import com.android.*; // android
 
-import com.huawei.* // huawei
+import your.company.*; // your company's libs
 
-import com.google.common.io.Files // other business organizations
+import com.your.company.*; // your company's libs
 
-import lombok.extern.slf4j.Sl4j  // Other open source third parties
+import com.google.common.io.Files; // other business organizations
+
+import lombok.extern.slf4j.Sl4j;  // Other open source third parties
 
 import maven.*;  // Other open source third parties
 
@@ -710,15 +702,26 @@ The declaration part of a class or interface should be in the following order:
 **Exception：**
 All variants of a private val logger should be placed in the beginning of the class (private val log/LOG/logger/e.t.c)
 
- ### <a name="c3.1"></a>  大括号
+ ### <a name="c3.1"></a> Braces
 
- #### <a name="r3.3"></a>规则3.3  在条件语句和循环块中必须使用大括号
+ #### <a name="r3.3"></a>Rule 3.3 Braces must be used in conditional statements and loop blocks
 
- 在 `if`， `else`， `when`， `for`，`do`和 `while`等语句中，即使程序体是空的或只包含一个语句，也要使用大括号。
+  In `if`, `else`, `for`, `do`, and `while` statements, even if the program body is empty or contains only one statement, braces should be used.
+  In special Kotlin `when` statement no need to use braces for statements with 1 line. Valid example:
+    ```kotlin
+        when (node.elementType) {
+            FILE -> {
+                checkTopLevelDoc(node)
+                checkSomething()
+             }
+            CLASS -> checkClassElements(node)
+        }
+    ```
+  
+**Exception:** *Only* The only exception is ternary operator in Kotlin (it is a single line `if () <> else <>` ) 
+When the entire expression can be 
 
-**例外:** *仅*当整个表达式适合一行时，可以省略大括号。
-
-不好的例子：
+Bad example:
 
 ```kotlin
 val value = if (string.isEmpty())  // WRONG!
@@ -727,23 +730,28 @@ val value = if (string.isEmpty())  // WRONG!
                 1
 ```
 
-推荐例子:
+Valid example: 
 
 ```kotlin
 val value = if (string.isEmpty()) 0 else 1  // Okay
 ```
 
+```kotlin
+if (condition) {
+    println("test")
+} else {
+    println(0)
+}
+```
 
+#### <a name="r3.4"></a> Rule 3.4 For *non-empty* blocks and block structures, the opening brace is placed at the end of the line
 
- #### <a name="r3.2"></a>规则3.4 对于*非空*块和块状结构，左大括号放在行尾
-
- 对于*非空*块和块状结构，大括号遵循K&R风格（俗称*埃及括号*）：
-
- - 左大括号不换行
- - 右大括号自己单独一行
- - 右大括号后，可以跟逗号、分号等，也可以跟随 `else`, `catch`,`finally`等关键字语句。
-
- 推荐例子：
+For *non-empty* code blocks with braces, they should follow the K&R style (1TBS or OTBS style):
+ - The opening brace is on the same same line with the first line of the code block
+ - The closing brace is on it's new line
+ - The closing brace can be followed by a new line or `else`, `finally` or `catch` keywords
+ 
+ Good example：
 
  ```kotlin
         return () -> {
@@ -770,308 +778,315 @@ val value = if (string.isEmpty()) 0 else 1  // Okay
         }
  ```
 
- 对于枚举类的例外，请看 [枚举](#c3.6)。
+### <a name="c3.2"></a> Indentation
 
-### <a name="c3.2"></a> 缩进
+### <a name="r3.5"></a>Rule 3.5: Use spaces for indentation, indenting is equal to 4 spaces
 
-### <a name="r3.5"></a>规则3.5 使用空格进行缩进，每次缩进4个空格
+Only spaces are allowed for indentation and each indentation should equal to 4 spaces (tabs are not allowed). 
+In case you prefer using tabs - just simply configure auto change of tabs to spaces in your IDE.
+Exceptions:
+    - When breaking parameter list of a method/class constructor it can be aligned with 8 spaces or a parameter that was moved to a newline can be on the same level as the previous argument:
+    
+    ```kotlin
+    class Class(propertiesFileName: String,
+                otherName: String) {
+    ```
+    or 
+    ```kotlin
+    fun visit(
+            node: ASTNode,
+            autoCorrect: Boolean,
+            params: KtLint.Params,
+            emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit
+    ) {   
+    ```
+    
+    
+   - Operators like +/-/*/e.t.c can be indented with 8 spaces:
+    
+    ```kotlin
+    val abcdef = "my splitted" +
+                    " string"
+    ```
 
-只允许使用空格(space)进行缩进，每次缩进为 **4** 个空格。不允许插入制表符tab。
-当前几乎所有的集成开发环境（IDE）和代码编辑器都支持配置将Tab键自动扩展为**4**空格输入，请配置你的代码编辑器支持使用空格进行缩进。
-**例外：** 方法参数换行、字符串+语句换行、方法连续操作符.调用，这些特殊场景，业界流行工具Eclipse,IntelliJ IDEA ，默认缩进8个空格，也是可以的。
+#### <a name="s3.3"></a>Recommendation 3.3: try to avoid empty blocks; multiple braces should start a new line
 
-#### <a name="s3.3"></a>建议3.3  应该避免空块；多块的右大括号应该新起一行
+  An empty code block can be closed immediately on the same line as well as the block can be closed on the next line.
+  There can be no characters or line breaks between opening and closed braces (`{}`), **unless** it is part of a *multi-block statement* like `if/else` or `try/catch/finally`, etc.
 
- 空块或块状结构遵循1.3.1.2要求，也可以在打开后立即关闭，在（`{}`）之间没有字符或换行符，**除非**它是 *多块语句的一部分*（ `if/else`或者 `try/catch/finally`等）。
-
- 推荐例子：
+  Recommended examples:
 
  ```kotlin
-   // 这是可以接受的
    fun doNothing（）{} 
  
-   // 这同样可以接受
    fun doNothingElse（）{ 
    }
  ```
 
- 多块语句，不好的例子：
- ```kotlin
+   Not recommended:
+  ```kotlin
   try {
       doSomething()
-  } catch (Exception e) {}
+  } catch (e: Some) {}
  ```
 
- 多块语句，好：
+    Use this code instead of the example above
  ```kotlin
    try {
        doSomething()
-   } catch (Exception e) {
+   } catch () {
+       
    }
  ```
 
-### <a name="c3.4"></a>行内容
+### <a name="c3.4"></a> Code lines
 
-### <a name="s3.4"></a>建议3.4 每行不超过一个语句
+### <a name="s3.4"></a> Recommendation 3.4 No more than one statement per line
+    There should not be more than one code statement in one line (this recommendation prohibits usage of code with ";") 
 
- 每个语句后面都有一个换行符。
+### <a name="c3.5"></a>Line width
 
-### <a name="c3.5"></a>行宽
+### <a name="s3.5"></a> Recommendation 3.5: line length should be less than 120 symbols
 
-### <a name="s3.5"></a>建议3.5 每行限长120个窄字符
+This international code style prohibits non-latin (non ASCII) symbols in the code. But in case you would like to use them anyway - please use the following convention:
 
-一个宽字符占用两个窄字符的宽度。除非另有说明，否则任何超出此限制的行都应该换行，如 *换行* 一节中所述。 
-每个Unicode代码点都计为一个字符，即使其显示宽度大于或小于。例如，如果使用 [全角字符](https://en.wikipedia.org/wiki/Halfwidth_and_fullwidth_forms)，您可以选择比此规则严格要求的位置更早地换行。
-字符的“宽”与“窄”由它的[*east asian width* Unicode属性](https://unicode.org/reports/tr11/)定义。通常，窄字符也称“半角”字符，ASCII字符集中的所有字符，包括字母（如：`a`、`A`）、数字（如：`0`、`3`）、标点（如`,`、`{`）、空格，都是窄字符；
-宽字符也称“全角”字符，汉字（如：`中`、`文`）、中文标点（`，`、`、`）、全角字母和数字（如`Ａ`、`３`）等都是宽字符，算2个窄字符。
- 	 
+- One wide character occupies the width of two narrow characters.
+  The "wide" and "narrow" of a character are defined by its [*east asian width* Unicode attribute] (https://unicode.org/reports/tr11/).
+  Generally, narrow characters are also called "half-width" characters. All characters in the ASCII character set include letters (such as `a`, `A`), numbers (such as `0`, `3`), and punctuation (such as `, `, `{`), spaces. All of them are narrow characters.
+  Wide characters are also called "full-width" characters, Chinese characters (such as `中`, `文`), Chinese punctuation (`, `, `, `), full-width letters and numbers (such as `Ａ`、`３`) are all. These characters counted as 2 narrow characters.
+  
+- Any line that exceeds this limit (120 narrow symbols) should be wrapped, as described in the *Newline* section. 
 
->  注：对于代码风格检查工具的开发人员来说，可以简单地判断字符是否在ASCII的范围内，以及是否为中文（可判断其所在的Unicode块），来判断宽窄，这样可以覆盖99%以上的代码，其余字符可以保守地认为是半角，不判定其超出限制。如果需要更精确的判断，可以使用开源的[ICU](http://site.icu-project.org/home)库等。
+ **Exceptions：**
 
- **例外：**
+  1. Long URL or long JSON method reference in KDoc.
+  2. The `package` and `import` statements.
+  3. The command line in the comment so that it can be cut and pasted into the shell for use.
 
- 1. KDoc中的长URL或长JSON方法引用。
- 2. `package`和 `import`语句。
- 3. 注释中的命令行，使它可以剪切并粘贴到shell中使用。
+### <a name="c3.4"></a> Line breaks (newlines)
 
-### <a name="c3.4"></a>换行
+#### <a name="r3.6"></a>Rule 3.6 line break style rules if the line is split
 
-#### <a name="r3.6"></a>规则3.6 换行起点在点号、双冒号、类型&、catch块中管道之前，在函数左括号、逗号、lambda箭头和其左大括号之后
+  1. Compared to Java Kotlin allows not to to put semicolumn (';') after each statement separated by newline.
+     There should be no redundant semicolumn at the end of lines.
+     
+     In case when newline is needed to split the line, it should be placed after operators like &&/||/+/e.t.c
+     But newline should be placed before operators like ('.', '?.', '?:', '::', e.t.c), operator !! should not be separated from the value it is checking.
+     
+     Note, that you need to follow functional style:
+     ```kotlin
+        val value = otherValue!!
+                .map(x -> x)
+                .filter(true)
+                .size      
+     ```
+      
+  2. Newline should be placed before assignment operator ('=')
+  3. The name of a function or constructor should not be split by a newline from the opening brace '('. Brace follows immediately after the name without any spaces.   
+  4. Newline should be placed right after the comma (',')
+  5. If lambda expression has one-argument, a newline can appear after an arrow, if an expression has more than one argument before an arrow - breakpoint should appear after the brace.
+  
+  Recommended examples：
 
-  1. 与Java不同，Kotlin一般不在结尾写分号，因此换行应出现在 运算符*之后*，例如&&之后，避免语法错误。
+     ```kotlin
+     val lambda =
+         (label: String, value: Long) -> {
+             // ...
+         }
+     
+     val predicate = str ->
+         longExpressionInvolving(str)
+     ```
 
-    - 但在以下“类似运算符”的符号之前换行：
-      - 点分隔符（`.`）
-      - 成员引用的两个冒号（`::`）
-  2. 赋值符号后
-  3. 函数或构造函数名称与紧跟其后面的左括号（`(`）保持在同一行。
-  4. 逗号（`,`）断点出现在逗号之后。
-  5. 在lambda表达式中，如果箭头后是单个表达式，可以在箭头后面出现断点，如果箭头后是程序块，可以在大括号后出现断点。
-
-    推荐例子：
-
- ```kotlin
- val lambda =
-     (label: String, value: Long) -> {
-         // ...
-     }
- 
- val predicate = str ->
-     longExpressionInvolving(str)
- ```
-
-6. 当函数只包含单个表达式时，它可以表示为 [表达式函数](https://kotlinlang.org/docs/reference/functions.html#single-expression-functions)。
-
-   推荐例子:
-
+6. When the function contains only a single expression, it can be expressed as [expression function] (https://kotlinlang.org/docs/reference/functions.html#single-expression-functions).
+  Instead of: 
+  ```kotlin
+   override fun toString(): String { return "hi" }
+  ```
+  use:
    ```kotlin
-   override fun toString （）：String = "hi"
-   override fun toString （）：String { return "Hey" }
+   override fun toString() = "hi"
    ```
 
+### <a name="c3.5"></a>Blank lines
 
-### <a name="c3.5"></a>空白
+### <a name="s3.6"></a>Recommendation 3.6: Reduce unnecessary blank lines and keep the code compact
 
-### <a name="s3.6"></a>建议3.6 减少不必要的空行，保持代码紧凑 
+By reducing unnecessary blank lines, you can display more code one one screen and that makes the code more readable.
 
-减少不必要的空行，可以显示更多的代码，方便代码阅读。下面有一些建议遵守的规则：
-
-- 根据上下内容的相关程度，合理安排空行：空行出现在字段，构造方法，方法，嵌套类，静态初始化块之间
-- 方法内部、类型定义内部、初始化表达式内部，不使用**连续**空行
-- 不使用**连续 3 个**空行，或更多
-- 大括号内的代码块**行首之前和行尾之后不要加空行**，包括类型和方法定义、语句代码块。
-
-```kotlin
-fun foo() {
-    // ...
-}
-
-
-
-fun bar() {  // Bad：最多使用连续2个空行
-    // ...
-}
-```
+- Blank lines should separate content based on it's relevance: blank lines should be placed between groups of fields, constructors, methods, nested classes, init blocks, objects
+- Do not use more than one single line inside methods, type definitions, initialization expressions
+- Generally do not use more than two consecutive blank lines in a row
+- Do not put newlines in the beginning or at the end of code blocks with curly braces:
 
 ```kotlin
 fun baz() {
         
-    doSomething();  // Bad：大括号内部首尾，不需要空行
+    doSomething();  // No need to add blank lines at the beginning and at the end of the code block
     // ...
 
 }
 ```
 
-### 水平空格
+### Horizontal space
 
-### <a name="s3.7"></a>建议3.7 单个空格应该分隔关键字与其后的左括号、与其前面的右大括号，出现在任何二元/三元运算符/类似运算符的两侧，`,:;`或类型转换结束括号`)`之后使用空格。行尾和空行不能有空格space
+### <a name="s3.7"></a> Recommendation 3.7: Usage of whitespace for code separation
 
-  1. 将任何关键字（例如 `if`， `for`, `while`, `when`, `try` 或 `catch`）与该行后面的左括号用空格分开,
-     **例外：** 方法调用类的`super`, `this`。
+  1. Any keywords (like 'if', 'when', 'for', e.t.c) should be separated from with a single whitespace from the openning parenthesis.
+     Only exceptions are: 'super' and 'constructor' keywords. They should not be separated from a parenthesis.
 
-  2. 将任何关键字（例如 `else`或 `catch`等）与该行前后大括号与空格分开
+  2. Separate any keywords (such as `else` or `catch`, etc.) from the openning brace ('{') with a single whitespace.
+  
+  3. Use single whitespace before any opening whitespace (`{`).
+     Only exception is passing of a lambda:
+     ```kotlin
+         private fun foo(a: (Int) -> Int, b: Int) {}
+         foo({x: Int -> x}, 5) // no space before '{'
+     ```
 
-  3. 在任何大括号（`{`）之前都使用空格，数组有两个例外：
+  4. Single whitespace should be placed on both sides of binary operators. Also this applies to operator-like symbols, for example: 
 
-     - `@SomeAnnotation({a, b})` （注解的数组不需要使用空格）
-     {% raw %}
-     - `String[][] xs = {{"foo"}};`（`{{`多维数组之间不需要空格）
-     {% endraw %}
+     - In generic structures with 'where' keyword： `where T : Type`
+     - With arrow in lambdas： `(str: String) -> str.length()`
 
-  4. 在任何二元或三元运算符的两边。这也适用于以下“类似运算符”的符号：
-
-     - 交类型中的＆符号： `where T : <Foo & Bar>`
-     - 处理多个异常的catch块的管道： `catch (FooException | BarException e)`
-     - `for`（“foreach”）语句中的冒号（` : `）
-     - lambda表达式中的箭头： `(str: String) -> str.length()`
-
-  **例外：**
+  **Exceptions：**
 
 ```kotlin
-- `::`方法引用的两个冒号()，写法像`Object::toString`
-- 点分隔符（`.`），写法像 `object.toString()`
+- Two colons (`::`) are written without spaces: `Object::toString`
+- Dot separator (`.`) that stays on the same line with an object name `object.toString()`
 ```
 
-  5. `,:;`或类型转换cast结束括号（`) `）之后使用空格
+  5. Spaces should used after ','/':',';' (except cases when those symbols are in the end of line). There should be no whitespaces in the end of line.
 
-  6. 在类型注解与`[]`之间
+  6. There should be *only one space* between identifier and it's type： `list: List<String>`
+  
+  7. When using '[]' operator (get/set) there should be *no* spaces between identifier and '[': `someList[0]`
+  
+  8. There should be no space between a method name and a parenthesis: `foo() {}`
 
-  7. 在声明的类型和变量之间： `list: List<String>`
+### <a name="s3.8"></a>Recommendation 3.8: No spaces should be inserted for horizontal alignment
 
+*Horizontal alignment* - is a practice to add additional spaces in the code, to align code blocks on the same level with previous code blocks.
 
-### <a name="s3.8"></a>建议3.8 不应插入空格水平对齐
+- It always takes time to format and support such code and fix alignment for new developers in case they need to change something in aligned code.
+- Long identifier names will break the alignment and will make the code less presentable.
+- The disadvantages of alignment are greater than the benefits; in order to reduce maintenance costs and not cause trouble, misalignment is the best choice.
 
- *水平对齐*是在代码中添加可变数量的附加空格的做法，目的是使某些标记直接出现在前一行的某些其他标记下方。
- 包括在KDoc注释性的描述内容前不应插入空格对齐。
+Recommendation: the only exception where can look good is `enum class`, where you can use alignment (in table format) to make code more readable:
+```kotlin
+enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean, private val warn: String) : Rule {
+    PACKAGE_NAME_MISSING         (1, true,  "no package name declared in a file"),
+    PACKAGE_NAME_INCORRECT_CASE  (2, true,  "package name should be completely in a lower case"),
+    PACKAGE_NAME_INCORRECT_PREFIX(3, false, "package name should start from company's domain")
+    ;
+}
+```
 
- - 如果参数/变量名长短差异较大，无规律插入的空白数呈凹凸状，并不美观
- - 如果某个参数/变量名较长，例如gardenPlantingDetailViewModel，对应的描述内容也较长的话，就可能不得不换行，又可能会有换行对齐的顾忌
- - 后续的维护者可能会困扰是否在整个module/package都刻意追求对齐
-   因此，对齐的弊大于利；为了减少维护成本，不造成困扰，不对齐是最好的选择。
-
- 推荐例子：
-
+ Recommended examples：
  ```kotlin
- private val nr: Int; // 这可以
- private var color: Color; // 这也可以
+ private val nr: Int // no alignment, but looks fine
+ private var color: Color // no alignment
  ```
 
- 不好的例子：
-
+ Not recommended：
  ```kotlin
- private val nr: Int;       // 维护者可能不得不修改这些对齐空格数
- private val color: Color;  // 不必与上行对齐注释 
+ private val    nr: Int    // aligned comment with extra spaces
+ private val color: Color  // alignment for a comment and alignment for identifier name
  ```
 
-###<a name="c3.8"></a> 枚举
+###<a name="c3.8"></a> Enumerations
 
-### <a name="s3.9"></a>建议3.9 枚举常量间用逗号隔开， 换行可选
+### <a name="s3.9"></a>Recommendation 3.9: enum values are separated by comma and a line break. ';' is put on the new line
+1) Enum values are separated by comma and a line break. ';' is put on the new line:
+     ```Kotlin
+        enum class Warnings {
+            A,
+            B,
+            C
+            ;
+        }
+     ```
+    This will help to resolve conflicts and reduce it's number during merging pull requests.
 
- 在枚举常量后面的每个逗号之后，换行符是可选的。还允许额外的空白行（通常只有一行）。例如：
+2) In case enum is simple (it has no properties, no methods and no comments inside) - it can be declared in a single line:
+     ```kotlin
+    enum class Suit { CLUBS, HEARTS, SPADES, DIAMONDS }
+     ```
 
- ```Java
-    private enum Answer {
-        YES {
-            @Override
-            public fun toString() {
-                return "yes";
-            }
-        },
+3) Prefer enum classes if it is possible, for example instead of 2 Boolean properties like:
+    `val isCelsius = true | val isFahrenheit = false` use enum class:
+    ```kotlin
+    enum class TemperatureScale { CELSIUS, FAHRENHEIT }
+    ```
 
-        NO,
-        MAYBE
-    }
- ```
-
- 没有方法且没有关于其常量的文档的枚举类，可以选择格式化就好像它是一个数组初始化一样：
-
- ```java
- private enum Suit { CLUBS, HEARTS, SPADES, DIAMONDS }
- ```
-
- 由于枚举类*是类*，因此适用于格式化类的所有其他规则。
- Java的枚举比较灵活强大，而且与switch/case结合较好，只要可能，优先使用。
- 枚举的使用场景：
-
-  - 布尔型的2元素值，例如isCelsius = true | false来表示摄氏|华氏，可用
-
-  ```java
-  public enum TemperatureScale { CELSIUS, FAHRENHEIT }
-  ```
-
-  - 变量值仅在一个固定范围内变化用 enum 类型来定义。例如 [建议8.6.3的Keyboard](#s8.6.3)例子 
-  - 整数或字符串的枚举模式，蕴含有某种名称空间的，例如上面的`Suit`例子，或者其它语言的ComparisonResult，避免-1、0、1的数字比较：
-
+    - The variable value only changes within a fixed range and is defined with the enum type. For example, [Recommend 8.6.3 Keyboard](#s8.6.3) example
+    - Avoid comparison with magic constant numbers of -1, 0, and 1, instead of this use enums:
   ```kotlin
-    public enum ComparisonResult {
+    enum class ComparisonResult {
         ORDERED_ASCENDING,
         ORDERED_SAME,
         ORDERED_DESCENDING
+        ;
     }
   ```
 
- #### <a name="c3.7"></a> 变量声明
+ #### <a name="c3.7"></a> Variable declaration
 
-### <a name="r3.7"></a>规则3.7 每行声明一个变量
+### <a name="r3.7"></a>Rule 3.7: declare one variable on one line
 
- 每行的变量声明（字段或本地）都只声明一个变量，不好的例子 `val n1: Int; val n2: Int`。
+Each property or variable declaration should be declared on separate line. Bad example: `val n1: Int; val n2: Int`.
 
- **例外：**`for`循环标题中可以接受多个变量声明 。
+### <a name="s3.10"></a>Recommendation 3.10: Variables are declared close to the line where they are first used
+Local variables are declared close to the point where they are first used. THis will minimize their scope.
+Local variable declarations are usually initialized or initialized immediately after the declaration. The member fields of the class should be declared collectively. 
 
-### <a name="s3.10"></a>建议3.10 变量被声明在接近它们首次使用的行
+### <a name="c3.11"></a>When
 
-局部变量被声明为接近它们首次使用的点，以最小化它们的范围。局部变量声明通常具有初始化，或在声明后立即初始化。类的成员字段要集中声明。
+### <a name="r3.10"></a>Rule 3.10: 'when' statement must have else branch, unless when condition variable is enumerated or sealed type
+Each when statement contains an `else` statement group, even if it does not contain any code.
 
-### <a name="c3.11"></a>when
+*Exception:* If a when statement of type `enum or sealed` contains all values of a enum - there is no need to have "else" branch.
+The compiler can issue a warning when it is missing.
 
-### <a name="r3.10"></a>规则3.10 when语句要有else分支，除非when的条件变量是枚举或sealed类型
+### <a name="c3.12"></a> Annotations
 
- 每个when语句都包含一个`else`语句组，即使它不包含任何代码。
- **例外：**如果`enum或sealed`类型的when语句包含涵盖该类型的*所有*可能值的显式案例，*则*该类型的when语句*可以*省略该`else`语句组。编译器能够在缺少时，发出警告。
+### <a name="s3.11"></a> Recommendation 3.11: Each annotation applied to a class, method or constructor is on its own line
 
-### <a name="c3.12"></a>注解
+1. Annotations applied to the class, method, or constructor are placed on separate lines (one annotation per line). Example:
+```kotlin
+@MustBeDocumented
+@CustomAnnotation
+fun getNameIfPresent() { ... }
+```
+2. A single annotation should stay on the same line where the code that it is annotating:
+```kotlin
+@CustomAnnotation class Foo {}
+```
+3. Multiple annotations applied to a field/property are allowed to appear on the same line as the field:
+```kotlin
+@MustBeDocumented @CustomAnnotation loader: DataLoader
+```
+### <a name="c3.13"></a> Comments layout
 
-### <a name="s3.11"></a> 建议3.11 应用于类，方法或构造方法的每个注解独占一行
+Block comments are at the same indentation level as the surrounding code.
+Recommended examples:
 
- 应用于类，方法或构造方法的注解都在其自己的行上（即，每行一个注解）。例：
-
- ```java
- @Override
- @Nullable
- public String getNameIfPresent() { ... }
+ ```kotlin
+class SomeClass {
+     /*
+      * This is
+      * okay
+      */
+      fun foo() {}
+}
  ```
 
-单个的注解可以和签名的第一行出现在同一行   
+ **Hint：** To have automatic formatting by IDEs use `/*...*/` block comments.
 
-```java
-@Override public int hashCode() { . . . }
-```
+### <a name="c3.14"></a> Modifiers
 
-应用于字段的多个注解允许与字段出现在同一行   
-
-```java
-@Partial @Mock DataLoader loader;
-```
-
-### <a name="c3.13"></a>注释排版
-
-  块注释与周围代码的缩进级别相同。它们可以是 `/* ... */`风格或 `// ...`风格。对于多行 `/* ... */`注释，后续行必须以`*`与`*`前一行对齐的方式开始 。
-推荐例子：
-
- ```java
- /*
-  * This is          // And so
-  * okay.            // is this.
-  */
- ```
-
- **提示：**编写多行注释时，如果希望自动代码格式化程序在必要时重新换行（段落样式），请使用该`/* ... */`样式。
-
-### <a name="c3.14"></a> 修饰符
-
-### <a name="s3.12"></a> 建议3.12   如果⼀个声明有多个修饰符，始终按照以下顺序
-
-推荐的顺序（如果存在）：
+### <a name="s3.12"></a> Recommendation 3.12 If a declaration has multiple modifiers, always follow the sequence below
+Recommended sequence:
 
  ```kotlin
 public / internal / protected / private
@@ -1081,21 +1096,23 @@ external
 override
 lateinit
 tailrec
+crossinline
 vararg
 suspend
 inner
+out
 enum / annotation
 companion
-inline
+inline / noinline
+reified
 infix
 operator
 data
  ```
 
-### <a name="s3.13"></a>建议3.13 较长的数字字面值使用下划线分隔
+### <a name="s3.13"></a>Recommendation 3.13: long numerical values should be separated by underscore
 
-说明： 根据业务含义，较长的数字字面值，使用下划线使数字常量更易读，也更容易发现错误。
-
+Note: Usage of underscores makes the numeric constants easier to read and easier to find errors in it.
 ```kotlin
 val oneMillion = 1_000_000
 val creditCardNumber = 1234_5678_9012_3456L
@@ -1103,20 +1120,19 @@ val socialSecurityNumber = 999_99_9999L
 val hexBytes = 0xFF_EC_DE_5E
 val bytes = 0b11010010_01101001_10010100_10010010
 ```
+The following table contains some confusing characters. You should be careful when using them as identifiers. 
+And better use other names instead of these identifiers.
 
- 下表是一些易混淆的字符，当一起作为标识符时，需留意，但工具不作扫描。
- 表示元素索引下标、数字变量的，还可以考虑用常见的fst,snd,start/end,from/to,mid,idx,pos,size,cap,count,total等。
-
-| 期望的字符    | 易引起混淆的单个字符命名 | 更可读的备选短名 |
+| Expected      | Confusing name           | Suggested name |
 | ------------- | ------------------------ | ---------------- |
-| 0 (zero)      | O (大写的o), D (大写的d) | obj, dgt         |
-| 1 (one)       | I (大写的i), l (小写L)   | it, ln, line     |
-| 2 (two)       | Z (大写的z)              | n1, n2           |
-| 5 (five)      | S (大写的s)              | xs, str          |
-| 6 (six)       | e (小写的E)              | ex, elm          |
-| 8 (eight)     | B (大写的b)              | bt, nxt          |
-| n (小写的N)   | h (小写的H)              | nr, head, height |
-| rn (小写的RN) | m (小写的M)              | mbr, item        |
+| 0 (zero)      | O, D                     | obj, dgt         |
+| 1 (one)       | I, l                     | it, ln, line     |
+| 2 (two)       | Z                        | n1, n2           |
+| 5 (five)      | S                        | xs, str          |
+| 6 (six)       | e                        | ex, elm          |
+| 8 (eight)     | B                        | bt, nxt          |
+| n,h           | h,n                      | nr, head, height |
+| rn, m         | m,rn                     | mbr, item        |
 
  # <a name="c4"></a>4 变量和类型
 
@@ -1605,8 +1621,6 @@ android {
 }
 ```
 
-
-
 #<a name="appendix"></a>9 附录
 
 ## <a name="reference"></a>9.1	参考
@@ -1614,13 +1628,4 @@ android {
  ###9.1.2	JetBrains Kotlin语言编程规范：<https://kotlinlang.org/docs/reference/coding-conventions.html>
 
  ####9.1.3	Ktlin: <https://github.com/shyiko/ktlint>
-
-## <a name="contributor"></a>9.2	贡献者
-
-感谢所有参与规则制订、检视、评审的专家、同事！
-感谢所有提 issue / MR 参与贡献的同事！
-
-| 版本             | 起草                                                         | 评审                                                         | 批准人         | 修订情况                                                 |
-| ---------------- | ------------------------------------------------------------ | ------------------------------------------------------------ | -------------- | -------------------------------------------------------- |
-| DKBA1040-2019.03 | **CBG软件部**: 孙奇辉00440503 <br>**CBG软件部**: 薛竹飙00377846 任占民00389500<br> **公共开发部**: 焦石00343677 <br>**北研质量部**: 姜皓00267218 <br> | **CBG**: 王燕东00275844, 何良春00474316, 郑成亮00336987, 伊伟00212138, 王娅琦00464446, 张学煜 84105082,  赵俊民00387162，孙渊磊0217938, 冯文瀚00379734, 张志军00254575, 汪新建00210918<br>**网络**: 刘金亮00314904 <br>**研发能力中心**: 周代兵00340713, 李科00316555,陈旭00218141<br> | 董庆阳00372143 | V1.0 <br>本次优化，重点参考了Google、JetBrains等编程规范 |
 
