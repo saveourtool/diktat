@@ -7,7 +7,7 @@ import org.assertj.core.api.Assertions
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
-import org.cqfn.diktat.ruleset.rules.FileSize
+import org.cqfn.diktat.ruleset.rules.files.FileSize
 import org.cqfn.diktat.ruleset.utils.DiktatRuleSetProviderTest
 import org.junit.Test
 import java.io.File
