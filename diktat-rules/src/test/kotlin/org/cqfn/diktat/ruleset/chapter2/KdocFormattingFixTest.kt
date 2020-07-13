@@ -1,6 +1,6 @@
 package org.cqfn.diktat.ruleset.chapter2
 
-import org.cqfn.diktat.ruleset.rules.KdocFormatting
+import org.cqfn.diktat.ruleset.rules.kdoc.KdocFormatting
 import org.cqfn.diktat.ruleset.utils.FixTestBase
 import org.junit.Test
 

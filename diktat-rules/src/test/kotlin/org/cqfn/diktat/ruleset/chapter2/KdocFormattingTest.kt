@@ -1,8 +1,6 @@
 package org.cqfn.diktat.ruleset.chapter2
 
 import com.pinterest.ktlint.core.LintError
-import com.pinterest.ktlint.test.lint
-import org.assertj.core.api.Assertions
 import org.cqfn.diktat.ruleset.constants.Warnings.BLANK_LINE_AFTER_KDOC
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NEWLINES_BEFORE_BASIC_TAGS
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_DEPRECATED_TAG
@@ -11,11 +9,10 @@ import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_NEWLINES_BETWEEN_BASIC
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WRONG_SPACES_AFTER_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WRONG_TAGS_ORDER
-import org.cqfn.diktat.ruleset.rules.KdocFormatting
+import org.cqfn.diktat.ruleset.rules.kdoc.KdocFormatting
 import org.cqfn.diktat.ruleset.utils.lintMethod
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_EMPTY_KDOC
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
-import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule
 import org.cqfn.diktat.ruleset.utils.TEST_FILE_NAME
 import org.junit.Test
 

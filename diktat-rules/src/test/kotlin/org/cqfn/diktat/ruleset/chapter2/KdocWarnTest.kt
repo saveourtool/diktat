@@ -1,12 +1,10 @@
 package org.cqfn.diktat.ruleset.chapter2
 
 import com.pinterest.ktlint.core.LintError
-import com.pinterest.ktlint.test.lint
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.cqfn.diktat.ruleset.constants.Warnings.*
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
-import org.cqfn.diktat.ruleset.rules.KdocComments
+import org.cqfn.diktat.ruleset.rules.kdoc.KdocComments
 import org.cqfn.diktat.ruleset.utils.lintMethod
 
 class KdocWarnTest {

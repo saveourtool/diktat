@@ -7,7 +7,11 @@ import com.pinterest.ktlint.core.RuleSetProvider
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
 import org.cqfn.diktat.ruleset.rules.comments.CommentsRule
+import org.cqfn.diktat.ruleset.rules.files.FileSize
 import org.cqfn.diktat.ruleset.rules.files.FileStructureRule
+import org.cqfn.diktat.ruleset.rules.kdoc.KdocComments
+import org.cqfn.diktat.ruleset.rules.kdoc.KdocFormatting
+import org.cqfn.diktat.ruleset.rules.kdoc.KdocMethods
 
 /**
  * this constant will be used everywhere in the code to mark usage of Diktat ruleset
@@ -23,7 +27,7 @@ fun KtLint.Params.getDiktatConfigRules(): List<RulesConfig> {
 class DiktatRuleSetProvider(private val jsonRulesConfig: String = "rules-config.json") : RuleSetProvider {
     override fun get(): RuleSet {
         return RuleSetDiktat(
-            RulesConfigReader().readResource(jsonRulesConfig)?: listOf(),
+            RulesConfigReader().readResource(jsonRulesConfig) ?: listOf(),
             CommentsRule(),
             KdocComments(),
             KdocMethods(),
@@ -32,6 +36,7 @@ class DiktatRuleSetProvider(private val jsonRulesConfig: String = "rules-config.
             PackageNaming(),
             FileSize(),
             IdentifierNaming(),
+            BracesInConditionalsAndLoopsRule(),
             FileStructureRule()  // this rule should be the last because it should operate on already valid code
         )
     }
