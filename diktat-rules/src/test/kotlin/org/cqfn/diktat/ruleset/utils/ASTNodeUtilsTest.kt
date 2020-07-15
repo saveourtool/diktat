@@ -269,9 +269,9 @@ class ASTNodeUtilsTest {
             }
         """.trimIndent()
         var counter = 0
-        applyToCode(code){node ->
-            if (node.findChildAfter(VALUE_PARAMETER_LIST, TYPE_REFERENCE) != null) {
-                Assert.assertEquals("Int", node.findChildAfter(VALUE_PARAMETER_LIST, TYPE_REFERENCE)!!.text)
+        applyToCode(code) { node ->
+            node.findChildAfter(VALUE_PARAMETER_LIST, TYPE_REFERENCE)?.let {
+                Assert.assertEquals("Int", it.text)
                 counter++
             }
         }
@@ -279,7 +279,7 @@ class ASTNodeUtilsTest {
     }
 
     @Test
-    fun `test allSiblings with both meanings`(){
+    fun `test allSiblings withSelf - true`(){
         val code = """
             class Test() {
                 /**
@@ -290,23 +290,16 @@ class ASTNodeUtilsTest {
             }
         """.trimIndent()
         applyToCode(code){node ->
-            val setSibling = mutableSetOf<IElementType>()
-            val setParent = mutableSetOf<IElementType>()
+            val setSibling: Set<ASTNode>?
+            val setParent: Set<ASTNode>?
 
-            if (node.treeParent != null) {
-                node.treeParent.getChildren(null).forEach {
-                    setParent.add(it.elementType)
-                }
-            }
-            else
-                setParent.add(node.elementType)
-            node.allSiblings(false).forEach {
-                setSibling.add(it.elementType)
-            }
-            node.allSiblings(true).forEach {
-                setSibling.add(it.elementType)
-            }
+            setParent = if (node.treeParent != null) {
+                node.treeParent.getChildren(null).toSet()
+            } else
+                setOf(node)
+            setSibling = node.allSiblings(true).toSet()
             Assert.assertEquals(setParent, setSibling)
+            Assert.assertTrue(setParent.isNotEmpty())
         }
     }
 
@@ -446,17 +439,17 @@ class ASTNodeUtilsTest {
             }
         """.trimIndent()
         val list = mutableListOf<ASTNode>()
-        val leafWithTypeCount = mutableListOf<ASTNode>()
+        val leafWithTypeList = mutableListOf<ASTNode>()
         var firstNode: ASTNode? = null
         applyToCode(code){node ->
             if(firstNode == null)
                 firstNode = node
             if (node.isLeaf() && node.elementType == WHITE_SPACE) {
-                leafWithTypeCount.add(node)
+                leafWithTypeList.add(node)
             }
         }
         firstNode?.getAllLLeafsWithSpecificType(WHITE_SPACE, list)
-        Assert.assertEquals(list, leafWithTypeCount)
+        Assert.assertEquals(list, leafWithTypeList)
     }
 
     @Test
@@ -558,8 +551,7 @@ class ASTNodeUtilsTest {
                 val parent = node.treeParent
                 val firstText = node.text
                 node.leaveOnlyOneNewLine()
-                var secondText: String? = null
-                parent.getChildren(null).forEach { newNode -> secondText = newNode.text }
+                val secondText = parent.getChildren(null).last().text
                 Assert.assertEquals("\n", secondText)
                 Assert.assertEquals("\n\n", firstText)
                 counter++
@@ -575,14 +567,12 @@ class ASTNodeUtilsTest {
                 |val a = 0
                 |val b = 1
             """.trimMargin()) { node ->
-            val listBeforeMove = mutableListOf<IElementType>()
-            val listAfterMove = mutableListOf<IElementType>()
             if(node.getChildren(null).isNotEmpty()){
-                node.getChildren(null).forEach { listBeforeMove.add(it.elementType) }
+                val listBeforeMove = node.getChildren(null).map { it.elementType }
                 node.getChildren(null).forEachIndexed { index, astNode ->
                     node.moveChildBefore(astNode, node.getChildren(null)[node.getChildren(null).size - index -1])
                 }
-                node.getChildren(null).forEach { listAfterMove.add(it.elementType) }
+                val listAfterMove = node.getChildren(null).map { it.elementType }
                 Assert.assertEquals(listBeforeMove, listAfterMove.reversed())
                 counter++
             }
