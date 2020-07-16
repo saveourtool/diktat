@@ -3,21 +3,31 @@ package org.cqfn.diktat.ruleset.utils
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleSet
+import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.EQ
 import com.pinterest.ktlint.core.ast.ElementType.FILE
+import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.INTEGER_CONSTANT
+import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
+import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
+import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.VAL_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.isLeaf
 import com.pinterest.ktlint.core.ast.nextSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
+import org.jetbrains.kotlin.utils.addToStdlib.ifNotEmpty
 import org.junit.Assert
 import org.junit.Test
 
+@Suppress("LargeClass")
 class ASTNodeUtilsTest {
+
     @Test
     fun `String representation of ASTNode`() {
         val code = """
@@ -62,51 +72,552 @@ class ASTNodeUtilsTest {
     }
 
     @Test
-    fun `moveChildBefore 1 - Should correctly move node child before another`() {
+    fun `test node's check text lenght`(){
+        val code = """
+            class Test {
+                /**
+                * test method
+                * @param a - dummy int
+                */
+                fun foo(a: Int): Int = 2 * a
+            }
+        """.trimIndent()
+        var counter = 0
+        applyToCode(code){node ->
+            if (node.elementType == CLASS) {
+                Assert.assertTrue(node.checkLength(IntRange(code.length, code.length)))
+                counter++
+            }
+        }
+        Assert.assertEquals(1, counter)
+    }
+
+    @Test
+    fun `test IdentifierName`(){
+        val code = """
+            class Test {
+                /**
+                * test method
+                * @param a - dummy int
+                */
+                fun foo(a: Int): Int = 2 * a
+            }
+        """.trimIndent()
+        var counter = 0
+        val list = listOf("Test", "foo", "a", "a", "Int", "Int", "a")
+        applyToCode(code){ node ->
+            node.getIdentifierName()?.let {
+                Assert.assertEquals(list[counter], it.text)
+                counter++
+            }
+        }
+        Assert.assertEquals(counter, list.size)
+    }
+
+    @Test
+    fun `test getTypeParameterList`(){
+        val code = """
+            class Array<T>(val size: Int) {
+                
+            }
+        """.trimIndent()
+        var counter = 0
+        applyToCode(code){node ->
+            if (node.getTypeParameterList() != null) {
+                Assert.assertEquals("<T>", node.getTypeParameterList()!!.text)
+                counter++
+            }
+        }
+        Assert.assertEquals(1, counter)
+    }
+
+    @Test
+    fun `test getAllIdentifierChildren`(){
+        val code = """
+            class Test() {
+                /**
+                * test method
+                * @param a - dummy int
+                */
+                fun foo(a: Int): Int = 2 * a
+            }
+        """.trimIndent()
+        val list = listOf("Test", "foo", "a", "a", "Int", "Int", "a")
+        var counter = 0
+        applyToCode(code){node ->
+            node.getAllIdentifierChildren().ifNotEmpty {
+                this.forEach { Assert.assertEquals(list[counter], it.text) }
+                counter++
+            }
+        }
+        Assert.assertEquals(counter, list.size)
+    }
+
+    @Test
+    fun `test getAllChildrenWithType`(){
+        val code = """
+            class Test() {
+                /**
+                * test method
+                * @param a - dummy int
+                */
+                fun foo(a: Int): Int = 2 * a
+            }
+        """.trimIndent()
+        var firstCounter = 0
+        var secondCounter = 0
+        applyToCode(code){node ->
+            node.getAllChildrenWithType(CLASS).ifNotEmpty {
+                Assert.assertEquals(map { it.text }, listOf(code))
+                firstCounter++
+            }
+            if (node.getAllChildrenWithType(IDENTIFIER).isNotEmpty() && node.treeParent.elementType == FILE) {
+                Assert.assertEquals(node.getAllChildrenWithType(IDENTIFIER)[0].text, "Test")
+                secondCounter++
+            }
+        }
+        Assert.assertEquals(1, firstCounter)
+        Assert.assertEquals(1, secondCounter)
+    }
+
+    @Test
+    fun `test getFirstChildWithType`(){
+        val code = """
+            class Test() {
+                /**
+                * test method
+                * @param a - dummy int
+                */
+                fun foo(a: Int): Int = 2 * a
+            }
+        """.trimIndent()
+        var counter = 0
+        applyToCode(code){node ->
+            if (node.getAllChildrenWithType(IDENTIFIER).isNotEmpty() && node.treeParent.elementType == FILE) {
+                Assert.assertEquals(node.getFirstChildWithType(IDENTIFIER)!!.text, "Test")
+                counter++
+            }
+        }
+        Assert.assertEquals(1, counter)
+    }
+
+    @Test
+    fun `test hasChildOfType`(){
+        val code = """
+            class Test {
+                val x = 0
+            }
+        """.trimIndent()
+        var counter = 0
+        applyToCode(code){node ->
+            if (node.getIdentifierName() != null) {
+                Assert.assertTrue(node.hasChildOfType(IDENTIFIER))
+                counter++
+            }
+        }
+        Assert.assertEquals(2, counter)
+    }
+
+    @Test
+    fun `test hasAnyChildOfTypes`(){
+        val code = """
+            class Test {
+                val x = 0
+            }
+        """.trimIndent()
+        var counter = 0
+        applyToCode(code){node ->
+            if (node.getAllChildrenWithType(IDENTIFIER).isNotEmpty() || node.getAllChildrenWithType(CLASS).isNotEmpty()) {
+                Assert.assertTrue(node.hasAnyChildOfTypes(IDENTIFIER, CLASS))
+                counter++
+            }
+        }
+        Assert.assertEquals(3, counter)
+    }
+
+    @Test
+    fun `test findChildBefore`(){
+        val code = """
+            class Test() {
+                /**
+                * test method
+                * @param a - dummy int
+                */
+                fun foo(a: Int): Int = 2 * a
+            }
+        """.trimIndent()
+        var counter = 0
+        applyToCode(code){node ->
+            if (node.findChildBefore(CLASS_BODY, CLASS) != null) {
+                Assert.assertEquals(node.findChildBefore(CLASS_BODY, CLASS)!!.text, code)
+                counter++
+            }
+        }
+        Assert.assertEquals(1, counter)
+    }
+
+    @Test
+    fun `test findChildBefore - with siblings`(){
+        val code = """
+            class Test() {
+                /**
+                * test method
+                * @param a - dummy int
+                */
+                fun foo(a: Int): Int = 2 * a
+            }
+        """.trimIndent()
+        var counter = 0
+        val list = listOf("Test", "foo", "a", "a", "Int", "Int", "a")
+        applyToCode(code){node ->
+            if (node.findChildBefore(CLASS_BODY, IDENTIFIER) != null) {
+                Assert.assertEquals(node.findChildBefore(CLASS_BODY, IDENTIFIER)!!.text, list[counter])
+                counter++
+            }
+        }
+        Assert.assertEquals(7, counter)
+    }
+
+    @Test
+    fun `test findChildAfter`(){
+        val code = """
+            class Test() {
+                /**
+                * test method
+                * @param a - dummy int
+                */
+                fun foo(a: Int): Int = 2 * a
+            }
+        """.trimIndent()
+        var counter = 0
+        applyToCode(code) { node ->
+            node.findChildAfter(VALUE_PARAMETER_LIST, TYPE_REFERENCE)?.let {
+                Assert.assertEquals("Int", it.text)
+                counter++
+            }
+        }
+        Assert.assertEquals(1, counter)
+    }
+
+    @Test
+    fun `test allSiblings withSelf - true`(){
+        val code = """
+            class Test() {
+                /**
+                * test method
+                * @param a - dummy int
+                */
+                fun foo(a: Int): Int = 2 * a
+            }
+        """.trimIndent()
+        applyToCode(code){node ->
+            val setParent = if (node.treeParent != null) {
+                node.treeParent.getChildren(null).toSet()
+            } else
+                setOf(node)
+            val setSibling = node.allSiblings(true).toSet()
+            Assert.assertEquals(setParent, setSibling)
+            Assert.assertTrue(setParent.isNotEmpty())
+        }
+    }
+
+    @Test
+    fun `test isNodeFromCompanionObject`() {
+
+        var code = """
+            class Something{
+            	companion object {
+                    val id = 1
+            	}
+            }
+        """.trimIndent()
+        var firstCounter = 0
+        applyToCode(code){node ->
+            if(node.elementType == PROPERTY) {
+                Assert.assertTrue(node.isNodeFromCompanionObject())
+                firstCounter++
+            }
+        }
+        code = """
+            class Test() {
+                /**
+                * test method
+                * @param a - dummy int
+                */
+                fun foo(a: Int): Int = 2 * a
+            }
+        """.trimIndent()
+        var secondCounter = 0
+        applyToCode(code){node ->
+            if(node.elementType == FUN) {
+                Assert.assertFalse(node.isNodeFromCompanionObject())
+                secondCounter++
+            }
+        }
+        Assert.assertEquals(1, firstCounter)
+        Assert.assertEquals(1, secondCounter)
+    }
+
+    @Test
+    fun `test isNodeFromFileLevel - node from file level`() {
+        val code = """
+            class Test() {
+                /**
+                * test method
+                * @param a - dummy int
+                */
+                fun foo(a: Int): Int = 2 * a
+            }
+        """.trimIndent()
+        var counter = 0
+        applyToCode(code){node ->
+            if(node.treeParent != null && node.elementType == CLASS) {
+                Assert.assertTrue(node.isNodeFromFileLevel())
+                counter++
+            }
+        }
+        Assert.assertEquals(1, counter)
+    }
+
+    @Test
+    fun `test isNodeFromFileLevel - node isn't from file level`() {
+        val code = """
+            val x = 2
+            
+        """.trimIndent()
+        var counter = 0
+        applyToCode(code){node ->
+            if(node.elementType != FILE)
+                node.getChildren(null).forEach {
+                    Assert.assertFalse(it.isNodeFromFileLevel())
+                    counter++
+                }
+        }
+        Assert.assertEquals(8, counter)
+    }
+
+    @Test
+    fun `test isValProperty`(){
+        val code = """
+            class Test() {
+
+                private val name = "John"
+
+                /**
+                * test method
+                * @param a - dummy int
+                */
+                fun foo(a: Int): Int = 2 * a
+            }
+        """.trimIndent()
+        var isVal = false
+        applyToCode(code) { node ->
+            if (node.isValProperty())
+                isVal = true
+        }
+        Assert.assertTrue(isVal)
+    }
+
+    @Test
+    fun `test isConst`(){
+        val code = """
+            class Test() {
+
+                const val SPEED = 10
+
+                /**
+                * test method
+                * @param a - dummy int
+                */
+                fun foo(a: Int): Int = 2 * a
+            }
+        """.trimIndent()
+        var isConst = false
+        applyToCode(code) { node ->
+            if (node.isConst())
+                isConst = true
+        }
+        Assert.assertTrue(isConst)
+    }
+
+    @Test
+    fun `test isVarProperty`(){
+        val code = """
+            class Test() {
+
+                private var name: String? = null
+
+                /**
+                * test method
+                * @param a - dummy int
+                */
+                fun foo(a: Int): Int = 2 * a
+            }
+        """.trimIndent()
+        var isVar = false
+        applyToCode(code) { node ->
+            if (node.isVarProperty())
+                isVar = true
+        }
+        Assert.assertTrue(isVar)
+    }
+
+    @Test
+    fun `test getAllLLeafsWithSpecificType`(){
+        val code = """
+            class Test() {
+                /**
+                * test method
+                * @param a - dummy int
+                */
+                fun foo(a: Int): Int = 2 * a
+            }
+        """.trimIndent()
+        val list = mutableListOf<ASTNode>()
+        val leafWithTypeList = mutableListOf<ASTNode>()
+        var firstNode: ASTNode? = null
+        applyToCode(code){node ->
+            if(firstNode == null)
+                firstNode = node
+            if (node.isLeaf() && node.elementType == WHITE_SPACE) {
+                leafWithTypeList.add(node)
+            }
+        }
+        firstNode?.getAllLLeafsWithSpecificType(WHITE_SPACE, list)
+        Assert.assertEquals(list, leafWithTypeList)
+    }
+
+    @Test
+    fun `test findLeafWithSpecificType`(){
+        val code = """
+            class Test() {
+                /**
+                * test method
+                * @param a - dummy int
+                */
+                fun foo(a: Int): Int = 2 * a
+            }
+        """.trimIndent()
+        var firstNode: ASTNode? = null
+        var resultNode: ASTNode? = null
+        applyToCode(code){node ->
+            if(firstNode == null)
+                firstNode = node
+            if (resultNode == null && node.elementType == CLASS_BODY) {
+                resultNode = node
+            }
+        }
+        firstNode = firstNode?.findLeafWithSpecificType(CLASS_BODY)
+        Assert.assertEquals(resultNode!!.text, firstNode!!.text)
+    }
+
+    @Test
+    fun `test findAllNodesWithSpecificType`(){
+        val code = """
+            class Test() {
+                /**
+                * test method
+                * @param a - dummy int
+                */
+                fun foo(a: Int): Int = 2 * a
+            }
+        """.trimIndent()
+        var firstNode: ASTNode? = null
+        val listResults = mutableListOf<ASTNode>()
+        applyToCode(code){node ->
+            if(firstNode == null)
+                firstNode = node
+            if (node.elementType == IDENTIFIER) {
+                listResults.add(node)
+            }
+        }
+        val listTypes = firstNode?.findAllNodesWithSpecificType(IDENTIFIER)
+        Assert.assertEquals(listResults, listTypes)
+    }
+
+
+    @Test
+    fun `test isAccessibleOutside`(){
+        var code = """
+            class Test() {
+                /**
+                * test method
+                * @param a - dummy int
+                */
+                private fun foo(a: Int): Int = 2 * a
+            }
+        """.trimIndent()
+        var firstCounter = 0
+        applyToCode(code){node ->
+            if (node.elementType == MODIFIER_LIST) {
+                Assert.assertFalse(node.isAccessibleOutside())
+                firstCounter++
+            }
+        }
+        code = """
+            class Test() {
+                /**
+                * test method
+                * @param a - dummy int
+                */
+                public fun foo(a: Int): Int = 2 * a
+            }
+        """.trimIndent()
+        var secondCounter = 0
+        applyToCode(code){node ->
+            if (node.elementType == MODIFIER_LIST) {
+                Assert.assertTrue(node.isAccessibleOutside())
+                secondCounter++
+            }
+        }
+        Assert.assertEquals(1, firstCounter)
+        Assert.assertEquals(1, secondCounter)
+    }
+    @Test
+    fun `test leaveOnlyOneNewLine`() {
+        val code = """
+            var x = 2
+
+
+        """.trimIndent()
+        var counter = 0
+        applyToCode(code) { node ->
+            if (node.elementType == WHITE_SPACE && node.text.contains("\n\n")) {
+                val parent = node.treeParent
+                val firstText = node.text
+                node.leaveOnlyOneNewLine()
+                val secondText = parent.getChildren(null).last().text
+                Assert.assertEquals("\n", secondText)
+                Assert.assertEquals("\n\n", firstText)
+                counter++
+            }
+        }
+        Assert.assertEquals(1, counter)
+    }
+
+    @Test
+    fun `moveChildBefore 1 - reverse`() {
+        var counter = 0
         applyToCode("""
                 |val a = 0
                 |val b = 1
             """.trimMargin()) { node ->
-            if (node.elementType == CLASS_BODY) {
-                val val1 = node.getFirstChildWithType(PROPERTY)
-                val val2 = val1!!.nextSibling { it.elementType == PROPERTY }!!
-                val whiteSpace = val1.treeNext.clone() as ASTNode
-                node.moveChildBefore(val2, val1, false)
-                node.addChild(whiteSpace, val1)
-                node.removeChild(val1.treeNext)
-                Assert.assertTrue(node.text == """
-                    |val b = 1
-                    |val a = 0
-                    |
-                    """.trimMargin()
-                )
+            if(node.getChildren(null).isNotEmpty()){
+                val listBeforeMove = node.getChildren(null).map { it.elementType }
+                node.getChildren(null).forEachIndexed { index, astNode ->
+                    node.moveChildBefore(astNode, node.getChildren(null)[node.getChildren(null).size - index -1])
+                }
+                val listAfterMove = node.getChildren(null).map { it.elementType }
+                Assert.assertEquals(listBeforeMove, listAfterMove.reversed())
+                counter++
             }
         }
+        Assert.assertEquals(5, counter)
     }
 
     @Test
     fun `moveChildBefore 2 - Should correctly move node child to the end`() {
-        applyToCode("""
-                |val a = 0
-                |val b = 1
-            """.trimMargin()) { node ->
-            if (node.elementType == FILE) {
-                val val1 = node.getFirstChildWithType(PROPERTY)!!
-                val whiteSpace = val1.treeNext.clone() as ASTNode
-                node.moveChildBefore(val1, null, false)
-                node.addChild(whiteSpace, node.getChildren(null).last())
-                Assert.assertTrue(node.text == """
-                    |
-                    |val b = 1
-                    |val a = 0
-                    """.trimMargin()
-                )
-            }
-        }
-    }
-
-    @Test
-    fun `moveChildBefore 3 - Should correctly move node child to the end`() {
+        var counter = 0
         applyToCode("""
                 |val a = 0
                 |val b = 1""".trimMargin()) { node ->
@@ -121,8 +632,10 @@ class ASTNodeUtilsTest {
                     |
                     """.trimMargin()
                 )
+                counter++
             }
         }
+        Assert.assertEquals(1, counter)
     }
 
     @Test
