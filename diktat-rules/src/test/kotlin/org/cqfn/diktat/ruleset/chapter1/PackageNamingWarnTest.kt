@@ -7,7 +7,6 @@ import org.cqfn.diktat.ruleset.rules.PackageNaming
 import org.cqfn.diktat.ruleset.constants.Warnings.*
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.utils.lintMethod
-import org.junit.Ignore
 
 class PackageNamingWarnTest {
 

@@ -211,5 +211,15 @@
     "name": "NO_BRACES_IN_CONDITIONALS_AND_LOOPS",
     "enabled": true,
     "configuration": {}
+  },
+  {
+    "name": "WRONG_INDENTATION",
+    "enabled": true,
+    "configuration" : {
+      "newlineAtEnd": true,
+      "extendedIndentOfParameters": true,
+      "alignedParameters": true,
+      "extendedIndentAfterOperators": true
+    }
   }
 ]
