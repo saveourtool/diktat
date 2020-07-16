@@ -107,8 +107,8 @@ class ASTNodeUtilsTest {
         var counter = 0
         val list = listOf("Test", "foo", "a", "a", "Int", "Int", "a")
         applyToCode(code){ node ->
-            if (node.getIdentifierName() != null) {
-                Assert.assertEquals(list[counter], node.getIdentifierName()!!.text)
+            node.getIdentifierName()?.let {
+                Assert.assertEquals(list[counter], it.text)
                 counter++
             }
         }
@@ -146,8 +146,8 @@ class ASTNodeUtilsTest {
         val list = listOf("Test", "foo", "a", "a", "Int", "Int", "a")
         var counter = 0
         applyToCode(code){node ->
-            if (node.getAllIdentifierChildren().isNotEmpty()) {
-                node.getAllIdentifierChildren().forEach { Assert.assertEquals(list[counter], it.text) }
+            node.getAllIdentifierChildren().ifNotEmpty {
+                this.forEach { Assert.assertEquals(list[counter], it.text) }
                 counter++
             }
         }
@@ -258,6 +258,28 @@ class ASTNodeUtilsTest {
     }
 
     @Test
+    fun `test findChildBefore - with siblings`(){
+        val code = """
+            class Test() {
+                /**
+                * test method
+                * @param a - dummy int
+                */
+                fun foo(a: Int): Int = 2 * a
+            }
+        """.trimIndent()
+        var counter = 0
+        val list = listOf("Test", "foo", "a", "a", "Int", "Int", "a")
+        applyToCode(code){node ->
+            if (node.findChildBefore(CLASS_BODY, IDENTIFIER) != null) {
+                Assert.assertEquals(node.findChildBefore(CLASS_BODY, IDENTIFIER)!!.text, list[counter])
+                counter++
+            }
+        }
+        Assert.assertEquals(7, counter)
+    }
+
+    @Test
     fun `test findChildAfter`(){
         val code = """
             class Test() {
@@ -290,14 +312,11 @@ class ASTNodeUtilsTest {
             }
         """.trimIndent()
         applyToCode(code){node ->
-            val setSibling: Set<ASTNode>?
-            val setParent: Set<ASTNode>?
-
-            setParent = if (node.treeParent != null) {
+            val setParent = if (node.treeParent != null) {
                 node.treeParent.getChildren(null).toSet()
             } else
                 setOf(node)
-            setSibling = node.allSiblings(true).toSet()
+            val setSibling = node.allSiblings(true).toSet()
             Assert.assertEquals(setParent, setSibling)
             Assert.assertTrue(setParent.isNotEmpty())
         }
@@ -341,7 +360,7 @@ class ASTNodeUtilsTest {
     }
 
     @Test
-    fun `test isNodeFromFileLevel`() {
+    fun `test isNodeFromFileLevel - node from file level`() {
         val code = """
             class Test() {
                 /**
@@ -359,6 +378,23 @@ class ASTNodeUtilsTest {
             }
         }
         Assert.assertEquals(1, counter)
+    }
+
+    @Test
+    fun `test isNodeFromFileLevel - node isn't from file level`() {
+        val code = """
+            val x = 2
+            
+        """.trimIndent()
+        var counter = 0
+        applyToCode(code){node ->
+            if(node.elementType != FILE)
+                node.getChildren(null).forEach {
+                    Assert.assertFalse(it.isNodeFromFileLevel())
+                    counter++
+                }
+        }
+        Assert.assertEquals(8, counter)
     }
 
     @Test
@@ -473,7 +509,7 @@ class ASTNodeUtilsTest {
             }
         }
         firstNode = firstNode?.findLeafWithSpecificType(CLASS_BODY)
-        Assert.assertEquals(resultNode?.text, firstNode?.text)
+        Assert.assertEquals(resultNode!!.text, firstNode!!.text)
     }
 
     @Test
