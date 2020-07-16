@@ -25,9 +25,8 @@ import org.jetbrains.kotlin.utils.addToStdlib.ifNotEmpty
 import org.junit.Assert
 import org.junit.Test
 
+@Suppress("LargeClass")
 class ASTNodeUtilsTest {
-
-
 
     @Test
     fun `String representation of ASTNode`() {
