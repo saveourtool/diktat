@@ -28,7 +28,7 @@ class IndentationRuleWarnTest {
                     |}
                     |
                 """.trimMargin(),
-                LintError(2, 1, ruleId, "${WRONG_INDENTATION.warnText()} /TestFileName.kt", true)
+                LintError(2, 1, ruleId, "${WRONG_INDENTATION.warnText()} tabs are not allowed for indentation", true)
         )
     }
 
@@ -41,7 +41,7 @@ class IndentationRuleWarnTest {
                     |}
                     |
                 """.trimMargin(),
-                LintError(2, 1, ruleId, "${WRONG_INDENTATION.warnText()} expected 4 but was 3", true)
+                LintError(2, 1, ruleId, warnText(4, 3), true)
         )
     }
 
@@ -104,9 +104,9 @@ class IndentationRuleWarnTest {
                     |}
                     |
                 """.trimMargin(),
-                LintError(2, 1, ruleId, "${WRONG_INDENTATION.warnText()} expected 8 but was 14", true),
-                LintError(3, 1, ruleId, "${WRONG_INDENTATION.warnText()} expected 8 but was 14", true),
-                LintError(4, 1, ruleId, "${WRONG_INDENTATION.warnText()} expected 8 but was 14", true),
+                LintError(2, 1, ruleId, warnText(8, 14), true),
+                LintError(3, 1, ruleId, warnText(8, 14), true),
+                LintError(4, 1, ruleId, warnText(8, 14), true),
                 rulesConfigList = rulesConfigList
         )
     }
@@ -124,4 +124,36 @@ class IndentationRuleWarnTest {
                 rulesConfigList = rulesConfigList
         )
     }
+
+    @Test
+    fun `should check indentation in KDocs - positive example`() {
+        lintMethod(IndentationRule(),
+                """
+                    |/**
+                    | * Lorem ipsum
+                    | */
+                    |class Example {
+                    |}
+                    |
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    fun `should check indentation in KDocs`() {
+        lintMethod(IndentationRule(),
+                """
+                    |/**
+                    |* Lorem ipsum
+                    |*/
+                    |class Example {
+                    |}
+                    |
+                """.trimMargin(),
+                LintError(2, 1, ruleId, warnText(1, 0), true),
+                LintError(3, 1, ruleId, warnText(1, 0), true)
+        )
+    }
+
+    private fun warnText(expected: Int, actual: Int) = "${WRONG_INDENTATION.warnText()} expected $expected but was $actual"
 }

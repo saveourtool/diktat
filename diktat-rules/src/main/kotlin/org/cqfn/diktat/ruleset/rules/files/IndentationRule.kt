@@ -3,9 +3,6 @@ package org.cqfn.diktat.ruleset.rules.files
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.FILE
-import com.pinterest.ktlint.core.ast.ElementType.KDOC_END
-import com.pinterest.ktlint.core.ast.ElementType.KDOC_LEADING_ASTERISK
-import com.pinterest.ktlint.core.ast.ElementType.KDOC_SECTION
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.LBRACKET
 import com.pinterest.ktlint.core.ast.ElementType.LPAR
@@ -22,6 +19,7 @@ import org.cqfn.diktat.ruleset.utils.getAllLLeafsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.indentation.CustomIndentationChecker
 import org.cqfn.diktat.ruleset.utils.indentation.ExpressionIndentationChecker
 import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig
+import org.cqfn.diktat.ruleset.utils.indentation.KDocIndentationChecker
 import org.cqfn.diktat.ruleset.utils.indentation.ValueParameterListChecker
 import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
 import org.cqfn.diktat.ruleset.utils.log
@@ -64,7 +62,8 @@ class IndentationRule : Rule("indentation") {
                 ?: mapOf())
         customIndentationCheckers = listOf(
                 ValueParameterListChecker(configuration),
-                ExpressionIndentationChecker(configuration)
+                ExpressionIndentationChecker(configuration),
+                KDocIndentationChecker(configuration)
         )
 
         if (node.elementType == FILE) {
@@ -87,7 +86,7 @@ class IndentationRule : Rule("indentation") {
                 .filter { it.textContains('\t') }
                 .apply { if (isEmpty()) return true }
                 .forEach {
-                    WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, fileName, it.startOffset + it.text.indexOf('\t')) {
+                    WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "tabs are not allowed for indentation", it.startOffset + it.text.indexOf('\t')) {
                         (it as LeafPsiElement).replaceWithText(it.text.replace("\t", " ".repeat(INDENT_SIZE)))
                     }
                 }
@@ -136,16 +135,14 @@ class IndentationRule : Rule("indentation") {
     }
 
     private fun PsiWhiteSpace.indentBy(indent: Int) {
-        // fixme this should be done in separate exception handler
-        val adj = if (nextSibling.node.elementType in listOf(KDOC_LEADING_ASTERISK, KDOC_END, KDOC_SECTION)) 1 else 0
-        (node as LeafPsiElement).rawReplaceWithText(text.substringBeforeLast('\n') + "\n" + " ".repeat(indent + adj))
+        (node as LeafPsiElement).rawReplaceWithText(text.substringBeforeLast('\n') + "\n" + " ".repeat(indent))
     }
 
     private fun checkNewlineAtEnd(node: ASTNode) {
         if (configuration.newlineAtEnd) {
             val lastChild = node.lastChildNode
             if (lastChild.elementType != WHITE_SPACE || lastChild.text.count { it == '\n' } != 1) {
-                WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, fileName, node.startOffset + node.textLength) {
+                WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "no newline at the end of file $fileName", node.startOffset + node.textLength) {
                     if (lastChild.elementType != WHITE_SPACE) {
                         node.addChild(PsiWhiteSpaceImpl("\n"), null)
                     } else {
