@@ -110,6 +110,9 @@ Then, add this plugin:
 In case you want to add autofixer with diKTat ruleset just extend
 the snippet above with `<arg value="-F"/>`.
 
+To run diktat to check/fix code style - run `mvn antrun:run@diktat`.
+
+
 ## Customizations via `rules-config.json`
 
 In KTlint, rules can be configured via `.editorconfig`, but
