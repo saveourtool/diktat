@@ -148,6 +148,12 @@
             <url>https://central.artipie.com/akuleshov7/diktat</url>
         </repository>
     </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>artipie</id>
+            <url>https://central.artipie.com/akuleshov7/diktat</url>
+        </pluginRepository>
+    </pluginRepositories>
 
     <build>
         <pluginManagement>
@@ -239,7 +245,7 @@
                 <version>1.8</version>
                 <executions>
                     <execution>
-                        <id>ktlint</id>
+                        <id>diktat</id>
                         <phase>none</phase>
                         <configuration>
                             <target name="ktlint">
@@ -258,7 +264,7 @@
                     <dependency>
                         <groupId>com.pinterest</groupId>
                         <artifactId>ktlint</artifactId>
-                        <version>0.37.1</version>
+                        <version>0.37.1-fork</version>
                         <exclusions>
                             <!-- exclusions are needed so that custom artifacts from fork will be used -->
                             <exclusion>

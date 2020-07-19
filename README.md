@@ -77,7 +77,7 @@ Add this snippet to your pom.xml:
         <version>1.8</version>
         <executions>
           <execution>
-            <id>ktlint</id>
+            <id>diktat</id>
             <phase>verify</phase>
             <configuration>
               <target name="ktlint">
@@ -112,6 +112,9 @@ Add this snippet to your pom.xml:
 
 In case you want to add autofixer with diKTat ruleset just extend
 the snippet above with `<arg value="-F"/>`.
+
+To check/fix code style - mvn antrun:run@diktat.
+
 
 ## Customizations via `rules-config.json`
 
