@@ -13,22 +13,29 @@
 
 [![Chat on Telegram](https://img.shields.io/badge/Chat%20on-Telegram-brightgreen.svg)](https://t.me/joinchat/AAAAAFDg-ipuZFGyBGPPeg)
 
-It is a collection of [Kotlin](https://kotlinlang.org/) code style rules implemented
+**(!)** See [diKTat codestyle](info/diktat-kotlin-coding-style-guide-en.md) first.
+
+DiKTat is a collection of [Kotlin](https://kotlinlang.org/) code style rules implemented
 as AST visitors on top of [KTlint](https://ktlint.github.io/).
-The full list of rules is [here](https://github.com/cqfn/diKTat/wiki/diKTat-codestyle-guide).
+The full list of available supported rules and inspections is [here](info/available-rules.md).
 
-First, [install KTlint](https://ktlint.github.io/).
-Then, load diKTat:
+1. Install KTlint (until this [PR](https://github.com/pinterest/ktlint/pull/806) is merged you will need to use
+ [KTlint fork](https://central.artipie.com/akuleshov7/files/ktlint)):
+   ```bash
+   $ curl -sSLO https://central.artipie.com/akuleshov7/files/ktlint && chmod a+x ktlint
+   ```
+   
+2. Load diKTat manually: [here](https://github.com/cqfn/diKTat/releases/download/v1.0.0/diktat.jar)
 
-```bash
-$ curl -sSLO https://central.artipie.com/akuleshov7/diktat/org/cqfn/diktat/diktat-rules/0.0.1/diktat-rules-0.0.1-jar-with-dependencies.jar
-```
-
-Finally, run KTlint with diKTat injected to check your `*.kt` files in `src/test`:
-
-```bash
-$ ./ktlint -R diktat-rules-0.0.1-jar-with-dependencies.jar "src/test/**/*.kt"
-```
+   **OR** use curl:
+   ```bash
+   $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v1.0.0/diktat.jar
+   ```
+   
+3. Finally, run KTlint (with diKTat injected) to check your `*.kt` files in `dir/your/dir`:
+   ```bash
+   $ ./ktlint -R diktat.jar "dir/your/dir/**/*.kt"
+   ```
 
 To autofix all violations use `-F` option.
 
@@ -45,6 +52,12 @@ First, add this to your `pom.xml` file:
       <url>https://central.artipie.com/akuleshov7/diktat</url>
     </repository>
   </repositories>
+    <pluginRepositories>
+      <pluginRepository>
+        <id>artipie</id>
+        <url>https://central.artipie.com/akuleshov7/diktat</url>
+      </pluginRepository>
+    </pluginRepositories>
 </project>
 ```
 
@@ -117,6 +130,8 @@ For example:
 }
 ```
 
+See default configuration in [rules-config.json](diktat-rules/src/main/resources/rules-config.json)
+
 ## How to contribute?
 
 Main components are:
@@ -138,3 +153,5 @@ Before you make a pull request, make sure the build is clean:
 ```bash
 $ mvn clean install
 ```
+
+Also see our [Contributing Policy](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md)
