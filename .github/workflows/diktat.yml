@@ -1,4 +1,4 @@
-name: Run diktat
+name: Run diKTat
 
 on:
   push:

@@ -6,13 +6,16 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import org.cqfn.diktat.common.config.reader.JsonResourceConfigReader
 import org.apache.commons.cli.*
 import org.slf4j.LoggerFactory
+import java.io.BufferedReader
 import java.io.File
 import java.io.IOException
+import java.util.stream.Collectors
 import kotlin.system.exitProcess
 
 class TestArgumentsReader(
         private val args: Array<String>,
-        val properties: TestFrameworkProperties
+        val properties: TestFrameworkProperties,
+        override val classLoader: ClassLoader
 ) : JsonResourceConfigReader<List<CliArgument?>?>() {
 
     private val cliArguments: List<CliArgument?>? = readResource(properties.testFrameworkArgsRelativePath)
@@ -63,8 +66,9 @@ class TestArgumentsReader(
         }
 
     @Throws(IOException::class)
-    override fun parseResource(file: File): List<CliArgument> {
-        return jacksonObjectMapper().readValue<List<CliArgument>>(file)
+    override fun parseResource(fileStream: BufferedReader): List<CliArgument> {
+        val jsonValue = fileStream.lines().collect(Collectors.joining())
+        return jacksonObjectMapper().readValue<List<CliArgument>>(jsonValue)
     }
 
     companion object {

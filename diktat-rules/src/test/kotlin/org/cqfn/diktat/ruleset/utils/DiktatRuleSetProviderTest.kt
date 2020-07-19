@@ -11,7 +11,7 @@ import org.cqfn.diktat.ruleset.rules.RuleSetDiktat
  * simple class for emulating RuleSetProvider to inject .json rule configuration and mock this part of code
  */
 class DiktatRuleSetProviderTest(val rule: Rule, rulesConfigList: List<RulesConfig>?) : RuleSetProvider {
-    private val rulesConfigList: List<RulesConfig>? = rulesConfigList ?: RulesConfigReader().readResource("rules-config.json")
+    private val rulesConfigList: List<RulesConfig>? = rulesConfigList ?: RulesConfigReader(javaClass.classLoader).readResource("rules-config.json")
 
     override fun get(): RuleSet {
         return RuleSetDiktat(
