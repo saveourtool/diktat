@@ -61,7 +61,7 @@ Then, add this plugin:
         <version>1.8</version>
         <executions>
           <execution>
-            <id>ktlint</id>
+            <id>diktat</id>
             <phase>verify</phase>
             <configuration>
               <target name="ktlint">
@@ -96,6 +96,9 @@ Then, add this plugin:
 
 In case you want to add autofixer with diKTat ruleset just extend
 the snippet above with `<arg value="-F"/>`.
+
+To check/fix code style - mvn antrun:run@diktat.
+
 
 ## Customizations via `rules-config.json`
 
