@@ -41,7 +41,7 @@ class TestProcessingFactory(private val argReader: TestArgumentsReader) {
     }
 
     private fun findTestInResources(test: String): TestConfig =
-            TestConfigReader("${argReader.properties.testConfigsRelativePath}/$test.json")
+            TestConfigReader("${argReader.properties.testConfigsRelativePath}/$test.json", javaClass.classLoader)
                     .config!!
                     .setTestName(test)
 
