@@ -15,6 +15,8 @@ val JAVA = arrayOf("abstract", "assert", "boolean",
 val KOTLIN = KtTokens.KEYWORDS.types.map { line -> line.toString() }
         .plus(KtTokens.SOFT_KEYWORDS.types.map { line -> line.toString() })
 
+val loggerPropertyRegex = "(log|LOG|logger)".toRegex()
+
 fun String.isJavaKeyWord() = JAVA.contains(this)
 fun String.isKotlinKeyWord() = KOTLIN.contains(this)
 
@@ -61,7 +63,3 @@ fun String.removePrefix(): String {
     if (this.isUpperSnakeCase()) return this.substring(2)
     return this
 }
-
-
-
-

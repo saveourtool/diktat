@@ -2,33 +2,41 @@
 
 ![Build and test](https://github.com/cqfn/diKTat/workflows/Build%20and%20test/badge.svg)
 ![deteKT static analysis](https://github.com/cqfn/diKTat/workflows/Run%20deteKT/badge.svg)
+![diKTat code style](https://github.com/cqfn/diKTat/workflows/Run%20diKTat/badge.svg)
+
 [![Releases](https://img.shields.io/github/v/release/cqfn/diKTat)](https://github.com/cqfn/diKTat/releases)
 [![License](https://img.shields.io/github/license/cqfn/diKtat)](https://github.com/cqfn/diKTat/blob/master/LICENSE)
+[![Hits-of-Code](https://hitsofcode.com/github/cqfn/diktat)](https://hitsofcode.com/view/github/cqfn/diktat)
+[![codecov](https://codecov.io/gh/cqfn/diKTat/branch/master/graph/badge.svg)](https://codecov.io/gh/cqfn/diKTat)
 
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fcqfn%2FdiKTat.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fcqfn%2FdiKTat?ref=badge_shield)
 [![Awesome Kotlin Badge](https://kotlin.link/awesome-kotlin.svg)](https://github.com/KotlinBy/awesome-kotlin)
 [![ktlint](https://img.shields.io/badge/code%20style-%E2%9D%A4-FF4081.svg)](https://ktlint.github.io/)
-[![Hits-of-Code](https://hitsofcode.com/github/cqfn/diktat)](https://hitsofcode.com/view/github/cqfn/diktat)
-[![codecov](https://codecov.io/gh/cqfn/diKTat/branch/master/graph/badge.svg)](https://codecov.io/gh/cqfn/diKTat)
-
 [![Chat on Telegram](https://img.shields.io/badge/Chat%20on-Telegram-brightgreen.svg)](https://t.me/joinchat/AAAAAFDg-ipuZFGyBGPPeg)
 
-It is a collection of [Kotlin](https://kotlinlang.org/) code style rules implemented
+**(!)** See [diKTat codestyle](info/diktat-kotlin-coding-style-guide-en.md) first.
+
+DiKTat is a collection of [Kotlin](https://kotlinlang.org/) code style rules implemented
 as AST visitors on top of [KTlint](https://ktlint.github.io/).
-The full list of rules is [here](https://github.com/cqfn/diKTat/wiki/diKTat-codestyle-guide).
+The full list of available supported rules and inspections is [here](info/available-rules.md).
 
-First, [install KTlint](https://ktlint.github.io/).
-Then, load diKTat:
+1. Install KTlint (until this [PR](https://github.com/pinterest/ktlint/pull/806) is merged you will need to use
+ [KTlint fork](https://central.artipie.com/akuleshov7/files/ktlint)):
+   ```bash
+   $ curl -sSLO https://central.artipie.com/akuleshov7/files/ktlint && chmod a+x ktlint
+   ```
+   
+2. Load diKTat manually: [here](https://github.com/cqfn/diKTat/releases/download/v1.0.0/diktat.jar)
 
-```bash
-$ curl -sSLO https://central.artipie.com/akuleshov7/diktat/org/cqfn/diktat/diktat-rules/0.0.1/diktat-rules-0.0.1-jar-with-dependencies.jar
-```
-
-Finally, run KTlint with diKTat injected to check your `*.kt` files in `src/test`:
-
-```bash
-$ ./ktlint -R diktat-rules-0.0.1-jar-with-dependencies.jar "src/test/**/*.kt"
-```
+   **OR** use curl:
+   ```bash
+   $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v1.0.0/diktat.jar
+   ```
+   
+3. Finally, run KTlint (with diKTat injected) to check your `*.kt` files in `dir/your/dir`:
+   ```bash
+   $ ./ktlint -R diktat.jar "dir/your/dir/**/*.kt"
+   ```
 
 To autofix all violations use `-F` option.
 
@@ -45,6 +53,12 @@ First, add this to your `pom.xml` file:
       <url>https://central.artipie.com/akuleshov7/diktat</url>
     </repository>
   </repositories>
+    <pluginRepositories>
+      <pluginRepository>
+        <id>artipie</id>
+        <url>https://central.artipie.com/akuleshov7/diktat</url>
+      </pluginRepository>
+    </pluginRepositories>
 </project>
 ```
 
@@ -56,38 +70,38 @@ Then, add this plugin:
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.8</version>
-        <executions>
-          <execution>
-            <id>ktlint</id>
-            <phase>verify</phase>
-            <configuration>
-              <target name="ktlint">
-                <java taskname="ktlint" dir="${basedir}" fork="true" failonerror="true"
-                  classpathref="maven.plugin.classpath" classname="com.pinterest.ktlint.Main">
-                  <arg value="src/**/*.kt"/>
-                </java>
-              </target>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
-        <dependencies>
-          <dependency>
-            <groupId>com.pinterest</groupId>
-            <artifactId>ktlint</artifactId>
-            <version>0.37.2</version>
-          </dependency>
-          <dependency>
-            <groupId>org.cqfn.diktat</groupId>
-            <artifactId>diktat-rules</artifactId>
-            <version>0.0.1-SNAPSHOT</version> <!-- replace it with our current version -->
-          </dependency>
-        </dependencies>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <version>1.8</version>
+          <executions>
+              <execution>
+                  <id>diktat</id>
+                  <phase>none</phase>
+                  <configuration>
+                      <target name="ktlint">
+                          <java taskname="ktlint" dir="${basedir}" fork="true" failonerror="true"
+                                classpathref="maven.plugin.classpath" classname="com.pinterest.ktlint.Main">
+                              <arg value="src/**/*.kt"/>
+                          </java>
+                      </target>
+                  </configuration>
+                  <goals>
+                      <goal>run</goal>
+                  </goals>
+              </execution>
+          </executions>
+          <dependencies>
+              <dependency>
+                  <groupId>com.pinterest</groupId>
+                  <artifactId>ktlint</artifactId>
+                  <version>0.37.1-fork</version> <!-- use this fork to be compatible with diktat -->
+              </dependency>
+              <dependency>
+                  <groupId>org.cqfn.diktat</groupId>
+                  <artifactId>diktat-rules</artifactId>
+                  <version>1.0.0</version> <!-- replace it with diktat latest version -->
+              </dependency>
+          </dependencies>
       </plugin>
     </plugins>
   </build>
@@ -96,6 +110,9 @@ Then, add this plugin:
 
 In case you want to add autofixer with diKTat ruleset just extend
 the snippet above with `<arg value="-F"/>`.
+
+To run diktat to check/fix code style - run `mvn antrun:run@diktat`.
+
 
 ## Customizations via `rules-config.json`
 
@@ -116,6 +133,8 @@ For example:
   "copyrightText": "Copyright (c) Jeff Lebowski, 2012-2020. All rights reserved."
 }
 ```
+
+See default configuration in [rules-config.json](diktat-rules/src/main/resources/rules-config.json)
 
 ## How to contribute?
 
@@ -138,3 +157,5 @@ Before you make a pull request, make sure the build is clean:
 ```bash
 $ mvn clean install
 ```
+
+Also see our [Contributing Policy](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md)

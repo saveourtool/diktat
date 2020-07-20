@@ -13,6 +13,8 @@ import org.cqfn.diktat.ruleset.rules.files.IndentationRule
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocComments
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocFormatting
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocMethods
+import org.slf4j.LoggerFactory
+import java.nio.file.Paths
 
 /**
  * this constant will be used everywhere in the code to mark usage of Diktat ruleset
@@ -21,14 +23,13 @@ const val DIKTAT_RULE_SET_ID = "diktat-ruleset"
 
 class RuleSetDiktat(val rulesConfig: List<RulesConfig>, vararg rules: Rule) : RuleSet(DIKTAT_RULE_SET_ID, *rules)
 
-fun KtLint.Params.getDiktatConfigRules(): List<RulesConfig> {
-    return (this.ruleSets.find { it.id == DIKTAT_RULE_SET_ID } as RuleSetDiktat).rulesConfig
-}
+fun KtLint.Params.getDiktatConfigRules(): List<RulesConfig> = (this.ruleSets.find { it.id == DIKTAT_RULE_SET_ID } as RuleSetDiktat).rulesConfig
 
 class DiktatRuleSetProvider(private val jsonRulesConfig: String = "rules-config.json") : RuleSetProvider {
     override fun get(): RuleSet {
+        log.debug("Will run $DIKTAT_RULE_SET_ID with $jsonRulesConfig (it can be placed to the run directory or the default file from resources will be used)")
         return RuleSetDiktat(
-            RulesConfigReader().readResource(jsonRulesConfig) ?: listOf(),
+            RulesConfigReader(javaClass.classLoader).readResource(jsonRulesConfig) ?: listOf(),
             CommentsRule(),
             KdocComments(),
             KdocMethods(),
@@ -41,5 +42,9 @@ class DiktatRuleSetProvider(private val jsonRulesConfig: String = "rules-config.
             IndentationRule(),
             FileStructureRule()  // this rule should be the last because it should operate on already valid code
         )
+    }
+
+    companion object {
+        private val log = LoggerFactory.getLogger(DiktatRuleSetProvider::class.java)
     }
 }

@@ -223,9 +223,14 @@ fun ASTNode?.isAccessibleOutside(): Boolean =
 /**
  * removing all newlines in WHITE_SPACE node and replacing it to a one newline saving the initial indenting format
  */
-fun ASTNode.leaveOnlyOneNewLine() {
-    assert(this.elementType == WHITE_SPACE)
-    (this as LeafPsiElement).replaceWithText("\n${this.text.replace("\n", "")}")
+fun ASTNode.leaveOnlyOneNewLine() = leaveExactlyNumNewLines(1)
+
+/**
+ * removing all newlines in WHITE_SPACE node and replacing it to specified number of newlines saving the initial indenting format
+ */
+fun ASTNode.leaveExactlyNumNewLines(num: Int) {
+    require(this.elementType == WHITE_SPACE)
+    (this as LeafPsiElement).replaceWithText("${"\n".repeat(num)}${this.text.replace("\n", "")}")
 }
 
 /**
@@ -233,15 +238,19 @@ fun ASTNode.leaveOnlyOneNewLine() {
  * @param withNextNode whether next node after childToMove should be moved too. In most cases it corresponds to moving
  *     the node with newline.
  */
-fun ASTNode.moveChildBefore(childToMove: ASTNode, beforeThisNode: ASTNode?, withNextNode: Boolean = false) {
+fun ASTNode.moveChildBefore(childToMove: ASTNode, beforeThisNode: ASTNode?, withNextNode: Boolean = false): ReplacementResult {
     require(childToMove in getChildren(null)) { "can only move child of this node" }
     require(beforeThisNode?.let { it in getChildren(null) } ?: true) { "can only place node before another child of this node" }
-    addChild(childToMove.clone() as ASTNode, beforeThisNode)
-    if (withNextNode && childToMove.treeNext != null) {
-        addChild(childToMove.treeNext.clone() as ASTNode, beforeThisNode)
-        removeChild(childToMove.treeNext)
+    val movedChild = childToMove.clone() as ASTNode
+    val nextMovedChild = childToMove.treeNext?.let { it.clone() as ASTNode }?.takeIf { withNextNode }
+    val nextOldChild = childToMove.treeNext.takeIf { withNextNode && it != null }
+    addChild(movedChild, beforeThisNode)
+    if (nextMovedChild != null) {
+        addChild(nextMovedChild, beforeThisNode)
+        removeChild(nextOldChild!!)
     }
     removeChild(childToMove)
+    return ReplacementResult(listOfNotNull(childToMove, nextOldChild), listOfNotNull(movedChild, nextMovedChild))
 }
 
 fun ASTNode.isChildAfterAnother(child: ASTNode, afterChild: ASTNode): Boolean =
@@ -257,3 +266,19 @@ fun ASTNode.areChildrenBeforeGroup(children: List<ASTNode>, group: List<ASTNode>
     return children.map { getChildren(null).indexOf(it) }.max()!! < group.map { getChildren(null).indexOf(it) }.min()!!
 }
 
+fun List<ASTNode>.handleIncorrectOrder(getSiblingBlocks: ASTNode.() -> Pair<ASTNode?, ASTNode>,
+                                       incorrectPositionHandler: (nodeToMove: ASTNode, beforeThisNode: ASTNode) -> Unit) {
+    forEach { astNode ->
+        val (afterThisNode, beforeThisNode) = astNode.getSiblingBlocks()
+        val isPositionIncorrect = (afterThisNode != null && !astNode.treeParent.isChildAfterAnother(astNode, afterThisNode))
+                || !astNode.treeParent.isChildBeforeAnother(astNode, beforeThisNode)
+
+        if (isPositionIncorrect) incorrectPositionHandler(astNode, beforeThisNode)
+    }
+}
+
+data class ReplacementResult(val oldNodes: List<ASTNode>, val newNodes: List<ASTNode>) {
+    init {
+        require(oldNodes.size == newNodes.size)
+    }
+}

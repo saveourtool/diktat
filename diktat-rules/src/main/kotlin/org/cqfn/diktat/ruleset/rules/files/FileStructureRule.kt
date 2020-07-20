@@ -18,9 +18,8 @@ import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NO_BLANK_LINE_BETWEEN_BLO
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_UNORDERED_IMPORTS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_WILDCARD_IMPORTS
 import org.cqfn.diktat.ruleset.rules.getDiktatConfigRules
+import org.cqfn.diktat.ruleset.utils.handleIncorrectOrder
 import org.cqfn.diktat.ruleset.utils.findChildBefore
-import org.cqfn.diktat.ruleset.utils.isChildAfterAnother
-import org.cqfn.diktat.ruleset.utils.isChildBeforeAnother
 import org.cqfn.diktat.ruleset.utils.moveChildBefore
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -82,16 +81,12 @@ class FileStructureRule : Rule("file-structure") {
         val importsList = node.findChildByType(IMPORT_LIST)!!
 
         // checking order
-        listOfNotNull(copyrightComment, headerKdoc, fileAnnotations).forEach { astNode ->
-            val (afterThisNode, beforeThisNode) = astNode.getSiblingBlocks(copyrightComment, headerKdoc, fileAnnotations, packageDirectiveNode)
-            val isPositionIncorrect = (afterThisNode != null && !node.isChildAfterAnother(astNode, afterThisNode))
-                    || !node.isChildBeforeAnother(astNode, beforeThisNode)
-
-            if (isPositionIncorrect) {
-                FILE_INCORRECT_BLOCKS_ORDER.warnAndFix(configRules, emitWarn, isFixMode, astNode.text.lines().first(), astNode.startOffset) {
-                    node.moveChildBefore(astNode, beforeThisNode, true)
-                    astNode.treeNext?.let { node.replaceChild(it, PsiWhiteSpaceImpl("\n\n")) }
-                }
+        listOfNotNull(copyrightComment, headerKdoc, fileAnnotations).handleIncorrectOrder({
+            getSiblingBlocks(copyrightComment, headerKdoc, fileAnnotations, packageDirectiveNode)
+        }) { astNode, beforeThisNode ->
+            FILE_INCORRECT_BLOCKS_ORDER.warnAndFix(configRules, emitWarn, isFixMode, astNode.text.lines().first(), astNode.startOffset) {
+                node.moveChildBefore(astNode, beforeThisNode, true)
+                astNode.treeNext?.let { node.replaceChild(it, PsiWhiteSpaceImpl("\n\n")) }
             }
         }
 
