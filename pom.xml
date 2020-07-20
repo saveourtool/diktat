@@ -261,6 +261,17 @@
                         <groupId>com.pinterest</groupId>
                         <artifactId>ktlint</artifactId>
                         <version>0.37.1-fork</version>
+                        <exclusions>
+                            <!-- exclusions are needed so that custom artifacts from fork will be used -->
+                            <exclusion>
+                                <groupId>com.pinterest.ktlint</groupId>
+                                <artifactId>ktlint-core</artifactId>
+                            </exclusion>
+                            <exclusion>
+                                <groupId>com.pinterest.ktlint</groupId>
+                                <artifactId>ktlint-ruleset-standard</artifactId>
+                            </exclusion>
+                        </exclusions>
                     </dependency>
                     <dependency>
                         <groupId>org.cqfn.diktat</groupId>
