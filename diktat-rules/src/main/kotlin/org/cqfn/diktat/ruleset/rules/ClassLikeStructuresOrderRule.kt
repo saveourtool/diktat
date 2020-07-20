@@ -26,11 +26,12 @@ import com.pinterest.ktlint.core.ast.prevSibling
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.BLANK_LINE_BETWEEN_PROPERTIES
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES
-import org.cqfn.diktat.ruleset.utils.checkOrder
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.findLeafWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getIdentifierName
-import org.cqfn.diktat.ruleset.utils.leaveOnlyNNewLines
+import org.cqfn.diktat.ruleset.utils.handleIncorrectOrder
+import org.cqfn.diktat.ruleset.utils.leaveExactlyNumNewLines
+import org.cqfn.diktat.ruleset.utils.loggerPropertyRegex
 import org.cqfn.diktat.ruleset.utils.moveChildBefore
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
@@ -39,8 +40,6 @@ import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
  * Rule that checks order of declarations inside classes, interfaces and objects.
  */
 class ClassLikeStructuresOrderRule : Rule("class-like-structures") {
-    private val loggerPropertyRegex = "(log|LOG|logger)".toRegex()
-
     private lateinit var configRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
@@ -62,30 +61,30 @@ class ClassLikeStructuresOrderRule : Rule("class-like-structures") {
 
     private fun checkDeclarationsOrderInClass(node: ASTNode) {
         val allProperties = node.getChildren(TokenSet.create(PROPERTY))
-        val constProperties = allProperties.filter { it.findLeafWithSpecificType(CONST_KEYWORD) != null }
-        val lateInitProperties = allProperties.filter { it.findLeafWithSpecificType(LATEINIT_KEYWORD) != null }
+        val constProperties = allProperties.filter { it.findLeafWithSpecificType(CONST_KEYWORD) != null }.toMutableList()
+        val lateInitProperties = allProperties.filter { it.findLeafWithSpecificType(LATEINIT_KEYWORD) != null }.toMutableList()
         val loggers = allProperties.filter {
-            it.findLeafWithSpecificType(PRIVATE_KEYWORD) != null && it.getIdentifierName()!!.text.contains(loggerPropertyRegex)
-        }
-        val properties = allProperties.filter { it !in lateInitProperties && it !in loggers && it !in constProperties }
-        val initBlocks = node.getChildren(TokenSet.create(CLASS_INITIALIZER)).toList()
-        val constructors = node.getChildren(TokenSet.create(SECONDARY_CONSTRUCTOR)).toList()
-        val methods = node.getChildren(TokenSet.create(FUN)).toList()
+            (it.findChildByType(MODIFIER_LIST) == null || it.findLeafWithSpecificType(PRIVATE_KEYWORD) != null)
+                    && it.getIdentifierName()!!.text.contains(loggerPropertyRegex)
+        }.toMutableList()
+        val properties = allProperties.filter { it !in lateInitProperties && it !in loggers && it !in constProperties }.toMutableList()
+        val initBlocks = node.getChildren(TokenSet.create(CLASS_INITIALIZER)).toMutableList()
+        val constructors = node.getChildren(TokenSet.create(SECONDARY_CONSTRUCTOR)).toMutableList()
+        val methods = node.getChildren(TokenSet.create(FUN)).toMutableList()
         val (usedClasses, unusedClasses) = node.getChildren(TokenSet.create(CLASS)).partition { classNode ->
             classNode.getIdentifierName()?.let { identifierNode ->
                 node.parent(FILE)!!.findAllNodesWithSpecificType(REFERENCE_EXPRESSION).any { ref ->
                     ref.parent({ it == classNode }) == null && ref.text.contains(identifierNode.text)
                 }
             } ?: false
-        }
+        }.let { it.first.toMutableList() to it.second.toMutableList() }
         val companion = node.getChildren(TokenSet.create(OBJECT_DECLARATION))
                 .find { it.findChildByType(MODIFIER_LIST)?.findLeafWithSpecificType(COMPANION_KEYWORD) != null }
-        val blocks = Blocks(AllProperties(loggers.toMutableList(), constProperties.toMutableList(), properties.toMutableList(), lateInitProperties.toMutableList()),
-                initBlocks.toMutableList(), constructors.toMutableList(), methods.toMutableList(), usedClasses.toMutableList(), listOfNotNull(companion).toMutableList(),
-                unusedClasses.toMutableList())
+        val blocks = Blocks(AllProperties(loggers, constProperties, properties, lateInitProperties),
+                initBlocks, constructors, methods, usedClasses, listOfNotNull(companion).toMutableList(),
+                unusedClasses)
 
-
-        blocks.allBlockFlattened().reversed().checkOrder(blocks::getSiblingBlocks) { astNode, beforeThisNode ->
+        blocks.allBlockFlattened().reversed().handleIncorrectOrder(blocks::getSiblingBlocks) { astNode, beforeThisNode ->
             WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnAndFix(configRules, emitWarn, isFixMode, astNode.elementType.toString() + ": " + astNode.text, astNode.startOffset) {
                 val replacement = node.moveChildBefore(astNode, beforeThisNode, true)
                 replacement.oldNodes.forEachIndexed { idx, oldNode ->
@@ -106,7 +105,7 @@ class ClassLikeStructuresOrderRule : Rule("class-like-structures") {
             val nRequiredNewLines = if (commentOnThis == null) 1 else 2
             if (whiteSpaceBefore.text.count { it == '\n' } != nRequiredNewLines)
                 BLANK_LINE_BETWEEN_PROPERTIES.warnAndFix(configRules, emitWarn, isFixMode, node.getIdentifierName()!!.text, node.startOffset) {
-                    whiteSpaceBefore.leaveOnlyNNewLines(nRequiredNewLines)
+                    whiteSpaceBefore.leaveExactlyNumNewLines(nRequiredNewLines)
                 }
         }
     }

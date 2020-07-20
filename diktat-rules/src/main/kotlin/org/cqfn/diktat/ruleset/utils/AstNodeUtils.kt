@@ -223,14 +223,14 @@ fun ASTNode?.isAccessibleOutside(): Boolean =
 /**
  * removing all newlines in WHITE_SPACE node and replacing it to a one newline saving the initial indenting format
  */
-fun ASTNode.leaveOnlyOneNewLine() = leaveOnlyNNewLines(1)
+fun ASTNode.leaveOnlyOneNewLine() = leaveExactlyNumNewLines(1)
 
 /**
  * removing all newlines in WHITE_SPACE node and replacing it to specified number of newlines saving the initial indenting format
  */
-fun ASTNode.leaveOnlyNNewLines(n: Int) {
+fun ASTNode.leaveExactlyNumNewLines(num: Int) {
     require(this.elementType == WHITE_SPACE)
-    (this as LeafPsiElement).replaceWithText("${"\n".repeat(n)}${this.text.replace("\n", "")}")
+    (this as LeafPsiElement).replaceWithText("${"\n".repeat(num)}${this.text.replace("\n", "")}")
 }
 
 /**
@@ -266,8 +266,8 @@ fun ASTNode.areChildrenBeforeGroup(children: List<ASTNode>, group: List<ASTNode>
     return children.map { getChildren(null).indexOf(it) }.max()!! < group.map { getChildren(null).indexOf(it) }.min()!!
 }
 
-fun List<ASTNode>.checkOrder(getSiblingBlocks: ASTNode.() -> Pair<ASTNode?, ASTNode>,
-                             incorrectPositionHandler: (nodeToMove: ASTNode, beforeThisNode: ASTNode) -> Unit) {
+fun List<ASTNode>.handleIncorrectOrder(getSiblingBlocks: ASTNode.() -> Pair<ASTNode?, ASTNode>,
+                                       incorrectPositionHandler: (nodeToMove: ASTNode, beforeThisNode: ASTNode) -> Unit) {
     forEach { astNode ->
         val (afterThisNode, beforeThisNode) = astNode.getSiblingBlocks()
         val isPositionIncorrect = (afterThisNode != null && !astNode.treeParent.isChildAfterAnother(astNode, afterThisNode))

@@ -44,16 +44,18 @@ class ClassLikeStructuresOrderRuleWarnTest {
 
     @Test
     fun `should warn if loggers are not on top`() {
-        lintMethod(ClassLikeStructuresOrderRule(),
-                """
+        listOf("private ", "").forEach { modifier ->
+            lintMethod(ClassLikeStructuresOrderRule(),
+                    """
                     |class Example {
                     |    private val FOO = 42
-                    |    private val log = LoggerFactory.getLogger(Example.javaClass)
+                    |    ${modifier}val log = LoggerFactory.getLogger(Example.javaClass)
                     |}
                 """.trimMargin(),
-                LintError(2, 5, ruleId, "${WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnText()} PROPERTY: private val FOO = 42", true),
-                LintError(3, 5, ruleId, "${WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnText()} PROPERTY: private val log = LoggerFactory.getLogger(Example.javaClass)", true)
-        )
+                    LintError(2, 5, ruleId, "${WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnText()} PROPERTY: private val FOO = 42", true),
+                    LintError(3, 5, ruleId, "${WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnText()} PROPERTY: ${modifier}val log = LoggerFactory.getLogger(Example.javaClass)", true)
+            )
+        }
     }
 
     // ===== comments on properties ======

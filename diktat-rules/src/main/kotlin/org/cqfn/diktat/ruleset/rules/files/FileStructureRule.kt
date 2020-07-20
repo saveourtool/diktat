@@ -18,7 +18,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NO_BLANK_LINE_BETWEEN_BLO
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_UNORDERED_IMPORTS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_WILDCARD_IMPORTS
 import org.cqfn.diktat.ruleset.rules.getDiktatConfigRules
-import org.cqfn.diktat.ruleset.utils.checkOrder
+import org.cqfn.diktat.ruleset.utils.handleIncorrectOrder
 import org.cqfn.diktat.ruleset.utils.findChildBefore
 import org.cqfn.diktat.ruleset.utils.moveChildBefore
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -81,7 +81,7 @@ class FileStructureRule : Rule("file-structure") {
         val importsList = node.findChildByType(IMPORT_LIST)!!
 
         // checking order
-        listOfNotNull(copyrightComment, headerKdoc, fileAnnotations).checkOrder({
+        listOfNotNull(copyrightComment, headerKdoc, fileAnnotations).handleIncorrectOrder({
             getSiblingBlocks(copyrightComment, headerKdoc, fileAnnotations, packageDirectiveNode)
         }) { astNode, beforeThisNode ->
             FILE_INCORRECT_BLOCKS_ORDER.warnAndFix(configRules, emitWarn, isFixMode, astNode.text.lines().first(), astNode.startOffset) {
