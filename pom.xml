@@ -112,7 +112,7 @@
             <dependency>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
-                <version>3.12.2</version>
+                <version>3.16.1</version>
             </dependency>
             <dependency>
                 <groupId>org.ec4j.core</groupId>
@@ -261,6 +261,17 @@
                         <groupId>com.pinterest</groupId>
                         <artifactId>ktlint</artifactId>
                         <version>0.37.1-fork</version>
+                        <exclusions>
+                            <!-- exclusions are needed so that custom artifacts from fork will be used -->
+                            <exclusion>
+                                <groupId>com.pinterest.ktlint</groupId>
+                                <artifactId>ktlint-core</artifactId>
+                            </exclusion>
+                            <exclusion>
+                                <groupId>com.pinterest.ktlint</groupId>
+                                <artifactId>ktlint-ruleset-standard</artifactId>
+                            </exclusion>
+                        </exclusions>
                     </dependency>
                     <dependency>
                         <groupId>org.cqfn.diktat</groupId>
@@ -287,51 +298,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.8</version>
-                <executions>
-                    <execution>
-                        <id>diktat</id>
-                        <phase>none</phase>
-                        <configuration>
-                            <target name="ktlint">
-                                <java taskname="ktlint" dir="${basedir}" fork="true" failonerror="true"
-                                      classpathref="maven.plugin.classpath" classname="com.pinterest.ktlint.Main">
-                                    <arg value="src/**/*.kt"/>
-                                </java>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.pinterest</groupId>
-                        <artifactId>ktlint</artifactId>
-                        <version>0.37.1-fork</version>
-                        <exclusions>
-                            <!-- exclusions are needed so that custom artifacts from fork will be used -->
-                            <exclusion>
-                                <groupId>com.pinterest.ktlint</groupId>
-                                <artifactId>ktlint-core</artifactId>
-                            </exclusion>
-                            <exclusion>
-                                <groupId>com.pinterest.ktlint</groupId>
-                                <artifactId>ktlint-ruleset-standard</artifactId>
-                            </exclusion>
-                        </exclusions>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.cqfn.diktat</groupId>
-                        <artifactId>diktat-rules</artifactId>
-                        <version>1.0.0</version>
-                    </dependency>
-                </dependencies>
             </plugin>
         </plugins>
     </build>

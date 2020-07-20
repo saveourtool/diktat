@@ -700,7 +700,7 @@ The declaration part of a class or interface should be in the following order:
  - companion object
 
 **Exception：**
-All variants of a private val logger should be placed in the beginning of the class (private val log/LOG/logger/e.t.c)
+All variants of a (private) val logger should be placed in the beginning of the class ((private) val log/LOG/logger/e.t.c)
 
  ### <a name="c3.1"></a> Braces
 
