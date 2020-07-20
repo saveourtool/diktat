@@ -65,7 +65,8 @@ enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean
     FILE_NO_BLANK_LINE_BETWEEN_BLOCKS(45, true, "general structure of kotlin source file is wrong, general code blocks sohuld be separated by empty lines"),
     FILE_UNORDERED_IMPORTS(46, true, "imports should be ordered alphabetically and shouldn't be separated by newlines"),
     FILE_WILDCARD_IMPORTS(47, false, "collapsed imports should not be used"),
-    NO_BRACES_IN_CONDITIONALS_AND_LOOPS(48, true, "in if, else, when, for, do, and while statements braces should be used. Exception: single line if statement.")
+    NO_BRACES_IN_CONDITIONALS_AND_LOOPS(48, true, "in if, else, when, for, do, and while statements braces should be used. Exception: single line if statement."),
+    BRACES_BLOCK_STRUCTURE_ERROR(49, false, "braces are incorrectly placed")
     ;
 
     override fun ruleName(): String = this.name
