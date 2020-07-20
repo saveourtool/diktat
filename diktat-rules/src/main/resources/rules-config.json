@@ -178,7 +178,7 @@
     "name": "FILE_IS_TOO_LONG",
     "enabled": true,
     "configuration": {
-      "maxSize": "100",
+      "maxSize": "2000",
       "ignoreFolders" : ""
     }
   },
