@@ -66,7 +66,7 @@ enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean
     FILE_UNORDERED_IMPORTS(46, true, "imports should be ordered alphabetically and shouldn't be separated by newlines"),
     FILE_WILDCARD_IMPORTS(47, false, "collapsed imports should not be used"),
     NO_BRACES_IN_CONDITIONALS_AND_LOOPS(48, true, "in if, else, when, for, do, and while statements braces should be used. Exception: single line if statement."),
-    BRACES_BLOCK_STRUCTURE_ERROR(49, false, "braces are incorrectly placed")
+    BRACES_BLOCK_STRUCTURE_ERROR(49, false, "braces should follow 1TBS style")
     ;
 
     override fun ruleName(): String = this.name
