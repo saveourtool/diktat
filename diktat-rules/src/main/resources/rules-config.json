@@ -213,6 +213,16 @@
     "configuration": {}
   },
   {
+    "name": "WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES",
+    "enabled": true,
+    "configuration": {}
+  },
+  {
+    "name": "BLANK_LINE_BETWEEN_PROPERTIES",
+    "enabled": true,
+    "configuration": {}
+  },
+  {
     "name": "BRACES_BLOCK_STRUCTURE_ERROR",
     "enabled": true,
     "configuration": {}
