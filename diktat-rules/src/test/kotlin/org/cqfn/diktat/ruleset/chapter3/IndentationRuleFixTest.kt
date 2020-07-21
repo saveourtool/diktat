@@ -23,4 +23,9 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation", Indent
     fun `indentation rule - example 1`() {
         fixAndCompare("IndentationFull1Expected.kt", "IndentationFull1Test.kt")
     }
+
+    @Test
+    fun `indentation rule - verbose example from ktlint`() {
+        fixAndCompare("IndentFullExpected.kt", "IndentFullTest.kt")
+    }
 }

@@ -12,4 +12,8 @@ internal abstract class CustomIndentationChecker(protected val configuration: In
     abstract fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult?
 }
 
-internal data class CheckResult(val correct: Boolean, val expected: Int)
+internal data class CheckResult(val correct: Boolean, val expected: Int, val adjustNext: Boolean) {
+    companion object {
+        fun from(actual: Int, expected: Int, adjustNext: Boolean = false) = CheckResult(actual == expected, expected, adjustNext)
+    }
+}

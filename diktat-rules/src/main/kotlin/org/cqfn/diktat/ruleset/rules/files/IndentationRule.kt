@@ -2,6 +2,7 @@ package org.cqfn.diktat.ruleset.rules.files
 
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.LBRACKET
@@ -15,11 +16,15 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
 import org.cqfn.diktat.ruleset.rules.getDiktatConfigRules
+import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getAllLLeafsWithSpecificType
+import org.cqfn.diktat.ruleset.utils.indentation.AssignmentOperatorChecker
 import org.cqfn.diktat.ruleset.utils.indentation.CustomIndentationChecker
+import org.cqfn.diktat.ruleset.utils.indentation.DotCallChecker
 import org.cqfn.diktat.ruleset.utils.indentation.ExpressionIndentationChecker
 import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig
 import org.cqfn.diktat.ruleset.utils.indentation.KDocIndentationChecker
+import org.cqfn.diktat.ruleset.utils.indentation.SuperTypeListChecker
 import org.cqfn.diktat.ruleset.utils.indentation.ValueParameterListChecker
 import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
 import org.cqfn.diktat.ruleset.utils.log
@@ -27,6 +32,7 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
+import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
 import org.jetbrains.kotlin.utils.addToStdlib.firstNotNullResult
 
@@ -61,8 +67,11 @@ class IndentationRule : Rule("indentation") {
         configuration = IndentationConfig(configRules.getRuleConfig(WRONG_INDENTATION)?.configuration
                 ?: mapOf())
         customIndentationCheckers = listOf(
+                AssignmentOperatorChecker(configuration),
+                SuperTypeListChecker(configuration),
                 ValueParameterListChecker(configuration),
                 ExpressionIndentationChecker(configuration),
+                DotCallChecker(configuration),
                 KDocIndentationChecker(configuration)
         )
 
@@ -93,51 +102,6 @@ class IndentationRule : Rule("indentation") {
         return isFixMode  // true if we changed all tabs to spaces
     }
 
-    private fun checkIndentation(node: ASTNode) {
-        var indents = 0
-        val whiteSpaceNodes = mutableMapOf<PsiWhiteSpace, IndentationError>()
-        node.visit { astNode ->
-            when (astNode.elementType) {
-                in increasingTokens -> indents += INDENT_SIZE
-                in decreasingTokens -> {
-                    // indents are corrected when we handle WHITE_SPACE with \n which is before decreasingToken
-                    if (astNode.treePrev.elementType != WHITE_SPACE || !astNode.treePrev.textContains('\n')) {
-                        indents -= INDENT_SIZE
-                    }
-                }
-                WHITE_SPACE -> {
-                    if (astNode.textContains('\n') && astNode.treeNext != null) {
-                        if (astNode.treeNext.elementType in decreasingTokens) {
-                            indents -= INDENT_SIZE
-                        }
-
-                        val actualIndent = astNode.text.substringAfterLast('\n').count { it == ' ' }
-                        whiteSpaceNodes.putIfAbsent(astNode.psi as PsiWhiteSpace, IndentationError(indents, actualIndent))
-                    }
-                }
-            }
-        }
-
-        whiteSpaceNodes.forEach { (whiteSpace, indentError) ->
-            val checkResult = customIndentationCheckers.firstNotNullResult {
-                it.checkNode(whiteSpace, indentError)
-            }
-
-            val expectedIndent = checkResult?.expected ?: indentError.expected
-            if (checkResult?.correct != true && expectedIndent != indentError.actual) {
-                WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode,
-                        "expected $expectedIndent but was ${indentError.actual}",
-                        whiteSpace.startOffset + whiteSpace.text.lastIndexOf('\n') + 1) {
-                    whiteSpace.indentBy(expectedIndent)
-                }
-            }
-        }
-    }
-
-    private fun PsiWhiteSpace.indentBy(indent: Int) {
-        (node as LeafPsiElement).rawReplaceWithText(text.substringBeforeLast('\n') + "\n" + " ".repeat(indent))
-    }
-
     private fun checkNewlineAtEnd(node: ASTNode) {
         if (configuration.newlineAtEnd) {
             val lastChild = node.lastChildNode
@@ -150,6 +114,76 @@ class IndentationRule : Rule("indentation") {
                     }
                 }
             }
+        }
+    }
+
+    private fun checkIndentation(node: ASTNode) {
+        val context = IndentContext()
+        node.visit { astNode ->
+            context.checkAndReset(astNode)
+            if (astNode.elementType in increasingTokens) {
+                context.inc()
+            } else if (astNode.elementType in decreasingTokens && !astNode.treePrev.let { it.elementType == WHITE_SPACE && it.textContains('\n') }) {
+                // indents are corrected when we handle WHITE_SPACE with \n which stands before a decreasingToken
+                context.dec()
+            } else if (astNode.elementType == WHITE_SPACE && astNode.textContains('\n') && astNode.treeNext != null) {
+                // we check only WHITE_SPACE nodes with newlines, other than the last line in file; correctness of newlines should be checked elsewhere
+                visitWhiteSpace(astNode, context)
+            }
+        }
+    }
+
+    private fun visitWhiteSpace(astNode: ASTNode, context: IndentContext) {
+        val whiteSpace = astNode.psi as PsiWhiteSpace
+        if (astNode.treeNext.elementType in decreasingTokens) {
+            context.dec()
+        }
+
+        val actualIndent = astNode.text.substringAfterLast('\n').count { it == ' ' }
+        val indentError = IndentationError(context.indent(), actualIndent)
+
+        val checkResult = customIndentationCheckers.firstNotNullResult {
+            it.checkNode(whiteSpace, indentError)
+        }
+
+        val expectedIndent = checkResult?.expected ?: indentError.expected
+        if (checkResult?.adjustNext == true) {
+            val exceptionInitiatorNode = astNode.treeParent.let { parent ->
+                // fixme: a hack to keep extended indent for th whole chain of dot call expressions
+                if (parent.elementType != DOT_QUALIFIED_EXPRESSION) parent else astNode.parents().takeWhile { it.elementType == DOT_QUALIFIED_EXPRESSION }.last()
+            }
+            context.addException(exceptionInitiatorNode, expectedIndent - indentError.expected)
+        }
+        if (checkResult?.correct != true && expectedIndent != indentError.actual) {
+            WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "expected $expectedIndent but was ${indentError.actual}",
+                    whiteSpace.startOffset + whiteSpace.text.lastIndexOf('\n') + 1) {
+                whiteSpace.indentBy(expectedIndent)
+            }
+        }
+    }
+
+    private fun PsiWhiteSpace.indentBy(indent: Int) {
+        (node as LeafPsiElement).rawReplaceWithText(text.substringBeforeLast('\n') + "\n" + " ".repeat(indent))
+    }
+
+    private class IndentContext {
+        private var indent = 0
+        private val exceptionalIndents = mutableListOf<ExceptionalIndent>()
+
+        fun inc() {
+            indent += INDENT_SIZE
+        }
+        fun dec() {
+            indent -= INDENT_SIZE
+        }
+        fun indent() = indent + exceptionalIndents.sumBy { it.indent }
+        fun addException(initiator: ASTNode, indent: Int) = exceptionalIndents.add(ExceptionalIndent(initiator, indent))
+        fun checkAndReset(astNode: ASTNode) = exceptionalIndents.removeIf { it.checkAndReset(astNode) }
+
+        private data class ExceptionalIndent(val initiator: ASTNode, val indent: Int) {
+            // this is a hypotheses that exceptional indentation will end outside of node where it appeared
+            fun checkAndReset(currentNode: ASTNode): Boolean =
+                    !initiator.findAllNodesWithSpecificType(currentNode.elementType).contains(currentNode)
         }
     }
 
