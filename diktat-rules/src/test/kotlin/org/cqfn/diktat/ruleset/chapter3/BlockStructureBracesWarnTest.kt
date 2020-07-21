@@ -36,11 +36,11 @@ class BlockStructureBracesWarnTest {
                     |       goo()
                     |    }
                     |    else {
-                    |       koo() 
-                    |    }
+                    |       koo()}
                     |}
                 """.trimMargin(),
-                LintError(4, 6, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect new line after closing brace", false)
+                LintError(4, 6, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect new line after closing brace", false),
+                LintError(6, 13, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} no newline before closing brace", false)
         )
     }
 
@@ -49,7 +49,7 @@ class BlockStructureBracesWarnTest {
         val withBrace =
                 """
                     |fun foo() {
-                    |   if (x > 5){
+                    |   if (x > 5) {
                     |       x--
                     |   }
                     |}
@@ -111,9 +111,9 @@ class BlockStructureBracesWarnTest {
                     |       f() }
                     |}
                 """.trimMargin(),
-                LintError(3, 13, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect same line after closing brace", false),
+                LintError(3, 13, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} no newline before closing brace", false),
                 LintError(3, 14, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect new line after closing brace", false),
-                LintError(5, 12, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect same line after closing brace", false)
+                LintError(5, 12, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} no newline before closing brace", false)
         )
     }
 
@@ -139,7 +139,8 @@ class BlockStructureBracesWarnTest {
     fun `check function expression with wrong open brace with configuration`() {
         lintMethod(BlockStructureBraces(),
                 """
-                    |fun foo() {
+                    |fun foo() 
+                    |{
                     |   pyu()
                     |}
                 """.trimMargin(), rulesConfigList = rulesConfigListIgnoreOpen
@@ -162,7 +163,7 @@ class BlockStructureBracesWarnTest {
                     |fun foo() {
                     |   pyu() }
                 """.trimMargin(),
-                LintError(2, 10, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect same line after closing brace", false)
+                LintError(2, 10, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} no newline before closing brace", false)
         )
     }
 
@@ -257,7 +258,7 @@ class BlockStructureBracesWarnTest {
                     |}
                 """.trimMargin(),
                 LintError(2, 9, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect same line after opening brace", false),
-                LintError(6, 17, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect same line after closing brace", false)
+                LintError(6, 17, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} no newline before closing brace", false)
         )
     }
 
@@ -333,7 +334,7 @@ class BlockStructureBracesWarnTest {
                     |}
                 """.trimMargin(),
                 LintError(2, 8, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect newline before opening brace", false),
-                LintError(4, 14, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect same line after closing brace", false)
+                LintError(4, 14, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} no newline before closing brace", false)
         )
     }
 
@@ -377,8 +378,9 @@ class BlockStructureBracesWarnTest {
                     |   }
                     |}
                 """.trimMargin(),
-                LintError(5, 40, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect same line after closing brace", false),
-                LintError(6, 35, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect same line after closing brace", false)
+                LintError(4, 11, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect newline before opening brace", false),
+                LintError(5, 40, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} no newline before closing brace", false),
+                LintError(6, 35, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} no newline before closing brace", false)
         )
     }
 }
