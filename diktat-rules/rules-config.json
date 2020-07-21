@@ -211,5 +211,10 @@
     "name": "NO_BRACES_IN_CONDITIONALS_AND_LOOPS",
     "enabled": true,
     "configuration": {}
+  },
+  {
+    "name": "BRACES_BLOCK_STRUCTURE_ERROR",
+    "enabled": true,
+    "configuration": {}
   }
 ]
