@@ -22,6 +22,7 @@ import com.pinterest.ktlint.core.ast.ElementType.TRY
 import com.pinterest.ktlint.core.ast.ElementType.WHEN
 import com.pinterest.ktlint.core.ast.ElementType.WHILE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.prevSibling
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
@@ -136,7 +137,8 @@ class BlockStructureBraces : Rule("block-structure") {
         val braceSpace = node.findChildBefore(beforeType, WHITE_SPACE)
         if (braceSpace != null) {
             if (braceSpace.text.contains("\n".toRegex())) {
-                BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "incorrect newline before opening brace", 0){
+                BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "incorrect newline before opening brace",
+                        (braceSpace.prevSibling {it.elementType == beforeType} ?:braceSpace).startOffset){
                 }
                 return
             }
@@ -154,7 +156,8 @@ class BlockStructureBraces : Rule("block-structure") {
             else -> node.findChildByType(BLOCK)?.findChildAfter(LBRACE, WHITE_SPACE)
         }
         if (nodeText != null && !nodeText.text.contains("\n".toRegex())) {
-            BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "incorrect line after opening brace", 0) {
+            BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "incorrect line after opening brace",
+                    nodeText.startOffset) {
             }
         }
     }
@@ -163,7 +166,8 @@ class BlockStructureBraces : Rule("block-structure") {
         if (!configuration.closeBrace) return
         val space = node?.getChildren(null)?.findLast { it.elementType == WHITE_SPACE }
         if (space != null && !space.text.contains("\n".toRegex())) {
-            BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "incorrect line after closing brace", 0) {
+            BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "incorrect line after closing brace",
+                    (space).startOffset) {
             }
         }
     }
