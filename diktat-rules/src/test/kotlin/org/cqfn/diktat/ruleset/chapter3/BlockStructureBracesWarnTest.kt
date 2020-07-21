@@ -22,6 +22,10 @@ class BlockStructureBracesWarnTest {
                     mapOf("open-brace-newline" to "False"))
     )
 
+    private val rulesConfigListIgnoreClose: List<RulesConfig> = listOf(
+            RulesConfig(Warnings.BRACES_BLOCK_STRUCTURE_ERROR.name, true,
+                    mapOf("close-brace-newline" to "False"))
+    )
     @Test
     fun `correct if expression without else`() {
         val withBrace =
@@ -249,6 +253,101 @@ class BlockStructureBracesWarnTest {
                     |       println("Hello")
                     |   } }
                 """.trimMargin(), rulesConfigList = rulesConfigList
+        )
+    }
+
+    @Test
+    fun `check wrong close brace in object expression but with ignore config`() {
+        lintMethod(BlockStructureBraces(),
+                """
+                    |object A {
+                    |   fun foo() {
+                    |       println("Hello")
+                    |   }
+                    |   
+                    |   val x: Int = 10 }
+                """.trimMargin(), rulesConfigList = rulesConfigListIgnoreClose
+        )
+    }
+
+    @Test
+    fun `check wrong open brace in object expression`() {
+        lintMethod(BlockStructureBraces(),
+                """
+                    |object A
+                    |{
+                    |   fun foo() {
+                    |       println("Hello")
+                    |   }
+                    |   
+                    |   val x: Int = 10
+                    |}
+                """.trimMargin(),
+                LintError(1, 1, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect newline before opening brace", false)
+        )
+    }
+
+    @Test
+    fun `check init expression with wrong opening and closing brace position `(){
+        lintMethod(BlockStructureBraces(),
+                """
+                    |class A {
+                    |   init
+                    |   {
+                    |       foo() }
+                    |       
+                    |   fun foo() {
+                    |       println("Hello")
+                    |   }
+                    |}
+                """.trimMargin(),
+                LintError(1, 1, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect newline before opening brace", false),
+                LintError(1, 1, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect line after closing brace", false)
+        )
+    }
+
+    @Test
+    fun `check correct simple constructor expression`() {
+        lintMethod(BlockStructureBraces(),
+                """
+                    |class Person() {
+                    |   constructor(id: Int) {
+                    |       println(id)
+                    |   }
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    fun `check wrong constructor expression but with ignore opening brace config`() {
+        lintMethod(BlockStructureBraces(),
+                """
+                    |class Person()
+                    |{
+                    |   constructor(id: Int) {
+                    |       println(id)
+                    |   }
+                    |}
+                """.trimMargin(), rulesConfigList = rulesConfigListIgnoreOpen
+        )
+    }
+
+    @Test
+    fun `check lambda with incorrect close brace position`() {
+        lintMethod(BlockStructureBraces(),
+                """
+                    |class Person() {
+                    |   val list = listOf("Hello", "World")
+                    |   
+                    |   fun foo(){
+                    |       val size = list.map { it.length }
+                    |       size.forEach { println(it) }
+                    |   }
+                    |}
+                """.trimMargin(),
+                LintError(1, 1, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect line after closing brace", false),
+                LintError(1, 1, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect line after closing brace", false)
         )
     }
 }

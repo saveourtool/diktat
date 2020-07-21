@@ -6,12 +6,17 @@ import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.BODY
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
+import com.pinterest.ktlint.core.ast.ElementType.CLASS_INITIALIZER
 import com.pinterest.ktlint.core.ast.ElementType.DO_WHILE
 import com.pinterest.ktlint.core.ast.ElementType.ELSE
 import com.pinterest.ktlint.core.ast.ElementType.FOR
 import com.pinterest.ktlint.core.ast.ElementType.FUN
+import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_LITERAL
 import com.pinterest.ktlint.core.ast.ElementType.IF
+import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
+import com.pinterest.ktlint.core.ast.ElementType.OBJECT_DECLARATION
+import com.pinterest.ktlint.core.ast.ElementType.SECONDARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.THEN
 import com.pinterest.ktlint.core.ast.ElementType.TRY
 import com.pinterest.ktlint.core.ast.ElementType.WHEN
@@ -51,14 +56,22 @@ class BlockStructureBraces : Rule("block-structure") {
         )
 
         when (node.elementType) {
-            CLASS -> checkClass(node, configuration)
-            FUN -> checkFun(node, configuration)
+            LAMBDA_EXPRESSION -> checkLambda(node, configuration)
+            CLASS, OBJECT_DECLARATION -> checkClass(node, configuration)
+            FUN, CLASS_INITIALIZER, SECONDARY_CONSTRUCTOR -> checkFun(node, configuration)
             IF -> checkIf(node, configuration)
             WHEN -> checkWhen(node, configuration)
             FOR, WHILE, DO_WHILE -> checkLoop(node, configuration)
             TRY -> checkTry(node, configuration)
         }
     }
+
+    private fun checkLambda(node: ASTNode, configuration: BlockStructureBracesConfiguration) {
+        if (node.hasChildOfType(FUNCTION_LITERAL)){
+            checkCloseBrace(node.findChildByType(FUNCTION_LITERAL), configuration)
+        }
+    }
+
 
     private fun checkClass(node: ASTNode, configuration: BlockStructureBracesConfiguration) {
         if (node.hasChildOfType(CLASS_BODY)) {
@@ -137,7 +150,7 @@ class BlockStructureBraces : Rule("block-structure") {
             }
             WHEN -> node.findChildAfter(LBRACE, WHITE_SPACE)
             FOR, WHILE, DO_WHILE -> node.findChildByType(BODY)?.findChildByType(BLOCK)?.findChildAfter(LBRACE, WHITE_SPACE)
-            CLASS -> node.findChildByType(CLASS_BODY)!!.findChildAfter(LBRACE, WHITE_SPACE)
+            CLASS, OBJECT_DECLARATION -> node.findChildByType(CLASS_BODY)!!.findChildAfter(LBRACE, WHITE_SPACE)
             else -> node.findChildByType(BLOCK)?.findChildAfter(LBRACE, WHITE_SPACE)
         }
         if (nodeText != null && !nodeText.text.contains("\n".toRegex())) {
