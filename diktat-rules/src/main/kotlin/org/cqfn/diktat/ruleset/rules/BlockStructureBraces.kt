@@ -24,6 +24,7 @@ import com.pinterest.ktlint.core.ast.ElementType.TRY
 import com.pinterest.ktlint.core.ast.ElementType.WHEN
 import com.pinterest.ktlint.core.ast.ElementType.WHILE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.sun.org.apache.xpath.internal.operations.Bool
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
@@ -32,7 +33,8 @@ import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
-import org.jetbrains.kotlin.psi.*
+import org.jetbrains.kotlin.psi.KtIfExpression
+import org.jetbrains.kotlin.psi.KtTryExpression
 
 class BlockStructureBraces : Rule("block-structure") {
 
@@ -125,7 +127,7 @@ class BlockStructureBraces : Rule("block-structure") {
         }
         if (hasElseBranch && elseNode!!.elementType != IF && elseNode.hasChildOfType(LBRACE)) {
             checkOpenBraceOnSameLine(node, ELSE, configuration)
-            val allMiddleNode =  elseNode.findAllNodesWithSpecificType(THEN).map { it.treeNext }
+            val allMiddleNode =  node.findAllNodesWithSpecificType(THEN).map { it.treeNext }
             checkMidBrace(allMiddleNode)
             checkCloseBrace(elseNode, configuration)
         }
