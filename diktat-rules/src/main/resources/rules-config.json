@@ -225,6 +225,9 @@
   {
     "name": "BRACES_BLOCK_STRUCTURE_ERROR",
     "enabled": true,
-    "configuration": {}
+    "configuration": {
+      "openBraceNewline" : "True",
+      "closeBraceNewline" : "True"
+    }
   }
 ]
