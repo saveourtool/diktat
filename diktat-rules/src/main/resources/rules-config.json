@@ -223,6 +223,14 @@
     "configuration": {}
   },
   {
+    "name": "BRACES_BLOCK_STRUCTURE_ERROR",
+    "enabled": true,
+    "configuration": {
+      "openBraceNewline" : "True",
+      "closeBraceNewline" : "True"
+    }
+  },
+  {
     "name": "WRONG_INDENTATION",
     "enabled": true,
     "configuration" : {
