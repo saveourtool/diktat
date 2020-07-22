@@ -8,6 +8,6 @@ object TestEntry {
     @JvmStatic
     fun main(args: Array<String>) {
         val properties = TestFrameworkProperties("org/cqfn/diktat/test/framework/test_framework.properties")
-        TestProcessingFactory(TestArgumentsReader(args, properties)).processTests()
+        TestProcessingFactory(TestArgumentsReader(args, properties, javaClass.classLoader)).processTests()
     }
 }
