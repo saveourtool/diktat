@@ -182,7 +182,7 @@ class BlockStructureBraces : Rule("block-structure") {
             }
     }
 
-    private fun checkBraceNode(node: ASTNode, shouldContainNewline: Boolean = true) =
+    private fun checkBraceNode(node: ASTNode, shouldContainNewline: Boolean = false) =
             (node.elementType != WHITE_SPACE || shouldContainNewline  == node.text.contains("\n"))
 
     class BlockStructureBracesConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
