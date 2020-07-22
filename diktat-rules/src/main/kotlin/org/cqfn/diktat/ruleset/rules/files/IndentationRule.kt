@@ -133,6 +133,7 @@ class IndentationRule : Rule("indentation") {
         }
     }
 
+    @Suppress("ForbiddenComment")
     private fun visitWhiteSpace(astNode: ASTNode, context: IndentContext) {
         val whiteSpace = astNode.psi as PsiWhiteSpace
         if (astNode.treeNext.elementType in decreasingTokens) {
@@ -149,7 +150,7 @@ class IndentationRule : Rule("indentation") {
         val expectedIndent = checkResult?.expected ?: indentError.expected
         if (checkResult?.adjustNext == true) {
             val exceptionInitiatorNode = astNode.treeParent.let { parent ->
-                // fixme: a hack to keep extended indent for th whole chain of dot call expressions
+                // fixme: a hack to keep extended indent for the whole chain of dot call expressions
                 if (parent.elementType != DOT_QUALIFIED_EXPRESSION) parent else astNode.parents().takeWhile { it.elementType == DOT_QUALIFIED_EXPRESSION }.last()
             }
             context.addException(exceptionInitiatorNode, expectedIndent - indentError.expected)
