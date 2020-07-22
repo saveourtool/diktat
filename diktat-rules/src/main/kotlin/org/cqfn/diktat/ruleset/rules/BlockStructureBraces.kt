@@ -182,8 +182,8 @@ class BlockStructureBraces : Rule("block-structure") {
             }
     }
 
-    private fun checkBraceNode(node: ASTNode, isContains: Boolean = false) =
-            (node.elementType != WHITE_SPACE || !isContains.xor(node.text.contains("\n")))
+    private fun checkBraceNode(node: ASTNode, shouldContainNewline: Boolean = true) =
+            (node.elementType != WHITE_SPACE || shouldContainNewline  == node.text.contains("\n"))
 
     class BlockStructureBracesConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
         val openBrace = config["openBraceNewline"]?.toBoolean() ?: true
