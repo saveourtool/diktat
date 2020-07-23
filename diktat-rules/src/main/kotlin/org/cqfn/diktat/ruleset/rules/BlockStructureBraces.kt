@@ -28,9 +28,10 @@ import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.BRACES_BLOCK_STRUCTURE_ERROR
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
-import org.cqfn.diktat.ruleset.utils.hasChildOfType
+import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
+import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.KtTryExpression
@@ -100,6 +101,10 @@ class BlockStructureBraces : Rule("block-structure") {
         node.findChildByType(BODY)?.takeIf { body -> body.hasChildOfType(BLOCK) }?.let {
             checkOpenBraceOnSameLine(node, BODY, configuration)
             checkCloseBrace(it.findChildByType(BLOCK)!!, configuration)
+            if (node.elementType == DO_WHILE){
+                val allMiddleNode = listOf(node.findChildByType(BODY)!!.treeNext)
+                checkMidBrace(allMiddleNode)
+            }
         }
     }
 
@@ -123,11 +128,13 @@ class BlockStructureBraces : Rule("block-structure") {
         if (thenNode != null && thenNode.hasChildOfType(LBRACE)) {
             checkOpenBraceOnSameLine(node, THEN, configuration)
             checkCloseBrace(thenNode, configuration)
+            if (hasElseBranch) {
+                val allMiddleNode = listOf(node.findChildByType(THEN)!!.treeNext)
+                checkMidBrace(allMiddleNode)
+            }
         }
         if (hasElseBranch && elseNode!!.elementType != IF && elseNode.hasChildOfType(LBRACE)) {
             checkOpenBraceOnSameLine(node, ELSE, configuration)
-            val allMiddleNode =  node.findAllNodesWithSpecificType(THEN).map { it.treeNext }
-            checkMidBrace(allMiddleNode)
             checkCloseBrace(elseNode, configuration)
         }
     }
@@ -135,15 +142,19 @@ class BlockStructureBraces : Rule("block-structure") {
     private fun checkOpenBraceOnSameLine(node: ASTNode, beforeType: IElementType, configuration: BlockStructureBracesConfiguration) {
         if (!configuration.openBrace) return
         val braceSpace = node.findChildByType(beforeType)?.treePrev
-        if (braceSpace == null || braceSpace.elementType != WHITE_SPACE || braceSpace.text.contains("\n".toRegex()))
+        if (braceSpace == null || checkBraceNode(braceSpace, true))
             BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "incorrect newline before opening brace",
                     (braceSpace ?: node).startOffset) {
-
+                if (braceSpace == null || braceSpace.elementType != WHITE_SPACE) {
+                    node.addChild(PsiWhiteSpaceImpl(" "), node.findChildByType(beforeType))
+                } else {
+                    (braceSpace as LeafPsiElement).replaceWithText(" ")
+                }
             }
         checkOpenBraceEndLine(node, beforeType)
     }
 
-    private fun checkOpenBraceEndLine(node: ASTNode, beforeType: IElementType){
+    private fun checkOpenBraceEndLine(node: ASTNode, beforeType: IElementType) {
         val newNode = when (node.elementType) {
             IF -> {
                 when (beforeType) {
@@ -159,6 +170,11 @@ class BlockStructureBraces : Rule("block-structure") {
         if (newNode == null || checkBraceNode(newNode)) {
             BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "incorrect same line after opening brace",
                     (newNode ?: node).startOffset) {
+                if (newNode == null || newNode.elementType != WHITE_SPACE) {
+                    node.addChild(PsiWhiteSpaceImpl("\n"), newNode ?: node.findChildByType(beforeType))
+                } else {
+                    (newNode as LeafPsiElement).replaceWithText("\n")
+                }
             }
         }
     }
@@ -168,6 +184,11 @@ class BlockStructureBraces : Rule("block-structure") {
             if (checkBraceNode(it, true)) {
                 BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "incorrect new line after closing brace",
                         it.startOffset) {
+                    if (it.elementType != WHITE_SPACE) {
+                        it.addChild(PsiWhiteSpaceImpl(" "), it.treePrev)
+                    } else {
+                        (it as LeafPsiElement).replaceWithText(" ")
+                    }
                 }
             }
         }
@@ -179,16 +200,20 @@ class BlockStructureBraces : Rule("block-structure") {
         if (checkBraceNode(space))
             BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "no newline before closing brace",
                     (space.treeNext ?: node.findChildByType(RBRACE))!!.startOffset) {
+                if (space.elementType != WHITE_SPACE) {
+                    node.addChild(PsiWhiteSpaceImpl("\n"), node.findChildByType(RBRACE))
+                } else {
+                    (space as LeafPsiElement).replaceWithText("\n")
+                }
             }
     }
 
     private fun checkBraceNode(node: ASTNode, shouldContainNewline: Boolean = false) =
-            (node.elementType != WHITE_SPACE || shouldContainNewline  == node.text.contains("\n"))
+            (node.elementType != WHITE_SPACE || shouldContainNewline == node.text.contains("\n"))
 
     class BlockStructureBracesConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
         val openBrace = config["openBraceNewline"]?.toBoolean() ?: true
         val closeBrace = config["closeBraceNewline"]?.toBoolean() ?: true
     }
-
 }
 
