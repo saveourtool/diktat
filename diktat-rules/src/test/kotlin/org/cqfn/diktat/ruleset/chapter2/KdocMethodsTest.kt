@@ -1,12 +1,12 @@
 package org.cqfn.diktat.ruleset.chapter2
 
+import com.pinterest.ktlint.core.LintError
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_RETURN_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_THROWS_TAG
+import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocMethods
 import org.cqfn.diktat.ruleset.utils.lintMethod
-import com.pinterest.ktlint.core.LintError
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.junit.Test
 
 class KdocMethodsTest {
@@ -31,14 +31,14 @@ class KdocMethodsTest {
             $funCode
         """.trimIndent()
 
-        lintMethod(KdocMethods(), validCode, fileName = "src/main/kotlin/org/cqfn/diktat/Example.kt")
+        lintMethod(KdocMethods(), validCode)
     }
 
     @Test
     fun `Warning should not be triggered for private functions`() {
         val validCode = "private $funCode"
 
-        lintMethod(KdocMethods(), validCode, fileName = "src/main/kotlin/org/cqfn/diktat/Example.kt")
+        lintMethod(KdocMethods(), validCode)
     }
 
     @Test
@@ -63,7 +63,7 @@ class KdocMethodsTest {
             }
         """.trimIndent()
 
-        lintMethod(KdocMethods(), validCode, fileName = "src/main/kotlin/org/cqfn/diktat/Example.kt")
+        lintMethod(KdocMethods(), validCode)
     }
 
     @Test
@@ -80,10 +80,7 @@ class KdocMethodsTest {
             $funCode
         """.trimIndent()
 
-        lintMethod(KdocMethods(), invalidCode,
-                LintError(1, 13, ruleId, "${Warnings.KDOC_WITHOUT_PARAM_TAG.warnText()} doubleInt (a)"),
-                fileName = "src/main/kotlin/org/cqfn/diktat/Example.kt"
-        )
+        lintMethod(KdocMethods(), invalidCode, LintError(1, 13, ruleId, "${Warnings.KDOC_WITHOUT_PARAM_TAG.warnText()} doubleInt (a)"))
     }
 
     @Test
@@ -101,10 +98,7 @@ class KdocMethodsTest {
             fun addInts(a: Int, b: Int): Int = a + b
         """.trimIndent()
 
-        lintMethod(KdocMethods(), invalidCode,
-                LintError(1, 12, ruleId, "${Warnings.KDOC_WITHOUT_PARAM_TAG.warnText()} addInts (b)"),
-                fileName = "src/main/kotlin/org/cqfn/diktat/Example.kt"
-        )
+        lintMethod(KdocMethods(), invalidCode, LintError(1, 12, ruleId, "${Warnings.KDOC_WITHOUT_PARAM_TAG.warnText()} addInts (b)"))
     }
 
     @Test
@@ -121,10 +115,7 @@ class KdocMethodsTest {
             $funCode
         """.trimIndent()
 
-        lintMethod(KdocMethods(), invalidCode,
-                LintError(1, 13, ruleId, "${KDOC_WITHOUT_RETURN_TAG.warnText()} doubleInt"),
-                fileName = "src/main/kotlin/org/cqfn/diktat/Example.kt"
-        )
+        lintMethod(KdocMethods(), invalidCode, LintError(1, 13, ruleId, "${KDOC_WITHOUT_RETURN_TAG.warnText()} doubleInt"))
     }
 
     @Test
@@ -147,10 +138,7 @@ class KdocMethodsTest {
             private val list = mutableListOf<Int>()
         """.trimIndent()
 
-        lintMethod(KdocMethods(), invalidCode,
-                LintError(1, 12, ruleId, "${KDOC_WITHOUT_RETURN_TAG.warnText()} foo"),
-                fileName = "src/main/kotlin/org/cqfn/diktat/Example.kt"
-        )
+        lintMethod(KdocMethods(), invalidCode, LintError(1, 12, ruleId, "${KDOC_WITHOUT_RETURN_TAG.warnText()} foo"))
     }
 
     @Test
@@ -167,10 +155,7 @@ class KdocMethodsTest {
             $funCode
         """.trimIndent()
 
-        lintMethod(KdocMethods(), invalidCode,
-                LintError(1, 13, ruleId, "${KDOC_WITHOUT_THROWS_TAG.warnText()} doubleInt (IllegalStateException)"),
-                fileName = "src/main/kotlin/org/cqfn/diktat/Example.kt"
-        )
+        lintMethod(KdocMethods(), invalidCode, LintError(1, 13, ruleId, "${KDOC_WITHOUT_THROWS_TAG.warnText()} doubleInt (IllegalStateException)"))
     }
 
     @Test
@@ -190,7 +175,7 @@ class KdocMethodsTest {
             }
         """.trimIndent()
 
-        lintMethod(KdocMethods(), invalidCode, fileName = "src/main/kotlin/org/cqfn/diktat/Example.kt")
+        lintMethod(KdocMethods(), invalidCode)
     }
 
     @Test
@@ -209,9 +194,6 @@ class KdocMethodsTest {
             }
         """.trimIndent()
 
-        lintMethod(KdocMethods(), invalidCode,
-                LintError(1, 1, ruleId, "${KDOC_WITHOUT_THROWS_TAG.warnText()} doubleInt (IllegalAccessException)"),
-                fileName = "src/main/kotlin/org/cqfn/diktat/Example.kt"
-        )
+        lintMethod(KdocMethods(), invalidCode, LintError(1, 1, ruleId, "${KDOC_WITHOUT_THROWS_TAG.warnText()} doubleInt (IllegalAccessException)"))
     }
 }
