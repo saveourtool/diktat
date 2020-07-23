@@ -31,7 +31,7 @@ jobs:
       - name: Create settings.xml
         uses: whelk-io/maven-settings-xml-action@v9
         with:
-          servers: '[{ "id": "artipie", "username": "${{ secrets.ARTIPIE_USER }}", "password": "${{ secrets.ARTIPIE_PASSWORD }}" }]'
+          servers: '[{ "id": "central", "username": "${{ secrets.CENTRAL_USER }}", "password": "${{ secrets.CENTRAL_PASSWORD }}" }]'
       - name: Deploy artifacts
         run: mvn -B clean deploy
       - name: Create Github Release

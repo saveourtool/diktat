@@ -134,21 +134,23 @@
 
     <distributionManagement>
         <repository>
-            <id>artipie</id>
-            <url>https://central.artipie.com/akuleshov7/diktat</url>
+            <id>central</id>
+            <url>https://repo1.maven.org/maven2/</url>
         </repository>
         <snapshotRepository>
-            <id>artipie</id>
-            <url>https://central.artipie.com/akuleshov7/diktat</url>
+            <id>central</id>
+            <url>https://repo1.maven.org/maven2/</url>
         </snapshotRepository>
     </distributionManagement>
     <repositories>
+        <!-- this is needed to use ktlint 0.37.1-fork -->
         <repository>
             <id>artipie</id>
             <url>https://central.artipie.com/akuleshov7/diktat</url>
         </repository>
     </repositories>
     <pluginRepositories>
+        <!-- this is needed to use forked ktlint and diktat inside antrun plugin -->
         <pluginRepository>
             <id>artipie</id>
             <url>https://central.artipie.com/akuleshov7/diktat</url>
