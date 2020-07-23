@@ -4,7 +4,7 @@ import org.cqfn.diktat.ruleset.rules.BlockStructureBraces
 import org.cqfn.diktat.ruleset.utils.FixTestBase
 import org.junit.Test
 
-class BlockStructureBracesFixTestTest : FixTestBase ("test/paragraph3/block_brace", BlockStructureBraces()){
+class BlockStructureBracesFixTest : FixTestBase ("test/paragraph3/block_brace", BlockStructureBraces()){
 
     @Test
     fun `should fix open and close brace in if-else expression`() {
