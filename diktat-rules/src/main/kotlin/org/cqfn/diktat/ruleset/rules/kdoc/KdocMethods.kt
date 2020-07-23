@@ -34,8 +34,10 @@ import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.cqfn.diktat.ruleset.utils.hasKnownKDocTag
 import org.cqfn.diktat.ruleset.utils.insertTagBefore
 import org.cqfn.diktat.ruleset.utils.isAccessibleOutside
+import org.cqfn.diktat.ruleset.utils.isTestFun
 import org.cqfn.diktat.ruleset.utils.kDocTags
 import org.cqfn.diktat.ruleset.utils.parameterNames
+import org.cqfn.diktat.ruleset.utils.splitPathToDirs
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -68,7 +70,10 @@ class KdocMethods : Rule("kdoc-methods") {
         isFixMode = autoCorrect
         emitWarn = emit
 
-        if (node.elementType == FUN && node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside()) {
+        if (node.elementType == FUN &&
+                node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside() &&
+                !node.isTestFun(params.fileName!!.splitPathToDirs())
+        ) {
             checkSignatureDescription(node)
         }
     }

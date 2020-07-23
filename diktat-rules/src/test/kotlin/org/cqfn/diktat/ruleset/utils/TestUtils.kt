@@ -13,11 +13,12 @@ const val TEST_FILE_NAME = "/TestFileName.kt"
 fun lintMethod(rule: Rule,
                code: String,
                vararg lintErrors: LintError,
-               rulesConfigList: List<RulesConfig>? = null) {
+               rulesConfigList: List<RulesConfig>? = null,
+               fileName: String? = null) {
     val res = mutableListOf<LintError>()
     KtLint.lint(
             KtLint.Params(
-                    fileName = TEST_FILE_NAME,
+                    fileName = fileName ?: TEST_FILE_NAME,
                     text = code,
                     ruleSets = listOf(DiktatRuleSetProviderTest(rule, rulesConfigList).get()),
                     cb = { e, _ -> res.add(e) }

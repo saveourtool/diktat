@@ -1,4 +1,4 @@
-package test.paragraph2.kdoc
+package org.cqfn.diktat.kdoc.methods
 
 class Example {
     /**
