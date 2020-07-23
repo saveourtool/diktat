@@ -8,7 +8,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.files.FileSize
-import org.cqfn.diktat.ruleset.utils.DiktatRuleSetProviderTest
+import org.cqfn.diktat.util.DiktatRuleSetProvider4Test
 import org.junit.Test
 import java.io.File
 
@@ -54,7 +54,7 @@ class FileSizeWarnTest {
                 KtLint.Params(
                         fileName = fileName,
                         text = code,
-                        ruleSets = listOf(DiktatRuleSetProviderTest(rule, rulesConfigList).get()),
+                        ruleSets = listOf(DiktatRuleSetProvider4Test(rule, rulesConfigList).get()),
                         cb = { e, _ -> res.add(e) }
                 )
         )

@@ -749,7 +749,7 @@ if (condition) {
 For *non-empty* code blocks with braces, they should follow the K&R style (1TBS or OTBS style):
  - The opening brace is on the same same line with the first line of the code block
  - The closing brace is on it's new line
- - The closing brace can be followed by a new line or `else`, `finally` or `catch` keywords
+ - The closing brace can be followed by a new line. Only exceptions are: `else`, `finally` or `catch` keywords. These keywords should not be split from the closing brace by a newline.
  
  Good example：
 
