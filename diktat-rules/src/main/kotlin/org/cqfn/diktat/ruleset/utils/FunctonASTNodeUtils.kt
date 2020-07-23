@@ -43,12 +43,6 @@ fun ASTNode.parameterNames(): Collection<String?>? {
         ?.parameters?.map { (it as KtParameter).name }
 }
 
-fun ASTNode.hasParametersKDoc(): Boolean {
-    checkNode(this)
-    val kDocTags = this.kDocTags()
-    return kDocTags != null && kDocTags.hasKnownKDocTag(KDocKnownTag.PARAM)
-}
-
 private fun ASTNode.argList(): ASTNode? {
     checkNode(this)
     return this.getFirstChildWithType(ElementType.VALUE_PARAMETER_LIST)

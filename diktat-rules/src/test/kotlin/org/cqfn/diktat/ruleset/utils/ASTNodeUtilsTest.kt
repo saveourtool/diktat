@@ -664,25 +664,6 @@ class ASTNodeUtilsTest {
             }
         }
     }
-
-    private fun applyToCode(code: String, applyToNode: (node: ASTNode) -> Unit) {
-        KtLint.lint(
-                KtLint.Params(
-                        text = code,
-                        ruleSets = listOf(
-                                RuleSet("test", object : Rule("astnode-utils-test") {
-                                    override fun visit(node: ASTNode,
-                                                       autoCorrect: Boolean,
-                                                       params: KtLint.Params,
-                                                       emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
-                                        applyToNode(node)
-                                    }
-                                })
-                        ),
-                        cb = { _, _ -> Unit }
-                )
-        )
-    }
 }
 
 private class PrettyPrintingVisitor(private val elementType: IElementType,

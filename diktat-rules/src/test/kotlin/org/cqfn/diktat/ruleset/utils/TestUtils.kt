@@ -3,9 +3,11 @@ package org.cqfn.diktat.ruleset.utils
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.RuleSet
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.SoftAssertions
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 const val TEST_FILE_NAME = "/TestFileName.kt"
 
@@ -48,6 +50,25 @@ internal fun Rule.format(text: String, fileName: String,
                     cb = { lintError, _ ->
                         log.warn("Received linting error: $lintError")
                     }
+            )
+    )
+}
+
+internal fun applyToCode(code: String, applyToNode: (node: ASTNode) -> Unit) {
+    KtLint.lint(
+            KtLint.Params(
+                    text = code,
+                    ruleSets = listOf(
+                            RuleSet("test", object : Rule("astnode-utils-test") {
+                                override fun visit(node: ASTNode,
+                                                   autoCorrect: Boolean,
+                                                   params: KtLint.Params,
+                                                   emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
+                                    applyToNode(node)
+                                }
+                            })
+                    ),
+                    cb = { _, _ -> Unit }
             )
     )
 }
