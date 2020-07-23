@@ -1,6 +1,6 @@
 package org.cqfn.diktat.ruleset.utils.indentation
 
-import org.cqfn.diktat.ruleset.rules.files.IndentationRule.IndentationError
+import org.cqfn.diktat.ruleset.rules.files.IndentationError
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
 
 internal abstract class CustomIndentationChecker(protected val configuration: IndentationConfig) {
@@ -12,7 +12,10 @@ internal abstract class CustomIndentationChecker(protected val configuration: In
     abstract fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult?
 }
 
-internal data class CheckResult(val correct: Boolean, val expected: Int, val adjustNext: Boolean) {
+/**
+ * @property adjustNext Indicates whether the indent returned by this exception checker needs to be applied to other nodes with same parent
+ */
+internal data class CheckResult(val isCorrect: Boolean, val expectedIndent: Int, val adjustNext: Boolean) {
     companion object {
         fun from(actual: Int, expected: Int, adjustNext: Boolean = false) = CheckResult(actual == expected, expected, adjustNext)
     }

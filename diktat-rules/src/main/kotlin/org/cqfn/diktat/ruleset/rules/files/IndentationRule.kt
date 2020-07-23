@@ -18,6 +18,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
 import org.cqfn.diktat.ruleset.rules.getDiktatConfigRules
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getAllLLeafsWithSpecificType
+import org.cqfn.diktat.ruleset.utils.indentBy
 import org.cqfn.diktat.ruleset.utils.indentation.AssignmentOperatorChecker
 import org.cqfn.diktat.ruleset.utils.indentation.CustomIndentationChecker
 import org.cqfn.diktat.ruleset.utils.indentation.DotCallChecker
@@ -87,6 +88,7 @@ class IndentationRule : Rule("indentation") {
 
     /**
      * This method warns if tabs are used in WHITE_SPACE nodes and substitutes them with spaces in fix mode
+     * @return true if there are no tabs or all of them have been fixed, false otherwise
      */
     private fun checkIsIndentedWithSpaces(node: ASTNode): Boolean {
         val whiteSpaceNodes = mutableListOf<ASTNode>()
@@ -102,6 +104,9 @@ class IndentationRule : Rule("indentation") {
         return isFixMode  // true if we changed all tabs to spaces
     }
 
+    /**
+     * Checks that file ends with exactly one empty line
+     */
     private fun checkNewlineAtEnd(node: ASTNode) {
         if (configuration.newlineAtEnd) {
             val lastChild = node.lastChildNode
@@ -117,6 +122,9 @@ class IndentationRule : Rule("indentation") {
         }
     }
 
+    /**
+     * Traverses the tree, keeping track of regular and exceptional indentations
+     */
     private fun checkIndentation(node: ASTNode) {
         val context = IndentContext()
         node.visit { astNode ->
@@ -124,7 +132,7 @@ class IndentationRule : Rule("indentation") {
             if (astNode.elementType in increasingTokens) {
                 context.inc()
             } else if (astNode.elementType in decreasingTokens && !astNode.treePrev.let { it.elementType == WHITE_SPACE && it.textContains('\n') }) {
-                // indents are corrected when we handle WHITE_SPACE with \n which stands before a decreasingToken
+                // if decreasing token is after WHITE_SPACE with \n, indents are corrected in visitWhiteSpace method
                 context.dec()
             } else if (astNode.elementType == WHITE_SPACE && astNode.textContains('\n') && astNode.treeNext != null) {
                 // we check only WHITE_SPACE nodes with newlines, other than the last line in file; correctness of newlines should be checked elsewhere
@@ -137,17 +145,17 @@ class IndentationRule : Rule("indentation") {
     private fun visitWhiteSpace(astNode: ASTNode, context: IndentContext) {
         val whiteSpace = astNode.psi as PsiWhiteSpace
         if (astNode.treeNext.elementType in decreasingTokens) {
+            // if newline is followed by closing token, it should already be indented less
             context.dec()
         }
 
-        val actualIndent = astNode.text.substringAfterLast('\n').count { it == ' ' }
-        val indentError = IndentationError(context.indent(), actualIndent)
+        val indentError = IndentationError(context.indent(), astNode.text.lastIndent())
 
         val checkResult = customIndentationCheckers.firstNotNullResult {
             it.checkNode(whiteSpace, indentError)
         }
 
-        val expectedIndent = checkResult?.expected ?: indentError.expected
+        val expectedIndent = checkResult?.expectedIndent ?: indentError.expected
         if (checkResult?.adjustNext == true) {
             val exceptionInitiatorNode = astNode.treeParent.let { parent ->
                 // fixme: a hack to keep extended indent for the whole chain of dot call expressions
@@ -155,38 +163,44 @@ class IndentationRule : Rule("indentation") {
             }
             context.addException(exceptionInitiatorNode, expectedIndent - indentError.expected)
         }
-        if (checkResult?.correct != true && expectedIndent != indentError.actual) {
+        if (checkResult?.isCorrect != true && expectedIndent != indentError.actual) {
             WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "expected $expectedIndent but was ${indentError.actual}",
                     whiteSpace.startOffset + whiteSpace.text.lastIndexOf('\n') + 1) {
-                whiteSpace.indentBy(expectedIndent)
+                whiteSpace.node.indentBy(expectedIndent)
             }
         }
     }
 
-    private fun PsiWhiteSpace.indentBy(indent: Int) {
-        (node as LeafPsiElement).rawReplaceWithText(text.substringBeforeLast('\n') + "\n" + " ".repeat(indent))
-    }
-
+    /**
+     * Class that contains state needed to calculate indent and keep track of exceptional indents
+     */
     private class IndentContext {
-        private var indent = 0
+        private var regularIndent = 0
         private val exceptionalIndents = mutableListOf<ExceptionalIndent>()
 
         fun inc() {
-            indent += INDENT_SIZE
+            regularIndent += INDENT_SIZE
         }
+
         fun dec() {
-            indent -= INDENT_SIZE
+            regularIndent -= INDENT_SIZE
         }
-        fun indent() = indent + exceptionalIndents.sumBy { it.indent }
+
+        fun indent() = regularIndent + exceptionalIndents.sumBy { it.indent }
+
         fun addException(initiator: ASTNode, indent: Int) = exceptionalIndents.add(ExceptionalIndent(initiator, indent))
-        fun checkAndReset(astNode: ASTNode) = exceptionalIndents.removeIf { it.checkAndReset(astNode) }
+        fun checkAndReset(astNode: ASTNode) = exceptionalIndents.retainAll { it.isActive(astNode) }
 
         private data class ExceptionalIndent(val initiator: ASTNode, val indent: Int) {
-            // this is a hypotheses that exceptional indentation will end outside of node where it appeared
-            fun checkAndReset(currentNode: ASTNode): Boolean =
-                    !initiator.findAllNodesWithSpecificType(currentNode.elementType).contains(currentNode)
+            /**
+             * Checks whether this exceptional indent is still active. This is a hypotheses that exceptional indentation will end
+             * outside of node where it appeared, e.g. when an expression after assignment operator is over.
+             */
+            fun isActive(currentNode: ASTNode): Boolean = initiator.findAllNodesWithSpecificType(currentNode.elementType).contains(currentNode)
         }
     }
-
-    internal data class IndentationError(val expected: Int, val actual: Int)
 }
+
+internal data class IndentationError(val expected: Int, val actual: Int)
+
+internal fun String.lastIndent() = substringAfterLast('\n').count { it == ' ' }
