@@ -105,14 +105,14 @@ class IdentifierNamingWarnTest {
                   class className {
                       data class badClassName(val FIRST: String, var SECOND: String)
 
-                      object companion {
+                      companion object {
                           const val incorrect_case = ""
-                          val correctCase
+                          val correctCase = ""
                           var INCORRECT = ""
                       }
 
                       var check_me = ""
-                      val CHECK_ME
+                      val CHECK_ME = ""
                   }
                 """.trimIndent()
 

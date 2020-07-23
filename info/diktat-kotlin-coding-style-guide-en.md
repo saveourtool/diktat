@@ -749,15 +749,34 @@ if (condition) {
 For *non-empty* code blocks with braces, they should follow the K&R style (1TBS or OTBS style):
  - The opening brace is on the same same line with the first line of the code block
  - The closing brace is on it's new line
- - The closing brace can be followed by a new line or `else`, `finally` or `catch` keywords
+ - The closing brace can be followed by a new line or `else`, `finally`, `while` (from do-while statement) or `catch` keywords
  
- Good example：
+ Exception cases: 
+ 1) for lambdas newline should appear only after an arrow. No need to put a newline after an opening brace:
+ ```kotlin
+arg.map { value ->
+    foo(value)
+}
+```
+2) for else/catch/finally/while (from do-while statement) keywords closing brace should stay on the same line:
+ ```kotlin
+do {
+    if (true) {
+        x++
+    } else {
+        x--
+    }
+} while (x > 0) 
+```
+ 
+Good example：
 
  ```kotlin
-        return () -> {
+        return arg.map { value ->
             while (condition()) {
                 method()
             }
+            value 
         }
 
         return MyClass() {

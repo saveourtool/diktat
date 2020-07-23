@@ -322,8 +322,34 @@ class ASTNodeUtilsTest {
     }
 
     @Test
-    fun `test isNodeFromCompanionObject`() {
+    fun `regression - check for companion object`() {
+       var code = """
+                object Test {
+                    val id = 1
+            	}
+        """.trimIndent()
 
+        applyToCode(code) { node ->
+            if (node.elementType == PROPERTY) {
+                Assert.assertTrue(!node.isNodeFromCompanionObject())
+            }
+        }
+
+        code = """
+                companion object Test {
+                    val id = 1
+            	}
+        """.trimIndent()
+
+        applyToCode(code) { node ->
+            if (node.elementType == PROPERTY) {
+                Assert.assertTrue(node.isNodeFromCompanionObject())
+            }
+        }
+    }
+
+    @Test
+    fun `test isNodeFromCompanionObject`() {
         var code = """
             class Something{
             	companion object {
