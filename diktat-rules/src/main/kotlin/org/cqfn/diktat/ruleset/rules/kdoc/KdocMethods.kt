@@ -8,7 +8,6 @@ import com.pinterest.ktlint.core.ast.ElementType.CALLABLE_REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.COLLECTION_LITERAL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.FUN
-import com.pinterest.ktlint.core.ast.ElementType.FUN_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_TAG_NAME
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_TEXT
@@ -190,6 +189,7 @@ class KdocMethods : Rule("kdoc-methods") {
                                 returnCheckFailed: Boolean
     ) {
         MISSING_KDOC_ON_FUNCTION.warnAndFix(configRules, emitWarn, isFixMode, name, node.startOffset) {
+            // fixme: indentation logic should be only inside IndentationRule
             val indent = node.prevSibling { it.elementType == WHITE_SPACE }?.text
                     ?.substringAfterLast("\n")?.count { it == ' ' } ?: 0
             val kDocTemplate = "/**\n" +
@@ -199,10 +199,8 @@ class KdocMethods : Rule("kdoc-methods") {
                             " */\n"
                             ).prependIndent(" ".repeat(indent))
 
-            // we must ensure that KDoc is inserted before `fun` keyword
-            val methodNode = node.getFirstChildWithType(FUN_KEYWORD)
             // fixme could be added as proper CompositeElement
-            node.addChild(LeafPsiElement(KDOC, kDocTemplate), methodNode)
+            node.addChild(LeafPsiElement(KDOC, kDocTemplate), node.firstChildNode)
         }
     }
 }
