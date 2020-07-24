@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter3
 
 import org.cqfn.diktat.ruleset.rules.BlockStructureBraces
-import org.cqfn.diktat.ruleset.utils.FixTestBase
+import org.cqfn.diktat.util.FixTestBase
 import org.junit.Test
 
 class BlockStructureBracesFixTest : FixTestBase ("test/paragraph3/block_brace", BlockStructureBraces()){
