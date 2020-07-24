@@ -21,7 +21,9 @@ import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.WHEN_CONDITION_WITH_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.prevSibling
+import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_PARAM_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_RETURN_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_THROWS_TAG
@@ -32,9 +34,10 @@ import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.getIdentifierName
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.cqfn.diktat.ruleset.utils.hasKnownKDocTag
+import org.cqfn.diktat.ruleset.utils.hasTestAnnotation
 import org.cqfn.diktat.ruleset.utils.insertTagBefore
 import org.cqfn.diktat.ruleset.utils.isAccessibleOutside
-import org.cqfn.diktat.ruleset.utils.isTestFun
+import org.cqfn.diktat.ruleset.utils.isLocatedInTest
 import org.cqfn.diktat.ruleset.utils.kDocTags
 import org.cqfn.diktat.ruleset.utils.parameterNames
 import org.cqfn.diktat.ruleset.utils.splitPathToDirs
@@ -71,10 +74,11 @@ class KdocMethods : Rule("kdoc-methods") {
         emitWarn = emit
 
         if (node.elementType == FUN &&
-                node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside() &&
-                !node.isTestFun(params.fileName!!.splitPathToDirs())
-        ) {
-            checkSignatureDescription(node)
+                node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside()) {
+            val config = KdocMethodsConfiguration(configRules.getRuleConfig(MISSING_KDOC_ON_FUNCTION)?.configuration ?: mapOf())
+            if (!node.hasTestAnnotation() && !node.isLocatedInTest(params.fileName!!.splitPathToDirs(), config.testAnchors)) {
+                checkSignatureDescription(node)
+            }
         }
     }
 
@@ -210,4 +214,11 @@ class KdocMethods : Rule("kdoc-methods") {
             node.addChild(LeafPsiElement(KDOC, kDocTemplate), methodNode)
         }
     }
+}
+
+private class KdocMethodsConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
+    /**
+     * Names of directories which indicate that this is path to tests. Will be checked like "src/$testAnchor" for each entry.
+     */
+    val testAnchors = config.getOrDefault("testDirs", "test").split(',')
 }
