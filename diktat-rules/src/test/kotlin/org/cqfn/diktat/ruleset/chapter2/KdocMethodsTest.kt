@@ -4,7 +4,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_RETURN_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_THROWS_TAG
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocMethods
-import org.cqfn.diktat.ruleset.utils.lintMethod
+import org.cqfn.diktat.util.lintMethod
 import com.pinterest.ktlint.core.LintError
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.junit.Test
@@ -72,7 +72,7 @@ class KdocMethodsTest {
         """.trimIndent()
 
         lintMethod(KdocMethods(), invalidCode, LintError(1, 13, ruleId,
-            "${Warnings.KDOC_WITHOUT_PARAM_TAG.warnText()} doubleInt (a)")
+                "${Warnings.KDOC_WITHOUT_PARAM_TAG.warnText()} doubleInt (a)")
         )
     }
 
@@ -92,7 +92,7 @@ class KdocMethodsTest {
         """.trimIndent()
 
         lintMethod(KdocMethods(), invalidCode, LintError(1, 12, ruleId,
-            "${Warnings.KDOC_WITHOUT_PARAM_TAG.warnText()} addInts (b)")
+                "${Warnings.KDOC_WITHOUT_PARAM_TAG.warnText()} addInts (b)")
         )
     }
 
@@ -111,7 +111,7 @@ class KdocMethodsTest {
         """.trimIndent()
 
         lintMethod(KdocMethods(), invalidCode, LintError(1, 13, ruleId,
-            "${KDOC_WITHOUT_RETURN_TAG.warnText()} doubleInt"))
+                "${KDOC_WITHOUT_RETURN_TAG.warnText()} doubleInt"))
     }
 
     @Test
@@ -135,7 +135,7 @@ class KdocMethodsTest {
         """.trimIndent()
 
         lintMethod(KdocMethods(), invalidCode, LintError(1, 12, ruleId,
-            "${KDOC_WITHOUT_RETURN_TAG.warnText()} foo"))
+                "${KDOC_WITHOUT_RETURN_TAG.warnText()} foo"))
     }
 
     @Test
@@ -153,7 +153,7 @@ class KdocMethodsTest {
         """.trimIndent()
 
         lintMethod(KdocMethods(), invalidCode, LintError(1, 13, ruleId,
-            "${KDOC_WITHOUT_THROWS_TAG.warnText()} doubleInt (IllegalStateException)"))
+                "${KDOC_WITHOUT_THROWS_TAG.warnText()} doubleInt (IllegalStateException)"))
     }
 
     @Test
@@ -193,6 +193,6 @@ class KdocMethodsTest {
         """.trimIndent()
 
         lintMethod(KdocMethods(), invalidCode, LintError(1, 1, ruleId,
-        "${KDOC_WITHOUT_THROWS_TAG.warnText()} doubleInt (IllegalAccessException)"))
+                "${KDOC_WITHOUT_THROWS_TAG.warnText()} doubleInt (IllegalAccessException)"))
     }
 }
