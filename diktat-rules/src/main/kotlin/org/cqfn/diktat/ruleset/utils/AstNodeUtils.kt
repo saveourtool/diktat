@@ -109,9 +109,12 @@ fun ASTNode.allSiblings(withSelf: Boolean = false): List<ASTNode> =
 
 fun ASTNode.isNodeFromCompanionObject(): Boolean {
     val parent = this.treeParent
-    if (parent.elementType == ElementType.CLASS_BODY) {
-        if (parent.treeParent.elementType == ElementType.OBJECT_DECLARATION) {
-            return true;
+    if (parent != null) {
+        val grandParent = parent.treeParent
+        if (grandParent != null && grandParent.elementType == ElementType.OBJECT_DECLARATION) {
+            if (grandParent.findLeafWithSpecificType(ElementType.COMPANION_KEYWORD) != null) {
+                return true;
+            }
         }
     }
     return false

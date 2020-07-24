@@ -28,7 +28,7 @@ import kotlin.text.toUpperCase
  * This visitor covers rules:  1.2, 1.3, 1.4, 1.5 of Huawei code style. It covers following rules:
  * 1) All identifiers should use only ASCII letters or digits, and the names should match regular expressions \w{2,64}
  *  exceptions: variables like i,j,k
- * 2) constants from object companion should have UPPER_SNAKE_CASE
+ * 2) constants from companion object should have UPPER_SNAKE_CASE
  * 3) fields/variables should have lowerCamelCase and should not contain prefixes
  * 4) interfaces/classes/annotations/enums/object names should be in PascalCase
  * 5) methods: function names should be in camel case, methods that return boolean value should have "is"/"has" prefix
@@ -173,12 +173,11 @@ class IdentifierNaming : Rule("identifier-naming") {
      * fix: fixing object name to PascalCase
      */
     private fun checkObjectNaming(node: ASTNode): List<ASTNode> {
-        val objectName: ASTNode? = node.getIdentifierName()
-        // checking object naming, the only extension is "companion" keyword
-        if (!(objectName!!.text.isPascalCase()) && objectName.text != "companion") {
+        // if this object is companion object or anonymous object - it does not have any name
+        val objectName: ASTNode = node.getIdentifierName() ?: return listOf()
+        if (!objectName.text.isPascalCase()) {
             OBJECT_NAME_INCORRECT.warnAndFix(configRules, emitWarn, isFixMode, objectName.text, objectName.startOffset) {
                 (objectName as LeafPsiElement).replaceWithText(objectName.text.toPascalCase())
-
             }
         }
 
