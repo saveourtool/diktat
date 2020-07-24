@@ -107,7 +107,6 @@ fun ASTNode.findChildAfter(afterThisNodeType: IElementType, childNodeType: IElem
 fun ASTNode.allSiblings(withSelf: Boolean = false): List<ASTNode> =
         siblings(false).toList() + (if (withSelf) listOf(this) else listOf()) + siblings(true)
 
-// applicable for PROPERTY element type only
 fun ASTNode.isNodeFromCompanionObject(): Boolean {
     val parent = this.treeParent
     if (parent != null) {
@@ -116,6 +115,21 @@ fun ASTNode.isNodeFromCompanionObject(): Boolean {
             if (grandParent.findLeafWithSpecificType(ElementType.COMPANION_KEYWORD) != null) {
                 return true;
             }
+        }
+    }
+    return false
+}
+
+fun ASTNode.isConstant(): Boolean {
+    return (this.isNodeFromFileLevel() || this.isNodeFromObject()) && this.isValProperty() && this.isConst()
+}
+
+fun ASTNode.isNodeFromObject(): Boolean {
+    val parent = this.treeParent
+    if (parent != null && parent.elementType == ElementType.CLASS_BODY) {
+        val grandParent = parent.treeParent
+        if (grandParent != null && grandParent.elementType == ElementType.OBJECT_DECLARATION) {
+            return true;
         }
     }
     return false

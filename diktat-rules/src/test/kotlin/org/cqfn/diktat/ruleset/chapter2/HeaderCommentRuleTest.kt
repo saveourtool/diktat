@@ -9,8 +9,8 @@ import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_NOT_BEFORE_PACKAGE
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_WRONG_FORMAT
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule
-import org.cqfn.diktat.ruleset.utils.TEST_FILE_NAME
-import org.cqfn.diktat.ruleset.utils.lintMethod
+import org.cqfn.diktat.util.TEST_FILE_NAME
+import org.cqfn.diktat.util.lintMethod
 import org.junit.Test
 
 class HeaderCommentRuleTest {
@@ -36,7 +36,7 @@ class HeaderCommentRuleTest {
     @Test
     fun `file header comment (positive example)`() {
         lintMethod(HeaderCommentRule(),
-            """
+                """
                 $copyrightBlock
                 /**
                  * Very useful description, why this file has two classes
@@ -49,14 +49,14 @@ class HeaderCommentRuleTest {
 
                 class Example2 { }
             """.trimIndent(),
-            rulesConfigList = rulesConfigList
+                rulesConfigList = rulesConfigList
         )
     }
 
     @Test
     fun `file header comment with Chinese version copyright (positive example)`() {
         lintMethod(HeaderCommentRule(),
-            """
+                """
                 /*
                  * 版权所有 (c) 华为技术有限公司 2012-2020
                  */
@@ -71,14 +71,14 @@ class HeaderCommentRuleTest {
 
                 class Example2 { }
             """.trimIndent(),
-            rulesConfigList = rulesConfigListCn
+                rulesConfigList = rulesConfigListCn
         )
     }
 
     @Test
     fun `copyright should not be placed inside KDoc`() {
         lintMethod(HeaderCommentRule(),
-            """
+                """
                 /**
                  * Copyright (c) Huawei Technologies Co., Ltd. 2012-2020. All rights reserved.
                  */
@@ -93,15 +93,15 @@ class HeaderCommentRuleTest {
 
                 class Example2 { }
             """.trimIndent(),
-            LintError(1, 1, ruleId, "${HEADER_MISSING_OR_WRONG_COPYRIGHT.warnText()} $TEST_FILE_NAME", false),
-            rulesConfigList = rulesConfigList
+                LintError(1, 1, ruleId, "${HEADER_MISSING_OR_WRONG_COPYRIGHT.warnText()} $TEST_FILE_NAME", false),
+                rulesConfigList = rulesConfigList
         )
     }
 
     @Test
     fun `copyright should not be placed inside KDoc (Chinese version)`() {
         lintMethod(HeaderCommentRule(),
-            """
+                """
                 /**
                  * 版权所有 (c) 华为技术有限公司 2012-2020
                  */
@@ -116,15 +116,15 @@ class HeaderCommentRuleTest {
 
                 class Example2 { }
             """.trimIndent(),
-            LintError(1, 1, ruleId, "${HEADER_MISSING_OR_WRONG_COPYRIGHT.warnText()} $TEST_FILE_NAME", false),
-            rulesConfigList = rulesConfigListCn
+                LintError(1, 1, ruleId, "${HEADER_MISSING_OR_WRONG_COPYRIGHT.warnText()} $TEST_FILE_NAME", false),
+                rulesConfigList = rulesConfigListCn
         )
     }
 
     @Test
     fun `copyright should not be placed inside single line comment`() {
         lintMethod(HeaderCommentRule(),
-            """
+                """
                 // Copyright (c) Huawei Technologies Co., Ltd. 2012-2020. All rights reserved.
                 /**
                  * Very useful description, why this file has two classes
@@ -137,15 +137,15 @@ class HeaderCommentRuleTest {
 
                 class Example2 { }
             """.trimIndent(),
-            LintError(1, 1, ruleId, "${HEADER_MISSING_OR_WRONG_COPYRIGHT.warnText()} $TEST_FILE_NAME", false),
-            rulesConfigList = rulesConfigList
+                LintError(1, 1, ruleId, "${HEADER_MISSING_OR_WRONG_COPYRIGHT.warnText()} $TEST_FILE_NAME", false),
+                rulesConfigList = rulesConfigList
         )
     }
 
     @Test
     fun `@author tag is not allowed in header comment`() {
         lintMethod(HeaderCommentRule(),
-            """
+                """
                 |$copyrightBlock
                 |/**
                 | * Description of this file
@@ -156,45 +156,45 @@ class HeaderCommentRuleTest {
                 |
                 |class Example { }
             """.trimMargin(),
-            LintError(4, 1, ruleId, "${HEADER_CONTAINS_DATE_OR_AUTHOR.warnText()} * @author anonymous"),
-            rulesConfigList = rulesConfigList
+                LintError(4, 1, ruleId, "${HEADER_CONTAINS_DATE_OR_AUTHOR.warnText()} * @author anonymous"),
+                rulesConfigList = rulesConfigList
         )
     }
 
     @Test
     fun `file with zero classes should have header KDoc`() {
         lintMethod(HeaderCommentRule(),
-            """
+                """
                 package org.cqfn.diktat.example
 
                 val CONSTANT = 42
 
                 fun foo(): Int = 42
             """.trimIndent(),
-            LintError(1, 1, ruleId, "${HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warnText()} $TEST_FILE_NAME", false),
-            rulesConfigList = rulesConfigList
+                LintError(1, 1, ruleId, "${HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warnText()} $TEST_FILE_NAME", false),
+                rulesConfigList = rulesConfigList
         )
     }
 
     @Test
     fun `file with multiple classes should have header KDoc`() {
         lintMethod(HeaderCommentRule(),
-            """
+                """
                 package org.cqfn.diktat.example
 
                 class Example1 { }
 
                 class Example2 { }
             """.trimIndent(),
-            LintError(1, 1, ruleId, "${HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warnText()} $TEST_FILE_NAME", false),
-            rulesConfigList = rulesConfigList
+                LintError(1, 1, ruleId, "${HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warnText()} $TEST_FILE_NAME", false),
+                rulesConfigList = rulesConfigList
         )
     }
 
     @Test
     fun `header KDoc should have newline after it`() {
         lintMethod(HeaderCommentRule(),
-            """
+                """
                |$copyrightBlock
                |/**
                | * Very useful description
@@ -204,15 +204,15 @@ class HeaderCommentRuleTest {
                |
                |class Example { }
             """.trimMargin(),
-            LintError(4, 1, ruleId, "${HEADER_WRONG_FORMAT.warnText()} header KDoc should have a new line after", true),
-            rulesConfigList = rulesConfigList
+                LintError(4, 1, ruleId, "${HEADER_WRONG_FORMAT.warnText()} header KDoc should have a new line after", true),
+                rulesConfigList = rulesConfigList
         )
     }
 
     @Test
     fun `header KDoc should be placed before package and imports`() {
         lintMethod(HeaderCommentRule(),
-            """
+                """
                 |package org.cqfn.diktat.example
                 |
                 |import org.cqfn.diktat.example.Foo
@@ -226,8 +226,8 @@ class HeaderCommentRuleTest {
                 | */
                 |class Example { }
             """.trimMargin(),
-            LintError(5, 1, ruleId, "${HEADER_NOT_BEFORE_PACKAGE.warnText()} /TestFileName.kt", true),
-            rulesConfigList = listOf()
+                LintError(5, 1, ruleId, "${HEADER_NOT_BEFORE_PACKAGE.warnText()} /TestFileName.kt", true),
+                rulesConfigList = listOf()
         )
     }
 }
