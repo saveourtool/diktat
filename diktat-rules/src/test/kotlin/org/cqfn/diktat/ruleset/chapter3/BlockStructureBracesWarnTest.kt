@@ -72,8 +72,7 @@ class BlockStructureBracesWarnTest {
                     |fun foo() {
                     |    if (x < -5) {
                     |       goo()
-                    |    }
-                    |    else if (x > 5) {
+                    |    } else if (x > 5) {
                     |       hoo()
                     |    } else {
                     |       koo() 

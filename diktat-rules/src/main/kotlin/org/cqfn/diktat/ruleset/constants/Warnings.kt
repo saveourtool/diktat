@@ -68,7 +68,7 @@ enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean
     NO_BRACES_IN_CONDITIONALS_AND_LOOPS(48, true, "in if, else, when, for, do, and while statements braces should be used. Exception: single line if statement."),
     WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES(49, true, "the declaration part of a class-like code structures (class/interface/etc.) should be in the proper order"),
     BLANK_LINE_BETWEEN_PROPERTIES(50, true, "there should be no blank lines between properties without comments; comment or KDoc on property should have blank line before"),
-    BRACES_BLOCK_STRUCTURE_ERROR(51, false, "braces should follow 1TBS style")
+    BRACES_BLOCK_STRUCTURE_ERROR(51, true, "braces should follow 1TBS style")
     ;
 
     override fun ruleName(): String = this.name
