@@ -306,7 +306,7 @@ class KdocFormatting : Rule("kdoc-formatting") {
 
     private fun ASTNode.previousAsterisk() = prevSibling { it.elementType == KDOC_LEADING_ASTERISK }
 
-    private fun ASTNode.applyToPrevSibling(elementType: IElementType, f: ASTNode.() -> Unit) {
-        prevSibling { it.elementType == elementType }?.apply(f)
+    private fun ASTNode.applyToPrevSibling(elementType: IElementType, consumer: ASTNode.() -> Unit) {
+        prevSibling { it.elementType == elementType }?.apply(consumer)
     }
 }

@@ -72,7 +72,7 @@ Then, add this plugin:
       <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-antrun-plugin</artifactId>
-          <version>1.8</version>
+          <version>3.0.0</version>
           <executions>
               <execution>
                   <id>diktat</id>
@@ -81,7 +81,8 @@ Then, add this plugin:
                       <target name="ktlint">
                           <java taskname="ktlint" dir="${basedir}" fork="true" failonerror="true"
                                 classpathref="maven.plugin.classpath" classname="com.pinterest.ktlint.Main">
-                              <arg value="src/**/*.kt"/>
+                              <arg value="src/main/**/*.kt"/>
+                              <arg value="src/test/kotlin/**/*.kt"/>
                           </java>
                       </target>
                   </configuration>
@@ -95,11 +96,23 @@ Then, add this plugin:
                   <groupId>com.pinterest</groupId>
                   <artifactId>ktlint</artifactId>
                   <version>0.37.1-fork</version> <!-- use this fork to be compatible with diktat -->
+                  <exclusions>
+                      <exclusion>  <!-- without this exclusion both rulesets are enabled which we discourage -->
+                          <groupId>com.pinterest.ktlint</groupId>
+                          <artifactId>ktlint-ruleset-standard</artifactId>
+                      </exclusion>
+                  </exclusions>
               </dependency>
               <dependency>
                   <groupId>org.cqfn.diktat</groupId>
                   <artifactId>diktat-rules</artifactId>
                   <version>1.0.0</version> <!-- replace it with diktat latest version -->
+                  <exclusions>
+                      <exclusion>
+                          <groupId>org.slf4j</groupId>
+                          <artifactId>slf4j-log4j12</artifactId>
+                      </exclusion>
+                  </exclusions>
               </dependency>
           </dependencies>
       </plugin>
