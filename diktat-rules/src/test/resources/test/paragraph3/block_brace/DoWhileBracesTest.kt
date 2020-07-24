@@ -16,7 +16,7 @@ fun foo3() {
     do
     {
         println("hellp")
-    } while (z > 0)
+    }while (z > 0)
 }
 
 fun foo4() {

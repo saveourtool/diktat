@@ -28,3 +28,11 @@ fun foo3() {
     else
         println(7)
 }
+
+fun foo4() {
+    if (x > 4) {
+        println(4)
+    } else if (x < 4) {
+        println(5)
+    }
+}
