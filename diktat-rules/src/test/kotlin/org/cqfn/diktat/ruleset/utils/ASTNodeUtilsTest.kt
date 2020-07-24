@@ -385,6 +385,20 @@ class ASTNodeUtilsTest {
     }
 
     @Test
+    fun `test node is from object `() {
+        val code = """
+            object Something{
+                    val id = 1
+            }
+        """.trimIndent()
+        applyToCode(code) { node ->
+            if (node.elementType == PROPERTY) {
+                Assert.assertTrue(node.isNodeFromObject())
+            }
+        }
+    }
+
+    @Test
     fun `test isNodeFromFileLevel - node from file level`() {
         val code = """
             class Test() {
