@@ -5,7 +5,7 @@ import org.junit.Test
 import org.cqfn.diktat.ruleset.constants.Warnings.*
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocComments
-import org.cqfn.diktat.ruleset.utils.lintMethod
+import org.cqfn.diktat.util.lintMethod
 
 class KdocWarnTest {
     private val ruleId: String = "$DIKTAT_RULE_SET_ID:kdoc-comments"
@@ -30,10 +30,10 @@ class KdocWarnTest {
 
                 """.trimIndent()
         lintMethod(KdocComments(), code,
-            LintError(1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeGoodName"),
-            LintError(6, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeOtherGoodName"),
-            LintError(9, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeNewGoodName"),
-            LintError(12, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeOtherNewGoodName")
+                LintError(1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeGoodName"),
+                LintError(6, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeOtherGoodName"),
+                LintError(9, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeNewGoodName"),
+                LintError(12, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeOtherNewGoodName")
         )
     }
 
@@ -45,7 +45,7 @@ class KdocWarnTest {
                     }
                 """.trimIndent()
         lintMethod(KdocComments(), code, LintError(
-            1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeGoodName")
+                1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeGoodName")
         )
     }
 
@@ -61,8 +61,8 @@ class KdocWarnTest {
                     }
                 """.trimIndent()
         lintMethod(KdocComments(), code,
-            LintError(1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} someGoodName"),
-            LintError(4, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} someGoodNameNew")
+                LintError(1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} someGoodName"),
+                LintError(4, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} someGoodNameNew")
         )
     }
 
@@ -110,9 +110,9 @@ class KdocWarnTest {
                     }
                 """.trimIndent()
         lintMethod(KdocComments(), code,
-            LintError(5, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} variable"),
-            LintError(7, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} perfectFunction"),
-            LintError(13, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} InternalClass")
+                LintError(5, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} variable"),
+                LintError(7, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} perfectFunction"),
+                LintError(13, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} InternalClass")
         )
     }
 

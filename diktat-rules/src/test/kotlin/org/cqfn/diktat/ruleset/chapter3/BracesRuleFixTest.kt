@@ -1,8 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter3
 
 import org.cqfn.diktat.ruleset.rules.BracesInConditionalsAndLoopsRule
-import org.cqfn.diktat.ruleset.utils.FixTestBase
-import org.junit.Ignore
+import org.cqfn.diktat.util.FixTestBase
 import org.junit.Test
 
 class BracesRuleFixTest : FixTestBase("test/paragraph3/braces", BracesInConditionalsAndLoopsRule()) {

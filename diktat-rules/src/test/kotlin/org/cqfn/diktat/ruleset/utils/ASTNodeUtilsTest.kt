@@ -323,7 +323,6 @@ class ASTNodeUtilsTest {
 
     @Test
     fun `test isNodeFromCompanionObject`() {
-
         var code = """
             class Something{
             	companion object {
@@ -356,6 +355,20 @@ class ASTNodeUtilsTest {
         }
         Assert.assertEquals(1, firstCounter)
         Assert.assertEquals(1, secondCounter)
+    }
+
+    @Test
+    fun `test node is from object `() {
+        val code = """
+            object Something{
+                    val id = 1
+            }
+        """.trimIndent()
+        applyToCode(code) { node ->
+            if (node.elementType == PROPERTY) {
+                Assert.assertTrue(node.isNodeFromObject())
+            }
+        }
     }
 
     @Test

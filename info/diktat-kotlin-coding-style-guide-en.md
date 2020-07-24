@@ -246,18 +246,21 @@ Correct examples：
 ### <a name="r1.6"></a> Rule 1.6 Constant names should be in UPPER case, words separated by underscore
 
 1. Constants are attributes created with const keyword, or top-level/"val" local variables of an object that hold immutable data.
+ In most cases constants can be identified as const val property from object/companion object/file top level
  These variables contain fixed constant value that generaly should never be changed by a programmer.
  This includes basic types, strings, immutable types and immutable collections of immutable types. If any state of an object can be changed, then this is not a constant.
 
-  2. Constant names should contain only UPPERCASE letters, separated by underscores. They should have val or const val modifier to explicitly make them final.
-  3. Such objects that have immutable content like Logger, Lock, e.t.c. can be in uppercase as constant or can have camel case as regular variables.
-  4. Don't use magic numbers, use meaningful constants instead. SQL or logging strings should not be treated as "magic numbers" and should not be defined as string constants;
-     "Magic constants" like NUM_FIVE = 5 or NUM_5 = 5 should not be treated as constants. Because in case someone will change it to NUM_5 = 50 or 55 it will be easy to make a mistake. 
-     In general, such constants can represent business logic values like measures, capacity, scope, location, tax rate, promotional discounts, power base multiples in the algorithm, etc.
-     How to avoid magic numbers:
-     - use library functions and APIs. For example, instead of checking that size == 0 use isEmpty() function. To work with time use built-ins from java.time API.
-     - enumerations can be used for naming patterns, see [Recommended usage scenario for enumeration in 3.9] (# s3.9)
-     
+2. Constant names should contain only UPPERCASE letters, separated by underscores. They should have val or const val modifier to explicitly make them final.
+
+3. Such objects that have immutable content like Logger, Lock, e.t.c. can be in uppercase as constant or can have camel case as regular variables.
+
+4. Don't use magic numbers, use meaningful constants instead. SQL or logging strings should not be treated as "magic numbers" and should not be defined as string constants;
+ "Magic constants" like NUM_FIVE = 5 or NUM_5 = 5 should not be treated as constants. Because in case someone will change it to NUM_5 = 50 or 55 it will be easy to make a mistake. 
+ In general, such constants can represent business logic values like measures, capacity, scope, location, tax rate, promotional discounts, power base multiples in the algorithm, etc.
+ How to avoid magic numbers:
+ - use library functions and APIs. For example, instead of checking that size == 0 use isEmpty() function. To work with time use built-ins from java.time API.
+ - enumerations can be used for naming patterns, see [Recommended usage scenario for enumeration in 3.9] (# s3.9)
+ 
 Bad example:
 
  ```kotlin
@@ -749,7 +752,7 @@ if (condition) {
 For *non-empty* code blocks with braces, they should follow the K&R style (1TBS or OTBS style):
  - The opening brace is on the same same line with the first line of the code block
  - The closing brace is on it's new line
- - The closing brace can be followed by a new line or `else`, `finally` or `catch` keywords
+ - The closing brace can be followed by a new line. Only exceptions are: `else`, `finally` or `catch` keywords. These keywords should not be split from the closing brace by a newline.
  
  Good example：
 
