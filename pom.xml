@@ -240,7 +240,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>1.8</version>
                 <executions>
                     <execution>
                         <id>diktat</id>
@@ -249,8 +249,7 @@
                             <target name="ktlint">
                                 <java taskname="ktlint" dir="${basedir}" fork="true" failonerror="true"
                                       classpathref="maven.plugin.classpath" classname="com.pinterest.ktlint.Main">
-                                    <arg value="src/main/**/*.kt"/>
-                                    <arg value="src/test/kotlin/**/*.kt"/>
+                                    <arg value="src/**/*.kt"/>
                                 </java>
                             </target>
                         </configuration>
@@ -265,6 +264,11 @@
                         <artifactId>ktlint</artifactId>
                         <version>0.37.1-fork</version>
                         <exclusions>
+                            <!-- exclusions are needed so that custom artifacts from fork will be used -->
+                            <exclusion>
+                                <groupId>com.pinterest.ktlint</groupId>
+                                <artifactId>ktlint-core</artifactId>
+                            </exclusion>
                             <exclusion>
                                 <groupId>com.pinterest.ktlint</groupId>
                                 <artifactId>ktlint-ruleset-standard</artifactId>
@@ -274,13 +278,7 @@
                     <dependency>
                         <groupId>org.cqfn.diktat</groupId>
                         <artifactId>diktat-rules</artifactId>
-                        <version>1.0.1-pre</version>
-                        <exclusions>
-                            <exclusion>
-                                <groupId>org.slf4j</groupId>
-                                <artifactId>slf4j-log4j12</artifactId>
-                            </exclusion>
-                        </exclusions>
+                        <version>1.0.0</version>
                     </dependency>
                 </dependencies>
             </plugin>
