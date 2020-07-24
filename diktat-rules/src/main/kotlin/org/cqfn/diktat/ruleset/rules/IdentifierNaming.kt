@@ -28,7 +28,7 @@ import kotlin.text.toUpperCase
  * This visitor covers rules:  1.2, 1.3, 1.4, 1.5 of Huawei code style. It covers following rules:
  * 1) All identifiers should use only ASCII letters or digits, and the names should match regular expressions \w{2,64}
  *  exceptions: variables like i,j,k
- * 2) constants from object companion should have UPPER_SNAKE_CASE
+ * 2) constants from companion object should have UPPER_SNAKE_CASE
  * 3) fields/variables should have lowerCamelCase and should not contain prefixes
  * 4) interfaces/classes/annotations/enums/object names should be in PascalCase
  * 5) methods: function names should be in camel case, methods that return boolean value should have "is"/"has" prefix
@@ -67,7 +67,7 @@ class IdentifierNaming : Rule("identifier-naming") {
             ElementType.CLASS -> Pair(checkCLassNamings(node), false)
             // covers "object" code blocks
             ElementType.OBJECT_DECLARATION -> Pair(checkObjectNaming(node), false)
-            // covers variables and constants
+            // covers variables (val/var) and constants (const val)
             ElementType.PROPERTY, ElementType.VALUE_PARAMETER -> Pair(checkVariableName(node), true)
             // covers case of enum values
             ElementType.ENUM_ENTRY -> Pair(checkEnumValues(node), false)
@@ -83,47 +83,41 @@ class IdentifierNaming : Rule("identifier-naming") {
     }
 
     /**
-     * all checks for case and naming for vals/vars/constants from companion object
+     * all checks for case and naming for vals/vars/constants
      */
     private fun checkVariableName(node: ASTNode): List<ASTNode> {
-        val variableName: ASTNode? = node.getIdentifierName()
-
+        var variableName: ASTNode = node.getIdentifierName()!!
         // no need to do checks if variables are in a special list with exceptions
-        if (!ONE_CHAR_IDENTIFIERS.contains(variableName!!.text)) {
-            // generally variables with prefixes are not allowed (like mVariable)
-            if (variableName.text.hasPrefix()) {
-                VARIABLE_HAS_PREFIX.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset) {
-                    // FixMe: this correction should be done only after we checked variable case (below)
-                    (variableName as LeafPsiElement).replaceWithText(variableName.text.removePrefix())
-                }
-            }
-
+        if (!ONE_CHAR_IDENTIFIERS.contains(variableName.text)) {
             // variable should not contain only one letter in it's name. This is a bad example: b512
             // but no need to raise a warning here if length of a variable. In this case we will raise IDENTIFIER_LENGTH
             if (variableName.text.containsOneLetterOrZero() && variableName.text.length > 1) {
-                VARIABLE_NAME_INCORRECT.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset) {
-                }
+                VARIABLE_NAME_INCORRECT.warn(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset)
             }
-
             // check for constant variables - check for val from companion object or on global file level
             // it should be in UPPER_CASE, no need to raise this warning if it is one-letter variable
-            if ((node.isNodeFromCompanionObject() || node.isNodeFromFileLevel()) && node.isValProperty() && node.isConst()) {
+            if (node.isConstant()) {
                 if (!variableName.text.isUpperSnakeCase() && variableName.text.length > 1) {
                     CONSTANT_UPPERCASE.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset) {
-                        (variableName as LeafPsiElement).replaceWithText(variableName.text.toUpperCase())
+                        (variableName as LeafPsiElement).replaceWithText(variableName.text.toUpperSnakeCase())
                     }
                 }
-                return listOf(variableName)
-            }
-
-            // variable name should be in camel case. The only exception is a list of industry standard variables like i, j, k.
-            if (!variableName.text.isLowerCamelCase()) {
+            } else if (!variableName.text.isLowerCamelCase()) {
+                // variable name should be in camel case. The only exception is a list of industry standard variables like i, j, k.
                 VARIABLE_NAME_INCORRECT_FORMAT.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset) {
                     // FixMe: cover fixes with tests
                     (variableName as LeafPsiElement).replaceWithText(variableName.text.toLowerCamelCase())
                 }
             }
 
+            // need to get new node in case we have already converted the case before (and replaced the child node)
+            variableName = node.getIdentifierName()!!
+            // generally, variables with prefixes are not allowed (like mVariable, xCode, iValue)
+            if (variableName.text.hasPrefix()) {
+                VARIABLE_HAS_PREFIX.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset) {
+                    (variableName as LeafPsiElement).replaceWithText(variableName.text.removePrefix())
+                }
+            }
         }
         return listOf(variableName)
     }
@@ -148,7 +142,6 @@ class IdentifierNaming : Rule("identifier-naming") {
         }
 
         checkExceptionSuffix(node)
-
         return listOf(className)
     }
 
@@ -180,14 +173,14 @@ class IdentifierNaming : Rule("identifier-naming") {
      * fix: fixing object name to PascalCase
      */
     private fun checkObjectNaming(node: ASTNode): List<ASTNode> {
-        val objectName: ASTNode? = node.getIdentifierName()
-        // checking object naming, the only extension is "companion" keyword
-        if (!(objectName!!.text.isPascalCase()) && objectName.text != "companion") {
+        // if this object is companion object or anonymous object - it does not have any name
+        val objectName: ASTNode = node.getIdentifierName() ?: return listOf()
+        if (!objectName.text.isPascalCase()) {
             OBJECT_NAME_INCORRECT.warnAndFix(configRules, emitWarn, isFixMode, objectName.text, objectName.startOffset) {
                 (objectName as LeafPsiElement).replaceWithText(objectName.text.toPascalCase())
-
             }
         }
+
         return listOf(objectName)
     }
 
@@ -206,6 +199,7 @@ class IdentifierNaming : Rule("identifier-naming") {
                 }
             }
         }
+
         return enumValues
     }
 

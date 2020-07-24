@@ -26,41 +26,41 @@ fun ASTNode.checkLength(range: IntRange): Boolean = this.textLength in range
  * getting first child name with IDENTIFIER type
  */
 fun ASTNode.getIdentifierName(): ASTNode? =
-    this.getChildren(null).find { it.elementType == ElementType.IDENTIFIER }
+        this.getChildren(null).find { it.elementType == ElementType.IDENTIFIER }
 
 /**
  * getting first child name with TYPE_PARAMETER_LIST type
  */
 fun ASTNode.getTypeParameterList(): ASTNode? =
-    this.getChildren(null).find { it.elementType == ElementType.TYPE_PARAMETER_LIST }
+        this.getChildren(null).find { it.elementType == ElementType.TYPE_PARAMETER_LIST }
 
 /**
  * getting all children that have IDENTIFIER type
  */
 fun ASTNode.getAllIdentifierChildren(): List<ASTNode> =
-    this.getChildren(null).filter { it.elementType == ElementType.IDENTIFIER }
+        this.getChildren(null).filter { it.elementType == ElementType.IDENTIFIER }
 
 
 /**
  * obviously returns list with children that match particular element type
  */
 fun ASTNode.getAllChildrenWithType(elementType: IElementType): List<ASTNode> =
-    this.getChildren(null).filter { it.elementType == elementType }
+        this.getChildren(null).filter { it.elementType == elementType }
 
 /**
  * obviously returns first child that match particular element type
  */
 fun ASTNode.getFirstChildWithType(elementType: IElementType): ASTNode? =
-    this.getChildren(null).find { it.elementType == elementType }
+        this.getChildren(null).find { it.elementType == elementType }
 
 /**
  * checks if the node has corresponding child with elementTyp
  */
 fun ASTNode.hasChildOfType(elementType: IElementType): Boolean =
-    this.getFirstChildWithType(elementType) != null
+        this.getFirstChildWithType(elementType) != null
 
 fun ASTNode.hasAnyChildOfTypes(vararg elementType: IElementType): Boolean =
-    elementType.any { this.hasChildOfType(it) }
+        elementType.any { this.hasChildOfType(it) }
 
 /**
  * Method that is trying to find and return child of this node, which
@@ -75,8 +75,8 @@ fun ASTNode.findChildBefore(beforeThisNodeType: IElementType, childNodeType: IEl
             it.subList(0, it.indexOf(anchorNode))
         else it
     }.reversed()
-        .find { it.elementType == childNodeType }
-        ?.let { return it }
+            .find { it.elementType == childNodeType }
+            ?.let { return it }
 
     log.warn("Not able to find a node with type $childNodeType before $beforeThisNodeType")
     return null
@@ -105,13 +105,30 @@ fun ASTNode.findChildAfter(afterThisNodeType: IElementType, childNodeType: IElem
 }
 
 fun ASTNode.allSiblings(withSelf: Boolean = false): List<ASTNode> =
-    siblings(false).toList() + (if (withSelf) listOf(this) else listOf()) + siblings(true)
+        siblings(false).toList() + (if (withSelf) listOf(this) else listOf()) + siblings(true)
 
-// applicable for PROPERTY element type only
 fun ASTNode.isNodeFromCompanionObject(): Boolean {
     val parent = this.treeParent
-    if (parent.elementType == ElementType.CLASS_BODY) {
-        if (parent.treeParent.elementType == ElementType.OBJECT_DECLARATION) {
+    if (parent != null) {
+        val grandParent = parent.treeParent
+        if (grandParent != null && grandParent.elementType == ElementType.OBJECT_DECLARATION) {
+            if (grandParent.findLeafWithSpecificType(ElementType.COMPANION_KEYWORD) != null) {
+                return true;
+            }
+        }
+    }
+    return false
+}
+
+fun ASTNode.isConstant(): Boolean {
+    return (this.isNodeFromFileLevel() || this.isNodeFromObject()) && this.isValProperty() && this.isConst()
+}
+
+fun ASTNode.isNodeFromObject(): Boolean {
+    val parent = this.treeParent
+    if (parent != null && parent.elementType == ElementType.CLASS_BODY) {
+        val grandParent = parent.treeParent
+        if (grandParent != null && grandParent.elementType == ElementType.OBJECT_DECLARATION) {
             return true;
         }
     }
@@ -121,14 +138,14 @@ fun ASTNode.isNodeFromCompanionObject(): Boolean {
 fun ASTNode.isNodeFromFileLevel(): Boolean = this.treeParent.elementType == FILE
 
 fun ASTNode.isValProperty() =
-    this.getChildren(null)
-        .any { it.elementType == ElementType.VAL_KEYWORD }
+        this.getChildren(null)
+                .any { it.elementType == ElementType.VAL_KEYWORD }
 
 fun ASTNode.isConst() = this.findLeafWithSpecificType(CONST_KEYWORD) != null
 
 fun ASTNode.isVarProperty() =
-    this.getChildren(null)
-        .any { it.elementType == ElementType.VAR_KEYWORD }
+        this.getChildren(null)
+                .any { it.elementType == ElementType.VAR_KEYWORD }
 
 fun ASTNode.toLower() {
     (this as LeafPsiElement).replaceWithText(this.text.toLowerCase())
@@ -180,14 +197,14 @@ fun ASTNode.findAllNodesWithSpecificType(elementType: IElementType): List<ASTNod
  * Finds all children of optional type which match the predicate
  */
 fun ASTNode.findChildrenMatching(elementType: IElementType? = null, predicate: (ASTNode) -> Boolean): List<ASTNode> =
-    getChildren(elementType?.let { TokenSet.create(it) })
-        .filter(predicate)
+        getChildren(elementType?.let { TokenSet.create(it) })
+                .filter(predicate)
 
 /**
  * Check if this node has any children of optional type matching the predicate
  */
 fun ASTNode.hasChildMatching(elementType: IElementType? = null, predicate: (ASTNode) -> Boolean): Boolean =
-    findChildrenMatching(elementType, predicate).isNotEmpty()
+        findChildrenMatching(elementType, predicate).isNotEmpty()
 
 /**
  * Converts this AST node and all its children to pretty string representation
@@ -212,13 +229,13 @@ fun ASTNode.prettyPrint(level: Int = 0, maxLevel: Int = -1): String {
  * @param modifierList ASTNode with ElementType.MODIFIER_LIST, can be null if entity has no modifier list
  */
 fun ASTNode?.isAccessibleOutside(): Boolean =
-    if (this != null) {
-        assert(this.elementType == MODIFIER_LIST)
-        this.hasAnyChildOfTypes(PUBLIC_KEYWORD, PROTECTED_KEYWORD, INTERNAL_KEYWORD) ||
-            !this.hasAnyChildOfTypes(PUBLIC_KEYWORD, INTERNAL_KEYWORD, PROTECTED_KEYWORD, PRIVATE_KEYWORD)
-    } else {
-        true
-    }
+        if (this != null) {
+            assert(this.elementType == MODIFIER_LIST)
+            this.hasAnyChildOfTypes(PUBLIC_KEYWORD, PROTECTED_KEYWORD, INTERNAL_KEYWORD) ||
+                    !this.hasAnyChildOfTypes(PUBLIC_KEYWORD, INTERNAL_KEYWORD, PROTECTED_KEYWORD, PRIVATE_KEYWORD)
+        } else {
+            true
+        }
 
 /**
  * removing all newlines in WHITE_SPACE node and replacing it to a one newline saving the initial indenting format
@@ -240,7 +257,8 @@ fun ASTNode.leaveExactlyNumNewLines(num: Int) {
  */
 fun ASTNode.moveChildBefore(childToMove: ASTNode, beforeThisNode: ASTNode?, withNextNode: Boolean = false): ReplacementResult {
     require(childToMove in getChildren(null)) { "can only move child of this node" }
-    require(beforeThisNode?.let { it in getChildren(null) } ?: true) { "can only place node before another child of this node" }
+    require(beforeThisNode?.let { it in getChildren(null) }
+            ?: true) { "can only place node before another child of this node" }
     val movedChild = childToMove.clone() as ASTNode
     val nextMovedChild = childToMove.treeNext?.let { it.clone() as ASTNode }?.takeIf { withNextNode }
     val nextOldChild = childToMove.treeNext.takeIf { withNextNode && it != null }
@@ -254,9 +272,10 @@ fun ASTNode.moveChildBefore(childToMove: ASTNode, beforeThisNode: ASTNode?, with
 }
 
 fun ASTNode.isChildAfterAnother(child: ASTNode, afterChild: ASTNode): Boolean =
-    getChildren(null).indexOf(child) > getChildren(null).indexOf(afterChild)
+        getChildren(null).indexOf(child) > getChildren(null).indexOf(afterChild)
+
 fun ASTNode.isChildAfterGroup(child: ASTNode, group: List<ASTNode>): Boolean =
-    getChildren(null).indexOf(child) > (group.map { getChildren(null).indexOf(it) }.max() ?: 0)
+        getChildren(null).indexOf(child) > (group.map { getChildren(null).indexOf(it) }.max() ?: 0)
 
 fun ASTNode.isChildBeforeAnother(child: ASTNode, beforeChild: ASTNode): Boolean = areChildrenBeforeGroup(listOf(child), listOf(beforeChild))
 fun ASTNode.isChildBeforeGroup(child: ASTNode, group: List<ASTNode>): Boolean = areChildrenBeforeGroup(listOf(child), group)

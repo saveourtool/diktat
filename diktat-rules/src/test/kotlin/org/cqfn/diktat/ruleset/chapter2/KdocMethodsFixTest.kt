@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter2
 
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocMethods
-import org.cqfn.diktat.ruleset.utils.FixTestBase
+import org.cqfn.diktat.util.FixTestBase
 import org.junit.Test
 
 class KdocMethodsFixTest : FixTestBase("test/paragraph2/kdoc/package/src/main/kotlin/org/cqfn/diktat/kdoc/methods", KdocMethods()) {

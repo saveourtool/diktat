@@ -5,7 +5,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.files.FileSize
-import org.cqfn.diktat.ruleset.utils.lintMethod
+import org.cqfn.diktat.util.lintMethod
 import org.junit.Test
 import java.io.File
 

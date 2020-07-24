@@ -8,7 +8,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_THROWS_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_ON_FUNCTION
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocMethods
-import org.cqfn.diktat.ruleset.utils.lintMethod
+import org.cqfn.diktat.util.lintMethod
 import org.junit.Test
 
 class KdocMethodsTest {
@@ -120,7 +120,9 @@ class KdocMethodsTest {
             fun addInts(a: Int, b: Int): Int = a + b
         """.trimIndent()
 
-        lintMethod(KdocMethods(), invalidCode, LintError(1, 12, ruleId, "${KDOC_WITHOUT_PARAM_TAG.warnText()} addInts (b)"))
+        lintMethod(KdocMethods(), invalidCode, LintError(1, 12, ruleId,
+                "${KDOC_WITHOUT_PARAM_TAG.warnText()} addInts (b)")
+        )
     }
 
     @Test

@@ -2,6 +2,7 @@ package org.cqfn.diktat.ruleset.utils
 
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import org.assertj.core.api.Assertions
+import org.cqfn.diktat.util.applyToCode
 import org.junit.Assert
 import org.junit.Test
 

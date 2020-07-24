@@ -1,4 +1,4 @@
-package org.cqfn.diktat.ruleset.utils
+package org.cqfn.diktat.util
 
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.LintError
@@ -8,6 +8,7 @@ import org.assertj.core.api.Assertions
 import org.assertj.core.api.SoftAssertions
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.cqfn.diktat.ruleset.utils.log
 
 const val TEST_FILE_NAME = "/TestFileName.kt"
 
@@ -22,7 +23,7 @@ fun lintMethod(rule: Rule,
             KtLint.Params(
                     fileName = fileName ?: TEST_FILE_NAME,
                     text = code,
-                    ruleSets = listOf(DiktatRuleSetProviderTest(rule, rulesConfigList).get()),
+                    ruleSets = listOf(DiktatRuleSetProvider4Test(rule, rulesConfigList).get()),
                     cb = { e, _ -> res.add(e) }
             )
     )
@@ -45,7 +46,7 @@ internal fun Rule.format(text: String, fileName: String,
     return KtLint.format(
             KtLint.Params(
                     text = text,
-                    ruleSets = listOf(DiktatRuleSetProviderTest(this, rulesConfigList).get()),
+                    ruleSets = listOf(DiktatRuleSetProvider4Test(this, rulesConfigList).get()),
                     fileName = fileName,
                     cb = { lintError, _ ->
                         log.warn("Received linting error: $lintError")
