@@ -20,7 +20,9 @@ import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.WHEN_CONDITION_WITH_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.prevSibling
+import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_PARAM_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_RETURN_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_THROWS_TAG
@@ -31,10 +33,13 @@ import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.getIdentifierName
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.cqfn.diktat.ruleset.utils.hasKnownKDocTag
+import org.cqfn.diktat.ruleset.utils.hasTestAnnotation
 import org.cqfn.diktat.ruleset.utils.insertTagBefore
 import org.cqfn.diktat.ruleset.utils.isAccessibleOutside
+import org.cqfn.diktat.ruleset.utils.isLocatedInTest
 import org.cqfn.diktat.ruleset.utils.kDocTags
 import org.cqfn.diktat.ruleset.utils.parameterNames
+import org.cqfn.diktat.ruleset.utils.splitPathToDirs
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -67,8 +72,12 @@ class KdocMethods : Rule("kdoc-methods") {
         isFixMode = autoCorrect
         emitWarn = emit
 
-        if (node.elementType == FUN && node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside()) {
-            checkSignatureDescription(node)
+        if (node.elementType == FUN &&
+                node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside()) {
+            val config = KdocMethodsConfiguration(configRules.getRuleConfig(MISSING_KDOC_ON_FUNCTION)?.configuration ?: mapOf())
+            if (!node.hasTestAnnotation() && !node.isLocatedInTest(params.fileName!!.splitPathToDirs(), config.testAnchors)) {
+                checkSignatureDescription(node)
+            }
         }
     }
 
@@ -203,4 +212,11 @@ class KdocMethods : Rule("kdoc-methods") {
             node.addChild(LeafPsiElement(KDOC, kDocTemplate), node.firstChildNode)
         }
     }
+}
+
+private class KdocMethodsConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
+    /**
+     * Names of directories which indicate that this is path to tests. Will be checked like "src/$testAnchor" for each entry.
+     */
+    val testAnchors = config.getOrDefault("testDirs", "test").split(',')
 }
