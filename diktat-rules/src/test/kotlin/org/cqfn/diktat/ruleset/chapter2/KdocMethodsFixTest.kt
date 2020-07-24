@@ -11,6 +11,11 @@ class KdocMethodsFixTest : FixTestBase("test/paragraph2/kdoc/methods", KdocMetho
     }
 
     @Test
+    fun `KDoc template should be placed before modifiers`() {
+        fixAndCompare("MissingKdocWithModifiersExpected.kt", "MissingKdocWithModifiersTest.kt")
+    }
+
+    @Test
     fun `Rule should not suggest empty KDoc templates`() {
         fixAndCompare("EmptyKdocExpected.kt", "EmptyKdocTest.kt")
     }
