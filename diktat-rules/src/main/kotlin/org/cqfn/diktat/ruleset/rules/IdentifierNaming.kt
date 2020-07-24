@@ -180,9 +180,8 @@ class IdentifierNaming : Rule("identifier-naming") {
      * fix: fixing object name to PascalCase
      */
     private fun checkObjectNaming(node: ASTNode): List<ASTNode> {
-        val objectName: ASTNode? = node.getIdentifierName()
-        // if this object is companion object - it does not have any name
-        if (objectName == null) return listOf()
+        // if this object is companion object or anonymous object - it does not have any name
+        val objectName: ASTNode = node.getIdentifierName() ?: return listOf()
         if (!objectName.text.isPascalCase()) {
             OBJECT_NAME_INCORRECT.warnAndFix(configRules, emitWarn, isFixMode, objectName.text, objectName.startOffset) {
                 (objectName as LeafPsiElement).replaceWithText(objectName.text.toPascalCase())
