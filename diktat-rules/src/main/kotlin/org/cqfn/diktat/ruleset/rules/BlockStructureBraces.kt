@@ -76,7 +76,6 @@ class BlockStructureBraces : Rule("block-structure") {
         checkCloseBrace(node, configuration)
     }
 
-
     private fun checkClass(node: ASTNode, configuration: BlockStructureBracesConfiguration) {
         if (node.hasChildOfType(CLASS_BODY)) {
             checkOpenBraceOnSameLine(node, CLASS_BODY, configuration)
@@ -89,8 +88,8 @@ class BlockStructureBraces : Rule("block-structure") {
         val catchBlocks = tryBlock.catchClauses.map { it.node }
         val finallyBlock = tryBlock.finallyBlock?.node
         checkOpenBraceOnSameLine(tryBlock.node, BLOCK, configuration)
-        var allMiddleSpaceNode = node.findAllNodesWithSpecificType(CATCH).map { it.treePrev }
-        checkMidBrace(allMiddleSpaceNode, node, CATCH_KEYWORD)
+        var allMiddleSpaceNodes = node.findAllNodesWithSpecificType(CATCH).map { it.treePrev }
+        checkMidBrace(allMiddleSpaceNodes, node, CATCH_KEYWORD)
         catchBlocks.forEach {
             checkOpenBraceOnSameLine(it, BLOCK, configuration)
             checkCloseBrace(it.findChildByType(BLOCK)!!, configuration)
@@ -98,8 +97,8 @@ class BlockStructureBraces : Rule("block-structure") {
         if (finallyBlock != null) {
             checkOpenBraceOnSameLine(finallyBlock, BLOCK, configuration)
             checkCloseBrace(finallyBlock.findChildByType(BLOCK)!!, configuration)
-            allMiddleSpaceNode = node.findAllNodesWithSpecificType(FINALLY).map { it.treePrev }
-            checkMidBrace(allMiddleSpaceNode, node, FINALLY_KEYWORD)
+            allMiddleSpaceNodes = node.findAllNodesWithSpecificType(FINALLY).map { it.treePrev }
+            checkMidBrace(allMiddleSpaceNodes, node, FINALLY_KEYWORD)
         }
     }
 
