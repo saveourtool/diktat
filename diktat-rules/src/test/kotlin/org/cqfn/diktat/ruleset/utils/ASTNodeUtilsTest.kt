@@ -331,7 +331,7 @@ class ASTNodeUtilsTest {
 
         applyToCode(code) { node ->
             if (node.elementType == PROPERTY) {
-                Assert.assertTrue(!node.isNodeFromCompanionObject())
+                Assert.assertFalse(node.isNodeFromCompanionObject())
             }
         }
 
