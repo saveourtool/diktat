@@ -1,4 +1,4 @@
-package org.cqfn.diktat.ruleset.utils
+package org.cqfn.diktat.util
 
 import com.pinterest.ktlint.core.Rule
 import org.cqfn.diktat.common.config.rules.RulesConfig

@@ -3,7 +3,7 @@ package org.cqfn.diktat.ruleset.chapter2
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_MISSING_OR_WRONG_COPYRIGHT
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_WRONG_FORMAT
 import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule
-import org.cqfn.diktat.ruleset.utils.FixTestBase
+import org.cqfn.diktat.util.FixTestBase
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.junit.Test
 

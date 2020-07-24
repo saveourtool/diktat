@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter2
 
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocFormatting
-import org.cqfn.diktat.ruleset.utils.FixTestBase
+import org.cqfn.diktat.util.FixTestBase
 import org.junit.Test
 
 class KdocFormattingFixTest: FixTestBase("test/paragraph2/kdoc/", KdocFormatting()) {

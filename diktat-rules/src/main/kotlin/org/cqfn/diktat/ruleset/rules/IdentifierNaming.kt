@@ -67,7 +67,7 @@ class IdentifierNaming : Rule("identifier-naming") {
             ElementType.CLASS -> Pair(checkCLassNamings(node), false)
             // covers "object" code blocks
             ElementType.OBJECT_DECLARATION -> Pair(checkObjectNaming(node), false)
-            // covers variables and constants
+            // covers variables (val/var) and constants (const val)
             ElementType.PROPERTY, ElementType.VALUE_PARAMETER -> Pair(checkVariableName(node), true)
             // covers case of enum values
             ElementType.ENUM_ENTRY -> Pair(checkEnumValues(node), false)
@@ -83,47 +83,41 @@ class IdentifierNaming : Rule("identifier-naming") {
     }
 
     /**
-     * all checks for case and naming for vals/vars/constants from companion object
+     * all checks for case and naming for vals/vars/constants
      */
     private fun checkVariableName(node: ASTNode): List<ASTNode> {
-        val variableName: ASTNode? = node.getIdentifierName()
-
+        var variableName: ASTNode = node.getIdentifierName()!!
         // no need to do checks if variables are in a special list with exceptions
-        if (!ONE_CHAR_IDENTIFIERS.contains(variableName!!.text)) {
-            // generally variables with prefixes are not allowed (like mVariable)
-            if (variableName.text.hasPrefix()) {
-                VARIABLE_HAS_PREFIX.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset) {
-                    // FixMe: this correction should be done only after we checked variable case (below)
-                    (variableName as LeafPsiElement).replaceWithText(variableName.text.removePrefix())
-                }
-            }
-
+        if (!ONE_CHAR_IDENTIFIERS.contains(variableName.text)) {
             // variable should not contain only one letter in it's name. This is a bad example: b512
             // but no need to raise a warning here if length of a variable. In this case we will raise IDENTIFIER_LENGTH
             if (variableName.text.containsOneLetterOrZero() && variableName.text.length > 1) {
-                VARIABLE_NAME_INCORRECT.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset) {
-                }
+                VARIABLE_NAME_INCORRECT.warn(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset)
             }
-
             // check for constant variables - check for val from companion object or on global file level
             // it should be in UPPER_CASE, no need to raise this warning if it is one-letter variable
-            if ((node.isNodeFromCompanionObject() || node.isNodeFromFileLevel()) && node.isValProperty() && node.isConst()) {
+            if (node.isConstant()) {
                 if (!variableName.text.isUpperSnakeCase() && variableName.text.length > 1) {
                     CONSTANT_UPPERCASE.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset) {
-                        (variableName as LeafPsiElement).replaceWithText(variableName.text.toUpperCase())
+                        (variableName as LeafPsiElement).replaceWithText(variableName.text.toUpperSnakeCase())
                     }
                 }
-                return listOf(variableName)
-            }
-
-            // variable name should be in camel case. The only exception is a list of industry standard variables like i, j, k.
-            if (!variableName.text.isLowerCamelCase()) {
+            } else if (!variableName.text.isLowerCamelCase()) {
+                // variable name should be in camel case. The only exception is a list of industry standard variables like i, j, k.
                 VARIABLE_NAME_INCORRECT_FORMAT.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset) {
                     // FixMe: cover fixes with tests
                     (variableName as LeafPsiElement).replaceWithText(variableName.text.toLowerCamelCase())
                 }
             }
 
+            // need to get new node in case we have already converted the case before (and replaced the child node)
+            variableName = node.getIdentifierName()!!
+            // generally, variables with prefixes are not allowed (like mVariable, xCode, iValue)
+            if (variableName.text.hasPrefix()) {
+                VARIABLE_HAS_PREFIX.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset) {
+                    (variableName as LeafPsiElement).replaceWithText(variableName.text.removePrefix())
+                }
+            }
         }
         return listOf(variableName)
     }
@@ -148,7 +142,6 @@ class IdentifierNaming : Rule("identifier-naming") {
         }
 
         checkExceptionSuffix(node)
-
         return listOf(className)
     }
 
@@ -188,6 +181,7 @@ class IdentifierNaming : Rule("identifier-naming") {
 
             }
         }
+
         return listOf(objectName)
     }
 
@@ -206,6 +200,7 @@ class IdentifierNaming : Rule("identifier-naming") {
                 }
             }
         }
+
         return enumValues
     }
 

@@ -4,7 +4,7 @@ import com.pinterest.ktlint.core.LintError
 import org.cqfn.diktat.ruleset.constants.Warnings.NO_BRACES_IN_CONDITIONALS_AND_LOOPS
 import org.cqfn.diktat.ruleset.rules.BracesInConditionalsAndLoopsRule
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
-import org.cqfn.diktat.ruleset.utils.lintMethod
+import org.cqfn.diktat.util.lintMethod
 import org.junit.Test
 
 class BracesRuleWarnTest {
