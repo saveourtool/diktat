@@ -19,7 +19,9 @@ import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_LITERAL
 import com.pinterest.ktlint.core.ast.ElementType.IF
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
+import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.OBJECT_DECLARATION
+import com.pinterest.ktlint.core.ast.ElementType.OVERRIDE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.SECONDARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.THEN
@@ -43,7 +45,7 @@ import org.jetbrains.kotlin.psi.KtTryExpression
 
 class BlockStructureBraces : Rule("block-structure") {
 
-    companion object{
+    companion object {
         private const val emptyBlockSize = 4
     }
 
@@ -169,7 +171,7 @@ class BlockStructureBraces : Rule("block-structure") {
             CLASS, OBJECT_DECLARATION -> node.findChildByType(CLASS_BODY)!!.findChildByType(LBRACE)!!.treeNext
             else -> node.findChildByType(BLOCK)?.findChildByType(LBRACE)!!.treeNext
         }
-        if (!checkEmptyBlock(newNode.treeParent, configuration, node.elementType))
+        if (!checkEmptyBlock(newNode.treeParent, configuration))
             return
         if (checkBraceNode(newNode)) {
             BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "incorrect same line after opening brace",
@@ -184,19 +186,30 @@ class BlockStructureBraces : Rule("block-structure") {
         checkCloseBrace(closeNode, configuration)
     }
 
-    private fun checkEmptyBlock(node: ASTNode?, configuration: BlockStructureBracesConfiguration, nodeType: IElementType): Boolean {
+    private fun checkEmptyBlock(node: ASTNode?, configuration: BlockStructureBracesConfiguration): Boolean {
         if (node == null)
             return false
-        val listOfMultiBlockTypes = listOf(IF, THEN, ELSE, TRY, CATCH, FINALLY)
-        val isMultiBlock = listOfMultiBlockTypes.contains(nodeType)
         val children = node.getChildren(null)
+        val isOverride = node.treeParent.findChildByType(MODIFIER_LIST)?.findChildByType(OVERRIDE_KEYWORD)
         if (children.size < emptyBlockSize) {
-            if (isMultiBlock) {
-                BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "there can't be empty blocks in multi blocks",
-                        node.startOffset) {}
-            } else if (configuration.emptyBlockNewline != ((children.find { it.elementType == WHITE_SPACE }?.text?.contains("\n")) == true)) {
-                BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "incorrect brace in empty block",
-                        node.startOffset) {}
+            BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "there can't be empty blocks in multi blocks",
+                    node.startOffset) {}
+            if (isOverride != null)
+                return false
+            val space = node.findChildByType(RBRACE)!!.treePrev
+            if (configuration.emptyBlockNewline && !space.text.contains("\n")) {
+                BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "different style for empty block",
+                        node.startOffset) {
+                    if (space.elementType == WHITE_SPACE)
+                        (space.treeNext as LeafPsiElement).replaceWithText("\n")
+                    else
+                        node.addChild(PsiWhiteSpaceImpl("\n"), space.treeNext)
+                }
+            } else if (!configuration.emptyBlockNewline && space.text.contains("\n")) {
+                BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "different style for empty block",
+                        node.startOffset) {
+                    node.removeChild(space)
+                }
             }
         }
         return children.size >= emptyBlockSize
@@ -237,7 +250,7 @@ class BlockStructureBraces : Rule("block-structure") {
     class BlockStructureBracesConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
         val openBrace = config["openBraceNewline"]?.toBoolean() ?: true
         val closeBrace = config["closeBraceNewline"]?.toBoolean() ?: true
-        val emptyBlockNewline = config["emptyBlockNewline"]?.toBoolean() ?: true
+        val emptyBlockNewline = config["styleEmptyBlockWithNewline"]?.toBoolean() ?: true
     }
 }
 

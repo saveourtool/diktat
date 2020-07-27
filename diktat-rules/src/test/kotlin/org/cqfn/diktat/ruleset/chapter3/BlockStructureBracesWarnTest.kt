@@ -29,7 +29,7 @@ class BlockStructureBracesWarnTest {
 
     private val rulesConfigListIgnoreEmptyBlock: List<RulesConfig> = listOf(
             RulesConfig(Warnings.BRACES_BLOCK_STRUCTURE_ERROR.name, true,
-                    mapOf("emptyBlockNewline" to "False"))
+                    mapOf("styleEmptyBlockWithNewline" to "False"))
     )
 
     @Test
@@ -105,6 +105,21 @@ class BlockStructureBracesWarnTest {
     }
 
     @Test
+    fun `check wrong empty block in if expression`() {
+        lintMethod(BlockStructureBraces(),
+                """
+                    |fun foo() {
+                    |    if (x < -5) {
+                    |       goo()
+                    |    } else {}
+                    |}
+                """.trimMargin(),
+                LintError(4, 12, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} there can't be empty blocks in multi blocks", false),
+                LintError(4, 12, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} different style for empty block", false)
+        )
+    }
+
+    @Test
     fun `check if expression with wrong opening brace position`() {
         lintMethod(BlockStructureBraces(),
                 """
@@ -169,11 +184,25 @@ class BlockStructureBracesWarnTest {
     }
 
     @Test
+    fun `check empty fun expression with override annotation`() {
+        lintMethod(BlockStructureBraces(),
+                """
+                    |override fun foo() {
+                    |}
+                """.trimMargin(),
+                LintError(1, 20, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} there can't be empty blocks in multi blocks", false)
+        )
+    }
+
+    @Test
     fun `check empty fun bit with configuration`(){
         lintMethod(BlockStructureBraces(),
                 """
                     |fun foo() {}
-                """.trimMargin(), rulesConfigList = rulesConfigListIgnoreEmptyBlock
+                """.trimMargin(),
+                LintError(1, 11, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} there can't be empty blocks in multi blocks", false),
+                rulesConfigList = rulesConfigListIgnoreEmptyBlock
+
         )
     }
 
@@ -222,6 +251,19 @@ class BlockStructureBracesWarnTest {
                     |       println(i)
                     |}
                 """.trimMargin()
+        )
+    }
+
+    @Test
+    fun `check wrong for expression with empty block but with config`() {
+        lintMethod(BlockStructureBraces(),
+                """
+                    |fun a(x: Int) {
+                    |   for (i in 1..3) {}
+                    |}
+                """.trimMargin(),
+                LintError(2, 20, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} there can't be empty blocks in multi blocks", false),
+                rulesConfigList = rulesConfigListIgnoreEmptyBlock
         )
     }
 

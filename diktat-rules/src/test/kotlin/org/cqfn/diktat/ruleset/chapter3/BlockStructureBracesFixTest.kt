@@ -35,4 +35,9 @@ class BlockStructureBracesFixTest : FixTestBase ("test/paragraph3/block_brace", 
     fun `should fix open and close brace in try-catch-finally expression`() {
         fixAndCompare("TryBraceExpected.kt", "TryBraceTest.kt")
     }
+
+    @Test
+    fun `should fix empty block`() {
+        fixAndCompare("EmptyBlockExpected.kt", "EmptyBlockTest.kt")
+    }
 }
