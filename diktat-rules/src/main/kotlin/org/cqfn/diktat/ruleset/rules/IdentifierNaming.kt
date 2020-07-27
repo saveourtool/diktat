@@ -139,7 +139,7 @@ class IdentifierNaming : Rule("identifier-naming") {
             destructingDeclaration.getAllChildrenWithType(ElementType.DESTRUCTURING_DECLARATION_ENTRY)
                     .map { it.getIdentifierName()!! }
         } else {
-            mutableListOf(node.getIdentifierName()!!)
+            listOf(node.getIdentifierName()!!)
         }
 
         // no need to do checks if variables are in a special list with exceptions
