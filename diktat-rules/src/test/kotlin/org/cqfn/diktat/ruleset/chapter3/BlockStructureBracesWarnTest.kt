@@ -27,6 +27,11 @@ class BlockStructureBracesWarnTest {
                     mapOf("closeBraceNewline" to "False"))
     )
 
+    private val rulesConfigListIgnoreEmptyBlock: List<RulesConfig> = listOf(
+            RulesConfig(Warnings.BRACES_BLOCK_STRUCTURE_ERROR.name, true,
+                    mapOf("emptyBlockNewline" to "False"))
+    )
+
     @Test
     fun `check if expression with new line else`() {
         lintMethod(BlockStructureBraces(),
@@ -79,6 +84,23 @@ class BlockStructureBracesWarnTest {
                     |    }
                     |}
                 """.trimMargin()
+        )
+    }
+
+    @Test
+    fun `check empty block in else expression`() {
+        lintMethod(BlockStructureBraces(),
+                """
+                    |fun foo() {
+                    |    if (x < -5) {
+                    |       goo()
+                    |    } else if (x > 5) {
+                    |       hoo()
+                    |    } else { 
+                    |    }
+                    |}
+                """.trimMargin(),
+                LintError(6, 12, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} there can't be empty blocks in multi blocks", false)
         )
     }
 
@@ -143,6 +165,15 @@ class BlockStructureBracesWarnTest {
                     |   pyu()
                     |}
                 """.trimMargin(), rulesConfigList = rulesConfigListIgnoreOpen
+        )
+    }
+
+    @Test
+    fun `check empty fun bit with configuration`(){
+        lintMethod(BlockStructureBraces(),
+                """
+                    |fun foo() {}
+                """.trimMargin(), rulesConfigList = rulesConfigListIgnoreEmptyBlock
         )
     }
 
