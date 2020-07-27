@@ -21,7 +21,7 @@ open class TestCompare : TestBase {
 
     override fun runTest(): Boolean {
         // FixMe: this is an execution for Windows, should support other OS
-        val testPassed = if (testConfig!!.inPlace) processInPLace() else processToStdOut()
+        val testPassed = if (testConfig!!.inPlace) processInPlace() else processToStdOut()
 
         if (testPassed) {
             log.info("Test <${testConfig!!.testName}> passed")
@@ -43,7 +43,7 @@ open class TestCompare : TestBase {
         return this
     }
 
-    private fun processInPLace(): Boolean {
+    private fun processInPlace(): Boolean {
         val copyTestFile = File("${testFile}_copy")
         FileUtils.copyFile(testFile, copyTestFile)
         executeCommand("cmd /c " + testConfig!!.executionCommand + " " + copyTestFile)

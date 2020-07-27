@@ -5,7 +5,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.BlockStructureBraces
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
-import org.cqfn.diktat.ruleset.utils.lintMethod
+import org.cqfn.diktat.util.lintMethod
 import org.junit.Test
 
 class BlockStructureBracesWarnTest {
@@ -72,8 +72,7 @@ class BlockStructureBracesWarnTest {
                     |fun foo() {
                     |    if (x < -5) {
                     |       goo()
-                    |    }
-                    |    else if (x > 5) {
+                    |    } else if (x > 5) {
                     |       hoo()
                     |    } else {
                     |       koo() 

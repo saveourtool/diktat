@@ -1,11 +1,14 @@
-package org.cqfn.diktat.ruleset.utils
+package org.cqfn.diktat.util
 
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.RuleSet
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.SoftAssertions
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.cqfn.diktat.ruleset.utils.log
 
 const val TEST_FILE_NAME = "/TestFileName.kt"
 
@@ -13,13 +16,14 @@ const val TEST_FILE_NAME = "/TestFileName.kt"
 fun lintMethod(rule: Rule,
                code: String,
                vararg lintErrors: LintError,
-               rulesConfigList: List<RulesConfig>? = null) {
+               rulesConfigList: List<RulesConfig>? = null,
+               fileName: String? = null) {
     val res = mutableListOf<LintError>()
     KtLint.lint(
             KtLint.Params(
-                    fileName = TEST_FILE_NAME,
+                    fileName = fileName ?: TEST_FILE_NAME,
                     text = code,
-                    ruleSets = listOf(DiktatRuleSetProviderTest(rule, rulesConfigList).get()),
+                    ruleSets = listOf(DiktatRuleSetProvider4Test(rule, rulesConfigList).get()),
                     cb = { e, _ -> res.add(e) }
             )
     )
@@ -42,11 +46,30 @@ internal fun Rule.format(text: String, fileName: String,
     return KtLint.format(
             KtLint.Params(
                     text = text,
-                    ruleSets = listOf(DiktatRuleSetProviderTest(this, rulesConfigList).get()),
+                    ruleSets = listOf(DiktatRuleSetProvider4Test(this, rulesConfigList).get()),
                     fileName = fileName,
                     cb = { lintError, _ ->
                         log.warn("Received linting error: $lintError")
                     }
+            )
+    )
+}
+
+internal fun applyToCode(code: String, applyToNode: (node: ASTNode) -> Unit) {
+    KtLint.lint(
+            KtLint.Params(
+                    text = code,
+                    ruleSets = listOf(
+                            RuleSet("test", object : Rule("astnode-utils-test") {
+                                override fun visit(node: ASTNode,
+                                                   autoCorrect: Boolean,
+                                                   params: KtLint.Params,
+                                                   emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
+                                    applyToNode(node)
+                                }
+                            })
+                    ),
+                    cb = { _, _ -> Unit }
             )
     )
 }

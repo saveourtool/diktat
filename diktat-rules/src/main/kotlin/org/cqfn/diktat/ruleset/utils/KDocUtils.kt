@@ -23,10 +23,10 @@ fun Iterable<KDocTag>.hasKnownKDocTag(knownTag: KDocKnownTag): Boolean =
 /**
  * This method inserts a new tag into KDoc before specified another tag, aligning it with the rest of this KDoc
  * @param beforeTag tag before which the new one will be placed
- * @param f lambda which should be used to fill new tag with data, accepts CompositeElement as an argument
+ * @param consumer lambda which should be used to fill new tag with data, accepts CompositeElement as an argument
  */
 inline fun ASTNode.insertTagBefore(beforeTag: ASTNode?,
-                            f: CompositeElement.() -> Unit) {
+                                   consumer: CompositeElement.() -> Unit) {
     require(this.elementType == ElementType.KDOC && this.hasChildOfType(KDOC_SECTION)) { "kDoc tags can be inserted only into KDOC node" }
     val kDocSection = this.getFirstChildWithType(KDOC_SECTION)!!
     val newTag = CompositeElement(ElementType.KDOC_TAG)
@@ -38,5 +38,5 @@ inline fun ASTNode.insertTagBefore(beforeTag: ASTNode?,
     kDocSection.addChild(LeafPsiElement(ElementType.KDOC_LEADING_ASTERISK, "*"), beforeTagLineStart)
     kDocSection.addChild(LeafPsiElement(ElementType.KDOC_TEXT, " "), beforeTagLineStart)
     kDocSection.addChild(newTag, beforeTagLineStart)
-    f(newTag)
+    consumer(newTag)
 }

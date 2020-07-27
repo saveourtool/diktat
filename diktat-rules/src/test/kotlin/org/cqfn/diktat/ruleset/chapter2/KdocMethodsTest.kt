@@ -1,12 +1,14 @@
 package org.cqfn.diktat.ruleset.chapter2
 
-import org.cqfn.diktat.ruleset.constants.Warnings
+import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_PARAM_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_RETURN_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_THROWS_TAG
-import org.cqfn.diktat.ruleset.rules.kdoc.KdocMethods
-import org.cqfn.diktat.ruleset.utils.lintMethod
-import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_ON_FUNCTION
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
+import org.cqfn.diktat.ruleset.rules.kdoc.KdocMethods
+import org.cqfn.diktat.util.lintMethod
 import org.junit.Test
 
 class KdocMethodsTest {
@@ -42,6 +44,35 @@ class KdocMethodsTest {
     }
 
     @Test
+    fun `Warning should not be triggered for functions in tests`() {
+        val validCode = "@Test $funCode"
+        val complexAnnotationCode = "@Anno(test = [\"args\"]) $funCode"
+
+        // do not force KDoc on annotated function
+        lintMethod(KdocMethods(), validCode, fileName = "src/main/kotlin/org/cqfn/diktat/Example.kt")
+        // no false positive triggers on annotations
+        lintMethod(KdocMethods(), complexAnnotationCode,
+                LintError(1, 1, ruleId, "${KDOC_WITHOUT_PARAM_TAG.warnText()} doubleInt (a)", false),
+                LintError(1, 1, ruleId, "${KDOC_WITHOUT_RETURN_TAG.warnText()} doubleInt"),
+                LintError(1, 1, ruleId, "${KDOC_WITHOUT_THROWS_TAG.warnText()} doubleInt (IllegalStateException)"),
+                LintError(1, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} doubleInt", false),
+                fileName = "src/main/kotlin/org/cqfn/diktat/Example.kt"
+        )
+        // should check all .kt files unless both conditions on location and name are true
+        lintMethod(KdocMethods(), funCode,
+                LintError(1, 1, ruleId, "${KDOC_WITHOUT_PARAM_TAG.warnText()} doubleInt (a)", false),
+                LintError(1, 1, ruleId, "${KDOC_WITHOUT_RETURN_TAG.warnText()} doubleInt"),
+                LintError(1, 1, ruleId, "${KDOC_WITHOUT_THROWS_TAG.warnText()} doubleInt (IllegalStateException)"),
+                LintError(1, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} doubleInt", false),
+                fileName = "src/test/kotlin/org/cqfn/diktat/Example.kt"
+        )
+        // should allow to set custom test dirs
+        lintMethod(KdocMethods(), funCode, fileName = "src/jvmTest/kotlin/org/cqfn/diktat/ExampleTest.kt",
+                rulesConfigList = listOf(RulesConfig(MISSING_KDOC_ON_FUNCTION.name, true, mapOf("testDirs" to "test,jvmTest")))
+        )
+    }
+
+    @Test
     fun `Empty parameter list should not trigger warning about @param`() {
         val validCode = """
             /**
@@ -71,9 +102,7 @@ class KdocMethodsTest {
             $funCode
         """.trimIndent()
 
-        lintMethod(KdocMethods(), invalidCode, LintError(1, 13, ruleId,
-            "${Warnings.KDOC_WITHOUT_PARAM_TAG.warnText()} doubleInt (a)")
-        )
+        lintMethod(KdocMethods(), invalidCode, LintError(1, 13, ruleId, "${KDOC_WITHOUT_PARAM_TAG.warnText()} doubleInt (a)"))
     }
 
     @Test
@@ -92,7 +121,7 @@ class KdocMethodsTest {
         """.trimIndent()
 
         lintMethod(KdocMethods(), invalidCode, LintError(1, 12, ruleId,
-            "${Warnings.KDOC_WITHOUT_PARAM_TAG.warnText()} addInts (b)")
+                "${KDOC_WITHOUT_PARAM_TAG.warnText()} addInts (b)")
         )
     }
 
@@ -110,8 +139,7 @@ class KdocMethodsTest {
             $funCode
         """.trimIndent()
 
-        lintMethod(KdocMethods(), invalidCode, LintError(1, 13, ruleId,
-            "${KDOC_WITHOUT_RETURN_TAG.warnText()} doubleInt"))
+        lintMethod(KdocMethods(), invalidCode, LintError(1, 13, ruleId, "${KDOC_WITHOUT_RETURN_TAG.warnText()} doubleInt"))
     }
 
     @Test
@@ -134,8 +162,7 @@ class KdocMethodsTest {
             private val list = mutableListOf<Int>()
         """.trimIndent()
 
-        lintMethod(KdocMethods(), invalidCode, LintError(1, 12, ruleId,
-            "${KDOC_WITHOUT_RETURN_TAG.warnText()} foo"))
+        lintMethod(KdocMethods(), invalidCode, LintError(1, 12, ruleId, "${KDOC_WITHOUT_RETURN_TAG.warnText()} foo"))
     }
 
     @Test
@@ -152,8 +179,7 @@ class KdocMethodsTest {
             $funCode
         """.trimIndent()
 
-        lintMethod(KdocMethods(), invalidCode, LintError(1, 13, ruleId,
-            "${KDOC_WITHOUT_THROWS_TAG.warnText()} doubleInt (IllegalStateException)"))
+        lintMethod(KdocMethods(), invalidCode, LintError(1, 13, ruleId, "${KDOC_WITHOUT_THROWS_TAG.warnText()} doubleInt (IllegalStateException)"))
     }
 
     @Test
@@ -192,7 +218,6 @@ class KdocMethodsTest {
             }
         """.trimIndent()
 
-        lintMethod(KdocMethods(), invalidCode, LintError(1, 1, ruleId,
-        "${KDOC_WITHOUT_THROWS_TAG.warnText()} doubleInt (IllegalAccessException)"))
+        lintMethod(KdocMethods(), invalidCode, LintError(1, 1, ruleId, "${KDOC_WITHOUT_THROWS_TAG.warnText()} doubleInt (IllegalAccessException)"))
     }
 }
