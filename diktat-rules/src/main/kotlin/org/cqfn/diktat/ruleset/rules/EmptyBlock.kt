@@ -2,13 +2,11 @@ package org.cqfn.diktat.ruleset.rules
 
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.THEN
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.BODY
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
-import com.pinterest.ktlint.core.ast.ElementType.CLASS_INITIALIZER
 import com.pinterest.ktlint.core.ast.ElementType.DO_WHILE
 import com.pinterest.ktlint.core.ast.ElementType.ELSE
 import com.pinterest.ktlint.core.ast.ElementType.FOR
@@ -17,7 +15,6 @@ import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.OBJECT_DECLARATION
 import com.pinterest.ktlint.core.ast.ElementType.OVERRIDE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
-import com.pinterest.ktlint.core.ast.ElementType.SECONDARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.WHEN
 import com.pinterest.ktlint.core.ast.ElementType.WHILE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
@@ -30,11 +27,7 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 
-class EmptyBlock : Rule("block-structure") {
-
-    companion object {
-        private const val emptyBlockSize = 4
-    }
+class EmptyBlock : Rule("empty-block-structure") {
 
     private lateinit var configRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
@@ -58,27 +51,20 @@ class EmptyBlock : Rule("block-structure") {
 
     private fun searchNode(node: ASTNode, configuration: EmptyBlockStyleConfiguration) {
         val newNode = when (node.elementType) {
-            THEN -> node.findChildByType(BLOCK)?.findChildByType(LBRACE)!!.treeNext.treeParent
-            ELSE -> node.findChildByType(BLOCK)?.findChildByType(LBRACE)!!.treeNext.treeParent
+            THEN, ELSE -> node.findChildByType(BLOCK)?.findChildByType(LBRACE)!!.treeNext.treeParent
             WHEN -> node.findChildByType(LBRACE)!!.treeNext.treeParent
             FOR, WHILE, DO_WHILE -> node.findChildByType(BODY)?.findChildByType(BLOCK)?.findChildByType(LBRACE)!!.treeNext.treeParent
             CLASS, OBJECT_DECLARATION -> node.findChildByType(CLASS_BODY)!!.findChildByType(LBRACE)!!.treeNext.treeParent
-            else -> if (node.hasChildOfType(BLOCK))
-                node.findChildByType(BLOCK)?.findChildByType(LBRACE)!!.treeNext.treeParent
-            else
-                null
+            else -> if (node.hasChildOfType(BLOCK)) node.findChildByType(BLOCK)?.findChildByType(LBRACE)!!.treeNext.treeParent else null
         } ?: return
         checkEmptyBlock(newNode, configuration)
     }
 
     private fun checkEmptyBlock(node: ASTNode, configuration: EmptyBlockStyleConfiguration) {
-        val children = node.getChildren(null)
-        val isOverride = node.treeParent.findChildByType(MODIFIER_LIST)?.findChildByType(OVERRIDE_KEYWORD)
-        if (children.size < emptyBlockSize) {
+        if (node.treeParent.findChildByType(MODIFIER_LIST)?.findChildByType(OVERRIDE_KEYWORD) != null) return
+        if (isNodeEmpty(node)) {
             BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "there can't be empty blocks in multi blocks",
                     node.startOffset) {}
-            if (isOverride != null)
-                return
             val space = node.findChildByType(RBRACE)!!.treePrev
             if (configuration.emptyBlockNewline && !space.text.contains("\n")) {
                 BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "different style for empty block",
@@ -96,6 +82,9 @@ class EmptyBlock : Rule("block-structure") {
             }
         }
     }
+
+    private fun isNodeEmpty(node: ASTNode) = listOf(LBRACE, RBRACE, WHITE_SPACE)
+            .containsAll(node.getChildren(null).distinct().map { it.elementType })
 
     class EmptyBlockStyleConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
         val emptyBlockNewline = config["styleEmptyBlockWithNewline"]?.toBoolean() ?: true
