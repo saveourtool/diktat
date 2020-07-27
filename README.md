@@ -14,12 +14,13 @@
 [![ktlint](https://img.shields.io/badge/code%20style-%E2%9D%A4-FF4081.svg)](https://ktlint.github.io/)
 [![Chat on Telegram](https://img.shields.io/badge/Chat%20on-Telegram-brightgreen.svg)](https://t.me/joinchat/AAAAAFDg-ipuZFGyBGPPeg)
 
-**(!)** See [diKTat codestyle](info/diktat-kotlin-coding-style-guide-en.md) first.
+## (!) See [diKTat codestyle](info/diktat-kotlin-coding-style-guide-en.md) first.
 
 DiKTat is a collection of [Kotlin](https://kotlinlang.org/) code style rules implemented
 as AST visitors on top of [KTlint](https://ktlint.github.io/).
 The full list of available supported rules and inspections is [here](info/available-rules.md).
 
+## Run as CLI-application
 1. Install KTlint (until this [PR](https://github.com/pinterest/ktlint/pull/806) is merged you will need to use
  [KTlint fork](https://central.artipie.com/akuleshov7/files/ktlint)):
    ```bash
@@ -40,7 +41,7 @@ The full list of available supported rules and inspections is [here](info/availa
 
 To autofix all violations use `-F` option.
 
-## Maven Plugin
+## Run with Maven Plugin
 
 First, add this to your `pom.xml` file:
 
