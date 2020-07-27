@@ -155,7 +155,7 @@ fun ASTNode.toLower() {
  * This util method does tree traversal and stores to the result all tree leaf node of particular type (elementType).
  * Recursively will visit each and every node and will get leafs of specific type. Those nodes will be added to the result.
  */
-fun ASTNode.getAllLLeafsWithSpecificType(elementType: IElementType, result: MutableList<ASTNode>) {
+fun ASTNode.getAllLeafsWithSpecificType(elementType: IElementType, result: MutableList<ASTNode>) {
     // if statements here have the only right order - don't change it
     if (this.isLeaf()) {
         if (this.elementType == elementType) {
@@ -163,7 +163,7 @@ fun ASTNode.getAllLLeafsWithSpecificType(elementType: IElementType, result: Muta
         }
     } else {
         this.getChildren(null).forEach {
-            it.getAllLLeafsWithSpecificType(elementType, result)
+            it.getAllLeafsWithSpecificType(elementType, result)
         }
     }
 }

@@ -42,4 +42,9 @@ class IdentifierNamingFixTest : FixTestBase(
     fun `incorrect variable prefix (fix)`() {
         fixAndCompare("identifiers/PrefixInNameExpected.kt", "identifiers/PrefixInNameTest.kt")
     }
+
+    @Test
+    fun `incorrect lambda argument case (fix)`() {
+        fixAndCompare("identifiers/LambdaArgExpected.kt", "identifiers/LambdaArgTest.kt")
+    }
 }
