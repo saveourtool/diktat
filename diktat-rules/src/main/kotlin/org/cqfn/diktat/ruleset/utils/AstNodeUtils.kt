@@ -243,7 +243,7 @@ fun ASTNode?.isAccessibleOutside(): Boolean =
 fun ASTNode.leaveOnlyOneNewLine() = leaveExactlyNumNewLines(1)
 
 /**
- * removing all newlines in WHITE_SPACE node and replacing it to specified number of newlines saving the initial indenting format
+ * removing all newlines in WHITE_SPACE node and replacing it to [num] newlines saving the initial indenting format
  */
 fun ASTNode.leaveExactlyNumNewLines(num: Int) {
     require(this.elementType == WHITE_SPACE)
@@ -251,7 +251,15 @@ fun ASTNode.leaveExactlyNumNewLines(num: Int) {
 }
 
 /**
- * @param beforeThisNode node before which childToMove will be placed. If null, childToMove will be apeended after last child of this node.
+ * Transforms last line of this WHITE_SPACE to exactly [indent] spaces
+ */
+fun ASTNode.indentBy(indent: Int) {
+    require(this.elementType == WHITE_SPACE)
+    (this as LeafPsiElement).rawReplaceWithText(text.substringBeforeLast('\n') + "\n" + " ".repeat(indent))
+}
+
+/**
+ * @param beforeThisNode node before which childToMove will be placed. If null, childToMove will be appended after last child of this node.
  * @param withNextNode whether next node after childToMove should be moved too. In most cases it corresponds to moving
  *     the node with newline.
  */

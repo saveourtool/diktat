@@ -819,7 +819,14 @@ These code blocks should be indented if they are placed on the newline and:\
     4) this code block goes right after the opening parenthesis \
     5) this code block goes right after an arrow in lambda
     
-    Please note, that indenting should be also done after all statements like if/for/e.t.c, but this code stule always require braces for them.
+Please note, that indenting should be also done after all statements like if/for/e.t.c when they don't have braces, though this code style always requires braces for them. See: [3.4](r3.4)
+    
+Example:
+
+    ```kotlin
+    if (condition)
+        foo()
+    ```
 
 Exceptions:
     - When breaking parameter list of a method/class constructor it can be aligned with 8 spaces or a parameter that was moved to a newline can be on the same level as the previous argument:
@@ -833,12 +840,22 @@ Exceptions:
     ) {   
     ```
     
-    
    - Operators like +/-/*/e.t.c can be indented with 8 spaces:
     
     ```kotlin
     val abcdef = "my splitted" +
                     " string"
+    ```
+    
+   - List of super types should be indented with 4 spaces if they are on different lines, or with 8 spaces if leading colon is also on a separate line
+    
+    ```kotlin
+    class A :
+        B()
+        
+    class A
+        :
+            B()
     ```
 
 #### <a name="s3.3"></a>Recommendation 3.3: try to avoid empty blocks; multiple braces should start a new line
