@@ -227,7 +227,8 @@
     "enabled": true,
     "configuration": {
       "openBraceNewline" : "True",
-      "closeBraceNewline" : "True"
+      "closeBraceNewline" : "True",
+      "styleEmptyBlockWithNewline": "True"
     }
   }
 ]
