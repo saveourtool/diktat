@@ -77,7 +77,7 @@ class PackageNaming : Rule("package-naming") {
 
             // getting all identifiers from existing package name into the list like [org, diktat, project]
             val wordsInPackageName = mutableListOf<ASTNode>()
-            node.getAllLLeafsWithSpecificType(IDENTIFIER, wordsInPackageName)
+            node.getAllLeafsWithSpecificType(IDENTIFIER, wordsInPackageName)
 
             // no need to check that packageIdentifiers is empty, because in this case parsing will fail
             checkPackageName(wordsInPackageName)

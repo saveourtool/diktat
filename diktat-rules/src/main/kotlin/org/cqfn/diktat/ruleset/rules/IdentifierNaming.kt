@@ -22,7 +22,6 @@ import org.cqfn.diktat.ruleset.constants.Warnings.ENUM_VALUE
 import org.cqfn.diktat.ruleset.constants.Warnings.FUNCTION_NAME_INCORRECT_CASE
 import org.cqfn.diktat.ruleset.constants.Warnings.IDENTIFIER_LENGTH
 import org.cqfn.diktat.ruleset.utils.*
-import kotlin.text.toUpperCase
 
 /**
  * This visitor covers rules:  1.2, 1.3, 1.4, 1.5 of Huawei code style. It covers following rules:
@@ -34,6 +33,9 @@ import kotlin.text.toUpperCase
  * 5) methods: function names should be in camel case, methods that return boolean value should have "is"/"has" prefix
  * 6) custom exceptions: PascalCase and Exception suffix
  * 7) FixMe: should prohibit identifiers with free format with `` (except test functions)
+ *
+ * // FixMe: very important, that current implementation cannot fix identifier naming properly,
+ * // FixMe: because it fixes only declaration without the usages
  */
 @Suppress("ForbiddenComment")
 class IdentifierNaming : Rule("identifier-naming") {
@@ -67,7 +69,7 @@ class IdentifierNaming : Rule("identifier-naming") {
             ElementType.CLASS -> Pair(checkCLassNamings(node), false)
             // covers "object" code blocks
             ElementType.OBJECT_DECLARATION -> Pair(checkObjectNaming(node), false)
-            // covers variables (val/var) and constants (const val)
+            // covers variables (val/var), constants (const val) and parameters for lambdas
             ElementType.PROPERTY, ElementType.VALUE_PARAMETER -> Pair(checkVariableName(node), true)
             // covers case of enum values
             ElementType.ENUM_ENTRY -> Pair(checkEnumValues(node), false)
@@ -86,40 +88,62 @@ class IdentifierNaming : Rule("identifier-naming") {
      * all checks for case and naming for vals/vars/constants
      */
     private fun checkVariableName(node: ASTNode): List<ASTNode> {
-        var variableName: ASTNode = node.getIdentifierName()!!
-        // no need to do checks if variables are in a special list with exceptions
-        if (!ONE_CHAR_IDENTIFIERS.contains(variableName.text)) {
-            // variable should not contain only one letter in it's name. This is a bad example: b512
-            // but no need to raise a warning here if length of a variable. In this case we will raise IDENTIFIER_LENGTH
-            if (variableName.text.containsOneLetterOrZero() && variableName.text.length > 1) {
-                VARIABLE_NAME_INCORRECT.warn(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset)
-            }
-            // check for constant variables - check for val from companion object or on global file level
-            // it should be in UPPER_CASE, no need to raise this warning if it is one-letter variable
-            if (node.isConstant()) {
-                if (!variableName.text.isUpperSnakeCase() && variableName.text.length > 1) {
-                    CONSTANT_UPPERCASE.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset) {
-                        (variableName as LeafPsiElement).replaceWithText(variableName.text.toUpperSnakeCase())
+        // special case for Destructuring declarations that can be treated as parameters in lambda:
+        var namesOfVariables = extractVariableIdentifiers(node)
+        namesOfVariables
+                .forEach { variableName ->
+                    // variable should not contain only one letter in it's name. This is a bad example: b512
+                    // but no need to raise a warning here if length of a variable. In this case we will raise IDENTIFIER_LENGTH
+                    if (variableName.text.containsOneLetterOrZero() && variableName.text.length > 1) {
+                        VARIABLE_NAME_INCORRECT.warn(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset)
+                    }
+                    // check for constant variables - check for val from companion object or on global file level
+                    // it should be in UPPER_CASE, no need to raise this warning if it is one-letter variable
+                    if (node.isConstant()) {
+                        if (!variableName.text.isUpperSnakeCase() && variableName.text.length > 1) {
+                            CONSTANT_UPPERCASE.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset) {
+                                (variableName as LeafPsiElement).replaceWithText(variableName.text.toUpperSnakeCase())
+                            }
+                        }
+                    } else if (!variableName.text.isLowerCamelCase()) {
+                        // variable name should be in camel case. The only exception is a list of industry standard variables like i, j, k.
+                        VARIABLE_NAME_INCORRECT_FORMAT.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset) {
+                            // FixMe: cover fixes with tests
+                            (variableName as LeafPsiElement).replaceWithText(variableName.text.toLowerCamelCase())
+                        }
                     }
                 }
-            } else if (!variableName.text.isLowerCamelCase()) {
-                // variable name should be in camel case. The only exception is a list of industry standard variables like i, j, k.
-                VARIABLE_NAME_INCORRECT_FORMAT.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset) {
-                    // FixMe: cover fixes with tests
-                    (variableName as LeafPsiElement).replaceWithText(variableName.text.toLowerCamelCase())
-                }
-            }
 
-            // need to get new node in case we have already converted the case before (and replaced the child node)
-            variableName = node.getIdentifierName()!!
-            // generally, variables with prefixes are not allowed (like mVariable, xCode, iValue)
-            if (variableName.text.hasPrefix()) {
-                VARIABLE_HAS_PREFIX.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset) {
-                    (variableName as LeafPsiElement).replaceWithText(variableName.text.removePrefix())
+        // need to get new node in case we have already converted the case before (and replaced the child node)
+        // we need to recalculate it twice, because nodes could have been changed by "replaceWithText" function
+        namesOfVariables = extractVariableIdentifiers(node)
+        namesOfVariables
+                .forEach { variableName ->
+                    // generally, variables with prefixes are not allowed (like mVariable, xCode, iValue)
+                    if (variableName.text.hasPrefix()) {
+                        VARIABLE_HAS_PREFIX.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset) {
+                            (variableName as LeafPsiElement).replaceWithText(variableName.text.removePrefix())
+                        }
+                    }
                 }
-            }
+        return namesOfVariables
+    }
+
+    /**
+     * getting identifiers (aka variable names) from parent nodes like PROPERTY
+     * The trick here is to handle DESTRUCTURING_DECLARATION correctly, as it does not have IDENTIFIER leaf
+     */
+    private fun extractVariableIdentifiers(node: ASTNode): List<ASTNode> {
+        val destructingDeclaration = node.getFirstChildWithType(ElementType.DESTRUCTURING_DECLARATION)
+        val result = if (destructingDeclaration != null) {
+            destructingDeclaration.getAllChildrenWithType(ElementType.DESTRUCTURING_DECLARATION_ENTRY)
+                    .map { it.getIdentifierName()!! }
+        } else {
+            mutableListOf(node.getIdentifierName()!!)
         }
-        return listOf(variableName)
+
+        // no need to do checks if variables are in a special list with exceptions
+        return result.filterNot { IdentifierNaming.ONE_CHAR_IDENTIFIERS.contains(it.text) }
     }
 
     /**
@@ -180,7 +204,6 @@ class IdentifierNaming : Rule("identifier-naming") {
                 (objectName as LeafPsiElement).replaceWithText(objectName.text.toPascalCase())
             }
         }
-
         return listOf(objectName)
     }
 
