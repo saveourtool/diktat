@@ -10,7 +10,7 @@ import org.junit.Test
 
 class EmptyBlockWarnTest {
 
-    private val ruleId = "$DIKTAT_RULE_SET_ID:block-structure"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:empty-block-structure"
 
     private val rulesConfigListIgnoreEmptyBlock: List<RulesConfig> = listOf(
             RulesConfig(Warnings.BRACES_BLOCK_STRUCTURE_ERROR.name, true,
@@ -46,6 +46,16 @@ class EmptyBlockWarnTest {
                 """.trimMargin(),
                 LintError(5,10,ruleId,"${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} there can't be empty blocks in multi blocks", false),
                 rulesConfigList = rulesConfigListIgnoreEmptyBlock
+        )
+    }
+
+    @Test
+    fun `check fun expression with empty block and override annotation`() {
+        lintMethod(EmptyBlock(),
+                """
+                    |override fun foo() {
+                    |}
+                """.trimMargin()
         )
     }
 }
