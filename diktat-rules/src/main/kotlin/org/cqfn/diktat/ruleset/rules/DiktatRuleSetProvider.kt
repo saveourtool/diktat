@@ -39,6 +39,7 @@ class DiktatRuleSetProvider(private val jsonRulesConfig: String = "rules-config.
             IdentifierNaming(),
             BracesInConditionalsAndLoopsRule(),
             BlockStructureBraces(),
+            EmptyBlock(),
             FileStructureRule()  // this rule should be the last because it should operate on already valid code
         )
     }

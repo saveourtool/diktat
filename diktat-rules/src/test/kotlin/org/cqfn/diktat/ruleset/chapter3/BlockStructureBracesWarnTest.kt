@@ -27,11 +27,6 @@ class BlockStructureBracesWarnTest {
                     mapOf("closeBraceNewline" to "False"))
     )
 
-    private val rulesConfigListIgnoreEmptyBlock: List<RulesConfig> = listOf(
-            RulesConfig(Warnings.BRACES_BLOCK_STRUCTURE_ERROR.name, true,
-                    mapOf("styleEmptyBlockWithNewline" to "False"))
-    )
-
     @Test
     fun `check if expression with new line else`() {
         lintMethod(BlockStructureBraces(),
@@ -99,8 +94,7 @@ class BlockStructureBracesWarnTest {
                     |    } else { 
                     |    }
                     |}
-                """.trimMargin(),
-                LintError(6, 12, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} there can't be empty blocks in multi blocks", false)
+                """.trimMargin()
         )
     }
 
@@ -114,8 +108,8 @@ class BlockStructureBracesWarnTest {
                     |    } else {}
                     |}
                 """.trimMargin(),
-                LintError(4, 12, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} there can't be empty blocks in multi blocks", false),
-                LintError(4, 12, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} different style for empty block", false)
+                LintError(4, 13, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect same line after opening brace", false),
+                LintError(4, 13, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} no newline before closing brace", false)
         )
     }
 
@@ -189,8 +183,7 @@ class BlockStructureBracesWarnTest {
                 """
                     |override fun foo() {
                     |}
-                """.trimMargin(),
-                LintError(1, 20, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} there can't be empty blocks in multi blocks", false)
+                """.trimMargin()
         )
     }
 
@@ -200,8 +193,8 @@ class BlockStructureBracesWarnTest {
                 """
                     |fun foo() {}
                 """.trimMargin(),
-                LintError(1, 11, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} there can't be empty blocks in multi blocks", false),
-                rulesConfigList = rulesConfigListIgnoreEmptyBlock
+                LintError(1, 12, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect same line after opening brace", false),
+                LintError(1, 12, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} no newline before closing brace", false)
 
         )
     }
@@ -262,8 +255,8 @@ class BlockStructureBracesWarnTest {
                     |   for (i in 1..3) {}
                     |}
                 """.trimMargin(),
-                LintError(2, 20, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} there can't be empty blocks in multi blocks", false),
-                rulesConfigList = rulesConfigListIgnoreEmptyBlock
+                LintError(2, 21, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect same line after opening brace", false),
+                LintError(2, 21, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} no newline before closing brace", false)
         )
     }
 
@@ -453,6 +446,17 @@ class BlockStructureBracesWarnTest {
                 LintError(4, 11, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect newline before opening brace", false),
                 LintError(5, 40, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} no newline before closing brace", false),
                 LintError(6, 35, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} no newline before closing brace", false)
+        )
+    }
+
+    @Test
+    fun `check sdf with incorrect close brace position`() {
+        lintMethod(BlockStructureBraces(),
+                """
+                    |fun foo() {
+                    |   val a =0 ; val b = 0
+                    |}
+                """.trimMargin()
         )
     }
 }
