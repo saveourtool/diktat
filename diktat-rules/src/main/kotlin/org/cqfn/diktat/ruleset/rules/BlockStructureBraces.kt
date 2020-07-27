@@ -43,6 +43,10 @@ import org.jetbrains.kotlin.psi.KtTryExpression
 
 class BlockStructureBraces : Rule("block-structure") {
 
+    companion object{
+        private const val emptyBlockSize = 4
+    }
+
     private lateinit var configRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var fileName: String? = null
@@ -186,7 +190,7 @@ class BlockStructureBraces : Rule("block-structure") {
         val listOfMultiBlockTypes = listOf(IF, THEN, ELSE, TRY, CATCH, FINALLY)
         val isMultiBlock = listOfMultiBlockTypes.contains(nodeType)
         val children = node.getChildren(null)
-        if (children.size < 4) {
+        if (children.size < emptyBlockSize) {
             if (isMultiBlock) {
                 BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "there can't be empty blocks in multi blocks",
                         node.startOffset) {}
@@ -195,7 +199,7 @@ class BlockStructureBraces : Rule("block-structure") {
                         node.startOffset) {}
             }
         }
-        return children.size >= 4
+        return children.size >= emptyBlockSize
     }
 
     private fun checkMidBrace(allMiddleSpace: List<ASTNode>, node: ASTNode, keyword: IElementType) {
