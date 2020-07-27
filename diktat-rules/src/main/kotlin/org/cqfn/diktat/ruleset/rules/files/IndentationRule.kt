@@ -17,7 +17,7 @@ import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
 import org.cqfn.diktat.ruleset.rules.getDiktatConfigRules
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
-import org.cqfn.diktat.ruleset.utils.getAllLLeafsWithSpecificType
+import org.cqfn.diktat.ruleset.utils.getAllLeafsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.indentBy
 import org.cqfn.diktat.ruleset.utils.indentation.AssignmentOperatorChecker
 import org.cqfn.diktat.ruleset.utils.indentation.CustomIndentationChecker
@@ -92,7 +92,7 @@ class IndentationRule : Rule("indentation") {
      */
     private fun checkIsIndentedWithSpaces(node: ASTNode): Boolean {
         val whiteSpaceNodes = mutableListOf<ASTNode>()
-        node.getAllLLeafsWithSpecificType(WHITE_SPACE, whiteSpaceNodes)
+        node.getAllLeafsWithSpecificType(WHITE_SPACE, whiteSpaceNodes)
         whiteSpaceNodes
                 .filter { it.textContains('\t') }
                 .apply { if (isEmpty()) return true }
