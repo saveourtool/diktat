@@ -19,6 +19,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 val log: Logger = LoggerFactory.getLogger(ASTNode::class.java)
+val emptyBlockList = listOf(ElementType.LBRACE, WHITE_SPACE, ElementType.RBRACE)
 
 fun ASTNode.checkLength(range: IntRange): Boolean = this.textLength in range
 
@@ -62,8 +63,11 @@ fun ASTNode.hasChildOfType(elementType: IElementType): Boolean =
 fun ASTNode.hasAnyChildOfTypes(vararg elementType: IElementType): Boolean =
         elementType.any { this.hasChildOfType(it) }
 
-fun ASTNode.isBlockEmpty(elementType: IElementType) = this.findChildByType(elementType)?.let { listOf(ElementType.LBRACE, ElementType.RBRACE, WHITE_SPACE)
-        .containsAll(this.findChildByType(elementType)!!.getChildren(null).map { it.elementType })} ?: true
+/**
+ * check if node's block is empty (contains only left and right braces and space)
+ */
+fun ASTNode?.isBlockEmpty() = this?.let { emptyBlockList
+        .containsAll(this.getChildren(null).map { it.elementType })} ?: true
 /**
  * Method that is trying to find and return child of this node, which
  * 1) stands before the node with type @beforeThisNodeType
