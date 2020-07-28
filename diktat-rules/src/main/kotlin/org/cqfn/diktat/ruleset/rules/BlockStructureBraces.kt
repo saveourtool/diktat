@@ -82,7 +82,7 @@ class BlockStructureBraces : Rule("block-structure") {
     }
 
     private fun checkClass(node: ASTNode, configuration: BlockStructureBracesConfiguration) {
-        if (node.hasChildOfType(CLASS_BODY) && !node.isBlockEmpty(node.findChildByType(CLASS_BODY))) {
+        if (node.hasChildOfType(CLASS_BODY) && !node.isBlockEmpty(CLASS_BODY)) {
                 checkOpenBraceOnSameLine(node, CLASS_BODY, configuration)
                 checkCloseBrace(node.findChildByType(CLASS_BODY)!!, configuration)
             }
@@ -109,7 +109,7 @@ class BlockStructureBraces : Rule("block-structure") {
 
     private fun checkLoop(node: ASTNode, configuration: BlockStructureBracesConfiguration) {
         node.findChildByType(BODY)?.takeIf { body -> body.hasChildOfType(BLOCK) }?.let {
-            if (!it.isBlockEmpty(it.findChildByType(BLOCK))) {
+            if (!it.isBlockEmpty(BLOCK)) {
                 checkOpenBraceOnSameLine(node, BODY, configuration)
                 checkCloseBrace(it.findChildByType(BLOCK)!!, configuration)
                 if (node.elementType == DO_WHILE) {
@@ -129,7 +129,7 @@ class BlockStructureBraces : Rule("block-structure") {
     }
 
     private fun checkFun(node: ASTNode, configuration: BlockStructureBracesConfiguration) {
-        if (!node.isBlockEmpty(node.findChildByType(BLOCK))) {
+        if (!node.isBlockEmpty(BLOCK)) {
             checkOpenBraceOnSameLine(node, BLOCK, configuration)
             checkCloseBrace(node.findChildByType(BLOCK)!!, configuration)
         }

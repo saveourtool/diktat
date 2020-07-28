@@ -63,7 +63,7 @@ class EmptyBlock : Rule("empty-block-structure") {
 
     private fun checkEmptyBlock(node: ASTNode, configuration: EmptyBlockStyleConfiguration) {
         if (node.treeParent.findChildByType(MODIFIER_LIST)?.findChildByType(OVERRIDE_KEYWORD) != null) return
-        if (node.isBlockEmpty(node)) {
+        if (node.treeParent.isBlockEmpty(node.elementType)) {
             BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "there can't be empty blocks in multi blocks",
                     node.startOffset) {}
             val space = node.findChildByType(RBRACE)!!.treePrev
