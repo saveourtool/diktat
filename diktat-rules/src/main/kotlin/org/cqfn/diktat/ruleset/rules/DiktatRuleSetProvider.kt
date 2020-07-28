@@ -14,7 +14,6 @@ import org.cqfn.diktat.ruleset.rules.kdoc.KdocComments
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocFormatting
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocMethods
 import org.slf4j.LoggerFactory
-import java.nio.file.Paths
 
 /**
  * this constant will be used everywhere in the code to mark usage of Diktat ruleset
