@@ -220,4 +220,64 @@ class KdocMethodsTest {
 
         lintMethod(KdocMethods(), invalidCode, LintError(1, 1, ruleId, "${KDOC_WITHOUT_THROWS_TAG.warnText()} doubleInt (IllegalAccessException)"))
     }
+
+    @Test
+    fun `do not force documentation on standard methods`() {
+        lintMethod(KdocMethods(),
+                """
+                    |class Example {
+                    |    override fun toString() = "example"
+                    |    
+                    |    override fun equals(other: Any?) = false
+                    |    
+                    |    override fun hashCode() = 42
+                    |}
+                """.trimMargin()
+        )
+
+        lintMethod(KdocMethods(),
+                """
+                    |class Example {
+                    |    override fun toString(): String { return "example" }
+                    |    
+                    |    override fun equals(other: Any?): Boolean { return false }
+                    |    
+                    |    override fun hashCode(): Int { return 42 }
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    fun `should not force documentation on single line getters and setters`() {
+        lintMethod(KdocMethods(),
+                """
+                    |class Example {
+                    |    fun setX(x: Type) {
+                    |        this.x = x
+                    |    }
+                    |    
+                    |    fun getX() {
+                    |        return x
+                    |    }
+                    |    
+                    |    fun getY() = this.y
+                    |    
+                    |    fun setY(y: Type) {
+                    |        this.validate(y)
+                    |        this.y = y
+                    |    }
+                    |    
+                    |    fun getZ(): TypeZ {
+                    |        baz(z)
+                    |        return z
+                    |    }
+                    |}
+                """.trimMargin(),
+                LintError(12, 5, ruleId, "${KDOC_WITHOUT_PARAM_TAG.warnText()} setY (y)"),
+                LintError(12, 5, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} setY"),
+                LintError(17, 5, ruleId, "${KDOC_WITHOUT_RETURN_TAG.warnText()} getZ"),
+                LintError(17, 5, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} getZ")
+        )
+    }
 }
