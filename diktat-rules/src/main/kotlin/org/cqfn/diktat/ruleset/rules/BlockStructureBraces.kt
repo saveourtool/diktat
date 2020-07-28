@@ -32,9 +32,7 @@ import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.BRACES_BLOCK_STRUCTURE_ERROR
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
-import org.cqfn.diktat.ruleset.utils.hasChildOfType
-import org.cqfn.diktat.ruleset.utils.isBlockEmpty
+import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -43,10 +41,6 @@ import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.KtTryExpression
 
 class BlockStructureBraces : Rule("block-structure") {
-
-    companion object{
-        val emptyBlockList = listOf(LBRACE, WHITE_SPACE, RBRACE)
-    }
 
     private lateinit var configRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
@@ -108,7 +102,7 @@ class BlockStructureBraces : Rule("block-structure") {
     }
 
     private fun checkLoop(node: ASTNode, configuration: BlockStructureBracesConfiguration) {
-        node.findChildByType(BODY)?.takeIf { body -> body.hasChildOfType(BLOCK) }?.let {
+        node.findChildByType(BODY)?.let {
             if (!it.findChildByType(BLOCK).isBlockEmpty()) {
                 checkOpenBraceOnSameLine(node, BODY, configuration)
                 checkCloseBrace(it.findChildByType(BLOCK)!!, configuration)
@@ -121,6 +115,7 @@ class BlockStructureBraces : Rule("block-structure") {
     }
 
     private fun checkWhen(node: ASTNode, configuration: BlockStructureBracesConfiguration) {
+        /// WHEN expression doesn't contain BLOCK element and LBRECE isn't the first child, so we should to find it.
         val childrenAfterLBrace =  node.getChildren(null).toList().run { subList(indexOfFirst { it.elementType == LBRACE }, size) }
         if (!emptyBlockList.containsAll(childrenAfterLBrace.distinct().map { it.elementType })) {
             checkOpenBraceOnSameLine(node, LBRACE, configuration)
