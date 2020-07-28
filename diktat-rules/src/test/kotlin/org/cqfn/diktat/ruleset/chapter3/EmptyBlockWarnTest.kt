@@ -13,7 +13,7 @@ class EmptyBlockWarnTest {
     private val ruleId = "$DIKTAT_RULE_SET_ID:empty-block-structure"
 
     private val rulesConfigListIgnoreEmptyBlock: List<RulesConfig> = listOf(
-            RulesConfig(Warnings.BRACES_BLOCK_STRUCTURE_ERROR.name, true,
+            RulesConfig(Warnings.EMPTY_BLOCK_STRUCTURE_ERROR.name, true,
                     mapOf("styleEmptyBlockWithNewline" to "False"))
     )
 
@@ -29,7 +29,7 @@ class EmptyBlockWarnTest {
                     |    }
                     |}
                 """.trimMargin(),
-                LintError(5,10,ruleId,"${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} there can't be empty blocks in multi blocks", false)
+                LintError(5,10,ruleId,"${Warnings.EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} there can't be empty blocks in multi blocks", false)
         )
     }
 
@@ -44,7 +44,7 @@ class EmptyBlockWarnTest {
                     |    else {}
                     |}
                 """.trimMargin(),
-                LintError(5,10,ruleId,"${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} there can't be empty blocks in multi blocks", false),
+                LintError(5,10,ruleId,"${Warnings.EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} there can't be empty blocks in multi blocks", false),
                 rulesConfigList = rulesConfigListIgnoreEmptyBlock
         )
     }
