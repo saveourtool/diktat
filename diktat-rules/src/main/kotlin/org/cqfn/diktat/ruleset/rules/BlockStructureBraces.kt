@@ -34,6 +34,7 @@ import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.BRACES_BLOCK_STRUCTURE_ERROR
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
+import org.cqfn.diktat.ruleset.utils.isBlockEmpty
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -42,6 +43,10 @@ import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.KtTryExpression
 
 class BlockStructureBraces : Rule("block-structure") {
+
+    companion object{
+        val emptyBlockList = listOf(LBRACE, WHITE_SPACE, RBRACE)
+    }
 
     private lateinit var configRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
@@ -77,12 +82,10 @@ class BlockStructureBraces : Rule("block-structure") {
     }
 
     private fun checkClass(node: ASTNode, configuration: BlockStructureBracesConfiguration) {
-        if (!isNodeEmpty(node.findChildByType(CLASS_BODY))) {
-            if (node.hasChildOfType(CLASS_BODY)) {
+        if (node.hasChildOfType(CLASS_BODY) && !node.isBlockEmpty(node.findChildByType(CLASS_BODY))) {
                 checkOpenBraceOnSameLine(node, CLASS_BODY, configuration)
                 checkCloseBrace(node.findChildByType(CLASS_BODY)!!, configuration)
             }
-        }
     }
 
     private fun checkTry(node: ASTNode, configuration: BlockStructureBracesConfiguration) {
@@ -106,7 +109,7 @@ class BlockStructureBraces : Rule("block-structure") {
 
     private fun checkLoop(node: ASTNode, configuration: BlockStructureBracesConfiguration) {
         node.findChildByType(BODY)?.takeIf { body -> body.hasChildOfType(BLOCK) }?.let {
-            if (!isNodeEmpty(it.findChildByType(BLOCK))) {
+            if (!it.isBlockEmpty(it.findChildByType(BLOCK))) {
                 checkOpenBraceOnSameLine(node, BODY, configuration)
                 checkCloseBrace(it.findChildByType(BLOCK)!!, configuration)
                 if (node.elementType == DO_WHILE) {
@@ -118,16 +121,15 @@ class BlockStructureBraces : Rule("block-structure") {
     }
 
     private fun checkWhen(node: ASTNode, configuration: BlockStructureBracesConfiguration) {
-        val children = node.getChildren(null).toList()
-        val childrenAfterLBrace = children.subList(children.indexOfFirst { it.elementType == LBRACE }, children.size)
-        if (!listOf(LBRACE, WHITE_SPACE, RBRACE).containsAll(childrenAfterLBrace.distinct().map { it.elementType })) {
+        val childrenAfterLBrace =  node.getChildren(null).toList().run { subList(indexOfFirst { it.elementType == LBRACE }, size) }
+        if (!emptyBlockList.containsAll(childrenAfterLBrace.distinct().map { it.elementType })) {
             checkOpenBraceOnSameLine(node, LBRACE, configuration)
             checkCloseBrace(node, configuration)
         }
     }
 
     private fun checkFun(node: ASTNode, configuration: BlockStructureBracesConfiguration) {
-        if (!isNodeEmpty(node.findChildByType(BLOCK))) {
+        if (!node.isBlockEmpty(node.findChildByType(BLOCK))) {
             checkOpenBraceOnSameLine(node, BLOCK, configuration)
             checkCloseBrace(node.findChildByType(BLOCK)!!, configuration)
         }
@@ -151,9 +153,6 @@ class BlockStructureBraces : Rule("block-structure") {
             checkCloseBrace(elseNode, configuration)
         }
     }
-
-    private fun isNodeEmpty(node: ASTNode?) = listOf(LBRACE, RBRACE, WHITE_SPACE)
-            .containsAll(node?.getChildren(null)?.distinct()?.map { it.elementType } ?: emptyList())
 
     private fun checkOpenBraceOnSameLine(node: ASTNode, beforeType: IElementType, configuration: BlockStructureBracesConfiguration) {
         if (!configuration.openBrace) return
@@ -227,13 +226,6 @@ class BlockStructureBraces : Rule("block-structure") {
 
     private fun checkBraceNode(node: ASTNode, shouldContainNewline: Boolean = false) =
             (node.elementType != WHITE_SPACE || shouldContainNewline == node.text.contains("\n"))
-
-    private fun leaveOrAppendOneNewline(node: ASTNode, parent: ASTNode, nodeBefore: ASTNode?){
-        if (node.elementType != WHITE_SPACE)
-            parent.addChild(PsiWhiteSpaceImpl("\n"), nodeBefore)
-        else
-            (node.treeNext as LeafPsiElement).replaceWithText(" ")
-    }
 
     class BlockStructureBracesConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
         val openBrace = config["openBraceNewline"]?.toBoolean() ?: true
