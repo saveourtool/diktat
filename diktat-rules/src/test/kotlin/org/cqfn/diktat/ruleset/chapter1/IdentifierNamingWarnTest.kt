@@ -1,11 +1,18 @@
 package org.cqfn.diktat.ruleset.chapter1
 
 import com.pinterest.ktlint.core.LintError
+import com.pinterest.ktlint.core.ast.ElementType
 import org.junit.Test
 import org.cqfn.diktat.ruleset.rules.IdentifierNaming
 import org.cqfn.diktat.ruleset.constants.Warnings.*
 import org.cqfn.diktat.util.lintMethod
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
+import org.cqfn.diktat.ruleset.rules.comments.CommentsRule
+import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
+import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.com.intellij.psi.TokenType
+import org.jetbrains.kotlin.name.FqName
+import org.jetbrains.kotlin.resolve.ImportPath
 
 class IdentifierNamingWarnTest {
 
@@ -266,4 +273,42 @@ class IdentifierNamingWarnTest {
                 LintError(2, 11, ruleId, "${VARIABLE_HAS_PREFIX.warnText()} I_AM_CONSTANT2")
         )
     }
+
+    @Test
+    fun `regression - destructing declaration in lambdas - incorrect case `() {
+        val code =
+                """
+                private fun checkCommentedCode(node: ASTNode) {
+                    val eolCommentsOffsetToText = ""
+                    val blockCommentsOffsetToText = ""
+                    (eolCommentsOffsetToText + blockCommentsOffsetToText)
+                    .map { (STRANGECASE, text) ->
+                        ""
+                    }
+                }
+                """.trimIndent()
+
+        lintMethod(IdentifierNaming(), code,
+                LintError(5, 13, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} STRANGECASE")
+        )
+    }
+
+    @Test
+    fun `regression - lambda argument - incorrect case`() {
+        val code =
+                """
+                private fun checkCommentedCode(node: ASTNode) {
+                    val eolCommentsOffsetToText = ""
+                    eolCommentsOffsetToText.map { STRANGECASE ->
+                        ""
+                    }
+                }
+                """.trimIndent()
+
+        lintMethod(IdentifierNaming(), code,
+                LintError(3, 35, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} STRANGECASE")
+        )
+    }
+
+
 }
