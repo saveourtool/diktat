@@ -227,8 +227,7 @@
     "enabled": true,
     "configuration": {
       "openBraceNewline" : "True",
-      "closeBraceNewline" : "True",
-      "styleEmptyBlockWithNewline": "True"
+      "closeBraceNewline" : "True"
     }
   },
   {
@@ -239,6 +238,13 @@
       "extendedIndentOfParameters": true,
       "alignedParameters": true,
       "extendedIndentAfterOperators": true
+    }
+  },
+  {
+    "name": "EMPTY_BLOCK_STRUCTURE_ERROR",
+    "enabled": true,
+    "configuration": {
+      "styleEmptyBlockWithNewline": "True"
     }
   }
 ]

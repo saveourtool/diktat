@@ -166,18 +166,7 @@ class BlockStructureBraces : Rule("block-structure") {
     }
 
     private fun checkOpenBraceEndLine(node: ASTNode, beforeType: IElementType) {
-        val newNode = when (node.elementType) {
-            IF -> {
-                when (beforeType) {
-                    THEN -> node.findChildByType(THEN)?.findChildByType(BLOCK)?.findChildByType(LBRACE)!!.treeNext
-                    else -> node.findChildByType(ELSE)?.findChildByType(BLOCK)?.findChildByType(LBRACE)!!.treeNext
-                }
-            }
-            WHEN -> node.findChildByType(LBRACE)!!.treeNext
-            FOR, WHILE, DO_WHILE -> node.findChildByType(BODY)?.findChildByType(BLOCK)?.findChildByType(LBRACE)!!.treeNext
-            CLASS, OBJECT_DECLARATION -> node.findChildByType(CLASS_BODY)!!.findChildByType(LBRACE)!!.treeNext
-            else -> node.findChildByType(BLOCK)?.findChildByType(LBRACE)!!.treeNext
-        }
+        val newNode = if( beforeType == THEN || beforeType == ELSE) (node.findChildByType(beforeType)?.findLBrace() ?: return).treeNext else (node.findLBrace() ?: return).treeNext
         if (checkBraceNode(newNode)) {
             BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "incorrect same line after opening brace",
                     (newNode ?: node).startOffset) {
