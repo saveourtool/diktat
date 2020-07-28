@@ -755,8 +755,8 @@ For *non-empty* code blocks with braces, they should follow the K&R style (1TBS 
  - The closing brace can be followed by a new line. Only exceptions are: `else`, `finally`, `while` (from do-while statement) or `catch` keywords. These keywords should not be split from the closing brace by a newline.
  
  Exception cases: 
- 1) for lambdas newline should appear only after an arrow. No need to put a newline after an opening brace:
- ```kotlin
+ 1) for lambdas newline should appear only after an arrow (see [rule 3.5](#r3.5)). No need to put a newline after an opening brace:
+```kotlin
 arg.map { value ->
     foo(value)
 }
@@ -807,17 +807,32 @@ Good example：
 Only spaces are allowed for indentation and each indentation should equal to 4 spaces (tabs are not allowed). 
 In case you prefer using tabs - just simply configure auto change of tabs to spaces in your IDE.
 
-These code blocks should be indented if they are placed on the newline and:\
-    1) this code block goes right after an opening brace \
-    2) this code block goes after each and every operator, including assignment operator (+/-/&&/=/e.t.c)\
-    3) this code block is a call chain of methods: 
-    ```kotlin
-    someObject
-        .map()
-        .filter()
-    ``` \
-    4) this code block goes right after the opening parenthesis \
-    5) this code block goes right after an arrow in lambda
+These code blocks should be indented if they are placed on the newline and:
+1) this code block goes right after an opening brace 
+2) this code block goes after each and every operator, including assignment operator (+/-/&&/=/e.t.c)
+3) this code block is a call chain of methods: 
+```kotlin
+someObject
+    .map()
+    .filter()
+``` 
+4) this code block goes right after the opening parenthesis 
+5) this code block goes right after an arrow in lambda: 
+ ```kotlin
+arg.map { value ->
+    foo(value)
+}
+```
+    
+Exceptions cases:
+1) Argument lists: \
+    a) 8 spaces are used for indenting in argument list (both in declaration and at call site) \
+    b) Arguments in argument list can be aligned if they are on different lines
+2) 8 spaces are used if newline is after any binary operator
+3) 8 spaces are used for functional-like style when the newline is placed before the dot
+4) Supertype lists: \
+   a) 4 spaces if colon before supertype list is on new line \
+   b) 4 spaces before each supertype; 8 if colon is on new line
     
 Please note, that indenting should be also done after all statements like if/for/e.t.c when they don't have braces, though this code style always requires braces for them. See: [3.4](r3.4)
     
@@ -860,38 +875,48 @@ Exceptions:
 
 #### <a name="s3.3"></a>Recommendation 3.3: try to avoid empty blocks; multiple braces should start a new line
 
-  An empty code block can be closed immediately on the same line as well as the block can be closed on the next line.
-  There can be no characters or line breaks between opening and closed braces (`{}`), **unless** it is part of a *multi-block statement* like `if/else` or `try/catch/finally`, etc.
+An empty code block can be closed immediately on the same line as well as the block can be closed on the next line.
+But it is preferred to have a newline between opening and closing braces `{}` (see examples below).
 
-  Recommended examples:
+**Generally, empty code blocks are prohibited** and are very bad practice (especially for catch block).
+ The only code structures where it is appropriate are overridden functions, when functionality of the base class is not needed in the class-inheritor. 
+```kotlin
+override fun foo() {
+}
+``` 
 
- ```kotlin
-   fun doNothing（）{} 
- 
-   fun doNothingElse（）{ 
-   }
- ```
+Recommended examples of formatting empty code blocks (but note, that generally they are prohibited):
 
-   Not recommended:
-  ```kotlin
-  try {
-      doSomething()
-  } catch (e: Some) {}
- ```
+```kotlin
+fun doNothing（）{} 
 
-    Use this code instead of the example above
- ```kotlin
-   try {
-       doSomething()
-   } catch () {
-       
-   }
- ```
+fun doNothingElse（）{ 
+}
+```
+
+Not recommended:
+```kotlin
+try {
+  doSomething()
+} catch (e: Some) {}
+```
+
+Use this code instead of the example above
+```kotlin
+try {
+   doSomething()
+} catch (e: Some) {
+}
+```
 
 ### <a name="c3.4"></a> Code lines
 
 ### <a name="s3.4"></a> Recommendation 3.4 No more than one statement per line
-    There should not be more than one code statement in one line (this recommendation prohibits usage of code with ";") 
+There should not be more than one code statement in one line (this recommendation prohibits usage of code with ";")
+Such code is prohibited as it makes code visibility worse:
+```kotlin
+val a = ""; val b = ""
+```
 
 ### <a name="c3.5"></a>Line width
 
@@ -1182,3 +1207,20 @@ And better use other names instead of these identifiers.
 | 8 (eight)     | B                        | bt, nxt          |
 | n,h           | h,n                      | nr, head, height |
 | rn, m         | m,rn                     | mbr, item        |
+
+### <a name="r3.8"></a>Rule 3.8: Concatenation of Strings is prohibited, use raw strings and string templates instead.
+Kotlin significantly enhanced work with Strings:
+[String templates](https://kotlinlang.org/docs/reference/basic-types.html#string-templates), [Raw strings](https://kotlinlang.org/docs/reference/basic-types.html#string-literals)
+That's why code looks much better when instead of using explicit concatenation to use proper Kotlin strings.
+
+Bad example:
+```kotlin
+val myStr = "Super string"
+val value = myStr + " concatenated"
+```
+
+Good example:
+```kotlin
+val myStr = "Super string"
+val value = "$myStr concatenated"
+```
