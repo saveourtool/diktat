@@ -10,6 +10,7 @@ import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.DO_WHILE
 import com.pinterest.ktlint.core.ast.ElementType.ELSE
 import com.pinterest.ktlint.core.ast.ElementType.FOR
+import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.OBJECT_DECLARATION
@@ -24,6 +25,7 @@ import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.BRACES_BLOCK_STRUCTURE_ERROR
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.cqfn.diktat.ruleset.utils.isBlockEmpty
+import org.cqfn.diktat.ruleset.utils.prettyPrint
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -52,11 +54,11 @@ class EmptyBlock : Rule("empty-block-structure") {
 
     private fun searchNode(node: ASTNode, configuration: EmptyBlockStyleConfiguration) {
         val newNode = when (node.elementType) {
-            THEN, ELSE -> node.findChildByType(BLOCK)?.findChildByType(LBRACE)!!.treeNext.treeParent
+            THEN, ELSE -> node.findChildByType(BLOCK)?.findChildByType(LBRACE)!!.treeParent
             WHEN -> node.findChildByType(LBRACE)!!.treeNext.treeParent
-            FOR, WHILE, DO_WHILE -> node.findChildByType(BODY)?.findChildByType(BLOCK)?.findChildByType(LBRACE)!!.treeNext.treeParent
-            CLASS, OBJECT_DECLARATION -> node.findChildByType(CLASS_BODY)!!.findChildByType(LBRACE)!!.treeNext.treeParent
-            else -> if (node.hasChildOfType(BLOCK)) node.findChildByType(BLOCK)?.findChildByType(LBRACE)!!.treeNext.treeParent else null
+            FOR, WHILE, DO_WHILE -> node.findChildByType(BODY)?.findChildByType(BLOCK)?.findChildByType(LBRACE)!!.treeParent
+            CLASS, OBJECT_DECLARATION -> node.findChildByType(CLASS_BODY)!!.findChildByType(LBRACE)!!.treeParent
+            else -> if (node.hasChildOfType(BLOCK)) node.findChildByType(BLOCK)?.findChildByType(LBRACE)!!.treeParent else null
         } ?: return
         checkEmptyBlock(newNode, configuration)
     }
