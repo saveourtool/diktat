@@ -197,6 +197,16 @@ class BlockStructureBracesWarnTest {
     }
 
     @Test
+    fun `check fun with empty block won't be processed`() {
+        lintMethod(BlockStructureBraces(),
+                """
+                    |fun foo() {}
+                """.trimMargin()
+
+        )
+    }
+
+    @Test
     fun `check function expression with wrong close brace`() {
         lintMethod(BlockStructureBraces(),
                 """

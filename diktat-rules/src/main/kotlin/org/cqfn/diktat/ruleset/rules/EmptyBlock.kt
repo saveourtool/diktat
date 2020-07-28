@@ -23,6 +23,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.BRACES_BLOCK_STRUCTURE_ERROR
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
+import org.cqfn.diktat.ruleset.utils.isBlockEmpty
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -62,7 +63,7 @@ class EmptyBlock : Rule("empty-block-structure") {
 
     private fun checkEmptyBlock(node: ASTNode, configuration: EmptyBlockStyleConfiguration) {
         if (node.treeParent.findChildByType(MODIFIER_LIST)?.findChildByType(OVERRIDE_KEYWORD) != null) return
-        if (isNodeEmpty(node)) {
+        if (node.isBlockEmpty(node)) {
             BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "there can't be empty blocks in multi blocks",
                     node.startOffset) {}
             val space = node.findChildByType(RBRACE)!!.treePrev
@@ -82,9 +83,6 @@ class EmptyBlock : Rule("empty-block-structure") {
             }
         }
     }
-
-    private fun isNodeEmpty(node: ASTNode) = listOf(LBRACE, RBRACE, WHITE_SPACE)
-            .containsAll(node.getChildren(null).distinct().map { it.elementType })
 
     class EmptyBlockStyleConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
         val emptyBlockNewline = config["styleEmptyBlockWithNewline"]?.toBoolean() ?: true

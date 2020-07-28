@@ -9,6 +9,6 @@ class EmptyBlockFixTest : FixTestBase("test/paragraph3/empty_block", EmptyBlock(
 
     @Test
     fun `should fix open and close brace in if-else expression`() {
-        fixAndCompare("TryCatchEmptyBlockExprected.kt", "TryCatchEmptyBlockTest.kt")
+        fixAndCompare("TryCatchEmptyBlockExpected.kt", "TryCatchEmptyBlockTest.kt")
     }
 }

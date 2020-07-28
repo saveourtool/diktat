@@ -62,6 +62,8 @@ fun ASTNode.hasChildOfType(elementType: IElementType): Boolean =
 fun ASTNode.hasAnyChildOfTypes(vararg elementType: IElementType): Boolean =
         elementType.any { this.hasChildOfType(it) }
 
+fun ASTNode.isBlockEmpty(node: ASTNode?) = node?.let { listOf(ElementType.LBRACE, ElementType.RBRACE, WHITE_SPACE)
+        .containsAll(node.getChildren(null).map { it.elementType })} ?: true
 /**
  * Method that is trying to find and return child of this node, which
  * 1) stands before the node with type @beforeThisNodeType
