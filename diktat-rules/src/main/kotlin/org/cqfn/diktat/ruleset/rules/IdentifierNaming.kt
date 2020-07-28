@@ -25,6 +25,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.ENUM_VALUE
 import org.cqfn.diktat.ruleset.constants.Warnings.FUNCTION_NAME_INCORRECT_CASE
 import org.cqfn.diktat.ruleset.constants.Warnings.IDENTIFIER_LENGTH
 import org.cqfn.diktat.ruleset.utils.*
+import org.jetbrains.kotlin.psi.psiUtil.parents
 
 /**
  * This visitor covers rules:  1.2, 1.3, 1.4, 1.5 of Huawei code style. It covers following rules:
@@ -143,7 +144,8 @@ class IdentifierNaming : Rule("identifier-naming") {
         val result = if (destructingDeclaration != null) {
             destructingDeclaration.getAllChildrenWithType(DESTRUCTURING_DECLARATION_ENTRY)
                     .map { it.getIdentifierName()!! }
-        } else if (node.treeParent.elementType == VALUE_PARAMETER_LIST && node.treeParent.treeParent.elementType == FUNCTION_TYPE) {
+        } else if (node.parents().count() > 1 && node.treeParent.elementType == VALUE_PARAMETER_LIST
+                && node.treeParent.treeParent.elementType == FUNCTION_TYPE) {
             listOfNotNull(node.getIdentifierName())
         } else {
             listOf(node.getIdentifierName()!!)
