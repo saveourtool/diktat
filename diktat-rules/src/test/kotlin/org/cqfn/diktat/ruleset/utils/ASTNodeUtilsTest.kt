@@ -524,7 +524,7 @@ class ASTNodeUtilsTest {
                 leafWithTypeList.add(node)
             }
         }
-        firstNode?.getAllLLeafsWithSpecificType(WHITE_SPACE, list)
+        firstNode?.getAllLeafsWithSpecificType(WHITE_SPACE, list)
         Assert.assertEquals(list, leafWithTypeList)
     }
 

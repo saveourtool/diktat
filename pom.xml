@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.cqfn.diktat</groupId>
     <artifactId>diktat-parent</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.2-SNAPSHOT</version>
     <name>diktat</name>
     <description>diKTat kotlin formatter and fixer</description>
     <packaging>pom</packaging>
@@ -143,12 +143,14 @@
         </snapshotRepository>
     </distributionManagement>
     <repositories>
+        <!-- this is needed to use ktlint 0.37.1-fork -->
         <repository>
             <id>artipie</id>
             <url>https://central.artipie.com/akuleshov7/diktat</url>
         </repository>
     </repositories>
     <pluginRepositories>
+        <!-- this is needed to use forked ktlint and diktat inside antrun plugin -->
         <pluginRepository>
             <id>artipie</id>
             <url>https://central.artipie.com/akuleshov7/diktat</url>
