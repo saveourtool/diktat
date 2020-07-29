@@ -233,6 +233,8 @@ class KdocMethodsTest {
                     |    
                     |    override fun hashCode() = 42
                     |}
+                    |
+                    |fun main() { }
                 """.trimMargin()
         )
 
@@ -245,6 +247,8 @@ class KdocMethodsTest {
                     |    
                     |    override fun hashCode(): Int { return 42 }
                     |}
+                    |
+                    |fun main(vararg args: String) { }
                 """.trimMargin()
         )
     }
