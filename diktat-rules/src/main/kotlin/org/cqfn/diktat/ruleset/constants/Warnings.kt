@@ -71,6 +71,7 @@ enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean
     BRACES_BLOCK_STRUCTURE_ERROR(51, true, "braces should follow 1TBS style"),
     WRONG_INDENTATION(52, true, "only spaces are allowed for indentation and each indentation should equal to 4 spaces (tabs are not allowed)"),
     EMPTY_BLOCK_STRUCTURE_ERROR(53, true, "incorrect format of empty block"),
+    MORE_ONE_STATEMENT_PER_LINE(54,true, "There should not be more than one code statement in one line"),
     ;
 
     override fun ruleName(): String = this.name
