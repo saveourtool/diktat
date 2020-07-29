@@ -47,7 +47,7 @@ class EmptyBlock : Rule("empty-block-structure") {
         if (node.treeParent.findChildByType(MODIFIER_LIST)?.findChildByType(OVERRIDE_KEYWORD) != null) return
         if (node.isBlockEmpty()) {
             if (!configuration.emptyBlockExist) {
-                EMPTY_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "there can't be empty blocks in multi blocks",
+                EMPTY_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "empty blocks are forbidden unless it is function with override keyword",
                         node.startOffset) {}
             } else {
                 val space = node.findChildByType(RBRACE)!!.treePrev
@@ -70,7 +70,7 @@ class EmptyBlock : Rule("empty-block-structure") {
     }
 
     class EmptyBlockStyleConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
-        val emptyBlockExist = config["emptyBlockExist"]?.toBoolean() ?: false
+        val emptyBlockExist = config["allowEmptyBlocks"]?.toBoolean() ?: false
         val emptyBlockNewline = config["styleEmptyBlockWithNewline"]?.toBoolean() ?: true
     }
 }

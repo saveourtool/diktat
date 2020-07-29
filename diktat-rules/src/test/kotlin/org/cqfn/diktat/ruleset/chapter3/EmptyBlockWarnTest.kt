@@ -19,7 +19,7 @@ class EmptyBlockWarnTest {
 
     private val rulesConfigListEmptyBlockExist: List<RulesConfig> = listOf(
             RulesConfig(Warnings.EMPTY_BLOCK_STRUCTURE_ERROR.name, true,
-                    mapOf("emptyBlockExist" to "True"))
+                    mapOf("allowEmptyBlocks" to "True"))
     )
 
     @Test
@@ -34,7 +34,7 @@ class EmptyBlockWarnTest {
                     |    }
                     |}
                 """.trimMargin(),
-                LintError(5,10,ruleId,"${Warnings.EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} there can't be empty blocks in multi blocks", false)
+                LintError(5,10,ruleId,"${Warnings.EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} empty blocks are forbidden unless it is function with override keyword", false)
         )
     }
 
@@ -49,7 +49,7 @@ class EmptyBlockWarnTest {
                     |    else {}
                     |}
                 """.trimMargin(),
-                LintError(5,10,ruleId,"${Warnings.EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} there can't be empty blocks in multi blocks", false),
+                LintError(5,10,ruleId,"${Warnings.EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} empty blocks are forbidden unless it is function with override keyword", false),
                 rulesConfigList = rulesConfigListIgnoreEmptyBlock
         )
     }

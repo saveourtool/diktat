@@ -245,7 +245,7 @@
     "enabled": true,
     "configuration": {
       "styleEmptyBlockWithNewline": "True",
-      "emptyBlockExist" : "False"
+      "allowEmptyBlocks" : "False"
     }
   }
 ]
