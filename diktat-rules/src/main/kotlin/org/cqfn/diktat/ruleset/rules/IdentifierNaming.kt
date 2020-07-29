@@ -248,7 +248,7 @@ class IdentifierNaming : Rule("identifier-naming") {
 
         // if function has Boolean return type in 99% of cases it is much better to name it with isXXX or hasXXX prefix
         if (functionReturnType != null && functionReturnType == PrimitiveType.BOOLEAN.typeName.asString()) {
-            if (!(BOOLEAN_METHOD_PREFIXES.any { functionReturnType.startsWith(it) })) {
+            if (BOOLEAN_METHOD_PREFIXES.none { functionName.text.startsWith(it) }) {
                 FUNCTION_BOOLEAN_PREFIX.warnAndFix(configRules, emitWarn, isFixMode, functionName.text, functionName.startOffset) {
                     // FixMe: add agressive autofix for this
                 }

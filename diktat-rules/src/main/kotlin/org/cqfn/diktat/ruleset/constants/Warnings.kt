@@ -71,6 +71,7 @@ enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean
     BLANK_LINE_BETWEEN_PROPERTIES(51, true, "there should be no blank lines between properties without comments; comment or KDoc on property should have blank line before"),
     BRACES_BLOCK_STRUCTURE_ERROR(52, true, "braces should follow 1TBS style"),
     WRONG_INDENTATION(53, true, "only spaces are allowed for indentation and each indentation should equal to 4 spaces (tabs are not allowed)"),
+    EMPTY_BLOCK_STRUCTURE_ERROR(54, true, "incorrect format of empty block"),
     ;
 
     override fun ruleName(): String = this.name

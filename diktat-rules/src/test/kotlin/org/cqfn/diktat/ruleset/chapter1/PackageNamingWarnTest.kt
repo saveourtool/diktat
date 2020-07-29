@@ -13,7 +13,7 @@ class PackageNamingWarnTest {
     private val ruleId: String = "$DIKTAT_RULE_SET_ID:package-naming"
 
     private val rulesConfigList: List<RulesConfig> = listOf(
-        RulesConfig(PACKAGE_NAME_MISSING.name, true, mapOf("domainName" to "org.cqfn.diktat"))
+            RulesConfig(PACKAGE_NAME_MISSING.name, true, mapOf("domainName" to "org.cqfn.diktat"))
     )
 
     @Test
@@ -129,6 +129,24 @@ class PackageNamingWarnTest {
 
             """.trimIndent(),
                 rulesConfigList = rulesConfigList
+        )
+    }
+
+    @Test
+    fun `regression - incorrect warning on file under test directory`() {
+        lintMethod(PackageNaming(),
+                """
+                    package org.cqfn.diktat.ruleset.chapter1
+                """.trimIndent(),
+                fileName = "~/diktat/diktat-rules/src/test/kotlin/org/cqfn/diktat/ruleset/chapter1/EnumValueCaseTest.kt"
+        )
+
+        lintMethod(PackageNaming(),
+                """
+                    package org.cqfn.diktat.chapter1
+                """.trimIndent(),
+                LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} org.cqfn.diktat.ruleset.chapter1"),
+                fileName = "~/diktat/diktat-rules/src/test/kotlin/org/cqfn/diktat/ruleset/chapter1/EnumValueCaseTest.kt"
         )
     }
 }

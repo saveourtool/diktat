@@ -239,5 +239,13 @@
       "alignedParameters": true,
       "extendedIndentAfterOperators": true
     }
+  },
+  {
+    "name": "EMPTY_BLOCK_STRUCTURE_ERROR",
+    "enabled": true,
+    "configuration": {
+      "styleEmptyBlockWithNewline": "True",
+      "allowEmptyBlocks" : "False"
+    }
   }
 ]
