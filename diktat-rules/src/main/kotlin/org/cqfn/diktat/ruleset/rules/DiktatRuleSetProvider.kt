@@ -9,11 +9,11 @@ import org.cqfn.diktat.common.config.rules.RulesConfigReader
 import org.cqfn.diktat.ruleset.rules.comments.CommentsRule
 import org.cqfn.diktat.ruleset.rules.files.FileSize
 import org.cqfn.diktat.ruleset.rules.files.FileStructureRule
+import org.cqfn.diktat.ruleset.rules.files.IndentationRule
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocComments
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocFormatting
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocMethods
 import org.slf4j.LoggerFactory
-import java.nio.file.Paths
 
 /**
  * this constant will be used everywhere in the code to mark usage of Diktat ruleset
@@ -39,7 +39,9 @@ class DiktatRuleSetProvider(private val jsonRulesConfig: String = "rules-config.
             IdentifierNaming(),
             BracesInConditionalsAndLoopsRule(),
             BlockStructureBraces(),
-            FileStructureRule()  // this rule should be the last because it should operate on already valid code
+            EmptyBlock(),
+            FileStructureRule(),  // this rule should be right before indentation because it should operate on already valid code
+            IndentationRule()  // indentation rule should be the last because it fixes formatting after all the changes done by previous rules
         )
     }
 

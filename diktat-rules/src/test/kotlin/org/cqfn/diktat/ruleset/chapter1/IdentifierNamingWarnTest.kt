@@ -311,6 +311,33 @@ class IdentifierNamingWarnTest {
     }
 
     @Test
+    fun `FUNCTION_BOOLEAN_PREFIX - positive example`() {
+        lintMethod(IdentifierNaming(),
+                """
+                    fun ASTNode.hasEmptyLineAfter(): Boolean { }    
+                    fun hasEmptyLineAfter(): Boolean { }    
+                    fun ASTNode.isEmpty(): Boolean { }    
+                    fun isEmpty(): Boolean { }    
+                """.trimIndent()
+        )
+    }
+
+    @Test
+    fun `FUNCTION_BOOLEAN_PREFIX - negative example`() {
+        lintMethod(IdentifierNaming(),
+                """
+                    fun ASTNode.emptyLineAfter(): Boolean { }    
+                    fun emptyLineAfter(): Boolean { }    
+                    fun ASTNode.empty(): Boolean { }    
+                    fun empty(): Boolean { }    
+                """.trimIndent(),
+                LintError(1, 13, ruleId, "${FUNCTION_BOOLEAN_PREFIX.warnText()} emptyLineAfter"),
+                LintError(2, 5, ruleId, "${FUNCTION_BOOLEAN_PREFIX.warnText()} emptyLineAfter"),
+                LintError(3, 13, ruleId, "${FUNCTION_BOOLEAN_PREFIX.warnText()} empty"),
+                LintError(4, 5, ruleId, "${FUNCTION_BOOLEAN_PREFIX.warnText()} empty")
+        )
+    }
+    @Test
     fun `regression - function argument type`() {
         // valid example, should not cause exceptions
         lintMethod(IdentifierNaming(),
