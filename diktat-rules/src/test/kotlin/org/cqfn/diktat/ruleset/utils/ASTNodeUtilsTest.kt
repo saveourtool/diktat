@@ -3,6 +3,7 @@ package org.cqfn.diktat.ruleset.utils
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleSet
+import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.EQ
@@ -576,6 +577,35 @@ class ASTNodeUtilsTest {
         Assert.assertEquals(listResults, listTypes)
     }
 
+    @Test
+    fun `test findParentNodeWithSpecificType`() {
+        val code = """
+            val a = ""
+            class Test() {
+                fun foo() {
+                    try {
+                    } catch (e: Exception) {
+                    }
+                }
+            }
+        """.trimIndent()
+        val listResults = mutableListOf<ASTNode>()
+        applyToCode(code) { node ->
+            if (node.elementType == IDENTIFIER) {
+                listResults.add(node)
+            }
+        }
+
+        listResults.forEach { node ->
+            if (node.findParentNodeWithSpecificType(ElementType.CATCH) == null) {
+                val identifiers = listOf("Test", "foo", "a")
+                Assert.assertTrue("Identifier <${node.text}> expected not to have CATCH parent node", identifiers.contains(node.text))
+            } else {
+                val identifiers = listOf("e", "Exception")
+                Assert.assertTrue("Identifier <${node.text}> expected to have CATCH parent node", identifiers.contains(node.text))
+            }
+        }
+    }
 
     @Test
     fun `test isAccessibleOutside`() {

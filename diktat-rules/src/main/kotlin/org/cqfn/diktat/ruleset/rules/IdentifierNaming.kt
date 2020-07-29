@@ -3,6 +3,7 @@ package org.cqfn.diktat.ruleset.rules
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
+import com.pinterest.ktlint.core.ast.ElementType.CATCH
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import org.cqfn.diktat.common.config.rules.RulesConfig
@@ -143,7 +144,7 @@ class IdentifierNaming : Rule("identifier-naming") {
         }
 
         // no need to do checks if variables are in a special list with exceptions
-        return result.filterNot { IdentifierNaming.ONE_CHAR_IDENTIFIERS.contains(it.text) }
+        return result.filterNot { ONE_CHAR_IDENTIFIERS.contains(it.text) }
     }
 
     /**
@@ -279,9 +280,21 @@ class IdentifierNaming : Rule("identifier-naming") {
                                       isVariable: Boolean) {
         nodes.forEach {
             if (!(it.checkLength(MIN_IDENTIFIER_LENGTH..MAX_IDENTIFIER_LENGTH) ||
-                            (ONE_CHAR_IDENTIFIERS.contains(it.text)) && isVariable)) {
+                            ONE_CHAR_IDENTIFIERS.contains(it.text) && isVariable || validCatchIdentifier(it)
+
+                            )) {
                 IDENTIFIER_LENGTH.warn(configRules, emitWarn, isFixMode, it.text, it.startOffset)
             }
         }
+    }
+
+    /**
+     * exception case for identifiers used in catch block:
+     * catch (e: Exception) {}
+     */
+    private fun validCatchIdentifier(node: ASTNode): Boolean {
+        return node.text == "e" &&
+                node.findParentNodeWithSpecificType(CATCH) != null &&
+                node.findParentNodeWithSpecificType(VALUE_PARAMETER_LIST) != null
     }
 }

@@ -310,5 +310,43 @@ class IdentifierNamingWarnTest {
         )
     }
 
+    @Test
+    fun `regression - object parsing should not fail with anonymous objects`() {
+        val code =
+                """
+                    val fakeVal = RuleSet("test", object : Rule("astnode-utils-test") {
+                                    override fun visit(node: ASTNode) {}
+                                   })
+                """.trimIndent()
 
+        lintMethod(IdentifierNaming(), code)
+    }
+
+    @Test
+    fun `exception case for identifier naming in catch statements`() {
+        val code =
+                """
+                    fun foo() {
+                        try {
+                        } catch (e: IOException) {
+                        }
+                    }
+                """.trimIndent()
+
+        lintMethod(IdentifierNaming(), code)
+    }
+
+    @Test
+    fun `exception case for identifier naming - catching exception with type e`() {
+        val code =
+                """
+                    fun foo() {
+                        try {
+                        } catch (e: e) {
+                        }
+                    }
+                """.trimIndent()
+
+        lintMethod(IdentifierNaming(), code)
+    }
 }

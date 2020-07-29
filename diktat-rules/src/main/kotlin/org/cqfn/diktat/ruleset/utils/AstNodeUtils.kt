@@ -194,6 +194,18 @@ fun ASTNode.findAllNodesWithSpecificType(elementType: IElementType): List<ASTNod
 }
 
 /**
+ * This method recursively finds parent node that has specified elementType
+ */
+fun ASTNode.findParentNodeWithSpecificType(elementType: IElementType): ASTNode? {
+    if (this.elementType == elementType) return this
+    if (this.treeParent == null) {
+        return null
+    } else {
+        return this.treeParent.findParentNodeWithSpecificType(elementType)
+    }
+}
+
+/**
  * Finds all children of optional type which match the predicate
  */
 fun ASTNode.findChildrenMatching(elementType: IElementType? = null, predicate: (ASTNode) -> Boolean): List<ASTNode> =
