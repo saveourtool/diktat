@@ -9,6 +9,7 @@ import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.COLLECTION_LITERAL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
+import com.pinterest.ktlint.core.ast.ElementType.KDOC_SECTION
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_TAG_NAME
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_TEXT
 import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_EXPRESSION
@@ -23,6 +24,7 @@ import com.pinterest.ktlint.core.ast.prevSibling
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_TRIVIAL_KDOC_ON_FUNCTION
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_PARAM_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_RETURN_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_THROWS_TAG
@@ -45,6 +47,7 @@ import org.cqfn.diktat.ruleset.utils.splitPathToDirs
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
+import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
 import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
 
@@ -64,6 +67,8 @@ class KdocMethods : Rule("kdoc-methods") {
 
         // these methods do not need mandatory documentation
         private val standardMethods = listOf("equals", "hashCode", "toString", "clone", "finalize")
+
+        private val uselessKdocRegex = """^([rR]eturn|[gGsS]et)[s]?\s+\w+(\s+\w+)?$""".toRegex()
     }
 
     private lateinit var configRules: List<RulesConfig>
@@ -87,6 +92,8 @@ class KdocMethods : Rule("kdoc-methods") {
             if (!isTestMethod && !isStandardMethod && !node.isSingleLineGetterOrSetter()) {
                 checkSignatureDescription(node)
             }
+        } else if (node.elementType == KDOC_SECTION) {
+            checkKdocBody(node)
         }
     }
 
@@ -221,6 +228,16 @@ class KdocMethods : Rule("kdoc-methods") {
 
             // fixme could be added as proper CompositeElement
             node.addChild(LeafPsiElement(KDOC, kDocTemplate), node.firstChildNode)
+        }
+    }
+
+    private fun checkKdocBody(node: ASTNode) {
+        val kdocTextNodes = node.getChildren(TokenSet.create(KDOC_TEXT))
+        if (kdocTextNodes.size == 1) {
+            val kdocText = kdocTextNodes.first().text.trim()
+            if (kdocText.matches(uselessKdocRegex)) {
+                KDOC_TRIVIAL_KDOC_ON_FUNCTION.warn(configRules, emitWarn, isFixMode, kdocText, kdocTextNodes.first().startOffset)
+            }
         }
     }
 

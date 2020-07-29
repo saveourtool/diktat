@@ -2,6 +2,7 @@ package org.cqfn.diktat.ruleset.chapter2
 
 import com.pinterest.ktlint.core.LintError
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_TRIVIAL_KDOC_ON_FUNCTION
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_PARAM_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_RETURN_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_THROWS_TAG
@@ -278,6 +279,19 @@ class KdocMethodsTest {
                 LintError(12, 5, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} setY"),
                 LintError(17, 5, ruleId, "${KDOC_WITHOUT_RETURN_TAG.warnText()} getZ"),
                 LintError(17, 5, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} getZ")
+        )
+    }
+
+    @Test
+    fun `should check if KDoc is not trivial`() {
+        lintMethod(KdocMethods(),
+                """
+                    |/**
+                    | * Returns X
+                    | */
+                    |fun getX(): TypeX { return x }
+                """.trimMargin(),
+                LintError(2, 3, ruleId, "${KDOC_TRIVIAL_KDOC_ON_FUNCTION.warnText()} Returns X", false)
         )
     }
 }
