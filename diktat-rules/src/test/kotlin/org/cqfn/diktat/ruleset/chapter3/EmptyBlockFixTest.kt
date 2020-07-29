@@ -11,7 +11,7 @@ class EmptyBlockFixTest : FixTestBase("test/paragraph3/empty_block", EmptyBlock(
 
     private val rulesConfigListEmptyBlockExist: List<RulesConfig> = listOf(
             RulesConfig(Warnings.EMPTY_BLOCK_STRUCTURE_ERROR.name, true,
-                    mapOf("emptyBlockExist" to "True"))
+                    mapOf("allowEmptyBlocks" to "True"))
     )
 
     @Test
