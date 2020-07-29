@@ -66,7 +66,7 @@ class KdocMethods : Rule("kdoc-methods") {
                 CALLABLE_REFERENCE_EXPRESSION, SAFE_ACCESS_EXPRESSION, WHEN_CONDITION_WITH_EXPRESSION, COLLECTION_LITERAL_EXPRESSION)
 
         // these methods do not need mandatory documentation
-        private val standardMethods = listOf("equals", "hashCode", "toString", "clone", "finalize")
+        private val standardMethods = listOf("main", "equals", "hashCode", "toString", "clone", "finalize")
 
         private val uselessKdocRegex = """^([rR]eturn|[gGsS]et)[s]?\s+\w+(\s+\w+)?$""".toRegex()
     }
