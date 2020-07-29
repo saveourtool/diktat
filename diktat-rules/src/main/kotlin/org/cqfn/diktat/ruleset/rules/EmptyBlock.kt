@@ -46,27 +46,31 @@ class EmptyBlock : Rule("empty-block-structure") {
     private fun checkEmptyBlock(node: ASTNode, configuration: EmptyBlockStyleConfiguration) {
         if (node.treeParent.findChildByType(MODIFIER_LIST)?.findChildByType(OVERRIDE_KEYWORD) != null) return
         if (node.isBlockEmpty()) {
-            EMPTY_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "there can't be empty blocks in multi blocks",
-                    node.startOffset) {}
-            val space = node.findChildByType(RBRACE)!!.treePrev
-            if (configuration.emptyBlockNewline && !space.text.contains("\n")) {
-                EMPTY_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "different style for empty block",
-                        node.startOffset) {
-                    if (space.elementType == WHITE_SPACE)
-                        (space.treeNext as LeafPsiElement).replaceWithText("\n")
-                    else
-                        node.addChild(PsiWhiteSpaceImpl("\n"), space.treeNext)
-                }
-            } else if (!configuration.emptyBlockNewline && space.text.contains("\n")) {
-                EMPTY_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "different style for empty block",
-                        node.startOffset) {
-                    node.removeChild(space)
+            if (!configuration.emptyBlockExist) {
+                EMPTY_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "there can't be empty blocks in multi blocks",
+                        node.startOffset) {}
+            } else {
+                val space = node.findChildByType(RBRACE)!!.treePrev
+                if (configuration.emptyBlockNewline && !space.text.contains("\n")) {
+                    EMPTY_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "different style for empty block",
+                            node.startOffset) {
+                        if (space.elementType == WHITE_SPACE)
+                            (space.treeNext as LeafPsiElement).replaceWithText("\n")
+                        else
+                            node.addChild(PsiWhiteSpaceImpl("\n"), space.treeNext)
+                    }
+                } else if (!configuration.emptyBlockNewline && space.text.contains("\n")) {
+                    EMPTY_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "different style for empty block",
+                            node.startOffset) {
+                        node.removeChild(space)
+                    }
                 }
             }
         }
     }
 
     class EmptyBlockStyleConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
+        val emptyBlockExist = config["emptyBlockExist"]?.toBoolean() ?: false
         val emptyBlockNewline = config["styleEmptyBlockWithNewline"]?.toBoolean() ?: true
     }
 }

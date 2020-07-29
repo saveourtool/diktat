@@ -17,6 +17,11 @@ class EmptyBlockWarnTest {
                     mapOf("styleEmptyBlockWithNewline" to "False"))
     )
 
+    private val rulesConfigListEmptyBlockExist: List<RulesConfig> = listOf(
+            RulesConfig(Warnings.EMPTY_BLOCK_STRUCTURE_ERROR.name, true,
+                    mapOf("emptyBlockExist" to "True"))
+    )
+
     @Test
     fun `check if expression with empty else block`() {
         lintMethod(EmptyBlock(),
@@ -56,6 +61,22 @@ class EmptyBlockWarnTest {
                     |override fun foo() {
                     |}
                 """.trimMargin()
+        )
+    }
+
+    @Test
+    fun `check if expression with empty else block but with permission to use empty block`() {
+        lintMethod(EmptyBlock(),
+                """
+                    |fun foo() {
+                    |    if (x < -5) {
+                    |       goo()
+                    |    }
+                    |    else {
+                    |    }
+                    |}
+                """.trimMargin(),
+                rulesConfigList = rulesConfigListEmptyBlockExist
         )
     }
 }
