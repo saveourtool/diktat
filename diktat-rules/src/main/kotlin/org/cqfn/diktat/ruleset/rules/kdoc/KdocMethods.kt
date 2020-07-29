@@ -122,7 +122,11 @@ class KdocMethods : Rule("kdoc-methods") {
 
         // if no tag failed, we have too little information to suggest KDoc - it would just be empty
         val anyTagFailed = paramCheckFailed || returnCheckFailed || throwsCheckFailed
-        if (kDoc == null && anyTagFailed) addKdocTemplate(node, name, missingParameters, explicitlyThrownExceptions, returnCheckFailed)
+        if (kDoc == null && anyTagFailed) {
+            addKdocTemplate(node, name, missingParameters, explicitlyThrownExceptions, returnCheckFailed)
+        } else if (kDoc == null) {
+            MISSING_KDOC_ON_FUNCTION.warn(configRules, emitWarn, false, name, node.startOffset)
+        }
     }
 
     private fun getMissingParameters(node: ASTNode, kDocTags: Collection<KDocTag>?): Collection<String?> {
