@@ -11,14 +11,13 @@ import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.cqfn.diktat.ruleset.utils.isFollowedByNewline
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 
 class SingleLineStatementsRule : Rule("statement") {
 
-    companion object{
-        val semicolonToken =  TokenSet.create(SEMICOLON)
+    companion object {
+        val semicolonToken = TokenSet.create(SEMICOLON)
     }
 
     private lateinit var configRules: List<RulesConfig>
@@ -40,13 +39,13 @@ class SingleLineStatementsRule : Rule("statement") {
 
     private fun checkIsSemicolon(node: ASTNode) {
         node.getChildren(semicolonToken).forEach {
-                if (it.treeNext != null && !it.isFollowedByNewline()) {
-                    MORE_THAN_ONE_STATEMENT_PER_LINE.warnAndFix(configRules, emitWarn, isFixMode, "No more than one statement per line",
-                            it.startOffset) {
-                        node.addChild(PsiWhiteSpaceImpl("\n"), it)
-                        node.removeChild(it)
-                    }
+            if (it.treeNext != null && !it.isFollowedByNewline()) {
+                MORE_THAN_ONE_STATEMENT_PER_LINE.warnAndFix(configRules, emitWarn, isFixMode, findWrongText(it) ?:"No more than one statement per line",
+                        it.startOffset) {
+                    node.addChild(PsiWhiteSpaceImpl("\n"), it)
+                    node.removeChild(it)
                 }
+            }
         }
     }
 
@@ -58,7 +57,7 @@ class SingleLineStatementsRule : Rule("statement") {
             node.findAllNodesWithSpecificType(IMPORT_DIRECTIVE).takeIf { it.size > 1 }?.forEach {
                 val semicolon = it.findChildByType(SEMICOLON)
                 if (semicolon != null) {
-                    MORE_THAN_ONE_STATEMENT_PER_LINE.warnAndFix(configRules, emitWarn, isFixMode, "No more than one statement per line",
+                    MORE_THAN_ONE_STATEMENT_PER_LINE.warnAndFix(configRules, emitWarn, isFixMode, findWrongText(it) ?: "No more than one statement per line",
                             semicolon.startOffset) {
                         it.addChild(PsiWhiteSpaceImpl("\n"), semicolon)
                         it.removeChild(semicolon)
@@ -70,4 +69,22 @@ class SingleLineStatementsRule : Rule("statement") {
 
     private fun checkImportText(text: String) = text.contains(";") &&
             text.indexOf(";") != text.length - 1
+
+    private fun findWrongText(node: ASTNode): String? {
+        var text: String? = ""
+        var prevNode: ASTNode? = node
+        var nextNode: ASTNode? = node
+        while (prevNode!!.treePrev != null && !prevNode.treePrev.text.contains("\n")) {
+            prevNode = prevNode.treePrev
+        }
+        while (nextNode!!.treeNext != null && !nextNode.treeNext.text.contains("\n")) {
+            nextNode = nextNode.treeNext
+        }
+        do {
+            text += prevNode!!.text
+            prevNode = prevNode.treeNext
+        } while (prevNode != nextNode)
+        text += nextNode.text
+        return if (text == "") null else text
+    }
 }

@@ -33,10 +33,10 @@ class SingleLineStatementsRuleWarnTest {
                     |    println(1); println(1)
                     |}
                 """.trimMargin(),
-                LintError(1,40,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} No more than one statement per line", false),
-                LintError(5,13,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} No more than one statement per line", false),
-                LintError(14,14,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} No more than one statement per line", false),
-                LintError(15,15,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} No more than one statement per line", false)
+                LintError(1,40,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} import com.pinterest.ktlint.core.KtLint; import com.pinterest.ktlint.core.LintError", false),
+                LintError(5,13,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} goo(); hoo()", false),
+                LintError(14,14,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} val a = 5; val b = 10", false),
+                LintError(15,15,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} println(1); println(1)", false)
         )
     }
 
@@ -49,8 +49,8 @@ class SingleLineStatementsRuleWarnTest {
                     |    println(1);println(1)
                     |}
                 """.trimMargin(),
-                LintError(2,14,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} No more than one statement per line", false),
-                LintError(3,15,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} No more than one statement per line", false)
+                LintError(2,14,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} val a = 5;val b = 10", false),
+                LintError(3,15,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} println(1);println(1)", false)
         )
     }
 
