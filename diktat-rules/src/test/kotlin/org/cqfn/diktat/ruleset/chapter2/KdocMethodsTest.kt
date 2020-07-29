@@ -2,6 +2,7 @@ package org.cqfn.diktat.ruleset.chapter2
 
 import com.pinterest.ktlint.core.LintError
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_TRIVIAL_KDOC_ON_FUNCTION
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_PARAM_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_RETURN_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_THROWS_TAG
@@ -219,5 +220,78 @@ class KdocMethodsTest {
         """.trimIndent()
 
         lintMethod(KdocMethods(), invalidCode, LintError(1, 1, ruleId, "${KDOC_WITHOUT_THROWS_TAG.warnText()} doubleInt (IllegalAccessException)"))
+    }
+
+    @Test
+    fun `do not force documentation on standard methods`() {
+        lintMethod(KdocMethods(),
+                """
+                    |class Example {
+                    |    override fun toString() = "example"
+                    |    
+                    |    override fun equals(other: Any?) = false
+                    |    
+                    |    override fun hashCode() = 42
+                    |}
+                """.trimMargin()
+        )
+
+        lintMethod(KdocMethods(),
+                """
+                    |class Example {
+                    |    override fun toString(): String { return "example" }
+                    |    
+                    |    override fun equals(other: Any?): Boolean { return false }
+                    |    
+                    |    override fun hashCode(): Int { return 42 }
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    fun `should not force documentation on single line getters and setters`() {
+        lintMethod(KdocMethods(),
+                """
+                    |class Example {
+                    |    fun setX(x: Type) {
+                    |        this.x = x
+                    |    }
+                    |    
+                    |    fun getX() {
+                    |        return x
+                    |    }
+                    |    
+                    |    fun getY() = this.y
+                    |    
+                    |    fun setY(y: Type) {
+                    |        this.validate(y)
+                    |        this.y = y
+                    |    }
+                    |    
+                    |    fun getZ(): TypeZ {
+                    |        baz(z)
+                    |        return z
+                    |    }
+                    |}
+                """.trimMargin(),
+                LintError(12, 5, ruleId, "${KDOC_WITHOUT_PARAM_TAG.warnText()} setY (y)"),
+                LintError(12, 5, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} setY"),
+                LintError(17, 5, ruleId, "${KDOC_WITHOUT_RETURN_TAG.warnText()} getZ"),
+                LintError(17, 5, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} getZ")
+        )
+    }
+
+    @Test
+    fun `should check if KDoc is not trivial`() {
+        lintMethod(KdocMethods(),
+                """
+                    |/**
+                    | * Returns X
+                    | */
+                    |fun getX(): TypeX { return x }
+                """.trimMargin(),
+                LintError(2, 3, ruleId, "${KDOC_TRIVIAL_KDOC_ON_FUNCTION.warnText()} Returns X", false)
+        )
     }
 }
