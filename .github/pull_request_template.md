@@ -1,5 +1,6 @@
 ## Which rule and warnings did you add?
 
+This pull request closes <!-- insert related issue number -->
 <!-- Briefly describe rule and warnings -->
 
 ## Actions checklist
@@ -7,7 +8,7 @@
 * [ ] Added tests on checks
 * [ ] Added tests on fixers
 * [ ] Updated rules-config.json
-* [ ] Updated Readme
+* [ ] Updated available-rules.md
 
 ## Fixme
 

@@ -229,5 +229,15 @@
       "openBraceNewline" : "True",
       "closeBraceNewline" : "True"
     }
+  },
+  {
+    "name": "WRONG_INDENTATION",
+    "enabled": true,
+    "configuration" : {
+      "newlineAtEnd": true,
+      "extendedIndentOfParameters": true,
+      "alignedParameters": true,
+      "extendedIndentAfterOperators": true
+    }
   }
 ]
