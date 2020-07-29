@@ -11,8 +11,8 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtParameter
 import org.jetbrains.kotlin.psi.KtParameterList
 
-private val getPrefix = "get"
-private val setPrefix = "set"
+private const val GET_PREFIX = "get"
+private const val SET_PREFIX = "set"
 
 /**
  * Checks whether function from this [ElementType.FUN] node has `@Test` annotation
@@ -73,8 +73,8 @@ fun ASTNode.isGetterOrSetter(): Boolean {
     checkNodeIsFun(this)
     return getIdentifierName()?.let { functionName ->
         when {
-            functionName.text.startsWith(setPrefix) -> parameterNames()!!.size == 1
-            functionName.text.startsWith(getPrefix) -> parameterNames()!!.isEmpty()
+            functionName.text.startsWith(SET_PREFIX) -> parameterNames()!!.size == 1
+            functionName.text.startsWith(GET_PREFIX) -> parameterNames()!!.isEmpty()
             else -> false
         }
     } ?: false
