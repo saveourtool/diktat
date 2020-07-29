@@ -19,7 +19,7 @@ enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean
     CLASS_NAME_INCORRECT(7, true, "class/enum/interface name should be in PascalCase and should contain only latin (ASCII) letters or numbers"),
     OBJECT_NAME_INCORRECT(8, true, "object structure name should be in PascalCase and should contain only latin (ASCII) letters or numbers"),
     VARIABLE_NAME_INCORRECT_FORMAT(9, true, "variable name should be in camel case (correct: checkIpConfig, incorrect: CheckIPConfig)" +
-        " should contain only latin (ASCII) letters or numbers and should start from lower letter"),
+            " should contain only latin (ASCII) letters or numbers and should start from lower letter"),
     VARIABLE_NAME_INCORRECT(10, false, "variable name should contain more than one letter"),
     CONSTANT_UPPERCASE(11, true, "<val> properties from companion object or on file level mostly in all cases are constants - please use upper snake case for them"),
     VARIABLE_HAS_PREFIX(12, true, "variable has prefix (like mVariable or M_VARIABLE), generally it is a bad code style (Android - is the only exception)"),
@@ -35,6 +35,7 @@ enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean
 
     EXCEPTION_SUFFIX(20, true, "all exception classes should have \"Exception\" suffix"),
 
+    // ======== chapter 2 ========
     MISSING_KDOC_TOP_LEVEL(21, false, "all public and internal top-level classes and functions should have Kdoc"),
     MISSING_KDOC_CLASS_ELEMENTS(22, false, "all public, internal and protected classes, functions and variables inside the class should have Kdoc"),
     MISSING_KDOC_ON_FUNCTION(23, true, "all public, internal and protected functions should have Kdoc with proper tags"),
@@ -71,7 +72,7 @@ enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean
     BRACES_BLOCK_STRUCTURE_ERROR(52, true, "braces should follow 1TBS style"),
     WRONG_INDENTATION(53, true, "only spaces are allowed for indentation and each indentation should equal to 4 spaces (tabs are not allowed)"),
     EMPTY_BLOCK_STRUCTURE_ERROR(54, true, "incorrect format of empty block"),
-    MORE_ONE_STATEMENT_PER_LINE(55,true, "There should not be more than one code statement in one line"),
+    MORE_THAN_ONE_STATEMENT_PER_LINE(55,true, "There should not be more than one code statement in one line"),
     ;
 
     override fun ruleName(): String = this.name

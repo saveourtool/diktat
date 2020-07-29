@@ -1,18 +1,18 @@
 package test.paragraph3.statement
 
-import com.pinterest.ktlint.core.KtLint;
+import com.pinterest.ktlint.core.KtLint
  import com.pinterest.ktlint.core.LintError
 
 fun foo(){
     if (x > 0){
-        goo();
+        goo()
  qwe()
     }
 }
 
 fun foo(){
     if (x > 0){
-        goo();
+        goo()
 qwe()
     }
 }

@@ -1,20 +1,20 @@
 package org.cqfn.diktat.ruleset.chapter3
 
 import com.pinterest.ktlint.core.LintError
-import org.cqfn.diktat.ruleset.constants.Warnings.MORE_ONE_STATEMENT_PER_LINE
+import org.cqfn.diktat.ruleset.constants.Warnings.MORE_THAN_ONE_STATEMENT_PER_LINE
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
-import org.cqfn.diktat.ruleset.rules.Statement
+import org.cqfn.diktat.ruleset.rules.SingleLineStatementsRule
 import org.cqfn.diktat.util.lintMethod
 import org.junit.Test
 
-class StatementWarnTest {
+class SingleLineStatementsRuleWarnTest {
 
     private val ruleId = "$DIKTAT_RULE_SET_ID:statement"
 
 
     @Test
     fun `check two statement per line`() {
-        lintMethod(Statement(),
+        lintMethod(SingleLineStatementsRule(),
                 """
                     |import com.pinterest.ktlint.core.KtLint; import com.pinterest.ktlint.core.LintError
                     |
@@ -33,30 +33,30 @@ class StatementWarnTest {
                     |    println(1); println(1)
                     |}
                 """.trimMargin(),
-                LintError(1,40,ruleId,"${MORE_ONE_STATEMENT_PER_LINE.warnText()} No more than one statement per line", false),
-                LintError(5,13,ruleId,"${MORE_ONE_STATEMENT_PER_LINE.warnText()} No more than one statement per line", false),
-                LintError(14,14,ruleId,"${MORE_ONE_STATEMENT_PER_LINE.warnText()} No more than one statement per line", false),
-                LintError(15,15,ruleId,"${MORE_ONE_STATEMENT_PER_LINE.warnText()} No more than one statement per line", false)
+                LintError(1,40,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} No more than one statement per line", false),
+                LintError(5,13,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} No more than one statement per line", false),
+                LintError(14,14,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} No more than one statement per line", false),
+                LintError(15,15,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} No more than one statement per line", false)
         )
     }
 
     @Test
     fun `check two statement in one line without space`() {
-        lintMethod(Statement(),
+        lintMethod(SingleLineStatementsRule(),
                 """
                     |fun foo() {
                     |    val a = 5;val b = 10
                     |    println(1);println(1)
                     |}
                 """.trimMargin(),
-                LintError(2,14,ruleId,"${MORE_ONE_STATEMENT_PER_LINE.warnText()} No more than one statement per line", false),
-                LintError(3,15,ruleId,"${MORE_ONE_STATEMENT_PER_LINE.warnText()} No more than one statement per line", false)
+                LintError(2,14,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} No more than one statement per line", false),
+                LintError(3,15,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} No more than one statement per line", false)
         )
     }
 
     @Test
     fun `check correct test without more than one statement`() {
-        lintMethod(Statement(),
+        lintMethod(SingleLineStatementsRule(),
                 """
                     |import com.pinterest.ktlint.core.KtLint
                     |
@@ -73,6 +73,23 @@ class StatementWarnTest {
                     |    }
                     |    val a = 5
                     |    println(1)
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    fun `check semicolon with enum class expression`() {
+        lintMethod(SingleLineStatementsRule(),
+                """
+                    |enum class ProtocolState {
+                    |   WAITING {
+                    |       override fun signal() = TALKING
+                    |   },
+                    |   TALKING {
+                    |       override fun signal() = WAITING
+                    |   };
+                    |   abstract fun signal(): ProtocolState
                     |}
                 """.trimMargin()
         )
