@@ -3,6 +3,9 @@ package org.cqfn.diktat.ruleset.rules
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
+import com.pinterest.ktlint.core.ast.ElementType.DESTRUCTURING_DECLARATION
+import com.pinterest.ktlint.core.ast.ElementType.DESTRUCTURING_DECLARATION_ENTRY
+import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_TYPE
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import org.cqfn.diktat.common.config.rules.RulesConfig
@@ -22,6 +25,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.ENUM_VALUE
 import org.cqfn.diktat.ruleset.constants.Warnings.FUNCTION_NAME_INCORRECT_CASE
 import org.cqfn.diktat.ruleset.constants.Warnings.IDENTIFIER_LENGTH
 import org.cqfn.diktat.ruleset.utils.*
+import org.jetbrains.kotlin.psi.psiUtil.parents
 
 /**
  * This visitor covers rules:  1.2, 1.3, 1.4, 1.5 of Huawei code style. It covers following rules:
@@ -130,20 +134,25 @@ class IdentifierNaming : Rule("identifier-naming") {
     }
 
     /**
-     * getting identifiers (aka variable names) from parent nodes like PROPERTY
-     * The trick here is to handle DESTRUCTURING_DECLARATION correctly, as it does not have IDENTIFIER leaf
+     * Getting identifiers (aka variable names) from parent nodes like PROPERTY.
+     * Several things to take into account here:
+     *     * need to handle DESTRUCTURING_DECLARATION correctly, as it does not have IDENTIFIER leaf.
+     *     * function type can have VALUE_PARAMETERs without name
      */
     private fun extractVariableIdentifiers(node: ASTNode): List<ASTNode> {
-        val destructingDeclaration = node.getFirstChildWithType(ElementType.DESTRUCTURING_DECLARATION)
+        val destructingDeclaration = node.getFirstChildWithType(DESTRUCTURING_DECLARATION)
         val result = if (destructingDeclaration != null) {
-            destructingDeclaration.getAllChildrenWithType(ElementType.DESTRUCTURING_DECLARATION_ENTRY)
+            destructingDeclaration.getAllChildrenWithType(DESTRUCTURING_DECLARATION_ENTRY)
                     .map { it.getIdentifierName()!! }
+        } else if (node.parents().count() > 1 && node.treeParent.elementType == VALUE_PARAMETER_LIST
+                && node.treeParent.treeParent.elementType == FUNCTION_TYPE) {
+            listOfNotNull(node.getIdentifierName())
         } else {
             listOf(node.getIdentifierName()!!)
         }
 
         // no need to do checks if variables are in a special list with exceptions
-        return result.filterNot { IdentifierNaming.ONE_CHAR_IDENTIFIERS.contains(it.text) }
+        return result.filterNot { ONE_CHAR_IDENTIFIERS.contains(it.text) }
     }
 
     /**

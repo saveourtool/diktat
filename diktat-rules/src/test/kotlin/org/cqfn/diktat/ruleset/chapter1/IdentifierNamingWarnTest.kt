@@ -337,5 +337,21 @@ class IdentifierNamingWarnTest {
                 LintError(4, 5, ruleId, "${FUNCTION_BOOLEAN_PREFIX.warnText()} empty")
         )
     }
+    @Test
+    fun `regression - function argument type`() {
+        // valid example, should not cause exceptions
+        lintMethod(IdentifierNaming(),
+                """
+                    fun foo(predicate: (Int) -> Boolean) = Unit    
+                """.trimIndent()
+        )
 
+        // identifier names in function types are still checked if present
+        lintMethod(IdentifierNaming(),
+                """
+                    fun foo(predicate: (a: Int) -> Boolean) = Unit    
+                """.trimIndent(),
+                LintError(1, 21, ruleId, "${IDENTIFIER_LENGTH.warnText()} a", false)
+        )
+    }
 }
