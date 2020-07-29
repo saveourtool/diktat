@@ -36,7 +36,8 @@ fun lintMethod(rule: Rule,
                     it.assertThat(actual.col).`as`("Column").isEqualTo(expected.col)
                     it.assertThat(actual.ruleId).`as`("Rule id").isEqualTo(expected.ruleId)
                     it.assertThat(actual.detail).`as`("Detailed message").isEqualTo(expected.detail)
-                    // fixme: in ktlint canBeAutoCorrected is not included in equals/hashCode for `backward compatibility`
+                    // fixme: fix all tests and uncomment
+//                    it.assertThat(actual.canBeAutoCorrected).`as`("Can be autocorrected").isEqualTo(expected.canBeAutoCorrected)
                 }
             }
 }
