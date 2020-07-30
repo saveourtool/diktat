@@ -3,11 +3,15 @@ package org.cqfn.diktat.ruleset.rules
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
+import com.pinterest.ktlint.core.ast.ElementType.CATCH
+import com.pinterest.ktlint.core.ast.ElementType.CATCH_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.DESTRUCTURING_DECLARATION
 import com.pinterest.ktlint.core.ast.ElementType.DESTRUCTURING_DECLARATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_TYPE
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
+import com.pinterest.ktlint.core.ast.prevCodeSibling
+import com.pinterest.ktlint.core.ast.prevSibling
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.jetbrains.kotlin.builtins.PrimitiveType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -288,9 +292,21 @@ class IdentifierNaming : Rule("identifier-naming") {
                                       isVariable: Boolean) {
         nodes.forEach {
             if (!(it.checkLength(MIN_IDENTIFIER_LENGTH..MAX_IDENTIFIER_LENGTH) ||
-                            (ONE_CHAR_IDENTIFIERS.contains(it.text)) && isVariable)) {
+                            ONE_CHAR_IDENTIFIERS.contains(it.text) && isVariable || validCatchIdentifier(it)
+
+                            )) {
                 IDENTIFIER_LENGTH.warn(configRules, emitWarn, isFixMode, it.text, it.startOffset)
             }
         }
+    }
+
+    /**
+     * exception case for identifiers used in catch block:
+     * catch (e: Exception) {}
+     */
+    private fun validCatchIdentifier(node: ASTNode): Boolean {
+        val parentValueParamList = node.findParentNodeWithSpecificType(VALUE_PARAMETER_LIST)
+        val prevCatchKeyWord = parentValueParamList?.prevCodeSibling()?.elementType == CATCH_KEYWORD
+        return node.text == "e" && node.findParentNodeWithSpecificType(CATCH) != null && prevCatchKeyWord
     }
 }

@@ -14,6 +14,7 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.siblings
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -198,6 +199,12 @@ fun ASTNode.findAllNodesWithSpecificType(elementType: IElementType): List<ASTNod
         it.findAllNodesWithSpecificType(elementType)
     }
 }
+
+/**
+ * This method finds first parent node from the sequence of parents that has specified elementType
+ */
+fun ASTNode.findParentNodeWithSpecificType(elementType: IElementType) =
+        this.parents().find { it.elementType == elementType }
 
 /**
  * Finds all children of optional type which match the predicate
