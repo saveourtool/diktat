@@ -9,6 +9,7 @@ import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.COLLECTION_LITERAL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
+import com.pinterest.ktlint.core.ast.ElementType.KDOC_SECTION
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_TAG_NAME
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_TEXT
 import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_EXPRESSION
@@ -23,12 +24,14 @@ import com.pinterest.ktlint.core.ast.prevSibling
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_TRIVIAL_KDOC_ON_FUNCTION
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_PARAM_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_RETURN_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_THROWS_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_ON_FUNCTION
 import org.cqfn.diktat.ruleset.rules.getDiktatConfigRules
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
+import org.cqfn.diktat.ruleset.utils.getBodyLines
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.getIdentifierName
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
@@ -36,6 +39,7 @@ import org.cqfn.diktat.ruleset.utils.hasKnownKDocTag
 import org.cqfn.diktat.ruleset.utils.hasTestAnnotation
 import org.cqfn.diktat.ruleset.utils.insertTagBefore
 import org.cqfn.diktat.ruleset.utils.isAccessibleOutside
+import org.cqfn.diktat.ruleset.utils.isGetterOrSetter
 import org.cqfn.diktat.ruleset.utils.isLocatedInTest
 import org.cqfn.diktat.ruleset.utils.kDocTags
 import org.cqfn.diktat.ruleset.utils.parameterNames
@@ -43,6 +47,7 @@ import org.cqfn.diktat.ruleset.utils.splitPathToDirs
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
+import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
 import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
 
@@ -55,9 +60,16 @@ import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
  */
 @Suppress("ForbiddenComment")
 class KdocMethods : Rule("kdoc-methods") {
-    // expression body of function can have a lot of 'ElementType's, this list might be not full
-    private val expressionBodyTypes = setOf(BINARY_EXPRESSION, CALL_EXPRESSION, LAMBDA_EXPRESSION, REFERENCE_EXPRESSION,
-            CALLABLE_REFERENCE_EXPRESSION, SAFE_ACCESS_EXPRESSION, WHEN_CONDITION_WITH_EXPRESSION, COLLECTION_LITERAL_EXPRESSION)
+    companion object {
+        // expression body of function can have a lot of 'ElementType's, this list might be not full
+        private val expressionBodyTypes = setOf(BINARY_EXPRESSION, CALL_EXPRESSION, LAMBDA_EXPRESSION, REFERENCE_EXPRESSION,
+                CALLABLE_REFERENCE_EXPRESSION, SAFE_ACCESS_EXPRESSION, WHEN_CONDITION_WITH_EXPRESSION, COLLECTION_LITERAL_EXPRESSION)
+
+        // these methods do not need mandatory documentation
+        private val standardMethods = listOf("main", "equals", "hashCode", "toString", "clone", "finalize")
+
+        private val uselessKdocRegex = """^([rR]eturn|[gGsS]et)[s]?\s+\w+(\s+\w+)?$""".toRegex()
+    }
 
     private lateinit var configRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
@@ -72,12 +84,16 @@ class KdocMethods : Rule("kdoc-methods") {
         isFixMode = autoCorrect
         emitWarn = emit
 
-        if (node.elementType == FUN &&
-                node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside()) {
-            val config = KdocMethodsConfiguration(configRules.getRuleConfig(MISSING_KDOC_ON_FUNCTION)?.configuration ?: mapOf())
-            if (!node.hasTestAnnotation() && !node.isLocatedInTest(params.fileName!!.splitPathToDirs(), config.testAnchors)) {
+        if (node.elementType == FUN && node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside()) {
+            val config = KdocMethodsConfiguration(configRules.getRuleConfig(MISSING_KDOC_ON_FUNCTION)?.configuration
+                    ?: mapOf())
+            val isTestMethod = node.hasTestAnnotation() || node.isLocatedInTest(params.fileName!!.splitPathToDirs(), config.testAnchors)
+            val isStandardMethod = node.getIdentifierName()?.let { it.text in standardMethods } ?: false
+            if (!isTestMethod && !isStandardMethod && !node.isSingleLineGetterOrSetter()) {
                 checkSignatureDescription(node)
             }
+        } else if (node.elementType == KDOC_SECTION) {
+            checkKdocBody(node)
         }
     }
 
@@ -96,7 +112,7 @@ class KdocMethods : Rule("kdoc-methods") {
                         ?.toSet() ?: setOf()
                 )
 
-        val paramCheckFailed = missingParameters.isNotEmpty()
+        val paramCheckFailed = missingParameters.isNotEmpty() && !node.isSingleLineGetterOrSetter()
         val returnCheckFailed = checkReturnCheckFailed(node, kDocTags)
         val throwsCheckFailed = missingExceptions.isNotEmpty()
 
@@ -106,7 +122,11 @@ class KdocMethods : Rule("kdoc-methods") {
 
         // if no tag failed, we have too little information to suggest KDoc - it would just be empty
         val anyTagFailed = paramCheckFailed || returnCheckFailed || throwsCheckFailed
-        if (kDoc == null && anyTagFailed) addKdocTemplate(node, name, missingParameters, explicitlyThrownExceptions, returnCheckFailed)
+        if (kDoc == null && anyTagFailed) {
+            addKdocTemplate(node, name, missingParameters, explicitlyThrownExceptions, returnCheckFailed)
+        } else if (kDoc == null) {
+            MISSING_KDOC_ON_FUNCTION.warn(configRules, emitWarn, false, name, node.startOffset)
+        }
     }
 
     private fun getMissingParameters(node: ASTNode, kDocTags: Collection<KDocTag>?): Collection<String?> {
@@ -123,6 +143,8 @@ class KdocMethods : Rule("kdoc-methods") {
     }
 
     private fun checkReturnCheckFailed(node: ASTNode, kDocTags: Collection<KDocTag>?): Boolean {
+        if (node.isSingleLineGetterOrSetter()) return false
+
         val explicitReturnType = node.getFirstChildWithType(TYPE_REFERENCE)
         val hasExplicitNotUnitReturnType = explicitReturnType != null && explicitReturnType.text != "Unit"
         val hasExplicitUnitReturnType = explicitReturnType != null && explicitReturnType.text == "Unit"
@@ -212,6 +234,18 @@ class KdocMethods : Rule("kdoc-methods") {
             node.addChild(LeafPsiElement(KDOC, kDocTemplate), node.firstChildNode)
         }
     }
+
+    private fun checkKdocBody(node: ASTNode) {
+        val kdocTextNodes = node.getChildren(TokenSet.create(KDOC_TEXT))
+        if (kdocTextNodes.size == 1) {
+            val kdocText = kdocTextNodes.first().text.trim()
+            if (kdocText.matches(uselessKdocRegex)) {
+                KDOC_TRIVIAL_KDOC_ON_FUNCTION.warn(configRules, emitWarn, isFixMode, kdocText, kdocTextNodes.first().startOffset)
+            }
+        }
+    }
+
+    private fun ASTNode.isSingleLineGetterOrSetter() = isGetterOrSetter() && (expressionBodyTypes.any { hasChildOfType(it) } || getBodyLines().size == 1)
 }
 
 private class KdocMethodsConfiguration(config: Map<String, String>) : RuleConfiguration(config) {

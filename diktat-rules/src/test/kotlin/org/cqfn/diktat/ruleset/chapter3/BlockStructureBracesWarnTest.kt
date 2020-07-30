@@ -83,6 +83,37 @@ class BlockStructureBracesWarnTest {
     }
 
     @Test
+    fun `check empty block in else expression`() {
+        lintMethod(BlockStructureBraces(),
+                """
+                    |fun foo() {
+                    |    if (x < -5) {
+                    |       goo()
+                    |    } else if (x > 5) {
+                    |       hoo()
+                    |    } else { 
+                    |    }
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    fun `check wrong empty block in if expression`() {
+        lintMethod(BlockStructureBraces(),
+                """
+                    |fun foo() {
+                    |    if (x < -5) {
+                    |       goo()
+                    |    } else {}
+                    |}
+                """.trimMargin(),
+                LintError(4, 13, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect same line after opening brace", false),
+                LintError(4, 13, ruleId, "${Warnings.BRACES_BLOCK_STRUCTURE_ERROR.warnText()} no newline before closing brace", false)
+        )
+    }
+
+    @Test
     fun `check if expression with wrong opening brace position`() {
         lintMethod(BlockStructureBraces(),
                 """
@@ -147,11 +178,31 @@ class BlockStructureBracesWarnTest {
     }
 
     @Test
+    fun `check empty fun expression with override annotation`() {
+        lintMethod(BlockStructureBraces(),
+                """
+                    |override fun foo() {
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
     fun `check one line fun`() {
         lintMethod(BlockStructureBraces(),
                 """
                     |fun foo() = 0
                 """.trimMargin()
+        )
+    }
+
+    @Test
+    fun `check fun with empty block won't be processed`() {
+        lintMethod(BlockStructureBraces(),
+                """
+                    |fun foo() {}
+                """.trimMargin()
+
         )
     }
 
@@ -189,6 +240,17 @@ class BlockStructureBracesWarnTest {
                     |fun a(x: Int) {
                     |   for (i in 1..3)
                     |       println(i)
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    fun `check wrong for expression with empty block but with config`() {
+        lintMethod(BlockStructureBraces(),
+                """
+                    |fun a(x: Int) {
+                    |   for (i in 1..3) {}
                     |}
                 """.trimMargin()
         )

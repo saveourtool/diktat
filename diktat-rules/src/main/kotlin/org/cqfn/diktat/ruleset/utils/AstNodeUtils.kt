@@ -20,6 +20,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 val log: Logger = LoggerFactory.getLogger(ASTNode::class.java)
+val emptyBlockList = listOf(ElementType.LBRACE, WHITE_SPACE, ElementType.RBRACE)
 
 fun ASTNode.checkLength(range: IntRange): Boolean = this.textLength in range
 
@@ -63,6 +64,11 @@ fun ASTNode.hasChildOfType(elementType: IElementType): Boolean =
 fun ASTNode.hasAnyChildOfTypes(vararg elementType: IElementType): Boolean =
         elementType.any { this.hasChildOfType(it) }
 
+/**
+ * check if node's block is empty (contains only left and right braces and space)
+ */
+fun ASTNode?.isBlockEmpty() = this?.let { emptyBlockList
+        .containsAll(this.getChildren(null).map { it.elementType })} ?: true
 /**
  * Method that is trying to find and return child of this node, which
  * 1) stands before the node with type @beforeThisNodeType
@@ -284,6 +290,17 @@ fun ASTNode.moveChildBefore(childToMove: ASTNode, beforeThisNode: ASTNode?, with
     }
     removeChild(childToMove)
     return ReplacementResult(listOfNotNull(childToMove, nextOldChild), listOfNotNull(movedChild, nextMovedChild))
+}
+
+fun ASTNode.findLBrace():ASTNode? {
+    return when (this.elementType) {
+        ElementType.THEN, ElementType.ELSE -> this.findChildByType(ElementType.BLOCK)?.findChildByType(ElementType.LBRACE)!!
+        ElementType.WHEN -> this.findChildByType(ElementType.LBRACE)!!
+        ElementType.FOR, ElementType.WHILE, ElementType.DO_WHILE ->
+            this.findChildByType(ElementType.BODY)?.findChildByType(ElementType.BLOCK)?.findChildByType(ElementType.LBRACE)!!
+        ElementType.CLASS, ElementType.OBJECT_DECLARATION -> this.findChildByType(ElementType.CLASS_BODY)!!.findChildByType(ElementType.LBRACE)!!
+        else -> if (this.hasChildOfType(ElementType.BLOCK)) this.findChildByType(ElementType.BLOCK)?.findChildByType(ElementType.LBRACE)!! else null
+    }
 }
 
 fun ASTNode.isChildAfterAnother(child: ASTNode, afterChild: ASTNode): Boolean =

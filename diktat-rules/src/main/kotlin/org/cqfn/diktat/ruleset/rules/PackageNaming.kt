@@ -39,7 +39,7 @@ class PackageNaming : Rule("package-naming") {
     companion object {
         const val PACKAGE_SEPARATOR = "."
         const val PACKAGE_PATH_ANCHOR = "src"
-        val LANGUAGE_DIR_NAMES = listOf("src", "main", "java", "kotlin")
+        val LANGUAGE_DIR_NAMES = listOf("src", "main", "test", "java", "kotlin")
         private val log = LoggerFactory.getLogger(PackageNaming::class.java)
     }
 
