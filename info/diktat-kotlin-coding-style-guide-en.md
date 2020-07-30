@@ -840,7 +840,6 @@ Exceptions cases:
 4) Supertype lists: \
    a) 4 spaces if colon before supertype list is on new line \
    b) 4 spaces before each supertype; 8 if colon is on new line
-5) When statements - 8 spaces are used to indent condition branches: (`CONDITION -> foo()`) 
     
 Please note, that indenting should be also done after all statements like if/for/e.t.c when they don't have braces, though this code style always requires braces for them. See: [3.4](r3.4)
     
@@ -949,8 +948,8 @@ This international code style prohibits non-latin (non ASCII) symbols in the cod
 
 #### <a name="r3.6"></a>Rule 3.6 line break style rules if the line is split
 
-1. Compared to Java Kotlin allows not to to put semicolumn (';') after each statement separated by newline.
- There should be no redundant semicolumn at the end of lines.
+1. Compared to Java Kotlin allows not to put semicolon (';') after each statement separated by newline.
+ There should be no redundant semicolon at the end of lines.
  
  In case when newline is needed to split the line, it should be placed after operators like &&/||/+/e.t.c
  But newline should be placed before operators like ('.', '?.', '?:', '::', e.t.c), operator !! should not be separated from the value it is checking.
@@ -962,11 +961,15 @@ This international code style prohibits non-latin (non ASCII) symbols in the cod
             .filter(true)
             .size      
  ```
+  **Exception**: if functional chain is used inside of the branches of ternary operator - no need to split them with newlines. Valid example:
+ ```kotlin
+    if (condition) list.map { foo(it) }.filter { bar(it) } else list.drop(1)
+ ```  
   
 2. Newline should be placed after assignment operator ('=')
 3. The name of a function or constructor should not be split by a newline from the opening brace '('. Brace follows immediately after the name without any spaces.   
 4. Newline should be placed right after the comma (',')
-5. In lambda statements and `when` conditions, if it's body contains more than one line, the newline should be placed after an arrow. See examples below:
+5. In lambda statements, if it's body contains more than one line, the newline should be placed after an arrow. See examples below:
 
 Bad example:
 ```kotlin
@@ -977,12 +980,6 @@ Bad example:
 
 Recommended examples：
 ```kotlin
-when (node.elementType) {
-         SOMETHING -> 
-             foo()
-             bar()
- }
-
 value.map { name ->
     foo()
     bar()
