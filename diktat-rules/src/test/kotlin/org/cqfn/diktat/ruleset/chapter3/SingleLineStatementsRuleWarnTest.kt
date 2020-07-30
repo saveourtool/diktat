@@ -34,9 +34,9 @@ class SingleLineStatementsRuleWarnTest {
                     |}
                 """.trimMargin(),
                 LintError(1,40,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} import com.pinterest.ktlint.core.KtLint; import com.pinterest.ktlint.core.LintError", false),
-                LintError(5,13,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} goo(); hoo()", false),
-                LintError(14,14,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} val a = 5; val b = 10", false),
-                LintError(15,15,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} println(1); println(1)", false)
+                LintError(5,13,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()}        goo(); hoo()", false),
+                LintError(14,14,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()}     val a = 5; val b = 10", false),
+                LintError(15,15,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()}     println(1); println(1)", false)
         )
     }
 
@@ -49,8 +49,22 @@ class SingleLineStatementsRuleWarnTest {
                     |    println(1);println(1)
                     |}
                 """.trimMargin(),
-                LintError(2,14,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} val a = 5;val b = 10", false),
-                LintError(3,15,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} println(1);println(1)", false)
+                LintError(2,14,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()}     val a = 5;val b = 10", false),
+                LintError(3,15,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()}     println(1);println(1)", false)
+        )
+    }
+
+    @Test
+    fun `check two in one line without space`() {
+        lintMethod(SingleLineStatementsRule(),
+                """
+                    |fun foo() {
+                    |   if (x > 0){
+                    |       goo()
+                    |   }; else { print(123) }
+                    |}
+                """.trimMargin(),
+                LintError(4,5,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()}    }; else { print(123) }", false)
         )
     }
 
@@ -88,10 +102,27 @@ class SingleLineStatementsRuleWarnTest {
                     |   },
                     |   TALKING {
                     |       override fun signal() = WAITING
-                    |   };
-                    |   abstract fun signal(): ProtocolState
+                    |   }; abstract fun signal(): ProtocolState
                     |}
-                """.trimMargin()
+                """.trimMargin(),
+                LintError(7,5,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()}    }; abstract fun signal(): ProtocolState", false)
+        )
+    }
+
+    @Test
+    fun `check fd with enum class expression`() {
+        lintMethod(SingleLineStatementsRule(),
+                """
+                    |fun foo() {
+                    |   if(x > 0) {
+                    |       if ( y> 0){
+                    |           ji()
+                    |       }; gt()
+                    |   }; gr()
+                    |}
+                """.trimMargin(),
+                LintError(5,9,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()}        }; gt()", false),
+                LintError(6,5,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()}    }; gr()", false)
         )
     }
 }

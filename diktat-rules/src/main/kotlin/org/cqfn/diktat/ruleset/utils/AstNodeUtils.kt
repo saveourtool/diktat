@@ -57,6 +57,8 @@ fun ASTNode.getFirstChildWithType(elementType: IElementType): ASTNode? =
 fun ASTNode.isFollowedByNewline() =
         this.treeNext.elementType == WHITE_SPACE && this.treeNext.text.contains("\n")
 
+fun ASTNode.isBeginByNewline() =
+        this.treePrev.elementType == WHITE_SPACE && this.treePrev.text.contains("\n")
 /**
  * checks if the node has corresponding child with elementTyp
  */
