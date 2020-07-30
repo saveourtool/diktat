@@ -1,9 +1,9 @@
-package common
+package org.cqfn.diktat.common.config.reader
 
-import org.slf4j.LoggerFactory
 import java.io.IOException
-import java.util.*
+import java.util.Properties
 import kotlin.system.exitProcess
+import org.slf4j.LoggerFactory
 
 open class ApplicationProperties(propertiesFileName: String) {
     val properties: Properties = Properties()
