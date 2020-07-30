@@ -4,8 +4,11 @@ import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.CATCH
+import com.pinterest.ktlint.core.ast.ElementType.CATCH_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
+import com.pinterest.ktlint.core.ast.prevCodeSibling
+import com.pinterest.ktlint.core.ast.prevSibling
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.jetbrains.kotlin.builtins.PrimitiveType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -293,8 +296,8 @@ class IdentifierNaming : Rule("identifier-naming") {
      * catch (e: Exception) {}
      */
     private fun validCatchIdentifier(node: ASTNode): Boolean {
-        return node.text == "e" &&
-                node.findParentNodeWithSpecificType(CATCH) != null &&
-                node.findParentNodeWithSpecificType(VALUE_PARAMETER_LIST) != null
+        val parentValueParamList = node.findParentNodeWithSpecificType(VALUE_PARAMETER_LIST)
+        val prevCatchKeyWord = parentValueParamList?.prevCodeSibling()?.elementType == CATCH_KEYWORD
+        return node.text == "e" && node.findParentNodeWithSpecificType(CATCH) != null && prevCatchKeyWord
     }
 }

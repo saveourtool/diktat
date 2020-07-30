@@ -337,6 +337,22 @@ class IdentifierNamingWarnTest {
     }
 
     @Test
+    fun `exception case for identifier naming in catch statements with catch body`() {
+        val code =
+                """
+                    fun foo() {
+                        try {
+                        } catch (e: IOException) {
+                            fun foo(e: Int) {
+                            }
+                        }
+                    }
+                """.trimIndent()
+
+        lintMethod(IdentifierNaming(), code, LintError(4, 17, ruleId, "${IDENTIFIER_LENGTH.warnText()} e"))
+    }
+
+    @Test
     fun `exception case for identifier naming - catching exception with type e`() {
         val code =
                 """
