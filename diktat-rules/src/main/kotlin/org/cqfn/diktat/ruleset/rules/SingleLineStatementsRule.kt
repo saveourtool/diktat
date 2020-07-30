@@ -14,7 +14,7 @@ class SingleLineStatementsRule : Rule("statement") {
 
     companion object {
         val semicolonToken = TokenSet.create(SEMICOLON)
-        val minListTextSize = 1
+        const val minListTextSize = 1
     }
 
     private lateinit var configRules: List<RulesConfig>
@@ -51,7 +51,7 @@ class SingleLineStatementsRule : Rule("statement") {
     private fun isError (node: ASTNode) = (node.treeNext != null && !node.isFollowedByNewline())
             || (node.treeParent.treeNext != null && !node.treeParent.isFollowedByNewline())
 
-    private fun isSemicolonInMidLine(node: ASTNode) = node.isBeginByNewline() || (node.treeNext != null && node.isFollowedByNewline())
+    private fun isSemicolonInMidLine(node: ASTNode) = (node.treeNext != null && node.isFollowedByNewline())
 
     private fun findWrongText(node: ASTNode): String {
         var text: MutableList<String> = mutableListOf()

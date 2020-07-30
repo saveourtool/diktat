@@ -110,7 +110,7 @@ class SingleLineStatementsRuleWarnTest {
     }
 
     @Test
-    fun `check fd with enum class expression`() {
+    fun `check it expression with two wrong seminolon`() {
         lintMethod(SingleLineStatementsRule(),
                 """
                     |fun foo() {
@@ -123,6 +123,18 @@ class SingleLineStatementsRuleWarnTest {
                 """.trimMargin(),
                 LintError(5,9,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()}        }; gt()", false),
                 LintError(6,5,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()}    }; gr()", false)
+        )
+    }
+
+    @Test
+    fun `check semicolon in the beginning of the line`() {
+        lintMethod(SingleLineStatementsRule(),
+                """
+                    |fun foo() {
+                    |   ; grr()
+                    |}
+                """.trimMargin(),
+                LintError(2,4,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()}    ; grr()", false)
         )
     }
 }
