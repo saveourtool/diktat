@@ -15,6 +15,7 @@
 [![Chat on Telegram](https://img.shields.io/badge/Chat%20on-Telegram-brightgreen.svg)](https://t.me/joinchat/AAAAAFDg-ipuZFGyBGPPeg)
 
 ## (!) See [diKTat codestyle](info/diktat-kotlin-coding-style-guide-en.md) first.
+## (!) Also see [the list of all rules supported by diKTat](info/available-rules.md).
 
 DiKTat is a collection of [Kotlin](https://kotlinlang.org/) code style rules implemented
 as AST visitors on top of [KTlint](https://ktlint.github.io/).
