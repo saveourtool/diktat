@@ -4,12 +4,14 @@ import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.ENUM_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.SEMICOLON
+import com.pinterest.ktlint.core.ast.parent
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.MORE_THAN_ONE_STATEMENT_PER_LINE
 import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.psi.psiUtil.parents
 
 class SingleLineStatementsRule : Rule("statement") {
 
@@ -57,17 +59,7 @@ class SingleLineStatementsRule : Rule("statement") {
     /**
      * Sometimes the semicolon is the last leaf of the tree at a given level, so you need to go up a few levels to check if there is something behind the semicolon
      */
-    private fun isError (node: ASTNode): Boolean{
-      if ((node.treeNext != null && !node.isFollowedByNewline()))
-          return true
-        var parentNode = node.treeParent
-        while (parentNode.treeNext == null){
-            parentNode = parentNode.treeParent
-            if (parentNode == null)
-                return false
-        }
-        return !parentNode.isFollowedByNewline()
-    }
+    private fun isError (node: ASTNode) = node.parent({ it.treeNext != null}, strict=false)?.let { !it.isFollowedByNewline() } ?: false
 
 
     private fun isSemicolonAtEndOfLine(node: ASTNode) = (node.treeNext != null && node.isFollowedByNewline())
@@ -79,20 +71,14 @@ class SingleLineStatementsRule : Rule("statement") {
         while (prevNode != null) {
             val listText = prevNode.text.split("\n")
             text.add(listText.last())
-            if (listText.size > 1)
+            if (listText.size > minListTextSize)
                 break
             prevNode = prevNode.treePrev
         }
         text = text.asReversed()
         text.add(node.text)
-        if (nextNode!!.treeNext == null) {
-            do {
-                nextNode = nextNode!!.treeParent
-            } while (nextNode!!.treeNext == null && nextNode.treeParent != null)
-        }
-        if (nextNode.treeNext === null)
-            return text.joinToString(separator = "")
-        nextNode = nextNode.treeNext
+        nextNode = nextNode?.parent({ it.treeNext != null }, false) ?: nextNode
+        nextNode = nextNode!!.treeNext
         while (nextNode != null) {
             val listText = nextNode.text.split("\n")
             text.add(listText.first())
