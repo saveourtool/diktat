@@ -76,18 +76,16 @@ class SingleLineStatementsRule : Rule("statement") {
     private fun findWrongText(node: ASTNode): String {
         var text: MutableList<String> = mutableListOf()
         val nextNode: ASTNode? = node.parent({ it.treeNext != null }, false) ?: node
-        (node.siblings(false).map { sequenceNode -> sequenceNode.text.split("\n") }.takeWhileInclusive { listText ->
-            listText.size <= minListTextSize
-        }.forEach {
-            text.add(it.last())
-        })
+        node.siblings(false)
+                .map { it.text.split("\n") }
+                .takeWhileInclusive { it.size <= minListTextSize }
+                .forEach { text.add(it.last()) }
         text = text.asReversed()
         text.add(node.text)
-        (nextNode?.siblings(true)?.map { sequenceNode -> sequenceNode.text.split("\n") }?.takeWhileInclusive { listText ->
-            listText.size <= minListTextSize
-        }?.forEach {
-            text.add(it.first())
-        })
+        nextNode!!.siblings(true)
+            .map { it.text.split("\n") }
+            .takeWhileInclusive { it.size <= minListTextSize }
+            .forEach { text.add(it.first()) }
         return text.joinToString(separator = "")
     }
 }
