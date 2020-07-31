@@ -134,6 +134,7 @@ No special prefix or suffix should be used in these names. For example, the foll
 
  **Exceptions**
  - i,j,k variables that are used in loops is a standard for industry. It is allowed to use 1 symbol for such variables.
+ - e variable can be used for catching exceptions in catch block: `catch (e: Exception) {}`
  - Java community generally suggests not to use prefixes, but in case of developing code for Android you can use s prefix for static fields
   and m for non-public non-static fields. PLease note that prefixing can also do harm for the style together with auto generation of getters and setters.
 

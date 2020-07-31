@@ -25,6 +25,10 @@ class CliArgument @JsonCreator internal constructor(
             longName + ", hasArgs: " + hasArgs + ", isRequired: " + isRequired + ")"
     }
 
+    /**
+     * Converts parameters received from json to [Option]
+     * @return an [Option]
+     */
     fun convertToOption(): Option {
         val resOption = Option(shortName, longName, hasArgs, helpDescr)
         resOption.isRequired = isRequired

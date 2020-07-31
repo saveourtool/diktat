@@ -337,6 +337,7 @@ class IdentifierNamingWarnTest {
                 LintError(4, 5, ruleId, "${FUNCTION_BOOLEAN_PREFIX.warnText()} empty")
         )
     }
+
     @Test
     fun `regression - function argument type`() {
         // valid example, should not cause exceptions
@@ -353,5 +354,61 @@ class IdentifierNamingWarnTest {
                 """.trimIndent(),
                 LintError(1, 21, ruleId, "${IDENTIFIER_LENGTH.warnText()} a", false)
         )
+    }
+
+    @Test
+    fun `regression - object parsing should not fail with anonymous objects`() {
+        val code =
+                """
+                    val fakeVal = RuleSet("test", object : Rule("astnode-utils-test") {
+                                    override fun visit(node: ASTNode) {}
+                                   })
+                """.trimIndent()
+
+        lintMethod(IdentifierNaming(), code)
+    }
+
+    @Test
+    fun `exception case for identifier naming in catch statements`() {
+        val code =
+                """
+                    fun foo() {
+                        try {
+                        } catch (e: IOException) {
+                        }
+                    }
+                """.trimIndent()
+
+        lintMethod(IdentifierNaming(), code)
+    }
+
+    @Test
+    fun `exception case for identifier naming in catch statements with catch body`() {
+        val code =
+                """
+                    fun foo() {
+                        try {
+                        } catch (e: IOException) {
+                            fun foo(e: Int) {
+                            }
+                        }
+                    }
+                """.trimIndent()
+
+        lintMethod(IdentifierNaming(), code, LintError(4, 17, ruleId, "${IDENTIFIER_LENGTH.warnText()} e"))
+    }
+
+    @Test
+    fun `exception case for identifier naming - catching exception with type e`() {
+        val code =
+                """
+                    fun foo() {
+                        try {
+                        } catch (e: e) {
+                        }
+                    }
+                """.trimIndent()
+
+        lintMethod(IdentifierNaming(), code)
     }
 }
