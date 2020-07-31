@@ -48,9 +48,9 @@ class SingleLineStatementsRule : Rule("statement") {
                             node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node.treeNext)
                         } else {
                             if (!it.isBeginByNewline()) {
-                                val nextNode = it.treeNext ?: it.parent({ parent -> parent.treeNext != null})
+                                val nextNode = it.parent({ parent -> parent.treeNext != null}, strict=false)?.treeNext
                                 if ( nextNode != null && nextNode.elementType == WHITE_SPACE)
-                                    (nextNode as LeafPsiElement).replaceWithText("\n")
+                                    (nextNode as LeafPsiElement).replaceWithText("\n${nextNode.text}")
                                 else
                                     node.addChild(PsiWhiteSpaceImpl("\n"), it)
                             }
@@ -73,7 +73,6 @@ class SingleLineStatementsRule : Rule("statement") {
     private fun findWrongText(node: ASTNode): String {
         var text: MutableList<String> = mutableListOf()
         var prevNode: ASTNode? = node.treePrev
-        var nextNode: ASTNode? = node
         while (prevNode != null) {
             val listText = prevNode.text.split("\n")
             text.add(listText.last())
@@ -83,7 +82,7 @@ class SingleLineStatementsRule : Rule("statement") {
         }
         text = text.asReversed()
         text.add(node.text)
-        nextNode = nextNode?.parent({ it.treeNext != null }, false) ?: nextNode
+        var nextNode: ASTNode? = node.parent({ it.treeNext != null }, false) ?: node
         nextNode = nextNode!!.treeNext
         while (nextNode != null) {
             val listText = nextNode.text.split("\n")
