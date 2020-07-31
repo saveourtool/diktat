@@ -74,15 +74,15 @@ class SingleLineStatementsRule : Rule("statement") {
     private fun isSemicolonAtEndOfLine(node: ASTNode) = (node.treeNext != null && node.isFollowedByNewline())
 
     private fun findWrongText(node: ASTNode): String {
-        var text: MutableList<String> = mutableListOf()
-        val nextNode: ASTNode? = node.parent({ it.treeNext != null }, false) ?: node
+        var text = mutableListOf<String>()
+        val nextNode = node.parent({ it.treeNext != null }, false) ?: node
         node.siblings(false)
                 .map { it.text.split("\n") }
                 .takeWhileInclusive { it.size <= minListTextSize }
                 .forEach { text.add(it.last()) }
         text = text.asReversed()
         text.add(node.text)
-        nextNode!!.siblings(true)
+        nextNode.siblings(true)
             .map { it.text.split("\n") }
             .takeWhileInclusive { it.size <= minListTextSize }
             .forEach { text.add(it.first()) }
