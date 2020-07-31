@@ -724,8 +724,6 @@ In special Kotlin `when` statement no need to use braces for statements with 1 l
 **Exception:** *Only* The only exception is ternary operator in Kotlin (it is a single line `if () <> else <>` ) 
 When the entire expression can be 
 
-2) No need to use braces for the body of lambdas and when-conditions (after an arrow)
-  
 Bad example:
 
 ```kotlin
@@ -733,11 +731,6 @@ val value = if (string.isEmpty())  // WRONG!
                 0
             else
                 1
-
-val a = { b: String, c: String -> { // these braces are increasing complexity
-        null
-    }
-}
 ```
 
 Valid example: 
@@ -752,6 +745,27 @@ if (condition) {
 } else {
     println(0)
 }
+```
+
+2) No need to use braces for the body of lambdas and when-conditions (after an arrow)
+  
+Bad example:
+
+```kotlin
+val a = { b: String, c: String -> { // these braces are increasing complexity
+        null
+    }
+}
+```
+
+Valid examples: 
+
+```kotlin
+val a = { b: String, c: String ->
+        null
+}
+
+someValue.map { x -> x}
 ```
 
 #### <a name="r3.4"></a> Rule 3.4 For *non-empty* blocks and block structures, the opening brace is placed at the end of the line
@@ -952,19 +966,24 @@ This international code style prohibits non-latin (non ASCII) symbols in the cod
  There should be no redundant semicolon at the end of lines.
  
  In case when newline is needed to split the line, it should be placed after operators like &&/||/+/e.t.c
- But newline should be placed before operators like ('.', '?.', '?:', '::', e.t.c), operator !! should not be separated from the value it is checking.
+ But newline should be placed before operators like ('.', '?.', '?:', '::', e.t.c).
  
- Note, that you need to follow functional style:
- ```kotlin
-    val value = otherValue!!
-            .map(x -> x)
-            .filter(true)
-            .size      
- ```
-  **Exception**: if functional chain is used inside of the branches of ternary operator - no need to split them with newlines. Valid example:
- ```kotlin
-    if (condition) list.map { foo(it) }.filter { bar(it) } else list.drop(1)
- ```  
+* Note, that you need to follow functional style (i.e. each function call in a chain with `.` should start at a new line if chain of functions contains more than one call):
+```kotlin
+  val value = otherValue!!
+          .map { x -> x }
+          .filter {
+              val a = true
+              true
+          }
+          .size    
+```
+* Note, that Kotlin parser prohibits operator !! to be separated from the value it is checking.
+
+**Exception**: if functional chain is used inside of the branches of ternary operator - no need to split them with newlines. Valid example:
+```kotlin
+if (condition) list.map { foo(it) }.filter { bar(it) } else list.drop(1)
+```  
   
 2. Newline should be placed after assignment operator ('=')
 3. The name of a function or constructor should not be split by a newline from the opening brace '('. Brace follows immediately after the name without any spaces.   
