@@ -2,6 +2,7 @@ package org.cqfn.diktat.ruleset.rules
 
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.ast.ElementType.ENUM_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.SEMICOLON
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.MORE_THAN_ONE_STATEMENT_PER_LINE
@@ -36,22 +37,40 @@ class SingleLineStatementsRule : Rule("statement") {
 
     private fun checkSemicolon(node: ASTNode) {
         node.getChildren(semicolonToken).forEach {
-            if (!isSemicolonInMidLine(it)) {
+            if (!isSemicolonAtEndOfLine(it)) {
                 if (isError(it)) {
                     MORE_THAN_ONE_STATEMENT_PER_LINE.warnAndFix(configRules, emitWarn, isFixMode, findWrongText(it),
                             it.startOffset) {
-                        node.addChild(PsiWhiteSpaceImpl("\n"), it)
-                        node.removeChild(it)
+                        if (it.treeParent.elementType == ENUM_ENTRY){
+                            node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node.treeNext)
+                        } else {
+                            if (!it.isBeginByNewline())
+                                node.addChild(PsiWhiteSpaceImpl("\n"), it)
+                            node.removeChild(it)
+                        }
                     }
                 }
             }
         }
     }
 
-    private fun isError (node: ASTNode) = (node.treeNext != null && !node.isFollowedByNewline())
-            || (node.treeParent.treeNext != null && !node.treeParent.isFollowedByNewline())
+    /**
+     * Sometimes the semicolon is the last leaf of the tree at a given level, so you need to go up a few levels to check if there is something behind the semicolon
+     */
+    private fun isError (node: ASTNode): Boolean{
+      if ((node.treeNext != null && !node.isFollowedByNewline()))
+          return true
+        var parentNode = node.treeParent
+        while (parentNode.treeNext == null){
+            parentNode = parentNode.treeParent
+            if (parentNode == null)
+                return false
+        }
+        return !parentNode.isFollowedByNewline()
+    }
 
-    private fun isSemicolonInMidLine(node: ASTNode) = (node.treeNext != null && node.isFollowedByNewline())
+
+    private fun isSemicolonAtEndOfLine(node: ASTNode) = (node.treeNext != null && node.isFollowedByNewline())
 
     private fun findWrongText(node: ASTNode): String {
         var text: MutableList<String> = mutableListOf()
