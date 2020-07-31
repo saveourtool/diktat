@@ -8,11 +8,14 @@ import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.parent
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.MORE_THAN_ONE_STATEMENT_PER_LINE
-import org.cqfn.diktat.ruleset.utils.*
+import org.cqfn.diktat.ruleset.utils.isBeginByNewline
+import org.cqfn.diktat.ruleset.utils.isFollowedByNewline
+import org.cqfn.diktat.ruleset.utils.takeWhileInclusive
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.psi.psiUtil.siblings
 
 class SingleLineStatementsRule : Rule("statement") {
 
@@ -72,26 +75,19 @@ class SingleLineStatementsRule : Rule("statement") {
 
     private fun findWrongText(node: ASTNode): String {
         var text: MutableList<String> = mutableListOf()
-        var prevNode: ASTNode? = node.treePrev
-        while (prevNode != null) {
-            val listText = prevNode.text.split("\n")
-            text.add(listText.last())
-            if (listText.size > minListTextSize)
-                break
-            prevNode = prevNode.treePrev
-        }
+        val nextNode: ASTNode? = node.parent({ it.treeNext != null }, false) ?: node
+        (node.siblings(false).map { sequenceNode -> sequenceNode.text.split("\n") }.takeWhileInclusive { listText ->
+            listText.size <= minListTextSize
+        }.forEach {
+            text.add(it.last())
+        })
         text = text.asReversed()
         text.add(node.text)
-        var nextNode: ASTNode? = node.parent({ it.treeNext != null }, false) ?: node
-        nextNode = nextNode!!.treeNext
-        while (nextNode != null) {
-            val listText = nextNode.text.split("\n")
-            text.add(listText.first())
-            if (listText.size > minListTextSize) {
-                break
-            }
-            nextNode = nextNode.treeNext
-        }
+        (nextNode?.siblings(true)?.map { sequenceNode -> sequenceNode.text.split("\n") }?.takeWhileInclusive { listText ->
+            listText.size <= minListTextSize
+        }?.forEach {
+            text.add(it.first())
+        })
         return text.joinToString(separator = "")
     }
 }
