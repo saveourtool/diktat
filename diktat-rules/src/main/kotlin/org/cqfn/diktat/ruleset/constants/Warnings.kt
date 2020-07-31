@@ -34,6 +34,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     MISSING_KDOC_TOP_LEVEL(false, "all public and internal top-level classes and functions should have Kdoc"),
     MISSING_KDOC_CLASS_ELEMENTS(false, "all public, internal and protected classes, functions and variables inside the class should have Kdoc"),
     MISSING_KDOC_ON_FUNCTION(true, "all public, internal and protected functions should have Kdoc with proper tags"),
+    KDOC_TRIVIAL_KDOC_ON_FUNCTION(24, false, "KDocs should not be trivial (e.g. method getX should not de documented as 'returns X')"),
     KDOC_WITHOUT_PARAM_TAG(true, "all methods which take arguments should have @param tags in KDoc"),
     KDOC_WITHOUT_RETURN_TAG(true, "all methods which return values should have @return tag in KDoc"),
     KDOC_WITHOUT_THROWS_TAG(true, "all methods which throw exceptions should have @throws tag in KDoc"),
@@ -65,6 +66,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     BLANK_LINE_BETWEEN_PROPERTIES(true, "there should be no blank lines between properties without comments; comment or KDoc on property should have blank line before"),
     BRACES_BLOCK_STRUCTURE_ERROR(true, "braces should follow 1TBS style"),
     WRONG_INDENTATION(true, "only spaces are allowed for indentation and each indentation should equal to 4 spaces (tabs are not allowed)"),
+    EMPTY_BLOCK_STRUCTURE_ERROR(54, true, "incorrect format of empty block"),
     ;
 
     override fun ruleName(): String = this.name
