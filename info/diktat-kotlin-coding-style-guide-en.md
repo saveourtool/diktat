@@ -710,18 +710,18 @@ All variants of a (private) val logger should be placed in the beginning of the 
 
  #### <a name="r3.3"></a>Rule 3.3 Braces must be used in conditional statements and loop blocks
 
-  In `if`, `else`, `for`, `do`, and `while` statements, even if the program body is empty or contains only one statement, braces should be used.
-  In special Kotlin `when` statement no need to use braces for statements with 1 line. Valid example:
+1) In `if`, `else`, `for`, `do`, and `while` statements, even if the program body is empty or contains only one statement, braces should be used.
+In special Kotlin `when` statement no need to use braces for statements with 1 line. Valid example:
+
     ```kotlin
-        when (node.elementType) {
-            FILE -> {
-                checkTopLevelDoc(node)
-                checkSomething()
-             }
-            CLASS -> checkClassElements(node)
-        }
+    when (node.elementType) {
+        FILE -> {
+            checkTopLevelDoc(node)
+            checkSomething()
+         }
+        CLASS -> checkClassElements(node)
+    }
     ```
-  
 **Exception:** *Only* The only exception is ternary operator in Kotlin (it is a single line `if () <> else <>` ) 
 When the entire expression can be 
 
@@ -748,6 +748,27 @@ if (condition) {
 }
 ```
 
+2) No need to use braces for the body of lambdas and when-conditions (after an arrow)
+  
+Bad example:
+
+```kotlin
+val a = { b: String, c: String -> { // these braces are increasing complexity
+        null
+    }
+}
+```
+
+Valid examples: 
+
+```kotlin
+val a = { b: String, c: String ->
+        null
+}
+
+someValue.map { x -> x}
+```
+
 #### <a name="r3.4"></a> Rule 3.4 For *non-empty* blocks and block structures, the opening brace is placed at the end of the line
 
 For *non-empty* code blocks with braces, they should follow the K&R style (1TBS or OTBS style):
@@ -756,7 +777,7 @@ For *non-empty* code blocks with braces, they should follow the K&R style (1TBS 
  - The closing brace can be followed by a new line. Only exceptions are: `else`, `finally`, `while` (from do-while statement) or `catch` keywords. These keywords should not be split from the closing brace by a newline.
  
  Exception cases: 
- 1) for lambdas newline should appear only after an arrow (see [rule 3.5](#r3.5)). No need to put a newline after an opening brace:
+ 1) for lambdas no need to put a newline after first (function related) opening brace. Newline should appear only after an arrow (see [rule 3.6, point 5](#r3.6)):
 ```kotlin
 arg.map { value ->
     foo(value)
@@ -942,46 +963,60 @@ This international code style prohibits non-latin (non ASCII) symbols in the cod
 
 #### <a name="r3.6"></a>Rule 3.6 line break style rules if the line is split
 
-  1. Compared to Java Kotlin allows not to to put semicolumn (';') after each statement separated by newline.
-     There should be no redundant semicolumn at the end of lines.
-     
-     In case when newline is needed to split the line, it should be placed after operators like &&/||/+/e.t.c
-     But newline should be placed before operators like ('.', '?.', '?:', '::', e.t.c), operator !! should not be separated from the value it is checking.
-     
-     Note, that you need to follow functional style:
-     ```kotlin
-        val value = otherValue!!
-                .map(x -> x)
-                .filter(true)
-                .size      
-     ```
-      
-  2. Newline should be placed after assignment operator ('=')
-  3. The name of a function or constructor should not be split by a newline from the opening brace '('. Brace follows immediately after the name without any spaces.   
-  4. Newline should be placed right after the comma (',')
-  5. If lambda expression has one-argument, a newline can appear after an arrow, if an expression has more than one argument before an arrow - breakpoint should appear after the brace.
-  
-  Recommended examples：
+1. Compared to Java Kotlin allows not to put semicolon (';') after each statement separated by newline.
+ There should be no redundant semicolon at the end of lines.
+ 
+ In case when newline is needed to split the line, it should be placed after operators like &&/||/+/e.t.c
+ But newline should be placed before operators like ('.', '?.', '?:', '::', e.t.c).
+ 
+* Note, that you need to follow functional style (i.e. each function call in a chain with `.` should start at a new line if chain of functions contains more than one call):
+```kotlin
+  val value = otherValue!!
+          .map { x -> x }
+          .filter {
+              val a = true
+              true
+          }
+          .size    
+```
+* Note, that Kotlin parser prohibits operator !! to be separated from the value it is checking.
 
-     ```kotlin
-     val lambda =
-         (label: String, value: Long) -> {
-             // ...
-         }
-     
-     val predicate = str ->
-         longExpressionInvolving(str)
-     ```
+**Exception**: if functional chain is used inside of the branches of ternary operator - no need to split them with newlines. Valid example:
+```kotlin
+if (condition) list.map { foo(it) }.filter { bar(it) } else list.drop(1)
+```  
+  
+2. Newline should be placed after assignment operator ('=')
+3. The name of a function or constructor should not be split by a newline from the opening brace '('. Brace follows immediately after the name without any spaces.   
+4. Newline should be placed right after the comma (',')
+5. In lambda statements, if it's body contains more than one line, the newline should be placed after an arrow. See examples below:
+
+Bad example:
+```kotlin
+    value.map { name -> foo()
+        bar()
+    }
+```
+
+Recommended examples：
+```kotlin
+value.map { name ->
+    foo()
+    bar()
+}
+
+val someValue = { node:String -> node }
+```
 
 6. When the function contains only a single expression, it can be expressed as [expression function] (https://kotlinlang.org/docs/reference/functions.html#single-expression-functions).
-  Instead of: 
-  ```kotlin
-   override fun toString(): String { return "hi" }
-  ```
-  use:
-   ```kotlin
-   override fun toString() = "hi"
-   ```
+Instead of: 
+```kotlin
+override fun toString(): String { return "hi" }
+```
+use:
+```kotlin
+override fun toString() = "hi"
+```
 
 ### <a name="c3.5"></a>Blank lines
 
