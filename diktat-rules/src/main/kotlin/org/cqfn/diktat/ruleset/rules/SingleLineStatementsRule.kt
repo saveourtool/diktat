@@ -4,14 +4,15 @@ import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.ENUM_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.SEMICOLON
+import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.parent
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.MORE_THAN_ONE_STATEMENT_PER_LINE
 import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
-import org.jetbrains.kotlin.psi.psiUtil.parents
 
 class SingleLineStatementsRule : Rule("statement") {
 
@@ -46,8 +47,13 @@ class SingleLineStatementsRule : Rule("statement") {
                         if (it.treeParent.elementType == ENUM_ENTRY){
                             node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node.treeNext)
                         } else {
-                            if (!it.isBeginByNewline())
-                                node.addChild(PsiWhiteSpaceImpl("\n"), it)
+                            if (!it.isBeginByNewline()) {
+                                val nextNode = it.treeNext ?: it.parent({ parent -> parent.treeNext != null})
+                                if ( nextNode != null && nextNode.elementType == WHITE_SPACE)
+                                    (nextNode as LeafPsiElement).replaceWithText("\n")
+                                else
+                                    node.addChild(PsiWhiteSpaceImpl("\n"), it)
+                            }
                             node.removeChild(it)
                         }
                     }

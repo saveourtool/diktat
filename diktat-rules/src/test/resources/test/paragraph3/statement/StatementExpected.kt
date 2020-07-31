@@ -6,7 +6,7 @@ import com.pinterest.ktlint.core.KtLint
 fun foo(){
     if (x > 0){
         goo()
- qwe()
+qwe()
     }
 }
 
