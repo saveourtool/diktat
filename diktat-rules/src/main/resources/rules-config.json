@@ -247,5 +247,16 @@
       "styleEmptyBlockWithNewline": "True",
       "allowEmptyBlocks" : "False"
     }
+  },
+  {
+    "name": "REDUNDANT_SEMICOLON",
+    "enabled": true,
+    "configuration" : {}
+
+  },
+  {
+    "name": "WRONG_NEWLINES",
+    "enabled": true,
+    "configuration" : {}
   }
 ]

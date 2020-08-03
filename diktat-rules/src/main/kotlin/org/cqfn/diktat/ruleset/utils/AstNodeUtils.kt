@@ -10,8 +10,10 @@ import com.pinterest.ktlint.core.ast.ElementType.PROTECTED_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PUBLIC_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isLeaf
+import com.pinterest.ktlint.core.ast.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
+import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.psi.psiUtil.parents
@@ -55,11 +57,30 @@ fun ASTNode.getAllChildrenWithType(elementType: IElementType): List<ASTNode> =
 fun ASTNode.getFirstChildWithType(elementType: IElementType): ASTNode? =
         this.getChildren(null).find { it.elementType == elementType }
 
-fun ASTNode.isFollowedByNewline() =
-        this.treeNext.elementType == WHITE_SPACE && this.treeNext.text.contains("\n")
+/**
+ * Checks if the symbols in this node are at the end of line
+ */
+fun ASTNode.isEol() = parent({ it.treeNext != null }, false)?.isFollowedByNewline() ?: true
 
+/**
+ * Checks if there is a newline after symbol corresponding to this element. We can't always check only this node itself, because
+ * some nodes are placed not on the same level as white spaces, e.g. operators like [ElementType.ANDAND] are children of [ElementType.OPERATION_REFERENCE].
+ * Same is true also for semicolons in some cases.
+ * Therefore, to check if they are followed by newline we need to check their parents.
+ */
+fun ASTNode.isFollowedByNewline() =
+        parent({ it.treeNext != null }, strict = false)?.let {
+            it.treeNext.elementType == WHITE_SPACE && it.treeNext.text.contains("\n")
+        } ?: false
+
+/**
+ * Checks if there is a newline before this element. See [isFollowedByNewline] for motivation on parents check.
+ */
 fun ASTNode.isBeginByNewline() =
-        this.treePrev.elementType == WHITE_SPACE && this.treePrev.text.contains("\n")
+        parent({ it.treePrev != null }, strict = false)?.let {
+            it.treePrev.elementType == WHITE_SPACE && it.treePrev.text.contains("\n")
+        } ?: false
+
 /**
  * checks if the node has corresponding child with elementTyp
  */
@@ -72,8 +93,11 @@ fun ASTNode.hasAnyChildOfTypes(vararg elementType: IElementType): Boolean =
 /**
  * check if node's block is empty (contains only left and right braces and space)
  */
-fun ASTNode?.isBlockEmpty() = this?.let { emptyBlockList
-        .containsAll(this.getChildren(null).map { it.elementType })} ?: true
+fun ASTNode?.isBlockEmpty() = this?.let {
+    emptyBlockList
+            .containsAll(this.getChildren(null).map { it.elementType })
+} ?: true
+
 /**
  * Method that is trying to find and return child of this node, which
  * 1) stands before the node with type @beforeThisNodeType
@@ -125,7 +149,7 @@ fun ASTNode.isNodeFromCompanionObject(): Boolean {
         val grandParent = parent.treeParent
         if (grandParent != null && grandParent.elementType == ElementType.OBJECT_DECLARATION) {
             if (grandParent.findLeafWithSpecificType(ElementType.COMPANION_KEYWORD) != null) {
-                return true;
+                return true
             }
         }
     }
@@ -141,7 +165,7 @@ fun ASTNode.isNodeFromObject(): Boolean {
     if (parent != null && parent.elementType == ElementType.CLASS_BODY) {
         val grandParent = parent.treeParent
         if (grandParent != null && grandParent.elementType == ElementType.OBJECT_DECLARATION) {
-            return true;
+            return true
         }
     }
     return false
@@ -165,7 +189,7 @@ fun ASTNode.toLower() {
 
 /**
  * This util method does tree traversal and stores to the result all tree leaf node of particular type (elementType).
- * Recursively will visit each and every node and will get leafs of specific type. Those nodes will be added to the result.
+ * Recursively will visit each and every node and will get leaves of specific type. Those nodes will be added to the result.
  */
 fun ASTNode.getAllLeafsWithSpecificType(elementType: IElementType, result: MutableList<ASTNode>) {
     // if statements here have the only right order - don't change it
@@ -243,8 +267,8 @@ fun ASTNode.prettyPrint(level: Int = 0, maxLevel: Int = -1): String {
 }
 
 /**
- * Checks if this modifier list corresponds to accessible outside entity
- * @param modifierList ASTNode with ElementType.MODIFIER_LIST, can be null if entity has no modifier list
+ * Checks if this modifier list corresponds to accessible outside entity.
+ * The receiver should be an ASTNode with ElementType.MODIFIER_LIST, can be null if entity has no modifier list
  */
 fun ASTNode?.isAccessibleOutside(): Boolean =
         if (this != null) {
@@ -266,6 +290,14 @@ fun ASTNode.leaveOnlyOneNewLine() = leaveExactlyNumNewLines(1)
 fun ASTNode.leaveExactlyNumNewLines(num: Int) {
     require(this.elementType == WHITE_SPACE)
     (this as LeafPsiElement).replaceWithText("${"\n".repeat(num)}${this.text.replace("\n", "")}")
+}
+
+fun ASTNode.appendNewlineMergingWhiteSpace(whiteSpaceNode: ASTNode?, beforeNode: ASTNode?) {
+    if (whiteSpaceNode != null && whiteSpaceNode.elementType == WHITE_SPACE) {
+        (whiteSpaceNode as LeafPsiElement).replaceWithText("\n${whiteSpaceNode.text}")
+    } else {
+        addChild(PsiWhiteSpaceImpl("\n"), beforeNode)
+    }
 }
 
 /**
@@ -297,7 +329,7 @@ fun ASTNode.moveChildBefore(childToMove: ASTNode, beforeThisNode: ASTNode?, with
     return ReplacementResult(listOfNotNull(childToMove, nextOldChild), listOfNotNull(movedChild, nextMovedChild))
 }
 
-fun ASTNode.findLBrace():ASTNode? {
+fun ASTNode.findLBrace(): ASTNode? {
     return when (this.elementType) {
         ElementType.THEN, ElementType.ELSE -> this.findChildByType(ElementType.BLOCK)?.findChildByType(ElementType.LBRACE)!!
         ElementType.WHEN -> this.findChildByType(ElementType.LBRACE)!!
@@ -331,6 +363,26 @@ fun List<ASTNode>.handleIncorrectOrder(getSiblingBlocks: ASTNode.() -> Pair<ASTN
 
         if (isPositionIncorrect) incorrectPositionHandler(astNode, beforeThisNode)
     }
+}
+
+/**
+ * This method returns text of this [ASTNode] plus text after last and until next newline.
+ * E.g, if this node occupies no more than a single line, this whole line will be returned.
+ */
+fun ASTNode.extractLineOfText(): String {
+    var text = mutableListOf<String>()
+    val nextNode = parent({ it.treeNext != null }, false) ?: this
+    siblings(false)
+            .map { it.text.split("\n") }
+            .takeWhileInclusive { it.size <= 1 }
+            .forEach { text.add(it.last()) }
+    text = text.asReversed()
+    text.add(this.text)
+    nextNode.siblings(true)
+            .map { it.text.split("\n") }
+            .takeWhileInclusive { it.size <= 1 }
+            .forEach { text.add(it.first()) }
+    return text.joinToString(separator = "").trim()
 }
 
 data class ReplacementResult(val oldNodes: List<ASTNode>, val newNodes: List<ASTNode>) {

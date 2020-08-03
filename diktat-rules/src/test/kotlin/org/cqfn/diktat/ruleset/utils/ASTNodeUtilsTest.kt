@@ -736,6 +736,23 @@ class ASTNodeUtilsTest {
             }
         }
     }
+
+    @Test
+    fun `text line of text extraction`() {
+        var counter = 0
+        applyToCode("""
+            class Example {
+                fun
+                    foo() { }
+            }
+        """.trimIndent()) { node ->
+            if (node.elementType == IDENTIFIER && node.text == "foo") {
+                Assert.assertEquals("foo() { }", node.extractLineOfText())
+                counter ++
+            }
+        }
+        Assert.assertEquals(1, counter)
+    }
 }
 
 private class PrettyPrintingVisitor(private val elementType: IElementType,

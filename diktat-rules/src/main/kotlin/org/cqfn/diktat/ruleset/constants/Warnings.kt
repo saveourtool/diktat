@@ -68,6 +68,8 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     WRONG_INDENTATION(true, "only spaces are allowed for indentation and each indentation should equal to 4 spaces (tabs are not allowed)"),
     EMPTY_BLOCK_STRUCTURE_ERROR(true, "incorrect format of empty block"),
     MORE_THAN_ONE_STATEMENT_PER_LINE(true, "There should not be more than one code statement in one line"),
+    REDUNDANT_SEMICOLON(true, "there should be no redundant semicolon at the end of lines"),
+    WRONG_NEWLINES(true, "incorrect line breaking"),
     ;
 
     override fun ruleName(): String = this.name
