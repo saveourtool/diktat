@@ -1,0 +1,34 @@
+apply plugin: 'java'
+
+repositories {
+    maven {
+        url = uri("https://central.artipie.com/akuleshov7/diktat")
+    }
+    mavenCentral()
+    jcenter()
+}
+
+configurations {
+    ktlint
+    diktat
+}
+
+dependencies {
+    ktlint "com.pinterest:ktlint:0.37.1-fork"
+    diktat "org.cqfn.diktat:diktat-rules:1.0.1"
+}
+
+task ktlint(type: JavaExec, group: "verification") {
+    description = "Check Kotlin code style."
+    classpath = configurations.ktlint
+    main = "com.pinterest.ktlint.Main"
+    args "diktat-rules/src/main/kotlin/**/*.kt", "diktat-rules/src/test/kotlin/**/*.kt"
+}
+check.dependsOn ktlint
+
+task ktlintFormat(type: JavaExec, group: "formatting") {
+    description = "Fix Kotlin code style deviations."
+    classpath = configurations.ktlint
+    main = "com.pinterest.ktlint.Main"
+    args "-F", "diktat-rules/src/main/kotlin/**/*.kt", "diktat-rules/src/test/kotlin/**/*.kt"
+}
