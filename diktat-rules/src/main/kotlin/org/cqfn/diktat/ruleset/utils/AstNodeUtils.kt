@@ -16,6 +16,7 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.siblings
 import org.slf4j.Logger
@@ -340,6 +341,12 @@ fun ASTNode.findLBrace(): ASTNode? {
     }
 }
 
+fun ASTNode.isSingleLineIfElse(): Boolean {
+    val elseNode = (psi as KtIfExpression).`else`?.node
+    val hasSingleElse = elseNode != null && elseNode.elementType != ElementType.IF
+    return treeParent.elementType != ElementType.ELSE && hasSingleElse && text.lines().size == 1
+}
+
 fun ASTNode.isChildAfterAnother(child: ASTNode, afterChild: ASTNode): Boolean =
         getChildren(null).indexOf(child) > getChildren(null).indexOf(afterChild)
 
@@ -366,8 +373,8 @@ fun List<ASTNode>.handleIncorrectOrder(getSiblingBlocks: ASTNode.() -> Pair<ASTN
 }
 
 /**
- * This method returns text of this [ASTNode] plus text after last and until next newline.
- * E.g, if this node occupies no more than a single line, this whole line will be returned.
+ * This method returns text of this [ASTNode] plus text from it's siblings after last and until next newline, if present in siblings.
+ * I.e., if this node occupies no more than a single line, this whole line or it's part will be returned.
  */
 fun ASTNode.extractLineOfText(): String {
     var text = mutableListOf<String>()

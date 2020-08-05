@@ -12,7 +12,7 @@ fun foo() {
     obj
 ?.foo()
     obj
-?: OBJ
+ ?:OBJ
     obj
 ::foo
 }

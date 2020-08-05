@@ -56,6 +56,8 @@ class NewlinesRuleWarnTest {
                     |    obj.foo()
                     |    obj?.foo()
                     |    obj::foo
+                    |    bar().let(::baz)
+                    |    ::baz
                     |}
                 """.trimMargin()
         )
@@ -165,7 +167,6 @@ class NewlinesRuleWarnTest {
     }
 
     @Test
-    @Ignore("Not yet implemented")
     fun `chained calls should follow functional style - exception for ternary if-else`() {
         lintMethod(NewlinesRule(),
                 """

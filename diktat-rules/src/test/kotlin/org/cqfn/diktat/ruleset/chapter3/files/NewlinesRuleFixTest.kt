@@ -12,13 +12,11 @@ class NewlinesRuleFixTest : FixTestBase("test/paragraph3/newlines", NewlinesRule
     }
 
     @Test
-    @Ignore("Not fully implemented")
     fun `should fix newlines near operators`() {
         fixAndCompare("OperatorsExpected.kt", "OperatorsTest.kt")
     }
 
     @Test
-    @Ignore("Not implemented yet")
     fun `should fix newlines to follow functional style`() {
         fixAndCompare("FunctionalStyleExpected.kt", "FunctionalStyleTest.kt")
     }
