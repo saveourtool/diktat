@@ -8,4 +8,5 @@ fun foo(list: List<Bar>?) {
         it.condition()
     }
 ?.qux()
+            ?:foobar
 }

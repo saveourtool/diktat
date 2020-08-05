@@ -26,11 +26,12 @@ class NewlinesRuleWarnTest {
                     |    
                     |    fun foo() {};
                     |    val a = 0;
+                    |    val b = if (condition) { bar(); baz()} else qux
                     |};
                 """.trimMargin(),
                 LintError(6, 17, ruleId, "${REDUNDANT_SEMICOLON.warnText()} fun foo() {};", true),
                 LintError(7, 14, ruleId, "${REDUNDANT_SEMICOLON.warnText()} val a = 0;", true),
-                LintError(8, 2, ruleId, "${REDUNDANT_SEMICOLON.warnText()} };", true)
+                LintError(9, 2, ruleId, "${REDUNDANT_SEMICOLON.warnText()} };", true)
         )
     }
 

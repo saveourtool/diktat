@@ -9,4 +9,5 @@ enum class Example {
 
     fun foo() {};
     val a = 0;
+    val b = if (condition) { bar(); baz()} else qux
 };
