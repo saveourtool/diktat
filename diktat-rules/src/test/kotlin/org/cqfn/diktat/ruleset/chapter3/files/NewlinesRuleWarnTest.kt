@@ -6,7 +6,6 @@ import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_NEWLINES
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.files.NewlinesRule
 import org.cqfn.diktat.util.lintMethod
-import org.junit.Ignore
 import org.junit.Test
 
 class NewlinesRuleWarnTest {
@@ -14,6 +13,8 @@ class NewlinesRuleWarnTest {
     private val shouldBreakAfter = "${WRONG_NEWLINES.warnText()} should break a line after and not before"
     private val shouldBreakBefore = "${WRONG_NEWLINES.warnText()} should break a line before and not after"
     private val functionalStyleWarn = "${WRONG_NEWLINES.warnText()} should follow functional style at"
+    private val lParWarn = "${WRONG_NEWLINES.warnText()} opening parentheses should not be separated from constructor or function name -"
+    private val commaWarn = "${WRONG_NEWLINES.warnText()} newline should be placed only after comma"
 
     @Test
     fun `should forbid EOL semicolons`() {
@@ -175,6 +176,100 @@ class NewlinesRuleWarnTest {
                     |    if (list.size > n) list.filterNotNull().map { it.baz() } else list.let { it.bar() }.firstOrNull()?.qux()
                     |}
                 """.trimMargin()
+        )
+    }
+
+    @Test
+    fun `newline should be placed only after assignment operator`() {
+        lintMethod(NewlinesRule(),
+                """
+                    |class Example {
+                    |    val a =
+                    |        42
+                    |    val b
+                    |        = 43
+                    |}
+                """.trimMargin(),
+                LintError(5, 9, ruleId, "$shouldBreakAfter =", true)
+        )
+    }
+
+    @Test
+    fun `function name should not be separated from ( - positive example`() {
+        lintMethod(NewlinesRule(),
+                """
+                    |val foo = Foo(arg1, arg2)
+                    |class Example(
+                    |    val x: Int
+                    |) {
+                    |    fun foo(
+                    |        a: Int
+                    |    ) { }
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    fun `function name should not be separated from ( - should not trigger on other parenthesis`() {
+        lintMethod(NewlinesRule(),
+                """
+                    |val x = (2 + 2) * 2
+                    |val y = if (condition) 2 else 1
+                    |fun foo(f: (Int) -> Pair<Int, Int>) {
+                    |    val (a, b) = f(0)
+                    |}
+                    |fun bar(f: (x: Int) -> Unit) { }
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    fun `function name should not be separated from (`() {
+        lintMethod(NewlinesRule(),
+                """
+                    |val foo = Foo  (arg1, arg2)
+                    |class Example
+                    |    (
+                    |        val x: Int
+                    |    ) {
+                    |    fun foo
+                    |    (
+                    |        a: Int
+                    |    ) { }
+                    |}
+                """.trimMargin(),
+                LintError(1, 16, ruleId, lParWarn, true),
+                LintError(3, 5, ruleId, lParWarn, true),
+                LintError(7, 5, ruleId, lParWarn, true)
+        )
+    }
+
+    @Test
+    fun `newline should be placed only after comma - positive example`() {
+        lintMethod(NewlinesRule(),
+                """
+                    |fun foo(a: Int,
+                    |        b: Int) {
+                    |    bar(a, b)
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    fun `newline should be placed only after comma`() {
+        lintMethod(NewlinesRule(),
+                """
+                    |fun foo(a: Int
+                    |        ,
+                    |        b: Int) {
+                    |    bar(a
+                    |        , b)
+                    |}
+                """.trimMargin(),
+                LintError(2, 9, ruleId, commaWarn, true),
+                LintError(5, 9, ruleId, commaWarn, true)
         )
     }
 }
