@@ -13,7 +13,7 @@ class NewlinesRuleWarnTest {
     private val shouldBreakAfter = "${WRONG_NEWLINES.warnText()} should break a line after and not before"
     private val shouldBreakBefore = "${WRONG_NEWLINES.warnText()} should break a line before and not after"
     private val functionalStyleWarn = "${WRONG_NEWLINES.warnText()} should follow functional style at"
-    private val lParWarn = "${WRONG_NEWLINES.warnText()} opening parentheses should not be separated from constructor or function name -"
+    private val lParWarn = "${WRONG_NEWLINES.warnText()} opening parentheses should not be separated from constructor or function name"
     private val commaWarn = "${WRONG_NEWLINES.warnText()} newline should be placed only after comma"
     private val lambdaWithArrowWarn = "${WRONG_NEWLINES.warnText()} in lambda with several lines in body newline should be placed after an arrow"
     private val lambdaWithoutArrowWarn = "${WRONG_NEWLINES.warnText()} in lambda with several lines in body newline should be placed after an opening brace"
