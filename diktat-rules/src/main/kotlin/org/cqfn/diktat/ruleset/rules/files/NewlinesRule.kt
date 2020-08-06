@@ -3,7 +3,9 @@ package org.cqfn.diktat.ruleset.rules.files
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.ANDAND
+import com.pinterest.ktlint.core.ast.ElementType.ARROW
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.CALLABLE_REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.COLONCOLON
@@ -16,6 +18,7 @@ import com.pinterest.ktlint.core.ast.ElementType.ELVIS
 import com.pinterest.ktlint.core.ast.ElementType.ENUM_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.EQ
 import com.pinterest.ktlint.core.ast.ElementType.FUN
+import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_LITERAL
 import com.pinterest.ktlint.core.ast.ElementType.IF
 import com.pinterest.ktlint.core.ast.ElementType.IMPORT_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_ARGUMENT
@@ -50,9 +53,12 @@ import org.cqfn.diktat.ruleset.utils.isBeginByNewline
 import org.cqfn.diktat.ruleset.utils.isEol
 import org.cqfn.diktat.ruleset.utils.isFollowedByNewline
 import org.cqfn.diktat.ruleset.utils.isSingleLineIfElse
+import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.psi.psiUtil.parents
+import org.jetbrains.kotlin.psi.psiUtil.siblings
 
 /**
  * Rule that checks line break styles.
@@ -95,6 +101,7 @@ class NewlinesRule : Rule("newlines") {
             in lineBreakBeforeOperators -> handleOperatorWithLineBreakBefore(node)
             LPAR -> handleOpeningParentheses(node)
             COMMA -> handleComma(node)
+            BLOCK -> handleLambdaBody(node)
         }
     }
 
@@ -186,6 +193,43 @@ class NewlinesRule : Rule("newlines") {
         if (prevNewLine != null) {
             WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, "newline should be placed only after comma", node.startOffset) {
                 prevNewLine.treeParent.removeChild(prevNewLine)
+            }
+        }
+    }
+
+    private fun handleLambdaBody(node: ASTNode) {
+        if (node.treeParent.elementType == FUNCTION_LITERAL) {
+            val isSingleLineLambda = node.treeParent.text.lines().size == 1
+            val arrowNode = node.siblings(false).find { it.elementType == ARROW }
+            if (!isSingleLineLambda && arrowNode != null) {
+                // lambda with explicit arguments
+                val newlinesBeforeArrow = arrowNode
+                        .siblings(false)
+                        .filter { it.elementType == WHITE_SPACE && it.textContains('\n') }
+                        .toList()
+                if (newlinesBeforeArrow.isNotEmpty() || !arrowNode.isFollowedByNewline()) {
+                    WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
+                            "in lambda with several lines in body newline should be placed after an arrow", arrowNode.startOffset) {
+                        // fixme: replacement logic can be sophisticated for better appearance?
+                        newlinesBeforeArrow.forEach { it.treeParent.replaceChild(it, PsiWhiteSpaceImpl(" ")) }
+                        arrowNode.treeNext.takeIf { it.elementType == WHITE_SPACE }?.leaveOnlyOneNewLine()
+                    }
+                }
+            } else if (!isSingleLineLambda && arrowNode == null) {
+                // lambda without arguments
+                val lbraceNode = node.treeParent.firstChildNode
+                if (!lbraceNode.isFollowedByNewline()) {
+                    WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
+                            "in lambda with several lines in body newline should be placed after an opening brace", lbraceNode.startOffset) {
+                        lbraceNode.treeNext.let {
+                            if (it.elementType == WHITE_SPACE) {
+                                it.leaveOnlyOneNewLine()
+                            } else {
+                                it.treeParent.addChild(PsiWhiteSpaceImpl("\n"), it)
+                            }
+                        }
+                    }
+                }
             }
         }
     }

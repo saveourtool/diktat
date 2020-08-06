@@ -2,7 +2,6 @@ package org.cqfn.diktat.ruleset.chapter3.files
 
 import org.cqfn.diktat.ruleset.rules.files.NewlinesRule
 import org.cqfn.diktat.util.FixTestBase
-import org.junit.Ignore
 import org.junit.Test
 
 class NewlinesRuleFixTest : FixTestBase("test/paragraph3/newlines", NewlinesRule()) {
@@ -29,5 +28,10 @@ class NewlinesRuleFixTest : FixTestBase("test/paragraph3/newlines", NewlinesRule
     @Test
     fun `should fix wrong newlines around comma`() {
         fixAndCompare("CommaExpected.kt", "CommaTest.kt")
+    }
+
+    @Test
+    fun `should fix wrong newlines in lambdas`() {
+        fixAndCompare("LambdaExpected.kt", "LambdaTest.kt")
     }
 }

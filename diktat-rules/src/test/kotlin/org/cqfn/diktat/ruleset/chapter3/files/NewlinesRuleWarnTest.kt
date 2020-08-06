@@ -15,6 +15,8 @@ class NewlinesRuleWarnTest {
     private val functionalStyleWarn = "${WRONG_NEWLINES.warnText()} should follow functional style at"
     private val lParWarn = "${WRONG_NEWLINES.warnText()} opening parentheses should not be separated from constructor or function name -"
     private val commaWarn = "${WRONG_NEWLINES.warnText()} newline should be placed only after comma"
+    private val lambdaWithArrowWarn = "${WRONG_NEWLINES.warnText()} in lambda with several lines in body newline should be placed after an arrow"
+    private val lambdaWithoutArrowWarn = "${WRONG_NEWLINES.warnText()} in lambda with several lines in body newline should be placed after an opening brace"
 
     @Test
     fun `should forbid EOL semicolons`() {
@@ -270,6 +272,60 @@ class NewlinesRuleWarnTest {
                 """.trimMargin(),
                 LintError(2, 9, ruleId, commaWarn, true),
                 LintError(5, 9, ruleId, commaWarn, true)
+        )
+    }
+
+    @Test
+    fun `in lambdas newline should be placed after an arrow - positive example`() {
+        lintMethod(NewlinesRule(),
+                """
+                    |class Example {
+                    |    val a = list.map { elem ->
+                    |        foo(elem)
+                    |    }
+                    |    val b = list.map { elem: Type ->
+                    |        foo(elem)
+                    |    }
+                    |    val c = list.map { 
+                    |        bar(elem)
+                    |    }
+                    |    val d = list.map { elem -> bar(elem) }
+                    |    val e = list.map { elem: Type -> bar(elem) }
+                    |    val f = list.map { bar(elem) }
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    fun `in lambdas newline should be placed after an arrow`() {
+        lintMethod(NewlinesRule(),
+                """
+                    |class Example {
+                    |    val a = list.map {
+                    |        elem ->
+                    |            foo(elem)
+                    |    }
+                    |    val b = list.map { elem: Type 
+                    |        ->
+                    |            foo(elem)
+                    |    }
+                    |    val c = list.map { elem
+                    |        -> bar(elem)
+                    |    }
+                    |    val d = list.map { elem: Type -> bar(elem)
+                    |        foo(elem)
+                    |    }
+                    |    val e = list.map { bar(elem)
+                    |        foo(elem)
+                    |    }
+                    |}
+                """.trimMargin(),
+                LintError(3, 14, ruleId, lambdaWithArrowWarn, true),
+                LintError(7, 9, ruleId, lambdaWithArrowWarn, true),
+                LintError(11, 9, ruleId, lambdaWithArrowWarn, true),
+                LintError(13, 35, ruleId, lambdaWithArrowWarn, true),
+                LintError(16, 22, ruleId, lambdaWithoutArrowWarn, true)
         )
     }
 }
