@@ -1,0 +1,37 @@
+name: Run diKTat
+
+on:
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.11
+      - name: Cache local Maven repository (shared with regular CI build)
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-build-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-build
+      - name: Set version
+        run: |
+          snapshot_version=$(printf 'VERSION=${project.version}\n0\n' | mvn help:evaluate | grep '^VERSION' | cut -d= -f2)
+          base_version=${snapshot_version%-SNAPSHOT}
+          echo ::set-env name=BASE_VERSION::$base_version
+          mvn versions:set -DnewVersion=$base_version-pre
+      - name: Build and install
+        run: mvn clean install
+      - name: Revert project version and set proper version for antrun
+        run: |
+          mvn versions:set -DnewVersion=${{ env.BASE_VERSION }}-SNAPSHOT
+          mvn versions:set-property -Dproperty=diktat-check.version -DnewVersion=${{ env.BASE_VERSION }}-pre
+      - name: Run diktat snapshot via ktlint
+        run: mvn antrun:run@diktat
