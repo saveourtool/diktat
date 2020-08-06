@@ -6,7 +6,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.COMMENTED_OUT_CODE
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.comments.CommentsRule
 import org.cqfn.diktat.util.lintMethod
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class CommentedCodeTest {
     private val ruleId = "$DIKTAT_RULE_SET_ID:comments"

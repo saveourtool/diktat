@@ -9,7 +9,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.FILE_UNORDERED_IMPORTS
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.files.FileStructureRule
 import org.cqfn.diktat.util.lintMethod
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class FileStructureRuleTest {
     private val ruleId = "$DIKTAT_RULE_SET_ID:file-structure"

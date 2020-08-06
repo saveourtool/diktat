@@ -2,7 +2,7 @@ package org.cqfn.diktat.test
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class JsonReaderTest {
     @Test

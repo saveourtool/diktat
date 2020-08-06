@@ -4,7 +4,7 @@ import com.pinterest.ktlint.core.ast.ElementType.FUN
 import org.assertj.core.api.Assertions
 import org.cqfn.diktat.util.applyToCode
 import org.junit.Assert
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class FunctionASTNodeUtilsTest {
     @Test
