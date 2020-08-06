@@ -1,4 +1,4 @@
-name: Run diKTat
+name: Run diKTat from snapshot
 
 on:
   pull_request:
