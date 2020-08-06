@@ -1,12 +1,5 @@
 package org.cqfn.diktat.ruleset.rules.kdoc
 
-import org.cqfn.diktat.ruleset.constants.Warnings
-import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_CLASS_ELEMENTS
-import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_TOP_LEVEL
-import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
-import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
-import org.cqfn.diktat.ruleset.utils.getIdentifierName
-import org.cqfn.diktat.ruleset.utils.isAccessibleOutside
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
@@ -17,8 +10,17 @@ import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ruleset.constants.Warnings
+import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_CLASS_ELEMENTS
+import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_TOP_LEVEL
 import org.cqfn.diktat.ruleset.rules.getDiktatConfigRules
+import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
+import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
+import org.cqfn.diktat.ruleset.utils.getIdentifierName
+import org.cqfn.diktat.ruleset.utils.isAccessibleOutside
+import org.cqfn.diktat.ruleset.utils.isStandardMethod
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 
 /**
  * This rule checks the following features in KDocs:
@@ -26,16 +28,19 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
  * 2) All internal elements in class like class, property or function should be documented with KDoc
  */
 class KdocComments : Rule("kdoc-comments") {
+    companion object {
+        private val statementsToDocument = TokenSet.create(CLASS, FUN, PROPERTY)
+    }
 
     private lateinit var configRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
 
     override fun visit(
-        node: ASTNode,
-        autoCorrect: Boolean,
-        params: KtLint.Params,
-        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit
+            node: ASTNode,
+            autoCorrect: Boolean,
+            params: KtLint.Params,
+            emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit
     ) {
         configRules = params.getDiktatConfigRules()
         emitWarn = emit
@@ -53,15 +58,16 @@ class KdocComments : Rule("kdoc-comments") {
 
         // if parent class is public or internal than we can check it's internal code elements
         if (classBody != null && modifier.isAccessibleOutside()) {
-            (classBody.getAllChildrenWithType(CLASS) + classBody.getAllChildrenWithType(FUN) + classBody.getAllChildrenWithType(PROPERTY))
-                .forEach { checkDoc(it, MISSING_KDOC_CLASS_ELEMENTS) }
+            classBody.getChildren(statementsToDocument)
+                    .filterNot { it.elementType == FUN && it.isStandardMethod() }
+                    .forEach { checkDoc(it, MISSING_KDOC_CLASS_ELEMENTS) }
         }
     }
 
     private fun checkTopLevelDoc(node: ASTNode) =
-        // checking that all top level class declarations and functions have kDoc
-        (node.getAllChildrenWithType(CLASS) + node.getAllChildrenWithType(FUN))
-            .forEach { checkDoc(it, MISSING_KDOC_TOP_LEVEL) }
+            // checking that all top level class declarations and functions have kDoc
+            (node.getAllChildrenWithType(CLASS) + node.getAllChildrenWithType(FUN))
+                    .forEach { checkDoc(it, MISSING_KDOC_TOP_LEVEL) }
 
 
     /**
