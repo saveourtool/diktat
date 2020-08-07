@@ -1,13 +1,13 @@
 
 ![img](diktat.jpg)
 
-#Content
+# Content
 
-| Chapter                | Content                                                         |
+| Chapter             | Content                                                      |
 | ------------------- | ------------------------------------------------------------ |
-| [0 Intro](#c0.1)     | [Purpose](#c0.1) [General principles](#c0.2) [Terminology](#c0.3) [Scope](#c0.4) [Exception](#c0.5) |
-| [1 Naming](#c1)       | [Identifiers](#c1.1) [Package naming](#c1.2) [Classes, enumeration and interfaces](#c1.3) [Functions](#c1.4) [Constants](#c1.5) [Variables](#c1.6) |
-| [2 注释](#c2)       | [Kdoc](#c2.1) [文件头](#c2.2)、[函数头](#c2.3)、[代码](#c2.4)、[注释的语言](#c2.5) |
+| [0 Intro](#c0.1)    | [Purpose](#c0.1), [General principles](#c0.2), [Terminology](#c0.3), [Scope](#c0.4), [Exception](#c0.5) |
+| [1 Naming](#c1)     | [Identifiers](#c1.1), [Package naming](#c1.2), [Classes, enumeration and interfaces](#c1.3), [Functions](#c1.4), [Constants](#c1.5), [Variables](#c1.6) |
+| [2 Comments](#c2)   | [Kdoc](#c2.1), [File header](#c2.2), [Function header comments](#c2.3), [Code comments](#c2.4), [注释的语言](#c2.5) |
 | [3 排版格式](#c3)   | [大括号](#c3.1) [缩进](#c3.2) [行宽](#c3.3) [换行](#c3.4) [空白](#c3.5) [枚举](#c3.6) [变量](#c3.7) [数组](#c3.8) [when表达式](#c3.9) [注解](#c3.10) [注释排版](#c3.11) [修饰符](#c3.12) |
 | [4 变量和类型](#c4) | [变量](#c4.1) [类型](#c4.2)|
 | [5 函数](#c5)      | [函数设计](#c5.1) [函数参数](#c5.2)|
@@ -951,7 +951,7 @@ This international code style prohibits non-latin (non ASCII) symbols in the cod
   Generally, narrow characters are also called "half-width" characters. All characters in the ASCII character set include letters (such as `a`, `A`), numbers (such as `0`, `3`), and punctuation (such as `, `, `{`), spaces. All of them are narrow characters.
   Wide characters are also called "full-width" characters, Chinese characters (such as `中`, `文`), Chinese punctuation (`, `, `, `), full-width letters and numbers (such as `Ａ`、`３`) are all. These characters counted as 2 narrow characters.
   
-- Any line that exceeds this limit (120 narrow symbols) should be wrapped, as described in the *Newline* section. 
+- Any line that exceeds this limit (120 narrow symbols) should be wrapped, as described in the [*Newline* section](#c3.4). 
 
  **Exceptions：**
 
@@ -1025,9 +1025,9 @@ override fun toString() = "hi"
 
 ### <a name="s3.6"></a>Recommendation 3.6: Reduce unnecessary blank lines and keep the code compact
 
-By reducing unnecessary blank lines, you can display more code one one screen and that makes the code more readable.
+By reducing unnecessary blank lines, you can display more code on one screen and that makes the code more readable.
 
-- Blank lines should separate content based on it's relevance: blank lines should be placed between groups of fields, constructors, methods, nested classes, init blocks, objects
+- Blank lines should separate content based on it's relevance: blank lines should be placed between groups of fields, constructors, methods, nested classes, init blocks, objects (see [rule 3.2](#r3.2))
 - Do not use more than one single line inside methods, type definitions, initialization expressions
 - Generally do not use more than two consecutive blank lines in a row
 - Do not put newlines in the beginning or at the end of code blocks with curly braces:
@@ -1045,31 +1045,29 @@ fun baz() {
 
 ### <a name="s3.7"></a> Recommendation 3.7: Usage of whitespace for code separation
 
-  1. Any keywords (like 'if', 'when', 'for', e.t.c) should be separated from with a single whitespace from the openning parenthesis.
+  1. Any keywords (like 'if', 'when', 'for', e.t.c) should be separated with a single whitespace from the opening parenthesis.
      Only exceptions are: 'super' and 'constructor' keywords. They should not be separated from a parenthesis.
 
-  2. Separate any keywords (such as `else` or `catch`, etc.) from the openning brace ('{') with a single whitespace.
+  2. Separate any keywords (such as `else` or `catch`, etc.) from the opening brace ('{') with a single whitespace.
   
-  3. Use single whitespace before any opening whitespace (`{`).
-     Only exception is passing of a lambda:
+  3. Use single whitespace before any opening brace (`{`).
+     Only exception is passing a lambda as an argument inside parenthesis:
      ```kotlin
          private fun foo(a: (Int) -> Int, b: Int) {}
          foo({x: Int -> x}, 5) // no space before '{'
      ```
 
-  4. Single whitespace should be placed on both sides of binary operators. Also this applies to operator-like symbols, for example: 
+  4. Single whitespace should be placed on both sides of binary operators. This also applies to operator-like symbols, for example: 
 
-     - In generic structures with 'where' keyword： `where T : Type`
-     - With arrow in lambdas： `(str: String) -> str.length()`
+     - Colon in generic structures with 'where' keyword： `where T : Type`
+     - Arrow in lambdas： `(str: String) -> str.length()`
 
   **Exceptions：**
 
-```kotlin
-- Two colons (`::`) are written without spaces: `Object::toString`
-- Dot separator (`.`) that stays on the same line with an object name `object.toString()`
-```
+  - Two colons (`::`) are written without spaces: `Object::toString`
+  - Dot separator (`.`) that stays on the same line with an object name: `object.toString()`
 
-  5. Spaces should used after ','/':',';' (except cases when those symbols are in the end of line). There should be no whitespaces in the end of line.
+  5. Spaces should be used after ',',':',';' (except cases when those symbols are in the end of line). There should be no whitespaces in the end of line.
 
   6. There should be *only one space* between identifier and it's type： `list: List<String>`
   
@@ -1085,7 +1083,7 @@ fun baz() {
 - Long identifier names will break the alignment and will make the code less presentable.
 - The disadvantages of alignment are greater than the benefits; in order to reduce maintenance costs and not cause trouble, misalignment is the best choice.
 
-Recommendation: the only exception where can look good is `enum class`, where you can use alignment (in table format) to make code more readable:
+Recommendation: the only exception where it can look good is `enum class`, where you can use alignment (in table format) to make code more readable:
 ```kotlin
 enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean, private val warn: String) : Rule {
     PACKAGE_NAME_MISSING         (1, true,  "no package name declared in a file"),
