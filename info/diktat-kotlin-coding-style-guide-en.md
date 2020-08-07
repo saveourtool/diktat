@@ -987,9 +987,12 @@ if (condition) list.map { foo(it) }.filter { bar(it) } else list.drop(1)
 ```  
   
 2. Newline should be placed after assignment operator ('=')
-3. The name of a function or constructor should not be split by a newline from the opening brace '('. Brace follows immediately after the name without any spaces.   
+3. In function or class declarations name of a function or constructor should not be split by a newline from the opening brace '('.
+   Brace follows immediately after the name without any spaces both in declarations and at call sites.
 4. Newline should be placed right after the comma (',')
-5. In lambda statements, if it's body contains more than one line, the newline should be placed after an arrow. See examples below:
+5. In lambda statements, if it's body contains more than one line, the newline should be placed after an arrow if lambda has explicit parameters.
+   If lambda uses implicit parameter (`it`), newline should be placed after opening brace ('{').
+   See examples below:
 
 Bad example:
 ```kotlin
