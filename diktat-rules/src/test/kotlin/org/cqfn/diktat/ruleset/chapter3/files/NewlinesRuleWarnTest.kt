@@ -17,6 +17,7 @@ class NewlinesRuleWarnTest {
     private val commaWarn = "${WRONG_NEWLINES.warnText()} newline should be placed only after comma"
     private val lambdaWithArrowWarn = "${WRONG_NEWLINES.warnText()} in lambda with several lines in body newline should be placed after an arrow"
     private val lambdaWithoutArrowWarn = "${WRONG_NEWLINES.warnText()} in lambda with several lines in body newline should be placed after an opening brace"
+    private val singleReturnWarn = "${WRONG_NEWLINES.warnText()} functions with single return statement should be simplified to expression body"
 
     @Test
     fun `should forbid EOL semicolons`() {
@@ -326,6 +327,45 @@ class NewlinesRuleWarnTest {
                 LintError(11, 9, ruleId, lambdaWithArrowWarn, true),
                 LintError(13, 35, ruleId, lambdaWithArrowWarn, true),
                 LintError(16, 22, ruleId, lambdaWithoutArrowWarn, true)
+        )
+    }
+
+    @Test
+    fun `should warn if function consists of a single return statement - positive example`() {
+        lintMethod(NewlinesRule(),
+                """
+                    |fun foo() = "lorem ipsum"
+                    |
+                    |fun bar(): String {
+                    |    baz()
+                    |    return "lorem ipsum"
+                    |}
+                    |
+                    |fun qux(list: List<Int>): Int {
+                    |    list.filter {
+                    |        return@filter condition(it)
+                    |    }.forEach {
+                    |        return 0
+                    |    }
+                    |    return list.first()
+                    |}
+                    |
+                    |fun quux() { return }
+                    |
+                    |fun quux2(): Unit { return }
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    fun `should warn if function consists of a single return statement`() {
+        lintMethod(NewlinesRule(),
+                """
+                    |fun foo(): String {
+                    |    return "lorem ipsum"
+                    |}
+                """.trimMargin(),
+                LintError(2, 5, ruleId, singleReturnWarn, true)
         )
     }
 }

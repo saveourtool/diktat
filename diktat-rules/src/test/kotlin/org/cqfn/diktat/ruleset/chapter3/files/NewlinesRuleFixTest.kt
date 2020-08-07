@@ -34,4 +34,9 @@ class NewlinesRuleFixTest : FixTestBase("test/paragraph3/newlines", NewlinesRule
     fun `should fix wrong newlines in lambdas`() {
         fixAndCompare("LambdaExpected.kt", "LambdaTest.kt")
     }
+
+    @Test
+    fun `should replace functions with only return with expression body`() {
+        fixAndCompare("ExpressionBodyExpected.kt", "ExpressionBodyTest.kt")
+    }
 }
