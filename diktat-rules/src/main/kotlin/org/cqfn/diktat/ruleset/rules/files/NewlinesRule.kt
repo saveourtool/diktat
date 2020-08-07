@@ -257,7 +257,7 @@ class NewlinesRule : Rule("newlines") {
                 .filterNot { it.elementType in listOf(LBRACE, RBRACE, WHITE_SPACE) }
                 .toList()
                 .takeIf { it.size == 1 }
-                .apply {
+                ?.also {
                     WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
                             "functions with single return statement should be simplified to expression body", node.startOffset) {
                         val funNode = blockNode.treeParent
