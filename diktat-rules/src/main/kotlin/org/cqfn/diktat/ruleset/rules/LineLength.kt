@@ -10,6 +10,7 @@ import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.LONG_LINE
+import org.cqfn.diktat.ruleset.utils.prettyPrint
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import java.io.IOException
 import java.net.URL
@@ -49,7 +50,7 @@ class LineLength : Rule("line-length") {
         var offset = 0
         node.text.lines().forEach {
             if (it.length > configuration.lineLength) {
-                val newNode = node.psi.findElementAt(offset + it.length - 1)!!.node
+                val newNode = node.psi.findElementAt(offset + it.trim().length - 1)!!.node
                 if (newNode.elementType != KDOC_TEXT || !isKDocValid(newNode)) {
                     LONG_LINE.warnAndFix(configRules, emitWarn, isFixMode,
                             "max line length ${configuration.lineLength}, but was ${it.length}",
@@ -63,7 +64,7 @@ class LineLength : Rule("line-length") {
     // fixme json method
     private fun isKDocValid(node: ASTNode): Boolean {
         return try {
-            URL(node.text).toURI()
+            URL(node.text.split("\\s".toRegex()).last { it != "" }).toURI()
             true
         } catch (e: IOException) {
             false

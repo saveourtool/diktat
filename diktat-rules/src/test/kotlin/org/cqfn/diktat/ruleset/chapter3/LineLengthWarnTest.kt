@@ -142,8 +142,9 @@ class LineLengthWarnTest {
                     |import org.cqfn.diktat.util.lintMethod
                     |
                     |/**
+                    | * This is very important URL https://www.google.com/search?q=djfhvkdfhvkdh+gthtdj%3Bb&rlz=1C1GCEU_enRU909RU909&oq=posible+gthtdj%3Bb&aqs=chrome..69i57j0l3.2680j1j7&sourceid=chrome&ie=UTF-8    
                     | * https://www.google.com/search?q=djfhvkdfhvkdh+gthtdj%3Bb&rlz=1C1GCEU_enRU909RU909&oq=posible+gthtdj%3Bb&aqs=chrome..69i57j0l3.2680j1j7&sourceid=chrome&ie=UTF-8
-                    | * https://www.google.com/search?q=djfhvkdfhvkdh+gthtdj%3Bb&rlz=1C1GCEU_enRU909RU909&oq=posible+gthtdj%3Bb&aqs=chrome..69i57j0l3.2680j1j7&sourceid=chrome&ie=UTF-8
+                    | * https://www.google.com/search?q=djfhvkdfhvkdh+gthtdj%3Bb&rlz=1C1GCEU_enRU909RU909&oq=posible+gthtdj%3Bb&aqs=chrome..69i57j0l3.2680j1j7&sourceid=chrome&ie=UTF-8 this text can be on another line
                     | * @param a
                     |*/
                     |
@@ -156,6 +157,7 @@ class LineLengthWarnTest {
                     |   }
                     |}
                 """.trimMargin(),
+                LintError(9,1,ruleId,"${LONG_LINE.warnText()} max line length 163, but was 195", false),
                 rulesConfigList = rulesConfigListLineLength
         )
     }
