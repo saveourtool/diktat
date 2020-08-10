@@ -44,6 +44,8 @@ To autofix all violations use `-F` option.
 
 ## Run with Maven Plugin
 
+You can see how it is configured in our project for self-checks: [pom.xml](pom.xml)
+
 First, add this to your `pom.xml` file:
 
 ```xml
@@ -128,71 +130,37 @@ the snippet above with `<arg value="-F"/>`.
 
 To run diktat to check/fix code style - run `mvn antrun:run@diktat`.
 
-## Gradle Kotlin
-`build.gradle.kts`
-```kotlin
-val ktlint by configurations.creating
+## Gradle 
 
-dependencies {
-    ktlint("com.pinterest:ktlint:0.37.2")
-    // ktlint(project(":custom-ktlint-ruleset")) // in case of custom ruleset
-}
+You can see how it is configured in our project for self-checks: [build.gradle](build.gradle)
 
-val outputDir = "${project.buildDir}/reports/ktlint/"
-val inputFiles = project.fileTree(mapOf("dir" to "src", "include" to "**/*.kt"))
-
-val ktlintCheck by tasks.creating(JavaExec::class) {
-    inputs.files(inputFiles)
-    outputs.dir(outputDir)
-
-    description = "Check Kotlin code style."
-    classpath = ktlint
-    main = "com.pinterest.ktlint.Main"
-    args = listOf("src/**/*.kt")
-}
-
-val ktlintFormat by tasks.creating(JavaExec::class) {
-    inputs.files(inputFiles)
-    outputs.dir(outputDir)
-
-    description = "Fix Kotlin code style deviations."
-    classpath = ktlint
-    main = "com.pinterest.ktlint.Main"
-    args = listOf("-F", "src/**/*.kt")
-}
-```
-
-## Gradle Groovy
 `build.gradle`
 ```groovy
-// kotlin-gradle-plugin must be applied for configuration below to work
-// (see https://kotlinlang.org/docs/reference/using-gradle.html)
-
 apply plugin: 'java'
 
 repositories {
+    maven {
+        url = uri("https://central.artipie.com/akuleshov7/diktat")
+    }
+    mavenCentral()
     jcenter()
 }
 
 configurations {
     ktlint
+    diktat
 }
 
 dependencies {
-    ktlint "com.pinterest:ktlint:0.37.2"
-    // additional 3rd party ruleset(s) can be specified here
-    // just add them to the classpath (e.g. ktlint 'groupId:artifactId:version') and 
-    // ktlint will pick them up
+    ktlint "com.pinterest:ktlint:0.37.1-fork"
+    diktat "org.cqfn.diktat:diktat-rules:1.0.1"
 }
 
 task ktlint(type: JavaExec, group: "verification") {
     description = "Check Kotlin code style."
     classpath = configurations.ktlint
     main = "com.pinterest.ktlint.Main"
-    args "src/**/*.kt"
-    // to generate report in checkstyle format prepend following args:
-    // "--reporter=plain", "--reporter=checkstyle,output=${buildDir}/ktlint.xml"
-    // see https://github.com/pinterest/ktlint#usage for more
+    args "src/main/kotlin/**/*.kt"
 }
 check.dependsOn ktlint
 
@@ -200,9 +168,10 @@ task ktlintFormat(type: JavaExec, group: "formatting") {
     description = "Fix Kotlin code style deviations."
     classpath = configurations.ktlint
     main = "com.pinterest.ktlint.Main"
-    args "-F", "src/**/*.kt"
+    args "-F", args "src/main/kotlin/**/*.kt"
 }
 ```
+
 ## Customizations via `rules-config.json`
 
 In KTlint, rules can be configured via `.editorconfig`, but
@@ -224,6 +193,7 @@ For example:
 ```
 
 See default configuration in [rules-config.json](diktat-rules/src/main/resources/rules-config.json)
+Also see [the list of all rules supported by diKTat](info/available-rules.md).
 
 ## How to contribute?
 
