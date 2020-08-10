@@ -8,7 +8,6 @@ import org.cqfn.diktat.ruleset.rules.LineLength
 import org.cqfn.diktat.util.lintMethod
 import org.junit.Test
 
-
 class LineLengthWarnTest {
 
     private val ruleId = "$DIKTAT_RULE_SET_ID:line-length"
@@ -17,6 +16,10 @@ class LineLengthWarnTest {
             RulesConfig(LONG_LINE.name, true,
                     mapOf("lineLength" to "161"))
     )
+
+    private val wrongURL = "dhttps://www.google.com/search?q=djfhvkdfhvkdh+gthtdj%" +
+            "3Bb&rlz=1C1GCEU_enRU909RU909&oq=posible+gthtdj%3Bb&aqs=chrome.." +
+            "69i57j0l3.2680j1j7&sourceid=chrome&ie=UTF-8"
 
     @Test
     fun `check correct example with long URL in KDOC and long import`() {
@@ -55,7 +58,7 @@ class LineLengthWarnTest {
                     |
                     |/**
                     | * https://github.com/pinterest/ktlint/blob/master/ktlint-ruleset-standard/src/main/kotlin/com/pinterest/ktlint/ruleset/standard/MaxLineLengthRule.kt
-                    | * dhttps://www.google.com/search?q=djfhvkdfhvkdh+gthtdj%3Bb&rlz=1C1GCEU_enRU909RU909&oq=posible+gthtdj%3Bb&aqs=chrome..69i57j0l3.2680j1j7&sourceid=chrome&ie=UTF-8
+                    | * $wrongURL
                     | * https://www.google.com/search?q=djfhvkdfhvkdh+gthtdj%3Bb&rlz=1C1GCEU_enRU909RU909&oq=posible+gthtdj%3Bb&aqs=chrome..69i57j0l3.2680j1j7&sourceid=chrome&ie=UTF-8
                     | * @param a
                     |*/
@@ -82,7 +85,7 @@ class LineLengthWarnTest {
                     |import org.cqfn.diktat.util.lintMethod
                     |
                     |/**
-                    | * dhttps://www.google.com/search?q=djfhvkdfhvkdh+gthtdj%3Bb&rlz=1C1GCEU_enRU909RU909&oq=posible+gthtdj%3Bb&aqs=chrome..69i57j0l3.2680j1j7&sourceid=chrome&ie=UTF-8
+                    | * $wrongURL
                     | * https://www.google.com/search?q=djfhvkdfhvkdh+gthtdj%3Bb&rlz=1C1GCEU_enRU909RU909&oq=posible+gthtdj%3Bb&aqs=chrome..69i57j0l3.2680j1j7&sourceid=chrome&ie=UTF-8
                     | * @param a
                     |*/
