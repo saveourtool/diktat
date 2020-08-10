@@ -14,7 +14,7 @@ class LineLengthWarnTest {
 
     private val rulesConfigListLineLength: List<RulesConfig> = listOf(
             RulesConfig(LONG_LINE.name, true,
-                    mapOf("lineLength" to "161"))
+                    mapOf("lineLength" to "163"))
     )
 
     private val wrongURL = "dhttps://www.google.com/search?q=djfhvkdfhvkdh+gthtdj%" +
@@ -71,7 +71,7 @@ class LineLengthWarnTest {
                     |   }
                     |}
                 """.trimMargin(),
-                LintError(8,3,ruleId,"${LONG_LINE.warnText()} max line length 120, but was 161", false)
+                LintError(8,1,ruleId,"${LONG_LINE.warnText()} max line length 120, but was 163", false)
         )
     }
 

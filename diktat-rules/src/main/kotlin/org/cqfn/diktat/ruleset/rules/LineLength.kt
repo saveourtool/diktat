@@ -18,7 +18,7 @@ import java.net.URL
 class LineLength : Rule("line-length") {
 
     companion object {
-        const val MAX_LENGTH = 120L
+        private const val MAX_LENGTH = 120L
     }
 
     private lateinit var configRules: List<RulesConfig>
@@ -50,27 +50,23 @@ class LineLength : Rule("line-length") {
         node.text.lines().forEach {
             if (it.length > configuration.lineLength) {
                 val newNode = node.psi.findElementAt(offset + it.length - 1)!!.node
-                if (newNode.elementType == KDOC_TEXT)
-                    checkKDoc(newNode, configuration)
-                else
+                if (newNode.elementType != KDOC_TEXT || !isKDocValid(newNode)) {
                     LONG_LINE.warnAndFix(configRules, emitWarn, isFixMode,
                             "max line length ${configuration.lineLength}, but was ${it.length}",
                             offset.plus(node.startOffset)) {}
+                }
             }
             offset += it.length + 1
         }
     }
 
     // fixme json method
-    private fun checkKDoc(node: ASTNode, configuration: LineLengthConfiguration) {
-        if (node.text.length > configuration.lineLength) {
-            try {
-                URL(node.text).toURI()
-            } catch (e: IOException) {
-                LONG_LINE.warnAndFix(configRules, emitWarn, isFixMode,
-                        "max line length ${configuration.lineLength}, but was ${node.text.length}",
-                        node.startOffset) {}
-            }
+    private fun isKDocValid(node: ASTNode): Boolean {
+        return try {
+            URL(node.text).toURI()
+            true
+        } catch (e: IOException) {
+            false
         }
     }
 
