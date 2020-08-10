@@ -252,5 +252,10 @@
     "name": "MORE_THAN_ONE_STATEMENT_PER_LINE",
     "enabled": true,
     "configuration": {}
+  },
+  {
+    "name": "TOO_MANY_BLANK_LINES",
+    "enabled": true,
+    "configuration": {}
   }
 ]
