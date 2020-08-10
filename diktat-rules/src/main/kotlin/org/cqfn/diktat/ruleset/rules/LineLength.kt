@@ -4,13 +4,13 @@ import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
+import com.pinterest.ktlint.core.ast.ElementType.KDOC_MARKDOWN_INLINE_LINK
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_TEXT
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.LONG_LINE
-import org.cqfn.diktat.ruleset.utils.prettyPrint
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import java.io.IOException
 import java.net.URL
@@ -51,7 +51,7 @@ class LineLength : Rule("line-length") {
         node.text.lines().forEach {
             if (it.length > configuration.lineLength) {
                 val newNode = node.psi.findElementAt(offset + it.trim().length - 1)!!.node
-                if (newNode.elementType != KDOC_TEXT || !isKDocValid(newNode)) {
+                if ((newNode.elementType != KDOC_TEXT && newNode.elementType != KDOC_MARKDOWN_INLINE_LINK) || !isKDocValid(newNode)) {
                     LONG_LINE.warnAndFix(configRules, emitWarn, isFixMode,
                             "max line length ${configuration.lineLength}, but was ${it.length}",
                             offset.plus(node.startOffset)) {}
@@ -64,7 +64,10 @@ class LineLength : Rule("line-length") {
     // fixme json method
     private fun isKDocValid(node: ASTNode): Boolean {
         return try {
-            URL(node.text.split("\\s".toRegex()).last { it != "" }).toURI()
+            if (node.elementType == KDOC_TEXT)
+                URL(node.text.split("\\s".toRegex()).last { it.isNotEmpty() }).toURI()
+            else
+                URL(node.text.substring(node.text.indexOfFirst { it == ']' } + 2, node.textLength - 1)).toURI()
             true
         } catch (e: IOException) {
             false
