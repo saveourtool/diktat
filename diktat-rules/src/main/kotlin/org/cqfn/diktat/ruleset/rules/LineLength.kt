@@ -54,7 +54,7 @@ class LineLength : Rule("line-length") {
                 if ((newNode.elementType != KDOC_TEXT && newNode.elementType != KDOC_MARKDOWN_INLINE_LINK) || !isKDocValid(newNode)) {
                     LONG_LINE.warnAndFix(configRules, emitWarn, isFixMode,
                             "max line length ${configuration.lineLength}, but was ${it.length}",
-                            offset.plus(node.startOffset)) {}
+                            offset + node.startOffset) {}
                 }
             }
             offset += it.length + 1
