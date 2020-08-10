@@ -21,6 +21,10 @@ class LineLengthWarnTest {
             "3Bb&rlz=1C1GCEU_enRU909RU909&oq=posible+gthtdj%3Bb&aqs=chrome.." +
             "69i57j0l3.2680j1j7&sourceid=chrome&ie=UTF-8"
 
+    private val correctURL = "https://www.google.com/search?q=djfhvkdfhvkdh+gthtdj%" +
+            "3Bb&rlz=1C1GCEU_enRU909RU909&oq=posible+gthtdj%3Bb&aqs=chrome.." +
+            "69i57j0l3.2680j1j7&sourceid=chrome&ie=UTF-8"
+
     @Test
     fun `check correct example with long URL in KDOC and long import`() {
         lintMethod(LineLength(),
@@ -144,7 +148,7 @@ class LineLengthWarnTest {
                     |/**
                     | * This is very important URL https://www.google.com/search?q=djfhvkdfhvkdh+gthtdj%3Bb&rlz=1C1GCEU_enRU909RU909&oq=posible+gthtdj%3Bb&aqs=chrome..69i57j0l3.2680j1j7&sourceid=chrome&ie=UTF-8    
                     | * https://www.google.com/search?q=djfhvkdfhvkdh+gthtdj%3Bb&rlz=1C1GCEU_enRU909RU909&oq=posible+gthtdj%3Bb&aqs=chrome..69i57j0l3.2680j1j7&sourceid=chrome&ie=UTF-8
-                    | * https://www.google.com/search?q=djfhvkdfhvkdh+gthtdj%3Bb&rlz=1C1GCEU_enRU909RU909&oq=posible+gthtdj%3Bb&aqs=chrome..69i57j0l3.2680j1j7&sourceid=chrome&ie=UTF-8 this text can be on another line
+                    | * $correctURL this text can be on another line
                     | * @param a
                     |*/
                     |
