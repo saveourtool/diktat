@@ -12,7 +12,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.LONG_LINE
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import java.io.IOException
+import java.net.MalformedURLException
 import java.net.URL
 
 @Suppress("ForbiddenComment")
@@ -65,11 +65,11 @@ class LineLength : Rule("line-length") {
     private fun isKDocValid(node: ASTNode): Boolean {
         return try {
             if (node.elementType == KDOC_TEXT)
-                URL(node.text.split("\\s".toRegex()).last { it.isNotEmpty() }).toURI()
+                URL(node.text.split("\\s".toRegex()).last { it.isNotEmpty() })
             else
-                URL(node.text.substring(node.text.indexOfFirst { it == ']' } + 2, node.textLength - 1)).toURI()
+                URL(node.text.substring(node.text.indexOfFirst { it == ']' } + 2, node.textLength - 1))
             true
-        } catch (e: IOException) {
+        } catch (e: MalformedURLException) {
             false
         }
     }
