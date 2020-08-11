@@ -13,10 +13,9 @@ import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_HAS_PREFIX
 import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_NAME_INCORRECT
 import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_NAME_INCORRECT_FORMAT
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
-import com.pinterest.ktlint.core.ast.ElementType
-import org.junit.jupiter.api.Test
 import org.cqfn.diktat.ruleset.rules.IdentifierNaming
 import org.cqfn.diktat.util.lintMethod
+import org.junit.jupiter.api.Test
 
 class IdentifierNamingWarnTest {
 
