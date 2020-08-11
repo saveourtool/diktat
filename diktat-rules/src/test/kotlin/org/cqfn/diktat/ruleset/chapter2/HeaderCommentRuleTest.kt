@@ -93,7 +93,7 @@ class HeaderCommentRuleTest {
 
                 class Example2 { }
             """.trimIndent(),
-                LintError(1, 1, ruleId, "${HEADER_MISSING_OR_WRONG_COPYRIGHT.warnText()} $TEST_FILE_NAME", false),
+                LintError(1, 1, ruleId, "${HEADER_MISSING_OR_WRONG_COPYRIGHT.warnText()} $TEST_FILE_NAME", true),
                 rulesConfigList = rulesConfigList
         )
     }
@@ -116,7 +116,7 @@ class HeaderCommentRuleTest {
 
                 class Example2 { }
             """.trimIndent(),
-                LintError(1, 1, ruleId, "${HEADER_MISSING_OR_WRONG_COPYRIGHT.warnText()} $TEST_FILE_NAME", false),
+                LintError(1, 1, ruleId, "${HEADER_MISSING_OR_WRONG_COPYRIGHT.warnText()} $TEST_FILE_NAME", true),
                 rulesConfigList = rulesConfigListCn
         )
     }
@@ -137,7 +137,7 @@ class HeaderCommentRuleTest {
 
                 class Example2 { }
             """.trimIndent(),
-                LintError(1, 1, ruleId, "${HEADER_MISSING_OR_WRONG_COPYRIGHT.warnText()} $TEST_FILE_NAME", false),
+                LintError(1, 1, ruleId, "${HEADER_MISSING_OR_WRONG_COPYRIGHT.warnText()} $TEST_FILE_NAME", true),
                 rulesConfigList = rulesConfigList
         )
     }
