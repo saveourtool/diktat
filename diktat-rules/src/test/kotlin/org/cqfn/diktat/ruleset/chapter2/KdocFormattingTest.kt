@@ -14,7 +14,7 @@ import org.cqfn.diktat.util.lintMethod
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_EMPTY_KDOC
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.util.TEST_FILE_NAME
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class KdocFormattingTest {
 
@@ -33,7 +33,7 @@ class KdocFormattingTest {
                     const val SUPER_CONSTANT = 46
 
                     /**
-                     * Kdoc docummentation
+                     * Kdoc documentation
                      */
 
                     class SomeName {
@@ -60,11 +60,11 @@ class KdocFormattingTest {
                 """.trimIndent()
 
         lintMethod(KdocFormatting(), code,
-                LintError(5, 4, ruleId, "${BLANK_LINE_AFTER_KDOC.warnText()} SUPER_CONSTANT"),
-                LintError(11, 4, ruleId, "${BLANK_LINE_AFTER_KDOC.warnText()} SomeName"),
-                LintError(16, 8, ruleId, "${BLANK_LINE_AFTER_KDOC.warnText()} variable"),
-                LintError(22, 8, ruleId, "${BLANK_LINE_AFTER_KDOC.warnText()} somePublicFunction"),
-                LintError(31, 4, ruleId, "${BLANK_LINE_AFTER_KDOC.warnText()} someFunction")
+                LintError(5, 4, ruleId, "${BLANK_LINE_AFTER_KDOC.warnText()} SUPER_CONSTANT", true),
+                LintError(11, 4, ruleId, "${BLANK_LINE_AFTER_KDOC.warnText()} SomeName", true),
+                LintError(16, 8, ruleId, "${BLANK_LINE_AFTER_KDOC.warnText()} variable", true),
+                LintError(22, 8, ruleId, "${BLANK_LINE_AFTER_KDOC.warnText()} somePublicFunction", true),
+                LintError(31, 4, ruleId, "${BLANK_LINE_AFTER_KDOC.warnText()} someFunction", true)
         )
     }
 
@@ -132,8 +132,9 @@ class KdocFormattingTest {
             fun bar() = Unit
         """.trimIndent()
 
-        lintMethod(KdocFormatting(), invalidCode, LintError(2, 4, ruleId,
-                "${KDOC_NO_DEPRECATED_TAG.warnText()} @deprecated use foo instead"))
+        lintMethod(KdocFormatting(), invalidCode,
+                LintError(2, 4, ruleId, "${KDOC_NO_DEPRECATED_TAG.warnText()} @deprecated use foo instead", true)
+        )
     }
 
     @Test

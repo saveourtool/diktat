@@ -2,8 +2,7 @@ package org.cqfn.diktat.ruleset.chapter3.files
 
 import org.cqfn.diktat.ruleset.rules.files.NewlinesRule
 import org.cqfn.diktat.util.FixTestBase
-import org.junit.Ignore
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class NewlinesRuleFixTest : FixTestBase("test/paragraph3/newlines", NewlinesRule()) {
     @Test
