@@ -9,27 +9,23 @@ import org.junit.jupiter.api.Test
 class FunctionASTNodeUtilsTest {
     @Test
     fun `should detect parameters in function - no parameters`() {
-        var counter = 0
-        applyToCode("fun foo() { }") {
-            if (it.elementType == FUN) {
-                Assert.assertFalse(it.hasParameters())
-                Assertions.assertThat(it.parameterNames()).isEmpty()
-                counter++
+        applyToCode("fun foo() { }", 1) { node, counter ->
+            if (node.elementType == FUN) {
+                Assert.assertFalse(node.hasParameters())
+                Assertions.assertThat(node.parameterNames()).isEmpty()
+                counter.incrementAndGet()
             }
         }
-        Assert.assertEquals(1, counter)
     }
 
     @Test
     fun `should detect parameters in function`() {
-        var counter = 0
-        applyToCode("fun foo(a: Int) { }") {
-            if (it.elementType == FUN) {
-                Assert.assertTrue(it.hasParameters())
-                Assert.assertEquals(listOf("a"), it.parameterNames())
-                counter++
+        applyToCode("fun foo(a: Int) { }", 1) { node, counter ->
+            if (node.elementType == FUN) {
+                Assert.assertTrue(node.hasParameters())
+                Assert.assertEquals(listOf("a"), node.parameterNames())
+                counter.incrementAndGet()
             }
         }
-        Assert.assertEquals(1, counter)
     }
 }
