@@ -71,6 +71,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     LONG_LINE(true, "This line is longer than allowed"),
     REDUNDANT_SEMICOLON(true, "there should be no redundant semicolon at the end of lines"),
     WRONG_NEWLINES(true, "incorrect line breaking"),
+    WRONG_WHITESPACE(true, "incorrect usage of whitespaces for code separation"),
     ;
 
     override fun ruleName(): String = this.name
