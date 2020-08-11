@@ -6,6 +6,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_NEWLINES
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.files.NewlinesRule
 import org.cqfn.diktat.util.lintMethod
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 class NewlinesRuleWarnTest {
@@ -174,6 +175,45 @@ class NewlinesRuleWarnTest {
                     |    if (list.size > n) list.filterNotNull().map { it.baz() } else list.let { it.bar() }.firstOrNull()?.qux()
                     |}
                 """.trimMargin()
+        )
+    }
+
+    @Test
+    fun `long argument list should be split into several lines - positive example`() {
+        lintMethod(NewlinesRule(),
+                """
+                    |class SmallExample(val a: Int)
+                    |
+                    |class Example(val a: Int,
+                    |              val b: Int) {
+                    |    fun foo(a: Int) { }
+                    |    
+                    |    fun bar(
+                    |            a: Int,
+                    |            b: Int
+                    |    ) { }
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Disabled("Will be implemented later")
+    fun `long argument list should be split into several lines`() {
+        lintMethod(NewlinesRule(),
+                """
+                    |class SmallExample(val a: Int)
+                    |
+                    |class Example(val a: Int, val b: Int) {
+                    |    fun foo(a: Int) { }
+                    |    
+                    |    fun bar(
+                    |            a: Int, b: Int
+                    |    ) { }
+                    |}
+                """.trimMargin(),
+                LintError(3, 14, ruleId, "${WRONG_NEWLINES.warnText()} argument list should be split into several lines", true),
+                LintError(7, 12, ruleId, "${WRONG_NEWLINES.warnText()} argument list should be split into several lines", true)
         )
     }
 }
