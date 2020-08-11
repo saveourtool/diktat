@@ -19,4 +19,14 @@ class NewlinesRuleFixTest : FixTestBase("test/paragraph3/newlines", NewlinesRule
     fun `should fix newlines to follow functional style`() {
         fixAndCompare("FunctionalStyleExpected.kt", "FunctionalStyleTest.kt")
     }
+
+    @Test
+    fun `should fix empty space between identifier and opening parentheses`() {
+        fixAndCompare("LParExpected.kt", "LParTest.kt")
+    }
+
+    @Test
+    fun `should fix wrong newlines around comma`() {
+        fixAndCompare("CommaExpected.kt", "CommaTest.kt")
+    }
 }
