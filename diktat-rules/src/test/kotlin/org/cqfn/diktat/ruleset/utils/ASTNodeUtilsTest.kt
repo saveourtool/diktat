@@ -701,20 +701,18 @@ class ASTNodeUtilsTest {
     }
 
     @Test
-    fun `text line of text extraction`() {
-        var counter = 0
+    fun `test line of text extraction`() {
         applyToCode("""
             class Example {
                 fun
                     foo() { }
             }
-        """.trimIndent()) { node ->
+        """.trimIndent(), 1) { node, counter ->
             if (node.elementType == IDENTIFIER && node.text == "foo") {
                 Assert.assertEquals("foo() { }", node.extractLineOfText())
-                counter ++
+                counter.incrementAndGet()
             }
         }
-        Assert.assertEquals(1, counter)
     }
 }
 
