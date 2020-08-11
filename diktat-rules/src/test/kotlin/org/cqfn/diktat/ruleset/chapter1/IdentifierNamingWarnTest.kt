@@ -2,7 +2,7 @@ package org.cqfn.diktat.ruleset.chapter1
 
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.ast.ElementType
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.cqfn.diktat.ruleset.rules.IdentifierNaming
 import org.cqfn.diktat.ruleset.constants.Warnings.*
 import org.cqfn.diktat.util.lintMethod

@@ -11,7 +11,7 @@ import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule
 import org.cqfn.diktat.util.TEST_FILE_NAME
 import org.cqfn.diktat.util.lintMethod
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class HeaderCommentRuleTest {
 
