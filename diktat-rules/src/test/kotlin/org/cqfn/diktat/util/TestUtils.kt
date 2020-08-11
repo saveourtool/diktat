@@ -9,6 +9,7 @@ import org.assertj.core.api.SoftAssertions
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.cqfn.diktat.ruleset.utils.log
+import java.util.concurrent.atomic.AtomicInteger
 
 const val TEST_FILE_NAME = "/TestFileName.kt"
 
@@ -55,7 +56,15 @@ internal fun Rule.format(text: String, fileName: String,
     )
 }
 
-internal fun applyToCode(code: String, applyToNode: (node: ASTNode) -> Unit) {
+/**
+ * This utility function lets you run arbitrary code on every node of given [code].
+ * It also provides you with counter which can be incremented inside [applyToNode] and then will be compared to [expectedAsserts].
+ * This allows you to keep track of how many assertions have actually been run on your code during tests.
+ */
+internal fun applyToCode(code: String,
+                         expectedAsserts: Int,
+                         applyToNode: (node: ASTNode, counter: AtomicInteger) -> Unit) {
+    val counter = AtomicInteger(0)
     KtLint.lint(
             KtLint.Params(
                     text = code,
@@ -65,11 +74,12 @@ internal fun applyToCode(code: String, applyToNode: (node: ASTNode) -> Unit) {
                                                    autoCorrect: Boolean,
                                                    params: KtLint.Params,
                                                    emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
-                                    applyToNode(node)
+                                    applyToNode(node, counter)
                                 }
                             })
                     ),
                     cb = { _, _ -> Unit }
             )
     )
+    Assertions.assertThat(counter.get()).`as`("Number of expected asserts").isEqualTo(expectedAsserts)
 }
