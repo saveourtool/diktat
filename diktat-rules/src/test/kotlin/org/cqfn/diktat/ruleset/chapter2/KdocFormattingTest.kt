@@ -14,7 +14,7 @@ import org.cqfn.diktat.util.lintMethod
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_EMPTY_KDOC
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.util.TEST_FILE_NAME
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class KdocFormattingTest {
 

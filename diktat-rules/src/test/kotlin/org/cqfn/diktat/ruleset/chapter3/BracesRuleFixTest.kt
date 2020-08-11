@@ -2,7 +2,7 @@ package org.cqfn.diktat.ruleset.chapter3
 
 import org.cqfn.diktat.ruleset.rules.BracesInConditionalsAndLoopsRule
 import org.cqfn.diktat.util.FixTestBase
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class BracesRuleFixTest : FixTestBase("test/paragraph3/braces", BracesInConditionalsAndLoopsRule()) {
     @Test
