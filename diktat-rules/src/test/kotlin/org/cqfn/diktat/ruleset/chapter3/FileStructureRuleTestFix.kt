@@ -2,8 +2,8 @@ package org.cqfn.diktat.ruleset.chapter3
 
 import org.cqfn.diktat.ruleset.rules.files.FileStructureRule
 import org.cqfn.diktat.util.FixTestBase
-import org.junit.Ignore
-import org.junit.Test
+import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Test
 
 class FileStructureRuleTestFix : FixTestBase("test/paragraph3/file_structure", FileStructureRule()) {
     @Test
@@ -32,6 +32,6 @@ class FileStructureRuleTestFix : FixTestBase("test/paragraph3/file_structure", F
     }
 
     @Test
-    @Ignore("not yet implemented")
+    @Disabled("not yet implemented")
     fun `should reorder imports according to recommendation 3_1`() = Unit
 }

@@ -254,6 +254,13 @@
     "configuration": {}
   },
   {
+    "name": "LONG_LINE",
+    "enabled": true,
+    "configuration": {
+      "lineLength": "120"
+    }
+  },
+  {
     "name": "TOO_MANY_BLANK_LINES",
     "enabled": true,
     "configuration": {}

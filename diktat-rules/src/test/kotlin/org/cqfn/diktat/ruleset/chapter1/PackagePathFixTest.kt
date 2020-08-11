@@ -4,7 +4,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.PackageNaming
 import org.cqfn.diktat.util.FixTestBase
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class PackagePathFixTest : FixTestBase(
     "test/paragraph1/naming/package/src/main/kotlin",

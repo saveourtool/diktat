@@ -11,7 +11,7 @@ import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule
 import org.cqfn.diktat.util.TEST_FILE_NAME
 import org.cqfn.diktat.util.lintMethod
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class HeaderCommentRuleTest {
 
@@ -93,7 +93,7 @@ class HeaderCommentRuleTest {
 
                 class Example2 { }
             """.trimIndent(),
-                LintError(1, 1, ruleId, "${HEADER_MISSING_OR_WRONG_COPYRIGHT.warnText()} $TEST_FILE_NAME", false),
+                LintError(1, 1, ruleId, "${HEADER_MISSING_OR_WRONG_COPYRIGHT.warnText()} $TEST_FILE_NAME", true),
                 rulesConfigList = rulesConfigList
         )
     }
@@ -116,7 +116,7 @@ class HeaderCommentRuleTest {
 
                 class Example2 { }
             """.trimIndent(),
-                LintError(1, 1, ruleId, "${HEADER_MISSING_OR_WRONG_COPYRIGHT.warnText()} $TEST_FILE_NAME", false),
+                LintError(1, 1, ruleId, "${HEADER_MISSING_OR_WRONG_COPYRIGHT.warnText()} $TEST_FILE_NAME", true),
                 rulesConfigList = rulesConfigListCn
         )
     }
@@ -137,7 +137,7 @@ class HeaderCommentRuleTest {
 
                 class Example2 { }
             """.trimIndent(),
-                LintError(1, 1, ruleId, "${HEADER_MISSING_OR_WRONG_COPYRIGHT.warnText()} $TEST_FILE_NAME", false),
+                LintError(1, 1, ruleId, "${HEADER_MISSING_OR_WRONG_COPYRIGHT.warnText()} $TEST_FILE_NAME", true),
                 rulesConfigList = rulesConfigList
         )
     }

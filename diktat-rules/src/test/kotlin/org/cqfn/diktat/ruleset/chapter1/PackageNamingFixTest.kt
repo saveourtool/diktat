@@ -4,7 +4,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_MISSING
 import org.cqfn.diktat.ruleset.rules.PackageNaming
 import org.cqfn.diktat.util.FixTestBase
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class PackageNamingFixTest : FixTestBase(
     "test/paragraph1/naming/package",
