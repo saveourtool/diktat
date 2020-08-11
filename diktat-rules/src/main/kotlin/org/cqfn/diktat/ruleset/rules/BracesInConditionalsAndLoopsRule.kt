@@ -22,6 +22,7 @@ import com.pinterest.ktlint.core.ast.nextSibling
 import com.pinterest.ktlint.core.ast.prevSibling
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.NO_BRACES_IN_CONDITIONALS_AND_LOOPS
+import org.cqfn.diktat.ruleset.utils.isSingleLineIfElse
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -69,7 +70,7 @@ class BracesInConditionalsAndLoopsRule : Rule("braces-rule") {
         val elseNode = ifPsi.`else`?.node
         val indent = node.prevSibling { it.elementType == WHITE_SPACE }?.text?.lines()?.last()?.count { it == ' ' } ?: 0
 
-        if (isSingleLineIfElse(node, elseNode)) return
+        if (node.isSingleLineIfElse()) return
 
         if (thenNode?.elementType != BLOCK) {
             NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnAndFix(configRules, emitWarn, isFixMode, "IF",
@@ -97,11 +98,6 @@ class BracesInConditionalsAndLoopsRule : Rule("braces-rule") {
                 }
             }
         }
-    }
-
-    private fun isSingleLineIfElse(node: ASTNode, elseNode: ASTNode?): Boolean {
-        val hasSingleElse = elseNode != null && elseNode.elementType != IF
-        return node.treeParent.elementType != ELSE && hasSingleElse && node.text.lines().size == 1
     }
 
     private fun checkLoop(node: ASTNode) {
