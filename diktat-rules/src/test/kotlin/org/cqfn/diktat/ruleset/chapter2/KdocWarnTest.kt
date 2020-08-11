@@ -13,7 +13,7 @@ class KdocWarnTest {
     @Test
     fun `all public classes should be documented with KDoc`() {
         val code =
-            """
+                """
                     class SomeGoodName {
                         private class InternalClass {
                         }
@@ -40,7 +40,7 @@ class KdocWarnTest {
     @Test
     fun `all internal classes should be documented with KDoc`() {
         val code =
-            """
+                """
                     internal class SomeGoodName {
                     }
                 """.trimIndent()
@@ -52,7 +52,7 @@ class KdocWarnTest {
     @Test
     fun `all internal and public functions on top-level should be documented with Kdoc`() {
         val code =
-            """
+                """
                     fun someGoodName() {
                     }
 
@@ -69,7 +69,7 @@ class KdocWarnTest {
     @Test
     fun `all internal and public functions on top-level should be documented with Kdoc (positive case)`() {
         val code =
-            """
+                """
                     private fun someGoodName() {
                     }
                 """.trimIndent()
@@ -79,7 +79,7 @@ class KdocWarnTest {
     @Test
     fun `positive Kdoc case with private class`() {
         val code =
-            """
+                """
                     private class SomeGoodName {
                     }
                 """.trimIndent()
@@ -89,7 +89,7 @@ class KdocWarnTest {
     @Test
     fun `Kdoc should present for each class element`() {
         val code =
-            """
+                """
                     /**
                     * class that contains fields, functions and public subclasses
                     **/
@@ -119,7 +119,7 @@ class KdocWarnTest {
     @Test
     fun `Kdoc should present for each class element (positive)`() {
         val code =
-            """
+                """
                     /**
                     * class that contains fields, functions and public subclasses
                     **/
@@ -151,5 +151,19 @@ class KdocWarnTest {
                     }
                 """.trimIndent()
         lintMethod(KdocComments(), code)
+    }
+
+    @Test
+    fun `regression - should not force documentation on standard methods`() {
+        lintMethod(KdocComments(),
+                """
+                    |/**
+                    | * This is an example class
+                    | */
+                    |class Example {
+                    |    override fun toString() = ""
+                    |}
+                """.trimMargin()
+        )
     }
 }
