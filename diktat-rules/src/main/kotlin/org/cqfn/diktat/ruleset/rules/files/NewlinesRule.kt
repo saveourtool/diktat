@@ -5,16 +5,21 @@ import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.ANDAND
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CALLABLE_REFERENCE_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.COLONCOLON
+import com.pinterest.ktlint.core.ast.ElementType.COMMA
 import com.pinterest.ktlint.core.ast.ElementType.DIV
 import com.pinterest.ktlint.core.ast.ElementType.DIVEQ
 import com.pinterest.ktlint.core.ast.ElementType.DOT
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.ELVIS
 import com.pinterest.ktlint.core.ast.ElementType.ENUM_ENTRY
+import com.pinterest.ktlint.core.ast.ElementType.EQ
+import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.IF
 import com.pinterest.ktlint.core.ast.ElementType.IMPORT_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_ARGUMENT
+import com.pinterest.ktlint.core.ast.ElementType.LPAR
 import com.pinterest.ktlint.core.ast.ElementType.MINUS
 import com.pinterest.ktlint.core.ast.ElementType.MINUSEQ
 import com.pinterest.ktlint.core.ast.ElementType.MUL
@@ -24,9 +29,13 @@ import com.pinterest.ktlint.core.ast.ElementType.OROR
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.PLUS
 import com.pinterest.ktlint.core.ast.ElementType.PLUSEQ
+import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS
 import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.SECONDARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.SEMICOLON
+import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
+import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevCodeSibling
@@ -51,13 +60,15 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  * 2. Checks that some operators are followed by newline, while others are prepended by it
  * 3. Statements that follow `!!` behave in the same way
  * 4. Forces functional style of chained dot call expressions with exception
+ * 5. Checks that newline is placed after assignment operator, not before
+ * 6. Ensures that function or constructor name isn't separated from `(` by space or newline
  */
 @Suppress("ForbiddenComment")
 class NewlinesRule : Rule("newlines") {
     companion object {
         // fixme: these token sets can be not full, need to add new once as corresponding cases are discovered.
         // error is raised if these operators are prepended by newline
-        private val lineBreakAfterOperators = TokenSet.create(ANDAND, OROR, PLUS, PLUSEQ, MINUS, MINUSEQ, MUL, MULTEQ, DIV, DIVEQ)
+        private val lineBreakAfterOperators = TokenSet.create(ANDAND, OROR, PLUS, PLUSEQ, MINUS, MINUSEQ, MUL, MULTEQ, DIV, DIVEQ, EQ)
 
         // error is raised if these operators are followed by newline
         private val lineBreakBeforeOperators = TokenSet.create(DOT, SAFE_ACCESS, ELVIS, COLONCOLON)
@@ -78,12 +89,12 @@ class NewlinesRule : Rule("newlines") {
         isFixMode = autoCorrect
         emitWarn = emit
 
-        if (node.elementType == SEMICOLON) {
-            handleSemicolon(node)
-        } else if (node.elementType in lineBreakAfterOperators) {
-            handleOperatorWithLineBreakAfter(node)
-        } else if (node.elementType in lineBreakBeforeOperators && !node.isDotFromPackageOrImport()) {
-            handleOperatorWithLineBreakBefore(node)
+        when (node.elementType) {
+            SEMICOLON -> handleSemicolon(node)
+            in lineBreakAfterOperators -> handleOperatorWithLineBreakAfter(node)
+            in lineBreakBeforeOperators -> handleOperatorWithLineBreakBefore(node)
+            LPAR -> handleOpeningParentheses(node)
+            COMMA -> handleComma(node)
         }
     }
 
@@ -112,6 +123,9 @@ class NewlinesRule : Rule("newlines") {
     }
 
     private fun handleOperatorWithLineBreakBefore(node: ASTNode) {
+        if (node.isDotFromPackageOrImport()) {
+            return
+        }
         val isIncorrect = node.run {
             if (isCallsChain()) {
                 val isSingleLineIfElse = parent({ it.elementType == IF }, true)?.isSingleLineIfElse() ?: false
@@ -141,6 +155,37 @@ class NewlinesRule : Rule("newlines") {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private fun handleOpeningParentheses(node: ASTNode) {
+        val parent = node.treeParent
+        if (parent.elementType in listOf(VALUE_ARGUMENT_LIST, VALUE_PARAMETER_LIST)) {
+            val prevWhiteSpace = node
+                    .parent({ it.treePrev != null }, strict = false)
+                    ?.treePrev
+                    ?.takeIf { it.elementType == WHITE_SPACE }
+            val isNotAnonymous = parent.treeParent.elementType in listOf(CALL_EXPRESSION, PRIMARY_CONSTRUCTOR, SECONDARY_CONSTRUCTOR, FUN)
+            if (prevWhiteSpace != null && isNotAnonymous) {
+                WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
+                        "opening parentheses should not be separated from constructor or function name", node.startOffset) {
+                    prevWhiteSpace.treeParent.removeChild(prevWhiteSpace)
+                }
+            }
+        }
+    }
+
+    private fun handleComma(node: ASTNode) {
+        val prevNewLine = node
+                .parent({ it.treePrev != null }, strict = false)
+                ?.treePrev
+                ?.takeIf {
+                    it.elementType == WHITE_SPACE && it.text.contains("\n")
+                }
+        if (prevNewLine != null) {
+            WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, "newline should be placed only after comma", node.startOffset) {
+                prevNewLine.treeParent.removeChild(prevNewLine)
             }
         }
     }
