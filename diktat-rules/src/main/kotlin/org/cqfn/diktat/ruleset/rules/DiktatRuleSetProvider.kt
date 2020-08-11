@@ -40,6 +40,7 @@ class DiktatRuleSetProvider(private val jsonRulesConfig: String = "rules-config.
             BracesInConditionalsAndLoopsRule(),
             BlockStructureBraces(),
             EmptyBlock(),
+            LineLength(),
             FileStructureRule(),  // this rule should be right before indentation because it should operate on already valid code
             IndentationRule()  // indentation rule should be the last because it fixes formatting after all the changes done by previous rules
         )
