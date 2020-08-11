@@ -2,7 +2,7 @@ package org.cqfn.diktat.ruleset.chapter3
 
 import org.cqfn.diktat.ruleset.rules.BlockStructureBraces
 import org.cqfn.diktat.util.FixTestBase
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class BlockStructureBracesFixTest : FixTestBase ("test/paragraph3/block_brace", BlockStructureBraces()){
 
