@@ -6,7 +6,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.files.FileSize
 import org.cqfn.diktat.util.lintMethod
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.io.File
 
 class FileSizeWarnTest {

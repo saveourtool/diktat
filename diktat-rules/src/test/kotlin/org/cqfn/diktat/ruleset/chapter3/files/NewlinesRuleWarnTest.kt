@@ -6,7 +6,8 @@ import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_NEWLINES
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.files.NewlinesRule
 import org.cqfn.diktat.util.lintMethod
-import org.junit.Test
+import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Test
 
 class NewlinesRuleWarnTest {
     private val ruleId = "$DIKTAT_RULE_SET_ID:newlines"
@@ -198,6 +199,22 @@ class NewlinesRuleWarnTest {
     }
 
     @Test
+    fun `newline should be placed only after comma`() {
+        lintMethod(NewlinesRule(),
+                """
+                    |fun foo(a: Int
+                    |        ,
+                    |        b: Int) {
+                    |    bar(a
+                    |        , b)
+                    |}
+                """.trimMargin(),
+                LintError(2, 9, ruleId, commaWarn, true),
+                LintError(5, 9, ruleId, commaWarn, true)
+        )
+    }
+
+    @Test
     fun `function name should not be separated from ( - positive example`() {
         lintMethod(NewlinesRule(),
                 """
@@ -257,22 +274,6 @@ class NewlinesRuleWarnTest {
                     |    bar(a, b)
                     |}
                 """.trimMargin()
-        )
-    }
-
-    @Test
-    fun `newline should be placed only after comma`() {
-        lintMethod(NewlinesRule(),
-                """
-                    |fun foo(a: Int
-                    |        ,
-                    |        b: Int) {
-                    |    bar(a
-                    |        , b)
-                    |}
-                """.trimMargin(),
-                LintError(2, 9, ruleId, commaWarn, true),
-                LintError(5, 9, ruleId, commaWarn, true)
         )
     }
 
@@ -354,6 +355,45 @@ class NewlinesRuleWarnTest {
                     |
                     |fun quux2(): Unit { return }
                 """.trimMargin()
+        )
+    }
+
+    @Test
+    fun `long argument list should be split into several lines - positive example`() {
+        lintMethod(NewlinesRule(),
+                """
+                    |class SmallExample(val a: Int)
+                    |
+                    |class Example(val a: Int,
+                    |              val b: Int) {
+                    |    fun foo(a: Int) { }
+                    |    
+                    |    fun bar(
+                    |            a: Int,
+                    |            b: Int
+                    |    ) { }
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Disabled("Will be implemented later")
+    fun `long argument list should be split into several lines`() {
+        lintMethod(NewlinesRule(),
+                """
+                    |class SmallExample(val a: Int)
+                    |
+                    |class Example(val a: Int, val b: Int) {
+                    |    fun foo(a: Int) { }
+                    |    
+                    |    fun bar(
+                    |            a: Int, b: Int
+                    |    ) { }
+                    |}
+                """.trimMargin(),
+                LintError(3, 14, ruleId, "${WRONG_NEWLINES.warnText()} argument list should be split into several lines", true),
+                LintError(7, 12, ruleId, "${WRONG_NEWLINES.warnText()} argument list should be split into several lines", true)
         )
     }
 
