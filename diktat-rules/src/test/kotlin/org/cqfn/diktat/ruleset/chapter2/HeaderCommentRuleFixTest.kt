@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_WRONG_FORMAT
 import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule
 import org.cqfn.diktat.util.FixTestBase
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class HeaderCommentRuleFixTest : FixTestBase(
         "test/paragraph2/header",

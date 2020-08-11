@@ -252,5 +252,12 @@
     "name": "MORE_THAN_ONE_STATEMENT_PER_LINE",
     "enabled": true,
     "configuration": {}
+  },
+  {
+    "name": "LONG_LINE",
+    "enabled": true,
+    "configuration": {
+      "lineLength": "120"
+    }
   }
 ]

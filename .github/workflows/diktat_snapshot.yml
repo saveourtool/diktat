@@ -1,0 +1,44 @@
+name: Run diKTat from snapshot
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  diktat_snapshot_check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.11
+      - name: Cache local Maven repository (shared with regular CI build)
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-build-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-build
+      - name: Set version
+        # set project version which will then be used to run diktat from local maven repo
+        # base version is stored in env variable for later usage
+        run: |
+          snapshot_version=$(printf 'VERSION=${project.version}\n0\n' | mvn help:evaluate | grep '^VERSION' | cut -d= -f2)
+          base_version=${snapshot_version%-SNAPSHOT}
+          echo ::set-env name=BASE_VERSION::$base_version
+          mvn versions:set -DnewVersion=$base_version-pre
+      - name: Build and install
+        # install diktat with version 'base_version-pre' to local maven repo
+        run: mvn clean install
+      - name: Revert project version and set proper version for antrun
+        # revert project version to avoid cycle dependency
+        # set diktat version in antrun dependencies to the version which was built in the previous step
+        run: |
+          mvn versions:set -DnewVersion=${{ env.BASE_VERSION }}-SNAPSHOT
+          mvn versions:set-property -Dproperty=diktat-check.version -DnewVersion=${{ env.BASE_VERSION }}-pre
+      - name: Run diktat snapshot via ktlint
+        run: mvn antrun:run@diktat

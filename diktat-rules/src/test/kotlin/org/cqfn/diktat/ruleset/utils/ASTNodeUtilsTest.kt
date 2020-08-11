@@ -25,7 +25,7 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.utils.addToStdlib.ifNotEmpty
 import org.junit.Assert
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 @Suppress("LargeClass")
 class ASTNodeUtilsTest {
