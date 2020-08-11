@@ -1,4 +1,4 @@
-name: Run diKTat
+name: Run diKTat from release version
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  diktat_check:
     runs-on: ubuntu-latest
 
     steps:
