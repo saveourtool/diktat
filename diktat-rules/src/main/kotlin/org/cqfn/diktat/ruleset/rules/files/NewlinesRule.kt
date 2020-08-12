@@ -109,7 +109,8 @@ class NewlinesRule : Rule("newlines") {
     }
 
     private fun handleOperatorWithLineBreakAfter(node: ASTNode) {
-        if (!(node.elementType == EQ || node.firstChildNode?.elementType in lineBreakAfterOperators || node.isInfixCall())) {
+        // [node] should be either EQ or OPERATION_REFERENCE which has single child
+        if (!(node.elementType == EQ || node.firstChildNode.elementType in lineBreakAfterOperators || node.isInfixCall())) {
             return
         }
 
