@@ -23,7 +23,6 @@ import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_LITERAL
 import com.pinterest.ktlint.core.ast.ElementType.IF
 import com.pinterest.ktlint.core.ast.ElementType.IMPORT_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_ARGUMENT
-import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.LPAR
 import com.pinterest.ktlint.core.ast.ElementType.MINUS
 import com.pinterest.ktlint.core.ast.ElementType.MINUSEQ
@@ -35,7 +34,6 @@ import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.PLUS
 import com.pinterest.ktlint.core.ast.ElementType.PLUSEQ
 import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
-import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.RETURN
 import com.pinterest.ktlint.core.ast.ElementType.RETURN_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS
@@ -53,6 +51,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.REDUNDANT_SEMICOLON
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_NEWLINES
 import org.cqfn.diktat.ruleset.rules.getDiktatConfigRules
 import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
+import org.cqfn.diktat.ruleset.utils.emptyBlockList
 import org.cqfn.diktat.ruleset.utils.extractLineOfText
 import org.cqfn.diktat.ruleset.utils.getAllLeafsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.isBeginByNewline
@@ -254,7 +253,7 @@ class NewlinesRule : Rule("newlines") {
         }
         blockNode
                 .children()
-                .filterNot { it.elementType in listOf(LBRACE, RBRACE, WHITE_SPACE) }
+                .filterNot { it.elementType in emptyBlockList }
                 .toList()
                 .takeIf { it.size == 1 }
                 ?.also {
