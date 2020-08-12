@@ -12,6 +12,16 @@ class WhiteSpaceRuleFixTest : FixTestBase("test/paragraph3/spaces", WhiteSpaceRu
 
     @Test
     fun `should keep single whitespace between keyword and opening brace`() {
-        fixAndCompare("WhiteSpaceBeforeLBraceExpected.kt", "WhiteSpaceBeforeLBraceTest.kt")
+        fixAndCompare("LBraceAfterKeywordExpected.kt", "LBraceAfterKeywordTest.kt")
+    }
+
+    @Test
+    fun `should remove spaces between ( and { when lambda is used as an argument`() {
+        fixAndCompare("LambdaAsArgumentExpected.kt", "LambdaAsArgumentTest.kt")
+    }
+
+    @Test
+    fun `should keep single whitespace before any other opening brace`() {
+        fixAndCompare("LbraceExpected.kt", "LbraceTest.kt")
     }
 }
