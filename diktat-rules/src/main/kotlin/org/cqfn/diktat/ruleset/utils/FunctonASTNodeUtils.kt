@@ -11,9 +11,6 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtParameter
 import org.jetbrains.kotlin.psi.KtParameterList
 
-private const val GET_PREFIX = "get"
-private const val SET_PREFIX = "set"
-
 /**
  * Checks whether function from this [ElementType.FUN] node has `@Test` annotation
  */
@@ -79,6 +76,14 @@ fun ASTNode.isGetterOrSetter(): Boolean {
         }
     } ?: false
 }
+
+/**
+ * Check whether this function is a standard method
+ */
+fun ASTNode.isStandardMethod() = also(::checkNodeIsFun)
+        .getIdentifierName()
+        ?.let { it.text in STANDARD_METHODS }
+        ?: false
 
 private fun ASTNode.argList(): ASTNode? {
     checkNodeIsFun(this)

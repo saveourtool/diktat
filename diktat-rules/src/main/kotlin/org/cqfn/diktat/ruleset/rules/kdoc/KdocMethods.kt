@@ -41,6 +41,7 @@ import org.cqfn.diktat.ruleset.utils.insertTagBefore
 import org.cqfn.diktat.ruleset.utils.isAccessibleOutside
 import org.cqfn.diktat.ruleset.utils.isGetterOrSetter
 import org.cqfn.diktat.ruleset.utils.isLocatedInTest
+import org.cqfn.diktat.ruleset.utils.isStandardMethod
 import org.cqfn.diktat.ruleset.utils.kDocTags
 import org.cqfn.diktat.ruleset.utils.parameterNames
 import org.cqfn.diktat.ruleset.utils.splitPathToDirs
@@ -65,9 +66,6 @@ class KdocMethods : Rule("kdoc-methods") {
         private val expressionBodyTypes = setOf(BINARY_EXPRESSION, CALL_EXPRESSION, LAMBDA_EXPRESSION, REFERENCE_EXPRESSION,
                 CALLABLE_REFERENCE_EXPRESSION, SAFE_ACCESS_EXPRESSION, WHEN_CONDITION_WITH_EXPRESSION, COLLECTION_LITERAL_EXPRESSION)
 
-        // these methods do not need mandatory documentation
-        private val standardMethods = listOf("main", "equals", "hashCode", "toString", "clone", "finalize")
-
         private val uselessKdocRegex = """^([rR]eturn|[gGsS]et)[s]?\s+\w+(\s+\w+)?$""".toRegex()
     }
 
@@ -88,8 +86,7 @@ class KdocMethods : Rule("kdoc-methods") {
             val config = KdocMethodsConfiguration(configRules.getRuleConfig(MISSING_KDOC_ON_FUNCTION)?.configuration
                     ?: mapOf())
             val isTestMethod = node.hasTestAnnotation() || node.isLocatedInTest(params.fileName!!.splitPathToDirs(), config.testAnchors)
-            val isStandardMethod = node.getIdentifierName()?.let { it.text in standardMethods } ?: false
-            if (!isTestMethod && !isStandardMethod && !node.isSingleLineGetterOrSetter()) {
+            if (!isTestMethod && !node.isStandardMethod() && !node.isSingleLineGetterOrSetter()) {
                 checkSignatureDescription(node)
             }
         } else if (node.elementType == KDOC_SECTION) {
