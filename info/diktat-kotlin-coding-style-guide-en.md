@@ -1066,6 +1066,7 @@ fun baz() {
 
   - Two colons (`::`) are written without spaces: `Object::toString`
   - Dot separator (`.`) that stays on the same line with an object name `object.toString()`
+  - Operator `..` for creating ranges, e.g. `1..100`
 
   5. Spaces should be used after ',',':',';' (except cases when those symbols are in the end of line). There should be no whitespaces in the end of line.
 

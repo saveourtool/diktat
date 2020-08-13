@@ -11,6 +11,7 @@ class WhiteSpaceRuleWarnTest {
     private val ruleId = "$DIKTAT_RULE_SET_ID:horizontal-whitespace"
     private fun keywordWarn(keyword: String, sep: String) =
             "${WRONG_WHITESPACE.warnText()} keyword '$keyword' should be separated from '$sep' with a whitespace"
+
     private val lbraceWarn = "${WRONG_WHITESPACE.warnText()} there should be a whitespace before '{'"
 
     @Test
@@ -37,15 +38,15 @@ class WhiteSpaceRuleWarnTest {
                 """
                     |class Example {
                     |    fun foo() {
-                    |         if(condition) { }
-                    |         for  (i in 1..100) { }
-                    |         when(expression) { }
+                    |        if(condition) { }
+                    |        for  (i in 1..100) { }
+                    |        when(expression) { }
                     |    }
                     |}
                 """.trimMargin(),
-                LintError(3, 10, ruleId, keywordWarn("if", "("), true),
-                LintError(4, 10, ruleId, keywordWarn("for", "("), true),
-                LintError(5, 10, ruleId, keywordWarn("when", "("), true)
+                LintError(3, 11, ruleId, keywordWarn("if", "("), true),
+                LintError(4, 14, ruleId, keywordWarn("for", "("), true),
+                LintError(5, 13, ruleId, keywordWarn("when", "("), true)
         )
     }
 
