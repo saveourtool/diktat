@@ -36,12 +36,10 @@ import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.LONG_LINE
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
-import org.cqfn.diktat.ruleset.utils.prettyPrint
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
-import org.jetbrains.kotlin.psi.psiUtil.startOffset
 import java.net.MalformedURLException
 import java.net.URL
 
@@ -49,15 +47,16 @@ import java.net.URL
 class LineLength : Rule("line-length") {
 
     /**
-     * LEFT_OFFSET equal to the left offset
-     * if ( x > 6 ||
-     *      y > 5) the distance between y and left edge equal 13
-     *
-     * STRING_SPACE needed to split string. This value is open and close quotes, white space and
-     * plus sign text length
+     * val text = "first part" +
+     * "second part" +
+     * "third part"
+     * FIRST_STRING_PART_OFFSEST equal to the left offset of first string part("first part")
+     * REST_STRING_PART_OFFEST id needed for the rest parts of text ("second part", "third part")
      */
     companion object {
         private const val MAX_LENGTH = 120L
+        private const val FIRST_STRING_PART_OFFSEST = 4
+        private const val REST_STRING_PART_OFFEST = 5
         private val PROPERTY_LIST = listOf(INTEGER_CONSTANT, STRING_TEMPLATE, FLOAT_CONSTANT,
                 CHARACTER_CONSTANT, REFERENCE_EXPRESSION, BOOLEAN_CONSTANT)
     }
@@ -171,7 +170,7 @@ class LineLength : Rule("line-length") {
     private fun fixCondition(wrongNode: ASTNode, configuration: LineLengthConfiguration,
                              leftInitOffset: Int = -1, isProperty: Boolean = false) {
         var leftOffset = if (leftInitOffset < 0){
-            positionByOffset(wrongNode.firstChildNode.psi.startOffset).second
+            positionByOffset(wrongNode.firstChildNode.startOffset).second
         } else leftInitOffset
         val binList = mutableListOf<ASTNode>()
         if (isProperty)
@@ -256,7 +255,6 @@ class LineLength : Rule("line-length") {
     }
 
     private fun fixProperty(parent: ASTNode, configuration: LineLengthConfiguration){
-        println(parent.prettyPrint())
         if (!parent.hasChildOfType(STRING_TEMPLATE)) {
             if (parent.hasChildOfType(BINARY_EXPRESSION)) {
                 val leftOffset = positionByOffset(parent.findChildByType(BINARY_EXPRESSION)!!.psi.textOffset).second
@@ -278,11 +276,9 @@ class LineLength : Rule("line-length") {
         val col = positionByOffset(parent.findChildByType(STRING_TEMPLATE)!!.psi.textOffset).second
         parent.removeChild(parent.findChildByType(STRING_TEMPLATE)!!)
         val correctTextList = mutableListOf<String>()
-        val startOffset = 4
-        val regularOffset = 5
-        correctTextList.add(text.substring(0, configuration.lineLength.toInt() - col - startOffset))
-        text = text.substring(configuration.lineLength.toInt() - col - startOffset)
-        correctTextList.addAll(text.chunked(configuration.lineLength.toInt() - regularOffset))
+        correctTextList.add(text.substring(0, configuration.lineLength.toInt() - col - FIRST_STRING_PART_OFFSEST))
+        text = text.substring(configuration.lineLength.toInt() - col - FIRST_STRING_PART_OFFSEST)
+        correctTextList.addAll(text.chunked(configuration.lineLength.toInt() - REST_STRING_PART_OFFEST))
         var prevExp = CompositeElement(BINARY_EXPRESSION)
         parent.addChild(prevExp, null)
         correctTextList.reversed().forEachIndexed { index, textBinExpress ->
