@@ -79,6 +79,7 @@ class LineLength : Rule("line-length") {
                 configRules.getRuleConfig(LONG_LINE)?.configuration ?: mapOf())
 
         if (node.elementType == FILE) {
+            positionByOffset =calculateLineColByOffset(node.text)
             node.getChildren(null).forEach {
                 if (it.elementType != PACKAGE_DIRECTIVE || it.elementType != IMPORT_LIST)
                     checkLength(it, configuration)
@@ -96,7 +97,6 @@ class LineLength : Rule("line-length") {
                     LONG_LINE.warnAndFix(configRules, emitWarn, isFixMode,
                             "max line length ${configuration.lineLength}, but was ${it.length}",
                             offset + node.startOffset) {
-                        positionByOffset =calculateLineColByOffset(node.treeParent.text)
                         fixError(newNode, configuration)
                     }
                 }
@@ -221,7 +221,9 @@ class LineLength : Rule("line-length") {
      * This method stored all the nodes that have BINARY_EXPRESSION element type.
      * This method uses recursion to store binary node in the order in which they are located
      *@param node node in which to search
-     * @param binList mutable list of ASTNode to store nodes
+     *@param binList mutable list of ASTNode to store nodes
+     * We also search in nodes with the PARENTHESIZED element type, because binary expression may be in brackets
+     *  if(( x > 0 && y < 10) || x < 10)
      */
     private fun searchBinaryExpression(node: ASTNode, binList: MutableList<ASTNode>) {
         when {
