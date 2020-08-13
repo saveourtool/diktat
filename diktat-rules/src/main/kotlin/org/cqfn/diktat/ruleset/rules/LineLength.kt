@@ -111,23 +111,7 @@ class LineLength : Rule("line-length") {
 
     private fun fixError(wrongNode: ASTNode, configuration: LineLengthConfiguration, grand: ASTNode) {
         if (wrongNode.elementType == EOL_COMMENT) {
-            var node = wrongNode
-            do {
-                val commentText = node.text
-                var indexLastSpace = configuration.lineLength.toInt()
-                while (commentText[indexLastSpace] != ' ') {
-                    --indexLastSpace
-                    if (indexLastSpace == 0)
-                        return
-                }
-                val nodeText = "//${commentText.substring(indexLastSpace, commentText.length)}"
-                val newNode = LeafPsiElement(EOL_COMMENT, nodeText)
-                node.treeParent.addChild(LeafPsiElement(EOL_COMMENT, commentText.substring(0, indexLastSpace)), node)
-                node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node)
-                node.treeParent.addChild(newNode, node)
-                node.treeParent.removeChild(node)
-                node = newNode
-            } while (node.text.length <= configuration.lineLength)
+            fixComment(wrongNode, configuration)
             return
         }
         var parent = wrongNode
@@ -149,6 +133,26 @@ class LineLength : Rule("line-length") {
                 else -> parent = parent.treeParent
             }
         } while (parent.treeParent != null)
+    }
+
+    private fun fixComment(wrongNode: ASTNode, configuration: LineLengthConfiguration){
+        var node = wrongNode
+        do {
+            val commentText = node.text
+            var indexLastSpace = configuration.lineLength.toInt()
+            while (commentText[indexLastSpace] != ' ') {
+                --indexLastSpace
+                if (indexLastSpace == 0)
+                    return
+            }
+            val nodeText = "//${commentText.substring(indexLastSpace, commentText.length)}"
+            val newNode = LeafPsiElement(EOL_COMMENT, nodeText)
+            node.treeParent.addChild(LeafPsiElement(EOL_COMMENT, commentText.substring(0, indexLastSpace)), node)
+            node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node)
+            node.treeParent.addChild(newNode, node)
+            node.treeParent.removeChild(node)
+            node = newNode
+        } while (node.text.length <= configuration.lineLength)
     }
 
     private fun fixCondition(wrongNode: ASTNode, configuration: LineLengthConfiguration, grand: ASTNode,
