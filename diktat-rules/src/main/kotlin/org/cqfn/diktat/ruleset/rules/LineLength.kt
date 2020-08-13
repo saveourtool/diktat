@@ -45,10 +45,18 @@ import java.net.URL
 @Suppress("ForbiddenComment")
 class LineLength : Rule("line-length") {
 
+    /**
+     * LEFT_OFFSET equal to the left offset
+     * if ( x > 6 ||
+     *      y > 5) the distance between y and left edge equal 13
+     *
+     * STRING_SPACE needed to split string. This value is open and close quotes, white space and
+     * plus sign text length
+     */
     companion object {
         private const val MAX_LENGTH = 120L
-        private const val LEFT_OFFSET = 4
-        private const val BINARY_OFFSET = 13
+        private const val STRING_SPACE = 4
+        private const val LEFT_OFFSET = 13
         private val PROPERTY_LIST = listOf(INTEGER_CONSTANT, STRING_TEMPLATE, FLOAT_CONSTANT,
                 CHARACTER_CONSTANT, REFERENCE_EXPRESSION)
     }
@@ -57,7 +65,7 @@ class LineLength : Rule("line-length") {
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var fileName: String? = null
     private var isFixMode: Boolean = false
-
+    private lateinit var positionByOffset: (Int) -> Pair<Int, Int>
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
                        params: KtLint.Params,
@@ -88,7 +96,8 @@ class LineLength : Rule("line-length") {
                     LONG_LINE.warnAndFix(configRules, emitWarn, isFixMode,
                             "max line length ${configuration.lineLength}, but was ${it.length}",
                             offset + node.startOffset) {
-                        fixError(newNode, configuration, node)
+                        positionByOffset =calculateLineColByOffset(node.treeParent.text)
+                        fixError(newNode, configuration)
                     }
                 }
             }
@@ -109,7 +118,7 @@ class LineLength : Rule("line-length") {
         }
     }
 
-    private fun fixError(wrongNode: ASTNode, configuration: LineLengthConfiguration, grand: ASTNode) {
+    private fun fixError(wrongNode: ASTNode, configuration: LineLengthConfiguration) {
         if (wrongNode.elementType == EOL_COMMENT) {
             fixComment(wrongNode, configuration)
             return
@@ -123,11 +132,11 @@ class LineLength : Rule("line-length") {
                     return
                 }
                 CONDITION -> {
-                    fixCondition(parent, configuration, grand)
+                    fixCondition(parent, configuration)
                     return
                 }
                 PROPERTY -> {
-                    fixProperty(parent, grand, configuration)
+                    fixProperty(parent, configuration)
                     return
                 }
                 else -> parent = parent.treeParent
@@ -152,13 +161,12 @@ class LineLength : Rule("line-length") {
             node.treeParent.addChild(newNode, node)
             node.treeParent.removeChild(node)
             node = newNode
-        } while (node.text.length <= configuration.lineLength)
+        } while (node.text.length > configuration.lineLength)
     }
 
-    private fun fixCondition(wrongNode: ASTNode, configuration: LineLengthConfiguration, grand: ASTNode,
+    private fun fixCondition(wrongNode: ASTNode, configuration: LineLengthConfiguration,
                              leftInitOffset: Int = -1, isProperty: Boolean = false) {
         var leftOffset = if (leftInitOffset < 0){
-            val positionByOffset = calculateLineColByOffset(grand.treeParent.text)
             positionByOffset(wrongNode.firstChildNode.psi.textOffset).second
         } else leftInitOffset
         val binList = mutableListOf<ASTNode>()
@@ -179,24 +187,24 @@ class LineLength : Rule("line-length") {
                     binaryText += operationRef.treeNext.text
                 binaryText+= astNode.text
                 if (leftOffset + binaryText.length > configuration.lineLength) {
-                    val commonParent = findCommonParent(astNode, binList[index-1])!!
+                    val commonParent = findCommonParent(astNode, binList[index-1])
                     val newLine = PsiWhiteSpaceImpl("\n")
                     commonParent.addChild(newLine, commonParent.findChildByType(OPERATION_REFERENCE)!!.treeNext)
-                    leftOffset = BINARY_OFFSET
+                    leftOffset = LEFT_OFFSET
                     binaryText = astNode.text
                 }
             }
         }
     }
 
-    private fun findCommonParent(firstNode: ASTNode ,secondNode: ASTNode): ASTNode?{
+    private fun findCommonParent(firstNode: ASTNode ,secondNode: ASTNode): ASTNode{
         var firstParent: ASTNode? = firstNode
         while (firstParent!= null) {
             if (depthFirstSearch(firstParent, secondNode)!= null)
                 return firstParent
             firstParent = firstParent.treeParent
         }
-        return firstParent
+        return firstParent ?: firstNode
     }
 
     private fun depthFirstSearch(node: ASTNode, finder: ASTNode): ASTNode?{
@@ -209,6 +217,12 @@ class LineLength : Rule("line-length") {
         return null
     }
 
+    /**
+     * This method stored all the nodes that have BINARY_EXPRESSION element type.
+     * This method uses recursion to store binary node in the order in which they are located
+     *@param node node in which to search
+     * @param binList mutable list of ASTNode to store nodes
+     */
     private fun searchBinaryExpression(node: ASTNode, binList: MutableList<ASTNode>) {
         when {
             node.hasChildOfType(BINARY_EXPRESSION) -> {
@@ -230,36 +244,37 @@ class LineLength : Rule("line-length") {
 
     private fun dfsForProperty(node: ASTNode, binList: MutableList<ASTNode>) {
         node.getChildren(null).forEach {
-            if (PROPERTY_LIST.contains(it.elementType))
+            if (it.elementType in PROPERTY_LIST)
                 binList.add(it)
             dfsForProperty(it, binList)
         }
     }
 
-    private fun fixProperty(parent: ASTNode, grand: ASTNode, configuration: LineLengthConfiguration){
+    private fun fixProperty(parent: ASTNode, configuration: LineLengthConfiguration){
         if (!parent.hasChildOfType(STRING_TEMPLATE)) {
-            val positionByOffset = calculateLineColByOffset(grand.treeParent.text)
             if (parent.hasChildOfType(BINARY_EXPRESSION)) {
                 val leftOffset = positionByOffset(parent.findChildByType(BINARY_EXPRESSION)!!.psi.textOffset).second
-                fixCondition(parent, configuration, grand, leftOffset, true)
+                fixCondition(parent, configuration, leftOffset, true)
             }
             if (parent.hasChildOfType(PARENTHESIZED)){
                 val newParent = parent.findChildByType(PARENTHESIZED)!!
                 val leftOffset = positionByOffset(newParent.findChildByType(BINARY_EXPRESSION)!!.psi.textOffset).second
-                fixCondition(newParent, configuration, grand, leftOffset)
+                fixCondition(newParent, configuration, leftOffset)
             }
         }
         else
-            createNodes(parent, grand, configuration)
+            createNodes(parent, configuration)
     }
 
-    private fun createNodes(parent: ASTNode, grand: ASTNode, configuration: LineLengthConfiguration) {
+    private fun createNodes(parent: ASTNode, configuration: LineLengthConfiguration) {
         var text = parent.findChildByType(STRING_TEMPLATE)!!.text
         text = text.trimStart(text.first()).trimEnd(text.last())
-        val positionByOffset = calculateLineColByOffset(grand.treeParent.text)
         val col = positionByOffset(parent.findChildByType(STRING_TEMPLATE)!!.psi.textOffset).second
         parent.removeChild(parent.findChildByType(STRING_TEMPLATE)!!)
-        val correctTextList = text.chunked(configuration.lineLength.toInt() - col - LEFT_OFFSET)
+        val correctTextList = mutableListOf<String>()
+        correctTextList.add(text.substring(0, configuration.lineLength.toInt() - col - STRING_SPACE))
+        text = text.substring(configuration.lineLength.toInt() - col- STRING_SPACE)
+        correctTextList.addAll(text.chunked(configuration.lineLength.toInt() - LEFT_OFFSET - STRING_SPACE))
         var prevExp = CompositeElement(BINARY_EXPRESSION)
         parent.addChild(prevExp, null)
         correctTextList.reversed().forEachIndexed { index, textBinExpress ->

@@ -1,8 +1,11 @@
 package test.paragraph3.long_line
 
 fun foo() {
-    val longsNames = "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd" +
-"ddddddddddddddddddddddddddddddddddddddddd"
+    val longsNames = "dddddddddddddddddddddddd" +
+"ddddddddddddddddddddddddddddddddd" +
+"ddddddddddddddddddddddddddddddddd" +
+"ddddddddddddddddddddddddddddddddd" +
+"dddddddddddd"
 
     val LongNumber = 387642874629764856279254338764287462976485627925433876428746297648562792543387642874629764856279254338764287462976485627925433876428746297648562792543
 
@@ -13,6 +16,7 @@ fun foo() {
     val longProp = 387642874629764856279254338764287462976485627925433876428746297648562792543387642874629764856279254 +
  dfnvdfvndnvdnvkndkvndknvkdnvfkdnvkjndkjvndkjvfndkjvndkjnvkjdnvkjdnvkjdnvkjndvf
 
-    val longProp = 12 + sd + "sdkvjhdfkjhvdjkfhvkjdhfvjkdfkvhdkfjvhdkjvhdkjfvhkdjhfvkdjhvsdscsddc" + 123.123 + 123L +
- 'd'
+    val longProp = 12 + sd +
+ "sdkvjhdfkjhvdjkfhvkjdhfvjkdfkvhdkfjvhdkjvhdkjfvhkdjhfvkdjhvsdscsddc" +
+ 123.123 + 123L + 'd'
 }

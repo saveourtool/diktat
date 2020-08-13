@@ -1,7 +1,7 @@
 package test.paragraph3.long_line
 
-// hello world! dfhgkdhfgkdhfkjghdjkfhgkjdhfgkjhdfkgdkfghdkjfhgkdhfgkjdhgjkhdjkfghdkjfghdjkfhgjkdhfgjkdhfjghdkjfghdkjghkdjhfgkjdfhgkjdhgfkdhfgdgfdjgfhfdkjg
-// kdjfhgkdfhkjgdhkfghdfhgkdgdkjdhfgkjhkjfghkdhgfjdfhhh
+// hello world! helooooooo heleeeeeee heluuuuuuuuuuuuuuu helqqqqqqqqq helwwwwwwwwwww helrrrrrrrrrr helttttttt helyyyyyyyyyyyyyyyyy ooooooooooooo pppppppppp llllllll kkkkkkkkkkkk
+// dhkfghdfhgkdgdkjdhfgkjhkjfghkdhgfjdfhhh
 fun foo() {
 
 }
