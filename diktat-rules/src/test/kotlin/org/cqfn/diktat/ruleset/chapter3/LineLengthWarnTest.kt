@@ -213,4 +213,20 @@ class LineLengthWarnTest {
                 LintError(9,1,ruleId,"${LONG_LINE.warnText()} max line length 120, but was 123", false)
         )
     }
+
+    @Test
+    fun `fix`(){
+        lintMethod(LineLength(),
+                """
+                    |// hello world!dfhgkdhfgkdhfkjghdjkfhgkjdhfgkjhdfkgdkfghdkjfhgkdhfgkjdhgjkhdjkfghdkjfghdjkfhgjkdhfgjkdhfjghdkjfghdkjghkdjhfgkjdfhgkjdhgfkdhfgdgfdjgfhfdkjg
+                    |// kdjfhgkdfhkjgdhkfghdfhgkdgdkjdhfgkjhkjfghkdhgfjdfhhh
+                    |fun foo() {
+                    |   val x = 1 + 2 + 323874927498787293898098384759287349320458057280935482093584028380981092830928905487539587943572093842842794582361223729134627.23
+                    |   if ( x > 5 && y < 10762482378462378648725678263478263478628374628734628746287364782364826348726347826348726384726384762387462387462874628734628643){
+                    |       z = x + 10
+                    |   }
+                    |}
+                """.trimMargin()
+        )
+    }
 }
