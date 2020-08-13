@@ -13,7 +13,6 @@ class LineLengthFixTest : FixTestBase("test/paragraph3/long_line", LineLength())
                     mapOf("lineLength" to "50"))
     )
 
-
     @Test
     fun `should fix long comment`() {
         fixAndCompare("LongLineCommentExpected.kt", "LongLineCommentTest.kt", rulesConfigListLineLength)

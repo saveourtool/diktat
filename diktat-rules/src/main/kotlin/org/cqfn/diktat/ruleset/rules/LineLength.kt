@@ -5,6 +5,7 @@ import com.pinterest.ktlint.core.KtLint.calculateLineColByOffset
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
+import com.pinterest.ktlint.core.ast.ElementType.BOOLEAN_CONSTANT
 import com.pinterest.ktlint.core.ast.ElementType.CHARACTER_CONSTANT
 import com.pinterest.ktlint.core.ast.ElementType.CLOSING_QUOTE
 import com.pinterest.ktlint.core.ast.ElementType.CONDITION
@@ -35,10 +36,12 @@ import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.LONG_LINE
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
+import org.cqfn.diktat.ruleset.utils.prettyPrint
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
+import org.jetbrains.kotlin.psi.psiUtil.startOffset
 import java.net.MalformedURLException
 import java.net.URL
 
@@ -55,10 +58,8 @@ class LineLength : Rule("line-length") {
      */
     companion object {
         private const val MAX_LENGTH = 120L
-        private const val STRING_SPACE = 4
-        private const val LEFT_OFFSET = 13
         private val PROPERTY_LIST = listOf(INTEGER_CONSTANT, STRING_TEMPLATE, FLOAT_CONSTANT,
-                CHARACTER_CONSTANT, REFERENCE_EXPRESSION)
+                CHARACTER_CONSTANT, REFERENCE_EXPRESSION, BOOLEAN_CONSTANT)
     }
 
     private lateinit var configRules: List<RulesConfig>
@@ -156,10 +157,12 @@ class LineLength : Rule("line-length") {
             }
             val nodeText = "//${commentText.substring(indexLastSpace, commentText.length)}"
             val newNode = LeafPsiElement(EOL_COMMENT, nodeText)
-            node.treeParent.addChild(LeafPsiElement(EOL_COMMENT, commentText.substring(0, indexLastSpace)), node)
-            node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node)
-            node.treeParent.addChild(newNode, node)
-            node.treeParent.removeChild(node)
+            node.treeParent.run {
+                addChild(LeafPsiElement(EOL_COMMENT, commentText.substring(0, indexLastSpace)), node)
+                addChild(PsiWhiteSpaceImpl("\n"), node)
+                addChild(newNode, node)
+                removeChild(node)
+            }
             node = newNode
         } while (node.text.length > configuration.lineLength)
     }
@@ -167,7 +170,7 @@ class LineLength : Rule("line-length") {
     private fun fixCondition(wrongNode: ASTNode, configuration: LineLengthConfiguration,
                              leftInitOffset: Int = -1, isProperty: Boolean = false) {
         var leftOffset = if (leftInitOffset < 0){
-            positionByOffset(wrongNode.firstChildNode.psi.textOffset).second
+            positionByOffset(wrongNode.firstChildNode.psi.startOffset).second
         } else leftInitOffset
         val binList = mutableListOf<ASTNode>()
         if (isProperty)
@@ -190,7 +193,7 @@ class LineLength : Rule("line-length") {
                     val commonParent = findCommonParent(astNode, binList[index-1])
                     val newLine = PsiWhiteSpaceImpl("\n")
                     commonParent.addChild(newLine, commonParent.findChildByType(OPERATION_REFERENCE)!!.treeNext)
-                    leftOffset = LEFT_OFFSET
+                    leftOffset = 0
                     binaryText = astNode.text
                 }
             }
@@ -220,10 +223,9 @@ class LineLength : Rule("line-length") {
     /**
      * This method stored all the nodes that have BINARY_EXPRESSION element type.
      * This method uses recursion to store binary node in the order in which they are located
+     * Also binList contains nodes with PREFIX_EXPRESSION element type ( !isFoo(), !isValid)
      *@param node node in which to search
      *@param binList mutable list of ASTNode to store nodes
-     * We also search in nodes with the PARENTHESIZED element type, because binary expression may be in brackets
-     *  if(( x > 0 && y < 10) || x < 10)
      */
     private fun searchBinaryExpression(node: ASTNode, binList: MutableList<ASTNode>) {
         when {
@@ -253,6 +255,7 @@ class LineLength : Rule("line-length") {
     }
 
     private fun fixProperty(parent: ASTNode, configuration: LineLengthConfiguration){
+        println(parent.prettyPrint())
         if (!parent.hasChildOfType(STRING_TEMPLATE)) {
             if (parent.hasChildOfType(BINARY_EXPRESSION)) {
                 val leftOffset = positionByOffset(parent.findChildByType(BINARY_EXPRESSION)!!.psi.textOffset).second
@@ -274,9 +277,11 @@ class LineLength : Rule("line-length") {
         val col = positionByOffset(parent.findChildByType(STRING_TEMPLATE)!!.psi.textOffset).second
         parent.removeChild(parent.findChildByType(STRING_TEMPLATE)!!)
         val correctTextList = mutableListOf<String>()
-        correctTextList.add(text.substring(0, configuration.lineLength.toInt() - col - STRING_SPACE))
-        text = text.substring(configuration.lineLength.toInt() - col- STRING_SPACE)
-        correctTextList.addAll(text.chunked(configuration.lineLength.toInt() - LEFT_OFFSET - STRING_SPACE))
+        val startOffset = 4
+        val regularOffset = 5
+        correctTextList.add(text.substring(0, configuration.lineLength.toInt() - col - startOffset))
+        text = text.substring(configuration.lineLength.toInt() - col - startOffset)
+        correctTextList.addAll(text.chunked(configuration.lineLength.toInt() - regularOffset))
         var prevExp = CompositeElement(BINARY_EXPRESSION)
         parent.addChild(prevExp, null)
         correctTextList.reversed().forEachIndexed { index, textBinExpress ->

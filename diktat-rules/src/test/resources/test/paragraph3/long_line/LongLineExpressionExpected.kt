@@ -14,13 +14,12 @@ fun foo() {
  g > "dfnvdkjfnvkjdnvkdfkv"){}
     if (d > "sdcsdcscsdcsdcsdsdcjshfkjdhfjkhsdkjfhskjdfhskjdfhkshfsjdf" &&
  gh == "lkfvldkfjvkldjfkdjlkvjdklfjvdlkv" ||
- x > 23948239749273927934729 ||
- y< 937492734927){}
+ x > 23948239749273927934729 || y< 937492734927){}
     if (x == 2384792837492387498728947289472987492837492743){}
     if (x == 278492792738497293847392453527849279273849729384739245352784927927384972938473924535278492792738497293847344){}
     if (x == "sdcsdcscsdcsdcsdsdcjshfkjdhfjkhsdkjfhskjdfhskjdfhkshfsjdf" ||
- x == "es" || y == 123 || b > 12 &&
- jh==234 || h==54){}
+ x == "es" || y == 123 || b > 12 && jh==234 ||
+ h==54){}
     if ((x > 0 ||
  y< 2384792837492387498728947289472987492837492743) ||
  (y < 123123132 &&
