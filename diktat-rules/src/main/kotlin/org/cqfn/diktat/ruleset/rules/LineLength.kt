@@ -80,7 +80,6 @@ class LineLength : Rule("line-length") {
                 configRules.getRuleConfig(LONG_LINE)?.configuration ?: mapOf())
 
         if (node.elementType == FILE) {
-            positionByOffset =calculateLineColByOffset(node.text)
             node.getChildren(null).forEach {
                 if (it.elementType != PACKAGE_DIRECTIVE || it.elementType != IMPORT_LIST)
                     checkLength(it, configuration)
@@ -98,6 +97,8 @@ class LineLength : Rule("line-length") {
                     LONG_LINE.warnAndFix(configRules, emitWarn, isFixMode,
                             "max line length ${configuration.lineLength}, but was ${it.length}",
                             offset + node.startOffset) {
+                        if (!this::positionByOffset.isInitialized)
+                            positionByOffset =calculateLineColByOffset(node.treeParent.text)
                         fixError(newNode, configuration)
                     }
                 }
