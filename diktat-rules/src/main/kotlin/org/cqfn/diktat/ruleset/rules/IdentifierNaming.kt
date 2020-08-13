@@ -99,7 +99,7 @@ class IdentifierNaming : Rule("identifier-naming") {
     }
 
     /**
-     * method checks that identifier is wrapped over with backsticks (``)
+     * method checks that identifier is wrapped over with backticks (``)
      */
     private fun isIdentifierWithBackticks(node: ASTNode): Boolean {
         val identifier = node.getIdentifierName()
