@@ -48,6 +48,9 @@ class WhiteSpaceRule : Rule("horizontal-whitespace") {
                 // these keywords can be followed by either { or (
                 WHEN_KEYWORD
         )
+
+        // this is the number of parent nodes needed to check if this node is lambda from argument list
+        private const val numParentsForLambda = 3
     }
 
     private lateinit var configRules: List<RulesConfig>
@@ -100,7 +103,7 @@ class WhiteSpaceRule : Rule("horizontal-whitespace") {
      */
     private fun handleLbrace(node: ASTNode) {
         val whitespaceOrPrevNode = node.parent({ it.treePrev != null }, strict = false)!!.treePrev
-        val isFromLambdaAsArgument = node.parents().take(3).toList().let {
+        val isFromLambdaAsArgument = node.parents().take(numParentsForLambda).toList().let {
             it[0].elementType == FUNCTION_LITERAL &&
                     it[1].elementType == LAMBDA_EXPRESSION &&
                     it[2].elementType == VALUE_ARGUMENT
@@ -139,15 +142,19 @@ class WhiteSpaceRule : Rule("horizontal-whitespace") {
             if (spacesBefore != null && spacesBefore != requiredNumSpaces || spacesAfter != null && spacesAfter != requiredNumSpaces) {
                 val freeText = "${node.text} should ${if (requiredNumSpaces == 0) "not " else ""}be surrounded by whitespaces"
                 WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, freeText, node.startOffset) {
-                    if (requiredNumSpaces == 1) {
-                        node.treePrev.let { if (it.elementType == WHITE_SPACE) it.treePrev else it }.leaveSingleWhiteSpace()
-                        node.leaveSingleWhiteSpace()
-                    } else if (requiredNumSpaces == 0) {
-                        node.treePrev.removeIfWhiteSpace()
-                        node.treeNext.removeIfWhiteSpace()
-                    }
+                    node.fixSpaceAround(requiredNumSpaces)
                 }
             }
+        }
+    }
+
+    private fun ASTNode.fixSpaceAround(requiredNumSpaces: Int) {
+        if (requiredNumSpaces == 1) {
+            treePrev.let { if (it.elementType == WHITE_SPACE) it.treePrev else it }.leaveSingleWhiteSpace()
+            leaveSingleWhiteSpace()
+        } else if (requiredNumSpaces == 0) {
+            treePrev.removeIfWhiteSpace()
+            treeNext.removeIfWhiteSpace()
         }
     }
 
