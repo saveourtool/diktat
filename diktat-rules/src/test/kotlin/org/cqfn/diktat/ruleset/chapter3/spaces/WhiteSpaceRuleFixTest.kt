@@ -24,4 +24,9 @@ class WhiteSpaceRuleFixTest : FixTestBase("test/paragraph3/spaces", WhiteSpaceRu
     fun `should keep single whitespace before any other opening brace`() {
         fixAndCompare("LbraceExpected.kt", "LbraceTest.kt")
     }
+
+    @Test
+    fun `should surround binary operators with spaces`() {
+        fixAndCompare("BinaryOpExpected.kt", "BinaryOpTest.kt")
+    }
 }

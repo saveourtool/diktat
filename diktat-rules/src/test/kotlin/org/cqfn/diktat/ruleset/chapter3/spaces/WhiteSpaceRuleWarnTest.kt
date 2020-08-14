@@ -13,6 +13,8 @@ class WhiteSpaceRuleWarnTest {
             "${WRONG_WHITESPACE.warnText()} keyword '$keyword' should be separated from '$sep' with a whitespace"
 
     private val lbraceWarn = "${WRONG_WHITESPACE.warnText()} there should be a whitespace before '{'"
+    private fun binaryOpWarn(op: String, isException: Boolean = false) =
+            "${WRONG_WHITESPACE.warnText()} $op should ${if (isException) "not " else ""}be surrounded by whitespaces"
 
     @Test
     fun `keywords should have space before opening parenthesis and braces - positive example`() {
@@ -113,6 +115,78 @@ class WhiteSpaceRuleWarnTest {
                     |}
                 """.trimMargin(),
                 LintError(6, 10, ruleId, "${WRONG_WHITESPACE.warnText()} there should be no whitespace before '{' of lambda inside argument list", true)
+        )
+    }
+
+    @Test
+    fun `binary operators should be surrounded by spaces - positive example`() {
+        lintMethod(WhiteSpaceRule(),
+                """
+                    |class Example<T> where T : UpperType {
+                    |    fun foo(t: T) = t + 1
+                    |    
+                    |    fun bar() {
+                    |        listOf<T>().map(this::foo).filter { elem -> predicate(elem) }
+                    |    }
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    fun `should not false positively trigger when operators are surrounded with newlines`() {
+        lintMethod(WhiteSpaceRule(),
+                """
+                    |class Example<T> where T 
+                    |                 :
+                    |                 UpperType {
+                    |    fun foo(t: T) =
+                    |            t + 1
+                    |    
+                    |    fun bar() {
+                    |        listOf<T>()
+                    |            .map(this
+                    |                ::foo)
+                    |            .filter { elem ->
+                    |                 predicate(elem) 
+                    |             }
+                    |    }
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    fun `binary operators should be surrounded by spaces`() {
+        lintMethod(WhiteSpaceRule(),
+                """
+                    |class Example<T, R, Q> where T:UpperType, R: UpperType, Q :UpperType {
+                    |    fun foo(t : T) = t+ 1
+                    |    fun foo2(t: T) = t+1
+                    |    fun foo3(t: T) = t +1
+                    |    
+                    |    fun bar() {
+                    |        listOf<T>() .map(this ::foo).filter { elem ->predicate(elem) }
+                    |        listOf<T>() . map(this :: foo).filter { elem->predicate(elem) }
+                    |        listOf<T>(). map(this:: foo).filter { elem-> predicate(elem) }
+                    |    }
+                    |}
+                """.trimMargin(),
+                LintError(1, 31, ruleId, binaryOpWarn(":"), true),
+                LintError(1, 44, ruleId, binaryOpWarn(":"), true),
+                LintError(1, 59, ruleId, binaryOpWarn(":"), true),
+                LintError(2, 23, ruleId, binaryOpWarn("+"), true),
+                LintError(3, 23, ruleId, binaryOpWarn("+"), true),
+                LintError(4, 24, ruleId, binaryOpWarn("+"), true),
+                LintError(7, 21, ruleId, binaryOpWarn(".", true), true),
+                LintError(7, 31, ruleId, binaryOpWarn("::", true), true),
+                LintError(7, 52, ruleId, binaryOpWarn("->"), true),
+                LintError(8, 21, ruleId, binaryOpWarn(".", true), true),
+                LintError(8, 32, ruleId, binaryOpWarn("::", true), true),
+                LintError(8, 53, ruleId, binaryOpWarn("->"), true),
+                LintError(9, 20, ruleId, binaryOpWarn(".", true), true),
+                LintError(9, 30, ruleId, binaryOpWarn("::", true), true),
+                LintError(9, 51, ruleId, binaryOpWarn("->"), true)
         )
     }
 }
