@@ -30,6 +30,7 @@ import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.REGULAR_STRING_PART
 import com.pinterest.ktlint.core.ast.ElementType.STRING_TEMPLATE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.parent
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
@@ -40,6 +41,7 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
+import org.jetbrains.kotlin.psi.psiUtil.parents
 import java.net.MalformedURLException
 import java.net.URL
 
@@ -190,7 +192,7 @@ class LineLength : Rule("line-length") {
                     binaryText += operationRef.treeNext.text
                 binaryText+= astNode.text
                 if (leftOffset + binaryText.length > configuration.lineLength) {
-                    val commonParent = findCommonParent(astNode, binList[index-1])
+                    val commonParent = astNode.parent({it in binList[index - 1].parents()})!!
                     val newLine = PsiWhiteSpaceImpl("\n")
                     commonParent.addChild(newLine, commonParent.findChildByType(OPERATION_REFERENCE)!!.treeNext)
                     leftOffset = 0
@@ -198,26 +200,6 @@ class LineLength : Rule("line-length") {
                 }
             }
         }
-    }
-
-    private fun findCommonParent(firstNode: ASTNode ,secondNode: ASTNode): ASTNode{
-        var firstParent: ASTNode? = firstNode
-        while (firstParent!= null) {
-            if (depthFirstSearch(firstParent, secondNode)!= null)
-                return firstParent
-            firstParent = firstParent.treeParent
-        }
-        return firstParent ?: firstNode
-    }
-
-    private fun depthFirstSearch(node: ASTNode, finder: ASTNode): ASTNode?{
-        if (node.getChildren(null).find { it == finder } != null)
-            return node
-        node.getChildren(null).forEach {
-            val answer = depthFirstSearch(it, finder)
-            if (answer != null) return answer
-        }
-        return null
     }
 
     /**
@@ -257,7 +239,7 @@ class LineLength : Rule("line-length") {
     private fun fixProperty(parent: ASTNode, configuration: LineLengthConfiguration){
         if (!parent.hasChildOfType(STRING_TEMPLATE)) {
             if (parent.hasChildOfType(BINARY_EXPRESSION)) {
-                val leftOffset = positionByOffset(parent.findChildByType(BINARY_EXPRESSION)!!.psi.textOffset).second
+                val leftOffset = positionByOffset(parent.findChildByType(BINARY_EXPRESSION)!!.startOffset).second
                 fixCondition(parent, configuration, leftOffset, true)
             }
             if (parent.hasChildOfType(PARENTHESIZED)){
@@ -272,18 +254,19 @@ class LineLength : Rule("line-length") {
 
     private fun createNodes(parent: ASTNode, configuration: LineLengthConfiguration) {
         var text = parent.findChildByType(STRING_TEMPLATE)!!.text
+        // trim to remove first and last quote
         text = text.trimStart(text.first()).trimEnd(text.last())
         val col = positionByOffset(parent.findChildByType(STRING_TEMPLATE)!!.psi.textOffset).second
         parent.removeChild(parent.findChildByType(STRING_TEMPLATE)!!)
-        val correctTextList = mutableListOf<String>()
-        correctTextList.add(text.substring(0, configuration.lineLength.toInt() - col - FIRST_STRING_PART_OFFSEST))
-        text = text.substring(configuration.lineLength.toInt() - col - FIRST_STRING_PART_OFFSEST)
-        correctTextList.addAll(text.chunked(configuration.lineLength.toInt() - REST_STRING_PART_OFFEST))
+        val correctTextList = mutableListOf<String>().apply {
+            add(text.substring(0, configuration.lineLength.toInt() - col - FIRST_STRING_PART_OFFSEST))
+            text = text.substring(configuration.lineLength.toInt() - col - FIRST_STRING_PART_OFFSEST)
+            addAll(text.chunked(configuration.lineLength.toInt() - REST_STRING_PART_OFFEST))
+        }
+                .toList()
         var prevExp = CompositeElement(BINARY_EXPRESSION)
         parent.addChild(prevExp, null)
-        correctTextList.reversed().forEachIndexed { index, textBinExpress ->
-            if (index == correctTextList.size - 1)
-                return@forEachIndexed
+        correctTextList.reversed().dropLast(1).forEach { textBinExpress ->
             createNodesBetweenStringTemplates(prevExp)
             createStringTemplate(textBinExpress, prevExp)
             val newExp = CompositeElement(BINARY_EXPRESSION)
