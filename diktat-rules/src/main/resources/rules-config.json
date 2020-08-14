@@ -259,5 +259,15 @@
     "configuration": {
       "lineLength": "120"
     }
+  },
+  {
+    "name": "REDUNDANT_SEMICOLON",
+    "enabled": true,
+    "configuration" : {}
+  },
+  {
+    "name": "WRONG_NEWLINES",
+    "enabled": true,
+    "configuration" : {}
   }
 ]

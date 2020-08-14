@@ -6,7 +6,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_ORDER_IN_CLASS_LIKE_STRU
 import org.cqfn.diktat.ruleset.rules.ClassLikeStructuresOrderRule
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.util.lintMethod
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class ClassLikeStructuresOrderRuleWarnTest {
     private val ruleId = "$DIKTAT_RULE_SET_ID:class-like-structures"
