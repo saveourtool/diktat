@@ -52,8 +52,10 @@ class LineLength : Rule("line-length") {
      * val text = "first part" +
      * "second part" +
      * "third part"
-     * FIRST_STRING_PART_OFFSEST equal to the left offset of first string part("first part")
-     * REST_STRING_PART_OFFEST id needed for the rest parts of text ("second part", "third part")
+     * FIRST_STRING_PART_OFFSEST equal to the left offset of first string part("first part") =
+     * close quote (open quote removed by trim) + white space + plus sign
+     * REST_STRING_PART_OFFEST id needed for the rest parts of text ("second part", "third part") =
+     * close and open quote + white space + plus sign
      */
     companion object {
         private const val MAX_LENGTH = 120L
@@ -194,7 +196,12 @@ class LineLength : Rule("line-length") {
                 if (leftOffset + binaryText.length > configuration.lineLength) {
                     val commonParent = astNode.parent({it in binList[index - 1].parents()})!!
                     val newLine = PsiWhiteSpaceImpl("\n")
-                    commonParent.addChild(newLine, commonParent.findChildByType(OPERATION_REFERENCE)!!.treeNext)
+                    val nextNode = commonParent.findChildByType(OPERATION_REFERENCE)!!.treeNext
+                    if (nextNode.elementType == WHITE_SPACE){
+                        commonParent.addChild(newLine, nextNode)
+                        commonParent.removeChild(nextNode)
+                    } else
+                        commonParent.addChild(newLine, nextNode)
                     leftOffset = 0
                     binaryText = astNode.text
                 }
@@ -203,7 +210,7 @@ class LineLength : Rule("line-length") {
     }
 
     /**
-     * This method stored all the nodes that have BINARY_EXPRESSION element type.
+     * This method stored all the nodes that have BINARY_EXPRESSION or PREFIX_EXPRESSION element type.
      * This method uses recursion to store binary node in the order in which they are located
      * Also binList contains nodes with PREFIX_EXPRESSION element type ( !isFoo(), !isValid)
      *@param node node in which to search
@@ -244,7 +251,7 @@ class LineLength : Rule("line-length") {
             }
             if (parent.hasChildOfType(PARENTHESIZED)){
                 val newParent = parent.findChildByType(PARENTHESIZED)!!
-                val leftOffset = positionByOffset(newParent.findChildByType(BINARY_EXPRESSION)!!.psi.textOffset).second
+                val leftOffset = positionByOffset(newParent.findChildByType(BINARY_EXPRESSION)!!.startOffset).second
                 fixCondition(newParent, configuration, leftOffset)
             }
         }
@@ -256,7 +263,7 @@ class LineLength : Rule("line-length") {
         var text = parent.findChildByType(STRING_TEMPLATE)!!.text
         // trim to remove first and last quote
         text = text.trimStart(text.first()).trimEnd(text.last())
-        val col = positionByOffset(parent.findChildByType(STRING_TEMPLATE)!!.psi.textOffset).second
+        val col = positionByOffset(parent.findChildByType(STRING_TEMPLATE)!!.startOffset).second
         parent.removeChild(parent.findChildByType(STRING_TEMPLATE)!!)
         val correctTextList = mutableListOf<String>().apply {
             add(text.substring(0, configuration.lineLength.toInt() - col - FIRST_STRING_PART_OFFSEST))
