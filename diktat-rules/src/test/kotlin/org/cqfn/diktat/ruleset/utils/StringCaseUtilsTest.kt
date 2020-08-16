@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.utils
 
 import org.junit.Assert
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class StringCaseUtilsTest {
     @Test

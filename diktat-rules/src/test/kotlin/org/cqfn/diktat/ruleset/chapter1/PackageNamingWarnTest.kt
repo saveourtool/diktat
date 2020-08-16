@@ -2,7 +2,7 @@ package org.cqfn.diktat.ruleset.chapter1
 
 import com.pinterest.ktlint.core.LintError
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.cqfn.diktat.ruleset.rules.PackageNaming
 import org.cqfn.diktat.ruleset.constants.Warnings.*
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
@@ -28,7 +28,7 @@ class PackageNamingWarnTest {
                 class TestPackageName {  }
 
             """.trimIndent(),
-                LintError(1, 1, ruleId, "${PACKAGE_NAME_MISSING.warnText()} /TestFileName.kt"),
+                LintError(1, 1, ruleId, "${PACKAGE_NAME_MISSING.warnText()} /TestFileName.kt", true),
                 rulesConfigList = rulesConfigList
         )
     }
@@ -48,7 +48,7 @@ class PackageNamingWarnTest {
                 class TestPackageName {  }
 
             """.trimIndent(),
-                LintError(1, 35, ruleId, "${PACKAGE_NAME_INCORRECT_CASE.warnText()} SPECIALTEST"),
+                LintError(1, 35, ruleId, "${PACKAGE_NAME_INCORRECT_CASE.warnText()} SPECIALTEST", true),
                 rulesConfigList = rulesConfigList
         )
     }
@@ -68,7 +68,7 @@ class PackageNamingWarnTest {
                 class TestPackageName {  }
 
             """.trimIndent(),
-                LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PREFIX.warnText()} org.cqfn.diktat"),
+                LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PREFIX.warnText()} org.cqfn.diktat", true),
                 rulesConfigList = rulesConfigList
         )
     }
@@ -88,7 +88,7 @@ class PackageNamingWarnTest {
                 class TestPackageName {  }
 
             """.trimIndent(),
-                LintError(1, 32, ruleId, "${INCORRECT_PACKAGE_SEPARATOR.warnText()} test_"),
+                LintError(1, 32, ruleId, "${INCORRECT_PACKAGE_SEPARATOR.warnText()} test_", true),
                 rulesConfigList = rulesConfigList
         )
     }
@@ -145,7 +145,7 @@ class PackageNamingWarnTest {
                 """
                     package org.cqfn.diktat.chapter1
                 """.trimIndent(),
-                LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} org.cqfn.diktat.ruleset.chapter1"),
+                LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} org.cqfn.diktat.ruleset.chapter1", true),
                 fileName = "~/diktat/diktat-rules/src/test/kotlin/org/cqfn/diktat/ruleset/chapter1/EnumValueCaseTest.kt"
         )
     }

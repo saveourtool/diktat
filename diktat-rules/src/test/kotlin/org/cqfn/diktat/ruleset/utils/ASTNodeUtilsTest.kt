@@ -25,7 +25,7 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.utils.addToStdlib.ifNotEmpty
 import org.junit.Assert
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 @Suppress("LargeClass")
 class ASTNodeUtilsTest {
@@ -74,7 +74,7 @@ class ASTNodeUtilsTest {
     }
 
     @Test
-    fun `test node's check text lenght`() {
+    fun `test node's check text length`() {
         val code = """
             class Test {
                 /**
@@ -84,14 +84,12 @@ class ASTNodeUtilsTest {
                 fun foo(a: Int): Int = 2 * a
             }
         """.trimIndent()
-        var counter = 0
-        applyToCode(code) { node ->
+        applyToCode(code, 1) { node, counter ->
             if (node.elementType == CLASS) {
                 Assert.assertTrue(node.checkLength(IntRange(code.length, code.length)))
-                counter++
+                counter.incrementAndGet()
             }
         }
-        Assert.assertEquals(1, counter)
     }
 
     @Test
@@ -105,15 +103,13 @@ class ASTNodeUtilsTest {
                 fun foo(a: Int): Int = 2 * a
             }
         """.trimIndent()
-        var counter = 0
         val list = listOf("Test", "foo", "a", "a", "Int", "Int", "a")
-        applyToCode(code) { node ->
+        applyToCode(code, 7) { node, counter ->
             node.getIdentifierName()?.let {
-                Assert.assertEquals(list[counter], it.text)
-                counter++
+                Assert.assertEquals(list[counter.get()], it.text)
+                counter.incrementAndGet()
             }
         }
-        Assert.assertEquals(counter, list.size)
     }
 
     @Test
@@ -123,14 +119,12 @@ class ASTNodeUtilsTest {
                 
             }
         """.trimIndent()
-        var counter = 0
-        applyToCode(code) { node ->
+        applyToCode(code, 1) { node, counter ->
             if (node.getTypeParameterList() != null) {
                 Assert.assertEquals("<T>", node.getTypeParameterList()!!.text)
-                counter++
+                counter.incrementAndGet()
             }
         }
-        Assert.assertEquals(1, counter)
     }
 
     @Test
@@ -145,14 +139,12 @@ class ASTNodeUtilsTest {
             }
         """.trimIndent()
         val list = listOf("Test", "foo", "a", "a", "Int", "Int", "a")
-        var counter = 0
-        applyToCode(code) { node ->
+        applyToCode(code, 7) { node, counter ->
             node.getAllIdentifierChildren().ifNotEmpty {
-                this.forEach { Assert.assertEquals(list[counter], it.text) }
-                counter++
+                this.forEach { Assert.assertEquals(list[counter.get()], it.text) }
+                counter.incrementAndGet()
             }
         }
-        Assert.assertEquals(counter, list.size)
     }
 
     @Test
@@ -166,20 +158,16 @@ class ASTNodeUtilsTest {
                 fun foo(a: Int): Int = 2 * a
             }
         """.trimIndent()
-        var firstCounter = 0
-        var secondCounter = 0
-        applyToCode(code) { node ->
+        applyToCode(code, 2) { node, counter ->
             node.getAllChildrenWithType(CLASS).ifNotEmpty {
                 Assert.assertEquals(map { it.text }, listOf(code))
-                firstCounter++
+                counter.incrementAndGet()
             }
             if (node.getAllChildrenWithType(IDENTIFIER).isNotEmpty() && node.treeParent.elementType == FILE) {
                 Assert.assertEquals(node.getAllChildrenWithType(IDENTIFIER)[0].text, "Test")
-                secondCounter++
+                counter.incrementAndGet()
             }
         }
-        Assert.assertEquals(1, firstCounter)
-        Assert.assertEquals(1, secondCounter)
     }
 
     @Test
@@ -193,14 +181,12 @@ class ASTNodeUtilsTest {
                 fun foo(a: Int): Int = 2 * a
             }
         """.trimIndent()
-        var counter = 0
-        applyToCode(code) { node ->
+        applyToCode(code, 1) { node, counter ->
             if (node.getAllChildrenWithType(IDENTIFIER).isNotEmpty() && node.treeParent.elementType == FILE) {
                 Assert.assertEquals(node.getFirstChildWithType(IDENTIFIER)!!.text, "Test")
-                counter++
+                counter.incrementAndGet()
             }
         }
-        Assert.assertEquals(1, counter)
     }
 
     @Test
@@ -210,14 +196,12 @@ class ASTNodeUtilsTest {
                 val x = 0
             }
         """.trimIndent()
-        var counter = 0
-        applyToCode(code) { node ->
+        applyToCode(code, 2) { node, counter ->
             if (node.getIdentifierName() != null) {
                 Assert.assertTrue(node.hasChildOfType(IDENTIFIER))
-                counter++
+                counter.incrementAndGet()
             }
         }
-        Assert.assertEquals(2, counter)
     }
 
     @Test
@@ -227,14 +211,12 @@ class ASTNodeUtilsTest {
                 val x = 0
             }
         """.trimIndent()
-        var counter = 0
-        applyToCode(code) { node ->
+        applyToCode(code, 3) { node, counter ->
             if (node.getAllChildrenWithType(IDENTIFIER).isNotEmpty() || node.getAllChildrenWithType(CLASS).isNotEmpty()) {
                 Assert.assertTrue(node.hasAnyChildOfTypes(IDENTIFIER, CLASS))
-                counter++
+                counter.incrementAndGet()
             }
         }
-        Assert.assertEquals(3, counter)
     }
 
     @Test
@@ -248,14 +230,12 @@ class ASTNodeUtilsTest {
                 fun foo(a: Int): Int = 2 * a
             }
         """.trimIndent()
-        var counter = 0
-        applyToCode(code) { node ->
+        applyToCode(code, 1) { node, counter ->
             if (node.findChildBefore(CLASS_BODY, CLASS) != null) {
                 Assert.assertEquals(node.findChildBefore(CLASS_BODY, CLASS)!!.text, code)
-                counter++
+                counter.incrementAndGet()
             }
         }
-        Assert.assertEquals(1, counter)
     }
 
     @Test
@@ -269,15 +249,13 @@ class ASTNodeUtilsTest {
                 fun foo(a: Int): Int = 2 * a
             }
         """.trimIndent()
-        var counter = 0
         val list = listOf("Test", "foo", "a", "a", "Int", "Int", "a")
-        applyToCode(code) { node ->
+        applyToCode(code, 7) { node, counter ->
             if (node.findChildBefore(CLASS_BODY, IDENTIFIER) != null) {
-                Assert.assertEquals(node.findChildBefore(CLASS_BODY, IDENTIFIER)!!.text, list[counter])
-                counter++
+                Assert.assertEquals(node.findChildBefore(CLASS_BODY, IDENTIFIER)!!.text, list[counter.get()])
+                counter.incrementAndGet()
             }
         }
-        Assert.assertEquals(7, counter)
     }
 
     @Test
@@ -291,14 +269,12 @@ class ASTNodeUtilsTest {
                 fun foo(a: Int): Int = 2 * a
             }
         """.trimIndent()
-        var counter = 0
-        applyToCode(code) { node ->
+        applyToCode(code, 1) { node, counter ->
             node.findChildAfter(VALUE_PARAMETER_LIST, TYPE_REFERENCE)?.let {
                 Assert.assertEquals("Int", it.text)
-                counter++
+                counter.incrementAndGet()
             }
         }
-        Assert.assertEquals(1, counter)
     }
 
     @Test
@@ -312,7 +288,7 @@ class ASTNodeUtilsTest {
                 fun foo(a: Int): Int = 2 * a
             }
         """.trimIndent()
-        applyToCode(code) { node ->
+        applyToCode(code, 0) { node, _ ->
             val setParent = if (node.treeParent != null) {
                 node.treeParent.getChildren(null).toSet()
             } else
@@ -331,9 +307,10 @@ class ASTNodeUtilsTest {
             	}
         """.trimIndent()
 
-        applyToCode(code) { node ->
+        applyToCode(code, 1) { node, counter ->
             if (node.elementType == PROPERTY) {
                 Assert.assertFalse(node.isNodeFromCompanionObject())
+                counter.incrementAndGet()
             }
         }
 
@@ -343,9 +320,10 @@ class ASTNodeUtilsTest {
             	}
         """.trimIndent()
 
-        applyToCode(code) { node ->
+        applyToCode(code, 1) { node, counter ->
             if (node.elementType == PROPERTY) {
                 Assert.assertTrue(node.isNodeFromCompanionObject())
+                counter.incrementAndGet()
             }
         }
     }
@@ -359,11 +337,10 @@ class ASTNodeUtilsTest {
             	}
             }
         """.trimIndent()
-        var firstCounter = 0
-        applyToCode(code) { node ->
+        applyToCode(code, 1) { node, counter ->
             if (node.elementType == PROPERTY) {
                 Assert.assertTrue(node.isNodeFromCompanionObject())
-                firstCounter++
+                counter.incrementAndGet()
             }
         }
         code = """
@@ -375,15 +352,12 @@ class ASTNodeUtilsTest {
                 fun foo(a: Int): Int = 2 * a
             }
         """.trimIndent()
-        var secondCounter = 0
-        applyToCode(code) { node ->
+        applyToCode(code, 1) { node, counter ->
             if (node.elementType == FUN) {
                 Assert.assertFalse(node.isNodeFromCompanionObject())
-                secondCounter++
+                counter.incrementAndGet()
             }
         }
-        Assert.assertEquals(1, firstCounter)
-        Assert.assertEquals(1, secondCounter)
     }
 
     @Test
@@ -393,9 +367,10 @@ class ASTNodeUtilsTest {
                     val id = 1
             }
         """.trimIndent()
-        applyToCode(code) { node ->
+        applyToCode(code, 1) { node, counter ->
             if (node.elementType == PROPERTY) {
                 Assert.assertTrue(node.isNodeFromObject())
+                counter.incrementAndGet()
             }
         }
     }
@@ -411,14 +386,12 @@ class ASTNodeUtilsTest {
                 fun foo(a: Int): Int = 2 * a
             }
         """.trimIndent()
-        var counter = 0
-        applyToCode(code) { node ->
+        applyToCode(code, 1) { node, counter ->
             if (node.treeParent != null && node.elementType == CLASS) {
                 Assert.assertTrue(node.isNodeFromFileLevel())
-                counter++
+                counter.incrementAndGet()
             }
         }
-        Assert.assertEquals(1, counter)
     }
 
     @Test
@@ -427,15 +400,13 @@ class ASTNodeUtilsTest {
             val x = 2
             
         """.trimIndent()
-        var counter = 0
-        applyToCode(code) { node ->
+        applyToCode(code, 8) { node, counter ->
             if (node.elementType != FILE)
                 node.getChildren(null).forEach {
                     Assert.assertFalse(it.isNodeFromFileLevel())
-                    counter++
+                    counter.incrementAndGet()
                 }
         }
-        Assert.assertEquals(8, counter)
     }
 
     @Test
@@ -453,7 +424,7 @@ class ASTNodeUtilsTest {
             }
         """.trimIndent()
         var isVal = false
-        applyToCode(code) { node ->
+        applyToCode(code, 0) { node, _ ->
             if (node.isValProperty())
                 isVal = true
         }
@@ -475,7 +446,7 @@ class ASTNodeUtilsTest {
             }
         """.trimIndent()
         var isConst = false
-        applyToCode(code) { node ->
+        applyToCode(code, 0) { node, _ ->
             if (node.isConst())
                 isConst = true
         }
@@ -497,7 +468,7 @@ class ASTNodeUtilsTest {
             }
         """.trimIndent()
         var isVar = false
-        applyToCode(code) { node ->
+        applyToCode(code, 0) { node, _ ->
             if (node.isVarProperty())
                 isVar = true
         }
@@ -518,7 +489,7 @@ class ASTNodeUtilsTest {
         val list = mutableListOf<ASTNode>()
         val leafWithTypeList = mutableListOf<ASTNode>()
         var firstNode: ASTNode? = null
-        applyToCode(code) { node ->
+        applyToCode(code, 0) { node, _ ->
             if (firstNode == null)
                 firstNode = node
             if (node.isLeaf() && node.elementType == WHITE_SPACE) {
@@ -542,7 +513,7 @@ class ASTNodeUtilsTest {
         """.trimIndent()
         var firstNode: ASTNode? = null
         var resultNode: ASTNode? = null
-        applyToCode(code) { node ->
+        applyToCode(code, 0) { node, _ ->
             if (firstNode == null)
                 firstNode = node
             if (resultNode == null && node.elementType == CLASS_BODY) {
@@ -566,7 +537,7 @@ class ASTNodeUtilsTest {
         """.trimIndent()
         var firstNode: ASTNode? = null
         val listResults = mutableListOf<ASTNode>()
-        applyToCode(code) { node ->
+        applyToCode(code, 0) { node, _ ->
             if (firstNode == null)
                 firstNode = node
             if (node.elementType == IDENTIFIER) {
@@ -590,7 +561,7 @@ class ASTNodeUtilsTest {
             }
         """.trimIndent()
         val listResults = mutableListOf<ASTNode>()
-        applyToCode(code) { node ->
+        applyToCode(code, 0) { node, _ ->
             if (node.elementType == IDENTIFIER) {
                 listResults.add(node)
             }
@@ -618,11 +589,10 @@ class ASTNodeUtilsTest {
                 private fun foo(a: Int): Int = 2 * a
             }
         """.trimIndent()
-        var firstCounter = 0
-        applyToCode(code) { node ->
+        applyToCode(code, 1) { node, counter ->
             if (node.elementType == MODIFIER_LIST) {
                 Assert.assertFalse(node.isAccessibleOutside())
-                firstCounter++
+                counter.incrementAndGet()
             }
         }
         code = """
@@ -634,15 +604,12 @@ class ASTNodeUtilsTest {
                 public fun foo(a: Int): Int = 2 * a
             }
         """.trimIndent()
-        var secondCounter = 0
-        applyToCode(code) { node ->
+        applyToCode(code, 1) { node, counter ->
             if (node.elementType == MODIFIER_LIST) {
                 Assert.assertTrue(node.isAccessibleOutside())
-                secondCounter++
+                counter.incrementAndGet()
             }
         }
-        Assert.assertEquals(1, firstCounter)
-        Assert.assertEquals(1, secondCounter)
     }
 
     @Test
@@ -652,8 +619,7 @@ class ASTNodeUtilsTest {
 
 
         """.trimIndent()
-        var counter = 0
-        applyToCode(code) { node ->
+        applyToCode(code, 1) { node, counter ->
             if (node.elementType == WHITE_SPACE && node.text.contains("\n\n")) {
                 val parent = node.treeParent
                 val firstText = node.text
@@ -661,19 +627,17 @@ class ASTNodeUtilsTest {
                 val secondText = parent.getChildren(null).last().text
                 Assert.assertEquals("\n", secondText)
                 Assert.assertEquals("\n\n", firstText)
-                counter++
+                counter.incrementAndGet()
             }
         }
-        Assert.assertEquals(1, counter)
     }
 
     @Test
     fun `moveChildBefore 1 - reverse`() {
-        var counter = 0
         applyToCode("""
                 |val a = 0
                 |val b = 1
-            """.trimMargin()) { node ->
+            """.trimMargin(), 5) { node, counter ->
             if (node.getChildren(null).isNotEmpty()) {
                 val listBeforeMove = node.getChildren(null).map { it.elementType }
                 node.getChildren(null).forEachIndexed { index, astNode ->
@@ -681,18 +645,16 @@ class ASTNodeUtilsTest {
                 }
                 val listAfterMove = node.getChildren(null).map { it.elementType }
                 Assert.assertEquals(listBeforeMove, listAfterMove.reversed())
-                counter++
+                counter.incrementAndGet()
             }
         }
-        Assert.assertEquals(5, counter)
     }
 
     @Test
     fun `moveChildBefore 2 - Should correctly move node child to the end`() {
-        var counter = 0
         applyToCode("""
                 |val a = 0
-                |val b = 1""".trimMargin()) { node ->
+                |val b = 1""".trimMargin(), 1) { node, counter ->
             if (node.elementType == FILE) {
                 val val1 = node.getFirstChildWithType(PROPERTY)!!
                 val val2 = val1.nextSibling { it.elementType == PROPERTY }!!
@@ -704,15 +666,14 @@ class ASTNodeUtilsTest {
                     |
                     """.trimMargin()
                 )
-                counter++
+                counter.incrementAndGet()
             }
         }
-        Assert.assertEquals(1, counter)
     }
 
     @Test
     fun `isChildAfterGroup test`() {
-        applyToCode("val x = 0") { node ->
+        applyToCode("val x = 0", 1) { node, counter ->
             if (node.elementType == PROPERTY) {
                 val valNode = node.getFirstChildWithType(VAL_KEYWORD)!!
                 val identifier = node.getFirstChildWithType(IDENTIFIER)!!
@@ -733,6 +694,23 @@ class ASTNodeUtilsTest {
                 Assert.assertFalse(node.isChildBeforeGroup(zero, listOf(identifier, eq)))
                 Assert.assertFalse(node.areChildrenBeforeChild(listOf(identifier, eq, zero), valNode))
                 Assert.assertFalse(node.areChildrenBeforeGroup(listOf(eq, zero), listOf(valNode, identifier)))
+
+                counter.incrementAndGet()
+            }
+        }
+    }
+
+    @Test
+    fun `test line of text extraction`() {
+        applyToCode("""
+            class Example {
+                fun
+                    foo() { }
+            }
+        """.trimIndent(), 1) { node, counter ->
+            if (node.elementType == IDENTIFIER && node.text == "foo") {
+                Assert.assertEquals("foo() { }", node.extractLineOfText())
+                counter.incrementAndGet()
             }
         }
     }
