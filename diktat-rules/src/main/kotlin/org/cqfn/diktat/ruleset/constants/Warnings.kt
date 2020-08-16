@@ -12,7 +12,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     PACKAGE_NAME_INCORRECT_PREFIX(true, "package name should start from company's domain"),
     // FixMe: should add autofix
     PACKAGE_NAME_INCORRECT_SYMBOLS(false, "package name should contain only latin (ASCII) letters or numbers. For separation of words use dot"),
-    PACKAGE_NAME_INCORRECT_PATH(true, "package name does not match the directory hierarchy for this file, the path to the file is"),
+    PACKAGE_NAME_INCORRECT_PATH(true, "package name does not match the directory hierarchy for this file, the real package name should be:"),
     INCORRECT_PACKAGE_SEPARATOR(true, "package name parts should be separated only by dots - there should be no other symbols like underscores (_)"),
     CLASS_NAME_INCORRECT(true, "class/enum/interface name should be in PascalCase and should contain only latin (ASCII) letters or numbers"),
     OBJECT_NAME_INCORRECT(true, "object structure name should be in PascalCase and should contain only latin (ASCII) letters or numbers"),
@@ -71,6 +71,8 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     LONG_LINE(true, "This line is longer than allowed"),
     REDUNDANT_SEMICOLON(true, "there should be no redundant semicolon at the end of lines"),
     WRONG_NEWLINES(true, "incorrect line breaking"),
+    // FixMe: autofixing will be added for this rule
+    STRING_CONCATENATION(false, "strings should not be concatenated using plus operator - use string templates instead if the statement fits one line")
     ;
 
     override fun ruleName(): String = this.name
