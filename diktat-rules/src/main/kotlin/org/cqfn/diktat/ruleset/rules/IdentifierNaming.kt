@@ -13,6 +13,7 @@ import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.prevCodeSibling
 import com.pinterest.ktlint.core.ast.prevSibling
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ruleset.constants.Warnings
 import org.jetbrains.kotlin.builtins.PrimitiveType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -28,6 +29,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.CLASS_NAME_INCORRECT
 import org.cqfn.diktat.ruleset.constants.Warnings.ENUM_VALUE
 import org.cqfn.diktat.ruleset.constants.Warnings.FUNCTION_NAME_INCORRECT_CASE
 import org.cqfn.diktat.ruleset.constants.Warnings.IDENTIFIER_LENGTH
+import org.cqfn.diktat.ruleset.constants.Warnings.BACKTICKS_PROHIBITED
 import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.psi.psiUtil.parents
 
@@ -71,7 +73,12 @@ class IdentifierNaming : Rule("identifier-naming") {
         isFixMode = autoCorrect
         emitWarn = emit
 
-        // isVariable will be used in future like a workaround to check corner case with variables that have length == 1
+        // backticks are prohibited everywhere except test methods that are marked with @Test annotation
+        if (isIdentifierWithBackticks(node)) {
+            return
+        }
+
+        // isVariable is used as a workaround to check corner case with variables that have length == 1
         val (identifierNodes, isVariable) = when (node.elementType) {
             // covers interface, class, enum class and annotation class names
             ElementType.CLASS -> Pair(checkCLassNamings(node), false)
@@ -83,13 +90,29 @@ class IdentifierNaming : Rule("identifier-naming") {
             ElementType.ENUM_ENTRY -> Pair(checkEnumValues(node), false)
             // covers global functions, extensions and class methods
             ElementType.FUN -> Pair(checkFunctionName(node), false)
-            // covers arguments of functions and constructors/declaration of classes
-            else -> Pair(null, true)
+            else -> Pair(null, false)
         }
 
         if (identifierNodes != null) {
             checkIdentifierLength(identifierNodes, isVariable)
         }
+    }
+
+    /**
+     * method checks that identifier is wrapped over with backticks (``)
+     */
+    private fun isIdentifierWithBackticks(node: ASTNode): Boolean {
+        val identifier = node.getIdentifierName()
+        val identifierText = identifier?.text
+        if (identifierText?.startsWith('`') == true && identifierText.endsWith('`')) {
+            // the only exception is test method with @Test annotation
+            if (!(node.elementType == ElementType.FUN && node.hasTestAnnotation())) {
+                BACKTICKS_PROHIBITED.warn(configRules, emitWarn, isFixMode, identifierText, identifier.startOffset)
+            }
+            return true
+        }
+
+        return false
     }
 
     /**
@@ -244,12 +267,13 @@ class IdentifierNaming : Rule("identifier-naming") {
      * 1) function names should be in camel case
      * 2) methods that return boolean value should have "is"/"has" prefix
      * 3) FixMe: The function name is usually a verb or verb phrase (need to add check/fix for it)
+     * 4) backticks are prohibited in the naming of non-test methods
      */
     private fun checkFunctionName(node: ASTNode): List<ASTNode> {
-        val functionName = node.getIdentifierName()
+        val functionName = node.getIdentifierName()!!
 
         // basic check for camel case
-        if (!functionName!!.text.isLowerCamelCase()) {
+        if (!functionName.text.isLowerCamelCase()) {
             FUNCTION_NAME_INCORRECT_CASE.warnAndFix(configRules, emitWarn, isFixMode, functionName.text, functionName.startOffset) {
                 // FixMe: add tests for this
                 (functionName as LeafPsiElement).replaceWithText(functionName.text.toLowerCamelCase())
