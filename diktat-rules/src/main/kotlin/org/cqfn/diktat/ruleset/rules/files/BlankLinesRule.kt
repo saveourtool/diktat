@@ -14,6 +14,11 @@ import org.cqfn.diktat.ruleset.utils.leaveExactlyNumNewLines
 import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
+/**
+ * This rule checks usage of blank lines in code.
+ * 1. Checks that no more than two consecutive blank lines are used in a row
+ * 2. Checks that blank lines are not put in the beginning or at the end of code blocks with curly braces
+ */
 class BlankLinesRule : Rule("blank-lines") {
     private lateinit var configRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
