@@ -20,6 +20,7 @@ import com.pinterest.ktlint.core.ast.ElementType.ENUM_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.EQ
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_LITERAL
+import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.IF
 import com.pinterest.ktlint.core.ast.ElementType.IMPORT_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_ARGUMENT
@@ -83,7 +84,7 @@ class NewlinesRule : Rule("newlines") {
     companion object {
         // fixme: these token sets can be not full, need to add new once as corresponding cases are discovered.
         // error is raised if these operators are prepended by newline
-        private val lineBreakAfterOperators = TokenSet.create(ANDAND, OROR, PLUS, PLUSEQ, MINUS, MINUSEQ, MUL, MULTEQ, DIV, DIVEQ, EQ)
+        private val lineBreakAfterOperators = TokenSet.create(ANDAND, OROR, PLUS, PLUSEQ, MINUS, MINUSEQ, MUL, MULTEQ, DIV, DIVEQ)
 
         // error is raised if these operators are followed by newline
         private val lineBreakBeforeOperators = TokenSet.create(DOT, SAFE_ACCESS, ELVIS, COLONCOLON)
@@ -106,7 +107,7 @@ class NewlinesRule : Rule("newlines") {
 
         when (node.elementType) {
             SEMICOLON -> handleSemicolon(node)
-            in lineBreakAfterOperators -> handleOperatorWithLineBreakAfter(node)
+            OPERATION_REFERENCE, EQ -> handleOperatorWithLineBreakAfter(node)
             in lineBreakBeforeOperators -> handleOperatorWithLineBreakBefore(node)
             LPAR -> handleOpeningParentheses(node)
             COMMA -> handleComma(node)
@@ -125,11 +126,17 @@ class NewlinesRule : Rule("newlines") {
     }
 
     private fun handleOperatorWithLineBreakAfter(node: ASTNode) {
+        // [node] should be either EQ or OPERATION_REFERENCE which has single child
+        if (!(node.elementType == EQ || node.firstChildNode.elementType in lineBreakAfterOperators || node.isInfixCall())) {
+            return
+        }
+
         // We need to check newline only if prevCodeSibling exists. It can be not the case for unary operators, which are placed
         // at the beginning of the line.
-        if (node.selfOrOperationReferenceParent().prevCodeSibling()?.isFollowedByNewline() == true) {
-            WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, "should break a line after and not before ${node.text}", node.startOffset) {
-                node.selfOrOperationReferenceParent().run {
+        if (node.prevCodeSibling()?.isFollowedByNewline() == true) {
+            WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
+                    "should break a line after and not before ${node.text}", node.startOffset) {
+                node.run {
                     treeParent.removeChild(treePrev)
                     if (!isFollowedByNewline()) {
                         treeParent.appendNewlineMergingWhiteSpace(treeNext.takeIf { it.elementType == WHITE_SPACE }, treeNext)
@@ -279,8 +286,7 @@ class NewlinesRule : Rule("newlines") {
      * This function is needed because many operators are represented as a single child of [OPERATION_REFERENCE] node
      * e.g. [ANDAND] is a single child of [OPERATION_REFERENCE]
      */
-    private fun ASTNode.selfOrOperationReferenceParent() =
-            treeParent.takeIf { it.elementType in listOf(OPERATION_REFERENCE) } ?: this
+    private fun ASTNode.selfOrOperationReferenceParent() = treeParent.takeIf { it.elementType == OPERATION_REFERENCE } ?: this
 
     private fun ASTNode.isSingleDotStatementOnSingleLine() = parents()
             .takeWhile { it.elementType in expressionTypes }
@@ -310,4 +316,11 @@ class NewlinesRule : Rule("newlines") {
 
     private fun ASTNode.getParentExpressions() =
             parents().takeWhile { it.elementType in chainExpressionTypes && it.elementType != LAMBDA_ARGUMENT }
+
+    /**
+     * This method should be called on OPERATION_REFERENCE in the middle of BINARY_EXPRESSION
+     */
+    private fun ASTNode.isInfixCall() = elementType == OPERATION_REFERENCE &&
+            firstChildNode.elementType == IDENTIFIER &&
+            treeParent.elementType == BINARY_EXPRESSION
 }

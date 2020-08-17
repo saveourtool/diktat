@@ -126,6 +126,74 @@ class NewlinesRuleWarnTest {
     }
 
     @Test
+    fun `line breaking after infix functions - positive example`() {
+        lintMethod(NewlinesRule(),
+                """
+                    |fun foo() {
+                    |    true xor
+                    |        false
+                    |        
+                    |    true
+                    |        .xor(false)
+                    |    
+                    |    (true xor
+                    |        false)
+                    |
+                    |    true xor false or true
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    fun `line breaking after infix functions`() {
+        lintMethod(NewlinesRule(),
+                """
+                    |fun foo() {
+                    |    (true 
+                    |        xor false)
+                    |    
+                    |    (true
+                    |        xor
+                    |        false)
+                    |}
+                """.trimMargin(),
+                LintError(3, 9, ruleId, "$shouldBreakAfter xor", true),
+                LintError(6, 9, ruleId, "$shouldBreakAfter xor", true)
+        )
+    }
+
+    @Test
+    fun `line breaking after infix functions - several functions in a chain`() {
+        lintMethod(NewlinesRule(),
+                """
+                    |fun foo() {
+                    |    (true xor false
+                    |        or true
+                    |    )
+                    |    
+                    |    (true 
+                    |        xor false
+                    |        or true
+                    |    )
+                    |    
+                    |    (true
+                    |        xor
+                    |        false
+                    |        or
+                    |        true
+                    |    )
+                    |}
+                """.trimMargin(),
+                LintError(3, 9, ruleId, "$shouldBreakAfter or", true),
+                LintError(7, 9, ruleId, "$shouldBreakAfter xor", true),
+                LintError(8, 9, ruleId, "$shouldBreakAfter or", true),
+                LintError(12, 9, ruleId, "$shouldBreakAfter xor", true),
+                LintError(14, 9, ruleId, "$shouldBreakAfter or", true)
+        )
+    }
+
+    @Test
     fun `chained calls should follow functional style - positive example`() {
         lintMethod(NewlinesRule(),
                 """
