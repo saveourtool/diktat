@@ -1,13 +1,13 @@
 package org.cqfn.diktat.test.framework.processing
 
 import com.github.difflib.DiffUtils
-import com.github.difflib.algorithm.DiffException
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths
-import java.util.*
+import java.util.ArrayList
+import java.util.StringJoiner
 import java.util.stream.Collectors
 
 class FileComparator {
@@ -47,7 +47,7 @@ class FileComparator {
 |                        See difference below:
 |                           Expected  vs  Actual ${System.lineSeparator()}$deltasJoiner""".trimMargin())
 
-        } catch (e: DiffException) {
+        } catch (e: RuntimeException) {
             log.error("Not able to prepare diffs between <${expectedResultFile.name}> and <${actualResultList}>", e)
         }
         return false

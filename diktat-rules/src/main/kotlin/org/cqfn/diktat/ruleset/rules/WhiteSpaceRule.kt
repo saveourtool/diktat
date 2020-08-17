@@ -37,6 +37,11 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.psi.psiUtil.parents
 
+/**
+ * This rule checks usage of whitespaces for horizontal code separation
+ * 1. There should be single space between keyword and (, unless keyword is `constructor`
+ * 2. There should be single space between keyword and {
+ */
 @Suppress("ForbiddenComment")
 class WhiteSpaceRule : Rule("horizontal-whitespace") {
     companion object {
