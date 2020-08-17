@@ -69,8 +69,11 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     EMPTY_BLOCK_STRUCTURE_ERROR(true, "incorrect format of empty block"),
     MORE_THAN_ONE_STATEMENT_PER_LINE(true, "There should not be more than one code statement in one line"),
     LONG_LINE(true, "This line is longer than allowed"),
+    BACKTICKS_PROHIBITED(false, "Backticks should not be used in identifier's naming. The only exception test methods marked with @Test annotation"),
     REDUNDANT_SEMICOLON(true, "there should be no redundant semicolon at the end of lines"),
     WRONG_NEWLINES(true, "incorrect line breaking"),
+    TOO_MANY_BLANK_LINES(true, "too many consecutive blank lines"),
+    WRONG_WHITESPACE(true, "incorrect usage of whitespaces for code separation"),
     ;
 
     override fun ruleName(): String = this.name

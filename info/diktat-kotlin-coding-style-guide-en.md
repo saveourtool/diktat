@@ -131,6 +131,10 @@ No special prefix or suffix should be used in these names. For example, the foll
    ```
    The only exception can be - is function names in Unit tests.
 
+5. Backticks (``) should not be used for identifiers except names of test methods (marked with @Test annotation):
+```kotlin
+     @Test fun `my test`() { /*...*/ }
+``` 
 
  **Exceptions**
  - i,j,k variables that are used in loops is a standard for industry. It is allowed to use 1 symbol for such variables.
@@ -252,6 +256,7 @@ Correct examples：
  This includes basic types, strings, immutable types and immutable collections of immutable types. If any state of an object can be changed, then this is not a constant.
 
 2. Constant names should contain only UPPERCASE letters, separated by underscores. They should have val or const val modifier to explicitly make them final.
+ In most cases if you need to specify a constant value - you need to create it with "const val" modifier. Definitely not all "val" variables are constants. 
 
 3. Such objects that have immutable content like Logger, Lock, e.t.c. can be in uppercase as constant or can have camel case as regular variables.
 
@@ -966,7 +971,7 @@ This international code style prohibits non-latin (non ASCII) symbols in the cod
 1. Compared to Java Kotlin allows not to put semicolon (';') after each statement separated by newline.
  There should be no redundant semicolon at the end of lines.
  
- In case when newline is needed to split the line, it should be placed after operators like &&/||/+/e.t.c
+ In case when newline is needed to split the line, it should be placed after operators like &&/||/+/e.t.c and all *infix functions* (for example - [xor](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/xor.html)).
  But newline should be placed before operators like ('.', '?.', '?:', '::', e.t.c).
  
 * Note, that you need to follow functional style (i.e. each function call in a chain with `.` should start at a new line if chain of functions contains more than one call):
@@ -1021,6 +1026,23 @@ use:
 override fun toString() = "hi"
 ```
 
+7. If argument list in function declaration (including constructors)/function call contains more than 2 arguments - these arguments should be split by newlines in the following style:
+ ```kotlin
+val a = checkMissingPackageName(
+        node,
+        realPackageName,
+        params.fileName!!
+)
+
+fun foo(
+        a: String,
+        b: String,
+        c: String
+) {
+
+}
+ ```
+
 ### <a name="c3.5"></a>Blank lines
 
 ### <a name="s3.6"></a>Recommendation 3.6: Reduce unnecessary blank lines and keep the code compact
@@ -1045,13 +1067,16 @@ fun baz() {
 
 ### <a name="s3.7"></a> Recommendation 3.7: Usage of whitespace for code separation
 
-  1. Any keywords (like 'if', 'when', 'for', e.t.c) should be separated with a single whitespace from the opening parenthesis.
-     Only exceptions are: 'super' and 'constructor' keywords. They should not be separated from a parenthesis.
+  Note: this rule corresponds to the case when symbols are located on the same line. In some cases there could be a line break instead of a space,
+  but this logic is described in other rules.
 
-  2. Separate any keywords (such as `else` or `catch`, etc.) from the opening brace ('{') with a single whitespace.
+  1. Any keywords (like 'if', 'when', 'for', e.t.c) should be separated with a single whitespace from the opening parenthesis.
+     Only exceptions is 'constructor' keyword. It should not be separated from a parenthesis.
+
+  2. Separate any keywords (such as `else` or `try`, etc.) from the opening brace ('{') with a single whitespace.
   
   3. Use single whitespace before any opening brace (`{`).
-     Only exception is passing a lambda as an argument inside parenthesis:
+     Only exception is passing of a lambda as a parameter inside parenthesis:
      ```kotlin
          private fun foo(a: (Int) -> Int, b: Int) {}
          foo({x: Int -> x}, 5) // no space before '{'
@@ -1059,13 +1084,13 @@ fun baz() {
 
   4. Single whitespace should be placed on both sides of binary operators. This also applies to operator-like symbols, for example: 
 
-     - Colon in generic structures with 'where' keyword： `where T : Type`
-     - Arrow in lambdas： `(str: String) -> str.length()`
+     - Colon in generic structures with 'where' keyword: `where T : Type`
+     - Arrow in lambdas: `(str: String) -> str.length()`
 
   **Exceptions：**
 
   - Two colons (`::`) are written without spaces: `Object::toString`
-  - Dot separator (`.`) that stays on the same line with an object name: `object.toString()`
+  - Dot separator (`.`) that stays on the same line with an object name `object.toString()`
 
   5. Spaces should be used after ',',':',';' (except cases when those symbols are in the end of line). There should be no whitespaces in the end of line.
 
@@ -1073,7 +1098,14 @@ fun baz() {
   
   7. When using '[]' operator (get/set) there should be *no* spaces between identifier and '[': `someList[0]`
   
-  8. There should be no space between a method name and a parenthesis: `foo() {}`
+  8. There should be no space between a method or constructor name (both at declaration and at call site) and a parenthesis: `foo() {}`
+  Note that this subrule is related only to spaces, whitespace rules are described in [rule 3.6](#r3.6). This rule does not prohibit, for example, the following code:
+  ```kotlin
+    fun foo
+    (
+        a: String
+    )
+  ```
 
 ### <a name="s3.8"></a>Recommendation 3.8: No spaces should be inserted for horizontal alignment
 
@@ -1245,10 +1277,10 @@ And better use other names instead of these identifiers.
 | n,h           | h,n                      | nr, head, height |
 | rn, m         | m,rn                     | mbr, item        |
 
-### <a name="r3.8"></a>Rule 3.8: Concatenation of Strings is prohibited, use raw strings and string templates instead.
+### <a name="r3.8"></a>Rule 3.8: Concatenation Strings is prohibited when string fits one line, use raw strings and string templates instead.
 Kotlin significantly enhanced work with Strings:
 [String templates](https://kotlinlang.org/docs/reference/basic-types.html#string-templates), [Raw strings](https://kotlinlang.org/docs/reference/basic-types.html#string-literals)
-That's why code looks much better when instead of using explicit concatenation to use proper Kotlin strings.
+That's why code looks much better when instead of using explicit concatenation to use proper Kotlin strings in case your line is not too long and you do not need to split it with newlines.
 
 Bad example:
 ```kotlin

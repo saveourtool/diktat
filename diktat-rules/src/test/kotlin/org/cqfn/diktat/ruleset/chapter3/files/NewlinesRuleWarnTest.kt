@@ -16,6 +16,9 @@ class NewlinesRuleWarnTest {
     private val functionalStyleWarn = "${WRONG_NEWLINES.warnText()} should follow functional style at"
     private val lParWarn = "${WRONG_NEWLINES.warnText()} opening parentheses should not be separated from constructor or function name"
     private val commaWarn = "${WRONG_NEWLINES.warnText()} newline should be placed only after comma"
+    private val lambdaWithArrowWarn = "${WRONG_NEWLINES.warnText()} in lambda with several lines in body newline should be placed after an arrow"
+    private val lambdaWithoutArrowWarn = "${WRONG_NEWLINES.warnText()} in lambda with several lines in body newline should be placed after an opening brace"
+    private val singleReturnWarn = "${WRONG_NEWLINES.warnText()} functions with single return statement should be simplified to expression body"
 
     @Test
     fun `should forbid EOL semicolons`() {
@@ -331,6 +334,99 @@ class NewlinesRuleWarnTest {
     }
 
     @Test
+    fun `newline should be placed only after comma - positive example`() {
+        lintMethod(NewlinesRule(),
+                """
+                    |fun foo(a: Int,
+                    |        b: Int) {
+                    |    bar(a, b)
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    fun `in lambdas newline should be placed after an arrow - positive example`() {
+        lintMethod(NewlinesRule(),
+                """
+                    |class Example {
+                    |    val a = list.map { elem ->
+                    |        foo(elem)
+                    |    }
+                    |    val b = list.map { elem: Type ->
+                    |        foo(elem)
+                    |    }
+                    |    val c = list.map { 
+                    |        bar(elem)
+                    |    }
+                    |    val d = list.map { elem -> bar(elem) }
+                    |    val e = list.map { elem: Type -> bar(elem) }
+                    |    val f = list.map { bar(elem) }
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    fun `in lambdas newline should be placed after an arrow`() {
+        lintMethod(NewlinesRule(),
+                """
+                    |class Example {
+                    |    val a = list.map {
+                    |        elem ->
+                    |            foo(elem)
+                    |    }
+                    |    val b = list.map { elem: Type 
+                    |        ->
+                    |            foo(elem)
+                    |    }
+                    |    val c = list.map { elem
+                    |        -> bar(elem)
+                    |    }
+                    |    val d = list.map { elem: Type -> bar(elem)
+                    |        foo(elem)
+                    |    }
+                    |    val e = list.map { bar(elem)
+                    |        foo(elem)
+                    |    }
+                    |}
+                """.trimMargin(),
+                LintError(3, 14, ruleId, lambdaWithArrowWarn, true),
+                LintError(7, 9, ruleId, lambdaWithArrowWarn, true),
+                LintError(11, 9, ruleId, lambdaWithArrowWarn, true),
+                LintError(13, 35, ruleId, lambdaWithArrowWarn, true),
+                LintError(16, 22, ruleId, lambdaWithoutArrowWarn, true)
+        )
+    }
+
+    @Test
+    fun `should warn if function consists of a single return statement - positive example`() {
+        lintMethod(NewlinesRule(),
+                """
+                    |fun foo() = "lorem ipsum"
+                    |
+                    |fun bar(): String {
+                    |    baz()
+                    |    return "lorem ipsum"
+                    |}
+                    |
+                    |fun qux(list: List<Int>): Int {
+                    |    list.filter {
+                    |        return@filter condition(it)
+                    |    }.forEach {
+                    |        return 0
+                    |    }
+                    |    return list.first()
+                    |}
+                    |
+                    |fun quux() { return }
+                    |
+                    |fun quux2(): Unit { return }
+                """.trimMargin()
+        )
+    }
+
+    @Test
     fun `long argument list should be split into several lines - positive example`() {
         lintMethod(NewlinesRule(),
                 """
@@ -366,6 +462,18 @@ class NewlinesRuleWarnTest {
                 """.trimMargin(),
                 LintError(3, 14, ruleId, "${WRONG_NEWLINES.warnText()} argument list should be split into several lines", true),
                 LintError(7, 12, ruleId, "${WRONG_NEWLINES.warnText()} argument list should be split into several lines", true)
+        )
+    }
+
+    @Test
+    fun `should warn if function consists of a single return statement`() {
+        lintMethod(NewlinesRule(),
+                """
+                    |fun foo(): String {
+                    |    return "lorem ipsum"
+                    |}
+                """.trimMargin(),
+                LintError(2, 5, ruleId, singleReturnWarn, true)
         )
     }
 }

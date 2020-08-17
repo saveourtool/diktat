@@ -269,5 +269,15 @@
     "name": "WRONG_NEWLINES",
     "enabled": true,
     "configuration" : {}
+  },
+  {
+    "name": "TOO_MANY_BLANK_LINES",
+    "enabled": true,
+    "configuration": {}  
+  },
+  {
+    "name": "WRONG_WHITESPACE",
+    "enabled": true,
+    "configuration": {}
   }
 ]

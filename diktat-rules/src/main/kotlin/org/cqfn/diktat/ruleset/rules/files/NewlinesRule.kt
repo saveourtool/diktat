@@ -3,9 +3,12 @@ package org.cqfn.diktat.ruleset.rules.files
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.ANDAND
+import com.pinterest.ktlint.core.ast.ElementType.ARROW
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.CALLABLE_REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.COLON
 import com.pinterest.ktlint.core.ast.ElementType.COLONCOLON
 import com.pinterest.ktlint.core.ast.ElementType.COMMA
 import com.pinterest.ktlint.core.ast.ElementType.DIV
@@ -16,6 +19,7 @@ import com.pinterest.ktlint.core.ast.ElementType.ELVIS
 import com.pinterest.ktlint.core.ast.ElementType.ENUM_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.EQ
 import com.pinterest.ktlint.core.ast.ElementType.FUN
+import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_LITERAL
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.IF
 import com.pinterest.ktlint.core.ast.ElementType.IMPORT_DIRECTIVE
@@ -31,6 +35,8 @@ import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.PLUS
 import com.pinterest.ktlint.core.ast.ElementType.PLUSEQ
 import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
+import com.pinterest.ktlint.core.ast.ElementType.RETURN
+import com.pinterest.ktlint.core.ast.ElementType.RETURN_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS
 import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.SECONDARY_CONSTRUCTOR
@@ -38,6 +44,7 @@ import com.pinterest.ktlint.core.ast.ElementType.SEMICOLON
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.nextCodeSibling
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevCodeSibling
 import org.cqfn.diktat.common.config.rules.RulesConfig
@@ -45,15 +52,21 @@ import org.cqfn.diktat.ruleset.constants.Warnings.REDUNDANT_SEMICOLON
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_NEWLINES
 import org.cqfn.diktat.ruleset.rules.getDiktatConfigRules
 import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
+import org.cqfn.diktat.ruleset.utils.emptyBlockList
 import org.cqfn.diktat.ruleset.utils.extractLineOfText
 import org.cqfn.diktat.ruleset.utils.getAllLeafsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.isBeginByNewline
 import org.cqfn.diktat.ruleset.utils.isEol
 import org.cqfn.diktat.ruleset.utils.isFollowedByNewline
 import org.cqfn.diktat.ruleset.utils.isSingleLineIfElse
+import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
+import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.psi.psiUtil.children
 import org.jetbrains.kotlin.psi.psiUtil.parents
+import org.jetbrains.kotlin.psi.psiUtil.siblings
 
 /**
  * Rule that checks line break styles.
@@ -63,6 +76,8 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  * 4. Forces functional style of chained dot call expressions with exception
  * 5. Checks that newline is placed after assignment operator, not before
  * 6. Ensures that function or constructor name isn't separated from `(` by space or newline
+ * 7. Ensures that in multiline lambda newline follows arrow or, in case of lambda without explicit parameters, opening brace
+ * 8. Checks that functions with single `return` are simplified to functions with expression body
  */
 @Suppress("ForbiddenComment")
 class NewlinesRule : Rule("newlines") {
@@ -96,6 +111,8 @@ class NewlinesRule : Rule("newlines") {
             in lineBreakBeforeOperators -> handleOperatorWithLineBreakBefore(node)
             LPAR -> handleOpeningParentheses(node)
             COMMA -> handleComma(node)
+            BLOCK -> handleLambdaBody(node)
+            RETURN -> handleReturnStatement(node)
         }
     }
 
@@ -195,6 +212,74 @@ class NewlinesRule : Rule("newlines") {
                 prevNewLine.treeParent.removeChild(prevNewLine)
             }
         }
+    }
+
+    private fun handleLambdaBody(node: ASTNode) {
+        if (node.treeParent.elementType == FUNCTION_LITERAL) {
+            val isSingleLineLambda = node.treeParent.text.lines().size == 1
+            val arrowNode = node.siblings(false).find { it.elementType == ARROW }
+            if (!isSingleLineLambda && arrowNode != null) {
+                // lambda with explicit arguments
+                val newlinesBeforeArrow = arrowNode
+                        .siblings(false)
+                        .filter { it.elementType == WHITE_SPACE && it.textContains('\n') }
+                        .toList()
+                if (newlinesBeforeArrow.isNotEmpty() || !arrowNode.isFollowedByNewline()) {
+                    WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
+                            "in lambda with several lines in body newline should be placed after an arrow", arrowNode.startOffset) {
+                        // fixme: replacement logic can be sophisticated for better appearance?
+                        newlinesBeforeArrow.forEach { it.treeParent.replaceChild(it, PsiWhiteSpaceImpl(" ")) }
+                        arrowNode.treeNext.takeIf { it.elementType == WHITE_SPACE }?.leaveOnlyOneNewLine()
+                    }
+                }
+            } else if (!isSingleLineLambda && arrowNode == null) {
+                // lambda without arguments
+                val lbraceNode = node.treeParent.firstChildNode
+                if (!lbraceNode.isFollowedByNewline()) {
+                    WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
+                            "in lambda with several lines in body newline should be placed after an opening brace", lbraceNode.startOffset) {
+                        lbraceNode.treeNext.let {
+                            if (it.elementType == WHITE_SPACE) {
+                                it.leaveOnlyOneNewLine()
+                            } else {
+                                it.treeParent.addChild(PsiWhiteSpaceImpl("\n"), it)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun handleReturnStatement(node: ASTNode) {
+        val blockNode = node.treeParent.takeIf { it.elementType == BLOCK && it.treeParent.elementType == FUN }
+        val returnsUnit = node.children().count() == 1  // the only child is RETURN_KEYWORD
+        if (blockNode == null || returnsUnit) {
+            // function is either already with expression body or definitely can't be converted to it
+            return
+        }
+        blockNode
+                .children()
+                .filterNot { it.elementType in emptyBlockList }
+                .toList()
+                .takeIf { it.size == 1 }
+                ?.also {
+                    WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
+                            "functions with single return statement should be simplified to expression body", node.startOffset) {
+                        val funNode = blockNode.treeParent
+                        // if return type is not Unit, then there should be type specification
+                        // otherwise code won't compile and colon being null is correctly invalid
+                        val colon = funNode.findChildByType(COLON)!!
+                        val expression = node.findChildByType(RETURN_KEYWORD)!!.nextCodeSibling()!!
+                        funNode.apply {
+                            removeRange(colon, null)
+                            addChild(PsiWhiteSpaceImpl(" "), null)
+                            addChild(LeafPsiElement(EQ, "="), null)
+                            addChild(PsiWhiteSpaceImpl(" "), null)
+                            addChild(expression.clone() as ASTNode, null)
+                        }
+                    }
+                }
     }
 
     /**
