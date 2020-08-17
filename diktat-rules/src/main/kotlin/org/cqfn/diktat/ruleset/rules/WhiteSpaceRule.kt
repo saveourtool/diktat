@@ -20,6 +20,11 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 
+/**
+ * This rule checks usage of whitespaces for horizontal code separation
+ * 1. There should be single space between keyword and (, unless keyword is `constructor`
+ * 2. There should be single space between keyword and {
+ */
 class WhiteSpaceRule : Rule("horizontal-whitespace") {
     companion object {
         private val keywordsWithBraces = listOf(ELSE_KEYWORD, TRY_KEYWORD, DO_KEYWORD, WHEN_KEYWORD, FINALLY_KEYWORD, INIT_KEYWORD)
