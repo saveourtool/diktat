@@ -1,6 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter1
 
 import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.ruleset.constants.Warnings.BACKTICKS_PROHIBITED
 import org.cqfn.diktat.ruleset.constants.Warnings.CLASS_NAME_INCORRECT
 import org.cqfn.diktat.ruleset.constants.Warnings.CONSTANT_UPPERCASE
 import org.cqfn.diktat.ruleset.constants.Warnings.ENUM_VALUE
@@ -413,5 +414,57 @@ class IdentifierNamingWarnTest {
                 """.trimIndent()
 
         lintMethod(IdentifierNaming(), code)
+    }
+
+    @Test
+    fun `backticks should be used only with functions from tests (function)`() {
+        val code =
+                """
+                    fun `foo function`(`argument with backstick`: String) {
+                        val `foo variable` = ""
+                    }
+                """.trimIndent()
+
+        lintMethod(IdentifierNaming(), code,
+                LintError(1, 5, ruleId, "${BACKTICKS_PROHIBITED.warnText()} `foo function`"),
+                LintError(1, 20, ruleId, "${BACKTICKS_PROHIBITED.warnText()} `argument with backstick`"),
+                LintError(2, 9, ruleId, "${BACKTICKS_PROHIBITED.warnText()} `foo variable`")
+        )
+    }
+
+    @Test
+    fun `backticks should be used only with functions from tests (test method)`() {
+        val code =
+                """                    
+                    @Test
+                    fun `test function with backstick`() {                        
+                    }
+                """.trimIndent()
+
+        lintMethod(IdentifierNaming(), code)
+    }
+
+    @Test
+    fun `backticks should be used only with functions from tests (test method with variables)`() {
+        val code =
+                """                    
+                    @Test
+                    fun `test function with backstick`() {
+                        val `should not be used` = ""
+                        
+                    }
+                """.trimIndent()
+
+        lintMethod(IdentifierNaming(), code, LintError(3, 9, ruleId, "${BACKTICKS_PROHIBITED.warnText()} `should not be used`"))
+    }
+
+    @Test
+    fun `backticks should be used only with functions from tests (class)`() {
+        val code =
+                """
+                    class `my class name` {}
+                """.trimIndent()
+
+        lintMethod(IdentifierNaming(), code, LintError(1, 7, ruleId, "${BACKTICKS_PROHIBITED.warnText()} `my class name`"))
     }
 }
