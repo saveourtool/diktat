@@ -21,4 +21,6 @@ fun foo() {
     val longStringExpression = "First part" + "second Part"
 
     val longStringExpression = "First very long part" + "second Part"
+
+    val veryLooooooooooooooooooooooooooooooongVal = "text"
 }

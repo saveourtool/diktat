@@ -9,7 +9,7 @@ fun foo() {
             namesList.map {
                 it.subSequence(0, 1) // This is
 // another comment inside map
-                it.split("this is very long regex") // this comment start to the right of max length
+                it.split("this is long regex") // this comment start to the right of max length
             }
         }
     }

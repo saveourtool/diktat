@@ -19,6 +19,7 @@ import com.pinterest.ktlint.core.ast.ElementType.INTEGER_CONSTANT
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_MARKDOWN_INLINE_LINK
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_TEXT
 import com.pinterest.ktlint.core.ast.ElementType.LITERAL_STRING_TEMPLATE_ENTRY
+import com.pinterest.ktlint.core.ast.ElementType.LPAR
 import com.pinterest.ktlint.core.ast.ElementType.OPEN_QUOTE
 import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
@@ -28,7 +29,7 @@ import com.pinterest.ktlint.core.ast.ElementType.PREFIX_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.REGULAR_STRING_PART
-import com.pinterest.ktlint.core.ast.ElementType.SHORT_STRING_TEMPLATE_ENTRY
+import com.pinterest.ktlint.core.ast.ElementType.RPAR
 import com.pinterest.ktlint.core.ast.ElementType.STRING_TEMPLATE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.nextSibling
@@ -123,10 +124,6 @@ class LineLength : Rule("line-length") {
     }
 
     private fun fixError(wrongNode: ASTNode, configuration: LineLengthConfiguration) {
-        if (wrongNode.elementType == EOL_COMMENT) {
-            fixComment(wrongNode, configuration)
-            return
-        }
         var parent = wrongNode
         do {
             when (parent.elementType) {
@@ -143,6 +140,10 @@ class LineLength : Rule("line-length") {
                     fixProperty(parent, configuration)
                     return
                 }
+                EOL_COMMENT -> {
+                    fixComment(wrongNode, configuration)
+                    return
+                }
                 else -> parent = parent.treeParent
             }
         } while (parent.treeParent != null)
@@ -150,8 +151,6 @@ class LineLength : Rule("line-length") {
 
     private fun fixComment(wrongNode: ASTNode, configuration: LineLengthConfiguration) {
         val leftOffset = positionByOffset(wrongNode.startOffset).second
-        if (leftOffset >= configuration.lineLength)
-            return
         val indexLastSpace = wrongNode.text.substring(0, configuration.lineLength.toInt() - leftOffset).lastIndexOf(' ')
         if (indexLastSpace == -1)
             return
@@ -177,16 +176,17 @@ class LineLength : Rule("line-length") {
         var binaryText = ""
         binList.forEachIndexed { index, astNode ->
             if (index == 0) {
+                binaryText += astNode.treeParent.prevSibling { it.elementType == LPAR}?.text ?: ""
                 binaryText += astNode.prevSibling { it.elementType == WHITE_SPACE}?.text ?: ""
                 binaryText += astNode.text
                 binaryText += astNode.nextSibling { it.elementType == WHITE_SPACE}?.text ?: ""
-                if (astNode.treeNext != null && astNode.treeNext.elementType == WHITE_SPACE)
-                    binaryText += astNode.treeNext.text
             } else {
+                binaryText += astNode.treeParent.prevSibling { it.elementType == LPAR}?.text ?: ""
                 binaryText += astNode.prevSibling { it.elementType == WHITE_SPACE}?.text ?: ""
                 binaryText += astNode.treeParent.findChildByType(OPERATION_REFERENCE)!!.text
                 binaryText += astNode.text
                 binaryText += astNode.nextSibling { it.elementType == WHITE_SPACE}?.text ?: ""
+                binaryText += astNode.treeParent.nextSibling { it.elementType == RPAR}?.text ?: ""
                 if (leftOffset + binaryText.length > configuration.lineLength) {
                     val commonParent = astNode.parent({ it in binList[index - 1].parents() })!!
                     val nextNode = commonParent.findChildByType(OPERATION_REFERENCE)!!.treeNext
@@ -222,24 +222,18 @@ class LineLength : Rule("line-length") {
 
     private fun dfsForProperty(node: ASTNode, binList: MutableList<ASTNode>) {
         node.getChildren(null).forEach {
-            if (it.elementType in PROPERTY_LIST) {
-                if (it.elementType != REFERENCE_EXPRESSION || it.treeParent.elementType != SHORT_STRING_TEMPLATE_ENTRY)
+            if (it.elementType in PROPERTY_LIST)
                     binList.add(it)
-            }
             dfsForProperty(it, binList)
         }
     }
 
     private fun fixProperty(parent: ASTNode, configuration: LineLengthConfiguration) {
         if (!parent.hasChildOfType(STRING_TEMPLATE)) {
-            if (parent.hasChildOfType(BINARY_EXPRESSION)) {
-                val leftOffset = positionByOffset(parent.findChildByType(BINARY_EXPRESSION)!!.startOffset).second
-                fixCondition(parent, configuration, leftOffset, true)
-            }
-            if (parent.hasChildOfType(PARENTHESIZED)) {
-                val newParent = parent.findChildByType(PARENTHESIZED)!!
+            val newParent = parent.findChildByType(PARENTHESIZED) ?: parent
+            if (newParent.hasChildOfType(BINARY_EXPRESSION)) {
                 val leftOffset = positionByOffset(newParent.findChildByType(BINARY_EXPRESSION)!!.startOffset).second
-                fixCondition(newParent, configuration, leftOffset)
+                fixCondition(newParent, configuration, leftOffset, !parent.hasChildOfType(PARENTHESIZED))
             }
         } else
             createNodes(parent, configuration)
