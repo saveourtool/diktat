@@ -1,24 +1,29 @@
 package test.paragraph3.long_line
 
 fun foo() {
-    val longsNames = "dddddddddddddddddddddddd" +
-"ddddddddddddddddddddddddddddddddddddddddddddd" +
-"ddddddddddddddddddddddddddddddddddddddddddddd" +
-"ddddddddddddddddddddd"
+    val str = "This is very long string that" +
+" should be split"
 
-    val LongNumber = 3876428746297648562792543387642874629764856
+    fun foo() {
+        val veryLoooooooooooooooooongNamesList = listOf<String>("Jack", "Nick")
+        veryLoooooooooooooooooongNamesList.forEach { name ->
+            if (name == "Nick") {
+                veryLoooooooooooooooooongNamesList.map { val str = "This string shouldn't be split"}
+                name.map { val str = "This" +
+" string should be split" }
+            }
+        }
+    }
 
-    val longProp = dfs +
-3876428746297648562792543387642874629764856.6485627925433876 +
-38764287462976485627925433876428746.3876428746297648562792543387642874629764856
+    val longIntExpression = 12345 + 12345 + 12345 +
+ 12345
 
-    val longProp = 3876428746297648562792543387642874629764856 +
-dfnvdfvndnvdnvkndkvndknvkdnvfkdnvkjndkjvndkjvfndkjvndkjnvkjdnvkjdnvkjdnvkjndvf
+    val LongWithVar2 = "very long woooooordsdcsdcsdcsdc " +
+            "$variable"
 
-    val longProp = 12 + sd +
-"sdkvjhdfkjhvdjkfhvkjdhfvjkdfkvhdkfjvhdkjvhdkjfvhkdjhfvkdjhvsdscsddc" +
-123.123 + 123L + 'd'
+    val longStringExpression = "First part" +
+ "second Part"
 
-    val veryLong = """gfbkfkjfjgbfkjbfgbfgbgfbfgbfgbf""" +
-"sdcsdcs"
+    val longStringExpression = "First very long part" +
+ "second Part"
 }
