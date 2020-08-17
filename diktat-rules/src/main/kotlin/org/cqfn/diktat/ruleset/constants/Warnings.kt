@@ -72,6 +72,9 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     BACKTICKS_PROHIBITED(false, "Backticks should not be used in identifier's naming. The only exception test methods marked with @Test annotation"),
     REDUNDANT_SEMICOLON(true, "there should be no redundant semicolon at the end of lines"),
     WRONG_NEWLINES(true, "incorrect line breaking"),
+    TOO_MANY_SPACES(true, "too many spaces"),
+    NO_SPACE_COLON(true, "it should be a space after colon"),
+    NO_SPACE_COMMA(true, "it should be a space after comma")
     ;
 
     override fun ruleName(): String = this.name
