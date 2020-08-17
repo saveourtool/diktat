@@ -1067,13 +1067,16 @@ fun baz() {
 
 ### <a name="s3.7"></a> Recommendation 3.7: Usage of whitespace for code separation
 
-  1. Any keywords (like 'if', 'when', 'for', e.t.c) should be separated with a single whitespace from the opening parenthesis.
-     Only exceptions are: 'super' and 'constructor' keywords. They should not be separated from a parenthesis.
+  Note: this rule corresponds to the case when symbols are located on the same line. In some cases there could be a line break instead of a space,
+  but this logic is described in other rules.
 
-  2. Separate any keywords (such as `else` or `catch`, etc.) from the opening brace ('{') with a single whitespace.
+  1. Any keywords (like 'if', 'when', 'for', e.t.c) should be separated with a single whitespace from the opening parenthesis.
+     Only exceptions is 'constructor' keyword. It should not be separated from a parenthesis.
+
+  2. Separate any keywords (such as `else` or `try`, etc.) from the opening brace ('{') with a single whitespace.
   
   3. Use single whitespace before any opening brace (`{`).
-     Only exception is passing a lambda as an argument inside parenthesis:
+     Only exception is passing of a lambda as a parameter inside parenthesis:
      ```kotlin
          private fun foo(a: (Int) -> Int, b: Int) {}
          foo({x: Int -> x}, 5) // no space before '{'
@@ -1081,13 +1084,13 @@ fun baz() {
 
   4. Single whitespace should be placed on both sides of binary operators. This also applies to operator-like symbols, for example: 
 
-     - Colon in generic structures with 'where' keyword： `where T : Type`
-     - Arrow in lambdas： `(str: String) -> str.length()`
+     - Colon in generic structures with 'where' keyword: `where T : Type`
+     - Arrow in lambdas: `(str: String) -> str.length()`
 
   **Exceptions：**
 
   - Two colons (`::`) are written without spaces: `Object::toString`
-  - Dot separator (`.`) that stays on the same line with an object name: `object.toString()`
+  - Dot separator (`.`) that stays on the same line with an object name `object.toString()`
 
   5. Spaces should be used after ',',':',';' (except cases when those symbols are in the end of line). There should be no whitespaces in the end of line.
 
@@ -1095,7 +1098,14 @@ fun baz() {
   
   7. When using '[]' operator (get/set) there should be *no* spaces between identifier and '[': `someList[0]`
   
-  8. There should be no space between a method name and a parenthesis: `foo() {}`
+  8. There should be no space between a method or constructor name (both at declaration and at call site) and a parenthesis: `foo() {}`
+  Note that this subrule is related only to spaces, whitespace rules are described in [rule 3.6](#r3.6). This rule does not prohibit, for example, the following code:
+  ```kotlin
+    fun foo
+    (
+        a: String
+    )
+  ```
 
 ### <a name="s3.8"></a>Recommendation 3.8: No spaces should be inserted for horizontal alignment
 
