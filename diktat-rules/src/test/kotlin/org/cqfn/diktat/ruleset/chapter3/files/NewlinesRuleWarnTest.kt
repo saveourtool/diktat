@@ -135,6 +135,8 @@ class NewlinesRuleWarnTest {
                     |    
                     |    (true xor
                     |        false)
+                    |
+                    |    true xor false or true
                     |}
                 """.trimMargin()
         )
@@ -155,6 +157,36 @@ class NewlinesRuleWarnTest {
                 """.trimMargin(),
                 LintError(3, 9, ruleId, "$shouldBreakAfter xor", true),
                 LintError(6, 9, ruleId, "$shouldBreakAfter xor", true)
+        )
+    }
+
+    @Test
+    fun `line breaking after infix functions - several functions in a chain`() {
+        lintMethod(NewlinesRule(),
+                """
+                    |fun foo() {
+                    |    (true xor false
+                    |        or true
+                    |    )
+                    |    
+                    |    (true 
+                    |        xor false
+                    |        or true
+                    |    )
+                    |    
+                    |    (true
+                    |        xor
+                    |        false
+                    |        or
+                    |        true
+                    |    )
+                    |}
+                """.trimMargin(),
+                LintError(3, 9, ruleId, "$shouldBreakAfter or", true),
+                LintError(7, 9, ruleId, "$shouldBreakAfter xor", true),
+                LintError(8, 9, ruleId, "$shouldBreakAfter or", true),
+                LintError(12, 9, ruleId, "$shouldBreakAfter xor", true),
+                LintError(14, 9, ruleId, "$shouldBreakAfter or", true)
         )
     }
 
