@@ -1045,7 +1045,10 @@ fun baz() {
 
 ### <a name="s3.7"></a> Recommendation 3.7: Usage of whitespace for code separation
 
-  1. Any keywords (like 'if', 'when', 'for', e.t.c) should be separated from with a single whitespace from the opening parenthesis.
+  Note: this rule corresponds to the case when symbols are located on the same line. In some cases there could be a line break instead of a space,
+  but these logic is described in other rules.
+
+  1. Any keywords (like 'if', 'when', 'for', e.t.c) should be separated with a single whitespace from the opening parenthesis.
      Only exceptions is 'constructor' keyword. It should not be separated from a parenthesis.
 
   2. Separate any keywords (such as `else` or `try`, etc.) from the opening brace ('{') with a single whitespace.
@@ -1073,7 +1076,7 @@ fun baz() {
   
   7. When using '[]' operator (get/set) there should be *no* spaces between identifier and '[': `someList[0]`
   
-  8. There should be no space between a method or constructor name and a parenthesis (at call site? at declaration site? both?): `foo() {}`
+  8. There should be no space between a method or constructor name (both at declaration and at call site) and a parenthesis: `foo() {}`
 
 ### <a name="s3.8"></a>Recommendation 3.8: No spaces should be inserted for horizontal alignment
 
