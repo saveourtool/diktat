@@ -16,6 +16,7 @@
 
 ## (!) See [diKTat codestyle](info/diktat-kotlin-coding-style-guide-en.md) first.
 ## (!) Also see [the list of all rules supported by diKTat](info/available-rules.md).
+## (!) Have a look at [maven and gradle examples](https://github.com/akuleshov7/diktat-examples) of usage diKTat with plugins
 
 DiKTat is a collection of [Kotlin](https://kotlinlang.org/) code style rules implemented
 as AST visitors on top of [KTlint](https://ktlint.github.io/).
@@ -128,55 +129,72 @@ Then, add this plugin:
 In case you want to add autofixer with diKTat ruleset just extend
 the snippet above with `<arg value="-F"/>`.
 
-To run diktat to check/fix code style - run `mvn antrun:run@diktat`.
+To run diktat to check/fix code style - run `$ mvn antrun:run@diktat`.
 
-## Gradle 
+## Run with Gradle Plugin 
 
-You can see how it is configured in our project for self-checks: [build.gradle](build.gradle)
-
-`build.gradle`
-```groovy
-apply plugin: 'java'
+You can see how it is configured in our project for self-checks: [build.gradle.kts](build.gradle.kts).
+Add the code below to your `build.gradle.kts`:
+```kotlin
+val ktlint by configurations.creating
 
 repositories {
+    // artipie - an open source project that is used to store ktlint and diktat dependencies
     maven {
         url = uri("https://central.artipie.com/akuleshov7/diktat")
     }
     mavenCentral()
     jcenter()
-}
 
-configurations {
-    ktlint
-    diktat
-}
 
+}
 dependencies {
-    ktlint "com.pinterest:ktlint:0.37.1-fork"
-    diktat "org.cqfn.diktat:diktat-rules:1.0.1"
+    ktlint("com.pinterest:ktlint:0.37.1-fork") {
+        // need to exclude standard ruleset to use only diktat rules
+        exclude("com.pinterest.ktlint", "ktlint-ruleset-standard")
+    }
+
+    // diktat ruleset
+    ktlint("org.cqfn.diktat:diktat-rules:1.0.1") {
+        exclude("org.slf4j", "slf4j-log4j12")
+    }
 }
 
-task ktlint(type: JavaExec, group: "verification") {
+val outputDir = "${project.buildDir}/reports/diktat/"
+val inputFiles = project.fileTree(mapOf("dir" to "src", "include" to "**/*.kt"))
+
+val diktatCheck by tasks.creating(JavaExec::class) {
+    inputs.files(inputFiles)
+    outputs.dir(outputDir)
+
     description = "Check Kotlin code style."
-    classpath = configurations.ktlint
+    classpath = ktlint
     main = "com.pinterest.ktlint.Main"
-    args "src/main/kotlin/**/*.kt"
-}
-check.dependsOn ktlint
 
-task ktlintFormat(type: JavaExec, group: "formatting") {
+    // specify proper path to sources that should be checked here
+    args = listOf("src/main/kotlin/**/*.kt")
+}
+
+val diktatFormat by tasks.creating(JavaExec::class) {
+    inputs.files(inputFiles)
+    outputs.dir(outputDir)
+
     description = "Fix Kotlin code style deviations."
-    classpath = configurations.ktlint
+    classpath = ktlint
     main = "com.pinterest.ktlint.Main"
-    args "-F", args "src/main/kotlin/**/*.kt"
+
+    // specify proper path to sources that should be checked here
+    args = listOf("-F", "src/main/kotlin/**/*.kt")
 }
 ```
+
+To run diktat to check/fix code style - run `$ gradle diktatCheck`.
 
 ## Customizations via `rules-config.json`
 
 In KTlint, rules can be configured via `.editorconfig`, but
 this does not give a chance to customize or enable/disable
-each and every rule independently.
+each and every rule independently. 
 That is why we have supported `rules-config.json` that can be easily
 changed and help in customization of your own rule set.
 It has simple fields:
@@ -191,8 +209,8 @@ For example:
   "copyrightText": "Copyright (c) Jeff Lebowski, 2012-2020. All rights reserved."
 }
 ```
-
-See default configuration in [rules-config.json](diktat-rules/src/main/resources/rules-config.json)
+Note, that you can specify and put `rules-config.json` that contains configuration of diktat in the parent directory of your project on the same level where `build.gradle/pom.xml` is stored. \
+See default configuration in [rules-config.json](diktat-rules/src/main/resources/rules-config.json) \
 Also see [the list of all rules supported by diKTat](info/available-rules.md).
 
 ## How to contribute?

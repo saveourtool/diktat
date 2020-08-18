@@ -980,6 +980,20 @@ This international code style prohibits non-latin (non ASCII) symbols in the cod
  In case when newline is needed to split the line, it should be placed after operators like &&/||/+/e.t.c and all *infix functions* (for example - [xor](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/xor.html)).
  But newline should be placed before operators like ('.', '?.', '?:', '::', e.t.c).
  
+  Please note that all operators for comparing like '==', '>', '<', e.t.c should not be split.
+  Incorrect: 
+  ```kotlin
+         if (node !=
+                 null && test != null) {}
+ ```
+ 
+  Correct: 
+  ```kotlin
+             if (node != null && 
+                     test != null) {
+             }
+ ```
+  
 * Note, that you need to follow functional style (i.e. each function call in a chain with `.` should start at a new line if chain of functions contains more than one call):
 ```kotlin
   val value = otherValue!!
