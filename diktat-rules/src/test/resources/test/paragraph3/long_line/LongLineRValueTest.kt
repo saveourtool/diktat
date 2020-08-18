@@ -15,8 +15,7 @@ fun foo() {
 
     val longIntExpression = 12345 + 12345 + 12345 + 12345
 
-    val LongWithVar2 = "very long woooooordsdcsdcsdcsdc " +
-            "$variable"
+    val LongWithVar2 = "very long woooooordsdcsdcsdcsdc $variable"
 
     val longStringExpression = "First part" + "second Part"
 

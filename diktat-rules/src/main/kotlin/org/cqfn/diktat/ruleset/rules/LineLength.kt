@@ -40,6 +40,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.LONG_LINE
 import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
+import org.cqfn.diktat.ruleset.utils.createOperationReference
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
@@ -129,11 +130,11 @@ class LineLength : Rule("line-length") {
             when (parent.elementType) {
                 FUN -> {
                     if (!parent.hasChildOfType(BLOCK))
-                        parent.addChild(PsiWhiteSpaceImpl("\n"), parent.findChildByType(EQ)!!.treeNext)
+                        parent.appendNewlineMergingWhiteSpace(null, parent.findChildByType(EQ)!!.treeNext)
                     return
                 }
                 CONDITION -> {
-                    fixCondition(parent, configuration)
+                    fixLongBinaryExpression(parent, configuration)
                     return
                 }
                 PROPERTY -> {
@@ -163,30 +164,40 @@ class LineLength : Rule("line-length") {
         }
     }
 
-    private fun fixCondition(wrongNode: ASTNode, configuration: LineLengthConfiguration,
-                             leftInitOffset: Int = -1, isProperty: Boolean = false) {
+    /**
+     * This method fix too long binary expression: split after OPERATION_REFERENCE closest to max length
+     * @param wrongNode node that should be split
+     * @param configuration max length configuration
+     * @param leftInitOffset is a left offset, it need when we split binary expression in right value case
+     * @param isProperty if wrongNode is a property
+     *
+     * In this method we collect all binary expression in correct order and then
+     * we collect their if their length less then max.
+     */
+    private fun fixLongBinaryExpression(wrongNode: ASTNode, configuration: LineLengthConfiguration,
+                                        leftInitOffset: Int = -1, isParenthesized: Boolean = false) {
         var leftOffset = if (leftInitOffset < 0) {
             positionByOffset(wrongNode.firstChildNode.startOffset).second
         } else leftInitOffset
         val binList = mutableListOf<ASTNode>()
-        if (isProperty)
+        if (isParenthesized)
             dfsForProperty(wrongNode, binList)
         else
             searchBinaryExpression(wrongNode, binList)
         var binaryText = ""
         binList.forEachIndexed { index, astNode ->
             if (index == 0) {
-                binaryText += astNode.treeParent.prevSibling { it.elementType == LPAR}?.text ?: ""
-                binaryText += astNode.prevSibling { it.elementType == WHITE_SPACE}?.text ?: ""
+                binaryText += astNode.treeParent.prevSibling { it.elementType == LPAR }?.text ?: ""
+                binaryText += astNode.prevSibling { it.elementType == WHITE_SPACE }?.text ?: ""
                 binaryText += astNode.text
-                binaryText += astNode.nextSibling { it.elementType == WHITE_SPACE}?.text ?: ""
+                binaryText += astNode.nextSibling { it.elementType == WHITE_SPACE }?.text ?: ""
             } else {
-                binaryText += astNode.treeParent.prevSibling { it.elementType == LPAR}?.text ?: ""
-                binaryText += astNode.prevSibling { it.elementType == WHITE_SPACE}?.text ?: ""
+                binaryText += astNode.treeParent.prevSibling { it.elementType == LPAR }?.text ?: ""
+                binaryText += astNode.prevSibling { it.elementType == WHITE_SPACE }?.text ?: ""
                 binaryText += astNode.treeParent.findChildByType(OPERATION_REFERENCE)!!.text
                 binaryText += astNode.text
-                binaryText += astNode.nextSibling { it.elementType == WHITE_SPACE}?.text ?: ""
-                binaryText += astNode.treeParent.nextSibling { it.elementType == RPAR}?.text ?: ""
+                binaryText += astNode.nextSibling { it.elementType == WHITE_SPACE }?.text ?: ""
+                binaryText += astNode.treeParent.nextSibling { it.elementType == RPAR }?.text ?: ""
                 if (leftOffset + binaryText.length > configuration.lineLength) {
                     val commonParent = astNode.parent({ it in binList[index - 1].parents() })!!
                     val nextNode = commonParent.findChildByType(OPERATION_REFERENCE)!!.treeNext
@@ -223,7 +234,7 @@ class LineLength : Rule("line-length") {
     private fun dfsForProperty(node: ASTNode, binList: MutableList<ASTNode>) {
         node.getChildren(null).forEach {
             if (it.elementType in PROPERTY_LIST)
-                    binList.add(it)
+                binList.add(it)
             dfsForProperty(it, binList)
         }
     }
@@ -233,7 +244,7 @@ class LineLength : Rule("line-length") {
             val newParent = parent.findChildByType(PARENTHESIZED) ?: parent
             if (newParent.hasChildOfType(BINARY_EXPRESSION)) {
                 val leftOffset = positionByOffset(newParent.findChildByType(BINARY_EXPRESSION)!!.startOffset).second
-                fixCondition(newParent, configuration, leftOffset, !parent.hasChildOfType(PARENTHESIZED))
+                fixLongBinaryExpression(newParent, configuration, leftOffset, !parent.hasChildOfType(PARENTHESIZED))
             }
         } else
             createNodes(parent, configuration)
@@ -262,19 +273,17 @@ class LineLength : Rule("line-length") {
         val litString = CompositeElement(LITERAL_STRING_TEMPLATE_ENTRY)
         val stringTemplate = CompositeElement(STRING_TEMPLATE)
         val closeQuote = LeafPsiElement(CLOSING_QUOTE, "\"")
-        prevExp.addChild(litString)
-        litString.addChild(LeafPsiElement(REGULAR_STRING_PART, text))
         prevExp.addChild(stringTemplate)
         stringTemplate.addChild(closeQuote)
         stringTemplate.addChild(litString, closeQuote)
+        litString.addChild(LeafPsiElement(REGULAR_STRING_PART, text))
         stringTemplate.addChild(LeafPsiElement(OPEN_QUOTE, "\""), litString)
     }
 
     private fun createNodesBetweenStringTemplates(prevExp: CompositeElement) {
         prevExp.addChild(PsiWhiteSpaceImpl(" "))
-        val plusOperator = CompositeElement(OPERATION_REFERENCE)
-        prevExp.addChild(plusOperator)
-        plusOperator.addChild(LeafPsiElement(PLUS, "+"))
+        prevExp.createOperationReference()
+        prevExp.findChildByType(OPERATION_REFERENCE)!!.addChild(LeafPsiElement(PLUS, "+"), null)
         prevExp.addChild(PsiWhiteSpaceImpl("\n"))
     }
 
