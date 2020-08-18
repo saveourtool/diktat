@@ -113,6 +113,8 @@ class WhiteSpaceRuleWarnTest {
                     |fun bar(a: (Int) -> Int, b: Int) {
                     |    bar( {x: Int -> x}, 5)
                     |}
+                    |
+                    |val lambda = { x: Int -> 2 * x }
                 """.trimMargin(),
                 LintError(6, 10, ruleId, "${WRONG_WHITESPACE.warnText()} there should be no whitespace before '{' of lambda inside argument list", true)
         )

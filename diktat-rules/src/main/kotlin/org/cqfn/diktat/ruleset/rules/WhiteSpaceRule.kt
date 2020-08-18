@@ -108,11 +108,17 @@ class WhiteSpaceRule : Rule("horizontal-whitespace") {
      */
     private fun handleLbrace(node: ASTNode) {
         val whitespaceOrPrevNode = node.parent({ it.treePrev != null }, strict = false)!!.treePrev
-        val isFromLambdaAsArgument = node.parents().take(numParentsForLambda).toList().let {
-            it[0].elementType == FUNCTION_LITERAL &&
-                    it[1].elementType == LAMBDA_EXPRESSION &&
-                    it[2].elementType == VALUE_ARGUMENT
-        }
+        val isFromLambdaAsArgument = node
+                .parents()
+                .take(numParentsForLambda)
+                .toList()
+                .takeIf { it.size == numParentsForLambda }
+                ?.let {
+                    it[0].elementType == FUNCTION_LITERAL &&
+                            it[1].elementType == LAMBDA_EXPRESSION &&
+                            it[2].elementType == VALUE_ARGUMENT
+                }
+                ?: false
         val prevNode = whitespaceOrPrevNode.let { if (it.elementType == WHITE_SPACE) it.treePrev else it }
         val numWhiteSpace = whitespaceOrPrevNode.numWhiteSpaces()
 
