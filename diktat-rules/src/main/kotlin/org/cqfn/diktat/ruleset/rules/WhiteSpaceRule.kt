@@ -57,6 +57,8 @@ class WhiteSpaceRule : Rule("horizontal-whitespace") {
                 WHEN_KEYWORD
         )
 
+        val operatorsWithNoWhitespace = TokenSet.create(DOT, RANGE, COLONCOLON, SAFE_ACCESS, EXCLEXCL)
+
         // this is the number of parent nodes needed to check if this node is lambda from argument list
         private const val numParentsForLambda = 3
     }
@@ -146,20 +148,23 @@ class WhiteSpaceRule : Rule("horizontal-whitespace") {
             return
         }
 
-        val operatorsWithNoWhitespace = TokenSet.create(DOT, RANGE, COLONCOLON, SAFE_ACCESS, EXCLEXCL)
         val operatorNode = if (node.elementType == OPERATION_REFERENCE) node.firstChildNode else node
 
         if (node.elementType == OPERATION_REFERENCE && node.treeParent.elementType.let { it == BINARY_EXPRESSION || it == POSTFIX_EXPRESSION } ||
                 node.elementType != OPERATION_REFERENCE) {
-            val spacesBefore = node.treePrev.numWhiteSpaces()
-            val spacesAfter = (node.treeNext ?: node.treeParent.treeNext)  // for `!!` and possibly other postfix expressions treeNext can be null
-                    .numWhiteSpaces()
-            val requiredNumSpaces = if (operatorNode.elementType in operatorsWithNoWhitespace) 0 else 1
-            if (spacesBefore != null && spacesBefore != requiredNumSpaces || spacesAfter != null && spacesAfter != requiredNumSpaces) {
-                val freeText = "${node.text} should ${if (requiredNumSpaces == 0) "not " else ""}be surrounded by whitespaces"
-                WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, freeText, node.startOffset) {
-                    node.fixSpaceAround(requiredNumSpaces)
-                }
+            checkAndFixBinaryOperator(node, operatorNode)
+        }
+    }
+
+    private fun checkAndFixBinaryOperator(node: ASTNode, operatorNode: ASTNode) {
+        val spacesBefore = node.treePrev.numWhiteSpaces()
+        val spacesAfter = (node.treeNext ?: node.treeParent.treeNext)  // for `!!` and possibly other postfix expressions treeNext can be null
+                .numWhiteSpaces()
+        val requiredNumSpaces = if (operatorNode.elementType in operatorsWithNoWhitespace) 0 else 1
+        if (spacesBefore != null && spacesBefore != requiredNumSpaces || spacesAfter != null && spacesAfter != requiredNumSpaces) {
+            val freeText = "${node.text} should ${if (requiredNumSpaces == 0) "not " else ""}be surrounded by whitespaces"
+            WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, freeText, node.startOffset) {
+                node.fixSpaceAround(requiredNumSpaces)
             }
         }
     }
