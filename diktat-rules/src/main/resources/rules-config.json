@@ -269,5 +269,12 @@
     "name": "WRONG_NEWLINES",
     "enabled": true,
     "configuration" : {}
+  },
+  {
+    "name": "TOO_MANY_SPACES",
+    "enabled": true,
+    "configuration": {
+      "spaces": "1"
+    }
   }
 ]
