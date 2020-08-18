@@ -18,7 +18,7 @@
         <junit.version>5.6.2</junit.version>
         <guava.version>29.0-jre</guava.version>
         <jackson.version>2.11.2</jackson.version>
-        <slf4j.version>1.7.5</slf4j.version>
+        <slf4j.version>1.7.30</slf4j.version>
         <commons-cli.version>1.4</commons-cli.version>
         <diktat-check.version>1.0.1</diktat-check.version>
     </properties>
@@ -104,7 +104,7 @@
             <dependency>
                 <groupId>io.github.java-diff-utils</groupId>
                 <artifactId>java-diff-utils</artifactId>
-                <version>4.5</version>
+                <version>4.7</version>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
@@ -165,7 +165,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-assembly-plugin</artifactId>
-                    <version>3.2.0</version>
+                    <version>3.3.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
