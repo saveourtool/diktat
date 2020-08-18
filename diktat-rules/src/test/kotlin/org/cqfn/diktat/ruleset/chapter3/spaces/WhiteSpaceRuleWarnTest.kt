@@ -168,9 +168,9 @@ class WhiteSpaceRuleWarnTest {
                     |    fun foo3(t: T) = t +1
                     |    
                     |    fun bar() {
-                    |        listOf<T>() .map(this ::foo).filter { elem ->predicate(elem) }
-                    |        listOf<T>() . map(this :: foo).filter { elem->predicate(elem) }
-                    |        listOf<T>(). map(this:: foo).filter { elem-> predicate(elem) }
+                    |        listOf<T>() .map(this ::foo) ?.filter { elem ->predicate(elem) } !!.first()
+                    |        listOf<T>() . map(this :: foo) ?. filter { elem->predicate(elem) } !! .first()
+                    |        listOf<T>(). map(this:: foo)?. filter { elem-> predicate(elem) }!!. first()
                     |    }
                     |}
                 """.trimMargin(),
@@ -182,13 +182,20 @@ class WhiteSpaceRuleWarnTest {
                 LintError(4, 24, ruleId, binaryOpWarn("+"), true),
                 LintError(7, 21, ruleId, binaryOpWarn(".", true), true),
                 LintError(7, 31, ruleId, binaryOpWarn("::", true), true),
-                LintError(7, 52, ruleId, binaryOpWarn("->"), true),
+                LintError(7, 38, ruleId, binaryOpWarn("?.", true), true),
+                LintError(7, 54, ruleId, binaryOpWarn("->"), true),
+                LintError(7, 74, ruleId, binaryOpWarn("!!", true), true),
                 LintError(8, 21, ruleId, binaryOpWarn(".", true), true),
                 LintError(8, 32, ruleId, binaryOpWarn("::", true), true),
-                LintError(8, 53, ruleId, binaryOpWarn("->"), true),
+                LintError(8, 40, ruleId, binaryOpWarn("?.", true), true),
+                LintError(8, 56, ruleId, binaryOpWarn("->"), true),
+                LintError(8, 76, ruleId, binaryOpWarn("!!", true), true),
+                LintError(8, 79, ruleId, binaryOpWarn(".", true), true),
                 LintError(9, 20, ruleId, binaryOpWarn(".", true), true),
                 LintError(9, 30, ruleId, binaryOpWarn("::", true), true),
-                LintError(9, 51, ruleId, binaryOpWarn("->"), true)
+                LintError(9, 37, ruleId, binaryOpWarn("?.", true), true),
+                LintError(9, 53, ruleId, binaryOpWarn("->"), true),
+                LintError(9, 75, ruleId, binaryOpWarn(".", true), true)
         )
     }
 }

@@ -11,6 +11,7 @@ import com.pinterest.ktlint.core.ast.ElementType.CONSTRUCTOR_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.DOT
 import com.pinterest.ktlint.core.ast.ElementType.DO_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.ELSE_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.EXCLEXCL
 import com.pinterest.ktlint.core.ast.ElementType.FINALLY_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.FOR_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_LITERAL
@@ -20,7 +21,9 @@ import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.LPAR
 import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
+import com.pinterest.ktlint.core.ast.ElementType.POSTFIX_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.RANGE
+import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS
 import com.pinterest.ktlint.core.ast.ElementType.TRY_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_CONSTRAINT
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT
@@ -74,7 +77,7 @@ class WhiteSpaceRule : Rule("horizontal-whitespace") {
             CONSTRUCTOR_KEYWORD -> handleConstructor(node)
             in keywordsWithSpaceAfter -> handleKeywordWithParOrBrace(node)
             LBRACE -> handleLbrace(node)
-            OPERATION_REFERENCE, COLON, COLONCOLON, DOT, ARROW -> handleBinaryOperator(node)
+            OPERATION_REFERENCE, COLON, COLONCOLON, DOT, ARROW, SAFE_ACCESS -> handleBinaryOperator(node)
         }
     }
 
@@ -143,12 +146,14 @@ class WhiteSpaceRule : Rule("horizontal-whitespace") {
             return
         }
 
-        val operatorsWithNoWhitespace = TokenSet.create(DOT, RANGE, COLONCOLON)
+        val operatorsWithNoWhitespace = TokenSet.create(DOT, RANGE, COLONCOLON, SAFE_ACCESS, EXCLEXCL)
         val operatorNode = if (node.elementType == OPERATION_REFERENCE) node.firstChildNode else node
 
-        if (node.elementType == OPERATION_REFERENCE && node.treeParent.elementType == BINARY_EXPRESSION || node.elementType != OPERATION_REFERENCE) {
+        if (node.elementType == OPERATION_REFERENCE && node.treeParent.elementType.let { it == BINARY_EXPRESSION || it == POSTFIX_EXPRESSION } ||
+                node.elementType != OPERATION_REFERENCE) {
             val spacesBefore = node.treePrev.numWhiteSpaces()
-            val spacesAfter = node.treeNext.numWhiteSpaces()
+            val spacesAfter = (node.treeNext ?: node.treeParent.treeNext)  // for `!!` and possibly other postfix expressions treeNext can be null
+                    .numWhiteSpaces()
             val requiredNumSpaces = if (operatorNode.elementType in operatorsWithNoWhitespace) 0 else 1
             if (spacesBefore != null && spacesBefore != requiredNumSpaces || spacesAfter != null && spacesAfter != requiredNumSpaces) {
                 val freeText = "${node.text} should ${if (requiredNumSpaces == 0) "not " else ""}be surrounded by whitespaces"
@@ -165,7 +170,8 @@ class WhiteSpaceRule : Rule("horizontal-whitespace") {
             leaveSingleWhiteSpace()
         } else if (requiredNumSpaces == 0) {
             treePrev.removeIfWhiteSpace()
-            treeNext.removeIfWhiteSpace()
+            // for `!!` and possibly other postfix expressions treeNext can be null
+            (treeNext ?: treeParent.treeNext).removeIfWhiteSpace()
         }
     }
 
@@ -187,5 +193,6 @@ class WhiteSpaceRule : Rule("horizontal-whitespace") {
         }
     }
 
-    private fun ASTNode.removeIfWhiteSpace() = takeIf { it.elementType == WHITE_SPACE }?.let { it.treeParent.removeChild(it) }
+    private fun ASTNode.removeIfWhiteSpace() = takeIf { it.elementType == WHITE_SPACE && !it.textContains('\n') }
+            ?.let { it.treeParent.removeChild(it) }
 }
