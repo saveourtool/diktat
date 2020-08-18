@@ -7,6 +7,7 @@ import org.cqfn.diktat.ruleset.rules.PackageNaming
 import org.cqfn.diktat.ruleset.constants.Warnings.*
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.util.lintMethod
+import org.junit.jupiter.api.Tag
 
 class PackageNamingWarnTest {
 
@@ -17,6 +18,7 @@ class PackageNamingWarnTest {
     )
 
     @Test
+    @Tag("PACKAGE_NAME_MISSING")
     fun `missing package name (check)`() {
         lintMethod(PackageNaming(),
                 """
@@ -34,6 +36,7 @@ class PackageNamingWarnTest {
     }
 
     @Test
+    @Tag("PACKAGE_NAME_INCORRECT_CASE")
     fun `package name should be in a lower case (check)`() {
         lintMethod(
                 PackageNaming(),
@@ -54,6 +57,7 @@ class PackageNamingWarnTest {
     }
 
     @Test
+    @Tag("PACKAGE_NAME_INCORRECT_PREFIX")
     fun `package name should start from domain name (check)`() {
         lintMethod(
                 PackageNaming(),
@@ -74,6 +78,7 @@ class PackageNamingWarnTest {
     }
 
     @Test
+    @Tag("INCORRECT_PACKAGE_SEPARATOR")
     fun `underscore exceptions - incorrect underscore case`() {
         lintMethod(
                 PackageNaming(),
@@ -94,6 +99,7 @@ class PackageNamingWarnTest {
     }
 
     @Test
+    @Tag("PACKAGE_NAME_INCORRECT_SYMBOLS")
     fun `incorrect symbol in package name`() {
         lintMethod(
                 PackageNaming(),
@@ -133,6 +139,7 @@ class PackageNamingWarnTest {
     }
 
     @Test
+    @Tag("PACKAGE_NAME_INCORRECT_PATH")
     fun `regression - incorrect warning on file under test directory`() {
         lintMethod(PackageNaming(),
                 """
