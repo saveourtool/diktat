@@ -116,11 +116,6 @@
                 <artifactId>assertj-core</artifactId>
                 <version>3.16.1</version>
             </dependency>
-            <dependency>
-                <groupId>io.gitlab.arturbosch.detekt</groupId>
-                <artifactId>detekt-cli</artifactId>
-                <version>1.11.0</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -225,7 +220,7 @@
             <plugin>
                 <groupId>com.github.ozsie</groupId>
                 <artifactId>detekt-maven-plugin</artifactId>
-                <version>1.10.0</version>
+                <version>1.11.0</version>
                 <executions>
                     <execution>
                         <id>detekt</id>
