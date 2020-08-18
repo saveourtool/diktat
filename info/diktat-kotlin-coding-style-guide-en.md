@@ -1320,7 +1320,7 @@ And better use other names instead of these identifiers.
 ### <a name="r3.8"></a>Rule 3.8: Concatenation Strings is prohibited when string fits one line, use raw strings and string templates instead.
 Kotlin significantly enhanced work with Strings:
 [String templates](https://kotlinlang.org/docs/reference/basic-types.html#string-templates), [Raw strings](https://kotlinlang.org/docs/reference/basic-types.html#string-literals)
-That's why code looks much better when instead of using explicit concatenation to use proper Kotlin strings.
+That's why code looks much better when instead of using explicit concatenation to use proper Kotlin strings in case your line is not too long and you do not need to split it with newlines.
 
 Bad example:
 ```kotlin
