@@ -11,6 +11,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import java.lang.annotation.ElementType
 
 /**
  * This rule covers checks and fixes related to string concatenation.
@@ -66,10 +67,8 @@ class StringConcatenationRule : Rule("string-concatenation") {
         //    /        |        \
         //  expr1 operationRef expr2
 
-        val operationReference = node.getChildren(TokenSet.create(OPERATION_REFERENCE))
+        val operationReference = node.getFirstChildWithType(OPERATION_REFERENCE)
         return operationReference
-                .first()
-                ?.getChildren(TokenSet.create(PLUS))
-                ?.first() != null
+                ?.getFirstChildWithType(PLUS) != null
     }
 }
