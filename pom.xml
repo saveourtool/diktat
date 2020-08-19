@@ -208,6 +208,7 @@
                         <commit-msg>.git-hooks/commit-msg.sh</commit-msg>
                     </installHooks>
                 </configuration>
+                <inherited>false</inherited>
                 <executions>
                     <execution>
                         <id>install-git-hooks</id>
