@@ -223,15 +223,7 @@ class LineLength : Rule("line-length") {
         }
         while (node.treeParent.elementType == PARENTHESIZED) {
             node = node.treeParent
-            if (prevNode.prevSibling { it.elementType == OPERATION_REFERENCE } == null) {
-                if (node.findChildByType(LPAR)!!.treePrev != null && node.findChildByType(LPAR)!!.treePrev.elementType == WHITE_SPACE)
-                    text += node.findChildByType(LPAR)!!.treePrev.text
-                text += node.findChildByType(LPAR)!!.text
-            } else {
-                if (node.findChildByType(RPAR)!!.treePrev != null && node.findChildByType(RPAR)!!.treePrev.elementType == WHITE_SPACE)
-                    text += node.findChildByType(RPAR)!!.treePrev.text
-                text += node.findChildByType(RPAR)!!.text
-            }
+            text += getTextBeforeOperationReference(node, prevNode)
         }
         text += astNode.text
         node = if (astNode.nextSibling { it.elementType == OPERATION_REFERENCE } == null)
@@ -242,6 +234,20 @@ class LineLength : Rule("line-length") {
         if (node.treePrev.elementType == WHITE_SPACE)
             text += node.treePrev.text
         text += node.text
+        return text
+    }
+
+    private fun getTextBeforeOperationReference(node: ASTNode, prevNode: ASTNode): String {
+        var text = ""
+        if (prevNode.prevSibling { it.elementType == OPERATION_REFERENCE } == null) {
+            if (node.findChildByType(LPAR)!!.treePrev != null && node.findChildByType(LPAR)!!.treePrev.elementType == WHITE_SPACE)
+                text += node.findChildByType(LPAR)!!.treePrev.text
+            text += node.findChildByType(LPAR)!!.text
+        } else {
+            if (node.findChildByType(RPAR)!!.treePrev != null && node.findChildByType(RPAR)!!.treePrev.elementType == WHITE_SPACE)
+                text += node.findChildByType(RPAR)!!.treePrev.text
+            text += node.findChildByType(RPAR)!!.text
+        }
         return text
     }
 
