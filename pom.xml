@@ -116,11 +116,6 @@
                 <artifactId>assertj-core</artifactId>
                 <version>3.16.1</version>
             </dependency>
-            <dependency>
-                <groupId>io.gitlab.arturbosch.detekt</groupId>
-                <artifactId>detekt-cli</artifactId>
-                <version>1.10.0</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -165,7 +160,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-assembly-plugin</artifactId>
-                    <version>3.2.0</version>
+                    <version>3.3.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -226,7 +221,7 @@
             <plugin>
                 <groupId>com.github.ozsie</groupId>
                 <artifactId>detekt-maven-plugin</artifactId>
-                <version>1.10.0</version>
+                <version>1.11.0</version>
                 <executions>
                     <execution>
                         <id>detekt</id>
@@ -240,6 +235,7 @@
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
@@ -287,6 +283,7 @@
                     </dependency>
                 </dependencies>
             </plugin>
+
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
