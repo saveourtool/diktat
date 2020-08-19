@@ -335,7 +335,8 @@ class IdentifierNamingWarnTest {
         )
     }
 
-    @Test //FixMe
+    @Test
+    @Tag("FUNCTION_BOOLEAN_PREFIX")
     fun `FUNCTION_BOOLEAN_PREFIX - positive example`() {
         lintMethod(IdentifierNaming(),
                 """
@@ -383,7 +384,8 @@ class IdentifierNamingWarnTest {
         )
     }
 
-    @Test //FixMe
+    @Test
+    @Tag("IDENTIFIER_LENGTH")
     fun `regression - object parsing should not fail with anonymous objects`() {
         val code =
                 """
@@ -395,7 +397,8 @@ class IdentifierNamingWarnTest {
         lintMethod(IdentifierNaming(), code)
     }
 
-    @Test // FixMe
+    @Test
+    @Tag("IDENTIFIER_LENGTH")
     fun `exception case for identifier naming in catch statements`() {
         val code =
                 """
@@ -426,7 +429,8 @@ class IdentifierNamingWarnTest {
         lintMethod(IdentifierNaming(), code, LintError(4, 17, ruleId, "${IDENTIFIER_LENGTH.warnText()} e", false))
     }
 
-    @Test //FixMe
+    @Test
+    @Tag("IDENTIFIER_LENGTH")
     fun `exception case for identifier naming - catching exception with type e`() {
         val code =
                 """
@@ -457,7 +461,8 @@ class IdentifierNamingWarnTest {
         )
     }
 
-    @Test //fixMe
+    @Test
+    @Tag("BACKTICKS_PROHIBITED")
     fun `backticks should be used only with functions from tests (test method)`() {
         val code =
                 """                    

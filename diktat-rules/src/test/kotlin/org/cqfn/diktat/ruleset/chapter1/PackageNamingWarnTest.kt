@@ -120,6 +120,7 @@ class PackageNamingWarnTest {
     }
 
     @Test
+    @Tag("PACKAGE_NAME_INCORRECT_SYMBOLS")
     fun `underscore exceptions - positive case - keyword`() {
         lintMethod(
                 PackageNaming(),

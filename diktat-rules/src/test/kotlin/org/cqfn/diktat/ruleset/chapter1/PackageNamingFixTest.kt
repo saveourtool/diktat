@@ -18,7 +18,8 @@ class PackageNamingFixTest : FixTestBase(
         fixAndCompare("FixUpperExpected.kt", "FixUpperTest.kt")
     }
 
-    @Test // fixMe
+    @Test
+    @Tag("PACKAGE_NAME_INCORRECT_PATH")
     fun `fixing incorrect domain name (fix)`() {
         fixAndCompare("MissingDomainNameExpected.kt", "MissingDomainNameTest.kt")
     }

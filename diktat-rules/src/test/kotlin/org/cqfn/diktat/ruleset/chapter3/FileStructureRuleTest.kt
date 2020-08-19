@@ -9,12 +9,14 @@ import org.cqfn.diktat.ruleset.constants.Warnings.FILE_UNORDERED_IMPORTS
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.files.FileStructureRule
 import org.cqfn.diktat.util.lintMethod
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class FileStructureRuleTest {
     private val ruleId = "$DIKTAT_RULE_SET_ID:file-structure"
 
     @Test
+    @Tag("FILE_CONTAINS_ONLY_COMMENTS")
     fun `should warn if file contains only comments`() {
         lintMethod(FileStructureRule(),
                 """
@@ -33,6 +35,7 @@ class FileStructureRuleTest {
     }
 
     @Test
+    @Tag("FILE_INCORRECT_BLOCKS_ORDER")
     fun `should warn if file annotations are not immediately before package directive`() {
         lintMethod(FileStructureRule(),
                 """
@@ -52,6 +55,7 @@ class FileStructureRuleTest {
     }
 
     @Test
+    @Tag("FILE_UNORDERED_IMPORTS")
     fun `should warn if imports are not sorted alphabetically`() {
         lintMethod(FileStructureRule(),
                 """
@@ -67,6 +71,7 @@ class FileStructureRuleTest {
     }
 
     @Test
+    @Tag("FILE_WILDCARD_IMPORTS")
     fun `should warn if wildcard imports are used`() {
         lintMethod(FileStructureRule(),
                 """
@@ -81,6 +86,7 @@ class FileStructureRuleTest {
     }
 
     @Test
+    @Tag("FILE_NO_BLANK_LINE_BETWEEN_BLOCKS")
     fun `should warn if blank lines are wrong between code blocks`() {
         lintMethod(FileStructureRule(),
                 """

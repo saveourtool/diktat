@@ -5,6 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_WHITESPACE
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.WhiteSpaceRule
 import org.cqfn.diktat.util.lintMethod
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class WhiteSpaceRuleWarnTest {
@@ -13,6 +14,7 @@ class WhiteSpaceRuleWarnTest {
             "${WRONG_WHITESPACE.warnText()} keyword '$keyword' should be separated from '$sep' with a whitespace"
 
     @Test
+    @Tag("WRONG_WHITESPACE")
     fun `keywords should have space before opening parenthesis and braces - positive example`() {
         lintMethod(WhiteSpaceRule(),
                 """
@@ -31,6 +33,7 @@ class WhiteSpaceRuleWarnTest {
     }
 
     @Test
+    @Tag("WRONG_WHITESPACE")
     fun `keywords should have space before opening parenthesis`() {
         lintMethod(WhiteSpaceRule(),
                 """
@@ -49,6 +52,7 @@ class WhiteSpaceRuleWarnTest {
     }
 
     @Test
+    @Tag("WRONG_WHITESPACE")
     fun `constructor should not have space before opening parenthesis`() {
         lintMethod(WhiteSpaceRule(),
                 """
@@ -61,6 +65,7 @@ class WhiteSpaceRuleWarnTest {
     }
 
     @Test
+    @Tag("WRONG_WHITESPACE")
     fun `keywords should have space before opening braces`() {
         lintMethod(WhiteSpaceRule(),
                 """

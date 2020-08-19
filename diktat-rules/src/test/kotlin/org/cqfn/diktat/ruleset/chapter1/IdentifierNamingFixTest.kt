@@ -51,7 +51,7 @@ class IdentifierNamingFixTest : FixTestBase(
     }
 
     @Test
-    //FixMe: Not found lamba warning
+    @Tag("VARIABLE_NAME_INCORRECT_FORMAT")
     fun `incorrect lambda argument case fix`() {
         fixAndCompare("identifiers/LambdaArgExpected.kt", "identifiers/LambdaArgTest.kt")
     }

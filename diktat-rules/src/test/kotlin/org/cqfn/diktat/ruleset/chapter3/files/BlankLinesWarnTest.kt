@@ -5,6 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.TOO_MANY_BLANK_LINES
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.files.BlankLinesRule
 import org.cqfn.diktat.util.lintMethod
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class BlankLinesWarnTest {
@@ -14,6 +15,7 @@ class BlankLinesWarnTest {
             "${TOO_MANY_BLANK_LINES.warnText()} do not put newlines ${if (isBeginning) "in the beginning" else "at the end"} of code blocks"
 
     @Test
+    @Tag("TOO_MANY_BLANK_LINES")
     fun `blank lines usage - positive example`() {
         lintMethod(BlankLinesRule(),
                 """
@@ -27,6 +29,7 @@ class BlankLinesWarnTest {
     }
 
     @Test
+    @Tag("TOO_MANY_BLANK_LINES")
     fun `should prohibit usage of two or more consecutive blank lines`() {
         lintMethod(BlankLinesRule(),
                 """
@@ -45,6 +48,7 @@ class BlankLinesWarnTest {
     }
 
     @Test
+    @Tag("TOO_MANY_BLANK_LINES")
     fun `should prohibit blank lines in the beginning or at the end of block`() {
         lintMethod(BlankLinesRule(),
                 """

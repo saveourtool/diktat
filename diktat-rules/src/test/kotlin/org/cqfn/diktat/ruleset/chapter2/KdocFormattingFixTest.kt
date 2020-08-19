@@ -3,6 +3,7 @@ package org.cqfn.diktat.ruleset.chapter2
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocFormatting
 import org.cqfn.diktat.util.FixTestBase
 import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.Tags
 import org.junit.jupiter.api.Test
 
 class KdocFormattingFixTest: FixTestBase("test/paragraph2/kdoc/", KdocFormatting()) {
@@ -44,11 +45,13 @@ class KdocFormattingFixTest: FixTestBase("test/paragraph2/kdoc/", KdocFormatting
     }
 
     @Test
+    @Tag("KDOC_NEWLINES_BEFORE_BASIC_TAGS")
     fun `Empty line should be added before block of standard tags`() {
         fixAndCompare("BasicTagsEmptyLineBeforeExpected.kt", "BasicTagsEmptyLineBeforeTest.kt")
     }
 
     @Test
+    @Tags(Tag("KDOC_NO_DEPRECATED_TAG"), Tag("KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS"))
     fun `KdocFormatting - all warnings`() {
         fixAndCompare("KdocFormattingFullExpected.kt", "KdocFormattingFullTest.kt")
     }
