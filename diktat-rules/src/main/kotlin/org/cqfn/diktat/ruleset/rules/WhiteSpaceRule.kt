@@ -205,9 +205,12 @@ class WhiteSpaceRule : Rule("horizontal-whitespace") {
     }
 
     private fun handleEolWhiteSpace(node: ASTNode) {
-        if (node.textContains('\n') && node.text.substringBefore('\n').contains(' ')) {
+        val hasSpaces = node.text.substringBefore('\n').contains(' ')
+        // the second condition corresponds to the last line of file
+        val isEol = node.textContains('\n') || node.parents().all { it.treeNext == null }
+        if (hasSpaces && isEol) {
             WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "there should be no spaces in the end of line", node.startOffset) {
-                (node as LeafElement).replaceWithText(node.text.run { substring(indexOf('\n')) })
+                (node as LeafElement).replaceWithText(node.text.trimStart(' '))
             }
         }
     }
