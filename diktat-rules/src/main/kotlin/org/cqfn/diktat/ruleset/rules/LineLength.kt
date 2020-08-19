@@ -25,6 +25,7 @@ import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.PARENTHESIZED
 import com.pinterest.ktlint.core.ast.ElementType.PLUS
+import com.pinterest.ktlint.core.ast.ElementType.POSTFIX_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.PREFIX_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
@@ -50,6 +51,11 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
 import java.net.MalformedURLException
 import java.net.URL
 
+/**
+ * The rule checks for lines in the file that exceed the maximum length.
+ * Rule ignores URL in KDoc. Rule also can fix some case.
+ * Rule can fix long binary conditions, comments, variables, oneline functions
+ */
 @Suppress("ForbiddenComment")
 class LineLength : Rule("line-length") {
 
@@ -83,6 +89,7 @@ class LineLength : Rule("line-length") {
 
         val configuration = LineLengthConfiguration(
                 configRules.getRuleConfig(LONG_LINE)?.configuration ?: mapOf())
+
 
         if (node.elementType == FILE) {
             node.getChildren(null).forEach {
@@ -169,14 +176,14 @@ class LineLength : Rule("line-length") {
      * @param wrongNode node that should be split
      * @param configuration max length configuration
      * @param leftInitOffset is a left offset, it need when we split binary expression in right value case
-     * @param isProperty if wrongNode is a property
+     * @param isParenthesized if wrongNode is a property and it in brackets
      *
      * In this method we collect all binary expression in correct order and then
      * we collect their if their length less then max.
      */
     private fun fixLongBinaryExpression(wrongNode: ASTNode, configuration: LineLengthConfiguration,
                                         leftInitOffset: Int = -1, isParenthesized: Boolean = false) {
-        var leftOffset = if (leftInitOffset < 0) {
+        val leftOffset = if (leftInitOffset < 0) {
             positionByOffset(wrongNode.firstChildNode.startOffset).second
         } else leftInitOffset
         val binList = mutableListOf<ASTNode>()
@@ -184,31 +191,69 @@ class LineLength : Rule("line-length") {
             dfsForProperty(wrongNode, binList)
         else
             searchBinaryExpression(wrongNode, binList)
+        if (binList.size == 1)
+            return
         var binaryText = ""
         binList.forEachIndexed { index, astNode ->
-            if (index == 0) {
-                binaryText += astNode.treeParent.prevSibling { it.elementType == LPAR }?.text ?: ""
-                binaryText += astNode.prevSibling { it.elementType == WHITE_SPACE }?.text ?: ""
-                binaryText += astNode.text
-                binaryText += astNode.nextSibling { it.elementType == WHITE_SPACE }?.text ?: ""
-            } else {
-                binaryText += astNode.treeParent.prevSibling { it.elementType == LPAR }?.text ?: ""
-                binaryText += astNode.prevSibling { it.elementType == WHITE_SPACE }?.text ?: ""
-                binaryText += astNode.treeParent.findChildByType(OPERATION_REFERENCE)!!.text
-                binaryText += astNode.text
-                binaryText += astNode.nextSibling { it.elementType == WHITE_SPACE }?.text ?: ""
-                binaryText += astNode.treeParent.nextSibling { it.elementType == RPAR }?.text ?: ""
-                if (leftOffset + binaryText.length > configuration.lineLength) {
-                    val commonParent = astNode.parent({ it in binList[index - 1].parents() })!!
-                    val nextNode = commonParent.findChildByType(OPERATION_REFERENCE)!!.treeNext
-                    if (!nextNode.text.contains("\n"))
-                        commonParent.appendNewlineMergingWhiteSpace(nextNode, nextNode)
-                    leftOffset = 0
-                    binaryText = astNode.text
-                    return
-                }
+            binaryText += findAllText(astNode)
+            if (leftOffset + binaryText.length > configuration.lineLength && index != 0) {
+                val commonParent = astNode.parent({ it in binList[index - 1].parents() })!!
+                val nextNode = commonParent.findChildByType(OPERATION_REFERENCE)!!.treeNext
+                if (!nextNode.text.contains("\n"))
+                    commonParent.appendNewlineMergingWhiteSpace(nextNode, nextNode)
+                return
             }
         }
+    }
+
+    private fun findAllText(astNode: ASTNode): String {
+        var text = ""
+        var node = astNode
+        var prevNode: ASTNode = node
+        if (astNode.elementType != POSTFIX_EXPRESSION) {
+            do {
+                prevNode = node
+                node = node.treeParent
+                if (node.elementType == PARENTHESIZED)
+                    text += getTextFromParenthesized(node)
+            } while (node.elementType != BINARY_EXPRESSION)
+        }
+        if(node.treePrev != null && node.treePrev.elementType == WHITE_SPACE) {
+            text += node.treePrev.text
+        }
+        while (node.treeParent.elementType == PARENTHESIZED) {
+            node = node.treeParent
+            if (prevNode.prevSibling { it.elementType == OPERATION_REFERENCE } == null) {
+                if (node.findChildByType(LPAR)!!.treePrev != null && node.findChildByType(LPAR)!!.treePrev.elementType == WHITE_SPACE)
+                    text += node.findChildByType(LPAR)!!.treePrev.text
+                text += node.findChildByType(LPAR)!!.text
+            } else {
+                if (node.findChildByType(RPAR)!!.treePrev != null && node.findChildByType(RPAR)!!.treePrev.elementType == WHITE_SPACE)
+                    text += node.findChildByType(RPAR)!!.treePrev.text
+                text += node.findChildByType(RPAR)!!.text
+            }
+        }
+        text += astNode.text
+        node = if (astNode.nextSibling { it.elementType == OPERATION_REFERENCE } == null)
+            astNode.parent({ newNode -> newNode.nextSibling { it.elementType == OPERATION_REFERENCE } != null })
+                    ?: return text
+        else astNode
+        node = node.nextSibling { it.elementType == OPERATION_REFERENCE }!!
+        if (node.treePrev.elementType == WHITE_SPACE)
+            text += node.treePrev.text
+        text += node.text
+        return text
+    }
+
+    private fun getTextFromParenthesized(node: ASTNode): String {
+        var text = ""
+        text += node.findChildByType(LPAR)!!.text
+        if (node.findChildByType(LPAR)!!.treeNext.elementType == WHITE_SPACE)
+            text += node.findChildByType(LPAR)!!.treeNext.text
+        if (node.findChildByType(RPAR)!!.treePrev.elementType == WHITE_SPACE)
+            text += node.findChildByType(RPAR)!!.treePrev.text
+        text += node.findChildByType(RPAR)!!.text
+        return text
     }
 
     /**
@@ -219,9 +264,9 @@ class LineLength : Rule("line-length") {
      *@param binList mutable list of ASTNode to store nodes
      */
     private fun searchBinaryExpression(node: ASTNode, binList: MutableList<ASTNode>) {
-        if (node.hasChildOfType(BINARY_EXPRESSION) || node.hasChildOfType(PARENTHESIZED)) {
+        if (node.hasChildOfType(BINARY_EXPRESSION) || node.hasChildOfType(PARENTHESIZED) || node.hasChildOfType(POSTFIX_EXPRESSION)) {
             node.getChildren(null)
-                    .filter { it.elementType == BINARY_EXPRESSION || it.elementType == PARENTHESIZED }
+                    .filter { it.elementType == BINARY_EXPRESSION || it.elementType == PARENTHESIZED || it.elementType == POSTFIX_EXPRESSION }
                     .forEach {
                         searchBinaryExpression(it, binList)
                     }
