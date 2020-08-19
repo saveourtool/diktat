@@ -6,10 +6,12 @@ import org.jetbrains.kotlin.cli.jvm.compiler.EnvironmentConfigFiles
 import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.openapi.Disposable
+import org.jetbrains.kotlin.com.intellij.psi.TokenType.ERROR_ELEMENT
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.psi.KtPsiFactory
+import org.jetbrains.kotlin.resolve.ImportPath
 
-class StringToNode {
+class KotlinParser {
 
     /**
      * Set property
@@ -18,7 +20,7 @@ class StringToNode {
         setIdeaIoUseFallback()
     }
 
-    fun createNode(text: String): ASTNode? {
+    fun createNode(text: String): ASTNode {
         val project = KotlinCoreEnvironment.createForProduction(
                 Disposable {},
                 CompilerConfiguration(),
@@ -26,6 +28,13 @@ class StringToNode {
         ).project
         val ktPsiFactory = KtPsiFactory(project, true)
         val node = ktPsiFactory.createBlockCodeFragment(text, null).node
-        return node.findChildByType(BLOCK)?.firstChildNode
+        if (node.findAllNodesWithSpecificType(ERROR_ELEMENT).isNotEmpty()){
+            node.findAllNodesWithSpecificType(ERROR_ELEMENT).forEach {
+                val q = ktPsiFactory.createImportDirective(ImportPath.fromString(it.text)).node
+                println(q.prettyPrint())
+            }
+            throw KotlinParseException("Your text is not valid")
+        }
+        return node.findChildByType(BLOCK)!!.firstChildNode
     }
 }
