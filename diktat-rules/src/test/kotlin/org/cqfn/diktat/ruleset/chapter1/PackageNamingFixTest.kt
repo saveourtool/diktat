@@ -12,17 +12,17 @@ class PackageNamingFixTest : FixTestBase(
     listOf(RulesConfig(PACKAGE_NAME_MISSING.name, true, mapOf("domainName" to "org.cqfn.diktat")))
 ) {
     @Test
-    fun `incorrect case of package name (fix)`() {
+    fun `incorrect case of package name fix`() {
         fixAndCompare("FixUpperExpected.kt", "FixUpperTest.kt")
     }
 
     @Test
-    fun `fixing incorrect domain name (fix)`() {
+    fun `fixing incorrect domain name fix`() {
         fixAndCompare("MissingDomainNameExpected.kt", "MissingDomainNameTest.kt")
     }
 
     @Test
-    fun `incorrect usage of package separator (fix)`() {
+    fun `incorrect usage of package separator fix`() {
         fixAndCompare("FixUnderscoreExpected.kt", "FixUnderscoreTest.kt")
     }
 }

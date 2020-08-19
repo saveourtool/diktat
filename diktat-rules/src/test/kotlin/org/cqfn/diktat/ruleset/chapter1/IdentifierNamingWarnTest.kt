@@ -24,7 +24,7 @@ class IdentifierNamingWarnTest {
 
     // ======== checks for generics ========
     @Test
-    fun `generic class - single capital letter, can be followed by a number  (check - positive1)`() {
+    fun `generic class - single capital letter, can be followed by a number  check - positive1`() {
         val code =
                 """
                     package org.cqfn.diktat.test
@@ -36,7 +36,7 @@ class IdentifierNamingWarnTest {
     }
 
     @Test
-    fun `generic class - single capital letter, can be followed by a number  (check - positive2)`() {
+    fun `generic class - single capital letter, can be followed by a number  check - positive2`() {
         val code =
                 """
                     package org.cqfn.diktat.test
@@ -48,7 +48,7 @@ class IdentifierNamingWarnTest {
     }
 
     @Test
-    fun `generic class - single capital letter, can be followed by a number  (check - negative1)`() {
+    fun `generic class - single capital letter, can be followed by a number  check - negative1`() {
         val code =
                 """
                     package org.cqfn.diktat.test
@@ -62,7 +62,7 @@ class IdentifierNamingWarnTest {
     }
 
     @Test
-    fun `generic class - single capital letter, can be followed by a number  (check - negative2)`() {
+    fun `generic class - single capital letter, can be followed by a number  check - negative2`() {
         val code =
                 """
                     package org.cqfn.diktat.test
@@ -77,7 +77,7 @@ class IdentifierNamingWarnTest {
 
 
     @Test
-    fun `generic method - single capital letter, can be followed by a number  (check)`() {
+    fun `generic method - single capital letter, can be followed by a number  check`() {
         val code =
                 """
                    package org.cqfn.diktat.test
@@ -95,7 +95,7 @@ class IdentifierNamingWarnTest {
 
     // ======== checks for variables and class names ========
     @Test
-    fun `check class name (check)`() {
+    fun `check class name check`() {
         val code =
                 """
                     class incorrectNAME {}
@@ -108,7 +108,7 @@ class IdentifierNamingWarnTest {
     }
 
     @Test
-    fun `check identifiers case format (check - negative)`() {
+    fun `check identifiers case format check - negative`() {
         val code =
                 """
                   var SOMEtest = "TEST"
@@ -142,7 +142,7 @@ class IdentifierNamingWarnTest {
     }
 
     @Test
-    fun `check variable length (check - negative)`() {
+    fun `check variable length check - negative`() {
         val code =
                 """
                   val r = 0
@@ -162,7 +162,7 @@ class IdentifierNamingWarnTest {
 
 
     @Test
-    fun `check value parameters in dataclasses (check - negative)`() {
+    fun `check value parameters in dataclasses check - negative`() {
         val code =
                 """
                     data class ClassName(val FIRST: String, var SECOND: String)
@@ -174,7 +174,7 @@ class IdentifierNamingWarnTest {
     }
 
     @Test
-    fun `check value parameters in functions (check - negative)`() {
+    fun `check value parameters in functions check - negative`() {
         val code =
                 """
                     fun foo(SOMENAME: String) {
@@ -186,7 +186,7 @@ class IdentifierNamingWarnTest {
     }
 
     @Test
-    fun `check case for enum values (check - negative)`() {
+    fun `check case for enum values check - negative`() {
         val code =
                 """
                   enum class TEST_ONE {
@@ -202,7 +202,7 @@ class IdentifierNamingWarnTest {
     }
 
     @Test
-    fun `check case for object (check - negative)`() {
+    fun `check case for object check - negative`() {
         val code =
                 """
                   object TEST_ONE {
@@ -417,7 +417,7 @@ class IdentifierNamingWarnTest {
     }
 
     @Test
-    fun `backticks should be used only with functions from tests (function)`() {
+    fun `backticks should be used only with functions from tests function`() {
         val code =
                 """
                     fun `foo function`(`argument with backstick`: String) {
@@ -433,7 +433,7 @@ class IdentifierNamingWarnTest {
     }
 
     @Test
-    fun `backticks should be used only with functions from tests (test method)`() {
+    fun `backticks should be used only with functions from tests test method`() {
         val code =
                 """                    
                     @Test
@@ -445,7 +445,7 @@ class IdentifierNamingWarnTest {
     }
 
     @Test
-    fun `backticks should be used only with functions from tests (test method with variables)`() {
+    fun `backticks should be used only with functions from tests test method with variables`() {
         val code =
                 """                    
                     @Test
@@ -459,7 +459,7 @@ class IdentifierNamingWarnTest {
     }
 
     @Test
-    fun `backticks should be used only with functions from tests (class)`() {
+    fun `backticks should be used only with functions from tests class`() {
         val code =
                 """
                     class `my class name` {}

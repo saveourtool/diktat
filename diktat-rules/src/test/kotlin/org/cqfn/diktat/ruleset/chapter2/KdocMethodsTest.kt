@@ -23,7 +23,7 @@ class KdocMethodsTest {
     """.trimIndent()
 
     @Test
-    fun `Accessible methods with parameters, return type and throws should have proper KDoc (positive example)`() {
+    fun `Accessible methods with parameters, return type and throws should have proper KDoc positive example`() {
         val validCode = """
             /**
              * Test method

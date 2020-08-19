@@ -36,7 +36,7 @@ class KdocMethodsFixTest : FixTestBase("test/paragraph2/kdoc/package/src/main/ko
     }
 
     @Test
-    fun `KdocMethods rule should reformat code (full example)`() {
+    fun `KdocMethods rule should reformat code full example`() {
         fixAndCompare("KdocMethodsFullExpected.kt", "KdocMethodsFullTested.kt")
     }
 }

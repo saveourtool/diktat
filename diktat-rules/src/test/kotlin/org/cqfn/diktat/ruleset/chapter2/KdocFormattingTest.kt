@@ -154,7 +154,7 @@ class KdocFormattingTest {
     }
 
     @Test
-    fun `KDocs should contain only one white space between tag and its content (positive example)`() {
+    fun `KDocs should contain only one white space between tag and its content positive example`() {
         val validCode = """
             /**
              * @param a dummy int
@@ -191,7 +191,7 @@ class KdocFormattingTest {
     }
 
     @Test
-    fun `tags should be ordered in KDocs (positive example)`() {
+    fun `tags should be ordered in KDocs positive example`() {
         val validCode = """
             /**
              * @param a dummy int
@@ -241,7 +241,7 @@ class KdocFormattingTest {
     }
 
     @Test
-    fun `basic tags block should have empty line before if there is other KDoc content (positive example)`() {
+    fun `basic tags block should have empty line before if there is other KDoc content positive example`() {
         lintMethod(KdocFormatting(),
                 """/**
                | * Lorem ipsum
@@ -282,7 +282,7 @@ class KdocFormattingTest {
     }
 
     @Test
-    fun `special tags should have exactly one newline after them (positive example)`() {
+    fun `special tags should have exactly one newline after them positive example`() {
         val validCode = """
             /**
              * @implSpec stuff
@@ -300,7 +300,7 @@ class KdocFormattingTest {
     }
 
     @Test
-    fun `special tags should have exactly one newline after them (no newline)`() {
+    fun `special tags should have exactly one newline after them no newline`() {
         val invalidCode = """
             /**
              * @implSpec stuff
@@ -316,7 +316,7 @@ class KdocFormattingTest {
     }
 
     @Test
-    fun `special tags should have exactly one newline after them (many lines)`() {
+    fun `special tags should have exactly one newline after them many lines`() {
         val invalidCode = """
             /**
              * @implSpec stuff

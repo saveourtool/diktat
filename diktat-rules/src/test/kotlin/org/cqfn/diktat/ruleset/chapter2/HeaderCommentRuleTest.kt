@@ -34,7 +34,7 @@ class HeaderCommentRuleTest {
     """.trimIndent()
 
     @Test
-    fun `file header comment (positive example)`() {
+    fun `file header comment positive example`() {
         lintMethod(HeaderCommentRule(),
                 """
                 $copyrightBlock
@@ -54,7 +54,7 @@ class HeaderCommentRuleTest {
     }
 
     @Test
-    fun `file header comment with Chinese version copyright (positive example)`() {
+    fun `file header comment with Chinese version copyright positive example`() {
         lintMethod(HeaderCommentRule(),
                 """
                 /*
@@ -99,7 +99,7 @@ class HeaderCommentRuleTest {
     }
 
     @Test
-    fun `copyright should not be placed inside KDoc (Chinese version)`() {
+    fun `copyright should not be placed inside KDoc Chinese version`() {
         lintMethod(HeaderCommentRule(),
                 """
                 /**

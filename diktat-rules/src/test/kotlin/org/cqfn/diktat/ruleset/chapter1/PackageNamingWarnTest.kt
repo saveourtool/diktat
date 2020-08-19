@@ -17,7 +17,7 @@ class PackageNamingWarnTest {
     )
 
     @Test
-    fun `missing package name (check)`() {
+    fun `missing package name check`() {
         lintMethod(PackageNaming(),
                 """
                 import org.cqfn.diktat.a.b.c
@@ -34,7 +34,7 @@ class PackageNamingWarnTest {
     }
 
     @Test
-    fun `package name should be in a lower case (check)`() {
+    fun `package name should be in a lower case check`() {
         lintMethod(
                 PackageNaming(),
                 """
@@ -54,7 +54,7 @@ class PackageNamingWarnTest {
     }
 
     @Test
-    fun `package name should start from domain name (check)`() {
+    fun `package name should start from domain name check`() {
         lintMethod(
                 PackageNaming(),
                 """

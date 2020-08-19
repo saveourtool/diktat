@@ -14,7 +14,7 @@ import org.cqfn.diktat.ruleset.utils.*
 class NoSpacesRule : Rule("no-spaces") {
 
     companion object {
-        private const val MAX_SPACES = 1L
+        private const val MAX_SPACES = 1
     }
 
 
@@ -43,17 +43,16 @@ class NoSpacesRule : Rule("no-spaces") {
 
 
     private fun checkWhiteSpace(node: ASTNode, configuration: NoSpacesRuleConfiguration) {
-        val space = node.textLength
-
-        if (space > configuration.numberOfSpaces && !node.isWhiteSpaceWithNewline()) {
-            TOO_MANY_SPACES.warn(configRules, emitWarn, isFixMode, "", node.startOffset)
+        val spaces = node.textLength
+        if (spaces > configuration.numberOfSpaces && !node.isWhiteSpaceWithNewline()) {
+            TOO_MANY_SPACES.warn(configRules, emitWarn, isFixMode, "found: $spaces. need to be: ${configuration.numberOfSpaces}", node.startOffset)
         }
     }
 
 
 
     class NoSpacesRuleConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
-        val numberOfSpaces = config["spaces"]?.toLongOrNull() ?: MAX_SPACES
+        val numberOfSpaces = config["max_spaces"]?.toIntOrNull() ?: MAX_SPACES
     }
 
 }

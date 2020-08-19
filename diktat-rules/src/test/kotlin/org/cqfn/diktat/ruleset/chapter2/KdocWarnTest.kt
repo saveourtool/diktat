@@ -67,7 +67,7 @@ class KdocWarnTest {
     }
 
     @Test
-    fun `all internal and public functions on top-level should be documented with Kdoc (positive case)`() {
+    fun `all internal and public functions on top-level should be documented with Kdoc positive case`() {
         val code =
                 """
                     private fun someGoodName() {
@@ -117,7 +117,7 @@ class KdocWarnTest {
     }
 
     @Test
-    fun `Kdoc should present for each class element (positive)`() {
+    fun `Kdoc should present for each class element positive`() {
         val code =
                 """
                     /**

@@ -14,37 +14,37 @@ class IdentifierNamingFixTest : FixTestBase(
         )
 ) {
     @Test
-    fun `incorrect class name (fix)`() {
+    fun `incorrect class name fix`() {
         fixAndCompare("class_/IncorrectClassNameExpected.kt", "class_/IncorrectClassNameTest.kt")
     }
 
     @Test
-    fun `incorrect object name (fix)`() {
+    fun `incorrect object name fix`() {
         fixAndCompare("object_/IncorrectObjectNameExpected.kt", "object_/IncorrectObjectNameTest.kt")
     }
 
     @Test
-    fun `incorrect enum values case (fix)`() {
+    fun `incorrect enum values case fix`() {
         fixAndCompare("enum_/EnumValueCaseExpected.kt", "enum_/EnumValueCaseTest.kt")
     }
 
     @Test
-    fun `incorrect constant name case (fix)`() {
+    fun `incorrect constant name case fix`() {
         fixAndCompare("identifiers/ConstantValNameExpected.kt", "identifiers/ConstantValNameTest.kt")
     }
 
     @Test
-    fun `incorrect variable name case (fix)`() {
+    fun `incorrect variable name case fix`() {
         fixAndCompare("identifiers/VariableNamingExpected.kt", "identifiers/VariableNamingTest.kt")
     }
 
     @Test
-    fun `incorrect variable prefix (fix)`() {
+    fun `incorrect variable prefix fix`() {
         fixAndCompare("identifiers/PrefixInNameExpected.kt", "identifiers/PrefixInNameTest.kt")
     }
 
     @Test
-    fun `incorrect lambda argument case (fix)`() {
+    fun `incorrect lambda argument case fix`() {
         fixAndCompare("identifiers/LambdaArgExpected.kt", "identifiers/LambdaArgTest.kt")
     }
 }
