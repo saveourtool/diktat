@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 
-class NoSpacesRuleWarn {
+class NoSpacesRuleWarnTest {
 
 
     private val ruleId = "$DIKTAT_RULE_SET_ID:no-spaces"
@@ -33,7 +33,7 @@ class NoSpacesRuleWarn {
                     |    PLUS, ASD
                     |}
                 """.trimMargin(),
-                LintError(1, 5, ruleId, "${TOO_MANY_SPACES.warnText()} found: 7. need to be: 1", false)
+                LintError(1, 5, ruleId, "${TOO_MANY_SPACES.warnText()} found: 7. need to be: 1", true)
         )
     }
 
@@ -73,8 +73,8 @@ class NoSpacesRuleWarn {
                     |   }
                     |}
                 """.trimMargin(),
-                LintError(2, 7 , ruleId,"${TOO_MANY_SPACES.warnText()} found: 6. need to be: 1", false),
-                LintError(2, 33 , ruleId,"${TOO_MANY_SPACES.warnText()} found: 5. need to be: 1", false)
+                LintError(2, 7 , ruleId,"${TOO_MANY_SPACES.warnText()} found: 6. need to be: 1", true),
+                LintError(2, 33 , ruleId,"${TOO_MANY_SPACES.warnText()} found: 5. need to be: 1", true)
         )
     }
 
@@ -88,8 +88,8 @@ class NoSpacesRuleWarn {
                     |   }
                     |}
                 """.trimMargin(),
-                LintError(1, 6 , ruleId,"${TOO_MANY_SPACES.warnText()} found: 5. need to be: 1", false),
-                LintError(2, 9 , ruleId,"${TOO_MANY_SPACES.warnText()} found: 5. need to be: 1", false)
+                LintError(1, 6 , ruleId,"${TOO_MANY_SPACES.warnText()} found: 5. need to be: 1", true),
+                LintError(2, 9 , ruleId,"${TOO_MANY_SPACES.warnText()} found: 5. need to be: 1", true)
         )
     }
 
@@ -136,9 +136,9 @@ class NoSpacesRuleWarn {
                     |   }
                     |}
                 """.trimMargin(),
-                LintError(3, 15 , ruleId,"${TOO_MANY_SPACES.warnText()} found: 4. need to be: 1", false),
-                LintError(4, 18 , ruleId,"${TOO_MANY_SPACES.warnText()} found: 5. need to be: 1", false),
-                LintError(5, 14 , ruleId,"${TOO_MANY_SPACES.warnText()} found: 5. need to be: 1", false)
+                LintError(3, 15 , ruleId,"${TOO_MANY_SPACES.warnText()} found: 4. need to be: 1", true),
+                LintError(4, 18 , ruleId,"${TOO_MANY_SPACES.warnText()} found: 5. need to be: 1", true),
+                LintError(5, 14 , ruleId,"${TOO_MANY_SPACES.warnText()} found: 5. need to be: 1", true)
 
         )
     }
@@ -165,8 +165,8 @@ class NoSpacesRuleWarn {
                     |   var value = t
                     |}
                 """.trimMargin(),
-                LintError(1, 11 , ruleId,"${TOO_MANY_SPACES.warnText()} found: 3. need to be: 1", false),
-                LintError(1, 19 , ruleId,"${TOO_MANY_SPACES.warnText()} found: 4. need to be: 1", false)
+                LintError(1, 11 , ruleId,"${TOO_MANY_SPACES.warnText()} found: 3. need to be: 1", true),
+                LintError(1, 19 , ruleId,"${TOO_MANY_SPACES.warnText()} found: 4. need to be: 1", true)
         )
     }
 
@@ -193,7 +193,7 @@ class NoSpacesRuleWarn {
                     |   fun bar()
                     |}
                 """.trimMargin(),
-                LintError(1, 10 , ruleId,"${TOO_MANY_SPACES.warnText()} found: 7. need to be: 1", false)
+                LintError(1, 10 , ruleId,"${TOO_MANY_SPACES.warnText()} found: 7. need to be: 1", true)
         )
     }
 
@@ -209,7 +209,7 @@ class NoSpacesRuleWarn {
                     |   }
                     |}
                 """.trimMargin(),
-                LintError(2, 8 , ruleId,"${TOO_MANY_SPACES.warnText()} found: 5. need to be: 1", false)
+                LintError(2, 8 , ruleId,"${TOO_MANY_SPACES.warnText()} found: 5. need to be: 1", true)
         )
     }
 

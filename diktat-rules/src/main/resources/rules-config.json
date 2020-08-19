@@ -274,7 +274,8 @@
     "name": "TOO_MANY_SPACES",
     "enabled": true,
     "configuration": {
-      "max_spaces": "1"
+      "max_spaces": "1",
+      "saveInitialFormattingForEnums": false
     }
   },
   {
