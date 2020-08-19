@@ -1087,8 +1087,7 @@ fun baz() {
 
 ### <a name="s3.7"></a> Recommendation 3.7: Usage of whitespace for code separation
 
-  Note: this rule corresponds to the case when symbols are located on the same line. In some cases there could be a line break instead of a space,
-  but this logic is described in other rules.
+  Note: this rule corresponds to the case when symbols are located on the same line. In some cases there could be a line break instead of a space, but this logic is described in other rules.
 
   1. Any keywords (like 'if', 'when', 'for', e.t.c) should be separated with a single whitespace from the opening parenthesis.
      Only exceptions is 'constructor' keyword. It should not be separated from a parenthesis.
@@ -1114,25 +1113,24 @@ fun baz() {
   - Safe access modifiers: `?.` and `!!`, that stay on the same line with an object name: `object?.toString()`
   - Operator `..` for creating ranges, e.g. `1..100`
 
-  5. Spaces should be used after ',' and ':' (also ';', but please note that this code style prohibits usage of ';' in the middle of the line, see rule []())
-    (except cases when those symbols are in the end of line). There should be no whitespaces in the end of line.
-    
-    There should be no spaces before `,`, `:` and `;`. The only exceptions for colon are the following:
-    - when `:` is used to separate a type and a supertype, including anonimous object (after `object` keyword)
-    - when delegating to a superclass constructor or a different constructor of the same class
-    Good example:
-    ```kotlin
-        abstract class Foo<out T : Any> : IFoo { }
-        
-        class FooImpl : Foo() {
-            constructor(x: String) : this(x) { /*...*/ }
-            
-            val x = object : IFoo { /*...*/ } 
-        }
-    ```
+  5. Spaces should be used after ',' and ':' (also ';', but please note that this code style prohibits usage of ';' in the middle of the line, see [rule 3.4](#s3.4)) (except cases when those symbols are in the end of line). There should be no whitespaces in the end of line.
+  There should be no spaces before `,`, `:` and `;`. The only exceptions for colon are the following:
+  - when `:` is used to separate a type and a supertype, including anonimous object (after `object` keyword)
+  - when delegating to a superclass constructor or a different constructor of the same class
+  
+  Good example:
+  ```kotlin
+      abstract class Foo<out T : Any> : IFoo { }
+      
+      class FooImpl : Foo() {
+          constructor(x: String) : this(x) { /*...*/ }
+          
+          val x = object : IFoo { /*...*/ } 
+      }
+  ```
 
   6. There should be *only one space* between identifier and it's type: `list: List<String>`
-     If type is nullable there should be no space before `?`.
+  If type is nullable there should be no space before `?`.
   
   7. When using '[]' operator (get/set) there should be *no* spaces between identifier and '[': `someList[0]`
   
