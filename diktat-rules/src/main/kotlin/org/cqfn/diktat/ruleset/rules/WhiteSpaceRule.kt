@@ -50,6 +50,7 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.psi.psiUtil.parents
+import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
 
 /**
  * This rule checks usage of whitespaces for horizontal code separation
@@ -207,7 +208,7 @@ class WhiteSpaceRule : Rule("horizontal-whitespace") {
     private fun handleEolWhiteSpace(node: ASTNode) {
         val hasSpaces = node.text.substringBefore('\n').contains(' ')
         // the second condition corresponds to the last line of file
-        val isEol = node.textContains('\n') || node.parents().all { it.treeNext == null }
+        val isEol = node.textContains('\n') || node.psi.parentsWithSelf.all { it.nextSibling == null }
         if (hasSpaces && isEol) {
             WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "there should be no spaces in the end of line", node.startOffset) {
                 (node as LeafElement).replaceWithText(node.text.trimStart(' '))

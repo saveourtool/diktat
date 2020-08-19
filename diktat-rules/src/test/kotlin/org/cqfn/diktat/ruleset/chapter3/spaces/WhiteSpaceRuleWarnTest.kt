@@ -13,6 +13,7 @@ class WhiteSpaceRuleWarnTest {
             "${WRONG_WHITESPACE.warnText()} keyword '$keyword' should be separated from '$sep' with a whitespace"
 
     private val lbraceWarn = "${WRONG_WHITESPACE.warnText()} there should be a whitespace before '{'"
+    private val eolSpaceWarn = "${WRONG_WHITESPACE.warnText()} there should be no spaces in the end of line"
     private fun binaryOpWarn(op: String, before: Int?, after: Int?, reqBefore: Int, reqAfter: Int?) =
 //            "${WRONG_WHITESPACE.warnText()} $op should ${if (isException) "not " else ""}be surrounded by whitespaces"
             "${WRONG_WHITESPACE.warnText()} $op should have $reqBefore space(s) before" +
@@ -21,11 +22,6 @@ class WhiteSpaceRuleWarnTest {
                     (if (before != null) " $before space(s) before" else "") +
                     (if (before != null && after != null) " and" else "") +
                     (if (after != null) " $after space(s) after" else "")
-
-
-    private fun singleSpaceOpWarn(op: String) = "${WRONG_WHITESPACE.warnText()} there should be a single space after $op"
-    private fun noSpaceBeforeOpWarn(op: String) = "${WRONG_WHITESPACE.warnText()} there should be no space before $op"
-    private val eolSpaceWarn = "${WRONG_WHITESPACE.warnText()} there should be no spaces in the end of line"
 
     @Test
     fun `keywords should have space before opening parenthesis and braces - positive example`() {
