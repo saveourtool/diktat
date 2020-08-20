@@ -91,14 +91,19 @@ class WhiteSpaceRuleWarnTest {
     }
 
     @Test
-    fun `keywords should have space before opening braces - doesn't check if there is no brace`() {
+    fun `keywords should have space before opening braces - else without braces`() {
         lintMethod(WhiteSpaceRule(),
                 """
                     |fun foo() {
-                    |     if (condition) { }
-                    |     else foo()
+                    |     if (condition)
+                    |         bar()
+                    |     else
+                    |         baz()
+                    |     
+                    |     if (condition) bar() else  baz()
                     |}
-                """.trimMargin()
+                """.trimMargin(),
+                LintError(7, 33, ruleId, keywordWarn("else", "baz"), true)
         )
     }
 

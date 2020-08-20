@@ -1093,6 +1093,8 @@ fun baz() {
      Only exceptions is 'constructor' keyword. It should not be separated from a parenthesis.
 
   2. Separate any keywords (such as `else` or `try`, etc.) from the opening brace ('{') with a single whitespace.
+     If `else` is used in ternary-style statement without braces, then there should be a single space between 'else' and the statement after:
+     `if (condition) foo() else bar()`
   
   3. Use single whitespace before any opening brace (`{`).
      Only exception is passing of a lambda as a parameter inside parenthesis:

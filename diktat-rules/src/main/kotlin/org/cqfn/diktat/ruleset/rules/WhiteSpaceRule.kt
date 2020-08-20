@@ -118,8 +118,8 @@ class WhiteSpaceRule : Rule("horizontal-whitespace") {
         if (node.treeNext.numWhiteSpaces() != 1) {
             // there is either not single whitespace or newline after keyword
             val nextCodeLeaf = node.nextCodeLeaf()!!
-            if (nextCodeLeaf.elementType != LPAR && nextCodeLeaf.elementType != LBRACE) {
-                // keywords without code block, e.g. `if (condition) foo() else bar()`
+            if (nextCodeLeaf.elementType != LPAR && nextCodeLeaf.elementType != LBRACE && node.treeNext.textContains('\n')) {
+                // statement after keyword doesn't have braces and starts at new line, e.g. `if (condition) foo()\n else\n bar()`
                 return
             }
             WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "keyword '${node.text}' should be separated from " +
