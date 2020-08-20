@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter3.files
 
 import com.pinterest.ktlint.core.LintError
-import org.cqfn.diktat.ruleset.constants.WarningNames
+import generated.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings.REDUNDANT_SEMICOLON
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_NEWLINES
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID

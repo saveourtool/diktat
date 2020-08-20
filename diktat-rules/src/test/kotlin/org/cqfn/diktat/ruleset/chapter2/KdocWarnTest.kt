@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter2
 
 import com.pinterest.ktlint.core.LintError
-import org.cqfn.diktat.ruleset.constants.WarningNames
+import generated.WarningNames
 import org.junit.jupiter.api.Test
 import org.cqfn.diktat.ruleset.constants.Warnings.*
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID

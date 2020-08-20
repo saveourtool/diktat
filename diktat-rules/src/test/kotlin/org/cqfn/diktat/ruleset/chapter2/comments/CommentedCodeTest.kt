@@ -2,7 +2,7 @@ package org.cqfn.diktat.ruleset.chapter2.comments
 
 
 import com.pinterest.ktlint.core.LintError
-import org.cqfn.diktat.ruleset.constants.WarningNames
+import generated.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings.COMMENTED_OUT_CODE
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.comments.CommentsRule

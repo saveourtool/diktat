@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter3
 
 import com.pinterest.ktlint.core.LintError
-import org.cqfn.diktat.ruleset.constants.WarningNames
+import generated.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_WILDCARD_IMPORTS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_CONTAINS_ONLY_COMMENTS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_INCORRECT_BLOCKS_ORDER
