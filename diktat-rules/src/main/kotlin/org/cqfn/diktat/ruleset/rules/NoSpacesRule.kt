@@ -2,10 +2,7 @@ package org.cqfn.diktat.ruleset.rules
 
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.ast.ElementType.CLASS
-import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
-import com.pinterest.ktlint.core.ast.ElementType.ENUM_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
+import com.pinterest.ktlint.core.ast.ElementType.ENUM_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.parent
@@ -14,7 +11,6 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.cqfn.diktat.ruleset.constants.Warnings.TOO_MANY_SPACES
-import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
 
 class NoSpacesRule : Rule("no-spaces") {
@@ -61,19 +57,16 @@ class NoSpacesRule : Rule("no-spaces") {
     private fun checkWhiteSpaceEnum(node: ASTNode, configuration: NoSpacesRuleConfiguration) {
         val isInEnum = isWhitespaceInEnum(node)
 
-        if (isInEnum) {
+        if (!isInEnum) {
             squeezeSpacesToOne(node, configuration)
         }
     }
 
     private fun isWhitespaceInEnum(node: ASTNode): Boolean {
-        node.parent({it.elementType == CLASS_BODY})
-                ?.parent({it.elementType == CLASS})
-                ?.findChildByType(MODIFIER_LIST)
-                ?.findChildByType(ENUM_KEYWORD)
-                ?: return true
+        node.parent({it.elementType == ENUM_ENTRY})
+                ?: return false
 
-        return false
+        return true
     }
 
     private fun squeezeSpacesToOne(node: ASTNode, configuration: NoSpacesRuleConfiguration) {

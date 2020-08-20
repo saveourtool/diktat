@@ -5,4 +5,8 @@ enum             class               Warnings(private val id: Int, private val c
     PACKAGE_NAME_INCORRECT_CASE  (2, true,  "package name should be completely in a lower case"),
     PACKAGE_NAME_INCORRECT_PREFIX(3, false, "package name should start from company's domain")
     ;
+
+    fun some() {
+        val b =            5
+    }
 }
