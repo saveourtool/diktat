@@ -271,7 +271,7 @@
     "configuration" : {}
   },
   {
-    "name": "TOO_MANY_SPACES",
+    "name": "TOO_MANY_CONSECUTIVE_SPACES",
     "enabled": true,
     "configuration": {
       "max_spaces": "1",

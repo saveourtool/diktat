@@ -10,10 +10,19 @@ import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import org.cqfn.diktat.ruleset.constants.Warnings.TOO_MANY_SPACES
+import org.cqfn.diktat.ruleset.constants.Warnings.TOO_MANY_CONSECUTIVE_SPACES
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
 
-class NoSpacesRule : Rule("no-spaces") {
+
+
+
+/**
+ * This visitor covers recommendation 3.8 of Huawei code style. It covers following recommendations:
+ * 1) No spaces should be inserted for horizontal alignment
+ * 2) If saveInitialFormattingForEnums is true then white spaces in enums will not be affected
+ *
+ */
+class ConsecutiveSpacesRule : Rule("too-many-spaces") {
 
     companion object {
         private const val MAX_SPACES = 1
@@ -22,7 +31,6 @@ class NoSpacesRule : Rule("no-spaces") {
 
     private lateinit var configRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
-    private var fileName: String? = null
     private var isFixMode: Boolean = false
 
     override fun visit(node: ASTNode,
@@ -30,12 +38,11 @@ class NoSpacesRule : Rule("no-spaces") {
                        params: KtLint.Params,
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
         configRules = params.getDiktatConfigRules()
-        fileName = params.fileName
         emitWarn = emit
         isFixMode = autoCorrect
 
-        val configuration = NoSpacesRuleConfiguration(
-                configRules.getRuleConfig(TOO_MANY_SPACES)?.configuration ?: mapOf())
+        val configuration = TooManySpacesRuleConfiguration(
+                configRules.getRuleConfig(TOO_MANY_CONSECUTIVE_SPACES)?.configuration ?: mapOf())
 
         if (node.elementType == WHITE_SPACE) {
             checkWhiteSpace(node, configuration)
@@ -44,7 +51,7 @@ class NoSpacesRule : Rule("no-spaces") {
     }
 
 
-    private fun checkWhiteSpace(node: ASTNode, configuration: NoSpacesRuleConfiguration) {
+    private fun checkWhiteSpace(node: ASTNode, configuration: TooManySpacesRuleConfiguration) {
 
         if (configuration.enumInitialFormatting) {
             checkWhiteSpaceEnum(node, configuration)
@@ -54,7 +61,7 @@ class NoSpacesRule : Rule("no-spaces") {
 
     }
 
-    private fun checkWhiteSpaceEnum(node: ASTNode, configuration: NoSpacesRuleConfiguration) {
+    private fun checkWhiteSpaceEnum(node: ASTNode, configuration: TooManySpacesRuleConfiguration) {
         val isInEnum = isWhitespaceInEnum(node)
 
         if (!isInEnum) {
@@ -64,11 +71,11 @@ class NoSpacesRule : Rule("no-spaces") {
 
     private fun isWhitespaceInEnum(node: ASTNode): Boolean = node.parent({it.elementType == ENUM_ENTRY}) != null
 
-    private fun squeezeSpacesToOne(node: ASTNode, configuration: NoSpacesRuleConfiguration) {
+    private fun squeezeSpacesToOne(node: ASTNode, configuration: TooManySpacesRuleConfiguration) {
 
         val spaces = node.textLength
         if (spaces > configuration.numberOfSpaces && !node.isWhiteSpaceWithNewline()) {
-            TOO_MANY_SPACES.warnAndFix(configRules, emitWarn, isFixMode,
+            TOO_MANY_CONSECUTIVE_SPACES.warnAndFix(configRules, emitWarn, isFixMode,
                     "found: $spaces. need to be: ${configuration.numberOfSpaces}", node.startOffset) {
                 node.squeezeSpaces()
             }
@@ -81,7 +88,7 @@ class NoSpacesRule : Rule("no-spaces") {
     }
 
 
-    class NoSpacesRuleConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
+    class TooManySpacesRuleConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
         val numberOfSpaces = config["max_spaces"]?.toIntOrNull() ?: MAX_SPACES
         val enumInitialFormatting = config["saveInitialFormattingForEnums"]?.toBoolean() ?: false
     }
