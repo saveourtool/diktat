@@ -91,6 +91,18 @@ class WhiteSpaceRuleWarnTest {
     }
 
     @Test
+    fun `keywords should have space before opening braces - doesn't check if there is no brace`() {
+        lintMethod(WhiteSpaceRule(),
+                """
+                    |fun foo() {
+                    |     if (condition) { }
+                    |     else foo()
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
     fun `all opening braces should have leading space`() {
         lintMethod(WhiteSpaceRule(),
                 """

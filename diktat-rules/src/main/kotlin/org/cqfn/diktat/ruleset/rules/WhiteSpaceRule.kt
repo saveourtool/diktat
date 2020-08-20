@@ -168,6 +168,7 @@ class WhiteSpaceRule : Rule("horizontal-whitespace") {
         when (node.treeParent.elementType) {
             CLASS, SECONDARY_CONSTRUCTOR, TYPE_CONSTRAINT, TYPE_PARAMETER, OBJECT_DECLARATION -> handleBinaryOperator(node)
             VALUE_PARAMETER, PROPERTY -> handleToken(node, 0, 1)
+            // fixme: find examples or delete this line
             else -> log.warn("Colon with treeParent.elementType=${node.treeParent.elementType}, not handled by WhiteSpaceRule")
         }
     }
