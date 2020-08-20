@@ -48,14 +48,14 @@ class KotlinParser {
                             aspect,
                             Any::class.java.getDeclaredConstructor(*arrayOfNulls<Class<*>>(0))
                     )
-                    return constructor.newInstance(*emptyArray()) as T
+                    return constructor.newInstance() as T
                 }
                 return null
             }
         } // I don't really understand what's going on here, but thanks to this, you can use this node in the future
         val project = KotlinCoreEnvironment.createForProduction(
                 Disposable {},
-                CompilerConfiguration(),
+                compilerConfiguration,
                 EnvironmentConfigFiles.JVM_CONFIG_FILES
         ).project // create project
         project as MockProject
