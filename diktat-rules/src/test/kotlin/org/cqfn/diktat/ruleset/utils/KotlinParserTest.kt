@@ -1,12 +1,17 @@
 package org.cqfn.diktat.ruleset.utils
 
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
+import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
+import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import org.cqfn.diktat.util.applyToCode
+import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.junit.Assert
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -33,6 +38,7 @@ class KotlinParserTest {
     @Test
     fun `test invalidate code`() {
         assertThrows<KotlinParseException> { KotlinParser().createNode("simple text") }
+        assertThrows<KotlinParseException> { KotlinParser().createNode("") }
         assertThrows<KotlinParseException> { KotlinParser().createNode("fuc fun() = 1") }
     }
 
@@ -49,7 +55,7 @@ class KotlinParserTest {
             |   }
             |}
             """.trimMargin()
-        val node = KotlinParser().createNode(code)
+        val node = KotlinParser().createNode(code, true)
         Assert.assertEquals(FILE, node.elementType)
         Assert.assertEquals(PACKAGE_DIRECTIVE, node.firstChildNode.elementType)
     }
@@ -66,5 +72,56 @@ class KotlinParserTest {
         val node = KotlinParser().createNode(code)
         Assert.assertEquals(CLASS, node.elementType)
         Assert.assertEquals(CLASS_KEYWORD, node.firstChildNode.elementType)
+    }
+
+    @Test
+    fun `test multiline class code with import`() {
+        val code = """
+            |import org.junit.jupiter.api.Test
+            | 
+            |class A {
+            |   fun foo(){
+            |       println("hello")
+            |   }
+            |}
+            """.trimMargin()
+        assertThrows<KotlinParseException> { KotlinParser().createNode(code) }
+    }
+
+    @Test
+    fun `test multiline class code compare with applyToCode`() {
+        val emptyClass = """
+            |package org.cqfn.diktat.ruleset.utils
+            |
+            |import org.junit.jupiter.api.Test
+            |
+            |class A {
+            |}
+            """.trimMargin()
+        val function = """
+            |fun foo() = "Hello"
+            """.trimMargin()
+        val resultClass = """
+            |package org.cqfn.diktat.ruleset.utils
+            |
+            |import org.junit.jupiter.api.Test
+            |
+            |class A {
+            |fun foo() = "Hello"
+            |}
+            """.trimMargin()
+        var nodeToApply: ASTNode? = null
+        var resultNode: ASTNode? = null
+        applyToCode(emptyClass, 0) { newNode, _ ->
+            if (nodeToApply == null) nodeToApply = newNode
+        }
+        applyToCode(resultClass, 0) { newNode, _ ->
+            if (resultNode == null) resultNode = newNode
+        }
+        Assert.assertTrue(nodeToApply!!.prettyPrint() == KotlinParser().createNode(emptyClass, true).prettyPrint())
+        val classNode = nodeToApply!!.findChildByType(CLASS)!!.findChildByType(CLASS_BODY)!!
+        classNode.addChild(KotlinParser().createNode(function), classNode.findChildByType(RBRACE))
+        classNode.addChild(PsiWhiteSpaceImpl("\n"), classNode.findChildByType(RBRACE))
+        Assert.assertTrue(nodeToApply!!.prettyPrint() == resultNode!!.prettyPrint())
     }
 }
