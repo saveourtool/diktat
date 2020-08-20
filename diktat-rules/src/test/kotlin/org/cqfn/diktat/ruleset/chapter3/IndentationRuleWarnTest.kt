@@ -2,7 +2,7 @@ package org.cqfn.diktat.ruleset.chapter3
 
 import com.pinterest.ktlint.core.LintError
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.StringWarnings
+import org.cqfn.diktat.ruleset.constants.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.files.IndentationRule
@@ -23,7 +23,7 @@ class IndentationRuleWarnTest {
     )
 
     @Test
-    @Tag(StringWarnings.WRONG_INDENTATION)
+    @Tag(WarningNames.WRONG_INDENTATION)
     fun `should warn if tabs are used in indentation`() {
         lintMethod(IndentationRule(),
                 """
@@ -37,7 +37,7 @@ class IndentationRuleWarnTest {
     }
 
     @Test
-    @Tag(StringWarnings.WRONG_INDENTATION)
+    @Tag(WarningNames.WRONG_INDENTATION)
     fun `should warn if indent size is not 4 spaces`() {
         lintMethod(IndentationRule(),
                 """
@@ -51,7 +51,7 @@ class IndentationRuleWarnTest {
     }
 
     @Test
-    @Tag(StringWarnings.WRONG_INDENTATION)
+    @Tag(WarningNames.WRONG_INDENTATION)
     fun `valid indentation - example 1`() {
         lintMethod(IndentationRule(),
                 """
@@ -75,7 +75,7 @@ class IndentationRuleWarnTest {
     }
 
     @Test
-    @Tag(StringWarnings.WRONG_INDENTATION)
+    @Tag(WarningNames.WRONG_INDENTATION)
     fun `parameters can be indented by 8 spaces - positive example`() {
         lintMethod(IndentationRule(),
                 """
@@ -101,7 +101,7 @@ class IndentationRuleWarnTest {
     }
 
     @Test
-    @Tag(StringWarnings.WRONG_INDENTATION)
+    @Tag(WarningNames.WRONG_INDENTATION)
     fun `parameters can be aligned - positive example`() {
         lintMethod(IndentationRule(),
                 """
@@ -116,7 +116,7 @@ class IndentationRuleWarnTest {
     }
 
     @Test
-    @Tag(StringWarnings.WRONG_INDENTATION)
+    @Tag(WarningNames.WRONG_INDENTATION)
     fun `parameters can be aligned`() {
         lintMethod(IndentationRule(),
                 """
@@ -135,7 +135,7 @@ class IndentationRuleWarnTest {
     }
 
     @Test
-    @Tag(StringWarnings.WRONG_INDENTATION)
+    @Tag(WarningNames.WRONG_INDENTATION)
     fun `lines split by operator can be indented by 8 spaces`() {
         lintMethod(IndentationRule(),
                 """
@@ -150,7 +150,7 @@ class IndentationRuleWarnTest {
     }
 
     @Test
-    @Tag(StringWarnings.WRONG_INDENTATION)
+    @Tag(WarningNames.WRONG_INDENTATION)
     fun `should check indentation in KDocs - positive example`() {
         lintMethod(IndentationRule(),
                 """
@@ -165,7 +165,7 @@ class IndentationRuleWarnTest {
     }
 
     @Test
-    @Tag(StringWarnings.WRONG_INDENTATION)
+    @Tag(WarningNames.WRONG_INDENTATION)
     fun `assignment increases indentation if followed by newline`() {
         lintMethod(IndentationRule(),
                 """
@@ -185,7 +185,7 @@ class IndentationRuleWarnTest {
     }
 
     @Test
-    @Tag(StringWarnings.WRONG_INDENTATION)
+    @Tag(WarningNames.WRONG_INDENTATION)
     fun `should check indentation in KDocs`() {
         lintMethod(IndentationRule(),
                 """
@@ -202,7 +202,7 @@ class IndentationRuleWarnTest {
     }
 
     @Test
-    @Tag(StringWarnings.WRONG_INDENTATION)
+    @Tag(WarningNames.WRONG_INDENTATION)
     fun `dot call increases indentation`() {
         lintMethod(IndentationRule(),
                 """
@@ -221,7 +221,7 @@ class IndentationRuleWarnTest {
     }
 
     @Test
-    @Tag(StringWarnings.WRONG_INDENTATION)
+    @Tag(WarningNames.WRONG_INDENTATION)
     @Disabled("todo")
     fun `opening braces should not increase indent when placed on the same line`() {
         lintMethod(IndentationRule(),

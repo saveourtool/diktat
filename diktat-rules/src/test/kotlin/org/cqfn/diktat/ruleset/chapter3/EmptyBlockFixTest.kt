@@ -2,7 +2,7 @@ package org.cqfn.diktat.ruleset.chapter3
 
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.StringWarnings
+import org.cqfn.diktat.ruleset.constants.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.EmptyBlock
 import org.cqfn.diktat.util.FixTestBase
@@ -17,7 +17,7 @@ class EmptyBlockFixTest : FixTestBase("test/paragraph3/empty_block", EmptyBlock(
     )
 
     @Test
-    @Tag(StringWarnings.EMPTY_BLOCK_STRUCTURE_ERROR)
+    @Tag(WarningNames.EMPTY_BLOCK_STRUCTURE_ERROR)
     fun `should fix open and close brace in if-else expression`() {
         fixAndCompare("TryCatchEmptyBlockExpected.kt", "TryCatchEmptyBlockTest.kt", rulesConfigListEmptyBlockExist)
     }
