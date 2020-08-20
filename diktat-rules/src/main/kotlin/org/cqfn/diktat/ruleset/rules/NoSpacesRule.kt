@@ -62,12 +62,7 @@ class NoSpacesRule : Rule("no-spaces") {
         }
     }
 
-    private fun isWhitespaceInEnum(node: ASTNode): Boolean {
-        node.parent({it.elementType == ENUM_ENTRY})
-                ?: return false
-
-        return true
-    }
+    private fun isWhitespaceInEnum(node: ASTNode): Boolean = node.parent({it.elementType == ENUM_ENTRY}) != null
 
     private fun squeezeSpacesToOne(node: ASTNode, configuration: NoSpacesRuleConfiguration) {
 
