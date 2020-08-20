@@ -1,6 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter3
 
 import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.ruleset.constants.StringWarnings
 import org.cqfn.diktat.ruleset.constants.Warnings.BLANK_LINE_BETWEEN_PROPERTIES
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES
 import org.cqfn.diktat.ruleset.rules.ClassLikeStructuresOrderRule
@@ -15,7 +16,7 @@ class ClassLikeStructuresOrderRuleWarnTest {
     // ===== order of declarations =====
 
     @Test
-    @Tag("WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES")
+    @Tag(StringWarnings.WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES)
     fun `should check order of declarations in classes - positive example`() {
         fun codeTemplate(keyword: String) = """
                     |$keyword Example {
@@ -45,7 +46,7 @@ class ClassLikeStructuresOrderRuleWarnTest {
     }
 
     @Test
-    @Tag("WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES")
+    @Tag(StringWarnings.WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES)
     fun `should warn if loggers are not on top`() {
         listOf("private ", "").forEach { modifier ->
             lintMethod(ClassLikeStructuresOrderRule(),
@@ -64,7 +65,7 @@ class ClassLikeStructuresOrderRuleWarnTest {
     // ===== comments on properties ======
 
     @Test
-    @Tag("BLANK_LINE_BETWEEN_PROPERTIES")
+    @Tag(StringWarnings.BLANK_LINE_BETWEEN_PROPERTIES)
     fun `comments and KDocs on properties should be prepended by newline - positive example`() {
         lintMethod(ClassLikeStructuresOrderRule(),
                 """
@@ -86,7 +87,7 @@ class ClassLikeStructuresOrderRuleWarnTest {
     }
 
     @Test
-    @Tag("BLANK_LINE_BETWEEN_PROPERTIES")
+    @Tag(StringWarnings.BLANK_LINE_BETWEEN_PROPERTIES)
     fun `should warn if comments and KDocs on properties are not prepended by newline`() {
         lintMethod(ClassLikeStructuresOrderRule(),
                 """

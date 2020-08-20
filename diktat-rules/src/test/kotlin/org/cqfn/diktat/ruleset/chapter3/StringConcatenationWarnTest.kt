@@ -1,6 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter3
 
 import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.ruleset.constants.StringWarnings
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.StringConcatenationRule
@@ -14,7 +15,7 @@ class StringConcatenationWarnTest {
     private val canBeAutoCorrected = false
 
     @Test
-    @Tag("STRING_CONCATENATION")
+    @Tag(StringWarnings.STRING_CONCATENATION)
     fun `string concatenation - only strings`() {
         lintMethod(StringConcatenationRule(),
                 """
@@ -27,7 +28,7 @@ class StringConcatenationWarnTest {
     }
 
     @Test
-    @Tag("STRING_CONCATENATION")
+    @Tag(StringWarnings.STRING_CONCATENATION)
     fun `string concatenation - simple string and integers`() {
         lintMethod(StringConcatenationRule(),
                 """
@@ -40,7 +41,7 @@ class StringConcatenationWarnTest {
     }
 
     @Test
-    @Tag("STRING_CONCATENATION")
+    @Tag(StringWarnings.STRING_CONCATENATION)
     // FixMe: need to check and think if this codeblock should trigger warning or not
     fun `string concatenation - toString function in string templates`() {
         lintMethod(StringConcatenationRule(),
@@ -52,7 +53,7 @@ class StringConcatenationWarnTest {
     }
 
     @Test
-    @Tag("STRING_CONCATENATION")
+    @Tag(StringWarnings.STRING_CONCATENATION)
     fun `string concatenation - toString and variables`() {
         lintMethod(StringConcatenationRule(),
                 """
@@ -64,7 +65,7 @@ class StringConcatenationWarnTest {
     }
 
     @Test
-    @Tag("STRING_CONCATENATION")
+    @Tag(StringWarnings.STRING_CONCATENATION)
     fun `string concatenation - toString and variables with braces`() {
         lintMethod(StringConcatenationRule(),
                 """
@@ -78,7 +79,7 @@ class StringConcatenationWarnTest {
     }
 
     @Test
-    @Tag("STRING_CONCATENATION")
+    @Tag(StringWarnings.STRING_CONCATENATION)
     fun `string concatenation - function argument`() {
         lintMethod(StringConcatenationRule(),
                 """
@@ -92,7 +93,7 @@ class StringConcatenationWarnTest {
     }
 
     @Test
-    @Tag("STRING_CONCATENATION")
+    @Tag(StringWarnings.STRING_CONCATENATION)
     fun `string concatenation - string and braces`() {
         lintMethod(StringConcatenationRule(),
                 """
@@ -106,7 +107,7 @@ class StringConcatenationWarnTest {
     }
 
     @Test
-    @Tag("STRING_CONCATENATION")
+    @Tag(StringWarnings.STRING_CONCATENATION)
     fun `string concatenation - several braces`() {
         lintMethod(StringConcatenationRule(),
                 """
@@ -120,7 +121,7 @@ class StringConcatenationWarnTest {
     }
 
     @Test
-    @Tag("STRING_CONCATENATION")
+    @Tag(StringWarnings.STRING_CONCATENATION)
     fun `string concatenation - multiple braces`() {
         lintMethod(StringConcatenationRule(),
                 """
@@ -134,7 +135,7 @@ class StringConcatenationWarnTest {
     }
 
     @Test
-    @Tag("STRING_CONCATENATION")
+    @Tag(StringWarnings.STRING_CONCATENATION)
     fun `string concatenation - other binary operators`() {
         lintMethod(StringConcatenationRule(),
                 """
@@ -147,7 +148,7 @@ class StringConcatenationWarnTest {
     }
 
     @Test
-    @Tag("STRING_CONCATENATION")
+    @Tag(StringWarnings.STRING_CONCATENATION)
     fun `string concatenation - three lines `() {
         lintMethod(StringConcatenationRule(),
                 """
@@ -160,7 +161,7 @@ class StringConcatenationWarnTest {
     }
 
     @Test
-    @Tag("STRING_CONCATENATION")
+    @Tag(StringWarnings.STRING_CONCATENATION)
     fun `string concatenation - two lines `() {
         lintMethod(StringConcatenationRule(),
                 """
