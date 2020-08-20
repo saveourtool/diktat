@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.constants
 
 
-object StringWarnings {
+object WarningNames {
     const val PACKAGE_NAME_MISSING = "PACKAGE_NAME_MISSING"
     const val PACKAGE_NAME_INCORRECT_CASE = "PACKAGE_NAME_INCORRECT_CASE"
     const val PACKAGE_NAME_INCORRECT_PREFIX = "PACKAGE_NAME_INCORRECT_PREFIX"

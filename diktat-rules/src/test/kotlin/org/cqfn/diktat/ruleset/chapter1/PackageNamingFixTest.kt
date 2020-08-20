@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter1
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.StringWarnings
+import org.cqfn.diktat.ruleset.constants.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_MISSING
 import org.cqfn.diktat.ruleset.rules.PackageNaming
 import org.cqfn.diktat.util.FixTestBase
@@ -14,19 +14,19 @@ class PackageNamingFixTest : FixTestBase(
     listOf(RulesConfig(PACKAGE_NAME_MISSING.name, true, mapOf("domainName" to "org.cqfn.diktat")))
 ) {
     @Test
-    @Tag(StringWarnings.PACKAGE_NAME_INCORRECT_CASE)
+    @Tag(WarningNames.PACKAGE_NAME_INCORRECT_CASE)
     fun `incorrect case of package name (fix)`() {
         fixAndCompare("FixUpperExpected.kt", "FixUpperTest.kt")
     }
 
     @Test
-    @Tag(StringWarnings.PACKAGE_NAME_INCORRECT_PATH)
+    @Tag(WarningNames.PACKAGE_NAME_INCORRECT_PATH)
     fun `fixing incorrect domain name (fix)`() {
         fixAndCompare("MissingDomainNameExpected.kt", "MissingDomainNameTest.kt")
     }
 
     @Test
-    @Tag(StringWarnings.INCORRECT_PACKAGE_SEPARATOR)
+    @Tag(WarningNames.INCORRECT_PACKAGE_SEPARATOR)
     fun `incorrect usage of package separator (fix)`() {
         fixAndCompare("FixUnderscoreExpected.kt", "FixUnderscoreTest.kt")
     }

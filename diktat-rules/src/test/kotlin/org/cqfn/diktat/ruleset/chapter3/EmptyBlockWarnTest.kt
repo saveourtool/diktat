@@ -2,7 +2,7 @@ package org.cqfn.diktat.ruleset.chapter3
 
 import com.pinterest.ktlint.core.LintError
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.StringWarnings
+import org.cqfn.diktat.ruleset.constants.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings.EMPTY_BLOCK_STRUCTURE_ERROR
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.EmptyBlock
@@ -25,7 +25,7 @@ class EmptyBlockWarnTest {
     )
 
     @Test
-    @Tag(StringWarnings.EMPTY_BLOCK_STRUCTURE_ERROR)
+    @Tag(WarningNames.EMPTY_BLOCK_STRUCTURE_ERROR)
     fun `check if expression with empty else block`() {
         lintMethod(EmptyBlock(),
                 """
@@ -42,7 +42,7 @@ class EmptyBlockWarnTest {
     }
 
     @Test
-    @Tag(StringWarnings.EMPTY_BLOCK_STRUCTURE_ERROR)
+    @Tag(WarningNames.EMPTY_BLOCK_STRUCTURE_ERROR)
     fun `check if expression with empty else block with config`() {
         lintMethod(EmptyBlock(),
                 """
@@ -59,7 +59,7 @@ class EmptyBlockWarnTest {
     }
 
     @Test
-    @Tag(StringWarnings.EMPTY_BLOCK_STRUCTURE_ERROR)
+    @Tag(WarningNames.EMPTY_BLOCK_STRUCTURE_ERROR)
     fun `check fun expression with empty block and override annotation`() {
         lintMethod(EmptyBlock(),
                 """
@@ -70,7 +70,7 @@ class EmptyBlockWarnTest {
     }
 
     @Test
-    @Tag(StringWarnings.EMPTY_BLOCK_STRUCTURE_ERROR)
+    @Tag(WarningNames.EMPTY_BLOCK_STRUCTURE_ERROR)
     fun `check if expression with empty else block but with permission to use empty block`() {
         lintMethod(EmptyBlock(),
                 """

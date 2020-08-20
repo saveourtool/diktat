@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter1
 
 import com.pinterest.ktlint.core.LintError
-import org.cqfn.diktat.ruleset.constants.StringWarnings
+import org.cqfn.diktat.ruleset.constants.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings.BACKTICKS_PROHIBITED
 import org.cqfn.diktat.ruleset.constants.Warnings.CLASS_NAME_INCORRECT
 import org.cqfn.diktat.ruleset.constants.Warnings.CONSTANT_UPPERCASE
@@ -27,7 +27,7 @@ class IdentifierNamingWarnTest {
 
     // ======== checks for generics ========
     @Test
-    @Tag(StringWarnings.GENERIC_NAME)
+    @Tag(WarningNames.GENERIC_NAME)
     fun `generic class - single capital letter, can be followed by a number  (check - positive1)`() {
         val code =
                 """
@@ -40,7 +40,7 @@ class IdentifierNamingWarnTest {
     }
 
     @Test
-    @Tag(StringWarnings.GENERIC_NAME)
+    @Tag(WarningNames.GENERIC_NAME)
     fun `generic class - single capital letter, can be followed by a number  (check - positive2)`() {
         val code =
                 """
@@ -53,7 +53,7 @@ class IdentifierNamingWarnTest {
     }
 
     @Test
-    @Tag(StringWarnings.GENERIC_NAME)
+    @Tag(WarningNames.GENERIC_NAME)
     fun `generic class - single capital letter, can be followed by a number  (check - negative1)`() {
         val code =
                 """
@@ -68,7 +68,7 @@ class IdentifierNamingWarnTest {
     }
 
     @Test
-    @Tag(StringWarnings.GENERIC_NAME)
+    @Tag(WarningNames.GENERIC_NAME)
     fun `generic class - single capital letter, can be followed by a number  (check - negative2)`() {
         val code =
                 """
@@ -84,7 +84,7 @@ class IdentifierNamingWarnTest {
 
 
     @Test
-    @Tag(StringWarnings.GENERIC_NAME)
+    @Tag(WarningNames.GENERIC_NAME)
     fun `generic method - single capital letter, can be followed by a number  (check)`() {
         val code =
                 """
@@ -103,7 +103,7 @@ class IdentifierNamingWarnTest {
 
     // ======== checks for variables and class names ========
     @Test
-    @Tag(StringWarnings.CLASS_NAME_INCORRECT)
+    @Tag(WarningNames.CLASS_NAME_INCORRECT)
     fun `check class name (check)`() {
         val code =
                 """
@@ -117,7 +117,7 @@ class IdentifierNamingWarnTest {
     }
 
     @Test
-    @Tags(Tag(StringWarnings.CLASS_NAME_INCORRECT), Tag(StringWarnings.VARIABLE_NAME_INCORRECT_FORMAT), Tag(StringWarnings.CONSTANT_UPPERCASE))
+    @Tags(Tag(WarningNames.CLASS_NAME_INCORRECT), Tag(WarningNames.VARIABLE_NAME_INCORRECT_FORMAT), Tag(WarningNames.CONSTANT_UPPERCASE))
     fun `check identifiers case format (check - negative)`() {
         val code =
                 """
@@ -152,7 +152,7 @@ class IdentifierNamingWarnTest {
     }
 
     @Test
-    @Tags(Tag(StringWarnings.IDENTIFIER_LENGTH),Tag(StringWarnings.VARIABLE_NAME_INCORRECT))
+    @Tags(Tag(WarningNames.IDENTIFIER_LENGTH),Tag(WarningNames.VARIABLE_NAME_INCORRECT))
     fun `check variable length (check - negative)`() {
         val code =
                 """
@@ -173,7 +173,7 @@ class IdentifierNamingWarnTest {
 
 
     @Test
-    @Tag(StringWarnings.VARIABLE_NAME_INCORRECT_FORMAT)
+    @Tag(WarningNames.VARIABLE_NAME_INCORRECT_FORMAT)
     fun `check value parameters in dataclasses (check - negative)`() {
         val code =
                 """
@@ -186,7 +186,7 @@ class IdentifierNamingWarnTest {
     }
 
     @Test
-    @Tag(StringWarnings.VARIABLE_NAME_INCORRECT_FORMAT)
+    @Tag(WarningNames.VARIABLE_NAME_INCORRECT_FORMAT)
     fun `check value parameters in functions (check - negative)`() {
         val code =
                 """
@@ -199,7 +199,7 @@ class IdentifierNamingWarnTest {
     }
 
     @Test
-    @Tags(Tag(StringWarnings.ENUM_VALUE), Tag(StringWarnings.CLASS_NAME_INCORRECT))
+    @Tags(Tag(WarningNames.ENUM_VALUE), Tag(WarningNames.CLASS_NAME_INCORRECT))
     fun `check case for enum values (check - negative)`() {
         val code =
                 """
@@ -216,7 +216,7 @@ class IdentifierNamingWarnTest {
     }
 
     @Test
-    @Tag(StringWarnings.OBJECT_NAME_INCORRECT)
+    @Tag(WarningNames.OBJECT_NAME_INCORRECT)
     fun `check case for object (check - negative)`() {
         val code =
                 """
@@ -230,7 +230,7 @@ class IdentifierNamingWarnTest {
 
     // ======== exception case and suffix ========
     @Test
-    @Tag(StringWarnings.CLASS_NAME_INCORRECT)
+    @Tag(WarningNames.CLASS_NAME_INCORRECT)
     fun `check exception case format`() {
         val code =
                 """
@@ -242,7 +242,7 @@ class IdentifierNamingWarnTest {
     }
 
     @Test
-    @Tag(StringWarnings.EXCEPTION_SUFFIX)
+    @Tag(WarningNames.EXCEPTION_SUFFIX)
     fun `check exception case and suffix (with type call entry) - negative`() {
         val code =
                 """
@@ -254,7 +254,7 @@ class IdentifierNamingWarnTest {
     }
 
     @Test
-    @Tag(StringWarnings.EXCEPTION_SUFFIX)
+    @Tag(WarningNames.EXCEPTION_SUFFIX)
     fun `check exception case and suffix (only parent name inheritance) - negative`() {
         val code =
                 """
@@ -268,7 +268,7 @@ class IdentifierNamingWarnTest {
     }
 
     @Test
-    @Tag(StringWarnings.VARIABLE_HAS_PREFIX)
+    @Tag(WarningNames.VARIABLE_HAS_PREFIX)
     fun `checking that there should be no prefixes in variable name`() {
         val code =
                 """
@@ -283,7 +283,7 @@ class IdentifierNamingWarnTest {
     }
 
     @Test
-    @Tags(Tag(StringWarnings.VARIABLE_NAME_INCORRECT_FORMAT), Tag(StringWarnings.VARIABLE_HAS_PREFIX))
+    @Tags(Tag(WarningNames.VARIABLE_NAME_INCORRECT_FORMAT), Tag(WarningNames.VARIABLE_HAS_PREFIX))
     fun `regression - checking that digit in the end will not raise a warning`() {
         val code =
                 """
@@ -299,7 +299,7 @@ class IdentifierNamingWarnTest {
     }
 
     @Test
-    @Tag(StringWarnings.VARIABLE_NAME_INCORRECT_FORMAT)
+    @Tag(WarningNames.VARIABLE_NAME_INCORRECT_FORMAT)
     fun `regression - destructing declaration in lambdas - incorrect case `() {
         val code =
                 """
@@ -319,7 +319,7 @@ class IdentifierNamingWarnTest {
     }
 
     @Test
-    @Tag(StringWarnings.VARIABLE_NAME_INCORRECT_FORMAT)
+    @Tag(WarningNames.VARIABLE_NAME_INCORRECT_FORMAT)
     fun `regression - lambda argument - incorrect case`() {
         val code =
                 """
@@ -337,7 +337,7 @@ class IdentifierNamingWarnTest {
     }
 
     @Test
-    @Tag(StringWarnings.FUNCTION_BOOLEAN_PREFIX)
+    @Tag(WarningNames.FUNCTION_BOOLEAN_PREFIX)
     fun `FUNCTION_BOOLEAN_PREFIX - positive example`() {
         lintMethod(IdentifierNaming(),
                 """
@@ -350,7 +350,7 @@ class IdentifierNamingWarnTest {
     }
 
     @Test
-    @Tag(StringWarnings.FUNCTION_BOOLEAN_PREFIX)
+    @Tag(WarningNames.FUNCTION_BOOLEAN_PREFIX)
     fun `FUNCTION_BOOLEAN_PREFIX - negative example`() {
         lintMethod(IdentifierNaming(),
                 """
@@ -367,7 +367,7 @@ class IdentifierNamingWarnTest {
     }
 
     @Test
-    @Tag(StringWarnings.IDENTIFIER_LENGTH)
+    @Tag(WarningNames.IDENTIFIER_LENGTH)
     fun `regression - function argument type`() {
         // valid example, should not cause exceptions
         lintMethod(IdentifierNaming(),
@@ -386,7 +386,7 @@ class IdentifierNamingWarnTest {
     }
 
     @Test
-    @Tag(StringWarnings.IDENTIFIER_LENGTH)
+    @Tag(WarningNames.IDENTIFIER_LENGTH)
     fun `regression - object parsing should not fail with anonymous objects`() {
         val code =
                 """
@@ -399,7 +399,7 @@ class IdentifierNamingWarnTest {
     }
 
     @Test
-    @Tag(StringWarnings.IDENTIFIER_LENGTH)
+    @Tag(WarningNames.IDENTIFIER_LENGTH)
     fun `exception case for identifier naming in catch statements`() {
         val code =
                 """
@@ -414,7 +414,7 @@ class IdentifierNamingWarnTest {
     }
 
     @Test
-    @Tag(StringWarnings.IDENTIFIER_LENGTH)
+    @Tag(WarningNames.IDENTIFIER_LENGTH)
     fun `exception case for identifier naming in catch statements with catch body`() {
         val code =
                 """
@@ -431,7 +431,7 @@ class IdentifierNamingWarnTest {
     }
 
     @Test
-    @Tag(StringWarnings.IDENTIFIER_LENGTH)
+    @Tag(WarningNames.IDENTIFIER_LENGTH)
     fun `exception case for identifier naming - catching exception with type e`() {
         val code =
                 """
@@ -446,7 +446,7 @@ class IdentifierNamingWarnTest {
     }
 
     @Test
-    @Tag(StringWarnings.BACKTICKS_PROHIBITED)
+    @Tag(WarningNames.BACKTICKS_PROHIBITED)
     fun `backticks should be used only with functions from tests (function)`() {
         val code =
                 """
@@ -463,7 +463,7 @@ class IdentifierNamingWarnTest {
     }
 
     @Test
-    @Tag(StringWarnings.BACKTICKS_PROHIBITED)
+    @Tag(WarningNames.BACKTICKS_PROHIBITED)
     fun `backticks should be used only with functions from tests (test method)`() {
         val code =
                 """                    
@@ -476,7 +476,7 @@ class IdentifierNamingWarnTest {
     }
 
     @Test
-    @Tag(StringWarnings.BACKTICKS_PROHIBITED)
+    @Tag(WarningNames.BACKTICKS_PROHIBITED)
     fun `backticks should be used only with functions from tests (test method with variables)`() {
         val code =
                 """                    
@@ -491,7 +491,7 @@ class IdentifierNamingWarnTest {
     }
 
     @Test
-    @Tag(StringWarnings.BACKTICKS_PROHIBITED)
+    @Tag(WarningNames.BACKTICKS_PROHIBITED)
     fun `backticks should be used only with functions from tests (class)`() {
         val code =
                 """

@@ -2,7 +2,7 @@ package org.cqfn.diktat.ruleset.chapter2
 
 import com.pinterest.ktlint.core.LintError
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.StringWarnings
+import org.cqfn.diktat.ruleset.constants.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_TRIVIAL_KDOC_ON_FUNCTION
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_PARAM_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_RETURN_TAG
@@ -26,7 +26,7 @@ class KdocMethodsTest {
     """.trimIndent()
 
     @Test
-    @Tags(Tag(StringWarnings.KDOC_WITHOUT_PARAM_TAG), Tag(StringWarnings.KDOC_WITHOUT_RETURN_TAG), Tag(StringWarnings.KDOC_WITHOUT_THROWS_TAG))
+    @Tags(Tag(WarningNames.KDOC_WITHOUT_PARAM_TAG), Tag(WarningNames.KDOC_WITHOUT_RETURN_TAG), Tag(WarningNames.KDOC_WITHOUT_THROWS_TAG))
     fun `Accessible methods with parameters, return type and throws should have proper KDoc (positive example)`() {
         val validCode = """
             /**
@@ -42,7 +42,7 @@ class KdocMethodsTest {
     }
 
     @Test
-    @Tag(StringWarnings.MISSING_KDOC_TOP_LEVEL)
+    @Tag(WarningNames.MISSING_KDOC_TOP_LEVEL)
     fun `Warning should not be triggered for private functions`() {
         val validCode = "private $funCode"
 
@@ -50,8 +50,8 @@ class KdocMethodsTest {
     }
 
     @Test
-    @Tags(Tag(StringWarnings.KDOC_WITHOUT_PARAM_TAG), Tag(StringWarnings.KDOC_WITHOUT_RETURN_TAG), Tag(StringWarnings.KDOC_WITHOUT_THROWS_TAG),
-            Tag(StringWarnings.MISSING_KDOC_ON_FUNCTION))
+    @Tags(Tag(WarningNames.KDOC_WITHOUT_PARAM_TAG), Tag(WarningNames.KDOC_WITHOUT_RETURN_TAG), Tag(WarningNames.KDOC_WITHOUT_THROWS_TAG),
+            Tag(WarningNames.MISSING_KDOC_ON_FUNCTION))
     fun `Warning should not be triggered for functions in tests`() {
         val validCode = "@Test $funCode"
         val complexAnnotationCode = "@Anno(test = [\"args\"]) $funCode"
@@ -81,7 +81,7 @@ class KdocMethodsTest {
     }
 
     @Test
-    @Tag(StringWarnings.KDOC_WITHOUT_PARAM_TAG)
+    @Tag(WarningNames.KDOC_WITHOUT_PARAM_TAG)
     fun `Empty parameter list should not trigger warning about @param`() {
         val validCode = """
             /**
@@ -98,7 +98,7 @@ class KdocMethodsTest {
     }
 
     @Test
-    @Tag(StringWarnings.KDOC_WITHOUT_PARAM_TAG)
+    @Tag(WarningNames.KDOC_WITHOUT_PARAM_TAG)
     fun `All methods with parameters should have @param KDoc`() {
         val invalidKDoc = """
             /**
@@ -118,7 +118,7 @@ class KdocMethodsTest {
     }
 
     @Test
-    @Tag(StringWarnings.KDOC_WITHOUT_PARAM_TAG)
+    @Tag(WarningNames.KDOC_WITHOUT_PARAM_TAG)
     fun `All methods with parameters should have @param KDoc for each parameter`() {
         val invalidKDoc = """
             /**
@@ -139,7 +139,7 @@ class KdocMethodsTest {
     }
 
     @Test
-    @Tag(StringWarnings.KDOC_WITHOUT_RETURN_TAG)
+    @Tag(WarningNames.KDOC_WITHOUT_RETURN_TAG)
     fun `All methods with explicit return type excluding Unit should have @return KDoc`() {
         val invalidKDoc = """
             /**
@@ -159,7 +159,7 @@ class KdocMethodsTest {
     }
 
     @Test
-    @Tag(StringWarnings.KDOC_WITHOUT_RETURN_TAG)
+    @Tag(WarningNames.KDOC_WITHOUT_RETURN_TAG)
     fun `All methods with expression body should have @return tag or explicitly set return type to Unit`() {
         val kdocWithoutReturn = """
             /**
@@ -185,7 +185,7 @@ class KdocMethodsTest {
     }
 
     @Test
-    @Tag(StringWarnings.KDOC_WITHOUT_THROWS_TAG)
+    @Tag(WarningNames.KDOC_WITHOUT_THROWS_TAG)
     fun `All methods with throw in method body should have @throws KDoc`() {
         val invalidKDoc = """
             /**
@@ -205,7 +205,7 @@ class KdocMethodsTest {
     }
 
     @Test
-    @Tag(StringWarnings.KDOC_WITHOUT_THROWS_TAG)
+    @Tag(WarningNames.KDOC_WITHOUT_THROWS_TAG)
     fun `Linter shouldn't detect throws inside comments`() {
         val invalidKDoc = """
             /**
@@ -226,7 +226,7 @@ class KdocMethodsTest {
     }
 
     @Test
-    @Tag(StringWarnings.KDOC_WITHOUT_THROWS_TAG)
+    @Tag(WarningNames.KDOC_WITHOUT_THROWS_TAG)
     fun `All thrown exceptions should be in KDoc`() {
         val invalidCode = """
             /**
@@ -248,7 +248,7 @@ class KdocMethodsTest {
     }
 
     @Test
-    @Tag(StringWarnings.MISSING_KDOC_TOP_LEVEL)
+    @Tag(WarningNames.MISSING_KDOC_TOP_LEVEL)
     fun `do not force documentation on standard methods`() {
         lintMethod(KdocMethods(),
                 """
@@ -280,7 +280,7 @@ class KdocMethodsTest {
     }
 
     @Test
-    @Tag(StringWarnings.MISSING_KDOC_ON_FUNCTION)
+    @Tag(WarningNames.MISSING_KDOC_ON_FUNCTION)
     fun `should not force documentation on single line getters and setters`() {
         lintMethod(KdocMethods(),
                 """
@@ -315,7 +315,7 @@ class KdocMethodsTest {
     }
 
     @Test
-    @Tag(StringWarnings.MISSING_KDOC_ON_FUNCTION)
+    @Tag(WarningNames.MISSING_KDOC_ON_FUNCTION)
     fun `regression - warn about missing KDoc even if it cannot be autocorrected`() {
         lintMethod(KdocMethods(),
                 """
@@ -326,7 +326,7 @@ class KdocMethodsTest {
     }
 
     @Test
-    @Tag(StringWarnings.KDOC_TRIVIAL_KDOC_ON_FUNCTION)
+    @Tag(WarningNames.KDOC_TRIVIAL_KDOC_ON_FUNCTION)
     fun `should check if KDoc is not trivial`() {
         lintMethod(KdocMethods(),
                 """

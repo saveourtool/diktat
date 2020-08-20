@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter3
 
 import com.pinterest.ktlint.core.LintError
-import org.cqfn.diktat.ruleset.constants.StringWarnings
+import org.cqfn.diktat.ruleset.constants.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings.MORE_THAN_ONE_STATEMENT_PER_LINE
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.SingleLineStatementsRule
@@ -15,7 +15,7 @@ class SingleLineStatementsRuleWarnTest {
 
 
     @Test
-    @Tag(StringWarnings.MORE_THAN_ONE_STATEMENT_PER_LINE)
+    @Tag(WarningNames.MORE_THAN_ONE_STATEMENT_PER_LINE)
     fun `check two statement per line`() {
         lintMethod(SingleLineStatementsRule(),
                 """
@@ -44,7 +44,7 @@ class SingleLineStatementsRuleWarnTest {
     }
 
     @Test
-    @Tag(StringWarnings.MORE_THAN_ONE_STATEMENT_PER_LINE)
+    @Tag(WarningNames.MORE_THAN_ONE_STATEMENT_PER_LINE)
     fun `check two statement in one line without space`() {
         lintMethod(SingleLineStatementsRule(),
                 """
@@ -59,7 +59,7 @@ class SingleLineStatementsRuleWarnTest {
     }
 
     @Test
-    @Tag(StringWarnings.MORE_THAN_ONE_STATEMENT_PER_LINE)
+    @Tag(WarningNames.MORE_THAN_ONE_STATEMENT_PER_LINE)
     fun `check if expression with semicolon and else block in one line`() {
         lintMethod(SingleLineStatementsRule(),
                 """
@@ -74,7 +74,7 @@ class SingleLineStatementsRuleWarnTest {
     }
 
     @Test
-    @Tag(StringWarnings.MORE_THAN_ONE_STATEMENT_PER_LINE)
+    @Tag(WarningNames.MORE_THAN_ONE_STATEMENT_PER_LINE)
     fun `check correct test without more than one statement`() {
         lintMethod(SingleLineStatementsRule(),
                 """
@@ -99,7 +99,7 @@ class SingleLineStatementsRuleWarnTest {
     }
 
     @Test
-    @Tag(StringWarnings.MORE_THAN_ONE_STATEMENT_PER_LINE)
+    @Tag(WarningNames.MORE_THAN_ONE_STATEMENT_PER_LINE)
     fun `check semicolon with enum class expression`() {
         lintMethod(SingleLineStatementsRule(),
                 """
@@ -117,7 +117,7 @@ class SingleLineStatementsRuleWarnTest {
     }
 
     @Test
-    @Tag(StringWarnings.MORE_THAN_ONE_STATEMENT_PER_LINE)
+    @Tag(WarningNames.MORE_THAN_ONE_STATEMENT_PER_LINE)
     fun `check if expression with two wrong semincolon`() {
         lintMethod(SingleLineStatementsRule(),
                 """
@@ -135,7 +135,7 @@ class SingleLineStatementsRuleWarnTest {
     }
 
     @Test
-    @Tag(StringWarnings.MORE_THAN_ONE_STATEMENT_PER_LINE)
+    @Tag(WarningNames.MORE_THAN_ONE_STATEMENT_PER_LINE)
     fun `check semicolon in the beginning of the line`() {
         lintMethod(SingleLineStatementsRule(),
                 """
