@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter3
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.WarningNames
+import generated.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
 import org.cqfn.diktat.ruleset.rules.files.IndentationRule
 import org.cqfn.diktat.util.FixTestBase

@@ -1,6 +1,6 @@
 package org.cqfn.diktat.ruleset.chapter3.files
 
-import org.cqfn.diktat.ruleset.constants.WarningNames
+import generated.WarningNames
 import org.cqfn.diktat.ruleset.rules.files.BlankLinesRule
 import org.cqfn.diktat.util.FixTestBase
 import org.junit.jupiter.api.Tag

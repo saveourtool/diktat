@@ -1,6 +1,6 @@
 package org.cqfn.diktat.ruleset.chapter2
 
-import org.cqfn.diktat.ruleset.constants.WarningNames
+import generated.WarningNames
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocFormatting
 import org.cqfn.diktat.util.FixTestBase
 import org.junit.jupiter.api.Tag

@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter1
 
 import com.pinterest.ktlint.core.LintError
-import org.cqfn.diktat.ruleset.constants.WarningNames
+import generated.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings.BACKTICKS_PROHIBITED
 import org.cqfn.diktat.ruleset.constants.Warnings.CLASS_NAME_INCORRECT
 import org.cqfn.diktat.ruleset.constants.Warnings.CONSTANT_UPPERCASE
