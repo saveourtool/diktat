@@ -9,12 +9,11 @@ import org.jetbrains.kotlin.com.intellij.openapi.Disposable
 import org.jetbrains.kotlin.com.intellij.psi.TokenType.ERROR_ELEMENT
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.psi.KtPsiFactory
-import org.jetbrains.kotlin.resolve.ImportPath
 
 class KotlinParser {
 
     /**
-     * Set property
+     * Set idea.io.use.nio2 in system property to true
      */
     init {
         setIdeaIoUseFallback()
@@ -27,14 +26,13 @@ class KotlinParser {
                 EnvironmentConfigFiles.JVM_CONFIG_FILES
         ).project
         val ktPsiFactory = KtPsiFactory(project, true)
-        val node = ktPsiFactory.createBlockCodeFragment(text, null).node
-        if (node.findAllNodesWithSpecificType(ERROR_ELEMENT).isNotEmpty()){
-            node.findAllNodesWithSpecificType(ERROR_ELEMENT).forEach {
-                val q = ktPsiFactory.createImportDirective(ImportPath.fromString(it.text)).node
-                println(q.prettyPrint())
-            }
-            throw KotlinParseException("Your text is not valid")
+        val node = ktPsiFactory.createBlockCodeFragment(text, null).node.findChildByType(BLOCK)!!
+        if (node.findAllNodesWithSpecificType(ERROR_ELEMENT).isNotEmpty()) {
+            val fileNode = ktPsiFactory.createFile(text).node
+            if (fileNode.findAllNodesWithSpecificType(ERROR_ELEMENT).isNotEmpty())
+                throw KotlinParseException("Your text is not valid")
+            else return fileNode
         }
-        return node.findChildByType(BLOCK)!!.firstChildNode
+        return node.firstChildNode
     }
 }
