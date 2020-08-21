@@ -14,10 +14,11 @@ class WhiteSpaceRuleWarnTest {
 
     private val lbraceWarn = "${WRONG_WHITESPACE.warnText()} there should be a whitespace before '{'"
     private val eolSpaceWarn = "${WRONG_WHITESPACE.warnText()} there should be no spaces in the end of line"
-    private fun binaryOpWarn(op: String, before: Int?, after: Int?, reqBefore: Int, reqAfter: Int?) =
-//            "${WRONG_WHITESPACE.warnText()} $op should ${if (isException) "not " else ""}be surrounded by whitespaces"
-            "${WRONG_WHITESPACE.warnText()} $op should have $reqBefore space(s) before" +
-                    (if (reqAfter != null) " and $reqAfter space(s) after" else "") +
+    private fun tokenWarn(token: String, before: Int?, after: Int?, reqBefore: Int?, reqAfter: Int?) =
+            "${WRONG_WHITESPACE.warnText()} $token should have" +
+                    (if (reqBefore != null) " $reqBefore space(s) before" else "") +
+                    (if (reqBefore != null && reqAfter != null) " and" else "") +
+                    (if (reqAfter != null) " $reqAfter space(s) after" else "") +
                     ", but has" +
                     (if (before != null) " $before space(s) before" else "") +
                     (if (before != null && after != null) " and" else "") +
@@ -183,6 +184,29 @@ class WhiteSpaceRuleWarnTest {
     }
 
     @Test
+    fun `should not false positively trigger when operators are surrounded with newlines and EOL comments`() {
+        lintMethod(WhiteSpaceRule(),
+                """
+                    |class Example<T> where T
+                    |                 :  // comment about UpperType
+                    |                 UpperType {
+                    |    fun foo(t: T) =  // another comment
+                    |            t + 1
+                    |    
+                    |    fun bar() {
+                    |        listOf<T>()
+                    |            .map(this  // lorem ipsum
+                    |                ::foo)
+                    |            .filter { elem ->  // dolor sit amet
+                    |                 predicate(elem)
+                    |             }
+                    |    }
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
     fun `binary operators should be surrounded by spaces`() {
         lintMethod(WhiteSpaceRule(),
                 """
@@ -198,28 +222,28 @@ class WhiteSpaceRuleWarnTest {
                     |    }
                     |}
                 """.trimMargin(),
-                LintError(1, 31, ruleId, binaryOpWarn(":", 0, 0, 1, 1), true),
-                LintError(1, 44, ruleId, binaryOpWarn(":", 0, null, 1, 1), true),
-                LintError(1, 59, ruleId, binaryOpWarn(":", null, 0, 1, 1), true),
-                LintError(2, 22, ruleId, binaryOpWarn("+", 0, null, 1, 1), true),
-                LintError(3, 23, ruleId, binaryOpWarn("+", 0, 0, 1, 1), true),
-                LintError(4, 24, ruleId, binaryOpWarn("+", null, 0, 1, 1), true),
-                LintError(7, 21, ruleId, binaryOpWarn(".", 1, null, 0, 0), true),
-                LintError(7, 31, ruleId, binaryOpWarn("::", 1, null, 0, 0), true),
-                LintError(7, 38, ruleId, binaryOpWarn("?.", 1, null, 0, 0), true),
-                LintError(7, 54, ruleId, binaryOpWarn("->", null, 0, 1, 1), true),
-                LintError(7, 74, ruleId, binaryOpWarn("!!", 1, null, 0, 0), true),
-                LintError(8, 21, ruleId, binaryOpWarn(".", 1, 1, 0, 0), true),
-                LintError(8, 32, ruleId, binaryOpWarn("::", 1, 1, 0, 0), true),
-                LintError(8, 40, ruleId, binaryOpWarn("?.", 1, 1, 0, 0), true),
-                LintError(8, 56, ruleId, binaryOpWarn("->", 0, 0, 1, 1), true),
-                LintError(8, 76, ruleId, binaryOpWarn("!!", 1, 1, 0, 0), true),
-                LintError(8, 79, ruleId, binaryOpWarn(".", 1, null, 0, 0), true),
-                LintError(9, 20, ruleId, binaryOpWarn(".", null, 1, 0, 0), true),
-                LintError(9, 30, ruleId, binaryOpWarn("::", null, 1, 0, 0), true),
-                LintError(9, 37, ruleId, binaryOpWarn("?.", null, 1, 0, 0), true),
-                LintError(9, 53, ruleId, binaryOpWarn("->", 0, null, 1, 1), true),
-                LintError(9, 75, ruleId, binaryOpWarn(".", null, 1, 0, 0), true)
+                LintError(1, 31, ruleId, tokenWarn(":", 0, 0, 1, 1), true),
+                LintError(1, 44, ruleId, tokenWarn(":", 0, null, 1, 1), true),
+                LintError(1, 59, ruleId, tokenWarn(":", null, 0, 1, 1), true),
+                LintError(2, 22, ruleId, tokenWarn("+", 0, null, 1, 1), true),
+                LintError(3, 23, ruleId, tokenWarn("+", 0, 0, 1, 1), true),
+                LintError(4, 24, ruleId, tokenWarn("+", null, 0, 1, 1), true),
+                LintError(7, 21, ruleId, tokenWarn(".", 1, null, 0, 0), true),
+                LintError(7, 31, ruleId, tokenWarn("::", 1, null, 0, 0), true),
+                LintError(7, 38, ruleId, tokenWarn("?.", 1, null, 0, 0), true),
+                LintError(7, 54, ruleId, tokenWarn("->", null, 0, 1, 1), true),
+                LintError(7, 74, ruleId, tokenWarn("!!", 1, null, 0, 0), true),
+                LintError(8, 21, ruleId, tokenWarn(".", 1, 1, 0, 0), true),
+                LintError(8, 32, ruleId, tokenWarn("::", 1, 1, 0, 0), true),
+                LintError(8, 40, ruleId, tokenWarn("?.", 1, 1, 0, 0), true),
+                LintError(8, 56, ruleId, tokenWarn("->", 0, 0, 1, 1), true),
+                LintError(8, 76, ruleId, tokenWarn("!!", 1, 1, 0, 0), true),
+                LintError(8, 79, ruleId, tokenWarn(".", 1, null, 0, 0), true),
+                LintError(9, 20, ruleId, tokenWarn(".", null, 1, 0, 0), true),
+                LintError(9, 30, ruleId, tokenWarn("::", null, 1, 0, 0), true),
+                LintError(9, 37, ruleId, tokenWarn("?.", null, 1, 0, 0), true),
+                LintError(9, 53, ruleId, tokenWarn("->", 0, null, 1, 1), true),
+                LintError(9, 75, ruleId, tokenWarn(".", null, 1, 0, 0), true)
         )
     }
 
@@ -257,13 +281,13 @@ class WhiteSpaceRuleWarnTest {
                     |}
                 """.trimMargin(),
                 LintError(1, 19, ruleId, eolSpaceWarn, true),
-                LintError(2, 16, ruleId, binaryOpWarn(":", 1, 0, 0, 1), true),
-                LintError(2, 19, ruleId, binaryOpWarn(",", 1, 0, 0, 1), true),
-                LintError(2, 22, ruleId, binaryOpWarn(":", null, 0, 0, 1), true),
+                LintError(2, 16, ruleId, tokenWarn(":", 1, 0, 0, 1), true),
+                LintError(2, 19, ruleId, tokenWarn(",", 1, 0, 0, 1), true),
+                LintError(2, 22, ruleId, tokenWarn(":", null, 0, 0, 1), true),
                 LintError(2, 27, ruleId, eolSpaceWarn, true),
-                LintError(3, 18, ruleId, binaryOpWarn(";", null, 0, 0, 1), true),
-                LintError(4, 19, ruleId, binaryOpWarn(";", 1, null, 0, 1), true),
-                LintError(7, 11, ruleId, binaryOpWarn(":", 1, null, 0, 1), true)
+                LintError(3, 18, ruleId, tokenWarn(";", null, 0, 0, 1), true),
+                LintError(4, 19, ruleId, tokenWarn(";", 1, null, 0, 1), true),
+                LintError(7, 11, ruleId, tokenWarn(":", 1, null, 0, 1), true)
         )
     }
 
@@ -294,11 +318,11 @@ class WhiteSpaceRuleWarnTest {
                     |    val x = object: IFoo { /*...*/ }
                     |}
                 """.trimMargin(),
-                LintError(1, 25, ruleId, binaryOpWarn(":", 0, null, 1, 1), true),
-                LintError(1, 31, ruleId, binaryOpWarn(":", 0, null, 1, 1), true),
-                LintError(3, 14, ruleId, binaryOpWarn(":", 0, null, 1, 1), true),
-                LintError(4, 27, ruleId, binaryOpWarn(":", 0, null, 1, 1), true),
-                LintError(6, 19, ruleId, binaryOpWarn(":", 0, null, 1, 1), true)
+                LintError(1, 25, ruleId, tokenWarn(":", 0, null, 1, 1), true),
+                LintError(1, 31, ruleId, tokenWarn(":", 0, null, 1, 1), true),
+                LintError(3, 14, ruleId, tokenWarn(":", 0, null, 1, 1), true),
+                LintError(4, 27, ruleId, tokenWarn(":", 0, null, 1, 1), true),
+                LintError(6, 19, ruleId, tokenWarn(":", 0, null, 1, 1), true)
         )
     }
 
@@ -311,7 +335,55 @@ class WhiteSpaceRuleWarnTest {
                     |    lateinit var x: Int ?
                     |}
                 """.trimMargin(),
-                LintError(3, 25, ruleId, binaryOpWarn("?", 1, null, 0, null), true)
+                LintError(3, 25, ruleId, tokenWarn("?", 1, null, 0, null), true)
+        )
+    }
+
+    @Test
+    fun `there should be no space before and after square bracket`() {
+        lintMethod(WhiteSpaceRule(),
+                """
+                    |val x = list[0]
+                    |val y = list [0]
+                """.trimMargin(),
+                LintError(2, 14, ruleId, tokenWarn("[", 1, null, 0, 0), true)
+        )
+    }
+
+    @Test
+    fun `there should be no space between constructor or function name and opening parentheses - positive example`() {
+        lintMethod(WhiteSpaceRule(),
+                """
+                    |class Example(val x: Int) {
+                    |    constructor() : this(0)
+                    |    
+                    |    fun foo(y: Int): AnotherExample {
+                    |        bar(x)
+                    |        return AnotherExample(y)
+                    |    }
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    fun `there should be no space between constructor or function name and opening parentheses`() {
+        lintMethod(WhiteSpaceRule(),
+                """
+                    |class Example (val x: Int) {
+                    |    constructor() : this (0)
+                    |
+                    |    fun foo (y: Int): AnotherExample {
+                    |        bar (x)
+                    |        return AnotherExample (y)
+                    |    }
+                    |}
+                """.trimMargin(),
+                LintError(1, 15, ruleId, tokenWarn("(", 1, null, 0, 0), true),
+                LintError(2, 26, ruleId, tokenWarn("(", 1, null, 0, 0), true),
+                LintError(4, 13, ruleId, tokenWarn("(", 1, null, 0, 0), true),
+                LintError(5, 13, ruleId, tokenWarn("(", 1, null, 0, 0), true),
+                LintError(6, 31, ruleId, tokenWarn("(", 1, null, 0, 0), true)
         )
     }
 }
