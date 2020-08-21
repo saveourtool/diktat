@@ -7,12 +7,14 @@ import com.squareup.kotlinpoet.TypeSpec
 import java.io.File
 
 
+private const val PATH_TO_WARNINGS = "src/main/kotlin/org/cqfn/diktat/ruleset/constants/Warnings.kt"
+
 private const val AUTO_GENERATION_COMMENT =
         " This document was auto generated, please dont modify it\n" +
         " This document contains all enum properties from Warnings.kt as Strings"
 
 fun main(){
-    val bufferedReader = File("src/main/kotlin/org/cqfn/diktat/ruleset/constants/Warnings.kt").bufferedReader()
+    val bufferedReader = File(getPathToWarnings()).bufferedReader()
     val lineList = mutableListOf<String>()
 
     bufferedReader.useLines { lines ->
@@ -48,3 +50,6 @@ fun main(){
     kotlinFile.writeTo(File("src/main/kotlin"))
 
 }
+
+
+private fun getPathToWarnings() = PATH_TO_WARNINGS.replace("/", File.separator)
