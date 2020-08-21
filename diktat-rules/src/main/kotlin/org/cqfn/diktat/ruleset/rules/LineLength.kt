@@ -53,8 +53,8 @@ import java.net.URL
 
 /**
  * The rule checks for lines in the file that exceed the maximum length.
- * Rule ignores URL in KDoc. Rule also can fix some case.
- * Rule can fix long binary conditions, comments, variables, oneline functions
+ * Rule ignores URL in KDoc. Rule also can fix some cases.
+ * Rule can fix long binary expressions in condition inside `if` and in property declarations and one line functions
  */
 @Suppress("ForbiddenComment")
 class LineLength : Rule("line-length") {
@@ -176,18 +176,18 @@ class LineLength : Rule("line-length") {
      * @param wrongNode node that should be split
      * @param configuration max length configuration
      * @param leftInitOffset is a left offset, it need when we split binary expression in right value case
-     * @param isParenthesized if wrongNode is a property and it in brackets
+     * @param isProperty if wrongNode is a property and it in brackets
      *
      * In this method we collect all binary expression in correct order and then
      * we collect their if their length less then max.
      */
     private fun fixLongBinaryExpression(wrongNode: ASTNode, configuration: LineLengthConfiguration,
-                                        leftInitOffset: Int = -1, isParenthesized: Boolean = false) {
+                                        leftInitOffset: Int = -1, isProperty: Boolean = false) {
         val leftOffset = if (leftInitOffset < 0) {
             positionByOffset(wrongNode.firstChildNode.startOffset).second
         } else leftInitOffset
         val binList = mutableListOf<ASTNode>()
-        if (isParenthesized)
+        if (isProperty)
             dfsForProperty(wrongNode, binList)
         else
             searchBinaryExpression(wrongNode, binList)
@@ -209,27 +209,31 @@ class LineLength : Rule("line-length") {
     private fun findAllText(astNode: ASTNode): String {
         var text = ""
         var node = astNode
-        var prevNode: ASTNode = node
-        if (astNode.elementType != POSTFIX_EXPRESSION) {
-            do {
-                prevNode = node
-                node = node.treeParent
-                if (node.elementType == PARENTHESIZED)
-                    text += getTextFromParenthesized(node)
-            } while (node.elementType != BINARY_EXPRESSION)
-        }
-        if(node.treePrev != null && node.treePrev.elementType == WHITE_SPACE) {
-            text += node.treePrev.text
+        var prevNode: ASTNode
+        do {
+            prevNode = node
+            node = node.treeParent
+            if (node.elementType == PARENTHESIZED)
+                text += getTextFromParenthesized(node)
+        } while (node.elementType != BINARY_EXPRESSION)
+
+        if (node.firstChildNode == prevNode) {
+            if (node.treePrev != null && node.treePrev.elementType == WHITE_SPACE) {
+                text += node.treePrev.text
+            }
+        } else {
+            if (prevNode.treePrev != null && prevNode.treePrev.elementType == WHITE_SPACE) {
+                text += prevNode.treePrev.text
+            }
         }
         while (node.treeParent.elementType == PARENTHESIZED) {
             node = node.treeParent
-            text += getTextBeforeOperationReference(node, prevNode)
+            text += getBraceAndBeforeText(node, prevNode)
         }
         text += astNode.text
-        node = if (astNode.nextSibling { it.elementType == OPERATION_REFERENCE } == null)
-            astNode.parent({ newNode -> newNode.nextSibling { it.elementType == OPERATION_REFERENCE } != null })
-                    ?: return text
-        else astNode
+        node = astNode.parent({ newNode -> newNode.nextSibling { it.elementType == OPERATION_REFERENCE } != null },
+                strict = false)
+                ?: return text
         node = node.nextSibling { it.elementType == OPERATION_REFERENCE }!!
         if (node.treePrev.elementType == WHITE_SPACE)
             text += node.treePrev.text
@@ -237,17 +241,12 @@ class LineLength : Rule("line-length") {
         return text
     }
 
-    private fun getTextBeforeOperationReference(node: ASTNode, prevNode: ASTNode): String {
+    private fun getBraceAndBeforeText(node: ASTNode, prevNode: ASTNode): String {
         var text = ""
-        if (prevNode.prevSibling { it.elementType == OPERATION_REFERENCE } == null) {
-            if (node.findChildByType(LPAR)!!.treePrev != null && node.findChildByType(LPAR)!!.treePrev.elementType == WHITE_SPACE)
-                text += node.findChildByType(LPAR)!!.treePrev.text
-            text += node.findChildByType(LPAR)!!.text
-        } else {
-            if (node.findChildByType(RPAR)!!.treePrev != null && node.findChildByType(RPAR)!!.treePrev.elementType == WHITE_SPACE)
-                text += node.findChildByType(RPAR)!!.treePrev.text
-            text += node.findChildByType(RPAR)!!.text
-        }
+        val par = if (prevNode.prevSibling { it.elementType == OPERATION_REFERENCE } == null) LPAR else RPAR
+        if (node.findChildByType(par)!!.treePrev != null && node.findChildByType(par)!!.treePrev.elementType == WHITE_SPACE)
+            text += node.findChildByType(par)!!.treePrev.text
+        text += node.findChildByType(par)!!.text
         return text
     }
 
@@ -295,19 +294,18 @@ class LineLength : Rule("line-length") {
             val newParent = parent.findChildByType(PARENTHESIZED) ?: parent
             if (newParent.hasChildOfType(BINARY_EXPRESSION)) {
                 val leftOffset = positionByOffset(newParent.findChildByType(BINARY_EXPRESSION)!!.startOffset).second
-                fixLongBinaryExpression(newParent, configuration, leftOffset, !parent.hasChildOfType(PARENTHESIZED))
+                fixLongBinaryExpression(newParent, configuration, leftOffset, true)
             }
-        } else
+        } else {
             createNodes(parent, configuration)
+        }
     }
 
     private fun createNodes(node: ASTNode, configuration: LineLengthConfiguration) {
         val leftOffset = positionByOffset(node.findChildByType(STRING_TEMPLATE)!!.startOffset).second
         if (leftOffset > configuration.lineLength)
             return
-        var text = node.findChildByType(STRING_TEMPLATE)!!.text
-        // trim to remove first and last quote
-        text = text.trimStart(text.first()).trimEnd(text.last())
+        val text = node.findChildByType(STRING_TEMPLATE)!!.text.trim('"')
         val lastCharIndex = configuration.lineLength.toInt() - leftOffset - STRING_PART_OFFSET
         val indexLastSpace = (text.substring(0, lastCharIndex).lastIndexOf(' '))
         if (indexLastSpace == -1)
@@ -333,8 +331,7 @@ class LineLength : Rule("line-length") {
 
     private fun createNodesBetweenStringTemplates(prevExp: CompositeElement) {
         prevExp.addChild(PsiWhiteSpaceImpl(" "))
-        prevExp.createOperationReference()
-        prevExp.findChildByType(OPERATION_REFERENCE)!!.addChild(LeafPsiElement(PLUS, "+"), null)
+        prevExp.createOperationReference(PLUS, "+")
         prevExp.addChild(PsiWhiteSpaceImpl("\n"))
     }
 

@@ -285,9 +285,10 @@ fun ASTNode?.isAccessibleOutside(): Boolean =
 /**
  * creation of operation reference in a node
  */
-fun ASTNode.createOperationReference(){
+fun ASTNode.createOperationReference(elementType: IElementType, text: String){
     val operationReference = CompositeElement(OPERATION_REFERENCE)
     this.addChild(operationReference, null)
+    operationReference.addChild(LeafPsiElement(elementType, text), null)
 }
 
 /**
