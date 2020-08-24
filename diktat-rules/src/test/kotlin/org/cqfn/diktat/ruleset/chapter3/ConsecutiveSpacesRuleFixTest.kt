@@ -1,5 +1,6 @@
 package org.cqfn.diktat.ruleset.chapter3
 
+import generated.WarningNames
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.ConsecutiveSpacesRule
@@ -18,13 +19,13 @@ class ConsecutiveSpacesRuleFixTest : FixTestBase("test/paragraph3/spaces", Conse
         )
 ) {
     @Test
-    @Tag("TOO_MANY_SPACES")
+    @Tag(WarningNames.TOO_MANY_CONSECUTIVE_SPACES)
     fun `many spaces rule enum case`() {
         fixAndCompare("TooManySpacesEnumExpected.kt", "TooManySpacesEnumTest.kt")
     }
 
     @Test
-    @Tag("TOO_MANY_SPACES")
+    @Tag(WarningNames.TOO_MANY_CONSECUTIVE_SPACES)
     fun `many spaces rule`() {
         fixAndCompare("TooManySpacesExpected.kt", "TooManySpacesTest.kt")
     }
