@@ -32,6 +32,6 @@ fun main() {
             .addComment(AUTO_GENERATION_COMMENT)
             .build()
 
-    kotlinFile.writeTo(File("src/main/kotlin"))
+    kotlinFile.writeTo(File("diktat-rules/src/main/kotlin")) // fixme: need to add it to pom
 
 }
