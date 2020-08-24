@@ -7,9 +7,11 @@ import com.squareup.kotlinpoet.TypeSpec
 import org.cqfn.diktat.ruleset.constants.Warnings
 import java.io.File
 
-private const val AUTO_GENERATION_COMMENT =
-        " This document was auto generated, please dont modify it\n" +
-                " This document contains all enum properties from Warnings.kt as Strings"
+private val AUTO_GENERATION_COMMENT =
+        """
+            | This document was auto generated, please don't modify it.
+            | This document contains all enum properties from Warnings.kt as Strings.
+        """.trimMargin()
 
 fun main() {
     val enumValNames = Warnings.values().map { it.name }
