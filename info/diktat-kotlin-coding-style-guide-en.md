@@ -598,6 +598,12 @@ val someVal = if (nr % 15 == 0) {
 }
 ```
 
+3. Start all comments (including KDoc) with a space after leading symbol (`//`, `/*`, `/**` and `*`)
+   Good example:
+   ```kotlin
+   val x = 0  // this is a comment
+   ```
+
 ### <a name="r2.7"></a>Rule 2.7 Do not comment unused code blocks (including imports). Delete them immediately.
 
 Code - is not a history storage. For history use git, svn or other VCS tools.
@@ -1105,10 +1111,28 @@ fun baz() {
 
   - Two colons (`::`) are written without spaces: `Object::toString`
   - Dot separator (`.`) that stays on the same line with an object name `object.toString()`
+  - Safe access modifiers: `?.` and `!!`, that stay on the same line with an object name: `object?.toString()`
+  - Operator `..` for creating ranges, e.g. `1..100`
 
-  5. Spaces should be used after ',',':',';' (except cases when those symbols are in the end of line). There should be no whitespaces in the end of line.
+  5. Spaces should be used after ',' and ':' (also ';', but please note that this code style prohibits usage of ';' in the middle of the line, see rule []())
+    (except cases when those symbols are in the end of line). There should be no whitespaces in the end of line.
+    
+    There should be no spaces before `,`, `:` and `;`. The only exceptions for colon are the following:
+    - when `:` is used to separate a type and a supertype, including anonimous object (after `object` keyword)
+    - when delegating to a superclass constructor or a different constructor of the same class
+    Good example:
+    ```kotlin
+        abstract class Foo<out T : Any> : IFoo { }
+        
+        class FooImpl : Foo() {
+            constructor(x: String) : this(x) { /*...*/ }
+            
+            val x = object : IFoo { /*...*/ } 
+        }
+    ```
 
-  6. There should be *only one space* between identifier and it's type： `list: List<String>`
+  6. There should be *only one space* between identifier and it's type: `list: List<String>`
+     If type is nullable there should be no space before `?`.
   
   7. When using '[]' operator (get/set) there should be *no* spaces between identifier and '[': `someList[0]`
   
@@ -1120,6 +1144,8 @@ fun baz() {
         a: String
     )
   ```
+
+  9. Never put a space after `(`, `[`, `<` (when used as bracket in templates) or before `)`, `]`, `>` (when used as bracket in templates)
 
 ### <a name="s3.8"></a>Recommendation 3.8: No spaces should be inserted for horizontal alignment
 
