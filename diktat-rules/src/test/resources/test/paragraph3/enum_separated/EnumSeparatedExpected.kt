@@ -1,10 +1,7 @@
 package test.paragraph3.enum_separated
 
 enum class ENUM {
-    A,
- B,
- C,
-    ;
+    A , B, C
 }
 
 enum class ENUM {

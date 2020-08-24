@@ -32,11 +32,7 @@ class EnumsSeparatedWarnTest {
                     |enum class ENUM {
                     |   A, B, C
                     |}
-                """.trimMargin(),
-                LintError(2,4,ruleId,"${ENUMS_SEPARATED.warnText()} enum constance must end with a line break", true),
-                LintError(2,7,ruleId,"${ENUMS_SEPARATED.warnText()} enum constance must end with a line break", true),
-                LintError(2,10,ruleId,"${ENUMS_SEPARATED.warnText()} enums must end with semicolon", true),
-                LintError(2,10,ruleId,"${ENUMS_SEPARATED.warnText()} last enum constance must end with a comma", true)
+                """.trimMargin()
         )
     }
 
