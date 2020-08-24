@@ -1,10 +1,11 @@
 package org.cqfn.diktat.ruleset.chapter3
 
 import com.pinterest.ktlint.core.LintError
+import generated.WarningNames
+import org.cqfn.diktat.ruleset.constants.Warnings.TOO_MANY_CONSECUTIVE_SPACES
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.rules.ConsecutiveSpacesRule
 import org.cqfn.diktat.util.lintMethod
-import org.cqfn.diktat.ruleset.constants.Warnings.TOO_MANY_CONSECUTIVE_SPACES
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -22,7 +23,7 @@ class ConsecutiveSpacesRuleWarnTest {
     )
 
     @Test
-    @Tag("TOO_MANY_SPACES")
+    @Tag(WarningNames.TOO_MANY_CONSECUTIVE_SPACES)
     fun `enum spaces check bad`() {
         lintMethod(ConsecutiveSpacesRule(),
                 """
@@ -35,7 +36,7 @@ class ConsecutiveSpacesRuleWarnTest {
     }
 
     @Test
-    @Tag("TOO_MANY_SPACES")
+    @Tag(WarningNames.TOO_MANY_CONSECUTIVE_SPACES)
     fun `enum spaces check good`() {
         lintMethod(ConsecutiveSpacesRule(),
                 """
@@ -48,7 +49,7 @@ class ConsecutiveSpacesRuleWarnTest {
 
 
     @Test
-    @Tag("TOO_MANY_SPACES")
+    @Tag(WarningNames.TOO_MANY_CONSECUTIVE_SPACES)
     fun `fun space check good`() {
         lintMethod(ConsecutiveSpacesRule(),
                 """
@@ -61,7 +62,7 @@ class ConsecutiveSpacesRuleWarnTest {
     }
 
     @Test
-    @Tag("TOO_MANY_SPACES")
+    @Tag(WarningNames.TOO_MANY_CONSECUTIVE_SPACES)
     fun `fun space check bad`() {
         lintMethod(ConsecutiveSpacesRule(),
                 """
@@ -76,7 +77,7 @@ class ConsecutiveSpacesRuleWarnTest {
     }
 
     @Test
-    @Tag("TOO_MANY_SPACES")
+    @Tag(WarningNames.TOO_MANY_CONSECUTIVE_SPACES)
     fun `class space check bad`() {
         lintMethod(ConsecutiveSpacesRule(),
                 """
@@ -91,7 +92,7 @@ class ConsecutiveSpacesRuleWarnTest {
     }
 
     @Test
-    @Tag("TOO_MANY_SPACES")
+    @Tag(WarningNames.TOO_MANY_CONSECUTIVE_SPACES)
     fun `class space check good`() {
         lintMethod(ConsecutiveSpacesRule(),
                 """
@@ -105,7 +106,7 @@ class ConsecutiveSpacesRuleWarnTest {
 
 
     @Test
-    @Tag("TOO_MANY_SPACES")
+    @Tag(WarningNames.TOO_MANY_CONSECUTIVE_SPACES)
     fun `property space check good`() {
         lintMethod(ConsecutiveSpacesRule(),
                 """
@@ -121,7 +122,7 @@ class ConsecutiveSpacesRuleWarnTest {
     }
 
     @Test
-    @Tag("TOO_MANY_SPACES")
+    @Tag(WarningNames.TOO_MANY_CONSECUTIVE_SPACES)
     fun `property space check bad`() {
         lintMethod(ConsecutiveSpacesRule(),
                 """
@@ -142,7 +143,7 @@ class ConsecutiveSpacesRuleWarnTest {
 
 
     @Test
-    @Tag("TOO_MANY_SPACES")
+    @Tag(WarningNames.TOO_MANY_CONSECUTIVE_SPACES)
     fun `generic space check good`() {
         lintMethod(ConsecutiveSpacesRule(),
                 """
@@ -154,7 +155,7 @@ class ConsecutiveSpacesRuleWarnTest {
     }
 
     @Test
-    @Tag("TOO_MANY_SPACES")
+    @Tag(WarningNames.TOO_MANY_CONSECUTIVE_SPACES)
     fun `generic space check bad`() {
         lintMethod(ConsecutiveSpacesRule(),
                 """
@@ -168,7 +169,7 @@ class ConsecutiveSpacesRuleWarnTest {
     }
 
     @Test
-    @Tag("TOO_MANY_SPACES")
+    @Tag(WarningNames.TOO_MANY_CONSECUTIVE_SPACES)
     fun `interface space check good`() {
         lintMethod(ConsecutiveSpacesRule(),
                 """
@@ -181,7 +182,7 @@ class ConsecutiveSpacesRuleWarnTest {
     }
 
     @Test
-    @Tag("TOO_MANY_SPACES")
+    @Tag(WarningNames.TOO_MANY_CONSECUTIVE_SPACES)
     fun `interface space check bad`() {
         lintMethod(ConsecutiveSpacesRule(),
                 """
@@ -196,7 +197,7 @@ class ConsecutiveSpacesRuleWarnTest {
 
 
     @Test
-    @Tag("TOO_MANY_SPACES")
+    @Tag(WarningNames.TOO_MANY_CONSECUTIVE_SPACES)
     fun `init space check bad`() {
         lintMethod(ConsecutiveSpacesRule(),
                 """
@@ -212,7 +213,7 @@ class ConsecutiveSpacesRuleWarnTest {
 
 
     @Test
-    @Tag("TOO_MANY_SPACES")
+    @Tag(WarningNames.TOO_MANY_CONSECUTIVE_SPACES)
     fun `init space check good`() {
         lintMethod(ConsecutiveSpacesRule(),
                 """
@@ -226,7 +227,7 @@ class ConsecutiveSpacesRuleWarnTest {
     }
 
     @Test
-    @Tag("TOO_MANY_SPACES")
+    @Tag(WarningNames.TOO_MANY_CONSECUTIVE_SPACES)
     fun `config check`() {
         lintMethod(ConsecutiveSpacesRule(),
                 """
@@ -241,7 +242,7 @@ class ConsecutiveSpacesRuleWarnTest {
     }
 
     @Test
-    @Tag("TOO_MANY_SPACES")
+    @Tag(WarningNames.TOO_MANY_CONSECUTIVE_SPACES)
     fun `eol comment check`() {
         lintMethod(ConsecutiveSpacesRule(),
                 """
