@@ -2,6 +2,7 @@ package org.cqfn.diktat.ruleset.chapter2
 
 import com.pinterest.ktlint.core.LintError
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import generated.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_CONTAINS_DATE_OR_AUTHOR
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_MISSING_OR_WRONG_COPYRIGHT
@@ -11,6 +12,7 @@ import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule
 import org.cqfn.diktat.util.TEST_FILE_NAME
 import org.cqfn.diktat.util.lintMethod
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class HeaderCommentRuleTest {
@@ -34,6 +36,7 @@ class HeaderCommentRuleTest {
     """.trimIndent()
 
     @Test
+    @Tag(WarningNames.HEADER_WRONG_FORMAT)
     fun `file header comment (positive example)`() {
         lintMethod(HeaderCommentRule(),
                 """
@@ -54,6 +57,7 @@ class HeaderCommentRuleTest {
     }
 
     @Test
+    @Tag(WarningNames.HEADER_WRONG_FORMAT)
     fun `file header comment with Chinese version copyright (positive example)`() {
         lintMethod(HeaderCommentRule(),
                 """
@@ -76,6 +80,7 @@ class HeaderCommentRuleTest {
     }
 
     @Test
+    @Tag(WarningNames.HEADER_MISSING_OR_WRONG_COPYRIGHT)
     fun `copyright should not be placed inside KDoc`() {
         lintMethod(HeaderCommentRule(),
                 """
@@ -99,6 +104,7 @@ class HeaderCommentRuleTest {
     }
 
     @Test
+    @Tag(WarningNames.HEADER_MISSING_OR_WRONG_COPYRIGHT)
     fun `copyright should not be placed inside KDoc (Chinese version)`() {
         lintMethod(HeaderCommentRule(),
                 """
@@ -122,6 +128,7 @@ class HeaderCommentRuleTest {
     }
 
     @Test
+    @Tag(WarningNames.HEADER_MISSING_OR_WRONG_COPYRIGHT)
     fun `copyright should not be placed inside single line comment`() {
         lintMethod(HeaderCommentRule(),
                 """
@@ -143,6 +150,7 @@ class HeaderCommentRuleTest {
     }
 
     @Test
+    @Tag(WarningNames.HEADER_CONTAINS_DATE_OR_AUTHOR)
     fun `@author tag is not allowed in header comment`() {
         lintMethod(HeaderCommentRule(),
                 """
@@ -162,6 +170,7 @@ class HeaderCommentRuleTest {
     }
 
     @Test
+    @Tag(WarningNames.HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE)
     fun `file with zero classes should have header KDoc`() {
         lintMethod(HeaderCommentRule(),
                 """
@@ -177,6 +186,7 @@ class HeaderCommentRuleTest {
     }
 
     @Test
+    @Tag(WarningNames.HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE)
     fun `file with multiple classes should have header KDoc`() {
         lintMethod(HeaderCommentRule(),
                 """
@@ -192,6 +202,7 @@ class HeaderCommentRuleTest {
     }
 
     @Test
+    @Tag(WarningNames.HEADER_WRONG_FORMAT)
     fun `header KDoc should have newline after it`() {
         lintMethod(HeaderCommentRule(),
                 """
@@ -210,6 +221,7 @@ class HeaderCommentRuleTest {
     }
 
     @Test
+    @Tag(WarningNames.HEADER_NOT_BEFORE_PACKAGE)
     fun `header KDoc should be placed before package and imports`() {
         lintMethod(HeaderCommentRule(),
                 """
