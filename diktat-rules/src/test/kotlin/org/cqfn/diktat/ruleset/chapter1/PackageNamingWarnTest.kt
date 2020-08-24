@@ -2,11 +2,13 @@ package org.cqfn.diktat.ruleset.chapter1
 
 import com.pinterest.ktlint.core.LintError
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import generated.WarningNames
 import org.junit.jupiter.api.Test
 import org.cqfn.diktat.ruleset.rules.PackageNaming
 import org.cqfn.diktat.ruleset.constants.Warnings.*
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.util.lintMethod
+import org.junit.jupiter.api.Tag
 
 class PackageNamingWarnTest {
 
@@ -17,7 +19,8 @@ class PackageNamingWarnTest {
     )
 
     @Test
-    fun `missing package name check`() {
+    @Tag(WarningNames.PACKAGE_NAME_MISSING)
+    fun `missing package name (check)`() {
         lintMethod(PackageNaming(),
                 """
                 import org.cqfn.diktat.a.b.c
@@ -34,7 +37,8 @@ class PackageNamingWarnTest {
     }
 
     @Test
-    fun `package name should be in a lower case check`() {
+    @Tag(WarningNames.PACKAGE_NAME_INCORRECT_CASE)
+    fun `package name should be in a lower case (check)`() {
         lintMethod(
                 PackageNaming(),
                 """
@@ -54,7 +58,8 @@ class PackageNamingWarnTest {
     }
 
     @Test
-    fun `package name should start from domain name check`() {
+    @Tag(WarningNames.PACKAGE_NAME_INCORRECT_PREFIX)
+    fun `package name should start from domain name (check)`() {
         lintMethod(
                 PackageNaming(),
                 """
@@ -74,6 +79,7 @@ class PackageNamingWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.INCORRECT_PACKAGE_SEPARATOR)
     fun `underscore exceptions - incorrect underscore case`() {
         lintMethod(
                 PackageNaming(),
@@ -94,6 +100,7 @@ class PackageNamingWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.PACKAGE_NAME_INCORRECT_SYMBOLS)
     fun `incorrect symbol in package name`() {
         lintMethod(
                 PackageNaming(),
@@ -114,6 +121,7 @@ class PackageNamingWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.PACKAGE_NAME_INCORRECT_SYMBOLS)
     fun `underscore exceptions - positive case - keyword`() {
         lintMethod(
                 PackageNaming(),
@@ -133,6 +141,7 @@ class PackageNamingWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.PACKAGE_NAME_INCORRECT_PATH)
     fun `regression - incorrect warning on file under test directory`() {
         lintMethod(PackageNaming(),
                 """

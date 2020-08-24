@@ -2,10 +2,12 @@ package org.cqfn.diktat.ruleset.chapter3
 
 import com.pinterest.ktlint.core.LintError
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import generated.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.files.FileSize
 import org.cqfn.diktat.util.lintMethod
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import java.io.File
 
@@ -42,6 +44,7 @@ class FileSizeWarnTest {
     )
 
     @Test
+    @Tag(WarningNames.FILE_IS_TOO_LONG)
     fun `file larger then max with ignore`() {
         val path = javaClass.classLoader.getResource("test/paragraph3/src/main/FileSizeLarger.kt")
         val file = File(path!!.file)
@@ -49,6 +52,7 @@ class FileSizeWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.FILE_IS_TOO_LONG)
     fun `file smaller then max`() {
         val path = javaClass.classLoader.getResource("test/paragraph3/src/main/FileSizeLarger.kt")
         val file = File(path!!.file)
@@ -56,6 +60,7 @@ class FileSizeWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.FILE_IS_TOO_LONG)
     fun `file larger then max`() {
         val path = javaClass.classLoader.getResource("test/paragraph3/src/main/FileSizeLarger.kt")
         val file = File(path!!.file)
@@ -68,6 +73,7 @@ class FileSizeWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.FILE_IS_TOO_LONG)
     fun `use default values`(){
         val path = javaClass.classLoader.getResource("test/paragraph3/src/main/FileSizeLarger.kt")
         val file = File(path!!.file)
@@ -75,6 +81,7 @@ class FileSizeWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.FILE_IS_TOO_LONG)
     fun `file has more than 2000 lines`(){
         val path = javaClass.classLoader.getResource("test/paragraph3/src/main/A/FileSize2000.kt")
         val file = File(path!!.file)
@@ -86,6 +93,7 @@ class FileSizeWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.FILE_IS_TOO_LONG)
     fun `config has only ignoreFolders`(){
         val path = javaClass.classLoader.getResource("test/paragraph3/src/main/A/FileSize2000.kt")
         val file = File(path!!.file)
@@ -100,6 +108,7 @@ class FileSizeWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.FILE_IS_TOO_LONG)
     fun `ignoring two out of three folders`(){
         var path = javaClass.classLoader.getResource("test/paragraph3/src/main/A/FileSizeA.kt")
         var file = File(path!!.file)

@@ -2,17 +2,20 @@ package org.cqfn.diktat.ruleset.chapter2.comments
 
 
 import com.pinterest.ktlint.core.LintError
+import generated.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings.COMMENTED_OUT_CODE
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.comments.CommentsRule
 import org.cqfn.diktat.util.lintMethod
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class CommentedCodeTest {
     private val ruleId = "$DIKTAT_RULE_SET_ID:comments"
 
     @Test
-    fun `Should warn if commented out import or package directive is detected single line comments`() {
+    @Tag(WarningNames.COMMENTED_OUT_CODE)
+    fun `Should warn if commented out import or package directive is detected (single line comments)`() {
         lintMethod(CommentsRule(),
                 """
                 |//package org.cqfn.diktat.example
@@ -27,7 +30,8 @@ class CommentedCodeTest {
     }
 
     @Test
-    fun `Should warn if commented out imports are detected block comments`() {
+    @Tag(WarningNames.COMMENTED_OUT_CODE)
+    fun `Should warn if commented out imports are detected (block comments)`() {
         lintMethod(CommentsRule(),
                 """
            |/*import org.junit.Test
@@ -39,7 +43,8 @@ class CommentedCodeTest {
     }
 
     @Test
-    fun `Should warn if commented out code is detected block comments`() {
+    @Tag(WarningNames.COMMENTED_OUT_CODE)
+    fun `Should warn if commented out code is detected (block comments)`() {
         lintMethod(CommentsRule(),
                 """
            |import org.junit.Test
@@ -56,7 +61,8 @@ class CommentedCodeTest {
     }
 
     @Test
-    fun `Should warn if commented out code is detected single line comments`() {
+    @Tag(WarningNames.COMMENTED_OUT_CODE)
+    fun `Should warn if commented out code is detected (single line comments)`() {
         lintMethod(CommentsRule(),
                 """
            |import org.junit.Test
@@ -72,7 +78,8 @@ class CommentedCodeTest {
     }
 
     @Test
-    fun `Should warn if commented out function is detected single line comments`() {
+    @Tag(WarningNames.COMMENTED_OUT_CODE)
+    fun `Should warn if commented out function is detected (single line comments)`() {
         lintMethod(CommentsRule(),
                 """
            |import org.junit.Test
@@ -88,7 +95,8 @@ class CommentedCodeTest {
     }
 
     @Test
-    fun `Should warn if commented out function is detected single line comments with surrounding text`() {
+    @Tag(WarningNames.COMMENTED_OUT_CODE)
+    fun `Should warn if commented out function is detected (single line comments with surrounding text)`() {
         lintMethod(CommentsRule(),
                 """
            |import org.junit.Test
@@ -105,7 +113,8 @@ class CommentedCodeTest {
     }
 
     @Test
-    fun `Should warn if commented out function is detected block comment`() {
+    @Tag(WarningNames.COMMENTED_OUT_CODE)
+    fun `Should warn if commented out function is detected (block comment)`() {
         lintMethod(CommentsRule(),
                 """
            |import org.junit.Test
@@ -121,7 +130,8 @@ class CommentedCodeTest {
     }
 
     @Test
-    fun `Should warn if detects commented out code example with indents`() {
+    @Tag(WarningNames.COMMENTED_OUT_CODE)
+    fun `Should warn if detects commented out code (example with indents)`() {
         lintMethod(CommentsRule(),
                 """
                 |//import org.junit.Ignore
@@ -142,7 +152,8 @@ class CommentedCodeTest {
     }
 
     @Test
-    fun `Should warn if detects commented out code example with IDEA style indents`() {
+    @Tag(WarningNames.COMMENTED_OUT_CODE)
+    fun `Should warn if detects commented out code (example with IDEA style indents)`() {
         lintMethod(CommentsRule(),
                 """
                 |//import org.junit.Ignore

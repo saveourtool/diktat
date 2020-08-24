@@ -2,9 +2,11 @@ package org.cqfn.diktat.ruleset.chapter3
 
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import generated.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.EmptyBlock
 import org.cqfn.diktat.util.FixTestBase
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class EmptyBlockFixTest : FixTestBase("test/paragraph3/empty_block", EmptyBlock()) {
@@ -15,6 +17,7 @@ class EmptyBlockFixTest : FixTestBase("test/paragraph3/empty_block", EmptyBlock(
     )
 
     @Test
+    @Tag(WarningNames.EMPTY_BLOCK_STRUCTURE_ERROR)
     fun `should fix open and close brace in if-else expression`() {
         fixAndCompare("TryCatchEmptyBlockExpected.kt", "TryCatchEmptyBlockTest.kt", rulesConfigListEmptyBlockExist)
     }
