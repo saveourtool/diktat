@@ -5,7 +5,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 /**
  * Special test that checks that developer has not forgotten to add his warning to a rules-config.json
@@ -29,6 +29,16 @@ class RulesConfigJsonTest {
                    You can fix it by adding the following code below to rules-config.json:
                    $ruleJson
                 """
+            }
+        }
+
+        allRulesFromConfig.forEach { warning ->
+            val warningName = warning.name
+            val ruleFound = allRulesFromCode.find { it.ruleName() == warningName } != null
+            require(ruleFound) {
+                """
+                    Found rule (warning) in rules-config.json: <$warningName> that does not exist in the code. Misprint or configuration was renamed? 
+                """.trimIndent()
             }
         }
     }

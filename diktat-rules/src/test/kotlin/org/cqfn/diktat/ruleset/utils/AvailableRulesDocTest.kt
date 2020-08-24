@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.utils
 
 import org.cqfn.diktat.ruleset.constants.Warnings
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.io.File
 
 /**
@@ -27,10 +27,20 @@ class AvailableRulesDocTest {
                 val docs = "| | | $ruleName" +
                         "|  |  |  | |"
                 """
-                Cannot find warning $ruleName in $availableRulesFile.
-                You can fix it by adding the following description below with more info to $availableRulesFile:
-                add $docs to $availableRulesFile
+                    Cannot find warning $ruleName in $availableRulesFile.
+                    You can fix it by adding the following description below with more info to $availableRulesFile:
+                    add $docs to $availableRulesFile
                 """
+            }
+        }
+
+        allRulesFromDoc.forEach { warning ->
+            val trimmedWarning = warning.trim()
+            val ruleFound = allRulesFromCode.find { it.ruleName() == trimmedWarning } != null
+            require(ruleFound) {
+                """
+                    Found rule (warning) in documentation: <$trimmedWarning> that does not exist in the code. Misprint or configuration was renamed? 
+                """.trimIndent()
             }
         }
     }
@@ -41,7 +51,7 @@ class AvailableRulesDocTest {
             val splitMarkDown = line
                     .split("|")
 
-            val ruleName = splitMarkDown.get(3)
+            val ruleName = splitMarkDown.get(3).trim()
 
             if (!ruleName.startsWith(tableDelimiter) &&
                     !ruleName.startsWith(ruleNameHeader)) {
