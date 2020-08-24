@@ -272,7 +272,7 @@
                     <dependency>
                         <groupId>com.pinterest</groupId>
                         <artifactId>ktlint</artifactId>
-                        <version>0.37.1-fork</version>
+                        <version>0.38.0</version>
                         <exclusions>
                             <exclusion>
                                 <groupId>com.pinterest.ktlint</groupId>
