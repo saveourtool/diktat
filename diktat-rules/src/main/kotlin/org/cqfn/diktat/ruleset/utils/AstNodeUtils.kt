@@ -331,12 +331,12 @@ fun ASTNode.moveChildBefore(childToMove: ASTNode, beforeThisNode: ASTNode?, with
 
 fun ASTNode.findLBrace(): ASTNode? {
     return when (this.elementType) {
-        ElementType.THEN, ElementType.ELSE -> this.findChildByType(ElementType.BLOCK)?.findChildByType(ElementType.LBRACE)!!
+        ElementType.THEN, ElementType.ELSE -> this.findChildByType(ElementType.BLOCK)?.findChildByType(ElementType.LBRACE)
         ElementType.WHEN -> this.findChildByType(ElementType.LBRACE)!!
         ElementType.FOR, ElementType.WHILE, ElementType.DO_WHILE ->
-            this.findChildByType(ElementType.BODY)?.findChildByType(ElementType.BLOCK)?.findChildByType(ElementType.LBRACE)!!
-        ElementType.CLASS, ElementType.OBJECT_DECLARATION -> this.findChildByType(ElementType.CLASS_BODY)!!.findChildByType(ElementType.LBRACE)!!
-        else -> if (this.hasChildOfType(ElementType.BLOCK)) this.findChildByType(ElementType.BLOCK)?.findChildByType(ElementType.LBRACE)!! else null
+            this.findChildByType(ElementType.BODY)?.findChildByType(ElementType.BLOCK)?.findChildByType(ElementType.LBRACE)
+        ElementType.CLASS, ElementType.OBJECT_DECLARATION -> this.findChildByType(ElementType.CLASS_BODY)!!.findChildByType(ElementType.LBRACE)
+        else -> this.findChildByType(ElementType.BLOCK)?.findChildByType(ElementType.LBRACE)
     }
 }
 
