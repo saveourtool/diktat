@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.chapter3
 
-
 import com.pinterest.ktlint.core.LintError
 import org.cqfn.diktat.ruleset.constants.Warnings.ENUMS_SEPARATED
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
@@ -27,6 +26,21 @@ class EnumsSeparatedWarnTest {
     }
 
     @Test
+    fun `check one line enum`() {
+        lintMethod(EnumsSeparated(),
+                """
+                    |enum class ENUM {
+                    |   A, B, C
+                    |}
+                """.trimMargin(),
+                LintError(2,4,ruleId,"${ENUMS_SEPARATED.warnText()} enum constance must end with a line break", true),
+                LintError(2,7,ruleId,"${ENUMS_SEPARATED.warnText()} enum constance must end with a line break", true),
+                LintError(2,10,ruleId,"${ENUMS_SEPARATED.warnText()} enums must end with semicolon", true),
+                LintError(2,10,ruleId,"${ENUMS_SEPARATED.warnText()} last enum constance must end with a comma", true)
+        )
+    }
+
+    @Test
     fun `check correct enum but with initialize constance` () {
         lintMethod(EnumsSeparated(),
                 """
@@ -37,6 +51,21 @@ class EnumsSeparatedWarnTest {
                     |   ;
                     |}
                 """.trimMargin()
+        )
+    }
+
+    @Test
+    fun `check wrong enum with initialize constance and without last comma` () {
+        lintMethod(EnumsSeparated(),
+                """
+                    |enum class ENUM {
+                    |   RED(0xFF0000),
+                    |   GREEN(0x00FF00),
+                    |   BLUE(0x0000FF)
+                    |   ;
+                    |}
+                """.trimMargin(),
+                LintError(4,4,ruleId,"${ENUMS_SEPARATED.warnText()} last enum constance must end with a comma", true)
         )
     }
 
@@ -60,7 +89,7 @@ class EnumsSeparatedWarnTest {
 
 
     @Test
-    fun `check if expression with empty else block`() {
+    fun `check wrong enum without last comma and line break`() {
         lintMethod(EnumsSeparated(),
                 """
                     |enum class Warnings {
@@ -69,19 +98,31 @@ class EnumsSeparatedWarnTest {
                     |   }, 
                     |   TALKING  {
                     |      override fun signal() = TALKING
-                    |   }, ;
-                    |   
-                    |   
+                    |   };
                     |   abstract fun signal(): ProtocolState
                     |}
                 """.trimMargin(),
-                LintError(7,7,ruleId,"${ENUMS_SEPARATED.warnText()} semicolon must be on a new line", false)
+                LintError(5,4,ruleId,"${ENUMS_SEPARATED.warnText()} semicolon must be on a new line", true),
+                LintError(5,4,ruleId,"${ENUMS_SEPARATED.warnText()} last enum constance must end with a comma", true)
         )
     }
 
-    enum class qwe {
-        A,
-        B,
-        C
+    @Test
+    fun `check wrong enum without last comma, line break and semicolon`() {
+        lintMethod(EnumsSeparated(),
+                """
+                    |enum class Warnings {
+                    |   WAITING {
+                    |      override fun signal() = TALKING
+                    |   },
+                    |   TALKING  {
+                    |      override fun signal() = TALKING
+                    |   }
+                    |}
+                """.trimMargin(),
+                LintError(5,4,ruleId,"${ENUMS_SEPARATED.warnText()} enums must end with semicolon", true),
+                LintError(5,4,ruleId,"${ENUMS_SEPARATED.warnText()} last enum constance must end with a comma", true)
+
+        )
     }
 }

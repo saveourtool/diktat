@@ -230,6 +230,11 @@ fun ASTNode.findAllNodesWithSpecificType(elementType: IElementType): List<ASTNod
 }
 
 /**
+ * Check a node of type CLASS if it is a enum class
+ */
+fun ASTNode.isClassEnum(): Boolean = this.findChildByType(MODIFIER_LIST)?.hasChildOfType(ElementType.ENUM_KEYWORD) ?: false
+
+/**
  * This method finds first parent node from the sequence of parents that has specified elementType
  */
 fun ASTNode.findParentNodeWithSpecificType(elementType: IElementType) =
