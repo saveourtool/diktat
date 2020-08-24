@@ -4,7 +4,8 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.ConsecutiveSpacesRule
 import org.cqfn.diktat.util.FixTestBase
-import org.junit.Test
+import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.Test
 
 class ConsecutiveSpacesRuleFixTest : FixTestBase("test/paragraph3/spaces", ConsecutiveSpacesRule(),
         listOf(
@@ -17,11 +18,13 @@ class ConsecutiveSpacesRuleFixTest : FixTestBase("test/paragraph3/spaces", Conse
         )
 ) {
     @Test
+    @Tag("TOO_MANY_SPACES")
     fun `many spaces rule enum case`() {
         fixAndCompare("TooManySpacesEnumExpected.kt", "TooManySpacesEnumTest.kt")
     }
 
     @Test
+    @Tag("TOO_MANY_SPACES")
     fun `many spaces rule`() {
         fixAndCompare("TooManySpacesExpected.kt", "TooManySpacesTest.kt")
     }
