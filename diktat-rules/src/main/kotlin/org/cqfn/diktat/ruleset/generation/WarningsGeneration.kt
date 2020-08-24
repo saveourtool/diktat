@@ -29,6 +29,7 @@ fun main() {
 
     val kotlinFile = FileSpec.builder("generated", "WarningNames")
             .addType(fileBody)
+            .indent("    ")
             .addComment(AUTO_GENERATION_COMMENT)
             .build()
 
