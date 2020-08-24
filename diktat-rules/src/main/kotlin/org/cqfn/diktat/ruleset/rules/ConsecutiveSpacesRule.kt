@@ -3,6 +3,7 @@ package org.cqfn.diktat.ruleset.rules
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.ENUM_ENTRY
+import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.parent
@@ -11,6 +12,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.cqfn.diktat.ruleset.constants.Warnings.TOO_MANY_CONSECUTIVE_SPACES
+import org.cqfn.diktat.ruleset.utils.prettyPrint
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
 
 
@@ -47,12 +49,10 @@ class ConsecutiveSpacesRule : Rule("too-many-spaces") {
         if (node.elementType == WHITE_SPACE) {
             checkWhiteSpace(node, configuration)
         }
-
     }
 
 
     private fun checkWhiteSpace(node: ASTNode, configuration: TooManySpacesRuleConfiguration) {
-
         if (configuration.enumInitialFormatting) {
             checkWhiteSpaceEnum(node, configuration)
         } else {
@@ -69,12 +69,12 @@ class ConsecutiveSpacesRule : Rule("too-many-spaces") {
         }
     }
 
-    private fun isWhitespaceInEnum(node: ASTNode): Boolean = node.parent({it.elementType == ENUM_ENTRY}) != null
+    private fun isWhitespaceInEnum(node: ASTNode): Boolean = node.parent(ENUM_ENTRY) != null
 
     private fun squeezeSpacesToOne(node: ASTNode, configuration: TooManySpacesRuleConfiguration) {
-
         val spaces = node.textLength
-        if (spaces > configuration.numberOfSpaces && !node.isWhiteSpaceWithNewline()) {
+        if (spaces > configuration.numberOfSpaces && !node.isWhiteSpaceWithNewline()
+                && !node.hasEolComment()) {
             TOO_MANY_CONSECUTIVE_SPACES.warnAndFix(configRules, emitWarn, isFixMode,
                     "found: $spaces. need to be: ${configuration.numberOfSpaces}", node.startOffset) {
                 node.squeezeSpaces()
@@ -83,9 +83,9 @@ class ConsecutiveSpacesRule : Rule("too-many-spaces") {
     }
 
 
-    private fun ASTNode.squeezeSpaces() {
-        (this as LeafElement).replaceWithText(" ")
-    }
+    private fun ASTNode.hasEolComment(): Boolean = this.treeNext.elementType == EOL_COMMENT
+
+    private fun ASTNode.squeezeSpaces() = (this as LeafElement).replaceWithText(" ")
 
 
     class TooManySpacesRuleConfiguration(config: Map<String, String>) : RuleConfiguration(config) {

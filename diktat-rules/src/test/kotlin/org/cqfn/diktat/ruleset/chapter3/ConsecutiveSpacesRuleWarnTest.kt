@@ -240,4 +240,16 @@ class ConsecutiveSpacesRuleWarnTest {
         )
     }
 
+    @Test
+    @Tag("TOO_MANY_SPACES")
+    fun `eol comment check`() {
+        lintMethod(ConsecutiveSpacesRule(),
+                """
+                    |class SomeClass{              // this is a comment
+                    |   val a = 5 // this is another comment
+                    |}
+                """.trimMargin()
+        )
+    }
+
 }
