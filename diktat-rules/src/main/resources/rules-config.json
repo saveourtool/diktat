@@ -337,5 +337,10 @@
     "name": "STRING_CONCATENATION",
     "enabled": true,
     "configuration": {}
+  },
+  {
+    "name": "WHEN_WITHOUT_ELSE",
+    "enabled": true,
+    "configuration": {}
   }
 ]
