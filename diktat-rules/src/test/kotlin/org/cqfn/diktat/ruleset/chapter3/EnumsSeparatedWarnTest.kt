@@ -1,10 +1,12 @@
 package org.cqfn.diktat.ruleset.chapter3
 
 import com.pinterest.ktlint.core.LintError
+import generated.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings.ENUMS_SEPARATED
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.EnumsSeparated
 import org.cqfn.diktat.util.lintMethod
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class EnumsSeparatedWarnTest {
@@ -12,6 +14,7 @@ class EnumsSeparatedWarnTest {
     private val ruleId = "$DIKTAT_RULE_SET_ID:enum-separated"
 
     @Test
+    @Tag(WarningNames.ENUMS_SEPARATED)
     fun `check simple correct enum with new line`() {
         lintMethod(EnumsSeparated(),
                 """
@@ -26,6 +29,7 @@ class EnumsSeparatedWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.ENUMS_SEPARATED)
     fun `check simple enum but with fun` () {
         lintMethod(EnumsSeparated(),
                 """
@@ -42,6 +46,7 @@ class EnumsSeparatedWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.ENUMS_SEPARATED)
     fun `check one line enum`() {
         lintMethod(EnumsSeparated(),
                 """
@@ -53,6 +58,7 @@ class EnumsSeparatedWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.ENUMS_SEPARATED)
     fun `check wrong simple enum with new line last value`() {
         lintMethod(EnumsSeparated(),
                 """
@@ -68,6 +74,7 @@ class EnumsSeparatedWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.ENUMS_SEPARATED)
     fun `check wrong simple enum with new line last value but with same line semicolon`() {
         lintMethod(EnumsSeparated(),
                 """
@@ -82,6 +89,7 @@ class EnumsSeparatedWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.ENUMS_SEPARATED)
     fun `check correct enum but with initialize constance` () {
         lintMethod(EnumsSeparated(),
                 """
@@ -96,6 +104,7 @@ class EnumsSeparatedWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.ENUMS_SEPARATED)
     fun `check wrong enum with initialize constance and without last comma` () {
         lintMethod(EnumsSeparated(),
                 """
@@ -111,6 +120,7 @@ class EnumsSeparatedWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.ENUMS_SEPARATED)
     fun `check correct enum with method`() {
         lintMethod(EnumsSeparated(),
                 """
@@ -130,6 +140,7 @@ class EnumsSeparatedWarnTest {
 
 
     @Test
+    @Tag(WarningNames.ENUMS_SEPARATED)
     fun `check wrong enum without last comma and line break`() {
         lintMethod(EnumsSeparated(),
                 """
@@ -149,6 +160,7 @@ class EnumsSeparatedWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.ENUMS_SEPARATED)
     fun `check wrong enum without last comma, line break and semicolon`() {
         lintMethod(EnumsSeparated(),
                 """
