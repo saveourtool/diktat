@@ -2,6 +2,7 @@ package org.cqfn.diktat.ruleset.utils
 
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.IMPORT_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.environment.setIdeaIoUseFallback
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
@@ -16,6 +17,7 @@ import org.jetbrains.kotlin.com.intellij.pom.PomModelAspect
 import org.jetbrains.kotlin.com.intellij.pom.PomTransaction
 import org.jetbrains.kotlin.com.intellij.pom.impl.PomTransactionBase
 import org.jetbrains.kotlin.com.intellij.pom.tree.TreeAspect
+import org.jetbrains.kotlin.com.intellij.psi.TokenType.ERROR_ELEMENT
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.KtPsiFactory
@@ -50,6 +52,7 @@ class KotlinParser {
             override fun runTransaction(transaction: PomTransaction) {
                 (transaction as PomTransactionBase).run()
             }
+
             @Suppress("UNCHECKED_CAST")
             override fun <T : PomModelAspect> getModelAspect(aspect: Class<T>): T? {
                 if (aspect == TreeAspect::class.java) {
@@ -74,10 +77,9 @@ class KotlinParser {
         val ktPsiFactory = KtPsiFactory(project, true)
         if (text.trim().isEmpty())
             return ktPsiFactory.createWhiteSpace(text).node
-        lateinit var node: ASTNode
-        node = if (isPackage)
+        var node = if (isPackage) {
             ktPsiFactory.createFile(text).node
-        else {
+        } else {
             if (text.contains(KtTokens.IMPORT_KEYWORD.value)) {
                 val (imports, blockCode) = text.lines().partition { it.contains(KtTokens.IMPORT_KEYWORD.value) }
                 if (blockCode.isNotEmpty())
@@ -87,6 +89,7 @@ class KotlinParser {
                     ktPsiFactory.createImportDirective(importText).node
                 } else {
                     ktPsiFactory.createBlockCodeFragment(text, null).node.findChildByType(BLOCK)!!
+                            .findChildByType(ERROR_ELEMENT)!!.findChildByType(IMPORT_LIST)!!
                 }
             } else {
                 ktPsiFactory.createBlockCodeFragment(text, null).node.findChildByType(BLOCK)!!
@@ -94,7 +97,7 @@ class KotlinParser {
         }
         if (node.getChildren(null).size == 1)
             node = node.firstChildNode
-        if (!node.isCorrect()){
+        if (!node.isCorrect()) {
             node = ktPsiFactory.createFile(text).node
             if (!node.isCorrect())
                 return null

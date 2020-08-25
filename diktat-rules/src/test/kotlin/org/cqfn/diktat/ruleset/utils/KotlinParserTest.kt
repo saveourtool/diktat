@@ -7,6 +7,7 @@ import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.IMPORT_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.IMPORT_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
@@ -149,6 +150,19 @@ class KotlinParserTest {
         Assertions.assertEquals(IMPORT_DIRECTIVE, node.elementType)
         Assertions.assertEquals(importCode, node.text)
         Assertions.assertEquals(IMPORT_KEYWORD, node.firstChildNode.elementType)
+    }
+
+    @Test
+    fun `check imports`() {
+        val importCode = """
+            |import org.junit.jupiter.api.Test
+            |import org.junit.jupiter.api.Tests
+            |import org.junit.jupiter.api
+            """.trimMargin()
+        val node = KotlinParser().createNode(importCode)
+        Assertions.assertEquals(IMPORT_LIST, node.elementType)
+        Assertions.assertEquals(importCode, node.text)
+        Assertions.assertEquals(IMPORT_DIRECTIVE, node.firstChildNode.elementType)
     }
 
     @Test
