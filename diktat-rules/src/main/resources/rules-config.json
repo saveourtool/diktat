@@ -55,11 +55,6 @@
     "configuration": {}
   },
   {
-    "name": "PACKAGE_NAME_INCORRECT",
-    "enabled": true,
-    "configuration": {}
-  },
-  {
     "name": "PACKAGE_NAME_INCORRECT_CASE",
     "enabled": true,
     "configuration": {}
@@ -71,6 +66,11 @@
   },
   {
     "name": "PACKAGE_NAME_INCORRECT_SYMBOLS",
+    "enabled": true,
+    "configuration": {}
+  },
+  {
+    "name": "PACKAGE_NAME_INCORRECT_PATH",
     "enabled": true,
     "configuration": {}
   },
@@ -97,12 +97,22 @@
     "configuration": {}
   },
   {
+    "name": "MISSING_KDOC_ON_FUNCTION",
+    "enabled": true,
+    "configuration": {}
+  },
+  {
     "name": "MISSING_KDOC_TOP_LEVEL",
     "enabled": true,
     "configuration": {}
   },
   {
     "name": "MISSING_KDOC_CLASS_ELEMENTS",
+    "enabled": true,
+    "configuration": {}
+  },
+  {
+    "name": "BLANK_LINE_AFTER_KDOC",
     "enabled": true,
     "configuration": {}
   },
@@ -118,6 +128,11 @@
   },
   {
     "name": "KDOC_WITHOUT_THROWS_TAG",
+    "enabled": true,
+    "configuration": {}
+  },
+  {
+    "name": "KDOC_EMPTY_KDOC",
     "enabled": true,
     "configuration": {}
   },
@@ -147,12 +162,32 @@
     "configuration": {}
   },
   {
+    "name": "KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS",
+    "enabled": true,
+    "configuration": {}
+  },
+  {
+    "name": "KDOC_NEWLINES_BEFORE_BASIC_TAGS",
+    "enabled": true,
+    "configuration": {}
+  },
+  {
     "name": "KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS",
     "enabled": true,
     "configuration": {}
   },
   {
+    "name": "KDOC_TRIVIAL_KDOC_ON_FUNCTION",
+    "enabled": "true",
+    "configuration": {}
+  },
+  {
     "name": "HEADER_WRONG_FORMAT",
+    "enabled": true,
+    "configuration": {}
+  },
+  {
+    "name": "HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE",
     "enabled": true,
     "configuration": {}
   },
@@ -165,12 +200,12 @@
     }
   },
   {
-    "name": "HEADER_CONTAINS_DATE_OR_AUTHOR",
+    "name": "HEADER_NOT_BEFORE_PACKAGE",
     "enabled": true,
     "configuration": {}
   },
   {
-    "name": "HEADER_MISSING_IN_LONG_FILE",
+    "name": "HEADER_CONTAINS_DATE_OR_AUTHOR",
     "enabled": true,
     "configuration": {}
   },
@@ -179,7 +214,7 @@
     "enabled": true,
     "configuration": {
       "maxSize": "2000",
-      "ignoreFolders" : ""
+      "ignoreFolders": ""
     }
   },
   {
@@ -189,6 +224,11 @@
   },
   {
     "name": "FILE_CONTAINS_ONLY_COMMENTS",
+    "enabled": true,
+    "configuration": {}
+  },
+  {
+    "name": "FILE_UNORDERED_IMPORTS",
     "enabled": true,
     "configuration": {}
   },
@@ -226,14 +266,14 @@
     "name": "BRACES_BLOCK_STRUCTURE_ERROR",
     "enabled": true,
     "configuration": {
-      "openBraceNewline" : "True",
-      "closeBraceNewline" : "True"
+      "openBraceNewline": "True",
+      "closeBraceNewline": "True"
     }
   },
   {
     "name": "WRONG_INDENTATION",
     "enabled": true,
-    "configuration" : {
+    "configuration": {
       "newlineAtEnd": true,
       "extendedIndentOfParameters": true,
       "alignedParameters": true,
@@ -245,7 +285,7 @@
     "enabled": true,
     "configuration": {
       "styleEmptyBlockWithNewline": "True",
-      "allowEmptyBlocks" : "False"
+      "allowEmptyBlocks": "False"
     }
   },
   {
@@ -263,12 +303,20 @@
   {
     "name": "REDUNDANT_SEMICOLON",
     "enabled": true,
-    "configuration" : {}
+    "configuration": {}
   },
   {
     "name": "WRONG_NEWLINES",
     "enabled": true,
-    "configuration" : {}
+    "configuration": {}
+  },
+  {
+    "name": "TOO_MANY_CONSECUTIVE_SPACES",
+    "enabled": true,
+    "configuration": {
+      "max_spaces": "1",
+      "saveInitialFormattingForEnums": false
+    }
   },
   {
     "name": "TOO_MANY_BLANK_LINES",
@@ -277,6 +325,16 @@
   },
   {
     "name": "WRONG_WHITESPACE",
+    "enabled": true,
+    "configuration": {}
+  },
+  {
+    "name": "BACKTICKS_PROHIBITED",
+    "enabled": true,
+    "configuration": {}
+  },
+  {
+    "name": "STRING_CONCATENATION",
     "enabled": true,
     "configuration": {}
   }

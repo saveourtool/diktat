@@ -4,6 +4,7 @@ import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.CONST_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.INTERNAL_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.PRIVATE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PROTECTED_KEYWORD
@@ -91,11 +92,11 @@ fun ASTNode.hasAnyChildOfTypes(vararg elementType: IElementType): Boolean =
         elementType.any { this.hasChildOfType(it) }
 
 /**
- * check if node's block is empty (contains only left and right braces and space)
+ * check if node's text is empty (contains only left and right braces)
+ * check text because some nodes have empty BLOCK element inside (lambda)
  */
 fun ASTNode?.isBlockEmpty() = this?.let {
-    emptyBlockList
-            .containsAll(this.getChildren(null).map { it.elementType })
+    this.text.replace("\\s+".toRegex(), "") == EMPTY_BLOCK_TEXT
 } ?: true
 
 /**
@@ -336,12 +337,13 @@ fun ASTNode.moveChildBefore(childToMove: ASTNode, beforeThisNode: ASTNode?, with
 
 fun ASTNode.findLBrace(): ASTNode? {
     return when (this.elementType) {
-        ElementType.THEN, ElementType.ELSE -> this.findChildByType(ElementType.BLOCK)?.findChildByType(ElementType.LBRACE)!!
+        ElementType.THEN, ElementType.ELSE -> this.findChildByType(ElementType.BLOCK)?.findChildByType(ElementType.LBRACE)
         ElementType.WHEN -> this.findChildByType(ElementType.LBRACE)!!
         ElementType.FOR, ElementType.WHILE, ElementType.DO_WHILE ->
-            this.findChildByType(ElementType.BODY)?.findChildByType(ElementType.BLOCK)?.findChildByType(ElementType.LBRACE)!!
-        ElementType.CLASS, ElementType.OBJECT_DECLARATION -> this.findChildByType(ElementType.CLASS_BODY)!!.findChildByType(ElementType.LBRACE)!!
-        else -> if (this.hasChildOfType(ElementType.BLOCK)) this.findChildByType(ElementType.BLOCK)?.findChildByType(ElementType.LBRACE)!! else null
+            this.findChildByType(ElementType.BODY)?.findChildByType(ElementType.BLOCK)?.findChildByType(ElementType.LBRACE)
+        ElementType.CLASS, ElementType.OBJECT_DECLARATION -> this.findChildByType(ElementType.CLASS_BODY)!!.findChildByType(ElementType.LBRACE)
+        ElementType.FUNCTION_LITERAL -> this.findChildByType(LBRACE)
+        else -> this.findChildByType(ElementType.BLOCK)?.findChildByType(ElementType.LBRACE)
     }
 }
 

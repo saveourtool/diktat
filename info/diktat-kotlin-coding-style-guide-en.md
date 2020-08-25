@@ -504,7 +504,7 @@ Note the following when writing file header or comments for top-level classes:
 
 - In a top-level file Kdoc need to include copyright and functional description, especially if the number of top-level classes in a file is not equal to 1.
 
-- It is forbidden to have empty comment blockst.
+- It is forbidden to have empty comment blocks.
      As in the above example, if there is no content after the option `@apiNote`, the entire tag block should be deleted.
 
 - Industry is not using any history information in comments. History can be found in VCS (git/svn/e.t.c). It is not recommended to include historical data in the comments of the Kotlin source code.
@@ -569,7 +569,7 @@ Examples:
 ```
 
 2. Leave one single space between the comment on the right side of the code and the code.
-Conditional comments in the `if-else-if` scenario:
+ Conditional comments in the `if-else-if` scenario:
  For a better understanding, put the comments inside `else if` branch or in the conditional block, but not before the `else if`. 
  When the if-block is used with curly braces - the comment should be on the next line after opening curly brace.
  
