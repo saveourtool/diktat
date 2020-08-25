@@ -7,20 +7,26 @@ import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.COMMA
 import com.pinterest.ktlint.core.ast.ElementType.ENUM_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
+import com.pinterest.ktlint.core.ast.ElementType.LBRACE
+import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.SEMICOLON
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.ENUMS_SEPARATED
-import org.cqfn.diktat.ruleset.utils.*
+import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
+import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
+import org.cqfn.diktat.ruleset.utils.hasChildOfType
+import org.cqfn.diktat.ruleset.utils.isClassEnum
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 
 class EnumsSeparated : Rule("enum-separated") {
 
-    companion object{
-        private val SIMPLE_ENUM = listOf(IDENTIFIER, WHITE_SPACE, COMMA, SEMICOLON)
+    companion object {
+        private val SIMPLE_VALUE = listOf(IDENTIFIER, WHITE_SPACE, COMMA, SEMICOLON)
+        private val SIMPLE_ENUM = listOf(ENUM_ENTRY, WHITE_SPACE, LBRACE, RBRACE)
     }
 
     private lateinit var configRules: List<RulesConfig>
@@ -40,9 +46,10 @@ class EnumsSeparated : Rule("enum-separated") {
                 checkEnumEntry(node)
     }
 
+    //Fixme prefer enum classes if it is possible instead of variables
     private fun checkEnumEntry(node: ASTNode) {
         val enums = node.findChildByType(CLASS_BODY)!!.getAllChildrenWithType(ENUM_ENTRY)
-        if (isEnumSimple(enums))
+        if (enums.isEmpty() || (isEnumSimple(enums) && isSimpleEnumOneLine(enums)))
             return
         enums.forEach {
             if (!it.treeNext.isWhiteSpaceWithNewline())
@@ -51,32 +58,34 @@ class EnumsSeparated : Rule("enum-separated") {
                     it.appendNewlineMergingWhiteSpace(it.treeNext, it.treeNext)
                 }
         }
-        if (enums.isNotEmpty())
-            checkLastEnum(enums.last())
+        checkLastEnum(enums.last())
     }
+
+    private fun isSimpleEnumOneLine(nodes: List<ASTNode>) =
+            nodes.find { it != nodes.last() && it.treeNext.isWhiteSpaceWithNewline() } == null
 
     private fun isEnumSimple(nodes: List<ASTNode>): Boolean {
-        nodes.forEach {
-            if (!SIMPLE_ENUM.containsAll(it.getChildren(null).map { its -> its.elementType }))
+        nodes.forEach { node ->
+            if (!SIMPLE_VALUE.containsAll(node.getChildren(null).map { it.elementType }))
                 return false
         }
-        return true
+        return SIMPLE_ENUM.containsAll(nodes.last().treeParent.getChildren(null).map { it.elementType })
     }
 
-    private fun checkLastEnum(node: ASTNode){
-        if (!node.hasChildOfType(SEMICOLON)){
+    private fun checkLastEnum(node: ASTNode) {
+        if (!node.hasChildOfType(SEMICOLON)) {
             ENUMS_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, "enums must end with semicolon",
                     node.startOffset) {
                 node.addChild(LeafPsiElement(SEMICOLON, ";"), null)
                 node.addChild(PsiWhiteSpaceImpl("\n"), node.findChildByType(SEMICOLON)!!)
             }
-        } else if (!node.findChildByType(SEMICOLON)!!.treePrev.isWhiteSpaceWithNewline()){
+        } else if (!node.findChildByType(SEMICOLON)!!.treePrev.isWhiteSpaceWithNewline()) {
             ENUMS_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, "semicolon must be on a new line",
                     node.startOffset) {
                 node.appendNewlineMergingWhiteSpace(node.findChildByType(SEMICOLON)!!, node.findChildByType(SEMICOLON)!!)
             }
         }
-        if (!node.hasChildOfType(COMMA)){
+        if (!node.hasChildOfType(COMMA)) {
             ENUMS_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, "last enum constance must end with a comma",
                     node.startOffset) {
                 node.addChild(LeafPsiElement(COMMA, ","), node.findChildByType(SEMICOLON)!!.treePrev)

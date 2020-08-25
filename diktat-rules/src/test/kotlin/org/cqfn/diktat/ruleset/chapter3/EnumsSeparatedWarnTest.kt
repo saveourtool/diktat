@@ -12,7 +12,7 @@ class EnumsSeparatedWarnTest {
     private val ruleId = "$DIKTAT_RULE_SET_ID:enum-separated"
 
     @Test
-    fun `check simple correct enum`() {
+    fun `check simple correct enum with new line`() {
         lintMethod(EnumsSeparated(),
                 """
                     |enum class ENUM {
@@ -26,6 +26,22 @@ class EnumsSeparatedWarnTest {
     }
 
     @Test
+    fun `check simple enum but with fun` () {
+        lintMethod(EnumsSeparated(),
+                """
+                    |enum class ENUM {
+                    |   A, B, C;
+                    |   fun foo() {}
+                    |}
+                """.trimMargin(),
+                LintError(2,4,ruleId,"${ENUMS_SEPARATED.warnText()} enum constance must end with a line break", true),
+                LintError(2,7,ruleId,"${ENUMS_SEPARATED.warnText()} enum constance must end with a line break", true),
+                LintError(2,10,ruleId,"${ENUMS_SEPARATED.warnText()} semicolon must be on a new line", true),
+                LintError(2,10,ruleId,"${ENUMS_SEPARATED.warnText()} last enum constance must end with a comma", true)
+        )
+    }
+
+    @Test
     fun `check one line enum`() {
         lintMethod(EnumsSeparated(),
                 """
@@ -33,6 +49,35 @@ class EnumsSeparatedWarnTest {
                     |   A, B, C
                     |}
                 """.trimMargin()
+        )
+    }
+
+    @Test
+    fun `check wrong simple enum with new line last value`() {
+        lintMethod(EnumsSeparated(),
+                """
+                    |enum class ENUM {
+                    |   A, B, 
+                    |   C
+                    |}
+                """.trimMargin(),
+                LintError(2,4,ruleId,"${ENUMS_SEPARATED.warnText()} enum constance must end with a line break", true),
+                LintError(3,4,ruleId,"${ENUMS_SEPARATED.warnText()} enums must end with semicolon", true),
+                LintError(3,4,ruleId,"${ENUMS_SEPARATED.warnText()} last enum constance must end with a comma", true)
+        )
+    }
+
+    @Test
+    fun `check wrong simple enum with new line last value but with same line semicolon`() {
+        lintMethod(EnumsSeparated(),
+                """
+                    |enum class ENUM {
+                    |   A, B, 
+                    |   C, ;
+                    |}
+                """.trimMargin(),
+                LintError(2,4,ruleId,"${ENUMS_SEPARATED.warnText()} enum constance must end with a line break", true),
+                LintError(3,4,ruleId,"${ENUMS_SEPARATED.warnText()} semicolon must be on a new line", true)
         )
     }
 

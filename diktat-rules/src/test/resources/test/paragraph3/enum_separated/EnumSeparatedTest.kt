@@ -37,3 +37,17 @@ enum class ProtocolState {
     };
     abstract fun signal(): ProtocolState
 }
+
+enum class Simple {
+    A, B, C
+}
+
+enum class SimpleWithFun {
+    A, B, C ;
+    fun foo() {}
+}
+
+enum class SimpleWithNewLine {
+    A, B,
+    C
+}
