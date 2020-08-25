@@ -122,9 +122,8 @@ class WhiteSpaceRule : Rule("horizontal-whitespace") {
             LBRACE -> handleLbrace(node)
             LBRACKET -> handleToken(node, 0, 0)
             LPAR -> handleLpar(node)
-            LT -> if (node.treeParent == TYPE_PARAMETER_LIST) handleToken(node, null, 0)
             RPAR, RBRACKET -> handleToken(node, 0, null)
-            GT -> if (node.treeParent == TYPE_PARAMETER_LIST) handleToken(node, 0, null)
+            GT, LT -> handleGtOrLt(node)
             // white space
             WHITE_SPACE -> handleEolWhiteSpace(node)
         }
@@ -260,6 +259,14 @@ class WhiteSpaceRule : Rule("horizontal-whitespace") {
         } else {
             handleToken(node, null, 0)
         }
+    }
+
+    private fun handleGtOrLt(node: ASTNode){
+        if (node.treeParent == TYPE_PARAMETER_LIST) handleToken(
+                node,
+                if (node.elementType == GT) 0 else null,
+                if (node.elementType == GT) null else 0
+        )
     }
 
     private fun ASTNode.fixSpaceAround(requiredSpacesBefore: Int?, requiredSpacesAfter: Int?) {
