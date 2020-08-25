@@ -30,6 +30,21 @@ class EnumsSeparatedWarnTest {
 
     @Test
     @Tag(WarningNames.ENUMS_SEPARATED)
+    fun `check simple correct enum with comments`() {
+        lintMethod(EnumsSeparated(),
+                """
+                    |enum class ENUM {
+                    |   A, // this is A
+                    |   B,
+                    |   C,
+                    |   ;
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.ENUMS_SEPARATED)
     fun `check simple enum but with fun` () {
         lintMethod(EnumsSeparated(),
                 """
@@ -38,10 +53,10 @@ class EnumsSeparatedWarnTest {
                     |   fun foo() {}
                     |}
                 """.trimMargin(),
-                LintError(2,4,ruleId,"${ENUMS_SEPARATED.warnText()} enum constance must end with a line break", true),
-                LintError(2,7,ruleId,"${ENUMS_SEPARATED.warnText()} enum constance must end with a line break", true),
+                LintError(2,4,ruleId,"${ENUMS_SEPARATED.warnText()} enum entries must end with a line break", true),
+                LintError(2,7,ruleId,"${ENUMS_SEPARATED.warnText()} enum entries must end with a line break", true),
                 LintError(2,10,ruleId,"${ENUMS_SEPARATED.warnText()} semicolon must be on a new line", true),
-                LintError(2,10,ruleId,"${ENUMS_SEPARATED.warnText()} last enum constance must end with a comma", true)
+                LintError(2,10,ruleId,"${ENUMS_SEPARATED.warnText()} last enum entries must end with a comma", true)
         )
     }
 
@@ -67,9 +82,9 @@ class EnumsSeparatedWarnTest {
                     |   C
                     |}
                 """.trimMargin(),
-                LintError(2,4,ruleId,"${ENUMS_SEPARATED.warnText()} enum constance must end with a line break", true),
+                LintError(2,4,ruleId,"${ENUMS_SEPARATED.warnText()} enum entries must end with a line break", true),
                 LintError(3,4,ruleId,"${ENUMS_SEPARATED.warnText()} enums must end with semicolon", true),
-                LintError(3,4,ruleId,"${ENUMS_SEPARATED.warnText()} last enum constance must end with a comma", true)
+                LintError(3,4,ruleId,"${ENUMS_SEPARATED.warnText()} last enum entries must end with a comma", true)
         )
     }
 
@@ -83,14 +98,14 @@ class EnumsSeparatedWarnTest {
                     |   C, ;
                     |}
                 """.trimMargin(),
-                LintError(2,4,ruleId,"${ENUMS_SEPARATED.warnText()} enum constance must end with a line break", true),
+                LintError(2,4,ruleId,"${ENUMS_SEPARATED.warnText()} enum entries must end with a line break", true),
                 LintError(3,4,ruleId,"${ENUMS_SEPARATED.warnText()} semicolon must be on a new line", true)
         )
     }
 
     @Test
     @Tag(WarningNames.ENUMS_SEPARATED)
-    fun `check correct enum but with initialize constance` () {
+    fun `check correct enum but with initialize entries` () {
         lintMethod(EnumsSeparated(),
                 """
                     |enum class ENUM {
@@ -105,7 +120,7 @@ class EnumsSeparatedWarnTest {
 
     @Test
     @Tag(WarningNames.ENUMS_SEPARATED)
-    fun `check wrong enum with initialize constance and without last comma` () {
+    fun `check wrong enum with initialize entries and without last comma` () {
         lintMethod(EnumsSeparated(),
                 """
                     |enum class ENUM {
@@ -115,7 +130,7 @@ class EnumsSeparatedWarnTest {
                     |   ;
                     |}
                 """.trimMargin(),
-                LintError(4,4,ruleId,"${ENUMS_SEPARATED.warnText()} last enum constance must end with a comma", true)
+                LintError(4,4,ruleId,"${ENUMS_SEPARATED.warnText()} last enum entries must end with a comma", true)
         )
     }
 
@@ -155,7 +170,7 @@ class EnumsSeparatedWarnTest {
                     |}
                 """.trimMargin(),
                 LintError(5,4,ruleId,"${ENUMS_SEPARATED.warnText()} semicolon must be on a new line", true),
-                LintError(5,4,ruleId,"${ENUMS_SEPARATED.warnText()} last enum constance must end with a comma", true)
+                LintError(5,4,ruleId,"${ENUMS_SEPARATED.warnText()} last enum entries must end with a comma", true)
         )
     }
 
@@ -174,7 +189,7 @@ class EnumsSeparatedWarnTest {
                     |}
                 """.trimMargin(),
                 LintError(5,4,ruleId,"${ENUMS_SEPARATED.warnText()} enums must end with semicolon", true),
-                LintError(5,4,ruleId,"${ENUMS_SEPARATED.warnText()} last enum constance must end with a comma", true)
+                LintError(5,4,ruleId,"${ENUMS_SEPARATED.warnText()} last enum entries must end with a comma", true)
 
         )
     }

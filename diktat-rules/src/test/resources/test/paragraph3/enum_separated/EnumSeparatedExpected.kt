@@ -49,7 +49,7 @@ enum class Simple {
 enum class SimpleWithFun {
     A,
  B,
- C ,
+ C,
 ;
     fun foo() {}
 }

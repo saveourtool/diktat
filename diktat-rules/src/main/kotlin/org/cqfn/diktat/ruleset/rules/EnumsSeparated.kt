@@ -48,28 +48,28 @@ class EnumsSeparated : Rule("enum-separated") {
 
     //Fixme prefer enum classes if it is possible instead of variables
     private fun checkEnumEntry(node: ASTNode) {
-        val enums = node.findChildByType(CLASS_BODY)!!.getAllChildrenWithType(ENUM_ENTRY)
-        if (enums.isEmpty() || (isEnumSimple(enums) && isSimpleEnumOneLine(enums)))
+        val enumEntries = node.findChildByType(CLASS_BODY)!!.getAllChildrenWithType(ENUM_ENTRY)
+        if (enumEntries.isEmpty() || (isEnumOneLine(enumEntries) && isSimpleEnumOneLine(enumEntries)))
             return
-        enums.forEach {
+        enumEntries.forEach {
             if (!it.treeNext.isWhiteSpaceWithNewline())
-                ENUMS_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, "enum constance must end with a line break",
+                ENUMS_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, "enum entries must end with a line break",
                         it.startOffset) {
                     it.appendNewlineMergingWhiteSpace(it.treeNext, it.treeNext)
                 }
         }
-        checkLastEnum(enums.last())
+        checkLastEnum(enumEntries.last())
     }
 
     private fun isSimpleEnumOneLine(nodes: List<ASTNode>) =
-            nodes.find { it != nodes.last() && it.treeNext.isWhiteSpaceWithNewline() } == null
+            nodes.dropLast(1).find { it.treeNext.isWhiteSpaceWithNewline() } == null
 
-    private fun isEnumSimple(nodes: List<ASTNode>): Boolean {
-        nodes.forEach { node ->
+    private fun isEnumOneLine(enumEntries: List<ASTNode>): Boolean {
+        enumEntries.forEach { node ->
             if (!SIMPLE_VALUE.containsAll(node.getChildren(null).map { it.elementType }))
                 return false
         }
-        return SIMPLE_ENUM.containsAll(nodes.last().treeParent.getChildren(null).map { it.elementType })
+        return SIMPLE_ENUM.containsAll(enumEntries.last().treeParent.getChildren(null).map { it.elementType })
     }
 
     private fun checkLastEnum(node: ASTNode) {
@@ -86,7 +86,7 @@ class EnumsSeparated : Rule("enum-separated") {
             }
         }
         if (!node.hasChildOfType(COMMA)) {
-            ENUMS_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, "last enum constance must end with a comma",
+            ENUMS_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, "last enum entries must end with a comma",
                     node.startOffset) {
                 node.addChild(LeafPsiElement(COMMA, ","), node.findChildByType(SEMICOLON)!!.treePrev)
             }
