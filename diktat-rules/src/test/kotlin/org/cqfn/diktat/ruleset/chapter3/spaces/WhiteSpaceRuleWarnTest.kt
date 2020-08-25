@@ -1,10 +1,12 @@
 package org.cqfn.diktat.ruleset.chapter3.spaces
 
 import com.pinterest.ktlint.core.LintError
+import generated.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_WHITESPACE
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.WhiteSpaceRule
 import org.cqfn.diktat.util.lintMethod
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class WhiteSpaceRuleWarnTest {
@@ -25,6 +27,7 @@ class WhiteSpaceRuleWarnTest {
                     (if (after != null) " $after space(s) after" else "")
 
     @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
     fun `keywords should have space before opening parenthesis and braces - positive example`() {
         lintMethod(WhiteSpaceRule(),
                 """
@@ -43,6 +46,7 @@ class WhiteSpaceRuleWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
     fun `keywords should have space before opening parenthesis`() {
         lintMethod(WhiteSpaceRule(),
                 """
@@ -61,6 +65,7 @@ class WhiteSpaceRuleWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
     fun `constructor should not have space before opening parenthesis`() {
         lintMethod(WhiteSpaceRule(),
                 """
@@ -73,6 +78,7 @@ class WhiteSpaceRuleWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
     fun `keywords should have space before opening braces`() {
         lintMethod(WhiteSpaceRule(),
                 """

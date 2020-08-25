@@ -72,7 +72,7 @@ import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
  * 2. There should be single space between keyword and {
  * 3. There should be single space before any {, unless lambda inside parentheses of argument list
  * 4. Binary operators should be surrounded by whitespaces, excluding :: and .
- * 5. Spaces should be used after ',',':',';' (except cases when those symbols are in the end of line).
+ * 5. Spaces should be used after `,`, `:`, `;` (except cases when those symbols are in the end of line).
  *    There should be no whitespaces in the end of line.
  * 6. There should be only one space between identifier and it's type, if type is nullable there should be no spaces before `?`
  * 7. There should be no space before `[`
@@ -212,12 +212,10 @@ class WhiteSpaceRule : Rule("horizontal-whitespace") {
     private fun handleToken(node: ASTNode, requiredSpacesBefore: Int?, requiredSpacesAfter: Int?) {
         require(requiredSpacesBefore != null || requiredSpacesAfter != null)
         val spacesBefore = node.parent({ it.treePrev != null }, strict = false)!!.treePrev.numWhiteSpaces()
-        val spacesAfter = if (requiredSpacesAfter != null) {
+        val spacesAfter = requiredSpacesAfter?.let { _ ->
             (node.treeNext
                     ?: node.treeParent.treeNext)  // for `!!` and possibly other postfix expressions treeNext can be null
                     .numWhiteSpaces()
-        } else {
-            null
         }
         val isErrorBefore = requiredSpacesBefore != null && spacesBefore != null && spacesBefore != requiredSpacesBefore
         val isErrorAfter = requiredSpacesAfter != null && spacesAfter != null && spacesAfter != requiredSpacesAfter
@@ -312,7 +310,13 @@ class WhiteSpaceRule : Rule("horizontal-whitespace") {
                                shouldAfter: Boolean,
                                before: Int?,
                                after: Int?): String =
-            (if (shouldBefore) " $before space(s) before" else "") +
-                    (if (shouldBefore && shouldAfter) " and" else "") +
-                    (if (shouldAfter) " $after space(s) after" else "")
+            if (shouldBefore && shouldAfter) {
+                " $before space(s) before and $after space(s) after"
+            } else if (shouldBefore && !shouldAfter) {
+                " $before space(s) before"
+            } else if (shouldAfter) {
+                " $after space(s) after"
+            } else {
+                ""
+            }
 }
