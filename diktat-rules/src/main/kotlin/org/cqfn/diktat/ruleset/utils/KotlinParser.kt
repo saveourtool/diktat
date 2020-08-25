@@ -30,10 +30,13 @@ class KotlinParser {
         setIdeaIoUseFallback()
     }
 
-    companion object{
-        private const val ONE_CHILD = 1
-    }
-
+    /**
+     * This method create a node based on text.
+     * @param isPackage - flag to check if node will contains package.
+     * If this flag is true, node's element type will be FILE.
+     * Else, try to create node based on text.
+     * If this node will contain ERROR_ELEMENT type children this mean that cannot create node based on this text
+     */
     fun createNode(text: String, isPackage: Boolean = false): ASTNode {
         val compilerConfiguration = CompilerConfiguration()
         compilerConfiguration.put(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, MessageCollector.NONE) // mute the output logging to process it themselves
@@ -70,7 +73,7 @@ class KotlinParser {
             ktPsiFactory.createFile(text).node
         else
             ktPsiFactory.createBlockCodeFragment(text, null).node.findChildByType(BLOCK)!!
-        if (node.getChildren(null).size == ONE_CHILD)
+        if (node.getChildren(null).size == 1)
             node = node.firstChildNode
         if (node.findAllNodesWithSpecificType(ERROR_ELEMENT).isNotEmpty())
             throw KotlinParseException("Your text is not valid")
