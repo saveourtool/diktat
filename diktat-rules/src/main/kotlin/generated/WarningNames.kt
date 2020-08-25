@@ -129,4 +129,6 @@ object WarningNames {
   const val TOO_MANY_BLANK_LINES: String = "TOO_MANY_BLANK_LINES"
 
   const val WRONG_WHITESPACE: String = "WRONG_WHITESPACE"
+
+  const val WHEN_WITHOUT_ELSE: String = "WHEN_WITHOUT_ELSE"
 }
