@@ -15,7 +15,7 @@ class EmptyBlockFixTest : FixTestBase("test/paragraph3/empty_block", EmptyBlock(
     )
 
     @Test
-    fun `should fix open and close brace in if-else expression`() {
+    fun `should fix open and close brace in try-catch expression`() {
         fixAndCompare("TryCatchEmptyBlockExpected.kt", "TryCatchEmptyBlockTest.kt", rulesConfigListEmptyBlockExist)
     }
 }
