@@ -53,11 +53,6 @@
                 <version>${ktlint.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.pinterest.ktlint</groupId>
-                <artifactId>ktlint-test</artifactId>
-                <version>${ktlint.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
