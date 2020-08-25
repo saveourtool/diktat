@@ -33,4 +33,9 @@ class WhiteSpaceRuleFixTest : FixTestBase("test/paragraph3/spaces", WhiteSpaceRu
     fun `should surround binary operators with spaces`() {
         fixAndCompare("BinaryOpExpected.kt", "BinaryOpTest.kt")
     }
+
+    @Test
+    fun `should trim spaces in the end of line`() {
+        fixAndCompare("EolSpacesExpected.kt", "EolSpacesTest.kt")
+    }
 }

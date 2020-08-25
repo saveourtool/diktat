@@ -15,15 +15,22 @@ class WhiteSpaceRuleWarnTest {
             "${WRONG_WHITESPACE.warnText()} keyword '$keyword' should be separated from '$sep' with a whitespace"
 
     private val lbraceWarn = "${WRONG_WHITESPACE.warnText()} there should be a whitespace before '{'"
-    private fun binaryOpWarn(op: String, isException: Boolean = false) =
-            "${WRONG_WHITESPACE.warnText()} $op should ${if (isException) "not " else ""}be surrounded by whitespaces"
+    private val eolSpaceWarn = "${WRONG_WHITESPACE.warnText()} there should be no spaces in the end of line"
+    private fun binaryOpWarn(op: String, before: Int?, after: Int?, reqBefore: Int, reqAfter: Int?) =
+//            "${WRONG_WHITESPACE.warnText()} $op should ${if (isException) "not " else ""}be surrounded by whitespaces"
+            "${WRONG_WHITESPACE.warnText()} $op should have $reqBefore space(s) before" +
+                    (if (reqAfter != null) " and $reqAfter space(s) after" else "") +
+                    ", but has" +
+                    (if (before != null) " $before space(s) before" else "") +
+                    (if (before != null && after != null) " and" else "") +
+                    (if (after != null) " $after space(s) after" else "")
 
     @Test
     @Tag(WarningNames.WRONG_WHITESPACE)
     fun `keywords should have space before opening parenthesis and braces - positive example`() {
         lintMethod(WhiteSpaceRule(),
                 """
-                    |class Example : SuperExample {
+                    |class Example {
                     |    constructor(val a: Int)
                     |
                     |    fun foo() {
@@ -90,6 +97,23 @@ class WhiteSpaceRuleWarnTest {
     }
 
     @Test
+    fun `keywords should have space before opening braces - else without braces`() {
+        lintMethod(WhiteSpaceRule(),
+                """
+                    |fun foo() {
+                    |     if (condition)
+                    |         bar()
+                    |     else
+                    |         baz()
+                    |     
+                    |     if (condition) bar() else  baz()
+                    |}
+                """.trimMargin(),
+                LintError(7, 33, ruleId, keywordWarn("else", "baz"), true)
+        )
+    }
+
+    @Test
     fun `all opening braces should have leading space`() {
         lintMethod(WhiteSpaceRule(),
                 """
@@ -145,7 +169,7 @@ class WhiteSpaceRuleWarnTest {
     fun `should not false positively trigger when operators are surrounded with newlines`() {
         lintMethod(WhiteSpaceRule(),
                 """
-                    |class Example<T> where T 
+                    |class Example<T> where T
                     |                 :
                     |                 UpperType {
                     |    fun foo(t: T) =
@@ -156,7 +180,7 @@ class WhiteSpaceRuleWarnTest {
                     |            .map(this
                     |                ::foo)
                     |            .filter { elem ->
-                    |                 predicate(elem) 
+                    |                 predicate(elem)
                     |             }
                     |    }
                     |}
@@ -169,7 +193,7 @@ class WhiteSpaceRuleWarnTest {
         lintMethod(WhiteSpaceRule(),
                 """
                     |class Example<T, R, Q> where T:UpperType, R: UpperType, Q :UpperType {
-                    |    fun foo(t : T) = t+ 1
+                    |    fun foo(t: T) = t+ 1
                     |    fun foo2(t: T) = t+1
                     |    fun foo3(t: T) = t +1
                     |    
@@ -180,28 +204,120 @@ class WhiteSpaceRuleWarnTest {
                     |    }
                     |}
                 """.trimMargin(),
-                LintError(1, 31, ruleId, binaryOpWarn(":"), true),
-                LintError(1, 44, ruleId, binaryOpWarn(":"), true),
-                LintError(1, 59, ruleId, binaryOpWarn(":"), true),
-                LintError(2, 23, ruleId, binaryOpWarn("+"), true),
-                LintError(3, 23, ruleId, binaryOpWarn("+"), true),
-                LintError(4, 24, ruleId, binaryOpWarn("+"), true),
-                LintError(7, 21, ruleId, binaryOpWarn(".", true), true),
-                LintError(7, 31, ruleId, binaryOpWarn("::", true), true),
-                LintError(7, 38, ruleId, binaryOpWarn("?.", true), true),
-                LintError(7, 54, ruleId, binaryOpWarn("->"), true),
-                LintError(7, 74, ruleId, binaryOpWarn("!!", true), true),
-                LintError(8, 21, ruleId, binaryOpWarn(".", true), true),
-                LintError(8, 32, ruleId, binaryOpWarn("::", true), true),
-                LintError(8, 40, ruleId, binaryOpWarn("?.", true), true),
-                LintError(8, 56, ruleId, binaryOpWarn("->"), true),
-                LintError(8, 76, ruleId, binaryOpWarn("!!", true), true),
-                LintError(8, 79, ruleId, binaryOpWarn(".", true), true),
-                LintError(9, 20, ruleId, binaryOpWarn(".", true), true),
-                LintError(9, 30, ruleId, binaryOpWarn("::", true), true),
-                LintError(9, 37, ruleId, binaryOpWarn("?.", true), true),
-                LintError(9, 53, ruleId, binaryOpWarn("->"), true),
-                LintError(9, 75, ruleId, binaryOpWarn(".", true), true)
+                LintError(1, 31, ruleId, binaryOpWarn(":", 0, 0, 1, 1), true),
+                LintError(1, 44, ruleId, binaryOpWarn(":", 0, null, 1, 1), true),
+                LintError(1, 59, ruleId, binaryOpWarn(":", null, 0, 1, 1), true),
+                LintError(2, 22, ruleId, binaryOpWarn("+", 0, null, 1, 1), true),
+                LintError(3, 23, ruleId, binaryOpWarn("+", 0, 0, 1, 1), true),
+                LintError(4, 24, ruleId, binaryOpWarn("+", null, 0, 1, 1), true),
+                LintError(7, 21, ruleId, binaryOpWarn(".", 1, null, 0, 0), true),
+                LintError(7, 31, ruleId, binaryOpWarn("::", 1, null, 0, 0), true),
+                LintError(7, 38, ruleId, binaryOpWarn("?.", 1, null, 0, 0), true),
+                LintError(7, 54, ruleId, binaryOpWarn("->", null, 0, 1, 1), true),
+                LintError(7, 74, ruleId, binaryOpWarn("!!", 1, null, 0, 0), true),
+                LintError(8, 21, ruleId, binaryOpWarn(".", 1, 1, 0, 0), true),
+                LintError(8, 32, ruleId, binaryOpWarn("::", 1, 1, 0, 0), true),
+                LintError(8, 40, ruleId, binaryOpWarn("?.", 1, 1, 0, 0), true),
+                LintError(8, 56, ruleId, binaryOpWarn("->", 0, 0, 1, 1), true),
+                LintError(8, 76, ruleId, binaryOpWarn("!!", 1, 1, 0, 0), true),
+                LintError(8, 79, ruleId, binaryOpWarn(".", 1, null, 0, 0), true),
+                LintError(9, 20, ruleId, binaryOpWarn(".", null, 1, 0, 0), true),
+                LintError(9, 30, ruleId, binaryOpWarn("::", null, 1, 0, 0), true),
+                LintError(9, 37, ruleId, binaryOpWarn("?.", null, 1, 0, 0), true),
+                LintError(9, 53, ruleId, binaryOpWarn("->", 0, null, 1, 1), true),
+                LintError(9, 75, ruleId, binaryOpWarn(".", null, 1, 0, 0), true)
+        )
+    }
+
+    @Test
+    fun `operators with single space after - positive example`() {
+        lintMethod(WhiteSpaceRule(),
+                """
+                    |class Example<T> {
+                    |    fun foo(t1: T, t2: T) {
+                    |        println(); println()
+                    |    }
+                    |    
+                    |    fun bar(t: T,
+                    |            d: T) {
+                    |        println();
+                    |    }
+                    |    
+                    |    val x: Int
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    fun `operators with single space after`() {
+        lintMethod(WhiteSpaceRule(),
+                """
+                    |class Example<T> {${" "}
+                    |    fun foo(t1 :T ,t2:T) {${" "} 
+                    |        println();println()
+                    |        println() ; println()
+                    |    }
+                    |    
+                    |    val x : Int
+                    |}
+                """.trimMargin(),
+                LintError(1, 19, ruleId, eolSpaceWarn, true),
+                LintError(2, 16, ruleId, binaryOpWarn(":", 1, 0, 0, 1), true),
+                LintError(2, 19, ruleId, binaryOpWarn(",", 1, 0, 0, 1), true),
+                LintError(2, 22, ruleId, binaryOpWarn(":", null, 0, 0, 1), true),
+                LintError(2, 27, ruleId, eolSpaceWarn, true),
+                LintError(3, 18, ruleId, binaryOpWarn(";", null, 0, 0, 1), true),
+                LintError(4, 19, ruleId, binaryOpWarn(";", 1, null, 0, 1), true),
+                LintError(7, 11, ruleId, binaryOpWarn(":", 1, null, 0, 1), true)
+        )
+    }
+
+    @Test
+    fun `operators with single space after - exceptional cases - positive example`() {
+        lintMethod(WhiteSpaceRule(),
+                """
+                    |abstract class Foo<out T : Any> : IFoo { }
+                    |
+                    |class FooImpl : Foo() {
+                    |    constructor(x: String) : this(x) { /*...*/ }
+                    |
+                    |    val x = object : IFoo { /*...*/ }
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    fun `operators with single space after - exceptional cases`() {
+        lintMethod(WhiteSpaceRule(),
+                """
+                    |abstract class Foo<out T: Any>: IFoo { }
+                    |
+                    |class FooImpl: Foo() {
+                    |    constructor(x: String): this(x) { /*...*/ }
+                    |
+                    |    val x = object: IFoo { /*...*/ }
+                    |}
+                """.trimMargin(),
+                LintError(1, 25, ruleId, binaryOpWarn(":", 0, null, 1, 1), true),
+                LintError(1, 31, ruleId, binaryOpWarn(":", 0, null, 1, 1), true),
+                LintError(3, 14, ruleId, binaryOpWarn(":", 0, null, 1, 1), true),
+                LintError(4, 27, ruleId, binaryOpWarn(":", 0, null, 1, 1), true),
+                LintError(6, 19, ruleId, binaryOpWarn(":", 0, null, 1, 1), true)
+        )
+    }
+
+    @Test
+    fun `there should be no space before ? in nullable types`() {
+        lintMethod(WhiteSpaceRule(),
+                """
+                    |class Example {
+                    |    lateinit var x: Int?
+                    |    lateinit var x: Int ?
+                    |}
+                """.trimMargin(),
+                LintError(3, 25, ruleId, binaryOpWarn("?", 1, null, 0, null), true)
         )
     }
 }
