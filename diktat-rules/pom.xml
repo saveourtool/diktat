@@ -41,6 +41,7 @@
             <artifactId>kotlin-stdlib</artifactId>
         </dependency>
         <dependency>
+            <!-- guava is used for string case utils -->
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>
@@ -51,11 +52,6 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.pinterest.ktlint</groupId>
-            <artifactId>ktlint-test</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
