@@ -5,6 +5,8 @@ import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FUN
+import com.pinterest.ktlint.core.ast.ElementType.IMPORT_DIRECTIVE
+import com.pinterest.ktlint.core.ast.ElementType.IMPORT_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
@@ -27,7 +29,7 @@ class KotlinParserTest {
     }
 
     @Test
-    fun `test oneliner function`() {
+    fun `test oneline function`() {
         val node = KotlinParser().createNode("fun foo(text: String) = text.toUpperCase()")
         Assert.assertEquals(FUN, node.elementType)
         Assert.assertEquals("fun foo(text: String) = text.toUpperCase()", node.text)
@@ -47,7 +49,8 @@ class KotlinParserTest {
         val code = """
             |package org.cqfn.diktat.ruleset.utils
             |
-            |import org.junit.jupiter.api.Test 
+            |import org.junit.jupiter.api.Test
+            |import org.junit.jupiter.api.Tests
             |
             |class A {
             |   fun foo(){
@@ -78,6 +81,7 @@ class KotlinParserTest {
     fun `test multiline class code with import`() {
         val code = """
             |import org.junit.jupiter.api.Test
+            |import org.junit.jupiter.api.Tests
             | 
             |class A {
             |   fun foo(){
@@ -123,5 +127,41 @@ class KotlinParserTest {
         classNode.addChild(KotlinParser().createNode(function), classNode.findChildByType(RBRACE))
         classNode.addChild(PsiWhiteSpaceImpl("\n"), classNode.findChildByType(RBRACE))
         Assert.assertTrue(nodeToApply!!.prettyPrint() == resultNode!!.prettyPrint())
+    }
+
+    @Test
+    fun `check package`() {
+        val packageCode = """
+            |package org.cqfn.diktat.ruleset.utils
+            """.trimMargin()
+        val node = KotlinParser().createNode(packageCode, true)
+        Assert.assertEquals(FILE, node.elementType)
+        Assert.assertEquals(packageCode, node.text)
+        Assert.assertEquals(PACKAGE_DIRECTIVE, node.firstChildNode.elementType)
+    }
+
+    @Test
+    fun `check import`() {
+        val importCode = """
+            |import org.junit.jupiter.api.Test
+            """.trimMargin()
+        val node = KotlinParser().createNode(importCode)
+        Assert.assertEquals(IMPORT_DIRECTIVE, node.elementType)
+        Assert.assertEquals(importCode, node.text)
+        Assert.assertEquals(IMPORT_KEYWORD, node.firstChildNode.elementType)
+    }
+
+    @Test
+    fun `check package and import`() {
+        val code = """
+            |package org.cqfn.diktat.ruleset.utils
+            |
+            |import org.junit.jupiter.api.Test
+            |import org.junit.jupiter.api.Tests
+            """.trimMargin()
+        val node = KotlinParser().createNode(code, true)
+        Assert.assertEquals(FILE, node.elementType)
+        Assert.assertEquals(code, node.text)
+        Assert.assertEquals(PACKAGE_DIRECTIVE, node.firstChildNode.elementType)
     }
 }

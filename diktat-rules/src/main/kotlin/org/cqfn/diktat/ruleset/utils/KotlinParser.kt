@@ -1,6 +1,7 @@
 package org.cqfn.diktat.ruleset.utils
 
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
+import com.pinterest.ktlint.core.ast.ElementType.IMPORT_KEYWORD
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.environment.setIdeaIoUseFallback
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
@@ -15,9 +16,10 @@ import org.jetbrains.kotlin.com.intellij.pom.PomModelAspect
 import org.jetbrains.kotlin.com.intellij.pom.PomTransaction
 import org.jetbrains.kotlin.com.intellij.pom.impl.PomTransactionBase
 import org.jetbrains.kotlin.com.intellij.pom.tree.TreeAspect
-import org.jetbrains.kotlin.com.intellij.psi.TokenType.ERROR_ELEMENT
 import org.jetbrains.kotlin.config.CompilerConfiguration
+import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.KtPsiFactory
+import org.jetbrains.kotlin.resolve.ImportPath
 import sun.reflect.ReflectionFactory
 
 class KotlinParser {
@@ -71,12 +73,28 @@ class KotlinParser {
         lateinit var node: ASTNode
         node = if (isPackage)
             ktPsiFactory.createFile(text).node
-        else
-            ktPsiFactory.createBlockCodeFragment(text, null).node.findChildByType(BLOCK)!!
+        else {
+            if (text.contains(KtTokens.IMPORT_KEYWORD.value)) {
+                val (imports, blockCode) = text.lines().partition { it.contains(KtTokens.IMPORT_KEYWORD.value) }
+                if (blockCode.isNotEmpty())
+                    throw throw KotlinParseException("Your text is not valid")
+                if (imports.size == 1) {
+                    val importText = ImportPath.fromString(text.substringAfter("$IMPORT_KEYWORD "))
+                    ktPsiFactory.createImportDirective(importText).node
+                } else {
+                    ktPsiFactory.createBlockCodeFragment(text, null).node.findChildByType(BLOCK)!!
+                }
+            } else {
+                ktPsiFactory.createBlockCodeFragment(text, null).node.findChildByType(BLOCK)!!
+            }
+        }
         if (node.getChildren(null).size == 1)
             node = node.firstChildNode
-        if (node.findAllNodesWithSpecificType(ERROR_ELEMENT).isNotEmpty())
-            throw KotlinParseException("Your text is not valid")
+        if (!node.isCorrect()){
+            node = ktPsiFactory.createFile(text).node
+            if (!node.isCorrect())
+                throw KotlinParseException("Your text is not valid")
+        }
         return node
     }
 }
