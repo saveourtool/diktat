@@ -18,7 +18,7 @@ class EmptyBlockFixTest : FixTestBase("test/paragraph3/empty_block", EmptyBlock(
 
     @Test
     @Tag(WarningNames.EMPTY_BLOCK_STRUCTURE_ERROR)
-    fun `should fix open and close brace in if-else expression`() {
-        fixAndCompare("TryCatchEmptyBlockExpected.kt", "TryCatchEmptyBlockTest.kt", rulesConfigListEmptyBlockExist)
+    fun `should fix open and close brace in different expression`() {
+        fixAndCompare("EmptyBlockExpected.kt", "EmptyBlockTest.kt", rulesConfigListEmptyBlockExist)
     }
 }
