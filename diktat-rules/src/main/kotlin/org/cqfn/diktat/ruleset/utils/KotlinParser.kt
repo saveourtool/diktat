@@ -32,6 +32,10 @@ class KotlinParser {
         setIdeaIoUseFallback()
     }
 
+    fun createNode(text: String, isPackage: Boolean = false): ASTNode {
+        return makeNode(text, isPackage) ?: throw KotlinParseException("Your text is not valid")
+    }
+
     /**
      * This method create a node based on text.
      * @param isPackage - flag to check if node will contains package.
@@ -39,7 +43,7 @@ class KotlinParser {
      * Else, try to create node based on text.
      * If this node will contain ERROR_ELEMENT type children this mean that cannot create node based on this text
      */
-    fun createNode(text: String, isPackage: Boolean = false): ASTNode {
+    private fun makeNode(text: String, isPackage: Boolean = false): ASTNode? {
         val compilerConfiguration = CompilerConfiguration()
         compilerConfiguration.put(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, MessageCollector.NONE) // mute the output logging to process it themselves
         val pomModel: PomModel = object : UserDataHolderBase(), PomModel {
@@ -66,7 +70,7 @@ class KotlinParser {
         project as MockProject
         project.registerService(PomModel::class.java, pomModel)
         if (text.isEmpty())
-            throw KotlinParseException("Your text is not valid")
+            return null
         val ktPsiFactory = KtPsiFactory(project, true)
         if (text.trim().isEmpty())
             return ktPsiFactory.createWhiteSpace(text).node
@@ -77,7 +81,7 @@ class KotlinParser {
             if (text.contains(KtTokens.IMPORT_KEYWORD.value)) {
                 val (imports, blockCode) = text.lines().partition { it.contains(KtTokens.IMPORT_KEYWORD.value) }
                 if (blockCode.isNotEmpty())
-                    throw throw KotlinParseException("Your text is not valid")
+                    return null
                 if (imports.size == 1) {
                     val importText = ImportPath.fromString(text.substringAfter("$IMPORT_KEYWORD "))
                     ktPsiFactory.createImportDirective(importText).node
@@ -93,7 +97,7 @@ class KotlinParser {
         if (!node.isCorrect()){
             node = ktPsiFactory.createFile(text).node
             if (!node.isCorrect())
-                throw KotlinParseException("Your text is not valid")
+                return null
         }
         return node
     }
