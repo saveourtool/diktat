@@ -626,7 +626,7 @@ style:
   ForbiddenComment:
     excludes: ['**/resources/**'] 
     active: true
-    values: ['TODO:', 'FIXME:', 'STOPSHIP:']
+    values: ['TODO:', 'STOPSHIP:']
     allowedPatterns: ''
   ForbiddenImport:
     excludes: ['**/resources/**'] 

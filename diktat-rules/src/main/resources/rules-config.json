@@ -311,12 +311,30 @@
     "configuration": {}
   },
   {
+    "name": "TOO_MANY_CONSECUTIVE_SPACES",
+    "enabled": true,
+    "configuration": {
+      "max_spaces": "1",
+      "saveInitialFormattingForEnums": false
+    }
+  },
+  {
     "name": "TOO_MANY_BLANK_LINES",
     "enabled": true,
     "configuration": {}
   },
   {
+    "name": "WRONG_WHITESPACE",
+    "enabled": true,
+    "configuration": {}
+  },
+  {
     "name": "BACKTICKS_PROHIBITED",
+    "enabled": true,
+    "configuration": {}
+  },
+  {
+    "name": "STRING_CONCATENATION",
     "enabled": true,
     "configuration": {}
   }

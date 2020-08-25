@@ -5,6 +5,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
 /**
@@ -23,7 +24,7 @@ class RulesConfigJsonTest {
             val jacksonMapper = jacksonObjectMapper()
 
             val ruleJson = jacksonMapper.writeValueAsString(jsonCodeSnippet)
-            require(foundRule != null) {
+            Assertions.assertTrue(foundRule != null) {
                 """
                    Cannot find warning ${rule.ruleName()} in rules-config.json.
                    You can fix it by adding the following code below to rules-config.json:
@@ -35,7 +36,7 @@ class RulesConfigJsonTest {
         allRulesFromConfig.forEach { warning ->
             val warningName = warning.name
             val ruleFound = allRulesFromCode.find { it.ruleName() == warningName } != null
-            require(ruleFound) {
+            Assertions.assertTrue(ruleFound) {
                 """
                     Found rule (warning) in rules-config.json: <$warningName> that does not exist in the code. Misprint or configuration was renamed? 
                 """.trimIndent()
