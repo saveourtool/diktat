@@ -1,6 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter2
 
 import com.pinterest.ktlint.core.LintError
+import generated.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings.BLANK_LINE_AFTER_KDOC
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NEWLINES_BEFORE_BASIC_TAGS
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_DEPRECATED_TAG
@@ -14,6 +15,7 @@ import org.cqfn.diktat.util.lintMethod
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_EMPTY_KDOC
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.util.TEST_FILE_NAME
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class KdocFormattingTest {
@@ -21,6 +23,7 @@ class KdocFormattingTest {
     private val ruleId: String = "$DIKTAT_RULE_SET_ID:kdoc-formatting"
 
     @Test
+    @Tag(WarningNames.BLANK_LINE_AFTER_KDOC)
     fun `there should be no blank line between kdoc and it's declaration code`() {
         val code =
             """
@@ -76,6 +79,7 @@ class KdocFormattingTest {
     """.trimIndent()
 
     @Test
+    @Tag(WarningNames.KDOC_EMPTY_KDOC)
     fun `empty KDocs are not allowed - example with empty KDOC_SECTION`() {
         lintMethod(KdocFormatting(),
                 """/**
@@ -88,6 +92,7 @@ class KdocFormattingTest {
     }
 
     @Test
+    @Tag(WarningNames.KDOC_EMPTY_KDOC)
     fun `empty KDocs are not allowed - example with no KDOC_SECTION`() {
         lintMethod(KdocFormatting(),
                 """/**
@@ -99,6 +104,7 @@ class KdocFormattingTest {
     }
 
     @Test
+    @Tag(WarningNames.KDOC_EMPTY_KDOC)
     fun `empty KDocs are not allowed - without bound identifier`() {
         lintMethod(KdocFormatting(),
                 """/**
@@ -110,6 +116,7 @@ class KdocFormattingTest {
     }
 
     @Test
+    @Tag(WarningNames.KDOC_EMPTY_KDOC)
     fun `empty KDocs are not allowed - with anonymous entity`() {
         lintMethod(KdocFormatting(),
                 """class Example {
@@ -124,6 +131,7 @@ class KdocFormattingTest {
     }
 
     @Test
+    @Tag(WarningNames.KDOC_NO_DEPRECATED_TAG)
     fun `@deprecated tag is not allowed`() {
         val invalidCode = """
             /**
@@ -138,6 +146,7 @@ class KdocFormattingTest {
     }
 
     @Test
+    @Tag(WarningNames.KDOC_NO_EMPTY_TAGS)
     fun `no empty descriptions in tag blocks are allowed`() {
         val invalidCode = """
             /**
@@ -168,6 +177,7 @@ class KdocFormattingTest {
     }
 
     @Test
+    @Tag(WarningNames.KDOC_WRONG_SPACES_AFTER_TAG)
     fun `KDocs should contain only one white space between tag and its content`() {
         val invalidCode = """
             /**
@@ -191,6 +201,7 @@ class KdocFormattingTest {
     }
 
     @Test
+    @Tag(WarningNames.KDOC_WRONG_TAGS_ORDER)
     fun `tags should be ordered in KDocs (positive example)`() {
         val validCode = """
             /**
@@ -205,6 +216,7 @@ class KdocFormattingTest {
     }
 
     @Test
+    @Tag(WarningNames.KDOC_WRONG_TAGS_ORDER)
     fun `tags should be ordered in KDocs`() {
         val invalidCode = """
             /**
@@ -221,6 +233,7 @@ class KdocFormattingTest {
     }
 
     @Test
+    @Tag(WarningNames.KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS)
     fun `newlines are not allowed between basic tags`() {
         val invalidCode = """
             /**
@@ -241,6 +254,7 @@ class KdocFormattingTest {
     }
 
     @Test
+    @Tag(WarningNames.KDOC_NEWLINES_BEFORE_BASIC_TAGS)
     fun `basic tags block should have empty line before if there is other KDoc content (positive example)`() {
         lintMethod(KdocFormatting(),
                 """/**
@@ -255,6 +269,7 @@ class KdocFormattingTest {
     }
 
     @Test
+    @Tag(WarningNames.KDOC_NEWLINES_BEFORE_BASIC_TAGS)
     fun `basic tags block shouldn't have empty line before if there is no other KDoc content`() {
         lintMethod(KdocFormatting(),
                 """/**
@@ -268,6 +283,7 @@ class KdocFormattingTest {
     }
 
     @Test
+    @Tag(WarningNames.KDOC_NEWLINES_BEFORE_BASIC_TAGS)
     fun `basic tags block should have empty line before if there is other KDoc content`() {
         lintMethod(KdocFormatting(),
                 """/**
@@ -282,6 +298,7 @@ class KdocFormattingTest {
     }
 
     @Test
+    @Tag(WarningNames.KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS)
     fun `special tags should have exactly one newline after them (positive example)`() {
         val validCode = """
             /**
@@ -300,6 +317,7 @@ class KdocFormattingTest {
     }
 
     @Test
+    @Tag(WarningNames.KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS)
     fun `special tags should have exactly one newline after them (no newline)`() {
         val invalidCode = """
             /**
@@ -316,6 +334,7 @@ class KdocFormattingTest {
     }
 
     @Test
+    @Tag(WarningNames.KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS)
     fun `special tags should have exactly one newline after them (many lines)`() {
         val invalidCode = """
             /**
