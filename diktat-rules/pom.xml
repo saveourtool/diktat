@@ -41,6 +41,7 @@
             <artifactId>kotlin-stdlib</artifactId>
         </dependency>
         <dependency>
+            <!-- guava is used for string case utils -->
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>
