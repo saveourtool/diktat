@@ -39,7 +39,7 @@ class WhenMustHaveElseWarnTest {
                     |    }
                     |}
                 """.trimMargin(),
-                LintError(2,5,ruleId, "${Warnings.WHEN_WITHOUT_ELSE.warnText()} else was not found")
+                LintError(2,5,ruleId, "${Warnings.WHEN_WITHOUT_ELSE.warnText()} else was not found", true)
         )
     }
 }
