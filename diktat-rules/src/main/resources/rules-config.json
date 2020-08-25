@@ -271,6 +271,14 @@
     "configuration" : {}
   },
   {
+    "name": "TOO_MANY_CONSECUTIVE_SPACES",
+    "enabled": true,
+    "configuration": {
+      "max_spaces": "1",
+      "saveInitialFormattingForEnums": false
+    }
+  },
+  {
     "name": "TOO_MANY_BLANK_LINES",
     "enabled": true,
     "configuration": {}

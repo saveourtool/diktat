@@ -16,3 +16,5 @@ internal const val SET_PREFIX = "set"
  * List of element types present in empty code block `{ }`
  */
 val emptyBlockList = listOf(LBRACE, WHITE_SPACE, RBRACE)
+
+internal const val EMPTY_BLOCK_TEXT = "{}"
