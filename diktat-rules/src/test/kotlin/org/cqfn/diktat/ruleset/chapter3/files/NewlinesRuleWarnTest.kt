@@ -1,12 +1,14 @@
 package org.cqfn.diktat.ruleset.chapter3.files
 
 import com.pinterest.ktlint.core.LintError
+import generated.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings.REDUNDANT_SEMICOLON
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_NEWLINES
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.files.NewlinesRule
 import org.cqfn.diktat.util.lintMethod
 import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class NewlinesRuleWarnTest {
@@ -21,6 +23,7 @@ class NewlinesRuleWarnTest {
     private val singleReturnWarn = "${WRONG_NEWLINES.warnText()} functions with single return statement should be simplified to expression body"
 
     @Test
+    @Tag(WarningNames.REDUNDANT_SEMICOLON)
     fun `should forbid EOL semicolons`() {
         lintMethod(NewlinesRule(),
                 """
@@ -41,6 +44,7 @@ class NewlinesRuleWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
     fun `should not false positively trigger on dots in package directive and imports`() {
         lintMethod(NewlinesRule(),
                 """
@@ -53,6 +57,7 @@ class NewlinesRuleWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
     fun `should not false positively trigger on operators in the middle of the line`() {
         lintMethod(NewlinesRule(),
                 """
@@ -70,6 +75,7 @@ class NewlinesRuleWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
     fun `line breaking at operators - positive example`() {
         lintMethod(NewlinesRule(),
                 """
@@ -97,6 +103,7 @@ class NewlinesRuleWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
     fun `line breaking at operators`() {
         lintMethod(NewlinesRule(),
                 """
@@ -126,6 +133,78 @@ class NewlinesRuleWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
+    fun `line breaking after infix functions - positive example`() {
+        lintMethod(NewlinesRule(),
+                """
+                    |fun foo() {
+                    |    true xor
+                    |        false
+                    |        
+                    |    true
+                    |        .xor(false)
+                    |    
+                    |    (true xor
+                    |        false)
+                    |
+                    |    true xor false or true
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
+    fun `line breaking after infix functions`() {
+        lintMethod(NewlinesRule(),
+                """
+                    |fun foo() {
+                    |    (true 
+                    |        xor false)
+                    |    
+                    |    (true
+                    |        xor
+                    |        false)
+                    |}
+                """.trimMargin(),
+                LintError(3, 9, ruleId, "$shouldBreakAfter xor", true),
+                LintError(6, 9, ruleId, "$shouldBreakAfter xor", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
+    fun `line breaking after infix functions - several functions in a chain`() {
+        lintMethod(NewlinesRule(),
+                """
+                    |fun foo() {
+                    |    (true xor false
+                    |        or true
+                    |    )
+                    |    
+                    |    (true 
+                    |        xor false
+                    |        or true
+                    |    )
+                    |    
+                    |    (true
+                    |        xor
+                    |        false
+                    |        or
+                    |        true
+                    |    )
+                    |}
+                """.trimMargin(),
+                LintError(3, 9, ruleId, "$shouldBreakAfter or", true),
+                LintError(7, 9, ruleId, "$shouldBreakAfter xor", true),
+                LintError(8, 9, ruleId, "$shouldBreakAfter or", true),
+                LintError(12, 9, ruleId, "$shouldBreakAfter xor", true),
+                LintError(14, 9, ruleId, "$shouldBreakAfter or", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
     fun `chained calls should follow functional style - positive example`() {
         lintMethod(NewlinesRule(),
                 """
@@ -143,6 +222,7 @@ class NewlinesRuleWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
     fun `chained calls should follow functional style - should not trigger on single dot calls`() {
         lintMethod(NewlinesRule(),
                 """
@@ -156,6 +236,7 @@ class NewlinesRuleWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
     fun `chained calls should follow functional style`() {
         lintMethod(NewlinesRule(),
                 """
@@ -173,6 +254,7 @@ class NewlinesRuleWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
     fun `chained calls should follow functional style - exception for ternary if-else`() {
         lintMethod(NewlinesRule(),
                 """
@@ -184,6 +266,7 @@ class NewlinesRuleWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
     fun `newline should be placed only after assignment operator`() {
         lintMethod(NewlinesRule(),
                 """
@@ -199,6 +282,7 @@ class NewlinesRuleWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
     fun `newline should be placed only after comma`() {
         lintMethod(NewlinesRule(),
                 """
@@ -215,6 +299,7 @@ class NewlinesRuleWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
     fun `function name should not be separated from ( - positive example`() {
         lintMethod(NewlinesRule(),
                 """
@@ -231,6 +316,7 @@ class NewlinesRuleWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
     fun `function name should not be separated from ( - should not trigger on other parenthesis`() {
         lintMethod(NewlinesRule(),
                 """
@@ -245,6 +331,7 @@ class NewlinesRuleWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
     fun `function name should not be separated from (`() {
         lintMethod(NewlinesRule(),
                 """
@@ -266,6 +353,7 @@ class NewlinesRuleWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
     fun `newline should be placed only after comma - positive example`() {
         lintMethod(NewlinesRule(),
                 """
@@ -278,6 +366,7 @@ class NewlinesRuleWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
     fun `in lambdas newline should be placed after an arrow - positive example`() {
         lintMethod(NewlinesRule(),
                 """
@@ -300,6 +389,7 @@ class NewlinesRuleWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
     fun `in lambdas newline should be placed after an arrow`() {
         lintMethod(NewlinesRule(),
                 """
@@ -332,6 +422,7 @@ class NewlinesRuleWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
     fun `should warn if function consists of a single return statement - positive example`() {
         lintMethod(NewlinesRule(),
                 """
@@ -359,6 +450,7 @@ class NewlinesRuleWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
     fun `long argument list should be split into several lines - positive example`() {
         lintMethod(NewlinesRule(),
                 """
@@ -378,6 +470,7 @@ class NewlinesRuleWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
     @Disabled("Will be implemented later")
     fun `long argument list should be split into several lines`() {
         lintMethod(NewlinesRule(),
@@ -398,6 +491,7 @@ class NewlinesRuleWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
     fun `should warn if function consists of a single return statement`() {
         lintMethod(NewlinesRule(),
                 """
