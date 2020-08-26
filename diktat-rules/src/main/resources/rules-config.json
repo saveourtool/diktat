@@ -337,5 +337,10 @@
     "name": "STRING_CONCATENATION",
     "enabled": true,
     "configuration": {}
+  },
+  {
+    "name": "LOCAL_VARIABLE_EARLY_DECLARATION",
+    "enabled": true,
+    "configuration": {}
   }
 ]

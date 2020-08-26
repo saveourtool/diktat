@@ -76,7 +76,8 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     STRING_CONCATENATION(false, "strings should not be concatenated using plus operator - use string templates instead if the statement fits one line"),
     TOO_MANY_BLANK_LINES(true, "too many consecutive blank lines"),
     WRONG_WHITESPACE(true, "incorrect usage of whitespaces for code separation"),
-    TOO_MANY_CONSECUTIVE_SPACES(true, "too many consecutive spaces")
+    TOO_MANY_CONSECUTIVE_SPACES(true, "too many consecutive spaces"),
+    LOCAL_VARIABLE_EARLY_DECLARATION(false, "local variables need to be declared close to line where they are first used"),
     ;
 
     override fun ruleName(): String = this.name

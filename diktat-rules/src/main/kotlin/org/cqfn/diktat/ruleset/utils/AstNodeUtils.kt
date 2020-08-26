@@ -223,8 +223,8 @@ fun ASTNode.findLeafWithSpecificType(elementType: IElementType): ASTNode? {
 /**
  * This method performs tree traversal and returns all nodes with specific element type
  */
-fun ASTNode.findAllNodesWithSpecificType(elementType: IElementType): List<ASTNode> {
-    val initialAcc = if (this.elementType == elementType) mutableListOf(this) else mutableListOf()
+fun ASTNode.findAllNodesWithSpecificType(elementType: IElementType, withSelf: Boolean = true): List<ASTNode> {
+    val initialAcc = if (this.elementType == elementType && withSelf) mutableListOf(this) else mutableListOf()
     return initialAcc + this.getChildren(null).flatMap {
         it.findAllNodesWithSpecificType(elementType)
     }
@@ -279,6 +279,8 @@ fun ASTNode?.isAccessibleOutside(): Boolean =
         } else {
             true
         }
+
+fun ASTNode.numNewLines() = text.count { it == '\n' }
 
 /**
  * removing all newlines in WHITE_SPACE node and replacing it to a one newline saving the initial indenting format
@@ -392,6 +394,8 @@ fun ASTNode.extractLineOfText(): String {
             .forEach { text.add(it.first()) }
     return text.joinToString(separator = "").trim()
 }
+
+fun ASTNode.firstLineOfText(suffix: String = "") = text.lines().run { singleOrNull() ?: (first() + suffix) }
 
 data class ReplacementResult(val oldNodes: List<ASTNode>, val newNodes: List<ASTNode>) {
     init {

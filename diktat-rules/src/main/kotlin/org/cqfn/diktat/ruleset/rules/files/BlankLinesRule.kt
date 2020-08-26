@@ -12,6 +12,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.TOO_MANY_BLANK_LINES
 import org.cqfn.diktat.ruleset.rules.getDiktatConfigRules
 import org.cqfn.diktat.ruleset.utils.leaveExactlyNumNewLines
 import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
+import org.cqfn.diktat.ruleset.utils.numNewLines
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 /**
@@ -62,6 +63,4 @@ class BlankLinesRule : Rule("blank-lines") {
             node.leaveExactlyNumNewLines(2)
         }
     }
-
-    private fun ASTNode.numNewLines() = text.count { it == '\n' }
 }
