@@ -131,4 +131,6 @@ object WarningNames {
     const val WRONG_WHITESPACE: String = "WRONG_WHITESPACE"
 
     const val TOO_MANY_CONSECUTIVE_SPACES: String = "TOO_MANY_CONSECUTIVE_SPACES"
+
+    const val NO_BRACES_IN_LAMBDAS_AND_WHEN: String = "NO_BRACES_IN_LAMBDAS_AND_WHEN"
 }

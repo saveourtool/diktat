@@ -337,5 +337,10 @@
     "name": "STRING_CONCATENATION",
     "enabled": true,
     "configuration": {}
+  },
+  {
+    "name": "NO_BRACES_IN_LAMBDAS_AND_WHEN",
+    "enabled": true,
+    "configuration": {}
   }
 ]
