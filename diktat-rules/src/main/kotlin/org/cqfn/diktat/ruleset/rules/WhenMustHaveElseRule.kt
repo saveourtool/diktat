@@ -27,7 +27,6 @@ class WhenMustHaveElseRule : Rule("no-else-in-when") {
 
     private lateinit var configRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
-    private var fileName: String? = null
     private var isFixMode: Boolean = false
 
     override fun visit(node: ASTNode,
@@ -35,7 +34,6 @@ class WhenMustHaveElseRule : Rule("no-else-in-when") {
                        params: KtLint.Params,
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
         configRules = params.getDiktatConfigRules()
-        fileName = params.fileName
         emitWarn = emit
         isFixMode = autoCorrect
 
@@ -53,8 +51,7 @@ class WhenMustHaveElseRule : Rule("no-else-in-when") {
                 val whenEntryElse = CompositeElement(ElementType.WHEN_ENTRY)
                 node.addChild(whenEntryElse, node.lastChildNode.treePrev)
                 addChildren(whenEntryElse)
-                node.addChild(PsiWhiteSpaceImpl("\n${getIndent(node)}"), whenEntryElse)
-                println(node.treeParent.prettyPrint())
+                node.addChild(PsiWhiteSpaceImpl("\n"), whenEntryElse)
             }
         }
     }
@@ -77,13 +74,9 @@ class WhenMustHaveElseRule : Rule("no-else-in-when") {
 
         block.apply{
             addChild(LeafPsiElement(ElementType.LBRACE, "{"), null)
+            addChild(PsiWhiteSpaceImpl("\n"),null)
             addChild(LeafPsiElement(ElementType.RBRACE, "}"), null)
         }
 
-    }
-
-    private fun getIndent(node: ASTNode) : String {
-        val indent = node.findChildByType(ElementType.LBRACE)?.treeNext?.text?.length
-        return if (indent != null) StringBuilder(" ").repeat(indent - 1) else ""
     }
 }

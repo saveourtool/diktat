@@ -10,6 +10,7 @@ fun testWhenExpression() {
     val objectType = when (directoryType) {
         TestEnum.ONE -> "d"
         TestEnum.TWO -> "-"
-        else -> {}
+else -> {
+}
     }
 }
