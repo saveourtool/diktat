@@ -337,5 +337,10 @@
     "name": "STRING_CONCATENATION",
     "enabled": true,
     "configuration": {}
+  },
+  {
+    "name": "ANNOTATION_NEW_LINE",
+    "enabled": true,
+    "configuration": {}
   }
 ]
