@@ -63,7 +63,7 @@ class EnumsSeparated : Rule("enum-separated") {
     }
 
     private fun isEnumOneLine(nodes: List<ASTNode>) =
-            nodes.dropLast(1).find { it.treeNext.isWhiteSpaceWithNewline() } == null
+            nodes.dropLast(1).none { it.treeNext.isWhiteSpaceWithNewline() }
 
     private fun isEnumSimple(enumEntries: List<ASTNode>): Boolean {
         enumEntries.forEach { node ->
