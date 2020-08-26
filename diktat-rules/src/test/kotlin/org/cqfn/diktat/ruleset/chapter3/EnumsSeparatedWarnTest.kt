@@ -56,7 +56,7 @@ class EnumsSeparatedWarnTest {
                 LintError(2,4,ruleId,"${ENUMS_SEPARATED.warnText()} enum entries must end with a line break", true),
                 LintError(2,7,ruleId,"${ENUMS_SEPARATED.warnText()} enum entries must end with a line break", true),
                 LintError(2,10,ruleId,"${ENUMS_SEPARATED.warnText()} semicolon must be on a new line", true),
-                LintError(2,10,ruleId,"${ENUMS_SEPARATED.warnText()} last enum entries must end with a comma", true)
+                LintError(2,10,ruleId,"${ENUMS_SEPARATED.warnText()} last enum entry must end with a comma", true)
         )
     }
 
@@ -84,7 +84,7 @@ class EnumsSeparatedWarnTest {
                 """.trimMargin(),
                 LintError(2,4,ruleId,"${ENUMS_SEPARATED.warnText()} enum entries must end with a line break", true),
                 LintError(3,4,ruleId,"${ENUMS_SEPARATED.warnText()} enums must end with semicolon", true),
-                LintError(3,4,ruleId,"${ENUMS_SEPARATED.warnText()} last enum entries must end with a comma", true)
+                LintError(3,4,ruleId,"${ENUMS_SEPARATED.warnText()} last enum entry must end with a comma", true)
         )
     }
 
@@ -130,7 +130,7 @@ class EnumsSeparatedWarnTest {
                     |   ;
                     |}
                 """.trimMargin(),
-                LintError(4,4,ruleId,"${ENUMS_SEPARATED.warnText()} last enum entries must end with a comma", true)
+                LintError(4,4,ruleId,"${ENUMS_SEPARATED.warnText()} last enum entry must end with a comma", true)
         )
     }
 
@@ -170,7 +170,7 @@ class EnumsSeparatedWarnTest {
                     |}
                 """.trimMargin(),
                 LintError(5,4,ruleId,"${ENUMS_SEPARATED.warnText()} semicolon must be on a new line", true),
-                LintError(5,4,ruleId,"${ENUMS_SEPARATED.warnText()} last enum entries must end with a comma", true)
+                LintError(5,4,ruleId,"${ENUMS_SEPARATED.warnText()} last enum entry must end with a comma", true)
         )
     }
 
@@ -189,7 +189,7 @@ class EnumsSeparatedWarnTest {
                     |}
                 """.trimMargin(),
                 LintError(5,4,ruleId,"${ENUMS_SEPARATED.warnText()} enums must end with semicolon", true),
-                LintError(5,4,ruleId,"${ENUMS_SEPARATED.warnText()} last enum entries must end with a comma", true)
+                LintError(5,4,ruleId,"${ENUMS_SEPARATED.warnText()} last enum entry must end with a comma", true)
 
         )
     }

@@ -87,7 +87,7 @@ class EnumsSeparated : Rule("enum-separated") {
             }
         }
         if (!node.hasChildOfType(COMMA)) {
-            ENUMS_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, "last enum entry  must end with a comma",
+            ENUMS_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, "last enum entry must end with a comma",
                     node.startOffset) {
                 node.addChild(LeafPsiElement(COMMA, ","), node.findChildByType(SEMICOLON)!!.treePrev)
             }
