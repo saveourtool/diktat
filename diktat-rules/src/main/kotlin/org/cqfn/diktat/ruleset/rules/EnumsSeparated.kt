@@ -18,6 +18,7 @@ import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.cqfn.diktat.ruleset.utils.isClassEnum
+import org.cqfn.diktat.ruleset.utils.allSiblings
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -41,7 +42,7 @@ class EnumsSeparated : Rule("enum-separated") {
         emitWarn = emit
         isFixMode = autoCorrect
 
-        if (node.elementType == CLASS)
+        if (node.elementType == CLASS && node.hasChildOfType(CLASS_BODY))
             if (node.isClassEnum())
                 checkEnumEntry(node)
     }
@@ -49,7 +50,7 @@ class EnumsSeparated : Rule("enum-separated") {
     //Fixme prefer enum classes if it is possible instead of variables
     private fun checkEnumEntry(node: ASTNode) {
         val enumEntries = node.findChildByType(CLASS_BODY)!!.getAllChildrenWithType(ENUM_ENTRY)
-        if (enumEntries.isEmpty() || (isEnumOneLine(enumEntries) && isSimpleEnumOneLine(enumEntries)))
+        if (enumEntries.isEmpty() || (isEnumSimple(enumEntries) && isEnumOneLine(enumEntries)))
             return
         enumEntries.forEach {
             if (!it.treeNext.isWhiteSpaceWithNewline())
@@ -61,15 +62,15 @@ class EnumsSeparated : Rule("enum-separated") {
         checkLastEnum(enumEntries.last())
     }
 
-    private fun isSimpleEnumOneLine(nodes: List<ASTNode>) =
+    private fun isEnumOneLine(nodes: List<ASTNode>) =
             nodes.dropLast(1).find { it.treeNext.isWhiteSpaceWithNewline() } == null
 
-    private fun isEnumOneLine(enumEntries: List<ASTNode>): Boolean {
+    private fun isEnumSimple(enumEntries: List<ASTNode>): Boolean {
         enumEntries.forEach { node ->
             if (!SIMPLE_VALUE.containsAll(node.getChildren(null).map { it.elementType }))
                 return false
         }
-        return SIMPLE_ENUM.containsAll(enumEntries.last().treeParent.getChildren(null).map { it.elementType })
+        return SIMPLE_ENUM.containsAll(enumEntries.last().allSiblings(withSelf = true).map { it.elementType })
     }
 
     private fun checkLastEnum(node: ASTNode) {
@@ -86,7 +87,7 @@ class EnumsSeparated : Rule("enum-separated") {
             }
         }
         if (!node.hasChildOfType(COMMA)) {
-            ENUMS_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, "last enum entries must end with a comma",
+            ENUMS_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, "last enum entry  must end with a comma",
                     node.startOffset) {
                 node.addChild(LeafPsiElement(COMMA, ","), node.findChildByType(SEMICOLON)!!.treePrev)
             }
