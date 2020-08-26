@@ -77,7 +77,7 @@ class KotlinParser {
         val ktPsiFactory = KtPsiFactory(project, true)
         if (text.trim().isEmpty())
             return ktPsiFactory.createWhiteSpace(text).node
-        var node = if (isPackage) {
+        var node = if (isPackage || isContainKDoc(text)) {
             ktPsiFactory.createFile(text).node
         } else {
             if (text.contains(KtTokens.IMPORT_KEYWORD.value)) {
@@ -104,4 +104,7 @@ class KotlinParser {
         }
         return node
     }
+
+    private fun isContainKDoc(text: String) =
+            text.lines().any { it.trim().indexOf("/**") == 0 }
 }

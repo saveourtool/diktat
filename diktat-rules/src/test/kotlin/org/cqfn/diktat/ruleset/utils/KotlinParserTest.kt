@@ -8,6 +8,7 @@ import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.IMPORT_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.IMPORT_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
+import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
@@ -15,6 +16,7 @@ import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import org.cqfn.diktat.util.applyToCode
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
+import org.jetbrains.kotlin.psi.KtPsiFactory
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -177,5 +179,23 @@ class KotlinParserTest {
         Assertions.assertEquals(FILE, node.elementType)
         Assertions.assertEquals(code, node.text)
         Assertions.assertEquals(PACKAGE_DIRECTIVE, node.firstChildNode.elementType)
+    }
+
+    @Test
+    fun `check KDoc`() {
+        val code = """
+            |/**
+            |* [link]haha
+            |*/
+            |fun foo()
+            """.trimMargin()
+        val KDocText = """
+            /**
+            * [link]haha
+            */
+        """.trimIndent()
+        val node = KotlinParser().createNode(code)
+        Assertions.assertEquals(KDOC, node.findChildByType(FUN)!!.firstChildNode.elementType)
+        Assertions.assertEquals(KDocText, node.findChildByType(FUN)!!.firstChildNode.text)
     }
 }
