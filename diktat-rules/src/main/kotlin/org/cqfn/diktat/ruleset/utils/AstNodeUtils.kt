@@ -17,6 +17,7 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.siblings
@@ -229,6 +230,11 @@ fun ASTNode.findAllNodesWithSpecificType(elementType: IElementType): List<ASTNod
         it.findAllNodesWithSpecificType(elementType)
     }
 }
+
+/**
+ * Check a node of type CLASS if it is a enum class
+ */
+fun ASTNode.isClassEnum(): Boolean = (psi as? KtClass)?.isEnum() ?: false
 
 /**
  * This method finds first parent node from the sequence of parents that has specified elementType

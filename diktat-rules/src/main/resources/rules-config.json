@@ -337,5 +337,10 @@
     "name": "STRING_CONCATENATION",
     "enabled": true,
     "configuration": {}
+  },
+  {
+    "name": "ENUMS_SEPARATED",
+    "enabled": true,
+    "configuration": {}
   }
 ]
