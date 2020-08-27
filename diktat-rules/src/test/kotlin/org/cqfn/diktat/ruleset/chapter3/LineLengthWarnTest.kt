@@ -2,10 +2,12 @@ package org.cqfn.diktat.ruleset.chapter3
 
 import com.pinterest.ktlint.core.LintError
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import generated.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings.LONG_LINE
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.LineLength
 import org.cqfn.diktat.util.lintMethod
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class LineLengthWarnTest {
@@ -26,6 +28,7 @@ class LineLengthWarnTest {
             "69i57j0l3.2680j1j7&sourceid=chrome&ie=UTF-8"
 
     @Test
+    @Tag(WarningNames.LONG_LINE)
     fun `check correct example with long URL in KDOC and long import`() {
         lintMethod(LineLength(),
                 """
@@ -52,6 +55,7 @@ class LineLengthWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.LONG_LINE)
     fun `check wrong example with wrong URL in KDOC`() {
         lintMethod(LineLength(),
                 """
@@ -80,6 +84,7 @@ class LineLengthWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.LONG_LINE)
     fun `check wrong example with wrong URL in KDOC with configuration`() {
         lintMethod(LineLength(),
                 """
@@ -107,6 +112,7 @@ class LineLengthWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.LONG_LINE)
     fun `check wrong example with long line`() {
         lintMethod(LineLength(),
                 """
@@ -137,6 +143,7 @@ class LineLengthWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.LONG_LINE)
     fun `check wrong example with long line but with configuration`() {
         lintMethod(LineLength(),
                 """
@@ -167,6 +174,7 @@ class LineLengthWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.LONG_LINE)
     fun `check correct example with long URL in KDOC in class`() {
         lintMethod(LineLength(),
                 """
@@ -193,6 +201,7 @@ class LineLengthWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.LONG_LINE)
     fun `check wrong examples with long function name and properties`() {
         lintMethod(LineLength(),
                 """
