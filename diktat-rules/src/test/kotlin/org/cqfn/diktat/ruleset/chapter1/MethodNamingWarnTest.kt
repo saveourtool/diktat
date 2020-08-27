@@ -1,18 +1,21 @@
 package org.cqfn.diktat.ruleset.chapter1
 
 import com.pinterest.ktlint.core.LintError
+import generated.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings.FUNCTION_BOOLEAN_PREFIX
 import org.cqfn.diktat.ruleset.constants.Warnings.FUNCTION_NAME_INCORRECT_CASE
 import org.junit.jupiter.api.Test
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.IdentifierNaming
 import org.cqfn.diktat.util.lintMethod
+import org.junit.jupiter.api.Tag
 
 class MethodNamingWarnTest {
 
     private val ruleId: String = "$DIKTAT_RULE_SET_ID:identifier-naming"
 
     @Test
+    @Tag(WarningNames.FUNCTION_NAME_INCORRECT_CASE)
     fun `method name incorrect, part 1`() {
         val code =
             """
@@ -26,6 +29,7 @@ class MethodNamingWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.FUNCTION_NAME_INCORRECT_CASE)
     fun `method name incorrect, part 2`() {
         val code =
             """
@@ -39,6 +43,7 @@ class MethodNamingWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.FUNCTION_NAME_INCORRECT_CASE)
     fun `method name incorrect, part 3`() {
         val code =
             """
@@ -55,6 +60,7 @@ class MethodNamingWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.FUNCTION_NAME_INCORRECT_CASE)
     fun `method name incorrect, part 4`() {
         val code =
             """
@@ -67,6 +73,7 @@ class MethodNamingWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.FUNCTION_NAME_INCORRECT_CASE)
     fun `method name incorrect, part 5`() {
         val code =
             """
@@ -79,6 +86,7 @@ class MethodNamingWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.FUNCTION_BOOLEAN_PREFIX)
     fun `boolean method name incorrect`() {
         val code =
             """

@@ -21,6 +21,7 @@
         <slf4j.version>1.7.30</slf4j.version>
         <commons-cli.version>1.4</commons-cli.version>
         <diktat-check.version>1.0.1</diktat-check.version>
+        <kotlinpoet.version>1.6.0</kotlinpoet.version>
     </properties>
 
     <modules>
@@ -31,6 +32,11 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.squareup</groupId>
+                <artifactId>kotlinpoet</artifactId>
+                <version>${kotlinpoet.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-stdlib</artifactId>
@@ -44,11 +50,6 @@
             <dependency>
                 <groupId>com.pinterest.ktlint</groupId>
                 <artifactId>ktlint-core</artifactId>
-                <version>${ktlint.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.pinterest.ktlint</groupId>
-                <artifactId>ktlint-test</artifactId>
                 <version>${ktlint.version}</version>
             </dependency>
             <dependency>
@@ -114,12 +115,7 @@
             <dependency>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
-                <version>3.16.1</version>
-            </dependency>
-            <dependency>
-                <groupId>io.gitlab.arturbosch.detekt</groupId>
-                <artifactId>detekt-cli</artifactId>
-                <version>1.10.0</version>
+                <version>3.17.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -190,6 +186,11 @@
                     <artifactId>kotlin-maven-plugin</artifactId>
                     <version>${kotlin.version}</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>3.0.0</version>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
@@ -208,6 +209,7 @@
                         <commit-msg>.git-hooks/commit-msg.sh</commit-msg>
                     </installHooks>
                 </configuration>
+                <inherited>false</inherited>
                 <executions>
                     <execution>
                         <id>install-git-hooks</id>
@@ -225,7 +227,7 @@
             <plugin>
                 <groupId>com.github.ozsie</groupId>
                 <artifactId>detekt-maven-plugin</artifactId>
-                <version>1.10.0</version>
+                <version>1.11.0</version>
                 <executions>
                     <execution>
                         <id>detekt</id>

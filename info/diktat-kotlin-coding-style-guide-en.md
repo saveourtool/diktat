@@ -504,7 +504,7 @@ Note the following when writing file header or comments for top-level classes:
 
 - In a top-level file Kdoc need to include copyright and functional description, especially if the number of top-level classes in a file is not equal to 1.
 
-- It is forbidden to have empty comment blockst.
+- It is forbidden to have empty comment blocks.
      As in the above example, if there is no content after the option `@apiNote`, the entire tag block should be deleted.
 
 - Industry is not using any history information in comments. History can be found in VCS (git/svn/e.t.c). It is not recommended to include historical data in the comments of the Kotlin source code.
@@ -569,7 +569,7 @@ Examples:
 ```
 
 2. Leave one single space between the comment on the right side of the code and the code.
-Conditional comments in the `if-else-if` scenario:
+ Conditional comments in the `if-else-if` scenario:
  For a better understanding, put the comments inside `else if` branch or in the conditional block, but not before the `else if`. 
  When the if-block is used with curly braces - the comment should be on the next line after opening curly brace.
  
@@ -597,6 +597,12 @@ val someVal = if (nr % 15 == 0) {
     println(x)
 }
 ```
+
+3. Start all comments (including KDoc) with a space after leading symbol (`//`, `/*`, `/**` and `*`)
+   Good example:
+   ```kotlin
+   val x = 0  // this is a comment
+   ```
 
 ### <a name="r2.7"></a>Rule 2.7 Do not comment unused code blocks (including imports). Delete them immediately.
 
@@ -1081,13 +1087,14 @@ fun baz() {
 
 ### <a name="s3.7"></a> Recommendation 3.7: Usage of whitespace for code separation
 
-  Note: this rule corresponds to the case when symbols are located on the same line. In some cases there could be a line break instead of a space,
-  but this logic is described in other rules.
+  Note: this rule corresponds to the case when symbols are located on the same line. In some cases there could be a line break instead of a space, but this logic is described in other rules.
 
   1. Any keywords (like 'if', 'when', 'for', e.t.c) should be separated with a single whitespace from the opening parenthesis.
      Only exceptions is 'constructor' keyword. It should not be separated from a parenthesis.
 
   2. Separate any keywords (such as `else` or `try`, etc.) from the opening brace ('{') with a single whitespace.
+     If `else` is used in ternary-style statement without braces, then there should be a single space between 'else' and the statement after:
+     `if (condition) foo() else bar()`
   
   3. Use single whitespace before any opening brace (`{`).
      Only exception is passing of a lambda as a parameter inside parenthesis:
@@ -1105,10 +1112,27 @@ fun baz() {
 
   - Two colons (`::`) are written without spaces: `Object::toString`
   - Dot separator (`.`) that stays on the same line with an object name `object.toString()`
+  - Safe access modifiers: `?.` and `!!`, that stay on the same line with an object name: `object?.toString()`
+  - Operator `..` for creating ranges, e.g. `1..100`
 
-  5. Spaces should be used after ',',':',';' (except cases when those symbols are in the end of line). There should be no whitespaces in the end of line.
+  5. Spaces should be used after ',' and ':' (also ';', but please note that this code style prohibits usage of ';' in the middle of the line, see [rule 3.4](#s3.4)) (except cases when those symbols are in the end of line). There should be no whitespaces in the end of line.
+  There should be no spaces before `,`, `:` and `;`. The only exceptions for colon are the following:
+  - when `:` is used to separate a type and a supertype, including anonimous object (after `object` keyword)
+  - when delegating to a superclass constructor or a different constructor of the same class
+  
+  Good example:
+  ```kotlin
+      abstract class Foo<out T : Any> : IFoo { }
+      
+      class FooImpl : Foo() {
+          constructor(x: String) : this(x) { /*...*/ }
+          
+          val x = object : IFoo { /*...*/ } 
+      }
+  ```
 
-  6. There should be *only one space* between identifier and it's type： `list: List<String>`
+  6. There should be *only one space* between identifier and it's type: `list: List<String>`
+  If type is nullable there should be no space before `?`.
   
   7. When using '[]' operator (get/set) there should be *no* spaces between identifier and '[': `someList[0]`
   
@@ -1120,6 +1144,8 @@ fun baz() {
         a: String
     )
   ```
+
+  9. Never put a space after `(`, `[`, `<` (when used as bracket in templates) or before `)`, `]`, `>` (when used as bracket in templates)
 
 ### <a name="s3.8"></a>Recommendation 3.8: No spaces should be inserted for horizontal alignment
 
