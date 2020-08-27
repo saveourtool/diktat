@@ -106,5 +106,5 @@ class KotlinParser {
     }
 
     private fun isContainKDoc(text: String) =
-            text.lines().any { it.trim().indexOf("/**") == 0 }
+            text.lines().any { it.trim().startsWith("/**") }
 }
