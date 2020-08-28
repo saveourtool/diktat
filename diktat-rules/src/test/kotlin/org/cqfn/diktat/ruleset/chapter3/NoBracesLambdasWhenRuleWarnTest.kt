@@ -71,7 +71,6 @@ class NoBracesLambdasWhenRuleWarnTest {
                 """
                     |val lambda1: (String) -> Unit = { name: String -> println("Hello, World!") }
                     |val lambda2: (String) -> Unit = { name -> println("Hello, World!") }
-                    |val lambda3: (String) -> Unit = println("Hello, World!")
                     |val lambda4: (String) -> Unit = { println("Hello, World!") }
                     |val lambda5: (Int, Int) -> Int = {  x, y -> 
                     |print(x)
