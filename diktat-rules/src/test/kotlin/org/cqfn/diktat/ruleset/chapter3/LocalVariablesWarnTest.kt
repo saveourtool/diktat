@@ -13,6 +13,8 @@ import org.junit.jupiter.api.Test
 class LocalVariablesWarnTest {
     private val ruleId = "$DIKTAT_RULE_SET_ID:local-variables"
 
+    private fun warnMessage(name: String, declared: Int, used: Int) = "$name is declared on line $declared and used for the first time on line $used"
+
     @Test
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `should not check top-level and member properties`() {
@@ -62,6 +64,23 @@ class LocalVariablesWarnTest {
 
     @Test
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    fun `local variables used only in this scope - positive example with comments`() {
+        lintMethod(LocalVariablesRule(),
+                """
+                    |class Example {
+                    |    fun foo() {
+                    |        val bar = 0
+                    |        // comment
+                    |        baz(bar)
+                    |        println()
+                    |    }
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `local var used only in this scope - positive example`() {
         lintMethod(LocalVariablesRule(),
                 """
@@ -100,7 +119,7 @@ class LocalVariablesWarnTest {
                     |    baz(bar)
                     |}
                 """.trimMargin(),
-                LintError(2, 5, ruleId, "${LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} val bar = 0", false)
+                LintError(2, 5, ruleId, "${LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("bar", 2, 4)}", false)
         )
     }
 
@@ -120,17 +139,49 @@ class LocalVariablesWarnTest {
 
     @Test
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
-    fun `local variables used only in this scope - multiline declaration`() {
+    fun `local variables used only in this scope - multiline declaration with binary expression`() {
         lintMethod(LocalVariablesRule(),
                 """
                     |fun foo() {
-                    |    val bar = obj
-                    |        .foo()
+                    |    val bar = 1 + 
+                    |        2
                     |    println()
                     |    baz(bar)
                     |}
                 """.trimMargin(),
-                LintError(2, 5, ruleId, "${LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} val bar = obj...", false)
+                LintError(2, 5, ruleId, "${LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("bar", 2, 5)}", false)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    fun `local variables used only in this scope - multiline declaration with dot qualified property access`() {
+        lintMethod(LocalVariablesRule(),
+                """
+                    |fun foo() {
+                    |    val bar = "string"
+                    |        .size
+                    |    println()
+                    |    baz(bar)
+                    |}
+                """.trimMargin(),
+                LintError(2, 5, ruleId, "${LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("bar", 2, 5)}", false)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    fun `local variables used only in this scope - multiline declaration with dot qualified method call`() {
+        lintMethod(LocalVariablesRule(),
+                """
+                    |fun foo() {
+                    |    val bar = "string"
+                    |        .count()
+                    |    println()
+                    |    baz(bar)
+                    |}
+                """.trimMargin(),
+                LintError(2, 5, ruleId, "${LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("bar", 2, 5)}", false)
         )
     }
 
@@ -212,6 +263,7 @@ class LocalVariablesWarnTest {
 
     @Test
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    @Disabled("Checking of variable from outer scope is not supported yet")
     fun `need to allow declaring vars outside of loops`() {
         lintMethod(LocalVariablesRule(),
                 """
@@ -230,6 +282,7 @@ class LocalVariablesWarnTest {
 
     @Test
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    @Disabled("Checking of variable from outer scope is not supported yet")
     fun `need to allow declaring vars outside collection methods`() {
         lintMethod(LocalVariablesRule(),
                 """
@@ -283,16 +336,49 @@ class LocalVariablesWarnTest {
 
     @Test
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
-    fun `should not trigger when variables from outer scope are shadowed`() {
+    fun `should not trigger when variables from outer scope are shadowed by lambda parameters`() {
         lintMethod(LocalVariablesRule(),
                 """
                     |fun foo(): Bar {
                     |    val x = 0
                     |    list.forEach { x ->
+                    |        println()
                     |        bar(x)
                     |    }
                     |}
                 """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    fun `should check usage inside lambdas - positive example`() {
+        lintMethod(LocalVariablesRule(),
+                """
+                    |fun foo(): Bar {
+                    |    val x = 0
+                    |    list.forEach {
+                    |        bar(x)
+                    |    }
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    fun `should check usage inside lambdas`() {
+        lintMethod(LocalVariablesRule(),
+                """
+                    |fun foo(): Bar {
+                    |    val x = 0
+                    |    println()
+                    |    list.forEach {
+                    |        bar(x)
+                    |    }
+                    |}
+                """.trimMargin(),
+                LintError(2, 5, ruleId, "${LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("x", 2, 4)}", false)
         )
     }
 
@@ -319,10 +405,47 @@ class LocalVariablesWarnTest {
                     |    val x = 0
                     |    val a = -1
                     |    val y = 1
-                    |    foo(x, y)
+                    |    val z = 2
+                    |    foo(x, y, z)
                     |}
                 """.trimMargin(),
-                LintError(2, 5, ruleId, "${LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} val x = 0", false)
+                LintError(2, 5, ruleId, "${LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("x", 2, 6)}", false)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    fun `should emit only one warning when same variables are used more than once`() {
+        lintMethod(LocalVariablesRule(),
+                """
+                    |private fun checkDoc(node: ASTNode, warning: Warnings) {
+                    |    val a = 0
+                    |    val b = 1
+                    |    val c = 2
+                    |
+                    |    if (predicate(a) && predicate(b)) {
+                    |        foo(a, b, c)
+                    |    }
+                    |}
+                """.trimMargin(),
+                LintError(2, 5, ruleId, "${LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("a", 2, 6)}", false),
+                LintError(3, 5, ruleId, "${LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("b", 3, 6)}", false)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    @Disabled("Constructors are not handled separately yet")
+    fun `should check variables initialized with constructor with no parameters`() {
+        lintMethod(LocalVariablesRule(),
+                """
+                     |fun foo(isRequired: Boolean): Type {
+                     |    val resOption = Type()
+                     |    println()
+                     |    resOption.isRequired = isRequired
+                     |    return resOption
+                     |}
+                     """.trimMargin()
         )
     }
 }

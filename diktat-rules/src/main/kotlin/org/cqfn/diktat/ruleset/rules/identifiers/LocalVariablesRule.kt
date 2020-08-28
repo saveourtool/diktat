@@ -2,43 +2,41 @@ package org.cqfn.diktat.ruleset.rules.identifiers
 
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.ast.ElementType.BLOCK
-import com.pinterest.ktlint.core.ast.ElementType.CATCH
-import com.pinterest.ktlint.core.ast.ElementType.ELSE
+import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
-import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
+import com.pinterest.ktlint.core.ast.isPartOfComment
 import com.pinterest.ktlint.core.ast.lineNumber
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.LOCAL_VARIABLE_EARLY_DECLARATION
 import org.cqfn.diktat.ruleset.rules.getDiktatConfigRules
+import org.cqfn.diktat.ruleset.utils.containsOnlyConstants
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
-import org.cqfn.diktat.ruleset.utils.firstLineOfText
-import org.cqfn.diktat.ruleset.utils.numNewLines
+import org.cqfn.diktat.ruleset.utils.findUsagesOf
+import org.cqfn.diktat.ruleset.utils.getDeclarationScope
+import org.cqfn.diktat.ruleset.utils.isContainingScope
+import org.cqfn.diktat.ruleset.utils.lastLineNumber
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
+import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
 import org.jetbrains.kotlin.psi.KtBlockExpression
-import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
 import org.jetbrains.kotlin.psi.KtFunctionLiteral
-import org.jetbrains.kotlin.psi.KtIfExpression
-import org.jetbrains.kotlin.psi.KtLoopExpression
 import org.jetbrains.kotlin.psi.KtNameReferenceExpression
 import org.jetbrains.kotlin.psi.KtProperty
-import org.jetbrains.kotlin.psi.KtTryExpression
-import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
 import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
-import org.jetbrains.kotlin.psi.psiUtil.isAncestor
 import org.jetbrains.kotlin.psi.psiUtil.parents
-import kotlin.math.max
+import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
+import org.jetbrains.kotlin.psi.psiUtil.siblings
+import org.jetbrains.kotlin.psi.psiUtil.startOffset
 
 /**
  * This rule checks that local variables are declared close to the point where they are first used.
- * @implNote current algorithm assumes that scopes are always `BLOCK`s
- * TODO: handle case when several variables are declared on consecutive lines and then used all at once
- * ```
- *     val a = ..
- *     val b = ..
- *     foo(a, b)
- * ```
+ * Current algorithm assumes that scopes are always `BLOCK`s.
+ * 1. Warns if there are statements between variable declaration and it's first usage
+ * 2. It is allowed to declare variables in outer scope compared to usage scope. It could be useful to store state, e.g. between loop iterations.
+ *
+ * Current limitations due to usage of AST only:
+ * * Only properties without initialization or initialized with expressions based on constants are supported.
+ * * Properties initialized with constructor calls cannot be distinguished from method call and are no supported.
  */
 class LocalVariablesRule : Rule("local-variables") {
     private lateinit var configRules: List<RulesConfig>
@@ -53,110 +51,96 @@ class LocalVariablesRule : Rule("local-variables") {
         emitWarn = emit
         isFixMode = autoCorrect
 
-        if (node.elementType == PROPERTY) {
-            if (node.treeParent.elementType != BLOCK) {
-                return
-            }
+        if (node.elementType == FILE) {
+            // collect all local properties and associate with corresponding references
+            val propertiesToUsages = node
+                    .findAllNodesWithSpecificType(PROPERTY)
+                    .map { it.psi as KtProperty }
+                    .filter { it.isLocal && it.name != null && it.parent is KtBlockExpression }
+                    .filter { it.isVar && it.initializer == null || it.initializer?.containsOnlyConstants() ?: false }
+                    .associateWith(::findUsagesOf)
+                    .filterNot { it.value.isEmpty() }
 
-            (node.psi as KtProperty)
-                    .takeIf { it.isLocal }
-                    ?.let(::handleLocalProperty)
+            // find all usages which include more than one property
+            val multiPropertyUsages = propertiesToUsages
+                    .mapValues { (_, usages) ->
+                        usages.map { ref -> ref.parents.find { it.parent is KtBlockExpression }!! }
+                    }
+                    .mapValues { (_, statements) ->
+                        val usageScopes = statements.map { it.getParentOfType<KtBlockExpression>(true)!! }
+                        val outermostScope = findOutermost(usageScopes)
+                        statements.getOrNull(usageScopes.indexOf(outermostScope))
+                    }
+                    .filterNot { it.value == null }
+                    .map { it.value!! to it.key }
+                    .groupByTo(mutableMapOf(), { it.first }) { it.second }
+                    .filter { it.value.size > 1 }
+                    .toMap<PsiElement, List<KtProperty>>()
+
+            multiPropertyUsages
+                    .forEach { (statement, properties) ->
+                        // need to check that properties are declared consecutively with only maybe empty lines
+                        properties
+                                .sortedBy { it.node.lineNumber()!! }
+                                .zip(properties.size - 1 downTo 0)
+                                .forEach { (property, offset) ->
+                                    checkLineNumbers(property, statement.node.lineNumber()!!, offset)
+                                }
+                    }
+
+            propertiesToUsages
+                    .filterNot { it.key in multiPropertyUsages.values.flatten() }
+                    .forEach { handleLocalProperty(it.key, it.value) }
         }
     }
 
-    private fun handleLocalProperty(property: KtProperty) {
-        val name = property.nameAsName
-                ?: return
-
-        val declarationScope = property.getParentOfType<KtBlockExpression>(true)!!
-
-        val usages = property.getParentOfType<KtBlockExpression>(true)!!
-                .let { if (it is KtIfExpression) it.then!! else it }
-                .let { if (it is KtTryExpression) it.tryBlock else it }
-                .node
-                .findAllNodesWithSpecificType(REFERENCE_EXPRESSION)
-                .map { it.psi as KtNameReferenceExpression }
-                .filter { it.getIdentifier()!!.text == name.identifier }
-                .filter {
-                    // to avoid false triggering on objects' fields with same name as local property
-                    it.parent !is KtDotQualifiedExpression
-                }
-                .filterNot { ref ->
-                    // to exclude usages of local properties and lambda arguments with same name
-                    ref.parents.filter { it is KtBlockExpression }.takeWhile { it != declarationScope }.any { block ->
-                        block.getChildrenOfType<KtProperty>().any { it.nameAsName == name } ||
-                                (block.parent.let { it as? KtFunctionLiteral }?.valueParameters?.any { it.nameAsName == name } ?: false)
-                    }
-                }
-
-        if (usages.isEmpty()) {
-            return
-        }
+    private fun handleLocalProperty(property: KtProperty, usages: List<KtNameReferenceExpression>) {
+        val declarationScope = property.getDeclarationScope()
 
         val usageScopes = usages.mapNotNull { it.getParentOfType<KtBlockExpression>(true) }
-        val outermostUsageScope = usageScopes.find { block ->
-            usageScopes.all { block.isContainingScope(it) }
-        }
-
-        // properties are permitted outside of loops, they could need to store data between iterations
-        val needsToBeDeclaredOutside = outermostUsageScope?.parent?.parent is KtLoopExpression
-        val node = property.node
+        val outermostUsageScope = findOutermost(usageScopes)
 
         if (outermostUsageScope == declarationScope) {
             // property is declared in the same scope where it is used, we need to check how close it is to the first usage
-
-            // todo write test where just usages.firstOrNull() is not enough. Or is ut OK, because findAllNodes operates as DFS?
             val firstUsage = usages.minBy { it.node.lineNumber()!! }!!
-
-            // treat last line as declaration line for multiline declarations
-            val effectiveDeclarationLine = property.node.lineNumber()!! + property.text.lines().size - 1
-
-            // treat usage line as first line of usage statement for multiline usages
-            val effectiveFirstUsageLine = firstUsage.parents
-                    .find { it.parent is KtBlockExpression }!!
-                    .node
-                    .lineNumber()!! -
-                    // trim blank lines between declaration and first usage
-                    max(0, node.treeNext.numNewLines() - 1)
-            if (effectiveFirstUsageLine != effectiveDeclarationLine + 1) {
-                LOCAL_VARIABLE_EARLY_DECLARATION.warn(configRules, emitWarn, isFixMode, node.firstLineOfText("..."), node.startOffset)
-            }
-        } else if (false) {
-            // this branch is TODO
-            // Here declaration is in outer scope compared to any of it's usages; sometimes it means declaration can be moved deeper.
-            // But, e.g., for loops it is not true.
-            if (outermostUsageScope != null) {
-                if (needsToBeDeclaredOutside && outermostUsageScope.getParentOfType<KtBlockExpression>(true) != declarationScope ||
-                        !needsToBeDeclaredOutside) {
-                    LOCAL_VARIABLE_EARLY_DECLARATION.warn(configRules, emitWarn, isFixMode, node.firstLineOfText("..."), node.startOffset)
-                }
-            } else {
-                val outermostScope = usageScopes
-                        .first()
-                        .parents
-                        .filter { it is KtBlockExpression }
-                        .find { block ->
-                            usageScopes.all { block.isContainingScope(it) }
-                        }
-                if (outermostScope != declarationScope) {
-                    LOCAL_VARIABLE_EARLY_DECLARATION.warn(configRules, emitWarn, isFixMode, node.firstLineOfText("..."), node.startOffset)
-                }
-            }
+            checkLineNumbers(property, firstUsage.containingStatementFirstLineNumber())
+        } else {
+            usageScopes
+                    .first()
+                    .parentsWithSelf
+                    .filter { it is KtBlockExpression }
+                    .zipWithNext()
+                    .find { it.second == declarationScope }
+                    ?.let { (usageScope, _) ->
+                        val firstUsageLine = (usageScope.parent.takeIf { it is KtFunctionLiteral } ?: usageScope).node.lineNumber()!!
+                        checkLineNumbers(property, firstUsageLine)
+                    }
         }
+    }
+
+    private fun checkLineNumbers(property: KtProperty, firstUsageLine: Int, offset: Int = 0) {
+        val numLinesToSkip = property
+                .siblings(forward = true, withItself = false)
+                .takeWhile { it is PsiWhiteSpace || it.node.isPartOfComment() }
+                .let { siblings -> siblings.last().node.lastLineNumber()!! - siblings.first().node.lineNumber()!! - 1 }
+
+        if (firstUsageLine - numLinesToSkip != property.node.lastLineNumber()!! + 1 + offset) {
+            LOCAL_VARIABLE_EARLY_DECLARATION.warn(configRules, emitWarn, isFixMode,
+                    warnMessage(property.name!!, property.node.lineNumber()!!, firstUsageLine), property.startOffset)
+        }
+    }
+
+    private fun findOutermost(scopes: List<KtBlockExpression>) = scopes.find { block ->
+        scopes.all { block.isContainingScope(it) }
     }
 
     /**
-     * Checks if this [PsiElement] is an ancestor of [block].
-     * Nodes like `IF`, `TRY` are parents of `ELSE`, `CATCH`, but their scopes are not intersecting, and false is returned in this case.
+     * Get line number of statement, where this reference is used. Return first line number for multiline statements.
      */
-    private fun PsiElement.isContainingScope(block: KtBlockExpression): Boolean {
-        when (block.parent.node.elementType) {
-            ELSE -> getParentOfType<KtIfExpression>(true)
-            CATCH -> getParentOfType<KtTryExpression>(true)
-            else -> null
-        }.let {
-            if (this == it) return false
-        }
-        return isAncestor(block, false)
-    }
+    private fun KtNameReferenceExpression.containingStatementFirstLineNumber() = parentsWithSelf
+            .find { it.parent is KtBlockExpression }!!
+            .node
+            .lineNumber()!!
+
+    private fun warnMessage(name: String, declared: Int, used: Int) = "$name is declared on line $declared and used for the first time on line $used"
 }
