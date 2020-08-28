@@ -42,6 +42,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.LONG_LINE
 import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
+import org.cqfn.diktat.ruleset.utils.prettyPrint
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -296,18 +297,20 @@ class LineLength : Rule("line-length") {
     }
 
     private fun fixProperty(parent: ASTNode, configuration: LineLengthConfiguration) {
-        if (!parent.hasChildOfType(STRING_TEMPLATE)) {
-            val newParent = parent.findChildByType(PARENTHESIZED) ?: parent
+        var newParent = parent
+        while (newParent.hasChildOfType(PARENTHESIZED))
+            newParent = parent.findChildByType(PARENTHESIZED)!!
+        if (!newParent.hasChildOfType(STRING_TEMPLATE)) {
             if (newParent.hasChildOfType(BINARY_EXPRESSION)) {
                 val leftOffset = positionByOffset(newParent.findChildByType(BINARY_EXPRESSION)!!.startOffset).second
                 fixLongBinaryExpression(newParent, configuration, leftOffset, true)
             }
         } else {
-            val leftOffset = positionByOffset(parent.findChildByType(STRING_TEMPLATE)!!.startOffset).second
-            if (parent.findChildByType(STRING_TEMPLATE)!!.hasChildOfType(LONG_STRING_TEMPLATE_ENTRY)) {
-                fixLongString(parent, configuration, leftOffset)
+            val leftOffset = positionByOffset(newParent.findChildByType(STRING_TEMPLATE)!!.startOffset).second
+            if (newParent.findChildByType(STRING_TEMPLATE)!!.hasChildOfType(LONG_STRING_TEMPLATE_ENTRY)) {
+                fixLongString(newParent, configuration, leftOffset)
             } else {
-                createNodes(parent, configuration, leftOffset)
+                createNodes(newParent, configuration, leftOffset)
             }
         }
     }
