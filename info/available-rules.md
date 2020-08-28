@@ -64,3 +64,4 @@
 |    3 |      3.7 | WRONG_WHITESPACE                        | Check: warns if usage of horizontal spaces violates code style guide.<br>Fix: fixes incorrect whitespaces.                                                                   | yes |                         - |                                                                                     - |
 |    3 |      3.8 | TOO_MANY_CONSECUTIVE_SPACES             | Check: warns if there are too many consecutive spaces in line. Exception: in enum if configured and single eol comments <br>Fix: squeezes spaces to 1.                       | yes | max_spaces saveInitialFormattingForEnums | - |
 |    3 |      3.11 | ANNOTATION_NEW_LINE                    | Check: warns if annotation not on a new single line                                                                                                                          | yes | - | - |
+
