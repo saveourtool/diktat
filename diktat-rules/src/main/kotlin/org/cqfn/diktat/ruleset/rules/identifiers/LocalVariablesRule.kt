@@ -19,12 +19,14 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
 import org.jetbrains.kotlin.psi.KtBlockExpression
+import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtFunctionLiteral
 import org.jetbrains.kotlin.psi.KtNameReferenceExpression
 import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
+import org.jetbrains.kotlin.psi.psiUtil.referenceExpression
 import org.jetbrains.kotlin.psi.psiUtil.siblings
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
 
@@ -39,6 +41,14 @@ import org.jetbrains.kotlin.psi.psiUtil.startOffset
  * * Properties initialized with constructor calls cannot be distinguished from method call and are no supported.
  */
 class LocalVariablesRule : Rule("local-variables") {
+    companion object {
+        private var functionInitializers = listOf(
+                "emptyList", "emptySet", "emptyMap", "emptyArray", "emptySequence",
+                "listOf", "setOf", "mapOf", "arrayOf", "arrayListOf",
+                "mutableListOf", "mutableSetOf", "mutableMapOf"
+        )
+    }
+
     private lateinit var configRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
@@ -57,7 +67,11 @@ class LocalVariablesRule : Rule("local-variables") {
                     .findAllNodesWithSpecificType(PROPERTY)
                     .map { it.psi as KtProperty }
                     .filter { it.isLocal && it.name != null && it.parent is KtBlockExpression }
-                    .filter { it.isVar && it.initializer == null || it.initializer?.containsOnlyConstants() ?: false }
+                    .filter {
+                        it.isVar && it.initializer == null ||
+                                (it.initializer?.containsOnlyConstants() ?: false) ||
+                                (it.initializer as? KtCallExpression).isWhitelistedMethod()
+                    }
                     .associateWith(::findUsagesOf)
                     .filterNot { it.value.isEmpty() }
 
@@ -112,7 +126,8 @@ class LocalVariablesRule : Rule("local-variables") {
                     .zipWithNext()
                     .find { it.second == declarationScope }
                     ?.let { (usageScope, _) ->
-                        val firstUsageLine = (usageScope.parent.takeIf { it is KtFunctionLiteral } ?: usageScope).node.lineNumber()!!
+                        val firstUsageLine = (usageScope.parent.takeIf { it is KtFunctionLiteral }
+                                ?: usageScope).node.lineNumber()!!
                         checkLineNumbers(property, firstUsageLine)
                     }
         }
@@ -130,6 +145,14 @@ class LocalVariablesRule : Rule("local-variables") {
         }
     }
 
+    private fun KtCallExpression?.isWhitelistedMethod() =
+            if (this == null) {
+                false
+            } else {
+                (referenceExpression() as KtNameReferenceExpression).getReferencedName() in functionInitializers &&
+                        valueArguments.isEmpty()
+            }
+
     private fun findOutermost(scopes: List<KtBlockExpression>) = scopes.find { block ->
         scopes.all { block.isContainingScope(it) }
     }
@@ -144,3 +167,9 @@ class LocalVariablesRule : Rule("local-variables") {
 
     private fun warnMessage(name: String, declared: Int, used: Int) = "$name is declared on line $declared and used for the first time on line $used"
 }
+
+//  val tmpFile = KtPsiFactory(propertyPsi).createAnalyzableFile("tmpFile.kt", node.parents().last().text, propertyPsi.context!!)
+
+//  val resolveSession = ResolveSession()
+//  (node.parents().last().psi as KtFile).project.getService(ResolveSession::class.java)
+//  usages[0].getReferenceTargets()

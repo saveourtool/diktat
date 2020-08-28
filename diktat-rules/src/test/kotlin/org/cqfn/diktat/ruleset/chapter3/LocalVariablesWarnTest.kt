@@ -448,4 +448,20 @@ class LocalVariablesWarnTest {
                      """.trimMargin()
         )
     }
+
+
+    @Test
+    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    fun `check properties initialized with some selected methods`() {
+        lintMethod(LocalVariablesRule(),
+                """
+                    |fun foo() {
+                    |    val list = emptyList<Int>()
+                    |    println()
+                    |    bar(list)
+                    |}
+                """.trimMargin(),
+                LintError(2, 5, ruleId, "${LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("list", 2, 4)}", false)
+        )
+    }
 }
