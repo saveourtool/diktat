@@ -133,6 +133,4 @@ object WarningNames {
     const val WHEN_WITHOUT_ELSE: String = "WHEN_WITHOUT_ELSE"
 
     const val TOO_MANY_CONSECUTIVE_SPACES: String = "TOO_MANY_CONSECUTIVE_SPACES"
-
-    const val ENUMS_SEPARATED: String = "ENUMS_SEPARATED"
 }
