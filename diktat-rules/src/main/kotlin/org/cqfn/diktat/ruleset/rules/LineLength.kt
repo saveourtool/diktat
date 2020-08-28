@@ -41,7 +41,6 @@ import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.LONG_LINE
 import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
-import org.cqfn.diktat.ruleset.utils.hasChildMatching
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
@@ -245,7 +244,8 @@ class LineLength : Rule("line-length") {
     private fun getBraceAndBeforeText(node: ASTNode, prevNode: ASTNode): String {
         var text = ""
         val par = if (prevNode.prevSibling { it.elementType == OPERATION_REFERENCE } == null) LPAR else RPAR
-        if (node.findChildByType(par)!!.treePrev != null && node.findChildByType(par)!!.treePrev.elementType == WHITE_SPACE)
+        if (node.findChildByType(par)!!.treePrev != null &&
+                node.findChildByType(par)!!.treePrev.elementType == WHITE_SPACE)
             text += node.findChildByType(par)!!.treePrev.text
         text += node.findChildByType(par)!!.text
         return text
@@ -270,9 +270,11 @@ class LineLength : Rule("line-length") {
      *@param binList mutable list of ASTNode to store nodes
      */
     private fun searchBinaryExpression(node: ASTNode, binList: MutableList<ASTNode>) {
-        if (node.hasChildOfType(BINARY_EXPRESSION) || node.hasChildOfType(PARENTHESIZED) || node.hasChildOfType(POSTFIX_EXPRESSION)) {
+        if (node.hasChildOfType(BINARY_EXPRESSION) || node.hasChildOfType(PARENTHESIZED) ||
+                node.hasChildOfType(POSTFIX_EXPRESSION)) {
             node.getChildren(null)
-                    .filter { it.elementType == BINARY_EXPRESSION || it.elementType == PARENTHESIZED || it.elementType == POSTFIX_EXPRESSION }
+                    .filter { it.elementType == BINARY_EXPRESSION || it.elementType == PARENTHESIZED ||
+                            it.elementType == POSTFIX_EXPRESSION }
                     .forEach {
                         searchBinaryExpression(it, binList)
                     }
@@ -336,7 +338,7 @@ class LineLength : Rule("line-length") {
     }
 
     private fun createNodes(node: ASTNode, configuration: LineLengthConfiguration, leftOffset: Int) {
-        if (leftOffset > configuration.lineLength)
+        if (leftOffset > configuration.lineLength - STRING_PART_OFFSET)
             return
         val text = node.findChildByType(STRING_TEMPLATE)!!.text.trim('"')
         val lastCharIndex = configuration.lineLength.toInt() - leftOffset - STRING_PART_OFFSET

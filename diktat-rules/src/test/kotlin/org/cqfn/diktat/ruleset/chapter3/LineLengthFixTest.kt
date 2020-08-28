@@ -42,4 +42,10 @@ class LineLengthFixTest : FixTestBase("test/paragraph3/long_line", LineLength())
     fun `should fix short long right value`() {
         fixAndCompare("LongShortRValueExpected.kt", "LongShortRValueTest.kt", rulesConfigListShortLineLength)
     }
+
+
+    @Test
+    fun `shouldn't fix`() {
+        fixAndCompare("LongExpressionNoFixExpected.kt", "LongExpressionNoFixTest.kt", rulesConfigListShortLineLength)
+    }
 }
