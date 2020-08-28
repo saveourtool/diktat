@@ -42,4 +42,18 @@ class WhenMustHaveElseWarnTest {
                 LintError(2,5,ruleId, "${Warnings.WHEN_WITHOUT_ELSE.warnText()} else was not found", true)
         )
     }
+
+    @Test
+    @Tag(WarningNames.WHEN_WITHOUT_ELSE)
+    fun `when expression in func test good`(){
+        lintMethod(WhenMustHaveElseRule(),
+                """
+                    |fun foo() {
+                    |    val obj = when(a) {
+                    |       1 -> print("x is neither 1 nor 2")
+                    |    }
+                    |}
+                """.trimMargin()
+        )
+    }
 }

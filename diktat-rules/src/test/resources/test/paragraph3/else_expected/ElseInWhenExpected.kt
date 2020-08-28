@@ -7,10 +7,15 @@ enum class TestEnum {
 fun testWhenExpression() {
     val directoryType = TestEnum.ONE
 
-    val objectType = when (directoryType) {
+    when (directoryType) {
         TestEnum.ONE -> "d"
         TestEnum.TWO -> "-"
 else -> {
 }
+}
+
+    val noElse = when (directoryType) {
+        TestEnum.ONE -> "d"
+        TestEnum.TWO -> "a"
     }
 }

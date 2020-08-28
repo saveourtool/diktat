@@ -3,6 +3,7 @@ package org.cqfn.diktat.ruleset.rules
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
+import com.pinterest.ktlint.core.ast.isWhiteSpace
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
@@ -13,6 +14,7 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.java.PsiBlockStatementImpl
+import org.jetbrains.kotlin.psi.KtWhenExpression
 import java.lang.StringBuilder
 
 /**
@@ -37,7 +39,7 @@ class WhenMustHaveElseRule : Rule("no-else-in-when") {
         emitWarn = emit
         isFixMode = autoCorrect
 
-        if (node.elementType == ElementType.WHEN) {
+        if (node.elementType == ElementType.WHEN && isStatement(node)) {
             checkEntries(node)
         }
     }
@@ -46,9 +48,14 @@ class WhenMustHaveElseRule : Rule("no-else-in-when") {
     //FixMe: If a when statement of type enum or sealed contains all values of a enum - there is no need to have "else" branch.
 
     private fun checkEntries(node: ASTNode) {
-        if (!checkElses(node)) {
+        if (!checkElse(node)) {
             Warnings.WHEN_WITHOUT_ELSE.warnAndFix(configRules, emitWarn, isFixMode, "else was not found", node.startOffset) {
                 val whenEntryElse = CompositeElement(ElementType.WHEN_ENTRY)
+                if (node.lastChildNode.treePrev.isWhiteSpace()) {
+                    checkWhiteSpace(node.lastChildNode.treePrev)
+                } else {
+                    node.addChild(PsiWhiteSpaceImpl("\n"), node.lastChildNode.treePrev)
+                }
                 node.addChild(whenEntryElse, node.lastChildNode.treePrev)
                 addChildren(whenEntryElse)
                 node.addChild(PsiWhiteSpaceImpl("\n"), whenEntryElse)
@@ -56,9 +63,18 @@ class WhenMustHaveElseRule : Rule("no-else-in-when") {
         }
     }
 
-    private fun checkElses(node: ASTNode): Boolean = node.findAllNodesWithSpecificType(ElementType.WHEN_ENTRY).any {
-            it.hasChildOfType(ElementType.ELSE_KEYWORD)
+
+    private fun checkWhiteSpace(node: ASTNode) {
+        if (!node.textContains('\n')) {
+            (node as LeafPsiElement).replaceWithText("\n")
         }
+    }
+
+    private fun isStatement(node: ASTNode) : Boolean {
+        return node.treeParent.elementType == ElementType.BLOCK
+    }
+
+    private fun checkElse(node: ASTNode): Boolean = (node.psi as KtWhenExpression).elseExpression != null
 
     private fun addChildren(node: ASTNode) {
         val block = PsiBlockStatementImpl()
