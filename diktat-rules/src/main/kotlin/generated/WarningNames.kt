@@ -133,5 +133,4 @@ object WarningNames {
     const val TOO_MANY_CONSECUTIVE_SPACES: String = "TOO_MANY_CONSECUTIVE_SPACES"
 
     const val ANNOTATION_NEW_LINE: String = "ANNOTATION_NEW_LINE"
-  
 }
