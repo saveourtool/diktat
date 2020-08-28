@@ -28,7 +28,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 val log: Logger = LoggerFactory.getLogger(ASTNode::class.java)
-val emptyBlockList = listOf(ElementType.LBRACE, WHITE_SPACE, ElementType.RBRACE)
 
 fun ASTNode.checkLength(range: IntRange): Boolean = this.textLength in range
 

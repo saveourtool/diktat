@@ -34,4 +34,10 @@ fun foo() {
 
     val longIntExpression = (12345) + (12345) +
  (12345) + (12345)
+
+    val veryLongExpression = Method() + 12345 +
+ baaar()
+
+    val veryLongExpression = Method() + baaar() +
+ 12345
 }

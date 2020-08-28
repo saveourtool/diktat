@@ -13,6 +13,11 @@ class LineLengthFixTest : FixTestBase("test/paragraph3/long_line", LineLength())
                     mapOf("lineLength" to "50"))
     )
 
+    private val rulesConfigListShortLineLength: List<RulesConfig> = listOf(
+            RulesConfig(LONG_LINE.name, true,
+                    mapOf("lineLength" to "20"))
+    )
+
     @Test
     fun `should fix long comment`() {
         fixAndCompare("LongLineCommentExpected.kt", "LongLineCommentTest.kt", rulesConfigListLineLength)
@@ -31,5 +36,10 @@ class LineLengthFixTest : FixTestBase("test/paragraph3/long_line", LineLength())
     @Test
     fun `should fix long right value`() {
         fixAndCompare("LongLineRValueExpected.kt", "LongLineRValueTest.kt", rulesConfigListLineLength)
+    }
+
+    @Test
+    fun `should fix short long right value`() {
+        fixAndCompare("LongShortRValueExpected.kt", "LongShortRValueTest.kt", rulesConfigListShortLineLength)
     }
 }

@@ -6,8 +6,8 @@ import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.BOOLEAN_CONSTANT
+import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CHARACTER_CONSTANT
-import com.pinterest.ktlint.core.ast.ElementType.CLOSING_QUOTE
 import com.pinterest.ktlint.core.ast.ElementType.CONDITION
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.EQ
@@ -19,18 +19,17 @@ import com.pinterest.ktlint.core.ast.ElementType.INTEGER_CONSTANT
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_MARKDOWN_INLINE_LINK
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_TEXT
 import com.pinterest.ktlint.core.ast.ElementType.LITERAL_STRING_TEMPLATE_ENTRY
+import com.pinterest.ktlint.core.ast.ElementType.LONG_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.LPAR
-import com.pinterest.ktlint.core.ast.ElementType.OPEN_QUOTE
 import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.PARENTHESIZED
-import com.pinterest.ktlint.core.ast.ElementType.PLUS
 import com.pinterest.ktlint.core.ast.ElementType.POSTFIX_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.PREFIX_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.REGULAR_STRING_PART
 import com.pinterest.ktlint.core.ast.ElementType.RPAR
+import com.pinterest.ktlint.core.ast.ElementType.SHORT_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.STRING_TEMPLATE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.nextSibling
@@ -40,8 +39,9 @@ import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.LONG_LINE
+import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
-import org.cqfn.diktat.ruleset.utils.createOperationReference
+import org.cqfn.diktat.ruleset.utils.hasChildMatching
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
@@ -69,8 +69,9 @@ class LineLength : Rule("line-length") {
     companion object {
         private const val MAX_LENGTH = 120L
         private const val STRING_PART_OFFSET = 4
-        private val PROPERTY_LIST = listOf(INTEGER_CONSTANT, STRING_TEMPLATE, FLOAT_CONSTANT,
-                CHARACTER_CONSTANT, REFERENCE_EXPRESSION, BOOLEAN_CONSTANT)
+        private val PROPERTY_LIST = listOf(INTEGER_CONSTANT, LITERAL_STRING_TEMPLATE_ENTRY, FLOAT_CONSTANT,
+                CHARACTER_CONSTANT, REFERENCE_EXPRESSION, BOOLEAN_CONSTANT, LONG_STRING_TEMPLATE_ENTRY,
+                SHORT_STRING_TEMPLATE_ENTRY)
     }
 
     private lateinit var configRules: List<RulesConfig>
@@ -284,7 +285,10 @@ class LineLength : Rule("line-length") {
     private fun dfsForProperty(node: ASTNode, binList: MutableList<ASTNode>) {
         node.getChildren(null).forEach {
             if (it.elementType in PROPERTY_LIST)
-                binList.add(it)
+                if (it.elementType == REFERENCE_EXPRESSION && it.treeParent.elementType == CALL_EXPRESSION)
+                    binList.add(it.treeParent)
+            else
+                    binList.add(it)
             dfsForProperty(it, binList)
         }
     }
@@ -297,12 +301,41 @@ class LineLength : Rule("line-length") {
                 fixLongBinaryExpression(newParent, configuration, leftOffset, true)
             }
         } else {
-            createNodes(parent, configuration)
+            val leftOffset = positionByOffset(parent.findChildByType(STRING_TEMPLATE)!!.startOffset).second
+            if (parent.findChildByType(STRING_TEMPLATE)!!.hasChildOfType(LONG_STRING_TEMPLATE_ENTRY)) {
+                fixLongString(parent, configuration, leftOffset)
+            } else {
+                createNodes(parent, configuration, leftOffset)
+            }
         }
     }
 
-    private fun createNodes(node: ASTNode, configuration: LineLengthConfiguration) {
-        val leftOffset = positionByOffset(node.findChildByType(STRING_TEMPLATE)!!.startOffset).second
+    private fun fixLongString(wrongNode: ASTNode, configuration: LineLengthConfiguration, leftOffset: Int) {
+        val binList = wrongNode.findChildByType(STRING_TEMPLATE)!!.getChildren(null).filter { it.elementType in PROPERTY_LIST }
+        if (binList.size == 1)
+            return
+        val allText = binList.map { it.text }.joinToString("")
+        var binaryText = ""
+        binList.forEachIndexed { index, astNode ->
+            binaryText += astNode.text
+            if (STRING_PART_OFFSET + leftOffset + binaryText.length > configuration.lineLength) {
+                if (astNode.elementType == LITERAL_STRING_TEMPLATE_ENTRY) {
+                    val lastCharIndex = configuration.lineLength.toInt() - leftOffset - STRING_PART_OFFSET
+                    val indexLastSpace = (allText.substring(0, lastCharIndex).lastIndexOf(' '))
+                    if (indexLastSpace == -1)
+                        return
+                    splitTextAndCreateNode(wrongNode, allText, indexLastSpace)
+                    return
+                } else if (index == 0) {
+                    return
+                }
+                splitTextAndCreateNode(wrongNode, allText, binaryText.length)
+                return
+            }
+        }
+    }
+
+    private fun createNodes(node: ASTNode, configuration: LineLengthConfiguration, leftOffset: Int) {
         if (leftOffset > configuration.lineLength)
             return
         val text = node.findChildByType(STRING_TEMPLATE)!!.text.trim('"')
@@ -310,29 +343,16 @@ class LineLength : Rule("line-length") {
         val indexLastSpace = (text.substring(0, lastCharIndex).lastIndexOf(' '))
         if (indexLastSpace == -1)
             return
+        splitTextAndCreateNode(node, text, indexLastSpace)
+    }
+
+    private fun splitTextAndCreateNode(node: ASTNode, text: String, index: Int){
+        val resultText = "\"" + text.substring(0, index) + "\" +\n\"" + text.substring(index) + "\""
+        val newNode = KotlinParser().createNode(resultText)
         node.removeChild(node.findChildByType(STRING_TEMPLATE)!!)
         val prevExp = CompositeElement(BINARY_EXPRESSION)
         node.addChild(prevExp, null)
-        createStringTemplate(text.substring(0, indexLastSpace), prevExp)
-        createNodesBetweenStringTemplates(prevExp)
-        createStringTemplate(text.substring(indexLastSpace), prevExp)
-    }
-
-    private fun createStringTemplate(text: String, prevExp: CompositeElement) {
-        val litString = CompositeElement(LITERAL_STRING_TEMPLATE_ENTRY)
-        val stringTemplate = CompositeElement(STRING_TEMPLATE)
-        val closeQuote = LeafPsiElement(CLOSING_QUOTE, "\"")
-        prevExp.addChild(stringTemplate)
-        stringTemplate.addChild(closeQuote)
-        stringTemplate.addChild(litString, closeQuote)
-        litString.addChild(LeafPsiElement(REGULAR_STRING_PART, text))
-        stringTemplate.addChild(LeafPsiElement(OPEN_QUOTE, "\""), litString)
-    }
-
-    private fun createNodesBetweenStringTemplates(prevExp: CompositeElement) {
-        prevExp.addChild(PsiWhiteSpaceImpl(" "))
-        prevExp.createOperationReference(PLUS, "+")
-        prevExp.addChild(PsiWhiteSpaceImpl("\n"))
+        prevExp.addChild(newNode, null)
     }
 
     class LineLengthConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
