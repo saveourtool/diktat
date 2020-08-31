@@ -7,7 +7,7 @@ class SomeClass @Inject constructor() {
 
     @ThirdAnnotation
 @FourthAnnotation
-fun someFunc(@Annotation var1: Int, @AnotherAnnotation var2: String) {
+ fun someFunc(@Annotation var1: Int, @AnotherAnnotation var2: String) {
 
     }
 }

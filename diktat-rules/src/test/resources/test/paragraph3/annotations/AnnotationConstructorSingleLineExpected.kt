@@ -1,6 +1,7 @@
 package test.paragraph3.annotations
 
-class SomeClass @Inject
+class SomeClass 
+@Inject
 @SomeAnnotation
 constructor() {
 

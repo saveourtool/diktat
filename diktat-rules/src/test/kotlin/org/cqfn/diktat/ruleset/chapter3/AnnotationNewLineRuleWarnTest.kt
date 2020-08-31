@@ -19,7 +19,8 @@ class AnnotationNewLineRuleWarnTest {
     fun `annotation class test good`(){
         lintMethod(AnnotationNewLineRule(),
                 """
-                    |@SomeAnnotation 
+                    |
+                    |@SomeAnnotation
                     |@SecondAnnotation
                     |class A {
                     |   val a = 5
@@ -50,7 +51,8 @@ class AnnotationNewLineRuleWarnTest {
                     |   val a = 5
                     |}
                 """.trimMargin(),
-                LintError(1,1, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @SomeAnnotation not on a single line", true)
+                LintError(1,1, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @SomeAnnotation not on a single line", true),
+                LintError(1,17, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @SecondAnnotation not on a single line", true)
         )
     }
 
@@ -64,7 +66,7 @@ class AnnotationNewLineRuleWarnTest {
                     |}
                 """.trimMargin(),
                 LintError(1,1, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @SomeAnnotation not on a single line", true),
-                LintError(1,1, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @SecondAnnotation not on a single line", true)
+                LintError(1,17, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @SecondAnnotation not on a single line", true)
         )
     }
 
@@ -116,7 +118,7 @@ class AnnotationNewLineRuleWarnTest {
                     |}
                 """.trimMargin(),
                 LintError(4,3, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @SomeAnnotation not on a single line", true),
-                LintError(4,3, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @SecondAnnotation not on a single line", true)
+                LintError(4,19, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @SecondAnnotation not on a single line", true)
         )
     }
 
@@ -134,7 +136,8 @@ class AnnotationNewLineRuleWarnTest {
                     |  }
                     |}
                 """.trimMargin(),
-                LintError(4,3, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @SomeAnnotation not on a single line", true)
+                LintError(4,3, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @SomeAnnotation not on a single line", true),
+                LintError(4,19, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @SecondAnnotation not on a single line", true)
         )
     }
 
@@ -189,7 +192,7 @@ class AnnotationNewLineRuleWarnTest {
                     |}
                 """.trimMargin(),
                 LintError(1,19, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @Inject not on a single line", true),
-                LintError(1,19, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @SomeAnnotation not on a single line", true)
+                LintError(1,27, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @SomeAnnotation not on a single line", true)
         )
     }
 
@@ -203,7 +206,8 @@ class AnnotationNewLineRuleWarnTest {
                     |
                     |}
                 """.trimMargin(),
-                LintError(1,19, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @SomeAnnotation not on a single line", true)
+                LintError(1,19, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @Inject not on a single line", true),
+                LintError(2,1, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @SomeAnnotation not on a single line", true)
         )
     }
 

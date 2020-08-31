@@ -51,22 +51,43 @@ class AnnotationNewLineRule : Rule("annotation-new-line") {
             return
 
         node.getAllChildrenWithType(ANNOTATION_ENTRY).forEach {
-            if (!it.isFollowedByNewline()) {
-                Warnings.ANNOTATION_NEW_LINE.warnAndFix(configRules, emitWarn, isFixMode, "${it.text} not on a single line",
-                        node.startOffset) {
-                    if (it.treeNext != null) {
-                        if (it.treeNext.isWhiteSpace()) {
-                            node.removeChild(it.treeNext)
-                        }
-                        node.addChild(PsiWhiteSpaceImpl("\n"), it.treeNext)
-                    } else {
-                        node.addChild(PsiWhiteSpaceImpl("\n"), null)
-                    }
-                    deleteUselessWhiteSpace(node.treeParent.getFirstChildWithType(FUN_KEYWORD))
-                }
+            
+            if (!it.isFollowedByNewline() && !it.isBeginByNewline()) {
+                deleteSpaces(it)
+            } else if (!it.isFollowedByNewline()) {
+                deleteSpaces(it, side = Side.RIGHT)
+            } else if (!it.isBeginByNewline()) {
+                deleteSpaces(it, side = Side.LEFT)
             }
         }
 
+    }
+
+    private fun deleteSpaces(node: ASTNode, side: Side = Side.BOTH) {
+        Warnings.ANNOTATION_NEW_LINE.warnAndFix(configRules, emitWarn, isFixMode, "${node.text} not on a single line",
+                node.startOffset) {
+            if ((side == Side.BOTH || side == Side.RIGHT)) {
+                if (node.treeNext != null) {
+                    if (node.treeNext.isWhiteSpace()) {
+                        node.removeChild(node.treeNext)
+                    }
+                    node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node.treeNext)
+                } else {
+                    node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), null)
+                }
+            }
+
+            if((side == Side.BOTH || side == Side.LEFT)) {
+                if (node.treePrev != null) {
+                    if (node.treePrev.isWhiteSpace()) {
+                        node.removeChild(node.treePrev)
+                    }
+                    node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node.treePrev)
+                } else {
+                    node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node)
+                }
+            }
+        }
     }
 
     private fun deleteUselessWhiteSpace(node: ASTNode?) {
@@ -75,6 +96,10 @@ class AnnotationNewLineRule : Rule("annotation-new-line") {
                 node.treeParent.removeChild(node.treePrev)
             }
         }
+    }
+
+    private enum class Side {
+        RIGHT, LEFT, BOTH
     }
 
 }
