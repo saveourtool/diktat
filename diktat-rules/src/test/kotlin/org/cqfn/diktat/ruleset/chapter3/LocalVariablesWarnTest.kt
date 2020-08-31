@@ -282,6 +282,22 @@ class LocalVariablesWarnTest {
 
     @Test
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    fun `discovered during testing`() {
+        lintMethod(LocalVariablesRule(),
+                """
+                    |fun foo() {
+                    |    var offset = 0
+                    |    for (x in 1..100) {
+                    |        offset += it.length
+                    |    }
+                    |    return offset
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
     @Disabled("Checking of variable from outer scope is not supported yet")
     fun `need to allow declaring vars outside collection methods`() {
         lintMethod(LocalVariablesRule(),
@@ -378,7 +394,7 @@ class LocalVariablesWarnTest {
                     |    }
                     |}
                 """.trimMargin(),
-                LintError(2, 5, ruleId, "${LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("x", 2, 4)}", false)
+                LintError(2, 5, ruleId, "${LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("x", 2, 5)}", false)
         )
     }
 
@@ -396,7 +412,7 @@ class LocalVariablesWarnTest {
                     |    }
                     |}
                 """.trimMargin(),
-                LintError(2, 5, ruleId, "${LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("x", 2, 5)}", false)
+                LintError(2, 5, ruleId, "${LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("x", 2, 6)}", false)
         )
     }
 
