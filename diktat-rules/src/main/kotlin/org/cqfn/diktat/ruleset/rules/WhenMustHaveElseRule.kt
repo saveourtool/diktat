@@ -3,11 +3,16 @@ package org.cqfn.diktat.ruleset.rules
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
+import com.pinterest.ktlint.core.ast.ElementType.ARROW
+import com.pinterest.ktlint.core.ast.ElementType.BLOCK
+import com.pinterest.ktlint.core.ast.ElementType.ELSE_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.FUN
+import com.pinterest.ktlint.core.ast.ElementType.LBRACE
+import com.pinterest.ktlint.core.ast.ElementType.RBRACE
+import com.pinterest.ktlint.core.ast.ElementType.WHEN_ENTRY
 import com.pinterest.ktlint.core.ast.isWhiteSpace
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
-import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.cqfn.diktat.ruleset.utils.prettyPrint
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
@@ -15,7 +20,6 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.java.PsiBlockStatementImpl
 import org.jetbrains.kotlin.psi.KtWhenExpression
-import java.lang.StringBuilder
 
 /**
  * Rule 3.10: 'when' statement must have else branch, unless when condition variable is enumerated or sealed type
@@ -50,7 +54,7 @@ class WhenMustHaveElseRule : Rule("no-else-in-when") {
     private fun checkEntries(node: ASTNode) {
         if (!checkElse(node)) {
             Warnings.WHEN_WITHOUT_ELSE.warnAndFix(configRules, emitWarn, isFixMode, "else was not found", node.startOffset) {
-                val whenEntryElse = CompositeElement(ElementType.WHEN_ENTRY)
+                val whenEntryElse = CompositeElement(WHEN_ENTRY)
                 if (node.lastChildNode.treePrev.isWhiteSpace()) {
                     checkWhiteSpace(node.lastChildNode.treePrev)
                 } else {
@@ -71,7 +75,7 @@ class WhenMustHaveElseRule : Rule("no-else-in-when") {
     }
 
     private fun isStatement(node: ASTNode) : Boolean {
-        return node.treeParent.elementType == ElementType.BLOCK
+        return node.treeParent.elementType == BLOCK || node.treeParent.elementType == FUN
     }
 
     private fun checkElse(node: ASTNode): Boolean = (node.psi as KtWhenExpression).elseExpression != null
@@ -80,18 +84,18 @@ class WhenMustHaveElseRule : Rule("no-else-in-when") {
         val block = PsiBlockStatementImpl()
 
         node.apply {
-            addChild(LeafPsiElement(ElementType.ELSE_KEYWORD, "else"), null)
+            addChild(LeafPsiElement(ELSE_KEYWORD, "else"), null)
             addChild(PsiWhiteSpaceImpl(" "), null)
-            addChild(LeafPsiElement(ElementType.ARROW, "->"), null)
+            addChild(LeafPsiElement(ARROW, "->"), null)
             addChild(PsiWhiteSpaceImpl(" "), null)
             addChild(block, null)
         }
 
 
         block.apply{
-            addChild(LeafPsiElement(ElementType.LBRACE, "{"), null)
+            addChild(LeafPsiElement(LBRACE, "{"), null)
             addChild(PsiWhiteSpaceImpl("\n"),null)
-            addChild(LeafPsiElement(ElementType.RBRACE, "}"), null)
+            addChild(LeafPsiElement(RBRACE, "}"), null)
         }
 
     }
