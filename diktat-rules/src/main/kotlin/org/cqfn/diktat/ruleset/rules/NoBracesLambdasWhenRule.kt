@@ -2,14 +2,16 @@ package org.cqfn.diktat.ruleset.rules
 
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.ast.ElementType
+import com.pinterest.ktlint.core.ast.ElementType.ARROW
+import com.pinterest.ktlint.core.ast.ElementType.BLOCK
+import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.LBRACE
+import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
-import org.cqfn.diktat.ruleset.utils.prettyPrint
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import org.jetbrains.kotlin.psi.KtBlockExpression
 
 class NoBracesLambdasWhenRule : Rule("no-braces-lambdas-when") {
 
@@ -28,25 +30,26 @@ class NoBracesLambdasWhenRule : Rule("no-braces-lambdas-when") {
 
         //print(node.prettyPrint())
 
-        if (node.elementType == ElementType.LAMBDA_EXPRESSION) {
+        if (node.elementType == LAMBDA_EXPRESSION) {
             someFun(node.firstChildNode)
         }
     }
 
 
     private fun someFun(node: ASTNode) {
-        if (node.hasChildOfType(ElementType.ARROW) && node.hasChildOfType(ElementType.BLOCK)) {
-            val firstBlock = node.getFirstChildWithType(ElementType.BLOCK)!!
-            if (firstBlock.hasChildOfType(ElementType.LAMBDA_EXPRESSION)) {
+        if (node.hasChildOfType(ARROW) && node.hasChildOfType(BLOCK)) {
+            val firstBlock = node.getFirstChildWithType(BLOCK)!!
+            if (firstBlock.hasChildOfType(LAMBDA_EXPRESSION)) {
                 checkBraces(firstBlock.firstChildNode.firstChildNode)
             }
         }
     }
 
     private fun checkBraces(node: ASTNode) {
-        if (node.hasChildOfType(ElementType.LBRACE) && node.hasChildOfType(ElementType.RBRACE)) {
+        if (node.hasChildOfType(LBRACE) && node.hasChildOfType(RBRACE)) {
             Warnings.NO_BRACES_IN_LAMBDAS_AND_WHEN.warnAndFix(configRules, emitWarn, isFixMode, "text", node.startOffset) {
-
+                node.removeChild(node.getFirstChildWithType(LBRACE)!!)
+                node.removeChild(node.getFirstChildWithType(RBRACE)!!)
             }
         }
     }

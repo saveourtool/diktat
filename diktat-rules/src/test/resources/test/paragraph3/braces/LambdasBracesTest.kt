@@ -7,5 +7,5 @@ val lambda5: (Int, Int) -> Int = { x, y ->
     print(x)
     print(y)
     x + y
-}
+    }
 val lambda6 = {x: Int, y: Int -> {x + y} }

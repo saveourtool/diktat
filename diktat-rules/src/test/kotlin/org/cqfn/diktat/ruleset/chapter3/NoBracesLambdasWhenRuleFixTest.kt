@@ -6,7 +6,7 @@ import org.cqfn.diktat.util.FixTestBase
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class NoBracesLambdasWhenRuleFixTest : FixTestBase("test/paragraph3/statement", NoBracesLambdasWhenRule()) {
+class NoBracesLambdasWhenRuleFixTest : FixTestBase("test/paragraph3/braces", NoBracesLambdasWhenRule()) {
 
     @Test
     @Tag(WarningNames.NO_BRACES_IN_LAMBDAS_AND_WHEN)
