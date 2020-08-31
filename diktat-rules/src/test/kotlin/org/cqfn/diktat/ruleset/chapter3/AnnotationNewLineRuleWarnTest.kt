@@ -224,4 +224,18 @@ class AnnotationNewLineRuleWarnTest {
                 """.trimMargin()
         )
     }
+
+    @Test
+    @Tag(WarningNames.ANNOTATION_NEW_LINE)
+    fun `no warns in func params 2`() {
+        lintMethod(AnnotationNewLineRule(),
+                """
+                    |public class Conf {
+                    |   fun someFunc(@SomeAnnotation @AnotherAnnotation conf: JsonConf, @SecondAnnotation @ThirdAnnotation some: Int) {
+                    |   
+                    |   }
+                    |}
+                """.trimMargin()
+        )
+    }
 }
