@@ -29,7 +29,7 @@ class NoBracesLambdasRuleWarnTest {
                     |   }
                     |}
                 """.trimMargin(),
-                LintError(1, 35, ruleId, "${Warnings.NO_BRACES_IN_LAMBDAS.warnText()} text", true)
+                LintError(1, 35, ruleId, "${Warnings.NO_BRACES_IN_LAMBDAS.warnText()} found excess braces", true)
         )
     }
 

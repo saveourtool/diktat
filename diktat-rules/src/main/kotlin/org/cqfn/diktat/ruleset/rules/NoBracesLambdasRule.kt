@@ -27,16 +27,13 @@ class NoBracesLambdasRule : Rule("no-braces-lambdas") {
         emitWarn = emit
         isFixMode = autoCorrect
 
-
-        //print(node.prettyPrint())
-
         if (node.elementType == LAMBDA_EXPRESSION) {
-            someFun(node.firstChildNode)
+            deleteExcessLambdaBraces(node.firstChildNode)
         }
     }
 
 
-    private fun someFun(node: ASTNode) {
+    private fun deleteExcessLambdaBraces(node: ASTNode) {
         if (node.hasChildOfType(ARROW) && node.hasChildOfType(BLOCK)) {
             val firstBlock = node.getFirstChildWithType(BLOCK)!!
             if (firstBlock.hasChildOfType(LAMBDA_EXPRESSION)) {
@@ -47,7 +44,7 @@ class NoBracesLambdasRule : Rule("no-braces-lambdas") {
 
     private fun checkBraces(node: ASTNode) {
         if (node.hasChildOfType(LBRACE) && node.hasChildOfType(RBRACE)) {
-            NO_BRACES_IN_LAMBDAS.warnAndFix(configRules, emitWarn, isFixMode, "text", node.startOffset) {
+            NO_BRACES_IN_LAMBDAS.warnAndFix(configRules, emitWarn, isFixMode, "found excess braces", node.startOffset) {
                 node.removeChild(node.getFirstChildWithType(LBRACE)!!)
                 node.removeChild(node.getFirstChildWithType(RBRACE)!!)
             }
