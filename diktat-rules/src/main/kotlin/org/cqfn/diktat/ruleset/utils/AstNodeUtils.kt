@@ -14,10 +14,12 @@ import com.pinterest.ktlint.core.ast.isLeaf
 import com.pinterest.ktlint.core.ast.lineNumber
 import com.pinterest.ktlint.core.ast.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.com.intellij.psi.TokenType
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.siblings
@@ -46,6 +48,10 @@ fun ASTNode.getTypeParameterList(): ASTNode? =
 fun ASTNode.getAllIdentifierChildren(): List<ASTNode> =
         this.getChildren(null).filter { it.elementType == ElementType.IDENTIFIER }
 
+/**
+ * check is node doesn't contain error elements
+ */
+fun ASTNode.isCorrect(): Boolean = this.findAllNodesWithSpecificType(TokenType.ERROR_ELEMENT).isEmpty()
 
 /**
  * obviously returns list with children that match particular element type
@@ -230,6 +236,11 @@ fun ASTNode.findAllNodesWithSpecificType(elementType: IElementType, withSelf: Bo
         it.findAllNodesWithSpecificType(elementType)
     }
 }
+
+/**
+ * Check a node of type CLASS if it is a enum class
+ */
+fun ASTNode.isClassEnum(): Boolean = (psi as? KtClass)?.isEnum() ?: false
 
 /**
  * This method finds first parent node from the sequence of parents that has specified elementType

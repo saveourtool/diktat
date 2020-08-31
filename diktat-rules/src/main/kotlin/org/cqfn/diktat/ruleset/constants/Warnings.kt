@@ -77,6 +77,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     TOO_MANY_BLANK_LINES(true, "too many consecutive blank lines"),
     WRONG_WHITESPACE(true, "incorrect usage of whitespaces for code separation"),
     TOO_MANY_CONSECUTIVE_SPACES(true, "too many consecutive spaces"),
+    ENUMS_SEPARATED(true, "split enumeration error"),
     LOCAL_VARIABLE_EARLY_DECLARATION(false, "local variables need to be declared close to line where they are first used"),
     ;
 
