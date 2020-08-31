@@ -133,4 +133,5 @@ object WarningNames {
     const val TOO_MANY_CONSECUTIVE_SPACES: String = "TOO_MANY_CONSECUTIVE_SPACES"
 
     const val NO_BRACES_IN_LAMBDAS: String = "NO_BRACES_IN_LAMBDAS"
+
 }
