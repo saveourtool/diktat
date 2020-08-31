@@ -77,7 +77,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     TOO_MANY_BLANK_LINES(true, "too many consecutive blank lines"),
     WRONG_WHITESPACE(true, "incorrect usage of whitespaces for code separation"),
     TOO_MANY_CONSECUTIVE_SPACES(true, "too many consecutive spaces"),
-    NO_BRACES_IN_LAMBDAS_AND_WHEN(true, "there shouldn't be braces in when and lambdas")
+    NO_BRACES_IN_LAMBDAS(true, "there shouldn't be braces in when and lambdas")
     ;
 
     override fun ruleName(): String = this.name

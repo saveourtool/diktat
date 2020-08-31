@@ -4,19 +4,19 @@ import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
-import org.cqfn.diktat.ruleset.rules.NoBracesLambdasWhenRule
+import org.cqfn.diktat.ruleset.rules.NoBracesLambdasRule
 import org.cqfn.diktat.util.lintMethod
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class NoBracesLambdasWhenRuleWarnTest {
+class NoBracesLambdasRuleWarnTest {
 
-    private val ruleId = "$DIKTAT_RULE_SET_ID:no-braces-lambdas-when"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:no-braces-lambdas"
 
     @Test
-    @Tag(WarningNames.NO_BRACES_IN_LAMBDAS_AND_WHEN)
+    @Tag(WarningNames.NO_BRACES_IN_LAMBDAS)
     fun `excess braces in lambda bad`() {
-        lintMethod(NoBracesLambdasWhenRule(),
+        lintMethod(NoBracesLambdasRule(),
                 """
                     |val a = { b: String, c: String -> {
                     |       null
@@ -29,14 +29,14 @@ class NoBracesLambdasWhenRuleWarnTest {
                     |   }
                     |}
                 """.trimMargin(),
-                LintError(1, 35, ruleId, "${Warnings.NO_BRACES_IN_LAMBDAS_AND_WHEN.warnText()} text", true)
+                LintError(1, 35, ruleId, "${Warnings.NO_BRACES_IN_LAMBDAS.warnText()} text", true)
         )
     }
 
     @Test
-    @Tag(WarningNames.NO_BRACES_IN_LAMBDAS_AND_WHEN)
+    @Tag(WarningNames.NO_BRACES_IN_LAMBDAS)
     fun `excess braces in lambda good`() {
-        lintMethod(NoBracesLambdasWhenRule(),
+        lintMethod(NoBracesLambdasRule(),
                 """
                     |val a = { b: String, c: String -> null
                     |}
@@ -48,9 +48,9 @@ class NoBracesLambdasWhenRuleWarnTest {
     }
 
     @Test
-    @Tag(WarningNames.NO_BRACES_IN_LAMBDAS_AND_WHEN)
+    @Tag(WarningNames.NO_BRACES_IN_LAMBDAS)
     fun `excess braces in lambda good 2`() {
-        lintMethod(NoBracesLambdasWhenRule(),
+        lintMethod(NoBracesLambdasRule(),
                 """
                     |val a = { b: String, c: String -> 
                     |       null
@@ -65,9 +65,9 @@ class NoBracesLambdasWhenRuleWarnTest {
     }
 
     @Test
-    @Tag(WarningNames.NO_BRACES_IN_LAMBDAS_AND_WHEN)
+    @Tag(WarningNames.NO_BRACES_IN_LAMBDAS)
     fun `excess braces in lambda good 3`() {
-        lintMethod(NoBracesLambdasWhenRule(),
+        lintMethod(NoBracesLambdasRule(),
                 """
                     |val lambda1: (String) -> Unit = { name: String -> println("Hello, World!") }
                     |val lambda2: (String) -> Unit = { name -> println("Hello, World!") }
@@ -83,9 +83,9 @@ class NoBracesLambdasWhenRuleWarnTest {
     }
 
     @Test
-    @Tag(WarningNames.NO_BRACES_IN_LAMBDAS_AND_WHEN)
+    @Tag(WarningNames.NO_BRACES_IN_LAMBDAS)
     fun `excess braces in lambda good 4`() {
-        lintMethod(NoBracesLambdasWhenRule(),
+        lintMethod(NoBracesLambdasRule(),
                 """
                     |private fun isValidYear(year: String?): Boolean { 
                     |val yearValidator: (String?) -> Boolean = { !it.isNullOrEmpty() && it.toInt() in 1877..2019 }

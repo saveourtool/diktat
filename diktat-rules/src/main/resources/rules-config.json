@@ -339,7 +339,7 @@
     "configuration": {}
   },
   {
-    "name": "NO_BRACES_IN_LAMBDAS_AND_WHEN",
+    "name": "NO_BRACES_IN_LAMBDAS",
     "enabled": true,
     "configuration": {}
   }

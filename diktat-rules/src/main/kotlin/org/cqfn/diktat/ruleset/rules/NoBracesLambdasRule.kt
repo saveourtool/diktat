@@ -8,12 +8,12 @@ import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.Warnings
+import org.cqfn.diktat.ruleset.constants.Warnings.NO_BRACES_IN_LAMBDAS
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
-class NoBracesLambdasWhenRule : Rule("no-braces-lambdas-when") {
+class NoBracesLambdasRule : Rule("no-braces-lambdas") {
 
     private lateinit var configRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
@@ -47,7 +47,7 @@ class NoBracesLambdasWhenRule : Rule("no-braces-lambdas-when") {
 
     private fun checkBraces(node: ASTNode) {
         if (node.hasChildOfType(LBRACE) && node.hasChildOfType(RBRACE)) {
-            Warnings.NO_BRACES_IN_LAMBDAS_AND_WHEN.warnAndFix(configRules, emitWarn, isFixMode, "text", node.startOffset) {
+            NO_BRACES_IN_LAMBDAS.warnAndFix(configRules, emitWarn, isFixMode, "text", node.startOffset) {
                 node.removeChild(node.getFirstChildWithType(LBRACE)!!)
                 node.removeChild(node.getFirstChildWithType(RBRACE)!!)
             }
