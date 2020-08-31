@@ -111,7 +111,7 @@ Then, add this plugin:
               <dependency>
                   <groupId>org.cqfn.diktat</groupId>
                   <artifactId>diktat-rules</artifactId>
-                  <version>1.0.2-SNAPSHOT</version> <!-- replace it with diktat latest version -->
+                  <version>1.0.2</version> <!-- replace it with diktat latest version -->
                   <exclusions>
                       <exclusion>
                           <groupId>org.slf4j</groupId>
