@@ -155,8 +155,8 @@ dependencies {
     }
 
     // diktat ruleset
-    ktlint("org.cqfn.diktat:diktat-rules:1.0.3-SNAPSHOT") {
-    ktlint("org.cqfn.diktat:diktat-rules:1.0.3-SNAPSHOT") {
+    ktlint("org.cqfn.diktat:diktat-rules:1.0.2") {
+    ktlint("org.cqfn.diktat:diktat-rules:1.0.2") {
         exclude("org.slf4j", "slf4j-log4j12")
     }
 }
