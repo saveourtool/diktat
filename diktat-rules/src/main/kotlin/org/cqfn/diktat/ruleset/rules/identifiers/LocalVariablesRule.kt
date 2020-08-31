@@ -63,17 +63,7 @@ class LocalVariablesRule : Rule("local-variables") {
 
         if (node.elementType == FILE) {
             // collect all local properties and associate with corresponding references
-            val propertiesToUsages = node
-                    .findAllNodesWithSpecificType(PROPERTY)
-                    .map { it.psi as KtProperty }
-                    .filter { it.isLocal && it.name != null && it.parent is KtBlockExpression }
-                    .filter {
-                        it.isVar && it.initializer == null ||
-                                (it.initializer?.containsOnlyConstants() ?: false) ||
-                                (it.initializer as? KtCallExpression).isWhitelistedMethod()
-                    }
-                    .associateWith(::findUsagesOf)
-                    .filterNot { it.value.isEmpty() }
+            val propertiesToUsages = collectPropertiesWithUsages(node)
 
             // find all usages which include more than one property
             val multiPropertyUsages = propertiesToUsages
@@ -108,6 +98,18 @@ class LocalVariablesRule : Rule("local-variables") {
         }
     }
 
+    private fun collectPropertiesWithUsages(node: ASTNode) = node
+            .findAllNodesWithSpecificType(PROPERTY)
+            .map { it.psi as KtProperty }
+            .filter { it.isLocal && it.name != null && it.parent is KtBlockExpression }
+            .filter {
+                it.isVar && it.initializer == null ||
+                        (it.initializer?.containsOnlyConstants() ?: false) ||
+                        (it.initializer as? KtCallExpression).isWhitelistedMethod()
+            }
+            .associateWith(::findUsagesOf)
+            .filterNot { it.value.isEmpty() }
+
     private fun handleLocalProperty(property: KtProperty, usages: List<KtNameReferenceExpression>) {
         val declarationScope = property.getDeclarationScope()
 
@@ -117,7 +119,18 @@ class LocalVariablesRule : Rule("local-variables") {
         if (outermostUsageScope == declarationScope) {
             // property is declared in the same scope where it is used, we need to check how close it is to the first usage
             val firstUsage = usages.minBy { it.node.lineNumber()!! }!!
-            checkLineNumbers(property, firstUsage.containingStatementFirstLineNumber())
+            val firstUsageScope = firstUsage.parents.find { it is KtBlockExpression }!!
+                    .run {
+                        if (this != declarationScope && parent is KtFunctionLiteral) {
+                            parentsWithSelf.find {
+                                it is KtBlockExpression && it.parent !is KtFunctionLiteral
+                            }!!
+                        } else {
+                            this
+                        }
+                    }
+            val firstUsageStatement = firstUsage.parents.find { it.parent == firstUsageScope }!!
+            checkLineNumbers(property, firstUsageStatement.node.lineNumber()!!)
         } else {
             usageScopes
                     .first()
@@ -146,30 +159,14 @@ class LocalVariablesRule : Rule("local-variables") {
     }
 
     private fun KtCallExpression?.isWhitelistedMethod() =
-            if (this == null) {
-                false
-            } else {
+            this?.run {
                 (referenceExpression() as KtNameReferenceExpression).getReferencedName() in functionInitializers &&
                         valueArguments.isEmpty()
-            }
+            } ?: false
 
     private fun findOutermost(scopes: List<KtBlockExpression>) = scopes.find { block ->
         scopes.all { block.isContainingScope(it) }
     }
 
-    /**
-     * Get line number of statement, where this reference is used. Return first line number for multiline statements.
-     */
-    private fun KtNameReferenceExpression.containingStatementFirstLineNumber() = parentsWithSelf
-            .find { it.parent is KtBlockExpression }!!
-            .node
-            .lineNumber()!!
-
     private fun warnMessage(name: String, declared: Int, used: Int) = "$name is declared on line $declared and used for the first time on line $used"
 }
-
-//  val tmpFile = KtPsiFactory(propertyPsi).createAnalyzableFile("tmpFile.kt", node.parents().last().text, propertyPsi.context!!)
-
-//  val resolveSession = ResolveSession()
-//  (node.parents().last().psi as KtFile).project.getService(ResolveSession::class.java)
-//  usages[0].getReferenceTargets()

@@ -19,6 +19,7 @@ import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
 import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 import org.jetbrains.kotlin.psi.psiUtil.isAncestor
 import org.jetbrains.kotlin.psi.psiUtil.parents
+import org.jetbrains.kotlin.psi.psiUtil.referenceExpression
 
 /**
  * Checks if this [KtExpression] contains only constant literals, strings with possibly constant expressions in templates,
@@ -66,7 +67,9 @@ fun findUsagesOf(property: KtProperty) = property
                     .filter { it.getReferencedNameAsName() == name }
                     .filterNot {
                         // to avoid false triggering on objects' fields with same name as local property
-                        it.parent is KtDotQualifiedExpression
+                        (it.parent as? KtDotQualifiedExpression)?.run {
+                            receiverExpression != it && selectorExpression?.referenceExpression() == it
+                        } ?: false
                     }
                     .filterNot { ref ->
                         // to exclude usages of local properties and lambda arguments with same name
@@ -86,9 +89,6 @@ fun PsiElement.isContainingScope(block: KtBlockExpression): Boolean {
     when (block.parent.node.elementType) {
         ElementType.ELSE -> getParentOfType<KtIfExpression>(true)
         ElementType.CATCH -> getParentOfType<KtTryExpression>(true)
-        else -> null
-    }.let {
-        if (this == it) return false
     }
     return isAncestor(block, false)
 }

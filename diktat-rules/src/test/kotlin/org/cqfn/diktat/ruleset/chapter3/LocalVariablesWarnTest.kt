@@ -384,6 +384,41 @@ class LocalVariablesWarnTest {
 
     @Test
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    fun `should check usage inside lambdas with line break`() {
+        lintMethod(LocalVariablesRule(),
+                """
+                    |fun foo(): Bar {
+                    |    val x = 0
+                    |    println()
+                    |    list
+                    |        .forEach {
+                    |            bar(x)
+                    |    }
+                    |}
+                """.trimMargin(),
+                LintError(2, 5, ruleId, "${LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("x", 2, 5)}", false)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    fun `should check properties declared inside lambda`() {
+        lintMethod(LocalVariablesRule(),
+                """
+                    |fun foo() {
+                    |    list.map {
+                    |        val foo = "bar"
+                    |        println()
+                    |        foo.baz(it)
+                    |    }
+                    |}
+                """.trimMargin(),
+                LintError(3, 9, ruleId, "${LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("foo", 3, 5)}", false)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `should not trigger when more than one variables need to be declared`() {
         lintMethod(LocalVariablesRule(),
                 """
@@ -449,7 +484,6 @@ class LocalVariablesWarnTest {
         )
     }
 
-
     @Test
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `check properties initialized with some selected methods`() {
@@ -462,6 +496,24 @@ class LocalVariablesWarnTest {
                     |}
                 """.trimMargin(),
                 LintError(2, 5, ruleId, "${LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("list", 2, 4)}", false)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    fun `should properly detect containing scope of lambdas`() {
+        lintMethod(LocalVariablesRule(),
+                """
+                    |fun foo() {
+                    |    val res = mutableListOf<Type>()
+                    |    Foo.bar(
+                    |            Foo.baz(
+                    |                    cb = { e, _ -> res.add(e) }
+                    |            )
+                    |    )
+                    |    Assertions.assertThat(res).isEmpty()
+                    |}
+                """.trimMargin()
         )
     }
 }
