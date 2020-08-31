@@ -350,10 +350,7 @@ fun ASTNode.findLBrace(): ASTNode? {
             this.findChildByType(ElementType.BODY)?.findChildByType(ElementType.BLOCK)?.findChildByType(ElementType.LBRACE)
         ElementType.CLASS, ElementType.OBJECT_DECLARATION -> this.findChildByType(ElementType.CLASS_BODY)?.findChildByType(ElementType.LBRACE)
         ElementType.FUNCTION_LITERAL -> this.findChildByType(LBRACE)
-        else -> {
-            log.warn("Can't find LBrace for ${this.elementType}, type")
-            return null
-        }
+        else -> return null
     }
 }
 
