@@ -11,6 +11,7 @@ fun testWhenExpression() {
         TestEnum.ONE -> "d"
         TestEnum.TWO -> "-"
 else -> {
+// this is a generated else block
 }
 }
 
@@ -29,5 +30,6 @@ fun eval(e: Expr): Int =
             is Expr.Num -> e.value
             is Expr.Sum -> eval(e.right) + eval(e.left)
 else -> {
+// this is a generated else block
 }
         }

@@ -6,6 +6,7 @@ import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.ARROW
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.ELSE_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
@@ -94,6 +95,8 @@ class WhenMustHaveElseRule : Rule("no-else-in-when") {
 
         block.apply{
             addChild(LeafPsiElement(LBRACE, "{"), null)
+            addChild(PsiWhiteSpaceImpl("\n"),null)
+            addChild(LeafPsiElement(EOL_COMMENT, "// this is a generated else block"),null)
             addChild(PsiWhiteSpaceImpl("\n"),null)
             addChild(LeafPsiElement(RBRACE, "}"), null)
         }
