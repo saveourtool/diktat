@@ -79,7 +79,6 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     TOO_MANY_CONSECUTIVE_SPACES(true, "too many consecutive spaces"),
     ENUMS_SEPARATED(true, "split enumeration error"),
     WHEN_WITHOUT_ELSE(true, "each when statement must have else at the end"),
-    TOO_MANY_CONSECUTIVE_SPACES(true, "too many consecutive spaces")
     ;
 
     override fun ruleName(): String = this.name

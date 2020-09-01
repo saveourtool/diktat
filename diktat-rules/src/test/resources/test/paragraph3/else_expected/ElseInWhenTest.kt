@@ -7,8 +7,22 @@ enum class TestEnum {
 fun testWhenExpression() {
     val directoryType = TestEnum.ONE
 
-    val objectType = when (directoryType) {
+    when (directoryType) {
         TestEnum.ONE -> "d"
-        TestEnum.TWO -> "-"
+        TestEnum.TWO -> "-" }
+
+    val noElse = when (directoryType) {
+        TestEnum.ONE -> "d"
+        TestEnum.TWO -> "a"
     }
 }
+
+sealed class Expr {
+    class Num(val value: Int) : Expr()
+    class Sum(val left: Expr, val right: Expr) : Expr()
+}
+fun eval(e: Expr): Int =
+        when (e) {
+            is Expr.Num -> e.value
+            is Expr.Sum -> eval(e.right) + eval(e.left)
+        }

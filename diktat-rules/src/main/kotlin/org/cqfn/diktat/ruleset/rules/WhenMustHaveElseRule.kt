@@ -3,17 +3,25 @@ package org.cqfn.diktat.ruleset.rules
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
+import com.pinterest.ktlint.core.ast.ElementType.ARROW
+import com.pinterest.ktlint.core.ast.ElementType.BLOCK
+import com.pinterest.ktlint.core.ast.ElementType.ELSE_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
+import com.pinterest.ktlint.core.ast.ElementType.FUN
+import com.pinterest.ktlint.core.ast.ElementType.LBRACE
+import com.pinterest.ktlint.core.ast.ElementType.RBRACE
+import com.pinterest.ktlint.core.ast.ElementType.WHEN_ENTRY
+import com.pinterest.ktlint.core.ast.isWhiteSpace
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
-import org.cqfn.diktat.ruleset.utils.hasChildOfType
+import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
 import org.cqfn.diktat.ruleset.utils.prettyPrint
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.java.PsiBlockStatementImpl
-import java.lang.StringBuilder
+import org.jetbrains.kotlin.psi.KtWhenExpression
 
 /**
  * Rule 3.10: 'when' statement must have else branch, unless when condition variable is enumerated or sealed type
@@ -27,7 +35,6 @@ class WhenMustHaveElseRule : Rule("no-else-in-when") {
 
     private lateinit var configRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
-    private var fileName: String? = null
     private var isFixMode: Boolean = false
 
     override fun visit(node: ASTNode,
@@ -35,11 +42,10 @@ class WhenMustHaveElseRule : Rule("no-else-in-when") {
                        params: KtLint.Params,
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
         configRules = params.getDiktatConfigRules()
-        fileName = params.fileName
         emitWarn = emit
         isFixMode = autoCorrect
 
-        if (node.elementType == ElementType.WHEN) {
+        if (node.elementType == ElementType.WHEN && isStatement(node)) {
             checkEntries(node)
         }
     }
@@ -48,42 +54,42 @@ class WhenMustHaveElseRule : Rule("no-else-in-when") {
     //FixMe: If a when statement of type enum or sealed contains all values of a enum - there is no need to have "else" branch.
 
     private fun checkEntries(node: ASTNode) {
-        if (!checkElses(node)) {
+        if (!hasElse(node)) {
             Warnings.WHEN_WITHOUT_ELSE.warnAndFix(configRules, emitWarn, isFixMode, "else was not found", node.startOffset) {
-                val whenEntryElse = CompositeElement(ElementType.WHEN_ENTRY)
-                node.addChild(whenEntryElse, node.lastChildNode.treePrev)
+                val whenEntryElse = CompositeElement(WHEN_ENTRY)
+                node.appendNewlineMergingWhiteSpace(node.lastChildNode.treePrev, node.lastChildNode.treePrev)
+                node.addChild(whenEntryElse, node.lastChildNode)
                 addChildren(whenEntryElse)
-                node.addChild(PsiWhiteSpaceImpl("\n${getIndent(node)}"), whenEntryElse)
-                println(node.treeParent.prettyPrint())
+                node.addChild(PsiWhiteSpaceImpl("\n"), whenEntryElse)
             }
         }
     }
 
-    private fun checkElses(node: ASTNode): Boolean = node.findAllNodesWithSpecificType(ElementType.WHEN_ENTRY).any {
-            it.hasChildOfType(ElementType.ELSE_KEYWORD)
-        }
+    private fun isStatement(node: ASTNode) : Boolean {
+        return node.treeParent.elementType == BLOCK
+    }
+
+    private fun hasElse(node: ASTNode): Boolean = (node.psi as KtWhenExpression).elseExpression != null
 
     private fun addChildren(node: ASTNode) {
         val block = PsiBlockStatementImpl()
 
         node.apply {
-            addChild(LeafPsiElement(ElementType.ELSE_KEYWORD, "else"), null)
+            addChild(LeafPsiElement(ELSE_KEYWORD, "else"), null)
             addChild(PsiWhiteSpaceImpl(" "), null)
-            addChild(LeafPsiElement(ElementType.ARROW, "->"), null)
+            addChild(LeafPsiElement(ARROW, "->"), null)
             addChild(PsiWhiteSpaceImpl(" "), null)
             addChild(block, null)
         }
 
 
         block.apply{
-            addChild(LeafPsiElement(ElementType.LBRACE, "{"), null)
-            addChild(LeafPsiElement(ElementType.RBRACE, "}"), null)
+            addChild(LeafPsiElement(LBRACE, "{"), null)
+            addChild(PsiWhiteSpaceImpl("\n"),null)
+            addChild(LeafPsiElement(EOL_COMMENT, "// this is a generated else block"),null)
+            addChild(PsiWhiteSpaceImpl("\n"),null)
+            addChild(LeafPsiElement(RBRACE, "}"), null)
         }
 
-    }
-
-    private fun getIndent(node: ASTNode) : String {
-        val indent = node.findChildByType(ElementType.LBRACE)?.treeNext?.text?.length
-        return if (indent != null) StringBuilder(" ").repeat(indent - 1) else ""
     }
 }
