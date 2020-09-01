@@ -339,11 +339,6 @@
     "configuration": {}
   },
   {
-    "name": "NO_BRACES_IN_LAMBDAS",
-    "enabled": true,
-    "configuration": {}
-  },
-  {
     "name": "ENUMS_SEPARATED",
     "enabled": true,
     "configuration": {}
