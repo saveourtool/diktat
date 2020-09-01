@@ -53,29 +53,23 @@ class AnnotationNewLineRule : Rule("annotation-new-line") {
             return
 
         node.getAllChildrenWithType(ANNOTATION_ENTRY).forEach {
-            
-            if (!it.isFollowedByNewline() && !it.isBeginByNewline()) {
-                deleteSpaces(it)
-            } else if (!it.isFollowedByNewline()) {
-                deleteSpaces(it, side = Side.RIGHT)
-            } else if (!it.isBeginByNewline()) {
-                deleteSpaces(it, side = Side.LEFT)
-            }
+            if (!it.isFollowedByNewline() || !it.isBeginByNewline())
+                deleteSpaces(it, !it.isFollowedByNewline(), !it.isBeginByNewline())
         }
 
     }
 
-    private fun deleteSpaces(node: ASTNode, side: Side = Side.BOTH) {
+    private fun deleteSpaces(node: ASTNode, rightSide: Boolean, leftSide: Boolean) {
         Warnings.ANNOTATION_NEW_LINE.warnAndFix(configRules, emitWarn, isFixMode, "${node.text} not on a single line",
                 node.startOffset) {
-            if ((side == Side.BOTH || side == Side.RIGHT)) {
+            if (rightSide) {
                 if (node.treeNext?.isWhiteSpace() == true) {
                     node.removeChild(node.treeNext)
                 }
                 node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node.treeNext)
             }
 
-            if((side == Side.BOTH || side == Side.LEFT)) {
+            if(leftSide) {
                 if (node.treePrev?.isWhiteSpace() == true) {
                     node.removeChild(node.treePrev)
                 }
@@ -83,9 +77,4 @@ class AnnotationNewLineRule : Rule("annotation-new-line") {
             }
         }
     }
-
-    private enum class Side {
-        RIGHT, LEFT, BOTH
-    }
-
 }
