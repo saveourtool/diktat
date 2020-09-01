@@ -15,6 +15,7 @@ import com.pinterest.ktlint.core.ast.isWhiteSpace
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
+import org.cqfn.diktat.ruleset.utils.isBeginByNewline
 import org.cqfn.diktat.ruleset.utils.prettyPrint
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
@@ -60,7 +61,9 @@ class WhenMustHaveElseRule : Rule("no-else-in-when") {
                 node.appendNewlineMergingWhiteSpace(node.lastChildNode.treePrev, node.lastChildNode.treePrev)
                 node.addChild(whenEntryElse, node.lastChildNode)
                 addChildren(whenEntryElse)
-                node.addChild(PsiWhiteSpaceImpl("\n"), whenEntryElse)
+                if(!whenEntryElse.isBeginByNewline()) {
+                    node.addChild(PsiWhiteSpaceImpl("\n"), whenEntryElse)
+                }
             }
         }
     }
