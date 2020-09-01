@@ -66,6 +66,7 @@ jobs:
       - name: Create pull request
         uses: peter-evans/create-pull-request@v3
         with:
+          author: GitHub <noreply@github.com>
           commit-message: Update diktat version after release
           branch: infra/diktat-version-update-to-${{ env.RELEASE_VERSION }}
           title: Update versions in pom.xml and documentation after ${{ env.RELEASE_VERSION }} release
