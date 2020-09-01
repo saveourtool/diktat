@@ -716,7 +716,7 @@ All variants of a (private) val logger should be placed in the beginning of the 
 
  #### <a name="r3.3"></a>Rule 3.3 Braces must be used in conditional statements and loop blocks
 
-1) In `if`, `else`, `for`, `do`, and `while` statements, even if the program body is empty or contains only one statement, braces should be used.
+In `if`, `else`, `for`, `do`, and `while` statements, even if the program body is empty or contains only one statement, braces should be used.
 In special Kotlin `when` statement no need to use braces for statements with 1 line. Valid example:
 
     ```kotlin
@@ -752,27 +752,6 @@ if (condition) {
 } else {
     println(0)
 }
-```
-
-2) No need to use braces for the body of lambdas and when-conditions (after an arrow)
-  
-Bad example:
-
-```kotlin
-val a = { b: String, c: String -> { // these braces are increasing complexity
-        null
-    }
-}
-```
-
-Valid examples: 
-
-```kotlin
-val a = { b: String, c: String ->
-        null
-}
-
-someValue.map { x -> x}
 ```
 
 #### <a name="r3.4"></a> Rule 3.4 For *non-empty* blocks and block structures, the opening brace is placed at the end of the line
