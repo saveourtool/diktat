@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.cqfn.diktat</groupId>
     <artifactId>diktat-parent</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.0.3-SNAPSHOT</version>
     <name>diktat</name>
     <description>diKTat kotlin formatter and fixer</description>
     <packaging>pom</packaging>
@@ -20,7 +20,7 @@
         <jackson.version>2.11.2</jackson.version>
         <slf4j.version>1.7.30</slf4j.version>
         <commons-cli.version>1.4</commons-cli.version>
-        <diktat-check.version>1.0.1</diktat-check.version>
+        <diktat-check.version>1.0.2</diktat-check.version>
         <kotlinpoet.version>1.6.0</kotlinpoet.version>
     </properties>
 

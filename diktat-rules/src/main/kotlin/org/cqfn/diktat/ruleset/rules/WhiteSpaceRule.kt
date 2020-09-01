@@ -4,11 +4,14 @@ import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.ARROW
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.BLOCK
+import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CATCH_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.COLON
 import com.pinterest.ktlint.core.ast.ElementType.COLONCOLON
 import com.pinterest.ktlint.core.ast.ElementType.COMMA
+import com.pinterest.ktlint.core.ast.ElementType.CONSTRUCTOR_DELEGATION_CALL
 import com.pinterest.ktlint.core.ast.ElementType.CONSTRUCTOR_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.DOT
 import com.pinterest.ktlint.core.ast.ElementType.DO_KEYWORD
@@ -16,30 +19,41 @@ import com.pinterest.ktlint.core.ast.ElementType.ELSE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.EXCLEXCL
 import com.pinterest.ktlint.core.ast.ElementType.FINALLY_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.FOR_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_LITERAL
+import com.pinterest.ktlint.core.ast.ElementType.GT
 import com.pinterest.ktlint.core.ast.ElementType.IF_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.INIT_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
+import com.pinterest.ktlint.core.ast.ElementType.LBRACKET
 import com.pinterest.ktlint.core.ast.ElementType.LPAR
+import com.pinterest.ktlint.core.ast.ElementType.LT
 import com.pinterest.ktlint.core.ast.ElementType.NULLABLE_TYPE
 import com.pinterest.ktlint.core.ast.ElementType.OBJECT_DECLARATION
 import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.POSTFIX_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.QUEST
 import com.pinterest.ktlint.core.ast.ElementType.RANGE
+import com.pinterest.ktlint.core.ast.ElementType.RBRACKET
+import com.pinterest.ktlint.core.ast.ElementType.RPAR
 import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS
 import com.pinterest.ktlint.core.ast.ElementType.SECONDARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.SEMICOLON
 import com.pinterest.ktlint.core.ast.ElementType.TRY_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_CONSTRAINT
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_PARAMETER
+import com.pinterest.ktlint.core.ast.ElementType.TYPE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT
+import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER
+import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.WHEN_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHILE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.isPartOfComment
 import com.pinterest.ktlint.core.ast.nextCodeLeaf
 import com.pinterest.ktlint.core.ast.parent
 import org.cqfn.diktat.common.config.rules.RulesConfig
@@ -61,6 +75,9 @@ import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
  * 5. Spaces should be used after `,`, `:`, `;` (except cases when those symbols are in the end of line).
  *    There should be no whitespaces in the end of line.
  * 6. There should be only one space between identifier and it's type, if type is nullable there should be no spaces before `?`
+ * 7. There should be no space before `[`
+ * 8. There should be no space between a method or constructor name (both at declaration and at call site) and a parenthesis.
+ * 9. There should be no space after `(`, `[` and `<` (in templates); no space before `)`, `]`, `>` (in templates)
  */
 @Suppress("ForbiddenComment")
 class WhiteSpaceRule : Rule("horizontal-whitespace") {
@@ -93,13 +110,21 @@ class WhiteSpaceRule : Rule("horizontal-whitespace") {
         isFixMode = autoCorrect
 
         when (node.elementType) {
+            // keywords
             CONSTRUCTOR_KEYWORD -> handleConstructor(node)
             in keywordsWithSpaceAfter -> handleKeywordWithParOrBrace(node)
-            LBRACE -> handleLbrace(node)
+            // operators and operator-like symbols
             OPERATION_REFERENCE, COLONCOLON, DOT, ARROW, SAFE_ACCESS -> handleBinaryOperator(node)
-            COMMA, SEMICOLON -> handleToken(node, 0, 1)
             COLON -> handleColon(node)
+            COMMA, SEMICOLON -> handleToken(node, 0, 1)
             QUEST -> if (node.treeParent.elementType == NULLABLE_TYPE) handleToken(node, 0, null)
+            // braces and other symbols
+            LBRACE -> handleLbrace(node)
+            LBRACKET -> handleToken(node, 0, 0)
+            LPAR -> handleLpar(node)
+            RPAR, RBRACKET -> handleToken(node, 0, null)
+            GT, LT -> handleGtOrLt(node)
+            // white space
             WHITE_SPACE -> handleEolWhiteSpace(node)
         }
     }
@@ -185,7 +210,7 @@ class WhiteSpaceRule : Rule("horizontal-whitespace") {
 
     private fun handleToken(node: ASTNode, requiredSpacesBefore: Int?, requiredSpacesAfter: Int?) {
         require(requiredSpacesBefore != null || requiredSpacesAfter != null)
-        val spacesBefore = node.treePrev.numWhiteSpaces()
+        val spacesBefore = node.parent({ it.treePrev != null }, strict = false)!!.treePrev.numWhiteSpaces()
         val spacesAfter = requiredSpacesAfter?.let { _ ->
             (node.treeNext
                     ?: node.treeParent.treeNext)  // for `!!` and possibly other postfix expressions treeNext can be null
@@ -215,6 +240,35 @@ class WhiteSpaceRule : Rule("horizontal-whitespace") {
         }
     }
 
+    private fun handleLpar(node: ASTNode) {
+        if (node.treeParent.treeParent.elementType == SECONDARY_CONSTRUCTOR) {
+            // there is separate handler for 'constructor' keyword to provide custom warning message
+            return
+        } else if (node.nextCodeLeaf()!!.elementType == LBRACE) {
+            // there is separate handler for lambda expression inside parenthesis
+            return
+        }
+        val isDeclaration = node.treeParent.elementType == VALUE_PARAMETER_LIST && node.treeParent.treeParent.elementType.let {
+            it == PRIMARY_CONSTRUCTOR || it == FUN || it == CALL_EXPRESSION
+        }
+        val isCall = node.treeParent.elementType == VALUE_ARGUMENT_LIST && node.treeParent.treeParent.elementType.let {
+            it == CONSTRUCTOR_DELEGATION_CALL || it == CALL_EXPRESSION
+        }
+        if (isDeclaration || isCall) {
+            handleToken(node, 0, 0)
+        } else {
+            handleToken(node, null, 0)
+        }
+    }
+
+    private fun handleGtOrLt(node: ASTNode){
+        if (node.treeParent == TYPE_PARAMETER_LIST) handleToken(
+                node,
+                if (node.elementType == GT) 0 else null,
+                if (node.elementType == GT) null else 0
+        )
+    }
+
     private fun ASTNode.fixSpaceAround(requiredSpacesBefore: Int?, requiredSpacesAfter: Int?) {
         if (requiredSpacesBefore != null) {
             if (requiredSpacesBefore == 1) {
@@ -234,13 +288,18 @@ class WhiteSpaceRule : Rule("horizontal-whitespace") {
     }
 
     /**
-     * This method counts whitespaces near this node. If neighbor node is WHITE_SPACE with a newline, then count of spaces is
-     * meaningless and null is returned instead. If neighbor node is not a WHITE_SPACE, 0 is returned because there are zero white spaces.
+     * This method counts spaces in this node. Null is returned in following cases:
+     * * if it is WHITE_SPACE with a newline
+     * * if the next node is a comment, because spaces around comments are checked elsewhere.
+     *
+     * If this node is not a WHITE_SPACE, 0 is returned because there are zero white spaces.
      */
     private fun ASTNode.numWhiteSpaces(): Int? = if (elementType != WHITE_SPACE) {
         0
     } else {
-        if (textContains('\n')) null else text.count { it == ' ' }
+        // this can happen, e.g. in lambdas after an arrow, where block can be not surrounded by braces
+        val isBlockStartingWithComment = treeNext.elementType == BLOCK && treeNext.firstChildNode.isPartOfComment()
+        if (textContains('\n') || treeNext.isPartOfComment() || isBlockStartingWithComment) null else text.count { it == ' ' }
     }
 
     private fun ASTNode.leaveSingleWhiteSpace() {

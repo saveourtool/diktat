@@ -13,10 +13,12 @@ import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isLeaf
 import com.pinterest.ktlint.core.ast.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.com.intellij.psi.TokenType
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.siblings
@@ -45,6 +47,10 @@ fun ASTNode.getTypeParameterList(): ASTNode? =
 fun ASTNode.getAllIdentifierChildren(): List<ASTNode> =
         this.getChildren(null).filter { it.elementType == ElementType.IDENTIFIER }
 
+/**
+ * check is node doesn't contain error elements
+ */
+fun ASTNode.isCorrect(): Boolean = this.findAllNodesWithSpecificType(TokenType.ERROR_ELEMENT).isEmpty()
 
 /**
  * obviously returns list with children that match particular element type
@@ -231,6 +237,11 @@ fun ASTNode.findAllNodesWithSpecificType(elementType: IElementType): List<ASTNod
 }
 
 /**
+ * Check a node of type CLASS if it is a enum class
+ */
+fun ASTNode.isClassEnum(): Boolean = (psi as? KtClass)?.isEnum() ?: false
+
+/**
  * This method finds first parent node from the sequence of parents that has specified elementType
  */
 fun ASTNode.findParentNodeWithSpecificType(elementType: IElementType) =
@@ -332,13 +343,14 @@ fun ASTNode.moveChildBefore(childToMove: ASTNode, beforeThisNode: ASTNode?, with
 
 fun ASTNode.findLBrace(): ASTNode? {
     return when (this.elementType) {
-        ElementType.THEN, ElementType.ELSE -> this.findChildByType(ElementType.BLOCK)?.findChildByType(ElementType.LBRACE)
+        ElementType.THEN, ElementType.ELSE, ElementType.FUN, ElementType.TRY, ElementType.CATCH, ElementType.FINALLY ->
+            this.findChildByType(ElementType.BLOCK)?.findChildByType(ElementType.LBRACE)
         ElementType.WHEN -> this.findChildByType(ElementType.LBRACE)!!
         ElementType.FOR, ElementType.WHILE, ElementType.DO_WHILE ->
             this.findChildByType(ElementType.BODY)?.findChildByType(ElementType.BLOCK)?.findChildByType(ElementType.LBRACE)
-        ElementType.CLASS, ElementType.OBJECT_DECLARATION -> this.findChildByType(ElementType.CLASS_BODY)!!.findChildByType(ElementType.LBRACE)
+        ElementType.CLASS, ElementType.OBJECT_DECLARATION -> this.findChildByType(ElementType.CLASS_BODY)?.findChildByType(ElementType.LBRACE)
         ElementType.FUNCTION_LITERAL -> this.findChildByType(LBRACE)
-        else -> this.findChildByType(ElementType.BLOCK)?.findChildByType(ElementType.LBRACE)
+        else -> null
     }
 }
 
