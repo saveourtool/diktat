@@ -1092,6 +1092,7 @@ fun baz() {
   There should be no spaces before `,`, `:` and `;`. The only exceptions for colon are the following:
   - when `:` is used to separate a type and a supertype, including anonimous object (after `object` keyword)
   - when delegating to a superclass constructor or a different constructor of the same class
+  - when colon is used in annotation to specify use-site target (e.g. `@param:JsonProperty`)
   
   Good example:
   ```kotlin
