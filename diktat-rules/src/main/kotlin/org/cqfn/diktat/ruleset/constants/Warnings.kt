@@ -78,6 +78,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     WRONG_WHITESPACE(true, "incorrect usage of whitespaces for code separation"),
     TOO_MANY_CONSECUTIVE_SPACES(true, "too many consecutive spaces"),
     ENUMS_SEPARATED(true, "split enumeration error"),
+    LONG_NUMERICAL_VALUES_SEPARATED(true, "long numerical values should be separated"),
     ;
 
     override fun ruleName(): String = this.name

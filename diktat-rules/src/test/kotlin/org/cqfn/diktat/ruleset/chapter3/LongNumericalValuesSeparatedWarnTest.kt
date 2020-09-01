@@ -1,0 +1,111 @@
+package org.cqfn.diktat.ruleset.chapter3
+
+import com.pinterest.ktlint.core.LintError
+import generated.WarningNames.LONG_NUMERICAL_VALUES_SEPARATED
+import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ruleset.constants.Warnings
+import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
+import org.cqfn.diktat.ruleset.rules.LongNumericalValuesSeparatedRule
+import org.cqfn.diktat.util.lintMethod
+import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.Test
+
+class LongNumericalValuesSeparatedWarnTest {
+
+    private val ruleId = "$DIKTAT_RULE_SET_ID:long-numerical-values"
+
+    private val rulesConfig: List<RulesConfig> = listOf(
+            RulesConfig(Warnings.LONG_NUMERICAL_VALUES_SEPARATED.name, true,
+                    mapOf("maxLength" to "2"))
+    )
+
+    @Test
+    @Tag(LONG_NUMERICAL_VALUES_SEPARATED)
+    fun `check properties test bad`() {
+        lintMethod(LongNumericalValuesSeparatedRule(),
+                """
+                    |fun foo() {
+                    |   val oneMillion = 100000000000
+                    |   val creditCardNumber = 1234567890123456L
+                    |   val socialSecurityNumber = 999999999L
+                    |   val hexBytes = 0xFFECDE5E
+                    |   val bytes = 0b11010010_01101001_10010100_10010010
+                    |   val flo = 192.31234134134
+                    |}
+                """.trimMargin(),
+                LintError(2,21, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 100000000000", false),
+                LintError(3,27, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 1234567890123456L", false),
+                LintError(4,31, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 999999999L", false),
+                LintError(5,19, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 0xFFECDE5E", false),
+                LintError(7,14, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 192.31234134134", false)
+        )
+    }
+
+    @Test
+    @Tag(LONG_NUMERICAL_VALUES_SEPARATED)
+    fun `check properties test good`() {
+        lintMethod(LongNumericalValuesSeparatedRule(),
+                """
+                    |fun foo() {
+                    |   val oneMillion = 1_000_000_000_000
+                    |   val creditCardNumber = 1234_5678_9012_3456L
+                    |   val socialSecurityNumber = 999_999_999L
+                    |   val hexBytes = 0xFF_EC_DE_5E
+                    |   val bytes = 0b11010010_01101001_10010100_10010010
+                    |   val flo = 192.312_341_341_345
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(LONG_NUMERICAL_VALUES_SEPARATED)
+    fun `check properties test bad 2`() {
+        lintMethod(LongNumericalValuesSeparatedRule(),
+                """
+                    |fun foo() {
+                    |   val oneMillion = 100
+                    |   val creditCardNumber = 1234566L
+                    |   val socialSecurityNumber = 999L
+                    |   val hexBytes = 0xFFE
+                    |   val bytes = 0b110100
+                    |   val flo = 192.312
+                    |}
+                """.trimMargin(),
+                LintError(2,21, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 100", false),
+                LintError(3,27, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 1234566L", false),
+                LintError(4,31, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 999L", false),
+                LintError(5,19, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 0xFFE", false),
+                LintError(6,16, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 0b110100", false),
+                LintError(7,14, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 192.312", false),
+                rulesConfigList = rulesConfig
+        )
+    }
+
+    @Test
+    @Tag(LONG_NUMERICAL_VALUES_SEPARATED)
+    fun `check func params test good`() {
+        lintMethod(LongNumericalValuesSeparatedRule(),
+                """
+                    |fun foo(val one = 100_000_000) {
+                    |   
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(LONG_NUMERICAL_VALUES_SEPARATED)
+    fun `check func params test bad`() {
+        lintMethod(LongNumericalValuesSeparatedRule(),
+                """
+                    |fun foo(val one = 100000000) {
+                    |   
+                    |}
+                """.trimMargin(),
+                LintError(1,19, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 100000000", false)
+        )
+    }
+
+
+}

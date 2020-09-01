@@ -342,5 +342,12 @@
     "name": "ENUMS_SEPARATED",
     "enabled": true,
     "configuration": {}
+  },
+  {
+    "name": "LONG_NUMERICAL_VALUES_SEPARATED",
+    "enabled": true,
+    "configuration": {
+      "maxLength" : 8
+    }
   }
 ]
