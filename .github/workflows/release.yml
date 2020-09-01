@@ -17,13 +17,13 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.11
-      - name: Cache local Maven repository
-        uses: actions/cache@v2
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-release-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-release-
+#      - name: Cache local Maven repository
+#        uses: actions/cache@v2
+#        with:
+#          path: ~/.m2/repository
+#          key: ${{ runner.os }}-maven-release-${{ hashFiles('**/pom.xml') }}
+#          restore-keys: |
+#            ${{ runner.os }}-maven-release-
       - name: Set environment variables
         run: |
           echo ::set-env name=PREVIOUS_VERSION::$(printf 'VERSION=${diktat-check.version}\n0\n' | mvn help:evaluate | grep '^VERSION' | cut -d= -f2)
@@ -34,28 +34,28 @@ jobs:
         uses: whelk-io/maven-settings-xml-action@v9
         with:
           servers: '[{ "id": "artipie", "username": "${{ secrets.ARTIPIE_USER }}", "password": "${{ secrets.ARTIPIE_PASSWORD }}" }]'
-      - name: Deploy artifacts
-        run: mvn -B clean deploy
-      - name: Create Github Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ env.RELEASE_VERSION }}
-          draft: false
-          prerelease: false
-      - name: Upload assets to github releases
-        id: upload-release-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./diktat-rules/target/diktat.jar
-          asset_name: diktat.jar
-          asset_content_type: application/zip
+#      - name: Deploy artifacts
+#        run: mvn -B clean deploy
+#      - name: Create Github Release
+#        id: create_release
+#        uses: actions/create-release@v1
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        with:
+#          tag_name: ${{ github.ref }}
+#          release_name: Release ${{ env.RELEASE_VERSION }}
+#          draft: false
+#          prerelease: false
+#      - name: Upload assets to github releases
+#        id: upload-release-asset
+#        uses: actions/upload-release-asset@v1
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        with:
+#          upload_url: ${{ steps.create_release.outputs.upload_url }}
+#          asset_path: ./diktat-rules/target/diktat.jar
+#          asset_name: diktat.jar
+#          asset_content_type: application/zip
       - name: Update versions in pom.xml and documentation
         id: update-versions
         run: |
