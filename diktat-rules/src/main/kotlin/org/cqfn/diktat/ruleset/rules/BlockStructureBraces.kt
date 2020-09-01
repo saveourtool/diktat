@@ -72,7 +72,9 @@ class BlockStructureBraces : Rule("block-structure") {
     }
 
     private fun checkLambda(node: ASTNode, configuration: BlockStructureBracesConfiguration) {
-        checkCloseBrace(node, configuration)
+        val isSingleLineLambda = node.text.lines().size == 1
+        if (!isSingleLineLambda)
+            checkCloseBrace(node, configuration)
     }
 
     private fun checkClass(node: ASTNode, configuration: BlockStructureBracesConfiguration) {
