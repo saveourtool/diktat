@@ -11,6 +11,6 @@ class JsonReaderTest {
         assert(rulesConfigList?.filter { it.name == "CLASS_NAME_INCORRECT" && it.enabled }!!.isNotEmpty())
         assert(rulesConfigList.find { it.name == "CLASS_NAME_INCORRECT" }?.configuration == mapOf<String, String>())
         assert(rulesConfigList.find { it.name == "HEADER_MISSING_OR_WRONG_COPYRIGHT" }!!
-                .configuration == mapOf("isCopyrightMandatory" to "true"))
+            .configuration == mapOf("isCopyrightMandatory" to "true"))
     }
 }

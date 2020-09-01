@@ -5,8 +5,15 @@ import java.util.Properties
 import kotlin.system.exitProcess
 import org.slf4j.LoggerFactory
 
+/**
+ * Base class for working with properties files.
+ */
 open class ApplicationProperties(propertiesFileName: String) {
+    /**
+     * The [Properties] loaded from a file.
+     */
     val properties: Properties = Properties()
+
     private fun errorReadingConfig(propertiesFileName: String) {
         log.error("Cannot read file $propertiesFileName with configuration properties")
         exitProcess(EXIT_STATUS_MISSING_PROPERTIES)
