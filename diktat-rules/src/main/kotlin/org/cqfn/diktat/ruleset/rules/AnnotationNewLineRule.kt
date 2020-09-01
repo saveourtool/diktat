@@ -19,7 +19,7 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import java.lang.StringBuilder
 
 /**
- * This rule makes each annotation applied to a class, method or constructor is on its own line. Except: if first annotation of constructor
+ * This rule makes each annotation applied to a class, method or constructor is on its own line. Except: if first annotation of constructor, class or method
  */
 class AnnotationNewLineRule : Rule("annotation-new-line") {
 
@@ -69,25 +69,17 @@ class AnnotationNewLineRule : Rule("annotation-new-line") {
         Warnings.ANNOTATION_NEW_LINE.warnAndFix(configRules, emitWarn, isFixMode, "${node.text} not on a single line",
                 node.startOffset) {
             if ((side == Side.BOTH || side == Side.RIGHT)) {
-                if (node.treeNext != null) {
-                    if (node.treeNext.isWhiteSpace()) {
-                        node.removeChild(node.treeNext)
-                    }
-                    node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node.treeNext)
-                } else {
-                    node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), null)
+                if (node.treeNext?.isWhiteSpace() == true) {
+                    node.removeChild(node.treeNext)
                 }
+                node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node.treeNext)
             }
 
             if((side == Side.BOTH || side == Side.LEFT)) {
-                if (node.treePrev != null) {
-                    if (node.treePrev.isWhiteSpace()) {
-                        node.removeChild(node.treePrev)
-                    }
-                    node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node.treePrev)
-                } else {
-                    node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node)
+                if (node.treePrev?.isWhiteSpace() == true) {
+                    node.removeChild(node.treePrev)
                 }
+                node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node)
             }
         }
     }
