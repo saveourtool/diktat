@@ -79,7 +79,7 @@ class LineLengthWarnTest {
                     |   }
                     |}
                 """.trimMargin(),
-                LintError(8,1,ruleId,"${LONG_LINE.warnText()} max line length 120, but was 163", true)
+                LintError(8,1,ruleId,"${LONG_LINE.warnText()} max line length 120, but was 163", false)
         )
     }
 
@@ -168,7 +168,7 @@ class LineLengthWarnTest {
                     |   }
                     |}
                 """.trimMargin(),
-                LintError(9,1,ruleId,"${LONG_LINE.warnText()} max line length 163, but was 195", true),
+                LintError(9,1,ruleId,"${LONG_LINE.warnText()} max line length 163, but was 195", false),
                 rulesConfigList = rulesConfigListLineLength
         )
     }

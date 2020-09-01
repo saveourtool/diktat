@@ -42,7 +42,6 @@ import org.cqfn.diktat.ruleset.constants.Warnings.LONG_LINE
 import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
-import org.cqfn.diktat.ruleset.utils.prettyPrint
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -69,6 +68,7 @@ class LineLength : Rule("line-length") {
     companion object {
         private const val MAX_LENGTH = 120L
         private const val STRING_PART_OFFSET = 4
+        private val FIX_TYPE = listOf(FUN, EOL_COMMENT, CONDITION, PROPERTY)
         private val PROPERTY_LIST = listOf(INTEGER_CONSTANT, LITERAL_STRING_TEMPLATE_ENTRY, FLOAT_CONSTANT,
                 CHARACTER_CONSTANT, REFERENCE_EXPRESSION, BOOLEAN_CONSTANT, LONG_STRING_TEMPLATE_ENTRY,
                 SHORT_STRING_TEMPLATE_ENTRY)
@@ -109,7 +109,7 @@ class LineLength : Rule("line-length") {
                         !isKDocValid(newNode)) {
                     LONG_LINE.warnAndFix(configRules, emitWarn, isFixMode,
                             "max line length ${configuration.lineLength}, but was ${it.length}",
-                            offset + node.startOffset) {
+                            offset + node.startOffset, isFixable(newNode)) {
                         positionByOffset = calculateLineColByOffset(node.treeParent.text)
                         fixError(newNode, configuration)
                     }
@@ -118,6 +118,8 @@ class LineLength : Rule("line-length") {
             offset += it.length + 1
         }
     }
+
+    private fun isFixable(wrongNode: ASTNode) = wrongNode.parent({it.elementType in FIX_TYPE}) != null
 
     // fixme json method
     private fun isKDocValid(node: ASTNode): Boolean {

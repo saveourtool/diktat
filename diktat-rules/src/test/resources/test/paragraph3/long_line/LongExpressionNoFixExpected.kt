@@ -1,11 +1,6 @@
-package test.paragraph3.long_line
+package org.cqfn.diktat.resources.paragraph3.longline
 
-import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
-import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
-import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
-
-class veryLooooooongName {
-    class InnerLongName {
-
-    }
+class veryLoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong {
+    val s = "d" +
+" s d d d d ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
 }
