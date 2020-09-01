@@ -19,32 +19,12 @@ import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.THROW
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.WHEN_CONDITION_WITH_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.prevSibling
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
-import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_TRIVIAL_KDOC_ON_FUNCTION
-import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_PARAM_TAG
-import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_RETURN_TAG
-import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_THROWS_TAG
-import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_ON_FUNCTION
+import org.cqfn.diktat.ruleset.constants.Warnings.*
 import org.cqfn.diktat.ruleset.rules.getDiktatConfigRules
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
-import org.cqfn.diktat.ruleset.utils.getBodyLines
-import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
-import org.cqfn.diktat.ruleset.utils.getIdentifierName
-import org.cqfn.diktat.ruleset.utils.hasChildOfType
-import org.cqfn.diktat.ruleset.utils.hasKnownKDocTag
-import org.cqfn.diktat.ruleset.utils.hasTestAnnotation
-import org.cqfn.diktat.ruleset.utils.insertTagBefore
-import org.cqfn.diktat.ruleset.utils.isAccessibleOutside
-import org.cqfn.diktat.ruleset.utils.isGetterOrSetter
-import org.cqfn.diktat.ruleset.utils.isLocatedInTest
-import org.cqfn.diktat.ruleset.utils.isStandardMethod
-import org.cqfn.diktat.ruleset.utils.kDocTags
-import org.cqfn.diktat.ruleset.utils.parameterNames
-import org.cqfn.diktat.ruleset.utils.splitPathToDirs
+import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -217,18 +197,15 @@ class KdocMethods : Rule("kdoc-methods") {
                                 returnCheckFailed: Boolean
     ) {
         MISSING_KDOC_ON_FUNCTION.warnAndFix(configRules, emitWarn, isFixMode, name, node.startOffset) {
-            // fixme: indentation logic should be only inside IndentationRule
-            val indent = node.prevSibling { it.elementType == WHITE_SPACE }?.text
-                    ?.substringAfterLast("\n")?.count { it == ' ' } ?: 0
             val kDocTemplate = "/**\n" +
                     (missingParameters.joinToString("") { " * @param $it\n" } +
                             (if (returnCheckFailed) " * @return\n" else "") +
                             explicitlyThrownExceptions.joinToString("") { " * @throws $it\n" } +
                             " */\n"
-                            ).prependIndent(" ".repeat(indent))
-
-            // fixme could be added as proper CompositeElement
-            node.addChild(LeafPsiElement(KDOC, kDocTemplate), node.firstChildNode)
+                            )
+            val kdocNode = KotlinParser().createNode(kDocTemplate).findChildByType(KDOC)!!
+            node.appendNewlineMergingWhiteSpace(node.firstChildNode, node.firstChildNode)
+            node.addChild(kdocNode, node.firstChildNode)
         }
     }
 
