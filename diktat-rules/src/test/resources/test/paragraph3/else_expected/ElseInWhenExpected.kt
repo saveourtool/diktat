@@ -9,8 +9,8 @@ fun testWhenExpression() {
 
     when (directoryType) {
         TestEnum.ONE -> "d"
-        TestEnum.TWO -> "-"
 
+TestEnum.TWO -> "-"
 else -> {
 // this is a generated else block
 }}

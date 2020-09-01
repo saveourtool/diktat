@@ -9,7 +9,7 @@ fun testWhenExpression() {
 
     when (directoryType) {
         TestEnum.ONE -> "d"
-        TestEnum.TWO -> "-" }
+        TestEnum.TWO -> "-"}
 
     val noElse = when (directoryType) {
         TestEnum.ONE -> "d"
