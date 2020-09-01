@@ -184,6 +184,36 @@ class AnnotationNewLineRuleWarnTest {
 
     @Test
     @Tag(WarningNames.ANNOTATION_NEW_LINE)
+    fun `annotation secondary constructor test good`() {
+        lintMethod(AnnotationNewLineRule(),
+                """
+                    |public class Conf {
+                    |   @FirstAnnotation constructor(conf: Conf) {
+                    |   
+                    |   }
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.ANNOTATION_NEW_LINE)
+    fun `annotation secondary constructor test bad`() {
+        lintMethod(AnnotationNewLineRule(),
+                """
+                    |public class Conf {
+                    |   @FirstAnnotation @SecondAnnotation constructor(conf: Conf) {
+                    |   
+                    |   }
+                    |}
+                """.trimMargin(),
+                LintError(2,4, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @FirstAnnotation not on a single line", true),
+                LintError(2,21, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @SecondAnnotation not on a single line", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.ANNOTATION_NEW_LINE)
     fun `annotation constructor test bad`() {
         lintMethod(AnnotationNewLineRule(),
                 """

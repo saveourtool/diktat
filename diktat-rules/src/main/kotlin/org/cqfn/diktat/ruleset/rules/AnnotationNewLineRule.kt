@@ -2,12 +2,14 @@ package org.cqfn.diktat.ruleset.rules
 
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.FUN_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
+import com.pinterest.ktlint.core.ast.ElementType.SECONDARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.isWhiteSpace
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
@@ -34,7 +36,7 @@ class AnnotationNewLineRule : Rule("annotation-new-line") {
         isFixMode = autoCorrect
 
         when (node.elementType) {
-            CLASS, FUN, PRIMARY_CONSTRUCTOR -> checkAnnotation(node)
+            CLASS, FUN, PRIMARY_CONSTRUCTOR, SECONDARY_CONSTRUCTOR -> checkAnnotation(node)
         }
     }
 
@@ -86,14 +88,6 @@ class AnnotationNewLineRule : Rule("annotation-new-line") {
                 } else {
                     node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node)
                 }
-            }
-        }
-    }
-
-    private fun deleteUselessWhiteSpace(node: ASTNode?) {
-        if (node != null) {
-            if (node.treePrev.isWhiteSpace() && node.treePrev.textLength == 1) {
-                node.treeParent.removeChild(node.treePrev)
             }
         }
     }
