@@ -12,7 +12,7 @@ constructor() {
     }
 }
 
-class AnotherClass
+class AnotherClass 
 @Inject
 @SomeAnnotation
 constructor() {
