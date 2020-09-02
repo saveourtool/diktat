@@ -134,5 +134,5 @@ object WarningNames {
 
     const val ENUMS_SEPARATED: String = "ENUMS_SEPARATED"
 
-    const val SORT_RULE: String = "SORT_RULE"
+    const val WRONG_DECLARATIONS_ORDER: String = "WRONG_DECLARATIONS_ORDER"
 }

@@ -344,7 +344,7 @@
     "configuration": {}
   },
   {
-    "name": "SORT_RULE",
+    "name": "WRONG_DECLARATIONS_ORDER",
     "enabled": true,
     "configuration": {}
   }

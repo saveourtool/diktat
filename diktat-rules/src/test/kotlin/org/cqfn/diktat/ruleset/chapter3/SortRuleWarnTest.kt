@@ -14,7 +14,7 @@ class SortRuleWarnTest {
     private val ruleId = "$DIKTAT_RULE_SET_ID:sort-rule"
 
     @Test
-    @Tag(WarningNames.SORT_RULE)
+    @Tag(WarningNames.WRONG_DECLARATIONS_ORDER)
     fun `check simple correct enum`() {
         lintMethod(SortRule(),
                 """
@@ -30,7 +30,7 @@ class SortRuleWarnTest {
     }
 
     @Test
-    @Tag(WarningNames.SORT_RULE)
+    @Tag(WarningNames.WRONG_DECLARATIONS_ORDER)
     fun `check simple wrong enum`() {
         lintMethod(SortRule(),
                 """
@@ -47,7 +47,7 @@ class SortRuleWarnTest {
     }
 
     @Test
-    @Tag(WarningNames.SORT_RULE)
+    @Tag(WarningNames.WRONG_DECLARATIONS_ORDER)
     fun `check correct enum`() {
         lintMethod(SortRule(),
                 """
@@ -62,7 +62,7 @@ class SortRuleWarnTest {
     }
 
     @Test
-    @Tag(WarningNames.SORT_RULE)
+    @Tag(WarningNames.WRONG_DECLARATIONS_ORDER)
     fun `check wrong enum without semicolon`() {
         lintMethod(SortRule(),
                 """
@@ -77,7 +77,7 @@ class SortRuleWarnTest {
     }
 
     @Test
-    @Tag(WarningNames.SORT_RULE)
+    @Tag(WarningNames.WRONG_DECLARATIONS_ORDER)
     fun `check wrong enum without semicolon and last comma`() {
         lintMethod(SortRule(),
                 """
@@ -92,7 +92,7 @@ class SortRuleWarnTest {
     }
 
     @Test
-    @Tag(WarningNames.SORT_RULE)
+    @Tag(WarningNames.WRONG_DECLARATIONS_ORDER)
     fun `check correct enum without semicolon and last comma`() {
         lintMethod(SortRule(),
                 """
@@ -106,7 +106,7 @@ class SortRuleWarnTest {
     }
 
     @Test
-    @Tag(WarningNames.SORT_RULE)
+    @Tag(WarningNames.WRONG_DECLARATIONS_ORDER)
     fun `check wrong enum with fun`() {
         lintMethod(SortRule(),
                 """
@@ -126,7 +126,7 @@ class SortRuleWarnTest {
     }
 
     @Test
-    @Tag(WarningNames.SORT_RULE)
+    @Tag(WarningNames.WRONG_DECLARATIONS_ORDER)
     fun `check wrong properties between non conts`() {
         lintMethod(SortRule(),
                 """
@@ -145,7 +145,7 @@ class SortRuleWarnTest {
     }
 
     @Test
-    @Tag(WarningNames.SORT_RULE)
+    @Tag(WarningNames.WRONG_DECLARATIONS_ORDER)
     fun `check wrong properties between non const more than one group`() {
         lintMethod(SortRule(),
                 """
@@ -167,7 +167,7 @@ class SortRuleWarnTest {
     }
 
     @Test
-    @Tag(WarningNames.SORT_RULE)
+    @Tag(WarningNames.WRONG_DECLARATIONS_ORDER)
     fun `check wrong properties between non const more than one group only one`() {
         lintMethod(SortRule(),
                 """
@@ -188,7 +188,7 @@ class SortRuleWarnTest {
     }
 
     @Test
-    @Tag(WarningNames.SORT_RULE)
+    @Tag(WarningNames.WRONG_DECLARATIONS_ORDER)
     fun `check correct simple properties`() {
         lintMethod(SortRule(),
                 """
@@ -203,7 +203,7 @@ class SortRuleWarnTest {
     }
 
     @Test
-    @Tag(WarningNames.SORT_RULE)
+    @Tag(WarningNames.WRONG_DECLARATIONS_ORDER)
     fun `check correct simple properties between non const`() {
         lintMethod(SortRule(),
                 """

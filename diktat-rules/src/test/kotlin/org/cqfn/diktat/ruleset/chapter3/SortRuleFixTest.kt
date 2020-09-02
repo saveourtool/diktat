@@ -9,13 +9,13 @@ import org.junit.jupiter.api.Test
 class SortRuleFixTest : FixTestBase("test/paragraph3/sort_error", SortRule()) {
 
     @Test
-    @Tag(WarningNames.SORT_RULE)
+    @Tag(WarningNames.WRONG_DECLARATIONS_ORDER)
     fun `should fix enum order`() {
         fixAndCompare("EnumSortExpected.kt", "EnumSortTest.kt")
     }
 
     @Test
-    @Tag(WarningNames.SORT_RULE)
+    @Tag(WarningNames.WRONG_DECLARATIONS_ORDER)
     fun `should fix constants order`() {
         fixAndCompare("ConstantsExpected.kt", "ConstantsTest.kt")
     }
