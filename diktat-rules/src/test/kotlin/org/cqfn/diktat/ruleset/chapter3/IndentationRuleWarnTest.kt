@@ -222,6 +222,56 @@ class IndentationRuleWarnTest {
 
     @Test
     @Tag(WarningNames.WRONG_INDENTATION)
+    fun `loops and conditionals without braces should be indented - positive example`() {
+        lintMethod(IndentationRule(),
+                """
+                    |fun foo() {
+                    |    for (i in 1..100)
+                    |        println(i)
+                    |    
+                    |    do
+                    |        println()
+                    |    while (condition)
+                    |    
+                    |    if (condition)
+                    |        bar()
+                    |    else
+                    |        baz()
+                    |}
+                    |
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
+    fun `loops and conditionals without braces should be indented`() {
+        lintMethod(IndentationRule(),
+                """
+                    |fun foo() {
+                    |    for (i in 1..100)
+                    |    println(i)
+                    |    
+                    |    do
+                    |    println()
+                    |    while (condition)
+                    |    
+                    |    if (condition)
+                    |    bar()
+                    |    else
+                    |    baz()
+                    |}
+                    |
+                """.trimMargin(),
+                LintError(3, 1, ruleId, warnText(8, 4), true),
+                LintError(6, 1, ruleId, warnText(8, 4), true),
+                LintError(10, 1, ruleId, warnText(8, 4), true),
+                LintError(12, 1, ruleId, warnText(8, 4), true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
     @Disabled("todo")
     fun `opening braces should not increase indent when placed on the same line`() {
         lintMethod(IndentationRule(),

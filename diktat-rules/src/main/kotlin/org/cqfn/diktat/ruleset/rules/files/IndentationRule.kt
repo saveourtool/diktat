@@ -20,6 +20,7 @@ import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getAllLeafsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.indentBy
 import org.cqfn.diktat.ruleset.utils.indentation.AssignmentOperatorChecker
+import org.cqfn.diktat.ruleset.utils.indentation.ConditionalsAndLoopsWithoutBracesChecker
 import org.cqfn.diktat.ruleset.utils.indentation.CustomIndentationChecker
 import org.cqfn.diktat.ruleset.utils.indentation.DotCallChecker
 import org.cqfn.diktat.ruleset.utils.indentation.ExpressionIndentationChecker
@@ -68,13 +69,14 @@ class IndentationRule : Rule("indentation") {
         configuration = IndentationConfig(configRules.getRuleConfig(WRONG_INDENTATION)?.configuration
                 ?: mapOf())
         customIndentationCheckers = listOf(
-                AssignmentOperatorChecker(configuration),
-                SuperTypeListChecker(configuration),
-                ValueParameterListChecker(configuration),
-                ExpressionIndentationChecker(configuration),
-                DotCallChecker(configuration),
-                KDocIndentationChecker(configuration)
-        )
+                ::AssignmentOperatorChecker,
+                ::ConditionalsAndLoopsWithoutBracesChecker,
+                ::SuperTypeListChecker,
+                ::ValueParameterListChecker,
+                ::ExpressionIndentationChecker,
+                ::DotCallChecker,
+                ::KDocIndentationChecker
+        ).map { it.invoke(configuration) }
 
         if (node.elementType == FILE) {
             if (checkIsIndentedWithSpaces(node)) {
