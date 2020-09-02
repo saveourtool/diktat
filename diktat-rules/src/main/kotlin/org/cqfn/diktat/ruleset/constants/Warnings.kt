@@ -78,7 +78,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     WRONG_WHITESPACE(true, "incorrect usage of whitespaces for code separation"),
     TOO_MANY_CONSECUTIVE_SPACES(true, "too many consecutive spaces"),
     ENUMS_SEPARATED(true, "split enumeration error"),
-    SORT_RULE(true, "the order is wrong"),
+    WRONG_DECLARATIONS_ORDER(true, "declarations of constants and enum members should be sorted alphabetically"),
     ;
 
     override fun ruleName(): String = this.name
