@@ -16,7 +16,7 @@ class LongNumericalValuesSeparatedWarnTest {
 
     private val rulesConfig: List<RulesConfig> = listOf(
             RulesConfig(Warnings.LONG_NUMERICAL_VALUES_SEPARATED.name, true,
-                    mapOf("maxLength" to "2"))
+                    mapOf("maxNumberLength" to "2"))
     )
 
     @Test

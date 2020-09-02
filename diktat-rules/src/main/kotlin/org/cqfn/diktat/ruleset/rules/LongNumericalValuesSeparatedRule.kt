@@ -16,7 +16,11 @@ class LongNumericalValuesSeparatedRule : Rule("long-numerical-values") {
     private lateinit var configRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
-    private val delimeterLength: Int = 3
+
+    companion object {
+        private const val DELIMITER_LENGTH: Int = 3
+        private const val MAX_NUMBER_LENGTH: Int = 3
+    }
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
@@ -46,7 +50,7 @@ class LongNumericalValuesSeparatedRule : Rule("long-numerical-values") {
         val resultRealPart = StringBuilder(nodePrefix(node.text))
 
         if (realPart.length > configuration.maxLength) {
-            val chunks = realPart.reversed().chunked(delimeterLength).reversed()
+            val chunks = realPart.reversed().chunked(DELIMITER_LENGTH).reversed()
             chunks.forEach {
                 resultRealPart.append(it.reversed()).append("_")
             }
@@ -55,7 +59,7 @@ class LongNumericalValuesSeparatedRule : Rule("long-numerical-values") {
 
         if (fractionalPart.size > 1 && fractionalPart[1].length > configuration.maxLength) {
             val resultFractionalPart = StringBuilder()
-            val chunks = fractionalPart[1].reversed().chunked(delimeterLength).reversed()
+            val chunks = fractionalPart[1].reversed().chunked(DELIMITER_LENGTH).reversed()
             chunks.forEach {
                 resultFractionalPart.append(it.reversed()).append("_")
             }
@@ -131,6 +135,6 @@ class LongNumericalValuesSeparatedRule : Rule("long-numerical-values") {
     }
 
     class LongNumericalValuesConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
-        val maxLength = config["maxLength"]?.toIntOrNull() ?: 3
+        val maxLength = config["maxNumberLength"]?.toIntOrNull() ?: MAX_NUMBER_LENGTH
     }
 }
