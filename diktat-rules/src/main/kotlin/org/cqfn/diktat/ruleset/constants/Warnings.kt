@@ -53,6 +53,9 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE(false, "files that contain multiple or no classes should contain description of what is inside of this file"),
     HEADER_NOT_BEFORE_PACKAGE(true, "header KDoc should be placed before package and imports"),
     COMMENTED_OUT_CODE(false, "you should not comment out code, use VCS to save it in history and delete this block"),
+    WHITESPACE_IN_COMMENT(true, "there should be a white space at the begining of the comment"),
+    COMMENT_NEW_LINE_ABOVE(true, "there should be a new line above the kDoc"),
+    FIRST_COMMENT_NO_SPACES(true, "there should not be any spaces before first comment"),
 
     // ======== chapter 3 ========
     FILE_IS_TOO_LONG(false, "file has more number of lines than expected"),

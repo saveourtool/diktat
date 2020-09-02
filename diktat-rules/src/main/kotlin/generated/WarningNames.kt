@@ -90,6 +90,12 @@ object WarningNames {
 
     const val COMMENTED_OUT_CODE: String = "COMMENTED_OUT_CODE"
 
+    const val WHITESPACE_IN_COMMENT: String = "WHITESPACE_IN_COMMENT"
+
+    const val COMMENT_NEW_LINE_ABOVE: String = "COMMENT_NEW_LINE_ABOVE"
+
+    const val FIRST_COMMENT_NO_SPACES: String = "FIRST_COMMENT_NO_SPACES"
+
     const val FILE_IS_TOO_LONG: String = "FILE_IS_TOO_LONG"
 
     const val FILE_CONTAINS_ONLY_COMMENTS: String = "FILE_CONTAINS_ONLY_COMMENTS"
