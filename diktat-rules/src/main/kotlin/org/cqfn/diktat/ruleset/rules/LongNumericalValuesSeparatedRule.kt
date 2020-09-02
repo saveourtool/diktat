@@ -44,22 +44,28 @@ class LongNumericalValuesSeparatedRule : Rule("long-numerical-values") {
     }
 
     private fun fixConstant(node: ASTNode, configuration: LongNumericalValuesConfiguration) {
-        val realPart = removePrefixSuffix(node.text)
+        val parts = node.text.split(".")
+        val realPart = removePrefixSuffix(parts[0])
 
-        val fractionalPart = node.text.split(".")
         val resultRealPart = StringBuilder(nodePrefix(node.text))
 
+        // We can get here in 2 cases:
+        // 1. When integer number is > maxLength
+        // 2. When float number realPart > maxLength
         if (realPart.length > configuration.maxLength) {
             val chunks = realPart.reversed().chunked(DELIMITER_LENGTH).reversed()
             chunks.forEach {
                 resultRealPart.append(it.reversed()).append("_")
             }
             resultRealPart.deleteCharAt(resultRealPart.length - 1)
+        } else {
+            // Here we get in 1 case: when realPart of float number is < maxLength
+            resultRealPart.append(realPart).append(".")
         }
 
-        if (fractionalPart.size > 1 && fractionalPart[1].length > configuration.maxLength) {
+        if (parts.size > 1 && parts[1].length > configuration.maxLength) {
             val resultFractionalPart = StringBuilder()
-            val chunks = fractionalPart[1].reversed().chunked(DELIMITER_LENGTH).reversed()
+            val chunks = parts[1].reversed().chunked(DELIMITER_LENGTH).reversed()
             chunks.forEach {
                 resultFractionalPart.append(it.reversed()).append("_")
             }
@@ -105,19 +111,20 @@ class LongNumericalValuesSeparatedRule : Rule("long-numerical-values") {
             return true
         }
 
-        val realPart = removePrefixSuffix(text)
+        val parts = text.split(".")
 
-        val fractionalPart = text.split(".")
+        val realPart = removePrefixSuffix(parts[0])
 
-        if (fractionalPart.size > 1) {
-            return fractionalPart[1].length < configuration.maxLength
+
+        if (parts.size > 1) {
+            return parts[1].length < configuration.maxLength
         }
 
         return realPart.length < configuration.maxLength
     }
 
     private fun checkBlocks(text: String, configuration: LongNumericalValuesConfiguration, node: ASTNode) {
-        val blocks = text.split("_")
+        val blocks = text.split("_", ".")
 
         blocks.forEach {
             if (it.length > configuration.maxLength) {

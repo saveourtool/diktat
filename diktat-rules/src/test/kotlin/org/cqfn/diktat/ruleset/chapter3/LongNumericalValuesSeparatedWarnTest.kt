@@ -30,7 +30,8 @@ class LongNumericalValuesSeparatedWarnTest {
                     |   val socialSecurityNumber = 999999999L
                     |   val hexBytes = 0xFFECDE5E
                     |   val bytes = 0b110100110_01101001_10010100_10010010
-                    |   val flo = 192.31234134134
+                    |   val flo = 192.312341341344355345
+                    |   val flo2 = 192.31234134134435_5345
                     |}
                 """.trimMargin(),
                 LintError(2,21, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 100000000000", true),
@@ -38,7 +39,8 @@ class LongNumericalValuesSeparatedWarnTest {
                 LintError(4,31, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 999999999L", true),
                 LintError(5,19, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 0xFFECDE5E", true),
                 LintError(6,16, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 110100110", false),
-                LintError(7,14, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 192.31234134134", true)
+                LintError(7,14, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 192.312341341344355345", true),
+                LintError(8,15, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 31234134134435", false)
         )
     }
 
