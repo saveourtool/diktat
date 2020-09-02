@@ -15,6 +15,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import java.lang.StringBuilder
 
@@ -70,7 +71,9 @@ class AnnotationNewLineRule : Rule("annotation-new-line") {
             }
 
             if(leftSide) {
-                node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node)
+                if (node.treeParent.treeParent.treePrev.isWhiteSpace()) {
+                    (node.treeParent.treeParent.treePrev as LeafPsiElement).replaceWithText("\n")
+                }
             }
         }
     }
