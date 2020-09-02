@@ -23,6 +23,7 @@ import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtIfExpression
+import org.jetbrains.kotlin.psi.KtObjectDeclaration
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.siblings
 import org.slf4j.Logger
@@ -244,8 +245,7 @@ fun ASTNode.findAllNodesWithSpecificType(elementType: IElementType): List<ASTNod
  */
 fun ASTNode.isClassEnum(): Boolean = (psi as? KtClass)?.isEnum() ?: false
 
-fun ASTNode.isCompanionObject(): Boolean =
-        this.elementType == OBJECT_DECLARATION && this.hasChildOfType(OBJECT_KEYWORD) && this.firstChildNode.hasChildOfType(COMPANION_KEYWORD)
+fun ASTNode.isCompanionObject(): Boolean = this.psi is KtObjectDeclaration
 
 /**
  * This method finds first parent node from the sequence of parents that has specified elementType
