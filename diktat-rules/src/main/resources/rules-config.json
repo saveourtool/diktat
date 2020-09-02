@@ -342,5 +342,10 @@
     "name": "ENUMS_SEPARATED",
     "enabled": true,
     "configuration": {}
+  },
+  {
+    "name": "SORT_RULE",
+    "enabled": true,
+    "configuration": {}
   }
 ]

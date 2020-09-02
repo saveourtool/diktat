@@ -1,11 +1,14 @@
 package org.cqfn.diktat.ruleset.utils
 
 import com.pinterest.ktlint.core.ast.ElementType
+import com.pinterest.ktlint.core.ast.ElementType.COMPANION_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.CONST_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.INTERNAL_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
+import com.pinterest.ktlint.core.ast.ElementType.OBJECT_DECLARATION
+import com.pinterest.ktlint.core.ast.ElementType.OBJECT_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PRIVATE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PROTECTED_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PUBLIC_KEYWORD
@@ -240,6 +243,9 @@ fun ASTNode.findAllNodesWithSpecificType(elementType: IElementType): List<ASTNod
  * Check a node of type CLASS if it is a enum class
  */
 fun ASTNode.isClassEnum(): Boolean = (psi as? KtClass)?.isEnum() ?: false
+
+fun ASTNode.isCompanionObject(): Boolean =
+        this.elementType == OBJECT_DECLARATION && this.hasChildOfType(OBJECT_KEYWORD) && this.firstChildNode.hasChildOfType(COMPANION_KEYWORD)
 
 /**
  * This method finds first parent node from the sequence of parents that has specified elementType

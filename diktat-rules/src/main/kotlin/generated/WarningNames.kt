@@ -133,4 +133,6 @@ object WarningNames {
     const val TOO_MANY_CONSECUTIVE_SPACES: String = "TOO_MANY_CONSECUTIVE_SPACES"
 
     const val ENUMS_SEPARATED: String = "ENUMS_SEPARATED"
+
+    const val SORT_RULE: String = "SORT_RULE"
 }
