@@ -71,6 +71,8 @@ class AnnotationNewLineRule : Rule("annotation-new-line") {
             }
 
             if(leftSide) {
+                // Current node is ANNOTATION_ENTRY. treeParent(ModifierList) -> treeParent(PRIMARY_CONSTRUCTOR)
+                // Checks if there is a white space before grandparent node
                 if (node.treeParent.treeParent.treePrev.isWhiteSpace()) {
                     (node.treeParent.treeParent.treePrev as LeafPsiElement).replaceWithText("\n")
                 }
