@@ -7,13 +7,8 @@
 | ------------------- | ------------------------------------------------------------ |
 | [0 Intro](#c0.1)    | [Purpose](#c0.1), [General principles](#c0.2), [Terminology](#c0.3), [Scope](#c0.4), [Exception](#c0.5) |
 | [1 Naming](#c1)     | [Identifiers](#c1.1), [Package naming](#c1.2), [Classes, enumeration and interfaces](#c1.3), [Functions](#c1.4), [Constants](#c1.5), [Variables](#c1.6) |
-| [2 Comments](#c2)   | [Kdoc](#c2.1), [File header](#c2.2), [Function header comments](#c2.3), [Code comments](#c2.4), [注释的语言](#c2.5) |
-| [3 排版格式](#c3)   | [大括号](#c3.1) [缩进](#c3.2) [行宽](#c3.3) [换行](#c3.4) [空白](#c3.5) [枚举](#c3.6) [变量](#c3.7) [数组](#c3.8) [when表达式](#c3.9) [注解](#c3.10) [注释排版](#c3.11) [修饰符](#c3.12) |
-| [4 变量和类型](#c4) | [变量](#c4.1) [类型](#c4.2)|
-| [5 函数](#c5)      | [函数设计](#c5.1) [函数参数](#c5.2)|
-| [6 类和接口](#c6)   | [类](#c6.1) [接口](#c6.2) |
-| [7 Kotlin-Java互操作](#c7)   | [Java(用于Kotlin调用)](#c7.1) [Kotlin(用于Java调用)](#c7.2) |
-| [附录](#appendix)   | [参考](#reference) [贡献者](#contributor)|
+| [2 Comments](#c2)   | [Kdoc](#c2.1), [File header](#c2.2), [Function header comments](#c2.3), [Code comments](#c2.4) |
+| [3 General formal](#c3)   | [File-related rules](#c3.1) [Indentation](#c3.2) [Empty blocks](#c3.3) [Line width](#c3.4) [Line breaks (newlines)](#c3.5) [Blank lines](#c3.6) [Horiznotal alignment](#c3.7) [Enumerations](#c3.8) [Variable declaration](#c3.9) [When expression](#c3.10) [Annotations](#c3.11) [Comment layout](#c3.12) [Modifiers](#c3.13) [Modifiers](#c3.14)|
 
 
  # <a name="c0"></a> Foreword
@@ -721,7 +716,7 @@ All variants of a (private) val logger should be placed in the beginning of the 
 
  #### <a name="r3.3"></a>Rule 3.3 Braces must be used in conditional statements and loop blocks
 
-1) In `if`, `else`, `for`, `do`, and `while` statements, even if the program body is empty or contains only one statement, braces should be used.
+In `if`, `else`, `for`, `do`, and `while` statements, even if the program body is empty or contains only one statement, braces should be used.
 In special Kotlin `when` statement no need to use braces for statements with 1 line. Valid example:
 
     ```kotlin
@@ -757,27 +752,6 @@ if (condition) {
 } else {
     println(0)
 }
-```
-
-2) No need to use braces for the body of lambdas and when-conditions (after an arrow)
-  
-Bad example:
-
-```kotlin
-val a = { b: String, c: String -> { // these braces are increasing complexity
-        null
-    }
-}
-```
-
-Valid examples: 
-
-```kotlin
-val a = { b: String, c: String ->
-        null
-}
-
-someValue.map { x -> x}
 ```
 
 #### <a name="r3.4"></a> Rule 3.4 For *non-empty* blocks and block structures, the opening brace is placed at the end of the line
@@ -905,6 +879,7 @@ Exceptions:
         :
             B()
     ```
+### <a name="c3.3"></a> Empty blocks
 
 #### <a name="s3.3"></a>Recommendation 3.3: try to avoid empty blocks; multiple braces should start a new line
 
@@ -942,18 +917,9 @@ try {
 }
 ```
 
-### <a name="c3.4"></a> Code lines
+### <a name="c3.4"></a>Line width
 
-### <a name="s3.4"></a> Recommendation 3.4 No more than one statement per line
-There should not be more than one code statement in one line (this recommendation prohibits usage of code with ";")
-Such code is prohibited as it makes code visibility worse:
-```kotlin
-val a = ""; val b = ""
-```
-
-### <a name="c3.5"></a>Line width
-
-### <a name="s3.5"></a> Recommendation 3.5: line length should be less than 120 symbols
+### <a name="s3.5"></a> Recommendation 3.4: line length should be less than 120 symbols
 
 This international code style prohibits non-latin (non ASCII) symbols in the code. But in case you would like to use them anyway - please use the following convention:
 
@@ -962,7 +928,7 @@ This international code style prohibits non-latin (non ASCII) symbols in the cod
   Generally, narrow characters are also called "half-width" characters. All characters in the ASCII character set include letters (such as `a`, `A`), numbers (such as `0`, `3`), and punctuation (such as `, `, `{`), spaces. All of them are narrow characters.
   Wide characters are also called "full-width" characters, Chinese characters (such as `中`, `文`), Chinese punctuation (`, `, `, `), full-width letters and numbers (such as `Ａ`、`３`) are all. These characters counted as 2 narrow characters.
   
-- Any line that exceeds this limit (120 narrow symbols) should be wrapped, as described in the [*Newline* section](#c3.4). 
+- Any line that exceeds this limit (120 narrow symbols) should be wrapped, as described in the [*Newline* section](#c3.5). 
 
  **Exceptions：**
 
@@ -970,7 +936,14 @@ This international code style prohibits non-latin (non ASCII) symbols in the cod
   2. The `package` and `import` statements.
   3. The command line in the comment so that it can be cut and pasted into the shell for use.
 
-### <a name="c3.4"></a> Line breaks (newlines)
+### <a name="c3.5"></a> Line breaks (newlines)
+
+### <a name="s3.4"></a> Recommendation 3.5 No more than one statement per line
+There should not be more than one code statement in one line (this recommendation prohibits usage of code with ";")
+Such code is prohibited as it makes code visibility worse:
+```kotlin
+val a = ""; val b = ""
+```
 
 #### <a name="r3.6"></a>Rule 3.6 line break style rules if the line is split
 
@@ -1063,7 +1036,7 @@ fun foo(
 }
  ```
 
-### <a name="c3.5"></a>Blank lines
+### <a name="c3.6"></a>Blank lines
 
 ### <a name="s3.6"></a>Recommendation 3.6: Reduce unnecessary blank lines and keep the code compact
 
@@ -1083,7 +1056,7 @@ fun baz() {
 }
 ```
 
-### Horizontal space
+###<a name="c3.7"></a> Horizontal space
 
 ### <a name="s3.7"></a> Recommendation 3.7: Usage of whitespace for code separation
 
@@ -1213,7 +1186,7 @@ enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean
     }
   ```
 
- #### <a name="c3.7"></a> Variable declaration
+#### <a name="c3.9"></a> Variable declaration
 
 ### <a name="r3.7"></a>Rule 3.7: declare one variable on one line
 
@@ -1223,7 +1196,7 @@ Each property or variable declaration should be declared on separate line. Bad e
 Local variables are declared close to the point where they are first used. THis will minimize their scope.
 Local variable declarations are usually initialized or initialized immediately after the declaration. The member fields of the class should be declared collectively. 
 
-### <a name="c3.11"></a>When
+### <a name="c3.10"></a>When expression
 
 ### <a name="r3.10"></a>Rule 3.10: 'when' statement must have else branch, unless when condition variable is enumerated or sealed type
 Each when statement contains an `else` statement group, even if it does not contain any code.
@@ -1231,7 +1204,7 @@ Each when statement contains an `else` statement group, even if it does not cont
 *Exception:* If a when statement of type `enum or sealed` contains all values of a enum - there is no need to have "else" branch.
 The compiler can issue a warning when it is missing.
 
-### <a name="c3.12"></a> Annotations
+### <a name="c3.11"></a> Annotations
 
 ### <a name="s3.11"></a> Recommendation 3.11: Each annotation applied to a class, method or constructor is on its own line
 
@@ -1249,7 +1222,7 @@ fun getNameIfPresent() { ... }
 ```kotlin
 @MustBeDocumented @CustomAnnotation loader: DataLoader
 ```
-### <a name="c3.13"></a> Comments layout
+### <a name="c3.12"></a> Comments layout
 
 Block comments are at the same indentation level as the surrounding code.
 Recommended examples:
@@ -1266,7 +1239,7 @@ class SomeClass {
 
  **Hint：** To have automatic formatting by IDEs use `/*...*/` block comments.
 
-### <a name="c3.14"></a> Modifiers
+### <a name="c3.13"></a> Modifiers
 
 ### <a name="s3.12"></a> Recommendation 3.12 If a declaration has multiple modifiers, always follow the sequence below
 Recommended sequence:
@@ -1316,6 +1289,8 @@ And better use other names instead of these identifiers.
 | 8 (eight)     | B                        | bt, nxt          |
 | n,h           | h,n                      | nr, head, height |
 | rn, m         | m,rn                     | mbr, item        |
+
+### <a name="c3.14"></a> Strings
 
 ### <a name="r3.8"></a>Rule 3.8: Concatenation Strings is prohibited when string fits one line, use raw strings and string templates instead.
 Kotlin significantly enhanced work with Strings:

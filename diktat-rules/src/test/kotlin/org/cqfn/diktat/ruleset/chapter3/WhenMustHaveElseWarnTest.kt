@@ -38,6 +38,7 @@ class WhenMustHaveElseWarnTest {
                     |       1 -> print("x is neither 1 nor 2")
                     |    }
                     |}
+                    |
                 """.trimMargin(),
                 LintError(2,5,ruleId, "${Warnings.WHEN_WITHOUT_ELSE.warnText()} else was not found", true)
         )
@@ -51,6 +52,22 @@ class WhenMustHaveElseWarnTest {
                     |fun foo() {
                     |    val obj = when(a) {
                     |       1 -> print("x is neither 1 nor 2")
+                    |    }
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WHEN_WITHOUT_ELSE)
+    fun `when expression in func test good 2`(){
+        lintMethod(WhenMustHaveElseRule(),
+                """
+                    |fun foo() {
+                    |    val x = listOf<Int>().map {
+                    |           when(it) {
+                    |               1 -> it * 2
+                    |           }
                     |    }
                     |}
                 """.trimMargin()

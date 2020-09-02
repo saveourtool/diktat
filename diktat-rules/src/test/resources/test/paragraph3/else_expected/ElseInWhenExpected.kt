@@ -10,10 +10,9 @@ fun testWhenExpression() {
     when (directoryType) {
         TestEnum.ONE -> "d"
         TestEnum.TWO -> "-"
-else -> {
+ else -> {
 // this is a generated else block
-}
-}
+}}
 
     val noElse = when (directoryType) {
         TestEnum.ONE -> "d"
@@ -29,7 +28,4 @@ fun eval(e: Expr): Int =
         when (e) {
             is Expr.Num -> e.value
             is Expr.Sum -> eval(e.right) + eval(e.left)
-else -> {
-// this is a generated else block
-}
         }
