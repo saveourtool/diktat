@@ -1088,11 +1088,11 @@ fun baz() {
   - Safe access modifiers: `?.` and `!!`, that stay on the same line with an object name: `object?.toString()`
   - Operator `..` for creating ranges, e.g. `1..100`
 
-  5. Spaces should be used after ',' and ':' (also ';', but please note that this code style prohibits usage of ';' in the middle of the line, see [rule 3.4](#s3.4)) (except cases when those symbols are in the end of line). There should be no whitespaces in the end of line.
-  There should be no spaces before `,`, `:` and `;`. The only exceptions for colon are the following:
+  5. Spaces should be used *after* ',' and ':' (also ';', but please note that this code style prohibits usage of ';' in the middle of the line, see [rule 3.4](#s3.4)) (except cases when those symbols are in the end of line). There should be no whitespaces in the end of line.
+  The only exception when there should be no spaces *after* colon is when colon is used in annotation to specify use-site target (e.g. `@param:JsonProperty`)
+  There should be no spaces *before* `,`, `:` and `;`. The only exceptions for colon are the following:
   - when `:` is used to separate a type and a supertype, including anonimous object (after `object` keyword)
   - when delegating to a superclass constructor or a different constructor of the same class
-  - when colon is used in annotation to specify use-site target (e.g. `@param:JsonProperty`)
   
   Good example:
   ```kotlin
