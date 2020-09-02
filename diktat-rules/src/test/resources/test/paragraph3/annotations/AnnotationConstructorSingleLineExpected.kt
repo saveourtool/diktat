@@ -11,3 +11,10 @@ constructor() {
 
     }
 }
+
+class AnotherClass
+@Inject
+@SomeAnnotation
+constructor() {
+
+}

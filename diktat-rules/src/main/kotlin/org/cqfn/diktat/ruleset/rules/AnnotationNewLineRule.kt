@@ -70,9 +70,6 @@ class AnnotationNewLineRule : Rule("annotation-new-line") {
             }
 
             if(leftSide) {
-                if (node.treePrev?.isWhiteSpace() == true) {
-                    node.removeChild(node.treePrev)
-                }
                 node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node)
             }
         }
