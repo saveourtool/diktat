@@ -17,20 +17,20 @@ class KdocMethodsFull {
 
     companion object {
         /**
-         * @param a
-         * @throws IllegalStateException
-         */
-        fun test3(a: Int) {
+ * @param a
+ * @throws IllegalStateException
+ */
+fun test3(a: Int) {
             throw IllegalStateException("Lorem ipsum")
         }
     }
 
     private class Nested {
         /**
-         * @param a
-         * @param b
-         * @return
-         */
-        fun test4(a: Int, b: Int): Int = 42
+ * @param a
+ * @param b
+ * @return
+ */
+fun test4(a: Int, b: Int): Int = 42
     }
 }
