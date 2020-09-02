@@ -155,8 +155,9 @@ class BlockStructureBraces : Rule("block-structure") {
         if (!configuration.openBrace) return
         val nodeBefore = node.findChildByType(beforeType)
         val braceSpace = nodeBefore?.treePrev
-        if (braceSpace == null || checkBraceNode(braceSpace, true))
-            BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "incorrect newline before opening brace",
+        if (braceSpace == null || checkBraceNode(braceSpace, true)) {
+            val freeText = if (braceSpace?.elementType != WHITE_SPACE) "no space before open brace" else "incorrect newline before opening brace"
+            BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, freeText,
                     (braceSpace ?: node).startOffset) {
                 if (braceSpace == null || braceSpace.elementType != WHITE_SPACE) {
                     node.addChild(PsiWhiteSpaceImpl(" "), nodeBefore)
@@ -164,6 +165,7 @@ class BlockStructureBraces : Rule("block-structure") {
                     (braceSpace as LeafPsiElement).replaceWithText(" ")
                 }
             }
+        }
         checkOpenBraceEndLine(node, beforeType)
     }
 

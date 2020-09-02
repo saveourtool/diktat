@@ -7,7 +7,6 @@ import org.cqfn.diktat.ruleset.constants.Warnings.BRACES_BLOCK_STRUCTURE_ERROR
 import org.cqfn.diktat.ruleset.rules.BlockStructureBraces
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.util.lintMethod
-import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
@@ -470,7 +469,7 @@ class BlockStructureBracesWarnTest {
                     |   }
                     |}
                 """.trimMargin(),
-                LintError(4, 11, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect newline before opening brace", true)
+                LintError(4, 11, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} no space before open brace", true)
         )
     }
 
