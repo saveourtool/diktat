@@ -22,6 +22,7 @@
         <commons-cli.version>1.4</commons-cli.version>
         <diktat-check.version>1.0.2</diktat-check.version>
         <kotlinpoet.version>1.6.0</kotlinpoet.version>
+        <detekt.version>1.11.0</detekt.version>
     </properties>
 
     <modules>
@@ -225,9 +226,26 @@
             <!-- ========= CI/CD tools========== -->
 
             <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.1.2</version>
+                <executions>
+                    <execution>
+                        <id>detekt</id>
+                        <phase>none</phase>
+                        <goals>
+                            <goal>build-classpath</goal>
+                        </goals>
+                        <configuration>
+                            <outputProperty>maven.compile.classpath</outputProperty>
+                            <pathSeparator>${path.separator}</pathSeparator>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>com.github.ozsie</groupId>
                 <artifactId>detekt-maven-plugin</artifactId>
-                <version>1.11.0</version>
+                <version>${detekt.version}</version>
                 <executions>
                     <execution>
                         <id>detekt</id>
@@ -237,6 +255,7 @@
                         </goals>
                         <configuration>
                             <config>detekt-config.yml</config>
+                            <classPath>${maven.compile.classpath}</classPath>
                         </configuration>
                     </execution>
                 </executions>
