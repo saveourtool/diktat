@@ -344,6 +344,11 @@
     "configuration": {}
   },
   {
+    "name": "ANNOTATION_NEW_LINE",
+    "enabled": true,
+    "configuration": {}
+  },
+  {
     "name": "ENUMS_SEPARATED",
     "enabled": true,
     "configuration": {}
