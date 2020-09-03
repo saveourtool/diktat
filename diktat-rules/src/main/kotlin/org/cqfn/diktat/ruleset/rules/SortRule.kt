@@ -10,10 +10,11 @@ import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.SEMICOLON
-import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.nextSibling
+import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_DECLARATIONS_ORDER
 import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -35,9 +36,14 @@ class SortRule : Rule("sort-rule") {
         emitWarn = emit
         isFixMode = autoCorrect
 
-        if (node.isClassEnum() && node.hasChildOfType(CLASS_BODY))
+        val configuration = SortRuleConfiguration(
+                configRules.getRuleConfig(WRONG_DECLARATIONS_ORDER)?.configuration ?: mapOf()
+        )
+
+        if (node.isClassEnum() && node.hasChildOfType(CLASS_BODY) && configuration.sortEnum)
             sortEnum(node.findChildByType(CLASS_BODY)!!)
-        if (((node.psi as? KtObjectDeclaration)?.isCompanion() == true) && node.hasChildOfType(CLASS_BODY))
+        if (((node.psi as? KtObjectDeclaration)?.isCompanion() == true) && node.hasChildOfType(CLASS_BODY) &&
+                configuration.sortProperty)
             sortProperty(node.findChildByType(CLASS_BODY)!!)
     }
 
@@ -116,5 +122,10 @@ class SortRule : Rule("sort-rule") {
         if (isSpace)
             node.removeChild(node.lastChildNode)
         return Pair(isSemicolon, isSpace)
+    }
+
+    class SortRuleConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
+        val sortEnum = config["sortEnum"]?.toBoolean() ?: false
+        val sortProperty = config["sortProperty"]?.toBoolean() ?: false
     }
 }

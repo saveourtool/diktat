@@ -3,6 +3,7 @@ package org.cqfn.diktat.ruleset.chapter3
 import com.pinterest.ktlint.core.LintError
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_DECLARATIONS_ORDER
 import generated.WarningNames
+import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.SortRule
 import org.cqfn.diktat.util.lintMethod
@@ -12,6 +13,21 @@ import org.junit.jupiter.api.Test
 class SortRuleWarnTest {
 
     private val ruleId = "$DIKTAT_RULE_SET_ID:sort-rule"
+
+    private val rulesConfigNotSortEnum: List<RulesConfig> = listOf(
+            RulesConfig(WRONG_DECLARATIONS_ORDER.name, true,
+                    mapOf("sortEnum" to "false"))
+    )
+
+    private val rulesConfigNotSortProperty: List<RulesConfig> = listOf(
+            RulesConfig(WRONG_DECLARATIONS_ORDER.name, true,
+                    mapOf("sortProperty" to "false"))
+    )
+
+    private val rulesConfigNotSortBoth: List<RulesConfig> = listOf(
+            RulesConfig(WRONG_DECLARATIONS_ORDER.name, true,
+                    mapOf("sortProperty" to "false", "sortEnum" to "false"))
+    )
 
     @Test
     @Tag(WarningNames.WRONG_DECLARATIONS_ORDER)
@@ -127,6 +143,25 @@ class SortRuleWarnTest {
 
     @Test
     @Tag(WarningNames.WRONG_DECLARATIONS_ORDER)
+    fun `check wrong enum with fun but with config`() {
+        lintMethod(SortRule(),
+                """
+                    |enum class Warnings {
+                    |   WAITING {
+                    |      override fun signal() = TALKING
+                    |   }, 
+                    |   TALKING  {
+                    |      override fun signal() = TALKING
+                    |   },
+                    |   ;
+                    |   abstract fun signal(): ProtocolState
+                    |}
+                """.trimMargin(), rulesConfigList = rulesConfigNotSortEnum
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_DECLARATIONS_ORDER)
     fun `check wrong properties between non conts`() {
         lintMethod(SortRule(),
                 """
@@ -184,6 +219,56 @@ class SortRuleWarnTest {
                     |}
                 """.trimMargin(),
                 LintError(7, 8, ruleId, "${WRONG_DECLARATIONS_ORDER.warnText()} constant properties inside companion object order is incorrect", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_DECLARATIONS_ORDER)
+    fun `check wrong properties but with config`() {
+        lintMethod(SortRule(),
+                """
+                    |class A {
+                    |   companion object {
+                    |       private val log = "Log"
+                    |       private const val A = 4
+                    |       private const val D = 5
+                    |       private val SIMPLE_VALUE = listOf(IDENTIFIER, WHITE_SPACE, COMMA, SEMICOLON)
+                    |       private const val Daa = 5
+                    |       private const val Da = 5
+                    |       private const val Db = 5
+                    |   }
+                    |}
+                """.trimMargin(), rulesConfigList = rulesConfigNotSortProperty
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_DECLARATIONS_ORDER)
+    fun `check wrong properties but with both config`() {
+        lintMethod(SortRule(),
+                """
+                    |class A {
+                    |   companion object {
+                    |       private val log = "Log"
+                    |       private const val A = 4
+                    |       private const val D = 5
+                    |       private val SIMPLE_VALUE = listOf(IDENTIFIER, WHITE_SPACE, COMMA, SEMICOLON)
+                    |       private const val Daa = 5
+                    |       private const val Da = 5
+                    |       private const val Db = 5
+                    |   }
+                    |}
+                    |enum class Warnings {
+                    |   WAITING {
+                    |      override fun signal() = TALKING
+                    |   }, 
+                    |   TALKING  {
+                    |      override fun signal() = TALKING
+                    |   },
+                    |   ;
+                    |   abstract fun signal(): ProtocolState
+                    |}
+                """.trimMargin(), rulesConfigList = rulesConfigNotSortBoth
         )
     }
 

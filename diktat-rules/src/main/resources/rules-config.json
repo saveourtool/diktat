@@ -346,6 +346,9 @@
   {
     "name": "WRONG_DECLARATIONS_ORDER",
     "enabled": true,
-    "configuration": {}
+    "configuration": {
+      "sortEnum": true,
+      "sortProperty": true
+    }
   }
 ]
