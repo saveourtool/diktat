@@ -53,11 +53,8 @@ class LongNumericalValuesSeparatedRule : Rule("long-numerical-values") {
         // 1. When integer number is > maxLength
         // 2. When float number realPart > maxLength
         if (realPart.length > configuration.maxLength) {
-            val chunks = realPart.reversed().chunked(DELIMITER_LENGTH).reversed()
-            chunks.forEach {
-                resultRealPart.append(it.reversed()).append("_")
-            }
-            resultRealPart.deleteCharAt(resultRealPart.length - 1)
+            val chunks = realPart.reversed().chunked(configuration.maxBlockLength).reversed()
+            resultRealPart.append(chunks.joinToString(separator = "_") { it.reversed() })
         } else {
             // Here we get in 1 case: when realPart of float number is < maxLength
             resultRealPart.append(realPart).append(".")
@@ -65,11 +62,8 @@ class LongNumericalValuesSeparatedRule : Rule("long-numerical-values") {
 
         if (parts.size > 1 && parts[1].length > configuration.maxLength) {
             val resultFractionalPart = StringBuilder()
-            val chunks = parts[1].reversed().chunked(DELIMITER_LENGTH).reversed()
-            chunks.forEach {
-                resultFractionalPart.append(it.reversed()).append("_")
-            }
-            resultFractionalPart.deleteCharAt(resultFractionalPart.length - 1)
+            val chunks = parts[1].reversed().chunked(configuration.maxBlockLength).reversed()
+            resultFractionalPart.append(chunks.joinToString(separator = "_") { it.reversed() })
             resultFractionalPart.append(nodeSuffix(node.text))
 
             (node as LeafPsiElement).replaceWithText(resultRealPart.append(resultFractionalPart).toString())
@@ -80,25 +74,22 @@ class LongNumericalValuesSeparatedRule : Rule("long-numerical-values") {
         (node as LeafPsiElement).replaceWithText(resultRealPart.toString())
     }
 
-    private fun nodePrefix(node: String) : String {
-        if (node.contains("0b"))
+    private fun nodePrefix(nodeText: String) : String {
+        if (nodeText.startsWith("0b"))
             return "0b"
 
-        if(node.contains("0x"))
+        if(nodeText.startsWith("0x"))
             return "0x"
 
         return ""
     }
 
-    private fun nodeSuffix(node: String) : String {
-        if (node.contains("L"))
+    private fun nodeSuffix(nodeText: String) : String {
+        if (nodeText.endsWith("L"))
             return "L"
 
-        if (node.contains("f"))
+        if (nodeText.endsWith("f", true))
             return "f"
-
-        if (node.contains("F"))
-            return "F"
 
         return ""
     }
@@ -127,7 +118,7 @@ class LongNumericalValuesSeparatedRule : Rule("long-numerical-values") {
         val blocks = text.split("_", ".")
 
         blocks.forEach {
-            if (it.length > configuration.maxLength) {
+            if (it.length > configuration.maxBlockLength) {
                 Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warn(configRules, emitWarn, isFixMode, "this block is too long $it", node.startOffset)
             }
         }
@@ -143,5 +134,6 @@ class LongNumericalValuesSeparatedRule : Rule("long-numerical-values") {
 
     class LongNumericalValuesConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
         val maxLength = config["maxNumberLength"]?.toIntOrNull() ?: MAX_NUMBER_LENGTH
+        val maxBlockLength = config["maxBlockLength"]?.toIntOrNull() ?: DELIMITER_LENGTH
     }
 }

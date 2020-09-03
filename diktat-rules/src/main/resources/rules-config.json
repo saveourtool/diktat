@@ -347,7 +347,8 @@
     "name": "LONG_NUMERICAL_VALUES_SEPARATED",
     "enabled": true,
     "configuration": {
-      "maxNumberLength" : 8
+      "maxNumberLength" : "5",
+      "maxBlockLength" : "3"
     }
   }
 ]
