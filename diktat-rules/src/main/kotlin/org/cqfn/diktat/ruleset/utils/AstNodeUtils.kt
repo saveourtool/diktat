@@ -98,6 +98,11 @@ fun ASTNode.hasAnyChildOfTypes(vararg elementType: IElementType): Boolean =
         elementType.any { this.hasChildOfType(it) }
 
 /**
+ * checks if node has parent of type
+ */
+fun ASTNode.hasParent(type: IElementType) = parent(type) != null
+
+/**
  * check if node's text is empty (contains only left and right braces)
  * check text because some nodes have empty BLOCK element inside (lambda)
  */

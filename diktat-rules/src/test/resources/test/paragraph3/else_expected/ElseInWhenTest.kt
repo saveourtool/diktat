@@ -15,6 +15,11 @@ fun testWhenExpression() {
         TestEnum.ONE -> "d"
         TestEnum.TWO -> "a"
     }
+
+    val inLambda = {x: Int -> when(x) {
+        1 -> print(5)
+    }
+    }
 }
 
 sealed class Expr {
@@ -22,7 +27,8 @@ sealed class Expr {
     class Sum(val left: Expr, val right: Expr) : Expr()
 }
 fun eval(e: Expr): Int =
-        when (e) {
-            is Expr.Num -> e.value
-            is Expr.Sum -> eval(e.right) + eval(e.left)
-        }
+    when (e) {
+        is Expr.Num -> e.value
+        is Expr.Sum -> eval(e.right) + eval(e.left)
+    }
+
