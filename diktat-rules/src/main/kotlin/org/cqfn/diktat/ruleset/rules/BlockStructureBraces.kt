@@ -28,6 +28,7 @@ import com.pinterest.ktlint.core.ast.ElementType.WHEN
 import com.pinterest.ktlint.core.ast.ElementType.WHILE
 import com.pinterest.ktlint.core.ast.ElementType.WHILE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
@@ -72,7 +73,9 @@ class BlockStructureBraces : Rule("block-structure") {
     }
 
     private fun checkLambda(node: ASTNode, configuration: BlockStructureBracesConfiguration) {
-        checkCloseBrace(node, configuration)
+        val isSingleLineLambda = node.text.lines().size == 1
+        if (!isSingleLineLambda)
+            checkCloseBrace(node, configuration)
     }
 
     private fun checkClass(node: ASTNode, configuration: BlockStructureBracesConfiguration) {
@@ -153,7 +156,7 @@ class BlockStructureBraces : Rule("block-structure") {
         if (!configuration.openBrace) return
         val nodeBefore = node.findChildByType(beforeType)
         val braceSpace = nodeBefore?.treePrev
-        if (braceSpace == null || checkBraceNode(braceSpace, true))
+        if (braceSpace == null || checkBraceNode(braceSpace, true)) {
             BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "incorrect newline before opening brace",
                     (braceSpace ?: node).startOffset) {
                 if (braceSpace == null || braceSpace.elementType != WHITE_SPACE) {
@@ -162,6 +165,7 @@ class BlockStructureBraces : Rule("block-structure") {
                     (braceSpace as LeafPsiElement).replaceWithText(" ")
                 }
             }
+        }
         checkOpenBraceEndLine(node, beforeType)
     }
 
@@ -210,7 +214,7 @@ class BlockStructureBraces : Rule("block-structure") {
     }
 
     private fun checkBraceNode(node: ASTNode, shouldContainNewline: Boolean = false) =
-            (node.elementType != WHITE_SPACE || shouldContainNewline == node.text.contains("\n"))
+            shouldContainNewline == node.isWhiteSpaceWithNewline()
 
     class BlockStructureBracesConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
         val openBrace = config["openBraceNewline"]?.toBoolean() ?: true
