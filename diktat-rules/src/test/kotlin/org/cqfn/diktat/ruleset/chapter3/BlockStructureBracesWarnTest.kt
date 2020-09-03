@@ -468,8 +468,7 @@ class BlockStructureBracesWarnTest {
                     |       size.forEach { println(it) }
                     |   }
                     |}
-                """.trimMargin(),
-                LintError(4, 11, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} no space before open brace", true)
+                """.trimMargin()
         )
     }
 

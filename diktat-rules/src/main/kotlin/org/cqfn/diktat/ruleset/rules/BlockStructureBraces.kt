@@ -28,6 +28,7 @@ import com.pinterest.ktlint.core.ast.ElementType.WHEN
 import com.pinterest.ktlint.core.ast.ElementType.WHILE
 import com.pinterest.ktlint.core.ast.ElementType.WHILE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
@@ -156,8 +157,7 @@ class BlockStructureBraces : Rule("block-structure") {
         val nodeBefore = node.findChildByType(beforeType)
         val braceSpace = nodeBefore?.treePrev
         if (braceSpace == null || checkBraceNode(braceSpace, true)) {
-            val freeText = if (braceSpace?.elementType != WHITE_SPACE) "no space before open brace" else "incorrect newline before opening brace"
-            BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, freeText,
+            BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "incorrect newline before opening brace",
                     (braceSpace ?: node).startOffset) {
                 if (braceSpace == null || braceSpace.elementType != WHITE_SPACE) {
                     node.addChild(PsiWhiteSpaceImpl(" "), nodeBefore)
@@ -214,7 +214,7 @@ class BlockStructureBraces : Rule("block-structure") {
     }
 
     private fun checkBraceNode(node: ASTNode, shouldContainNewline: Boolean = false) =
-            (node.elementType != WHITE_SPACE || shouldContainNewline == node.text.contains("\n"))
+            shouldContainNewline == node.isWhiteSpaceWithNewline()
 
     class BlockStructureBracesConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
         val openBrace = config["openBraceNewline"]?.toBoolean() ?: true
