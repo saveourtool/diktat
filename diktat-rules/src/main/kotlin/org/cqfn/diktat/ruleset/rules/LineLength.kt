@@ -244,7 +244,7 @@ class LineLength : Rule("line-length") {
         var binaryText = ""
         binList.forEachIndexed { index, astNode ->
             binaryText += findAllText(astNode)
-            if (leftOffset + binaryText.length > wrongBinaryExpression.lineLength && index != 0) {
+            if (leftOffset + binaryText.length > wrongBinaryExpression.maximumLineLength && index != 0) {
                 val commonParent = astNode.parent({ it in binList[index - 1].parents() })!!
                 val nextNode = commonParent.findChildByType(OPERATION_REFERENCE)!!.treeNext
                 if (!nextNode.text.contains("\n"))
@@ -348,7 +348,7 @@ class LineLength : Rule("line-length") {
     private fun fixLongString(wrongProperty: LongLineFixableCases.PropertyWithTemplateEntry) {
         val wrongNode = wrongProperty.node
         val leftOffset = wrongProperty.leftOffset
-        val lineLength = wrongProperty.lineLength
+        val lineLength = wrongProperty.maximumLineLength
         val binList = wrongProperty.binList
         val allText = binList.joinToString("") { it.text }
         var binaryText = ""
@@ -394,10 +394,10 @@ class LineLength : Rule("line-length") {
     sealed class LongLineFixableCases {
         object None: LongLineFixableCases()
         class Comment(val node: ASTNode, val indexLastSpace: Int): LongLineFixableCases()
-        class Condition(val lineLength: Long, val leftOffset: Int, val binList: MutableList<ASTNode>): LongLineFixableCases()
+        class Condition(val maximumLineLength: Long, val leftOffset: Int, val binList: MutableList<ASTNode>): LongLineFixableCases()
         class Fun(val node: ASTNode): LongLineFixableCases()
         class Property(val node: ASTNode, val indexLastSpace: Int, val text: String): LongLineFixableCases()
-        class PropertyWithTemplateEntry(val node: ASTNode, val lineLength: Long,
+        class PropertyWithTemplateEntry(val node: ASTNode, val maximumLineLength: Long,
                                         val leftOffset: Int, val binList: MutableList<ASTNode>): LongLineFixableCases()
     }
 }
