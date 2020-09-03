@@ -60,13 +60,20 @@ class KdocCodeBlocksFormattingTest {
                     |    private val some = 5
                     |    
                     |    fun someFunc() {
-                    |       // First comment
-                    |       val first = 5
+                    |       /* First comment */
+                    |       val first = 5 // Some comment
                     |       
                     |       /**
                     |       * kDoc comment
                     |       */
                     |       val second = 6
+                    |       
+                    |       /**
+                    |       * asdasd
+                    |       */
+                    |       fun testFunc() {
+                    |       
+                    |       }
                     |    }
                     |}
                 """.trimMargin()

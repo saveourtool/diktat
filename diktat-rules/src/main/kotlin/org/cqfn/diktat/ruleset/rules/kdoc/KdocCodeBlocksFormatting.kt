@@ -3,6 +3,7 @@ package org.cqfn.diktat.ruleset.rules.kdoc
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
+import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
@@ -13,6 +14,8 @@ import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isWhiteSpace
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ruleset.constants.Warnings
+import org.cqfn.diktat.ruleset.constants.Warnings.COMMENT_BETWEEN_COMMENT_AND_CODE
 import org.cqfn.diktat.ruleset.constants.Warnings.COMMENT_NEW_LINE_ABOVE
 import org.cqfn.diktat.ruleset.constants.Warnings.FIRST_COMMENT_NO_SPACES
 import org.cqfn.diktat.ruleset.constants.Warnings.WHITESPACE_IN_COMMENT
@@ -38,43 +41,36 @@ class KdocCodeBlocksFormatting : Rule("kdoc-comments-codeblocks-formatting") {
         isFixMode = autoCorrect
         emitWarn = emit
 
-        if (node.elementType == EOL_COMMENT) {
-            checkWhiteSpaceBeforeComment(node)
-        }
-
         when (node.elementType) {
-            BLOCK -> handleBlockComments(node)
-            CLASS_BODY, CLASS -> handleClassComments(node)
-        }
+            EOL_COMMENT -> {
+                checkWhiteSpaceBeforeComment(node)
+                checkSpaceBetweenPropertyAndComment(node)
 
-    }
+                if (node.treeParent.elementType == BLOCK && node.treeParent.lastChildNode != node) {
+                    checkBlockComments(node)
+                } else if (node.treeParent.lastChildNode != node) {
+                    checkClassComment(node)
+                }
+            }
+            BLOCK_COMMENT -> {
+                checkSpaceBetweenPropertyAndComment(node)
 
-    private fun handleClassComments(node: ASTNode) {
-        val eolComments = node.getAllChildrenWithType(EOL_COMMENT)
-        val kDocComments = node.getAllChildrenWithType(KDOC)
+                if (node.treeParent.elementType == BLOCK && node.treeParent.lastChildNode != node) {
+                    checkBlockComments(node)
+                } else if (node.treeParent.lastChildNode != node) {
+                    checkClassComment(node)
+                }
+            }
 
-        eolComments.forEach {
-            checkClassComment(it)
-        }
-
-        kDocComments.forEach {
-            checkClassComment(it)
-        }
-    }
-
-    private fun handleBlockComments(node: ASTNode) {
-        val eolComments = node.getAllChildrenWithType(EOL_COMMENT)
-        val properties = node.getAllChildrenWithType(PROPERTY)
-
-        eolComments.forEach {
-            checkBlockComments(it)
-        }
-
-        properties.forEach {
-            if (it.hasChildOfType(KDOC)) {
-                checkBlockComments(it)
+            KDOC -> {
+                if (node.treeParent.treeParent.elementType == BLOCK) {
+                    checkBlockComments(node.treeParent) // node.treeParent is a Property.
+                } else {
+                    checkClassComment(node)
+                }
             }
         }
+
     }
 
     private fun checkBlockComments(node: ASTNode) {
@@ -96,8 +92,23 @@ class KdocCodeBlocksFormatting : Rule("kdoc-comments-codeblocks-formatting") {
         }
     }
 
+    private fun checkSpaceBetweenPropertyAndComment(node: ASTNode) {
+        if (node.treeParent.elementType == PROPERTY
+                && node.treeParent.firstChildNode != node) {
+            if (!node.treePrev.isWhiteSpace()) {
+                COMMENT_BETWEEN_COMMENT_AND_CODE.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset) {
+                    node.treeParent.addChild(PsiWhiteSpaceImpl(" "), node)
+                }
+            } else if (node.treePrev.text.length != 1) {
+                COMMENT_BETWEEN_COMMENT_AND_CODE.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset) {
+                    (node.treePrev as LeafPsiElement).replaceWithText(" ")
+                }
+            }
+        }
+    }
+
     private fun checkWhiteSpaceBeforeComment(node: ASTNode) {
-        if (node.text.takeWhile { it == '/' || it == ' ' }.length == 3)
+        if (node.text.takeWhile { it == '/' || it == ' ' || it == '*' }.length == 3)
             return
 
         WHITESPACE_IN_COMMENT.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset) {
@@ -136,12 +147,14 @@ class KdocCodeBlocksFormatting : Rule("kdoc-comments-codeblocks-formatting") {
         }
     }
 
+
+    //FIXME
     private fun isFirstComment(node: ASTNode): Boolean {
         if (node.treeParent.treeParent.elementType == CLASS_BODY) {
             return node.treeParent == node.treeParent.treeParent.getFirstChildWithType(node.treeParent.elementType)
         }
 
-        if (node.treeParent.elementType == BLOCK) {
+        if (node.treeParent.firstChildNode == node) {
             return node == node.treeParent.getFirstChildWithType(node.elementType)
         }
         return false
