@@ -102,9 +102,9 @@ class SortRule : Rule("sort-rule") {
         if (enumEntryList != sortList) {
             WRONG_DECLARATIONS_ORDER.warnAndFix(configRules, emitWarn, isFixMode, "enum entries order is incorrect", node.startOffset) {
                 val (isEndSemicolon, isEndSpace) = removeLastSemicolonAndSpace(enumEntryList.last())
-                val isLastHasComma = (sortList.last() != enumEntryList.last() && enumEntryList.last().hasChildOfType(COMMA))
+                val hasTrailingComma  = (sortList.last() != enumEntryList.last() && enumEntryList.last().hasChildOfType(COMMA))
                 swapSortNodes(sortList, enumEntryList, node)
-                if (!isLastHasComma) {
+                if (!hasTrailingComma ) {
                     enumEntryList.last().addChild(LeafPsiElement(COMMA, ","), null)
                     sortList.last().removeChild(sortList.last().findChildByType(COMMA)!!)
                 }

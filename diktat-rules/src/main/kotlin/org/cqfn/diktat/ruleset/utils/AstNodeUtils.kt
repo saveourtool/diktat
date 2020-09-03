@@ -1,14 +1,11 @@
 package org.cqfn.diktat.ruleset.utils
 
 import com.pinterest.ktlint.core.ast.ElementType
-import com.pinterest.ktlint.core.ast.ElementType.COMPANION_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.CONST_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.INTERNAL_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
-import com.pinterest.ktlint.core.ast.ElementType.OBJECT_DECLARATION
-import com.pinterest.ktlint.core.ast.ElementType.OBJECT_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PRIVATE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PROTECTED_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PUBLIC_KEYWORD
@@ -23,7 +20,6 @@ import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtIfExpression
-import org.jetbrains.kotlin.psi.KtObjectDeclaration
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.siblings
 import org.slf4j.Logger
