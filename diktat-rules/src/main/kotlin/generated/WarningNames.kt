@@ -135,4 +135,6 @@ object WarningNames {
     const val ANNOTATION_NEW_LINE: String = "ANNOTATION_NEW_LINE"
 
     const val ENUMS_SEPARATED: String = "ENUMS_SEPARATED"
+
+    const val WRONG_DECLARATIONS_ORDER: String = "WRONG_DECLARATIONS_ORDER"
 }
