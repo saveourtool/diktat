@@ -135,4 +135,6 @@ object WarningNames {
     const val ENUMS_SEPARATED: String = "ENUMS_SEPARATED"
 
     const val WHEN_WITHOUT_ELSE: String = "WHEN_WITHOUT_ELSE"
+
+    const val WRONG_DECLARATIONS_ORDER: String = "WRONG_DECLARATIONS_ORDER"
 }
