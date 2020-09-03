@@ -5,7 +5,7 @@ fun foo() {
     val ten = 10
     val creditCardNumber = 1_234_567_890_123_456L
     val socialSecurityNumber = 999_999_999L
-    val hexBytes = 0xFF_EC_DE_5E
-    val bytes = 0b11010010_01101001_10010100_10010010
+    val hexBytes = 0xFF_ECD_E5E
+    val bytes = 0b11_010_010_011_010_011_001_010_010_010_010
     val flo = 192.312_341_341_344_355_345
 }
