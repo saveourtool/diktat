@@ -1,6 +1,4 @@
 package test.paragraph3.annotations
-
-
 @SomeAnnotation @SecondAnnotation
 class SomeClass @Inject constructor() {
 
