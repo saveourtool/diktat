@@ -107,7 +107,7 @@ class LineLength : Rule("line-length") {
                 if ((newNode.elementType != KDOC_TEXT && newNode.elementType != KDOC_MARKDOWN_INLINE_LINK) ||
                         !isKDocValid(newNode)) {
                     positionByOffset = calculateLineColByOffset(node.treeParent.text)
-                    val fixableType = isFixable2(newNode, configuration)
+                    val fixableType = isFixable(newNode, configuration)
                     LONG_LINE.warnAndFix(configRules, emitWarn, isFixMode,
                             "max line length ${configuration.lineLength}, but was ${it.length}",
                             offset + node.startOffset, fixableType != LongLineFixableEnum.ERROR) {
@@ -119,7 +119,7 @@ class LineLength : Rule("line-length") {
         }
     }
 
-    private fun isFixable2(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableEnum {
+    private fun isFixable(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableEnum {
         var parent = wrongNode
         do {
             when (parent.elementType) {
