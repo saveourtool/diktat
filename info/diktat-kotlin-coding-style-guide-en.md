@@ -699,6 +699,7 @@ import javax.swing.event.ActionEvent;
 Notes:
 1. There should be no blank lines between properties without comments;
 2. Properties with comments/Kdoc should be separated by a newline before the comment/Kdoc
+3. Enum entries and constant properties (`const val`) in companion objects should be sorted alphabetically.
 
 The declaration part of a class or interface should be in the following order:
  - compile-time constants (for objects)
@@ -716,7 +717,7 @@ All variants of a (private) val logger should be placed in the beginning of the 
 
  #### <a name="r3.3"></a>Rule 3.3 Braces must be used in conditional statements and loop blocks
 
-1) In `if`, `else`, `for`, `do`, and `while` statements, even if the program body is empty or contains only one statement, braces should be used.
+In `if`, `else`, `for`, `do`, and `while` statements, even if the program body is empty or contains only one statement, braces should be used.
 In special Kotlin `when` statement no need to use braces for statements with 1 line. Valid example:
 
     ```kotlin
@@ -752,27 +753,6 @@ if (condition) {
 } else {
     println(0)
 }
-```
-
-2) No need to use braces for the body of lambdas and when-conditions (after an arrow)
-  
-Bad example:
-
-```kotlin
-val a = { b: String, c: String -> { // these braces are increasing complexity
-        null
-    }
-}
-```
-
-Valid examples: 
-
-```kotlin
-val a = { b: String, c: String ->
-        null
-}
-
-someValue.map { x -> x}
 ```
 
 #### <a name="r3.4"></a> Rule 3.4 For *non-empty* blocks and block structures, the opening brace is placed at the end of the line
@@ -1109,8 +1089,9 @@ fun baz() {
   - Safe access modifiers: `?.` and `!!`, that stay on the same line with an object name: `object?.toString()`
   - Operator `..` for creating ranges, e.g. `1..100`
 
-  5. Spaces should be used after ',' and ':' (also ';', but please note that this code style prohibits usage of ';' in the middle of the line, see [rule 3.4](#s3.4)) (except cases when those symbols are in the end of line). There should be no whitespaces in the end of line.
-  There should be no spaces before `,`, `:` and `;`. The only exceptions for colon are the following:
+  5. Spaces should be used *after* ',' and ':' (also ';', but please note that this code style prohibits usage of ';' in the middle of the line, see [rule 3.4](#s3.4)) (except cases when those symbols are in the end of line). There should be no whitespaces in the end of line.
+  The only exception when there should be no spaces *after* colon is when colon is used in annotation to specify use-site target (e.g. `@param:JsonProperty`)
+  There should be no spaces *before* `,`, `:` and `;`. The only exceptions for colon are the following:
   - when `:` is used to separate a type and a supertype, including anonimous object (after `object` keyword)
   - when delegating to a superclass constructor or a different constructor of the same class
   
