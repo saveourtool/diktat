@@ -4,12 +4,14 @@ import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
+import com.pinterest.ktlint.core.ast.ElementType.COMMA
 import com.pinterest.ktlint.core.ast.ElementType.CONST_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.SEMICOLON
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.nextSibling
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_DECLARATIONS_ORDER
@@ -17,6 +19,7 @@ import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
+import org.jetbrains.kotlin.psi.KtObjectDeclaration
 
 class SortRule : Rule("sort-rule") {
 
@@ -34,7 +37,7 @@ class SortRule : Rule("sort-rule") {
 
         if (node.isClassEnum() && node.hasChildOfType(CLASS_BODY))
             sortEnum(node.findChildByType(CLASS_BODY)!!)
-        if (node.isCompanionObject() && node.hasChildOfType(CLASS_BODY))
+        if (((node.psi as? KtObjectDeclaration)?.isCompanion() == true) && node.hasChildOfType(CLASS_BODY))
             sortProperty(node.findChildByType(CLASS_BODY)!!)
     }
 
@@ -46,10 +49,8 @@ class SortRule : Rule("sort-rule") {
         if (propertyList.size <= 1)
             return
         val consecutivePropertiesGroups = createOrderListOfList(propertyList)
-        val sortedListOfList = mutableListOf<List<ASTNode>>()
-        consecutivePropertiesGroups.forEach { nodesList ->
-            val sortList = nodesList.sortedBy { it.findChildByType(IDENTIFIER)!!.text }
-            sortedListOfList.add(sortList)
+        val sortedListOfList = consecutivePropertiesGroups.map { group ->
+            group.sortedBy { it.findChildByType(IDENTIFIER)!!.text }
         }
         consecutivePropertiesGroups.forEachIndexed { index, mutableList ->
             if (mutableList != sortedListOfList[index]) {
@@ -72,20 +73,19 @@ class SortRule : Rule("sort-rule") {
         }
     }
 
-    private fun createOrderListOfList(propertyList: List<ASTNode>): MutableList<MutableList<ASTNode>> {
+    private fun createOrderListOfList(propertyList: List<ASTNode>): List<List<ASTNode>> {
         val orderListOfList = mutableListOf<MutableList<ASTNode>>()
         var oneOrderList = mutableListOf(propertyList.first())
-        val propertyZipList = propertyList.zipWithNext()
-        propertyZipList.forEach { nodePair ->
-            if (nodePair.first.nextSibling { it.elementType == PROPERTY } == nodePair.second)
-                oneOrderList.add(nodePair.second)
+        propertyList.zipWithNext().forEach { (currentProperty, nextProperty) ->
+            if (currentProperty.nextSibling { it.elementType == PROPERTY } == nextProperty)
+                oneOrderList.add(nextProperty)
             else {
                 orderListOfList.add(oneOrderList)
-                oneOrderList = mutableListOf(nodePair.second)
+                oneOrderList = mutableListOf(nextProperty)
             }
         }
         orderListOfList.add(oneOrderList)
-        return orderListOfList
+        return orderListOfList.toList()
     }
 
     private fun sortEnum(node: ASTNode) {
@@ -95,18 +95,26 @@ class SortRule : Rule("sort-rule") {
         val sortList = enumEntryList.sortedBy { it.findChildByType(IDENTIFIER)!!.text }
         if (enumEntryList != sortList) {
             WRONG_DECLARATIONS_ORDER.warnAndFix(configRules, emitWarn, isFixMode, "enum entries order is incorrect", node.startOffset) {
-                removeLastSemicolonAndSpace(enumEntryList.last())
+                val (isEndSemicolon, isEndSpace) = removeLastSemicolonAndSpace(enumEntryList.last())
+                val isLastHasComma = (sortList.last() != enumEntryList.last() && enumEntryList.last().hasChildOfType(COMMA))
                 swapSortNodes(sortList, enumEntryList, node)
-                sortList.last().addChild(PsiWhiteSpaceImpl("\n"), null)
-                sortList.last().addChild(LeafPsiElement(SEMICOLON, ";"), null)
+                if (!isLastHasComma) {
+                    enumEntryList.last().addChild(LeafPsiElement(COMMA, ","), null)
+                    sortList.last().removeChild(sortList.last().findChildByType(COMMA)!!)
+                }
+                if (isEndSpace) sortList.last().addChild(PsiWhiteSpaceImpl("\n"), null)
+                if (isEndSemicolon) sortList.last().addChild(LeafPsiElement(SEMICOLON, ";"), null)
             }
         }
     }
 
-    private fun removeLastSemicolonAndSpace(node: ASTNode) {
-        if (node.hasChildOfType(SEMICOLON))
+    private fun removeLastSemicolonAndSpace(node: ASTNode): Pair<Boolean, Boolean> {
+        val isSemicolon = node.hasChildOfType(SEMICOLON)
+        if (isSemicolon)
             node.removeChild(node.findChildByType(SEMICOLON)!!)
-        if (node.lastChildNode.elementType == WHITE_SPACE)
+        val isSpace = node.lastChildNode.isWhiteSpaceWithNewline()
+        if (isSpace)
             node.removeChild(node.lastChildNode)
+        return Pair(isSemicolon, isSpace)
     }
 }

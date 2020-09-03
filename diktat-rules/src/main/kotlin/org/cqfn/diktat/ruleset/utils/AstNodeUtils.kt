@@ -245,8 +245,6 @@ fun ASTNode.findAllNodesWithSpecificType(elementType: IElementType): List<ASTNod
  */
 fun ASTNode.isClassEnum(): Boolean = (psi as? KtClass)?.isEnum() ?: false
 
-fun ASTNode.isCompanionObject(): Boolean = this.psi is KtObjectDeclaration
-
 /**
  * This method finds first parent node from the sequence of parents that has specified elementType
  */
