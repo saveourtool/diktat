@@ -39,8 +39,12 @@ class LongNumericalValuesSeparatedWarnTest {
                 LintError(4,31, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 999999999L", true),
                 LintError(5,19, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 0xFFECDE5E", true),
                 LintError(6,16, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 110100110", false),
+                LintError(6,16, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 01101001", false),
+                LintError(6,16, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 10010100", false),
+                LintError(6,16, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 10010010", false),
                 LintError(7,14, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 192.312341341344355345", true),
-                LintError(8,15, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 31234134134435", false)
+                LintError(8,15, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 31234134134435", false),
+                LintError(8,15, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 5345", false)
         )
     }
 
@@ -51,10 +55,10 @@ class LongNumericalValuesSeparatedWarnTest {
                 """
                     |fun foo() {
                     |   val oneMillion = 1_000_000_000_000
-                    |   val creditCardNumber = 1234_5678_9012_3456L
+                    |   val creditCardNumber = 1_234_567_890_123_456L
                     |   val socialSecurityNumber = 999_999_999L
                     |   val hexBytes = 0xFF_EC_DE_5E
-                    |   val bytes = 0b11010010_01101001_10010100_10010010
+                    |   val bytes = 0b11_010_010_011_010_011_001_010_010_010_010
                     |   val flo = 192.312_341_341_345
                     |}
                 """.trimMargin()
