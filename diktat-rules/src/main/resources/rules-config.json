@@ -350,7 +350,7 @@
       "maxNumberLength" : "5",
       "maxBlockLength" : "3"
     }
-  }
+  },
   {  
     "name": "WRONG_DECLARATIONS_ORDER",
     "enabled": true,
