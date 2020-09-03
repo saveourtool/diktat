@@ -110,7 +110,7 @@ class LineLength : Rule("line-length") {
                     val fixableType = isFixable(newNode, configuration)
                     LONG_LINE.warnAndFix(configRules, emitWarn, isFixMode,
                             "max line length ${configuration.lineLength}, but was ${it.length}",
-                            offset + node.startOffset, fixableType != LongLineFixableEnum.ERROR) {
+                            offset + node.startOffset, fixableType != LongLineFixableCases.None) {
                         fixError(fixableType)
                     }
                 }
@@ -119,7 +119,7 @@ class LineLength : Rule("line-length") {
         }
     }
 
-    private fun isFixable(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableEnum {
+    private fun isFixable(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
         var parent = wrongNode
         do {
             when (parent.elementType) {
@@ -138,46 +138,30 @@ class LineLength : Rule("line-length") {
                 else -> parent = parent.treeParent
             }
         } while (parent.treeParent != null)
-        return LongLineFixableEnum.ERROR
+        return LongLineFixableCases.None
     }
 
-    private fun checkFun(wrongNode: ASTNode): LongLineFixableEnum {
-        if (!wrongNode.hasChildOfType(BLOCK)) {
-            val funError = LongLineFixableEnum.FUN
-            funError.node = wrongNode
-            return funError
-        }
-        return LongLineFixableEnum.ERROR
+    private fun checkFun(wrongNode: ASTNode) =
+            if (!wrongNode.hasChildOfType(BLOCK)) LongLineFixableCases.Fun(wrongNode) else LongLineFixableCases.None
 
-    }
-
-    private fun checkComment(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableEnum {
+    private fun checkComment(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
         val leftOffset = positionByOffset(wrongNode.startOffset).second
         val indexLastSpace = wrongNode.text.substring(0, configuration.lineLength.toInt() - leftOffset).lastIndexOf(' ')
         if (indexLastSpace == -1)
-            return LongLineFixableEnum.ERROR
-        val comment = LongLineFixableEnum.COMMENT
-        comment.leftOffset = leftOffset
-        comment.indexLastSpace = indexLastSpace
-        comment.node = wrongNode
-        return comment
+            return LongLineFixableCases.None
+        return LongLineFixableCases.Comment(wrongNode, indexLastSpace)
     }
 
-    private fun checkCondition(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableEnum {
+    private fun checkCondition(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
         val leftOffset = positionByOffset(wrongNode.firstChildNode.startOffset).second
         val binList = mutableListOf<ASTNode>()
         searchBinaryExpression(wrongNode, binList)
         if (binList.size == 1)
-            return LongLineFixableEnum.ERROR
-        val condition = LongLineFixableEnum.CONDITION
-        condition.leftOffset = leftOffset
-        condition.binList = binList
-        condition.node = wrongNode
-        condition.configuration = configuration
-        return condition
+            return LongLineFixableCases.None
+        return LongLineFixableCases.Condition(configuration.lineLength, leftOffset, binList)
     }
 
-    private fun checkProperty(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableEnum {
+    private fun checkProperty(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
         var newParent = wrongNode
         while (newParent.hasChildOfType(PARENTHESIZED))
             newParent = wrongNode.findChildByType(PARENTHESIZED)!!
@@ -187,43 +171,27 @@ class LineLength : Rule("line-length") {
                 val binList = mutableListOf<ASTNode>()
                 dfsForProperty(wrongNode, binList)
                 if (binList.size == 1)
-                    return LongLineFixableEnum.ERROR
-                val property = LongLineFixableEnum.PROPERTY_WITH_BINARY
-                property.leftOffset = leftOffset
-                property.binList = binList
-                property.node = wrongNode
-                property.configuration = configuration
-                return property
+                    return LongLineFixableCases.None
+                return LongLineFixableCases.Condition(configuration.lineLength, leftOffset, binList)
             } else {
-                return LongLineFixableEnum.ERROR
+                return LongLineFixableCases.None
             }
         } else {
             val leftOffset = positionByOffset(newParent.findChildByType(STRING_TEMPLATE)!!.startOffset).second
             if (newParent.findChildByType(STRING_TEMPLATE)!!.hasChildOfType(LONG_STRING_TEMPLATE_ENTRY)) {
                 val binList = wrongNode.findChildByType(STRING_TEMPLATE)!!.getChildren(null).filter { it.elementType in PROPERTY_LIST }
                 if (binList.size == 1)
-                    return LongLineFixableEnum.ERROR
-                val property = LongLineFixableEnum.PROPERTY_WITH_TEMPLATE_ENTRY
-                property.node = wrongNode
-                property.configuration = configuration
-                property.leftOffset = leftOffset
-                property.binList  = binList.toMutableList()
-                return property
+                    return LongLineFixableCases.None
+                return LongLineFixableCases.PropertyWithTemplateEntry(wrongNode, configuration.lineLength, leftOffset, binList.toMutableList())
             } else {
                 if (leftOffset > configuration.lineLength - STRING_PART_OFFSET)
-                    return LongLineFixableEnum.ERROR
+                    return LongLineFixableCases.None
                 val text = wrongNode.findChildByType(STRING_TEMPLATE)!!.text.trim('"')
                 val lastCharIndex = configuration.lineLength.toInt() - leftOffset - STRING_PART_OFFSET
                 val indexLastSpace = (text.substring(0, lastCharIndex).lastIndexOf(' '))
                 if (indexLastSpace == -1)
-                    return LongLineFixableEnum.ERROR
-                val property = LongLineFixableEnum.PROPERTY
-                property.leftOffset = leftOffset
-                property.indexLastSpace = indexLastSpace
-                property.node = wrongNode
-                property.configuration = configuration
-                property.text = text
-                return property
+                    return LongLineFixableCases.None
+                return LongLineFixableCases.Property(wrongNode, indexLastSpace, text)
             }
         }
     }
@@ -241,20 +209,20 @@ class LineLength : Rule("line-length") {
         }
     }
 
-    private fun fixError(fixableType: LongLineFixableEnum) {
+    private fun fixError(fixableType: LongLineFixableCases) {
         when (fixableType) {
-            LongLineFixableEnum.FUN -> fixableType.node.appendNewlineMergingWhiteSpace(null, fixableType.node.findChildByType(EQ)!!.treeNext)
-            LongLineFixableEnum.COMMENT -> fixComment(fixableType)
-            LongLineFixableEnum.CONDITION, LongLineFixableEnum.PROPERTY_WITH_BINARY -> fixLongBinaryExpression(fixableType)
-            LongLineFixableEnum.PROPERTY -> createNodes(fixableType)
-            LongLineFixableEnum.PROPERTY_WITH_TEMPLATE_ENTRY -> fixLongString(fixableType)
-            LongLineFixableEnum.ERROR -> return
+            is LongLineFixableCases.Fun -> fixableType.node.appendNewlineMergingWhiteSpace(null, fixableType.node.findChildByType(EQ)!!.treeNext)
+            is LongLineFixableCases.Comment -> fixComment(fixableType)
+            is LongLineFixableCases.Condition -> fixLongBinaryExpression(fixableType)
+            is LongLineFixableCases.Property -> createSplitProperty(fixableType)
+            is LongLineFixableCases.PropertyWithTemplateEntry -> fixLongString(fixableType)
+            is LongLineFixableCases.None -> return
         }
     }
 
-    private fun fixComment(fixableType: LongLineFixableEnum) {
-        val wrongNode = fixableType.node
-        val indexLastSpace = fixableType.indexLastSpace
+    private fun fixComment(wrongComment: LongLineFixableCases.Comment) {
+        val wrongNode = wrongComment.node
+        val indexLastSpace = wrongComment.indexLastSpace
         val nodeText = "//${wrongNode.text.substring(indexLastSpace, wrongNode.text.length)}"
         wrongNode.treeParent.run {
             addChild(LeafPsiElement(EOL_COMMENT, wrongNode.text.substring(0, indexLastSpace)), wrongNode)
@@ -270,13 +238,13 @@ class LineLength : Rule("line-length") {
      * In this method we collect all binary expression in correct order and then
      * we collect their if their length less then max.
      */
-    private fun fixLongBinaryExpression(fixableType: LongLineFixableEnum) {
-        val leftOffset = fixableType.leftOffset
-        val binList = fixableType.binList
+    private fun fixLongBinaryExpression(wrongBinaryExpression: LongLineFixableCases.Condition) {
+        val leftOffset = wrongBinaryExpression.leftOffset
+        val binList = wrongBinaryExpression.binList
         var binaryText = ""
         binList.forEachIndexed { index, astNode ->
             binaryText += findAllText(astNode)
-            if (leftOffset + binaryText.length > fixableType.configuration.lineLength && index != 0) {
+            if (leftOffset + binaryText.length > wrongBinaryExpression.lineLength && index != 0) {
                 val commonParent = astNode.parent({ it in binList[index - 1].parents() })!!
                 val nextNode = commonParent.findChildByType(OPERATION_REFERENCE)!!.treeNext
                 if (!nextNode.text.contains("\n"))
@@ -377,11 +345,11 @@ class LineLength : Rule("line-length") {
         }
     }
 
-    private fun fixLongString(fixableType: LongLineFixableEnum) {
-        val wrongNode = fixableType.node
-        val leftOffset = fixableType.leftOffset
-        val lineLength = fixableType.configuration.lineLength
-        val binList = fixableType.binList
+    private fun fixLongString(wrongProperty: LongLineFixableCases.PropertyWithTemplateEntry) {
+        val wrongNode = wrongProperty.node
+        val leftOffset = wrongProperty.leftOffset
+        val lineLength = wrongProperty.lineLength
+        val binList = wrongProperty.binList
         val allText = binList.joinToString("") { it.text }
         var binaryText = ""
         binList.forEachIndexed { index, astNode ->
@@ -403,10 +371,10 @@ class LineLength : Rule("line-length") {
         }
     }
 
-    private fun createNodes(fixableType: LongLineFixableEnum) {
-        val node = fixableType.node
-        val indexLastSpace = fixableType.indexLastSpace
-        val text = fixableType.text
+    private fun createSplitProperty(wrongProperty: LongLineFixableCases.Property) {
+        val node = wrongProperty.node
+        val indexLastSpace = wrongProperty.indexLastSpace
+        val text = wrongProperty.text
         splitTextAndCreateNode(node, text, indexLastSpace)
     }
 
@@ -423,20 +391,13 @@ class LineLength : Rule("line-length") {
         val lineLength = config["lineLength"]?.toLongOrNull() ?: MAX_LENGTH
     }
 
-    enum class LongLineFixableEnum {
-        COMMENT,
-        CONDITION,
-        ERROR,
-        FUN,
-        PROPERTY,
-        PROPERTY_WITH_TEMPLATE_ENTRY,
-        PROPERTY_WITH_BINARY,
-        ;
-        open var leftOffset = 0
-        open var indexLastSpace = 0
-        open var text = ""
-        open lateinit var binList: MutableList<ASTNode>
-        open lateinit var node: ASTNode
-        open lateinit var configuration: LineLengthConfiguration
+    sealed class LongLineFixableCases {
+        object None: LongLineFixableCases()
+        class Comment(val node: ASTNode, val indexLastSpace: Int): LongLineFixableCases()
+        class Condition(val lineLength: Long, val leftOffset: Int, val binList: MutableList<ASTNode>): LongLineFixableCases()
+        class Fun(val node: ASTNode): LongLineFixableCases()
+        class Property(val node: ASTNode, val indexLastSpace: Int, val text: String): LongLineFixableCases()
+        class PropertyWithTemplateEntry(val node: ASTNode, val lineLength: Long,
+                                        val leftOffset: Int, val binList: MutableList<ASTNode>): LongLineFixableCases()
     }
 }
