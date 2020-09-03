@@ -137,8 +137,8 @@ class LineLengthWarnTest {
                     |   }
                     |}
                 """.trimMargin(),
-                LintError(14,1,ruleId,"${LONG_LINE.warnText()} max line length 120, but was 143", true),
-                LintError(18,1,ruleId,"${LONG_LINE.warnText()} max line length 120, but was 142", true)
+                LintError(14,1,ruleId,"${LONG_LINE.warnText()} max line length 120, but was 143", false),
+                LintError(18,1,ruleId,"${LONG_LINE.warnText()} max line length 120, but was 142", false)
         )
     }
 
@@ -218,8 +218,8 @@ class LineLengthWarnTest {
                     |   }
                     |}
                 """.trimMargin(),
-                LintError(8,1,ruleId,"${LONG_LINE.warnText()} max line length 120, but was 130", true),
-                LintError(9,1,ruleId,"${LONG_LINE.warnText()} max line length 120, but was 123", true)
+                LintError(8,1,ruleId,"${LONG_LINE.warnText()} max line length 120, but was 130", false),
+                LintError(9,1,ruleId,"${LONG_LINE.warnText()} max line length 120, but was 123", false)
         )
     }
 }
