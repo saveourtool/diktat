@@ -2,6 +2,7 @@ package org.cqfn.diktat.ruleset.rules
 
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.ARROW
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
@@ -192,7 +193,8 @@ class WhiteSpaceRule : Rule("horizontal-whitespace") {
     private fun handleColon(node: ASTNode) {
         when (node.treeParent.elementType) {
             CLASS, SECONDARY_CONSTRUCTOR, TYPE_CONSTRAINT, TYPE_PARAMETER, OBJECT_DECLARATION -> handleBinaryOperator(node)
-            VALUE_PARAMETER, PROPERTY -> handleToken(node, 0, 1)
+            VALUE_PARAMETER, PROPERTY, FUN -> handleToken(node, 0, 1)
+            ANNOTATION_ENTRY -> handleToken(node, 0, 0)  // e.g. @param:JsonProperty
             // fixme: find examples or delete this line
             else -> log.warn("Colon with treeParent.elementType=${node.treeParent.elementType}, not handled by WhiteSpaceRule")
         }
