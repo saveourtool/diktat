@@ -10,7 +10,9 @@ import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
+import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
+import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isWhiteSpace
 import org.cqfn.diktat.common.config.rules.RulesConfig
@@ -21,6 +23,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.FIRST_COMMENT_NO_SPACES
 import org.cqfn.diktat.ruleset.constants.Warnings.WHITESPACE_IN_COMMENT
 import org.cqfn.diktat.ruleset.rules.getDiktatConfigRules
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
+import org.cqfn.diktat.ruleset.utils.getAllIdentifierChildren
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -75,7 +78,11 @@ class KdocCodeBlocksFormatting : Rule("kdoc-comments-codeblocks-formatting") {
 
     private fun checkBlockComments(node: ASTNode) {
         if (isFirstComment(node)) {
-            checkFirstCommentSpaces(node)
+            if (node.treeParent.elementType == BLOCK || node.treeParent.elementType == CLASS_BODY)
+                checkFirstCommentSpaces(node)
+            else
+                checkFirstCommentSpaces(node.treeParent)
+
             return
         }
 
@@ -120,7 +127,11 @@ class KdocCodeBlocksFormatting : Rule("kdoc-comments-codeblocks-formatting") {
 
     private fun checkClassComment(node: ASTNode) {
         if (isFirstComment(node)) {
-            checkFirstCommentSpaces(node)
+            if (node.treeParent.elementType == BLOCK || node.treeParent.elementType == CLASS_BODY)
+                checkFirstCommentSpaces(node)
+            else
+                checkFirstCommentSpaces(node.treeParent)
+
             return
         }
 
@@ -138,25 +149,21 @@ class KdocCodeBlocksFormatting : Rule("kdoc-comments-codeblocks-formatting") {
     }
 
     private fun checkFirstCommentSpaces(node: ASTNode) {
-        if (node.treeParent.treePrev.isWhiteSpace()) {
-            if (node.treeParent.treePrev.text.filter { it == '\n' }.length > 1) {
+        if (node.treePrev.isWhiteSpace()) {
+            if (node.treePrev.text.filter { it == '\n' }.length > 1) {
                 FIRST_COMMENT_NO_SPACES.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset) {
-                    node.treeParent.treeParent.removeChild(node.treeParent.treePrev)
+                    node.treeParent.removeChild(node.treePrev)
                 }
             }
         }
     }
 
 
-    //FIXME
     private fun isFirstComment(node: ASTNode): Boolean {
-        if (node.treeParent.treeParent.elementType == CLASS_BODY) {
-            return node.treeParent == node.treeParent.treeParent.getFirstChildWithType(node.treeParent.elementType)
+        if (node.treeParent.elementType == BLOCK || node.treeParent.elementType == CLASS_BODY) {
+            return node.treePrev.treePrev.elementType == LBRACE
         }
 
-        if (node.treeParent.firstChildNode == node) {
-            return node == node.treeParent.getFirstChildWithType(node.elementType)
-        }
-        return false
+        return node.treeParent.treePrev.treePrev.elementType == LBRACE
     }
 }
