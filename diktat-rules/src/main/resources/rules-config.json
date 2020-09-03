@@ -351,4 +351,12 @@
       "maxBlockLength" : "3"
     }
   }
+  {  
+    "name": "WRONG_DECLARATIONS_ORDER",
+    "enabled": true,
+    "configuration": {
+      "sortEnum": true,
+      "sortProperty": true
+    }
+  }
 ]

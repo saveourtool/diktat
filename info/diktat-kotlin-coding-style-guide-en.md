@@ -712,6 +712,7 @@ import javax.swing.event.ActionEvent;
 Notes:
 1. There should be no blank lines between properties without comments;
 2. Properties with comments/Kdoc should be separated by a newline before the comment/Kdoc
+3. Enum entries and constant properties (`const val`) in companion objects should be sorted alphabetically.
 
 The declaration part of a class or interface should be in the following order:
  - compile-time constants (for objects)
