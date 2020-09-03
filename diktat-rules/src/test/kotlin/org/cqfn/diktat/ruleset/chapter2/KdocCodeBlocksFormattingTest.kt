@@ -60,12 +60,35 @@ class KdocCodeBlocksFormattingTest {
                     |    private val some = 5
                     |    
                     |    fun someFunc() {
-                    |       // Second comment
+                    |       // First comment
                     |       val first = 5
                     |       
-                    |       // First comment
+                    |       /**
+                    |       * kDoc comment
+                    |       */
                     |       val second = 6
                     |    }
+                    |}
+                """.trimMargin()
+
+        lintMethod(KdocCodeBlocksFormatting(), code)
+    }
+
+    @Test
+    @Tag(WHITESPACE_IN_COMMENT)
+    fun `check file new line above comment good` () {
+        val code =
+                """
+                    |package org.cqfn.diktat.ruleset.chapter3
+                    |
+                    |// Some comment
+                    |class Example {
+                    |
+                    |}
+                    |
+                    |// Some comment 2
+                    |class AnotherExample {
+                    |
                     |}
                 """.trimMargin()
 
