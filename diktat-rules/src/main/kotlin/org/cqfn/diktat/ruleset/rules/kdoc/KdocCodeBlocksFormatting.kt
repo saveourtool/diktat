@@ -129,14 +129,13 @@ class KdocCodeBlocksFormatting : Rule("kdoc-comments-codeblocks-formatting") {
             if (node.treeParent.elementType == BLOCK || node.treeParent.elementType == CLASS_BODY)
                 checkFirstCommentSpaces(node)
             else
-                checkFirstCommentSpaces(node.treeParent)
-
+                checkFirstCommentSpaces(node.treeParent) // TreeParent is property. Then check white spaces before property
             return
         }
 
         if (!node.treePrev.isWhiteSpace()) {
             COMMENT_NEW_LINE_ABOVE.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset) {
-                node.treeParent.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node.treeParent)
+                node.treeParent.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node.treeParent) // If treeParent is property
             }
         } else {
             if (node.treePrev.text.filter { it == '\n' }.length == 1 || node.treePrev.text.filter { it == '\n' }.length > 2) {
