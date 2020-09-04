@@ -56,7 +56,8 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     WHITESPACE_IN_COMMENT(true, "there should be a white space at the begining of the comment"),
     COMMENT_NEW_LINE_ABOVE(true, "there should be a new line above the kDoc"),
     FIRST_COMMENT_NO_SPACES(true, "there should not be any spaces before first comment"),
-    COMMENT_BETWEEN_COMMENT_AND_CODE(true, "there should be a white space between code and comment"),
+    SPACE_BETWEEN_COMMENT_AND_CODE(true, "there should be a white space between code and comment"),
+    IF_ELSE_COMMENTS(true, "invalid comments structure. Comment should be inside the block"),
 
     // ======== chapter 3 ========
     FILE_IS_TOO_LONG(false, "file has more number of lines than expected"),

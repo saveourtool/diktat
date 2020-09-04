@@ -1,8 +1,10 @@
 package org.cqfn.diktat.ruleset.chapter2
 
 import com.pinterest.ktlint.core.LintError
+import generated.WarningNames.COMMENT_NEW_LINE_ABOVE
 import generated.WarningNames.WHITESPACE_IN_COMMENT
 import org.cqfn.diktat.ruleset.constants.Warnings
+import org.cqfn.diktat.ruleset.constants.Warnings.IF_ELSE_COMMENTS
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocCodeBlocksFormatting
 import org.cqfn.diktat.util.lintMethod
@@ -47,7 +49,7 @@ class KdocCodeBlocksFormattingTest {
     }
 
     @Test
-    @Tag(WHITESPACE_IN_COMMENT)
+    @Tag(COMMENT_NEW_LINE_ABOVE)
     fun `check new line above comment good` () {
         val code =
                 """
@@ -82,7 +84,7 @@ class KdocCodeBlocksFormattingTest {
     }
 
     @Test
-    @Tag(WHITESPACE_IN_COMMENT)
+    @Tag(COMMENT_NEW_LINE_ABOVE)
     fun `check file new line above comment good` () {
         val code =
                 """
@@ -100,5 +102,133 @@ class KdocCodeBlocksFormattingTest {
                 """.trimMargin()
 
         lintMethod(KdocCodeBlocksFormatting(), code)
+    }
+
+    @Test
+    @Tag(COMMENT_NEW_LINE_ABOVE)
+    fun `check file new line above comment bad` () {
+        val code =
+                """
+                    |package org.cqfn.diktat.ruleset.chapter3
+                    |// Some comment
+                    |class Example {
+                    |
+                    |}
+                    |
+                    |// Some comment 2
+                    |class AnotherExample {
+                    |
+                    |}
+                """.trimMargin()
+
+        lintMethod(KdocCodeBlocksFormatting(), code,
+                LintError(2,1,ruleId, "${Warnings.COMMENT_NEW_LINE_ABOVE.warnText()} // Some comment", true))
+    }
+
+    @Test
+    @Tag(COMMENT_NEW_LINE_ABOVE)
+    fun `check file new line above comment bad - block and kDOC comments` () {
+        val code =
+                """
+                    |package org.cqfn.diktat.ruleset.chapter3
+                    |/* Some comment */
+                    |class Example {
+                    |
+                    |}
+                    |/**
+                    |* Some comment 2
+                    |*/
+                    |class AnotherExample {
+                    |
+                    |}
+                """.trimMargin()
+
+        lintMethod(KdocCodeBlocksFormatting(), code,
+                LintError(2,1,ruleId, "${Warnings.COMMENT_NEW_LINE_ABOVE.warnText()} /* Some comment */", true),
+                LintError(6,1,ruleId, "${Warnings.COMMENT_NEW_LINE_ABOVE.warnText()} /**\n" +
+                        "* Some comment 2\n" +
+                        "*/", true))
+    }
+
+    @Test
+    @Tag("SPACE_BETWEEN_COMMENT_AND_CODE")
+    fun `check right side comments - good` () {
+        val code =
+                """
+                    |package org.cqfn.diktat.ruleset.chapter3
+                    |
+                    |/* Some comment */
+                    |class Example {
+                    |   val a = 5 // This is a comment
+                    |}
+                """.trimMargin()
+
+        lintMethod(KdocCodeBlocksFormatting(), code)
+    }
+
+    @Test
+    @Tag("SPACE_BETWEEN_COMMENT_AND_CODE")
+    fun `check right side comments - bad` () {
+        val code =
+                """
+                    |package org.cqfn.diktat.ruleset.chapter3
+                    |
+                    |/* Some comment */
+                    |class Example {
+                    |   val a = 5// This is a comment
+                    |}
+                """.trimMargin()
+
+        lintMethod(KdocCodeBlocksFormatting(), code,
+                LintError(5,13, ruleId, "${Warnings.SPACE_BETWEEN_COMMENT_AND_CODE.warnText()} // This is a comment", true))
+    }
+
+    @Test
+    @Tag("IF_ELSE_COMMENTS")
+    fun `if - else comments good` () {
+        val code =
+                """
+                    |package org.cqfn.diktat.ruleset.chapter3
+                    |
+                    |class Example {
+                    |   fun someFunc() {
+                    |       // general if comment
+                    |       if(a = 5) {
+                    |       
+                    |       }
+                    |       else {
+                    |           // Good Comment
+                    |           print(5)
+                    |       }
+                    |   }
+                    |}
+                """.trimMargin()
+
+        lintMethod(KdocCodeBlocksFormatting(), code)
+    }
+
+    @Test
+    @Tag("IF_ELSE_COMMENTS")
+    fun `if - else comments bad` () {
+        val code =
+                """
+                    |package org.cqfn.diktat.ruleset.chapter3
+                    |
+                    |class Example {
+                    |   fun someFunc() {
+                    |       // general if comment
+                    |       if(a = 5) {
+                    |       
+                    |       }
+                    |       // Bad Comment
+                    |       else {
+                    |           print(5)
+                    |       }
+                    |   }
+                    |}
+                """.trimMargin()
+
+        lintMethod(KdocCodeBlocksFormatting(), code,
+                LintError(6,8,ruleId, "${IF_ELSE_COMMENTS.warnText()} // Bad Comment", true))
     }
 }
