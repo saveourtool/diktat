@@ -82,7 +82,9 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     TOO_MANY_BLANK_LINES(true, "too many consecutive blank lines"),
     WRONG_WHITESPACE(true, "incorrect usage of whitespaces for code separation"),
     TOO_MANY_CONSECUTIVE_SPACES(true, "too many consecutive spaces"),
+    ANNOTATION_NEW_LINE(true, "annotations must be on new line"),
     ENUMS_SEPARATED(true, "split enumeration error"),
+    WRONG_DECLARATIONS_ORDER(true, "declarations of constants and enum members should be sorted alphabetically"),
     ;
 
     override fun ruleName(): String = this.name
@@ -95,8 +97,9 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
                    isFixMode: Boolean,
                    freeText: String,
                    offset: Int,
+                   canBeAutoCorrected: Boolean = this.canBeAutoCorrected,
                    autoFix: () -> Unit) {
-        warn(configRules, emit, this.canBeAutoCorrected, freeText, offset)
+        warn(configRules, emit, canBeAutoCorrected, freeText, offset)
         fix(configRules, autoFix, isFixMode)
     }
 
