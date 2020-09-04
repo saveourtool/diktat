@@ -69,20 +69,24 @@ class LongNumericalValuesSeparatedRule : Rule("long-numerical-values") {
         val resultRealPart = StringBuilder(nodePrefix(realPart))
         val resultFractionalPart = StringBuilder()
 
-        if (removePrefixSuffix(realPart).length > configuration.maxLength) {
-            val chunks = removePrefixSuffix(realPart).reversed().chunked(configuration.maxBlockLength).reversed()
+        val realNumber = removePrefixSuffix(realPart)
+        if (realNumber.length > configuration.maxLength) {
+            val chunks = realNumber.reversed().chunked(configuration.maxBlockLength).reversed()
             resultRealPart.append(chunks.joinToString(separator = "_") { it.reversed() })
 
             resultRealPart.append(nodeSuffix(realPart)).append(".")
         } else {
-            resultRealPart.append(removePrefixSuffix(realPart)).append(".")
+            resultRealPart.append(realNumber).append(".")
         }
 
-        if ( removePrefixSuffix(fractionalPart).length > configuration.maxLength) {
-            val chunks = removePrefixSuffix(fractionalPart).reversed().chunked(configuration.maxBlockLength).reversed()
-            resultFractionalPart.append(chunks.joinToString(separator = "_", postfix = nodeSuffix(fractionalPart)) { it.reversed() })
+        val fractionalNumber = removePrefixSuffix(fractionalPart)
+        if (fractionalNumber.length > configuration.maxLength) {
+            val chunks = fractionalNumber.chunked(configuration.maxBlockLength)
+            resultFractionalPart.append(chunks.joinToString(separator = "_", postfix = nodeSuffix(fractionalPart)) { it })
 
             resultFractionalPart.append(nodeSuffix(fractionalPart))
+        } else {
+            resultFractionalPart.append(fractionalNumber).append(nodeSuffix(fractionalPart))
         }
 
         (node as LeafPsiElement).replaceWithText(resultRealPart.append(resultFractionalPart).toString())
@@ -115,13 +119,7 @@ class LongNumericalValuesSeparatedRule : Rule("long-numerical-values") {
             return true
         }
 
-        if (text.split(".").size > 1) {
-            val parts = text.split(".")
-            return removePrefixSuffix(parts[0]).length < configuration.maxLength &&
-                    removePrefixSuffix(parts[1]).length < configuration.maxLength
-        }
-
-        return removePrefixSuffix(text).length < configuration.maxLength
+        return text.split(".").map { removePrefixSuffix(it) }.all { it.length < configuration.maxLength }
     }
 
     private fun checkBlocks(text: String, configuration: LongNumericalValuesConfiguration, node: ASTNode) {
@@ -139,10 +137,10 @@ class LongNumericalValuesSeparatedRule : Rule("long-numerical-values") {
             return text.removePrefix("0x")
         }
 
-        return text.removePrefix("0b").
-                removeSuffix("L").
-                removeSuffix("f").
-                removeSuffix("F")
+        return text.removePrefix("0b")
+                .removeSuffix("L")
+                .removeSuffix("f")
+                .removeSuffix("F")
     }
 
     class LongNumericalValuesConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
