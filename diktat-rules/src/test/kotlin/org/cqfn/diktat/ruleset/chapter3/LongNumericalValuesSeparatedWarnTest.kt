@@ -29,6 +29,7 @@ class LongNumericalValuesSeparatedWarnTest {
                     |   val creditCardNumber = 1234567890123456L
                     |   val socialSecurityNumber = 999999999L
                     |   val hexBytes = 0xFFECDE5E
+                    |   val hexBytes2 = 0xF
                     |   val bytes = 0b110100110_01101001_10010100_10010010
                     |   val flo = 192.312341341344355345
                     |   val flo2 = 192.31234134134435_5345
@@ -38,13 +39,13 @@ class LongNumericalValuesSeparatedWarnTest {
                 LintError(3,27, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 1234567890123456L", true),
                 LintError(4,31, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 999999999L", true),
                 LintError(5,19, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 0xFFECDE5E", true),
-                LintError(6,16, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 110100110", false),
-                LintError(6,16, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 01101001", false),
-                LintError(6,16, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 10010100", false),
-                LintError(6,16, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 10010010", false),
-                LintError(7,14, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 192.312341341344355345", true),
-                LintError(8,15, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 31234134134435", false),
-                LintError(8,15, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 5345", false)
+                LintError(7,16, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 110100110", false),
+                LintError(7,16, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 01101001", false),
+                LintError(7,16, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 10010100", false),
+                LintError(7,16, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 10010010", false),
+                LintError(8,14, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 192.312341341344355345", true),
+                LintError(9,15, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 31234134134435", false),
+                LintError(9,15, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 5345", false)
         )
     }
 

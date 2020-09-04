@@ -33,45 +33,67 @@ class LongNumericalValuesSeparatedRule : Rule("long-numerical-values") {
         val configuration = LongNumericalValuesConfiguration(
                 configRules.getRuleConfig(Warnings.LONG_NUMERICAL_VALUES_SEPARATED)?.configuration ?: mapOf())
 
-        if (node.elementType == INTEGER_LITERAL || node.elementType == FLOAT_LITERAL) {
-            if(!isValidConstant(node.text, configuration, node)) {
+        if (node.elementType == INTEGER_LITERAL) {
+            if(!isValidIntegerConstant(node.text, configuration, node)) {
                 Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset) {
-                    fixConstant(node, configuration)
+                    fixIntegerConstant(node, configuration.maxBlockLength)
+                }
+            }
+        }
+
+        if (node.elementType == FLOAT_LITERAL) {
+            if (node.text.contains("_")) {
+                checkBlocks(removePrefixSuffix(node.text), configuration, node)
+                return
+            }
+
+            val parts = node.text.split(".")
+
+            val isGoodRealPart = removePrefixSuffix(parts[0]).length < configuration.maxLength
+            val isGoodFractionalPart = removePrefixSuffix(parts[1]).length < configuration.maxLength
+
+            if (!isGoodRealPart || !isGoodFractionalPart) {
+                Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset) {
+                    fixFloatConstantPart(parts[0], parts[1], configuration.maxBlockLength, isGoodRealPart, isGoodFractionalPart, node)
                 }
             }
         }
 
     }
 
-    private fun fixConstant(node: ASTNode, configuration: LongNumericalValuesConfiguration) {
-        val parts = node.text.split(".")
-        val realPart = removePrefixSuffix(parts[0])
 
+    private fun fixIntegerConstant(node: ASTNode, maxBlockLength: Int) {
         val resultRealPart = StringBuilder(nodePrefix(node.text))
 
-        // We can get here in 2 cases:
-        // 1. When integer number is > maxLength
-        // 2. When float number realPart > maxLength
-        if (realPart.length > configuration.maxLength) {
-            val chunks = realPart.reversed().chunked(configuration.maxBlockLength).reversed()
-            resultRealPart.append(chunks.joinToString(separator = "_") { it.reversed() })
-        } else {
-            // Here we get in 1 case: when realPart of float number is < maxLength
-            resultRealPart.append(realPart).append(".")
-        }
-
-        if (parts.size > 1 && parts[1].length > configuration.maxLength) {
-            val resultFractionalPart = StringBuilder()
-            val chunks = parts[1].reversed().chunked(configuration.maxBlockLength).reversed()
-            resultFractionalPart.append(chunks.joinToString(separator = "_") { it.reversed() })
-            resultFractionalPart.append(nodeSuffix(node.text))
-
-            (node as LeafPsiElement).replaceWithText(resultRealPart.append(resultFractionalPart).toString())
-            return
-        }
+        val chunks = removePrefixSuffix(node.text).reversed().chunked(maxBlockLength).reversed()
+        resultRealPart.append(chunks.joinToString(separator = "_") { it.reversed() })
 
         resultRealPart.append(nodeSuffix(node.text))
         (node as LeafPsiElement).replaceWithText(resultRealPart.toString())
+    }
+
+    private fun fixFloatConstantPart(realPart: String, fractionalPart: String, maxBlockLength: Int, isGoodRealPart: Boolean,
+                                     isGoodFractionalPart: Boolean, node: ASTNode) {
+        val resultRealPart = StringBuilder(nodePrefix(realPart))
+        val resultFractionalPart = StringBuilder()
+
+        if (!isGoodRealPart) {
+            val chunks = removePrefixSuffix(realPart).reversed().chunked(maxBlockLength).reversed()
+            resultRealPart.append(chunks.joinToString(separator = "_") { it.reversed() })
+
+            resultRealPart.append(nodeSuffix(realPart)).append(".")
+        } else {
+            resultRealPart.append(removePrefixSuffix(realPart)).append(".")
+        }
+
+        if (!isGoodFractionalPart) {
+            val chunks = removePrefixSuffix(fractionalPart).reversed().chunked(maxBlockLength).reversed()
+            resultFractionalPart.append(chunks.joinToString(separator = "_", postfix = nodeSuffix(fractionalPart)) { it.reversed() })
+
+            resultFractionalPart.append(nodeSuffix(fractionalPart))
+        }
+
+        (node as LeafPsiElement).replaceWithText(resultRealPart.append(resultFractionalPart).toString())
     }
 
     private fun nodePrefix(nodeText: String) : String {
@@ -95,23 +117,13 @@ class LongNumericalValuesSeparatedRule : Rule("long-numerical-values") {
     }
 
 
-    private fun isValidConstant(text: String, configuration: LongNumericalValuesConfiguration, node: ASTNode) : Boolean {
+    private fun isValidIntegerConstant (text: String, configuration: LongNumericalValuesConfiguration, node: ASTNode) : Boolean {
         if (text.contains("_")) {
-            val number = removePrefixSuffix(text)
-            checkBlocks(number, configuration, node)
+            checkBlocks(removePrefixSuffix(text), configuration, node)
             return true
         }
 
-        val parts = text.split(".")
-
-        val realPart = removePrefixSuffix(parts[0])
-
-
-        if (parts.size > 1) {
-            return parts[1].length < configuration.maxLength
-        }
-
-        return realPart.length < configuration.maxLength
+        return removePrefixSuffix(text).length < configuration.maxLength
     }
 
     private fun checkBlocks(text: String, configuration: LongNumericalValuesConfiguration, node: ASTNode) {
@@ -119,17 +131,22 @@ class LongNumericalValuesSeparatedRule : Rule("long-numerical-values") {
 
         blocks.forEach {
             if (it.length > configuration.maxBlockLength) {
-                Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warn(configRules, emitWarn, isFixMode, "this block is too long $it", node.startOffset)
+                Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warn(configRules, emitWarn, false, "this block is too long $it", node.startOffset)
             }
         }
     }
 
     private fun removePrefixSuffix (text : String) : String {
-        return text.removePrefix("0b").
-            removePrefix("0x").
-            removeSuffix("L").
-            removeSuffix("f").
-            removeSuffix("F")
+        val result = text.removePrefix("0b").
+                removePrefix("0x").
+                removeSuffix("L")
+
+        if (result.length > 1) {
+            return result.removeSuffix("f")
+                    .removeSuffix("F")
+        }
+
+        return result
     }
 
     class LongNumericalValuesConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
