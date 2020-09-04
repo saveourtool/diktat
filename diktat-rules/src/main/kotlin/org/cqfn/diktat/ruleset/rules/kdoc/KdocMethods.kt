@@ -8,20 +8,28 @@ import com.pinterest.ktlint.core.ast.ElementType.CALLABLE_REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.COLLECTION_LITERAL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.FUN
+import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
+import com.pinterest.ktlint.core.ast.ElementType.KDOC_MARKDOWN_LINK
+import com.pinterest.ktlint.core.ast.ElementType.KDOC_NAME
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_SECTION
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_TAG_NAME
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_TEXT
 import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
+import com.pinterest.ktlint.core.ast.ElementType.PARAM_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.THROW
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
+import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER
+import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.WHEN_CONDITION_WITH_EXPRESSION
+import com.pinterest.ktlint.core.ast.nextSibling
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
+import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_KDOC_PARAM
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_ON_FUNCTION
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_PARAM_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_RETURN_TAG
@@ -51,6 +59,8 @@ class KdocMethods : Rule("kdoc-methods") {
                 CALLABLE_REFERENCE_EXPRESSION, SAFE_ACCESS_EXPRESSION, WHEN_CONDITION_WITH_EXPRESSION, COLLECTION_LITERAL_EXPRESSION)
 
         private val uselessKdocRegex = """^([rR]eturn|[gGsS]et)[s]?\s+\w+(\s+\w+)?$""".toRegex()
+
+        private const val NOT_FIND = -1
     }
 
     private lateinit var configRules: List<RulesConfig>
@@ -66,15 +76,37 @@ class KdocMethods : Rule("kdoc-methods") {
         isFixMode = autoCorrect
         emitWarn = emit
 
-        if (node.elementType == FUN && node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside()) {
-            val config = KdocMethodsConfiguration(configRules.getRuleConfig(MISSING_KDOC_ON_FUNCTION)?.configuration
-                    ?: mapOf())
-            val isTestMethod = node.hasTestAnnotation() || node.isLocatedInTest(params.fileName!!.splitPathToDirs(), config.testAnchors)
-            if (!isTestMethod && !node.isStandardMethod() && !node.isSingleLineGetterOrSetter()) {
-                checkSignatureDescription(node)
+        if (node.elementType == FUN) {
+            if (node.hasChildOfType(KDOC)){
+                checkKDocParam(node)
+            }
+            if (node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside()) {
+                val config = KdocMethodsConfiguration(configRules.getRuleConfig(MISSING_KDOC_ON_FUNCTION)?.configuration
+                        ?: mapOf())
+                val isTestMethod = node.hasTestAnnotation() || node.isLocatedInTest(params.fileName!!.splitPathToDirs(), config.testAnchors)
+                if (!isTestMethod && !node.isStandardMethod() && !node.isSingleLineGetterOrSetter()) {
+                    checkSignatureDescription(node)
+                }
             }
         } else if (node.elementType == KDOC_SECTION) {
             checkKdocBody(node)
+        }
+    }
+
+    private fun checkKDocParam(node: ASTNode) {
+        val functionParamList = node.findChildByType(VALUE_PARAMETER_LIST)!!
+                .getChildren(null)
+                .filter { it.elementType == VALUE_PARAMETER }
+                .mapNotNull { it.findChildByType(IDENTIFIER) }
+
+        val kDocParamList = node.findAllNodesWithSpecificType(KDOC_TAG_NAME)
+                .filter { it.text == "@${PARAM_KEYWORD}" }
+                .mapNotNull { it.nextSibling { its -> its.elementType == KDOC_MARKDOWN_LINK } }
+                .mapNotNull { it.findChildByType(KDOC_NAME)?.findChildByType(IDENTIFIER) }
+
+        kDocParamList.filter { functionParamList.map { funParam -> funParam.text }.indexOf(it.text) == NOT_FIND }.forEach {
+            WRONG_KDOC_PARAM.warn(configRules, emitWarn, false,
+                    "${it.text} param isn't define in function", it.startOffset)
         }
     }
 

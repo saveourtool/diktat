@@ -47,6 +47,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS(true, "in KDoc there should be exactly one empty line after special tags"),
     KDOC_NO_EMPTY_TAGS(false, "no empty descriptions in tag blocks are allowed"),
     KDOC_NO_DEPRECATED_TAG(true, "KDoc doesn't support @deprecated tag, use @Deprecated annotation instead"),
+    WRONG_KDOC_PARAM(false, "incorrect declaration param inside KDoc"),
     HEADER_WRONG_FORMAT(true, "file header comments should be properly formatted"),
     HEADER_MISSING_OR_WRONG_COPYRIGHT(true, "file header comment must include copyright information inside a block comment"),
     HEADER_CONTAINS_DATE_OR_AUTHOR(false, "file header comment should not contain creation date and author name"),
@@ -79,7 +80,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     TOO_MANY_CONSECUTIVE_SPACES(true, "too many consecutive spaces"),
     ANNOTATION_NEW_LINE(true, "annotations must be on new line"),
     ENUMS_SEPARATED(true, "split enumeration error"),
-    WRONG_DECLARATIONS_ORDER(true, "declarations of constants and enum members should be sorted alphabetically"),
+    WRONG_DECLARATIONS_ORDER(true, "declarations of constants and enum members should be sorted alphabetically")
     ;
 
     override fun ruleName(): String = this.name

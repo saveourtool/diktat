@@ -122,6 +122,11 @@
     "configuration": {}
   },
   {
+    "name": "WRONG_KDOC_PARAM",
+    "enabled": true,
+    "configuration": {}
+  },
+  {
     "name": "KDOC_WITHOUT_RETURN_TAG",
     "enabled": true,
     "configuration": {}
