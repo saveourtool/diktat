@@ -80,6 +80,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     ANNOTATION_NEW_LINE(true, "annotations must be on new line"),
     ENUMS_SEPARATED(true, "split enumeration error"),
     WRONG_DECLARATIONS_ORDER(true, "declarations of constants and enum members should be sorted alphabetically"),
+    WRONG_MULTIPLE_MODIFIERS_ORDER(true, "sequence of modifiers is incorrect"),
     ;
 
     override fun ruleName(): String = this.name

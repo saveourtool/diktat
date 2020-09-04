@@ -355,5 +355,10 @@
       "sortEnum": true,
       "sortProperty": true
     }
+  },
+  {
+    "name": "WRONG_MULTIPLE_MODIFIERS_ORDER",
+    "enabled": true,
+    "configuration": {}
   }
 ]
