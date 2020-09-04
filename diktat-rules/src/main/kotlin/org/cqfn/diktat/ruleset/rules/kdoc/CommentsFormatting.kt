@@ -41,10 +41,11 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
  * Leave one single space between the comment on the right side of the code and the code.
  * comments in if-else
  */
-class KdocCodeBlocksFormatting : Rule("kdoc-comments-codeblocks-formatting") {
+class CommentsFormatting : Rule("kdoc-comments-codeblocks-formatting") {
 
     companion object {
         private const val MAX_SPACES = 1
+        private const val APPROPRIATE_COMMENT_SPACES = 3
     }
 
     private lateinit var configRules: List<RulesConfig>
@@ -68,35 +69,46 @@ class KdocCodeBlocksFormatting : Rule("kdoc-comments-codeblocks-formatting") {
                 handleIfElse(node)
             }
             EOL_COMMENT -> {
-                checkSpaceBetweenPropertyAndComment(node, configuration)
-
-                if (node.treeParent.elementType == BLOCK && node.treeParent.lastChildNode != node) {
-                    checkBlockComments(node)
-                } else if (node.treeParent.lastChildNode != node && node.treeParent.elementType != IF) {
-                    checkClassComment(node)
-                }
-
-                checkWhiteSpaceBeforeComment(node)
+                handleEolComments(node, configuration)
             }
             BLOCK_COMMENT -> {
-                checkSpaceBetweenPropertyAndComment(node, configuration)
-
-                if (node.treeParent.elementType == BLOCK && node.treeParent.lastChildNode != node) {
-                    checkBlockComments(node)
-                } else if (node.treeParent.lastChildNode != node && node.treeParent.elementType != IF) {
-                    checkClassComment(node)
-                }
+                handleBlockComments(node, configuration)
             }
 
             KDOC -> {
-                if (node.treeParent.treeParent.elementType == BLOCK) {
-                    checkBlockComments(node.treeParent) // node.treeParent is a Property.
-                } else if (node.treeParent.elementType != IF){
-                    checkClassComment(node)
-                }
+                handleKdocComments(node)
             }
         }
+    }
 
+    private fun handleKdocComments(node: ASTNode) {
+        if (node.treeParent.treeParent.elementType == BLOCK) {
+            checkBlockComments(node.treeParent) // node.treeParent is a Property.
+        } else if (node.treeParent.elementType != IF){
+            checkClassComment(node)
+        }
+    }
+
+    private fun handleEolComments(node: ASTNode, configuration: KdocCodeBlocksFormattingConfiguration) {
+        checkSpaceBetweenPropertyAndComment(node, configuration)
+
+        if (node.treeParent.elementType == BLOCK && node.treeParent.lastChildNode != node) {
+            checkBlockComments(node)
+        } else if (node.treeParent.lastChildNode != node && node.treeParent.elementType != IF) {
+            checkClassComment(node)
+        }
+
+        checkWhiteSpaceBeforeComment(node)
+    }
+
+    private fun handleBlockComments(node: ASTNode, configuration: KdocCodeBlocksFormattingConfiguration) {
+        checkSpaceBetweenPropertyAndComment(node, configuration)
+
+        if (node.treeParent.elementType == BLOCK && node.treeParent.lastChildNode != node) {
+            checkBlockComments(node)
+        } else if (node.treeParent.lastChildNode != node && node.treeParent.elementType != IF) {
+            checkClassComment(node)
+        }
     }
 
     private fun handleIfElse(node: ASTNode) {
@@ -162,7 +174,7 @@ class KdocCodeBlocksFormatting : Rule("kdoc-comments-codeblocks-formatting") {
     }
 
     private fun checkWhiteSpaceBeforeComment(node: ASTNode) {
-        if (node.text.takeWhile { it == '/' || it == ' ' || it == '*' }.length == 3)
+        if (node.text.takeWhile { it == '/' || it == ' ' || it == '*' }.length == APPROPRIATE_COMMENT_SPACES)
             return
 
         WHITESPACE_IN_COMMENT.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset) {

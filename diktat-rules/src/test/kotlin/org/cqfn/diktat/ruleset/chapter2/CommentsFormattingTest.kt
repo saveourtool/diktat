@@ -8,12 +8,12 @@ import generated.WarningNames.WHITESPACE_IN_COMMENT
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.constants.Warnings.IF_ELSE_COMMENTS
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
-import org.cqfn.diktat.ruleset.rules.kdoc.KdocCodeBlocksFormatting
+import org.cqfn.diktat.ruleset.rules.kdoc.CommentsFormatting
 import org.cqfn.diktat.util.lintMethod
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class KdocCodeBlocksFormattingTest {
+class CommentsFormattingTest {
 
     private val ruleId = "$DIKTAT_RULE_SET_ID:kdoc-comments-codeblocks-formatting"
 
@@ -30,7 +30,7 @@ class KdocCodeBlocksFormattingTest {
                     |}
                 """.trimMargin()
 
-        lintMethod(KdocCodeBlocksFormatting(), code)
+        lintMethod(CommentsFormatting(), code)
     }
 
     @Test
@@ -46,7 +46,7 @@ class KdocCodeBlocksFormattingTest {
                     |}
                 """.trimMargin()
 
-        lintMethod(KdocCodeBlocksFormatting(), code,
+        lintMethod(CommentsFormatting(), code,
                 LintError(4,5, ruleId, "${Warnings.WHITESPACE_IN_COMMENT.warnText()} //First Comment", true))
     }
 
@@ -82,7 +82,7 @@ class KdocCodeBlocksFormattingTest {
                     |}
                 """.trimMargin()
 
-        lintMethod(KdocCodeBlocksFormatting(), code)
+        lintMethod(CommentsFormatting(), code)
     }
 
     @Test
@@ -103,7 +103,7 @@ class KdocCodeBlocksFormattingTest {
                     |}
                 """.trimMargin()
 
-        lintMethod(KdocCodeBlocksFormatting(), code)
+        lintMethod(CommentsFormatting(), code)
     }
 
     @Test
@@ -123,7 +123,7 @@ class KdocCodeBlocksFormattingTest {
                     |}
                 """.trimMargin()
 
-        lintMethod(KdocCodeBlocksFormatting(), code,
+        lintMethod(CommentsFormatting(), code,
                 LintError(2,1,ruleId, "${Warnings.COMMENT_NEW_LINE_ABOVE.warnText()} // Some comment", true))
     }
 
@@ -145,7 +145,7 @@ class KdocCodeBlocksFormattingTest {
                     |}
                 """.trimMargin()
 
-        lintMethod(KdocCodeBlocksFormatting(), code,
+        lintMethod(CommentsFormatting(), code,
                 LintError(2,1,ruleId, "${Warnings.COMMENT_NEW_LINE_ABOVE.warnText()} /* Some comment */", true),
                 LintError(6,1,ruleId, "${Warnings.COMMENT_NEW_LINE_ABOVE.warnText()} /**\n" +
                         "* Some comment 2\n" +
@@ -165,7 +165,7 @@ class KdocCodeBlocksFormattingTest {
                     |}
                 """.trimMargin()
 
-        lintMethod(KdocCodeBlocksFormatting(), code)
+        lintMethod(CommentsFormatting(), code)
     }
 
     @Test
@@ -181,7 +181,7 @@ class KdocCodeBlocksFormattingTest {
                     |}
                 """.trimMargin()
 
-        lintMethod(KdocCodeBlocksFormatting(), code,
+        lintMethod(CommentsFormatting(), code,
                 LintError(5,13, ruleId, "${Warnings.SPACE_BETWEEN_COMMENT_AND_CODE.warnText()} // This is a comment", true))
     }
 
@@ -206,7 +206,7 @@ class KdocCodeBlocksFormattingTest {
                     |}
                 """.trimMargin()
 
-        lintMethod(KdocCodeBlocksFormatting(), code)
+        lintMethod(CommentsFormatting(), code)
     }
 
     @Test
@@ -230,7 +230,7 @@ class KdocCodeBlocksFormattingTest {
                     |}
                 """.trimMargin()
 
-        lintMethod(KdocCodeBlocksFormatting(), code,
+        lintMethod(CommentsFormatting(), code,
                 LintError(6,8,ruleId, "${IF_ELSE_COMMENTS.warnText()} // Bad Comment", true))
     }
 }
