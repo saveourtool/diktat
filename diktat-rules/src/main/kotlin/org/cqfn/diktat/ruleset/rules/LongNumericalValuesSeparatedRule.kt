@@ -34,7 +34,7 @@ class LongNumericalValuesSeparatedRule : Rule("long-numerical-values") {
                 configRules.getRuleConfig(Warnings.LONG_NUMERICAL_VALUES_SEPARATED)?.configuration ?: mapOf())
 
         if (node.elementType == INTEGER_LITERAL) {
-            if(!isValidIntegerConstant(node.text, configuration, node)) {
+            if(!isValidConstant(node.text, configuration, node)) {
                 Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset) {
                     fixIntegerConstant(node, configuration.maxBlockLength)
                 }
@@ -42,18 +42,13 @@ class LongNumericalValuesSeparatedRule : Rule("long-numerical-values") {
         }
 
         if (node.elementType == FLOAT_LITERAL) {
-            if (node.text.contains("_")) {
-                checkBlocks(removePrefixSuffix(node.text), configuration, node)
-                return
-            }
+            if(!isValidConstant(node.text, configuration, node)) {
+                val parts = node.text.split(".")
 
-            val parts = node.text.split(".")
-
-            if (removePrefixSuffix(parts[0]).length > configuration.maxLength ||
-                    removePrefixSuffix(parts[1]).length > configuration.maxLength) {
                 Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset) {
                     fixFloatConstantPart(parts[0], parts[1], configuration, node)
                 }
+
             }
         }
 
@@ -114,10 +109,16 @@ class LongNumericalValuesSeparatedRule : Rule("long-numerical-values") {
     }
 
 
-    private fun isValidIntegerConstant (text: String, configuration: LongNumericalValuesConfiguration, node: ASTNode) : Boolean {
+    private fun isValidConstant (text: String, configuration: LongNumericalValuesConfiguration, node: ASTNode) : Boolean {
         if (text.contains("_")) {
             checkBlocks(removePrefixSuffix(text), configuration, node)
             return true
+        }
+
+        if (text.split(".").size > 1) {
+            val parts = text.split(".")
+            return removePrefixSuffix(parts[0]).length < configuration.maxLength &&
+                    removePrefixSuffix(parts[1]).length < configuration.maxLength
         }
 
         return removePrefixSuffix(text).length < configuration.maxLength
@@ -134,16 +135,14 @@ class LongNumericalValuesSeparatedRule : Rule("long-numerical-values") {
     }
 
     private fun removePrefixSuffix (text : String) : String {
-        val result = text.removePrefix("0b").
-                removePrefix("0x").
-                removeSuffix("L")
-
-        if (result.length > 1) {
-            return result.removeSuffix("f")
-                    .removeSuffix("F")
+        if (text.startsWith("0x")) {
+            return text.removePrefix("0x")
         }
 
-        return result
+        return text.removePrefix("0b").
+                removeSuffix("L").
+                removeSuffix("f").
+                removeSuffix("F")
     }
 
     class LongNumericalValuesConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
