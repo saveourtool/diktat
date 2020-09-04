@@ -51,7 +51,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./diktat-rules/target/diktat.jar
+          asset_path: ./diktat-rules/target/diktat-${{ env.RELEASE_VERSION }}-jar-with-dependencies.jar
           asset_name: diktat.jar
           asset_content_type: application/zip
       - name: Set next snapshot version

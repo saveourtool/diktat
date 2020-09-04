@@ -141,8 +141,8 @@
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
-                    <finalName>diktat</finalName>
-                    <appendAssemblyId>false</appendAssemblyId>
+                    <finalName>diktat-${project.version}</finalName>
+                    <appendAssemblyId>true</appendAssemblyId>
                 </configuration>
                 <executions>
                     <execution>
@@ -168,7 +168,7 @@
                         <configuration>
                             <artifacts>
                                 <artifact>
-                                    <file>${build.directory}/diktat.jar</file>
+                                    <file>${build.directory}/diktat-${project.version}-jar-with-dependencies.jar</file>
                                     <type>jar</type>
                                     <classifier>jar-with-dependencies</classifier>
                                 </artifact>
