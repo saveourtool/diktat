@@ -339,6 +339,11 @@
     "configuration": {}
   },
   {
+    "name": "ANNOTATION_NEW_LINE",
+    "enabled": true,
+    "configuration": {}
+  },
+  {
     "name": "ENUMS_SEPARATED",
     "enabled": true,
     "configuration": {}
@@ -369,5 +374,13 @@
     "name": "IF_ELSE_COMMENTS",
     "enabled": true,
     "configuration": {}
+  },
+  {   
+    "name": "WRONG_DECLARATIONS_ORDER",
+    "enabled": true,
+    "configuration": {
+      "sortEnum": true,
+      "sortProperty": true
+    }
   }
 ]

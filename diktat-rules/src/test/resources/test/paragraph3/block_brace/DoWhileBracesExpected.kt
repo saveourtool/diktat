@@ -7,7 +7,7 @@ fun foo1() {
 }
 
 fun foo2() {
-    do {
+    do{
         println("hello")
     } while (y > 0)
 }
@@ -15,7 +15,7 @@ fun foo2() {
 fun foo3() {
     do {
         println("hellp")
-    } while (z > 0)
+    }while (z > 0)
 }
 
 fun foo4() {
