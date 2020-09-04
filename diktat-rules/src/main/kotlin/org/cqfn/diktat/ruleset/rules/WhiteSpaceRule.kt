@@ -214,9 +214,11 @@ class WhiteSpaceRule : Rule("horizontal-whitespace") {
         require(requiredSpacesBefore != null || requiredSpacesAfter != null)
         val spacesBefore = node.parent({ it.treePrev != null }, strict = false)!!.treePrev.numWhiteSpaces()
         val spacesAfter = requiredSpacesAfter?.let { _ ->
+            // for `!!` and possibly other postfix expressions treeNext and treeParent.treeNext can be null
+            // upper levels are already outside of the expression this token belongs to, so we won't check them
             (node.treeNext
-                    ?: node.treeParent.treeNext)  // for `!!` and possibly other postfix expressions treeNext can be null
-                    .numWhiteSpaces()
+                    ?: node.treeParent.treeNext)
+                    ?.numWhiteSpaces()
         }
         val isErrorBefore = requiredSpacesBefore != null && spacesBefore != null && spacesBefore != requiredSpacesBefore
         val isErrorAfter = requiredSpacesAfter != null && spacesAfter != null && spacesAfter != requiredSpacesAfter
