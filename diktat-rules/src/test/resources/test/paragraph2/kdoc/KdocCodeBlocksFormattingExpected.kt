@@ -16,4 +16,12 @@ class SomeClass {
 // Some Comment
         }
     }
+
+/**
+     * This is a useless function
+     */
+    fun someUselessFunction() {
+// This is a useless value
+        val uselessValue = 1
+    }
 }

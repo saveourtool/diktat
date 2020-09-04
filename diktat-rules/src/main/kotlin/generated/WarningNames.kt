@@ -96,6 +96,10 @@ object WarningNames {
 
     const val FIRST_COMMENT_NO_SPACES: String = "FIRST_COMMENT_NO_SPACES"
 
+    const val SPACE_BETWEEN_COMMENT_AND_CODE: String = "SPACE_BETWEEN_COMMENT_AND_CODE"
+
+    const val IF_ELSE_COMMENTS: String = "IF_ELSE_COMMENTS"
+
     const val FILE_IS_TOO_LONG: String = "FILE_IS_TOO_LONG"
 
     const val FILE_CONTAINS_ONLY_COMMENTS: String = "FILE_CONTAINS_ONLY_COMMENTS"

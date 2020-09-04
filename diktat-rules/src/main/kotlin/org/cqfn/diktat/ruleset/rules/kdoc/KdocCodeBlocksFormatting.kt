@@ -29,6 +29,18 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 
+
+/**
+ * This class handles rule 2.6
+ * Part 1:
+ * there must be 1 space between the comment character and the content of the comment;
+ * there must be a newline between a Kdoc and the previous code above.
+ * No need to add a blank line before a first comment in this particular name space (code block), for example between function declaration and first comment in a function body.
+ *
+ * Part 2:
+ * Leave one single space between the comment on the right side of the code and the code.
+ * comments in if-else
+ */
 class KdocCodeBlocksFormatting : Rule("kdoc-comments-codeblocks-formatting") {
 
     companion object {
@@ -56,7 +68,6 @@ class KdocCodeBlocksFormatting : Rule("kdoc-comments-codeblocks-formatting") {
                 handleIfElse(node)
             }
             EOL_COMMENT -> {
-                checkWhiteSpaceBeforeComment(node)
                 checkSpaceBetweenPropertyAndComment(node, configuration)
 
                 if (node.treeParent.elementType == BLOCK && node.treeParent.lastChildNode != node) {
@@ -64,6 +75,8 @@ class KdocCodeBlocksFormatting : Rule("kdoc-comments-codeblocks-formatting") {
                 } else if (node.treeParent.lastChildNode != node && node.treeParent.elementType != IF) {
                     checkClassComment(node)
                 }
+
+                checkWhiteSpaceBeforeComment(node)
             }
             BLOCK_COMMENT -> {
                 checkSpaceBetweenPropertyAndComment(node, configuration)

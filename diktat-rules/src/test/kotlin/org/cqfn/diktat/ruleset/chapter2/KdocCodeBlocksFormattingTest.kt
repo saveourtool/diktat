@@ -1,7 +1,9 @@
 package org.cqfn.diktat.ruleset.chapter2
 
 import com.pinterest.ktlint.core.LintError
+import generated.WarningNames
 import generated.WarningNames.COMMENT_NEW_LINE_ABOVE
+import generated.WarningNames.SPACE_BETWEEN_COMMENT_AND_CODE
 import generated.WarningNames.WHITESPACE_IN_COMMENT
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.constants.Warnings.IF_ELSE_COMMENTS
@@ -151,7 +153,7 @@ class KdocCodeBlocksFormattingTest {
     }
 
     @Test
-    @Tag("SPACE_BETWEEN_COMMENT_AND_CODE")
+    @Tag(SPACE_BETWEEN_COMMENT_AND_CODE)
     fun `check right side comments - good` () {
         val code =
                 """
@@ -167,7 +169,7 @@ class KdocCodeBlocksFormattingTest {
     }
 
     @Test
-    @Tag("SPACE_BETWEEN_COMMENT_AND_CODE")
+    @Tag(SPACE_BETWEEN_COMMENT_AND_CODE)
     fun `check right side comments - bad` () {
         val code =
                 """
@@ -184,7 +186,7 @@ class KdocCodeBlocksFormattingTest {
     }
 
     @Test
-    @Tag("IF_ELSE_COMMENTS")
+    @Tag(WarningNames.IF_ELSE_COMMENTS)
     fun `if - else comments good` () {
         val code =
                 """
@@ -208,7 +210,7 @@ class KdocCodeBlocksFormattingTest {
     }
 
     @Test
-    @Tag("IF_ELSE_COMMENTS")
+    @Tag(WarningNames.IF_ELSE_COMMENTS)
     fun `if - else comments bad` () {
         val code =
                 """

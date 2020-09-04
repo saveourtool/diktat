@@ -7,7 +7,7 @@ class SomeClass {
 
     /* block comment to func */
     fun testFunc() {
-        val a = 5 //Right side comment good
+        val a = 5//Right side comment good
 
         /* General if comment */
         if (a == 5) {
@@ -16,5 +16,13 @@ class SomeClass {
         // Some Comment
         else {
         }
+    }
+    /**
+     * This is a useless function
+     */
+    fun someUselessFunction() {
+
+        //This is a useless value
+        val uselessValue = 1
     }
 }

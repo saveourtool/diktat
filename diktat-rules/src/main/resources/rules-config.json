@@ -349,5 +349,25 @@
     "configuration": {
       "maxSpaces" : 1
     }
+  },
+  {
+    "name": "WHITESPACE_IN_COMMENT",
+    "enabled": true,
+    "configuration": {}
+  },
+  {
+    "name": "COMMENT_NEW_LINE_ABOVE",
+    "enabled": true,
+    "configuration": {}
+  },
+  {
+    "name": "FIRST_COMMENT_NO_SPACES",
+    "enabled": true,
+    "configuration": {}
+  },
+  {
+    "name": "IF_ELSE_COMMENTS",
+    "enabled": true,
+    "configuration": {}
   }
 ]
