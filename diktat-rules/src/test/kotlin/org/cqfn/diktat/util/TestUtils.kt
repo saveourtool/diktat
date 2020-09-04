@@ -42,12 +42,11 @@ fun lintMethod(rule: Rule,
             }
 }
 
-internal fun Rule.format(text: String, fileName: String,
-                         rulesConfigList: List<RulesConfig>? = emptyList()): String {
+internal fun RuleSet.format(text: String, fileName: String): String {
     return KtLint.format(
             KtLint.Params(
                     text = text,
-                    ruleSets = listOf(DiktatRuleSetProvider4Test(this, rulesConfigList).get()),
+                    ruleSets = listOf(this),
                     fileName = fileName,
                     cb = { lintError, _ ->
                         log.warn("Received linting error: $lintError")
