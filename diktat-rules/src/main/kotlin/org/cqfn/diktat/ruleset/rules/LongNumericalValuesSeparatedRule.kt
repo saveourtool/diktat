@@ -49,12 +49,10 @@ class LongNumericalValuesSeparatedRule : Rule("long-numerical-values") {
 
             val parts = node.text.split(".")
 
-            val isGoodRealPart = removePrefixSuffix(parts[0]).length < configuration.maxLength
-            val isGoodFractionalPart = removePrefixSuffix(parts[1]).length < configuration.maxLength
-
-            if (!isGoodRealPart || !isGoodFractionalPart) {
+            if (removePrefixSuffix(parts[0]).length > configuration.maxLength ||
+                    removePrefixSuffix(parts[1]).length > configuration.maxLength) {
                 Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset) {
-                    fixFloatConstantPart(parts[0], parts[1], configuration.maxBlockLength, isGoodRealPart, isGoodFractionalPart, node)
+                    fixFloatConstantPart(parts[0], parts[1], configuration, node)
                 }
             }
         }
@@ -72,13 +70,12 @@ class LongNumericalValuesSeparatedRule : Rule("long-numerical-values") {
         (node as LeafPsiElement).replaceWithText(resultRealPart.toString())
     }
 
-    private fun fixFloatConstantPart(realPart: String, fractionalPart: String, maxBlockLength: Int, isGoodRealPart: Boolean,
-                                     isGoodFractionalPart: Boolean, node: ASTNode) {
+    private fun fixFloatConstantPart(realPart: String, fractionalPart: String, configuration: LongNumericalValuesConfiguration, node: ASTNode) {
         val resultRealPart = StringBuilder(nodePrefix(realPart))
         val resultFractionalPart = StringBuilder()
 
-        if (!isGoodRealPart) {
-            val chunks = removePrefixSuffix(realPart).reversed().chunked(maxBlockLength).reversed()
+        if (removePrefixSuffix(realPart).length > configuration.maxLength) {
+            val chunks = removePrefixSuffix(realPart).reversed().chunked(configuration.maxBlockLength).reversed()
             resultRealPart.append(chunks.joinToString(separator = "_") { it.reversed() })
 
             resultRealPart.append(nodeSuffix(realPart)).append(".")
@@ -86,8 +83,8 @@ class LongNumericalValuesSeparatedRule : Rule("long-numerical-values") {
             resultRealPart.append(removePrefixSuffix(realPart)).append(".")
         }
 
-        if (!isGoodFractionalPart) {
-            val chunks = removePrefixSuffix(fractionalPart).reversed().chunked(maxBlockLength).reversed()
+        if ( removePrefixSuffix(fractionalPart).length > configuration.maxLength) {
+            val chunks = removePrefixSuffix(fractionalPart).reversed().chunked(configuration.maxBlockLength).reversed()
             resultFractionalPart.append(chunks.joinToString(separator = "_", postfix = nodeSuffix(fractionalPart)) { it.reversed() })
 
             resultFractionalPart.append(nodeSuffix(fractionalPart))
