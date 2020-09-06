@@ -79,6 +79,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     TOO_MANY_CONSECUTIVE_SPACES(true, "too many consecutive spaces"),
     ANNOTATION_NEW_LINE(true, "annotations must be on new line"),
     ENUMS_SEPARATED(true, "split enumeration error"),
+    LONG_NUMERICAL_VALUES_SEPARATED(true, "long numerical values should be separated with underscore"),
     WRONG_DECLARATIONS_ORDER(true, "declarations of constants and enum members should be sorted alphabetically"),
     ;
 
