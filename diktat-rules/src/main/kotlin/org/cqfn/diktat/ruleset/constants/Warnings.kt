@@ -12,7 +12,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     PACKAGE_NAME_INCORRECT_PREFIX(true, "package name should start from company's domain"),
     // FixMe: should add autofix
     PACKAGE_NAME_INCORRECT_SYMBOLS(false, "package name should contain only latin (ASCII) letters or numbers. For separation of words use dot"),
-    PACKAGE_NAME_INCORRECT_PATH(true, "package name does not match the directory hierarchy for this file, the real package name should be:"),
+    PACKAGE_NAME_INCORRECT_PATH(true, "package name does not match the directory hierarchy for this file, the real package name should be"),
     INCORRECT_PACKAGE_SEPARATOR(true, "package name parts should be separated only by dots - there should be no other symbols like underscores (_)"),
     CLASS_NAME_INCORRECT(true, "class/enum/interface name should be in PascalCase and should contain only latin (ASCII) letters or numbers"),
     OBJECT_NAME_INCORRECT(true, "object structure name should be in PascalCase and should contain only latin (ASCII) letters or numbers"),
@@ -84,6 +84,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     TOO_MANY_CONSECUTIVE_SPACES(true, "too many consecutive spaces"),
     ANNOTATION_NEW_LINE(true, "annotations must be on new line"),
     ENUMS_SEPARATED(true, "split enumeration error"),
+    LONG_NUMERICAL_VALUES_SEPARATED(true, "long numerical values should be separated with underscore"),
     WRONG_DECLARATIONS_ORDER(true, "declarations of constants and enum members should be sorted alphabetically"),
     ;
 

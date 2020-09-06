@@ -130,6 +130,19 @@ No special prefix or suffix should be used in these names. For example, the foll
 ```kotlin
      @Test fun `my test`() { /*...*/ }
 ``` 
+6. The following table contains some confusing characters. You should be careful when using them as identifiers. 
+   And better use other names instead of these identifiers.
+   
+   | Expected      | Confusing name           | Suggested name |
+   | ------------- | ------------------------ | ---------------- |
+   | 0 (zero)      | O, D                     | obj, dgt         |
+   | 1 (one)       | I, l                     | it, ln, line     |
+   | 2 (two)       | Z                        | n1, n2           |
+   | 5 (five)      | S                        | xs, str          |
+   | 6 (six)       | e                        | ex, elm          |
+   | 8 (eight)     | B                        | bt, nxt          |
+   | n,h           | h,n                      | nr, head, height |
+   | rn, m         | m,rn                     | mbr, item        |
 
  **Exceptions**
  - i,j,k variables that are used in loops is a standard for industry. It is allowed to use 1 symbol for such variables.
@@ -1278,19 +1291,6 @@ val socialSecurityNumber = 999_99_9999L
 val hexBytes = 0xFF_EC_DE_5E
 val bytes = 0b11010010_01101001_10010100_10010010
 ```
-The following table contains some confusing characters. You should be careful when using them as identifiers. 
-And better use other names instead of these identifiers.
-
-| Expected      | Confusing name           | Suggested name |
-| ------------- | ------------------------ | ---------------- |
-| 0 (zero)      | O, D                     | obj, dgt         |
-| 1 (one)       | I, l                     | it, ln, line     |
-| 2 (two)       | Z                        | n1, n2           |
-| 5 (five)      | S                        | xs, str          |
-| 6 (six)       | e                        | ex, elm          |
-| 8 (eight)     | B                        | bt, nxt          |
-| n,h           | h,n                      | nr, head, height |
-| rn, m         | m,rn                     | mbr, item        |
 
 ### <a name="c3.14"></a> Strings
 
