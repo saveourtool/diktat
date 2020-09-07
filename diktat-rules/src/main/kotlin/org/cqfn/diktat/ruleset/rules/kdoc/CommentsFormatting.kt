@@ -83,7 +83,7 @@ class CommentsFormatting : Rule("kdoc-comments-codeblocks-formatting") {
 
     private fun handleKdocComments(node: ASTNode) {
         if (node.treeParent.treeParent.elementType == BLOCK) {
-            checkBlockComments(node.treeParent) // node.treeParent is a Property.
+            checkBlockComments(node.treeParent) // node.treeParent is a node that contains a comment.
         } else if (node.treeParent.elementType != IF){
             checkClassComment(node)
         }
@@ -92,7 +92,7 @@ class CommentsFormatting : Rule("kdoc-comments-codeblocks-formatting") {
     private fun handleEolComments(node: ASTNode, configuration: KdocCodeBlocksFormattingConfiguration) {
         checkSpaceBetweenPropertyAndComment(node, configuration)
 
-        if (node.treeParent.elementType == BLOCK && node.treeParent.lastChildNode != node) {
+        if (node.treeParent.elementType == BLOCK && node.treeNext != null) {
             checkBlockComments(node)
         } else if (node.treeParent.lastChildNode != node && node.treeParent.elementType != IF) {
             checkClassComment(node)
@@ -104,7 +104,7 @@ class CommentsFormatting : Rule("kdoc-comments-codeblocks-formatting") {
     private fun handleBlockComments(node: ASTNode, configuration: KdocCodeBlocksFormattingConfiguration) {
         checkSpaceBetweenPropertyAndComment(node, configuration)
 
-        if (node.treeParent.elementType == BLOCK && node.treeParent.lastChildNode != node) {
+        if (node.treeParent.elementType == BLOCK && node.treeNext != null) {
             checkBlockComments(node)
         } else if (node.treeParent.lastChildNode != node && node.treeParent.elementType != IF) {
             checkClassComment(node)

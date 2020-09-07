@@ -22,7 +22,6 @@ public interface Example {
 
     /**
      * These possibilities include: Formatting of header comments
-     *                /* 注释正文与其下的各个KDoc tag之间加1个空行 */
      * @return the rounds of battle of fox and dog
      */
     fun bar() {

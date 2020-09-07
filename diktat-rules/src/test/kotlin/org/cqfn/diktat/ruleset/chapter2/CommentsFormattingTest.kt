@@ -76,7 +76,10 @@ class CommentsFormattingTest {
                     |       * asdasd
                     |       */
                     |       fun testFunc() {
-                    |       
+                    |           val a = 5 // Some Comment
+                    |           
+                    |           // Fun in fun Block
+                    |           val b = 6
                     |       }
                     |    }
                     |}
