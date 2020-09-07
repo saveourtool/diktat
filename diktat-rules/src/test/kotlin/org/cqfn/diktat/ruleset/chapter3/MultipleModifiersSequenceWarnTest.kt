@@ -23,10 +23,10 @@ class MultipleModifiersSequenceWarnTest {
                     |   lateinit open protected var a: List<ASTNode>   
                     |}
                 """.trimMargin(),
-                LintError(2, 1, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} final modifier is not in the right position", true),
-                LintError(2, 7, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} public modifier is not in the right position", true),
-                LintError(3, 4, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} lateinit modifier is not in the right position", true),
-                LintError(3, 18, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} protected modifier is not in the right position", true)
+                LintError(2, 1, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} final should be on position 2, but is on position 1", true),
+                LintError(2, 7, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} public should be on position 1, but is on position 2", true),
+                LintError(3, 4, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} lateinit should be on position 3, but is on position 1", true),
+                LintError(3, 18, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} protected should be on position 1, but is on position 3", true)
         )
     }
 
@@ -57,10 +57,10 @@ class MultipleModifiersSequenceWarnTest {
                     |
                     |inline  fun < reified T> membersOf() = T::class.members
                 """.trimMargin(),
-                LintError(1, 1, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} inline modifier is not in the right position", true),
-                LintError(1, 16, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} public modifier is not in the right position", true),
-                LintError(3, 1, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} inline modifier is not in the right position", true),
-                LintError(3, 8, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} suspend modifier is not in the right position", true)
+                LintError(1, 1, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} inline should be on position 3, but is on position 1", true),
+                LintError(1, 16, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} public should be on position 1, but is on position 3", true),
+                LintError(3, 1, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} inline should be on position 2, but is on position 1", true),
+                LintError(3, 8, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} suspend should be on position 1, but is on position 2", true)
         )
     }
 
@@ -77,12 +77,12 @@ class MultipleModifiersSequenceWarnTest {
                     |      }
                     |}
                 """.trimMargin(),
-                LintError(1, 1, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} enum modifier is not in the right position", true),
-                LintError(1, 6, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} public modifier is not in the right position", true),
-                LintError(3, 1, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} data modifier is not in the right position", true),
-                LintError(3, 6, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} protected modifier is not in the right position", true),
-                LintError(4, 4, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} operator modifier is not in the right position", true),
-                LintError(4, 13, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} suspend modifier is not in the right position", true)
+                LintError(1, 1, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} enum should be on position 2, but is on position 1", true),
+                LintError(1, 6, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} public should be on position 1, but is on position 2", true),
+                LintError(3, 1, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} data should be on position 2, but is on position 1", true),
+                LintError(3, 6, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} protected should be on position 1, but is on position 2", true),
+                LintError(4, 4, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} operator should be on position 2, but is on position 1", true),
+                LintError(4, 13, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} suspend should be on position 1, but is on position 2", true)
         )
     }
 }
