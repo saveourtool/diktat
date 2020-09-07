@@ -5,18 +5,18 @@ import generated.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.WhenMustHaveElseRule
-import org.cqfn.diktat.util.lintMethod
+import org.cqfn.diktat.util.LintTestBase
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class WhenMustHaveElseWarnTest {
+class WhenMustHaveElseWarnTest : LintTestBase(::WhenMustHaveElseRule) {
 
     private val ruleId = "$DIKTAT_RULE_SET_ID:no-else-in-when"
 
     @Test
     @Tag(WarningNames.WHEN_WITHOUT_ELSE)
     fun `when in func test good`(){
-        lintMethod(WhenMustHaveElseRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    when(a) {
@@ -31,7 +31,7 @@ class WhenMustHaveElseWarnTest {
     @Test
     @Tag(WarningNames.WHEN_WITHOUT_ELSE)
     fun `when in func test bad`(){
-        lintMethod(WhenMustHaveElseRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    when(a) {
@@ -47,7 +47,7 @@ class WhenMustHaveElseWarnTest {
     @Test
     @Tag(WarningNames.WHEN_WITHOUT_ELSE)
     fun `when expression in func test good`(){
-        lintMethod(WhenMustHaveElseRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    val obj = when(a) {
@@ -61,7 +61,7 @@ class WhenMustHaveElseWarnTest {
     @Test
     @Tag(WarningNames.WHEN_WITHOUT_ELSE)
     fun `when expression in func test good 2`(){
-        lintMethod(WhenMustHaveElseRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    val x = listOf<Int>().map {

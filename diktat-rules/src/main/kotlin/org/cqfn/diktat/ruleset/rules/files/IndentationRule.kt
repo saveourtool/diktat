@@ -15,7 +15,6 @@ import com.pinterest.ktlint.core.ast.visit
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
-import org.cqfn.diktat.ruleset.rules.getDiktatConfigRules
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getAllLeafsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.indentBy
@@ -44,7 +43,7 @@ import org.jetbrains.kotlin.utils.addToStdlib.firstNotNullResult
  * Additionally, a set of CustomIndentationChecker objects checks all WHITE_SPACE node if they are exceptions from general rules.
  * @see CustomIndentationChecker
  */
-class IndentationRule : Rule("indentation") {
+class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indentation") {
     companion object {
         const val INDENT_SIZE = 4
         private val increasingTokens = listOf(LPAR, LBRACE, LBRACKET)
@@ -54,29 +53,29 @@ class IndentationRule : Rule("indentation") {
     private lateinit var configuration: IndentationConfig
     private lateinit var customIndentationCheckers: List<CustomIndentationChecker>
 
-    private lateinit var configRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
     private var fileName: String = ""
 
-    override fun visit(node: ASTNode, autoCorrect: Boolean, params: KtLint.Params, emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
-        configRules = params.getDiktatConfigRules()
+    override fun visit(node: ASTNode,
+                       autoCorrect: Boolean,
+                       emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
         isFixMode = autoCorrect
         emitWarn = emit
-        fileName = params.fileName!!
-
-        configuration = IndentationConfig(configRules.getRuleConfig(WRONG_INDENTATION)?.configuration
-                ?: mapOf())
-        customIndentationCheckers = listOf(
-                AssignmentOperatorChecker(configuration),
-                SuperTypeListChecker(configuration),
-                ValueParameterListChecker(configuration),
-                ExpressionIndentationChecker(configuration),
-                DotCallChecker(configuration),
-                KDocIndentationChecker(configuration)
-        )
 
         if (node.elementType == FILE) {
+            fileName = node.getUserData(KtLint.FILE_PATH_USER_DATA_KEY)!!
+            configuration = IndentationConfig(configRules.getRuleConfig(WRONG_INDENTATION)?.configuration
+                    ?: mapOf())
+            customIndentationCheckers = listOf(
+                    AssignmentOperatorChecker(configuration),
+                    SuperTypeListChecker(configuration),
+                    ValueParameterListChecker(configuration),
+                    ExpressionIndentationChecker(configuration),
+                    DotCallChecker(configuration),
+                    KDocIndentationChecker(configuration)
+            )
+
             if (checkIsIndentedWithSpaces(node)) {
                 checkIndentation(node)
             } else {

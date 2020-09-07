@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.rules
 
-import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.ARROW
@@ -36,17 +35,14 @@ import org.jetbrains.kotlin.psi.KtWhenExpression
  * The compiler can issue a warning when it is missing.
  */
 @Suppress("ForbiddenComment")
-class WhenMustHaveElseRule : Rule("no-else-in-when") {
+class WhenMustHaveElseRule(private val configRules: List<RulesConfig>) : Rule("no-else-in-when") {
 
-    private lateinit var configRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
-                       params: KtLint.Params,
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
-        configRules = params.getDiktatConfigRules()
         emitWarn = emit
         isFixMode = autoCorrect
 

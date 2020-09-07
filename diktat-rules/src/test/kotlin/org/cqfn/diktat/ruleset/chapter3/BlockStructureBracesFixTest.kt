@@ -6,7 +6,7 @@ import org.cqfn.diktat.util.FixTestBase
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class BlockStructureBracesFixTest : FixTestBase ("test/paragraph3/block_brace", BlockStructureBraces()){
+class BlockStructureBracesFixTest : FixTestBase ("test/paragraph3/block_brace", ::BlockStructureBraces) {
 
     @Test
     @Tag(WarningNames.BRACES_BLOCK_STRUCTURE_ERROR)

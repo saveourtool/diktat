@@ -5,11 +5,11 @@ import generated.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings.MORE_THAN_ONE_STATEMENT_PER_LINE
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.SingleLineStatementsRule
-import org.cqfn.diktat.util.lintMethod
+import org.cqfn.diktat.util.LintTestBase
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class SingleLineStatementsRuleWarnTest {
+class SingleLineStatementsRuleWarnTest : LintTestBase(::SingleLineStatementsRule) {
 
     private val ruleId = "$DIKTAT_RULE_SET_ID:statement"
 
@@ -17,7 +17,7 @@ class SingleLineStatementsRuleWarnTest {
     @Test
     @Tag(WarningNames.MORE_THAN_ONE_STATEMENT_PER_LINE)
     fun `check two statement per line`() {
-        lintMethod(SingleLineStatementsRule(),
+        lintMethod(
                 """
                     |import com.pinterest.ktlint.core.KtLint; import com.pinterest.ktlint.core.LintError
                     |
@@ -46,7 +46,7 @@ class SingleLineStatementsRuleWarnTest {
     @Test
     @Tag(WarningNames.MORE_THAN_ONE_STATEMENT_PER_LINE)
     fun `check two statement in one line without space`() {
-        lintMethod(SingleLineStatementsRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    val a = 5;val b = 10
@@ -61,7 +61,7 @@ class SingleLineStatementsRuleWarnTest {
     @Test
     @Tag(WarningNames.MORE_THAN_ONE_STATEMENT_PER_LINE)
     fun `check if expression with semicolon and else block in one line`() {
-        lintMethod(SingleLineStatementsRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |   if (x > 0){
@@ -76,7 +76,7 @@ class SingleLineStatementsRuleWarnTest {
     @Test
     @Tag(WarningNames.MORE_THAN_ONE_STATEMENT_PER_LINE)
     fun `check correct test without more than one statement`() {
-        lintMethod(SingleLineStatementsRule(),
+        lintMethod(
                 """
                     |import com.pinterest.ktlint.core.KtLint
                     |
@@ -101,7 +101,7 @@ class SingleLineStatementsRuleWarnTest {
     @Test
     @Tag(WarningNames.MORE_THAN_ONE_STATEMENT_PER_LINE)
     fun `check semicolon with enum class expression`() {
-        lintMethod(SingleLineStatementsRule(),
+        lintMethod(
                 """
                     |enum class ProtocolState {
                     |   WAITING {
@@ -119,7 +119,7 @@ class SingleLineStatementsRuleWarnTest {
     @Test
     @Tag(WarningNames.MORE_THAN_ONE_STATEMENT_PER_LINE)
     fun `check if expression with two wrong semincolon`() {
-        lintMethod(SingleLineStatementsRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |   if(x > 0) {
@@ -137,7 +137,7 @@ class SingleLineStatementsRuleWarnTest {
     @Test
     @Tag(WarningNames.MORE_THAN_ONE_STATEMENT_PER_LINE)
     fun `check semicolon in the beginning of the line`() {
-        lintMethod(SingleLineStatementsRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |   ; grr()
