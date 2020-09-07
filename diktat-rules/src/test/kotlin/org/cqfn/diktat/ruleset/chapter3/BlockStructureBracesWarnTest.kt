@@ -468,10 +468,27 @@ class BlockStructureBracesWarnTest {
                     |       size.forEach { println(it) }
                     |   }
                     |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.BRACES_BLOCK_STRUCTURE_ERROR)
+    fun `check lambdas`() {
+        lintMethod(BlockStructureBraces(),
+                """
+                    |fun foo() {
+                    |   val x = t.map {it -> it.size}
+                    |   val y = q
+                    |          .map { it.treeParent }
+                    |           .filter { it.elementType == CLASS }
+                    |   val y = q
+                    |           .map { it.treeParent }
+                    |           .filter { it.elementType == CLASS &&
+                    |               it.text == "sdc" }
+                    |}
                 """.trimMargin(),
-                LintError(4, 11, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect newline before opening brace", true),
-                LintError(5, 40, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} no newline before closing brace", true),
-                LintError(6, 35, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} no newline before closing brace", true)
+                LintError(9, 33, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} no newline before closing brace", true)
         )
     }
 }
