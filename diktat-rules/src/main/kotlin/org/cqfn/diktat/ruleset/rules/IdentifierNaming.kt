@@ -30,6 +30,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.ENUM_VALUE
 import org.cqfn.diktat.ruleset.constants.Warnings.FUNCTION_NAME_INCORRECT_CASE
 import org.cqfn.diktat.ruleset.constants.Warnings.IDENTIFIER_LENGTH
 import org.cqfn.diktat.ruleset.constants.Warnings.BACKTICKS_PROHIBITED
+import org.cqfn.diktat.ruleset.constants.Warnings.CONFUSING_IDENTIFIER_NAMING
 import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.psi.psiUtil.parents
 
@@ -54,6 +55,7 @@ class IdentifierNaming : Rule("identifier-naming") {
         // FixMe: this should be moved to properties
         val ONE_CHAR_IDENTIFIERS = setOf("i", "j", "k", "x", "y", "z")
         val BOOLEAN_METHOD_PREFIXES = setOf("has", "is")
+        val CONFUSING_IDENTIFIER_NAMES = setOf("O", "D", "I", "l", "Z", "S", "e", "B", "h", "n", "m", "rn")
         const val MAX_IDENTIFIER_LENGTH = 64
         const val MIN_IDENTIFIER_LENGTH = 2
 
@@ -128,6 +130,11 @@ class IdentifierNaming : Rule("identifier-naming") {
                     if (variableName.text.containsOneLetterOrZero() && variableName.text.length > 1) {
                         VARIABLE_NAME_INCORRECT.warn(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset)
                     }
+                    // check if identifier of a property has a confusing name
+                    if (CONFUSING_IDENTIFIER_NAMES.contains(variableName.text) && !validCatchIdentifier(variableName)
+                            && node.elementType == ElementType.PROPERTY) {
+                        warnConfusingName(variableName)
+                    }
                     // check for constant variables - check for val from companion object or on global file level
                     // it should be in UPPER_CASE, no need to raise this warning if it is one-letter variable
                     if (node.isConstant()) {
@@ -158,6 +165,24 @@ class IdentifierNaming : Rule("identifier-naming") {
                     }
                 }
         return namesOfVariables
+    }
+
+    /**
+     * Warns that variable have a confusing name
+     */
+    private fun warnConfusingName (variableName: ASTNode) {
+        var warnText = ""
+        when(variableName.text) {
+            "O", "D" -> warnText = "better name is: obj, dgt"
+            "I", "l" -> warnText = "better name is: it, ln, line"
+            "Z" -> warnText = "better name is: n1, n2"
+            "S" -> warnText = "better name is: xs, str"
+            "e" -> warnText = "better name is: ex, elm"
+            "B" -> warnText = "better name is: bt, nxt"
+            "h", "n" -> warnText = "better name is: nr, head, height"
+            "m", "rn" -> warnText = "better name is: mbr, item"
+        }
+        CONFUSING_IDENTIFIER_NAMING.warn(configRules, emitWarn, false, warnText, variableName.startOffset)
     }
 
     /**
@@ -256,6 +281,10 @@ class IdentifierNaming : Rule("identifier-naming") {
                     // FixMe: add tests for this
                     (value as LeafPsiElement).replaceWithText(value.text.toUpperSnakeCase())
                 }
+            }
+
+            if (CONFUSING_IDENTIFIER_NAMES.contains(value.text)) {
+                warnConfusingName(value)
             }
         }
 

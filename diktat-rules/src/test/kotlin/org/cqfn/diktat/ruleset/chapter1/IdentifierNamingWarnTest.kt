@@ -2,8 +2,10 @@ package org.cqfn.diktat.ruleset.chapter1
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
+import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.constants.Warnings.BACKTICKS_PROHIBITED
 import org.cqfn.diktat.ruleset.constants.Warnings.CLASS_NAME_INCORRECT
+import org.cqfn.diktat.ruleset.constants.Warnings.CONFUSING_IDENTIFIER_NAMING
 import org.cqfn.diktat.ruleset.constants.Warnings.CONSTANT_UPPERCASE
 import org.cqfn.diktat.ruleset.constants.Warnings.ENUM_VALUE
 import org.cqfn.diktat.ruleset.constants.Warnings.EXCEPTION_SUFFIX
@@ -499,5 +501,31 @@ class IdentifierNamingWarnTest {
                 """.trimIndent()
 
         lintMethod(IdentifierNaming(), code, LintError(1, 7, ruleId, "${BACKTICKS_PROHIBITED.warnText()} `my class name`"))
+    }
+
+    @Test
+    @Tag(WarningNames.CONFUSING_IDENTIFIER_NAMING)
+    fun `confusing identifier naming`() {
+        val code =
+                """
+                    fun someFunc() {
+                        val D = 0
+                        val Z = 2
+                    }
+                    
+                    enum class Ident {
+                        B
+                    }
+                """.trimIndent()
+
+        lintMethod(IdentifierNaming(), code,
+                LintError(2, 9, ruleId, "${CONFUSING_IDENTIFIER_NAMING.warnText()} better name is: obj, dgt", false),
+                LintError(2,9, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} D", true),
+                LintError(2,9, ruleId, "${IDENTIFIER_LENGTH.warnText()} D", false),
+                LintError(3, 9, ruleId, "${CONFUSING_IDENTIFIER_NAMING.warnText()} better name is: n1, n2", false),
+                LintError(3,9, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} Z", true),
+                LintError(3,9, ruleId, "${IDENTIFIER_LENGTH.warnText()} Z", false),
+                LintError(7, 5, ruleId, "${CONFUSING_IDENTIFIER_NAMING.warnText()} better name is: bt, nxt", false),
+                LintError(7,5, ruleId, "${IDENTIFIER_LENGTH.warnText()} B", false))
     }
 }
