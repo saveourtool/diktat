@@ -339,6 +339,11 @@
     "configuration": {}
   },
   {
+    "name": "WHEN_WITHOUT_ELSE",
+    "enabled": true,
+    "configuration": {}
+  },
+  {
     "name": "ANNOTATION_NEW_LINE",
     "enabled": true,
     "configuration": {}
