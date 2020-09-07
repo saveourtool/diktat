@@ -12,11 +12,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.cqfn.diktat.ruleset.constants.Warnings.TOO_MANY_CONSECUTIVE_SPACES
-import org.cqfn.diktat.ruleset.utils.prettyPrint
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
-
-
-
 
 /**
  * This visitor covers recommendation 3.8 of Huawei code style. It covers following recommendations:
@@ -25,11 +21,9 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
  *
  */
 class ConsecutiveSpacesRule : Rule("too-many-spaces") {
-
     companion object {
         private const val MAX_SPACES = 1
     }
-
 
     private lateinit var configRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
@@ -50,7 +44,6 @@ class ConsecutiveSpacesRule : Rule("too-many-spaces") {
             checkWhiteSpace(node, configuration)
         }
     }
-
 
     private fun checkWhiteSpace(node: ASTNode, configuration: TooManySpacesRuleConfiguration) {
         if (configuration.enumInitialFormatting) {
@@ -82,15 +75,12 @@ class ConsecutiveSpacesRule : Rule("too-many-spaces") {
         }
     }
 
-
     private fun ASTNode.hasEolComment(): Boolean = this.treeNext.elementType == EOL_COMMENT
 
     private fun ASTNode.squeezeSpaces() = (this as LeafElement).replaceWithText(" ")
-
 
     class TooManySpacesRuleConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
         val numberOfSpaces = config["max_spaces"]?.toIntOrNull() ?: MAX_SPACES
         val enumInitialFormatting = config["saveInitialFormattingForEnums"]?.toBoolean() ?: false
     }
-
 }

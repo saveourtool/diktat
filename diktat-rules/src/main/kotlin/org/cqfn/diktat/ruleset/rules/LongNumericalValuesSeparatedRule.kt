@@ -4,13 +4,13 @@ import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.FLOAT_LITERAL
 import com.pinterest.ktlint.core.ast.ElementType.INTEGER_LITERAL
+import java.lang.StringBuilder
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
-import java.lang.StringBuilder
 
 class LongNumericalValuesSeparatedRule : Rule("long-numerical-values") {
     private lateinit var configRules: List<RulesConfig>
@@ -34,7 +34,7 @@ class LongNumericalValuesSeparatedRule : Rule("long-numerical-values") {
                 configRules.getRuleConfig(Warnings.LONG_NUMERICAL_VALUES_SEPARATED)?.configuration ?: mapOf())
 
         if (node.elementType == INTEGER_LITERAL) {
-            if(!isValidConstant(node.text, configuration, node)) {
+            if (!isValidConstant(node.text, configuration, node)) {
                 Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset) {
                     fixIntegerConstant(node, configuration.maxBlockLength)
                 }
@@ -42,18 +42,15 @@ class LongNumericalValuesSeparatedRule : Rule("long-numerical-values") {
         }
 
         if (node.elementType == FLOAT_LITERAL) {
-            if(!isValidConstant(node.text, configuration, node)) {
+            if (!isValidConstant(node.text, configuration, node)) {
                 val parts = node.text.split(".")
 
                 Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset) {
                     fixFloatConstantPart(parts[0], parts[1], configuration, node)
                 }
-
             }
         }
-
     }
-
 
     private fun fixIntegerConstant(node: ASTNode, maxBlockLength: Int) {
         val resultRealPart = StringBuilder(nodePrefix(node.text))
@@ -92,24 +89,16 @@ class LongNumericalValuesSeparatedRule : Rule("long-numerical-values") {
         (node as LeafPsiElement).replaceWithText(resultRealPart.append(resultFractionalPart).toString())
     }
 
-    private fun nodePrefix(nodeText: String) : String {
-        if (nodeText.startsWith("0b"))
-            return "0b"
-
-        if(nodeText.startsWith("0x"))
-            return "0x"
-
-        return ""
+    private fun nodePrefix(nodeText: String) = when {
+        nodeText.startsWith("0b") -> "0b"
+        nodeText.startsWith("0x") -> "0x"
+        else -> ""
     }
 
-    private fun nodeSuffix(nodeText: String) : String {
-        if (nodeText.endsWith("L"))
-            return "L"
-
-        if (nodeText.endsWith("f", true))
-            return "f"
-
-        return ""
+    private fun nodeSuffix(nodeText: String) = when {
+        nodeText.endsWith("L") -> "L"
+        nodeText.endsWith("f", true) -> "f"
+        else -> ""
     }
 
 

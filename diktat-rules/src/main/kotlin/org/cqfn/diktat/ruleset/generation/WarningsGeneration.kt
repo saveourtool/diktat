@@ -4,8 +4,8 @@ import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
-import org.cqfn.diktat.ruleset.constants.Warnings
 import java.io.File
+import org.cqfn.diktat.ruleset.constants.Warnings
 
 private val AUTO_GENERATION_COMMENT =
         """
@@ -23,16 +23,17 @@ fun main() {
                 .build()
     }
 
-    val fileBody = TypeSpec.objectBuilder("WarningNames")
+    val fileBody = TypeSpec
+            .objectBuilder("WarningNames")
             .addProperties(propertyList)
             .build()
 
-    val kotlinFile = FileSpec.builder("generated", "WarningNames")
+    val kotlinFile = FileSpec
+            .builder("generated", "WarningNames")
             .addType(fileBody)
             .indent("    ")
             .addComment(AUTO_GENERATION_COMMENT)
             .build()
 
     kotlinFile.writeTo(File("diktat-rules/src/main/kotlin")) // fixme: need to add it to pom
-
 }

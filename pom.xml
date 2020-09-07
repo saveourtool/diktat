@@ -252,10 +252,10 @@
                         <phase>none</phase>
                         <configuration>
                             <target name="ktlint">
-                                <java taskname="ktlint" dir="${basedir}" fork="true" failonerror="true"
+                                <java taskname="ktlint" dir="${maven.multiModuleProjectDirectory}" fork="true" failonerror="true"
                                       classpathref="maven.plugin.classpath" classname="com.pinterest.ktlint.Main">
-                                    <arg value="src/main/kotlin/**/*.kt"/>
-                                    <arg value="src/test/kotlin/**/*.kt"/>
+                                    <arg value="${project.basedir}/src/main/kotlin/**/*.kt"/>
+                                    <arg value="${project.basedir}/src/test/kotlin/**/*.kt"/>
                                 </java>
                             </target>
                         </configuration>

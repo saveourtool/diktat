@@ -4,6 +4,10 @@ import org.cqfn.diktat.common.config.rules.Rule
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.isRuleEnabled
 
+/**
+ * This class represent individual inspections of diktat code style.
+ * A [Warnings] entry contains rule name, warning message and is used in code check.
+ */
 @Suppress("ForbiddenComment", "MagicNumber")
 enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: String) : Rule {
     // ======== chapter 1 ========
@@ -83,7 +87,10 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     WRONG_DECLARATIONS_ORDER(true, "declarations of constants and enum members should be sorted alphabetically"),
     ;
 
-    override fun ruleName(): String = this.name
+    /**
+     * Name of the inspection, it is used in configuration and in output.
+     */
+    override fun ruleName() = this.name
 
     fun warnText(): String = "[${ruleName()}] ${this.warn}:"
 
