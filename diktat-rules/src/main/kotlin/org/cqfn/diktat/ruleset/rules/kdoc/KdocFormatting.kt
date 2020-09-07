@@ -16,7 +16,6 @@ import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.nextSibling
 import com.pinterest.ktlint.core.ast.prevSibling
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.Warnings.BLANK_LINE_AFTER_KDOC
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NEWLINES_BEFORE_BASIC_TAGS
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_EMPTY_KDOC
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_DEPRECATED_TAG
@@ -27,7 +26,6 @@ import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WRONG_SPACES_AFTER_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WRONG_TAGS_ORDER
 import org.cqfn.diktat.ruleset.rules.getDiktatConfigRules
 import org.cqfn.diktat.ruleset.utils.allSiblings
-import org.cqfn.diktat.ruleset.utils.countSubStringOccurrences
 import org.cqfn.diktat.ruleset.utils.findChildAfter
 import org.cqfn.diktat.ruleset.utils.findChildBefore
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
@@ -77,10 +75,6 @@ class KdocFormatting : Rule("kdoc-formatting") {
 
         val declarationTypes = setOf(CLASS, FUN, PROPERTY)
 
-        if (declarationTypes.contains(node.elementType)) {
-            checkBlankLineAfterKdoc(node)
-        }
-
         if (node.elementType == KDOC && checkKdocNotEmpty(node)) {
             checkNoDeprecatedTag(node)
             checkEmptyTags(node.kDocTags())
@@ -89,17 +83,6 @@ class KdocFormatting : Rule("kdoc-formatting") {
             node.kDocBasicTags()?.let { checkEmptyLinesBetweenBasicTags(it) }
             checkBasicTagsOrder(node)
             checkNewLineAfterSpecialTags(node)
-        }
-    }
-
-    private fun checkBlankLineAfterKdoc(node: ASTNode) {
-        val kdoc = node.getFirstChildWithType(KDOC)
-        val nodeAfterKdoc = kdoc?.treeNext
-        val name = node.getFirstChildWithType(ElementType.IDENTIFIER)
-        if (nodeAfterKdoc?.elementType == WHITE_SPACE && nodeAfterKdoc.text.countSubStringOccurrences("\n") > 1) {
-            BLANK_LINE_AFTER_KDOC.warnAndFix(configRules, emitWarn, isFixMode, name!!.text, nodeAfterKdoc.startOffset) {
-                nodeAfterKdoc.leaveOnlyOneNewLine()
-            }
         }
     }
 

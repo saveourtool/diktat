@@ -59,8 +59,6 @@ object WarningNames {
 
     const val KDOC_WITHOUT_THROWS_TAG: String = "KDOC_WITHOUT_THROWS_TAG"
 
-    const val BLANK_LINE_AFTER_KDOC: String = "BLANK_LINE_AFTER_KDOC"
-
     const val KDOC_EMPTY_KDOC: String = "KDOC_EMPTY_KDOC"
 
     const val KDOC_WRONG_SPACES_AFTER_TAG: String = "KDOC_WRONG_SPACES_AFTER_TAG"
@@ -90,13 +88,11 @@ object WarningNames {
 
     const val COMMENTED_OUT_CODE: String = "COMMENTED_OUT_CODE"
 
-    const val WHITESPACE_IN_COMMENT: String = "WHITESPACE_IN_COMMENT"
-
-    const val COMMENT_NEW_LINE_ABOVE: String = "COMMENT_NEW_LINE_ABOVE"
+    const val COMMENT_NEW_LINES: String = "COMMENT_NEW_LINES"
 
     const val FIRST_COMMENT_NO_SPACES: String = "FIRST_COMMENT_NO_SPACES"
 
-    const val SPACE_BETWEEN_COMMENT_AND_CODE: String = "SPACE_BETWEEN_COMMENT_AND_CODE"
+    const val COMMENT_WHITE_SPACE: String = "COMMENT_WHITE_SPACE"
 
     const val IF_ELSE_COMMENTS: String = "IF_ELSE_COMMENTS"
 
@@ -147,7 +143,7 @@ object WarningNames {
     const val ENUMS_SEPARATED: String = "ENUMS_SEPARATED"
 
     const val WHEN_WITHOUT_ELSE: String = "WHEN_WITHOUT_ELSE"
-  
+
     const val LONG_NUMERICAL_VALUES_SEPARATED: String = "LONG_NUMERICAL_VALUES_SEPARATED"
 
     const val WRONG_DECLARATIONS_ORDER: String = "WRONG_DECLARATIONS_ORDER"

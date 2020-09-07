@@ -2,7 +2,6 @@ package org.cqfn.diktat.ruleset.chapter2
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
-import org.cqfn.diktat.ruleset.constants.Warnings.BLANK_LINE_AFTER_KDOC
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NEWLINES_BEFORE_BASIC_TAGS
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_DEPRECATED_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_EMPTY_TAGS
@@ -21,55 +20,6 @@ import org.junit.jupiter.api.Test
 class KdocFormattingTest {
 
     private val ruleId: String = "$DIKTAT_RULE_SET_ID:kdoc-formatting"
-
-    @Test
-    @Tag(WarningNames.BLANK_LINE_AFTER_KDOC)
-    fun `there should be no blank line between kdoc and it's declaration code`() {
-        val code =
-            """
-                    package org.cqfn.diktat.test.resources.test.paragraph2.kdoc
-
-                    /**
-                     * declaration for some constant
-                     */
-
-                    const val SUPER_CONSTANT = 46
-
-                    /**
-                     * Kdoc documentation
-                     */
-
-                    class SomeName {
-                        /**
-                         * another Kdoc
-                         */
-
-                        val variable = "string"
-
-                        /**
-                         * another Kdoc
-                         */
-
-                        fun somePublicFunction() {}
-
-                    }
-
-
-                    /**
-                     * another Kdoc
-                     */
-
-                    fun someFunction() {}
-                """.trimIndent()
-
-        lintMethod(KdocFormatting(), code,
-                LintError(5, 4, ruleId, "${BLANK_LINE_AFTER_KDOC.warnText()} SUPER_CONSTANT", true),
-                LintError(11, 4, ruleId, "${BLANK_LINE_AFTER_KDOC.warnText()} SomeName", true),
-                LintError(16, 8, ruleId, "${BLANK_LINE_AFTER_KDOC.warnText()} variable", true),
-                LintError(22, 8, ruleId, "${BLANK_LINE_AFTER_KDOC.warnText()} somePublicFunction", true),
-                LintError(31, 4, ruleId, "${BLANK_LINE_AFTER_KDOC.warnText()} someFunction", true)
-        )
-    }
 
     private val funCode = """
          fun foo(a: Int): Int {

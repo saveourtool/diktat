@@ -112,11 +112,6 @@
     "configuration": {}
   },
   {
-    "name": "BLANK_LINE_AFTER_KDOC",
-    "enabled": true,
-    "configuration": {}
-  },
-  {
     "name": "KDOC_WITHOUT_PARAM_TAG",
     "enabled": true,
     "configuration": {}
@@ -354,19 +349,14 @@
     "configuration": {}
   },
   {
-    "name": "SPACE_BETWEEN_COMMENT_AND_CODE",
+    "name": "COMMENT_WHITE_SPACE",
     "enabled": true,
     "configuration": {
       "maxSpaces" : 1
     }
   },
   {
-    "name": "WHITESPACE_IN_COMMENT",
-    "enabled": true,
-    "configuration": {}
-  },
-  {
-    "name": "COMMENT_NEW_LINE_ABOVE",
+    "name": "COMMENT_NEW_LINES",
     "enabled": true,
     "configuration": {}
   },

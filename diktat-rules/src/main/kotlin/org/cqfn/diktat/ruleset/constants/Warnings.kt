@@ -38,7 +38,6 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     KDOC_WITHOUT_PARAM_TAG(true, "all methods which take arguments should have @param tags in KDoc"),
     KDOC_WITHOUT_RETURN_TAG(true, "all methods which return values should have @return tag in KDoc"),
     KDOC_WITHOUT_THROWS_TAG(true, "all methods which throw exceptions should have @throws tag in KDoc"),
-    BLANK_LINE_AFTER_KDOC(true, "there should be no empty line between Kdoc and code it is describing"),
     KDOC_EMPTY_KDOC(false, "KDoc should never be empty"),
     KDOC_WRONG_SPACES_AFTER_TAG(true, "there should be exactly one white space after tag name in KDoc"),
     KDOC_WRONG_TAGS_ORDER(true, "in KDoc standard tags are arranged in order @param, @return, @throws, but are"),
@@ -53,10 +52,9 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE(false, "files that contain multiple or no classes should contain description of what is inside of this file"),
     HEADER_NOT_BEFORE_PACKAGE(true, "header KDoc should be placed before package and imports"),
     COMMENTED_OUT_CODE(false, "you should not comment out code, use VCS to save it in history and delete this block"),
-    WHITESPACE_IN_COMMENT(true, "there should be a white space at the begining of the comment"),
-    COMMENT_NEW_LINE_ABOVE(true, "there should be a new line above the kDoc"),
+    COMMENT_NEW_LINES(true, "there should be a new line above the kDoc and there should not be any line after kDoc"),
     FIRST_COMMENT_NO_SPACES(true, "there should not be any spaces before first comment"),
-    SPACE_BETWEEN_COMMENT_AND_CODE(true, "there should be a white space between code and comment"),
+    COMMENT_WHITE_SPACE(true, "there should be a white space between code and comment"),
     IF_ELSE_COMMENTS(true, "invalid comments structure. Comment should be inside the block"),
 
     // ======== chapter 3 ========

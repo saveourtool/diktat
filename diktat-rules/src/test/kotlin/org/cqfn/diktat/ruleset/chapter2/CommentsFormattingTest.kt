@@ -2,9 +2,6 @@ package org.cqfn.diktat.ruleset.chapter2
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
-import generated.WarningNames.COMMENT_NEW_LINE_ABOVE
-import generated.WarningNames.SPACE_BETWEEN_COMMENT_AND_CODE
-import generated.WarningNames.WHITESPACE_IN_COMMENT
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.constants.Warnings.IF_ELSE_COMMENTS
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
@@ -18,7 +15,7 @@ class CommentsFormattingTest {
     private val ruleId = "$DIKTAT_RULE_SET_ID:kdoc-comments-codeblocks-formatting"
 
     @Test
-    @Tag(WHITESPACE_IN_COMMENT)
+    @Tag(WarningNames.COMMENT_WHITE_SPACE)
     fun `check white space before comment good` () {
         val code =
                 """
@@ -34,7 +31,7 @@ class CommentsFormattingTest {
     }
 
     @Test
-    @Tag(WHITESPACE_IN_COMMENT)
+    @Tag(WarningNames.COMMENT_WHITE_SPACE)
     fun `check white space before comment bad` () {
         val code =
                 """
@@ -47,11 +44,11 @@ class CommentsFormattingTest {
                 """.trimMargin()
 
         lintMethod(CommentsFormatting(), code,
-                LintError(4,5, ruleId, "${Warnings.WHITESPACE_IN_COMMENT.warnText()} //First Comment", true))
+                LintError(4,5, ruleId, "${Warnings.COMMENT_WHITE_SPACE.warnText()} //First Comment", true))
     }
 
     @Test
-    @Tag(COMMENT_NEW_LINE_ABOVE)
+    @Tag(WarningNames.COMMENT_NEW_LINES)
     fun `check new line above comment good` () {
         val code =
                 """
@@ -89,7 +86,7 @@ class CommentsFormattingTest {
     }
 
     @Test
-    @Tag(COMMENT_NEW_LINE_ABOVE)
+    @Tag(WarningNames.COMMENT_NEW_LINES)
     fun `check file new line above comment good` () {
         val code =
                 """
@@ -110,7 +107,7 @@ class CommentsFormattingTest {
     }
 
     @Test
-    @Tag(COMMENT_NEW_LINE_ABOVE)
+    @Tag(WarningNames.COMMENT_NEW_LINES)
     fun `check file new line above comment bad` () {
         val code =
                 """
@@ -127,11 +124,11 @@ class CommentsFormattingTest {
                 """.trimMargin()
 
         lintMethod(CommentsFormatting(), code,
-                LintError(2,1,ruleId, "${Warnings.COMMENT_NEW_LINE_ABOVE.warnText()} // Some comment", true))
+                LintError(2,1,ruleId, "${Warnings.COMMENT_NEW_LINES.warnText()} // Some comment", true))
     }
 
     @Test
-    @Tag(COMMENT_NEW_LINE_ABOVE)
+    @Tag(WarningNames.COMMENT_NEW_LINES)
     fun `check file new line above comment bad - block and kDOC comments` () {
         val code =
                 """
@@ -143,20 +140,24 @@ class CommentsFormattingTest {
                     |/**
                     |* Some comment 2
                     |*/
+                    |
                     |class AnotherExample {
                     |
                     |}
                 """.trimMargin()
 
         lintMethod(CommentsFormatting(), code,
-                LintError(2,1,ruleId, "${Warnings.COMMENT_NEW_LINE_ABOVE.warnText()} /* Some comment */", true),
-                LintError(6,1,ruleId, "${Warnings.COMMENT_NEW_LINE_ABOVE.warnText()} /**\n" +
+                LintError(2,1,ruleId, "${Warnings.COMMENT_NEW_LINES.warnText()} /* Some comment */", true),
+                LintError(6,1,ruleId, "${Warnings.COMMENT_NEW_LINES.warnText()} /**\n" +
+                        "* Some comment 2\n" +
+                        "*/", true),
+                LintError(8,3,ruleId, "${Warnings.COMMENT_NEW_LINES.warnText()} /**\n" +
                         "* Some comment 2\n" +
                         "*/", true))
     }
 
     @Test
-    @Tag(SPACE_BETWEEN_COMMENT_AND_CODE)
+    @Tag(WarningNames.COMMENT_WHITE_SPACE)
     fun `check right side comments - good` () {
         val code =
                 """
@@ -172,7 +173,7 @@ class CommentsFormattingTest {
     }
 
     @Test
-    @Tag(SPACE_BETWEEN_COMMENT_AND_CODE)
+    @Tag(WarningNames.COMMENT_WHITE_SPACE)
     fun `check right side comments - bad` () {
         val code =
                 """
@@ -185,7 +186,7 @@ class CommentsFormattingTest {
                 """.trimMargin()
 
         lintMethod(CommentsFormatting(), code,
-                LintError(5,13, ruleId, "${Warnings.SPACE_BETWEEN_COMMENT_AND_CODE.warnText()} // This is a comment", true))
+                LintError(5,13, ruleId, "${Warnings.COMMENT_WHITE_SPACE.warnText()} // This is a comment", true))
     }
 
     @Test
