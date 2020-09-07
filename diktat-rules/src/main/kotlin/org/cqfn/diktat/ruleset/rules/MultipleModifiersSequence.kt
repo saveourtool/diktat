@@ -42,8 +42,7 @@ class MultipleModifiersSequence : Rule("multiple-modifiers") {
     }
 
     private fun checkModifierList(node: ASTNode) {
-        val modifierListOfPair = node.getChildren(null)
-                .filter { it.elementType != WHITE_SPACE && it.elementType != ANNOTATION_ENTRY }
+        val modifierListOfPair = node.getChildren(KtTokens.MODIFIER_KEYWORDS).toList()
                 .map { Pair(it, MODIFIER_ORDER.indexOf(it.elementType)) }
         val sortModifierListOfPair = modifierListOfPair.sortedBy { it.second }.map { it.first }
         modifierListOfPair.forEachIndexed { index, (modifierNode, _) ->
@@ -52,7 +51,7 @@ class MultipleModifiersSequence : Rule("multiple-modifiers") {
                         "${modifierNode.text} modifier is not in the right position", modifierNode.startOffset) {
                     val nodeBefore = modifierNode.treeNext
                     node.removeChild(modifierNode)
-                    node.addChild(KotlinParser().createNode(sortModifierListOfPair[index].text), nodeBefore)
+                    node.addChild((sortModifierListOfPair[index].clone() as ASTNode), nodeBefore)
                 }
             }
         }
