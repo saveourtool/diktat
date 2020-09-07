@@ -30,24 +30,25 @@ class DiktatRuleSetProvider(private val jsonRulesConfig: String = "rules-config.
     override fun get(): RuleSet {
         log.debug("Will run $DIKTAT_RULE_SET_ID with $jsonRulesConfig (it can be placed to the run directory or the default file from resources will be used)")
         return RuleSetDiktat(
-            RulesConfigReader(javaClass.classLoader).readResource(jsonRulesConfig) ?: listOf(),
-            CommentsRule(),
-            KdocComments(),
-            KdocMethods(),
-            KdocFormatting(),
-            FileNaming(),
-            PackageNaming(),
-            FileSize(),
-            IdentifierNaming(),
-            BracesInConditionalsAndLoopsRule(),
-            BlockStructureBraces(),
-            EmptyBlock(),
-            LineLength(),
-            BlankLinesRule(),
-            WhiteSpaceRule(),
-            FileStructureRule(),  // this rule should be right before indentation because it should operate on already valid code
-            NewlinesRule(),  // newlines need to be inserted right before fixing indentation
-            IndentationRule()  // indentation rule should be the last because it fixes formatting after all the changes done by previous rules
+                RulesConfigReader(javaClass.classLoader).readResource(jsonRulesConfig) ?: listOf(),
+                CommentsRule(),
+                KdocComments(),
+                KdocMethods(),
+                KdocFormatting(),
+                FileNaming(),
+                PackageNaming(),
+                FileSize(),
+                IdentifierNaming(),
+                BracesInConditionalsAndLoopsRule(),
+                BlockStructureBraces(),
+                EmptyBlock(),
+                LineLength(),
+                BlankLinesRule(),
+                WhiteSpaceRule(),
+                WhenMustHaveElseRule(),
+                FileStructureRule(),  // this rule should be right before indentation because it should operate on already valid code
+                NewlinesRule(),  // newlines need to be inserted right before fixing indentation
+                IndentationRule()  // indentation rule should be the last because it fixes formatting after all the changes done by previous rules
         )
     }
 
