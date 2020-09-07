@@ -375,7 +375,15 @@
     "enabled": true,
     "configuration": {}
   },
-  {   
+  {
+    "name": "LONG_NUMERICAL_VALUES_SEPARATED",
+    "enabled": true,
+    "configuration": {
+      "maxNumberLength" : "5",
+      "maxBlockLength" : "3"
+    }
+  },
+  {
     "name": "WRONG_DECLARATIONS_ORDER",
     "enabled": true,
     "configuration": {

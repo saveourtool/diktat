@@ -158,4 +158,26 @@ class PackageNamingWarnTest {
                 fileName = "~/diktat/diktat-rules/src/test/kotlin/org/cqfn/diktat/ruleset/chapter1/EnumValueCaseTest.kt"
         )
     }
+
+    @Test
+    @Tag(WarningNames.PACKAGE_NAME_INCORRECT_PATH)
+    fun `regression - should not remove special words from file path`() {
+        val rule = PackageNaming()
+        lintMethod(rule,
+                """
+                    |package org.cqfn.diktat.test.processing
+                """.trimMargin(),
+                fileName = "/home/testu/project/module/src/test/kotlin/org/cqfn/diktat/test/processing/SpecialPackageNaming.kt"
+        )
+
+        lintMethod(rule,
+                """
+                    |package kotlin.collections
+                """.trimMargin(),
+                fileName = "/home/testu/project/module/src/main/kotlin/kotlin/collections/Collections.kt",
+                rulesConfigList = listOf(
+                        RulesConfig(PACKAGE_NAME_MISSING.name, true, mapOf("domainName" to "kotlin"))
+                )
+        )
+    }
 }
