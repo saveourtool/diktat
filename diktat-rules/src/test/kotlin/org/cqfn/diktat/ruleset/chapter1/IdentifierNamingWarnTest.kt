@@ -518,7 +518,7 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
                     }
                 """.trimIndent()
 
-        lintMethod(IdentifierNaming(), code,
+        lintMethod(code,
                 LintError(2, 9, ruleId, "${CONFUSING_IDENTIFIER_NAMING.warnText()} better name is: obj, dgt", false),
                 LintError(2,9, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} D", true),
                 LintError(2,9, ruleId, "${IDENTIFIER_LENGTH.warnText()} D", false),
