@@ -7,6 +7,7 @@ import com.pinterest.ktlint.core.RuleSetProvider
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
 import org.cqfn.diktat.ruleset.rules.comments.CommentsRule
+import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule
 import org.cqfn.diktat.ruleset.rules.files.BlankLinesRule
 import org.cqfn.diktat.ruleset.rules.files.FileSize
 import org.cqfn.diktat.ruleset.rules.files.FileStructureRule
@@ -35,12 +36,22 @@ class DiktatRuleSetProvider(private val jsonRulesConfig: String = "rules-config.
                 KdocComments(),
                 KdocMethods(),
                 KdocFormatting(),
+                HeaderCommentRule(),
                 FileNaming(),
+                ConsecutiveSpacesRule(),
+                ClassLikeStructuresOrderRule(),
+                EnumsSeparated(),
+                MultipleModifiersSequence(),
+                SingleLineStatementsRule(),
+                StringConcatenationRule(),
+                SortRule(),
                 PackageNaming(),
                 FileSize(),
                 IdentifierNaming(),
+                LongNumericalValuesSeparatedRule(),
                 BracesInConditionalsAndLoopsRule(),
                 BlockStructureBraces(),
+                AnnotationNewLineRule(),
                 EmptyBlock(),
                 LineLength(),
                 BlankLinesRule(),
