@@ -118,7 +118,7 @@ class PackageNaming : Rule("package-naming") {
             // 2) removing src/main/kotlin/java/e.t.c dirs and removing file name
             // 3) adding company's domain name at the beginning
             val fileSubDir = filePathParts.subList(filePathParts.lastIndexOf(PACKAGE_PATH_ANCHOR), filePathParts.size - 1)
-                .filter { !LANGUAGE_DIR_NAMES.contains(it) }
+                .dropWhile { LANGUAGE_DIR_NAMES.contains(it) }
             // no need to add DOMAIN_NAME to the package name if it is already in path
             val domainPrefix = if (!fileSubDir.joinToString(PACKAGE_SEPARATOR).startsWith(domainName)) domainName.split(PACKAGE_SEPARATOR) else listOf()
             domainPrefix + fileSubDir
