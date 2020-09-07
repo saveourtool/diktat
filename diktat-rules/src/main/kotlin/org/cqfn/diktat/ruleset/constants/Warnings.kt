@@ -84,8 +84,10 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     TOO_MANY_CONSECUTIVE_SPACES(true, "too many consecutive spaces"),
     ANNOTATION_NEW_LINE(true, "annotations must be on new line"),
     ENUMS_SEPARATED(true, "split enumeration error"),
+    WHEN_WITHOUT_ELSE(true, "each when statement must have else at the end"),
     LONG_NUMERICAL_VALUES_SEPARATED(true, "long numerical values should be separated with underscore"),
     WRONG_DECLARATIONS_ORDER(true, "declarations of constants and enum members should be sorted alphabetically"),
+    WRONG_MULTIPLE_MODIFIERS_ORDER(true, "sequence of modifiers is incorrect"),
     ;
 
     override fun ruleName(): String = this.name
