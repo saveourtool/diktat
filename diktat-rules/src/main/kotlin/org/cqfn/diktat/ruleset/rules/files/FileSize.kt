@@ -7,12 +7,11 @@ import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_IS_TOO_LONG
-import org.cqfn.diktat.ruleset.rules.getDiktatConfigRules
 import org.cqfn.diktat.ruleset.utils.splitPathToDirs
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.slf4j.LoggerFactory
 
-class FileSize : Rule("file-size") {
+class FileSize(private val configRules: List<RulesConfig>) : Rule("file-size") {
     companion object {
         private val log = LoggerFactory.getLogger(FileSize::class.java)
         const val MAX_SIZE = 2000L
@@ -21,22 +20,19 @@ class FileSize : Rule("file-size") {
         const val SRC_PATH = "src"
     }
 
-    private lateinit var configRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var fileName: String? = null
     private var isFixMode: Boolean = false
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
-                       params: KtLint.Params,
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
-        configRules = params.getDiktatConfigRules()
-        fileName = params.fileName
         emitWarn = emit
         isFixMode = autoCorrect
         if (node.elementType == ElementType.FILE) {
+            fileName = node.getUserData(KtLint.FILE_PATH_USER_DATA_KEY)!!
             val configuration = FileSizeConfiguration(
-                configRules.getRuleConfig(FILE_IS_TOO_LONG)?.configuration ?: mapOf()
+                this.configRules.getRuleConfig(FILE_IS_TOO_LONG)?.configuration ?: mapOf()
             )
             val ignoreFolders = configuration.ignoreFolders
 
@@ -65,7 +61,7 @@ class FileSize : Rule("file-size") {
     private fun checkFileSize(node: ASTNode, maxSize: Long) {
         val size = node.text.split("\n").size
         if (size > maxSize) {
-            FILE_IS_TOO_LONG.warn(configRules, emitWarn, isFixMode, "$size", node.startOffset)
+            FILE_IS_TOO_LONG.warn(this.configRules, emitWarn, isFixMode, "$size", node.startOffset)
         }
     }
 

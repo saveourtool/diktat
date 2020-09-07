@@ -18,12 +18,12 @@ import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_NAME_INCORRECT
 import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_NAME_INCORRECT_FORMAT
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.IdentifierNaming
-import org.cqfn.diktat.util.lintMethod
+import org.cqfn.diktat.util.LintTestBase
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Tags
 import org.junit.jupiter.api.Test
 
-class IdentifierNamingWarnTest {
+class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
 
     private val ruleId: String = "$DIKTAT_RULE_SET_ID:identifier-naming"
 
@@ -38,7 +38,7 @@ class IdentifierNamingWarnTest {
                     class TreeNode<T>(val value: T?, val next: TreeNode<T>? = null)
 
                 """.trimIndent()
-        lintMethod(IdentifierNaming(), code)
+        lintMethod(code)
     }
 
     @Test
@@ -51,7 +51,7 @@ class IdentifierNamingWarnTest {
                     class TreeNode<T123>(val value: T?, val next: TreeNode<T>? = null)
 
                 """.trimIndent()
-        lintMethod(IdentifierNaming(), code)
+        lintMethod(code)
     }
 
     @Test
@@ -64,7 +64,7 @@ class IdentifierNamingWarnTest {
                     class TreeNode<a>(val value: T?, val next: TreeNode<T>? = null)
 
                 """.trimIndent()
-        lintMethod(IdentifierNaming(), code, LintError(
+        lintMethod(code, LintError(
                 3, 15, ruleId, "${GENERIC_NAME.warnText()} <a>", true)
         )
     }
@@ -79,7 +79,7 @@ class IdentifierNamingWarnTest {
                     class TreeNode<TBBB>(val value: T?, val next: TreeNode<T>? = null)
 
                 """.trimIndent()
-        lintMethod(IdentifierNaming(), code, LintError(
+        lintMethod(code, LintError(
                 3, 15, ruleId, "${GENERIC_NAME.warnText()} <TBBB>", true)
         )
     }
@@ -100,7 +100,7 @@ class IdentifierNamingWarnTest {
                         return node
                     }
                 """.trimIndent()
-        lintMethod(IdentifierNaming(), code)
+        lintMethod(code)
     }
 
     // ======== checks for variables and class names ========
@@ -112,7 +112,7 @@ class IdentifierNamingWarnTest {
                     class incorrectNAME {}
                     class IncorrectNAME {}
                 """
-        lintMethod(IdentifierNaming(), code,
+        lintMethod(code,
                 LintError(2, 27, ruleId, "${CLASS_NAME_INCORRECT.warnText()} incorrectNAME", true),
                 LintError(3, 27, ruleId, "${CLASS_NAME_INCORRECT.warnText()} IncorrectNAME", true)
         )
@@ -139,7 +139,7 @@ class IdentifierNamingWarnTest {
                   }
                 """.trimIndent()
 
-        lintMethod(IdentifierNaming(), code,
+        lintMethod(code,
                 LintError(1, 5, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} SOMEtest", true),
                 LintError(2, 11, ruleId, "${CONSTANT_UPPERCASE.warnText()} thisConstantShouldBeUpper", true),
                 LintError(3, 7, ruleId, "${CLASS_NAME_INCORRECT.warnText()} className", true),
@@ -165,7 +165,7 @@ class IdentifierNamingWarnTest {
                       val veryLongveryLongveryLongveryLongveryLongveryLongveryLongveryLongveryLongName = ""
                   }
                 """.trimIndent()
-        lintMethod(IdentifierNaming(), code,
+        lintMethod(code,
                 LintError(1, 5, ruleId, "${IDENTIFIER_LENGTH.warnText()} r"),
                 LintError(2, 5, ruleId, "${VARIABLE_NAME_INCORRECT.warnText()} x256"),
                 LintError(4, 7, ruleId, "${IDENTIFIER_LENGTH.warnText()} LongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongName"),
@@ -181,7 +181,7 @@ class IdentifierNamingWarnTest {
                 """
                     data class ClassName(val FIRST: String, var SECOND: String)
                 """.trimIndent()
-        lintMethod(IdentifierNaming(), code,
+        lintMethod(code,
                 LintError(1, 26, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} FIRST", true),
                 LintError(1, 45, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} SECOND", true)
         )
@@ -195,7 +195,7 @@ class IdentifierNamingWarnTest {
                     fun foo(SOMENAME: String) {
                     }
                 """.trimIndent()
-        lintMethod(IdentifierNaming(), code,
+        lintMethod(code,
                 LintError(1, 9, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} SOMENAME", true)
         )
     }
@@ -209,7 +209,7 @@ class IdentifierNamingWarnTest {
                     first_value, secondValue, thirdVALUE
                   }
                 """.trimIndent()
-        lintMethod(IdentifierNaming(), code,
+        lintMethod(code,
                 LintError(1, 12, ruleId, "${CLASS_NAME_INCORRECT.warnText()} TEST_ONE", true),
                 LintError(2, 3, ruleId, "${ENUM_VALUE.warnText()} first_value", true),
                 LintError(2, 16, ruleId, "${ENUM_VALUE.warnText()} secondValue", true),
@@ -225,7 +225,7 @@ class IdentifierNamingWarnTest {
                   object TEST_ONE {
                   }
                 """.trimIndent()
-        lintMethod(IdentifierNaming(), code,
+        lintMethod(code,
                 LintError(1, 8, ruleId, "${OBJECT_NAME_INCORRECT.warnText()} TEST_ONE", true)
         )
     }
@@ -238,7 +238,7 @@ class IdentifierNamingWarnTest {
                 """
                     class incorrect_case_Exception(message: String) : Exception(message)
                 """.trimIndent()
-        lintMethod(IdentifierNaming(), code,
+        lintMethod(code,
                 LintError(1, 7, ruleId, "${CLASS_NAME_INCORRECT.warnText()} incorrect_case_Exception", true)
         )
     }
@@ -250,7 +250,7 @@ class IdentifierNamingWarnTest {
                 """
                     class Custom(message: String) : Exception(message)
                 """.trimIndent()
-        lintMethod(IdentifierNaming(), code,
+        lintMethod(code,
                 LintError(1, 7, ruleId, "${EXCEPTION_SUFFIX.warnText()} Custom", true)
         )
     }
@@ -264,7 +264,7 @@ class IdentifierNamingWarnTest {
                         constructor(msg: String) : super(msg)
                     }
                 """.trimIndent()
-        lintMethod(IdentifierNaming(), code,
+        lintMethod(code,
                 LintError(1, 7, ruleId, "${EXCEPTION_SUFFIX.warnText()} Custom", true)
         )
     }
@@ -278,7 +278,7 @@ class IdentifierNamingWarnTest {
                     val aPrefix = ""
                 """.trimIndent()
 
-        lintMethod(IdentifierNaming(), code,
+        lintMethod(code,
                 LintError(1, 11, ruleId, "${VARIABLE_HAS_PREFIX.warnText()} M_GLOB", true),
                 LintError(2, 5, ruleId, "${VARIABLE_HAS_PREFIX.warnText()} aPrefix", true)
         )
@@ -293,7 +293,7 @@ class IdentifierNamingWarnTest {
                     const val I_AM_CONSTANT2  = ""
                 """.trimIndent()
 
-        lintMethod(IdentifierNaming(), code,
+        lintMethod(code,
                 LintError(1, 5, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} I_AM_CONSTANT1", true),
                 LintError(1, 5, ruleId, "${VARIABLE_HAS_PREFIX.warnText()} I_AM_CONSTANT1", true),
                 LintError(2, 11, ruleId, "${VARIABLE_HAS_PREFIX.warnText()} I_AM_CONSTANT2", true)
@@ -315,7 +315,7 @@ class IdentifierNamingWarnTest {
                 }
                 """.trimIndent()
 
-        lintMethod(IdentifierNaming(), code,
+        lintMethod(code,
                 LintError(5, 13, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} STRANGECASE", true)
         )
     }
@@ -333,7 +333,7 @@ class IdentifierNamingWarnTest {
                 }
                 """.trimIndent()
 
-        lintMethod(IdentifierNaming(), code,
+        lintMethod(code,
                 LintError(3, 35, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} STRANGECASE", true)
         )
     }
@@ -341,7 +341,7 @@ class IdentifierNamingWarnTest {
     @Test
     @Tag(WarningNames.FUNCTION_BOOLEAN_PREFIX)
     fun `FUNCTION_BOOLEAN_PREFIX - positive example`() {
-        lintMethod(IdentifierNaming(),
+        lintMethod(
                 """
                     fun ASTNode.hasEmptyLineAfter(): Boolean { }    
                     fun hasEmptyLineAfter(): Boolean { }    
@@ -354,7 +354,7 @@ class IdentifierNamingWarnTest {
     @Test
     @Tag(WarningNames.FUNCTION_BOOLEAN_PREFIX)
     fun `FUNCTION_BOOLEAN_PREFIX - negative example`() {
-        lintMethod(IdentifierNaming(),
+        lintMethod(
                 """
                     fun ASTNode.emptyLineAfter(): Boolean { }    
                     fun emptyLineAfter(): Boolean { }    
@@ -372,14 +372,14 @@ class IdentifierNamingWarnTest {
     @Tag(WarningNames.IDENTIFIER_LENGTH)
     fun `regression - function argument type`() {
         // valid example, should not cause exceptions
-        lintMethod(IdentifierNaming(),
+        lintMethod(
                 """
                     fun foo(predicate: (Int) -> Boolean) = Unit    
                 """.trimIndent()
         )
 
         // identifier names in function types are still checked if present
-        lintMethod(IdentifierNaming(),
+        lintMethod(
                 """
                     fun foo(predicate: (a: Int) -> Boolean) = Unit    
                 """.trimIndent(),
@@ -397,7 +397,7 @@ class IdentifierNamingWarnTest {
                                    })
                 """.trimIndent()
 
-        lintMethod(IdentifierNaming(), code)
+        lintMethod(code)
     }
 
     @Test
@@ -412,7 +412,7 @@ class IdentifierNamingWarnTest {
                     }
                 """.trimIndent()
 
-        lintMethod(IdentifierNaming(), code)
+        lintMethod(code)
     }
 
     @Test
@@ -429,7 +429,7 @@ class IdentifierNamingWarnTest {
                     }
                 """.trimIndent()
 
-        lintMethod(IdentifierNaming(), code, LintError(4, 17, ruleId, "${IDENTIFIER_LENGTH.warnText()} e", false))
+        lintMethod(code, LintError(4, 17, ruleId, "${IDENTIFIER_LENGTH.warnText()} e", false))
     }
 
     @Test
@@ -444,7 +444,7 @@ class IdentifierNamingWarnTest {
                     }
                 """.trimIndent()
 
-        lintMethod(IdentifierNaming(), code)
+        lintMethod(code)
     }
 
     @Test
@@ -457,7 +457,7 @@ class IdentifierNamingWarnTest {
                     }
                 """.trimIndent()
 
-        lintMethod(IdentifierNaming(), code,
+        lintMethod(code,
                 LintError(1, 5, ruleId, "${BACKTICKS_PROHIBITED.warnText()} `foo function`"),
                 LintError(1, 20, ruleId, "${BACKTICKS_PROHIBITED.warnText()} `argument with backstick`"),
                 LintError(2, 9, ruleId, "${BACKTICKS_PROHIBITED.warnText()} `foo variable`")
@@ -474,7 +474,7 @@ class IdentifierNamingWarnTest {
                     }
                 """.trimIndent()
 
-        lintMethod(IdentifierNaming(), code)
+        lintMethod(code)
     }
 
     @Test
@@ -489,7 +489,7 @@ class IdentifierNamingWarnTest {
                     }
                 """.trimIndent()
 
-        lintMethod(IdentifierNaming(), code, LintError(3, 9, ruleId, "${BACKTICKS_PROHIBITED.warnText()} `should not be used`"))
+        lintMethod(code, LintError(3, 9, ruleId, "${BACKTICKS_PROHIBITED.warnText()} `should not be used`"))
     }
 
     @Test
@@ -500,7 +500,7 @@ class IdentifierNamingWarnTest {
                     class `my class name` {}
                 """.trimIndent()
 
-        lintMethod(IdentifierNaming(), code, LintError(1, 7, ruleId, "${BACKTICKS_PROHIBITED.warnText()} `my class name`"))
+        lintMethod(code, LintError(1, 7, ruleId, "${BACKTICKS_PROHIBITED.warnText()} `my class name`"))
     }
 
     @Test

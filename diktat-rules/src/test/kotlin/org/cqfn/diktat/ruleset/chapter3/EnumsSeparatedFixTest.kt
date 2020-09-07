@@ -6,9 +6,7 @@ import org.cqfn.diktat.util.FixTestBase
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class EnumsSeparatedFixTest : FixTestBase("test/paragraph3/enum_separated", EnumsSeparated()) {
-
-
+class EnumsSeparatedFixTest : FixTestBase("test/paragraph3/enum_separated", ::EnumsSeparated) {
     @Test
     @Tag(WarningNames.ENUMS_SEPARATED)
     fun `test enums split`() {

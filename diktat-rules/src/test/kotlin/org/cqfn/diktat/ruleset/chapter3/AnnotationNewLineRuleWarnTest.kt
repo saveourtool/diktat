@@ -5,19 +5,18 @@ import generated.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.AnnotationNewLineRule
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
-import org.cqfn.diktat.util.lintMethod
-import org.jetbrains.kotlin.javax.inject.Inject
+import org.cqfn.diktat.util.LintTestBase
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class AnnotationNewLineRuleWarnTest {
+class AnnotationNewLineRuleWarnTest : LintTestBase(::AnnotationNewLineRule) {
     private val ruleId = "$DIKTAT_RULE_SET_ID:annotation-new-line"
 
 
     @Test
     @Tag(WarningNames.ANNOTATION_NEW_LINE)
     fun `annotation class test good`(){
-        lintMethod(AnnotationNewLineRule(),
+        lintMethod(
                 """
                     |
                     |@SomeAnnotation
@@ -32,7 +31,7 @@ class AnnotationNewLineRuleWarnTest {
     @Test
     @Tag(WarningNames.ANNOTATION_NEW_LINE)
     fun `annotation class test good 2`(){
-        lintMethod(AnnotationNewLineRule(),
+        lintMethod(
                 """
                     |@SomeAnnotation class A {
                     |   val a = 5
@@ -44,7 +43,7 @@ class AnnotationNewLineRuleWarnTest {
     @Test
     @Tag(WarningNames.ANNOTATION_NEW_LINE)
     fun `annotation class test bad`() {
-        lintMethod(AnnotationNewLineRule(),
+        lintMethod(
                 """
                     |@SomeAnnotation @SecondAnnotation
                     |class A {
@@ -59,7 +58,7 @@ class AnnotationNewLineRuleWarnTest {
     @Test
     @Tag(WarningNames.ANNOTATION_NEW_LINE)
     fun `annotation class test bad 2`() {
-        lintMethod(AnnotationNewLineRule(),
+        lintMethod(
                 """
                     |@SomeAnnotation @SecondAnnotation class A {
                     |   val a = 5
@@ -73,7 +72,7 @@ class AnnotationNewLineRuleWarnTest {
     @Test
     @Tag(WarningNames.ANNOTATION_NEW_LINE)
     fun `annotation fun test good`() {
-        lintMethod(AnnotationNewLineRule(),
+        lintMethod(
                 """
                     |class A {
                     |   val a = 5
@@ -91,7 +90,7 @@ class AnnotationNewLineRuleWarnTest {
     @Test
     @Tag(WarningNames.ANNOTATION_NEW_LINE)
     fun `annotation fun test good 2`() {
-        lintMethod(AnnotationNewLineRule(),
+        lintMethod(
                 """
                     |class A {
                     |   val a = 5
@@ -107,7 +106,7 @@ class AnnotationNewLineRuleWarnTest {
     @Test
     @Tag(WarningNames.ANNOTATION_NEW_LINE)
     fun `annotation fun test bad`() {
-        lintMethod(AnnotationNewLineRule(),
+        lintMethod(
                 """
                     |class A {
                     |   val a = 5
@@ -125,7 +124,7 @@ class AnnotationNewLineRuleWarnTest {
     @Test
     @Tag(WarningNames.ANNOTATION_NEW_LINE)
     fun `annotation fun test bad 2`() {
-        lintMethod(AnnotationNewLineRule(),
+        lintMethod(
                 """
                     |class A {
                     |   val a = 5
@@ -144,7 +143,7 @@ class AnnotationNewLineRuleWarnTest {
     @Test
     @Tag(WarningNames.ANNOTATION_NEW_LINE)
     fun `annotation constructor test good`() {
-        lintMethod(AnnotationNewLineRule(),
+        lintMethod(
                 """
                     |public class Conf
                     |@Inject
@@ -158,7 +157,7 @@ class AnnotationNewLineRuleWarnTest {
     @Test
     @Tag(WarningNames.ANNOTATION_NEW_LINE)
     fun `annotation constructor test good 2`() {
-        lintMethod(AnnotationNewLineRule(),
+        lintMethod(
                 """
                     |public class Conf @Inject constructor(conf: Int) {
                     |
@@ -170,7 +169,7 @@ class AnnotationNewLineRuleWarnTest {
     @Test
     @Tag(WarningNames.ANNOTATION_NEW_LINE)
     fun `annotation constructor test good 3`() {
-        lintMethod(AnnotationNewLineRule(),
+        lintMethod(
                 """
                     |public class Conf 
                     |@Inject 
@@ -185,7 +184,7 @@ class AnnotationNewLineRuleWarnTest {
     @Test
     @Tag(WarningNames.ANNOTATION_NEW_LINE)
     fun `annotation secondary constructor test good`() {
-        lintMethod(AnnotationNewLineRule(),
+        lintMethod(
                 """
                     |public class Conf {
                     |   @FirstAnnotation constructor(conf: Conf) {
@@ -199,7 +198,7 @@ class AnnotationNewLineRuleWarnTest {
     @Test
     @Tag(WarningNames.ANNOTATION_NEW_LINE)
     fun `annotation secondary constructor test bad`() {
-        lintMethod(AnnotationNewLineRule(),
+        lintMethod(
                 """
                     |public class Conf {
                     |   @FirstAnnotation @SecondAnnotation constructor(conf: Conf) {
@@ -215,7 +214,7 @@ class AnnotationNewLineRuleWarnTest {
     @Test
     @Tag(WarningNames.ANNOTATION_NEW_LINE)
     fun `annotation constructor test bad`() {
-        lintMethod(AnnotationNewLineRule(),
+        lintMethod(
                 """
                     |public class Conf @Inject @SomeAnnotation constructor(conf: Int) {
                     |
@@ -229,7 +228,7 @@ class AnnotationNewLineRuleWarnTest {
     @Test
     @Tag(WarningNames.ANNOTATION_NEW_LINE)
     fun `annotation constructor test bad 2`() {
-        lintMethod(AnnotationNewLineRule(),
+        lintMethod(
                 """
                     |public class Conf @Inject 
                     |@SomeAnnotation constructor(conf: Int) {
@@ -244,7 +243,7 @@ class AnnotationNewLineRuleWarnTest {
     @Test
     @Tag(WarningNames.ANNOTATION_NEW_LINE)
     fun `no warns in func params`() {
-        lintMethod(AnnotationNewLineRule(),
+        lintMethod(
                 """
                     |public class Conf {
                     |   fun someFunc(@SomeAnnotation conf: JsonConf, @SecondAnnotation some: Int) {
@@ -258,7 +257,7 @@ class AnnotationNewLineRuleWarnTest {
     @Test
     @Tag(WarningNames.ANNOTATION_NEW_LINE)
     fun `no warns in func params 2`() {
-        lintMethod(AnnotationNewLineRule(),
+        lintMethod(
                 """
                     |public class Conf {
                     |   fun someFunc(@SomeAnnotation @AnotherAnnotation conf: JsonConf, @SecondAnnotation @ThirdAnnotation some: Int) {
