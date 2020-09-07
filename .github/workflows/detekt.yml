@@ -22,4 +22,4 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-detekt-
       - name: running deteKT
-        run: mvn dependency:build-classpath@detekt detekt:check@detekt
+        run: mvn compile dependency:build-classpath@detekt detekt:check@detekt
