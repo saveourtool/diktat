@@ -94,7 +94,6 @@ class CommentsFormatting : Rule("kdoc-comments-codeblocks-formatting") {
     private fun checkBlankLineAfterKdoc(node: ASTNode, type: IElementType) {
         val kdoc = node.getFirstChildWithType(type)
         val nodeAfterKdoc = kdoc?.treeNext
-        val name = node.getFirstChildWithType(ElementType.IDENTIFIER)
         if (nodeAfterKdoc?.elementType == ElementType.WHITE_SPACE && nodeAfterKdoc.text.countSubStringOccurrences("\n") > 1) {
             COMMENT_NEW_LINES.warnAndFix(configRules, emitWarn, isFixMode, kdoc.text, nodeAfterKdoc.startOffset) {
                 nodeAfterKdoc.leaveOnlyOneNewLine()
@@ -168,12 +167,12 @@ class CommentsFormatting : Rule("kdoc-comments-codeblocks-formatting") {
 
         if (!node.treePrev.isWhiteSpace()) {
             COMMENT_NEW_LINES.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset) {
-                node.treeParent.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node.treeParent) // If treeParent is property
+                node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node.treeParent) // If treeParent is property
             }
         } else {
             if (node.treePrev.text.countSubStringOccurrences("\n") == 1 || node.treePrev.text.countSubStringOccurrences("\n") > 2) {
                 COMMENT_NEW_LINES.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset) {
-                    (node.treeParent.treePrev as LeafPsiElement).replaceWithText("\n\n")
+                    (node.treePrev as LeafPsiElement).replaceWithText("\n\n")
                 }
             }
         }
