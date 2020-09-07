@@ -77,8 +77,6 @@ object WarningNames {
 
     const val KDOC_NO_DEPRECATED_TAG: String = "KDOC_NO_DEPRECATED_TAG"
 
-    const val WRONG_KDOC_PARAM: String = "WRONG_KDOC_PARAM"
-
     const val HEADER_WRONG_FORMAT: String = "HEADER_WRONG_FORMAT"
 
     const val HEADER_MISSING_OR_WRONG_COPYRIGHT: String = "HEADER_MISSING_OR_WRONG_COPYRIGHT"
