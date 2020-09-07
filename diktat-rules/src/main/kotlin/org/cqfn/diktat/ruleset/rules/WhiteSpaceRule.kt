@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.rules
 
-import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.ARROW
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
@@ -80,7 +80,7 @@ import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
  * 9. There should be no space after `(`, `[` and `<` (in templates); no space before `)`, `]`, `>` (in templates)
  */
 @Suppress("ForbiddenComment")
-class WhiteSpaceRule : Rule("horizontal-whitespace") {
+class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizontal-whitespace") {
     companion object {
         private val keywordsWithSpaceAfter = TokenSet.create(
                 // these keywords are followed by {
@@ -97,15 +97,12 @@ class WhiteSpaceRule : Rule("horizontal-whitespace") {
         private const val numParentsForLambda = 3
     }
 
-    private lateinit var configRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
-                       params: KtLint.Params,
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
-        configRules = params.getDiktatConfigRules()
         emitWarn = emit
         isFixMode = autoCorrect
 
@@ -192,7 +189,8 @@ class WhiteSpaceRule : Rule("horizontal-whitespace") {
     private fun handleColon(node: ASTNode) {
         when (node.treeParent.elementType) {
             CLASS, SECONDARY_CONSTRUCTOR, TYPE_CONSTRAINT, TYPE_PARAMETER, OBJECT_DECLARATION -> handleBinaryOperator(node)
-            VALUE_PARAMETER, PROPERTY -> handleToken(node, 0, 1)
+            VALUE_PARAMETER, PROPERTY, FUN -> handleToken(node, 0, 1)
+            ANNOTATION_ENTRY -> handleToken(node, 0, 0)  // e.g. @param:JsonProperty
             // fixme: find examples or delete this line
             else -> log.warn("Colon with treeParent.elementType=${node.treeParent.elementType}, not handled by WhiteSpaceRule")
         }

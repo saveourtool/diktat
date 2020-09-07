@@ -7,10 +7,10 @@ import org.cqfn.diktat.ruleset.constants.Warnings.FUNCTION_NAME_INCORRECT_CASE
 import org.junit.jupiter.api.Test
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.IdentifierNaming
-import org.cqfn.diktat.util.lintMethod
+import org.cqfn.diktat.util.LintTestBase
 import org.junit.jupiter.api.Tag
 
-class MethodNamingWarnTest {
+class MethodNamingWarnTest : LintTestBase(::IdentifierNaming) {
 
     private val ruleId: String = "$DIKTAT_RULE_SET_ID:identifier-naming"
 
@@ -25,7 +25,7 @@ class MethodNamingWarnTest {
                     }
                   }
                 """.trimIndent()
-        lintMethod(IdentifierNaming(), code, LintError(2, 13, ruleId, "${FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREE", true))
+        lintMethod(code, LintError(2, 13, ruleId, "${FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREE", true))
     }
 
     @Test
@@ -39,7 +39,7 @@ class MethodNamingWarnTest {
                     }
                   }
                 """.trimIndent()
-        lintMethod(IdentifierNaming(), code, LintError(2, 7, ruleId, "${FUNCTION_NAME_INCORRECT_CASE.warnText()} method_two", true))
+        lintMethod(code, LintError(2, 7, ruleId, "${FUNCTION_NAME_INCORRECT_CASE.warnText()} method_two", true))
     }
 
     @Test
@@ -53,7 +53,7 @@ class MethodNamingWarnTest {
                         }
                     }
                 """.trimIndent()
-        lintMethod(IdentifierNaming(), code,
+        lintMethod(code,
                 LintError(1, 12, ruleId, "${FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREE", true),
                 LintError(2, 9, ruleId, "${FUNCTION_NAME_INCORRECT_CASE.warnText()} TEST", true)
         )
@@ -69,7 +69,7 @@ class MethodNamingWarnTest {
                     }
                   }
                 """.trimIndent()
-        lintMethod(IdentifierNaming(), code, LintError(2, 7, ruleId, "${FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREE", true))
+        lintMethod(code, LintError(2, 7, ruleId, "${FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREE", true))
     }
 
     @Test
@@ -82,7 +82,7 @@ class MethodNamingWarnTest {
                     }
                   }
                 """.trimIndent()
-        lintMethod(IdentifierNaming(), code, LintError(2, 7, ruleId, "${FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREE", true))
+        lintMethod(code, LintError(2, 7, ruleId, "${FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREE", true))
     }
 
     @Test
@@ -94,6 +94,6 @@ class MethodNamingWarnTest {
                      return false
                  }
                 """.trimIndent()
-        lintMethod(IdentifierNaming(), code, LintError(1, 5, ruleId, "${FUNCTION_BOOLEAN_PREFIX.warnText()} someBooleanCheck", true))
+        lintMethod(code, LintError(1, 5, ruleId, "${FUNCTION_BOOLEAN_PREFIX.warnText()} someBooleanCheck", true))
     }
 }

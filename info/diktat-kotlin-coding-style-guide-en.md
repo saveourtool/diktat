@@ -130,6 +130,19 @@ No special prefix or suffix should be used in these names. For example, the foll
 ```kotlin
      @Test fun `my test`() { /*...*/ }
 ``` 
+6. The following table contains some confusing characters. You should be careful when using them as identifiers. 
+   And better use other names instead of these identifiers.
+   
+   | Expected      | Confusing name           | Suggested name |
+   | ------------- | ------------------------ | ---------------- |
+   | 0 (zero)      | O, D                     | obj, dgt         |
+   | 1 (one)       | I, l                     | it, ln, line     |
+   | 2 (two)       | Z                        | n1, n2           |
+   | 5 (five)      | S                        | xs, str          |
+   | 6 (six)       | e                        | ex, elm          |
+   | 8 (eight)     | B                        | bt, nxt          |
+   | n,h           | h,n                      | nr, head, height |
+   | rn, m         | m,rn                     | mbr, item        |
 
  **Exceptions**
  - i,j,k variables that are used in loops is a standard for industry. It is allowed to use 1 symbol for such variables.
@@ -699,6 +712,7 @@ import javax.swing.event.ActionEvent;
 Notes:
 1. There should be no blank lines between properties without comments;
 2. Properties with comments/Kdoc should be separated by a newline before the comment/Kdoc
+3. Enum entries and constant properties (`const val`) in companion objects should be sorted alphabetically.
 
 The declaration part of a class or interface should be in the following order:
  - compile-time constants (for objects)
@@ -1088,8 +1102,9 @@ fun baz() {
   - Safe access modifiers: `?.` and `!!`, that stay on the same line with an object name: `object?.toString()`
   - Operator `..` for creating ranges, e.g. `1..100`
 
-  5. Spaces should be used after ',' and ':' (also ';', but please note that this code style prohibits usage of ';' in the middle of the line, see [rule 3.4](#s3.4)) (except cases when those symbols are in the end of line). There should be no whitespaces in the end of line.
-  There should be no spaces before `,`, `:` and `;`. The only exceptions for colon are the following:
+  5. Spaces should be used *after* ',' and ':' (also ';', but please note that this code style prohibits usage of ';' in the middle of the line, see [rule 3.4](#s3.4)) (except cases when those symbols are in the end of line). There should be no whitespaces in the end of line.
+  The only exception when there should be no spaces *after* colon is when colon is used in annotation to specify use-site target (e.g. `@param:JsonProperty`)
+  There should be no spaces *before* `,`, `:` and `;`. The only exceptions for colon are the following:
   - when `:` is used to separate a type and a supertype, including anonimous object (after `object` keyword)
   - when delegating to a superclass constructor or a different constructor of the same class
   
@@ -1276,19 +1291,6 @@ val socialSecurityNumber = 999_99_9999L
 val hexBytes = 0xFF_EC_DE_5E
 val bytes = 0b11010010_01101001_10010100_10010010
 ```
-The following table contains some confusing characters. You should be careful when using them as identifiers. 
-And better use other names instead of these identifiers.
-
-| Expected      | Confusing name           | Suggested name |
-| ------------- | ------------------------ | ---------------- |
-| 0 (zero)      | O, D                     | obj, dgt         |
-| 1 (one)       | I, l                     | it, ln, line     |
-| 2 (two)       | Z                        | n1, n2           |
-| 5 (five)      | S                        | xs, str          |
-| 6 (six)       | e                        | ex, elm          |
-| 8 (eight)     | B                        | bt, nxt          |
-| n,h           | h,n                      | nr, head, height |
-| rn, m         | m,rn                     | mbr, item        |
 
 ### <a name="c3.14"></a> Strings
 

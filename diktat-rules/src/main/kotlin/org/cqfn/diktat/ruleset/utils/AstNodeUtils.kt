@@ -6,14 +6,17 @@ import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.INTERNAL_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
+import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.PRIVATE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PROTECTED_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PUBLIC_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isLeaf
+import com.pinterest.ktlint.core.ast.isRoot
 import com.pinterest.ktlint.core.ast.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.TokenType
+import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
@@ -26,6 +29,8 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 val log: Logger = LoggerFactory.getLogger(ASTNode::class.java)
+
+fun ASTNode.getRootNode() = if (isRoot()) this else parents().last()
 
 fun ASTNode.checkLength(range: IntRange): Boolean = this.textLength in range
 
@@ -96,6 +101,11 @@ fun ASTNode.hasChildOfType(elementType: IElementType): Boolean =
 
 fun ASTNode.hasAnyChildOfTypes(vararg elementType: IElementType): Boolean =
         elementType.any { this.hasChildOfType(it) }
+
+/**
+ * checks if node has parent of type
+ */
+fun ASTNode.hasParent(type: IElementType) = parent(type) != null
 
 /**
  * check if node's text is empty (contains only left and right braces)
@@ -290,6 +300,15 @@ fun ASTNode?.isAccessibleOutside(): Boolean =
         } else {
             true
         }
+
+/**
+ * creation of operation reference in a node
+ */
+fun ASTNode.createOperationReference(elementType: IElementType, text: String){
+    val operationReference = CompositeElement(OPERATION_REFERENCE)
+    this.addChild(operationReference, null)
+    operationReference.addChild(LeafPsiElement(elementType, text), null)
+}
 
 /**
  * removing all newlines in WHITE_SPACE node and replacing it to a one newline saving the initial indenting format
