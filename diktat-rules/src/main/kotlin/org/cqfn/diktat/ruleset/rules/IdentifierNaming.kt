@@ -20,7 +20,6 @@ import org.cqfn.diktat.ruleset.constants.Warnings.FUNCTION_BOOLEAN_PREFIX
 import org.cqfn.diktat.ruleset.constants.Warnings.FUNCTION_NAME_INCORRECT_CASE
 import org.cqfn.diktat.ruleset.constants.Warnings.GENERIC_NAME
 import org.cqfn.diktat.ruleset.constants.Warnings.IDENTIFIER_LENGTH
-import org.cqfn.diktat.ruleset.constants.Warnings.BACKTICKS_PROHIBITED
 import org.cqfn.diktat.ruleset.constants.Warnings.CONFUSING_IDENTIFIER_NAMING
 import org.cqfn.diktat.ruleset.constants.Warnings.OBJECT_NAME_INCORRECT
 import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_HAS_PREFIX
