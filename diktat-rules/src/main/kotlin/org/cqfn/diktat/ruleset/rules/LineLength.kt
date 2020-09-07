@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.rules
 
-import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.KtLint.calculateLineColByOffset
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
@@ -56,7 +55,7 @@ import java.net.URL
  * Rule can fix long binary expressions in condition inside `if` and in property declarations and one line functions
  */
 @Suppress("ForbiddenComment")
-class LineLength : Rule("line-length") {
+class LineLength(private val configRules: List<RulesConfig>) : Rule("line-length") {
 
     /**
      * val text = "first part" +
@@ -73,17 +72,12 @@ class LineLength : Rule("line-length") {
                 SHORT_STRING_TEMPLATE_ENTRY)
     }
 
-    private lateinit var configRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
-    private var fileName: String? = null
     private var isFixMode: Boolean = false
     private lateinit var positionByOffset: (Int) -> Pair<Int, Int>
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
-                       params: KtLint.Params,
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
-        configRules = params.getDiktatConfigRules()
-        fileName = params.fileName
         emitWarn = emit
         isFixMode = autoCorrect
 

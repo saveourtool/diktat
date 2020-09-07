@@ -6,7 +6,7 @@ import org.cqfn.diktat.util.FixTestBase
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class MultipleModifiersSequenceFixTest : FixTestBase("test/paragraph3/multiple_modifiers", MultipleModifiersSequence()) {
+class MultipleModifiersSequenceFixTest : FixTestBase("test/paragraph3/multiple_modifiers", ::MultipleModifiersSequence) {
 
 
     @Test

@@ -8,7 +8,7 @@ import org.cqfn.diktat.util.FixTestBase
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class SortRuleFixTest : FixTestBase("test/paragraph3/sort_error", SortRule()) {
+class SortRuleFixTest : FixTestBase("test/paragraph3/sort_error", ::SortRule) {
 
     private val rulesConfigSortEnum: List<RulesConfig> = listOf(
             RulesConfig(Warnings.WRONG_DECLARATIONS_ORDER.name, true,
