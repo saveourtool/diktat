@@ -256,6 +256,7 @@
                         <configuration>
                             <config>detekt-config.yml</config>
                             <classPath>${maven.compile.classpath}</classPath>
+                            <excludes>**/resources/**/*.kt</excludes>
                         </configuration>
                     </execution>
                 </executions>

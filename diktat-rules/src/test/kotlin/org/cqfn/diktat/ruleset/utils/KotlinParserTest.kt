@@ -96,6 +96,7 @@ class KotlinParserTest {
     }
 
     @Test
+    @Suppress("UnsafeCallOnNullableType")
     fun `test multiline class code compare with applyToCode`() {
         val emptyClass = """
             |package org.cqfn.diktat.ruleset.utils

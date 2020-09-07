@@ -194,8 +194,8 @@ class IdentifierNaming : Rule("identifier-naming") {
             }
         }
 
-        val className: ASTNode? = node.getIdentifierName()
-        if (!(className!!.text.isPascalCase())) {
+        val className: ASTNode = node.getIdentifierName() ?: return listOf()
+        if (!(className.text.isPascalCase())) {
             CLASS_NAME_INCORRECT.warnAndFix(configRules, emitWarn, isFixMode, className.text, className.startOffset) {
                 (className as LeafPsiElement).replaceWithText(className.text.toPascalCase())
             }
@@ -213,14 +213,14 @@ class IdentifierNaming : Rule("identifier-naming") {
 
         fun hasExceptionSuffix(text: String) = text.toLowerCase().endsWith("exception")
 
-        val classNameNode: ASTNode? = node.getIdentifierName()
+        val classNameNode = node.getIdentifierName() ?: return
         // getting super class name
         val superClassName: String? = node
                 .getFirstChildWithType(ElementType.SUPER_TYPE_LIST)
                 ?.findLeafWithSpecificType(TYPE_REFERENCE)
                 ?.text
 
-        if (superClassName != null && hasExceptionSuffix(superClassName) && !hasExceptionSuffix(classNameNode!!.text)) {
+        if (superClassName != null && hasExceptionSuffix(superClassName) && !hasExceptionSuffix(classNameNode.text)) {
             EXCEPTION_SUFFIX.warnAndFix(configRules, emitWarn, isFixMode, classNameNode.text, classNameNode.startOffset) {
                 // FixMe: need to add tests for this
                 (classNameNode as LeafPsiElement).replaceWithText(classNameNode.text + "Exception")

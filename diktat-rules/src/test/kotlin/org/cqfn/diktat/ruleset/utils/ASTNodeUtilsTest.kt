@@ -501,6 +501,7 @@ class ASTNodeUtilsTest {
     }
 
     @Test
+    @Suppress("UnsafeCallOnNullableType")
     fun `test findLeafWithSpecificType`() {
         val code = """
             class Test() {

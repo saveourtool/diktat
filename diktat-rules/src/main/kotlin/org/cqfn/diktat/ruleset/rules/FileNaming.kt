@@ -32,7 +32,7 @@ class FileNaming : Rule("file-naming") {
 
     private lateinit var configRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
-    private var fileName: String? = null
+    private lateinit var fileName: String
     private var isFixMode: Boolean = false
 
     override fun visit(node: ASTNode,
@@ -40,45 +40,41 @@ class FileNaming : Rule("file-naming") {
                        params: KtLint.Params,
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
         configRules = params.getDiktatConfigRules()
-        fileName = params.fileName
         emitWarn = emit
         isFixMode = autoCorrect
 
-        if (node.elementType == FILE) {
+        if (node.elementType == FILE && params.fileName != null) {
+            fileName = params.fileName!!
             checkFileNaming()
             checkClassNameMatchesWithFile(node)
         }
     }
 
     private fun checkFileNaming() {
-        if (fileName != null) {
-            val (name, extension) = getFileParts()
-            if (!name.isPascalCase() || !VALID_EXTENSIONS.contains(extension)) {
-                FILE_NAME_INCORRECT.warnAndFix(configRules, emitWarn, isFixMode, "$name$extension", 0) {
-                    // FixMe: we can add an autocorrect here in future, but is there any purpose to change file or class name?
-                }
+        val (name, extension) = getFileParts(fileName)
+        if (!name.isPascalCase() || !VALID_EXTENSIONS.contains(extension)) {
+            FILE_NAME_INCORRECT.warnAndFix(configRules, emitWarn, isFixMode, "$name$extension", 0) {
+                // FixMe: we can add an autocorrect here in future, but is there any purpose to change file or class name?
             }
         }
     }
 
     private fun checkClassNameMatchesWithFile(fileLevelNode: ASTNode) {
-        if (fileName != null) {
-            val (fileNameWithoutSuffix, fileNameSuffix) = getFileParts()
-            val classes = fileLevelNode.getAllChildrenWithType(CLASS)
-            if (classes.size == 1) {
-                val className = classes[0].getFirstChildWithType(IDENTIFIER)!!.text
-                if (className != fileNameWithoutSuffix) {
-                    FILE_NAME_MATCH_CLASS.warnAndFix(configRules, emitWarn, isFixMode, "$fileNameWithoutSuffix$fileNameSuffix vs $className", 0) {
+        val (fileNameWithoutSuffix, fileNameSuffix) = getFileParts(fileName)
+        val classes = fileLevelNode.getAllChildrenWithType(CLASS)
+        if (classes.size == 1) {
+            val className = classes[0].getFirstChildWithType(IDENTIFIER)!!.text
+            if (className != fileNameWithoutSuffix) {
+                FILE_NAME_MATCH_CLASS.warnAndFix(configRules, emitWarn, isFixMode, "$fileNameWithoutSuffix$fileNameSuffix vs $className", 0) {
 
-                        // FixMe: we can add an autocorrect here in future, but is there any purpose to change file name?
-                    }
+                    // FixMe: we can add an autocorrect here in future, but is there any purpose to change file name?
                 }
             }
         }
     }
 
-    private fun getFileParts(): Pair<String, String> {
-        val file = File(fileName!!)
+    private fun getFileParts(fileName: String): Pair<String, String> {
+        val file = File(fileName)
         val fileNameWithoutSuffix = file.name.replace(Regex("\\..*"), "")
         val fileNameSuffix = file.name.replace(fileNameWithoutSuffix, "")
         return Pair(fileNameWithoutSuffix, fileNameSuffix)

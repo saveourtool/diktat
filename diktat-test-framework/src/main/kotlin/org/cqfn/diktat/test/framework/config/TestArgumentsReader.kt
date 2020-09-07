@@ -19,14 +19,14 @@ class TestArgumentsReader(
 ) : JsonResourceConfigReader<List<CliArgument?>?>() {
 
     private val cliArguments: List<CliArgument?>? = readResource(properties.testFrameworkArgsRelativePath)
-    private val cmd: CommandLine?
+    private val cmd: CommandLine
     fun shouldRunAllTests(): Boolean {
-        return cmd!!.hasOption("all")
+        return cmd.hasOption("all")
     }
 
     val tests: List<String>
         get() {
-            val tests = cmd!!.getOptionValue("t")
+            val tests = cmd.getOptionValue("t")
             if (tests == null) {
                 log.error("""Missing option --test or -t. Not able to run tests, please provide test names or use --all
                          option to run all available tests""")
@@ -37,11 +37,11 @@ class TestArgumentsReader(
                     .map { it.trim() }
         }
 
-    private fun parseArguments(): CommandLine? {
+    private fun parseArguments(): CommandLine {
         val parser: CommandLineParser = DefaultParser()
         val formatter = HelpFormatter()
         val options = declaredOptions
-        val cmd: CommandLine?
+        val cmd: CommandLine
         try {
             cmd = parser.parse(options, args)
         } catch (e: ParseException) {

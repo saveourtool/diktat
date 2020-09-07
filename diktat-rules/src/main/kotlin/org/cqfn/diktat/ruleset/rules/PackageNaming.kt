@@ -212,26 +212,25 @@ class PackageNaming : Rule("package-naming") {
      * FixMe: check if proper line/char numbers are added
      */
     private fun createAndInsertPackageName(parentNode: ASTNode, insertBeforeNode: ASTNode?, packageNameToInsert: List<String>) {
-        var compositeElementWithNameAndDot: CompositeElement? = null
-        var childDot: LeafPsiElement? = null
-        var childPackageNamePart: LeafPsiElement?
-
-        packageNameToInsert.forEach { name ->
+        packageNameToInsert.map { name ->
             // creating Composite object = ((IDENTIFIER) + (DOT))
-            compositeElementWithNameAndDot = CompositeElement(REFERENCE_EXPRESSION)
-            childDot = LeafPsiElement(DOT, PACKAGE_SEPARATOR)
-            childPackageNamePart = LeafPsiElement(IDENTIFIER, name)
+            val compositeElementWithNameAndDot = CompositeElement(REFERENCE_EXPRESSION)
+            val childDot = LeafPsiElement(DOT, PACKAGE_SEPARATOR)
+            val childPackageNamePart = LeafPsiElement(IDENTIFIER, name)
 
             // putting composite node first in the parent tree and adding IDENTIFIER and DOT as children to it after
-            parentNode.addChild(compositeElementWithNameAndDot!!, insertBeforeNode)
-            compositeElementWithNameAndDot!!.addChild(childPackageNamePart!!)
-            compositeElementWithNameAndDot!!.addChild(childDot!!)
+            parentNode.addChild(compositeElementWithNameAndDot, insertBeforeNode)
+            compositeElementWithNameAndDot.addChild(childPackageNamePart)
+            compositeElementWithNameAndDot.addChild(childDot)
+            compositeElementWithNameAndDot
         }
-
-        // removing extra DOT that is not needed if we were inserting the whole package name (not just a part) to the parent
-        if (insertBeforeNode == null) {
-            compositeElementWithNameAndDot!!.removeChild(childDot!!)
-        }
+                .lastOrNull()
+                ?.let { compositeElementWithNameAndDot ->
+                    // removing extra DOT that is not needed if we were inserting the whole package name (not just a part) to the parent
+                    if (insertBeforeNode == null) {
+                        compositeElementWithNameAndDot.removeChild(compositeElementWithNameAndDot.lastChildNode)
+                    }
+                }
     }
 
     /**
