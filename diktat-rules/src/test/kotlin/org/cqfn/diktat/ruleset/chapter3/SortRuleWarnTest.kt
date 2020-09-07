@@ -6,11 +6,11 @@ import generated.WarningNames
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.SortRule
-import org.cqfn.diktat.util.lintMethod
+import org.cqfn.diktat.util.LintTestBase
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class SortRuleWarnTest {
+class SortRuleWarnTest : LintTestBase(::SortRule) {
 
     private val ruleId = "$DIKTAT_RULE_SET_ID:sort-rule"
 
@@ -32,7 +32,7 @@ class SortRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_DECLARATIONS_ORDER)
     fun `check simple correct enum`() {
-        lintMethod(SortRule(),
+        lintMethod(
                 """
                     |enum class Alph {
                     |   A,
@@ -48,7 +48,7 @@ class SortRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_DECLARATIONS_ORDER)
     fun `check simple wrong enum`() {
-        lintMethod(SortRule(),
+        lintMethod(
                 """
                     |enum class Alph {
                     |   D,
@@ -65,7 +65,7 @@ class SortRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_DECLARATIONS_ORDER)
     fun `check correct enum`() {
-        lintMethod(SortRule(),
+        lintMethod(
                 """
                     |enum class ENUM {
                     |   BLUE(0x0000FF),
@@ -80,7 +80,7 @@ class SortRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_DECLARATIONS_ORDER)
     fun `check wrong enum without semicolon`() {
-        lintMethod(SortRule(),
+        lintMethod(
                 """
                     |enum class ENUM {
                     |   GREEN(0x00FF00),
@@ -95,7 +95,7 @@ class SortRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_DECLARATIONS_ORDER)
     fun `check wrong enum without semicolon and last comma`() {
-        lintMethod(SortRule(),
+        lintMethod(
                 """
                     |enum class ENUM {
                     |   GREEN(0x00FF00),
@@ -110,7 +110,7 @@ class SortRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_DECLARATIONS_ORDER)
     fun `check correct enum without semicolon and last comma`() {
-        lintMethod(SortRule(),
+        lintMethod(
                 """
                     |enum class ENUM {
                     |   BLUE(0x0000FF),
@@ -124,7 +124,7 @@ class SortRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_DECLARATIONS_ORDER)
     fun `check wrong enum with fun`() {
-        lintMethod(SortRule(),
+        lintMethod(
                 """
                     |enum class Warnings {
                     |   WAITING {
@@ -144,7 +144,7 @@ class SortRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_DECLARATIONS_ORDER)
     fun `check wrong enum with fun but with config`() {
-        lintMethod(SortRule(),
+        lintMethod(
                 """
                     |enum class Warnings {
                     |   WAITING {
@@ -163,7 +163,7 @@ class SortRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_DECLARATIONS_ORDER)
     fun `check wrong properties between non conts`() {
-        lintMethod(SortRule(),
+        lintMethod(
                 """
                     |class A {
                     |   companion object {
@@ -182,7 +182,7 @@ class SortRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_DECLARATIONS_ORDER)
     fun `check wrong properties between non const more than one group`() {
-        lintMethod(SortRule(),
+        lintMethod(
                 """
                     |class A {
                     |   companion object {
@@ -204,7 +204,7 @@ class SortRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_DECLARATIONS_ORDER)
     fun `check wrong properties between non const more than one group only one`() {
-        lintMethod(SortRule(),
+        lintMethod(
                 """
                     |class A {
                     |   companion object {
@@ -225,7 +225,7 @@ class SortRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_DECLARATIONS_ORDER)
     fun `check wrong properties but with config`() {
-        lintMethod(SortRule(),
+        lintMethod(
                 """
                     |class A {
                     |   companion object {
@@ -245,7 +245,7 @@ class SortRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_DECLARATIONS_ORDER)
     fun `check wrong properties but with both config`() {
-        lintMethod(SortRule(),
+        lintMethod(
                 """
                     |class A {
                     |   companion object {
@@ -275,7 +275,7 @@ class SortRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_DECLARATIONS_ORDER)
     fun `check correct simple properties`() {
-        lintMethod(SortRule(),
+        lintMethod(
                 """
                     |class A {
                     |   companion object {
@@ -290,7 +290,7 @@ class SortRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_DECLARATIONS_ORDER)
     fun `check correct simple properties between non const`() {
-        lintMethod(SortRule(),
+        lintMethod(
                 """
                     |class A {
                     |   companion object {
