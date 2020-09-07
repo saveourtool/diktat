@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.chapter2
 
-import generated.WarningNames
 import generated.WarningNames.COMMENT_NEW_LINES
 import generated.WarningNames.COMMENT_WHITE_SPACE
 import generated.WarningNames.FIRST_COMMENT_NO_SPACES
