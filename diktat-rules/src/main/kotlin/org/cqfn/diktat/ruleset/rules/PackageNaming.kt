@@ -2,27 +2,34 @@ package org.cqfn.diktat.ruleset.rules
 
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.ast.isLeaf
-import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
-import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
-import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import com.pinterest.ktlint.core.ast.ElementType.DOT
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
+import com.pinterest.ktlint.core.ast.isLeaf
 import com.pinterest.ktlint.core.ast.parent
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
+import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
-import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_PREFIX
-import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_CASE
-import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_MISSING
-import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_SYMBOLS
 import org.cqfn.diktat.ruleset.constants.Warnings.INCORRECT_PACKAGE_SEPARATOR
+import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_CASE
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_PATH
-import org.cqfn.diktat.ruleset.utils.*
+import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_PREFIX
+import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_SYMBOLS
+import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_MISSING
+import org.cqfn.diktat.ruleset.utils.getAllLeafsWithSpecificType
+import org.cqfn.diktat.ruleset.utils.getRootNode
+import org.cqfn.diktat.ruleset.utils.hasUppercaseLetter
+import org.cqfn.diktat.ruleset.utils.isASCIILettersAndDigits
+import org.cqfn.diktat.ruleset.utils.isJavaKeyWord
+import org.cqfn.diktat.ruleset.utils.isKotlinKeyWord
+import org.cqfn.diktat.ruleset.utils.splitPathToDirs
+import org.cqfn.diktat.ruleset.utils.toLower
+import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
+import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
+import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.lexer.KtTokens.PACKAGE_KEYWORD
 import org.slf4j.LoggerFactory
 
@@ -35,7 +42,7 @@ import org.slf4j.LoggerFactory
  * package a.b.c.D -> then class D should be placed in a/b/c/ directories
  */
 @Suppress("ForbiddenComment")
-class PackageNaming : Rule("package-naming") {
+class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-naming") {
     companion object {
         const val PACKAGE_SEPARATOR = "."
         const val PACKAGE_PATH_ANCHOR = "src"
@@ -43,17 +50,13 @@ class PackageNaming : Rule("package-naming") {
         private val log = LoggerFactory.getLogger(PackageNaming::class.java)
     }
 
-    private lateinit var configRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
     private lateinit var domainName: String
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
-                       params: KtLint.Params,
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
-
-        configRules = params.getDiktatConfigRules()
         isFixMode = autoCorrect
         emitWarn = emit
 
@@ -66,12 +69,13 @@ class PackageNaming : Rule("package-naming") {
         domainName = configuration.domainName
 
         if (node.elementType == PACKAGE_DIRECTIVE) {
+            val fileName = node.getRootNode().getUserData(KtLint.FILE_PATH_USER_DATA_KEY)!!
             // calculating package name based on the directory where the file is placed
-            val realPackageName = calculateRealPackageName(params)
+            val realPackageName = calculateRealPackageName(fileName)
 
             // if node isLeaf - this means that there is no package name declared
             if (node.isLeaf()) {
-                checkMissingPackageName(node, realPackageName, params.fileName!!)
+                checkMissingPackageName(node, realPackageName, fileName)
                 return
             }
 
@@ -105,10 +109,10 @@ class PackageNaming : Rule("package-naming") {
      * calculating real package name based on the directory path where the file is stored
      * @return - list with words that are parts of package name like [org, diktat, name]
      */
-    private fun calculateRealPackageName(params: KtLint.Params): List<String> {
-        val filePathParts = params.fileName?.splitPathToDirs()
+    private fun calculateRealPackageName(fileName: String): List<String> {
+        val filePathParts = fileName.splitPathToDirs()
 
-        return if (filePathParts == null || !filePathParts.contains(PACKAGE_PATH_ANCHOR)) {
+        return if (!filePathParts.contains(PACKAGE_PATH_ANCHOR)) {
             log.error("Not able to determine a path to a scanned file or src directory cannot be found in it's path." +
                 " Will not be able to determine correct package name. It can happen due to missing <src> directory in the path")
             listOf()
@@ -118,7 +122,7 @@ class PackageNaming : Rule("package-naming") {
             // 2) removing src/main/kotlin/java/e.t.c dirs and removing file name
             // 3) adding company's domain name at the beginning
             val fileSubDir = filePathParts.subList(filePathParts.lastIndexOf(PACKAGE_PATH_ANCHOR), filePathParts.size - 1)
-                .filter { !LANGUAGE_DIR_NAMES.contains(it) }
+                .dropWhile { LANGUAGE_DIR_NAMES.contains(it) }
             // no need to add DOMAIN_NAME to the package name if it is already in path
             val domainPrefix = if (!fileSubDir.joinToString(PACKAGE_SEPARATOR).startsWith(domainName)) domainName.split(PACKAGE_SEPARATOR) else listOf()
             domainPrefix + fileSubDir
