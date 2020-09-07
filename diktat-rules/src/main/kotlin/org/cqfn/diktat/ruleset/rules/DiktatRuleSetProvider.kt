@@ -46,6 +46,7 @@ class DiktatRuleSetProvider(private val jsonRulesConfig: String = "rules-config.
                 HeaderCommentRule(configRules),
                 SortRule(configRules),
                 StringConcatenationRule(configRules),
+                MultipleModifiersSequence(configRules),
                 LineLength(configRules),
                 BlankLinesRule(configRules),
                 WhiteSpaceRule(configRules),
