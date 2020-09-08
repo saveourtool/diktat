@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Tags
 import org.junit.jupiter.api.Test
 
-class KdocFormattingFixTest: FixTestBase("test/paragraph2/kdoc/", KdocFormatting()) {
+class KdocFormattingFixTest: FixTestBase("test/paragraph2/kdoc/", ::KdocFormatting) {
 
     @Test
     @Tag(WarningNames.KDOC_WRONG_SPACES_AFTER_TAG)

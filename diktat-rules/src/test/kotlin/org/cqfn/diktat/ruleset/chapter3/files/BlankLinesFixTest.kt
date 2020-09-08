@@ -6,7 +6,7 @@ import org.cqfn.diktat.util.FixTestBase
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class BlankLinesFixTest : FixTestBase("test/paragraph3/blank_lines", BlankLinesRule()) {
+class BlankLinesFixTest : FixTestBase("test/paragraph3/blank_lines", ::BlankLinesRule) {
     @Test
     @Tag(WarningNames.TOO_MANY_BLANK_LINES)
     fun `should remove redundant blank lines`() {

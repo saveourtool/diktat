@@ -6,7 +6,7 @@ import org.cqfn.diktat.util.FixTestBase
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class SingleLineStatementsRuleFixTest : FixTestBase("test/paragraph3/statement", SingleLineStatementsRule()) {
+class SingleLineStatementsRuleFixTest : FixTestBase("test/paragraph3/statement", ::SingleLineStatementsRule) {
 
     @Test
     @Tag(WarningNames.MORE_THAN_ONE_STATEMENT_PER_LINE)

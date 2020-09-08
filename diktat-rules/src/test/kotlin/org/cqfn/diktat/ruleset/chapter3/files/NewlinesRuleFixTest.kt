@@ -6,7 +6,7 @@ import org.cqfn.diktat.util.FixTestBase
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class NewlinesRuleFixTest : FixTestBase("test/paragraph3/newlines", NewlinesRule()) {
+class NewlinesRuleFixTest : FixTestBase("test/paragraph3/newlines", ::NewlinesRule) {
     @Test
     @Tag(WarningNames.REDUNDANT_SEMICOLON)
     fun `should remove redundant semicolons`() {

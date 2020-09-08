@@ -5,18 +5,18 @@ import generated.WarningNames
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_MULTIPLE_MODIFIERS_ORDER
 import org.cqfn.diktat.ruleset.rules.MultipleModifiersSequence
-import org.cqfn.diktat.util.lintMethod
+import org.cqfn.diktat.util.LintTestBase
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class MultipleModifiersSequenceWarnTest {
+class MultipleModifiersSequenceWarnTest : LintTestBase(::MultipleModifiersSequence) {
 
     private val ruleId = "$DIKTAT_RULE_SET_ID:multiple-modifiers"
 
     @Test
     @Tag(WarningNames.WRONG_MULTIPLE_MODIFIERS_ORDER)
     fun `check wrong order modifier in fun and variable with annotation`() {
-        lintMethod(MultipleModifiersSequence(),
+        lintMethod(
                 """
                     |@Annotation
                     |final public fun foo() {
@@ -33,7 +33,7 @@ class MultipleModifiersSequenceWarnTest {
     @Test
     @Tag(WarningNames.WRONG_MULTIPLE_MODIFIERS_ORDER)
     fun `check correct order modifier in fun and variable and without`() {
-        lintMethod(MultipleModifiersSequence(),
+        lintMethod(
                 """
                     |public final fun foo() {
                     |   protected open lateinit var a: List<ASTNode>   
@@ -49,7 +49,7 @@ class MultipleModifiersSequenceWarnTest {
     @Test
     @Tag(WarningNames.WRONG_MULTIPLE_MODIFIERS_ORDER)
     fun `check wrong order another modifier in fun`() {
-        lintMethod(MultipleModifiersSequence(),
+        lintMethod(
                 """
                     |inline tailrec public fun qwe(vararg text: String) {}
                     |
@@ -67,7 +67,7 @@ class MultipleModifiersSequenceWarnTest {
     @Test
     @Tag(WarningNames.WRONG_MULTIPLE_MODIFIERS_ORDER)
     fun `check wrong order modifier in class`() {
-        lintMethod(MultipleModifiersSequence(),
+        lintMethod(
                 """
                     |enum public class Q {}
                     |

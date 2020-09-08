@@ -6,7 +6,7 @@ import org.cqfn.diktat.util.FixTestBase
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class WhenMustHaveElseFixTest : FixTestBase("test/paragraph3/else_expected", WhenMustHaveElseRule()) {
+class WhenMustHaveElseFixTest : FixTestBase("test/paragraph3/else_expected", ::WhenMustHaveElseRule) {
 
     @Test
     @Tag(WarningNames.WHEN_WITHOUT_ELSE)
