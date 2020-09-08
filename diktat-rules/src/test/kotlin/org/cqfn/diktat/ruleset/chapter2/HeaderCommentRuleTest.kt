@@ -20,12 +20,12 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
     private val ruleId: String = "$DIKTAT_RULE_SET_ID:header-comment"
 
     private val rulesConfigList: List<RulesConfig> = listOf(
-        RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true,
+        RulesConfig("DIKTAT_COMMON", true,
             mapOf("copyrightText" to "Copyright (c) Huawei Technologies Co., Ltd. 2012-2020. All rights reserved."))
     )
 
     private val rulesConfigListCn: List<RulesConfig> = listOf(
-        RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true,
+        RulesConfig("DIKTAT_COMMON", true,
             mapOf("copyrightText" to "版权所有 (c) 华为技术有限公司 2012-2020"))
     )
 

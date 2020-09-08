@@ -16,7 +16,7 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
     private val ruleId: String = "$DIKTAT_RULE_SET_ID:package-naming"
 
     private val rulesConfigList: List<RulesConfig> = listOf(
-            RulesConfig(PACKAGE_NAME_MISSING.name, true, mapOf("domainName" to "org.cqfn.diktat"))
+            RulesConfig("DIKTAT_COMMON", true, mapOf("domainName" to "org.cqfn.diktat"))
     )
 
     @Test

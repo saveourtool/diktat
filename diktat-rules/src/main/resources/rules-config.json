@@ -86,9 +86,7 @@
   {
     "name": "PACKAGE_NAME_MISSING",
     "enabled": true,
-    "configuration": {
-      "domainName": "org.cqfn.diktat"
-    }
+    "configuration": {}
   },
   {
     "name": "VARIABLE_HAS_PREFIX",
@@ -203,10 +201,7 @@
   {
     "name": "HEADER_MISSING_OR_WRONG_COPYRIGHT",
     "enabled": true,
-    "configuration": {
-      "isCopyrightMandatory": true,
-      "copyrightText": "Copyright (c) Huawei Technologies Co., Ltd. 2012-2020. All rights reserved."
-    }
+    "configuration": {}
   },
   {
     "name": "HEADER_NOT_BEFORE_PACKAGE",
