@@ -28,31 +28,38 @@ fun lintMethod(rule: Rule,
                     cb = { e, _ -> res.add(e) }
             )
     )
-    Assertions.assertThat(res)
-            .hasSize(lintErrors.size)
-            .allSatisfy { actual ->
-                val expected = lintErrors[res.indexOf(actual)]
-                SoftAssertions.assertSoftly {
-                    it.assertThat(actual.line).`as`("Line").isEqualTo(expected.line)
-                    it.assertThat(actual.col).`as`("Column").isEqualTo(expected.col)
-                    it.assertThat(actual.ruleId).`as`("Rule id").isEqualTo(expected.ruleId)
-                    it.assertThat(actual.detail).`as`("Detailed message").isEqualTo(expected.detail)
-                    it.assertThat(actual.canBeAutoCorrected).`as`("Can be autocorrected").isEqualTo(expected.canBeAutoCorrected)
-                }
-            }
+    res.assertEquals(*lintErrors)
 }
 
-internal fun RuleSet.format(text: String, fileName: String): String {
+internal fun List<LintError>.assertEquals(vararg expectedLintErrors: LintError) =
+        Assertions.assertThat(this)
+                .hasSize(expectedLintErrors.size)
+                .allSatisfy { actual ->
+                    val expected = expectedLintErrors[this.indexOf(actual)]
+                    SoftAssertions.assertSoftly {
+                        it.assertThat(actual.line).`as`("Line").isEqualTo(expected.line)
+                        it.assertThat(actual.col).`as`("Column").isEqualTo(expected.col)
+                        it.assertThat(actual.ruleId).`as`("Rule id").isEqualTo(expected.ruleId)
+                        it.assertThat(actual.detail).`as`("Detailed message").isEqualTo(expected.detail)
+                        it.assertThat(actual.canBeAutoCorrected).`as`("Can be autocorrected").isEqualTo(expected.canBeAutoCorrected)
+                    }
+                }
+
+internal fun RuleSet.format(text: String,
+                            fileName: String,
+                            cb: (lintError: LintError, corrected: Boolean) -> Unit = defaultCallback): String {
     return KtLint.format(
             KtLint.Params(
                     text = text,
                     ruleSets = listOf(this),
                     fileName = fileName,
-                    cb = { lintError, _ ->
-                        log.warn("Received linting error: $lintError")
-                    }
+                    cb = cb
             )
     )
+}
+
+internal val defaultCallback: (lintError: LintError, corrected: Boolean) -> Unit = { lintError, _ ->
+    log.warn("Received linting error: $lintError")
 }
 
 /**
