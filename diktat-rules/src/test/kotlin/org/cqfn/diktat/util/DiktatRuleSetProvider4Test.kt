@@ -35,8 +35,7 @@ class DiktatRuleSetProviderTest {
     @Test
     fun `check DiktatRuleSetProviderTest contain all rules`() {
         val path = "${System.getProperty("user.dir")}/src/main/kotlin/org/cqfn/diktat/ruleset/rules"
-        val filesName = File(path).walk().filter { it.isFile }.map { it.nameWithoutExtension }.toMutableList()
-        filesName.removeAll(IGNORE_FILE)
+        val filesName = File(path).walk().filter { it.isFile }.map { it.nameWithoutExtension }.filterNot { it in IGNORE_FILE }.toMutableList()
         val rulesName = DiktatRuleSetProvider().get()
                 .map { it.toString().split('.').last() }
                 .map { it.substring(0, it.indexOf('@')) }
