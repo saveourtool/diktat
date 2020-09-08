@@ -183,17 +183,18 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
     /**
      * Warns that variable have a confusing name
      */
-    private fun warnConfusingName (variableName: ASTNode) {
-        var warnText = ""
-        when(variableName.text) {
-            "O", "D" -> warnText = "better name is: obj, dgt"
-            "I", "l" -> warnText = "better name is: it, ln, line"
-            "Z" -> warnText = "better name is: n1, n2"
-            "S" -> warnText = "better name is: xs, str"
-            "e" -> warnText = "better name is: ex, elm"
-            "B" -> warnText = "better name is: bt, nxt"
-            "h", "n" -> warnText = "better name is: nr, head, height"
-            "m", "rn" -> warnText = "better name is: mbr, item"
+    private fun warnConfusingName(variableName: ASTNode) {
+        val warnText = when (variableName.text) {
+            "O", "D" -> "better name is: obj, dgt"
+            "I", "l" -> "better name is: it, ln, line"
+            "Z" -> "better name is: n1, n2"
+            "S" -> "better name is: xs, str"
+            "e" -> "better name is: ex, elm"
+            "B" -> "better name is: bt, nxt"
+            "h", "n" -> "better name is: nr, head, height"
+            "m", "rn" -> "better name is: mbr, item"
+            else -> ""
+
         }
         CONFUSING_IDENTIFIER_NAMING.warn(configRules, emitWarn, false, warnText, variableName.startOffset)
     }
