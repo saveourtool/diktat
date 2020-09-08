@@ -42,7 +42,7 @@ class MultipleModifiersSequence(private val configRules: List<RulesConfig>) : Ru
             if (modifierNode != sortModifierListOfPair[index]) {
                 WRONG_MULTIPLE_MODIFIERS_ORDER.warnAndFix(configRules, emitWarn, isFixMode,
                         "${modifierNode.text} should be on position ${sortModifierListOfPair.indexOf(modifierNode) + 1}, but is on position ${index + 1}",
-                        modifierNode.startOffset) {
+                        modifierNode.startOffset, modifierNode) {
                     val nodeBefore = modifierNode.treeNext
                     node.removeChild(modifierNode)
                     node.addChild((sortModifierListOfPair[index].clone() as ASTNode), nodeBefore)

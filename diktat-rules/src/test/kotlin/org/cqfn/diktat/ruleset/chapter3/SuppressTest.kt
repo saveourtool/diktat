@@ -1,4 +1,4 @@
-package org.cqfn.diktat.ruleset.utils
+package org.cqfn.diktat.ruleset.chapter3
 
 import org.cqfn.diktat.ruleset.rules.IdentifierNaming
 import org.cqfn.diktat.util.LintTestBase
