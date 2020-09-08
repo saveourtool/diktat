@@ -14,5 +14,23 @@ class Example {
      * @return
      */
     fun bar(x: Int, y: Int) = x + y
+
+    /**
+     * @param sub
+     * @return
+     */
+    fun String.countSubStringOccurrences(sub: String): Int {
+        // println("sub: $sub")
+        return this.split(sub).size - 1
+    }
+
+    /**
+     * @return
+     */
+    fun String.splitPathToDirs(): List<String> =
+        this
+            .replace("\\", "/")
+            .replace("//", "/")
+            .split("/")
 }
 

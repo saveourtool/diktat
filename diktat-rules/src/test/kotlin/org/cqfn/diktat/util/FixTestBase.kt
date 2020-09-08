@@ -7,7 +7,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.test.framework.processing.TestComparatorUnit
 import org.junit.jupiter.api.Assertions
 
-open class FixTestBase(private val resourceFilePath: String,
+open class FixTestBase(protected val resourceFilePath: String,
                        private val ruleSetProviderRef: (rulesConfigList: List<RulesConfig>?) -> RuleSetProvider,
                        private val cb: (LintError, Boolean) -> Unit = defaultCallback,
                        private val rulesConfigList: List<RulesConfig>? = null) {
