@@ -223,7 +223,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
     @Test
     @Tag(WarningNames.WRONG_INDENTATION)
     fun `loops and conditionals without braces should be indented - positive example`() {
-        lintMethod(IndentationRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    for (i in 1..100)
@@ -246,7 +246,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
     @Test
     @Tag(WarningNames.WRONG_INDENTATION)
     fun `loops and conditionals without braces should be indented`() {
-        lintMethod(IndentationRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    for (i in 1..100)
