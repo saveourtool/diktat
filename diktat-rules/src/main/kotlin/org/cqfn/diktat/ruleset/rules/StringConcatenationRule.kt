@@ -1,17 +1,16 @@
 package org.cqfn.diktat.ruleset.rules
 
-import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.PLUS
 import com.pinterest.ktlint.core.ast.ElementType.STRING_TEMPLATE
-import org.cqfn.diktat.ruleset.constants.Warnings.STRING_CONCATENATION
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.utils.*
+import org.cqfn.diktat.ruleset.constants.Warnings.STRING_CONCATENATION
+import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
+import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
+import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
-import java.lang.annotation.ElementType
 
 /**
  * This rule covers checks and fixes related to string concatenation.
@@ -19,18 +18,13 @@ import java.lang.annotation.ElementType
  * // FixMe: fixes will be added
  * // FixMe: .toString() method and functions that return strings are not supported
  */
-class StringConcatenationRule : Rule("string-concatenation") {
-    private lateinit var configRules: List<RulesConfig>
+class StringConcatenationRule(private val configRules: List<RulesConfig>) : Rule("string-concatenation") {
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
-    private var fileName: String? = null
     private var isFixMode: Boolean = false
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
-                       params: KtLint.Params,
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
-        configRules = params.getDiktatConfigRules()
-        fileName = params.fileName
         emitWarn = emit
         isFixMode = autoCorrect
 

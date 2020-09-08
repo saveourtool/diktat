@@ -7,53 +7,61 @@ import com.pinterest.ktlint.core.RuleSet
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.SoftAssertions
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.cqfn.diktat.ruleset.utils.log
+import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.konan.file.File
 import java.util.concurrent.atomic.AtomicInteger
 
-const val TEST_FILE_NAME = "/TestFileName.kt"
+internal val testFileName = "${File.separator}TestFileName.kt"
 
-@Suppress("ForbiddenComment")
-fun lintMethod(rule: Rule,
-               code: String,
-               vararg lintErrors: LintError,
-               rulesConfigList: List<RulesConfig>? = null,
-               fileName: String? = null) {
-    val res = mutableListOf<LintError>()
-    KtLint.lint(
-            KtLint.Params(
-                    fileName = fileName ?: TEST_FILE_NAME,
-                    text = code,
-                    ruleSets = listOf(DiktatRuleSetProvider4Test(rule, rulesConfigList).get()),
-                    cb = { e, _ -> res.add(e) }
-            )
-    )
-    res.assertEquals(*lintErrors)
+open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesConfig>) -> Rule,
+                        private val rulesConfigList: List<RulesConfig>? = null) {
+    fun lintMethod(code: String,
+                   vararg lintErrors: LintError,
+                   rulesConfigList: List<RulesConfig>? = null,
+                   fileName: String? = null) {
+        val res = mutableListOf<LintError>()
+        val actualFileName = fileName ?: testFileName
+        KtLint.lint(
+                KtLint.Params(
+                        fileName = actualFileName,
+                        text = code,
+                        ruleSets = listOf(DiktatRuleSetProvider4Test(ruleSupplier,
+                                rulesConfigList ?: this.rulesConfigList).get()),
+                        cb = { e, _ -> res.add(e) },
+                        userData = mapOf("file_path" to actualFileName)
+                )
+        )
+        res.assertEquals(*lintErrors)
+    }
+
+    internal fun List<LintError>.assertEquals(vararg expectedLintErrors: LintError) =
+            Assertions.assertThat(this)
+                    .hasSize(expectedLintErrors.size)
+                    .allSatisfy { actual ->
+                        val expected = expectedLintErrors[this.indexOf(actual)]
+                        SoftAssertions.assertSoftly {
+                            it.assertThat(actual.line).`as`("Line").isEqualTo(expected.line)
+                            it.assertThat(actual.col).`as`("Column").isEqualTo(expected.col)
+                            it.assertThat(actual.ruleId).`as`("Rule id").isEqualTo(expected.ruleId)
+                            it.assertThat(actual.detail).`as`("Detailed message").isEqualTo(expected.detail)
+                            it.assertThat(actual.canBeAutoCorrected).`as`("Can be autocorrected").isEqualTo(expected.canBeAutoCorrected)
+                        }
+                    }
 }
 
-internal fun List<LintError>.assertEquals(vararg expectedLintErrors: LintError) =
-        Assertions.assertThat(this)
-                .hasSize(expectedLintErrors.size)
-                .allSatisfy { actual ->
-                    val expected = expectedLintErrors[this.indexOf(actual)]
-                    SoftAssertions.assertSoftly {
-                        it.assertThat(actual.line).`as`("Line").isEqualTo(expected.line)
-                        it.assertThat(actual.col).`as`("Column").isEqualTo(expected.col)
-                        it.assertThat(actual.ruleId).`as`("Rule id").isEqualTo(expected.ruleId)
-                        it.assertThat(actual.detail).`as`("Detailed message").isEqualTo(expected.detail)
-                        it.assertThat(actual.canBeAutoCorrected).`as`("Can be autocorrected").isEqualTo(expected.canBeAutoCorrected)
-                    }
-                }
-
-internal fun RuleSet.format(text: String,
-                            fileName: String,
-                            cb: (lintError: LintError, corrected: Boolean) -> Unit = defaultCallback): String {
+internal fun format(ruleSupplier: (rulesConfigList: List<RulesConfig>) -> Rule,
+                    text: String,
+                    fileName: String,
+                    rulesConfigList: List<RulesConfig> = emptyList(),
+                    cb: (lintError: LintError, corrected: Boolean) -> Unit = defaultCallback): String {
     return KtLint.format(
             KtLint.Params(
                     text = text,
-                    ruleSets = listOf(this),
+                    ruleSets = listOf(DiktatRuleSetProvider4Test(ruleSupplier, rulesConfigList).get()),
                     fileName = fileName,
-                    cb = cb
+                    cb = cb,
+                    userData = mapOf("file_path" to fileName)
             )
     )
 }
@@ -78,7 +86,6 @@ internal fun applyToCode(code: String,
                             RuleSet("test", object : Rule("astnode-utils-test") {
                                 override fun visit(node: ASTNode,
                                                    autoCorrect: Boolean,
-                                                   params: KtLint.Params,
                                                    emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
                                     applyToNode(node, counter)
                                 }
