@@ -440,4 +440,17 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
                 LintError(7, 23, ruleId, tokenWarn(":", 1, 1, 0, 0), true)
         )
     }
+
+    @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
+    fun `regression - comma after !!`() {
+        lintMethod(
+                """
+                    |fun foo() {
+                    |    val codeFix = CodeFix(codeForm.initialCode!! ,codeFormHtml.ruleSet[0])
+                    |}
+                """.trimMargin(),
+                LintError(2, 50, ruleId, tokenWarn(",", 1, 0, 0, 1), true)
+        )
+    }
 }
