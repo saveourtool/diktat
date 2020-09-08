@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 
 class HeaderCommentRuleFixTest : FixTestBase(
         "test/paragraph2/header",
-        HeaderCommentRule(),
+        ::HeaderCommentRule,
         listOf(
                 RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true,
                         mapOf(

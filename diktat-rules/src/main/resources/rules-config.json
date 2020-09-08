@@ -339,6 +339,11 @@
     "configuration": {}
   },
   {
+    "name": "WHEN_WITHOUT_ELSE",
+    "enabled": true,
+    "configuration": {}
+  },
+  {
     "name": "ANNOTATION_NEW_LINE",
     "enabled": true,
     "configuration": {}
@@ -363,5 +368,10 @@
       "sortEnum": true,
       "sortProperty": true
     }
+  },
+  {
+    "name": "WRONG_MULTIPLE_MODIFIERS_ORDER",
+    "enabled": true,
+    "configuration": {}
   }
 ]

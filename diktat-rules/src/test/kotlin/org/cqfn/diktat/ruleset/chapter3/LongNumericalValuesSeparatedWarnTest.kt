@@ -6,11 +6,11 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.LongNumericalValuesSeparatedRule
-import org.cqfn.diktat.util.lintMethod
+import org.cqfn.diktat.util.LintTestBase
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class LongNumericalValuesSeparatedWarnTest {
+class LongNumericalValuesSeparatedWarnTest : LintTestBase(::LongNumericalValuesSeparatedRule) {
 
     private val ruleId = "$DIKTAT_RULE_SET_ID:long-numerical-values"
 
@@ -22,7 +22,7 @@ class LongNumericalValuesSeparatedWarnTest {
     @Test
     @Tag(LONG_NUMERICAL_VALUES_SEPARATED)
     fun `check properties test bad`() {
-        lintMethod(LongNumericalValuesSeparatedRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |   val oneMillion = 100000000000
@@ -52,7 +52,7 @@ class LongNumericalValuesSeparatedWarnTest {
     @Test
     @Tag(LONG_NUMERICAL_VALUES_SEPARATED)
     fun `check properties test good`() {
-        lintMethod(LongNumericalValuesSeparatedRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |   val oneMillion = 1_000_000_000_000
@@ -69,7 +69,7 @@ class LongNumericalValuesSeparatedWarnTest {
     @Test
     @Tag(LONG_NUMERICAL_VALUES_SEPARATED)
     fun `check properties test bad 2`() {
-        lintMethod(LongNumericalValuesSeparatedRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |   val oneMillion = 100
@@ -93,7 +93,7 @@ class LongNumericalValuesSeparatedWarnTest {
     @Test
     @Tag(LONG_NUMERICAL_VALUES_SEPARATED)
     fun `check func params test good`() {
-        lintMethod(LongNumericalValuesSeparatedRule(),
+        lintMethod(
                 """
                     |fun foo(val one = 100_000_000) {
                     |   
@@ -105,7 +105,7 @@ class LongNumericalValuesSeparatedWarnTest {
     @Test
     @Tag(LONG_NUMERICAL_VALUES_SEPARATED)
     fun `check func params test bad`() {
-        lintMethod(LongNumericalValuesSeparatedRule(),
+        lintMethod(
                 """
                     |fun foo(val one = 100000000) {
                     |   

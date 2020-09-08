@@ -6,11 +6,11 @@ import generated.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings.EMPTY_BLOCK_STRUCTURE_ERROR
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.EmptyBlock
-import org.cqfn.diktat.util.lintMethod
+import org.cqfn.diktat.util.LintTestBase
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class EmptyBlockWarnTest {
+class EmptyBlockWarnTest : LintTestBase(::EmptyBlock) {
 
     private val ruleId = "$DIKTAT_RULE_SET_ID:empty-block-structure"
 
@@ -27,7 +27,7 @@ class EmptyBlockWarnTest {
     @Test
     @Tag(WarningNames.EMPTY_BLOCK_STRUCTURE_ERROR)
     fun `check if expression with empty else block`() {
-        lintMethod(EmptyBlock(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    if (x < -5) {
@@ -44,7 +44,7 @@ class EmptyBlockWarnTest {
     @Test
     @Tag(WarningNames.EMPTY_BLOCK_STRUCTURE_ERROR)
     fun `check if expression with empty else block with config`() {
-        lintMethod(EmptyBlock(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    if (x < -5) {
@@ -61,7 +61,7 @@ class EmptyBlockWarnTest {
     @Test
     @Tag(WarningNames.EMPTY_BLOCK_STRUCTURE_ERROR)
     fun `check fun expression with empty block and override annotation`() {
-        lintMethod(EmptyBlock(),
+        lintMethod(
                 """
                     |override fun foo() {
                     |}
@@ -72,7 +72,7 @@ class EmptyBlockWarnTest {
     @Test
     @Tag(WarningNames.EMPTY_BLOCK_STRUCTURE_ERROR)
     fun `check if expression with empty else block but with permission to use empty block`() {
-        lintMethod(EmptyBlock(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    if (x < -5) {
@@ -88,7 +88,7 @@ class EmptyBlockWarnTest {
 
     @Test
     fun `check if expression without block`() {
-        lintMethod(EmptyBlock(),
+        lintMethod(
                 """
                     |fun foo() {
                     |   if (node.treeParent != null) return
@@ -99,7 +99,7 @@ class EmptyBlockWarnTest {
 
     @Test
     fun `check if-else expression without block`() {
-        lintMethod(EmptyBlock(),
+        lintMethod(
                 """
                     |fun foo() {
                     |   if (node.treeParent != null) return else println(true)
@@ -110,7 +110,7 @@ class EmptyBlockWarnTest {
 
     @Test
     fun `check for expresion and while without block`() {
-        lintMethod(EmptyBlock(),
+        lintMethod(
                 """
                     |fun foo() {
                     |   for(x in 0..10) println(x)
@@ -124,7 +124,7 @@ class EmptyBlockWarnTest {
 
     @Test
     fun `check empty lambda`() {
-        lintMethod(EmptyBlock(),
+        lintMethod(
                 """
                     |fun foo() {
                     |   val y = listOf<Int>().map {} 
@@ -136,7 +136,7 @@ class EmptyBlockWarnTest {
 
     @Test
     fun `check empty lambda with config`() {
-        lintMethod(EmptyBlock(),
+        lintMethod(
                 """
                     |fun foo() {
                     |   val y = listOf<Int>().map {} 

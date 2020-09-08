@@ -8,7 +8,8 @@ import org.cqfn.diktat.util.FixTestBase
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation", IndentationRule(),
+class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
+        ::IndentationRule,
         listOf(
                 RulesConfig(WRONG_INDENTATION.name, true,
                         mapOf(

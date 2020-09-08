@@ -12,6 +12,7 @@ import com.pinterest.ktlint.core.ast.ElementType.PROTECTED_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PUBLIC_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isLeaf
+import com.pinterest.ktlint.core.ast.isRoot
 import com.pinterest.ktlint.core.ast.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.TokenType
@@ -28,6 +29,8 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 val log: Logger = LoggerFactory.getLogger(ASTNode::class.java)
+
+fun ASTNode.getRootNode() = if (isRoot()) this else parents().last()
 
 fun ASTNode.checkLength(range: IntRange): Boolean = this.textLength in range
 
@@ -98,6 +101,11 @@ fun ASTNode.hasChildOfType(elementType: IElementType): Boolean =
 
 fun ASTNode.hasAnyChildOfTypes(vararg elementType: IElementType): Boolean =
         elementType.any { this.hasChildOfType(it) }
+
+/**
+ * checks if node has parent of type
+ */
+fun ASTNode.hasParent(type: IElementType) = parent(type) != null
 
 /**
  * check if node's text is empty (contains only left and right braces)
