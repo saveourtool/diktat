@@ -1,6 +1,8 @@
 package org.cqfn.diktat.ruleset.utils
 
 import com.pinterest.ktlint.core.ast.ElementType
+import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION
+import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.CONST_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.INTERNAL_KEYWORD
@@ -291,6 +293,11 @@ fun ASTNode?.isAccessibleOutside(): Boolean =
             true
         }
 
+fun ASTNode.hasSuppress(warningName: String): Boolean = parent(ANNOTATION)
+        .let { node ->
+            node?.getAllChildrenWithType(ANNOTATION_ENTRY)!!.any { it.text.contains("Suppress")
+                    && it.text.contains(warningName) }
+        }
 /**
  * removing all newlines in WHITE_SPACE node and replacing it to a one newline saving the initial indenting format
  */
