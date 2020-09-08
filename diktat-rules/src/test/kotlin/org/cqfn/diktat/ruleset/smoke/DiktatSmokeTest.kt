@@ -15,7 +15,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import java.nio.file.Path
-import java.nio.file.Paths
 
 // fixme: run as a separate maven goal/module?
 class DiktatSmokeTest : FixTestBase("test/smoke",
@@ -23,8 +22,6 @@ class DiktatSmokeTest : FixTestBase("test/smoke",
         { lintError, _ -> unfixedLintErrors.add(lintError) },
         null
 ) {
-    private val resourcesAbsolutePath = Path.of(resourceFilePath).toAbsolutePath()
-
     companion object {
         private val unfixedLintErrors: MutableList<LintError> = mutableListOf()
     }
