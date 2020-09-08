@@ -6,7 +6,7 @@ import org.cqfn.diktat.util.FixTestBase
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class WhiteSpaceRuleFixTest : FixTestBase("test/paragraph3/spaces", WhiteSpaceRule()) {
+class WhiteSpaceRuleFixTest : FixTestBase("test/paragraph3/spaces", ::WhiteSpaceRule) {
     @Test
     @Tag(WarningNames.WRONG_WHITESPACE)
     fun `should keep single whitespace between keyword and opening parentheses`() {
@@ -20,21 +20,25 @@ class WhiteSpaceRuleFixTest : FixTestBase("test/paragraph3/spaces", WhiteSpaceRu
     }
 
     @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
     fun `should remove spaces between ( and { when lambda is used as an argument`() {
         fixAndCompare("LambdaAsArgumentExpected.kt", "LambdaAsArgumentTest.kt")
     }
 
     @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
     fun `should keep single whitespace before any other opening brace`() {
         fixAndCompare("LbraceExpected.kt", "LbraceTest.kt")
     }
 
     @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
     fun `should surround binary operators with spaces`() {
         fixAndCompare("BinaryOpExpected.kt", "BinaryOpTest.kt")
     }
 
     @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
     fun `should trim spaces in the end of line`() {
         fixAndCompare("EolSpacesExpected.kt", "EolSpacesTest.kt")
     }

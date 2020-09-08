@@ -3,8 +3,6 @@ package org.cqfn.diktat.ruleset.constants
 import org.cqfn.diktat.common.config.rules.Rule
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.isRuleEnabled
-import org.cqfn.diktat.ruleset.utils.hasSuppress
-import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 @Suppress("ForbiddenComment", "MagicNumber")
 enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: String) : Rule {
@@ -93,10 +91,11 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
                    freeText: String,
                    offset: Int,
                    node: ASTNode?,
+                   canBeAutoCorrected: Boolean = this.canBeAutoCorrected,
                    autoFix: () -> Unit) {
         if (node != null && node.hasSuppress(name))
             return
-        warn(configRules, emit, this.canBeAutoCorrected, freeText, offset, node)
+        warn(configRules, emit, canBeAutoCorrected, freeText, offset, node)
         fix(configRules, autoFix, isFixMode)
     }
 

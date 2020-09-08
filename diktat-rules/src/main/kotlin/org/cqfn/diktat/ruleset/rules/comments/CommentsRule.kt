@@ -11,7 +11,6 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.COMMENTED_OUT_CODE
 import org.cqfn.diktat.ruleset.rules.getDiktatConfigRules
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
-import org.cqfn.diktat.ruleset.utils.hasSuppress
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.TokenType
 import org.jetbrains.kotlin.lexer.KtTokens
@@ -24,7 +23,7 @@ import org.jetbrains.kotlin.resolve.ImportPath
  * No commented out code is allowed, including imports.
  */
 @Suppress("ForbiddenComment")
-class CommentsRule : Rule("comments") {
+class CommentsRule(private val configRules: List<RulesConfig>) : Rule("comments") {
 
     companion object {
         private val IMPORT_KEYWORD = KtTokens.IMPORT_KEYWORD.value
@@ -33,20 +32,14 @@ class CommentsRule : Rule("comments") {
         private val EOL_COMMENT_START = """// \S""".toRegex()
     }
 
-    private lateinit var configRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
     private lateinit var ktPsiFactory: KtPsiFactory
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
-                       params: KtLint.Params,
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit
     ) {
-        if (node.hasSuppress(COMMENTED_OUT_CODE.name))
-            return
-
-        configRules = params.getDiktatConfigRules()
         emitWarn = emit
         isFixMode = autoCorrect
 

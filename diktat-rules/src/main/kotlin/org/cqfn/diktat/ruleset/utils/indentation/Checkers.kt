@@ -1,9 +1,11 @@
 package org.cqfn.diktat.ruleset.utils.indentation
 
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.BODY
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.COLON
 import com.pinterest.ktlint.core.ast.ElementType.DOT
+import com.pinterest.ktlint.core.ast.ElementType.ELSE
 import com.pinterest.ktlint.core.ast.ElementType.EQ
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_END
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_LEADING_ASTERISK
@@ -14,6 +16,7 @@ import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.RPAR
 import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS
 import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_LIST
+import com.pinterest.ktlint.core.ast.ElementType.THEN
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
@@ -24,6 +27,9 @@ import org.cqfn.diktat.ruleset.rules.files.IndentationRule.Companion.INDENT_SIZE
 import org.cqfn.diktat.ruleset.rules.files.lastIndent
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
+import org.jetbrains.kotlin.psi.KtBlockExpression
+import org.jetbrains.kotlin.psi.KtIfExpression
+import org.jetbrains.kotlin.psi.KtLoopExpression
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
 
@@ -124,6 +130,26 @@ internal class DotCallChecker(config: IndentationConfig) : CustomIndentationChec
                     ?: indentError.expected) + INDENT_SIZE, true)
         }
         return null
+    }
+}
+
+/**
+ * This [CustomIndentationChecker] checks indentation in loops and if-else expressions without braces around body.
+ */
+internal class ConditionalsAndLoopsWithoutBracesChecker(config: IndentationConfig) : CustomIndentationChecker(config) {
+    override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
+        val parent = whiteSpace.parent
+        val nextNode = whiteSpace.nextSibling.node
+        return when (parent) {
+            is KtLoopExpression -> nextNode.elementType == BODY && parent.body !is KtBlockExpression
+            is KtIfExpression -> nextNode.elementType.let { it == THEN || it == ELSE } && parent.then !is KtBlockExpression
+            else -> false
+        }
+                .takeIf { it }
+                ?.let {
+                    CheckResult.from(indentError.actual, (whiteSpace.parentIndent()
+                            ?: indentError.expected) + INDENT_SIZE, false)
+                }
     }
 }
 

@@ -17,9 +17,8 @@ import org.cqfn.diktat.ruleset.constants.Warnings.FILE_INCORRECT_BLOCKS_ORDER
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NO_BLANK_LINE_BETWEEN_BLOCKS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_UNORDERED_IMPORTS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_WILDCARD_IMPORTS
-import org.cqfn.diktat.ruleset.rules.getDiktatConfigRules
-import org.cqfn.diktat.ruleset.utils.handleIncorrectOrder
 import org.cqfn.diktat.ruleset.utils.findChildBefore
+import org.cqfn.diktat.ruleset.utils.handleIncorrectOrder
 import org.cqfn.diktat.ruleset.utils.moveChildBefore
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -36,24 +35,20 @@ import org.jetbrains.kotlin.psi.KtImportDirective
  * 4. Ensures imports are ordered alphabetically without blank lines
  * 5. Ensures there are no wildcard imports
  */
-class FileStructureRule : Rule("file-structure") {
+class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file-structure") {
 
-    private lateinit var configRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
     private var fileName: String = ""
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
-                       params: KtLint.Params,
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
-
-        configRules = params.getDiktatConfigRules()
         isFixMode = autoCorrect
         emitWarn = emit
 
         if (node.elementType == ElementType.FILE) {
-            fileName = params.fileName!!
+            fileName = node.getUserData(KtLint.FILE_PATH_USER_DATA_KEY)!!
             checkImportsOrder(node.findChildByType(IMPORT_LIST)!!)
             if (checkFileHasCode(node)) {
                 checkCodeBlocksOrderAndEmptyLines(node)

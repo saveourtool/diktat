@@ -14,7 +14,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <kotlin.version>1.3.72</kotlin.version>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
-        <ktlint.version>0.37.1-fork</ktlint.version>
+        <ktlint.version>0.37.1</ktlint.version>
         <junit.version>5.6.2</junit.version>
         <guava.version>29.0-jre</guava.version>
         <jackson.version>2.11.2</jackson.version>
@@ -268,7 +268,7 @@
                     <dependency>
                         <groupId>com.pinterest</groupId>
                         <artifactId>ktlint</artifactId>
-                        <version>0.37.1-fork</version>
+                        <version>${ktlint.version}</version>
                         <exclusions>
                             <exclusion>
                                 <groupId>com.pinterest.ktlint</groupId>

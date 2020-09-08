@@ -1,13 +1,11 @@
 package org.cqfn.diktat.ruleset.rules
 
-import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.CONDITION
 import com.pinterest.ktlint.core.ast.ElementType.DO_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.DO_WHILE
-import com.pinterest.ktlint.core.ast.ElementType.ELSE
 import com.pinterest.ktlint.core.ast.ElementType.ELSE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.FOR
 import com.pinterest.ktlint.core.ast.ElementType.IF
@@ -34,20 +32,17 @@ import org.jetbrains.kotlin.psi.KtLoopExpression
 import org.jetbrains.kotlin.psi.KtWhenExpression
 import org.jetbrains.kotlin.psi.psiUtil.astReplace
 
-class BracesInConditionalsAndLoopsRule : Rule("braces-rule") {
+class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig>) : Rule("braces-rule") {
     companion object {
         private const val indentStep = 4
     }
 
-    private lateinit var configRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
-                       params: KtLint.Params,
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
-        configRules = params.getDiktatConfigRules()
         emitWarn = emit
         isFixMode = autoCorrect
 

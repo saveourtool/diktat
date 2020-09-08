@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.rules
 
-import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
@@ -39,16 +38,13 @@ import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 /**
  * Rule that checks order of declarations inside classes, interfaces and objects.
  */
-class ClassLikeStructuresOrderRule : Rule("class-like-structures") {
-    private lateinit var configRules: List<RulesConfig>
+class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) : Rule("class-like-structures") {
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
-                       params: KtLint.Params,
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
-        configRules = params.getDiktatConfigRules()
         emitWarn = emit
         isFixMode = autoCorrect
 

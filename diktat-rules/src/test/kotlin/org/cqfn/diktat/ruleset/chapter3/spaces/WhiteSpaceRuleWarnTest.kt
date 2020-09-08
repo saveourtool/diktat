@@ -5,11 +5,11 @@ import generated.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_WHITESPACE
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.WhiteSpaceRule
-import org.cqfn.diktat.util.lintMethod
+import org.cqfn.diktat.util.LintTestBase
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class WhiteSpaceRuleWarnTest {
+class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
     private val ruleId = "$DIKTAT_RULE_SET_ID:horizontal-whitespace"
     private fun keywordWarn(keyword: String, sep: String) =
             "${WRONG_WHITESPACE.warnText()} keyword '$keyword' should be separated from '$sep' with a whitespace"
@@ -29,7 +29,7 @@ class WhiteSpaceRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_WHITESPACE)
     fun `keywords should have space before opening parenthesis and braces - positive example`() {
-        lintMethod(WhiteSpaceRule(),
+        lintMethod(
                 """
                     |class Example {
                     |    constructor(val a: Int)
@@ -48,7 +48,7 @@ class WhiteSpaceRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_WHITESPACE)
     fun `keywords should have space before opening parenthesis`() {
-        lintMethod(WhiteSpaceRule(),
+        lintMethod(
                 """
                     |class Example {
                     |    fun foo() {
@@ -67,7 +67,7 @@ class WhiteSpaceRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_WHITESPACE)
     fun `constructor should not have space before opening parenthesis`() {
-        lintMethod(WhiteSpaceRule(),
+        lintMethod(
                 """
                     |class Example {
                     |    constructor (val a: Int)
@@ -80,7 +80,7 @@ class WhiteSpaceRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_WHITESPACE)
     fun `keywords should have space before opening braces`() {
-        lintMethod(WhiteSpaceRule(),
+        lintMethod(
                 """
                     |class Example {
                     |    fun foo() {
@@ -98,8 +98,9 @@ class WhiteSpaceRuleWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
     fun `keywords should have space before opening braces - else without braces`() {
-        lintMethod(WhiteSpaceRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |     if (condition)
@@ -115,8 +116,9 @@ class WhiteSpaceRuleWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
     fun `all opening braces should have leading space`() {
-        lintMethod(WhiteSpaceRule(),
+        lintMethod(
                 """
                     |class Example{
                     |    fun foo(){
@@ -134,8 +136,9 @@ class WhiteSpaceRuleWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
     fun `all opening braces should have leading space - exception for lambdas as arguments`() {
-        lintMethod(WhiteSpaceRule(),
+        lintMethod(
                 """
                     |fun foo(a: (Int) -> Int, b: Int) {
                     |    foo({x: Int -> x}, 5)
@@ -152,8 +155,9 @@ class WhiteSpaceRuleWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
     fun `binary operators should be surrounded by spaces - positive example`() {
-        lintMethod(WhiteSpaceRule(),
+        lintMethod(
                 """
                     |class Example<T> where T : UpperType {
                     |    fun foo(t: T) = t + 1
@@ -167,8 +171,9 @@ class WhiteSpaceRuleWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
     fun `should not false positively trigger when operators are surrounded with newlines`() {
-        lintMethod(WhiteSpaceRule(),
+        lintMethod(
                 """
                     |class Example<T> where T
                     |                 :
@@ -190,8 +195,9 @@ class WhiteSpaceRuleWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
     fun `should not false positively trigger when operators are surrounded with newlines and EOL comments`() {
-        lintMethod(WhiteSpaceRule(),
+        lintMethod(
                 """
                     |class Example<T> where T
                     |                 :  // comment about UpperType
@@ -213,8 +219,9 @@ class WhiteSpaceRuleWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
     fun `binary operators should be surrounded by spaces`() {
-        lintMethod(WhiteSpaceRule(),
+        lintMethod(
                 """
                     |class Example<T, R, Q> where T:UpperType, R: UpperType, Q :UpperType {
                     |    fun foo(t: T) = t+ 1
@@ -254,8 +261,9 @@ class WhiteSpaceRuleWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
     fun `operators with single space after - positive example`() {
-        lintMethod(WhiteSpaceRule(),
+        lintMethod(
                 """
                     |class Example<T> {
                     |    fun foo(t1: T, t2: T) {
@@ -274,8 +282,9 @@ class WhiteSpaceRuleWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
     fun `operators with single space after`() {
-        lintMethod(WhiteSpaceRule(),
+        lintMethod(
                 """
                     |class Example<T> {${" "}
                     |    fun foo(t1 :T ,t2:T) {${" "} 
@@ -298,8 +307,9 @@ class WhiteSpaceRuleWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
     fun `operators with single space after - exceptional cases - positive example`() {
-        lintMethod(WhiteSpaceRule(),
+        lintMethod(
                 """
                     |abstract class Foo<out T : Any> : IFoo { }
                     |
@@ -313,8 +323,9 @@ class WhiteSpaceRuleWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
     fun `operators with single space after - exceptional cases`() {
-        lintMethod(WhiteSpaceRule(),
+        lintMethod(
                 """
                     |abstract class Foo<out T: Any>: IFoo { }
                     |
@@ -333,8 +344,9 @@ class WhiteSpaceRuleWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
     fun `there should be no space before ? in nullable types`() {
-        lintMethod(WhiteSpaceRule(),
+        lintMethod(
                 """
                     |class Example {
                     |    lateinit var x: Int?
@@ -346,8 +358,9 @@ class WhiteSpaceRuleWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
     fun `there should be no space before and after square bracket`() {
-        lintMethod(WhiteSpaceRule(),
+        lintMethod(
                 """
                     |val x = list[0]
                     |val y = list [0]
@@ -357,8 +370,9 @@ class WhiteSpaceRuleWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
     fun `there should be no space between constructor or function name and opening parentheses - positive example`() {
-        lintMethod(WhiteSpaceRule(),
+        lintMethod(
                 """
                     |class Example(val x: Int) {
                     |    constructor() : this(0)
@@ -373,8 +387,9 @@ class WhiteSpaceRuleWarnTest {
     }
 
     @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
     fun `there should be no space between constructor or function name and opening parentheses`() {
-        lintMethod(WhiteSpaceRule(),
+        lintMethod(
                 """
                     |class Example (val x: Int) {
                     |    constructor() : this (0)
@@ -390,6 +405,52 @@ class WhiteSpaceRuleWarnTest {
                 LintError(4, 13, ruleId, tokenWarn("(", 1, null, 0, 0), true),
                 LintError(5, 13, ruleId, tokenWarn("(", 1, null, 0, 0), true),
                 LintError(6, 31, ruleId, tokenWarn("(", 1, null, 0, 0), true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
+    fun `there should be no space before and single space after colon in function return type`() {
+        lintMethod(
+                """
+                    |fun foo(): String = "lorem"
+                    |fun bar() : String = "ipsum"
+                    |fun baz() :String = "dolor"
+                    """.trimMargin(),
+                LintError(2, 11, ruleId, tokenWarn(":", 1, null, 0, 1), true),
+                LintError(3, 11, ruleId, tokenWarn(":", 1, 0, 0, 1), true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
+    fun `there should be no space before and after colon when use-site annotation is used`() {
+        lintMethod(
+                """
+                    |class Example(@field:Anno val foo: Type,
+                    |              @get:Anno val bar: Type,
+                    |              @param:Anno val baz: Type)
+                    |              
+                    |class Example2(@field: Anno val foo: Type,
+                    |               @get :Anno val bar: Type,
+                    |               @param : Anno val baz: Type)
+                    """.trimMargin(),
+                LintError(5, 22, ruleId, tokenWarn(":", null, 1, 0, 0), true),
+                LintError(6, 21, ruleId, tokenWarn(":", 1, null, 0, 0), true),
+                LintError(7, 23, ruleId, tokenWarn(":", 1, 1, 0, 0), true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
+    fun `regression - comma after !!`() {
+        lintMethod(
+                """
+                    |fun foo() {
+                    |    val codeFix = CodeFix(codeForm.initialCode!! ,codeFormHtml.ruleSet[0])
+                    |}
+                """.trimMargin(),
+                LintError(2, 50, ruleId, tokenWarn(",", 1, 0, 0, 1), true)
         )
     }
 }

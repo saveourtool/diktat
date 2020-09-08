@@ -6,11 +6,11 @@ import org.cqfn.diktat.ruleset.constants.Warnings.BLANK_LINE_BETWEEN_PROPERTIES
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES
 import org.cqfn.diktat.ruleset.rules.ClassLikeStructuresOrderRule
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
-import org.cqfn.diktat.util.lintMethod
+import org.cqfn.diktat.util.LintTestBase
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class ClassLikeStructuresOrderRuleWarnTest {
+class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresOrderRule) {
     private val ruleId = "$DIKTAT_RULE_SET_ID:class-like-structures"
 
     // ===== order of declarations =====
@@ -41,7 +41,7 @@ class ClassLikeStructuresOrderRuleWarnTest {
                     |}
                 """.trimMargin()
         listOf("class", "interface", "object").forEach { keyword ->
-            lintMethod(ClassLikeStructuresOrderRule(), codeTemplate(keyword))
+            lintMethod(codeTemplate(keyword))
         }
     }
 
@@ -49,7 +49,7 @@ class ClassLikeStructuresOrderRuleWarnTest {
     @Tag(WarningNames.WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES)
     fun `should warn if loggers are not on top`() {
         listOf("private ", "").forEach { modifier ->
-            lintMethod(ClassLikeStructuresOrderRule(),
+            lintMethod(
                     """
                     |class Example {
                     |    private val FOO = 42
@@ -67,7 +67,7 @@ class ClassLikeStructuresOrderRuleWarnTest {
     @Test
     @Tag(WarningNames.BLANK_LINE_BETWEEN_PROPERTIES)
     fun `comments and KDocs on properties should be prepended by newline - positive example`() {
-        lintMethod(ClassLikeStructuresOrderRule(),
+        lintMethod(
                 """
                     |class Example {
                     |    // logger property
@@ -89,7 +89,7 @@ class ClassLikeStructuresOrderRuleWarnTest {
     @Test
     @Tag(WarningNames.BLANK_LINE_BETWEEN_PROPERTIES)
     fun `should warn if comments and KDocs on properties are not prepended by newline`() {
-        lintMethod(ClassLikeStructuresOrderRule(),
+        lintMethod(
                 """
                     |class Example {
                     |    private val log = LoggerFactory.getLogger(Example.javaClass)
