@@ -5,18 +5,19 @@ import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.RuleSetProvider
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
-import org.cqfn.diktat.ruleset.rules.RuleSetDiktat
+import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 
 /**
  * simple class for emulating RuleSetProvider to inject .json rule configuration and mock this part of code
  */
-class DiktatRuleSetProvider4Test(val rule: Rule, rulesConfigList: List<RulesConfig>?) : RuleSetProvider {
+class DiktatRuleSetProvider4Test(private val ruleSupplier: (rulesConfigList: List<RulesConfig>) -> Rule,
+                                 rulesConfigList: List<RulesConfig>?) : RuleSetProvider {
     private val rulesConfigList: List<RulesConfig>? = rulesConfigList ?: RulesConfigReader(javaClass.classLoader).readResource("rules-config.json")
 
     override fun get(): RuleSet {
-        return RuleSetDiktat(
-                rulesConfigList?: listOf(),
-                rule
+        return RuleSet(
+                DIKTAT_RULE_SET_ID,
+                ruleSupplier.invoke(rulesConfigList ?: emptyList())
         )
     }
 }

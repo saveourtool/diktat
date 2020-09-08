@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.rules
 
-import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.ARROW
@@ -81,7 +80,7 @@ import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
  * 9. There should be no space after `(`, `[` and `<` (in templates); no space before `)`, `]`, `>` (in templates)
  */
 @Suppress("ForbiddenComment")
-class WhiteSpaceRule : Rule("horizontal-whitespace") {
+class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizontal-whitespace") {
     companion object {
         private val keywordsWithSpaceAfter = TokenSet.create(
                 // these keywords are followed by {
@@ -98,15 +97,12 @@ class WhiteSpaceRule : Rule("horizontal-whitespace") {
         private const val numParentsForLambda = 3
     }
 
-    private lateinit var configRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
-                       params: KtLint.Params,
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
-        configRules = params.getDiktatConfigRules()
         emitWarn = emit
         isFixMode = autoCorrect
 
@@ -214,9 +210,11 @@ class WhiteSpaceRule : Rule("horizontal-whitespace") {
         require(requiredSpacesBefore != null || requiredSpacesAfter != null)
         val spacesBefore = node.parent({ it.treePrev != null }, strict = false)!!.treePrev.numWhiteSpaces()
         val spacesAfter = requiredSpacesAfter?.let { _ ->
+            // for `!!` and possibly other postfix expressions treeNext and treeParent.treeNext can be null
+            // upper levels are already outside of the expression this token belongs to, so we won't check them
             (node.treeNext
-                    ?: node.treeParent.treeNext)  // for `!!` and possibly other postfix expressions treeNext can be null
-                    .numWhiteSpaces()
+                    ?: node.treeParent.treeNext)
+                    ?.numWhiteSpaces()
         }
         val isErrorBefore = requiredSpacesBefore != null && spacesBefore != null && spacesBefore != requiredSpacesBefore
         val isErrorAfter = requiredSpacesAfter != null && spacesAfter != null && spacesAfter != requiredSpacesAfter

@@ -9,7 +9,7 @@ import org.cqfn.diktat.util.FixTestBase
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class EmptyBlockFixTest : FixTestBase("test/paragraph3/empty_block", EmptyBlock()) {
+class EmptyBlockFixTest : FixTestBase("test/paragraph3/empty_block", ::EmptyBlock) {
 
     private val rulesConfigListEmptyBlockExist: List<RulesConfig> = listOf(
             RulesConfig(Warnings.EMPTY_BLOCK_STRUCTURE_ERROR.name, true,

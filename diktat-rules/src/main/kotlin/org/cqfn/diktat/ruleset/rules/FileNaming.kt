@@ -6,12 +6,12 @@ import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NAME_INCORRECT
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NAME_MATCH_CLASS
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.isPascalCase
+import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import java.io.File
 
 /**
@@ -23,28 +23,25 @@ import java.io.File
  * Aggressive: In case file contains only one class on upper level - it should be named with the same name
  */
 @Suppress("ForbiddenComment")
-class FileNaming : Rule("file-naming") {
+class FileNaming(private val configRules: List<RulesConfig>) : Rule("file-naming") {
 
     companion object {
         // FixMe: should be moved to properties
         val VALID_EXTENSIONS = listOf(".kt", ".kts")
     }
 
-    private lateinit var configRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private lateinit var fileName: String
     private var isFixMode: Boolean = false
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
-                       params: KtLint.Params,
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
-        configRules = params.getDiktatConfigRules()
         emitWarn = emit
         isFixMode = autoCorrect
 
-        if (node.elementType == FILE && params.fileName != null) {
-            fileName = params.fileName!!
+        if (node.elementType == FILE) {
+            fileName = node.getUserData(KtLint.FILE_PATH_USER_DATA_KEY)!!
             checkFileNaming()
             checkClassNameMatchesWithFile(node)
         }

@@ -6,12 +6,12 @@ import org.cqfn.diktat.ruleset.constants.Warnings.REDUNDANT_SEMICOLON
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_NEWLINES
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.files.NewlinesRule
-import org.cqfn.diktat.util.lintMethod
+import org.cqfn.diktat.util.LintTestBase
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class NewlinesRuleWarnTest {
+class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
     private val ruleId = "$DIKTAT_RULE_SET_ID:newlines"
     private val shouldBreakAfter = "${WRONG_NEWLINES.warnText()} should break a line after and not before"
     private val shouldBreakBefore = "${WRONG_NEWLINES.warnText()} should break a line before and not after"
@@ -25,7 +25,7 @@ class NewlinesRuleWarnTest {
     @Test
     @Tag(WarningNames.REDUNDANT_SEMICOLON)
     fun `should forbid EOL semicolons`() {
-        lintMethod(NewlinesRule(),
+        lintMethod(
                 """
                     |enum class Example {
                     |    A,
@@ -46,7 +46,7 @@ class NewlinesRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `should not false positively trigger on dots in package directive and imports`() {
-        lintMethod(NewlinesRule(),
+        lintMethod(
                 """
                     |package org.cqfn.diktat.example
                     |
@@ -59,7 +59,7 @@ class NewlinesRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `should not false positively trigger on operators in the middle of the line`() {
-        lintMethod(NewlinesRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    val log = LoggerFactory.getLogger(Foo::class.java)
@@ -77,7 +77,7 @@ class NewlinesRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `line breaking at operators - positive example`() {
-        lintMethod(NewlinesRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    val foo: Foo? = bar ?: Bar(javaClass.classLoader).readResource("baz")
@@ -105,7 +105,7 @@ class NewlinesRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `line breaking at operators`() {
-        lintMethod(NewlinesRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    val and = condition1
@@ -135,7 +135,7 @@ class NewlinesRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `line breaking after infix functions - positive example`() {
-        lintMethod(NewlinesRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    true xor
@@ -156,7 +156,7 @@ class NewlinesRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `line breaking after infix functions`() {
-        lintMethod(NewlinesRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    (true 
@@ -175,7 +175,7 @@ class NewlinesRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `line breaking after infix functions - several functions in a chain`() {
-        lintMethod(NewlinesRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    (true xor false
@@ -206,7 +206,7 @@ class NewlinesRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `chained calls should follow functional style - positive example`() {
-        lintMethod(NewlinesRule(),
+        lintMethod(
                 """
                     |fun foo(list: List<Bar>?) {
                     |    list!!
@@ -224,7 +224,7 @@ class NewlinesRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `chained calls should follow functional style - should not trigger on single dot calls`() {
-        lintMethod(NewlinesRule(),
+        lintMethod(
                 """
                     |fun foo(bar: Bar?) {
                     |    bar.baz()
@@ -238,7 +238,7 @@ class NewlinesRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `chained calls should follow functional style`() {
-        lintMethod(NewlinesRule(),
+        lintMethod(
                 """
                     |fun foo(list: List<Bar>?) {
                     |    list!!.filterNotNull()
@@ -256,7 +256,7 @@ class NewlinesRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `chained calls should follow functional style - exception for ternary if-else`() {
-        lintMethod(NewlinesRule(),
+        lintMethod(
                 """
                     |fun foo(list: List<Bar>?) {
                     |    if (list.size > n) list.filterNotNull().map { it.baz() } else list.let { it.bar() }.firstOrNull()?.qux()
@@ -268,7 +268,7 @@ class NewlinesRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `newline should be placed only after assignment operator`() {
-        lintMethod(NewlinesRule(),
+        lintMethod(
                 """
                     |class Example {
                     |    val a =
@@ -284,7 +284,7 @@ class NewlinesRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `newline should be placed only after comma`() {
-        lintMethod(NewlinesRule(),
+        lintMethod(
                 """
                     |fun foo(a: Int
                     |        ,
@@ -301,7 +301,7 @@ class NewlinesRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `function name should not be separated from ( - positive example`() {
-        lintMethod(NewlinesRule(),
+        lintMethod(
                 """
                     |val foo = Foo(arg1, arg2)
                     |class Example(
@@ -318,7 +318,7 @@ class NewlinesRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `function name should not be separated from ( - should not trigger on other parenthesis`() {
-        lintMethod(NewlinesRule(),
+        lintMethod(
                 """
                     |val x = (2 + 2) * 2
                     |val y = if (condition) 2 else 1
@@ -333,7 +333,7 @@ class NewlinesRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `function name should not be separated from (`() {
-        lintMethod(NewlinesRule(),
+        lintMethod(
                 """
                     |val foo = Foo  (arg1, arg2)
                     |class Example
@@ -355,7 +355,7 @@ class NewlinesRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `newline should be placed only after comma - positive example`() {
-        lintMethod(NewlinesRule(),
+        lintMethod(
                 """
                     |fun foo(a: Int,
                     |        b: Int) {
@@ -368,7 +368,7 @@ class NewlinesRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `in lambdas newline should be placed after an arrow - positive example`() {
-        lintMethod(NewlinesRule(),
+        lintMethod(
                 """
                     |class Example {
                     |    val a = list.map { elem ->
@@ -391,7 +391,7 @@ class NewlinesRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `in lambdas newline should be placed after an arrow`() {
-        lintMethod(NewlinesRule(),
+        lintMethod(
                 """
                     |class Example {
                     |    val a = list.map {
@@ -424,7 +424,7 @@ class NewlinesRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `should warn if function consists of a single return statement - positive example`() {
-        lintMethod(NewlinesRule(),
+        lintMethod(
                 """
                     |fun foo() = "lorem ipsum"
                     |
@@ -452,7 +452,7 @@ class NewlinesRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `long argument list should be split into several lines - positive example`() {
-        lintMethod(NewlinesRule(),
+        lintMethod(
                 """
                     |class SmallExample(val a: Int)
                     |
@@ -473,7 +473,7 @@ class NewlinesRuleWarnTest {
     @Tag(WarningNames.WRONG_NEWLINES)
     @Disabled("Will be implemented later")
     fun `long argument list should be split into several lines`() {
-        lintMethod(NewlinesRule(),
+        lintMethod(
                 """
                     |class SmallExample(val a: Int)
                     |
@@ -493,7 +493,7 @@ class NewlinesRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `should warn if function consists of a single return statement`() {
-        lintMethod(NewlinesRule(),
+        lintMethod(
                 """
                     |fun foo(): String {
                     |    return "lorem ipsum"

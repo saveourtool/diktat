@@ -6,11 +6,11 @@ import org.cqfn.diktat.test.framework.processing.TestComparatorUnit
 import org.junit.jupiter.api.Assertions
 
 open class FixTestBase(private val resourceFilePath: String,
-                       protected val rule: Rule,
-                       rulesConfigList: List<RulesConfig>? = emptyList()
+                       private val ruleSupplier: (rulesConfigList: List<RulesConfig>) -> Rule,
+                       rulesConfigList: List<RulesConfig> = emptyList()
 ) {
     private val testComparatorUnit = TestComparatorUnit(resourceFilePath) { text, fileName ->
-        rule.format(text, fileName, rulesConfigList)
+        format(ruleSupplier, text, fileName, rulesConfigList)
     }
 
     protected fun fixAndCompare(expectedPath: String, testPath: String) {
@@ -20,9 +20,11 @@ open class FixTestBase(private val resourceFilePath: String,
         )
     }
 
-    protected fun fixAndCompare(expectedPath: String, testPath: String, overrideRulesConfigList: List<RulesConfig>) {
+    protected fun fixAndCompare(expectedPath: String,
+                                testPath: String,
+                                overrideRulesConfigList: List<RulesConfig>) {
         val testComparatorUnit = TestComparatorUnit(resourceFilePath) { text, fileName ->
-            rule.format(text, fileName, overrideRulesConfigList)
+            format(ruleSupplier, text, fileName, overrideRulesConfigList)
         }
         Assertions.assertTrue(
                 testComparatorUnit

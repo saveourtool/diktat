@@ -6,11 +6,11 @@ import generated.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings.LONG_LINE
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.LineLength
-import org.cqfn.diktat.util.lintMethod
+import org.cqfn.diktat.util.LintTestBase
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class LineLengthWarnTest {
+class LineLengthWarnTest : LintTestBase(::LineLength) {
 
     private val ruleId = "$DIKTAT_RULE_SET_ID:line-length"
 
@@ -30,7 +30,7 @@ class LineLengthWarnTest {
     @Test
     @Tag(WarningNames.LONG_LINE)
     fun `check correct example with long URL in KDOC and long import`() {
-        lintMethod(LineLength(),
+        lintMethod(
                 """
                     |package org.cqfn.diktat.ruleset.chapter3
                     |
@@ -57,7 +57,7 @@ class LineLengthWarnTest {
     @Test
     @Tag(WarningNames.LONG_LINE)
     fun `check wrong example with wrong URL in KDOC`() {
-        lintMethod(LineLength(),
+        lintMethod(
                 """
                     |package org.cqfn.diktat.ruleset.chapter3
                     |
@@ -86,7 +86,7 @@ class LineLengthWarnTest {
     @Test
     @Tag(WarningNames.LONG_LINE)
     fun `check wrong example with wrong URL in KDOC with configuration`() {
-        lintMethod(LineLength(),
+        lintMethod(
                 """
                     |package org.cqfn.diktat.ruleset.chapter3
                     |
@@ -114,7 +114,7 @@ class LineLengthWarnTest {
     @Test
     @Tag(WarningNames.LONG_LINE)
     fun `check wrong example with long line`() {
-        lintMethod(LineLength(),
+        lintMethod(
                 """
                     |package org.cqfn.diktat.ruleset.chapter3
                     |
@@ -145,7 +145,7 @@ class LineLengthWarnTest {
     @Test
     @Tag(WarningNames.LONG_LINE)
     fun `check wrong example with long line but with configuration`() {
-        lintMethod(LineLength(),
+        lintMethod(
                 """
                     |package org.cqfn.diktat.ruleset.chapter3
                     |
@@ -176,7 +176,7 @@ class LineLengthWarnTest {
     @Test
     @Tag(WarningNames.LONG_LINE)
     fun `check correct example with long URL in KDOC in class`() {
-        lintMethod(LineLength(),
+        lintMethod(
                 """
                     |package org.cqfn.diktat.ruleset.chapter3
                     |
@@ -203,7 +203,7 @@ class LineLengthWarnTest {
     @Test
     @Tag(WarningNames.LONG_LINE)
     fun `check wrong examples with long function name and properties`() {
-        lintMethod(LineLength(),
+        lintMethod(
                 """
                     |package org.cqfn.diktat.ruleset.chapter3
                     |
