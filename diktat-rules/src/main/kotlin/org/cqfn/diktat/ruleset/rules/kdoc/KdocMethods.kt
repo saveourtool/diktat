@@ -84,7 +84,7 @@ class KdocMethods : Rule("kdoc-methods") {
         val kDocTags = kDoc?.kDocTags()
         val name = node.getIdentifierName()!!.text
 
-        val missingParameters = getMissingParameters(node, kDocTags)
+        val (missingParameters, kDocParamList) = getMissingParameters(node, kDocTags)
 
         val explicitlyThrownExceptions = getExplicitlyThrownExceptions(node)
         val missingExceptions = explicitlyThrownExceptions
@@ -94,15 +94,13 @@ class KdocMethods : Rule("kdoc-methods") {
                         ?.toSet() ?: setOf()
                 )
 
-        val paramCheckFailed = missingParameters.isNotEmpty() && !node.isSingleLineGetterOrSetter()
+        val paramCheckFailed = (missingParameters.isNotEmpty() || kDocParamList.isNotEmpty()) && !node.isSingleLineGetterOrSetter()
         val returnCheckFailed = checkReturnCheckFailed(node, kDocTags)
         val throwsCheckFailed = missingExceptions.isNotEmpty()
 
-        if (paramCheckFailed) handleParamCheck(node, name, kDoc, missingParameters, kDocTags)
+        if (paramCheckFailed) handleParamCheck(node, name, kDoc, missingParameters, kDocParamList, kDocTags)
         if (returnCheckFailed) handleReturnCheck(node, name, kDoc, kDocTags)
         if (throwsCheckFailed) handleThrowsCheck(node, name, kDoc, missingExceptions)
-
-        if (kDocTags != null && kDocTags.isNotEmpty()) checkKDocParam(node, kDocTags)
 
         // if no tag failed, we have too little information to suggest KDoc - it would just be empty
         val anyTagFailed = paramCheckFailed || returnCheckFailed || throwsCheckFailed
@@ -113,16 +111,15 @@ class KdocMethods : Rule("kdoc-methods") {
         }
     }
 
-    private fun getMissingParameters(node: ASTNode, kDocTags: Collection<KDocTag>?): Collection<String?> {
+    private fun getMissingParameters(node: ASTNode, kDocTags: Collection<KDocTag>?): Pair<List<String?>, List<KDocTag>> {
         val parameterNames = node.parameterNames()
-        val kDocParameterNames = kDocTags?.filter { it.knownTag == KDocKnownTag.PARAM }
-                ?.map { it.getSubjectName() }
+        val kDocParamList = kDocTags?.filter { it.knownTag == KDocKnownTag.PARAM && it.getSubjectName() != null }
         return if (parameterNames == null || parameterNames.isEmpty()) {
-            listOf()
-        } else if (kDocParameterNames != null && kDocParameterNames.isNotEmpty()) {
-            parameterNames.minus(kDocParameterNames)
+            return Pair(listOf(), kDocParamList ?: listOf())
+        } else if (kDocParamList != null && kDocParamList.isNotEmpty()) {
+            Pair(parameterNames.minus(kDocParamList.map { it.getSubjectName() }), kDocParamList.filter { it.getSubjectName() !in parameterNames })
         } else {
-            parameterNames
+            Pair(parameterNames.toList(), listOf())
         }
     }
 
@@ -152,7 +149,12 @@ class KdocMethods : Rule("kdoc-methods") {
                                  name: String,
                                  kDoc: ASTNode?,
                                  missingParameters: Collection<String?>,
+                                 kDocParamList: List<KDocTag>,
                                  kDocTags: Collection<KDocTag>?) {
+        kDocParamList.forEach {
+            KDOC_WITHOUT_PARAM_TAG.warn(configRules, emitWarn, false,
+                    "${it.getSubjectName()} param isn't define in function", it.node.startOffset)
+        }
         KDOC_WITHOUT_PARAM_TAG.warnAndFix(configRules, emitWarn, isFixMode,
                 "$name (${missingParameters.joinToString()})", node.startOffset) {
             val beforeTag = kDocTags?.find { it.knownTag == KDocKnownTag.RETURN }
