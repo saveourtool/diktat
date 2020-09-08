@@ -106,6 +106,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
         fix(configRules, autoFix, isFixMode)
     }
 
+    @Suppress("LongParameterList")
     fun warn(configs: List<RulesConfig>,
              emit: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit),
              autoCorrected: Boolean,
