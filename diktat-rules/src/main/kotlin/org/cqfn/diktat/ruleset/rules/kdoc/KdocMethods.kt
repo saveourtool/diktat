@@ -79,7 +79,7 @@ class KdocMethods(private val configRules: List<RulesConfig>) : Rule("kdoc-metho
         val kDocTags = kDoc?.kDocTags()
         val name = node.getIdentifierName()!!.text
 
-        val (missingParameters, kDocParamList) = getMissingParameters(node, kDocTags)
+        val (missingParameters, kDocMissingParameters) = getMissingParameters(node, kDocTags)
 
         val explicitlyThrownExceptions = getExplicitlyThrownExceptions(node)
         val missingExceptions = explicitlyThrownExceptions
@@ -89,11 +89,11 @@ class KdocMethods(private val configRules: List<RulesConfig>) : Rule("kdoc-metho
                         ?.toSet() ?: setOf()
                 )
 
-        val paramCheckFailed = (missingParameters.isNotEmpty() || kDocParamList.isNotEmpty()) && !node.isSingleLineGetterOrSetter()
+        val paramCheckFailed = (missingParameters.isNotEmpty() && !node.isSingleLineGetterOrSetter()) || kDocMissingParameters.isNotEmpty()
         val returnCheckFailed = checkReturnCheckFailed(node, kDocTags)
         val throwsCheckFailed = missingExceptions.isNotEmpty()
 
-        if (paramCheckFailed) handleParamCheck(node, name, kDoc, missingParameters, kDocParamList, kDocTags)
+        if (paramCheckFailed) handleParamCheck(node, name, kDoc, missingParameters, kDocMissingParameters, kDocTags)
         if (returnCheckFailed) handleReturnCheck(node, name, kDoc, kDocTags)
         if (throwsCheckFailed) handleThrowsCheck(node, name, kDoc, missingExceptions)
 
@@ -144,9 +144,9 @@ class KdocMethods(private val configRules: List<RulesConfig>) : Rule("kdoc-metho
                                  name: String,
                                  kDoc: ASTNode?,
                                  missingParameters: Collection<String?>,
-                                 kDocParamList: List<KDocTag>,
+                                 kDocMissingParameters: List<KDocTag>,
                                  kDocTags: Collection<KDocTag>?) {
-        kDocParamList.forEach {
+        kDocMissingParameters.forEach {
             KDOC_WITHOUT_PARAM_TAG.warn(configRules, emitWarn, false,
                     "${it.getSubjectName()} param isn't define in function", it.node.startOffset)
         }

@@ -5,19 +5,19 @@ import generated.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings.*
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocMethods
-import org.cqfn.diktat.util.lintMethod
+import org.cqfn.diktat.util.LintTestBase
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Tags
 import org.junit.jupiter.api.Test
 
-class KdocParamPresentWarnTest {
+class KdocParamPresentWarnTest : LintTestBase(::KdocMethods) {
 
     private val ruleId = "$DIKTAT_RULE_SET_ID:kdoc-methods"
 
     @Test
     @Tag(WarningNames.KDOC_WITHOUT_PARAM_TAG)
     fun `check simple correct example`() {
-        lintMethod(KdocMethods(),
+        lintMethod(
                 """
                     |/**
                     |* @param a - leftOffset
@@ -30,7 +30,7 @@ class KdocParamPresentWarnTest {
     @Test
     @Tags(Tag(WarningNames.KDOC_WITHOUT_PARAM_TAG), Tag(WarningNames.KDOC_WITHOUT_PARAM_TAG))
     fun `check wrong example with russian letter name`() {
-        lintMethod(KdocMethods(),
+        lintMethod(
                 """
                     |/**
                     |* @param A - leftOffset
@@ -47,13 +47,14 @@ class KdocParamPresentWarnTest {
     @Test
     @Tag(WarningNames.KDOC_WITHOUT_PARAM_TAG)
     fun `check wrong example without param in fun`() {
-        lintMethod(KdocMethods(),
+        lintMethod(
                 """
                     |/**
                     |* @param A - leftOffset
                     |*/
                     |fun foo() {}
                 """.trimMargin(),
+                LintError(1, 1, ruleId, "${KDOC_WITHOUT_PARAM_TAG.warnText()} foo ()", true),
                 LintError(2, 3, ruleId, "${KDOC_WITHOUT_PARAM_TAG.warnText()} A param isn't define in function")
         )
     }
@@ -61,7 +62,7 @@ class KdocParamPresentWarnTest {
     @Test
     @Tag(WarningNames.KDOC_WITHOUT_PARAM_TAG)
     fun `check empty param`() {
-        lintMethod(KdocMethods(),
+        lintMethod(
                 """
                     |/**
                     |* @param
@@ -80,7 +81,7 @@ class KdocParamPresentWarnTest {
     @Test
     @Tag(WarningNames.KDOC_WITHOUT_PARAM_TAG)
     fun `check different order`() {
-        lintMethod(KdocMethods(),
+        lintMethod(
                 """
                     |/**
                     |* @param a - qwe
@@ -94,7 +95,7 @@ class KdocParamPresentWarnTest {
     @Test
     @Tags(Tag(WarningNames.KDOC_WITHOUT_PARAM_TAG), Tag(WarningNames.MISSING_KDOC_ON_FUNCTION))
     fun `check without kdoc and fun `() {
-        lintMethod(KdocMethods(),
+        lintMethod(
                 """
                     |fun foo(b: Int, a: Int) {}
                     |
