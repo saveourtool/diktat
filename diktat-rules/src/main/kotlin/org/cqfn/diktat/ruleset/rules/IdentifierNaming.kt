@@ -107,7 +107,7 @@ class IdentifierNaming : Rule("identifier-naming") {
         if (identifierText?.startsWith('`') == true && identifierText.endsWith('`')) {
             // the only exception is test method with @Test annotation
             if (!(node.elementType == ElementType.FUN && node.hasTestAnnotation())) {
-                BACKTICKS_PROHIBITED.warn(configRules, emitWarn, isFixMode, identifierText, identifier.startOffset)
+                BACKTICKS_PROHIBITED.warn(configRules, emitWarn, isFixMode, identifierText, identifier.startOffset, node)
             }
             return true
         }
@@ -126,19 +126,19 @@ class IdentifierNaming : Rule("identifier-naming") {
                     // variable should not contain only one letter in it's name. This is a bad example: b512
                     // but no need to raise a warning here if length of a variable. In this case we will raise IDENTIFIER_LENGTH
                     if (variableName.text.containsOneLetterOrZero() && variableName.text.length > 1) {
-                        VARIABLE_NAME_INCORRECT.warn(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset)
+                        VARIABLE_NAME_INCORRECT.warn(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset, node)
                     }
                     // check for constant variables - check for val from companion object or on global file level
                     // it should be in UPPER_CASE, no need to raise this warning if it is one-letter variable
                     if (node.isConstant()) {
                         if (!variableName.text.isUpperSnakeCase() && variableName.text.length > 1) {
-                            CONSTANT_UPPERCASE.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset) {
+                            CONSTANT_UPPERCASE.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset,node) {
                                 (variableName as LeafPsiElement).replaceWithText(variableName.text.toUpperSnakeCase())
                             }
                         }
                     } else if (!variableName.text.isLowerCamelCase()) {
                         // variable name should be in camel case. The only exception is a list of industry standard variables like i, j, k.
-                        VARIABLE_NAME_INCORRECT_FORMAT.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset) {
+                        VARIABLE_NAME_INCORRECT_FORMAT.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset, node) {
                             // FixMe: cover fixes with tests
                             (variableName as LeafPsiElement).replaceWithText(variableName.text.toLowerCamelCase())
                         }
@@ -152,7 +152,7 @@ class IdentifierNaming : Rule("identifier-naming") {
                 .forEach { variableName ->
                     // generally, variables with prefixes are not allowed (like mVariable, xCode, iValue)
                     if (variableName.text.hasPrefix()) {
-                        VARIABLE_HAS_PREFIX.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset) {
+                        VARIABLE_HAS_PREFIX.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset, node) {
                             (variableName as LeafPsiElement).replaceWithText(variableName.text.removePrefix())
                         }
                     }
@@ -189,14 +189,14 @@ class IdentifierNaming : Rule("identifier-naming") {
     private fun checkCLassNamings(node: ASTNode): List<ASTNode> {
         val genericType: ASTNode? = node.getTypeParameterList()
         if (genericType != null && !validGenericTypeName(genericType.text)) {
-            GENERIC_NAME.warnAndFix(configRules, emitWarn, isFixMode, genericType.text, genericType.startOffset) {
+            GENERIC_NAME.warnAndFix(configRules, emitWarn, isFixMode, genericType.text, genericType.startOffset, node) {
                 // FixMe: should fix generic name here
             }
         }
 
         val className: ASTNode? = node.getIdentifierName()
         if (!(className!!.text.isPascalCase())) {
-            CLASS_NAME_INCORRECT.warnAndFix(configRules, emitWarn, isFixMode, className.text, className.startOffset) {
+            CLASS_NAME_INCORRECT.warnAndFix(configRules, emitWarn, isFixMode, className.text, className.startOffset, node) {
                 (className as LeafPsiElement).replaceWithText(className.text.toPascalCase())
             }
         }
@@ -221,7 +221,7 @@ class IdentifierNaming : Rule("identifier-naming") {
                 ?.text
 
         if (superClassName != null && hasExceptionSuffix(superClassName) && !hasExceptionSuffix(classNameNode!!.text)) {
-            EXCEPTION_SUFFIX.warnAndFix(configRules, emitWarn, isFixMode, classNameNode.text, classNameNode.startOffset) {
+            EXCEPTION_SUFFIX.warnAndFix(configRules, emitWarn, isFixMode, classNameNode.text, classNameNode.startOffset, node) {
                 // FixMe: need to add tests for this
                 (classNameNode as LeafPsiElement).replaceWithText(classNameNode.text + "Exception")
             }
@@ -236,7 +236,7 @@ class IdentifierNaming : Rule("identifier-naming") {
         // if this object is companion object or anonymous object - it does not have any name
         val objectName: ASTNode = node.getIdentifierName() ?: return listOf()
         if (!objectName.text.isPascalCase()) {
-            OBJECT_NAME_INCORRECT.warnAndFix(configRules, emitWarn, isFixMode, objectName.text, objectName.startOffset) {
+            OBJECT_NAME_INCORRECT.warnAndFix(configRules, emitWarn, isFixMode, objectName.text, objectName.startOffset, node) {
                 (objectName as LeafPsiElement).replaceWithText(objectName.text.toPascalCase())
             }
         }
@@ -252,7 +252,7 @@ class IdentifierNaming : Rule("identifier-naming") {
         val enumValues: List<ASTNode> = node.getChildren(null).filter { it.elementType == ElementType.IDENTIFIER }
         enumValues.forEach { value ->
             if (!value.text.isUpperSnakeCase()) {
-                ENUM_VALUE.warnAndFix(configRules, emitWarn, isFixMode, value.text, value.startOffset) {
+                ENUM_VALUE.warnAndFix(configRules, emitWarn, isFixMode, value.text, value.startOffset, node) {
                     // FixMe: add tests for this
                     (value as LeafPsiElement).replaceWithText(value.text.toUpperSnakeCase())
                 }
@@ -274,7 +274,7 @@ class IdentifierNaming : Rule("identifier-naming") {
 
         // basic check for camel case
         if (!functionName.text.isLowerCamelCase()) {
-            FUNCTION_NAME_INCORRECT_CASE.warnAndFix(configRules, emitWarn, isFixMode, functionName.text, functionName.startOffset) {
+            FUNCTION_NAME_INCORRECT_CASE.warnAndFix(configRules, emitWarn, isFixMode, functionName.text, functionName.startOffset, node) {
                 // FixMe: add tests for this
                 (functionName as LeafPsiElement).replaceWithText(functionName.text.toLowerCamelCase())
             }
@@ -286,7 +286,7 @@ class IdentifierNaming : Rule("identifier-naming") {
         // if function has Boolean return type in 99% of cases it is much better to name it with isXXX or hasXXX prefix
         if (functionReturnType != null && functionReturnType == PrimitiveType.BOOLEAN.typeName.asString()) {
             if (BOOLEAN_METHOD_PREFIXES.none { functionName.text.startsWith(it) }) {
-                FUNCTION_BOOLEAN_PREFIX.warnAndFix(configRules, emitWarn, isFixMode, functionName.text, functionName.startOffset) {
+                FUNCTION_BOOLEAN_PREFIX.warnAndFix(configRules, emitWarn, isFixMode, functionName.text, functionName.startOffset, node) {
                     // FixMe: add agressive autofix for this
                 }
             }
@@ -319,7 +319,7 @@ class IdentifierNaming : Rule("identifier-naming") {
                             ONE_CHAR_IDENTIFIERS.contains(it.text) && isVariable || validCatchIdentifier(it)
 
                             )) {
-                IDENTIFIER_LENGTH.warn(configRules, emitWarn, isFixMode, it.text, it.startOffset)
+                IDENTIFIER_LENGTH.warn(configRules, emitWarn, isFixMode, it.text, it.startOffset, it)
             }
         }
     }

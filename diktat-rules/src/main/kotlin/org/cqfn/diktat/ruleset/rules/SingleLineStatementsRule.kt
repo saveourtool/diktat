@@ -44,7 +44,7 @@ class SingleLineStatementsRule : Rule("statement") {
         node.getChildren(semicolonToken).forEach {
             if (!it.isFollowedByNewline()) {
                 MORE_THAN_ONE_STATEMENT_PER_LINE.warnAndFix(configRules, emitWarn, isFixMode, it.extractLineOfText(),
-                        it.startOffset) {
+                        it.startOffset, it) {
                     if (it.treeParent.elementType == ENUM_ENTRY) {
                         node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node.treeNext)
                     } else {

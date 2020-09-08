@@ -106,7 +106,7 @@ class KdocMethods : Rule("kdoc-methods") {
         if (kDoc == null && anyTagFailed) {
             addKdocTemplate(node, name, missingParameters, explicitlyThrownExceptions, returnCheckFailed)
         } else if (kDoc == null) {
-            MISSING_KDOC_ON_FUNCTION.warn(configRules, emitWarn, false, name, node.startOffset)
+            MISSING_KDOC_ON_FUNCTION.warn(configRules, emitWarn, false, name, node.startOffset, node)
         }
     }
 
@@ -151,7 +151,7 @@ class KdocMethods : Rule("kdoc-methods") {
                                  missingParameters: Collection<String?>,
                                  kDocTags: Collection<KDocTag>?) {
         KDOC_WITHOUT_PARAM_TAG.warnAndFix(configRules, emitWarn, isFixMode,
-                "$name (${missingParameters.joinToString()})", node.startOffset) {
+                "$name (${missingParameters.joinToString()})", node.startOffset, node) {
             val beforeTag = kDocTags?.find { it.knownTag == KDocKnownTag.RETURN }
                     ?: kDocTags?.find { it.knownTag == KDocKnownTag.THROWS }
             missingParameters.forEach {
@@ -169,7 +169,7 @@ class KdocMethods : Rule("kdoc-methods") {
                                   kDoc: ASTNode?,
                                   kDocTags: Collection<KDocTag>?
     ) {
-        KDOC_WITHOUT_RETURN_TAG.warnAndFix(configRules, emitWarn, isFixMode, name, node.startOffset) {
+        KDOC_WITHOUT_RETURN_TAG.warnAndFix(configRules, emitWarn, isFixMode, name, node.startOffset, node) {
             val beforeTag = kDocTags?.find { it.knownTag == KDocKnownTag.THROWS }
             kDoc?.insertTagBefore(beforeTag?.node) {
                 addChild(LeafPsiElement(KDOC_TAG_NAME, "@return"))
@@ -183,7 +183,7 @@ class KdocMethods : Rule("kdoc-methods") {
                                   missingExceptions: Collection<String>
     ) {
         KDOC_WITHOUT_THROWS_TAG.warnAndFix(configRules, emitWarn, isFixMode,
-                "$name (${missingExceptions.joinToString()})", node.startOffset) {
+                "$name (${missingExceptions.joinToString()})", node.startOffset, node) {
             missingExceptions.forEach {
                 kDoc?.insertTagBefore(null) {
                     addChild(LeafPsiElement(KDOC_TAG_NAME, "@throws"))
@@ -200,7 +200,7 @@ class KdocMethods : Rule("kdoc-methods") {
                                 explicitlyThrownExceptions: Collection<String>,
                                 returnCheckFailed: Boolean
     ) {
-        MISSING_KDOC_ON_FUNCTION.warnAndFix(configRules, emitWarn, isFixMode, name, node.startOffset) {
+        MISSING_KDOC_ON_FUNCTION.warnAndFix(configRules, emitWarn, isFixMode, name, node.startOffset, node) {
             val kDocTemplate = "/**\n" +
                     (missingParameters.joinToString("") { " * @param $it\n" } +
                             (if (returnCheckFailed) " * @return\n" else "") +
@@ -218,7 +218,7 @@ class KdocMethods : Rule("kdoc-methods") {
         if (kdocTextNodes.size == 1) {
             val kdocText = kdocTextNodes.first().text.trim()
             if (kdocText.matches(uselessKdocRegex)) {
-                KDOC_TRIVIAL_KDOC_ON_FUNCTION.warn(configRules, emitWarn, isFixMode, kdocText, kdocTextNodes.first().startOffset)
+                KDOC_TRIVIAL_KDOC_ON_FUNCTION.warn(configRules, emitWarn, isFixMode, kdocText, kdocTextNodes.first().startOffset, node)
             }
         }
     }

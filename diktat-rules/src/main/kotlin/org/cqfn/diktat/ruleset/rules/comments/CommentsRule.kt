@@ -88,7 +88,7 @@ class CommentsRule : Rule("comments") {
             .filter { (_, parsedNode) ->
                 parsedNode.findAllNodesWithSpecificType(TokenType.ERROR_ELEMENT).isEmpty()
             }.forEach { (offset, parsedNode) ->
-                COMMENTED_OUT_CODE.warn(configRules, emitWarn, isFixMode, parsedNode.text.substringBefore("\n").trim(), offset)
+                COMMENTED_OUT_CODE.warn(configRules, emitWarn, isFixMode, parsedNode.text.substringBefore("\n").trim(), offset, node)
             }
     }
 

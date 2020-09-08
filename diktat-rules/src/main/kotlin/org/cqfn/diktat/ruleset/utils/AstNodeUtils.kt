@@ -293,11 +293,16 @@ fun ASTNode?.isAccessibleOutside(): Boolean =
             true
         }
 
-fun ASTNode.hasSuppress(warningName: String): Boolean = parent(ANNOTATION)
-        .let { node ->
-            node?.getAllChildrenWithType(ANNOTATION_ENTRY)!!.any { it.text.contains("Suppress")
-                    && it.text.contains(warningName) }
+fun ASTNode.hasSuppress(warningName: String): Boolean {
+    if (elementType == FILE) {
+        return findAllNodesWithSpecificType(ANNOTATION_ENTRY).any {
+            it.text.contains("Suppress") && it.text.contains(warningName)
         }
+    }
+    return parent({ it.findAllNodesWithSpecificType(ANNOTATION_ENTRY).any {
+        it.text.contains("Suppress") && it.text.contains(warningName)
+    }}) != null
+}
 /**
  * removing all newlines in WHITE_SPACE node and replacing it to a one newline saving the initial indenting format
  */

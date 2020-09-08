@@ -65,7 +65,7 @@ class FileSize : Rule("file-size") {
     private fun checkFileSize(node: ASTNode, maxSize: Long) {
         val size = node.text.split("\n").size
         if (size > maxSize) {
-            FILE_IS_TOO_LONG.warn(configRules, emitWarn, isFixMode, "$size", node.startOffset)
+            FILE_IS_TOO_LONG.warn(configRules, emitWarn, isFixMode, "$size", node.startOffset, node)
         }
     }
 
