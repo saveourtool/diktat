@@ -3,6 +3,8 @@ package org.cqfn.diktat.ruleset.constants
 import org.cqfn.diktat.common.config.rules.Rule
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.isRuleEnabled
+import org.cqfn.diktat.ruleset.utils.hasSuppress
+import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 @Suppress("ForbiddenComment", "MagicNumber")
 enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: String) : Rule {
