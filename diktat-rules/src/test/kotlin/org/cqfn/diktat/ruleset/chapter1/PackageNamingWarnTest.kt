@@ -176,7 +176,7 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
                 """.trimMargin(),
                 fileName = "/home/testu/project/module/src/main/kotlin/kotlin/collections/Collections.kt",
                 rulesConfigList = listOf(
-                        RulesConfig(PACKAGE_NAME_MISSING.name, true, mapOf("domainName" to "kotlin"))
+                        RulesConfig("DIKTAT_COMMON", true, mapOf("domainName" to "kotlin"))
                 )
         )
     }
