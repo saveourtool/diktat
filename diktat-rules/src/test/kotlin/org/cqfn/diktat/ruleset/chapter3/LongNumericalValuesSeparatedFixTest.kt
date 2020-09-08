@@ -8,7 +8,7 @@ import org.cqfn.diktat.util.FixTestBase
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class LongNumericalValuesSeparatedFixTest : FixTestBase("test/paragraph3/long_numbers", LongNumericalValuesSeparatedRule()) {
+class LongNumericalValuesSeparatedFixTest : FixTestBase("test/paragraph3/long_numbers", ::LongNumericalValuesSeparatedRule) {
 
     private val rulesConfig: List<RulesConfig> = listOf(
             RulesConfig(Warnings.LONG_NUMERICAL_VALUES_SEPARATED.name, true,

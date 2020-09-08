@@ -734,7 +734,6 @@ private class PrettyPrintingVisitor(private val elementType: IElementType,
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
-                       params: KtLint.Params,
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
         if (node.elementType == elementType) {
             Assertions.assertEquals(

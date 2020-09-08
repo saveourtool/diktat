@@ -6,7 +6,7 @@ import org.cqfn.diktat.util.FixTestBase
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class BracesRuleFixTest : FixTestBase("test/paragraph3/braces", BracesInConditionalsAndLoopsRule()) {
+class BracesRuleFixTest : FixTestBase("test/paragraph3/braces", ::BracesInConditionalsAndLoopsRule) {
     @Test
     @Tag(WarningNames.NO_BRACES_IN_CONDITIONALS_AND_LOOPS)
     fun `should add braces to if-else statements - 1`() {

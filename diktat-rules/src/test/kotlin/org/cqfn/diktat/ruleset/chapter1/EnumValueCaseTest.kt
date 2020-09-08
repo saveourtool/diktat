@@ -6,7 +6,7 @@ import org.cqfn.diktat.util.FixTestBase
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class EnumValueCaseTest : FixTestBase ("test/paragraph1/naming", IdentifierNaming()){
+class EnumValueCaseTest : FixTestBase("test/paragraph1/naming", ::IdentifierNaming) {
 
     @Test
     @Tag(WarningNames.ENUM_VALUE)
