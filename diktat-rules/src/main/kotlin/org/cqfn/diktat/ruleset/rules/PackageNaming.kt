@@ -243,7 +243,8 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
      */
     private fun checkFilePathMatchesWithPackageName(packageNameParts: List<ASTNode>, realName: List<String>) {
         if (realName.isNotEmpty() && packageNameParts.map { node -> node.text } != realName) {
-            PACKAGE_NAME_INCORRECT_PATH.warnAndFix(configRules, emitWarn, isFixMode, realName.joinToString(PACKAGE_SEPARATOR), packageNameParts[0].startOffset, packageNameParts[0]) {
+            PACKAGE_NAME_INCORRECT_PATH.warnAndFix(configRules, emitWarn, isFixMode, realName.joinToString(PACKAGE_SEPARATOR),
+                    packageNameParts[0].startOffset, packageNameParts[0]) {
                 // need to get first top-level DOT-QUALIFIED-EXPRESSION
                 // -- PACKAGE_DIRECTIVE
                 //    -- DOT_QUALIFIED_EXPRESSION
