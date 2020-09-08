@@ -7,7 +7,8 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Tags
 import org.junit.jupiter.api.Test
 
-class KdocMethodsFixTest : FixTestBase("test/paragraph2/kdoc/package/src/main/kotlin/org/cqfn/diktat/kdoc/methods", KdocMethods()) {
+class KdocMethodsFixTest : FixTestBase("test/paragraph2/kdoc/package/src/main/kotlin/org/cqfn/diktat/kdoc/methods",
+        ::KdocMethods) {
     @Test
     @Tag(WarningNames.MISSING_KDOC_TOP_LEVEL)
     fun `Rule should suggest KDoc template for missing KDocs`() {
