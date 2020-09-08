@@ -1,9 +1,12 @@
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2012-2020. All rights reserved.
+ */
+
 package org.cqfn.diktat.test.smoke
 
 class Example {
     @get:JvmName ("getIsValid")
     val isValid = true
-
     val foo: Int =1
     /**
      * @param x

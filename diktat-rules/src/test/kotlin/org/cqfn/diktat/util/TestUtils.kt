@@ -4,6 +4,7 @@ import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleSet
+import com.pinterest.ktlint.core.RuleSetProvider
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.SoftAssertions
 import org.cqfn.diktat.common.config.rules.RulesConfig
@@ -14,51 +15,29 @@ import java.util.concurrent.atomic.AtomicInteger
 
 internal val testFileName = "${File.separator}TestFileName.kt"
 
-open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesConfig>) -> Rule,
-                        private val rulesConfigList: List<RulesConfig>? = null) {
-    fun lintMethod(code: String,
-                   vararg lintErrors: LintError,
-                   rulesConfigList: List<RulesConfig>? = null,
-                   fileName: String? = null) {
-        val res = mutableListOf<LintError>()
-        val actualFileName = fileName ?: testFileName
-        KtLint.lint(
-                KtLint.Params(
-                        fileName = actualFileName,
-                        text = code,
-                        ruleSets = listOf(DiktatRuleSetProvider4Test(ruleSupplier,
-                                rulesConfigList ?: this.rulesConfigList).get()),
-                        cb = { e, _ -> res.add(e) },
-                        userData = mapOf("file_path" to actualFileName)
-                )
-        )
-        res.assertEquals(*lintErrors)
-    }
-
-    internal fun List<LintError>.assertEquals(vararg expectedLintErrors: LintError) =
-            Assertions.assertThat(this)
-                    .hasSize(expectedLintErrors.size)
-                    .allSatisfy { actual ->
-                        val expected = expectedLintErrors[this.indexOf(actual)]
-                        SoftAssertions.assertSoftly {
-                            it.assertThat(actual.line).`as`("Line").isEqualTo(expected.line)
-                            it.assertThat(actual.col).`as`("Column").isEqualTo(expected.col)
-                            it.assertThat(actual.ruleId).`as`("Rule id").isEqualTo(expected.ruleId)
-                            it.assertThat(actual.detail).`as`("Detailed message").isEqualTo(expected.detail)
-                            it.assertThat(actual.canBeAutoCorrected).`as`("Can be autocorrected").isEqualTo(expected.canBeAutoCorrected)
-                        }
+internal fun List<LintError>.assertEquals(vararg expectedLintErrors: LintError) =
+        Assertions.assertThat(this)
+                .hasSize(expectedLintErrors.size)
+                .allSatisfy { actual ->
+                    val expected = expectedLintErrors[this.indexOf(actual)]
+                    SoftAssertions.assertSoftly {
+                        it.assertThat(actual.line).`as`("Line").isEqualTo(expected.line)
+                        it.assertThat(actual.col).`as`("Column").isEqualTo(expected.col)
+                        it.assertThat(actual.ruleId).`as`("Rule id").isEqualTo(expected.ruleId)
+                        it.assertThat(actual.detail).`as`("Detailed message").isEqualTo(expected.detail)
+                        it.assertThat(actual.canBeAutoCorrected).`as`("Can be autocorrected").isEqualTo(expected.canBeAutoCorrected)
                     }
-}
+                }
 
-internal fun format(ruleSupplier: (rulesConfigList: List<RulesConfig>) -> Rule,
+internal fun format(ruleSetProviderRef: (rulesConfigList: List<RulesConfig>?) -> RuleSetProvider,
                     text: String,
                     fileName: String,
-                    rulesConfigList: List<RulesConfig> = emptyList(),
+                    rulesConfigList: List<RulesConfig>? = null,
                     cb: (lintError: LintError, corrected: Boolean) -> Unit = defaultCallback): String {
     return KtLint.format(
             KtLint.Params(
                     text = text,
-                    ruleSets = listOf(DiktatRuleSetProvider4Test(ruleSupplier, rulesConfigList).get()),
+                    ruleSets = listOf(ruleSetProviderRef.invoke(rulesConfigList).get()),
                     fileName = fileName,
                     cb = cb,
                     userData = mapOf("file_path" to fileName)
