@@ -93,9 +93,9 @@ class KdocMethods(private val configRules: List<RulesConfig>) : Rule("kdoc-metho
         val returnCheckFailed = checkReturnCheckFailed(node, kDocTags)
         val throwsCheckFailed = missingExceptions.isNotEmpty()
 
-        if (paramCheckFailed) handleParamCheck(node, name, kDoc, missingParameters, kDocMissingParameters, kDocTags)
-        if (returnCheckFailed) handleReturnCheck(node, name, kDoc, kDocTags)
-        if (throwsCheckFailed) handleThrowsCheck(node, name, kDoc, missingExceptions)
+        if (paramCheckFailed) handleParamCheck(node, kDoc, missingParameters, kDocMissingParameters, kDocTags)
+        if (returnCheckFailed) handleReturnCheck(node, kDoc, kDocTags)
+        if (throwsCheckFailed) handleThrowsCheck(node, kDoc, missingExceptions)
 
         // if no tag failed, we have too little information to suggest KDoc - it would just be empty
         val anyTagFailed = paramCheckFailed || returnCheckFailed || throwsCheckFailed
@@ -141,7 +141,6 @@ class KdocMethods(private val configRules: List<RulesConfig>) : Rule("kdoc-metho
     }
 
     private fun handleParamCheck(node: ASTNode,
-                                 name: String,
                                  kDoc: ASTNode?,
                                  missingParameters: Collection<String?>,
                                  kDocMissingParameters: List<KDocTag>,
@@ -151,7 +150,7 @@ class KdocMethods(private val configRules: List<RulesConfig>) : Rule("kdoc-metho
                     "${it.getSubjectName()} param isn't define in function", it.node.startOffset)
         }
         KDOC_WITHOUT_PARAM_TAG.warnAndFix(configRules, emitWarn, isFixMode,
-                "$name (${missingParameters.joinToString()})", node.startOffset) {
+                "${node.getIdentifierName()!!.text} (${missingParameters.joinToString()})", node.startOffset) {
             val beforeTag = kDocTags?.find { it.knownTag == KDocKnownTag.RETURN }
                     ?: kDocTags?.find { it.knownTag == KDocKnownTag.THROWS }
             missingParameters.forEach {
@@ -165,11 +164,10 @@ class KdocMethods(private val configRules: List<RulesConfig>) : Rule("kdoc-metho
     }
 
     private fun handleReturnCheck(node: ASTNode,
-                                  name: String,
                                   kDoc: ASTNode?,
                                   kDocTags: Collection<KDocTag>?
     ) {
-        KDOC_WITHOUT_RETURN_TAG.warnAndFix(configRules, emitWarn, isFixMode, name, node.startOffset) {
+        KDOC_WITHOUT_RETURN_TAG.warnAndFix(configRules, emitWarn, isFixMode, node.getIdentifierName()!!.text, node.startOffset) {
             val beforeTag = kDocTags?.find { it.knownTag == KDocKnownTag.THROWS }
             kDoc?.insertTagBefore(beforeTag?.node) {
                 addChild(LeafPsiElement(KDOC_TAG_NAME, "@return"))
@@ -178,12 +176,11 @@ class KdocMethods(private val configRules: List<RulesConfig>) : Rule("kdoc-metho
     }
 
     private fun handleThrowsCheck(node: ASTNode,
-                                  name: String,
                                   kDoc: ASTNode?,
                                   missingExceptions: Collection<String>
     ) {
         KDOC_WITHOUT_THROWS_TAG.warnAndFix(configRules, emitWarn, isFixMode,
-                "$name (${missingExceptions.joinToString()})", node.startOffset) {
+                "${node.getIdentifierName()!!.text} (${missingExceptions.joinToString()})", node.startOffset) {
             missingExceptions.forEach {
                 kDoc?.insertTagBefore(null) {
                     addChild(LeafPsiElement(KDOC_TAG_NAME, "@throws"))
