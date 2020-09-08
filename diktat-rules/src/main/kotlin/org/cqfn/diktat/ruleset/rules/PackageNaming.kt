@@ -11,6 +11,7 @@ import com.pinterest.ktlint.core.ast.isLeaf
 import com.pinterest.ktlint.core.ast.parent
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.common.config.rules.getCommonConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.INCORRECT_PACKAGE_SEPARATOR
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_CASE
@@ -60,7 +61,7 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
         isFixMode = autoCorrect
         emitWarn = emit
 
-        val domainNameConfiguration = configRules.getRuleConfig(PACKAGE_NAME_MISSING)?.configuration
+        val domainNameConfiguration = configRules.getCommonConfig()?.configuration
         if (domainNameConfiguration == null) {
             log.error("Not able to find an external configuration for domain name in the configuration of" +
                 " ${PACKAGE_NAME_MISSING.name} check (is it missing in json config?)")

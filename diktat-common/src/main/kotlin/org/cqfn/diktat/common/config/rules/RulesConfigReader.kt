@@ -62,6 +62,10 @@ fun List<RulesConfig>.getRuleConfig(rule: Rule): RulesConfig? {
     return this.find { it.name == rule.ruleName() }
 }
 
+fun List<RulesConfig>.getCommonConfig(): RulesConfig? {
+    return this.find { it.name == "DIKTAT_COMMON"}
+}
+
 /**
  * checking if in json config particular rule is enabled or disabled
  * (!) the default value is "true" (in case there is no config specified)

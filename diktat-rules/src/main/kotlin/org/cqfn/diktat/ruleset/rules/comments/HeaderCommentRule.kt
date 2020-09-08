@@ -9,10 +9,7 @@ import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
-import org.cqfn.diktat.common.config.rules.RuleConfiguration
-import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.common.config.rules.getRuleConfig
-import org.cqfn.diktat.common.config.rules.isRuleEnabled
+import org.cqfn.diktat.common.config.rules.*
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_CONTAINS_DATE_OR_AUTHOR
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_MISSING_OR_WRONG_COPYRIGHT
@@ -58,7 +55,7 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
     }
 
     private fun checkCopyright(node: ASTNode) {
-        val configuration = CopyrightConfiguration(configRules.getRuleConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT)?.configuration
+        val configuration = CopyrightConfiguration(configRules.getCommonConfig()?.configuration
                 ?: mapOf())
         if (!configuration.isCopyrightMandatory() && !configuration.hasCopyrightText()) return
 
