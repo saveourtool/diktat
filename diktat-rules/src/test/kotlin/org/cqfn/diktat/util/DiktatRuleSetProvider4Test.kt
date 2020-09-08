@@ -10,6 +10,7 @@ import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.io.File
+import kotlin.reflect.jvm.reflect
 
 /**
  * simple class for emulating RuleSetProvider to inject .json rule configuration and mock this part of code
@@ -36,10 +37,7 @@ class DiktatRuleSetProviderTest {
     fun `check DiktatRuleSetProviderTest contain all rules`() {
         val path = "${System.getProperty("user.dir")}/src/main/kotlin/org/cqfn/diktat/ruleset/rules"
         val filesName = File(path).walk().filter { it.isFile }.map { it.nameWithoutExtension }.filterNot { it in IGNORE_FILE }.toMutableList()
-        val rulesName = DiktatRuleSetProvider().get()
-                .map { it.toString().split('.').last() }
-                .map { it.substring(0, it.indexOf('@')) }
-                .toMutableList()
+        val rulesName = DiktatRuleSetProvider().get().map { it::class.simpleName!! }.toMutableList()
         Assertions.assertEquals(filesName.sort(), rulesName.sort())
     }
 }
