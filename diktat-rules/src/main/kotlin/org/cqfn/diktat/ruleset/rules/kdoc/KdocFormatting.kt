@@ -13,6 +13,7 @@ import com.pinterest.ktlint.core.ast.ElementType.KDOC_TAG_NAME
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_TEXT
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.nextSibling
 import com.pinterest.ktlint.core.ast.prevSibling
 import org.cqfn.diktat.common.config.rules.RulesConfig
@@ -25,17 +26,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_NEWLINES_BETWEEN_BASIC
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WRONG_SPACES_AFTER_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WRONG_TAGS_ORDER
-import org.cqfn.diktat.ruleset.utils.allSiblings
-import org.cqfn.diktat.ruleset.utils.countSubStringOccurrences
-import org.cqfn.diktat.ruleset.utils.findChildAfter
-import org.cqfn.diktat.ruleset.utils.findChildBefore
-import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
-import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
-import org.cqfn.diktat.ruleset.utils.getIdentifierName
-import org.cqfn.diktat.ruleset.utils.getRootNode
-import org.cqfn.diktat.ruleset.utils.hasChildMatching
-import org.cqfn.diktat.ruleset.utils.kDocTags
-import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
+import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -45,7 +36,6 @@ import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
 import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
 import org.jetbrains.kotlin.lexer.KtTokens
-import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
 
 /**
@@ -148,8 +138,10 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
             val hasSubject = tag.getSubjectName()?.isNotBlank() ?: false
             if (!hasSubject && tag.getContent().isBlank()) return@filter false
 
-            hasSubject && tag.node.findChildBefore(KDOC_TEXT, WHITE_SPACE)?.text != " "
-                || tag.node.findChildAfter(KDOC_TAG_NAME, WHITE_SPACE)?.text != " "
+            hasSubject && (tag.node.findChildBefore(KDOC_TEXT, WHITE_SPACE)?.text != " "
+                    && !(tag.node.findChildBefore(KDOC_TEXT, WHITE_SPACE)?.isWhiteSpaceWithNewline() ?: false))
+                    || (tag.node.findChildAfter(KDOC_TAG_NAME, WHITE_SPACE)?.text != " "
+                    && !(tag.node.findChildAfter(KDOC_TAG_NAME, WHITE_SPACE)?.isWhiteSpaceWithNewline() ?: false))
         }?.forEach { tag ->
             KDOC_WRONG_SPACES_AFTER_TAG.warnAndFix(configRules, emitWarn, isFixMode,
                 "@${tag.name!!}", tag.node.startOffset) {
