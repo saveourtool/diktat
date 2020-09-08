@@ -77,7 +77,7 @@ class HeaderCommentRule : Rule("header-comment") {
                 }
 
         if (isWrongCopyright || isMissingCopyright || isCopyrightInsideKdoc) {
-            HEADER_MISSING_OR_WRONG_COPYRIGHT.warnAndFix(configRules, emitWarn, isFixMode, fileName, node.startOffset) {
+            HEADER_MISSING_OR_WRONG_COPYRIGHT.warnAndFix(configRules, emitWarn, isFixMode, fileName, node.startOffset, node) {
                 if (headerComment != null) {
                     node.removeChild(headerComment)
                 }
@@ -107,7 +107,7 @@ class HeaderCommentRule : Rule("header-comment") {
         val hasOrphanedKdocAfterImports = firstKdoc != null && firstKdoc.treeParent.elementType == FILE
         if (configRules.isRuleEnabled(HEADER_NOT_BEFORE_PACKAGE) && node.findChildBefore(PACKAGE_DIRECTIVE, KDOC) == null
                 && hasOrphanedKdocAfterImports) {
-            HEADER_NOT_BEFORE_PACKAGE.warnAndFix(configRules, emitWarn, isFixMode, fileName, firstKdoc!!.startOffset) {
+            HEADER_NOT_BEFORE_PACKAGE.warnAndFix(configRules, emitWarn, isFixMode, fileName, firstKdoc!!.startOffset, firstKdoc) {
                 node.moveChildBefore(firstKdoc, node.getFirstChildWithType(PACKAGE_DIRECTIVE), true)
                 // ensure there is no empty line between copyright and header kdoc
                 node.findChildBefore(PACKAGE_DIRECTIVE, BLOCK_COMMENT)?.apply {
@@ -128,7 +128,7 @@ class HeaderCommentRule : Rule("header-comment") {
         if (headerKdoc == null) {
             val nDeclaredClasses = node.getAllChildrenWithType(ElementType.CLASS).size
             if (nDeclaredClasses == 0 || nDeclaredClasses > 1) {
-                HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warn(configRules, emitWarn, isFixMode, fileName, node.startOffset)
+                HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warn(configRules, emitWarn, isFixMode, fileName, node.startOffset, node)
             }
         } else {
             // fixme we should also check date of creation, but it can be in different formats
@@ -136,13 +136,13 @@ class HeaderCommentRule : Rule("header-comment") {
                     .filter { it.contains("@author") }
                     .forEach {
                         HEADER_CONTAINS_DATE_OR_AUTHOR.warn(configRules, emitWarn, isFixMode,
-                                it.trim(), headerKdoc.startOffset)
+                                it.trim(), headerKdoc.startOffset, headerKdoc)
                     }
 
             if (headerKdoc.treeNext != null && headerKdoc.treeNext.elementType == WHITE_SPACE
                     && headerKdoc.treeNext.text.count { it == '\n' } != 2) {
                 HEADER_WRONG_FORMAT.warnAndFix(configRules, emitWarn, isFixMode,
-                        "header KDoc should have a new line after", headerKdoc.startOffset) {
+                        "header KDoc should have a new line after", headerKdoc.startOffset, headerKdoc) {
                     node.replaceChild(headerKdoc.treeNext, PsiWhiteSpaceImpl("\n\n"))
                 }
             }

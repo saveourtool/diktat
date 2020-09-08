@@ -79,7 +79,7 @@ class KdocComments : Rule("kdoc-comments") {
         val name = node.getIdentifierName()
 
         if (modifier.isAccessibleOutside() && kDoc == null) {
-            warning.warn(configRules, emitWarn, isFixMode, name!!.text, node.startOffset)
+            warning.warn(configRules, emitWarn, isFixMode, name!!.text, node.startOffset,node)
         }
     }
 }

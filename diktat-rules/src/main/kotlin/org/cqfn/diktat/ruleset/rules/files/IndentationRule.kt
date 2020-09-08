@@ -97,7 +97,7 @@ class IndentationRule : Rule("indentation") {
                 .filter { it.textContains('\t') }
                 .apply { if (isEmpty()) return true }
                 .forEach {
-                    WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "tabs are not allowed for indentation", it.startOffset + it.text.indexOf('\t')) {
+                    WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "tabs are not allowed for indentation", it.startOffset + it.text.indexOf('\t'), it) {
                         (it as LeafPsiElement).replaceWithText(it.text.replace("\t", " ".repeat(INDENT_SIZE)))
                     }
                 }
@@ -111,7 +111,7 @@ class IndentationRule : Rule("indentation") {
         if (configuration.newlineAtEnd) {
             val lastChild = node.lastChildNode
             if (lastChild.elementType != WHITE_SPACE || lastChild.text.count { it == '\n' } != 1) {
-                WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "no newline at the end of file $fileName", node.startOffset + node.textLength) {
+                WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "no newline at the end of file $fileName", node.startOffset + node.textLength, node) {
                     if (lastChild.elementType != WHITE_SPACE) {
                         node.addChild(PsiWhiteSpaceImpl("\n"), null)
                     } else {
@@ -165,7 +165,7 @@ class IndentationRule : Rule("indentation") {
         }
         if (checkResult?.isCorrect != true && expectedIndent != indentError.actual) {
             WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "expected $expectedIndent but was ${indentError.actual}",
-                    whiteSpace.startOffset + whiteSpace.text.lastIndexOf('\n') + 1) {
+                    whiteSpace.startOffset + whiteSpace.text.lastIndexOf('\n') + 1, astNode) {
                 whiteSpace.node.indentBy(expectedIndent)
             }
         }

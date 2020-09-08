@@ -50,7 +50,7 @@ class BlankLinesRule : Rule("blank-lines") {
                 // if both are present, this is not beginning or end
                 // if both are null, then this block is empty and is handled in another rule
                 val freeText = "do not put newlines ${if (node.treePrev.elementType == LBRACE) "in the beginning" else "at the end"} of code blocks"
-                TOO_MANY_BLANK_LINES.warnAndFix(configRules, emitWarn, isFixMode, freeText, node.startOffset) {
+                TOO_MANY_BLANK_LINES.warnAndFix(configRules, emitWarn, isFixMode, freeText, node.startOffset, node) {
                     node.leaveOnlyOneNewLine()
                 }
             }
@@ -58,7 +58,7 @@ class BlankLinesRule : Rule("blank-lines") {
     }
 
     private fun handleTooManyBlankLines(node: ASTNode) {
-        TOO_MANY_BLANK_LINES.warnAndFix(configRules, emitWarn, isFixMode, "do not use more than two consecutive blank lines", node.startOffset) {
+        TOO_MANY_BLANK_LINES.warnAndFix(configRules, emitWarn, isFixMode, "do not use more than two consecutive blank lines", node.startOffset, node) {
             node.leaveExactlyNumNewLines(2)
         }
     }

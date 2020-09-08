@@ -76,7 +76,7 @@ class ConsecutiveSpacesRule : Rule("too-many-spaces") {
         if (spaces > configuration.numberOfSpaces && !node.isWhiteSpaceWithNewline()
                 && !node.hasEolComment()) {
             TOO_MANY_CONSECUTIVE_SPACES.warnAndFix(configRules, emitWarn, isFixMode,
-                    "found: $spaces. need to be: ${configuration.numberOfSpaces}", node.startOffset) {
+                    "found: $spaces. need to be: ${configuration.numberOfSpaces}", node.startOffset, node) {
                 node.squeezeSpaces()
             }
         }

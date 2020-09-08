@@ -85,7 +85,7 @@ class ClassLikeStructuresOrderRule : Rule("class-like-structures") {
                 unusedClasses)
 
         blocks.allBlockFlattened().reversed().handleIncorrectOrder(blocks::getSiblingBlocks) { astNode, beforeThisNode ->
-            WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnAndFix(configRules, emitWarn, isFixMode, astNode.elementType.toString() + ": " + astNode.text, astNode.startOffset) {
+            WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnAndFix(configRules, emitWarn, isFixMode, astNode.elementType.toString() + ": " + astNode.text, astNode.startOffset, astNode) {
                 val replacement = node.moveChildBefore(astNode, beforeThisNode, true)
                 replacement.oldNodes.forEachIndexed { idx, oldNode ->
                     blocks.allBlocks().find { oldNode in it }?.apply {
@@ -104,7 +104,7 @@ class ClassLikeStructuresOrderRule : Rule("class-like-structures") {
             val whiteSpaceBefore = previousProperty.nextSibling { it.elementType == WHITE_SPACE }!!
             val nRequiredNewLines = if (commentOnThis == null) 1 else 2
             if (whiteSpaceBefore.text.count { it == '\n' } != nRequiredNewLines)
-                BLANK_LINE_BETWEEN_PROPERTIES.warnAndFix(configRules, emitWarn, isFixMode, node.getIdentifierName()!!.text, node.startOffset) {
+                BLANK_LINE_BETWEEN_PROPERTIES.warnAndFix(configRules, emitWarn, isFixMode, node.getIdentifierName()!!.text, node.startOffset, node) {
                     whiteSpaceBefore.leaveExactlyNumNewLines(nRequiredNewLines)
                 }
         }

@@ -54,7 +54,7 @@ class StringConcatenationRule : Rule("string-concatenation") {
         assert(node.elementType == BINARY_EXPRESSION)
         val firstChild = node.firstChildNode
         return if (isPlusBinaryExpression(node) && firstChild.elementType == STRING_TEMPLATE) {
-            STRING_CONCATENATION.warn(configRules, emitWarn, this.isFixMode, parentNode.text, firstChild.startOffset)
+            STRING_CONCATENATION.warn(configRules, emitWarn, this.isFixMode, parentNode.text, firstChild.startOffset, firstChild)
             true
         } else {
             false
