@@ -358,7 +358,7 @@
     }
   },
   {
-    "name": "COMMENT_NEW_LINES",
+    "name": "WRONG_NEWLINES_AROUND_KDOC",
     "enabled": true,
     "configuration": {}
   },

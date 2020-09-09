@@ -10,6 +10,7 @@ import org.cqfn.diktat.ruleset.rules.files.FileSize
 import org.cqfn.diktat.ruleset.rules.files.FileStructureRule
 import org.cqfn.diktat.ruleset.rules.files.IndentationRule
 import org.cqfn.diktat.ruleset.rules.files.NewlinesRule
+import org.cqfn.diktat.ruleset.rules.kdoc.CommentsFormatting
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocComments
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocFormatting
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocMethods
@@ -39,6 +40,7 @@ class DiktatRuleSetProvider(private val jsonRulesConfig: String = "rules-config.
                 ::EmptyBlock,
                 ::EnumsSeparated,
                 ::SingleLineStatementsRule,
+                ::CommentsFormatting,
                 ::ConsecutiveSpacesRule,
                 ::LongNumericalValuesSeparatedRule,
                 ::AnnotationNewLineRule,

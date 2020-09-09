@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.rules.kdoc
 
-import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
@@ -10,6 +9,7 @@ import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.ELSE
 import com.pinterest.ktlint.core.ast.ElementType.ELSE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
+import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.IF
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
@@ -19,16 +19,17 @@ import com.pinterest.ktlint.core.ast.isWhiteSpace
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
-import org.cqfn.diktat.ruleset.constants.Warnings.COMMENT_NEW_LINES
+import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_NEWLINES_AROUND_KDOC
 import org.cqfn.diktat.ruleset.constants.Warnings.COMMENT_WHITE_SPACE
 import org.cqfn.diktat.ruleset.constants.Warnings.FIRST_COMMENT_NO_SPACES
 import org.cqfn.diktat.ruleset.constants.Warnings.IF_ELSE_COMMENTS
-import org.cqfn.diktat.ruleset.rules.getDiktatConfigRules
 import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.ruleset.utils.countSubStringOccurrences
+import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
+import org.cqfn.diktat.ruleset.utils.numNewLines
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -46,23 +47,19 @@ import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
  * Leave one single space between the comment on the right side of the code and the code.
  * comments in if-else
  */
-class CommentsFormatting : Rule("kdoc-comments-codeblocks-formatting") {
+class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-comments-codeblocks-formatting") {
 
     companion object {
         private const val MAX_SPACES = 1
-        private const val APPROPRIATE_COMMENT_SPACES = 3
+        private const val APPROPRIATE_COMMENT_SPACES = 1
     }
 
-    private lateinit var configRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
-                       params: KtLint.Params,
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
-
-        configRules = params.getDiktatConfigRules()
         isFixMode = autoCorrect
         emitWarn = emit
 
@@ -94,8 +91,8 @@ class CommentsFormatting : Rule("kdoc-comments-codeblocks-formatting") {
     private fun checkBlankLineAfterKdoc(node: ASTNode, type: IElementType) {
         val kdoc = node.getFirstChildWithType(type)
         val nodeAfterKdoc = kdoc?.treeNext
-        if (nodeAfterKdoc?.elementType == ElementType.WHITE_SPACE && nodeAfterKdoc.text.countSubStringOccurrences("\n") > 1) {
-            COMMENT_NEW_LINES.warnAndFix(configRules, emitWarn, isFixMode, kdoc.text, nodeAfterKdoc.startOffset) {
+        if (nodeAfterKdoc?.elementType == ElementType.WHITE_SPACE && nodeAfterKdoc.numNewLines() > 1) {
+            WRONG_NEWLINES_AROUND_KDOC.warnAndFix(configRules, emitWarn, isFixMode, kdoc.text, nodeAfterKdoc.startOffset) {
                 nodeAfterKdoc.leaveOnlyOneNewLine()
             }
         }
@@ -103,7 +100,7 @@ class CommentsFormatting : Rule("kdoc-comments-codeblocks-formatting") {
 
     private fun handleKdocComments(node: ASTNode) {
         if (node.treeParent.treeParent.elementType == BLOCK) {
-            checkBlockComments(node.treeParent) // node.treeParent is a node that contains a comment.
+            checkCommentsInCodeBlocks(node.treeParent) // node.treeParent is a node that contains a comment.
         } else if (node.treeParent.elementType != IF){
             checkClassComment(node)
         }
@@ -113,7 +110,7 @@ class CommentsFormatting : Rule("kdoc-comments-codeblocks-formatting") {
         checkSpaceBetweenPropertyAndComment(node, configuration)
 
         if (node.treeParent.elementType == BLOCK && node.treeNext != null) {
-            checkBlockComments(node)
+            checkCommentsInCodeBlocks(node)
         } else if (node.treeParent.lastChildNode != node && node.treeParent.elementType != IF) {
             checkClassComment(node)
         }
@@ -125,7 +122,7 @@ class CommentsFormatting : Rule("kdoc-comments-codeblocks-formatting") {
         checkSpaceBetweenPropertyAndComment(node, configuration)
 
         if (node.treeParent.elementType == BLOCK && node.treeNext != null) {
-            checkBlockComments(node)
+            checkCommentsInCodeBlocks(node)
         } else if (node.treeParent.lastChildNode != node && node.treeParent.elementType != IF) {
             checkClassComment(node)
         }
@@ -134,9 +131,8 @@ class CommentsFormatting : Rule("kdoc-comments-codeblocks-formatting") {
     private fun handleIfElse(node: ASTNode) {
         if(node.hasChildOfType(ELSE)) {
             val elseKeyWord = node.getFirstChildWithType(ELSE_KEYWORD)!!
-            if(elseKeyWord.treePrev.treePrev.elementType == EOL_COMMENT ||
-                    elseKeyWord.treePrev.treePrev.elementType == KDOC ||
-                    elseKeyWord.treePrev.treePrev.elementType == BLOCK_COMMENT) {
+            if(elseKeyWord.treePrev.treePrev.elementType.let { it == EOL_COMMENT ||
+                            it == KDOC || it == BLOCK_COMMENT }) {
                 IF_ELSE_COMMENTS.warnAndFix(configRules, emitWarn, isFixMode, elseKeyWord.treePrev.treePrev.text, node.startOffset) {
                     val elseBlock = node.getFirstChildWithType(ELSE)!!
                     if(elseBlock.hasChildOfType(BLOCK)) {
@@ -156,7 +152,7 @@ class CommentsFormatting : Rule("kdoc-comments-codeblocks-formatting") {
         }
     }
 
-    private fun checkBlockComments(node: ASTNode) {
+    private fun checkCommentsInCodeBlocks(node: ASTNode) {
         if (isFirstComment(node)) {
             if (node.treeParent.elementType == BLOCK || node.treeParent.elementType == CLASS_BODY)
                 checkFirstCommentSpaces(node)
@@ -166,12 +162,12 @@ class CommentsFormatting : Rule("kdoc-comments-codeblocks-formatting") {
         }
 
         if (!node.treePrev.isWhiteSpace()) {
-            COMMENT_NEW_LINES.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset) {
+            WRONG_NEWLINES_AROUND_KDOC.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset) {
                 node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node.treeParent) // If treeParent is property
             }
         } else {
-            if (node.treePrev.text.countSubStringOccurrences("\n") == 1 || node.treePrev.text.countSubStringOccurrences("\n") > 2) {
-                COMMENT_NEW_LINES.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset) {
+            if (node.treePrev.numNewLines() == 1 || node.treePrev.numNewLines() > 2) {
+                WRONG_NEWLINES_AROUND_KDOC.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset) {
                     (node.treePrev as LeafPsiElement).replaceWithText("\n\n")
                 }
             }
@@ -194,13 +190,16 @@ class CommentsFormatting : Rule("kdoc-comments-codeblocks-formatting") {
     }
 
     private fun checkWhiteSpaceBeforeComment(node: ASTNode) {
-        if (node.text.takeWhile { it == '/' || it == ' ' || it == '*' }.length == APPROPRIATE_COMMENT_SPACES)
+        if (node.text.trim('/', '*').takeWhile { it == ' ' }.length == APPROPRIATE_COMMENT_SPACES)
             return
 
         COMMENT_WHITE_SPACE.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset) {
             val commentText = node.text.drop(2).trim()
 
-            (node as LeafPsiElement).replaceWithText("// $commentText")
+            if (node.text.startsWith("//"))
+                (node as LeafPsiElement).replaceWithText("// $commentText")
+            else if(node.text.startsWith("/*"))
+                (node as LeafPsiElement).replaceWithText("/* $commentText")
         }
     }
 
@@ -214,13 +213,13 @@ class CommentsFormatting : Rule("kdoc-comments-codeblocks-formatting") {
             return
         }
 
-        if (!node.treeParent.treePrev.isWhiteSpace()) {
-            COMMENT_NEW_LINES.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset) {
+        if (!node.treeParent.treePrev.isWhiteSpace() && node.treeParent.elementType != FILE) {
+            WRONG_NEWLINES_AROUND_KDOC.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset) {
                 node.treeParent.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node.treeParent)
             }
-        } else {
-            if (node.treeParent.treePrev.text.countSubStringOccurrences("\n") == 1 || node.treeParent.treePrev.text.countSubStringOccurrences("\n") > 2) {
-                COMMENT_NEW_LINES.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset) {
+        } else if(node.treeParent.elementType != FILE) {
+            if (node.treeParent.treePrev.numNewLines() == 1 || node.treeParent.treePrev.numNewLines() > 2) {
+                WRONG_NEWLINES_AROUND_KDOC.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset) {
                     (node.treeParent.treePrev as LeafPsiElement).replaceWithText("\n\n")
                 }
             }
@@ -229,7 +228,8 @@ class CommentsFormatting : Rule("kdoc-comments-codeblocks-formatting") {
 
     private fun checkFirstCommentSpaces(node: ASTNode) {
         if (node.treePrev.isWhiteSpace()) {
-            if (node.treePrev.text.countSubStringOccurrences("\n") > 1) {
+            if (node.treePrev.numNewLines() > 1
+                    || node.treePrev.numNewLines() == 0) {
                 FIRST_COMMENT_NO_SPACES.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset) {
                     (node.treePrev as LeafPsiElement).replaceWithText("\n")
                 }
@@ -239,6 +239,7 @@ class CommentsFormatting : Rule("kdoc-comments-codeblocks-formatting") {
 
 
     private fun isFirstComment(node: ASTNode): Boolean {
+        // In case when comment is inside of a function or class
         if (node.treeParent.elementType == BLOCK || node.treeParent.elementType == CLASS_BODY) {
             return if (node.treePrev.isWhiteSpace())
                 node.treePrev.treePrev.elementType == LBRACE
@@ -246,7 +247,11 @@ class CommentsFormatting : Rule("kdoc-comments-codeblocks-formatting") {
                 node.treePrev.elementType == LBRACE
         }
 
-        return node.treeParent.treePrev.treePrev.elementType == LBRACE
+        // When comment inside of a PROPERTY
+        if (node.treeParent.elementType != FILE)
+            return node.treeParent.treePrev.treePrev.elementType == LBRACE
+
+        return node.treeParent.getAllChildrenWithType(node.elementType).first() == node
     }
 
     class KdocCodeBlocksFormattingConfiguration(config: Map<String, String>) : RuleConfiguration(config) {

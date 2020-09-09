@@ -237,6 +237,11 @@ fun ASTNode.findLeafWithSpecificType(elementType: IElementType): ASTNode? {
 }
 
 /**
+ * This method counts number of \n in node's text
+ */
+fun ASTNode.numNewLines() = text.count { it == '\n' }
+
+/**
  * This method performs tree traversal and returns all nodes with specific element type
  */
 fun ASTNode.findAllNodesWithSpecificType(elementType: IElementType): List<ASTNode> {

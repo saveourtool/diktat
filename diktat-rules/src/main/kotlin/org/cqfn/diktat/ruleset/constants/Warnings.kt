@@ -52,7 +52,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE(false, "files that contain multiple or no classes should contain description of what is inside of this file"),
     HEADER_NOT_BEFORE_PACKAGE(true, "header KDoc should be placed before package and imports"),
     COMMENTED_OUT_CODE(false, "you should not comment out code, use VCS to save it in history and delete this block"),
-    COMMENT_NEW_LINES(true, "there should be a new line above the kDoc and there should not be any line after kDoc"),
+    WRONG_NEWLINES_AROUND_KDOC(true, "there should be a new line above the kDoc and there should not be any line after kDoc"),
     FIRST_COMMENT_NO_SPACES(true, "there should not be any spaces before first comment"),
     COMMENT_WHITE_SPACE(true, "there should be a white space between code and comment"),
     IF_ELSE_COMMENTS(true, "invalid comments structure. Comment should be inside the block"),

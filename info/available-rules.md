@@ -42,7 +42,7 @@
 |    2 |      2.4 | HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE | Check: warns if file with zero or >1 classes doesn't have header KDoc                                                                                                        |  no |  ||
 |    2 |      2.7 | COMMENTED_OUT_CODE                      | Check: warns if commented code is detected (when un-commented, can be parsed)                                                                                                |  no |  |Offset is lost when joined EOL comments are split again|
 |    2 |      2.6 | COMMENT_WHITE_SPACE                     | Check: warns if there is no space between // and comment, if there is no space between code and comment <br>Fix: adds a white space   | yes | maxSpaces | - |
-|    2 |      2.6 | COMMENT_NEW_LINES                       | Check: warns if there is no new line above and under comment. Exception first comment<br>Fix: adds a new line | yes | - | - |
+|    2 |      2.6 | WRONG_NEWLINES_AROUND_KDOC                       | Check: warns if there is no new line above and under comment. Exception first comment<br>Fix: adds a new line | yes | - | - |
 |    2 |      2.6 | FIRST_COMMENT_NO_SPACES                 | Check: warns if there is a new line before first comment<br>Fix: deletes a new line | yes | - | - |
 |    2 |      2.6 | IF_ELSE_COMMENTS                        | Check: warns if there is a comment not in the else block<br>Fix: adds the comment to the first line in else block | yes | - | - |
 |    2 |      2.4 | HEADER_NOT_BEFORE_PACKAGE               | Check: warns if header KDoc if file is located not before package directive<br>Fix: moves this KDoc                                                                          | yes |  ||

@@ -88,7 +88,7 @@ object WarningNames {
 
     const val COMMENTED_OUT_CODE: String = "COMMENTED_OUT_CODE"
 
-    const val COMMENT_NEW_LINES: String = "COMMENT_NEW_LINES"
+    const val WRONG_NEWLINES_AROUND_KDOC: String = "WRONG_NEWLINES_AROUND_KDOC"
 
     const val FIRST_COMMENT_NO_SPACES: String = "FIRST_COMMENT_NO_SPACES"
 
