@@ -120,30 +120,9 @@
         </dependencies>
     </dependencyManagement>
 
-    <distributionManagement>
-        <repository>
-            <id>artipie</id>
-            <url>https://central.artipie.com/akuleshov7/diktat</url>
-        </repository>
-        <snapshotRepository>
-            <id>artipie</id>
-            <url>https://central.artipie.com/akuleshov7/diktat</url>
-        </snapshotRepository>
-    </distributionManagement>
-    <repositories>
-        <!-- this is needed to use ktlint 0.37.1-fork -->
-        <repository>
-            <id>artipie</id>
-            <url>https://central.artipie.com/akuleshov7/diktat</url>
-        </repository>
-    </repositories>
-    <pluginRepositories>
-        <!-- this is needed to use forked ktlint and diktat inside antrun plugin -->
-        <pluginRepository>
-            <id>artipie</id>
-            <url>https://central.artipie.com/akuleshov7/diktat</url>
-        </pluginRepository>
-    </pluginRepositories>
+    <!-- todo: add maven central -->
+<!--    <distributionManagement>-->
+<!--    </distributionManagement>-->
 
     <build>
         <pluginManagement>
