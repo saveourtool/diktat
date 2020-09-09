@@ -6,10 +6,10 @@ import org.junit.jupiter.api.Test
 import org.cqfn.diktat.ruleset.constants.Warnings.*
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocComments
-import org.cqfn.diktat.util.lintMethod
+import org.cqfn.diktat.util.LintTestBase
 import org.junit.jupiter.api.Tag
 
-class KdocWarnTest {
+class KdocWarnTest : LintTestBase(::KdocComments) {
     private val ruleId: String = "$DIKTAT_RULE_SET_ID:kdoc-comments"
 
     @Test
@@ -32,7 +32,7 @@ class KdocWarnTest {
                     }
 
                 """.trimIndent()
-        lintMethod(KdocComments(), code,
+        lintMethod(code,
                 LintError(1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeGoodName"),
                 LintError(6, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeOtherGoodName"),
                 LintError(9, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeNewGoodName"),
@@ -48,7 +48,7 @@ class KdocWarnTest {
                     internal class SomeGoodName {
                     }
                 """.trimIndent()
-        lintMethod(KdocComments(), code, LintError(
+        lintMethod(code, LintError(
                 1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeGoodName")
         )
     }
@@ -65,7 +65,7 @@ class KdocWarnTest {
                         return " ";
                     }
                 """.trimIndent()
-        lintMethod(KdocComments(), code,
+        lintMethod(code,
                 LintError(1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} someGoodName"),
                 LintError(4, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} someGoodNameNew")
         )
@@ -79,7 +79,7 @@ class KdocWarnTest {
                     private fun someGoodName() {
                     }
                 """.trimIndent()
-        lintMethod(KdocComments(), code)
+        lintMethod(code)
     }
 
     @Test
@@ -90,7 +90,7 @@ class KdocWarnTest {
                     private class SomeGoodName {
                     }
                 """.trimIndent()
-        lintMethod(KdocComments(), code)
+        lintMethod(code)
     }
 
     @Test
@@ -117,7 +117,7 @@ class KdocWarnTest {
                         }
                     }
                 """.trimIndent()
-        lintMethod(KdocComments(), code,
+        lintMethod(code,
                 LintError(5, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} variable"),
                 LintError(7, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} perfectFunction"),
                 LintError(13, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} InternalClass")
@@ -159,13 +159,13 @@ class KdocWarnTest {
                         }
                     }
                 """.trimIndent()
-        lintMethod(KdocComments(), code)
+        lintMethod(code)
     }
 
     @Test
     @Tag(WarningNames.MISSING_KDOC_CLASS_ELEMENTS)
     fun `regression - should not force documentation on standard methods`() {
-        lintMethod(KdocComments(),
+        lintMethod(
                 """
                     |/**
                     | * This is an example class

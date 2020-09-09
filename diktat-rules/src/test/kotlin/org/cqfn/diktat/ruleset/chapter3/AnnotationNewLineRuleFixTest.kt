@@ -6,7 +6,7 @@ import org.cqfn.diktat.util.FixTestBase
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class AnnotationNewLineRuleFixTest : FixTestBase("test/paragraph3/annotations", AnnotationNewLineRule()){
+class AnnotationNewLineRuleFixTest : FixTestBase("test/paragraph3/annotations", ::AnnotationNewLineRule) {
     @Test
     @Tag(WarningNames.ANNOTATION_NEW_LINE)
     fun `should fix func and class annotations`() {

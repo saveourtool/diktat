@@ -245,7 +245,9 @@
   {
     "name": "FILE_WILDCARD_IMPORTS",
     "enabled": true,
-    "configuration": {}
+    "configuration": {
+      "allowedWildcards" : ""
+    }
   },
   {
     "name": "NO_BRACES_IN_CONDITIONALS_AND_LOOPS",
@@ -339,6 +341,11 @@
     "configuration": {}
   },
   {
+    "name": "WHEN_WITHOUT_ELSE",
+    "enabled": true,
+    "configuration": {}
+  },
+  {
     "name": "ANNOTATION_NEW_LINE",
     "enabled": true,
     "configuration": {}
@@ -363,5 +370,10 @@
       "sortEnum": true,
       "sortProperty": true
     }
+  },
+  {
+    "name": "WRONG_MULTIPLE_MODIFIERS_ORDER",
+    "enabled": true,
+    "configuration": {}
   }
 ]

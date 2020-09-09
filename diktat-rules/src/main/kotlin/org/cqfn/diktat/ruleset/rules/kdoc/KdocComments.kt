@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.rules.kdoc
 
-import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
@@ -13,7 +12,6 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_CLASS_ELEMENTS
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_TOP_LEVEL
-import org.cqfn.diktat.ruleset.rules.getDiktatConfigRules
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.getIdentifierName
@@ -27,22 +25,19 @@ import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
  * 1) All top-level (file level) functions and classes with public or internal access should have KDoc
  * 2) All internal elements in class like class, property or function should be documented with KDoc
  */
-class KdocComments : Rule("kdoc-comments") {
+class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comments") {
     companion object {
         private val statementsToDocument = TokenSet.create(CLASS, FUN, PROPERTY)
     }
 
-    private lateinit var configRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
 
     override fun visit(
             node: ASTNode,
             autoCorrect: Boolean,
-            params: KtLint.Params,
             emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit
     ) {
-        configRules = params.getDiktatConfigRules()
         emitWarn = emit
         isFixMode = autoCorrect
 

@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.rules
 
-import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.FLOAT_LITERAL
 import com.pinterest.ktlint.core.ast.ElementType.INTEGER_LITERAL
@@ -12,8 +11,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 
-class LongNumericalValuesSeparatedRule : Rule("long-numerical-values") {
-    private lateinit var configRules: List<RulesConfig>
+class LongNumericalValuesSeparatedRule(private val configRules: List<RulesConfig>) : Rule("long-numerical-values") {
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
 
@@ -24,9 +22,7 @@ class LongNumericalValuesSeparatedRule : Rule("long-numerical-values") {
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
-                       params: KtLint.Params,
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
-        configRules = params.getDiktatConfigRules()
         emitWarn = emit
         isFixMode = autoCorrect
 

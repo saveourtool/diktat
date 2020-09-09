@@ -5,17 +5,17 @@ import generated.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings.NO_BRACES_IN_CONDITIONALS_AND_LOOPS
 import org.cqfn.diktat.ruleset.rules.BracesInConditionalsAndLoopsRule
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
-import org.cqfn.diktat.util.lintMethod
+import org.cqfn.diktat.util.LintTestBase
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class BracesRuleWarnTest {
+class BracesRuleWarnTest : LintTestBase(::BracesInConditionalsAndLoopsRule) {
     private val ruleId = "$DIKTAT_RULE_SET_ID:braces-rule"
 
     @Test
     @Tag(WarningNames.NO_BRACES_IN_CONDITIONALS_AND_LOOPS)
     fun `should check braces in if statement without else branch - positive example`() {
-        lintMethod(BracesInConditionalsAndLoopsRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    if (x > 0) {
@@ -29,7 +29,7 @@ class BracesRuleWarnTest {
     @Test
     @Tag(WarningNames.NO_BRACES_IN_CONDITIONALS_AND_LOOPS)
     fun `should check braces in if statement without else branch`() {
-        lintMethod(BracesInConditionalsAndLoopsRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    if (x > 0)
@@ -46,7 +46,7 @@ class BracesRuleWarnTest {
     @Test
     @Tag(WarningNames.NO_BRACES_IN_CONDITIONALS_AND_LOOPS)
     fun `should check braces in if statements - positive example`() {
-        lintMethod(BracesInConditionalsAndLoopsRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    if (x > 0) {
@@ -64,7 +64,7 @@ class BracesRuleWarnTest {
     @Test
     @Tag(WarningNames.NO_BRACES_IN_CONDITIONALS_AND_LOOPS)
     fun `should check braces in if statements`() {
-        lintMethod(BracesInConditionalsAndLoopsRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    if (x > 0)
@@ -84,7 +84,7 @@ class BracesRuleWarnTest {
     @Test
     @Tag(WarningNames.NO_BRACES_IN_CONDITIONALS_AND_LOOPS)
     fun `should check braces in if statements - exception for single line if`() {
-        lintMethod(BracesInConditionalsAndLoopsRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    if (x > 0) bar() else baz()
@@ -96,7 +96,7 @@ class BracesRuleWarnTest {
     @Test
     @Tag(WarningNames.NO_BRACES_IN_CONDITIONALS_AND_LOOPS)
     fun `should correctly detect single line if`() {
-        lintMethod(BracesInConditionalsAndLoopsRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    if (x > 0) {
@@ -112,7 +112,7 @@ class BracesRuleWarnTest {
     @Test
     @Tag(WarningNames.NO_BRACES_IN_CONDITIONALS_AND_LOOPS)
     fun `should check braces in if statements - empty body`() {
-        lintMethod(BracesInConditionalsAndLoopsRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    if (x > 0)
@@ -129,7 +129,7 @@ class BracesRuleWarnTest {
     @Test
     @Tag(WarningNames.NO_BRACES_IN_CONDITIONALS_AND_LOOPS)
     fun `should warn if single line branches in when are used with braces`() {
-        lintMethod(BracesInConditionalsAndLoopsRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    when (x) {
@@ -152,7 +152,7 @@ class BracesRuleWarnTest {
     @Test
     @Tag(WarningNames.NO_BRACES_IN_CONDITIONALS_AND_LOOPS)
     fun `for loops should have braces - positive example`() {
-        lintMethod(BracesInConditionalsAndLoopsRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    for (i in 1..100) {
@@ -166,7 +166,7 @@ class BracesRuleWarnTest {
     @Test
     @Tag(WarningNames.NO_BRACES_IN_CONDITIONALS_AND_LOOPS)
     fun `for loops should have braces`() {
-        lintMethod(BracesInConditionalsAndLoopsRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    for (i in 1..100)
@@ -180,7 +180,7 @@ class BracesRuleWarnTest {
     @Test
     @Tag(WarningNames.NO_BRACES_IN_CONDITIONALS_AND_LOOPS)
     fun `while loops should have braces - positive example`() {
-        lintMethod(BracesInConditionalsAndLoopsRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    while (condition) {
@@ -194,7 +194,7 @@ class BracesRuleWarnTest {
     @Test
     @Tag(WarningNames.NO_BRACES_IN_CONDITIONALS_AND_LOOPS)
     fun `while loops should have braces`() {
-        lintMethod(BracesInConditionalsAndLoopsRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    while (condition)
@@ -208,7 +208,7 @@ class BracesRuleWarnTest {
     @Test
     @Tag(WarningNames.NO_BRACES_IN_CONDITIONALS_AND_LOOPS)
     fun `do-while loops should have braces - positive example`() {
-        lintMethod(BracesInConditionalsAndLoopsRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    do {
@@ -222,7 +222,7 @@ class BracesRuleWarnTest {
     @Test
     @Tag(WarningNames.NO_BRACES_IN_CONDITIONALS_AND_LOOPS)
     fun `do-while loops should have braces`() {
-        lintMethod(BracesInConditionalsAndLoopsRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    do println(i) while (condition)
@@ -235,7 +235,7 @@ class BracesRuleWarnTest {
     @Test
     @Tag(WarningNames.NO_BRACES_IN_CONDITIONALS_AND_LOOPS)
     fun `do-while loops should have braces - empty body`() {
-        lintMethod(BracesInConditionalsAndLoopsRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    do while (condition)
