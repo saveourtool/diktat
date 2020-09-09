@@ -1,12 +1,14 @@
 package org.cqfn.diktat.ruleset.rules
 
 import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
+import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_MULTIPLE_MODIFIERS_ORDER
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.lexer.KtTokens
-
 
 class MultipleModifiersSequence(private val configRules: List<RulesConfig>) : Rule("multiple-modifiers") {
 
@@ -30,8 +32,10 @@ class MultipleModifiersSequence(private val configRules: List<RulesConfig>) : Ru
         emitWarn = emit
         isFixMode = autoCorrect
 
-        if (node.elementType == MODIFIER_LIST)
+        if (node.elementType == MODIFIER_LIST) {
             checkModifierList(node)
+            checkAnnotation(node)
+        }
     }
 
     private fun checkModifierList(node: ASTNode) {
@@ -46,6 +50,26 @@ class MultipleModifiersSequence(private val configRules: List<RulesConfig>) : Ru
                     val nodeBefore = modifierNode.treeNext
                     node.removeChild(modifierNode)
                     node.addChild((sortModifierListOfPair[index].clone() as ASTNode), nodeBefore)
+                }
+            }
+        }
+    }
+
+    private fun checkAnnotation(node: ASTNode) {
+        val firstModifierIndex = node.getChildren(KtTokens.MODIFIER_KEYWORDS).map { node.getChildren(null).indexOf(it) }.min() ?: return
+        node.getChildren(null).filter { it.elementType == ANNOTATION_ENTRY && node.getChildren(null).indexOf(it) > firstModifierIndex }.forEach {
+            WRONG_MULTIPLE_MODIFIERS_ORDER.warnAndFix(configRules, emitWarn, isFixMode,
+                    "${it.text} annotation should be before all modifiers",
+                    it.startOffset) {
+                val spaceAfter = it.treePrev
+                node.removeChild(it)
+                if (spaceAfter != null && spaceAfter.elementType == WHITE_SPACE){
+                    node.removeChild(spaceAfter)
+                    node.addChild(spaceAfter, node.getChildren(null).first())
+                    node.addChild(it.clone() as ASTNode, spaceAfter)
+                } else {
+                    node.addChild(PsiWhiteSpaceImpl(" "), node.getChildren(null).first())
+                    node.addChild(it.clone() as ASTNode, node.getChildren(null).first())
                 }
             }
         }
