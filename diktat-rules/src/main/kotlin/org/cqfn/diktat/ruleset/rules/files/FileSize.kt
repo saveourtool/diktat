@@ -1,12 +1,12 @@
 package org.cqfn.diktat.ruleset.rules.files
 
-import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_IS_TOO_LONG
+import org.cqfn.diktat.ruleset.utils.getFileName
 import org.cqfn.diktat.ruleset.utils.splitPathToDirs
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.slf4j.LoggerFactory
@@ -30,7 +30,7 @@ class FileSize(private val configRules: List<RulesConfig>) : Rule("file-size") {
         emitWarn = emit
         isFixMode = autoCorrect
         if (node.elementType == ElementType.FILE) {
-            fileName = node.getUserData(KtLint.FILE_PATH_USER_DATA_KEY)!!
+            fileName = node.getFileName()
             val configuration = FileSizeConfiguration(
                 this.configRules.getRuleConfig(FILE_IS_TOO_LONG)?.configuration ?: mapOf()
             )

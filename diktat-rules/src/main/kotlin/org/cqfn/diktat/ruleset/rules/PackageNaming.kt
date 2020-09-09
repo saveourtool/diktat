@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.rules
 
-import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.DOT
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
@@ -19,6 +18,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_PREFIX
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_SYMBOLS
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_MISSING
 import org.cqfn.diktat.ruleset.utils.getAllLeafsWithSpecificType
+import org.cqfn.diktat.ruleset.utils.getFileName
 import org.cqfn.diktat.ruleset.utils.getRootNode
 import org.cqfn.diktat.ruleset.utils.hasUppercaseLetter
 import org.cqfn.diktat.ruleset.utils.isASCIILettersAndDigits
@@ -69,7 +69,7 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
         domainName = configuration.domainName
 
         if (node.elementType == PACKAGE_DIRECTIVE) {
-            val fileName = node.getRootNode().getUserData(KtLint.FILE_PATH_USER_DATA_KEY)!!
+            val fileName = node.getRootNode().getFileName()
             // calculating package name based on the directory where the file is placed
             val realPackageName = calculateRealPackageName(fileName)
 

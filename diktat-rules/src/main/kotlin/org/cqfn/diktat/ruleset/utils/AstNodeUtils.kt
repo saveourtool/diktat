@@ -1,5 +1,6 @@
 package org.cqfn.diktat.ruleset.utils
 
+import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.CONST_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.FILE
@@ -422,6 +423,11 @@ fun ASTNode.extractLineOfText(): String {
             .takeWhileInclusive { it.size <= 1 }
             .forEach { text.add(it.first()) }
     return text.joinToString(separator = "").trim()
+}
+
+fun ASTNode.getFileName(): String = getUserData(KtLint.FILE_PATH_USER_DATA_KEY).let {
+    require(it != null) { "File path is not present in user data" }
+    it
 }
 
 data class ReplacementResult(val oldNodes: List<ASTNode>, val newNodes: List<ASTNode>) {
