@@ -1,13 +1,17 @@
 package org.cqfn.diktat.test.framework.config
 
-import org.cqfn.diktat.common.cli.CliArgument
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import org.apache.commons.cli.CommandLine
+import org.apache.commons.cli.CommandLineParser
+import org.apache.commons.cli.DefaultParser
+import org.apache.commons.cli.HelpFormatter
+import org.apache.commons.cli.Options
+import org.apache.commons.cli.ParseException
+import org.cqfn.diktat.common.cli.CliArgument
 import org.cqfn.diktat.common.config.reader.JsonResourceConfigReader
-import org.apache.commons.cli.*
 import org.slf4j.LoggerFactory
 import java.io.BufferedReader
-import java.io.File
 import java.io.IOException
 import java.util.stream.Collectors
 import kotlin.system.exitProcess
@@ -16,9 +20,9 @@ class TestArgumentsReader(
         private val args: Array<String>,
         val properties: TestFrameworkProperties,
         override val classLoader: ClassLoader
-) : JsonResourceConfigReader<List<CliArgument?>?>() {
+) : JsonResourceConfigReader<List<CliArgument>?>() {
 
-    private val cliArguments: List<CliArgument?>? = readResource(properties.testFrameworkArgsRelativePath)
+    private val cliArguments: List<CliArgument>? = readResource(properties.testFrameworkArgsRelativePath)
     private val cmd: CommandLine
     fun shouldRunAllTests(): Boolean {
         return cmd.hasOption("all")
@@ -57,7 +61,7 @@ class TestArgumentsReader(
             val options = Options()
             if (cliArguments != null) {
                 cliArguments
-                        .map { it!!.convertToOption() }
+                        .map { it.convertToOption() }
                         .forEach { opt -> options.addOption(opt) }
             } else {
                 exitProcess(1)
@@ -68,7 +72,7 @@ class TestArgumentsReader(
     @Throws(IOException::class)
     override fun parseResource(fileStream: BufferedReader): List<CliArgument> {
         val jsonValue = fileStream.lines().collect(Collectors.joining())
-        return jacksonObjectMapper().readValue<List<CliArgument>>(jsonValue)
+        return jacksonObjectMapper().readValue(jsonValue)
     }
 
     companion object {
