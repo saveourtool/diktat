@@ -23,10 +23,9 @@ as AST visitors on top of [KTlint](https://ktlint.github.io/).
 The full list of available supported rules and inspections is [here](info/available-rules.md).
 
 ## Run as CLI-application
-1. Install KTlint (until this [PR](https://github.com/pinterest/ktlint/pull/806) is merged you will need to use
- [KTlint fork](https://central.artipie.com/akuleshov7/files/ktlint)):
+1. Install KtLint:
    ```bash
-   $ curl -sSLO https://central.artipie.com/akuleshov7/files/ktlint && chmod a+x ktlint
+   $ curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.37.1/ktlint && chmod a+x ktlint
    ```
    
 2. Load diKTat manually: [here](https://github.com/cqfn/diKTat/releases/download/v1.0.2/diktat.jar)
@@ -47,27 +46,7 @@ To autofix all violations use `-F` option.
 
 You can see how it is configured in our project for self-checks: [pom.xml](pom.xml)
 
-First, add this to your `pom.xml` file:
-
-```xml
-<project>
-  [...]
-  <repositories>
-    <repository>
-      <id>artipie</id>
-      <url>https://central.artipie.com/akuleshov7/diktat</url>
-    </repository>
-  </repositories>
-    <pluginRepositories>
-      <pluginRepository>
-        <id>artipie</id>
-        <url>https://central.artipie.com/akuleshov7/diktat</url>
-      </pluginRepository>
-    </pluginRepositories>
-</project>
-```
-
-Then, add this plugin:
+Add this plugin:
 
 ```xml
 <project>
@@ -100,7 +79,7 @@ Then, add this plugin:
               <dependency>
                   <groupId>com.pinterest</groupId>
                   <artifactId>ktlint</artifactId>
-                  <version>0.37.1-fork</version> <!-- use this fork to be compatible with diktat -->
+                  <version>0.37.1</version>
                   <exclusions>
                       <exclusion>  <!-- without this exclusion both rulesets are enabled which we discourage -->
                           <groupId>com.pinterest.ktlint</groupId>
@@ -139,17 +118,11 @@ Add the code below to your `build.gradle.kts`:
 val ktlint by configurations.creating
 
 repositories {
-    // artipie - an open source project that is used to store ktlint and diktat dependencies
-    maven {
-        url = uri("https://central.artipie.com/akuleshov7/diktat")
-    }
     mavenCentral()
     jcenter()
-
-
 }
 dependencies {
-    ktlint("com.pinterest:ktlint:0.37.1-fork") {
+    ktlint("com.pinterest:ktlint:0.37.1") {
         // need to exclude standard ruleset to use only diktat rules
         exclude("com.pinterest.ktlint", "ktlint-ruleset-standard")
     }
