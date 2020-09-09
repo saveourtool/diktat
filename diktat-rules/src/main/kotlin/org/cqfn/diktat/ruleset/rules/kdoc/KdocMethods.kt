@@ -110,7 +110,7 @@ class KdocMethods(private val configRules: List<RulesConfig>) : Rule("kdoc-metho
         val parameterNames = node.parameterNames()
         val kDocParamList = kDocTags?.filter { it.knownTag == KDocKnownTag.PARAM && it.getSubjectName() != null }
         return if (parameterNames == null || parameterNames.isEmpty()) {
-            return Pair(listOf(), kDocParamList ?: listOf())
+            Pair(emptyList(), kDocParamList ?: listOf())
         } else if (kDocParamList != null && kDocParamList.isNotEmpty()) {
             Pair(parameterNames.minus(kDocParamList.map { it.getSubjectName() }), kDocParamList.filter { it.getSubjectName() !in parameterNames })
         } else {
@@ -147,17 +147,19 @@ class KdocMethods(private val configRules: List<RulesConfig>) : Rule("kdoc-metho
                                  kDocTags: Collection<KDocTag>?) {
         kDocMissingParameters.forEach {
             KDOC_WITHOUT_PARAM_TAG.warn(configRules, emitWarn, false,
-                    "${it.getSubjectName()} param isn't define in function", it.node.startOffset)
+                    "${it.getSubjectName()} param isn't present in argument list", it.node.startOffset)
         }
-        KDOC_WITHOUT_PARAM_TAG.warnAndFix(configRules, emitWarn, isFixMode,
-                "${node.getIdentifierName()!!.text} (${missingParameters.joinToString()})", node.startOffset) {
-            val beforeTag = kDocTags?.find { it.knownTag == KDocKnownTag.RETURN }
-                    ?: kDocTags?.find { it.knownTag == KDocKnownTag.THROWS }
-            missingParameters.forEach {
-                kDoc?.insertTagBefore(beforeTag?.node) {
-                    addChild(LeafPsiElement(KDOC_TAG_NAME, "@param"))
-                    addChild(PsiWhiteSpaceImpl(" "))
-                    addChild(LeafPsiElement(KDOC_TEXT, it))
+        if (missingParameters.isNotEmpty()) {
+            KDOC_WITHOUT_PARAM_TAG.warnAndFix(configRules, emitWarn, isFixMode,
+                    "${node.getIdentifierName()!!.text} (${missingParameters.joinToString()})", node.startOffset) {
+                val beforeTag = kDocTags?.find { it.knownTag == KDocKnownTag.RETURN }
+                        ?: kDocTags?.find { it.knownTag == KDocKnownTag.THROWS }
+                missingParameters.forEach {
+                    kDoc?.insertTagBefore(beforeTag?.node) {
+                        addChild(LeafPsiElement(KDOC_TAG_NAME, "@param"))
+                        addChild(PsiWhiteSpaceImpl(" "))
+                        addChild(LeafPsiElement(KDOC_TEXT, it))
+                    }
                 }
             }
         }

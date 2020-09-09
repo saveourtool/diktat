@@ -39,8 +39,8 @@ class KdocParamPresentWarnTest : LintTestBase(::KdocMethods) {
                     |fun foo(a: Int, B: Int) {}
                 """.trimMargin(),
                 LintError(1, 1, ruleId, "${KDOC_WITHOUT_PARAM_TAG.warnText()} foo (a, B)", true),
-                LintError(2, 3, ruleId, "${KDOC_WITHOUT_PARAM_TAG.warnText()} A param isn't define in function"),
-                LintError(3, 3, ruleId, "${KDOC_WITHOUT_PARAM_TAG.warnText()} В param isn't define in function")
+                LintError(2, 3, ruleId, "${KDOC_WITHOUT_PARAM_TAG.warnText()} A param isn't present in argument list"),
+                LintError(3, 3, ruleId, "${KDOC_WITHOUT_PARAM_TAG.warnText()} В param isn't present in argument list")
         )
     }
 
@@ -54,8 +54,7 @@ class KdocParamPresentWarnTest : LintTestBase(::KdocMethods) {
                     |*/
                     |fun foo() {}
                 """.trimMargin(),
-                LintError(1, 1, ruleId, "${KDOC_WITHOUT_PARAM_TAG.warnText()} foo ()", true),
-                LintError(2, 3, ruleId, "${KDOC_WITHOUT_PARAM_TAG.warnText()} A param isn't define in function")
+                LintError(2, 3, ruleId, "${KDOC_WITHOUT_PARAM_TAG.warnText()} A param isn't present in argument list")
         )
     }
 
