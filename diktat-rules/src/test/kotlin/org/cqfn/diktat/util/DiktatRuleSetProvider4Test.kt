@@ -12,7 +12,7 @@ import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
  */
 class DiktatRuleSetProvider4Test(private val ruleSupplier: (rulesConfigList: List<RulesConfig>) -> Rule,
                                  rulesConfigList: List<RulesConfig>?) : RuleSetProvider {
-    private val rulesConfigList: List<RulesConfig>? = rulesConfigList ?: RulesConfigReader(javaClass.classLoader).readResource("rules-config.json")
+    private val rulesConfigList: List<RulesConfig>? = rulesConfigList ?: RulesConfigReader(javaClass.classLoader).readResource("diktat-analysis.yml")
 
     override fun get(): RuleSet {
         return RuleSet(

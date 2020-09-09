@@ -46,7 +46,7 @@ class RulesConfigJsonTest {
 
     private fun readAllRulesFromConfig() =
             RulesConfigReader(javaClass.classLoader)
-                    .readResource("rules-config.json") ?: listOf()
+                    .readResource("diktat-analysis.yml") ?: listOf()
 
     private fun readAllRulesFromCode() =
             Warnings.values()
