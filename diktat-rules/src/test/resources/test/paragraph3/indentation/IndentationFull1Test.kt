@@ -12,4 +12,24 @@ fun foo(
 ): Int {
             return a + b
     }
+
+    fun bar() {
+        for (i in 1..100)
+        println(i)
+
+        do
+        println()
+        while (condition)
+
+        for (i in 1..100) {
+        println(i)
+        }
+    }
+
+    fun baz() {
+        if (condition)
+        foobar()
+        else
+        foobaz()
+    }
 }
