@@ -260,6 +260,13 @@
                         </configuration>
                     </execution>
                 </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>io.gitlab.arturbosch.detekt</groupId>
+                        <artifactId>detekt-cli</artifactId>
+                        <version>1.11.1</version>
+                    </dependency>
+                </dependencies>
             </plugin>
 
             <plugin>
