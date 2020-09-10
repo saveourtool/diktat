@@ -11,7 +11,13 @@ class MultipleModifiersSequenceFixTest : FixTestBase("test/paragraph3/multiple_m
 
     @Test
     @Tag(WarningNames.WRONG_MULTIPLE_MODIFIERS_ORDER)
-    fun `should fix long comment`() {
+    fun `should fix modifiers order`() {
         fixAndCompare("ModifierExpected.kt", "ModifierTest.kt")
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_MULTIPLE_MODIFIERS_ORDER)
+    fun `should fix annotation order`() {
+        fixAndCompare("AnnotationExpected.kt", "AnnotationTest.kt")
     }
 }

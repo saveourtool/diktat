@@ -1,12 +1,15 @@
 package org.cqfn.diktat.ruleset.rules
 
 import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
+import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_MULTIPLE_MODIFIERS_ORDER
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.lexer.KtTokens
-
+import org.jetbrains.kotlin.psi.psiUtil.children
 
 class MultipleModifiersSequence(private val configRules: List<RulesConfig>) : Rule("multiple-modifiers") {
 
@@ -30,8 +33,10 @@ class MultipleModifiersSequence(private val configRules: List<RulesConfig>) : Ru
         emitWarn = emit
         isFixMode = autoCorrect
 
-        if (node.elementType == MODIFIER_LIST)
+        if (node.elementType == MODIFIER_LIST) {
             checkModifierList(node)
+            checkAnnotation(node)
+        }
     }
 
     private fun checkModifierList(node: ASTNode) {
@@ -43,9 +48,29 @@ class MultipleModifiersSequence(private val configRules: List<RulesConfig>) : Ru
                 WRONG_MULTIPLE_MODIFIERS_ORDER.warnAndFix(configRules, emitWarn, isFixMode,
                         "${modifierNode.text} should be on position ${sortModifierListOfPair.indexOf(modifierNode) + 1}, but is on position ${index + 1}",
                         modifierNode.startOffset) {
-                    val nodeBefore = modifierNode.treeNext
+                    val nodeAfter = modifierNode.treeNext
                     node.removeChild(modifierNode)
-                    node.addChild((sortModifierListOfPair[index].clone() as ASTNode), nodeBefore)
+                    node.addChild((sortModifierListOfPair[index].clone() as ASTNode), nodeAfter)
+                }
+            }
+        }
+    }
+
+    private fun checkAnnotation(node: ASTNode) {
+        val firstModifierIndex = node.children().indexOfFirst { it.elementType in KtTokens.MODIFIER_KEYWORDS }.takeIf { it >= 0 } ?: return
+        node.getChildren(null).filterIndexed { index, astNode -> astNode.elementType == ANNOTATION_ENTRY && index > firstModifierIndex }.forEach {
+            WRONG_MULTIPLE_MODIFIERS_ORDER.warnAndFix(configRules, emitWarn, isFixMode,
+                    "${it.text} annotation should be before all modifiers",
+                    it.startOffset) {
+                val spaceBefore = it.treePrev
+                node.removeChild(it)
+                if (spaceBefore != null && spaceBefore.elementType == WHITE_SPACE){
+                    node.removeChild(spaceBefore)
+                    node.addChild(spaceBefore, node.firstChildNode)
+                    node.addChild(it.clone() as ASTNode, spaceBefore)
+                } else {
+                    node.addChild(PsiWhiteSpaceImpl(" "), node.getChildren(null).first())
+                    node.addChild(it.clone() as ASTNode, node.getChildren(null).first())
                 }
             }
         }

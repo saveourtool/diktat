@@ -29,11 +29,11 @@ The full list of available supported rules and inspections is [here](info/availa
    $ curl -sSLO https://central.artipie.com/akuleshov7/files/ktlint && chmod a+x ktlint
    ```
    
-2. Load diKTat manually: [here](https://github.com/cqfn/diKTat/releases/download/v1.0.2/diktat.jar)
+2. Load diKTat manually: [here](https://github.com/cqfn/diKTat/releases/download/v0.0.4/diktat.jar)
 
    **OR** use curl:
    ```bash
-   $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v1.0.2/diktat.jar
+   $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v0.0.4/diktat.jar
    ```
    
 3. Finally, run KTlint (with diKTat injected) to check your `*.kt` files in `dir/your/dir`:
@@ -111,7 +111,7 @@ Then, add this plugin:
               <dependency>
                   <groupId>org.cqfn.diktat</groupId>
                   <artifactId>diktat-rules</artifactId>
-                  <version>1.0.2</version> <!-- replace it with diktat latest version -->
+                  <version>0.0.4</version> <!-- replace it with diktat latest version -->
                   <exclusions>
                       <exclusion>
                           <groupId>org.slf4j</groupId>
@@ -155,7 +155,7 @@ dependencies {
     }
 
     // diktat ruleset
-    ktlint("org.cqfn.diktat:diktat-rules:1.0.2") {
+    ktlint("org.cqfn.diktat:diktat-rules:0.0.4") {
         exclude("org.slf4j", "slf4j-log4j12")
     }
 }
@@ -190,27 +190,26 @@ val diktatFormat by tasks.creating(JavaExec::class) {
 
 To run diktat to check/fix code style - run `$ gradle diktatCheck`.
 
-## Customizations via `rules-config.json`
+## Customizations via `diktat-analysis.yml`
 
 In KTlint, rules can be configured via `.editorconfig`, but
 this does not give a chance to customize or enable/disable
 each and every rule independently. 
-That is why we have supported `rules-config.json` that can be easily
+That is why we have supported `diktat-analysis.yml` that can be easily
 changed and help in customization of your own rule set.
 It has simple fields:
 `name` — name of the rule,
-`enabled` (true/false) — to enable or disable that rule, and
+`enabled` (true/false) — to enable or disable that rule, default value: true,
 `configuration` — a simple map of some extra unique configurations for the rule.
 For example:
 
-```json
-"configuration": {
+```yml
+configuration:
   "isCopyrightMandatory": true,
   "copyrightText": "Copyright (c) Jeff Lebowski, 2012-2020. All rights reserved."
-}
 ```
-Note, that you can specify and put `rules-config.json` that contains configuration of diktat in the parent directory of your project on the same level where `build.gradle/pom.xml` is stored. \
-See default configuration in [rules-config.json](diktat-rules/src/main/resources/rules-config.json) \
+Note, that you can specify and put `diktat-analysis.yml` that contains configuration of diktat in the parent directory of your project on the same level where `build.gradle/pom.xml` is stored. \
+See default configuration in [diktat-analysis.yml](diktat-rules/src/main/resources/diktat-analysis.yml) \
 Also see [the list of all rules supported by diKTat](info/available-rules.md).
 
 ## How to contribute?
@@ -223,7 +222,7 @@ Main components are:
 Mainly we wanted to create a common configurable mechanism that
 will give us a chance to enable/disable and customize all rules.
 That's why we added logic for:
-1) Parsing `.json` file with configurations of rules and passing it to visitors;
+1) Parsing `.yml` file with configurations of rules and passing it to visitors;
 2) Passing information about properties to visitors.
 This information is very useful, when you are trying to get,
 for example, a filename of file where the code is stored;
