@@ -59,7 +59,7 @@ class SortRule(private val configRules: List<RulesConfig>) : Rule("sort-rule") {
             if (mutableList != sortedListOfList[index]) {
                 WRONG_DECLARATIONS_ORDER.warnAndFix(configRules, emitWarn, isFixMode,
                         "constant properties inside companion object order is incorrect",
-                        mutableList.first().startOffset, node) {
+                        mutableList.first().startOffset, mutableList.first()) {
                     swapSortNodes(sortedListOfList[index], mutableList, node)
                 }
             }

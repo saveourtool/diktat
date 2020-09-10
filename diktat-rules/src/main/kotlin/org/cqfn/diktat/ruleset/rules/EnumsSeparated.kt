@@ -51,7 +51,7 @@ class EnumsSeparated(private val configRules: List<RulesConfig>) : Rule("enum-se
         enumEntries.forEach {
             if (!it.treeNext.isWhiteSpaceWithNewline())
                 ENUMS_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, "enum entries must end with a line break",
-                        it.startOffset, node) {
+                        it.startOffset, it) {
                     it.appendNewlineMergingWhiteSpace(it.treeNext, it.treeNext)
                 }
         }

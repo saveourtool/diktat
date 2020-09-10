@@ -173,7 +173,7 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
             node.findChildByType(beforeType) else node)?.findLBrace()?.treeNext ?: return
         if (checkBraceNode(newNode)) {
             BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "incorrect same line after opening brace",
-                    newNode.startOffset, node) {
+                    newNode.startOffset, newNode) {
                 if (newNode.elementType != WHITE_SPACE) {
                     node.addChild(PsiWhiteSpaceImpl("\n"), newNode)
                 } else {
@@ -187,7 +187,7 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
         allMiddleSpace.forEach {
             if (checkBraceNode(it, true)) {
                 BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "incorrect new line after closing brace",
-                        it.startOffset, node) {
+                        it.startOffset, it) {
                     if (it.elementType != WHITE_SPACE) {
                         node.addChild(PsiWhiteSpaceImpl(" "), node.findChildByType(keyword))
                     } else {

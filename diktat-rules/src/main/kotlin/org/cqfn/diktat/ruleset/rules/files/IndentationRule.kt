@@ -167,7 +167,7 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
         }
         if (checkResult?.isCorrect != true && expectedIndent != indentError.actual) {
             WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "expected $expectedIndent but was ${indentError.actual}",
-                    whiteSpace.startOffset + whiteSpace.text.lastIndexOf('\n') + 1, astNode) {
+                    whiteSpace.startOffset + whiteSpace.text.lastIndexOf('\n') + 1, whiteSpace.node) {
                 whiteSpace.node.indentBy(expectedIndent)
             }
         }

@@ -221,7 +221,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
                         .toList()
                 if (newlinesBeforeArrow.isNotEmpty() || !arrowNode.isFollowedByNewline()) {
                     WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
-                            "in lambda with several lines in body newline should be placed after an arrow", arrowNode.startOffset, node) {
+                            "in lambda with several lines in body newline should be placed after an arrow", arrowNode.startOffset, arrowNode) {
                         // fixme: replacement logic can be sophisticated for better appearance?
                         newlinesBeforeArrow.forEach { it.treeParent.replaceChild(it, PsiWhiteSpaceImpl(" ")) }
                         arrowNode.treeNext.takeIf { it.elementType == WHITE_SPACE }?.leaveOnlyOneNewLine()
@@ -232,7 +232,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
                 val lbraceNode = node.treeParent.firstChildNode
                 if (!lbraceNode.isFollowedByNewline()) {
                     WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
-                            "in lambda with several lines in body newline should be placed after an opening brace", lbraceNode.startOffset, node) {
+                            "in lambda with several lines in body newline should be placed after an opening brace", lbraceNode.startOffset, lbraceNode) {
                         lbraceNode.treeNext.let {
                             if (it.elementType == WHITE_SPACE) {
                                 it.leaveOnlyOneNewLine()

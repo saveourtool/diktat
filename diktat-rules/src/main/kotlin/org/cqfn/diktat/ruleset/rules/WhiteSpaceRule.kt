@@ -145,7 +145,7 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
                 return
             }
             WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "keyword '${node.text}' should be separated from " +
-                    "'${nextCodeLeaf.text}' with a whitespace", nextCodeLeaf.startOffset, node) {
+                    "'${nextCodeLeaf.text}' with a whitespace", nextCodeLeaf.startOffset, nextCodeLeaf) {
                 node.leaveSingleWhiteSpace()
             }
         }

@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory
  */
 const val DIKTAT_RULE_SET_ID = "diktat-ruleset"
 
-class DiktatRuleSetProvider(private val jsonRulesConfig: String = "rules-config.json") : RuleSetProvider {
+class DiktatRuleSetProvider(private val jsonRulesConfig: String = "diktat-analysis.yml") : RuleSetProvider {
     override fun get(): RuleSet {
         log.debug("Will run $DIKTAT_RULE_SET_ID with $jsonRulesConfig (it can be placed to the run directory or the default file from resources will be used)")
         val configRules = RulesConfigReader(javaClass.classLoader).readResource(jsonRulesConfig) ?: listOf()
@@ -41,11 +41,11 @@ class DiktatRuleSetProvider(private val jsonRulesConfig: String = "rules-config.
                 ::SingleLineStatementsRule,
                 ::ConsecutiveSpacesRule,
                 ::LongNumericalValuesSeparatedRule,
+                ::MultipleModifiersSequence,
                 ::AnnotationNewLineRule,
                 ::HeaderCommentRule,
                 ::SortRule,
                 ::StringConcatenationRule,
-                ::MultipleModifiersSequence,
                 ::LineLength,
                 ::BlankLinesRule,
                 ::WhiteSpaceRule,

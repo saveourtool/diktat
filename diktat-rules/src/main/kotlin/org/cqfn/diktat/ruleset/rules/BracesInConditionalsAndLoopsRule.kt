@@ -122,7 +122,7 @@ class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig
                 .map { it.expression as KtBlockExpression }
                 .filter { it.statements.size == 1 }
                 .forEach {
-                    NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnAndFix(configRules, emitWarn, isFixMode, "WHEN", it.node.startOffset, node) {
+                    NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnAndFix(configRules, emitWarn, isFixMode, "WHEN", it.node.startOffset, it.node) {
                         it.astReplace(it.firstStatement!!.node.psi)
                     }
                 }

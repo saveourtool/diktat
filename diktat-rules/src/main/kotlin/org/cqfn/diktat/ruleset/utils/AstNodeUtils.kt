@@ -304,14 +304,17 @@ fun ASTNode?.isAccessibleOutside(): Boolean =
         }
 
 fun ASTNode.hasSuppress(warningName: String): Boolean {
-    if (elementType == FILE) {
-        return findAllNodesWithSpecificType(ANNOTATION_ENTRY).any {
-            it.text.contains("Suppress($warningName)")
+    return if (elementType == FILE) {
+        findAllNodesWithSpecificType(ANNOTATION_ENTRY).any {
+            it.text.contains("Suppress(\"$warningName\")")
         }
+    } else {
+        parent({
+            it.findAllNodesWithSpecificType(ANNOTATION_ENTRY).any {
+                it.text.contains("Suppress(\"$warningName\")")
+            }
+        }) != null
     }
-    return parent({ it.findAllNodesWithSpecificType(ANNOTATION_ENTRY).any {
-        it.text.contains("Suppress($warningName)")
-    }}) != null
 }
 /**
  * creation of operation reference in a node
