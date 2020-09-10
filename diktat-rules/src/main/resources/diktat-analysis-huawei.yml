@@ -1,7 +1,7 @@
 - name: DIKTAT_COMMON
   enabled: true
   configuration:
-    domainName: org.cqfn.diktat
+    domainName: com.huawei
 - name: CLASS_NAME_INCORRECT
   enabled: true
   configuration: {}

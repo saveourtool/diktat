@@ -38,9 +38,10 @@ open class RulesConfigReader(override val classLoader: ClassLoader) : JsonResour
     override fun parseResource(fileStream: BufferedReader): List<RulesConfig> {
         val mapper = ObjectMapper(YAMLFactory())
         mapper.registerModule(KotlinModule())
-        val list: List<RulesConfig> = mapper.readValue(fileStream)
-        fileStream.close()
-        return list
+        return fileStream.use { stream ->
+            val list: List<RulesConfig> = mapper.readValue(stream)
+            list
+        }
     }
 
     /**

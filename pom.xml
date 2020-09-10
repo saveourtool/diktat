@@ -22,8 +22,6 @@
         <commons-cli.version>1.4</commons-cli.version>
         <diktat-check.version>1.0.2</diktat-check.version>
         <kotlinpoet.version>1.6.0</kotlinpoet.version>
-        <kaml.version>0.21.0</kaml.version>
-        <serialization.version>1.0.0-RC</serialization.version>
     </properties>
 
     <modules>
