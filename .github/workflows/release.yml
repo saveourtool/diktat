@@ -60,7 +60,6 @@ jobs:
         id: update-versions
         run: |
           mvn -B versions:set -DnextSnapshot=true -DprocessAllModules=true versions:commit
-          echo ::set-env name=NEXT_VERSION::$(printf 'VERSION=${project.version}\n0\n' | mvn help:evaluate | grep '^VERSION' | cut -d= -f2)
           mvn versions:set-property -Dproperty=diktat-check.version -DnewVersion=${{ env.RELEASE_VERSION }}
           sed -i "s/$PREVIOUS_VERSION/$RELEASE_VERSION/g" README.md
           sed -i "s/$PREVIOUS_VERSION/$RELEASE_VERSION/g" build.gradle.kts
@@ -68,7 +67,7 @@ jobs:
         uses: peter-evans/create-pull-request@v3
         with:
           author: GitHub <noreply@github.com>
-          commit-message: Update diktat version to ${{ env.NEXT_VERSION }} after release
+          commit-message: Prepare next development iteration after release ${{ env.RELEASE_VERSION }}
           branch: infra/diktat-version-update-to-${{ env.RELEASE_VERSION }}
           title: Update versions in pom.xml and documentation after ${{ env.RELEASE_VERSION }} release
           body: |
