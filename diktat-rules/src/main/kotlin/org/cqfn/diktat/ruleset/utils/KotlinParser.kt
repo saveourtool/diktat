@@ -77,23 +77,21 @@ class KotlinParser {
         val ktPsiFactory = KtPsiFactory(project, true)
         if (text.trim().isEmpty())
             return ktPsiFactory.createWhiteSpace(text).node
-        var node = if (isPackage || isContainKDoc(text)) {
+        var node: ASTNode = if (isPackage || isContainKDoc(text)) {
             ktPsiFactory.createFile(text).node
-        } else {
-            if (text.contains(KtTokens.IMPORT_KEYWORD.value)) {
-                val (imports, blockCode) = text.lines().partition { it.contains(KtTokens.IMPORT_KEYWORD.value) }
-                if (blockCode.isNotEmpty())
-                    return null
-                if (imports.size == 1) {
+        } else if (text.contains(KtTokens.IMPORT_KEYWORD.value)) {
+            val (imports, blockCode) = text.lines().partition { it.contains(KtTokens.IMPORT_KEYWORD.value) }
+            when {
+                blockCode.isNotEmpty() -> return null
+                imports.size == 1 -> {
                     val importText = ImportPath.fromString(text.substringAfter("$IMPORT_KEYWORD "))
                     ktPsiFactory.createImportDirective(importText).node
-                } else {
-                    ktPsiFactory.createBlockCodeFragment(text, null).node.findChildByType(BLOCK)!!
-                            .findChildByType(ERROR_ELEMENT)!!.findChildByType(IMPORT_LIST)!!
                 }
-            } else {
-                ktPsiFactory.createBlockCodeFragment(text, null).node.findChildByType(BLOCK)!!
+                else -> ktPsiFactory.createBlockCodeFragment(text, null).node.findChildByType(BLOCK)!!
+                        .findChildByType(ERROR_ELEMENT)!!.findChildByType(IMPORT_LIST)!!
             }
+        } else {
+            ktPsiFactory.createBlockCodeFragment(text, null).node.findChildByType(BLOCK)!!
         }
         if (node.getChildren(null).size == 1)
             node = node.firstChildNode
