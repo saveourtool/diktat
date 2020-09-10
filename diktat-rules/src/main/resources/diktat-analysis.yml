@@ -119,7 +119,7 @@
   enabled: true
   configuration:
     isCopyrightMandatory: false
-    copyrightText:
+    copyrightText: ''
 - name: HEADER_NOT_BEFORE_PACKAGE
   enabled: true
   configuration: {}
