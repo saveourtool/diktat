@@ -39,9 +39,9 @@ class FileSize(private val configRules: List<RulesConfig>) : Rule("file-size") {
             val realFilePath = calculateFilePath(fileName)
 
             if (!realFilePath.contains(SRC_PATH)) {
-                log.error("$SRC_PATH directory is not found in file path")}
-            else{
-                if (ignoreFolders.none { realFilePath.containsAll(it.splitPathToDirs()) }){
+                log.error("$SRC_PATH directory is not found in file path")
+            } else {
+                if (ignoreFolders.none { realFilePath.containsAll(it.splitPathToDirs()) }) {
                     checkFileSize(node, configuration.maxSize)
                 }
             }
@@ -59,7 +59,10 @@ class FileSize(private val configRules: List<RulesConfig>) : Rule("file-size") {
     }
 
     private fun checkFileSize(node: ASTNode, maxSize: Long) {
-        val size = node.text.split("\n").size
+        val size = node
+                .text
+                .split("\n")
+                .size
         if (size > maxSize) {
             FILE_IS_TOO_LONG.warn(configRules, emitWarn, isFixMode, "$size", node.startOffset, node)
         }
@@ -67,6 +70,6 @@ class FileSize(private val configRules: List<RulesConfig>) : Rule("file-size") {
 
     class FileSizeConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
         val maxSize = config["maxSize"]?.toLongOrNull() ?: MAX_SIZE
-        val ignoreFolders = config["ignoreFolders"]?.replace("\\s+".toRegex(),"")?.split(IGNORE_FOLDERS_SEPARATOR) ?: IGNORE_FOLDER
+        val ignoreFolders = config["ignoreFolders"]?.replace("\\s+".toRegex(), "")?.split(IGNORE_FOLDERS_SEPARATOR) ?: IGNORE_FOLDER
     }
 }

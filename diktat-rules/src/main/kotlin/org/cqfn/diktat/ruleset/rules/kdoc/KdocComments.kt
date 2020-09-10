@@ -53,7 +53,8 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
 
         // if parent class is public or internal than we can check it's internal code elements
         if (classBody != null && modifier.isAccessibleOutside()) {
-            classBody.getChildren(statementsToDocument)
+            classBody
+                    .getChildren(statementsToDocument)
                     .filterNot { it.elementType == FUN && it.isStandardMethod() }
                     .forEach { checkDoc(it, MISSING_KDOC_CLASS_ELEMENTS) }
         }
@@ -69,7 +70,7 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
      * raises warning if protected, public or internal code element does not have a Kdoc
      */
     private fun checkDoc(node: ASTNode, warning: Warnings) {
-        val kDoc = node.getFirstChildWithType(KDOC)
+        val kdoc = node.getFirstChildWithType(KDOC)
         val modifier = node.getFirstChildWithType(MODIFIER_LIST)
         val name = node.getIdentifierName()
 

@@ -6,6 +6,10 @@ import org.cqfn.diktat.common.config.rules.isRuleEnabled
 import org.cqfn.diktat.ruleset.utils.hasSuppress
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
+/**
+ * This class represent individual inspections of diktat code style.
+ * A [Warnings] entry contains rule name, warning message and is used in code check.
+ */
 @Suppress("ForbiddenComment", "MagicNumber")
 enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: String) : Rule {
     // ======== chapter 1 ========
@@ -87,7 +91,10 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     WRONG_MULTIPLE_MODIFIERS_ORDER(true, "sequence of modifiers is incorrect"),
     ;
 
-    override fun ruleName(): String = this.name
+    /**
+     * Name of the inspection, it is used in configuration and in output.
+     */
+    override fun ruleName() = this.name
 
     fun warnText(): String = "[${ruleName()}] ${this.warn}:"
 

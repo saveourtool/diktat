@@ -20,7 +20,6 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
  *
  */
 class ConsecutiveSpacesRule(private val configRules: List<RulesConfig>) : Rule("too-many-spaces") {
-
     companion object {
         private const val MAX_SPACES = 1
     }
@@ -41,7 +40,6 @@ class ConsecutiveSpacesRule(private val configRules: List<RulesConfig>) : Rule("
             checkWhiteSpace(node, configuration)
         }
     }
-
 
     private fun checkWhiteSpace(node: ASTNode, configuration: TooManySpacesRuleConfiguration) {
         if (configuration.enumInitialFormatting) {
@@ -73,15 +71,12 @@ class ConsecutiveSpacesRule(private val configRules: List<RulesConfig>) : Rule("
         }
     }
 
-
     private fun ASTNode.hasEolComment(): Boolean = this.treeNext.elementType == EOL_COMMENT
 
     private fun ASTNode.squeezeSpaces() = (this as LeafElement).replaceWithText(" ")
-
 
     class TooManySpacesRuleConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
         val numberOfSpaces = config["max_spaces"]?.toIntOrNull() ?: MAX_SPACES
         val enumInitialFormatting = config["saveInitialFormattingForEnums"]?.toBoolean() ?: false
     }
-
 }

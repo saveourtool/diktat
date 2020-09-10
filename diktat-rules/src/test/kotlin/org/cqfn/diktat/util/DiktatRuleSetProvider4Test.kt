@@ -13,7 +13,7 @@ import java.io.File
 import kotlin.reflect.jvm.reflect
 
 /**
- * simple class for emulating RuleSetProvider to inject .json rule configuration and mock this part of code
+ * simple class for emulating RuleSetProvider to inject .yml rule configuration and mock this part of code
  */
 class DiktatRuleSetProvider4Test(private val ruleSupplier: (rulesConfigList: List<RulesConfig>) -> Rule,
                                  rulesConfigList: List<RulesConfig>?) : RuleSetProvider {
