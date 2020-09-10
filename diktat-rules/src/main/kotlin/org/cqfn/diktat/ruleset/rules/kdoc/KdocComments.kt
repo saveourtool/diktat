@@ -74,7 +74,7 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
         val modifier = node.getFirstChildWithType(MODIFIER_LIST)
         val name = node.getIdentifierName()
 
-        if (modifier.isAccessibleOutside() && kDoc == null) {
+        if (modifier.isAccessibleOutside() && kdoc == null) {
             warning.warn(configRules, emitWarn, isFixMode, name!!.text, node.startOffset,node)
         }
     }

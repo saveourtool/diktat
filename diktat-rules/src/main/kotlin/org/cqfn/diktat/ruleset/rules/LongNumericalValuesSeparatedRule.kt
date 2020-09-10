@@ -31,7 +31,7 @@ class LongNumericalValuesSeparatedRule(private val configRules: List<RulesConfig
 
         if (node.elementType == INTEGER_LITERAL) {
             if(!isValidConstant(node.text, configuration, node)) {
-                Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset) {
+                Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
                     fixIntegerConstant(node, configuration.maxBlockLength)
                 }
             }
@@ -41,7 +41,7 @@ class LongNumericalValuesSeparatedRule(private val configRules: List<RulesConfig
             if (!isValidConstant(node.text, configuration, node)) {
                 val parts = node.text.split(".")
 
-                Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset,node) {
+                Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
                     fixFloatConstantPart(parts[0], parts[1], configuration, node)
                 }
 
