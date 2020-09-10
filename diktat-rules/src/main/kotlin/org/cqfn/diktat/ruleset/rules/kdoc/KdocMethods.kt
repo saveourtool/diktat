@@ -148,7 +148,8 @@ class KdocMethods(private val configRules: List<RulesConfig>) : Rule("kdoc-metho
 
         kDocMissingParameters.forEach {
             KDOC_WITHOUT_PARAM_TAG.warn(configRules, emitWarn, false,
-                    "${it.getSubjectName()} param isn't present in argument list", it.node.startOffset, it)
+                    "${it.getSubjectName()} param isn't present in argument list", it.node.startOffset,
+                    it.node)
         }
         if (missingParameters.isNotEmpty()) {
             KDOC_WITHOUT_PARAM_TAG.warnAndFix(configRules, emitWarn, isFixMode,
