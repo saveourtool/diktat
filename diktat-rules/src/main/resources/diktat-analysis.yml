@@ -1,6 +1,6 @@
 - name: DIKTAT_COMMON
   configuration:
-    domainName: org.cqfn.diktat
+    domainName: your.package.name.here
 - name: CLASS_NAME_INCORRECT
   enabled: true
   configuration: {}

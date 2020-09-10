@@ -39,8 +39,7 @@ open class RulesConfigReader(override val classLoader: ClassLoader) : JsonResour
         val mapper = ObjectMapper(YAMLFactory())
         mapper.registerModule(KotlinModule())
         return fileStream.use { stream ->
-            val list: List<RulesConfig> = mapper.readValue(stream)
-            list
+            mapper.readValue(stream)
         }
     }
 

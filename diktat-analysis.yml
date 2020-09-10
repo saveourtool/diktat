@@ -1,7 +1,7 @@
 - name: DIKTAT_COMMON
   enabled: true
   configuration:
-    domainName: please enter your domain name
+    domainName: org.cqfn.diktat
 - name: CLASS_NAME_INCORRECT
   enabled: true
   configuration: {}

@@ -19,7 +19,7 @@ class HeaderCommentRuleFixTest : FixTestBase(
                                 "isCopyrightMandatory" to "true",
                                 "copyrightText" to "Copyright (c) Huawei Technologies Co., Ltd. 2020-2020. All rights reserved.")
                 ),
-                RulesConfig(HEADER_WRONG_FORMAT.name, true, mapOf())
+                RulesConfig("HEADER_WRONG_FORMAT", true, mapOf())
         )
 ) {
     @Test
