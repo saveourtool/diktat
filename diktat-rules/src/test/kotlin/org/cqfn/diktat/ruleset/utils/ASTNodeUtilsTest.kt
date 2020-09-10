@@ -27,7 +27,7 @@ import org.jetbrains.kotlin.utils.addToStdlib.ifNotEmpty
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
-@Suppress("LargeClass")
+@Suppress("LargeClass", "UnsafeCallOnNullableType")
 class ASTNodeUtilsTest {
 
     @Test

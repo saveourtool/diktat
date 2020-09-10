@@ -32,6 +32,7 @@ class KotlinParserTest {
     }
 
     @Test
+    @Suppress("UnsafeCallOnNullableType")
     fun `test oneline function`() {
         val node = KotlinParser().createNode("fun foo(text: String) = text.toUpperCase()")
         Assertions.assertEquals(FUN, node.elementType)
@@ -183,6 +184,7 @@ class KotlinParserTest {
     }
 
     @Test
+    @Suppress("UnsafeCallOnNullableType")
     fun `check KDoc`() {
         val code = """
             |/**

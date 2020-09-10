@@ -26,6 +26,7 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtImportDirective
 
 /**
@@ -75,10 +76,12 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         val copyrightComment = node.findChildBefore(PACKAGE_DIRECTIVE, BLOCK_COMMENT)
         val headerKdoc = node.findChildBefore(PACKAGE_DIRECTIVE, KDOC)
         val fileAnnotations = node.findChildByType(FILE_ANNOTATION_LIST)
-        // the following two nodes are always present, even if their content is empty
-        // also kotlin compiler itself enforces their position in the file
-        val packageDirectiveNode = node.findChildByType(PACKAGE_DIRECTIVE)!!
-        val importsList = node.findChildByType(IMPORT_LIST)!!
+        // PACKAGE_DIRECTIVE node is always present in regular kt files and might be absent in kts
+        // kotlin compiler itself enforces it's position in the file if it is present
+        // fixme: handle cases when this node is not present
+        val packageDirectiveNode = (node.psi as KtFile).packageDirective?.node ?: return
+        // fixme: find cases when node.psi.importLists.size > 1, handle cases when it's not present
+        val importsList = (node.psi as KtFile).importList?.node ?: return
 
         // checking order
         listOfNotNull(copyrightComment, headerKdoc, fileAnnotations).handleIncorrectOrder({
