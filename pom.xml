@@ -2,12 +2,28 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <groupId>org.cqfn.diktat</groupId>
     <artifactId>diktat-parent</artifactId>
     <version>1.0.3-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
     <name>diktat</name>
     <description>diKTat kotlin formatter and fixer</description>
-    <packaging>pom</packaging>
+    <url>https://www.cqfn.org/diKTat/</url>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>http://www.opensource.org/licenses/mit-license.php</url>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:git://github.com/cqfn/diktat.git</connection>
+        <developerConnection>scm:git:ssh://github.com:cqfn/diktat.git</developerConnection>
+        <url>http://github.com/cqfn/diktat/tree/master</url>
+    </scm>
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
