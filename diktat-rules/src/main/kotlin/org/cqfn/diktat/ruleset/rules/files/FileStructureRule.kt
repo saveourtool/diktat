@@ -11,7 +11,9 @@ import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_CONTAINS_ONLY_COMMENTS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_INCORRECT_BLOCKS_ORDER
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NO_BLANK_LINE_BETWEEN_BLOCKS
@@ -49,7 +51,10 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
 
         if (node.elementType == ElementType.FILE) {
             fileName = node.getUserData(KtLint.FILE_PATH_USER_DATA_KEY)!!
-            checkImportsOrder(node.findChildByType(IMPORT_LIST)!!)
+            val configuration = WildCardImportsConfig(
+                    this.configRules.getRuleConfig(FILE_WILDCARD_IMPORTS)?.configuration ?: mapOf()
+            )
+            checkImportsOrder(node.findChildByType(IMPORT_LIST)!!, configuration)
             if (checkFileHasCode(node)) {
                 checkCodeBlocksOrderAndEmptyLines(node)
             }
@@ -97,11 +102,11 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         }
     }
 
-    private fun checkImportsOrder(node: ASTNode) {
+    private fun checkImportsOrder(node: ASTNode, configuration: WildCardImportsConfig) {
         val imports = node.getChildren(TokenSet.create(IMPORT_DIRECTIVE)).toList()
 
         // importPath can be null if import name cannot be parsed, which should be a very rare case, therefore !! should be safe here
-        imports.filter { (it.psi as KtImportDirective).importPath!!.isAllUnder }.forEach {
+        imports.filter { (it.psi as KtImportDirective).importPath!!.isAllUnder && it.text !in configuration.allowedWildcards }.forEach {
             FILE_WILDCARD_IMPORTS.warn(configRules, emitWarn, isFixMode, it.text, it.startOffset)
         }
 
@@ -140,5 +145,9 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         KDOC -> copyrightComment to (fileAnnotations ?: packageDirectiveNode)
         FILE_ANNOTATION_LIST -> (headerKdoc ?: copyrightComment) to packageDirectiveNode
         else -> error("Only BLOCK_COMMENT, KDOC and FILE_ANNOTATION_LIST are valid inputs.")
+    }
+
+    class WildCardImportsConfig(config: Map<String, String>) : RuleConfiguration(config) {
+        val allowedWildcards = config["allowedWildcards"]?.split(",")?.map { it.trim() } ?: listOf()
     }
 }
