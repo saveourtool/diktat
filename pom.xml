@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.cqfn.diktat</groupId>
     <artifactId>diktat-parent</artifactId>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>0.0.5-SNAPSHOT</version>
     <name>diktat</name>
     <description>diKTat kotlin formatter and fixer</description>
     <packaging>pom</packaging>
@@ -20,7 +20,7 @@
         <jackson.version>2.11.2</jackson.version>
         <slf4j.version>1.7.30</slf4j.version>
         <commons-cli.version>1.4</commons-cli.version>
-        <diktat-check.version>1.0.2</diktat-check.version>
+        <diktat-check.version>0.0.4</diktat-check.version>
         <kotlinpoet.version>1.6.0</kotlinpoet.version>
         <dokka.version>1.4.0</dokka.version>
     </properties>
@@ -67,6 +67,11 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.dataformat</groupId>
+                <artifactId>jackson-dataformat-yaml</artifactId>
                 <version>${jackson.version}</version>
             </dependency>
             <dependency>
@@ -328,10 +333,10 @@
                         <phase>none</phase>
                         <configuration>
                             <target name="ktlint">
-                                <java taskname="ktlint" dir="${basedir}" fork="true" failonerror="true"
+                                <java taskname="ktlint" dir="${maven.multiModuleProjectDirectory}" fork="true" failonerror="true"
                                       classpathref="maven.plugin.classpath" classname="com.pinterest.ktlint.Main">
-                                    <arg value="src/main/kotlin/**/*.kt"/>
-                                    <arg value="src/test/kotlin/**/*.kt"/>
+                                    <arg value="${project.basedir}/src/main/kotlin/**/*.kt"/>
+                                    <arg value="${project.basedir}/src/test/kotlin/**/*.kt"/>
                                 </java>
                             </target>
                         </configuration>
@@ -356,12 +361,6 @@
                         <groupId>org.cqfn.diktat</groupId>
                         <artifactId>diktat-rules</artifactId>
                         <version>${diktat-check.version}</version>
-                        <exclusions>
-                            <exclusion>
-                                <groupId>org.slf4j</groupId>
-                                <artifactId>slf4j-log4j12</artifactId>
-                            </exclusion>
-                        </exclusions>
                     </dependency>
                 </dependencies>
             </plugin>

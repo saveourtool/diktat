@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 class PackagePathFixTest : FixTestBase(
     "test/paragraph1/naming/package/src/main/kotlin",
     ::PackageNaming,
-    listOf(RulesConfig(Warnings.PACKAGE_NAME_MISSING.name, true, mapOf("domainName" to "org.cqfn.diktat")))
+    listOf(RulesConfig("DIKTAT_COMMON", true, mapOf("domainName" to "org.cqfn.diktat")))
 ) {
 
     @Test
