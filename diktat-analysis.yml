@@ -119,8 +119,8 @@
 - name: HEADER_MISSING_OR_WRONG_COPYRIGHT
   enabled: true
   configuration:
-    isCopyrightMandatory: true
-    copyrightText: please enter your copyright text
+    isCopyrightMandatory: false
+    copyrightText: ''
 - name: HEADER_NOT_BEFORE_PACKAGE
   enabled: true
   configuration: {}

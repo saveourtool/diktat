@@ -14,16 +14,6 @@ open class ApplicationProperties(propertiesFileName: String) {
      */
     val properties: Properties = Properties()
 
-    private fun errorReadingConfig(propertiesFileName: String) {
-        log.error("Cannot read file $propertiesFileName with configuration properties")
-        exitProcess(EXIT_STATUS_MISSING_PROPERTIES)
-    }
-
-    companion object {
-        private val log = LoggerFactory.getLogger(ApplicationProperties::class.java)
-        private const val EXIT_STATUS_MISSING_PROPERTIES = 4
-    }
-
     init {
         val propStream = javaClass.classLoader.getResourceAsStream(propertiesFileName)
         if (propStream != null) {
@@ -35,5 +25,15 @@ open class ApplicationProperties(propertiesFileName: String) {
         } else {
             errorReadingConfig(propertiesFileName)
         }
+    }
+
+    private fun errorReadingConfig(propertiesFileName: String) {
+        log.error("Cannot read file $propertiesFileName with configuration properties")
+        exitProcess(EXIT_STATUS_MISSING_PROPERTIES)
+    }
+
+    companion object {
+        private val log = LoggerFactory.getLogger(ApplicationProperties::class.java)
+        private const val EXIT_STATUS_MISSING_PROPERTIES = 4
     }
 }

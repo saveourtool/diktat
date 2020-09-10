@@ -1,3 +1,7 @@
+/**
+ * Classes and extensions needed to read and parse rules configuration file
+ */
+
 package org.cqfn.diktat.common.config.rules
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
@@ -29,9 +33,9 @@ interface Rule {
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class RulesConfig(
-    val name: String,
-    val enabled: Boolean = true,
-    val configuration: Map<String, String>
+        val name: String,
+        val enabled: Boolean = true,
+        val configuration: Map<String, String>
 )
 
 /**
@@ -44,10 +48,6 @@ object EmptyConfiguration : RuleConfiguration(mapOf())
  * class returns the list of configurations that we have read from a yml: diktat-analysis.yml
  */
 open class RulesConfigReader(override val classLoader: ClassLoader) : JsonResourceConfigReader<List<RulesConfig>>() {
-    companion object {
-        val log: Logger = LoggerFactory.getLogger(RulesConfigReader::class.java)
-    }
-
     /**
      * Parse resource file into list of [RulesConfig]
      *
@@ -79,6 +79,10 @@ open class RulesConfigReader(override val classLoader: ClassLoader) : JsonResour
             classLoader.getResourceAsStream(resourceFileName)?.bufferedReader()
         }
     }
+
+    companion object {
+        val log: Logger = LoggerFactory.getLogger(RulesConfigReader::class.java)
+    }
 }
 
 // ================== utils for List<RulesConfig> from yml config
@@ -91,9 +95,10 @@ open class RulesConfigReader(override val classLoader: ClassLoader) : JsonResour
  */
 fun List<RulesConfig>.getRuleConfig(rule: Rule): RulesConfig? = this.find { it.name == rule.ruleName() }
 
-fun List<RulesConfig>.getCommonConfig(): RulesConfig? {
-    return this.find { it.name == DIKTAT_COMMON}
-}
+/**
+ * Get [RulesConfig] representing common configuration part that can be used in any rule
+ */
+fun List<RulesConfig>.getCommonConfig() = find { it.name == DIKTAT_COMMON }
 
 /**
  * checking if in yml config particular rule is enabled or disabled
