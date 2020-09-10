@@ -35,7 +35,7 @@ class RulesConfigJsonTest {
 
         allRulesFromConfig.forEach { warning ->
             val warningName = warning.name
-            val ruleFound = allRulesFromCode.find { it.ruleName() == warningName } != null
+            val ruleFound = allRulesFromCode.find { it.ruleName() == warningName || warningName == "DIKTAT_COMMON" } != null
             Assertions.assertTrue(ruleFound) {
                 """
                     Found rule (warning) in rules-config.json: <$warningName> that does not exist in the code. Misprint or configuration was renamed? 
@@ -46,7 +46,7 @@ class RulesConfigJsonTest {
 
     private fun readAllRulesFromConfig() =
             RulesConfigReader(javaClass.classLoader)
-                    .readResource("rules-config.json") ?: listOf()
+                    .readResource("diktat-analysis.yml") ?: listOf()
 
     private fun readAllRulesFromCode() =
             Warnings.values()
