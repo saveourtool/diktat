@@ -45,6 +45,7 @@ class KotlinParser {
      * Else, try to create node based on text.
      * If this node will contain ERROR_ELEMENT type children this mean that cannot create node based on this text
      */
+    @Suppress("UnsafeCallOnNullableType")
     private fun makeNode(text: String, isPackage: Boolean = false): ASTNode? {
         val compilerConfiguration = CompilerConfiguration()
         compilerConfiguration.put(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, MessageCollector.NONE) // mute the output logging to process it themselves
