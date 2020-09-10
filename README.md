@@ -29,11 +29,11 @@ The full list of available supported rules and inspections is [here](info/availa
    $ curl -sSLO https://central.artipie.com/akuleshov7/files/ktlint && chmod a+x ktlint
    ```
    
-2. Load diKTat manually: [here](https://github.com/cqfn/diKTat/releases/download/v1.0.2/diktat.jar)
+2. Load diKTat manually: [here](https://github.com/cqfn/diKTat/releases/download/v0.0.4/diktat.jar)
 
    **OR** use curl:
    ```bash
-   $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v1.0.2/diktat.jar
+   $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v0.0.4/diktat.jar
    ```
    
 3. Finally, run KTlint (with diKTat injected) to check your `*.kt` files in `dir/your/dir`:
@@ -111,7 +111,7 @@ Then, add this plugin:
               <dependency>
                   <groupId>org.cqfn.diktat</groupId>
                   <artifactId>diktat-rules</artifactId>
-                  <version>1.0.2</version> <!-- replace it with diktat latest version -->
+                  <version>0.0.4</version> <!-- replace it with diktat latest version -->
                   <exclusions>
                       <exclusion>
                           <groupId>org.slf4j</groupId>
@@ -155,7 +155,7 @@ dependencies {
     }
 
     // diktat ruleset
-    ktlint("org.cqfn.diktat:diktat-rules:1.0.2") {
+    ktlint("org.cqfn.diktat:diktat-rules:0.0.4") {
         exclude("org.slf4j", "slf4j-log4j12")
     }
 }
