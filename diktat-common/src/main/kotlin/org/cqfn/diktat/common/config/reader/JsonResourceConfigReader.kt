@@ -1,9 +1,9 @@
 package org.cqfn.diktat.common.config.reader
 
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.io.BufferedReader
 import java.io.IOException
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 /**
  * This class is used to read some resource in any format that you will specify.
@@ -16,10 +16,14 @@ import java.io.IOException
  * @param <T> - class name parameter that will be used in calculation of classpath
  */
 abstract class JsonResourceConfigReader<T> {
+    /**
+     * The [ClassLoader] used to load the requested resource.
+     */
     abstract val classLoader: ClassLoader
 
     /**
      * @param resourceFileName - related path to a file from resources
+     * @return object of type [T] if resource has been parsed successfully
      */
     fun readResource(resourceFileName: String): T? {
         val resourceStream = getConfigFile(resourceFileName)
@@ -37,13 +41,18 @@ abstract class JsonResourceConfigReader<T> {
 
     /**
      * you can override this method in case you would like to read a file not simply from resources
+     *
+     * @param resourceFileName name of the resource which will be loaded using [classLoader]
+     * @return [BufferedReader] representing loaded resource
      */
-    protected open fun getConfigFile(resourceFileName: String): BufferedReader? {
-        return classLoader.getResourceAsStream(resourceFileName)?.bufferedReader()
-    }
+    protected open fun getConfigFile(resourceFileName: String): BufferedReader? =
+        classLoader.getResourceAsStream(resourceFileName)?.bufferedReader()
 
     /**
      * you can specify your own parser, in example for parsing stream as a json
+     *
+     * @param fileStream a [BufferedReader] representing loaded resource file
+     * @return resource parsed as type [T]
      */
     protected abstract fun parseResource(fileStream: BufferedReader): T
 

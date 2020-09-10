@@ -11,6 +11,6 @@ class ConfigReaderTest {
         assert(rulesConfigList?.filter { it.name == "CLASS_NAME_INCORRECT" && it.enabled }!!.isNotEmpty())
         assert(rulesConfigList.find { it.name == "CLASS_NAME_INCORRECT" }?.configuration == mapOf<String, String>())
         assert(rulesConfigList.find { it.name == "DIKTAT_COMMON" }!!
-                .configuration == mapOf("domainName" to "org.cqfn.diktat"))
+            .configuration == mapOf("domainName" to "org.cqfn.diktat"))
     }
 }
