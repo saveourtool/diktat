@@ -25,7 +25,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-release-
       - name: Set environment variables
-        run: echo ::set-env name=RELEASE_VERSION::${GITHUB_REF#'refs/tags/v'}
+        run: |
+          echo ::set-env name=PREVIOUS_VERSION::$(printf 'VERSION=${diktat-check.version}\n0\n' | mvn help:evaluate | grep '^VERSION' | cut -d= -f2)
+          echo ::set-env name=RELEASE_VERSION::${GITHUB_REF#'refs/tags/v'}
       - name: Set version
         run: mvn -B versions:set -DnewVersion=${{ env.RELEASE_VERSION }} versions:commit
       - name: Create settings.xml
@@ -54,16 +56,21 @@ jobs:
           asset_path: ./diktat-ruleset/target/diktat-ruleset-${{ env.RELEASE_VERSION }}.jar
           asset_name: diktat-ruleset-${{ env.RELEASE_VERSION }}.jar
           asset_content_type: application/zip
-      - name: Set next snapshot version
+      - name: Update versions in pom.xml and documentation
+        id: update-versions
         run: |
           mvn -B versions:set -DnextSnapshot=true -DprocessAllModules=true versions:commit
-          git add .
-          git config --local user.email "diktat@cqfn.org"
-          git config --local user.name "diktat_build"
-          git commit -m "Prepare next development iteration"
-      - name: Push changes
-        uses: ad-m/github-push-action@master
+          mvn versions:set-property -Dproperty=diktat-check.version -DnewVersion=${{ env.RELEASE_VERSION }}
+          sed -i "s/$PREVIOUS_VERSION/$RELEASE_VERSION/g" README.md
+          sed -i "s/$PREVIOUS_VERSION/$RELEASE_VERSION/g" build.gradle.kts
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: master
-          tags: false
+          author: GitHub <noreply@github.com>
+          commit-message: Prepare next development iteration after release ${{ env.RELEASE_VERSION }}
+          branch: infra/diktat-version-update-to-${{ env.RELEASE_VERSION }}
+          title: Update versions in pom.xml and documentation after ${{ env.RELEASE_VERSION }} release
+          body: |
+            * Versions are updated in pom.xml, README.md and build.gradle.kts
+            * Current project version is incremented to the next snapshot
+          base: master
