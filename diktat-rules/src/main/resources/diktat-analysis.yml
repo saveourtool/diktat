@@ -1,9 +1,6 @@
 - name: DIKTAT_COMMON
-  enabled: true
   configuration:
-    isCopyrightMandatory: true
-    domainName: please enter your domain name
-    copyrightText: please enter your copyright text
+    domainName: org.cqfn.diktat
 - name: CLASS_NAME_INCORRECT
   enabled: true
   configuration: {}
@@ -120,7 +117,9 @@
   configuration: {}
 - name: HEADER_MISSING_OR_WRONG_COPYRIGHT
   enabled: true
-  configuration: {}
+  configuration:
+    isCopyrightMandatory: true
+    copyrightText: please enter your copyright text
 - name: HEADER_NOT_BEFORE_PACKAGE
   enabled: true
   configuration: {}

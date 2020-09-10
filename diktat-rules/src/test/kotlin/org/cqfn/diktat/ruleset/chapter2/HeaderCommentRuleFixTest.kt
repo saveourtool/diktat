@@ -14,7 +14,7 @@ class HeaderCommentRuleFixTest : FixTestBase(
         "test/paragraph2/header",
         ::HeaderCommentRule,
         listOf(
-                RulesConfig("DIKTAT_COMMON", true,
+                RulesConfig("HEADER_MISSING_OR_WRONG_COPYRIGHT", true,
                         mapOf(
                                 "isCopyrightMandatory" to "true",
                                 "copyrightText" to "Copyright (c) Huawei Technologies Co., Ltd. 2020-2020. All rights reserved.")
