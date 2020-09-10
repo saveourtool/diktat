@@ -10,7 +10,7 @@ import com.pinterest.ktlint.core.ast.isLeaf
 import com.pinterest.ktlint.core.ast.parent
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.common.config.rules.getRuleConfig
+import org.cqfn.diktat.common.config.rules.getCommonConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.INCORRECT_PACKAGE_SEPARATOR
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_CASE
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_PATH
@@ -60,10 +60,9 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
         isFixMode = autoCorrect
         emitWarn = emit
 
-        val domainNameConfiguration = configRules.getRuleConfig(PACKAGE_NAME_MISSING)?.configuration
+        val domainNameConfiguration = configRules.getCommonConfig()?.configuration
         if (domainNameConfiguration == null) {
-            log.error("Not able to find an external configuration for domain name in the configuration of" +
-                " ${PACKAGE_NAME_MISSING.name} check (is it missing in json config?)")
+            log.error("Not able to find an external configuration for domain name in the common configuration (is it missing in yml config?)")
         }
         val configuration = PackageNamingConfiguration(domainNameConfiguration ?: mapOf())
         domainName = configuration.domainName
@@ -257,7 +256,7 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
     }
 
     /**
-     * this class represents json-map configuration with the only one field (domainName) - can be used for json parsing
+     * this class represents yml-map configuration with the only one field (domainName) - can be used for yml parsing
      */
     class PackageNamingConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
         val domainName by config
