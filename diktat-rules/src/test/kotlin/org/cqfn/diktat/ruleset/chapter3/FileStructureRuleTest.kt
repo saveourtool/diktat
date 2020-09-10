@@ -2,6 +2,7 @@ package org.cqfn.diktat.ruleset.chapter3
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
+import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_WILDCARD_IMPORTS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_CONTAINS_ONLY_COMMENTS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_INCORRECT_BLOCKS_ORDER
@@ -16,6 +17,16 @@ import org.junit.jupiter.api.Test
 
 class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
     private val ruleId = "$DIKTAT_RULE_SET_ID:file-structure"
+
+    private val rulesConfigListWildCardImport: List<RulesConfig> = listOf(
+            RulesConfig(FILE_WILDCARD_IMPORTS.name, true,
+                    mapOf("allowedWildcards" to "import org.cqfn.diktat.example.*"))
+    )
+
+    private val rulesConfigListWildCardImports: List<RulesConfig> = listOf(
+            RulesConfig(FILE_WILDCARD_IMPORTS.name, true,
+                    mapOf("allowedWildcards" to "import org.cqfn.diktat.example.*, import org.cqfn.diktat.ruleset.constants.Warnings.*"))
+    )
 
     @Test
     @Tag(WarningNames.FILE_CONTAINS_ONLY_COMMENTS)
@@ -106,6 +117,35 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
                 LintError(4, 1, ruleId, "${FILE_NO_BLANK_LINE_BETWEEN_BLOCKS.warnText()} @file:JvmName(\"Foo\")", true),
                 LintError(7, 1, ruleId, "${FILE_NO_BLANK_LINE_BETWEEN_BLOCKS.warnText()} package org.cqfn.diktat.example", true),
                 LintError(8, 1, ruleId, "${FILE_NO_BLANK_LINE_BETWEEN_BLOCKS.warnText()} import org.cqfn.diktat.example.Foo", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.FILE_WILDCARD_IMPORTS)
+    fun `wildcard imports are used but with config`() {
+        lintMethod(
+                """
+                |package org.cqfn.diktat.example
+                |
+                |import org.cqfn.diktat.example.*
+                |
+                |class Example { }
+            """.trimMargin(),rulesConfigList = rulesConfigListWildCardImport
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.FILE_WILDCARD_IMPORTS)
+    fun `wildcard imports are used but with several imports in config`() {
+        lintMethod(
+                """
+                |package org.cqfn.diktat.example
+                |
+                |import org.cqfn.diktat.example.*
+                |import org.cqfn.diktat.ruleset.constants.Warnings.*
+                |
+                |class Example { }
+            """.trimMargin(),rulesConfigList = rulesConfigListWildCardImports
         )
     }
 }
