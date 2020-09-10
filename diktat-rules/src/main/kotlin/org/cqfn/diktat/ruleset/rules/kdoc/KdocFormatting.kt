@@ -138,11 +138,9 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
             val hasSubject = tag.getSubjectName()?.isNotBlank() ?: false
             if (!hasSubject && tag.getContent().isBlank()) return@filter false
 
-            //Check if space before KDOC_TEXT is more than one and it hasn't new line
             val isSpaceBeforeContentError = tag.node.findChildBefore(KDOC_TEXT, WHITE_SPACE).let { it?.text != " "
                     && !(it?.isWhiteSpaceWithNewline() ?: false) }
 
-            //Check if space after KDOC_TAG_NAME is more than one and it hasn't new line
             val isSpaceAfterTagError = tag.node.findChildAfter(KDOC_TAG_NAME, WHITE_SPACE).let { it?.text != " "
                     && !(it?.isWhiteSpaceWithNewline() ?: false) }
 
