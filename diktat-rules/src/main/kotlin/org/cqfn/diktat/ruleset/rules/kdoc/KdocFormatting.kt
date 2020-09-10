@@ -139,14 +139,14 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
             if (!hasSubject && tag.getContent().isBlank()) return@filter false
 
             //Check if space before KDOC_TEXT is more than one and it hasn't new line
-            val isLeftSpaceError = (tag.node.findChildBefore(KDOC_TEXT, WHITE_SPACE)?.text != " "
-                    && !(tag.node.findChildBefore(KDOC_TEXT, WHITE_SPACE)?.isWhiteSpaceWithNewline() ?: false))
+            val isSpaceBeforeContentError = tag.node.findChildBefore(KDOC_TEXT, WHITE_SPACE).let { it?.text != " "
+                    && !(it?.isWhiteSpaceWithNewline() ?: false) }
 
             //Check if space after KDOC_TAG_NAME is more than one and it hasn't new line
-            val isRightSpaceError = (tag.node.findChildAfter(KDOC_TAG_NAME, WHITE_SPACE)?.text != " "
-                    && !(tag.node.findChildAfter(KDOC_TAG_NAME, WHITE_SPACE)?.isWhiteSpaceWithNewline() ?: false))
+            val isSpaceAfterTagError = tag.node.findChildAfter(KDOC_TAG_NAME, WHITE_SPACE).let { it?.text != " "
+                    && !(it?.isWhiteSpaceWithNewline() ?: false) }
 
-            hasSubject && isLeftSpaceError || isRightSpaceError
+            hasSubject && isSpaceBeforeContentError || isSpaceAfterTagError
         }?.forEach { tag ->
             KDOC_WRONG_SPACES_AFTER_TAG.warnAndFix(configRules, emitWarn, isFixMode,
                 "@${tag.name!!}", tag.node.startOffset) {
