@@ -20,7 +20,7 @@ interface Rule {
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class RulesConfig(
     val name: String,
-    val enabled: Boolean = false,
+    val enabled: Boolean = true,
     val configuration: Map<String, String>
 )
 

@@ -148,7 +148,8 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
                 """
                     package org.cqfn.diktat.ruleset.chapter1
                 """.trimIndent(),
-                fileName = "~/diktat/diktat-rules/src/test/kotlin/org/cqfn/diktat/ruleset/chapter1/EnumValueCaseTest.kt"
+                fileName = "~/diktat/diktat-rules/src/test/kotlin/org/cqfn/diktat/ruleset/chapter1/EnumValueCaseTest.kt",
+                rulesConfigList = rulesConfigList
         )
 
         lintMethod(
@@ -156,7 +157,8 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
                     package org.cqfn.diktat.chapter1
                 """.trimIndent(),
                 LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} org.cqfn.diktat.ruleset.chapter1", true),
-                fileName = "~/diktat/diktat-rules/src/test/kotlin/org/cqfn/diktat/ruleset/chapter1/EnumValueCaseTest.kt"
+                fileName = "~/diktat/diktat-rules/src/test/kotlin/org/cqfn/diktat/ruleset/chapter1/EnumValueCaseTest.kt",
+                rulesConfigList = rulesConfigList
         )
     }
 
@@ -167,7 +169,8 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
                 """
                     |package org.cqfn.diktat.test.processing
                 """.trimMargin(),
-                fileName = "/home/testu/project/module/src/test/kotlin/org/cqfn/diktat/test/processing/SpecialPackageNaming.kt"
+                fileName = "/home/testu/project/module/src/test/kotlin/org/cqfn/diktat/test/processing/SpecialPackageNaming.kt",
+                rulesConfigList = rulesConfigList
         )
 
         lintMethod(

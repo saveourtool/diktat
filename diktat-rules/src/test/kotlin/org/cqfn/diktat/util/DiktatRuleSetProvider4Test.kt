@@ -17,7 +17,7 @@ import kotlin.reflect.jvm.reflect
  */
 class DiktatRuleSetProvider4Test(private val ruleSupplier: (rulesConfigList: List<RulesConfig>) -> Rule,
                                  rulesConfigList: List<RulesConfig>?) : RuleSetProvider {
-    private val rulesConfigList: List<RulesConfig>? = rulesConfigList ?: RulesConfigReader(javaClass.classLoader).readResource("../diktat-analysis.yml")
+    private val rulesConfigList: List<RulesConfig>? = rulesConfigList ?: RulesConfigReader(javaClass.classLoader).readResource("diktat-analysis.yml")
 
     override fun get(): RuleSet {
         return RuleSet(
