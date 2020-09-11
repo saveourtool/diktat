@@ -516,7 +516,7 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
                                 for ((
                                     _,
                                     _,
-                                    year, // trailing comma
+                                    year
                                 ) in cars) {
                                     meanValue += year
                                 }
