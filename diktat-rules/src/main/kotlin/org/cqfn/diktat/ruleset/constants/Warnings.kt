@@ -35,6 +35,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     FILE_NAME_INCORRECT(true, "file name is incorrect - it should end with .kt extension and be in PascalCase"),
     FILE_NAME_MATCH_CLASS(true, "file name is incorrect - it should match with the class described in it if there is the only one class declared"),
     EXCEPTION_SUFFIX(true, "all exception classes should have \"Exception\" suffix"),
+    CONFUSING_IDENTIFIER_NAMING(false, "it's a bad name for identifier"),
 
     // ======== chapter 2 ========
     MISSING_KDOC_TOP_LEVEL(false, "all public and internal top-level classes and functions should have Kdoc"),

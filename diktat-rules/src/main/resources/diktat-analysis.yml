@@ -227,3 +227,6 @@
 - name: WRONG_MULTIPLE_MODIFIERS_ORDER
   enabled: true
   configuration: {}
+- name: CONFUSING_IDENTIFIER_NAMING
+  enabled: true
+  configuration: {}
