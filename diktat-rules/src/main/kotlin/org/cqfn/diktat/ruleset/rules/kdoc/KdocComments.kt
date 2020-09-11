@@ -11,6 +11,7 @@ import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.common.config.rules.TestAnchorsConfiguration
 import org.cqfn.diktat.common.config.rules.getCommonConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_CLASS_ELEMENTS
@@ -40,7 +41,7 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
         emitWarn = emit
         isFixMode = autoCorrect
 
-        val config = KdocCommentsConfiguration(configRules.getCommonConfig()?.configuration ?: mapOf())
+        val config = TestAnchorsConfiguration(configRules.getCommonConfig()?.configuration ?: mapOf())
         val fileName = node.getRootNode().getUserData(FILE_PATH_USER_DATA_KEY)!!
         if (!(node.hasTestAnnotation() || isLocatedInTest(fileName.splitPathToDirs(), config.testAnchors)))
             when (node.elementType) {
@@ -80,11 +81,4 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
             warning.warn(configRules, emitWarn, isFixMode, name!!.text, node.startOffset)
         }
     }
-}
-
-private class KdocCommentsConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
-    /**
-     * Names of directories which indicate that this is path to tests. Will be checked like "src/$testAnchor" for each entry.
-     */
-    val testAnchors = config.getOrDefault("testDirs", "test").split(',')
 }

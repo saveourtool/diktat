@@ -21,6 +21,7 @@ import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.WHEN_CONDITION_WITH_EXPRESSION
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.common.config.rules.TestAnchorsConfiguration
 import org.cqfn.diktat.common.config.rules.getCommonConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_ON_FUNCTION
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_TRIVIAL_KDOC_ON_FUNCTION
@@ -62,7 +63,7 @@ class KdocMethods(private val configRules: List<RulesConfig>) : Rule("kdoc-metho
         emitWarn = emit
 
         if (node.elementType == FUN && node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside()) {
-            val config = KdocMethodsConfiguration(configRules.getCommonConfig()?.configuration ?: mapOf())
+            val config = TestAnchorsConfiguration(configRules.getCommonConfig()?.configuration ?: mapOf())
             val fileName = node.getRootNode().getUserData(FILE_PATH_USER_DATA_KEY)!!
             val isTestMethod = node.hasTestAnnotation() || isLocatedInTest(fileName.splitPathToDirs(), config.testAnchors)
             if (!isTestMethod && !node.isStandardMethod() && !node.isSingleLineGetterOrSetter()) {
@@ -222,11 +223,4 @@ class KdocMethods(private val configRules: List<RulesConfig>) : Rule("kdoc-metho
     }
 
     private fun ASTNode.isSingleLineGetterOrSetter() = isGetterOrSetter() && (expressionBodyTypes.any { hasChildOfType(it) } || getBodyLines().size == 1)
-}
-
-private class KdocMethodsConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
-    /**
-     * Names of directories which indicate that this is path to tests. Will be checked like "src/$testAnchor" for each entry.
-     */
-    val testAnchors = config.getOrDefault("testDirs", "test").split(',')
 }

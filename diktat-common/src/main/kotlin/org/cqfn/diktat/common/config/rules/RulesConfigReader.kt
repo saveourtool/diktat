@@ -84,6 +84,10 @@ open class RulesConfigReader(override val classLoader: ClassLoader) : JsonResour
     }
 }
 
+open class TestAnchorsConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
+    val testAnchors = config.getOrDefault("testDirs", "test").split(',')
+}
+
 // ================== utils for List<RulesConfig> from yml config
 
 /**
