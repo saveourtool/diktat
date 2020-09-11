@@ -28,7 +28,6 @@ jobs:
         run: |
           echo ::set-env name=PREVIOUS_VERSION::$(printf 'VERSION=${diktat-check.version}\n0\n' | mvn help:evaluate | grep '^VERSION' | cut -d= -f2)
           echo ::set-env name=RELEASE_VERSION::${GITHUB_REF#'refs/tags/v'}
-          mkdir .gnupg
           echo ${{ secrets.DIKTAT_GPG_PUB }} > ~/diktat.pubring.gpg
           echo ${{ secrets.DIKTAT_GPG_SEC }} > ~/diktat.secring.gpg
           gpg --import ~/diktat.pubring.gpg
