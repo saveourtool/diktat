@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
  * Special test that checks that developer has not forgotten to add his warning to a diktat-analysis.yml
  * This file is needed to be in tact with latest changes in Warnings.kt
  */
-class RulesConfigJsonTest {
+class RulesConfigTest {
     @Test
     fun `read rules config json`() {
         val allRulesFromConfig = readAllRulesFromConfig()
@@ -26,8 +26,8 @@ class RulesConfigJsonTest {
             val ruleJson = jacksonMapper.writeValueAsString(jsonCodeSnippet)
             Assertions.assertTrue(foundRule != null) {
                 """
-                   Cannot find warning ${rule.ruleName()} in rules-config.json.
-                   You can fix it by adding the following code below to rules-config.json:
+                   Cannot find warning ${rule.ruleName()} in diktat-analysis.yml.
+                   You can fix it by adding the following code below to diktat-analysis.yml:
                    $ruleJson
                 """
             }
@@ -38,7 +38,7 @@ class RulesConfigJsonTest {
             val ruleFound = allRulesFromCode.find { it.ruleName() == warningName || warningName == "DIKTAT_COMMON" } != null
             Assertions.assertTrue(ruleFound) {
                 """
-                    Found rule (warning) in rules-config.json: <$warningName> that does not exist in the code. Misprint or configuration was renamed? 
+                    Found rule (warning) in diktat-analysis.yml: <$warningName> that does not exist in the code. Misprint or configuration was renamed? 
                 """.trimIndent()
             }
         }

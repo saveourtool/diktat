@@ -67,9 +67,6 @@
 - name: MISSING_KDOC_CLASS_ELEMENTS
   enabled: true
   configuration: {}
-- name: BLANK_LINE_AFTER_KDOC
-  enabled: true
-  configuration: {}
 - name: KDOC_WITHOUT_PARAM_TAG
   enabled: true
   configuration: {}
@@ -228,5 +225,17 @@
   enabled: true
   configuration: {}
 - name: CONFUSING_IDENTIFIER_NAMING
+  enabled: true
+  configuration: {}
+- name: WRONG_NEWLINES_AROUND_KDOC
+  enabled: true
+  configuration: {}
+- name: FIRST_COMMENT_NO_SPACES
+  enabled: true
+  configuration: {}
+- name: COMMENT_WHITE_SPACE
+  enabled: true
+  configuration: {}
+- name: IF_ELSE_COMMENTS
   enabled: true
   configuration: {}
