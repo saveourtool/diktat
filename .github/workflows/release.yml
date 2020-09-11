@@ -21,21 +21,24 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-release-${{ hashFiles('**/pom.xml') }}
+          key: ${{ runner.os }}-maven-master-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ runner.os }}-maven-release-
-      - name: Set environment variables
+            ${{ runner.os }}-maven-master-
+      - name: Setup environment
         run: |
           echo ::set-env name=PREVIOUS_VERSION::$(printf 'VERSION=${diktat-check.version}\n0\n' | mvn help:evaluate | grep '^VERSION' | cut -d= -f2)
           echo ::set-env name=RELEASE_VERSION::${GITHUB_REF#'refs/tags/v'}
+          mkdir .gnupg
+          echo ${{ secrets.DIKTAT_GPG_PUB }} > .gnupg/pubring.gpg
+          echo ${{ secrets.DIKTAT_GPG_SEC }} > .gnupg/secring.gpg
       - name: Set version
         run: mvn -B versions:set -DnewVersion=${{ env.RELEASE_VERSION }} versions:commit
       - name: Create settings.xml
         uses: whelk-io/maven-settings-xml-action@v9
         with:
-          servers: '[{ "id": "central", "username": "${{ secrets.CENTRAL_USER }}", "password": "${{ secrets.CENTRAL_PASSWORD }}" }]'
+          servers: '[{ "id": "ossrh", "username": "${{ secrets.SONATYPE_USER }}", "password": "${{ secrets.SONATYPE_PASSWORD }}" }]'
       - name: Deploy artifacts
-        run: mvn -B clean deploy
+        run: mvn -B clean deploy -Prelease -Dpassphrase=${{ secrets.DIKTAT_GPG_PASS }}
       - name: Create Github Release
         id: create_release
         uses: actions/create-release@v1
