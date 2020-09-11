@@ -504,7 +504,7 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
     }
 
     @Test
-    @Tag(WarningNames.BACKTICKS_PROHIBITED)
+    @Tag(WarningNames.VARIABLE_NAME_INCORRECT_FORMAT)
     fun `should not trigger on underscore`() {
         val code =
                 """
