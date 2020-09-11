@@ -23,6 +23,7 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.psi.KtAnnotationEntry
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.psiUtil.parents
@@ -304,15 +305,19 @@ fun ASTNode?.isAccessibleOutside(): Boolean =
         }
 
 fun ASTNode.hasSuppress(warningName: String): Boolean {
-    return if (elementType == FILE) {
-        findAllNodesWithSpecificType(ANNOTATION_ENTRY).any {
-            it.text.contains("Suppress(\"$warningName\")")
-        }
+    return if (findChildByType(MODIFIER_LIST) != null) {
+        findChildByType(MODIFIER_LIST)?.findAllNodesWithSpecificType(ANNOTATION_ENTRY)?.any {
+            (it.psi as KtAnnotationEntry).shortName.toString() == "Suppress"
+                    && (it.psi).text.contains(warningName)
+        } ?: false
     } else {
-        parent({
-            it.findAllNodesWithSpecificType(ANNOTATION_ENTRY).any {
-                it.text.contains("Suppress(\"$warningName\")")
-            }
+        parent({ node ->
+            node.findChildByType(MODIFIER_LIST)
+                    ?.findAllNodesWithSpecificType(ANNOTATION_ENTRY)
+                    ?.any {
+                        (it.psi as KtAnnotationEntry).shortName.toString() == "Suppress"
+                                && (it.psi).text.contains(warningName)
+            } ?: false
         }) != null
     }
 }
