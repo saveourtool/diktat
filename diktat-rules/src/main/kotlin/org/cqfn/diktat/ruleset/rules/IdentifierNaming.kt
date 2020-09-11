@@ -196,7 +196,7 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
             else -> ""
 
         }
-        CONFUSING_IDENTIFIER_NAMING.warn(configRules, emitWarn, false, warnText, variableName.startOffset)
+        CONFUSING_IDENTIFIER_NAMING.warn(configRules, emitWarn, false, warnText, variableName.startOffset, variableName)
     }
 
     /**
