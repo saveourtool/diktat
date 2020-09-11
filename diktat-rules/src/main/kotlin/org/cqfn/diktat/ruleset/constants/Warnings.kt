@@ -4,6 +4,10 @@ import org.cqfn.diktat.common.config.rules.Rule
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.isRuleEnabled
 
+/**
+ * This class represent individual inspections of diktat code style.
+ * A [Warnings] entry contains rule name, warning message and is used in code check.
+ */
 @Suppress("ForbiddenComment", "MagicNumber")
 enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: String) : Rule {
     // ======== chapter 1 ========
@@ -29,6 +33,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     FILE_NAME_INCORRECT(true, "file name is incorrect - it should end with .kt extension and be in PascalCase"),
     FILE_NAME_MATCH_CLASS(true, "file name is incorrect - it should match with the class described in it if there is the only one class declared"),
     EXCEPTION_SUFFIX(true, "all exception classes should have \"Exception\" suffix"),
+    CONFUSING_IDENTIFIER_NAMING(false, "it's a bad name for identifier"),
 
     // ======== chapter 2 ========
     MISSING_KDOC_TOP_LEVEL(false, "all public and internal top-level classes and functions should have Kdoc"),
@@ -85,7 +90,10 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     WRONG_MULTIPLE_MODIFIERS_ORDER(true, "sequence of modifiers is incorrect"),
     ;
 
-    override fun ruleName(): String = this.name
+    /**
+     * Name of the inspection, it is used in configuration and in output.
+     */
+    override fun ruleName() = this.name
 
     fun warnText(): String = "[${ruleName()}] ${this.warn}:"
 

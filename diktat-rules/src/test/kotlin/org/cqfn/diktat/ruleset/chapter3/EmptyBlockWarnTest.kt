@@ -37,7 +37,7 @@ class EmptyBlockWarnTest : LintTestBase(::EmptyBlock) {
                     |    }
                     |}
                 """.trimMargin(),
-                LintError(5, 10, ruleId, "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} empty blocks are forbidden unless it is function with override keyword", true)
+                LintError(5, 10, ruleId, "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} empty blocks are forbidden unless it is function with override keyword", false)
         )
     }
 
@@ -53,7 +53,7 @@ class EmptyBlockWarnTest : LintTestBase(::EmptyBlock) {
                     |    else {}
                     |}
                 """.trimMargin(),
-                LintError(5, 10, ruleId, "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} empty blocks are forbidden unless it is function with override keyword", true),
+                LintError(5, 10, ruleId, "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} empty blocks are forbidden unless it is function with override keyword", false),
                 rulesConfigList = rulesConfigListIgnoreEmptyBlock
         )
     }
@@ -130,7 +130,7 @@ class EmptyBlockWarnTest : LintTestBase(::EmptyBlock) {
                     |   val y = listOf<Int>().map {} 
                     |}
                 """.trimMargin(),
-                LintError(2, 30, ruleId, "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} empty blocks are forbidden unless it is function with override keyword", true)
+                LintError(2, 30, ruleId, "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} empty blocks are forbidden unless it is function with override keyword", false)
         )
     }
 

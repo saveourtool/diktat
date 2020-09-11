@@ -7,7 +7,7 @@ This pull request closes <!-- insert related issue number -->
 * [ ] Implemented Rule, added Warnings
 * [ ] Added tests on checks
 * [ ] Added tests on fixers
-* [ ] Updated rules-config.json
+* [ ] Updated diktat-analysis.yml
 * [ ] Updated available-rules.md
 
 ## Fixme

@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 class PackageNamingFixTest : FixTestBase(
     "test/paragraph1/naming/package",
     ::PackageNaming,
-    listOf(RulesConfig(PACKAGE_NAME_MISSING.name, true, mapOf("domainName" to "org.cqfn.diktat")))
+    listOf(RulesConfig("DIKTAT_COMMON", true, mapOf("domainName" to "org.cqfn.diktat")))
 ) {
     @Test
     @Tag(WarningNames.PACKAGE_NAME_INCORRECT_CASE)
