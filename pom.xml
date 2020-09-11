@@ -25,6 +25,19 @@
         <url>http://github.com/cqfn/diktat/tree/master</url>
     </scm>
 
+    <developers>
+        <developer>
+            <name>Andrey Kuleshov</name>
+            <email>andrewkuleshov7@gmail.com</email>
+            <url>https://github.com/akuleshov7</url>
+        </developer>
+        <developer>
+            <name>Peter Trifanov</name>
+            <email>peter.trifanov@mail.ru</email>
+            <url>https://github.com/petertrr</url>
+        </developer>
+    </developers>
+
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -274,8 +287,7 @@
                         <phase>none</phase>
                         <configuration>
                             <target name="ktlint">
-                                <java taskname="ktlint" dir="${maven.multiModuleProjectDirectory}" fork="true"
-                                      failonerror="true"
+                                <java taskname="ktlint" dir="${maven.multiModuleProjectDirectory}" fork="true" failonerror="true"
                                       classpathref="maven.plugin.classpath" classname="com.pinterest.ktlint.Main">
                                     <arg value="${project.basedir}/src/main/kotlin/**/*.kt"/>
                                     <arg value="${project.basedir}/src/test/kotlin/**/*.kt"/>
