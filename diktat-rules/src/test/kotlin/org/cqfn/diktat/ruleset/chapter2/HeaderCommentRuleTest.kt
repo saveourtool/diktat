@@ -24,6 +24,11 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
             mapOf("copyrightText" to "Copyright (c) Huawei Technologies Co., Ltd. 2012-2020. All rights reserved."))
     )
 
+    private val rulesConfigListYear: List<RulesConfig> = listOf(
+            RulesConfig("HEADER_MISSING_OR_WRONG_COPYRIGHT", true,
+                    mapOf("copyrightText" to "Copyright (c) 2020 Huawei Technologies Co., Ltd. All rights reserved."))
+    )
+
     private val rulesConfigListCn: List<RulesConfig> = listOf(
         RulesConfig("HEADER_MISSING_OR_WRONG_COPYRIGHT", true,
             mapOf("copyrightText" to "版权所有 (c) 华为技术有限公司 2012-2020"))
@@ -146,6 +151,52 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
             """.trimIndent(),
                 LintError(1, 1, ruleId, "${HEADER_MISSING_OR_WRONG_COPYRIGHT.warnText()} $testFileName", true),
                 rulesConfigList = rulesConfigList
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_COPYRIGHT_YEAR)
+    fun `copyright year good`() {
+        lintMethod(
+                """
+                /*
+                 * Copyright (c) Huawei Technologies Co., Ltd. 2012-2020. All rights reserved.
+                 */
+                /**
+                 * Very useful description, why this file has two classes
+                 * foo bar baz
+                 */
+
+                package org.cqfn.diktat.example
+
+                class Example1 { }
+
+                class Example2 { }
+            """.trimIndent(),
+                rulesConfigList = rulesConfigList
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_COPYRIGHT_YEAR)
+    fun `copyright year good 2`() {
+        lintMethod(
+                """
+                /*
+                 * Copyright (c) 2020 Huawei Technologies Co., Ltd. All rights reserved.
+                 */
+                /**
+                 * Very useful description, why this file has two classes
+                 * foo bar baz
+                 */
+
+                package org.cqfn.diktat.example
+
+                class Example1 { }
+
+                class Example2 { }
+            """.trimIndent(),
+                rulesConfigList = rulesConfigListYear
         )
     }
 

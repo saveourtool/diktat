@@ -230,3 +230,6 @@
 - name: CONFUSING_IDENTIFIER_NAMING
   enabled: true
   configuration: {}
+- name: WRONG_COPYRIGHT_YEAR
+  enabled: true
+  configuration: {}
