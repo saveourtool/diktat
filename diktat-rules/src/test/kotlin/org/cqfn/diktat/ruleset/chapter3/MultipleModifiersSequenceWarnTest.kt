@@ -85,4 +85,16 @@ class MultipleModifiersSequenceWarnTest : LintTestBase(::MultipleModifiersSequen
                 LintError(4, 13, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} suspend should be on position 1, but is on position 2", true)
         )
     }
+
+    @Test
+    @Tag(WarningNames.WRONG_MULTIPLE_MODIFIERS_ORDER)
+    fun `check wrong annotation order`() {
+        lintMethod(
+                """
+                    |public @Annotation final fun foo() {
+                    |}
+                """.trimMargin(),
+                LintError(1, 8, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} @Annotation annotation should be before all modifiers", true)
+        )
+    }
 }

@@ -77,27 +77,36 @@ fun String.toLowerCamelCase(): String {
  * detecting the case of _this_ String and converting it to the right PascalCase (UpperCamel) case
  */
 @Suppress("ForbiddenComment")
-fun String.toPascalCase(): String {
-    // all letters UPPER -> Upper
-    if (all { it.isUpperCase() }) return this[0] + substring(1).toLowerCase()
-    // all letters lower -> Lower
-    if (all { it.isLowerCase() }) return this[0].toUpperCase() + substring(1)
-    // lowerCamel -> LowerCamel
-    if (isUpperSnakeCase()) return CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, this)
-    // lower_snake -> LowerSnake
-    if (isLowerSnakeCase()) return CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, this)
-
-    val idx = getFirstLetterOrDigit()
-    if (idx != -1) {
-        // any other format -> PascalCase
-        // changing first letter to uppercase and replacing several uppercase letters in raw to lowercase:
-        // example of change: [p]a[SC]a[_]l -> [P]a[Sc]a[L]
-        // FixMe: there is some discussion on how PascalN_Case should be resolved: to PascalNcase or to PascalnCase or PascalNCase (current version)
-        return this[idx].toUpperCase().toString() + convertUnknownCaseToCamel(substring(idx + 1), true)
+fun String.toPascalCase(): String = when {
+    all { it.isUpperCase() } -> {
+        // all letters UPPER -> Upper
+        this[0] + substring(1).toLowerCase()
     }
-
-    log.error("Not able to fix case format for: $this")
-    return this
+    all { it.isLowerCase() } -> {
+        // all letters lower -> Lower
+        this[0].toUpperCase() + substring(1)
+    }
+    isUpperSnakeCase() -> {
+        // lowerCamel -> LowerCamel
+        CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, this)
+    }
+    isLowerSnakeCase() -> {
+        // lower_snake -> LowerSnake
+        CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, this)
+    }
+    else -> {
+        val idx = getFirstLetterOrDigit()
+        if (idx != -1) {
+            // any other format -> PascalCase
+            // changing first letter to uppercase and replacing several uppercase letters in raw to lowercase:
+            // example of change: [p]a[SC]a[_]l -> [P]a[Sc]a[L]
+            // FixMe: there is some discussion on how PascalN_Case should be resolved: to PascalNcase or to PascalnCase or PascalNCase (current version)
+            this[idx].toUpperCase().toString() + convertUnknownCaseToCamel(substring(idx + 1), true)
+        } else {
+            log.error("Not able to fix case format for: $this")
+            this
+        }
+    }
 }
 
 private fun convertUnknownCaseToCamel(str: String, isFirstLetterCapital: Boolean): String {
