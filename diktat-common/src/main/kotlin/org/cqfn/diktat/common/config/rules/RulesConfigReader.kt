@@ -11,7 +11,6 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.readValue
 import java.io.BufferedReader
 import java.io.File
-import java.util.stream.Collectors
 import org.cqfn.diktat.common.config.reader.JsonResourceConfigReader
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
