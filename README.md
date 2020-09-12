@@ -84,7 +84,7 @@ Add this plugin to your pom.xml:
               <dependency>
                   <groupId>com.pinterest</groupId>
                   <artifactId>ktlint</artifactId>
-                  <version>0.37.1</version> <!-- use this fork to be compatible with diktat -->
+                  <version>0.37.1</version>
                   <exclusions>
                       <exclusion>  <!-- without this exclusion both rulesets are enabled which we discourage -->
                           <groupId>com.pinterest.ktlint</groupId>
