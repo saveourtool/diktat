@@ -201,6 +201,24 @@ class KdocFormattingTest : LintTestBase(::KdocFormatting) {
     }
 
     @Test
+    @Tag(WarningNames.KDOC_WRONG_SPACES_AFTER_TAG)
+    fun `check end of the line after tag isn't error`() {
+        val invalidCode = """
+            /**
+             * @implNote
+             * implNote text
+             *
+             * @param a dummy int
+             * @param b dummy int
+             * @return doubled value
+             * @throws IllegalStateException
+             */
+             $funCode
+        """.trimIndent()
+        lintMethod(invalidCode)
+    }
+
+    @Test
     @Tag(WarningNames.KDOC_WRONG_TAGS_ORDER)
     fun `tags should be ordered in KDocs (positive example)`() {
         val validCode = """
