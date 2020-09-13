@@ -40,9 +40,9 @@ jobs:
       - name: Create settings.xml
         uses: whelk-io/maven-settings-xml-action@v9
         with:
-          servers: '[{ "id": "gpg.passphrase", "passphrase": "${{ secrets.DIKTAT_GPG_PASS }}" }]'
+          servers: '[{ "id": "ossrh", "username": "${{ secrets.SONATYPE_USER }}", "password": "${{ secrets.SONATYPE_PASSWORD }}" }, { "id": "gpg.passphrase", "passphrase": "${{ secrets.DIKTAT_GPG_PASS }}" }]'
       - name: Deploy artifacts
-        run: mvn -B clean verify -Prelease
+        run: mvn -B clean deploy -Prelease
       - name: Create Github Release
         id: create_release
         uses: actions/create-release@v1
