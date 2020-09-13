@@ -31,15 +31,15 @@ jobs:
           echo ${{ secrets.DIKTAT_GPG_PUB }} > ~/diktat.pubring.gpg
           echo ${{ secrets.DIKTAT_GPG_SEC }} > ~/diktat.secring.gpg
           gpg --import ~/diktat.pubring.gpg
-          gpg --import ~/diktat.secring.gpg
+          gpg --batch --import ~/diktat.secring.gpg
       - name: Set version
         run: mvn -B versions:set -DnewVersion=${{ env.RELEASE_VERSION }} versions:commit
       - name: Create settings.xml
         uses: whelk-io/maven-settings-xml-action@v9
         with:
-          servers: '[{ "id": "ossrh", "username": "${{ secrets.SONATYPE_USER }}", "password": "${{ secrets.SONATYPE_PASSWORD }}" }, { "id": "gpg.passphrase", "passphrase": "${{ secrets.DIKTAT_GPG_PASS }}" }]'
+          servers: '[{ "id": "gpg.passphrase", "passphrase": "${{ secrets.DIKTAT_GPG_PASS }}" }]'
       - name: Deploy artifacts
-        run: mvn -B clean deploy -Prelease
+        run: mvn -B clean verify -Prelease
       - name: Create Github Release
         id: create_release
         uses: actions/create-release@v1
