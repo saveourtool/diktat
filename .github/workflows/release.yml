@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     name: Build release
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
 
     steps:
       - name: Checkout
@@ -25,13 +25,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-master-
       - name: Setup environment
+        env:
+          DIKTAT_GPG_PUB: ${{ secrets.DIKTAT_PGP_PUB }}
+          DIKTAT_GPG_SEC: ${{ secrets.DIKTAT_PGP_SEC }}
         run: |
           echo ::set-env name=PREVIOUS_VERSION::$(printf 'VERSION=${diktat-check.version}\n0\n' | mvn help:evaluate | grep '^VERSION' | cut -d= -f2)
           echo ::set-env name=RELEASE_VERSION::${GITHUB_REF#'refs/tags/v'}
-          echo ${{ secrets.DIKTAT_GPG_PUB }} > ~/diktat.pubring.gpg
-          echo ${{ secrets.DIKTAT_GPG_SEC }} > ~/diktat.secring.gpg
+          echo "$DIKTAT_GPG_PUB" > ~/diktat.pubring.gpg
+          echo "$DIKTAT_GPG_SEC" > ~/diktat.secring.gpg
           gpg --import ~/diktat.pubring.gpg
-          gpg --import ~/diktat.secring.gpg
+          gpg --batch --import ~/diktat.secring.gpg  # --batch suppresses intercatively asking passphrase
       - name: Set version
         run: mvn -B versions:set -DnewVersion=${{ env.RELEASE_VERSION }} versions:commit
       - name: Create settings.xml
