@@ -30,8 +30,9 @@ jobs:
           echo ::set-env name=RELEASE_VERSION::${GITHUB_REF#'refs/tags/v'}
           echo ${{ secrets.DIKTAT_GPG_PUB }} > ~/diktat.pubring.gpg
           echo ${{ secrets.DIKTAT_GPG_SEC }} > ~/diktat.secring.gpg
-          gpg --import ~/diktat.pubring.gpg
-          gpg --batch --import ~/diktat.secring.gpg
+          gpg --version
+          gpg --import ~/diktat.pubring.gpg && echo 'Succesfully imported public key'
+          gpg --batch --yes --import ~/diktat.secring.gpg && echo 'Successfully imported private key'
       - name: Set version
         run: mvn -B versions:set -DnewVersion=${{ env.RELEASE_VERSION }} versions:commit
       - name: Create settings.xml
