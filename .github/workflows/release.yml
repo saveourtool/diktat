@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     name: Build release
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
 
     steps:
       - name: Checkout
@@ -31,8 +31,8 @@ jobs:
           echo ${{ secrets.DIKTAT_GPG_PUB }} > ~/diktat.pubring.gpg
           echo ${{ secrets.DIKTAT_GPG_SEC }} > ~/diktat.secring.gpg
           gpg --version
-          gpg --import ~/diktat.pubring.gpg && echo 'Succesfully imported public key'
-          gpg --batch --yes --import ~/diktat.secring.gpg && echo 'Successfully imported private key'
+          gpg --import ~/diktat.pubring.gpg || echo 'Error importing public key'
+          gpg --batch --yes --import ~/diktat.secring.gpg || echo 'Error importing private key'
       - name: Set version
         run: mvn -B versions:set -DnewVersion=${{ env.RELEASE_VERSION }} versions:commit
       - name: Create settings.xml
