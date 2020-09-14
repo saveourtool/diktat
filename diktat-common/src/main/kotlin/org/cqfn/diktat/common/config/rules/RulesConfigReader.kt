@@ -84,8 +84,16 @@ open class RulesConfigReader(override val classLoader: ClassLoader) : JsonResour
     }
 }
 
-open class TestAnchorsConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
-    val testAnchors = config.getOrDefault("testDirs", "test").split(',')
+fun List<RulesConfig>.getCommonConfiguration() = lazy { CommonConfiguration(getCommonConfig()) }
+
+class CommonConfiguration(commonConfig: RulesConfig?) {
+    val testAnchors : List<String> by lazy {
+        (commonConfig?.configuration ?: mapOf()).getOrDefault("testDirs", "test").split(',')
+    }
+
+    val domainName : String by lazy {
+         (commonConfig?.configuration ?: mapOf()).getOrDefault("domainName", "")
+    }
 }
 
 // ================== utils for List<RulesConfig> from yml config

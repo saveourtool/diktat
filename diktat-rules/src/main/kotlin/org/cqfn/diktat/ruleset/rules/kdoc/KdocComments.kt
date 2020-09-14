@@ -9,10 +9,8 @@ import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
-import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.common.config.rules.TestAnchorsConfiguration
-import org.cqfn.diktat.common.config.rules.getCommonConfig
+import org.cqfn.diktat.common.config.rules.getCommonConfiguration
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_CLASS_ELEMENTS
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_TOP_LEVEL
@@ -41,7 +39,7 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
         emitWarn = emit
         isFixMode = autoCorrect
 
-        val config = TestAnchorsConfiguration(configRules.getCommonConfig()?.configuration ?: mapOf())
+        val config = configRules.getCommonConfiguration().value
         val fileName = node.getRootNode().getUserData(FILE_PATH_USER_DATA_KEY)!!
         if (!(node.hasTestAnnotation() || isLocatedInTest(fileName.splitPathToDirs(), config.testAnchors)))
             when (node.elementType) {
