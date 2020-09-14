@@ -156,7 +156,7 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
                                 (variableName as LeafPsiElement).replaceWithText(variableName.text.toUpperSnakeCase())
                             }
                         }
-                    } else if (!variableName.text.isLowerCamelCase()) {
+                    } else if (variableName.text != "_" && !variableName.text.isLowerCamelCase()) {
                         // variable name should be in camel case. The only exception is a list of industry standard variables like i, j, k.
                         VARIABLE_NAME_INCORRECT_FORMAT.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset, node) {
                             // FixMe: cover fixes with tests
@@ -358,7 +358,7 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
     private fun checkIdentifierLength(nodes: List<ASTNode>,
                                       isVariable: Boolean) {
         nodes.forEach {
-            if (!(it.checkLength(MIN_IDENTIFIER_LENGTH..MAX_IDENTIFIER_LENGTH) ||
+            if (it.text != "_" && !(it.checkLength(MIN_IDENTIFIER_LENGTH..MAX_IDENTIFIER_LENGTH) ||
                             ONE_CHAR_IDENTIFIERS.contains(it.text) && isVariable || validCatchIdentifier(it)
 
                             )) {
