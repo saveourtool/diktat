@@ -31,11 +31,11 @@ The full list of available supported rules and inspections is [here](info/availa
     # another option is "brew install ktlint"
     ```
    
-2. Load diKTat manually: [here](https://github.com/cqfn/diKTat/releases/download/v0.0.4/diktat.jar)
+2. Load diKTat manually: [here](https://github.com/cqfn/diKTat/releases/download/v0.1.0/diktat.jar)
 
    **OR** use curl:
    ```bash
-   $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v0.0.4/diktat.jar
+   $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v0.1.0/diktat.jar
    ```
    
 3. Finally, run KTlint (with diKTat injected) to check your `*.kt` files in `dir/your/dir`:
@@ -84,7 +84,7 @@ Add this plugin to your pom.xml:
               <dependency>
                   <groupId>com.pinterest</groupId>
                   <artifactId>ktlint</artifactId>
-                  <version>0.37.1</version> <!-- use this fork to be compatible with diktat -->
+                  <version>0.37.1</version>
                   <exclusions>
                       <exclusion>  <!-- without this exclusion both rulesets are enabled which we discourage -->
                           <groupId>com.pinterest.ktlint</groupId>
@@ -95,7 +95,7 @@ Add this plugin to your pom.xml:
               <dependency>
                   <groupId>org.cqfn.diktat</groupId>
                   <artifactId>diktat-rules</artifactId>
-                  <version>0.0.4</version> <!-- replace it with diktat latest version -->
+                  <version>0.1.0</version> <!-- replace it with diktat latest version -->
                   <exclusions>
                       <exclusion>
                           <groupId>org.slf4j</groupId>
@@ -134,7 +134,7 @@ dependencies {
     }
 
     // diktat ruleset
-    ktlint("org.cqfn.diktat:diktat-rules:0.0.4") {
+    ktlint("org.cqfn.diktat:diktat-rules:0.1.0") {
         exclude("org.slf4j", "slf4j-log4j12")
     }
 }
@@ -199,7 +199,7 @@ Also see [the list of all rules supported by diKTat](info/available-rules.md).
 ## How to contribute?
 
 Main components are:
-1) diktat-ruleset — number of rules that are supported by diKTat;
+1) diktat-rules — number of rules that are supported by diKTat;
 2) diktat-test-framework — functional/unit test framework that can be used for running your code fixer on the initial code and compare it with the expected result;
 3) also see our demo: diktat-demo in a separate repository.
 
