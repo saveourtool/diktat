@@ -3,6 +3,7 @@ package org.cqfn.diktat.ruleset.chapter2
 import com.pinterest.ktlint.core.LintError
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import generated.WarningNames
+import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_CONTAINS_DATE_OR_AUTHOR
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_MISSING_OR_WRONG_COPYRIGHT
@@ -20,30 +21,40 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
 
     private val ruleId: String = "$DIKTAT_RULE_SET_ID:header-comment"
 
+    private val curYear = LocalDate.now().year
+
     private val rulesConfigList: List<RulesConfig> = listOf(
-        RulesConfig("HEADER_MISSING_OR_WRONG_COPYRIGHT", true,
-            mapOf("copyrightText" to "Copyright (c) Huawei Technologies Co., Ltd. 2012-2020. All rights reserved."))
+            RulesConfig("HEADER_MISSING_OR_WRONG_COPYRIGHT", true,
+                    mapOf("copyrightText" to "Copyright (c) My Company, Ltd. 2012-$curYear. All rights reserved."))
+    )
+
+    private val rulesConfigListInvalidYear: List<RulesConfig> = listOf(
+            RulesConfig("HEADER_MISSING_OR_WRONG_COPYRIGHT", true,
+                    mapOf("copyrightText" to "Copyright (c) My Company, Ltd. 2012-2019. All rights reserved."))
+    )
+
+    private val rulesConfigListInvalidYearBeforeCopyright: List<RulesConfig> = listOf(
+            RulesConfig("HEADER_MISSING_OR_WRONG_COPYRIGHT", true,
+                    mapOf("copyrightText" to "Copyright (c) 2019 My Company, Ltd. All rights reserved."))
     )
 
     private val rulesConfigListYear: List<RulesConfig> = listOf(
             RulesConfig("HEADER_MISSING_OR_WRONG_COPYRIGHT", true,
-                    mapOf("copyrightText" to "Copyright (c) 2020 Huawei Technologies Co., Ltd. All rights reserved."))
+                    mapOf("copyrightText" to "Copyright (c) 2020 My Company, Ltd. All rights reserved."))
     )
 
     private val rulesConfigListCn: List<RulesConfig> = listOf(
-        RulesConfig("HEADER_MISSING_OR_WRONG_COPYRIGHT", true,
-            mapOf("copyrightText" to "版权所有 (c) 华为技术有限公司 2012-2020"))
+            RulesConfig("HEADER_MISSING_OR_WRONG_COPYRIGHT", true,
+                    mapOf("copyrightText" to "版权所有 (c) 华为技术有限公司 2012-2020"))
     )
+
+    private val curYearCopyright = "Copyright (c) My Company, Ltd. 2012-$curYear. All rights reserved."
 
     private val copyrightBlock = """
         /*
-         * Copyright (c) Huawei Technologies Co., Ltd. 2012-2020. All rights reserved.
+         * $curYearCopyright
          */
     """.trimIndent()
-
-    private val curYear = LocalDate.now().year
-
-    private val curYearCopyright = "Copyright (c) My Company, Ltd. 2012-$curYear. All rights reserved."
 
     @Test
     @Tag(WarningNames.HEADER_WRONG_FORMAT)
@@ -142,7 +153,7 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
     fun `copyright should not be placed inside single line comment`() {
         lintMethod(
                 """
-                // Copyright (c) Huawei Technologies Co., Ltd. 2012-2020. All rights reserved.
+                // $curYearCopyright
                 /**
                  * Very useful description, why this file has two classes
                  * foo bar baz
@@ -165,7 +176,7 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
         lintMethod(
                 """
                 /*
-                 * Copyright (c) Huawei Technologies Co., Ltd. 2012-2020. All rights reserved.
+                 * $curYearCopyright
                  */
                 /**
                  * Very useful description, why this file has two classes
@@ -188,7 +199,7 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
         lintMethod(
                 """
                 /*
-                 * Copyright (c) 2020 Huawei Technologies Co., Ltd. All rights reserved.
+                 * Copyright (c) 2020 My Company, Ltd. All rights reserved.
                  */
                 /**
                  * Very useful description, why this file has two classes
@@ -202,6 +213,54 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
                 class Example2 { }
             """.trimIndent(),
                 rulesConfigList = rulesConfigListYear
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_COPYRIGHT_YEAR)
+    fun `copyright year bad`() {
+        lintMethod(
+                """
+                /*
+                 * Copyright (c) My Company, Ltd. 2012-2019. All rights reserved.
+                 */
+                /**
+                 * Very useful description, why this file has two classes
+                 * foo bar baz
+                 */
+
+                package org.cqfn.diktat.example
+
+                class Example1 { }
+
+                class Example2 { }
+            """.trimIndent(),
+                LintError(1, 1, ruleId, """${Warnings.WRONG_COPYRIGHT_YEAR.warnText()} \TestFileName.kt""", true),
+                rulesConfigList = rulesConfigListInvalidYear
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_COPYRIGHT_YEAR)
+    fun `copyright year bad 2`() {
+        lintMethod(
+                """
+                /*
+                 * Copyright (c) 2019 My Company, Ltd. All rights reserved.
+                 */
+                /**
+                 * Very useful description, why this file has two classes
+                 * foo bar baz
+                 */
+
+                package org.cqfn.diktat.example
+
+                class Example1 { }
+
+                class Example2 { }
+            """.trimIndent(),
+                LintError(1, 1, ruleId, """${Warnings.WRONG_COPYRIGHT_YEAR.warnText()} \TestFileName.kt""", true),
+                rulesConfigList = rulesConfigListInvalidYearBeforeCopyright
         )
     }
 

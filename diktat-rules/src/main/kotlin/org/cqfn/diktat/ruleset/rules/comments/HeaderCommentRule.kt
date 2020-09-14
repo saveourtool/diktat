@@ -63,7 +63,7 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
 
     companion object {
         val hyphen_regex = Regex("""\b(\d+-\d+)\b""")
-        val after_copyright_regex = Regex("""((©|([cC]))+ *\d+)""")
+        val after_copyright_regex = Regex("""((©|\([cC]\))+ *\d+)""")
         val curYear = LocalDate.now().year
     }
 
