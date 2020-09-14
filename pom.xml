@@ -393,6 +393,7 @@
                             <sourceDirectories>
                                 <dir>${project.basedir}/src/main/kotlin</dir>
                             </sourceDirectories>
+                            <languageVersion>1.3</languageVersion>
                             <dokkaPlugins>
                                 <plugin>
                                     <groupId>org.jetbrains.dokka</groupId>
