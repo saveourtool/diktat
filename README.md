@@ -196,6 +196,19 @@ Note, that you can specify and put `diktat-analysis.yml` that contains configura
 See default configuration in [diktat-analysis.yml](diktat-rules/src/main/resources/diktat-analysis.yml) \
 Also see [the list of all rules supported by diKTat](info/available-rules.md).
 
+## Suppress warnings
+You can suppress warnings by adding Suppress annotation
+
+For example:
+
+``` kotlin
+@Suppress("FUNCTION_NAME_INCORRECT_CASE")
+class SomeClass {
+    fun methODTREE(): String {
+
+    }
+}
+``` 
 ## How to contribute?
 
 Main components are:
