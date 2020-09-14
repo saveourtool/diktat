@@ -199,7 +199,7 @@ Also see [the list of all rules supported by diKTat](info/available-rules.md).
 ## How to contribute?
 
 Main components are:
-1) diktat-ruleset — number of rules that are supported by diKTat;
+1) diktat-rules — number of rules that are supported by diKTat;
 2) diktat-test-framework — functional/unit test framework that can be used for running your code fixer on the initial code and compare it with the expected result;
 3) also see our demo: diktat-demo in a separate repository.
 
