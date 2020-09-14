@@ -504,6 +504,36 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
     }
 
     @Test
+    @Tag(WarningNames.VARIABLE_NAME_INCORRECT_FORMAT)
+    fun `should not trigger on underscore`() {
+        val code =
+                """
+                    class SomeClass {
+                        fun bar() {
+                            val ast = list.map {(first, _) -> foo(first)}
+                            
+                            var meanValue: Int = 0
+                                for ((
+                                    _,
+                                    _,
+                                    year
+                                ) in cars) {
+                                    meanValue += year
+                                }
+                            
+                            try {
+                                /* ... */
+                            } catch (_: IOException) {
+                                /* ... */
+                            }
+                        }
+                    }
+                """.trimIndent()
+
+        lintMethod(code)
+    }
+
+    @Test
     @Tag(WarningNames.CONFUSING_IDENTIFIER_NAMING)
     fun `confusing identifier naming`() {
         val code =
