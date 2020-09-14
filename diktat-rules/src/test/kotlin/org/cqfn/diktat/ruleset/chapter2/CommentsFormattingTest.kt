@@ -37,9 +37,11 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting){
                 """
                     |package org.cqfn.diktat.ruleset.chapter3
                     |
-                    |// This is a comment
+                    |/* This is a comment */
                     |class Example {
-                    |    // First Comment
+                    |    /**
+                    |    * Some Comment
+                    |    */
                     |    private val log = LoggerFactory.getLogger(Example.javaClass)
                     |    
                     |    fun a() {
@@ -48,6 +50,9 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting){
                     |           1 -> print(1)
                     |       }
                     |    }
+                    |    /*
+                    |       Some Comment
+                    |    */
                     |}
                 """.trimMargin()
 
@@ -82,11 +87,19 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting){
                     |class Example {
                     |    //First Comment
                     |    private val log = LoggerFactory.getLogger(Example.javaClass)
+                    |    
+                    |    /**
+                    |    *      Some comment
+                    |    */
+                    |    
+                    |    /*     Comment */
                     |}
                 """.trimMargin()
 
         lintMethod(code,
-                LintError(4,5, ruleId, "${Warnings.COMMENT_WHITE_SPACE.warnText()} //First Comment", true))
+                LintError(4,5, ruleId, "${Warnings.COMMENT_WHITE_SPACE.warnText()} //First Comment", true),
+                LintError(7,5, ruleId, "${Warnings.COMMENT_WHITE_SPACE.warnText()} /**\n    *      Some comment\n    */", true),
+                LintError(11,5, ruleId, "${Warnings.COMMENT_WHITE_SPACE.warnText()} /*     Comment */", true))
     }
 
     @Test
