@@ -44,7 +44,7 @@ jobs:
       - name: Deploy artifacts
         run: mvn -B clean deploy -Prelease --projects '!diktat-ruleset'
       - name: Build diktat-ruleset.jar
-        run: mvn package --projects diktat-ruleset
+        run: mvn -B package --projects diktat-ruleset
       - name: Create Github Release
         id: create_release
         uses: actions/create-release@v1
