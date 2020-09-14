@@ -235,7 +235,7 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
 
                 class Example2 { }
             """.trimIndent(),
-                LintError(1, 1, ruleId, """${Warnings.WRONG_COPYRIGHT_YEAR.warnText()} \TestFileName.kt""", true),
+                LintError(1, 1, ruleId, """${Warnings.WRONG_COPYRIGHT_YEAR.warnText()} $testFileName""", true),
                 rulesConfigList = rulesConfigListInvalidYear
         )
     }
@@ -259,7 +259,7 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
 
                 class Example2 { }
             """.trimIndent(),
-                LintError(1, 1, ruleId, """${Warnings.WRONG_COPYRIGHT_YEAR.warnText()} \TestFileName.kt""", true),
+                LintError(1, 1, ruleId, """${Warnings.WRONG_COPYRIGHT_YEAR.warnText()} $testFileName""", true),
                 rulesConfigList = rulesConfigListInvalidYearBeforeCopyright
         )
     }
