@@ -61,7 +61,7 @@ class HeaderCommentRuleFixTest : FixTestBase(
         fixAndCompare("CopyrightDifferentYearExpected.kt", "CopyrightDifferentYearTest.kt",
                 listOf(RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true, mapOf(
                         "isCopyrightMandatory" to "true",
-                        "copyrightText" to "Copyright (c) Huawei Technologies Co., Ltd. 2012-2019. All rights reserved."
+                        "copyrightText" to "Copyright (c) My Company., Ltd. 2012-2019. All rights reserved."
                 )))
         )
     }

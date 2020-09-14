@@ -14,6 +14,7 @@ import org.cqfn.diktat.util.LintTestBase
 import org.cqfn.diktat.util.testFileName
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
+import java.time.LocalDate
 
 class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
 
@@ -39,6 +40,10 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
          * Copyright (c) Huawei Technologies Co., Ltd. 2012-2020. All rights reserved.
          */
     """.trimIndent()
+
+    private val curYear = LocalDate.now().year
+
+    private val curYearCopyright = "Copyright (c) My Company, Ltd. 2012-$curYear. All rights reserved."
 
     @Test
     @Tag(WarningNames.HEADER_WRONG_FORMAT)
@@ -90,7 +95,7 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
         lintMethod(
                 """
                 /**
-                 * Copyright (c) Huawei Technologies Co., Ltd. 2012-2020. All rights reserved.
+                 * $curYearCopyright
                  */
                 /**
                  * Very useful description, why this file has two classes

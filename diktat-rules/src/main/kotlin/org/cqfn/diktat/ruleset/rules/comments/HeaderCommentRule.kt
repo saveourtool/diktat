@@ -61,6 +61,12 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
         }
     }
 
+    companion object {
+        val hyphen_regex = Regex("""\b(\d+-\d+)\b""")
+        val after_copyright_regex = Regex("""((©|([cC]))+ *\d+)""")
+        val curYear = LocalDate.now().year
+    }
+
     private fun checkCopyright(node: ASTNode) {
         val configuration = CopyrightConfiguration(configRules.getRuleConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT)?.configuration
                 ?: mapOf())
@@ -96,7 +102,7 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
 
         val copyrightWithCorrectYear = makeCopyrightCorrectYear(copyrightText)
 
-        if (copyrightWithCorrectYear != ""){
+        if (copyrightWithCorrectYear.isNotEmpty()){
             WRONG_COPYRIGHT_YEAR.warnAndFix(configRules, emitWarn, isFixMode, fileName, node.startOffset) {
                 (headerComment as LeafElement).replaceWithText(headerComment.text.replace(copyrightText, copyrightWithCorrectYear))
             }
@@ -104,27 +110,24 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
     }
 
     private fun makeCopyrightCorrectYear(copyrightText: String) : String {
-        var regex = Regex("\\b(\\d+-\\d+)\\b")
-        val hyphenYear = regex.find(copyrightText)
-        val curYear = LocalDate.now().year
+        val hyphenYear = hyphen_regex.find(copyrightText)
 
         if (hyphenYear != null) {
             val copyrightYears = hyphenYear.value.split("-")
             if (copyrightYears[1].toInt() != curYear) {
                 val validYears = "${copyrightYears[0]}-${curYear}"
-                return copyrightText.replace(regex, validYears)
+                return copyrightText.replace(hyphen_regex, validYears)
             }
         }
 
-        regex = Regex("((©|\\([cC]\\))+ *\\d+)")
-        val afterCopyrightYear = regex.find(copyrightText)
+        val afterCopyrightYear = after_copyright_regex.find(copyrightText)
 
         if (afterCopyrightYear != null) {
             val copyrightYears = afterCopyrightYear.value.split("(c)", "(C)", "©")
 
             if (copyrightYears[1].trim().toInt() != curYear) {
                 val validYears = "${copyrightYears[0]}-${curYear}"
-                return copyrightText.replace(regex, validYears)
+                return copyrightText.replace(after_copyright_regex, validYears)
             }
         }
 
