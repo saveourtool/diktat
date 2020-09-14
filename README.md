@@ -196,8 +196,8 @@ Note, that you can specify and put `diktat-analysis.yml` that contains configura
 See default configuration in [diktat-analysis.yml](diktat-rules/src/main/resources/diktat-analysis.yml) \
 Also see [the list of all rules supported by diKTat](info/available-rules.md).
 
-## Suppress warnings
-You can suppress warnings by adding Suppress annotation
+## Suppress warnings on individual code blocks
+In addition to enabling/disabling warning globally via config file, you can suppress warnings by adding `@Suppress` annotation on individual code blocks
 
 For example:
 
