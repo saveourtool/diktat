@@ -305,26 +305,22 @@ fun ASTNode?.isAccessibleOutside(): Boolean =
         }
 
 fun ASTNode.hasSuppress(warningName: String): Boolean {
-    return if (findChildByType(MODIFIER_LIST) != null) {
-        findChildByType(MODIFIER_LIST)?.findAllNodesWithSpecificType(ANNOTATION_ENTRY)?.any {
-            (it.psi as KtAnnotationEntry).shortName.toString() == "Suppress"
-                    && (it.psi).text.contains(warningName)
-        } ?: false
-    } else {
-        parent({ node ->
-            node.findChildByType(MODIFIER_LIST)
-                    ?.findAllNodesWithSpecificType(ANNOTATION_ENTRY)
-                    ?.any {
-                        (it.psi as KtAnnotationEntry).shortName.toString() == "Suppress"
-                                && (it.psi).text.contains(warningName)
-            } ?: false
-        }) != null
-    }
+    return parent({ node ->
+        node.findChildByType(MODIFIER_LIST)
+                ?.findAllNodesWithSpecificType(ANNOTATION_ENTRY)
+                ?.any {
+                    (it.psi as KtAnnotationEntry).shortName.toString() == Suppress::class.simpleName
+                            && (it.psi as KtAnnotationEntry).valueArgumentList?.arguments?.isNotEmpty() ?: true
+                            && (it.psi as KtAnnotationEntry).valueArgumentList?.arguments
+                            ?.get(0)?.text?.contains(warningName) ?: true
+                } ?: false
+    }, strict = false) != null
 }
+
 /**
  * creation of operation reference in a node
  */
-fun ASTNode.createOperationReference(elementType: IElementType, text: String){
+fun ASTNode.createOperationReference(elementType: IElementType, text: String) {
     val operationReference = CompositeElement(OPERATION_REFERENCE)
     this.addChild(operationReference, null)
     operationReference.addChild(LeafPsiElement(elementType, text), null)

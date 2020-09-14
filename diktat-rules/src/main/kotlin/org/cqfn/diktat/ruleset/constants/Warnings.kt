@@ -105,10 +105,10 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
                    isFixMode: Boolean,
                    freeText: String,
                    offset: Int,
-                   node: ASTNode?,
+                   node: ASTNode,
                    canBeAutoCorrected: Boolean = this.canBeAutoCorrected,
                    autoFix: () -> Unit) {
-        if (node != null && node.hasSuppress(name))
+        if (node.hasSuppress(name))
             return
         warn(configRules, emit, canBeAutoCorrected, freeText, offset, node)
         fix(configRules, autoFix, isFixMode)
@@ -120,8 +120,8 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
              autoCorrected: Boolean,
              freeText: String,
              offset: Int,
-             node: ASTNode?) {
-        if (node != null && node.hasSuppress(name))
+             node: ASTNode) {
+        if (node.hasSuppress(name))
             return
 
         if (configs.isRuleEnabled(this)) {

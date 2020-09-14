@@ -42,16 +42,16 @@ class FileNaming(private val configRules: List<RulesConfig>) : Rule("file-naming
 
         if (node.elementType == FILE) {
             fileName = node.getUserData(KtLint.FILE_PATH_USER_DATA_KEY)!!
-            checkFileNaming()
+            checkFileNaming(node)
             checkClassNameMatchesWithFile(node)
         }
     }
 
-    private fun checkFileNaming() {
+    private fun checkFileNaming(node: ASTNode) {
         if (fileName != null) {
             val (name, extension) = getFileParts()
             if (!name.isPascalCase() || !VALID_EXTENSIONS.contains(extension)) {
-                FILE_NAME_INCORRECT.warnAndFix(configRules, emitWarn, isFixMode, "$name$extension", 0, null) {
+                FILE_NAME_INCORRECT.warnAndFix(configRules, emitWarn, isFixMode, "$name$extension", 0, node) {
                     // FixMe: we can add an autocorrect here in future, but is there any purpose to change file or class name?
                 }
             }
