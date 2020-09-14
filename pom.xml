@@ -262,7 +262,7 @@
             <plugin>
                 <groupId>com.github.ozsie</groupId>
                 <artifactId>detekt-maven-plugin</artifactId>
-                <version>1.11.0</version>
+                <version>1.13.1</version>
                 <executions>
                     <execution>
                         <id>detekt</id>
@@ -272,6 +272,8 @@
                         </goals>
                         <configuration>
                             <config>detekt-config.yml</config>
+                            <languageVersion>1.3</languageVersion>
+                            <jvmTarget>1.8</jvmTarget>
                         </configuration>
                     </execution>
                 </executions>
