@@ -20,9 +20,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-metrics-${{ hashFiles('**/pom.xml') }}
+          key: ${{ runner.os }}-maven-master-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ runner.os }}-maven-metrics-
+            ${{ runner.os }}-maven-master-
       - name: Run tests
         run: mvn -B test
       - name: Generate code coverage report

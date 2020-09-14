@@ -2,8 +2,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>diktat-ruleset</artifactId>
-    <description>This module builds jar that can be used to run dikat via ktlint -R</description>
+    <artifactId>diktat</artifactId>
+    <description>This module builds jar that can be used to run diktat using ktlint -R via command line</description>
 
     <parent>
         <groupId>org.cqfn.diktat</groupId>
@@ -54,7 +54,7 @@
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
-                    <finalName>diktat-ruleset-${project.version}</finalName>
+                    <finalName>diktat-${project.version}</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
                 <executions>
