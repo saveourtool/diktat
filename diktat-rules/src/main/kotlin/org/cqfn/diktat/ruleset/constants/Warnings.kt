@@ -108,10 +108,8 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
                    node: ASTNode,
                    canBeAutoCorrected: Boolean = this.canBeAutoCorrected,
                    autoFix: () -> Unit) {
-        if (node.hasSuppress(name))
-            return
         warn(configRules, emit, canBeAutoCorrected, freeText, offset, node)
-        fix(configRules, autoFix, isFixMode)
+        fix(configRules, autoFix, isFixMode, node)
     }
 
     @Suppress("LongParameterList")
@@ -121,10 +119,8 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
              freeText: String,
              offset: Int,
              node: ASTNode) {
-        if (node.hasSuppress(name))
-            return
 
-        if (configs.isRuleEnabled(this)) {
+        if (configs.isRuleEnabled(this) && !node.hasSuppress(name)) {
             emit(offset,
                     "${this.warnText()} $freeText",
                     autoCorrected
@@ -132,8 +128,8 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
         }
     }
 
-    private inline fun fix(configs: List<RulesConfig>, autoFix: () -> Unit, isFix: Boolean) {
-        if (configs.isRuleEnabled(this) && isFix) {
+    private inline fun fix(configs: List<RulesConfig>, autoFix: () -> Unit, isFix: Boolean, node: ASTNode) {
+        if (configs.isRuleEnabled(this) && isFix && !node.hasSuppress(name)) {
             autoFix()
         }
     }
