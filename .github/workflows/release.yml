@@ -42,7 +42,9 @@ jobs:
         with:
           servers: '[{ "id": "ossrh", "username": "${{ secrets.SONATYPE_USER }}", "password": "${{ secrets.SONATYPE_PASSWORD }}" }, { "id": "gpg.passphrase", "passphrase": "${{ secrets.DIKTAT_GPG_PASS }}" }]'
       - name: Deploy artifacts
-        run: mvn -B clean deploy -Prelease
+        run: mvn -B clean deploy -Prelease --pl !diktat-ruleset
+      - name: Build diktat-ruleset.jar
+        run: mvn package --pl diktat-ruleset
       - name: Create Github Release
         id: create_release
         uses: actions/create-release@v1
