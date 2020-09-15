@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test
 class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
     private val ruleId = "$DIKTAT_RULE_SET_ID:local-variables"
 
-    private fun warnMessage(name: String, declared: Int, used: Int) = "$name is declared on line $declared and is used for the first time on line $used"
+    private fun warnMessage(name: String, declared: Int, used: Int) = "<$name> is declared on line <$declared> and is used for the first time on line <$used>"
 
     @Test
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
