@@ -1,11 +1,13 @@
 package org.cqfn.diktat.ruleset.chapter3
 
 import com.pinterest.ktlint.core.LintError
+import generated.WarningNames
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.TYPE_ALIAS
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.TypeAliasRule
 import org.cqfn.diktat.util.LintTestBase
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class TypeAliasRuleWarnTest : LintTestBase(::TypeAliasRule) {
@@ -18,6 +20,7 @@ class TypeAliasRuleWarnTest : LintTestBase(::TypeAliasRule) {
     )
 
     @Test
+    @Tag(WarningNames.TYPE_ALIAS)
     fun `string concatenation - only strings`() {
         lintMethod(
                 """
@@ -29,6 +32,7 @@ class TypeAliasRuleWarnTest : LintTestBase(::TypeAliasRule) {
     }
 
     @Test
+    @Tag(WarningNames.TYPE_ALIAS)
     fun `check long lambda property`() {
         lintMethod(
                 """
@@ -41,6 +45,7 @@ class TypeAliasRuleWarnTest : LintTestBase(::TypeAliasRule) {
     }
 
     @Test
+    @Tag(WarningNames.TYPE_ALIAS)
     fun `correct type length`() {
         lintMethod(
                 """
@@ -56,6 +61,7 @@ class TypeAliasRuleWarnTest : LintTestBase(::TypeAliasRule) {
     }
 
     @Test
+    @Tag(WarningNames.TYPE_ALIAS)
     fun `correct type length but with configuration`() {
         lintMethod(
                 """
