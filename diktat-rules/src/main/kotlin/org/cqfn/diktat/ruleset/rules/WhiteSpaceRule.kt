@@ -8,6 +8,7 @@ import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CATCH_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
+import com.pinterest.ktlint.core.ast.ElementType.COLLECTION_LITERAL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.COLON
 import com.pinterest.ktlint.core.ast.ElementType.COLONCOLON
 import com.pinterest.ktlint.core.ast.ElementType.COMMA
@@ -18,6 +19,7 @@ import com.pinterest.ktlint.core.ast.ElementType.DO_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.ELSE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.EQ
 import com.pinterest.ktlint.core.ast.ElementType.EXCLEXCL
+import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FINALLY_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.FOR_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.FUN
@@ -60,6 +62,7 @@ import com.pinterest.ktlint.core.ast.parent
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_WHITESPACE
 import org.cqfn.diktat.ruleset.utils.log
+import org.cqfn.diktat.ruleset.utils.prettyPrint
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -118,7 +121,7 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
             QUEST -> if (node.treeParent.elementType == NULLABLE_TYPE) handleToken(node, 0, null)
             // braces and other symbols
             LBRACE -> handleLbrace(node)
-            LBRACKET -> handleToken(node, 0, 0)
+            LBRACKET -> handleLBracket(node)
             LPAR -> handleLpar(node)
             RPAR, RBRACKET -> handleToken(node, 0, null)
             GT, LT -> handleGtOrLt(node)
@@ -126,6 +129,13 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
             WHITE_SPACE -> handleEolWhiteSpace(node)
         }
     }
+
+    private fun handleLBracket(node: ASTNode) =
+            if (node.treeParent.elementType == COLLECTION_LITERAL_EXPRESSION)
+                handleToken(node, 1, 0)
+            else
+                handleToken(node, 0, 0)
+
 
     private fun handleConstructor(node: ASTNode) {
         if (node.treeNext.numWhiteSpaces()?.let { it > 0 } == true) {

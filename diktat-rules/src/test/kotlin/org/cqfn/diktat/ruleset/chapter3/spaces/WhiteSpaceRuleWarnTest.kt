@@ -495,4 +495,19 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
                 """.trimMargin()
         )
     }
+
+    @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
+    fun `array initializers in annotations`() {
+        lintMethod(
+                """ 
+                    |@RequestMapping(value =["/"], method = [RequestMethod.GET])
+                    |fun foo() {
+                    |   a[0]
+                    |}
+                """.trimMargin(),
+                LintError(1, 23, ruleId, tokenWarn("=", null, 0, 1, 1), true),
+                LintError(1, 24, ruleId, tokenWarn("[", 0, null, 1, 0), true)
+        )
+    }
 }

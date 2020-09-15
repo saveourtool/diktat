@@ -6,4 +6,9 @@ class A {
     fun foo() {
 
     }
+
+    @RequestMapping(value = ["/"], method = [RequestMethod.GET])
+    fun goo() {
+
+    }
 }

@@ -45,7 +45,7 @@ class WhiteSpaceRuleFixTest : FixTestBase("test/paragraph3/spaces", ::WhiteSpace
 
     @Test
     @Tag(WarningNames.WRONG_WHITESPACE)
-    fun `should remove space i annotation`() {
+    fun `should fix space in annotation`() {
         fixAndCompare("AnnotationExpected.kt", "AnnotationTest.kt")
     }
 
