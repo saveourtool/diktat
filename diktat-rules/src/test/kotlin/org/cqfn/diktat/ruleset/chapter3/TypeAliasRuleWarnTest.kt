@@ -1,6 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter3
 
 import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.TYPE_ALIAS
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.TypeAliasRule
@@ -11,6 +12,11 @@ class TypeAliasRuleWarnTest : LintTestBase(::TypeAliasRule) {
 
     private val ruleId = "$DIKTAT_RULE_SET_ID:type-alias"
 
+    private val rulesConfigListShortType: List<RulesConfig> = listOf(
+            RulesConfig(TYPE_ALIAS.name, true,
+                    mapOf("typeReferenceLength" to "4"))
+    )
+
     @Test
     fun `string concatenation - only strings`() {
         lintMethod(
@@ -18,7 +24,45 @@ class TypeAliasRuleWarnTest : LintTestBase(::TypeAliasRule) {
                     | val b: MutableMap<String, MutableList<String>>
                     | val b = listof<Int>()
                 """.trimMargin(),
-                LintError(1,9, ruleId, "${TYPE_ALIAS.warnText()} too long type reference, can be replace by type alias", false)
+                LintError(1,9, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false)
         )
     }
+
+    @Test
+    fun `check long lambda property`() {
+        lintMethod(
+                """
+                    | var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
+                """.trimMargin(),
+                LintError(1,16, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false)
+        )
+    }
+
+    @Test
+    fun `correct type length`() {
+        lintMethod(
+                """
+                    | var emitWarn: Int
+                    | val b = mutableMapOf<String, MutableList<String>>()
+                    | 
+                    | fun foo(): MutableMap<String, MutableList<String>> {
+                    | }
+                    | 
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    fun `correct type length but with configuration`() {
+        lintMethod(
+                """
+                    | var emitWarn: Int
+                    | val b: (T) -> Boolean
+                    | 
+                """.trimMargin(),
+                LintError(2,9, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false),
+                rulesConfigList = rulesConfigListShortType
+        )
+    }
+
 }

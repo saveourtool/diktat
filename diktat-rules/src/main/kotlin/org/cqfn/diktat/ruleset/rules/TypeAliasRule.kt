@@ -1,15 +1,12 @@
 package org.cqfn.diktat.ruleset.rules
 
 import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.TYPE_ALIAS
-import org.cqfn.diktat.ruleset.utils.hasChildOfType
-import org.cqfn.diktat.ruleset.utils.prettyPrint
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 class TypeAliasRule(private val configRules: List<RulesConfig>) : Rule("type-alias") {
@@ -35,7 +32,7 @@ class TypeAliasRule(private val configRules: List<RulesConfig>) : Rule("type-ali
     private fun checkProperty(node: ASTNode, config: TypeAliasConfiguration) {
         val typeReference = node.findChildByType(TYPE_REFERENCE) ?: return
         if (typeReference.textLength > config.typeReferenceLength)
-            TYPE_ALIAS.warn(configRules, emitWarn, isFixMode, "too long type reference, can be replace by type alias", typeReference.startOffset)
+            TYPE_ALIAS.warn(configRules, emitWarn, isFixMode, "too long type reference", typeReference.startOffset)
     }
 
     class TypeAliasConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
