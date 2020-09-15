@@ -13,6 +13,7 @@ import com.pinterest.ktlint.core.ast.ElementType.PUBLIC_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isLeaf
 import com.pinterest.ktlint.core.ast.isRoot
+import com.pinterest.ktlint.core.ast.lineNumber
 import com.pinterest.ktlint.core.ast.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.TokenType
@@ -256,8 +257,8 @@ fun ASTNode.numNewLines() = text.count { it == '\n' }
 /**
  * This method performs tree traversal and returns all nodes with specific element type
  */
-fun ASTNode.findAllNodesWithSpecificType(elementType: IElementType): List<ASTNode> {
-    val initialAcc = if (this.elementType == elementType) mutableListOf(this) else mutableListOf()
+fun ASTNode.findAllNodesWithSpecificType(elementType: IElementType, withSelf: Boolean = true): List<ASTNode> {
+    val initialAcc = if (this.elementType == elementType && withSelf) mutableListOf(this) else mutableListOf()
     return initialAcc + this.getChildren(null).flatMap {
         it.findAllNodesWithSpecificType(elementType)
     }
@@ -326,6 +327,8 @@ fun ASTNode.createOperationReference(elementType: IElementType, text: String){
     this.addChild(operationReference, null)
     operationReference.addChild(LeafPsiElement(elementType, text), null)
 }
+
+fun ASTNode.numNewLines() = text.count { it == '\n' }
 
 /**
  * removing all newlines in WHITE_SPACE node and replacing it to a one newline saving the initial indenting format
@@ -440,6 +443,10 @@ fun ASTNode.extractLineOfText(): String {
             .forEach { text.add(it.first()) }
     return text.joinToString(separator = "").trim()
 }
+
+fun ASTNode.firstLineOfText(suffix: String = "") = text.lines().run { singleOrNull() ?: (first() + suffix) }
+
+fun ASTNode.lastLineNumber() = lineNumber()?.plus(text.count { it == '\n' })
 
 data class ReplacementResult(val oldNodes: List<ASTNode>, val newNodes: List<ASTNode>) {
     init {

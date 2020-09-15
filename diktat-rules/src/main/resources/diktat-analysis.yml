@@ -241,3 +241,7 @@
 - name: IF_ELSE_COMMENTS
   enabled: true
   configuration: {}
+# Inspection that checks if local variables are declared close to the first usage site
+- name: LOCAL_VARIABLE_EARLY_DECLARATION
+  enabled: true
+  configuration: {}
