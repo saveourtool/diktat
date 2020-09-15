@@ -84,15 +84,22 @@ open class RulesConfigReader(override val classLoader: ClassLoader) : JsonResour
     }
 }
 
-fun List<RulesConfig>.getCommonConfiguration() = lazy { CommonConfiguration(getCommonConfig()) }
+/**
+ * @return common configuration from list of all rules configuration
+ */
+fun List<RulesConfig>.getCommonConfiguration() = lazy { CommonConfiguration(getCommonConfig()?.configuration) }
 
-class CommonConfiguration(commonConfig: RulesConfig?) {
+/**
+ * class returns the list of common configurations that we have read from a configuration map
+ * @param configuration map of common configuration
+ */
+open class CommonConfiguration(configuration: Map<String, String>?) {
     val testAnchors : List<String> by lazy {
-        (commonConfig?.configuration ?: mapOf()).getOrDefault("testDirs", "test").split(',')
+        (configuration ?: mapOf()).getOrDefault("testDirs", "test").split(',')
     }
 
     val domainName : String by lazy {
-         (commonConfig?.configuration ?: mapOf()).getOrDefault("domainName", "")
+         (configuration ?: mapOf()).getOrDefault("domainName", "")
     }
 }
 
