@@ -1208,8 +1208,9 @@ enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean
 Each property or variable declaration should be declared on separate line. Bad example: `val n1: Int; val n2: Int`.
 
 ### <a name="s3.10"></a>Recommendation 3.10: Variables are declared close to the line where they are first used
-Local variables are declared close to the point where they are first used. THis will minimize their scope.
-Local variable declarations are usually initialized or initialized immediately after the declaration. The member fields of the class should be declared collectively. 
+Local variables are declared close to the point where they are first used. This will minimize their scope.
+Local variable are usually initialized during declaration or initialized immediately after declaration.
+The member fields of the class should be declared collectively (see [recommendation 3.2](#s3.2) for details on class structure).
 
 ### <a name="c3.10"></a>When expression
 
