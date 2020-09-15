@@ -1,6 +1,7 @@
 - name: DIKTAT_COMMON
   configuration:
     domainName: your.package.name.here
+    testDirs: test
 - name: CLASS_NAME_INCORRECT
   enabled: true
   configuration: {}
