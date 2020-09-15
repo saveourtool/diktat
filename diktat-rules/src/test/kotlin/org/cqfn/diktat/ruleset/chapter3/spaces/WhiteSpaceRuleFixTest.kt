@@ -42,4 +42,16 @@ class WhiteSpaceRuleFixTest : FixTestBase("test/paragraph3/spaces", ::WhiteSpace
     fun `should trim spaces in the end of line`() {
         fixAndCompare("EolSpacesExpected.kt", "EolSpacesTest.kt")
     }
+
+    @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
+    fun `should remove space i annotation`() {
+        fixAndCompare("AnnotationExpected.kt", "AnnotationTest.kt")
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
+    fun `should add spaes on both sides of equals`() {
+        fixAndCompare("EqualsExpected.kt", "EqualsTest.kt")
+    }
 }

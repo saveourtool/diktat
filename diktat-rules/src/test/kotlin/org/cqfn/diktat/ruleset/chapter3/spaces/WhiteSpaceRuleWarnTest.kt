@@ -453,4 +453,46 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
                 LintError(2, 50, ruleId, tokenWarn(",", 1, 0, 0, 1), true)
         )
     }
+
+    @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
+    fun `space after annotation`() {
+        lintMethod(
+                """
+                    |@Annotation ("Text")
+                    |fun foo() {
+                    |
+                    |}
+                """.trimMargin(),
+                LintError(1, 13, ruleId, tokenWarn("(\"Text\")", 1, null, 0, null), true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
+    fun `ckeck space on both sides of equals`() {
+        lintMethod(
+                """ 
+                    |fun foo() {
+                    |   val q=10
+                    |   var w = 10
+                    |   w=q
+                    |}
+                """.trimMargin(),
+                LintError(2, 9, ruleId, tokenWarn("=", 0, 0, 1, 1), true),
+                LintError(4, 5, ruleId, tokenWarn("=", 0, 0, 1, 1), true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
+    fun `singe space after open brace`() {
+        lintMethod(
+                """ 
+                    |fun foo() {
+                    |   "${"$"}{foo()}"
+                    |}
+                """.trimMargin()
+        )
+    }
 }

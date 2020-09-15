@@ -16,6 +16,7 @@ import com.pinterest.ktlint.core.ast.ElementType.CONSTRUCTOR_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.DOT
 import com.pinterest.ktlint.core.ast.ElementType.DO_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.ELSE_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.EQ
 import com.pinterest.ktlint.core.ast.ElementType.EXCLEXCL
 import com.pinterest.ktlint.core.ast.ElementType.FINALLY_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.FOR_KEYWORD
@@ -111,7 +112,7 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
             CONSTRUCTOR_KEYWORD -> handleConstructor(node)
             in keywordsWithSpaceAfter -> handleKeywordWithParOrBrace(node)
             // operators and operator-like symbols
-            OPERATION_REFERENCE, COLONCOLON, DOT, ARROW, SAFE_ACCESS -> handleBinaryOperator(node)
+            OPERATION_REFERENCE, COLONCOLON, DOT, ARROW, SAFE_ACCESS, EQ -> handleBinaryOperator(node)
             COLON -> handleColon(node)
             COMMA, SEMICOLON -> handleToken(node, 0, 1)
             QUEST -> if (node.treeParent.elementType == NULLABLE_TYPE) handleToken(node, 0, null)
@@ -169,7 +170,6 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
                 ?: false
         val prevNode = whitespaceOrPrevNode.let { if (it.elementType == WHITE_SPACE) it.treePrev else it }
         val numWhiteSpace = whitespaceOrPrevNode.numWhiteSpaces()
-
         if (isFromLambdaAsArgument) {
             if (numWhiteSpace != 0) {
                 WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "there should be no whitespace before '{' of lambda" +
@@ -198,10 +198,11 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
 
     private fun handleBinaryOperator(node: ASTNode) {
         val operatorNode = if (node.elementType == OPERATION_REFERENCE) node.firstChildNode else node
-
-        if (node.elementType == OPERATION_REFERENCE && node.treeParent.elementType.let { it == BINARY_EXPRESSION || it == POSTFIX_EXPRESSION } ||
+        if (node.elementType == EQ && node.treeParent.elementType == OPERATION_REFERENCE) return
+        if (node.elementType == OPERATION_REFERENCE && node.treeParent.elementType.let { it == BINARY_EXPRESSION || it == POSTFIX_EXPRESSION || it == PROPERTY } ||
                 node.elementType != OPERATION_REFERENCE) {
             val requiredNumSpaces = if (operatorNode.elementType in operatorsWithNoWhitespace) 0 else 1
+
             handleToken(node, requiredNumSpaces, requiredNumSpaces)
         }
     }
@@ -241,12 +242,18 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
     }
 
     private fun handleLpar(node: ASTNode) {
-        if (node.treeParent.treeParent.elementType == SECONDARY_CONSTRUCTOR) {
-            // there is separate handler for 'constructor' keyword to provide custom warning message
-            return
-        } else if (node.nextCodeLeaf()!!.elementType == LBRACE) {
-            // there is separate handler for lambda expression inside parenthesis
-            return
+        when {
+            node.treeParent.treeParent.elementType == SECONDARY_CONSTRUCTOR -> {
+                // there is separate handler for 'constructor' keyword to provide custom warning message
+                return
+            }
+            node.nextCodeLeaf()!!.elementType == LBRACE -> {
+                // there is separate handler for lambda expression inside parenthesis
+                return
+            }
+            node.treeParent.treeParent.elementType == ANNOTATION_ENTRY -> {
+                handleToken(node.treeParent, 0, null)
+            }
         }
         val isDeclaration = node.treeParent.elementType == VALUE_PARAMETER_LIST && node.treeParent.treeParent.elementType.let {
             it == PRIMARY_CONSTRUCTOR || it == FUN || it == CALL_EXPRESSION
@@ -261,7 +268,7 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
         }
     }
 
-    private fun handleGtOrLt(node: ASTNode){
+    private fun handleGtOrLt(node: ASTNode) {
         if (node.treeParent == TYPE_PARAMETER_LIST) handleToken(
                 node,
                 if (node.elementType == GT) 0 else null,
