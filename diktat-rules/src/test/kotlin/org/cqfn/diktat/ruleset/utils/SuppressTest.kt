@@ -66,4 +66,64 @@ class SuppressTest : LintTestBase(::IdentifierNaming) {
         )
     }
 
+    @Test
+    fun `test suppress on file`() {
+        val code =
+                """
+                  @file:Suppress("FUNCTION_NAME_INCORRECT_CASE")
+
+                  class SomeClass {
+                    fun /* */ methODTREE(): String {
+
+                    }
+                  }
+                """.trimIndent()
+        lintMethod(code)
+    }
+
+    @Test
+    fun `test suppress field`() {
+        val code =
+                """
+                  class SomeClass(@field:Suppress("IDENTIFIER_LENGTH") val a:String) {
+                    fun /* */ method(): String {
+
+                    }
+                  }
+                """.trimIndent()
+        lintMethod(code)
+    }
+
+    @Test
+    fun `test suppress field with set`() {
+        val code =
+                """
+                  class SomeClass() {
+                    @set:[Suppress("IDENTIFIER_LENGTH") Inject]
+                    val a = 5
+                  
+                    fun /* */ method(): String {
+
+                    }
+                  }
+                """.trimIndent()
+        lintMethod(code)
+    }
+
+    @Test
+    fun `check simple wrong enum`() {
+        lintMethod(
+                """
+                    |@set:[Suppress("WRONG_DECLARATION_ORDER") Suppress("IDENTIFIER_LENGTH") Suppress("CONFUSING_IDENTIFIER_NAMING")]
+                    |enum class Alph {
+                    |   D,
+                    |   C,
+                    |   A,
+                    |   B,
+                    |   ;
+                    |}
+                """.trimMargin()
+        )
+    }
+
 }

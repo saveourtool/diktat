@@ -5,6 +5,7 @@ import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.CONST_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.FILE
+import com.pinterest.ktlint.core.ast.ElementType.FILE_ANNOTATION_LIST
 import com.pinterest.ktlint.core.ast.ElementType.INTERNAL_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
@@ -308,13 +309,18 @@ fun ASTNode?.isAccessibleOutside(): Boolean =
 
 fun ASTNode.hasSuppress(warningName: String): Boolean {
     return parent({ node ->
-        node.findChildByType(MODIFIER_LIST)
-                ?.findAllNodesWithSpecificType(ANNOTATION_ENTRY)
+        val children: ASTNode? = if (node.elementType != FILE) {
+            node.findChildByType(MODIFIER_LIST)
+        } else {
+            node.findChildByType(FILE_ANNOTATION_LIST)
+        }
+        children?.findAllNodesWithSpecificType(ANNOTATION_ENTRY)
+                ?.map { it.psi as KtAnnotationEntry }
                 ?.any {
-                    (it.psi as KtAnnotationEntry).shortName.toString() == Suppress::class.simpleName
-                            && (it.psi as KtAnnotationEntry).valueArgumentList?.arguments?.isNotEmpty() ?: true
-                            && (it.psi as KtAnnotationEntry).valueArgumentList?.arguments
-                            ?.get(0)?.text?.contains(warningName) ?: true
+                    it.shortName.toString() == Suppress::class.simpleName
+                            && it.valueArgumentList?.arguments?.isNotEmpty() ?: false // don't suppress anything
+                            && it.valueArgumentList?.arguments
+                            ?.firstOrNull()?.text?.contains(warningName) ?: true
                 } ?: false
     }, strict = false) != null
 }
