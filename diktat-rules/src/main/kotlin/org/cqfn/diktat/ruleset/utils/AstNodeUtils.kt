@@ -309,17 +309,17 @@ fun ASTNode?.isAccessibleOutside(): Boolean =
 
 fun ASTNode.hasSuppress(warningName: String): Boolean {
     return parent({ node ->
-        val children: ASTNode? = if (node.elementType != FILE) {
+        val annotationNode = if (node.elementType != FILE) {
             node.findChildByType(MODIFIER_LIST)
         } else {
             node.findChildByType(FILE_ANNOTATION_LIST)
         }
-        children?.findAllNodesWithSpecificType(ANNOTATION_ENTRY)
+        annotationNode?.findAllNodesWithSpecificType(ANNOTATION_ENTRY)
                 ?.map { it.psi as KtAnnotationEntry }
                 ?.any {
                     it.shortName.toString() == Suppress::class.simpleName
                             && it.valueArgumentList?.arguments
-                            ?.firstOrNull()?.text?.contains(warningName) ?: false
+                            ?.firstOrNull()?.text?.trim('"', ' ').equals(warningName) ?: false
                 } ?: false
     }, strict = false) != null
 }
