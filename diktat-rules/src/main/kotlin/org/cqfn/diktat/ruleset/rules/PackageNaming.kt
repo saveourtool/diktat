@@ -9,9 +9,9 @@ import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.isLeaf
 import com.pinterest.ktlint.core.ast.parent
-import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getCommonConfig
+import org.cqfn.diktat.common.config.rules.getCommonConfiguration
 import org.cqfn.diktat.ruleset.constants.Warnings.INCORRECT_PACKAGE_SEPARATOR
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_CASE
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_PATH
@@ -64,7 +64,7 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
         if (domainNameConfiguration == null) {
             log.error("Not able to find an external configuration for domain name in the common configuration (is it missing in yml config?)")
         }
-        val configuration = PackageNamingConfiguration(domainNameConfiguration ?: mapOf())
+        val configuration = configRules.getCommonConfiguration().value
         domainName = configuration.domainName
 
         if (node.elementType == PACKAGE_DIRECTIVE) {
@@ -255,12 +255,5 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
                 createAndInsertPackageName(parentNode, null, realName)
             }
         }
-    }
-
-    /**
-     * this class represents yml-map configuration with the only one field (domainName) - can be used for yml parsing
-     */
-    class PackageNamingConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
-        val domainName by config
     }
 }
