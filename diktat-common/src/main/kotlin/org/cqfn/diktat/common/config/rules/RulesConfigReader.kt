@@ -91,15 +91,15 @@ fun List<RulesConfig>.getCommonConfiguration() = lazy { CommonConfiguration(getC
 
 /**
  * class returns the list of common configurations that we have read from a configuration map
+ *
  * @param configuration map of common configuration
  */
-open class CommonConfiguration(configuration: Map<String, String>?) {
-    val testAnchors : List<String> by lazy {
+class CommonConfiguration(configuration: Map<String, String>?) {
+    val testAnchors: List<String> by lazy {
         (configuration ?: mapOf()).getOrDefault("testDirs", "test").split(',')
     }
-
-    val domainName : String by lazy {
-         (configuration ?: mapOf()).getOrDefault("domainName", "")
+    val domainName: String by lazy {
+        (configuration ?: mapOf()).getOrDefault("domainName", "")
     }
 }
 
