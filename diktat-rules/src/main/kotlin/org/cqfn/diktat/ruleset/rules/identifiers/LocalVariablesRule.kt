@@ -41,7 +41,8 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
         private var functionInitializers = listOf(
                 "emptyList", "emptySet", "emptyMap", "emptyArray", "emptySequence",
                 "listOf", "setOf", "mapOf", "arrayOf", "arrayListOf",
-                "mutableListOf", "mutableSetOf", "mutableMapOf"
+                "mutableListOf", "mutableSetOf", "mutableMapOf",
+                "linkedMapOf", "linkedSetOf"
         )
     }
 
@@ -151,5 +152,5 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
                         valueArguments.isEmpty()
             } ?: false
 
-    private fun warnMessage(name: String, declared: Int, used: Int) = "$name is declared on line $declared and used for the first time on line $used"
+    private fun warnMessage(name: String, declared: Int, used: Int) = "$name is declared on line $declared and is used for the first time on line $used"
 }

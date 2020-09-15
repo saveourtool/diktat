@@ -89,6 +89,9 @@ fun PsiElement.isContainingScope(block: KtBlockExpression): Boolean {
     when (block.parent.node.elementType) {
         ElementType.ELSE -> getParentOfType<KtIfExpression>(true)
         ElementType.CATCH -> getParentOfType<KtTryExpression>(true)
+        else -> null
+    }.let {
+        if (this == it) return false
     }
     return isAncestor(block, false)
 }

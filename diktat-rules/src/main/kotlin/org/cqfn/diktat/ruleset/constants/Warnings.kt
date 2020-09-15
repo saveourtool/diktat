@@ -88,7 +88,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     LONG_NUMERICAL_VALUES_SEPARATED(true, "long numerical values should be separated with underscore"),
     WRONG_DECLARATIONS_ORDER(true, "declarations of constants and enum members should be sorted alphabetically"),
     WRONG_MULTIPLE_MODIFIERS_ORDER(true, "sequence of modifiers is incorrect"),
-    LOCAL_VARIABLE_EARLY_DECLARATION(false, "local variables need to be declared close to line where they are first used"),
+    LOCAL_VARIABLE_EARLY_DECLARATION(false, "local variables should be declared close to the line where they are first used"),
     ;
 
     /**

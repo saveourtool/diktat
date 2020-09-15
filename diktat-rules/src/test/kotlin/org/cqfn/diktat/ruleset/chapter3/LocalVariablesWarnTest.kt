@@ -532,4 +532,20 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                 """.trimMargin()
         )
     }
+
+    @Test
+    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    fun `should not trigger when there is a property in a class and same variable name in function and lambda`() {
+        lintMethod(
+                """
+                    |class Example {
+                    |    val a = "a1"
+                    |    fun foo() {
+                    |        val a = "a2"
+                    |        listOf<String>().forEach { a -> println(a) }
+                    |    }
+                    |}
+                """.trimMargin()
+        )
+    }
 }
