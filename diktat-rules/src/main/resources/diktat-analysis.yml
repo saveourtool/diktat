@@ -149,7 +149,7 @@
 - name: FILE_WILDCARD_IMPORTS
   enabled: true
   configuration:
-    allowedWildcards: ""
+    allowedWildcards: "" # Allowed wildcards for imports (e.g. "org.cqfn.diktat.*, org.jetbrains.kotlin.*")
 - name: NO_BRACES_IN_CONDITIONALS_AND_LOOPS
   enabled: true
   configuration: {}
