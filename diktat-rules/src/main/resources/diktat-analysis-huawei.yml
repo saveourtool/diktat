@@ -228,3 +228,6 @@
 - name: WRONG_MULTIPLE_MODIFIERS_ORDER
   enabled: true
   configuration: {}
+- name: LOCAL_VARIABLE_EARLY_DECLARATION
+  enabled: true
+  configuration: {}
