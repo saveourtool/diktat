@@ -6,12 +6,12 @@ import generated.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.files.IndentationRule
-import org.cqfn.diktat.util.lintMethod
+import org.cqfn.diktat.util.LintTestBase
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class IndentationRuleWarnTest {
+class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
     private val ruleId = "$DIKTAT_RULE_SET_ID:indentation"
     private val rulesConfigList = listOf(
             RulesConfig(WRONG_INDENTATION.name, true,
@@ -25,7 +25,7 @@ class IndentationRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_INDENTATION)
     fun `should warn if tabs are used in indentation`() {
-        lintMethod(IndentationRule(),
+        lintMethod(
                 """
                     |class Example {
                     |${"\t"}val zero = 0
@@ -39,7 +39,7 @@ class IndentationRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_INDENTATION)
     fun `should warn if indent size is not 4 spaces`() {
-        lintMethod(IndentationRule(),
+        lintMethod(
                 """
                     |class Example {
                     |   val zero = 0
@@ -53,7 +53,7 @@ class IndentationRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_INDENTATION)
     fun `valid indentation - example 1`() {
-        lintMethod(IndentationRule(),
+        lintMethod(
                 """
                     |class Example {
                     |    private val foo = 0
@@ -77,7 +77,7 @@ class IndentationRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_INDENTATION)
     fun `parameters can be indented by 8 spaces - positive example`() {
-        lintMethod(IndentationRule(),
+        lintMethod(
                 """
                     |class Example(
                     |        val field1: Type1,
@@ -103,7 +103,7 @@ class IndentationRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_INDENTATION)
     fun `parameters can be aligned - positive example`() {
-        lintMethod(IndentationRule(),
+        lintMethod(
                 """
                     |class Example(val field1: Type1,
                     |              val field2: Type2,
@@ -118,7 +118,7 @@ class IndentationRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_INDENTATION)
     fun `parameters can be aligned`() {
-        lintMethod(IndentationRule(),
+        lintMethod(
                 """
                     |class Example(
                     |              val field1: Type1,
@@ -137,7 +137,7 @@ class IndentationRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_INDENTATION)
     fun `lines split by operator can be indented by 8 spaces`() {
-        lintMethod(IndentationRule(),
+        lintMethod(
                 """
                     |fun foo(a: Int, b: Int) {
                     |    return 2 * a +
@@ -152,7 +152,7 @@ class IndentationRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_INDENTATION)
     fun `should check indentation in KDocs - positive example`() {
-        lintMethod(IndentationRule(),
+        lintMethod(
                 """
                     |/**
                     | * Lorem ipsum
@@ -167,7 +167,7 @@ class IndentationRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_INDENTATION)
     fun `assignment increases indentation if followed by newline`() {
-        lintMethod(IndentationRule(),
+        lintMethod(
                 """
                     |fun <T> foo(list: List<T>) {
                     |    val a = list.filter { 
@@ -187,7 +187,7 @@ class IndentationRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_INDENTATION)
     fun `should check indentation in KDocs`() {
-        lintMethod(IndentationRule(),
+        lintMethod(
                 """
                     |/**
                     |* Lorem ipsum
@@ -204,7 +204,7 @@ class IndentationRuleWarnTest {
     @Test
     @Tag(WarningNames.WRONG_INDENTATION)
     fun `dot call increases indentation`() {
-        lintMethod(IndentationRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    Integer
@@ -222,9 +222,59 @@ class IndentationRuleWarnTest {
 
     @Test
     @Tag(WarningNames.WRONG_INDENTATION)
+    fun `loops and conditionals without braces should be indented - positive example`() {
+        lintMethod(
+                """
+                    |fun foo() {
+                    |    for (i in 1..100)
+                    |        println(i)
+                    |    
+                    |    do
+                    |        println()
+                    |    while (condition)
+                    |    
+                    |    if (condition)
+                    |        bar()
+                    |    else
+                    |        baz()
+                    |}
+                    |
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
+    fun `loops and conditionals without braces should be indented`() {
+        lintMethod(
+                """
+                    |fun foo() {
+                    |    for (i in 1..100)
+                    |    println(i)
+                    |    
+                    |    do
+                    |    println()
+                    |    while (condition)
+                    |    
+                    |    if (condition)
+                    |    bar()
+                    |    else
+                    |    baz()
+                    |}
+                    |
+                """.trimMargin(),
+                LintError(3, 1, ruleId, warnText(8, 4), true),
+                LintError(6, 1, ruleId, warnText(8, 4), true),
+                LintError(10, 1, ruleId, warnText(8, 4), true),
+                LintError(12, 1, ruleId, warnText(8, 4), true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
     @Disabled("todo")
     fun `opening braces should not increase indent when placed on the same line`() {
-        lintMethod(IndentationRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    consume(Example(

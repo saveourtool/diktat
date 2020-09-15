@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.rules
 
-import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.OVERRIDE_KEYWORD
@@ -16,19 +15,13 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 
-class EmptyBlock : Rule("empty-block-structure") {
-
-    private lateinit var configRules: List<RulesConfig>
+class EmptyBlock(private val configRules: List<RulesConfig>) : Rule("empty-block-structure") {
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
-    private var fileName: String? = null
     private var isFixMode: Boolean = false
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
-                       params: KtLint.Params,
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
-        configRules = params.getDiktatConfigRules()
-        fileName = params.fileName
         emitWarn = emit
         isFixMode = autoCorrect
 
@@ -47,17 +40,18 @@ class EmptyBlock : Rule("empty-block-structure") {
         if (node.treeParent.findChildByType(MODIFIER_LIST)?.findChildByType(OVERRIDE_KEYWORD) != null) return
         if (node.isBlockEmpty()) {
             if (!configuration.emptyBlockExist) {
-                EMPTY_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "empty blocks are forbidden unless it is function with override keyword",
-                        node.startOffset) {}
+                EMPTY_BLOCK_STRUCTURE_ERROR.warn(configRules, emitWarn, isFixMode, "empty blocks are forbidden unless it is function with override keyword",
+                        node.startOffset)
             } else {
                 val space = node.findChildByType(RBRACE)!!.treePrev
                 if (configuration.emptyBlockNewline && !space.text.contains("\n")) {
                     EMPTY_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "different style for empty block",
                             node.startOffset) {
-                        if (space.elementType == WHITE_SPACE)
+                        if (space.elementType == WHITE_SPACE) {
                             (space.treeNext as LeafPsiElement).replaceWithText("\n")
-                        else
+                        } else {
                             node.addChild(PsiWhiteSpaceImpl("\n"), space.treeNext)
+                        }
                     }
                 } else if (!configuration.emptyBlockNewline && space.text.contains("\n")) {
                     EMPTY_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "different style for empty block",

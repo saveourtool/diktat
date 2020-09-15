@@ -12,14 +12,14 @@ import org.junit.jupiter.api.Test
 
 class HeaderCommentRuleFixTest : FixTestBase(
         "test/paragraph2/header",
-        HeaderCommentRule(),
+        ::HeaderCommentRule,
         listOf(
-                RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true,
+                RulesConfig("HEADER_MISSING_OR_WRONG_COPYRIGHT", true,
                         mapOf(
                                 "isCopyrightMandatory" to "true",
                                 "copyrightText" to "Copyright (c) Huawei Technologies Co., Ltd. 2020-2020. All rights reserved.")
                 ),
-                RulesConfig(HEADER_WRONG_FORMAT.name, true, mapOf())
+                RulesConfig("HEADER_WRONG_FORMAT", true, mapOf())
         )
 ) {
     @Test

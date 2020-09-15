@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.rules.identifiers
 
-import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
@@ -8,7 +7,6 @@ import com.pinterest.ktlint.core.ast.isPartOfComment
 import com.pinterest.ktlint.core.ast.lineNumber
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.LOCAL_VARIABLE_EARLY_DECLARATION
-import org.cqfn.diktat.ruleset.rules.getDiktatConfigRules
 import org.cqfn.diktat.ruleset.utils.containsOnlyConstants
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.findUsagesOf
@@ -38,7 +36,7 @@ import org.jetbrains.kotlin.psi.psiUtil.startOffset
  * * Only properties without initialization or initialized with expressions based on constants are supported.
  * * Properties initialized with constructor calls cannot be distinguished from method call and are no supported.
  */
-class LocalVariablesRule : Rule("local-variables") {
+class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("local-variables") {
     companion object {
         private var functionInitializers = listOf(
                 "emptyList", "emptySet", "emptyMap", "emptyArray", "emptySequence",
@@ -47,15 +45,12 @@ class LocalVariablesRule : Rule("local-variables") {
         )
     }
 
-    private lateinit var configRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
-                       params: KtLint.Params,
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
-        configRules = params.getDiktatConfigRules()
         emitWarn = emit
         isFixMode = autoCorrect
 

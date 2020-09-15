@@ -8,8 +8,8 @@
 | [0 Intro](#c0.1)    | [Purpose](#c0.1), [General principles](#c0.2), [Terminology](#c0.3), [Scope](#c0.4), [Exception](#c0.5) |
 | [1 Naming](#c1)     | [Identifiers](#c1.1), [Package naming](#c1.2), [Classes, enumeration and interfaces](#c1.3), [Functions](#c1.4), [Constants](#c1.5), [Variables](#c1.6) |
 | [2 Comments](#c2)   | [Kdoc](#c2.1), [File header](#c2.2), [Function header comments](#c2.3), [Code comments](#c2.4) |
-| [3 General formal](#c3)   | [File-related rules](#c3.1) [Indentation](#c3.2) [Empty blocks](#c3.3) [Line width](#c3.4) [Line breaks (newlines)](#c3.5) [Blank lines](#c3.6) [Horiznotal alignment](#c3.7) [Enumerations](#c3.8) [Variable declaration](#c3.9) [When expression](#c3.10) [Annotations](#c3.11) [Comment layout](#c3.12) [Modifiers](#c3.13) [Modifiers](#c3.14)|
-
+| [3 General format](#c3)   | [File-related rules](#c3.1), [Indentation](#c3.2), [Empty blocks](#c3.3), [Line width](#c3.4), [Line breaks (newlines)](#c3.5), [Blank lines](#c3.6), [Horiznotal alignment](#c3.7), [Enumerations](#c3.8), [Variable declaration](#c3.9), [When expression](#c3.10), [Annotations](#c3.11), [Comment layout](#c3.12), [Modifiers](#c3.13), [Strings](#c3.14)|
+| [4 Variables and types](#c4) | [Variables](#c4.1), [Types](#c4.2), [Null safety and variable declarations](#4.3)|
 
  # <a name="c0"></a> Foreword
 
@@ -130,6 +130,19 @@ No special prefix or suffix should be used in these names. For example, the foll
 ```kotlin
      @Test fun `my test`() { /*...*/ }
 ``` 
+6. The following table contains some confusing characters. You should be careful when using them as identifiers. 
+   And better use other names instead of these identifiers.
+   
+   | Expected      | Confusing name           | Suggested name |
+   | ------------- | ------------------------ | ---------------- |
+   | 0 (zero)      | O, D                     | obj, dgt         |
+   | 1 (one)       | I, l                     | it, ln, line     |
+   | 2 (two)       | Z                        | n1, n2           |
+   | 5 (five)      | S                        | xs, str          |
+   | 6 (six)       | e                        | ex, elm          |
+   | 8 (eight)     | B                        | bt, nxt          |
+   | n,h           | h,n                      | nr, head, height |
+   | rn, m         | m,rn                     | mbr, item        |
 
  **Exceptions**
  - i,j,k variables that are used in loops is a standard for industry. It is allowed to use 1 symbol for such variables.
@@ -699,6 +712,7 @@ import javax.swing.event.ActionEvent;
 Notes:
 1. There should be no blank lines between properties without comments;
 2. Properties with comments/Kdoc should be separated by a newline before the comment/Kdoc
+3. Enum entries and constant properties (`const val`) in companion objects should be sorted alphabetically.
 
 The declaration part of a class or interface should be in the following order:
  - compile-time constants (for objects)
@@ -716,7 +730,7 @@ All variants of a (private) val logger should be placed in the beginning of the 
 
  #### <a name="r3.3"></a>Rule 3.3 Braces must be used in conditional statements and loop blocks
 
-1) In `if`, `else`, `for`, `do`, and `while` statements, even if the program body is empty or contains only one statement, braces should be used.
+In `if`, `else`, `for`, `do`, and `while` statements, even if the program body is empty or contains only one statement, braces should be used.
 In special Kotlin `when` statement no need to use braces for statements with 1 line. Valid example:
 
     ```kotlin
@@ -752,27 +766,6 @@ if (condition) {
 } else {
     println(0)
 }
-```
-
-2) No need to use braces for the body of lambdas and when-conditions (after an arrow)
-  
-Bad example:
-
-```kotlin
-val a = { b: String, c: String -> { // these braces are increasing complexity
-        null
-    }
-}
-```
-
-Valid examples: 
-
-```kotlin
-val a = { b: String, c: String ->
-        null
-}
-
-someValue.map { x -> x}
 ```
 
 #### <a name="r3.4"></a> Rule 3.4 For *non-empty* blocks and block structures, the opening brace is placed at the end of the line
@@ -1109,8 +1102,9 @@ fun baz() {
   - Safe access modifiers: `?.` and `!!`, that stay on the same line with an object name: `object?.toString()`
   - Operator `..` for creating ranges, e.g. `1..100`
 
-  5. Spaces should be used after ',' and ':' (also ';', but please note that this code style prohibits usage of ';' in the middle of the line, see [rule 3.4](#s3.4)) (except cases when those symbols are in the end of line). There should be no whitespaces in the end of line.
-  There should be no spaces before `,`, `:` and `;`. The only exceptions for colon are the following:
+  5. Spaces should be used *after* ',' and ':' (also ';', but please note that this code style prohibits usage of ';' in the middle of the line, see [rule 3.4](#s3.4)) (except cases when those symbols are in the end of line). There should be no whitespaces in the end of line.
+  The only exception when there should be no spaces *after* colon is when colon is used in annotation to specify use-site target (e.g. `@param:JsonProperty`)
+  There should be no spaces *before* `,`, `:` and `;`. The only exceptions for colon are the following:
   - when `:` is used to separate a type and a supertype, including anonimous object (after `object` keyword)
   - when delegating to a superclass constructor or a different constructor of the same class
   
@@ -1298,19 +1292,6 @@ val socialSecurityNumber = 999_99_9999L
 val hexBytes = 0xFF_EC_DE_5E
 val bytes = 0b11010010_01101001_10010100_10010010
 ```
-The following table contains some confusing characters. You should be careful when using them as identifiers. 
-And better use other names instead of these identifiers.
-
-| Expected      | Confusing name           | Suggested name |
-| ------------- | ------------------------ | ---------------- |
-| 0 (zero)      | O, D                     | obj, dgt         |
-| 1 (one)       | I, l                     | it, ln, line     |
-| 2 (two)       | Z                        | n1, n2           |
-| 5 (five)      | S                        | xs, str          |
-| 6 (six)       | e                        | ex, elm          |
-| 8 (eight)     | B                        | bt, nxt          |
-| n,h           | h,n                      | nr, head, height |
-| rn, m         | m,rn                     | mbr, item        |
 
 ### <a name="c3.14"></a> Strings
 
@@ -1329,4 +1310,197 @@ Good example:
 ```kotlin
 val myStr = "Super string"
 val value = "$myStr concatenated"
+```
+
+ # <a name="c4"></a>4 Variables and types
+
+### <a name="c4.1"></a>Variables
+
+### <a name="r4.1.1"></a> Rule 4.1.1: Do not use Float and Double when accurate calculations are needed
+Floating point numbers provide a good approximation over a wide range of values, but they cannot produce accurate results in some cases.
+Binary floating-point numbers are unsuitable for precise calculations, because it is impossible to represent 0.1 or any other negative power of 10 in a `binary representation` with a finite length.
+
+For example - this simple code that looks to be obvious:
+```
+    val myValue = 2.0 - 1.1
+    println(myValue)
+``` 
+
+will print something like this: `0.8999999999999999`
+
+That's why in case you need precise calculations (currency, finance, exact science etc.), it is recommended to use Int, Long, BigDecimal, etc. BigDecimal should be a good choice.
+
+Bad example:
+
+If a float value contains more than 6-7 decimal numbers, then it will be rounded
+ ```kotlin
+ val eFloat = 2.7182818284f // Float, will be rounded to 2.7182817
+ ```
+
+Recommended example: when accurate calculations are needed:
+
+ ```kotlin
+    val income = BigDecimal("2.0")
+    val expense = BigDecimal("1.1")
+    println(income.subtract(expense)) // here you will get 0.9
+ ```
+
+### <a name="r4.1.2"></a>Rule 4.1.2: Numbers of a float type should not be directly compared with equality operator (==) or other methods like compareTo and equals. 
+
+Since floating-point numbers have precision problems in computer representation - as it was recommended in
+Rule 4.1.1 - better to use BigDecimal instead when you need to make accurate computations and comparison.
+The following code describes these problems:
+ ```kotlin
+val f1 = 1.0f - 0.9f
+val f2 = 0.9f - 0.8f
+if (f1 == f2) {
+    println("Expected to enter here")
+} else {
+    println("But this block will be reached")
+}
+
+val flt1 = f1;
+val flt2 = f2;
+if (flt1.equals(flt2)) {
+    println("Expected to enter here")
+} else {
+    println("But this block will be reached")
+} 
+ ```
+
+Recommended example:
+
+```kotlin
+val foo = 1.03f
+val bar = 0.42f
+if (abs(foo - bar) > 1e-6f) {
+    println("Ok")
+} else {
+    println("Not")
+}
+```
+
+### <a name="r4.1.3"></a> Rule 4.1.3 Try to use 'val' instead of 'var' for variable declaration
+
+Variables with `val` modifier - are immutable (read-only). Usage of such variables instead of `var` variables increases robustness and readability of code,
+because `var` variables can be reassigned several times in the business logic. Of course, in some scenarios with loops or accumulators only `var`s can be used and are allowed.
+ 
+### <a name="c4.2"></a>Types
+
+### <a name="s4.2.1"></a>Recommendation 4.2.1: Use Contracts and smart cast as much as possible
+
+Kotlin compiler introduced [Smart casts](https://kotlinlang.org/docs/reference/typecasts.html#smart-casts) that help to reduce the size of code.
+
+Bad example:
+```kotlin
+    if (x is String) {
+        print((x as String).length) // x was already automatically cast to String - no need to use 'as' keyword here
+    }
+```
+
+Good example:
+```kotlin
+    if (x is String) {
+        print(x.length) // x was already automatically cast to String - no need to use 'as' keyword here
+    }
+```
+
+Also Kotlin 1.3 introduced [Contracts](https://kotlinlang.org/docs/reference/whatsnew13.html#contracts) that provide enhanced logic for smart-cast.
+Contracts are used and are very stable in `stdlib`, for example:
+
+```kotlin
+fun bar(x: String?) {
+    if (!x.isNullOrEmpty()) {
+        println("length of '$x' is ${x.length}") // smartcasted to not-null
+    }
+} 
+```
+
+Smart cast and contracts reduce boilerplate code and forced type conversion, that's why it is much better to use them.
+
+Bad example:
+```kotlin
+fun String?.isNotNull(): Boolean = this != null
+
+fun foo(s: String?) {
+    if (s.isNotNull()) s!!.length // No smartcast here and !! operator is used
+}
+```
+
+Good example:
+```kotlin
+fun foo(s: String?) {
+    if (s.isNotNull()) s.length // We have used a method with contract from stdlib that helped compiler to execute smart cast
+}
+```
+
+### <a name="s4.2.2"></a>Recommendation 4.2.2: Try to use type alias to represent types and make code more readable
+
+Type aliases provide alternative names for existing types. If the type name is too long, you can introduce a shorter name and replace the original type name with the new name.
+It helps to shorten long generic types. For example, code looks much more readable if you introduce a typealias instead of a long chain of nested generic types.
+We recommend to use typealias if the type contains **more than two** nested generic types and this type itself is longer than **25 chars**.
+
+Bad example:
+```kotlin
+val b: MutableMap<String, MutableList<String>>
+```
+
+Good example:
+```kotlin
+typealias FileTable = MutableMap<String, MutableList<String>>
+val b: FileTable
+```
+
+You can also provide additional aliases for function (lambda-like) types:
+```kotlin
+typealias MyHandler = (Int, String, Any) -> Unit
+
+typealias Predicate<T> = (T) -> Boolean
+```
+
+### <a name="c4.3"></a> Null safety and variable declarations
+Kotlin itself is declared as a null safe programming language. But to be compatible with Java it still supports nullable types.
+
+### <a name="s4.3.1"></a> Recommendation 4.3.1: avoid declaration of variables of nullable types, especially of types from Kotlin stdlib.
+To avoid NullPointerException and help compiler checks to prevent NPE try to avoid usage of nullable types (with "?" symbol).
+Not recommended:
+```kotlin 
+val a: Int? = 0
+```
+
+Recommended:
+```kotlin 
+val a: Int = 0
+```
+
+Nevertheless, if you use Java libraries extensively you'll have to use nullable types and enrich your code with '!!' and '?' symbols.
+But at least for Kotlin stdlib (declared in [official documentation](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/)) avoid using nullable types. 
+Try to use initializers for empty collections. For example: if you want to initialise list instead of using `null` use `emptyList()`.
+
+Not recommended:
+```kotlin 
+val a: List<Int>? = null 
+```
+
+Recommended:
+```kotlin 
+val a: List<Int> = emptyList() 
+```
+
+### <a name="s4.3.2"></a> Recommendation 4.3.2: Variables of generic types should have explicit type declaration
+As in Java, classes in Kotlin may have type parameters. In general, to create an instance of such a class, we need to provide type arguments:
+```kotlin
+val myVariable: Map<Int, String> = emptyMap<Int, String>() 
+```
+But compiler can inherit type parameter from the right value and will not force user to explicitly declare the type.
+Such declarations are not recommended as programmer will need to look at the method to find its return value and to understand the type of a variable. 
+
+Not recommended:
+```kotlin
+val myVariable = emptyMap<Int, String>() 
+```
+
+Recommended:
+```kotlin
+val myVariable: Map<Int, String> = emptyMap() 
 ```

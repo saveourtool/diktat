@@ -5,20 +5,20 @@ import generated.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings.LOCAL_VARIABLE_EARLY_DECLARATION
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.identifiers.LocalVariablesRule
-import org.cqfn.diktat.util.lintMethod
+import org.cqfn.diktat.util.LintTestBase
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class LocalVariablesWarnTest {
+class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
     private val ruleId = "$DIKTAT_RULE_SET_ID:local-variables"
 
-    private fun warnMessage(name: String, declared: Int, used: Int) = "$name is declared on line $declared and used for the first time on line $used"
+    private fun warnMessage(name: String, declared: Int, used: Int) = "$name is declared on line $declared and is used for the first time on line $used"
 
     @Test
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `should not check top-level and member properties`() {
-        lintMethod(LocalVariablesRule(),
+        lintMethod(
                 """
                     |const val foo = 0
                     |
@@ -32,7 +32,7 @@ class LocalVariablesWarnTest {
     @Test
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `local variables used only in this scope - positive example`() {
-        lintMethod(LocalVariablesRule(),
+        lintMethod(
                 """
                     |class Example {
                     |    fun foo() {
@@ -48,7 +48,7 @@ class LocalVariablesWarnTest {
     @Test
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `local variables used only in this scope - positive example with blank lines`() {
-        lintMethod(LocalVariablesRule(),
+        lintMethod(
                 """
                     |class Example {
                     |    fun foo() {
@@ -65,7 +65,7 @@ class LocalVariablesWarnTest {
     @Test
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `local variables used only in this scope - positive example with comments`() {
-        lintMethod(LocalVariablesRule(),
+        lintMethod(
                 """
                     |class Example {
                     |    fun foo() {
@@ -82,7 +82,7 @@ class LocalVariablesWarnTest {
     @Test
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `local var used only in this scope - positive example`() {
-        lintMethod(LocalVariablesRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    var bar: MutableList<Int>
@@ -96,7 +96,7 @@ class LocalVariablesWarnTest {
     @Test
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `local var used only in this scope with multiline usage - positive example`() {
-        lintMethod(LocalVariablesRule(),
+        lintMethod(
                 """
                     |fun foo(obj: Type?) {
                     |    var bar: MutableList<Int>
@@ -111,7 +111,7 @@ class LocalVariablesWarnTest {
     @Test
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `local variables used only in this scope`() {
-        lintMethod(LocalVariablesRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    val bar = 0
@@ -126,7 +126,7 @@ class LocalVariablesWarnTest {
     @Test
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `local variables used only in this scope - multiline declaration, positive example`() {
-        lintMethod(LocalVariablesRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    val bar = obj
@@ -140,7 +140,7 @@ class LocalVariablesWarnTest {
     @Test
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `local variables used only in this scope - multiline declaration with binary expression`() {
-        lintMethod(LocalVariablesRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    val bar = 1 + 
@@ -156,7 +156,7 @@ class LocalVariablesWarnTest {
     @Test
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `local variables used only in this scope - multiline declaration with dot qualified property access`() {
-        lintMethod(LocalVariablesRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    val bar = "string"
@@ -172,7 +172,7 @@ class LocalVariablesWarnTest {
     @Test
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `local variables used only in this scope - multiline declaration with dot qualified method call`() {
-        lintMethod(LocalVariablesRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    val bar = "string"
@@ -189,7 +189,7 @@ class LocalVariablesWarnTest {
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
     @Disabled("Checking of variable from outer scope is not supported yet")
     fun `local variables defined in outer scope and used only in nested scope`() {
-        lintMethod(LocalVariablesRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    val bar = 0
@@ -207,7 +207,7 @@ class LocalVariablesWarnTest {
     @Test
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `local variables defined in outer scope and used in several scopes - positive example`() {
-        lintMethod(LocalVariablesRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    val bar = 0
@@ -226,7 +226,7 @@ class LocalVariablesWarnTest {
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
     @Disabled("Checking of variable from outer scope is not supported yet")
     fun `local variables defined in outer scope and used in several scopes`() {
-        lintMethod(LocalVariablesRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    val bar = 0
@@ -249,7 +249,7 @@ class LocalVariablesWarnTest {
     @Test
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `should not trigger on other objects fields with same name`() {
-        lintMethod(LocalVariablesRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    val size = list.size
@@ -265,7 +265,7 @@ class LocalVariablesWarnTest {
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
     @Disabled("Checking of variable from outer scope is not supported yet")
     fun `need to allow declaring vars outside of loops`() {
-        lintMethod(LocalVariablesRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    var offset = 0
@@ -283,7 +283,7 @@ class LocalVariablesWarnTest {
     @Test
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `discovered during testing`() {
-        lintMethod(LocalVariablesRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    var offset = 0
@@ -300,7 +300,7 @@ class LocalVariablesWarnTest {
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
     @Disabled("Checking of variable from outer scope is not supported yet")
     fun `need to allow declaring vars outside collection methods`() {
-        lintMethod(LocalVariablesRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    var offset = 0
@@ -318,7 +318,7 @@ class LocalVariablesWarnTest {
     @Test
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `should not trigger on properties with same name in different scopes`() {
-        lintMethod(LocalVariablesRule(),
+        lintMethod(
                 """
                     |fun foo(): Bar {
                     |    if (condition) {
@@ -336,7 +336,7 @@ class LocalVariablesWarnTest {
     @Test
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `should not trigger on properties with same name in different scopes - 2`() {
-        lintMethod(LocalVariablesRule(),
+        lintMethod(
                 """
                     |fun foo(): Bar {
                     |    for (x in A) {
@@ -353,7 +353,7 @@ class LocalVariablesWarnTest {
     @Test
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `should not trigger when variables from outer scope are shadowed by lambda parameters`() {
-        lintMethod(LocalVariablesRule(),
+        lintMethod(
                 """
                     |fun foo(): Bar {
                     |    val x = 0
@@ -369,7 +369,7 @@ class LocalVariablesWarnTest {
     @Test
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `should check usage inside lambdas - positive example`() {
-        lintMethod(LocalVariablesRule(),
+        lintMethod(
                 """
                     |fun foo(): Bar {
                     |    val x = 0
@@ -384,7 +384,7 @@ class LocalVariablesWarnTest {
     @Test
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `should check usage inside lambdas`() {
-        lintMethod(LocalVariablesRule(),
+        lintMethod(
                 """
                     |fun foo(): Bar {
                     |    val x = 0
@@ -401,7 +401,7 @@ class LocalVariablesWarnTest {
     @Test
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `should check usage inside lambdas with line break`() {
-        lintMethod(LocalVariablesRule(),
+        lintMethod(
                 """
                     |fun foo(): Bar {
                     |    val x = 0
@@ -419,7 +419,7 @@ class LocalVariablesWarnTest {
     @Test
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `should check properties declared inside lambda`() {
-        lintMethod(LocalVariablesRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    list.map {
@@ -436,7 +436,7 @@ class LocalVariablesWarnTest {
     @Test
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `should not trigger when more than one variables need to be declared`() {
-        lintMethod(LocalVariablesRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    val x = 0
@@ -450,7 +450,7 @@ class LocalVariablesWarnTest {
     @Test
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `should check when more than one variables need to be declared`() {
-        lintMethod(LocalVariablesRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    val x = 0
@@ -467,7 +467,7 @@ class LocalVariablesWarnTest {
     @Test
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `should emit only one warning when same variables are used more than once`() {
-        lintMethod(LocalVariablesRule(),
+        lintMethod(
                 """
                     |private fun checkDoc(node: ASTNode, warning: Warnings) {
                     |    val a = 0
@@ -488,7 +488,7 @@ class LocalVariablesWarnTest {
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
     @Disabled("Constructors are not handled separately yet")
     fun `should check variables initialized with constructor with no parameters`() {
-        lintMethod(LocalVariablesRule(),
+        lintMethod(
                 """
                      |fun foo(isRequired: Boolean): Type {
                      |    val resOption = Type()
@@ -503,7 +503,7 @@ class LocalVariablesWarnTest {
     @Test
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `check properties initialized with some selected methods`() {
-        lintMethod(LocalVariablesRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    val list = emptyList<Int>()
@@ -518,7 +518,7 @@ class LocalVariablesWarnTest {
     @Test
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `should properly detect containing scope of lambdas`() {
-        lintMethod(LocalVariablesRule(),
+        lintMethod(
                 """
                     |fun foo() {
                     |    val res = mutableListOf<Type>()

@@ -11,15 +11,16 @@ import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_CONTAINS_ONLY_COMMENTS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_INCORRECT_BLOCKS_ORDER
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NO_BLANK_LINE_BETWEEN_BLOCKS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_UNORDERED_IMPORTS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_WILDCARD_IMPORTS
-import org.cqfn.diktat.ruleset.rules.getDiktatConfigRules
-import org.cqfn.diktat.ruleset.utils.handleIncorrectOrder
 import org.cqfn.diktat.ruleset.utils.findChildBefore
+import org.cqfn.diktat.ruleset.utils.handleIncorrectOrder
 import org.cqfn.diktat.ruleset.utils.moveChildBefore
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -36,25 +37,24 @@ import org.jetbrains.kotlin.psi.KtImportDirective
  * 4. Ensures imports are ordered alphabetically without blank lines
  * 5. Ensures there are no wildcard imports
  */
-class FileStructureRule : Rule("file-structure") {
+class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file-structure") {
 
-    private lateinit var configRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
     private var fileName: String = ""
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
-                       params: KtLint.Params,
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
-
-        configRules = params.getDiktatConfigRules()
         isFixMode = autoCorrect
         emitWarn = emit
 
         if (node.elementType == ElementType.FILE) {
-            fileName = params.fileName!!
-            checkImportsOrder(node.findChildByType(IMPORT_LIST)!!)
+            fileName = node.getUserData(KtLint.FILE_PATH_USER_DATA_KEY)!!
+            val configuration = WildCardImportsConfig(
+                    this.configRules.getRuleConfig(FILE_WILDCARD_IMPORTS)?.configuration ?: mapOf()
+            )
+            checkImportsOrder(node.findChildByType(IMPORT_LIST)!!, configuration)
             if (checkFileHasCode(node)) {
                 checkCodeBlocksOrderAndEmptyLines(node)
             }
@@ -102,11 +102,11 @@ class FileStructureRule : Rule("file-structure") {
         }
     }
 
-    private fun checkImportsOrder(node: ASTNode) {
+    private fun checkImportsOrder(node: ASTNode, configuration: WildCardImportsConfig) {
         val imports = node.getChildren(TokenSet.create(IMPORT_DIRECTIVE)).toList()
 
         // importPath can be null if import name cannot be parsed, which should be a very rare case, therefore !! should be safe here
-        imports.filter { (it.psi as KtImportDirective).importPath!!.isAllUnder }.forEach {
+        imports.filter { (it.psi as KtImportDirective).importPath!!.isAllUnder && it.text !in configuration.allowedWildcards }.forEach {
             FILE_WILDCARD_IMPORTS.warn(configRules, emitWarn, isFixMode, it.text, it.startOffset)
         }
 
@@ -145,5 +145,9 @@ class FileStructureRule : Rule("file-structure") {
         KDOC -> copyrightComment to (fileAnnotations ?: packageDirectiveNode)
         FILE_ANNOTATION_LIST -> (headerKdoc ?: copyrightComment) to packageDirectiveNode
         else -> error("Only BLOCK_COMMENT, KDOC and FILE_ANNOTATION_LIST are valid inputs.")
+    }
+
+    class WildCardImportsConfig(config: Map<String, String>) : RuleConfiguration(config) {
+        val allowedWildcards = config["allowedWildcards"]?.split(",")?.map { it.trim() } ?: listOf()
     }
 }

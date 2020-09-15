@@ -9,7 +9,6 @@ import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.TOO_MANY_BLANK_LINES
-import org.cqfn.diktat.ruleset.rules.getDiktatConfigRules
 import org.cqfn.diktat.ruleset.utils.leaveExactlyNumNewLines
 import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
 import org.cqfn.diktat.ruleset.utils.numNewLines
@@ -20,18 +19,13 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
  * 1. Checks that no more than two consecutive blank lines are used in a row
  * 2. Checks that blank lines are not put in the beginning or at the end of code blocks with curly braces
  */
-class BlankLinesRule : Rule("blank-lines") {
-    private lateinit var configRules: List<RulesConfig>
+class BlankLinesRule(private val configRules: List<RulesConfig>) : Rule("blank-lines") {
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
-    private var fileName: String? = null
     private var isFixMode: Boolean = false
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
-                       params: KtLint.Params,
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
-        configRules = params.getDiktatConfigRules()
-        fileName = params.fileName
         emitWarn = emit
         isFixMode = autoCorrect
 

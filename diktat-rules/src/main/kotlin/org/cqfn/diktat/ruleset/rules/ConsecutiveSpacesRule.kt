@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.rules
 
-import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.ENUM_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
@@ -10,13 +9,9 @@ import com.pinterest.ktlint.core.ast.parent
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
-import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.cqfn.diktat.ruleset.constants.Warnings.TOO_MANY_CONSECUTIVE_SPACES
-import org.cqfn.diktat.ruleset.utils.prettyPrint
+import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
-
-
-
 
 /**
  * This visitor covers recommendation 3.8 of Huawei code style. It covers following recommendations:
@@ -24,22 +19,17 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
  * 2) If saveInitialFormattingForEnums is true then white spaces in enums will not be affected
  *
  */
-class ConsecutiveSpacesRule : Rule("too-many-spaces") {
-
+class ConsecutiveSpacesRule(private val configRules: List<RulesConfig>) : Rule("too-many-spaces") {
     companion object {
         private const val MAX_SPACES = 1
     }
 
-
-    private lateinit var configRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
-                       params: KtLint.Params,
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
-        configRules = params.getDiktatConfigRules()
         emitWarn = emit
         isFixMode = autoCorrect
 
@@ -50,7 +40,6 @@ class ConsecutiveSpacesRule : Rule("too-many-spaces") {
             checkWhiteSpace(node, configuration)
         }
     }
-
 
     private fun checkWhiteSpace(node: ASTNode, configuration: TooManySpacesRuleConfiguration) {
         if (configuration.enumInitialFormatting) {
@@ -82,15 +71,12 @@ class ConsecutiveSpacesRule : Rule("too-many-spaces") {
         }
     }
 
-
     private fun ASTNode.hasEolComment(): Boolean = this.treeNext.elementType == EOL_COMMENT
 
     private fun ASTNode.squeezeSpaces() = (this as LeafElement).replaceWithText(" ")
-
 
     class TooManySpacesRuleConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
         val numberOfSpaces = config["max_spaces"]?.toIntOrNull() ?: MAX_SPACES
         val enumInitialFormatting = config["saveInitialFormattingForEnums"]?.toBoolean() ?: false
     }
-
 }

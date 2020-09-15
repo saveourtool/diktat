@@ -7,21 +7,22 @@ import org.junit.jupiter.api.Test
 import org.cqfn.diktat.ruleset.rules.PackageNaming
 import org.cqfn.diktat.ruleset.constants.Warnings.*
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
-import org.cqfn.diktat.util.lintMethod
+import org.cqfn.diktat.util.LintTestBase
+import org.cqfn.diktat.util.testFileName
 import org.junit.jupiter.api.Tag
 
-class PackageNamingWarnTest {
+class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
 
     private val ruleId: String = "$DIKTAT_RULE_SET_ID:package-naming"
 
     private val rulesConfigList: List<RulesConfig> = listOf(
-            RulesConfig(PACKAGE_NAME_MISSING.name, true, mapOf("domainName" to "org.cqfn.diktat"))
+            RulesConfig("DIKTAT_COMMON", true, mapOf("domainName" to "org.cqfn.diktat"))
     )
 
     @Test
     @Tag(WarningNames.PACKAGE_NAME_MISSING)
     fun `missing package name (check)`() {
-        lintMethod(PackageNaming(),
+        lintMethod(
                 """
                 import org.cqfn.diktat.a.b.c
 
@@ -31,7 +32,7 @@ class PackageNamingWarnTest {
                 class TestPackageName {  }
 
             """.trimIndent(),
-                LintError(1, 1, ruleId, "${PACKAGE_NAME_MISSING.warnText()} /TestFileName.kt", true),
+                LintError(1, 1, ruleId, "${PACKAGE_NAME_MISSING.warnText()} $testFileName", true),
                 rulesConfigList = rulesConfigList
         )
     }
@@ -40,7 +41,7 @@ class PackageNamingWarnTest {
     @Tag(WarningNames.PACKAGE_NAME_INCORRECT_CASE)
     fun `package name should be in a lower case (check)`() {
         lintMethod(
-                PackageNaming(),
+
                 """
                 package /* AAA */ org.cqfn.diktat.SPECIALTEST.test
 
@@ -61,7 +62,7 @@ class PackageNamingWarnTest {
     @Tag(WarningNames.PACKAGE_NAME_INCORRECT_PREFIX)
     fun `package name should start from domain name (check)`() {
         lintMethod(
-                PackageNaming(),
+
                 """
                 package some.incorrect.domain.test
 
@@ -82,7 +83,7 @@ class PackageNamingWarnTest {
     @Tag(WarningNames.INCORRECT_PACKAGE_SEPARATOR)
     fun `underscore exceptions - incorrect underscore case`() {
         lintMethod(
-                PackageNaming(),
+
                 """
                 package org.cqfn.diktat.domain.test_
 
@@ -103,7 +104,7 @@ class PackageNamingWarnTest {
     @Tag(WarningNames.PACKAGE_NAME_INCORRECT_SYMBOLS)
     fun `incorrect symbol in package name`() {
         lintMethod(
-                PackageNaming(),
+
                 """
                 package org.cqfn.diktat.domain.testш
 
@@ -124,7 +125,7 @@ class PackageNamingWarnTest {
     @Tag(WarningNames.PACKAGE_NAME_INCORRECT_SYMBOLS)
     fun `underscore exceptions - positive case - keyword`() {
         lintMethod(
-                PackageNaming(),
+
                 """
                 package org.cqfn.diktat.domain.int_
 
@@ -143,19 +144,43 @@ class PackageNamingWarnTest {
     @Test
     @Tag(WarningNames.PACKAGE_NAME_INCORRECT_PATH)
     fun `regression - incorrect warning on file under test directory`() {
-        lintMethod(PackageNaming(),
+        lintMethod(
                 """
                     package org.cqfn.diktat.ruleset.chapter1
                 """.trimIndent(),
-                fileName = "~/diktat/diktat-rules/src/test/kotlin/org/cqfn/diktat/ruleset/chapter1/EnumValueCaseTest.kt"
+                fileName = "~/diktat/diktat-rules/src/test/kotlin/org/cqfn/diktat/ruleset/chapter1/EnumValueCaseTest.kt",
+                rulesConfigList = rulesConfigList
         )
 
-        lintMethod(PackageNaming(),
+        lintMethod(
                 """
                     package org.cqfn.diktat.chapter1
                 """.trimIndent(),
                 LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} org.cqfn.diktat.ruleset.chapter1", true),
-                fileName = "~/diktat/diktat-rules/src/test/kotlin/org/cqfn/diktat/ruleset/chapter1/EnumValueCaseTest.kt"
+                fileName = "~/diktat/diktat-rules/src/test/kotlin/org/cqfn/diktat/ruleset/chapter1/EnumValueCaseTest.kt",
+                rulesConfigList = rulesConfigList
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.PACKAGE_NAME_INCORRECT_PATH)
+    fun `regression - should not remove special words from file path`() {
+        lintMethod(
+                """
+                    |package org.cqfn.diktat.test.processing
+                """.trimMargin(),
+                fileName = "/home/testu/project/module/src/test/kotlin/org/cqfn/diktat/test/processing/SpecialPackageNaming.kt",
+                rulesConfigList = rulesConfigList
+        )
+
+        lintMethod(
+                """
+                    |package kotlin.collections
+                """.trimMargin(),
+                fileName = "/home/testu/project/module/src/main/kotlin/kotlin/collections/Collections.kt",
+                rulesConfigList = listOf(
+                        RulesConfig("DIKTAT_COMMON", true, mapOf("domainName" to "kotlin"))
+                )
         )
     }
 }

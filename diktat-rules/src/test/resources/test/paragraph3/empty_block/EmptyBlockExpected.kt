@@ -16,3 +16,6 @@ fun goo () {
     while (x > 0)
         --x
 }
+
+open class RuleConfiguration(protected val config: Map<String, String>)
+object EmptyConfiguration: RuleConfiguration(mapOf())

@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.rules
 
-import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.CATCH
@@ -11,26 +10,44 @@ import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_TYPE
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.prevCodeSibling
-import com.pinterest.ktlint.core.ast.prevSibling
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.Warnings
+import org.cqfn.diktat.ruleset.constants.Warnings.BACKTICKS_PROHIBITED
+import org.cqfn.diktat.ruleset.constants.Warnings.CLASS_NAME_INCORRECT
+import org.cqfn.diktat.ruleset.constants.Warnings.CONSTANT_UPPERCASE
+import org.cqfn.diktat.ruleset.constants.Warnings.ENUM_VALUE
+import org.cqfn.diktat.ruleset.constants.Warnings.EXCEPTION_SUFFIX
+import org.cqfn.diktat.ruleset.constants.Warnings.FUNCTION_BOOLEAN_PREFIX
+import org.cqfn.diktat.ruleset.constants.Warnings.FUNCTION_NAME_INCORRECT_CASE
+import org.cqfn.diktat.ruleset.constants.Warnings.GENERIC_NAME
+import org.cqfn.diktat.ruleset.constants.Warnings.IDENTIFIER_LENGTH
+import org.cqfn.diktat.ruleset.constants.Warnings.CONFUSING_IDENTIFIER_NAMING
+import org.cqfn.diktat.ruleset.constants.Warnings.OBJECT_NAME_INCORRECT
+import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_HAS_PREFIX
+import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_NAME_INCORRECT
+import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_NAME_INCORRECT_FORMAT
+import org.cqfn.diktat.ruleset.utils.checkLength
+import org.cqfn.diktat.ruleset.utils.containsOneLetterOrZero
+import org.cqfn.diktat.ruleset.utils.findChildAfter
+import org.cqfn.diktat.ruleset.utils.findLeafWithSpecificType
+import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
+import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
+import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
+import org.cqfn.diktat.ruleset.utils.getIdentifierName
+import org.cqfn.diktat.ruleset.utils.getTypeParameterList
+import org.cqfn.diktat.ruleset.utils.hasPrefix
+import org.cqfn.diktat.ruleset.utils.hasTestAnnotation
+import org.cqfn.diktat.ruleset.utils.isConstant
+import org.cqfn.diktat.ruleset.utils.isDigits
+import org.cqfn.diktat.ruleset.utils.isLowerCamelCase
+import org.cqfn.diktat.ruleset.utils.isPascalCase
+import org.cqfn.diktat.ruleset.utils.isUpperSnakeCase
+import org.cqfn.diktat.ruleset.utils.removePrefix
+import org.cqfn.diktat.ruleset.utils.toLowerCamelCase
+import org.cqfn.diktat.ruleset.utils.toPascalCase
+import org.cqfn.diktat.ruleset.utils.toUpperSnakeCase
 import org.jetbrains.kotlin.builtins.PrimitiveType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
-import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_HAS_PREFIX
-import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_NAME_INCORRECT
-import org.cqfn.diktat.ruleset.constants.Warnings.CONSTANT_UPPERCASE
-import org.cqfn.diktat.ruleset.constants.Warnings.OBJECT_NAME_INCORRECT
-import org.cqfn.diktat.ruleset.constants.Warnings.FUNCTION_BOOLEAN_PREFIX
-import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_NAME_INCORRECT_FORMAT
-import org.cqfn.diktat.ruleset.constants.Warnings.GENERIC_NAME
-import org.cqfn.diktat.ruleset.constants.Warnings.EXCEPTION_SUFFIX
-import org.cqfn.diktat.ruleset.constants.Warnings.CLASS_NAME_INCORRECT
-import org.cqfn.diktat.ruleset.constants.Warnings.ENUM_VALUE
-import org.cqfn.diktat.ruleset.constants.Warnings.FUNCTION_NAME_INCORRECT_CASE
-import org.cqfn.diktat.ruleset.constants.Warnings.IDENTIFIER_LENGTH
-import org.cqfn.diktat.ruleset.constants.Warnings.BACKTICKS_PROHIBITED
-import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.psi.psiUtil.parents
 
 /**
@@ -48,28 +65,26 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  * // FixMe: because it fixes only declaration without the usages
  */
 @Suppress("ForbiddenComment")
-class IdentifierNaming : Rule("identifier-naming") {
+class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("identifier-naming") {
 
     companion object {
         // FixMe: this should be moved to properties
         val ONE_CHAR_IDENTIFIERS = setOf("i", "j", "k", "x", "y", "z")
         val BOOLEAN_METHOD_PREFIXES = setOf("has", "is")
+        val CONFUSING_IDENTIFIER_NAMES = setOf("O", "D", "I", "l", "Z", "S", "e", "B", "h", "n", "m", "rn")
         const val MAX_IDENTIFIER_LENGTH = 64
         const val MIN_IDENTIFIER_LENGTH = 2
 
     }
 
-    private lateinit var configRules: List<RulesConfig>
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
 
     override fun visit(
             node: ASTNode,
             autoCorrect: Boolean,
-            params: KtLint.Params,
             emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit
     ) {
-        configRules = params.getDiktatConfigRules()
         isFixMode = autoCorrect
         emitWarn = emit
 
@@ -128,6 +143,11 @@ class IdentifierNaming : Rule("identifier-naming") {
                     if (variableName.text.containsOneLetterOrZero() && variableName.text.length > 1) {
                         VARIABLE_NAME_INCORRECT.warn(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset)
                     }
+                    // check if identifier of a property has a confusing name
+                    if (CONFUSING_IDENTIFIER_NAMES.contains(variableName.text) && !validCatchIdentifier(variableName)
+                            && node.elementType == ElementType.PROPERTY) {
+                        warnConfusingName(variableName)
+                    }
                     // check for constant variables - check for val from companion object or on global file level
                     // it should be in UPPER_CASE, no need to raise this warning if it is one-letter variable
                     if (node.isConstant()) {
@@ -136,7 +156,7 @@ class IdentifierNaming : Rule("identifier-naming") {
                                 (variableName as LeafPsiElement).replaceWithText(variableName.text.toUpperSnakeCase())
                             }
                         }
-                    } else if (!variableName.text.isLowerCamelCase()) {
+                    } else if (variableName.text != "_" && !variableName.text.isLowerCamelCase()) {
                         // variable name should be in camel case. The only exception is a list of industry standard variables like i, j, k.
                         VARIABLE_NAME_INCORRECT_FORMAT.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset) {
                             // FixMe: cover fixes with tests
@@ -158,6 +178,25 @@ class IdentifierNaming : Rule("identifier-naming") {
                     }
                 }
         return namesOfVariables
+    }
+
+    /**
+     * Warns that variable have a confusing name
+     */
+    private fun warnConfusingName(variableName: ASTNode) {
+        val warnText = when (variableName.text) {
+            "O", "D" -> "better name is: obj, dgt"
+            "I", "l" -> "better name is: it, ln, line"
+            "Z" -> "better name is: n1, n2"
+            "S" -> "better name is: xs, str"
+            "e" -> "better name is: ex, elm"
+            "B" -> "better name is: bt, nxt"
+            "h", "n" -> "better name is: nr, head, height"
+            "m", "rn" -> "better name is: mbr, item"
+            else -> ""
+
+        }
+        CONFUSING_IDENTIFIER_NAMING.warn(configRules, emitWarn, false, warnText, variableName.startOffset)
     }
 
     /**
@@ -257,6 +296,10 @@ class IdentifierNaming : Rule("identifier-naming") {
                     (value as LeafPsiElement).replaceWithText(value.text.toUpperSnakeCase())
                 }
             }
+
+            if (CONFUSING_IDENTIFIER_NAMES.contains(value.text)) {
+                warnConfusingName(value)
+            }
         }
 
         return enumValues
@@ -315,7 +358,7 @@ class IdentifierNaming : Rule("identifier-naming") {
     private fun checkIdentifierLength(nodes: List<ASTNode>,
                                       isVariable: Boolean) {
         nodes.forEach {
-            if (!(it.checkLength(MIN_IDENTIFIER_LENGTH..MAX_IDENTIFIER_LENGTH) ||
+            if (it.text != "_" && !(it.checkLength(MIN_IDENTIFIER_LENGTH..MAX_IDENTIFIER_LENGTH) ||
                             ONE_CHAR_IDENTIFIERS.contains(it.text) && isVariable || validCatchIdentifier(it)
 
                             )) {
