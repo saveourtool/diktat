@@ -157,6 +157,18 @@ fun ASTNode.findChildAfter(afterThisNodeType: IElementType, childNodeType: IElem
     return null
 }
 
+/**
+ * method that traverses previous nodes until it finds needed node or it finds stop node
+ * @return ASTNode?
+ */
+fun ASTNode.prevNodeUntilNode(stopNode: IElementType, checkNode: IElementType) : ASTNode? {
+    if (this.treePrev == null || this.treePrev.elementType == stopNode)
+        return null
+    if (this.treePrev.elementType == checkNode)
+        return this.treePrev
+    return this.treePrev.prevNodeUntilNode(stopNode, checkNode)
+}
+
 fun ASTNode.allSiblings(withSelf: Boolean = false): List<ASTNode> =
         siblings(false).toList() + (if (withSelf) listOf(this) else listOf()) + siblings(true)
 

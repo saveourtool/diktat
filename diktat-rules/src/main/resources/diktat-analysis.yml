@@ -235,7 +235,9 @@
   configuration: {}
 - name: COMMENT_WHITE_SPACE
   enabled: true
-  configuration: {}
+  configuration:
+    maxSpacesBeforeComment: 1
+    maxSpacesInComment: 1
 - name: IF_ELSE_COMMENTS
   enabled: true
   configuration: {}

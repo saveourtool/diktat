@@ -19,6 +19,12 @@ class SomeClass {
         }
         /* Block Comment */
         val some = 4
+
+        /*This is a block comment */
+
+        /*
+            Don't fix this comment
+        */
     }
     /**
      * This is a useless function
