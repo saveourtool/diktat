@@ -64,7 +64,7 @@ class FileSize(private val configRules: List<RulesConfig>) : Rule("file-size") {
                 .split("\n")
                 .size
         if (size > maxSize) {
-            FILE_IS_TOO_LONG.warn(this.configRules, emitWarn, isFixMode, "$size", node.startOffset)
+            FILE_IS_TOO_LONG.warn(configRules, emitWarn, isFixMode, "$size", node.startOffset, node)
         }
     }
 

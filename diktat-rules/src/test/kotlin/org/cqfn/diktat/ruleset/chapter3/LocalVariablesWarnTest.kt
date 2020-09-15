@@ -34,6 +34,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
     fun `local variables used only in this scope - positive example`() {
         lintMethod(
                 """
+                    |import org.diktat.Some as test
                     |class Example {
                     |    fun foo() {
                     |        val bar = 0
