@@ -318,9 +318,8 @@ fun ASTNode.hasSuppress(warningName: String): Boolean {
                 ?.map { it.psi as KtAnnotationEntry }
                 ?.any {
                     it.shortName.toString() == Suppress::class.simpleName
-                            && it.valueArgumentList?.arguments?.isNotEmpty() ?: false // don't suppress anything
                             && it.valueArgumentList?.arguments
-                            ?.firstOrNull()?.text?.contains(warningName) ?: true
+                            ?.firstOrNull()?.text?.contains(warningName) ?: false
                 } ?: false
     }, strict = false) != null
 }
