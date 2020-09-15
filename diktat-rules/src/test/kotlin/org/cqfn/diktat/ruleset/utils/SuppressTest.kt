@@ -126,4 +126,20 @@ class SuppressTest : LintTestBase(::IdentifierNaming) {
         )
     }
 
+    @Test
+    fun `test suppress on class bad`() {
+        val code =
+                """
+                  @Suppress()
+                  class SomeClass {
+                    fun /* */ methODTREE(): String {
+
+                    }
+                  }
+                """.trimIndent()
+        lintMethod(code,
+                LintError(3,13, "$DIKTAT_RULE_SET_ID:identifier-naming",
+                        "${Warnings.FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREE", true))
+    }
+
 }
