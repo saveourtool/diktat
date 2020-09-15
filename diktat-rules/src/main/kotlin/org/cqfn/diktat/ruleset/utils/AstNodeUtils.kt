@@ -328,8 +328,6 @@ fun ASTNode.createOperationReference(elementType: IElementType, text: String){
     operationReference.addChild(LeafPsiElement(elementType, text), null)
 }
 
-fun ASTNode.numNewLines() = text.count { it == '\n' }
-
 /**
  * removing all newlines in WHITE_SPACE node and replacing it to a one newline saving the initial indenting format
  */
