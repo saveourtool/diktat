@@ -50,6 +50,7 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
                 ::StringConcatenationRule,
                 ::LineLength,
                 ::BlankLinesRule,
+                ::NullableTypeRule,
                 ::WhiteSpaceRule,
                 ::WhenMustHaveElseRule,
                 ::FileStructureRule,  // this rule should be right before indentation because it should operate on already valid code
