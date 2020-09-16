@@ -51,7 +51,7 @@ class EnumsSeparated(private val configRules: List<RulesConfig>) : Rule("enum-se
         enumEntries.forEach {
             if (!it.treeNext.isWhiteSpaceWithNewline())
                 ENUMS_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, "enum entries must end with a line break",
-                        it.startOffset) {
+                        it.startOffset, it) {
                     it.appendNewlineMergingWhiteSpace(it.treeNext, it.treeNext)
                 }
         }
@@ -72,19 +72,19 @@ class EnumsSeparated(private val configRules: List<RulesConfig>) : Rule("enum-se
     private fun checkLastEnum(node: ASTNode) {
         if (!node.hasChildOfType(SEMICOLON)) {
             ENUMS_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, "enums must end with semicolon",
-                    node.startOffset) {
+                    node.startOffset, node) {
                 node.addChild(LeafPsiElement(SEMICOLON, ";"), null)
                 node.addChild(PsiWhiteSpaceImpl("\n"), node.findChildByType(SEMICOLON)!!)
             }
         } else if (!node.findChildByType(SEMICOLON)!!.treePrev.isWhiteSpaceWithNewline()) {
             ENUMS_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, "semicolon must be on a new line",
-                    node.startOffset) {
+                    node.startOffset, node) {
                 node.appendNewlineMergingWhiteSpace(node.findChildByType(SEMICOLON)!!, node.findChildByType(SEMICOLON)!!)
             }
         }
         if (!node.hasChildOfType(COMMA)) {
             ENUMS_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, "last enum entry must end with a comma",
-                    node.startOffset) {
+                    node.startOffset, node) {
                 node.addChild(LeafPsiElement(COMMA, ","), node.findChildByType(SEMICOLON)!!.treePrev)
             }
         }

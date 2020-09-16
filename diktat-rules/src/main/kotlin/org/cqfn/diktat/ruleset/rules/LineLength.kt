@@ -104,7 +104,7 @@ class LineLength(private val configRules: List<RulesConfig>) : Rule("line-length
                     val fixableType = isFixable(newNode, configuration)
                     LONG_LINE.warnAndFix(configRules, emitWarn, isFixMode,
                             "max line length ${configuration.lineLength}, but was ${it.length}",
-                            offset + node.startOffset, fixableType != LongLineFixableCases.None) {
+                            offset + node.startOffset, node, fixableType != LongLineFixableCases.None) {
                         fixError(fixableType)
                     }
                 }

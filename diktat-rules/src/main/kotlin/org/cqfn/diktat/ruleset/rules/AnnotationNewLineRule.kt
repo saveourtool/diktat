@@ -59,7 +59,7 @@ class AnnotationNewLineRule(private val configRules: List<RulesConfig>) : Rule("
 
     private fun deleteSpaces(node: ASTNode, rightSide: Boolean, leftSide: Boolean) {
         Warnings.ANNOTATION_NEW_LINE.warnAndFix(configRules, emitWarn, isFixMode, "${node.text} not on a single line",
-                node.startOffset) {
+                node.startOffset, node) {
             if (rightSide) {
                 if (node.treeNext?.isWhiteSpace() == true) {
                     node.removeChild(node.treeNext)

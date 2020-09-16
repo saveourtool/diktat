@@ -121,7 +121,7 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
         if (firstUsageStatementLine - numLinesToSkip != property.node.lastLineNumber()!! + 1 + offset) {
             LOCAL_VARIABLE_EARLY_DECLARATION.warn(configRules, emitWarn, isFixMode,
                     warnMessage(property.name!!, property.node.lineNumber()!!, firstUsageLine
-                            ?: firstUsageStatementLine), property.startOffset)
+                            ?: firstUsageStatementLine), property.startOffset, property.node)
         }
     }
 
