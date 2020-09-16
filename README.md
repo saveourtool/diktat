@@ -14,26 +14,29 @@
 [![ktlint](https://img.shields.io/badge/code%20style-%E2%9D%A4-FF4081.svg)](https://ktlint.github.io/)
 [![Chat on Telegram](https://img.shields.io/badge/Chat%20on-Telegram-brightgreen.svg)](https://t.me/joinchat/AAAAAFDg-ipuZFGyBGPPeg)
 
-## (!) See [diKTat codestyle](info/diktat-kotlin-coding-style-guide-en.md) first.
-## (!) Also see [the list of all rules supported by diKTat](info/available-rules.md).
-## (!) Have a look at [maven and gradle examples](https://github.com/akuleshov7/diktat-examples) of usage diKTat with plugins
+### (!) See [diKTat codestyle](info/diktat-kotlin-coding-style-guide-en.md) first.
+### (!) Also see [the list of all supported rules](info/available-rules.md).
+### (!) Have a look at [maven and gradle examples](https://github.com/akuleshov7/diktat-examples).
+### (!) Check and try diktat/ktlint [online demo](https://ktlint-demo.herokuapp.com)
 
 DiKTat is a collection of [Kotlin](https://kotlinlang.org/) code style rules implemented
 as AST visitors on top of [KTlint](https://ktlint.github.io/).
 The full list of available supported rules and inspections is [here](info/available-rules.md).
 
 ## Run as CLI-application
-1. Install KTlint (until this [PR](https://github.com/pinterest/ktlint/pull/806) is merged you will need to use
- [KTlint fork](https://central.artipie.com/akuleshov7/files/ktlint)):
-   ```bash
-   $ curl -sSLO https://central.artipie.com/akuleshov7/files/ktlint && chmod a+x ktlint
-   ```
+1. Install KTlint manually: [here](https://github.com/pinterest/ktlint/releases)
+
+   **OR** use curl:
+    ```bash
+    curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.37.1/ktlint && chmod a+x ktlint
+    # another option is "brew install ktlint"
+    ```
    
-2. Load diKTat manually: [here](https://github.com/cqfn/diKTat/releases/download/v0.0.4/diktat.jar)
+2. Load diKTat manually: [here](https://github.com/cqfn/diKTat/releases/download/v0.1.0/diktat.jar)
 
    **OR** use curl:
    ```bash
-   $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v0.0.4/diktat.jar
+   $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v0.1.0/diktat-0.1.0.jar
    ```
    
 3. Finally, run KTlint (with diKTat injected) to check your `*.kt` files in `dir/your/dir`:
@@ -41,34 +44,16 @@ The full list of available supported rules and inspections is [here](info/availa
    $ ./ktlint -R diktat.jar "dir/your/dir/**/*.kt"
    ```
 
-To autofix all violations use `-F` option.
+To **autofix** all code style violations use `-F` option.
 
 ## Run with Maven Plugin
 
 You can see how it is configured in our project for self-checks: [pom.xml](pom.xml)
 
-First, add this to your `pom.xml` file:
-
-```xml
-<project>
-  [...]
-  <repositories>
-    <repository>
-      <id>artipie</id>
-      <url>https://central.artipie.com/akuleshov7/diktat</url>
-    </repository>
-  </repositories>
-    <pluginRepositories>
-      <pluginRepository>
-        <id>artipie</id>
-        <url>https://central.artipie.com/akuleshov7/diktat</url>
-      </pluginRepository>
-    </pluginRepositories>
-</project>
-```
-
-Then, add this plugin:
-
+Add this plugin to your pom.xml:
+<details>
+  <summary><b>Maven plugin snippet</b></summary><br>
+  
 ```xml
 <project>
   [...]
@@ -100,7 +85,7 @@ Then, add this plugin:
               <dependency>
                   <groupId>com.pinterest</groupId>
                   <artifactId>ktlint</artifactId>
-                  <version>0.37.1-fork</version> <!-- use this fork to be compatible with diktat -->
+                  <version>0.37.1</version>
                   <exclusions>
                       <exclusion>  <!-- without this exclusion both rulesets are enabled which we discourage -->
                           <groupId>com.pinterest.ktlint</groupId>
@@ -111,7 +96,7 @@ Then, add this plugin:
               <dependency>
                   <groupId>org.cqfn.diktat</groupId>
                   <artifactId>diktat-rules</artifactId>
-                  <version>0.0.4</version> <!-- replace it with diktat latest version -->
+                  <version>0.1.0</version> <!-- replace it with diktat latest version -->
                   <exclusions>
                       <exclusion>
                           <groupId>org.slf4j</groupId>
@@ -126,6 +111,8 @@ Then, add this plugin:
 </project>
 ```
 
+</details>
+
 In case you want to add autofixer with diKTat ruleset just extend
 the snippet above with `<arg value="-F"/>`.
 
@@ -135,27 +122,20 @@ To run diktat to check/fix code style - run `$ mvn antrun:run@diktat`.
 
 You can see how it is configured in our project for self-checks: [build.gradle.kts](build.gradle.kts).
 Add the code below to your `build.gradle.kts`:
+<details>
+  <summary><b>Gradle plugin snippet</b></summary><br>
+  
 ```kotlin
 val ktlint by configurations.creating
 
-repositories {
-    // artipie - an open source project that is used to store ktlint and diktat dependencies
-    maven {
-        url = uri("https://central.artipie.com/akuleshov7/diktat")
-    }
-    mavenCentral()
-    jcenter()
-
-
-}
 dependencies {
-    ktlint("com.pinterest:ktlint:0.37.1-fork") {
+    ktlint("com.pinterest:ktlint:0.37.1") {
         // need to exclude standard ruleset to use only diktat rules
         exclude("com.pinterest.ktlint", "ktlint-ruleset-standard")
     }
 
     // diktat ruleset
-    ktlint("org.cqfn.diktat:diktat-rules:0.0.4") {
+    ktlint("org.cqfn.diktat:diktat-rules:0.1.0") {
         exclude("org.slf4j", "slf4j-log4j12")
     }
 }
@@ -188,34 +168,52 @@ val diktatFormat by tasks.creating(JavaExec::class) {
 }
 ```
 
+</details>
+
 To run diktat to check/fix code style - run `$ gradle diktatCheck`.
 
 ## Customizations via `diktat-analysis.yml`
 
 In KTlint, rules can be configured via `.editorconfig`, but
 this does not give a chance to customize or enable/disable
-each and every rule independently. 
+each and every rule independently.
 That is why we have supported `diktat-analysis.yml` that can be easily
 changed and help in customization of your own rule set.
 It has simple fields:
 `name` — name of the rule,
-`enabled` (true/false) — to enable or disable that rule, default value: true,
-`configuration` — a simple map of some extra unique configurations for the rule.
+`enabled` (true/false) — to enable or disable that rule (all rules are enabled by the default),
+`configuration` — a simple map of some extra unique configurations for this particular rule.
 For example:
 
-```yml
-configuration:
-  "isCopyrightMandatory": true,
-  "copyrightText": "Copyright (c) Jeff Lebowski, 2012-2020. All rights reserved."
+```yaml
+- name: HEADER_MISSING_OR_WRONG_COPYRIGHT
+  # all rules are enabled by the default. To disable add 'enabled: false' to the config.
+  enabled: true 
+  configuration:
+    isCopyrightMandatory: true,
+    copyrightText: Copyright (c) Jeff Lebowski, 2012-2020. All rights reserved.
 ```
 Note, that you can specify and put `diktat-analysis.yml` that contains configuration of diktat in the parent directory of your project on the same level where `build.gradle/pom.xml` is stored. \
 See default configuration in [diktat-analysis.yml](diktat-rules/src/main/resources/diktat-analysis.yml) \
 Also see [the list of all rules supported by diKTat](info/available-rules.md).
 
+## Suppress warnings on individual code blocks
+In addition to enabling/disabling warning globally via config file (`enable = false`), you can suppress warnings by adding `@Suppress` annotation on individual code blocks
+
+For example:
+
+``` kotlin
+@Suppress("FUNCTION_NAME_INCORRECT_CASE")
+class SomeClass {
+    fun methODTREE(): String {
+
+    }
+}
+``` 
 ## How to contribute?
 
 Main components are:
-1) diktat-ruleset — number of rules that are supported by diKTat;
+1) diktat-rules — number of rules that are supported by diKTat;
 2) diktat-test-framework — functional/unit test framework that can be used for running your code fixer on the initial code and compare it with the expected result;
 3) also see our demo: diktat-demo in a separate repository.
 
@@ -226,9 +224,10 @@ That's why we added logic for:
 2) Passing information about properties to visitors.
 This information is very useful, when you are trying to get,
 for example, a filename of file where the code is stored;
-3) We added a bunch of visitors that will extended KTlint functionaliity.
+3) We added a bunch of visitors, checkers and fixers that will extended KTlint functionaliity with code style rules;
+4) We have proposed a code style for Kotlin language. 
 
-Before you make a pull request, make sure the build is clean:
+Before you make a pull request, make sure the build is clean as we have lot of tests and other prechecks:
 
 ```bash
 $ mvn clean install

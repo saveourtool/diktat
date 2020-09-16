@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     name: Build release
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
 
     steps:
       - name: Checkout
@@ -21,21 +21,30 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-release-${{ hashFiles('**/pom.xml') }}
+          key: ${{ runner.os }}-maven-master-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ runner.os }}-maven-release-
-      - name: Set environment variables
+            ${{ runner.os }}-maven-master-
+      - name: Setup environment
+        env:
+          DIKTAT_GPG_PUB: ${{ secrets.DIKTAT_PGP_PUB }}
+          DIKTAT_GPG_SEC: ${{ secrets.DIKTAT_PGP_SEC }}
         run: |
           echo ::set-env name=PREVIOUS_VERSION::$(printf 'VERSION=${diktat-check.version}\n0\n' | mvn help:evaluate | grep '^VERSION' | cut -d= -f2)
           echo ::set-env name=RELEASE_VERSION::${GITHUB_REF#'refs/tags/v'}
+          echo "$DIKTAT_GPG_PUB" > ~/diktat.pubring.gpg
+          echo "$DIKTAT_GPG_SEC" > ~/diktat.secring.gpg
+          gpg --import ~/diktat.pubring.gpg
+          gpg --batch --import ~/diktat.secring.gpg  # --batch suppresses intercatively asking passphrase
       - name: Set version
         run: mvn -B versions:set -DnewVersion=${{ env.RELEASE_VERSION }} versions:commit
       - name: Create settings.xml
         uses: whelk-io/maven-settings-xml-action@v9
         with:
-          servers: '[{ "id": "artipie", "username": "${{ secrets.ARTIPIE_USER }}", "password": "${{ secrets.ARTIPIE_PASSWORD }}" }]'
+          servers: '[{ "id": "ossrh", "username": "${{ secrets.SONATYPE_USER }}", "password": "${{ secrets.SONATYPE_PASSWORD }}" }, { "id": "gpg.passphrase", "passphrase": "${{ secrets.DIKTAT_GPG_PASS }}" }]'
       - name: Deploy artifacts
-        run: mvn -B clean deploy
+        run: mvn -B clean deploy -Prelease --projects '!diktat-ruleset'
+      - name: Build diktat.jar
+        run: mvn -B package --projects diktat-ruleset
       - name: Create Github Release
         id: create_release
         uses: actions/create-release@v1
@@ -53,8 +62,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./diktat-ruleset/target/diktat-ruleset-${{ env.RELEASE_VERSION }}.jar
-          asset_name: diktat-ruleset-${{ env.RELEASE_VERSION }}.jar
+          asset_path: ./diktat-ruleset/target/diktat-${{ env.RELEASE_VERSION }}.jar
+          asset_name: diktat-${{ env.RELEASE_VERSION }}.jar
           asset_content_type: application/zip
       - name: Update versions in pom.xml and documentation
         id: update-versions

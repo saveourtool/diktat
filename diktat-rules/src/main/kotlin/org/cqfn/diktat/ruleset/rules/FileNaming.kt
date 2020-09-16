@@ -42,15 +42,15 @@ class FileNaming(private val configRules: List<RulesConfig>) : Rule("file-naming
 
         if (node.elementType == FILE) {
             fileName = node.getFileName()
-            checkFileNaming()
+            checkFileNaming(node)
             checkClassNameMatchesWithFile(node)
         }
     }
 
-    private fun checkFileNaming() {
+    private fun checkFileNaming(node: ASTNode) {
         val (name, extension) = getFileParts(fileName)
         if (!name.isPascalCase() || !VALID_EXTENSIONS.contains(extension)) {
-            FILE_NAME_INCORRECT.warnAndFix(configRules, emitWarn, isFixMode, "$name$extension", 0) {
+            FILE_NAME_INCORRECT.warnAndFix(configRules, emitWarn, isFixMode, "$name$extension", 0, node) {
                 // FixMe: we can add an autocorrect here in future, but is there any purpose to change file or class name?
             }
         }
@@ -62,7 +62,7 @@ class FileNaming(private val configRules: List<RulesConfig>) : Rule("file-naming
         if (classes.size == 1) {
             val className = classes[0].getFirstChildWithType(IDENTIFIER)!!.text
             if (className != fileNameWithoutSuffix) {
-                FILE_NAME_MATCH_CLASS.warnAndFix(configRules, emitWarn, isFixMode, "$fileNameWithoutSuffix$fileNameSuffix vs $className", 0) {
+                FILE_NAME_MATCH_CLASS.warnAndFix(configRules, emitWarn, isFixMode, "$fileNameWithoutSuffix$fileNameSuffix vs $className", 0, fileLevelNode) {
 
                     // FixMe: we can add an autocorrect here in future, but is there any purpose to change file name?
                 }

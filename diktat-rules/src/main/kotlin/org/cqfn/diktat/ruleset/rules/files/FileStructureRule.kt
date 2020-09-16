@@ -66,7 +66,7 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         val codeTokens = TokenSet.andNot(TokenSet.ANY, TokenSet.create(WHITE_SPACE, KDOC, BLOCK_COMMENT, EOL_COMMENT, PACKAGE_DIRECTIVE, IMPORT_LIST))
         val hasCode = node.getChildren(codeTokens).isNotEmpty()
         if (!hasCode) {
-            FILE_CONTAINS_ONLY_COMMENTS.warn(configRules, emitWarn, isFixMode, fileName, node.startOffset)
+            FILE_CONTAINS_ONLY_COMMENTS.warn(configRules, emitWarn, isFixMode, fileName, node.startOffset, node)
         }
         return hasCode
     }
@@ -87,7 +87,7 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         listOfNotNull(copyrightComment, headerKdoc, fileAnnotations).handleIncorrectOrder({
             getSiblingBlocks(copyrightComment, headerKdoc, fileAnnotations, packageDirectiveNode)
         }) { astNode, beforeThisNode ->
-            FILE_INCORRECT_BLOCKS_ORDER.warnAndFix(configRules, emitWarn, isFixMode, astNode.text.lines().first(), astNode.startOffset) {
+            FILE_INCORRECT_BLOCKS_ORDER.warnAndFix(configRules, emitWarn, isFixMode, astNode.text.lines().first(), astNode.startOffset, astNode) {
                 node.moveChildBefore(astNode, beforeThisNode, true)
                 astNode.treeNext?.let { node.replaceChild(it, PsiWhiteSpaceImpl("\n\n")) }
             }
@@ -97,7 +97,7 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         arrayOf(copyrightComment, headerKdoc, fileAnnotations, packageDirectiveNode, importsList).forEach { astNode ->
             astNode?.treeNext?.apply {
                 if (elementType == WHITE_SPACE && text.count { it == '\n' } != 2) {
-                    FILE_NO_BLANK_LINE_BETWEEN_BLOCKS.warnAndFix(configRules, emitWarn, isFixMode, astNode.text.lines().first(), astNode.startOffset) {
+                    FILE_NO_BLANK_LINE_BETWEEN_BLOCKS.warnAndFix(configRules, emitWarn, isFixMode, astNode.text.lines().first(), astNode.startOffset, astNode) {
                         (this as LeafPsiElement).replaceWithText("\n\n${text.replace("\n", "")}")
                     }
                 }
@@ -109,13 +109,14 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         val imports = node.getChildren(TokenSet.create(IMPORT_DIRECTIVE)).toList()
 
         // importPath can be null if import name cannot be parsed, which should be a very rare case, therefore !! should be safe here
+
         imports.filter { (it.psi as KtImportDirective).importPath!!.isAllUnder && it.text !in configuration.allowedWildcards }.forEach {
-            FILE_WILDCARD_IMPORTS.warn(configRules, emitWarn, isFixMode, it.text, it.startOffset)
+            FILE_WILDCARD_IMPORTS.warn(configRules, emitWarn, isFixMode, it.text, it.startOffset, it)
         }
 
         val sortedImports = imports.sortedBy { it.text }
         if (sortedImports != imports) {
-            FILE_UNORDERED_IMPORTS.warnAndFix(configRules, emitWarn, isFixMode, fileName, node.startOffset) {
+            FILE_UNORDERED_IMPORTS.warnAndFix(configRules, emitWarn, isFixMode, fileName, node.startOffset, node) {
                 rearrangeImports(node, imports, sortedImports)
             }
         }
