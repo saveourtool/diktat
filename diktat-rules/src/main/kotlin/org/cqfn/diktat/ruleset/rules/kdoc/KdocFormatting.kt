@@ -89,12 +89,13 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkBlankLineAfterKdoc(node: ASTNode) {
         val kdoc = node.getFirstChildWithType(KDOC)
         val nodeAfterKdoc = kdoc?.treeNext
-        val name = node.getFirstChildWithType(ElementType.IDENTIFIER)
+        val name = node.getIdentifierName()!!
         if (nodeAfterKdoc?.elementType == WHITE_SPACE && nodeAfterKdoc.text.countSubStringOccurrences("\n") > 1) {
-            BLANK_LINE_AFTER_KDOC.warnAndFix(configRules, emitWarn, isFixMode, name!!.text, nodeAfterKdoc.startOffset, nodeAfterKdoc) {
+            BLANK_LINE_AFTER_KDOC.warnAndFix(configRules, emitWarn, isFixMode, name.text, nodeAfterKdoc.startOffset, nodeAfterKdoc) {
                 nodeAfterKdoc.leaveOnlyOneNewLine()
             }
         }
@@ -120,8 +121,7 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
             ?.let { kDocTag ->
                 KDOC_NO_DEPRECATED_TAG.warnAndFix(configRules, emitWarn, isFixMode, kDocTag.text, kDocTag.node.startOffset, kDocTag.node) {
                     val kDocSection = kDocTag.node.treeParent
-                    val deprecatedTagNode = kDocSection.getChildren(TokenSet.create(KDOC_TAG))
-                        .find { "@deprecated" in it.text }!!
+                    val deprecatedTagNode = kDocTag.node
                     kDocSection.removeRange(deprecatedTagNode.prevSibling { it.elementType == WHITE_SPACE }!!,
                         deprecatedTagNode.nextSibling { it.elementType == WHITE_SPACE }
                     )

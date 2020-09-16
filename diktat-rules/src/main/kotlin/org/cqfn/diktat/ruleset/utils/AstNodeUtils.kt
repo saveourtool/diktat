@@ -386,6 +386,7 @@ fun ASTNode.moveChildBefore(childToMove: ASTNode, beforeThisNode: ASTNode?, with
     return ReplacementResult(listOfNotNull(childToMove, nextOldChild), listOfNotNull(movedChild, nextMovedChild))
 }
 
+@Suppress("UnsafeCallOnNullableType")
 fun ASTNode.findLBrace(): ASTNode? {
     return when (this.elementType) {
         ElementType.THEN, ElementType.ELSE, ElementType.FUN, ElementType.TRY, ElementType.CATCH, ElementType.FINALLY ->

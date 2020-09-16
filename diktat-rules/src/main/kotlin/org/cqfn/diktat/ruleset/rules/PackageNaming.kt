@@ -133,7 +133,7 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
      * 1) directory should match with package name
      * 2) if package in incorrect case -> transform to lower
      */
-    @Suppress("UnsafeCallOnNullableType")  // nullability checks will be added in separate issue
+    @Suppress("UnsafeCallOnNullableType")  // fixme: remove suppression
     private fun checkPackageName(wordsInPackageName: List<ASTNode>) {
         // all words should be in a lower case (lower case letters/digits/underscore)
         wordsInPackageName
@@ -240,6 +240,7 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
     /**
      * checking and fixing package directive if it does not match with the directory where the file is stored
      */
+    @Suppress("UnsafeCallOnNullableType")  // fixme: remove suppression
     private fun checkFilePathMatchesWithPackageName(packageNameParts: List<ASTNode>, realName: List<String>) {
         if (realName.isNotEmpty() && packageNameParts.map { node -> node.text } != realName) {
             PACKAGE_NAME_INCORRECT_PATH.warnAndFix(configRules, emitWarn, isFixMode, realName.joinToString(PACKAGE_SEPARATOR),

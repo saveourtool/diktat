@@ -56,7 +56,7 @@ class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig
     /**
      * Check braces in if-else statements. Check for both IF and ELSE needs to be done in one method to discover single-line if-else statements correctly.
      */
-    @Suppress("ForbiddenComment")
+    @Suppress("ForbiddenComment", "UnsafeCallOnNullableType")
     private fun checkIfNode(node: ASTNode) {
         val ifPsi = node.psi as KtIfExpression
         val thenNode = ifPsi.then?.node
@@ -75,7 +75,7 @@ class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig
                         node.replaceChild(elseKeyword.prevSibling.node, PsiWhiteSpaceImpl(" "))
                     }
                 } else {
-                    val nodeAfterCondition = node.findChildByType(CONDITION)!!.nextSibling { it.elementType == ElementType.RPAR }!!.treeNext
+                    val nodeAfterCondition = ifPsi.rightParenthesis!!.node.treeNext
                     node.insertEmptyBlockBetweenChildren(nodeAfterCondition, nodeAfterCondition, indent)
                 }
             }
@@ -94,6 +94,7 @@ class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkLoop(node: ASTNode) {
         val loopBody = (node.psi as KtLoopExpression).body
         val loopBodyNode = loopBody?.node
@@ -115,6 +116,7 @@ class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkWhenBranches(node: ASTNode) {
         (node.psi as KtWhenExpression).entries.asSequence()
                 .filter { it.expression != null && it.expression!!.node.elementType == BLOCK }
