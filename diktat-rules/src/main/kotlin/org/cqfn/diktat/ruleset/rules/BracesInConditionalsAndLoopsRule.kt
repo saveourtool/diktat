@@ -55,13 +55,12 @@ class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig
 
     /**
      * Check braces in if-else statements. Check for both IF and ELSE needs to be done in one method to discover single-line if-else statements correctly.
-     * There is KtIfExpression class which can be used to access `then` and `else` body.
      */
     @Suppress("ForbiddenComment")
     private fun checkIfNode(node: ASTNode) {
         val ifPsi = node.psi as KtIfExpression
         val thenNode = ifPsi.then?.node
-        val hasElseBranch = ifPsi.elseKeyword != null
+        val elseKeyword = ifPsi.elseKeyword
         val elseNode = ifPsi.`else`?.node
         val indent = node.prevSibling { it.elementType == WHITE_SPACE }?.text?.lines()?.last()?.count { it == ' ' } ?: 0
 
@@ -71,9 +70,9 @@ class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig
             NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnAndFix(configRules, emitWarn, isFixMode, "IF",
                     (thenNode?.prevSibling { it.elementType == IF_KEYWORD } ?: node).startOffset, node) {
                 if (thenNode != null) {
-                    ifPsi.then!!.replaceWithBlock(indent)
-                    if (elseNode != null) {
-                        node.replaceChild(node.findChildByType(ELSE_KEYWORD)!!.treePrev, PsiWhiteSpaceImpl(" "))
+                    (thenNode.psi as KtElement).replaceWithBlock(indent)
+                    if (elseNode != null && elseKeyword != null) {
+                        node.replaceChild(elseKeyword.prevSibling.node, PsiWhiteSpaceImpl(" "))
                     }
                 } else {
                     val nodeAfterCondition = node.findChildByType(CONDITION)!!.nextSibling { it.elementType == ElementType.RPAR }!!.treeNext
@@ -82,14 +81,14 @@ class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig
             }
         }
 
-        if (hasElseBranch && elseNode?.elementType != IF && elseNode?.elementType != BLOCK) {
+        if (elseKeyword != null && elseNode?.elementType != IF && elseNode?.elementType != BLOCK) {
             NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnAndFix(configRules, emitWarn, isFixMode, "ELSE",
                     (elseNode?.treeParent?.prevSibling { it.elementType == ELSE_KEYWORD } ?: node).startOffset, node) {
                 if (elseNode != null) {
-                    ifPsi.`else`!!.replaceWithBlock(indent)
+                    (elseNode.psi as KtElement).replaceWithBlock(indent)
                 } else {
-                    // fixme: in which case else can have empty body?
-                    node.insertEmptyBlockBetweenChildren(node.findChildByType(ELSE_KEYWORD)!!, null, indent)
+                    // `else` can have empty body e.g. when there is a semicolon after: `else ;`
+                    node.insertEmptyBlockBetweenChildren(elseKeyword.node.treeNext, null, indent)
                 }
             }
         }
