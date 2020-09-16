@@ -3,21 +3,27 @@ package org.cqfn.diktat.ruleset.rules
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_WITH_TYPE
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
+import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CONDITION
+import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.ELSE
-import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.IF
 import com.pinterest.ktlint.core.ast.ElementType.IS_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.IS_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.NOT_IS
+import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.THEN
+import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
+import com.pinterest.ktlint.core.ast.ElementType.WHEN
+import com.pinterest.ktlint.core.ast.ElementType.WHEN_CONDITION_IS_PATTERN
+import com.pinterest.ktlint.core.ast.ElementType.WHEN_ENTRY
+import com.pinterest.ktlint.core.ast.ElementType.WHILE
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.constants.Warnings.SMART_CAST_NEEDED
+import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
-import org.cqfn.diktat.ruleset.utils.hasParent
+import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
+import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-cast-rule") {
@@ -33,6 +39,10 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
 
         if (node.elementType == IF) {
             handleIfBlock(node)
+        }
+
+        if (node.elementType == WHEN) {
+            handleWhenCondition(node)
         }
     }
 
@@ -61,30 +71,52 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
 
         if (isBlocks.isNotEmpty()) {
             val then = node.findChildByType(THEN)!!
-            val thenBlock = then.findChildByType(BLOCK)
+            handleThenBlock(then, isBlocks)
+        }
 
-            if (thenBlock != null) {
-                // Find all as expressions that are inside this current block
-                val asList = thenBlock.findAllNodesWithSpecificType(BINARY_WITH_TYPE).filter { it.text.contains(" as ")
-                        && it.findParentNodeWithSpecificType(BLOCK) == thenBlock }
-                val asExpr = mutableListOf<AsExpressions>()
+        if (notIsBlocks.isNotEmpty() && elseBlock != null) {
+            handleThenBlock(elseBlock, notIsBlocks)
+        }
+    }
 
-                asList.forEach {
-                    val split = it.text.split("as").map { part -> part.trim() }
-                    asExpr.add(AsExpressions(split[0], split[1], it))
-                }
+    private fun handleThenBlock(then: ASTNode, blocks: List<IsExpressions>) {
+        val thenBlock = then.findChildByType(BLOCK)
 
-                val exprToChange = asExpr.filter {
-                    isBlocks.any { isExpr ->
-                        isExpr.identifier == it.identifier
-                                && isExpr.type == it.type
-                    }
-                }
+        if (thenBlock != null) {
+            // Find all as expressions that are inside this current block
+            val asList = thenBlock.findAllNodesWithSpecificType(BINARY_WITH_TYPE).filter { it.text.contains(" as ")
+                    && it.findParentNodeWithSpecificType(BLOCK) == thenBlock }
+            checkAsExpressions(asList, blocks)
+        } else {
+            val asList = then.findAllNodesWithSpecificType(BINARY_WITH_TYPE).filter {  it.text.contains(" as ") }
+            checkAsExpressions(asList, blocks)
+        }
+    }
 
-                if (exprToChange.isNotEmpty()) {
-                    exprToChange.forEach {
-                        SMART_CAST_NEEDED.warn(configRules, emitWarn, isFixMode, it.identifier, thenBlock.startOffset)
-                    }
+    private fun checkAsExpressions(asList: List<ASTNode>, blocks: List<IsExpressions>) {
+        val asExpr = mutableListOf<AsExpressions>()
+
+        asList.forEach {
+            val split = it.text.split("as").map { part -> part.trim() }
+            asExpr.add(AsExpressions(split[0], split[1], it))
+        }
+
+        val exprToChange = asExpr.filter {
+            blocks.any { isExpr ->
+                isExpr.identifier == it.identifier
+                        && isExpr.type == it.type
+            }
+        }
+
+        if (exprToChange.isNotEmpty()) {
+            exprToChange.forEach {
+                SMART_CAST_NEEDED.warnAndFix(configRules, emitWarn, isFixMode, "${it.identifier} as ${it.type}", it.node.startOffset,
+                        it.node) {
+                    val dotExpr = it.node.findParentNodeWithSpecificType(DOT_QUALIFIED_EXPRESSION)!!
+                    val afterDotPart = dotExpr.text.split(".")[1]
+                    val text = "${it.identifier}.$afterDotPart"
+                    dotExpr.treeParent.addChild(KotlinParser().createNode(text), dotExpr)
+                    dotExpr.treeParent.removeChild(dotExpr)
                 }
             }
         }
@@ -95,6 +127,20 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
             Check if there is WHEN_CONDITION_IS_PATTERN. If so delete 'as' in it's block
             or call expression if it doesn't have block
          */
+
+        val identifier = node.getFirstChildWithType(REFERENCE_EXPRESSION)?.text
+
+        node.getAllChildrenWithType(WHEN_ENTRY).forEach {
+            if (it.hasChildOfType(WHEN_CONDITION_IS_PATTERN) && identifier != null) {
+                val type = it.getFirstChildWithType(WHEN_CONDITION_IS_PATTERN)!!
+                        .getFirstChildWithType(TYPE_REFERENCE)!!.text
+
+                val callExpr = it.getFirstChildWithType(CALL_EXPRESSION)!!
+                val blocks = listOf(IsExpressions(identifier, type))
+
+                handleThenBlock(callExpr, blocks)
+            }
+        }
     }
 
     class AsExpressions(val identifier: String, val type: String, val node:ASTNode)

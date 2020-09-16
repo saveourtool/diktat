@@ -93,7 +93,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     LOCAL_VARIABLE_EARLY_DECLARATION(false, "local variables should be declared close to the line where they are first used"),
 
     // ======== chapter 4 ========
-    SMART_CAST_NEEDED(false, "You can omit casting"),
+    SMART_CAST_NEEDED(true, "You can omit casting"),
     ;
 
     /**
