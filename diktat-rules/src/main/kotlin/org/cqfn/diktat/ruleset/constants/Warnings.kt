@@ -91,6 +91,8 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     WRONG_DECLARATIONS_ORDER(true, "declarations of constants and enum members should be sorted alphabetically"),
     WRONG_MULTIPLE_MODIFIERS_ORDER(true, "sequence of modifiers is incorrect"),
     LOCAL_VARIABLE_EARLY_DECLARATION(false, "local variables should be declared close to the line where they are first used"),
+    // FixMe: change float literal to BigDecimal? Or kotlin equivalent?
+    FLOAT_IN_ACCURATE_CALCULATIONS(false, "floating-point values shouldn't be used in accurate calculations"),
     ;
 
     /**
