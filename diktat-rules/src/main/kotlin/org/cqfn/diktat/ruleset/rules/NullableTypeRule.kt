@@ -66,21 +66,26 @@ class NullableTypeRule(private val configRules: List<RulesConfig>) : Rule("nulla
             "Long" -> FixedParam(INTEGER_CONSTANT, INTEGER_LITERAL, "0L")
             "Char" -> FixedParam(CHARACTER_CONSTANT, CHARACTER_LITERAL, "\'\'")
             "String" -> FixedParam(null, null, "", true)
-            "List", "Iterable" -> FixedParam(null, null, "emptyList()")
-            "Map" -> FixedParam(null, null, "emptyMap()")
-            "Array" -> FixedParam(null, null, "emptyArray()")
-            "Set" -> FixedParam(null, null, "emptySet()")
-            "Sequence" -> FixedParam(null, null, "emptySequence()")
-            "Queue" -> FixedParam(null, null, "LinkedList()")
-            "MutableList" -> FixedParam(null, null, "mutableListOf()")
-            "MutableMap" -> FixedParam(null, null, "mutableMapOf()")
-            "MutableSet" -> FixedParam(null, null, "mutableSetOf()")
-            "LinkedList" -> FixedParam(null, null, "LinkedList()")
-            "LinkedHashMap" -> FixedParam(null, null, "LinkedHashMap()")
-            "LinkedHashSet" -> FixedParam(null, null, "LinkedHashSet()")
-            else -> null
+            else -> isFixableForCollection(reference.text)
         }
     }
+
+    private fun isFixableForCollection(referenceText: String) =
+            when(referenceText) {
+                "List", "Iterable" -> FixedParam(null, null, "emptyList()")
+                "Map" -> FixedParam(null, null, "emptyMap()")
+                "Array" -> FixedParam(null, null, "emptyArray()")
+                "Set" -> FixedParam(null, null, "emptySet()")
+                "Sequence" -> FixedParam(null, null, "emptySequence()")
+                "Queue" -> FixedParam(null, null, "LinkedList()")
+                "MutableList" -> FixedParam(null, null, "mutableListOf()")
+                "MutableMap" -> FixedParam(null, null, "mutableMapOf()")
+                "MutableSet" -> FixedParam(null, null, "mutableSetOf()")
+                "LinkedList" -> FixedParam(null, null, "LinkedList()")
+                "LinkedHashMap" -> FixedParam(null, null, "LinkedHashMap()")
+                "LinkedHashSet" -> FixedParam(null, null, "LinkedHashSet()")
+                else -> null
+            }
 
     private fun findSubstitution(node: ASTNode, fixedParam: FixedParam) {
         if (fixedParam.isString)
