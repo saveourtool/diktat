@@ -36,7 +36,7 @@ The full list of available supported rules and inspections is [here](info/availa
 
    **OR** use curl:
    ```bash
-   $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v0.1.0/diktat.jar
+   $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v0.1.0/diktat-0.1.0.jar
    ```
    
 3. Finally, run KTlint (with diKTat injected) to check your `*.kt` files in `dir/your/dir`:
