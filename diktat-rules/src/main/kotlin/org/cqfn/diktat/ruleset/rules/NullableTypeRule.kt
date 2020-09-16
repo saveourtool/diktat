@@ -49,7 +49,7 @@ class NullableTypeRule(private val configRules: List<RulesConfig>) : Rule("nulla
         if (node.hasChildOfType(VAL_KEYWORD) && node.hasChildOfType(EQ) && node.hasChildOfType(TYPE_REFERENCE) && node.hasChildOfType(NULL)) {
             val fixedParam = isFixable(node)
             NULLABLE_PROPERTY_TYPE.warnAndFix(configRules, emitWarn, isFixMode, "initialize explicitly",
-                    node.findChildByType(NULL)!!.startOffset, fixedParam != null) {
+                    node.findChildByType(NULL)!!.startOffset, canBeAutoCorrected = (fixedParam != null)) {
                 if (fixedParam != null) findSubstitution(node, fixedParam)
             }
         }
