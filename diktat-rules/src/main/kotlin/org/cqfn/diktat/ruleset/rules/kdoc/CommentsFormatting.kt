@@ -86,7 +86,7 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
         val kdoc = node.getFirstChildWithType(type)
         val nodeAfterKdoc = kdoc?.treeNext
         if (nodeAfterKdoc?.elementType == ElementType.WHITE_SPACE && nodeAfterKdoc.numNewLines() > 1) {
-            WRONG_NEWLINES_AROUND_KDOC.warnAndFix(configRules, emitWarn, isFixMode, kdoc.text, nodeAfterKdoc.startOffset) {
+            WRONG_NEWLINES_AROUND_KDOC.warnAndFix(configRules, emitWarn, isFixMode, kdoc.text, nodeAfterKdoc.startOffset, nodeAfterKdoc) {
                 nodeAfterKdoc.leaveOnlyOneNewLine()
             }
         }
@@ -132,7 +132,7 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
             }
             val copyComment = comment?.copyElement()
             if (comment != null) {
-                IF_ELSE_COMMENTS.warnAndFix(configRules, emitWarn, isFixMode, comment.text, node.startOffset) {
+                IF_ELSE_COMMENTS.warnAndFix(configRules, emitWarn, isFixMode, comment.text, node.startOffset, node) {
                     if (elseBlock.hasChildOfType(BLOCK)) {
                         elseCodeBlock.addChild(copyComment!!,
                                 elseCodeBlock.firstChildNode.treeNext)
@@ -167,12 +167,12 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
 
         if (!node.treePrev.isWhiteSpace()) {
             // If node treePrev is not a whiteSpace then node treeParent is a property
-            WRONG_NEWLINES_AROUND_KDOC.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset) {
+            WRONG_NEWLINES_AROUND_KDOC.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
                 node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node.treeParent)
             }
         } else {
             if (node.treePrev.numNewLines() == 1 || node.treePrev.numNewLines() > 2) {
-                WRONG_NEWLINES_AROUND_KDOC.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset) {
+                WRONG_NEWLINES_AROUND_KDOC.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset,node) {
                     (node.treePrev as LeafPsiElement).replaceWithText("\n\n")
                 }
             }
@@ -184,12 +184,12 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
                 && node.treeParent.firstChildNode != node) {
             if (!node.treePrev.isWhiteSpace()) {
                 // if comment is like this: val a = 5// Comment
-                COMMENT_WHITE_SPACE.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset) {
+                COMMENT_WHITE_SPACE.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
                     node.treeParent.addChild(PsiWhiteSpaceImpl(" ".repeat(configuration.maxSpacesBeforeComment)), node)
                 }
             } else if (node.treePrev.text.length != configuration.maxSpacesBeforeComment) {
                 // if there are too many spaces before comment
-                COMMENT_WHITE_SPACE.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset) {
+                COMMENT_WHITE_SPACE.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
                     (node.treePrev as LeafPsiElement).replaceWithText(" ".repeat(configuration.maxSpacesBeforeComment))
                 }
             }
@@ -214,7 +214,7 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
             }
         }
 
-        COMMENT_WHITE_SPACE.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset) {
+        COMMENT_WHITE_SPACE.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
             var commentText = node.text.drop(2).trim()
 
             when (node.elementType) {
@@ -244,12 +244,12 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
         }
 
         if (node.treeParent.elementType != FILE && !node.treeParent.treePrev.isWhiteSpace()) {
-            WRONG_NEWLINES_AROUND_KDOC.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset) {
+            WRONG_NEWLINES_AROUND_KDOC.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
                 node.treeParent.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node.treeParent)
             }
         } else if (node.treeParent.elementType != FILE) {
             if (node.treeParent.treePrev.numNewLines() == 1 || node.treeParent.treePrev.numNewLines() > 2) {
-                WRONG_NEWLINES_AROUND_KDOC.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset) {
+                WRONG_NEWLINES_AROUND_KDOC.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
                     (node.treeParent.treePrev as LeafPsiElement).replaceWithText("\n\n")
                 }
             }
@@ -260,7 +260,7 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
         if (node.treePrev.isWhiteSpace()) {
             if (node.treePrev.numNewLines() > 1
                     || node.treePrev.numNewLines() == 0) {
-                FIRST_COMMENT_NO_SPACES.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset) {
+                FIRST_COMMENT_NO_SPACES.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
                     (node.treePrev as LeafPsiElement).replaceWithText("\n")
                 }
             }
