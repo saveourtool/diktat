@@ -18,8 +18,10 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |class Test {
                     |   val x = ""
                     |   fun someFun() {
-                    |       if (x !is String) {
+                    |       if (x is String && x != "a") {
                     |           val a = (x as String).length
+                    |           if (a == 5)
+                    |               print(a)
                     |       } else if (x == "as") {
                     |       
                     |       } else if (x == "") {}
