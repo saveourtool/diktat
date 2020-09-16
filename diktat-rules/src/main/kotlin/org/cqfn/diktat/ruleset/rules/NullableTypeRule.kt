@@ -15,6 +15,7 @@ import com.pinterest.ktlint.core.ast.ElementType.NULL
 import com.pinterest.ktlint.core.ast.ElementType.NULLABLE_TYPE
 import com.pinterest.ktlint.core.ast.ElementType.OPEN_QUOTE
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
+import com.pinterest.ktlint.core.ast.ElementType.QUEST
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.STRING_TEMPLATE
 import com.pinterest.ktlint.core.ast.ElementType.TRUE_KEYWORD
@@ -24,6 +25,7 @@ import com.pinterest.ktlint.core.ast.ElementType.VAL_KEYWORD
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.NULLABLE_PROPERTY_TYPE
 import org.cqfn.diktat.ruleset.utils.KotlinParser
+import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
@@ -46,11 +48,16 @@ class NullableTypeRule(private val configRules: List<RulesConfig>) : Rule("nulla
     }
 
     private fun checkProperty(node: ASTNode) {
-        if (node.hasChildOfType(VAL_KEYWORD) && node.hasChildOfType(EQ) && node.hasChildOfType(TYPE_REFERENCE) && node.hasChildOfType(NULL)) {
-            val fixedParam = isFixable(node)
-            NULLABLE_PROPERTY_TYPE.warnAndFix(configRules, emitWarn, isFixMode, "initialize explicitly",
-                    node.findChildByType(NULL)!!.startOffset, node, fixedParam != null) {
-                if (fixedParam != null) findSubstitution(node, fixedParam)
+        if (node.hasChildOfType(VAL_KEYWORD) && node.hasChildOfType(EQ) && node.hasChildOfType(TYPE_REFERENCE)) {
+            if (!node.hasChildOfType(NULL) && node.findAllNodesWithSpecificType(QUEST).isNotEmpty()) {
+                NULLABLE_PROPERTY_TYPE.warn(configRules, emitWarn, isFixMode, "don't use nullable type",
+                        node.findChildByType(TYPE_REFERENCE)!!.startOffset, node)
+            } else if (node.hasChildOfType(NULL)) {
+                val fixedParam = isFixable(node)
+                NULLABLE_PROPERTY_TYPE.warnAndFix(configRules, emitWarn, isFixMode, "initialize explicitly",
+                        node.findChildByType(NULL)!!.startOffset, node, fixedParam != null) {
+                    if (fixedParam != null) findSubstitution(node, fixedParam)
+                }
             }
         }
     }

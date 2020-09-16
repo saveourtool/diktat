@@ -24,11 +24,11 @@ class NullableTypeRuleWarnTest : LintTestBase(::NullableTypeRule) {
                     |val c: String? = null
                     |val a: MutableList<Int>? = null
                 """.trimMargin(),
-                LintError(1,21, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} initialize explicitly", true),
-                LintError(2,15, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} initialize explicitly", true),
-                LintError(3,18, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} initialize explicitly", true),
-                LintError(4,18, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} initialize explicitly", true),
-                LintError(5,28, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} initialize explicitly", true)
+                LintError(1, 21, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} initialize explicitly", true),
+                LintError(2, 15, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} initialize explicitly", true),
+                LintError(3, 18, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} initialize explicitly", true),
+                LintError(4, 18, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} initialize explicitly", true),
+                LintError(5, 28, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} initialize explicitly", true)
         )
     }
 
@@ -45,7 +45,29 @@ class NullableTypeRuleWarnTest : LintTestBase(::NullableTypeRule) {
                     |   }
                     |}
                 """.trimMargin(),
-                LintError(3,22, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} initialize explicitly", true)
+                LintError(3, 22, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} initialize explicitly", true),
+                LintError(4, 15, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} don't use nullable type", false),
+                LintError(5, 15, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} don't use nullable type", false)
         )
     }
+
+    @Test
+    @Tag(WarningNames.NULLABLE_PROPERTY_TYPE)
+    fun `check nullable type with initialize`() {
+        lintMethod(
+                """
+                    |class A {
+                    |   companion object {
+                    |       val a: Int? = 0
+                    |       val b: Int? = null
+                    |       val c: Boolean? = false
+                    |   }
+                    |}
+                """.trimMargin(),
+                LintError(3, 15, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} don't use nullable type", false),
+                LintError(4, 22, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} initialize explicitly", true),
+                LintError(5, 15, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} don't use nullable type", false)
+        )
+    }
+
 }
