@@ -355,6 +355,28 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting){
                 """.trimMargin()
 
         lintMethod(code,
-                LintError(6,8,ruleId, "${Warnings.IF_ELSE_COMMENTS.warnText()} /* Some comment */", true))
+                LintError(6,8,ruleId, "${IF_ELSE_COMMENTS.warnText()} /* Some comment */", true))
+    }
+
+    @Test
+    @Tag(WarningNames.IF_ELSE_COMMENTS)
+    fun `if - else comments bad 4` () {
+        val code =
+                """
+                    |package org.cqfn.diktat.ruleset.chapter3
+                    |
+                    |class Example {
+                    |   fun someFunc() {
+                    |       // general if comment
+                    |       if(a = 5) {
+                    |       
+                    |       } /* Some comment */ else
+                    |           print(5)
+                    |   }
+                    |}
+                """.trimMargin()
+
+        lintMethod(code,
+                LintError(6,8,ruleId, "${IF_ELSE_COMMENTS.warnText()} /* Some comment */", true))
     }
 }

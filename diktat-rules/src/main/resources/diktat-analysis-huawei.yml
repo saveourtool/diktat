@@ -231,3 +231,17 @@
 - name: LOCAL_VARIABLE_EARLY_DECLARATION
   enabled: true
   configuration: {}
+- name: WRONG_NEWLINES_AROUND_KDOC
+  enabled: true
+  configuration: {}
+- name: FIRST_COMMENT_NO_SPACES
+  enabled: true
+  configuration: {}
+- name: COMMENT_WHITE_SPACE
+  enabled: true
+  configuration:
+    maxSpacesBeforeComment: 1
+    maxSpacesInComment: 1
+- name: IF_ELSE_COMMENTS
+  enabled: true
+  configuration: {}

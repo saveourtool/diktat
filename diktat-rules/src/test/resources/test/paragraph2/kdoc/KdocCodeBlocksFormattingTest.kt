@@ -17,6 +17,13 @@ class SomeClass {
         // Some Comment
         else {
         }
+
+        if (a == 5) {
+
+        }
+        // Some Comment
+        else
+            print(a)
         /* Block Comment */
         val some = 4
 

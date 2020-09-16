@@ -1,7 +1,6 @@
 package org.cqfn.diktat.ruleset.rules.kdoc
 
 import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
@@ -85,7 +84,7 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
     private fun checkBlankLineAfterKdoc(node: ASTNode, type: IElementType) {
         val kdoc = node.getFirstChildWithType(type)
         val nodeAfterKdoc = kdoc?.treeNext
-        if (nodeAfterKdoc?.elementType == ElementType.WHITE_SPACE && nodeAfterKdoc.numNewLines() > 1) {
+        if (nodeAfterKdoc?.elementType == WHITE_SPACE && nodeAfterKdoc.numNewLines() > 1) {
             WRONG_NEWLINES_AROUND_KDOC.warnAndFix(configRules, emitWarn, isFixMode, kdoc.text, nodeAfterKdoc.startOffset, nodeAfterKdoc) {
                 nodeAfterKdoc.leaveOnlyOneNewLine()
             }
@@ -93,7 +92,7 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
     }
 
     private fun handleKdocComments(node: ASTNode, configuration: CommentsFormattingConfiguration) {
-        if (node.treeParent.treeParent.elementType == BLOCK) {
+        if (node.treeParent.treeParent != null && node.treeParent.treeParent.elementType == BLOCK) {
             checkCommentsInCodeBlocks(node.treeParent) // node.treeParent is a node that contains a comment.
         } else if (node.treeParent.elementType != IF) {
             checkClassComment(node)
@@ -123,7 +122,6 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
         if (node.hasChildOfType(ELSE)) {
             val elseKeyWord = node.getFirstChildWithType(ELSE_KEYWORD)!!
             val elseBlock = node.getFirstChildWithType(ELSE)!!
-            val elseCodeBlock = elseBlock.getFirstChildWithType(BLOCK)!!
             val comment = when {
                 elseKeyWord.prevNodeUntilNode(THEN, EOL_COMMENT) != null -> elseKeyWord.prevNodeUntilNode(THEN, EOL_COMMENT)
                 elseKeyWord.prevNodeUntilNode(THEN, BLOCK_COMMENT) != null -> elseKeyWord.prevNodeUntilNode(THEN, BLOCK_COMMENT)
@@ -134,15 +132,16 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
             if (comment != null) {
                 IF_ELSE_COMMENTS.warnAndFix(configRules, emitWarn, isFixMode, comment.text, node.startOffset, node) {
                     if (elseBlock.hasChildOfType(BLOCK)) {
+                        val elseCodeBlock = elseBlock.getFirstChildWithType(BLOCK)!!
                         elseCodeBlock.addChild(copyComment!!,
                                 elseCodeBlock.firstChildNode.treeNext)
                         elseCodeBlock.addChild(PsiWhiteSpaceImpl("\n"),
                                 elseCodeBlock.firstChildNode.treeNext)
                         node.removeChild(comment)
                     } else {
-                        val text = "else { \n${comment.text}\n ${elseBlock.text} \n }"
-                        node.removeChild(elseBlock)
-                        node.addChild(KotlinParser().createNode(text), null)
+                        elseKeyWord.treeParent.addChild(copyComment!!, elseKeyWord.treeNext)
+                        elseKeyWord.treeParent.addChild(PsiWhiteSpaceImpl("\n"), elseKeyWord.treeNext)
+                        node.removeChild(comment)
                     }
 
                     val whiteSpace = elseKeyWord.prevNodeUntilNode(THEN, WHITE_SPACE)
@@ -198,7 +197,7 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
 
     private fun checkWhiteSpaceBeforeComment(node: ASTNode, configuration: CommentsFormattingConfiguration) {
         if (node.elementType == EOL_COMMENT &&
-                node.text.trim('/').takeWhile { it == ' ' }.length == configuration.maxSpacesInComment)
+                node.text.trimStart('/').takeWhile { it == ' ' }.length == configuration.maxSpacesInComment)
             return
 
         if (node.elementType == BLOCK_COMMENT
