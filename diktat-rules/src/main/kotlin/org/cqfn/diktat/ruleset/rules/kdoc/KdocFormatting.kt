@@ -115,6 +115,7 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
         return isKdocNotEmpty
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkNoDeprecatedTag(node: ASTNode) {
         val kDocTags = node.kDocTags()
         kDocTags?.find { it.name == "deprecated" }
@@ -132,6 +133,7 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
                 }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkEmptyTags(kDocTags: Collection<KDocTag>?) {
         kDocTags?.filter {
             it.getSubjectName() == null && it.getContent().isEmpty()
@@ -140,6 +142,7 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkSpaceAfterTag(kDocTags: Collection<KDocTag>?) {
         // tags can have 'parameters' and content, either can be missing
         // we always can find white space after tag name, but after tag parameters only if content is present
@@ -173,13 +176,14 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
         )
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkBasicTagsOrder(node: ASTNode) {
         val kDocTags = node.kDocTags()
         // distinct basic tags which are present in current KDoc, in proper order
         val basicTagsOrdered = basicTagsList.filter { basicTag ->
             kDocTags?.find { it.knownTag == basicTag } != null
         }
-        // all basic tags from curent KDoc
+        // all basic tags from current KDoc
         val basicTags = kDocTags?.filter { basicTagsOrdered.contains(it.knownTag) }
         val isTagsInCorrectOrder = basicTags
                 ?.fold(mutableListOf<KDocTag>()) { acc, kDocTag ->
@@ -198,14 +202,15 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
                         .map { it.node }
 
                 basicTagsOrdered.forEachIndexed { index, tag ->
-                    val tagNode = kDocTags.find { it.knownTag == tag }?.node
-                    kDocSection.addChild(tagNode!!.clone() as CompositeElement, basicTagChildren[index])
+                    val tagNode = kDocTags.find { it.knownTag == tag }!!.node
+                    kDocSection.addChild(tagNode.clone() as CompositeElement, basicTagChildren[index])
                     kDocSection.removeChild(basicTagChildren[index])
                 }
             }
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkEmptyLineBeforeBasicTags(basicTags: List<KDocTag>) {
         val firstBasicTag = basicTags.firstOrNull()
         if (firstBasicTag != null) {

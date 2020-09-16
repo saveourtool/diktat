@@ -201,6 +201,7 @@ class KdocMethods(private val configRules: List<RulesConfig>) : Rule("kdoc-metho
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun addKdocTemplate(node: ASTNode,
                                 name: String,
                                 missingParameters: Collection<String?>,

@@ -100,10 +100,9 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
      */
     private fun checkHeaderKdocPosition(node: ASTNode): Boolean {
         val firstKdoc = node.findChildAfter(IMPORT_LIST, KDOC)
-        val hasOrphanedKdocAfterImports = firstKdoc != null && firstKdoc.treeParent.elementType == FILE
-        if (configRules.isRuleEnabled(HEADER_NOT_BEFORE_PACKAGE) && node.findChildBefore(PACKAGE_DIRECTIVE, KDOC) == null
-                && hasOrphanedKdocAfterImports) {
-            HEADER_NOT_BEFORE_PACKAGE.warnAndFix(configRules, emitWarn, isFixMode, fileName, firstKdoc!!.startOffset, firstKdoc) {
+        // if `firstKdoc.treeParent` is File then it's a KDoc not bound to any other structures
+        if (node.findChildBefore(PACKAGE_DIRECTIVE, KDOC) == null && firstKdoc != null && firstKdoc.treeParent.elementType == FILE) {
+            HEADER_NOT_BEFORE_PACKAGE.warnAndFix(configRules, emitWarn, isFixMode, fileName, firstKdoc.startOffset, firstKdoc) {
                 node.moveChildBefore(firstKdoc, node.getFirstChildWithType(PACKAGE_DIRECTIVE), true)
                 // ensure there is no empty line between copyright and header kdoc
                 node.findChildBefore(PACKAGE_DIRECTIVE, BLOCK_COMMENT)?.apply {

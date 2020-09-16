@@ -93,6 +93,7 @@ class LineLength(private val configRules: List<RulesConfig>) : Rule("line-length
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkLength(node: ASTNode, configuration: LineLengthConfiguration) {
         var offset = 0
         node.text.lines().forEach {
@@ -155,6 +156,7 @@ class LineLength(private val configRules: List<RulesConfig>) : Rule("line-length
         return LongLineFixableCases.Condition(configuration.lineLength, leftOffset, binList)
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkProperty(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
         var newParent = wrongNode
         while (newParent.hasChildOfType(PARENTHESIZED))
@@ -203,6 +205,7 @@ class LineLength(private val configRules: List<RulesConfig>) : Rule("line-length
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun fixError(fixableType: LongLineFixableCases) {
         when (fixableType) {
             is LongLineFixableCases.Fun -> fixableType.node.appendNewlineMergingWhiteSpace(null, fixableType.node.findChildByType(EQ)!!.treeNext)
@@ -232,6 +235,7 @@ class LineLength(private val configRules: List<RulesConfig>) : Rule("line-length
      * In this method we collect all binary expression in correct order and then
      * we collect their if their length less then max.
      */
+    @Suppress("UnsafeCallOnNullableType")
     private fun fixLongBinaryExpression(wrongBinaryExpression: LongLineFixableCases.Condition) {
         val leftOffset = wrongBinaryExpression.leftOffset
         val binList = wrongBinaryExpression.binList
@@ -283,6 +287,7 @@ class LineLength(private val configRules: List<RulesConfig>) : Rule("line-length
         return text
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun getBraceAndBeforeText(node: ASTNode, prevNode: ASTNode): String {
         var text = ""
         val par = if (prevNode.prevSibling { it.elementType == OPERATION_REFERENCE } == null) LPAR else RPAR
@@ -293,6 +298,7 @@ class LineLength(private val configRules: List<RulesConfig>) : Rule("line-length
         return text
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun getTextFromParenthesized(node: ASTNode): String {
         var text = ""
         text += node.findChildByType(LPAR)!!.text
@@ -372,6 +378,7 @@ class LineLength(private val configRules: List<RulesConfig>) : Rule("line-length
         splitTextAndCreateNode(node, text, indexLastSpace)
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun splitTextAndCreateNode(node: ASTNode, text: String, index: Int) {
         val resultText = "\"" + text.substring(0, index) + "\" +\n\"" + text.substring(index) + "\""
         val newNode = KotlinParser().createNode(resultText)
