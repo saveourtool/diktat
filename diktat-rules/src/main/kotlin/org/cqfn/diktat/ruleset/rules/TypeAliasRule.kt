@@ -31,6 +31,9 @@ class TypeAliasRule(private val configRules: List<RulesConfig>) : Rule("type-ali
         }
     }
 
+    /**
+     * Check properties for nested generics. Count LT for generic types and VALUE_PARAMETER for functional types
+     */
     private fun checkProperty(node: ASTNode, config: TypeAliasConfiguration) {
         if (node.textLength > config.typeReferenceLength)
             if (node.findAllNodesWithSpecificType(LT).size > 1 || node.findAllNodesWithSpecificType(VALUE_PARAMETER).size > 1)
