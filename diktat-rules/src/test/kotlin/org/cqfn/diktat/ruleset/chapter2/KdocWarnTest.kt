@@ -126,6 +126,33 @@ class KdocWarnTest : LintTestBase(::KdocComments) {
 
     @Test
     @Tag(WarningNames.MISSING_KDOC_CLASS_ELEMENTS)
+    fun `Kdoc shouldn't present for each class element because Test annotation`() {
+        lintMethod(
+                """
+                    /**
+                    * class that contains fields, functions and public subclasses
+                    **/
+                    @Test
+                    class SomeGoodName {
+                        val variable: String = ""
+                        private val privateVariable: String = ""
+                        fun perfectFunction() {
+                        }
+
+                        private fun privateFunction() {
+                        }
+
+                        class InternalClass {
+                        }
+
+                        private class InternalClass {
+                        }
+                    }
+                """.trimIndent())
+    }
+
+    @Test
+    @Tag(WarningNames.MISSING_KDOC_CLASS_ELEMENTS)
     fun `Kdoc should present for each class element (positive)`() {
         val code =
                 """

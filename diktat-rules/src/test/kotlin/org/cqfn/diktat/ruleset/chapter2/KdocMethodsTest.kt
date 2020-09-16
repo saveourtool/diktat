@@ -3,6 +3,7 @@ package org.cqfn.diktat.ruleset.chapter2
 import com.pinterest.ktlint.core.LintError
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import generated.WarningNames
+import org.cqfn.diktat.common.config.rules.DIKTAT_COMMON
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_TRIVIAL_KDOC_ON_FUNCTION
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_PARAM_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_RETURN_TAG
@@ -76,7 +77,7 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
         )
         // should allow to set custom test dirs
         lintMethod(funCode, fileName = "src/jvmTest/kotlin/org/cqfn/diktat/ExampleTest.kt",
-                rulesConfigList = listOf(RulesConfig(MISSING_KDOC_ON_FUNCTION.name, true, mapOf("testDirs" to "test,jvmTest")))
+                rulesConfigList = listOf(RulesConfig(DIKTAT_COMMON, true, mapOf("testDirs" to "test,jvmTest")))
         )
     }
 

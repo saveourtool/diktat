@@ -1,5 +1,6 @@
 package org.cqfn.diktat.ruleset.rules.kdoc
 
+import com.pinterest.ktlint.core.KtLint.FILE_PATH_USER_DATA_KEY
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
@@ -9,14 +10,11 @@ import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.common.config.rules.getCommonConfiguration
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_CLASS_ELEMENTS
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_TOP_LEVEL
-import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
-import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
-import org.cqfn.diktat.ruleset.utils.getIdentifierName
-import org.cqfn.diktat.ruleset.utils.isAccessibleOutside
-import org.cqfn.diktat.ruleset.utils.isStandardMethod
+import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 
@@ -41,10 +39,13 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
         emitWarn = emit
         isFixMode = autoCorrect
 
-        when (node.elementType) {
-            FILE -> checkTopLevelDoc(node)
-            CLASS -> checkClassElements(node)
-        }
+        val config = configRules.getCommonConfiguration().value
+        val fileName = node.getRootNode().getUserData(FILE_PATH_USER_DATA_KEY)!!
+        if (!(node.hasTestAnnotation() || isLocatedInTest(fileName.splitPathToDirs(), config.testAnchors)))
+            when (node.elementType) {
+                FILE -> checkTopLevelDoc(node)
+                CLASS -> checkClassElements(node)
+            }
     }
 
     private fun checkClassElements(node: ASTNode) {
@@ -75,7 +76,7 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
         val name = node.getIdentifierName()
 
         if (modifier.isAccessibleOutside() && kdoc == null) {
-            warning.warn(configRules, emitWarn, isFixMode, name!!.text, node.startOffset)
+            warning.warn(configRules, emitWarn, isFixMode, name!!.text, node.startOffset,node)
         }
     }
 }
