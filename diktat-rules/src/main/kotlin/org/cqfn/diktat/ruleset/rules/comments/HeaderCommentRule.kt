@@ -103,7 +103,7 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
         val copyrightWithCorrectYear = makeCopyrightCorrectYear(copyrightText)
 
         if (copyrightWithCorrectYear.isNotEmpty()){
-            WRONG_COPYRIGHT_YEAR.warnAndFix(configRules, emitWarn, isFixMode, fileName, node.startOffset) {
+            WRONG_COPYRIGHT_YEAR.warnAndFix(configRules, emitWarn, isFixMode, fileName, node.startOffset, node) {
                 (headerComment as LeafElement).replaceWithText(headerComment.text.replace(copyrightText, copyrightWithCorrectYear))
             }
         }
