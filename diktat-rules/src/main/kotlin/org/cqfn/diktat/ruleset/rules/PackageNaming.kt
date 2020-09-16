@@ -133,6 +133,7 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
      * 1) directory should match with package name
      * 2) if package in incorrect case -> transform to lower
      */
+    @Suppress("UnsafeCallOnNullableType")  // nullability checks will be added in separate issue
     private fun checkPackageName(wordsInPackageName: List<ASTNode>) {
         // all words should be in a lower case (lower case letters/digits/underscore)
         wordsInPackageName
