@@ -59,7 +59,7 @@ class SortRule(private val configRules: List<RulesConfig>) : Rule("sort-rule") {
             if (mutableList != sortedListOfList[index]) {
                 WRONG_DECLARATIONS_ORDER.warnAndFix(configRules, emitWarn, isFixMode,
                         "constant properties inside companion object order is incorrect",
-                        mutableList.first().startOffset) {
+                        mutableList.first().startOffset, mutableList.first()) {
                     swapSortNodes(sortedListOfList[index], mutableList, node)
                 }
             }
@@ -97,7 +97,7 @@ class SortRule(private val configRules: List<RulesConfig>) : Rule("sort-rule") {
             return
         val sortList = enumEntryList.sortedBy { it.findChildByType(IDENTIFIER)!!.text }
         if (enumEntryList != sortList) {
-            WRONG_DECLARATIONS_ORDER.warnAndFix(configRules, emitWarn, isFixMode, "enum entries order is incorrect", node.startOffset) {
+            WRONG_DECLARATIONS_ORDER.warnAndFix(configRules, emitWarn, isFixMode, "enum entries order is incorrect", node.startOffset, node) {
                 val (isEndSemicolon, isEndSpace) = removeLastSemicolonAndSpace(enumEntryList.last())
                 val hasTrailingComma  = (sortList.last() != enumEntryList.last() && enumEntryList.last().hasChildOfType(COMMA))
                 swapSortNodes(sortList, enumEntryList, node)

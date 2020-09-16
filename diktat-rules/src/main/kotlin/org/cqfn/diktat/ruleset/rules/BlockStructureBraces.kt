@@ -157,7 +157,7 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
         val braceSpace = nodeBefore?.treePrev
         if (braceSpace == null || checkBraceNode(braceSpace, true)) {
             BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "incorrect newline before opening brace",
-                    (braceSpace ?: node).startOffset) {
+                    (braceSpace ?: node).startOffset, node) {
                 if (braceSpace == null || braceSpace.elementType != WHITE_SPACE) {
                     node.addChild(PsiWhiteSpaceImpl(" "), nodeBefore)
                 } else {
@@ -173,7 +173,7 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
             node.findChildByType(beforeType) else node)?.findLBrace()?.treeNext ?: return
         if (checkBraceNode(newNode)) {
             BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "incorrect same line after opening brace",
-                    newNode.startOffset) {
+                    newNode.startOffset, newNode) {
                 if (newNode.elementType != WHITE_SPACE) {
                     node.addChild(PsiWhiteSpaceImpl("\n"), newNode)
                 } else {
@@ -187,7 +187,7 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
         allMiddleSpace.forEach {
             if (checkBraceNode(it, true)) {
                 BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "incorrect new line after closing brace",
-                        it.startOffset) {
+                        it.startOffset, it) {
                     if (it.elementType != WHITE_SPACE) {
                         node.addChild(PsiWhiteSpaceImpl(" "), node.findChildByType(keyword))
                     } else {
@@ -203,7 +203,7 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
         val space = node.findChildByType(RBRACE)!!.treePrev
         if (checkBraceNode(space))
             BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "no newline before closing brace",
-                    (space.treeNext ?: node.findChildByType(RBRACE))!!.startOffset) {
+                    (space.treeNext ?: node.findChildByType(RBRACE))!!.startOffset, node) {
                 if (space.elementType != WHITE_SPACE) {
                     node.addChild(PsiWhiteSpaceImpl("\n"), node.findChildByType(RBRACE))
                 } else {
