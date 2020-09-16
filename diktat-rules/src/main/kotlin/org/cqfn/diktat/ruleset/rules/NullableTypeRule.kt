@@ -70,7 +70,7 @@ class NullableTypeRule(private val configRules: List<RulesConfig>) : Rule("nulla
         }
     }
 
-    private fun isFixableForCollection(referenceText: String) =
+    private fun isFixableForCollection(referenceText: String): FixedParam? =
             when(referenceText) {
                 "List", "Iterable" -> FixedParam(null, null, "emptyList()")
                 "Map" -> FixedParam(null, null, "emptyMap()")
