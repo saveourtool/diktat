@@ -53,7 +53,7 @@ class NullableTypeRule(private val configRules: List<RulesConfig>) : Rule("nulla
                 NULLABLE_PROPERTY_TYPE.warn(configRules, emitWarn, isFixMode, "don't use nullable type",
                         node.findChildByType(TYPE_REFERENCE)!!.startOffset, node)
             } else if (node.hasChildOfType(NULL)) {
-                val fixedParam = isFixable(node)
+                val fixedParam = findFixableParam(node)
                 NULLABLE_PROPERTY_TYPE.warnAndFix(configRules, emitWarn, isFixMode, "initialize explicitly",
                         node.findChildByType(NULL)!!.startOffset, node, fixedParam != null) {
                     if (fixedParam != null) findSubstitution(node, fixedParam)
@@ -62,7 +62,7 @@ class NullableTypeRule(private val configRules: List<RulesConfig>) : Rule("nulla
         }
     }
 
-    private fun isFixable(node: ASTNode): FixedParam? {
+    private fun findFixableParam(node: ASTNode): FixedParam? {
         val reference = node.findChildByType(TYPE_REFERENCE)!!.findChildByType(NULLABLE_TYPE)!!.findChildByType(USER_TYPE)?.findChildByType(REFERENCE_EXPRESSION)
                 ?: return null
         return when (reference.text) {
@@ -73,11 +73,11 @@ class NullableTypeRule(private val configRules: List<RulesConfig>) : Rule("nulla
             "Long" -> FixedParam(INTEGER_CONSTANT, INTEGER_LITERAL, "0L")
             "Char" -> FixedParam(CHARACTER_CONSTANT, CHARACTER_LITERAL, "\'\'")
             "String" -> FixedParam(null, null, "", true)
-            else -> isFixableForCollection(reference.text)
+            else -> findFixableForCollectionParam(reference.text)
         }
     }
 
-    private fun isFixableForCollection(referenceText: String): FixedParam? =
+    private fun findFixableForCollectionParam(referenceText: String): FixedParam? =
             when(referenceText) {
                 "List", "Iterable" -> FixedParam(null, null, "emptyList()")
                 "Map" -> FixedParam(null, null, "emptyMap()")
