@@ -69,7 +69,7 @@ class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig
 
         if (thenNode?.elementType != BLOCK) {
             NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnAndFix(configRules, emitWarn, isFixMode, "IF",
-                    (thenNode?.prevSibling { it.elementType == IF_KEYWORD } ?: node).startOffset) {
+                    (thenNode?.prevSibling { it.elementType == IF_KEYWORD } ?: node).startOffset, node) {
                 if (thenNode != null) {
                     ifPsi.then!!.replaceWithBlock(indent)
                     if (elseNode != null) {
@@ -84,7 +84,7 @@ class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig
 
         if (hasElseBranch && elseNode?.elementType != IF && elseNode?.elementType != BLOCK) {
             NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnAndFix(configRules, emitWarn, isFixMode, "ELSE",
-                    (elseNode?.treeParent?.prevSibling { it.elementType == ELSE_KEYWORD } ?: node).startOffset) {
+                    (elseNode?.treeParent?.prevSibling { it.elementType == ELSE_KEYWORD } ?: node).startOffset, node) {
                 if (elseNode != null) {
                     ifPsi.`else`!!.replaceWithBlock(indent)
                 } else {
@@ -99,7 +99,7 @@ class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig
         val loopBody = (node.psi as KtLoopExpression).body
         val loopBodyNode = loopBody?.node
         if (loopBodyNode == null || loopBodyNode.elementType != BLOCK) {
-            NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnAndFix(configRules, emitWarn, isFixMode, node.elementType.toString(), node.startOffset) {
+            NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnAndFix(configRules, emitWarn, isFixMode, node.elementType.toString(), node.startOffset, node) {
                 // fixme proper way to calculate indent? or get step size (instead of hardcoded 4)
                 val indent = node.prevSibling { it.elementType == WHITE_SPACE }!!.text.lines().last().count { it == ' ' }
                 if (loopBody != null) {
@@ -122,7 +122,7 @@ class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig
                 .map { it.expression as KtBlockExpression }
                 .filter { it.statements.size == 1 }
                 .forEach {
-                    NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnAndFix(configRules, emitWarn, isFixMode, "WHEN", it.node.startOffset) {
+                    NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnAndFix(configRules, emitWarn, isFixMode, "WHEN", it.node.startOffset, it.node) {
                         it.astReplace(it.firstStatement!!.node.psi)
                     }
                 }

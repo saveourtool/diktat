@@ -1,8 +1,11 @@
 package org.cqfn.diktat.ruleset.utils
 
 import com.pinterest.ktlint.core.ast.ElementType
+import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION
+import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.CONST_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.FILE
+import com.pinterest.ktlint.core.ast.ElementType.FILE_ANNOTATION_LIST
 import com.pinterest.ktlint.core.ast.ElementType.INTERNAL_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
@@ -23,6 +26,7 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.psi.KtAnnotationEntry
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.psiUtil.parents
@@ -303,10 +307,27 @@ fun ASTNode?.isAccessibleOutside(): Boolean =
             true
         }
 
+fun ASTNode.hasSuppress(warningName: String): Boolean {
+    return parent({ node ->
+        val annotationNode = if (node.elementType != FILE) {
+            node.findChildByType(MODIFIER_LIST)
+        } else {
+            node.findChildByType(FILE_ANNOTATION_LIST)
+        }
+        annotationNode?.findAllNodesWithSpecificType(ANNOTATION_ENTRY)
+                ?.map { it.psi as KtAnnotationEntry }
+                ?.any {
+                    it.shortName.toString() == Suppress::class.simpleName
+                            && it.valueArgumentList?.arguments
+                            ?.firstOrNull()?.text?.trim('"', ' ').equals(warningName) ?: false
+                } ?: false
+    }, strict = false) != null
+}
+
 /**
  * creation of operation reference in a node
  */
-fun ASTNode.createOperationReference(elementType: IElementType, text: String){
+fun ASTNode.createOperationReference(elementType: IElementType, text: String) {
     val operationReference = CompositeElement(OPERATION_REFERENCE)
     this.addChild(operationReference, null)
     operationReference.addChild(LeafPsiElement(elementType, text), null)

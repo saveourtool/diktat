@@ -130,7 +130,7 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
         if (node.treeNext.numWhiteSpaces()?.let { it > 0 } == true) {
             // there is either whitespace or newline after constructor keyword
             WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "keyword '${node.text}' should not be separated from " +
-                    "'(' with a whitespace", node.startOffset) {
+                    "'(' with a whitespace", node.startOffset, node) {
                 node.treeParent.removeChild(node.treeNext)
             }
         }
@@ -145,7 +145,7 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
                 return
             }
             WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "keyword '${node.text}' should be separated from " +
-                    "'${nextCodeLeaf.text}' with a whitespace", nextCodeLeaf.startOffset) {
+                    "'${nextCodeLeaf.text}' with a whitespace", nextCodeLeaf.startOffset, nextCodeLeaf) {
                 node.leaveSingleWhiteSpace()
             }
         }
@@ -173,13 +173,13 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
         if (isFromLambdaAsArgument) {
             if (numWhiteSpace != 0) {
                 WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "there should be no whitespace before '{' of lambda" +
-                        " inside argument list", node.startOffset) {
+                        " inside argument list", node.startOffset, node) {
                     whitespaceOrPrevNode.treeParent.removeChild(whitespaceOrPrevNode)
                 }
             }
         } else if (prevNode.elementType !in keywordsWithSpaceAfter) {
             if (numWhiteSpace != 1) {
-                WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "there should be a whitespace before '{'", node.startOffset) {
+                WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "there should be a whitespace before '{'", node.startOffset, node) {
                     prevNode.leaveSingleWhiteSpace()
                 }
             }
@@ -223,7 +223,7 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
                     getDescription(requiredSpacesBefore != null, requiredSpacesAfter != null, requiredSpacesBefore, requiredSpacesAfter) +
                     ", but has" +
                     getDescription(isErrorBefore, isErrorAfter, spacesBefore, spacesAfter)
-            WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, freeText, node.startOffset) {
+            WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, freeText, node.startOffset, node) {
                 node.fixSpaceAround(requiredSpacesBefore, requiredSpacesAfter)
             }
         }
@@ -234,7 +234,7 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
         // the second condition corresponds to the last line of file
         val isEol = node.textContains('\n') || node.psi.parentsWithSelf.all { it.nextSibling == null }
         if (hasSpaces && isEol) {
-            WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "there should be no spaces in the end of line", node.startOffset) {
+            WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "there should be no spaces in the end of line", node.startOffset, node) {
                 (node as LeafElement).replaceWithText(node.text.trimStart(' '))
             }
         }

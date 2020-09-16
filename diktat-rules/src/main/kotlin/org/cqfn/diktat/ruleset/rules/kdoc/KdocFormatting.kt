@@ -84,7 +84,7 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
         val nodeAfterKdoc = kdoc?.treeNext
         val name = node.getFirstChildWithType(ElementType.IDENTIFIER)
         if (nodeAfterKdoc?.elementType == WHITE_SPACE && nodeAfterKdoc.text.countSubStringOccurrences("\n") > 1) {
-            BLANK_LINE_AFTER_KDOC.warnAndFix(configRules, emitWarn, isFixMode, name!!.text, nodeAfterKdoc.startOffset) {
+            BLANK_LINE_AFTER_KDOC.warnAndFix(configRules, emitWarn, isFixMode, name!!.text, nodeAfterKdoc.startOffset, nodeAfterKdoc) {
                 nodeAfterKdoc.leaveOnlyOneNewLine()
             }
         }
@@ -97,9 +97,9 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
                 } ?: false
         if (!isKdocNotEmpty) {
             KDOC_EMPTY_KDOC.warn(configRules, emitWarn, isFixMode,
-                    node.treeParent.getIdentifierName()?.text
-                            ?: node.nextSibling { it.elementType in KtTokens.KEYWORDS }?.text
-                            ?: fileName, node.startOffset)
+                node.treeParent.getIdentifierName()?.text
+                    ?: node.nextSibling { it.elementType in KtTokens.KEYWORDS }?.text
+                    ?: fileName, node.startOffset, node)
         }
         return isKdocNotEmpty
     }
@@ -107,19 +107,18 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
     private fun checkNoDeprecatedTag(node: ASTNode) {
         val kDocTags = node.kDocTags()
         kDocTags?.find { it.name == "deprecated" }
-                ?.let { kDocTag ->
-                    KDOC_NO_DEPRECATED_TAG.warnAndFix(configRules, emitWarn, isFixMode, kDocTag.text, kDocTag.node.startOffset) {
-                        val kDocSection = kDocTag.node.treeParent
-                        val deprecatedTagNode = kDocSection.getChildren(TokenSet.create(KDOC_TAG))
-                                .find { "@deprecated" in it.text }!!
-                        kDocSection.removeRange(deprecatedTagNode.prevSibling { it.elementType == WHITE_SPACE }!!,
-                                deprecatedTagNode.nextSibling { it.elementType == WHITE_SPACE }
-                        )
-                        node.treeParent.addChild(LeafPsiElement(ElementType.ANNOTATION,
-                                "@Deprecated(message = \"${kDocTag.getContent()}\")"), node.treeNext)
-                        // copy to get all necessary indents
-                        node.treeParent.addChild(node.nextSibling { it.elementType == WHITE_SPACE }!!.clone() as PsiWhiteSpaceImpl, node.treeNext)
-                    }
+            ?.let { kDocTag ->
+                KDOC_NO_DEPRECATED_TAG.warnAndFix(configRules, emitWarn, isFixMode, kDocTag.text, kDocTag.node.startOffset, kDocTag.node) {
+                    val kDocSection = kDocTag.node.treeParent
+                    val deprecatedTagNode = kDocSection.getChildren(TokenSet.create(KDOC_TAG))
+                        .find { "@deprecated" in it.text }!!
+                    kDocSection.removeRange(deprecatedTagNode.prevSibling { it.elementType == WHITE_SPACE }!!,
+                        deprecatedTagNode.nextSibling { it.elementType == WHITE_SPACE }
+                    )
+                    node.treeParent.addChild(LeafPsiElement(ElementType.ANNOTATION,
+                        "@Deprecated(message = \"${kDocTag.getContent()}\")"), node.treeNext)
+                    // copy to get all necessary indents
+                    node.treeParent.addChild(node.nextSibling { it.elementType == WHITE_SPACE }!!.clone() as PsiWhiteSpaceImpl, node.treeNext) }
                 }
     }
 
@@ -127,7 +126,7 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
         kDocTags?.filter {
             it.getSubjectName() == null && it.getContent().isEmpty()
         }?.forEach {
-            KDOC_NO_EMPTY_TAGS.warn(configRules, emitWarn, isFixMode, "@${it.name!!}", it.node.startOffset)
+            KDOC_NO_EMPTY_TAGS.warn(configRules, emitWarn, isFixMode, "@${it.name!!}", it.node.startOffset, it.node)
         }
     }
 
@@ -143,7 +142,7 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
             hasSubject && isSpaceBeforeContentError || isSpaceAfterTagError
         }?.forEach { tag ->
             KDOC_WRONG_SPACES_AFTER_TAG.warnAndFix(configRules, emitWarn, isFixMode,
-                    "@${tag.name!!}", tag.node.startOffset) {
+                "@${tag.name!!}", tag.node.startOffset, tag.node) {
                 tag.node.findChildBefore(KDOC_TEXT, WHITE_SPACE)
                         ?.let { tag.node.replaceChild(it, LeafPsiElement(WHITE_SPACE, " ")) }
                 tag.node.findChildAfter(KDOC_TAG_NAME, WHITE_SPACE)
@@ -182,7 +181,7 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
 
         if (kDocTags != null && !isTagsInCorrectOrder!!) {
             KDOC_WRONG_TAGS_ORDER.warnAndFix(configRules, emitWarn, isFixMode,
-                    basicTags.joinToString(", ") { "@${it.name}" }, basicTags.first().node.startOffset) {
+                basicTags.joinToString(", ") { "@${it.name}" }, basicTags.first().node.startOffset, basicTags.first().node) {
                 val kDocSection = node.getFirstChildWithType(KDOC_SECTION)!!
                 val basicTagChildren = kDocTags
                         .filter { basicTagsOrdered.contains(it.knownTag) }
@@ -212,7 +211,7 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
 
             if (hasContentBefore xor hasEmptyLineBefore) {
                 KDOC_NEWLINES_BEFORE_BASIC_TAGS.warnAndFix(configRules, emitWarn, isFixMode,
-                        "@${firstBasicTag.name!!}", firstBasicTag.node.startOffset) {
+                    "@${firstBasicTag.name!!}", firstBasicTag.node.startOffset, firstBasicTag.node) {
                     if (hasContentBefore) {
                         if (previousTag != null) {
                             previousTag.applyToPrevSibling(KDOC_LEADING_ASTERISK) {
@@ -248,7 +247,7 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
 
         tagsWithRedundantEmptyLines.forEach { tag ->
             KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS.warnAndFix(configRules, emitWarn, isFixMode,
-                    "@${tag.name}", tag.startOffset) {
+                "@${tag.name}", tag.startOffset, tag.node) {
                 tag.node.nextSibling { it.elementType == WHITE_SPACE }?.leaveOnlyOneNewLine()
                 // the first asterisk before tag is not included inside KDOC_TAG node
                 // we look for the second and take its previous which should be WHITE_SPACE with newline
@@ -275,8 +274,8 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
 
         if (presentSpecialTagNodes != null && poorlyFormattedTagNodes!!.isNotEmpty()) {
             KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS.warnAndFix(configRules, emitWarn, isFixMode,
-                    poorlyFormattedTagNodes.joinToString(", ") { "@${(it.psi as KDocTag).name!!}" },
-                    poorlyFormattedTagNodes.first().startOffset) {
+                poorlyFormattedTagNodes.joinToString(", ") { "@${(it.psi as KDocTag).name!!}" },
+                poorlyFormattedTagNodes.first().startOffset, node) {
                 poorlyFormattedTagNodes.forEach { node ->
                     while (node.lastChildNode.elementType == KDOC_LEADING_ASTERISK
                             && node.lastChildNode.treePrev.treePrev.elementType == KDOC_LEADING_ASTERISK) {
