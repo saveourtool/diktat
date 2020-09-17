@@ -136,6 +136,7 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun handleKeywordWithParOrBrace(node: ASTNode) {
         if (node.treeNext.numWhiteSpaces() != 1) {
             // there is either not single whitespace or newline after keyword
@@ -154,6 +155,7 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
     /**
      * This method covers all other opening braces, not covered in [handleKeywordWithParOrBrace].
      */
+    @Suppress("UnsafeCallOnNullableType")
     private fun handleLbrace(node: ASTNode) {
         val whitespaceOrPrevNode = node.parent({ it.treePrev != null }, strict = false)!!.treePrev
         val isFromLambdaAsArgument = node
@@ -206,6 +208,7 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun handleToken(node: ASTNode, requiredSpacesBefore: Int?, requiredSpacesAfter: Int?) {
         require(requiredSpacesBefore != null || requiredSpacesAfter != null)
         val spacesBefore = node.parent({ it.treePrev != null }, strict = false)!!.treePrev.numWhiteSpaces()
@@ -240,6 +243,7 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun handleLpar(node: ASTNode) {
         if (node.treeParent.treeParent.elementType == SECONDARY_CONSTRUCTOR) {
             // there is separate handler for 'constructor' keyword to provide custom warning message

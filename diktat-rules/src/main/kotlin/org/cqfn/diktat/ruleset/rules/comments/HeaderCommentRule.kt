@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.rules.comments
 
-import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
@@ -21,6 +20,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_WRONG_FORMAT
 import org.cqfn.diktat.ruleset.utils.findChildAfter
 import org.cqfn.diktat.ruleset.utils.findChildBefore
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
+import org.cqfn.diktat.ruleset.utils.getFileName
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.moveChildBefore
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -49,7 +49,7 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
         emitWarn = emit
 
         if (node.elementType == FILE) {
-            fileName = node.getUserData(KtLint.FILE_PATH_USER_DATA_KEY)!!
+            fileName = node.getFileName()
             checkCopyright(node)
             if (checkHeaderKdocPosition(node)) {
                 checkHeaderKdoc(node)
@@ -100,10 +100,9 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
      */
     private fun checkHeaderKdocPosition(node: ASTNode): Boolean {
         val firstKdoc = node.findChildAfter(IMPORT_LIST, KDOC)
-        val hasOrphanedKdocAfterImports = firstKdoc != null && firstKdoc.treeParent.elementType == FILE
-        if (configRules.isRuleEnabled(HEADER_NOT_BEFORE_PACKAGE) && node.findChildBefore(PACKAGE_DIRECTIVE, KDOC) == null
-                && hasOrphanedKdocAfterImports) {
-            HEADER_NOT_BEFORE_PACKAGE.warnAndFix(configRules, emitWarn, isFixMode, fileName, firstKdoc!!.startOffset, firstKdoc) {
+        // if `firstKdoc.treeParent` is File then it's a KDoc not bound to any other structures
+        if (node.findChildBefore(PACKAGE_DIRECTIVE, KDOC) == null && firstKdoc != null && firstKdoc.treeParent.elementType == FILE) {
+            HEADER_NOT_BEFORE_PACKAGE.warnAndFix(configRules, emitWarn, isFixMode, fileName, firstKdoc.startOffset, firstKdoc) {
                 node.moveChildBefore(firstKdoc, node.getFirstChildWithType(PACKAGE_DIRECTIVE), true)
                 // ensure there is no empty line between copyright and header kdoc
                 node.findChildBefore(PACKAGE_DIRECTIVE, BLOCK_COMMENT)?.apply {

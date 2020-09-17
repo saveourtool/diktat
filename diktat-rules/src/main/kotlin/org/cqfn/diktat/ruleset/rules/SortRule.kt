@@ -37,13 +37,15 @@ class SortRule(private val configRules: List<RulesConfig>) : Rule("sort-rule") {
                 configRules.getRuleConfig(WRONG_DECLARATIONS_ORDER)?.configuration ?: mapOf()
         )
 
-        if (node.isClassEnum() && node.hasChildOfType(CLASS_BODY) && configuration.sortEnum)
-            sortEnum(node.findChildByType(CLASS_BODY)!!)
-        if (((node.psi as? KtObjectDeclaration)?.isCompanion() == true) && node.hasChildOfType(CLASS_BODY) &&
+        val classBody = node.findChildByType(CLASS_BODY)
+        if (node.isClassEnum() && classBody != null && configuration.sortEnum)
+            sortEnum(classBody)
+        if ((node.psi as? KtObjectDeclaration)?.isCompanion() == true && classBody != null &&
                 configuration.sortProperty)
-            sortProperty(node.findChildByType(CLASS_BODY)!!)
+            sortProperty(classBody)
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun sortProperty(node: ASTNode) {
         val propertyList = node.getChildren(null)
                 .filter { it.elementType == PROPERTY }
@@ -91,6 +93,7 @@ class SortRule(private val configRules: List<RulesConfig>) : Rule("sort-rule") {
         return orderListOfList.toList()
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun sortEnum(node: ASTNode) {
         val enumEntryList = node.getChildren(null).filter { it.elementType == ElementType.ENUM_ENTRY }
         if (enumEntryList.size <= 1)
@@ -111,6 +114,7 @@ class SortRule(private val configRules: List<RulesConfig>) : Rule("sort-rule") {
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun removeLastSemicolonAndSpace(node: ASTNode): Pair<Boolean, Boolean> {
         val isSemicolon = node.hasChildOfType(SEMICOLON)
         if (isSemicolon)

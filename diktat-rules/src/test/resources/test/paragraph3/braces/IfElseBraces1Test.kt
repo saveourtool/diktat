@@ -19,3 +19,8 @@ fun foo3() {
         bar()
     }
 }
+
+fun foo4() {
+    if (x > 0)
+    else ;
+}
