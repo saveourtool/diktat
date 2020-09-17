@@ -119,6 +119,7 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun handleIfElse(node: ASTNode) {
         if (node.hasChildOfType(ELSE)) {
             val elseKeyWord = node.getFirstChildWithType(ELSE_KEYWORD)!!
