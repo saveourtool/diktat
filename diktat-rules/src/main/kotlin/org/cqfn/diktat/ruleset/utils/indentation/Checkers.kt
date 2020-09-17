@@ -28,8 +28,11 @@ import org.cqfn.diktat.ruleset.rules.files.lastIndent
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
 import org.jetbrains.kotlin.psi.KtBlockExpression
+import org.jetbrains.kotlin.psi.KtClass
+import org.jetbrains.kotlin.psi.KtClassInitializer
 import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.KtLoopExpression
+import org.jetbrains.kotlin.psi.KtSuperTypeList
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
 
@@ -56,7 +59,11 @@ internal class ValueParameterListChecker(configuration: IndentationConfig) : Cus
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
         if (whiteSpace.parent.node.elementType in listOf(VALUE_PARAMETER_LIST, VALUE_ARGUMENT_LIST) && whiteSpace.nextSibling.node.elementType != RPAR) {
             val parameterList = whiteSpace.parent.node
-            val parameterAfterLpar = parameterList.findChildByType(LPAR)!!.treeNext.takeIf { it.elementType == VALUE_PARAMETER }
+            // parameters in lambdas are VALUE_PARAMETER_LIST and might have no LPAR: list { elem -> ... }
+            val parameterAfterLpar = parameterList
+                    .findChildByType(LPAR)
+                    ?.treeNext
+                    ?.takeIf { it.elementType == VALUE_PARAMETER }
 
             val expectedIndent = if (parameterAfterLpar != null && configuration.alignedParameters) {
                 // fixme: probably there is a better way to find column number
@@ -102,7 +109,9 @@ internal class KDocIndentationChecker(config: IndentationConfig) : CustomIndenta
 
 /**
  * This checker indents all super types of class by one INDENT_SIZE or by two if colon is on a new line
+ * If class declaration has supertype list, then it should have a colon before it, therefore UnsafeCallOnNullableType inspection is suppressed
  */
+@Suppress("UnsafeCallOnNullableType")
 internal class SuperTypeListChecker(config: IndentationConfig) : CustomIndentationChecker(config) {
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
         if (whiteSpace.nextSibling.node.elementType == SUPER_TYPE_LIST) {

@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.rules
 
-import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.DOT
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
@@ -19,6 +18,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_PREFIX
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_SYMBOLS
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_MISSING
 import org.cqfn.diktat.ruleset.utils.getAllLeafsWithSpecificType
+import org.cqfn.diktat.ruleset.utils.getFileName
 import org.cqfn.diktat.ruleset.utils.getRootNode
 import org.cqfn.diktat.ruleset.utils.hasUppercaseLetter
 import org.cqfn.diktat.ruleset.utils.isASCIILettersAndDigits
@@ -68,7 +68,7 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
         domainName = configuration.domainName
 
         if (node.elementType == PACKAGE_DIRECTIVE) {
-            val fileName = node.getRootNode().getUserData(KtLint.FILE_PATH_USER_DATA_KEY)!!
+            val fileName = node.getRootNode().getFileName()
             // calculating package name based on the directory where the file is placed
             val realPackageName = calculateRealPackageName(fileName)
 
@@ -133,6 +133,7 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
      * 1) directory should match with package name
      * 2) if package in incorrect case -> transform to lower
      */
+    @Suppress("UnsafeCallOnNullableType")  // fixme: remove suppression
     private fun checkPackageName(wordsInPackageName: List<ASTNode>) {
         // all words should be in a lower case (lower case letters/digits/underscore)
         wordsInPackageName
@@ -214,7 +215,8 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
      * Will create composite object = (Identifier + Dot) and insert it into the children list of parent node
      * FixMe: check if proper line/char numbers are added
      */
-    private fun createAndInsertPackageName(parentNode: ASTNode, insertBeforeNode: ASTNode?, packageNameToInsert: List<String>) {
+    @Suppress("UnsafeCallOnNullableType")
+    private fun createAndInsertPackageName(parentNode: ASTNode, insertBeforeNode: ASTNode?, packageNameToInsert: List<String>)  {
         var compositeElementWithNameAndDot: CompositeElement? = null
         var childDot: LeafPsiElement? = null
         var childPackageNamePart: LeafPsiElement?
@@ -240,6 +242,7 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
     /**
      * checking and fixing package directive if it does not match with the directory where the file is stored
      */
+    @Suppress("UnsafeCallOnNullableType")  // fixme: remove suppression
     private fun checkFilePathMatchesWithPackageName(packageNameParts: List<ASTNode>, realName: List<String>) {
         if (realName.isNotEmpty() && packageNameParts.map { node -> node.text } != realName) {
             PACKAGE_NAME_INCORRECT_PATH.warnAndFix(configRules, emitWarn, isFixMode, realName.joinToString(PACKAGE_SEPARATOR),
