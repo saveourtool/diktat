@@ -9,5 +9,5 @@ class TestCheckWarn : TestCompare() {
 
     private var testConfig: TestConfig? = null
 
-    override fun getExecutionResult() = testResult!!.stdErr
+    override fun getExecutionResult() = testResult.stdErr
 }

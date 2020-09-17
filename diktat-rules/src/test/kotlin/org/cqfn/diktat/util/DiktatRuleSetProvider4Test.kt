@@ -33,6 +33,7 @@ class DiktatRuleSetProviderTest {
         private val IGNORE_FILE = listOf("DiktatRuleSetProvider")
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     @Test
     fun `check DiktatRuleSetProviderTest contain all rules`() {
         val path = "${System.getProperty("user.dir")}/src/main/kotlin/org/cqfn/diktat/ruleset/rules"
