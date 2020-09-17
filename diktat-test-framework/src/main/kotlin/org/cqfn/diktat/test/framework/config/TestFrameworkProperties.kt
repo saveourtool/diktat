@@ -2,7 +2,7 @@ package org.cqfn.diktat.test.framework.config
 
 import org.cqfn.diktat.common.config.reader.ApplicationProperties
 
-class TestFrameworkProperties(propertiesFileName: String?) : ApplicationProperties(propertiesFileName!!) {
+class TestFrameworkProperties(propertiesFileName: String) : ApplicationProperties(propertiesFileName!!) {
     private val testFrameworkResourcePath: String
         get() = properties.getProperty("test.framework.dir")
 

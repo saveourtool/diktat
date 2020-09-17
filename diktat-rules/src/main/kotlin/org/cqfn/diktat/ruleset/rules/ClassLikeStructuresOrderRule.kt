@@ -34,6 +34,7 @@ import org.cqfn.diktat.ruleset.utils.loggerPropertyRegex
 import org.cqfn.diktat.ruleset.utils.moveChildBefore
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.psi.psiUtil.parents
 
 /**
  * Rule that checks order of declarations inside classes, interfaces and objects.
@@ -55,6 +56,7 @@ class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) :
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkDeclarationsOrderInClass(node: ASTNode) {
         val allProperties = node.getChildren(TokenSet.create(PROPERTY))
         val constProperties = allProperties.filter { it.findLeafWithSpecificType(CONST_KEYWORD) != null }.toMutableList()
@@ -69,7 +71,7 @@ class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) :
         val methods = node.getChildren(TokenSet.create(FUN)).toMutableList()
         val (usedClasses, unusedClasses) = node.getChildren(TokenSet.create(CLASS)).partition { classNode ->
             classNode.getIdentifierName()?.let { identifierNode ->
-                node.parent(FILE)!!.findAllNodesWithSpecificType(REFERENCE_EXPRESSION).any { ref ->
+                node.parents().last().findAllNodesWithSpecificType(REFERENCE_EXPRESSION).any { ref ->
                     ref.parent({ it == classNode }) == null && ref.text.contains(identifierNode.text)
                 }
             } ?: false
@@ -92,6 +94,7 @@ class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) :
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkNewLinesBeforeProperty(node: ASTNode) {
         val previousProperty = node.prevSibling { it.elementType == PROPERTY }
 
