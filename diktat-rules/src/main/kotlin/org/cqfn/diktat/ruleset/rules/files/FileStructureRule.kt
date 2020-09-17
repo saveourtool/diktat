@@ -105,11 +105,11 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkImportsOrder(node: ASTNode, configuration: WildCardImportsConfig) {
         val imports = node.getChildren(TokenSet.create(IMPORT_DIRECTIVE)).toList()
 
         // importPath can be null if import name cannot be parsed, which should be a very rare case, therefore !! should be safe here
-
         imports.filter { (it.psi as KtImportDirective).importPath!!.isAllUnder && it.text !in configuration.allowedWildcards }.forEach {
             FILE_WILDCARD_IMPORTS.warn(configRules, emitWarn, isFixMode, it.text, it.startOffset, it)
         }

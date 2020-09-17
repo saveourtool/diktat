@@ -205,6 +205,7 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
      *     * need to handle DESTRUCTURING_DECLARATION correctly, as it does not have IDENTIFIER leaf.
      *     * function type can have VALUE_PARAMETERs without name
      */
+    @Suppress("UnsafeCallOnNullableType")
     private fun extractVariableIdentifiers(node: ASTNode): List<ASTNode> {
         val destructingDeclaration = node.getFirstChildWithType(DESTRUCTURING_DECLARATION)
         val result = if (destructingDeclaration != null) {
@@ -312,6 +313,7 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
      * 3) FixMe: The function name is usually a verb or verb phrase (need to add check/fix for it)
      * 4) backticks are prohibited in the naming of non-test methods
      */
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkFunctionName(node: ASTNode): List<ASTNode> {
         val functionName = node.getIdentifierName()!!
 

@@ -56,6 +56,7 @@ class FileNaming(private val configRules: List<RulesConfig>) : Rule("file-naming
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkClassNameMatchesWithFile(fileLevelNode: ASTNode) {
         val (fileNameWithoutSuffix, fileNameSuffix) = getFileParts(fileName)
         val classes = fileLevelNode.getAllChildrenWithType(CLASS)

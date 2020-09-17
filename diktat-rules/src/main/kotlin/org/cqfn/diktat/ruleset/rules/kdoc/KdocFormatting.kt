@@ -272,6 +272,7 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkNewLineAfterSpecialTags(node: ASTNode) {
         val presentSpecialTagNodes = node.getFirstChildWithType(KDOC_SECTION)
                 ?.getAllChildrenWithType(KDOC_TAG)
@@ -287,7 +288,7 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
                     && specialTagNode.lastChildNode.treePrev.treePrev.elementType != KDOC_LEADING_ASTERISK
         }
 
-        if (presentSpecialTagNodes != null && poorlyFormattedTagNodes!!.isNotEmpty()) {
+        if (poorlyFormattedTagNodes != null && poorlyFormattedTagNodes.isNotEmpty()) {
             KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS.warnAndFix(configRules, emitWarn, isFixMode,
                 poorlyFormattedTagNodes.joinToString(", ") { "@${(it.psi as KDocTag).name!!}" },
                 poorlyFormattedTagNodes.first().startOffset, node) {
