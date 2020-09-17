@@ -219,9 +219,9 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
      */
     private fun checkFilePathMatchesWithPackageName(packageNameParts: List<ASTNode>, realNameParts: List<String>, packageDirective: ASTNode) {
 
-        val realPackageNameStr = realName.joinToString(PACKAGE_SEPARATOR)
-        val offset = packageNameParts[0].startOffset
         if (realName.isNotEmpty() && packageNameParts.map { node -> node.text } != realName) {
+            val realPackageNameStr = realName.joinToString(PACKAGE_SEPARATOR)
+            val offset = packageNameParts[0].startOffset
             PACKAGE_NAME_INCORRECT_PATH.warnAndFix(configRules, emitWarn, isFixMode, realPackageNameStr, offset, packageNameParts[0]) {
                 insertNewPackageName(packageDirective, realPackageNameStr)
             }
