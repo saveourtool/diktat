@@ -129,7 +129,7 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
         if (!isDomainMatches(wordsInPackageName)) {
             PACKAGE_NAME_INCORRECT_PREFIX.warnAndFix(configRules, emitWarn, isFixMode, domainName, wordsInPackageName[0].startOffset, wordsInPackageName[0]) {
                 val oldPackageName = wordsInPackageName.map { it.text }.joinToString(PACKAGE_SEPARATOR)
-                val newPackageName = "$domainName.$oldPackageName"
+                val newPackageName = "$domainName$PACKAGE_SEPARATOR$oldPackageName"
                 insertNewPackageName(packageDirectiveNode, newPackageName)
             }
         }
