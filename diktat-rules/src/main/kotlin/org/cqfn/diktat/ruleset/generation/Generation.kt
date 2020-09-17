@@ -6,7 +6,9 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import java.io.File
 import org.cqfn.diktat.ruleset.constants.Warnings
-import java.time.LocalDate
+import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule.Companion.afterCopyrightRegex
+import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule.Companion.curYear
+import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule.Companion.hyphenRegex
 
 private val AUTO_GENERATION_COMMENT =
         """
@@ -44,10 +46,7 @@ private fun generateWarningNames() {
     kotlinFile.writeTo(File("diktat-rules/src/main/kotlin")) // fixme: need to add it to pom
 }
 
-private fun validateYear(){
-    val curYear = LocalDate.now().year
-    val hyphenRegex = Regex("""\b(\d+-\d+)\b""")
-    val afterCopyrightRegex = Regex("""((©|\([cC]\))+ *\d+)""")
+private fun validateYear() {
     val file = File("diktat-rules/src/test/resources/test/paragraph2/header/CopyrightDifferentYearExpected.kt")
     val tempFile = createTempFile()
     tempFile.printWriter().use { writer ->

@@ -62,8 +62,8 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
     }
 
     companion object {
-        val hyphen_regex = Regex("""\b(\d+-\d+)\b""")
-        val after_copyright_regex = Regex("""((©|\([cC]\))+ *\d+)""")
+        val hyphenRegex = Regex("""\b(\d+-\d+)\b""")
+        val afterCopyrightRegex = Regex("""((©|\([cC]\))+ *\d+)""")
         val curYear = LocalDate.now().year
     }
 
@@ -110,24 +110,24 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
     }
 
     private fun makeCopyrightCorrectYear(copyrightText: String) : String {
-        val hyphenYear = hyphen_regex.find(copyrightText)
+        val hyphenYear = hyphenRegex.find(copyrightText)
 
         if (hyphenYear != null) {
             val copyrightYears = hyphenYear.value.split("-")
             if (copyrightYears[1].toInt() != curYear) {
                 val validYears = "${copyrightYears[0]}-${curYear}"
-                return copyrightText.replace(hyphen_regex, validYears)
+                return copyrightText.replace(hyphenRegex, validYears)
             }
         }
 
-        val afterCopyrightYear = after_copyright_regex.find(copyrightText)
+        val afterCopyrightYear = afterCopyrightRegex.find(copyrightText)
 
         if (afterCopyrightYear != null) {
             val copyrightYears = afterCopyrightYear.value.split("(c)", "(C)", "©")
 
             if (copyrightYears[1].trim().toInt() != curYear) {
                 val validYears = "${copyrightYears[0]}-${curYear}"
-                return copyrightText.replace(after_copyright_regex, validYears)
+                return copyrightText.replace(afterCopyrightRegex, validYears)
             }
         }
 
