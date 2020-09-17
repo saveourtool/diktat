@@ -138,6 +138,7 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkIf(node: ASTNode, configuration: BlockStructureBracesConfiguration) {
         val ifPsi = node.psi as KtIfExpression
         val thenNode = ifPsi.then?.node
@@ -147,7 +148,8 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
             checkOpenBraceOnSameLine(node, THEN, configuration)
             checkCloseBrace(thenNode, configuration)
             if (hasElseBranch) {
-                val allMiddleNode = listOf(thenNode.treeNext)
+                // thenNode might have been altered by this point
+                val allMiddleNode = listOf(node.findChildByType(THEN)!!.treeNext)
                 checkMidBrace(allMiddleNode, node, ELSE_KEYWORD)
             }
         }

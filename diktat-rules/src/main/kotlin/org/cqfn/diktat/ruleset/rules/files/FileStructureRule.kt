@@ -55,7 +55,7 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
             val configuration = WildCardImportsConfig(
                     this.configRules.getRuleConfig(FILE_WILDCARD_IMPORTS)?.configuration ?: mapOf()
             )
-            checkImportsOrder(node.findChildByType(IMPORT_LIST)!!, configuration)
+            node.findChildByType(IMPORT_LIST)?.let { checkImportsOrder(it, configuration) }
             if (checkFileHasCode(node)) {
                 checkCodeBlocksOrderAndEmptyLines(node)
             }
