@@ -218,9 +218,8 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
      * checking and fixing package directive if it does not match with the directory where the file is stored
      */
     private fun checkFilePathMatchesWithPackageName(packageNameParts: List<ASTNode>, realNameParts: List<String>, packageDirective: ASTNode) {
-
-        if (realName.isNotEmpty() && packageNameParts.map { node -> node.text } != realName) {
-            val realPackageNameStr = realName.joinToString(PACKAGE_SEPARATOR)
+        if (realNameParts.isNotEmpty() && packageNameParts.map { node -> node.text } != realNameParts) {
+            val realPackageNameStr = realNameParts.joinToString(PACKAGE_SEPARATOR)
             val offset = packageNameParts[0].startOffset
             PACKAGE_NAME_INCORRECT_PATH.warnAndFix(configRules, emitWarn, isFixMode, realPackageNameStr, offset, packageNameParts[0]) {
                 insertNewPackageName(packageDirective, realPackageNameStr)
