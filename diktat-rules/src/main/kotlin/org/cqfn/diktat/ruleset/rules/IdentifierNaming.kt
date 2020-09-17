@@ -205,6 +205,7 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
      *     * need to handle DESTRUCTURING_DECLARATION correctly, as it does not have IDENTIFIER leaf.
      *     * function type can have VALUE_PARAMETERs without name
      */
+    @Suppress("UnsafeCallOnNullableType")
     private fun extractVariableIdentifiers(node: ASTNode): List<ASTNode> {
         val destructingDeclaration = node.getFirstChildWithType(DESTRUCTURING_DECLARATION)
         val result = if (destructingDeclaration != null) {
@@ -233,8 +234,8 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
             }
         }
 
-        val className: ASTNode? = node.getIdentifierName()
-        if (!(className!!.text.isPascalCase())) {
+        val className: ASTNode = node.getIdentifierName() ?: return listOf()
+        if (!(className.text.isPascalCase())) {
             CLASS_NAME_INCORRECT.warnAndFix(configRules, emitWarn, isFixMode, className.text, className.startOffset, className) {
                 (className as LeafPsiElement).replaceWithText(className.text.toPascalCase())
             }
@@ -252,14 +253,14 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
 
         fun hasExceptionSuffix(text: String) = text.toLowerCase().endsWith("exception")
 
-        val classNameNode: ASTNode? = node.getIdentifierName()
+        val classNameNode = node.getIdentifierName() ?: return
         // getting super class name
         val superClassName: String? = node
                 .getFirstChildWithType(ElementType.SUPER_TYPE_LIST)
                 ?.findLeafWithSpecificType(TYPE_REFERENCE)
                 ?.text
 
-        if (superClassName != null && hasExceptionSuffix(superClassName) && !hasExceptionSuffix(classNameNode!!.text)) {
+        if (superClassName != null && hasExceptionSuffix(superClassName) && !hasExceptionSuffix(classNameNode.text)) {
             EXCEPTION_SUFFIX.warnAndFix(configRules, emitWarn, isFixMode, classNameNode.text, classNameNode.startOffset, classNameNode) {
                 // FixMe: need to add tests for this
                 (classNameNode as LeafPsiElement).replaceWithText(classNameNode.text + "Exception")
@@ -312,6 +313,7 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
      * 3) FixMe: The function name is usually a verb or verb phrase (need to add check/fix for it)
      * 4) backticks are prohibited in the naming of non-test methods
      */
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkFunctionName(node: ASTNode): List<ASTNode> {
         val functionName = node.getIdentifierName()!!
 

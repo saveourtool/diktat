@@ -36,6 +36,7 @@ class EmptyBlock(private val configRules: List<RulesConfig>) : Rule("empty-block
         checkEmptyBlock(newNode, configuration)
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkEmptyBlock(node: ASTNode, configuration: EmptyBlockStyleConfiguration) {
         if (node.treeParent.findChildByType(MODIFIER_LIST)?.findChildByType(OVERRIDE_KEYWORD) != null) return
         if (node.isBlockEmpty()) {

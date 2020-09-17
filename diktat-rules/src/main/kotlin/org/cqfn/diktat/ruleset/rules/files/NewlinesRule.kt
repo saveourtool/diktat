@@ -246,6 +246,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun handleReturnStatement(node: ASTNode) {
         val blockNode = node.treeParent.takeIf { it.elementType == BLOCK && it.treeParent.elementType == FUN }
         val returnsUnit = node.children().count() == 1  // the only child is RETURN_KEYWORD

@@ -1295,7 +1295,7 @@ val bytes = 0b11010010_01101001_10010100_10010010
 
 ### <a name="c3.14"></a> Strings
 
-### <a name="r3.8"></a>Rule 3.8: Concatenation Strings is prohibited when string fits one line, use raw strings and string templates instead.
+### <a name="r3.8"></a>Rule 3.14.1: Concatenation Strings is prohibited when string fits one line, use raw strings and string templates instead.
 Kotlin significantly enhanced work with Strings:
 [String templates](https://kotlinlang.org/docs/reference/basic-types.html#string-templates), [Raw strings](https://kotlinlang.org/docs/reference/basic-types.html#string-literals)
 That's why code looks much better when instead of using explicit concatenation to use proper Kotlin strings in case your line is not too long and you do not need to split it with newlines.
@@ -1311,6 +1311,36 @@ Good example:
 val myStr = "Super string"
 val value = "$myStr concatenated"
 ```
+
+### <a name="r3.8"></a>Rule 3.14.2: String template format
+Redundant curly braces in string templates
+
+In String templates there should not be redundant curly braces. In case of using a not complex statement (one argument)
+ there should not be curly braces.
+
+Bad example:
+```kotlin
+val someString = "${myArgument} ${myArgument.foo()}"
+```
+
+Valid example:
+```kotlin
+val someString = "$myArgument ${myArgument.foo()}"
+```
+
+Redundant string template
+In case string template contains only one variable - there is no need to use string template. Use this variable directly.
+
+Bad example:
+```kotlin
+val someString = "$myArgument"
+```
+
+Valid example:
+```kotlin
+val someString = myArgument
+```
+
 
  # <a name="c4"></a>4 Variables and types
 

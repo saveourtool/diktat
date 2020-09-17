@@ -14,14 +14,14 @@ interface TestBase {
      * injects test configuration that was read from .json config file
      * @return test instance itself
      */
-    fun initTestProcessor(testConfig: TestConfig?, properties: TestFrameworkProperties?): TestBase?
+    fun initTestProcessor(testConfig: TestConfig, properties: TestFrameworkProperties): TestBase
 
     /**
      *
      * @param command - command to execute in shell
      * @return - execution result - in default implementation returns inputStream
      */
-    fun executeCommand(command: String?): ExecutionResult? {
-        return LocalCommandExecutor(command!!).executeCommand()
+    fun executeCommand(command: String): ExecutionResult {
+        return LocalCommandExecutor(command).executeCommand()
     }
 }
