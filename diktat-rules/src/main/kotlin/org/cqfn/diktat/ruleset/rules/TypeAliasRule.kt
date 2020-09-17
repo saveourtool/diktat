@@ -11,6 +11,10 @@ import org.cqfn.diktat.ruleset.constants.Warnings.TYPE_ALIAS
 import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
+/**
+ * This rule checks if variable has long type reference and two or more nested generics.
+ * Length type reference can be configured
+ */
 class TypeAliasRule(private val configRules: List<RulesConfig>) : Rule("type-alias") {
 
     companion object {
@@ -27,14 +31,14 @@ class TypeAliasRule(private val configRules: List<RulesConfig>) : Rule("type-ali
         isFixMode = autoCorrect
 
         if (node.elementType == TYPE_REFERENCE) {
-            checkProperty(node, TypeAliasConfiguration(configRules.getRuleConfig(TYPE_ALIAS)?.configuration ?: mapOf()))
+            checkTypeReference(node, TypeAliasConfiguration(configRules.getRuleConfig(TYPE_ALIAS)?.configuration ?: mapOf()))
         }
     }
 
     /**
      * Check properties for nested generics. Count LT for generic types and VALUE_PARAMETER for functional types
      */
-    private fun checkProperty(node: ASTNode, config: TypeAliasConfiguration) {
+    private fun checkTypeReference(node: ASTNode, config: TypeAliasConfiguration) {
         if (node.textLength > config.typeReferenceLength)
             if (node.findAllNodesWithSpecificType(LT).size > 1 || node.findAllNodesWithSpecificType(VALUE_PARAMETER).size > 1)
                 TYPE_ALIAS.warn(configRules, emitWarn, isFixMode, "too long type reference", node.startOffset, node)
