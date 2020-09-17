@@ -379,4 +379,26 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting){
         lintMethod(code,
                 LintError(6,8,ruleId, "${IF_ELSE_COMMENTS.warnText()} /* Some comment */", true))
     }
+
+    @Test
+    @Tag(WarningNames.IF_ELSE_COMMENTS)
+    fun `should not trigger on comment` () {
+        val code =
+                """
+                    |package org.cqfn.diktat.ruleset.chapter3
+                    |
+                    |class Example {
+                    |   fun someFunc() {
+                    |       // general if comment
+                    |       if(a = 5) {
+                    |           /* Some comment */
+                    |       } else {
+                    |           print(5)
+                    |       }
+                    |   }
+                    |}
+                """.trimMargin()
+
+        lintMethod(code)
+    }
 }
