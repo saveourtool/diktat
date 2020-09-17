@@ -12,6 +12,7 @@ import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.IF
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
+import com.pinterest.ktlint.core.ast.ElementType.KDOC_SECTION
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_TEXT
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
@@ -85,7 +86,7 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
         val kdoc = node.getFirstChildWithType(type)
         val nodeAfterKdoc = kdoc?.treeNext
         if (nodeAfterKdoc?.elementType == WHITE_SPACE && nodeAfterKdoc.numNewLines() > 1) {
-            WRONG_NEWLINES_AROUND_KDOC.warnAndFix(configRules, emitWarn, isFixMode, kdoc.text, nodeAfterKdoc.startOffset, nodeAfterKdoc) {
+            WRONG_NEWLINES_AROUND_KDOC.warnAndFix(configRules, emitWarn, isFixMode, "redundant blank line after ${kdoc.text}", nodeAfterKdoc.startOffset, nodeAfterKdoc) {
                 nodeAfterKdoc.leaveOnlyOneNewLine()
             }
         }
@@ -207,10 +208,8 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
         }
 
         if (node.elementType == KDOC) {
-            node.findAllNodesWithSpecificType(KDOC_TEXT).forEach {
-                if (it.text.startsWith(" ".repeat(configuration.maxSpacesInComment)))
-                    return
-            }
+            if (node.findAllNodesWithSpecificType(KDOC_SECTION).all { it.text.trim('*').length - it.text.trim('*', ' ').length == configuration.maxSpacesInComment})
+                return
         }
 
         COMMENT_WHITE_SPACE.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
@@ -224,7 +223,7 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
                         if (!it.text.startsWith(" ".repeat(configuration.maxSpacesInComment))) {
                             commentText = it.text.trim()
                             val indent = " ".repeat(configuration.maxSpacesInComment)
-                            (it as LeafPsiElement).replaceWithText("$indent $commentText")
+                            (it as LeafPsiElement).replaceWithText("$indent$commentText")
                         }
                     }
                 }

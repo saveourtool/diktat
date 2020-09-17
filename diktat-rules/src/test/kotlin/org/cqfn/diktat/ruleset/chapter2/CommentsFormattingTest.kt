@@ -121,6 +121,7 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting){
                     |       
                     |       /**
                     |       * kDoc comment
+                    |       * some text
                     |       */
                     |       val second = 6
                     |       
@@ -204,7 +205,7 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting){
         lintMethod(code,
                 LintError(2,1,ruleId, "${Warnings.WRONG_NEWLINES_AROUND_KDOC.warnText()} /* Some comment */", true),
                 LintError(6,1,ruleId, "${Warnings.WRONG_NEWLINES_AROUND_KDOC.warnText()} /**\n* Some comment 2\n*/", true),
-                LintError(8,3,ruleId, "${Warnings.WRONG_NEWLINES_AROUND_KDOC.warnText()} /**\n* Some comment 2\n*/", true))
+                LintError(8,3,ruleId, "${Warnings.WRONG_NEWLINES_AROUND_KDOC.warnText()} redundant blank line after /**\n* Some comment 2\n*/", true))
     }
 
     @Test
@@ -276,10 +277,9 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting){
                     |       // general if comment
                     |       if(a = 5) {
                     |       
-                    |       } else {
+                    |       } else
                     |           // Good Comment
                     |           print(5)
-                    |       }
                     |   }
                     |}
                 """.trimMargin()
@@ -310,29 +310,6 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting){
 
         lintMethod(code,
                 LintError(6,8,ruleId, "${IF_ELSE_COMMENTS.warnText()} // Bad Comment", true))
-    }
-
-    @Test
-    @Tag(WarningNames.IF_ELSE_COMMENTS)
-    fun `if - else comments bad 2` () {
-        val code =
-                """
-                    |package org.cqfn.diktat.ruleset.chapter3
-                    |
-                    |class Example {
-                    |   fun someFunc() {
-                    |       // general if comment
-                    |       if(a = 5) {
-                    |       
-                    |       } else { // Bad Comment 
-                    |           print(5)
-                    |       }
-                    |   }
-                    |}
-                """.trimMargin()
-
-        lintMethod(code,
-                LintError(8,17,ruleId, "${Warnings.FIRST_COMMENT_NO_SPACES.warnText()} // Bad Comment ", true))
     }
 
     @Test
@@ -400,5 +377,28 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting){
                 """.trimMargin()
 
         lintMethod(code)
+    }
+
+    @Test
+    @Tag(WarningNames.FIRST_COMMENT_NO_SPACES)
+    fun `first comment no space in if - else bad` () {
+        val code =
+                """
+                    |package org.cqfn.diktat.ruleset.chapter3
+                    |
+                    |class Example {
+                    |   fun someFunc() {
+                    |       // general if comment
+                    |       if(a = 5) {
+                    |       
+                    |       } else { // Bad Comment 
+                    |           print(5)
+                    |       }
+                    |   }
+                    |}
+                """.trimMargin()
+
+        lintMethod(code,
+                LintError(8,17,ruleId, "${Warnings.FIRST_COMMENT_NO_SPACES.warnText()} // Bad Comment ", true))
     }
 }
