@@ -217,7 +217,7 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
     /**
      * checking and fixing package directive if it does not match with the directory where the file is stored
      */
-    private fun checkFilePathMatchesWithPackageName(packageNameParts: List<ASTNode>, realName: List<String>, packageDirective: ASTNode) {
+    private fun checkFilePathMatchesWithPackageName(packageNameParts: List<ASTNode>, realNameParts: List<String>, packageDirective: ASTNode) {
 
         val realPackageNameStr = realName.joinToString(PACKAGE_SEPARATOR)
         val offset = packageNameParts[0].startOffset
