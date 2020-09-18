@@ -12,23 +12,28 @@ import org.junit.jupiter.api.Test
  * Special test that checks that developer has not forgotten to add his warning to a diktat-analysis.yml
  * This file is needed to be in tact with latest changes in Warnings.kt
  */
-class RulesConfigJsonTest {
+class RulesConfigYamlTest {
     @Test
-    fun `read rules config json`() {
-        val allRulesFromConfig = readAllRulesFromConfig()
+    fun `read rules config yml`() {
+        compareRulesAndConfig("diktat-analysis.yml")
+        compareRulesAndConfig("diktat-analysis-huawei.yml")
+    }
+
+    private fun compareRulesAndConfig(nameConfig: String) {
+        val allRulesFromConfig = readAllRulesFromConfig(nameConfig)
         val allRulesFromCode = readAllRulesFromCode()
 
         allRulesFromCode.forEach { rule ->
             val foundRule = allRulesFromConfig.getRuleConfig(rule)
-            val jsonCodeSnippet = RulesConfig(rule.ruleName(), true, mapOf())
+            val ymlCodeSnippet = RulesConfig(rule.ruleName(), true, mapOf())
             val jacksonMapper = jacksonObjectMapper()
 
-            val ruleJson = jacksonMapper.writeValueAsString(jsonCodeSnippet)
+            val ruleYaml = jacksonMapper.writeValueAsString(ymlCodeSnippet)
             Assertions.assertTrue(foundRule != null) {
                 """
-                   Cannot find warning ${rule.ruleName()} in rules-config.json.
-                   You can fix it by adding the following code below to rules-config.json:
-                   $ruleJson
+                   Cannot find warning ${rule.ruleName()} in $nameConfig.
+                   You can fix it by adding the following code below to $nameConfig:
+                   $ruleYaml
                 """
             }
         }
@@ -44,9 +49,9 @@ class RulesConfigJsonTest {
         }
     }
 
-    private fun readAllRulesFromConfig() =
+    private fun readAllRulesFromConfig(nameConfig: String) =
             RulesConfigReader(javaClass.classLoader)
-                    .readResource("diktat-analysis.yml") ?: listOf()
+                    .readResource(nameConfig) ?: listOf()
 
     private fun readAllRulesFromCode() =
             Warnings.values()
