@@ -149,4 +149,8 @@ object WarningNames {
     const val LOCAL_VARIABLE_EARLY_DECLARATION: String = "LOCAL_VARIABLE_EARLY_DECLARATION"
 
     const val TYPE_ALIAS: String = "TYPE_ALIAS"
+
+    const val REDUNDANT_CURLY_BRACES: String = "REDUNDANT_CURLY_BRACES"
+
+    const val REDUNDANT_QUOTES: String = "REDUNDANT_QUOTES"
 }

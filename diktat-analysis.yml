@@ -236,3 +236,9 @@
   enabled: true
   configuration:
     typeReferenceLength: '25' # max length of type reference
+- name: REDUNDANT_CURLY_BRACES
+  enabled: true
+  configuration: {}
+- name: REDUNDANT_QUOTES
+  enabled: true
+  configuration: {}
