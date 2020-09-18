@@ -470,7 +470,7 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
 
     @Test
     @Tag(WarningNames.WRONG_WHITESPACE)
-    fun `ckeck space on both sides of equals`() {
+    fun `check space on both sides of equals`() {
         lintMethod(
                 """ 
                     |fun foo() {
@@ -481,6 +481,21 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
                 """.trimMargin(),
                 LintError(2, 9, ruleId, tokenWarn("=", 0, 0, 1, 1), true),
                 LintError(4, 5, ruleId, tokenWarn("=", 0, 0, 1, 1), true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
+    fun `check eq in other cases`() {
+        lintMethod(
+                """ 
+                    |fun foo()=10
+                    |
+                    |val q =goo(text=ty)
+                """.trimMargin(),
+                LintError(1, 10, ruleId, tokenWarn("=", 0, 0, 1, 1), true),
+                LintError(3, 7, ruleId, tokenWarn("=", null, 0, 1, 1), true),
+                LintError(3, 16, ruleId, tokenWarn("=", 0, 0, 1, 1), true)
         )
     }
 
