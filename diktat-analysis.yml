@@ -231,8 +231,16 @@
 - name: LOCAL_VARIABLE_EARLY_DECLARATION
   enabled: true
   configuration: {}
-# Type aliases provide alternative names for existing types when type's reference text is longer 25 chars
+
+# Type aliases provide alternative names for existing types when type's reference text is longer 25 chars.
 - name: TYPE_ALIAS
   enabled: true
   configuration:
     typeReferenceLength: '25' # max length of type reference
+
+# Variables with `val` modifier - are immutable (read-only). Usage of such variables instead of `var` variables increases
+# robustness and readability of code, because `var` variables can be reassigned several times in the business logic.
+# This rule prohibits usage of `var`s
+- name: SAY_NO_TO_VAR
+  enabled: true
+  configuration: {}

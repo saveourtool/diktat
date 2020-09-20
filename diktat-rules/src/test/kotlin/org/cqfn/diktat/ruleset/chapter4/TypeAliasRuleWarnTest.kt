@@ -1,4 +1,4 @@
-package org.cqfn.diktat.ruleset.chapter3
+package org.cqfn.diktat.ruleset.chapter4
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
@@ -21,7 +21,7 @@ class TypeAliasRuleWarnTest : LintTestBase(::TypeAliasRule) {
 
     @Test
     @Tag(WarningNames.TYPE_ALIAS)
-    fun `string concatenation - only strings`() {
+    fun `long reference with several MutableMaps`() {
         lintMethod(
                 """
                     | val b: MutableMap<String, MutableList<String>>
