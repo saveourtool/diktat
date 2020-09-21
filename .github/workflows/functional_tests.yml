@@ -17,7 +17,7 @@ jobs:
         run: |
           curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.37.1/ktlint && chmod a+x ktlint
           curl -sSLO https://github.com/cqfn/diKTat/releases/download/v0.1.0/diktat-0.1.0.jar
-          ./ktlint -R diktat-0.1.0.jar "src/main/kotlin/**/*.kt"
+          ./ktlint -R diktat-0.1.0.jar "**/src/main/kotlin/**/*.kt"
 
       - name: Run diKTat from gradle
         run: gradle diktatCheck
