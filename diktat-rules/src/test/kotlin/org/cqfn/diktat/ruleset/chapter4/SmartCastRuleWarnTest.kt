@@ -1,4 +1,4 @@
-package org.cqfn.diktat.ruleset.chapter3
+package org.cqfn.diktat.ruleset.chapter4
 
 import com.pinterest.ktlint.core.LintError
 import org.cqfn.diktat.ruleset.constants.Warnings

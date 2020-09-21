@@ -231,3 +231,6 @@
 - name: LOCAL_VARIABLE_EARLY_DECLARATION
   enabled: true
   configuration: {}
+- name: SMART_CAST_NEEDED
+  enabled: true
+  configuration: {}

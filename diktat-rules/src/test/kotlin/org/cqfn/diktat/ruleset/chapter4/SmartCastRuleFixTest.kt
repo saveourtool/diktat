@@ -1,4 +1,4 @@
-package org.cqfn.diktat.ruleset.chapter3
+package org.cqfn.diktat.ruleset.chapter4
 
 import generated.WarningNames
 import org.cqfn.diktat.ruleset.rules.SmartCastRule
