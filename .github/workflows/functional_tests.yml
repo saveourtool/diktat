@@ -13,8 +13,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-#       - name: Run diKTat from cli
-#         run: ./ktlint -R diktat.jar "dir/your/dir/**/*.kt"
+      - name: Run diKTat from cli
+        run: ./ktlint -R diktat.jar "dir/your/dir/**/*.kt"
 
       - name: Run diKTat from maven
         run: mvn antrun:run@diktat
