@@ -46,6 +46,7 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun handleIfBlock(node: ASTNode) {
         /*
             There are 2 conditions.
@@ -93,6 +94,7 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkAsExpressions(asList: List<ASTNode>, blocks: List<IsExpressions>) {
         val asExpr = mutableListOf<AsExpressions>()
 
@@ -122,6 +124,7 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun handleWhenCondition(node: ASTNode) {
         /*
             Check if there is WHEN_CONDITION_IS_PATTERN. If so delete 'as' in it's block
