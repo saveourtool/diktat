@@ -1,4 +1,4 @@
-name: CI
+name: Run functional tests
 
 on:
   push:
@@ -13,8 +13,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-#       - name: Run diKTat from cli
-#         run: ./ktlint -R diktat.jar "dir/your/dir/**/*.kt"
+      - name: Run diKTat from cli
+        run: |
+          curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.37.1/ktlint && chmod a+x ktlint
+          ./ktlint -R diktat.jar "src/main/kotlin/**/*.kt"
 
       - name: Run diKTat from gradle
         run: gradle diktatCheck
