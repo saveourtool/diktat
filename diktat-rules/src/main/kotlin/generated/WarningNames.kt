@@ -148,7 +148,7 @@ object WarningNames {
 
     const val LOCAL_VARIABLE_EARLY_DECLARATION: String = "LOCAL_VARIABLE_EARLY_DECLARATION"
 
-    const val SMART_CAST_NEEDED: String = "SMART_CAST_NEEDED"
-
     const val TYPE_ALIAS: String = "TYPE_ALIAS"
+
+    const val SMART_CAST_NEEDED: String = "SMART_CAST_NEEDED"
 }
