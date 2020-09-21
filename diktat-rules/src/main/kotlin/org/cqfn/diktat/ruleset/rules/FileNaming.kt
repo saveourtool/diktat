@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.rules
 
-import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.FILE
@@ -9,6 +8,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NAME_INCORRECT
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NAME_MATCH_CLASS
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
+import org.cqfn.diktat.ruleset.utils.getFileName
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.isPascalCase
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -31,7 +31,7 @@ class FileNaming(private val configRules: List<RulesConfig>) : Rule("file-naming
     }
 
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
-    private var fileName: String? = null
+    private lateinit var fileName: String
     private var isFixMode: Boolean = false
 
     override fun visit(node: ASTNode,
@@ -41,41 +41,38 @@ class FileNaming(private val configRules: List<RulesConfig>) : Rule("file-naming
         isFixMode = autoCorrect
 
         if (node.elementType == FILE) {
-            fileName = node.getUserData(KtLint.FILE_PATH_USER_DATA_KEY)!!
+            fileName = node.getFileName()
             checkFileNaming(node)
             checkClassNameMatchesWithFile(node)
         }
     }
 
     private fun checkFileNaming(node: ASTNode) {
-        if (fileName != null) {
-            val (name, extension) = getFileParts()
-            if (!name.isPascalCase() || !VALID_EXTENSIONS.contains(extension)) {
-                FILE_NAME_INCORRECT.warnAndFix(configRules, emitWarn, isFixMode, "$name$extension", 0, node) {
-                    // FixMe: we can add an autocorrect here in future, but is there any purpose to change file or class name?
-                }
+        val (name, extension) = getFileParts(fileName)
+        if (!name.isPascalCase() || !VALID_EXTENSIONS.contains(extension)) {
+            FILE_NAME_INCORRECT.warnAndFix(configRules, emitWarn, isFixMode, "$name$extension", 0, node) {
+                // FixMe: we can add an autocorrect here in future, but is there any purpose to change file or class name?
             }
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkClassNameMatchesWithFile(fileLevelNode: ASTNode) {
-        if (fileName != null) {
-            val (fileNameWithoutSuffix, fileNameSuffix) = getFileParts()
-            val classes = fileLevelNode.getAllChildrenWithType(CLASS)
-            if (classes.size == 1) {
-                val className = classes[0].getFirstChildWithType(IDENTIFIER)!!.text
-                if (className != fileNameWithoutSuffix) {
-                    FILE_NAME_MATCH_CLASS.warnAndFix(configRules, emitWarn, isFixMode, "$fileNameWithoutSuffix$fileNameSuffix vs $className", 0, fileLevelNode) {
+        val (fileNameWithoutSuffix, fileNameSuffix) = getFileParts(fileName)
+        val classes = fileLevelNode.getAllChildrenWithType(CLASS)
+        if (classes.size == 1) {
+            val className = classes[0].getFirstChildWithType(IDENTIFIER)!!.text
+            if (className != fileNameWithoutSuffix) {
+                FILE_NAME_MATCH_CLASS.warnAndFix(configRules, emitWarn, isFixMode, "$fileNameWithoutSuffix$fileNameSuffix vs $className", 0, fileLevelNode) {
 
-                        // FixMe: we can add an autocorrect here in future, but is there any purpose to change file name?
-                    }
+                    // FixMe: we can add an autocorrect here in future, but is there any purpose to change file name?
                 }
             }
         }
     }
 
-    private fun getFileParts(): Pair<String, String> {
-        val file = File(fileName!!)
+    private fun getFileParts(fileName: String): Pair<String, String> {
+        val file = File(fileName)
         val fileNameWithoutSuffix = file.name.replace(Regex("\\..*"), "")
         val fileNameSuffix = file.name.replace(fileNameWithoutSuffix, "")
         return Pair(fileNameWithoutSuffix, fileNameSuffix)

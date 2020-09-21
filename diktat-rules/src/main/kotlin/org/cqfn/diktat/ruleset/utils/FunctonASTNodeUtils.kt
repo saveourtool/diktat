@@ -8,6 +8,7 @@ import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import org.cqfn.diktat.ruleset.rules.PackageNaming.Companion.PACKAGE_PATH_ANCHOR
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.kotlin.psi.KtParameter
 import org.jetbrains.kotlin.psi.KtParameterList
 
@@ -17,10 +18,9 @@ fun ASTNode.hasParameters(): Boolean {
     return argList != null && argList.hasChildOfType(ElementType.VALUE_PARAMETER)
 }
 
-fun ASTNode.parameterNames(): Collection<String?>? {
+fun ASTNode.parameterNames(): Collection<String?> {
     checkNodeIsFun(this)
-    return (this.argList()?.psi as KtParameterList?)
-            ?.parameters?.map { (it as KtParameter).name }
+    return (psi as KtFunction).valueParameters.map { it.name }
 }
 
 /**
@@ -42,8 +42,8 @@ fun ASTNode.isGetterOrSetter(): Boolean {
     checkNodeIsFun(this)
     return getIdentifierName()?.let { functionName ->
         when {
-            functionName.text.startsWith(SET_PREFIX) -> parameterNames()!!.size == 1
-            functionName.text.startsWith(GET_PREFIX) -> parameterNames()!!.isEmpty()
+            functionName.text.startsWith(SET_PREFIX) -> parameterNames().size == 1
+            functionName.text.startsWith(GET_PREFIX) -> parameterNames().isEmpty()
             else -> false
         }
     } ?: false

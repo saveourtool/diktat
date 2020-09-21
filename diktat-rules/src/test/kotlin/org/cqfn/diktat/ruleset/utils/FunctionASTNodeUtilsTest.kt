@@ -5,6 +5,7 @@ import org.cqfn.diktat.util.applyToCode
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
+@Suppress("UnsafeCallOnNullableType")
 class FunctionASTNodeUtilsTest {
     @Test
     fun `should detect parameters in function - no parameters`() {
