@@ -19,7 +19,6 @@ import com.pinterest.ktlint.core.ast.ElementType.DO_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.ELSE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.EQ
 import com.pinterest.ktlint.core.ast.ElementType.EXCLEXCL
-import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FINALLY_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.FOR_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.FUN
@@ -59,10 +58,11 @@ import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isPartOfComment
 import com.pinterest.ktlint.core.ast.nextCodeLeaf
 import com.pinterest.ktlint.core.ast.parent
+import com.pinterest.ktlint.core.ast.prevSibling
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_WHITESPACE
+import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.cqfn.diktat.ruleset.utils.log
-import org.cqfn.diktat.ruleset.utils.prettyPrint
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -175,7 +175,9 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
                 ?.let {
                     it[0].elementType == FUNCTION_LITERAL &&
                             it[1].elementType == LAMBDA_EXPRESSION &&
-                            it[2].elementType == VALUE_ARGUMENT
+                            it[2].elementType == VALUE_ARGUMENT &&
+                            !it[2].hasChildOfType(EQ) &&
+                            it[2].prevSibling { prevNode -> prevNode.elementType == COMMA } == null
                 }
                 ?: false
         val prevNode = whitespaceOrPrevNode.let { if (it.elementType == WHITE_SPACE) it.treePrev else it }

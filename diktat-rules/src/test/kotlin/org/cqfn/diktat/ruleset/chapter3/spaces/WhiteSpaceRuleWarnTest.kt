@@ -525,4 +525,30 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
                 LintError(1, 24, ruleId, tokenWarn("[", 0, null, 1, 0), true)
         )
     }
+
+    @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
+    fun `lambda as rigth value in arguments`() {
+        lintMethod(
+                """
+                    |fun foo() {
+                    |   Example(cb = { _, _ -> Unit })
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
+    fun `lambdas as argument for function`() {
+        lintMethod(
+                """
+                    |val q = foo(bar, { it.baz() })
+                    |val q = foo({ it.baz() })
+                    |val q = foo( { it.baz() })
+                """.trimMargin(),
+                LintError(3, 14, ruleId,
+                        "${WRONG_WHITESPACE.warnText()} there should be no whitespace before '{' of lambda inside argument list", true)
+        )
+    }
 }
