@@ -10,6 +10,7 @@
 | [2 Comments](#c2)   | [Kdoc](#c2.1), [File header](#c2.2), [Function header comments](#c2.3), [Code comments](#c2.4) |
 | [3 General format](#c3)   | [File-related rules](#c3.1), [Indentation](#c3.2), [Empty blocks](#c3.3), [Line width](#c3.4), [Line breaks (newlines)](#c3.5), [Blank lines](#c3.6), [Horiznotal alignment](#c3.7), [Enumerations](#c3.8), [Variable declaration](#c3.9), [When expression](#c3.10), [Annotations](#c3.11), [Comment layout](#c3.12), [Modifiers](#c3.13), [Strings](#c3.14)|
 | [4 Variables and types](#c4) | [Variables](#c4.1), [Types](#c4.2), [Null safety and variable declarations](#4.3)|
+| [5 Functions](#c5)      | [Function design](#c5.1) [Function parameters](#c5.2)|
 
  # <a name="c0"></a> Foreword
 
@@ -1208,8 +1209,9 @@ enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean
 Each property or variable declaration should be declared on separate line. Bad example: `val n1: Int; val n2: Int`.
 
 ### <a name="s3.10"></a>Recommendation 3.10: Variables are declared close to the line where they are first used
-Local variables are declared close to the point where they are first used. THis will minimize their scope.
-Local variable declarations are usually initialized or initialized immediately after the declaration. The member fields of the class should be declared collectively. 
+Local variables are declared close to the point where they are first used. This will minimize their scope.
+Local variable are usually initialized during declaration or initialized immediately after declaration.
+The member fields of the class should be declared collectively (see [recommendation 3.2](#s3.2) for details on class structure).
 
 ### <a name="c3.10"></a>When expression
 
@@ -1294,7 +1296,7 @@ val bytes = 0b11010010_01101001_10010100_10010010
 
 ### <a name="c3.14"></a> Strings
 
-### <a name="r3.8"></a>Rule 3.8: Concatenation Strings is prohibited when string fits one line, use raw strings and string templates instead.
+### <a name="r3.8"></a>Rule 3.14.1: Concatenation Strings is prohibited when string fits one line, use raw strings and string templates instead.
 Kotlin significantly enhanced work with Strings:
 [String templates](https://kotlinlang.org/docs/reference/basic-types.html#string-templates), [Raw strings](https://kotlinlang.org/docs/reference/basic-types.html#string-literals)
 That's why code looks much better when instead of using explicit concatenation to use proper Kotlin strings in case your line is not too long and you do not need to split it with newlines.
@@ -1310,6 +1312,36 @@ Good example:
 val myStr = "Super string"
 val value = "$myStr concatenated"
 ```
+
+### <a name="r3.8"></a>Rule 3.14.2: String template format
+Redundant curly braces in string templates
+
+In String templates there should not be redundant curly braces. In case of using a not complex statement (one argument)
+ there should not be curly braces.
+
+Bad example:
+```kotlin
+val someString = "${myArgument} ${myArgument.foo()}"
+```
+
+Valid example:
+```kotlin
+val someString = "$myArgument ${myArgument.foo()}"
+```
+
+Redundant string template
+In case string template contains only one variable - there is no need to use string template. Use this variable directly.
+
+Bad example:
+```kotlin
+val someString = "$myArgument"
+```
+
+Valid example:
+```kotlin
+val someString = myArgument
+```
+
 
  # <a name="c4"></a>4 Variables and types
 
@@ -1503,3 +1535,109 @@ Recommended:
 ```kotlin
 val myVariable: Map<Int, String> = emptyMap() 
 ```
+
+# <a name="c5"></a>5 Functions
+
+## <a name="c5.1"></a>Function design
+
+Knowledge of how to build design patterns and avoid code smells helps to write clean code. This and functional style should be unified together when you write the code on Kotlin.
+Ideas of functional style are the following: function - is the smallest unit of combinable and reusable code. Functions should have clean logic,
+**high cohesion** and **low coupling** to effectively organize the code. The code in functions should be simple and straightforward, should not hide
+the author's intentions and should have clean abstarction and control statements should be used in a straight forward manner. 
+The side effects (code that does not affect function's return value, but affects global/object instance variables) should not be used for state changes.
+The only exceptions are state machines. 
+
+[Kotlin is designed to support and encourage functional programming](https://www.slideshare.net/abreslav/whos-more-functional-kotlin-groovy-scala-or-java)。
+Kotlin language has built-in mechanisms that support functional programming. Standard collections ans sequences have methods for functional programming. For example - apply/with/let/run/e.t.c.
+Kotlin Higher-Order functions, function types, lambdas, default function arguments. As it was discussed [before](#r4.1.3) - Kotlin supports and encourages to use immutable types. 
+All of this motivates to write pure functions that avoid side effects and for specific input have corresponding output.
+
+The pure function pipeline data flow - is a part of functional paradigm. When you have chains of function calls and each step is:
+1. simple
+2. verifiable
+3. testable
+4. replaceable
+5. pluggable
+6. extensible  
+7. result of each step is immutable 
+
+then it is easy to do concurrent programming. There can be only one side effect in this data stream and it can be placed only at the end.
+
+### <a name="r5.1.1"></a> Rule 5.1.1 Avoid too long functions, no more than 30 lines (non-empty, non-comment)
+
+The function should be able to be displayed on one screen and only implement one certain logic.
+Too long function often means that the function is too complicated and can be split or be more primitive.
+
+**Exception:** Some functions that implement complex algorithms may exceed 30 lines due to the aggregation and comprehensiveness.
+Linter warnings for such functions can be suppressed. 
+
+Even if a long function works very well right now, once someone else modifies it, new problems or bugs may appear due to the complex logic.
+It is recommended to split such functions into several separated functions that are shorter and easier to manage, so that others can read and modify the code properly.
+
+### <a name="r5.1.2"></a>Rule 5.1.2 Avoid deep nesting of function code blocks. It should be limited to 4 levels 
+
+The nesting depth of the code block of a function is the depth of mutual inclusion between the code control blocks in the function (for example: if, for, while, when, etc.).
+Each level of nesting will increase the mental effort when reading code, because you need to maintain a current "stack" in your mind (for example, entering conditional statements, entering loops, etc.).
+**Exception:** The nesting levels of lambda expressions, local classes, and anonymous classes in functions are calculated based on the innermost function, and the nesting levels of enclosing methods are not accumulated.
+To avoid a confusion of code readers functional decomposition should be done. This will help reader to switch between context.
+
+### <a name="r5.1.3"></a>Rule 5.1.3 Avoid usage of nested functions
+Nested functions are making function context more complex and can cause confusion of a reader. 
+Also visibility context of nested functions is not obvious for the reader of the code.
+Bad example:
+```kotlin
+fun foo() { 
+    fun nested():String { 
+        return "String from nested function" 
+    } 
+    println("Nested Output: ${nested()}") 
+} 
+```  
+
+### <a name="c5.2"></a> Function arguments
+
+### <a name="r5.2.1"></a>Rule 5.2.1 The lambda parameter of the function should be placed in the last place in the argument list
+
+With a such notation it is easier to use curly brackets, code becoming more readable.
+Good example: 
+```kotlin
+// declaration
+fun myFoo(someArg: Int, myLambda: () -> Unit) {
+// ...
+}
+
+// usage
+myFoo(1) { 
+println("hey")
+}
+```
+
+### <a name="r5.2.2"></a>Rule 5.2.2 Number of parameters of function should be limited to 5
+
+Long argument list - is a code smell that makes code less reliable. If there are more than 5 parameters, then maintenance is becoming more difficult and merging of conflicts is starting to be much more complex.
+It is recommended to reduce the number of parameters. 
+
+If groups of parameters appear in different functions multiple times, it means that these parameters are closely related and can be encapsulated into a single data class.
+It is recommended to use data classes and Maps to unify these function arguments.
+
+### <a name="r5.2.3"></a>Rule 5.2.3 Use default values for function arguments instead of overloading them
+In Java default values for function arguments were prohibited. That's why each time when it is needed to create a function with less arguments it should be overloaded.
+In Kotlin you can use default arguments instead.
+
+Bad example:
+```kotlin
+private fun foo(arg: Int) {
+    // ...
+}
+
+private fun foo() {
+    // ...
+}
+``` 
+
+Good example:
+```kotlin
+ private fun foo(arg: Int = 0) {
+     // ...
+ }
+``` 

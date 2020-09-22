@@ -8,36 +8,9 @@ import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import org.cqfn.diktat.ruleset.rules.PackageNaming.Companion.PACKAGE_PATH_ANCHOR
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.kotlin.psi.KtParameter
 import org.jetbrains.kotlin.psi.KtParameterList
-
-/**
- * Checks whether function from this [ElementType.FUN] node has `@Test` annotation
- */
-fun ASTNode.hasTestAnnotation(): Boolean {
-    checkNodeIsFun(this)
-    return findChildByType(MODIFIER_LIST)
-            ?.getAllChildrenWithType(ANNOTATION_ENTRY)
-            ?.flatMap { it.findAllNodesWithSpecificType(CONSTRUCTOR_CALLEE) }
-            ?.any { it.findLeafWithSpecificType(IDENTIFIER)?.text == "Test" }
-            ?: false
-}
-
-/**
- * Checks whether function from this [ElementType.FUN] node is located in file src/test/**/*Test.kt
- * @param testAnchors names of test directories, e.g. "test", "jvmTest"
- */
-fun ASTNode.isLocatedInTest(filePathParts: List<String>, testAnchors: List<String>): Boolean {
-    checkNodeIsFun(this)
-    return filePathParts
-            .takeIf { it.contains(PACKAGE_PATH_ANCHOR) }
-            ?.run { subList(lastIndexOf(PACKAGE_PATH_ANCHOR), size) }
-            ?.run {
-                // e.g. src/test/ClassTest.kt, other files like src/test/Utils.kt are still checked
-                testAnchors.any { contains(it) } && last().substringBeforeLast('.').endsWith("Test")
-            }
-            ?: false
-}
 
 fun ASTNode.hasParameters(): Boolean {
     checkNodeIsFun(this)
@@ -45,10 +18,9 @@ fun ASTNode.hasParameters(): Boolean {
     return argList != null && argList.hasChildOfType(ElementType.VALUE_PARAMETER)
 }
 
-fun ASTNode.parameterNames(): Collection<String?>? {
+fun ASTNode.parameterNames(): Collection<String?> {
     checkNodeIsFun(this)
-    return (this.argList()?.psi as KtParameterList?)
-            ?.parameters?.map { (it as KtParameter).name }
+    return (psi as KtFunction).valueParameters.map { it.name }
 }
 
 /**
@@ -70,8 +42,8 @@ fun ASTNode.isGetterOrSetter(): Boolean {
     checkNodeIsFun(this)
     return getIdentifierName()?.let { functionName ->
         when {
-            functionName.text.startsWith(SET_PREFIX) -> parameterNames()!!.size == 1
-            functionName.text.startsWith(GET_PREFIX) -> parameterNames()!!.isEmpty()
+            functionName.text.startsWith(SET_PREFIX) -> parameterNames().size == 1
+            functionName.text.startsWith(GET_PREFIX) -> parameterNames().isEmpty()
             else -> false
         }
     } ?: false

@@ -44,6 +44,7 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.KtTryExpression
+import java.lang.Exception
 
 class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("block-structure") {
 
@@ -77,6 +78,7 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
             checkCloseBrace(node, configuration)
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkClass(node: ASTNode, configuration: BlockStructureBracesConfiguration) {
         if (node.hasChildOfType(CLASS_BODY) && !node.findChildByType(CLASS_BODY).isBlockEmpty()) {
                 checkOpenBraceOnSameLine(node, CLASS_BODY, configuration)
@@ -84,6 +86,7 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
             }
     }
 
+    @Suppress("UnsafeCallOnNullableType")  // `catch` and `finally` clauses should always have body in `{}`, therefore !!
     private fun checkTry(node: ASTNode, configuration: BlockStructureBracesConfiguration) {
         val tryBlock = node.psi as KtTryExpression
         val catchBlocks = tryBlock.catchClauses.map { it.node }
@@ -103,10 +106,12 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkLoop(node: ASTNode, configuration: BlockStructureBracesConfiguration) {
         node.findChildByType(BODY)?.let {
             if (!it.findChildByType(BLOCK).isBlockEmpty()) {
                 checkOpenBraceOnSameLine(node, BODY, configuration)
+                // check that there is a `BLOCK` child is done inside `!isBlockEmpty`
                 checkCloseBrace(it.findChildByType(BLOCK)!!, configuration)
                 if (node.elementType == DO_WHILE) {
                     val allMiddleNode = listOf(node.findChildByType(BODY)!!.treeNext)
@@ -125,6 +130,7 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkFun(node: ASTNode, configuration: BlockStructureBracesConfiguration) {
         if (!node.findChildByType(BLOCK).isBlockEmpty()) {
             checkOpenBraceOnSameLine(node, BLOCK, configuration)
@@ -132,6 +138,7 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkIf(node: ASTNode, configuration: BlockStructureBracesConfiguration) {
         val ifPsi = node.psi as KtIfExpression
         val thenNode = ifPsi.then?.node
@@ -141,11 +148,12 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
             checkOpenBraceOnSameLine(node, THEN, configuration)
             checkCloseBrace(thenNode, configuration)
             if (hasElseBranch) {
+                // thenNode might have been altered by this point
                 val allMiddleNode = listOf(node.findChildByType(THEN)!!.treeNext)
                 checkMidBrace(allMiddleNode, node, ELSE_KEYWORD)
             }
         }
-        if (hasElseBranch && elseNode!!.elementType != IF && elseNode.hasChildOfType(LBRACE)) {
+        if (hasElseBranch && elseNode != null && elseNode.elementType != IF && elseNode.hasChildOfType(LBRACE)) {
             checkOpenBraceOnSameLine(node, ELSE, configuration)
             checkCloseBrace(elseNode, configuration)
         }
@@ -157,7 +165,7 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
         val braceSpace = nodeBefore?.treePrev
         if (braceSpace == null || checkBraceNode(braceSpace, true)) {
             BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "incorrect newline before opening brace",
-                    (braceSpace ?: node).startOffset) {
+                    (braceSpace ?: node).startOffset, node) {
                 if (braceSpace == null || braceSpace.elementType != WHITE_SPACE) {
                     node.addChild(PsiWhiteSpaceImpl(" "), nodeBefore)
                 } else {
@@ -173,7 +181,7 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
             node.findChildByType(beforeType) else node)?.findLBrace()?.treeNext ?: return
         if (checkBraceNode(newNode)) {
             BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "incorrect same line after opening brace",
-                    newNode.startOffset) {
+                    newNode.startOffset, newNode) {
                 if (newNode.elementType != WHITE_SPACE) {
                     node.addChild(PsiWhiteSpaceImpl("\n"), newNode)
                 } else {
@@ -187,7 +195,7 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
         allMiddleSpace.forEach {
             if (checkBraceNode(it, true)) {
                 BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "incorrect new line after closing brace",
-                        it.startOffset) {
+                        it.startOffset, it) {
                     if (it.elementType != WHITE_SPACE) {
                         node.addChild(PsiWhiteSpaceImpl(" "), node.findChildByType(keyword))
                     } else {
@@ -198,12 +206,13 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkCloseBrace(node: ASTNode, configuration: BlockStructureBracesConfiguration) {
         if (!configuration.closeBrace) return
         val space = node.findChildByType(RBRACE)!!.treePrev
         if (checkBraceNode(space))
             BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "no newline before closing brace",
-                    (space.treeNext ?: node.findChildByType(RBRACE))!!.startOffset) {
+                    (space.treeNext ?: node.findChildByType(RBRACE))!!.startOffset, node) {
                 if (space.elementType != WHITE_SPACE) {
                     node.addChild(PsiWhiteSpaceImpl("\n"), node.findChildByType(RBRACE))
                 } else {

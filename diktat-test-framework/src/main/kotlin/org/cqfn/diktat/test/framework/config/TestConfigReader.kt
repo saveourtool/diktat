@@ -10,8 +10,8 @@ import java.io.File
 import java.io.IOException
 import java.util.stream.Collectors
 
-class TestConfigReader(configFilePath: String?, override val classLoader: ClassLoader) : JsonResourceConfigReader<TestConfig?>() {
-    val config: TestConfig? = readResource(configFilePath!!)
+class TestConfigReader(configFilePath: String, override val classLoader: ClassLoader) : JsonResourceConfigReader<TestConfig?>() {
+    val config: TestConfig? = readResource(configFilePath)
 
     @Throws(IOException::class)
     override fun parseResource(fileStream: BufferedReader): TestConfig {

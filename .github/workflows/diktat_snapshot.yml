@@ -33,7 +33,7 @@ jobs:
           mvn versions:set -DnewVersion=$base_version-pre
       - name: Build and install
         # install diktat with version 'base_version-pre' to local maven repo
-        run: mvn clean install
+        run: mvn -B clean install
       - name: Revert project version and set proper version for antrun
         # revert project version to avoid cycle dependency
         # set diktat version in antrun dependencies to the version which was built in the previous step
@@ -41,4 +41,4 @@ jobs:
           mvn versions:set -DnewVersion=${{ env.BASE_VERSION }}-SNAPSHOT
           mvn versions:set-property -Dproperty=diktat-check.version -DnewVersion=${{ env.BASE_VERSION }}-pre
       - name: Run diktat snapshot via ktlint
-        run: mvn antrun:run@diktat
+        run: mvn -B antrun:run@diktat

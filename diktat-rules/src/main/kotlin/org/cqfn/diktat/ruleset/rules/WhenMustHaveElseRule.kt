@@ -56,7 +56,7 @@ class WhenMustHaveElseRule(private val configRules: List<RulesConfig>) : Rule("n
 
     private fun checkEntries(node: ASTNode) {
         if (!hasElse(node)) {
-            Warnings.WHEN_WITHOUT_ELSE.warnAndFix(configRules, emitWarn, isFixMode, "else was not found", node.startOffset) {
+            Warnings.WHEN_WITHOUT_ELSE.warnAndFix(configRules, emitWarn, isFixMode, "else was not found", node.startOffset, node) {
                 val whenEntryElse = CompositeElement(WHEN_ENTRY)
                 node.appendNewlineMergingWhiteSpace(node.lastChildNode.treePrev, node.lastChildNode.treePrev)
                 node.addChild(whenEntryElse, node.lastChildNode)

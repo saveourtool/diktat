@@ -14,9 +14,10 @@
 [![ktlint](https://img.shields.io/badge/code%20style-%E2%9D%A4-FF4081.svg)](https://ktlint.github.io/)
 [![Chat on Telegram](https://img.shields.io/badge/Chat%20on-Telegram-brightgreen.svg)](https://t.me/joinchat/AAAAAFDg-ipuZFGyBGPPeg)
 
-## (!) See [diKTat codestyle](info/diktat-kotlin-coding-style-guide-en.md) first. This is a formal code style used by this linter.
-## (!) Also see [the list of all rules supported by diKTat](info/available-rules.md).
-## (!) Have a look at [maven and gradle examples](https://github.com/akuleshov7/diktat-examples) of usage diKTat with plugins.
+### (!) See [diKTat codestyle](info/diktat-kotlin-coding-style-guide-en.md) first.
+### (!) Also see [the list of all supported rules](info/available-rules.md).
+### (!) Have a look at [maven and gradle examples](https://github.com/akuleshov7/diktat-examples).
+### (!) Check and try diktat/ktlint [online demo](https://ktlint-demo.herokuapp.com)
 
 DiKTat is a collection of [Kotlin](https://kotlinlang.org/) code style rules implemented
 as AST visitors on top of [KTlint](https://ktlint.github.io/).
@@ -35,7 +36,7 @@ The full list of available supported rules and inspections is [here](info/availa
 
    **OR** use curl:
    ```bash
-   $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v0.1.0/diktat.jar
+   $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v0.1.0/diktat-0.1.0.jar
    ```
    
 3. Finally, run KTlint (with diKTat injected) to check your `*.kt` files in `dir/your/dir`:
@@ -196,6 +197,19 @@ Note, that you can specify and put `diktat-analysis.yml` that contains configura
 See default configuration in [diktat-analysis.yml](diktat-rules/src/main/resources/diktat-analysis.yml) \
 Also see [the list of all rules supported by diKTat](info/available-rules.md).
 
+## Suppress warnings on individual code blocks
+In addition to enabling/disabling warning globally via config file (`enable = false`), you can suppress warnings by adding `@Suppress` annotation on individual code blocks
+
+For example:
+
+``` kotlin
+@Suppress("FUNCTION_NAME_INCORRECT_CASE")
+class SomeClass {
+    fun methODTREE(): String {
+
+    }
+}
+``` 
 ## How to contribute?
 
 Main components are:

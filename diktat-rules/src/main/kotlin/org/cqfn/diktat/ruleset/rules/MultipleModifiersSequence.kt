@@ -47,7 +47,7 @@ class MultipleModifiersSequence(private val configRules: List<RulesConfig>) : Ru
             if (modifierNode != sortModifierListOfPair[index]) {
                 WRONG_MULTIPLE_MODIFIERS_ORDER.warnAndFix(configRules, emitWarn, isFixMode,
                         "${modifierNode.text} should be on position ${sortModifierListOfPair.indexOf(modifierNode) + 1}, but is on position ${index + 1}",
-                        modifierNode.startOffset) {
+                        modifierNode.startOffset, modifierNode) {
                     val nodeAfter = modifierNode.treeNext
                     node.removeChild(modifierNode)
                     node.addChild((sortModifierListOfPair[index].clone() as ASTNode), nodeAfter)
@@ -61,7 +61,7 @@ class MultipleModifiersSequence(private val configRules: List<RulesConfig>) : Ru
         node.getChildren(null).filterIndexed { index, astNode -> astNode.elementType == ANNOTATION_ENTRY && index > firstModifierIndex }.forEach {
             WRONG_MULTIPLE_MODIFIERS_ORDER.warnAndFix(configRules, emitWarn, isFixMode,
                     "${it.text} annotation should be before all modifiers",
-                    it.startOffset) {
+                    it.startOffset, it) {
                 val spaceBefore = it.treePrev
                 node.removeChild(it)
                 if (spaceBefore != null && spaceBefore.elementType == WHITE_SPACE){

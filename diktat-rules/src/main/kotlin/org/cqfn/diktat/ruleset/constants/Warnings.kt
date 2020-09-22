@@ -3,6 +3,8 @@ package org.cqfn.diktat.ruleset.constants
 import org.cqfn.diktat.common.config.rules.Rule
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.isRuleEnabled
+import org.cqfn.diktat.ruleset.utils.hasSuppress
+import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 /**
  * This class represent individual inspections of diktat code style.
@@ -88,6 +90,8 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     LONG_NUMERICAL_VALUES_SEPARATED(true, "long numerical values should be separated with underscore"),
     WRONG_DECLARATIONS_ORDER(true, "declarations of constants and enum members should be sorted alphabetically"),
     WRONG_MULTIPLE_MODIFIERS_ORDER(true, "sequence of modifiers is incorrect"),
+    LOCAL_VARIABLE_EARLY_DECLARATION(false, "local variables should be declared close to the line where they are first used"),
+    TYPE_ALIAS(false, "variable's type is too complex and should be replaced with typealias"),
     ;
 
     /**
@@ -103,18 +107,22 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
                    isFixMode: Boolean,
                    freeText: String,
                    offset: Int,
+                   node: ASTNode,
                    canBeAutoCorrected: Boolean = this.canBeAutoCorrected,
                    autoFix: () -> Unit) {
-        warn(configRules, emit, canBeAutoCorrected, freeText, offset)
-        fix(configRules, autoFix, isFixMode)
+        warn(configRules, emit, canBeAutoCorrected, freeText, offset, node)
+        fix(configRules, autoFix, isFixMode, node)
     }
 
+    @Suppress("LongParameterList")
     fun warn(configs: List<RulesConfig>,
              emit: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit),
              autoCorrected: Boolean,
              freeText: String,
-             offset: Int) {
-        if (configs.isRuleEnabled(this)) {
+             offset: Int,
+             node: ASTNode) {
+
+        if (configs.isRuleEnabled(this) && !node.hasSuppress(name)) {
             emit(offset,
                     "${this.warnText()} $freeText",
                     autoCorrected
@@ -122,8 +130,8 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
         }
     }
 
-    private inline fun fix(configs: List<RulesConfig>, autoFix: () -> Unit, isFix: Boolean) {
-        if (configs.isRuleEnabled(this) && isFix) {
+    private inline fun fix(configs: List<RulesConfig>, autoFix: () -> Unit, isFix: Boolean, node: ASTNode) {
+        if (configs.isRuleEnabled(this) && isFix && !node.hasSuppress(name)) {
             autoFix()
         }
     }

@@ -40,9 +40,8 @@ class AnnotationNewLineRule(private val configRules: List<RulesConfig>) : Rule("
 
 
     private fun checkAnnotation(node: ASTNode) {
-        if (node.hasChildOfType(MODIFIER_LIST)) {
-            val modList = node.findChildByType(MODIFIER_LIST)
-            fixAnnotation(modList!!)
+        node.findChildByType(MODIFIER_LIST)?.let { modList ->
+            fixAnnotation(modList)
         }
     }
 
@@ -59,7 +58,7 @@ class AnnotationNewLineRule(private val configRules: List<RulesConfig>) : Rule("
 
     private fun deleteSpaces(node: ASTNode, rightSide: Boolean, leftSide: Boolean) {
         Warnings.ANNOTATION_NEW_LINE.warnAndFix(configRules, emitWarn, isFixMode, "${node.text} not on a single line",
-                node.startOffset) {
+                node.startOffset, node) {
             if (rightSide) {
                 if (node.treeNext?.isWhiteSpace() == true) {
                     node.removeChild(node.treeNext)
