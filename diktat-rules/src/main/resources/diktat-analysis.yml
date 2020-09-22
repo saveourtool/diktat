@@ -240,3 +240,6 @@
   enabled: true
   configuration:
     typeReferenceLength: '25' # max length of type reference
+- name: GENERIC_VARIABLE_WRONG_DECLARATION
+  enabled: true
+  configuration: {}

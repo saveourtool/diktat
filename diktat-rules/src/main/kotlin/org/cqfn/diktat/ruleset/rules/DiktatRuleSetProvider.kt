@@ -40,6 +40,7 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
                 ::BlockStructureBraces,
                 ::EmptyBlock,
                 ::EnumsSeparated,
+                ::VariableGenericTypeDeclarationRule,
                 ::SingleLineStatementsRule,
                 ::ConsecutiveSpacesRule,
                 ::LongNumericalValuesSeparatedRule,
