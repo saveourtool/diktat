@@ -144,9 +144,11 @@
 - name: FILE_NO_BLANK_LINE_BETWEEN_BLOCKS
   enabled: true
   configuration: {}
+# Check: warns if wildcard imports are used except allows. (e.g. import org.cqfn.diktat.*)
 - name: FILE_WILDCARD_IMPORTS
   enabled: true
-  configuration: {}
+  configuration:
+    allowedWildcards: "" # Allowed wildcards for imports (e.g. "import org.cqfn.diktat.*, import org.jetbrains.kotlin.*")
 - name: NO_BRACES_IN_CONDITIONALS_AND_LOOPS
   enabled: true
   configuration: {}
