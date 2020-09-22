@@ -12,12 +12,14 @@ import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
 import org.cqfn.diktat.util.FixTestBase
 import org.cqfn.diktat.util.assertEquals
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import java.nio.file.Path
 
 // fixme: run as a separate maven goal/module?
-class DiktatSmokeTest : FixTestBase("test/smoke",
+@Disabled("https://github.com/cqfn/diKTat/issues/313")
+class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
         { DiktatRuleSetProvider() },
         { lintError, _ -> unfixedLintErrors.add(lintError) },
         null
