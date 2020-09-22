@@ -326,7 +326,9 @@
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.5</version>
                 <configuration>
-                    <excludes>GenerationKt</excludes>
+                    <excludes>
+                        <exclude>**/generation/**</exclude>
+                    </excludes>
                 </configuration>
                 <executions>
                     <execution>
