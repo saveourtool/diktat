@@ -64,6 +64,7 @@ class NullableTypeRule(private val configRules: List<RulesConfig>) : Rule("nulla
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun findFixableParam(node: ASTNode): FixedParam? {
         val reference = node.findChildByType(TYPE_REFERENCE)!!.findChildByType(NULLABLE_TYPE)!!.findChildByType(USER_TYPE)?.findChildByType(REFERENCE_EXPRESSION)
                 ?: return null
@@ -105,6 +106,7 @@ class NullableTypeRule(private val configRules: List<RulesConfig>) : Rule("nulla
             replaceValueByText(node, fixedParam.textNode)
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun replaceValueByText(node: ASTNode, nodeText: String) {
         val newNode = KotlinParser().createNode(nodeText)
         if (newNode.elementType == CALL_EXPRESSION) {
@@ -113,6 +115,7 @@ class NullableTypeRule(private val configRules: List<RulesConfig>) : Rule("nulla
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun replaceValue(node: ASTNode, insertConstantType: IElementType, insertType: IElementType, textNode: String) {
         val value = CompositeElement(insertConstantType)
         node.addChild(value, node.findChildByType(NULL)!!)
@@ -120,6 +123,7 @@ class NullableTypeRule(private val configRules: List<RulesConfig>) : Rule("nulla
         value.addChild(LeafPsiElement(insertType, textNode))
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun replaceValueForString(node: ASTNode) {
         val value = CompositeElement(STRING_TEMPLATE)
         node.addChild(value, node.findChildByType(NULL)!!)
