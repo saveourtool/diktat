@@ -19,7 +19,7 @@ class RulesConfigYamlTest {
         compareRulesAndConfig("diktat-analysis.yml")
         compareRulesAndConfig("diktat-analysis-huawei.yml")
         val thirdConfig = "${System.getProperty("user.dir")}${File.separator}..${File.separator}diktat-analysis.yml${File.separator}"
-        compareRulesAndConfig(thirdConfig, "diktat-analysis.yml")
+        compareRulesAndConfig(thirdConfig, "parent/diktat-analysis.yml")
     }
 
     private fun compareRulesAndConfig(nameConfig: String, nameConfigToText: String? = null) {
