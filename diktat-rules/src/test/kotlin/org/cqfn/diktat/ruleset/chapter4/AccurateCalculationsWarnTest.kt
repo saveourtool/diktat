@@ -16,18 +16,43 @@ class AccurateCalculationsWarnTest : LintTestBase(::AccurateCalculationsRule) {
 
     @Test
     @Tag(WarningNames.FLOAT_IN_ACCURATE_CALCULATIONS)
-    fun `should detect comparison with float literal`() {
+    fun `should detect comparison (equals) with float literal`() {
         lintMethod(
                 """
                     |class Example {
                     |    fun foo() {
                     |        x == 1.0
                     |        1.0 == x
+                    |        x.equals(1.0)
+                    |        1.0.equals(x)
                     |    }
                     |}
                 """.trimMargin(),
                 LintError(3, 9, ruleId, warnText("1.0", "x == 1.0"), false),
-                LintError(4, 9, ruleId, warnText("1.0", "1.0 == x"), false)
+                LintError(4, 9, ruleId, warnText("1.0", "1.0 == x"), false),
+                LintError(5, 9, ruleId, warnText("1.0", "x.equals(1.0)"), false),
+                LintError(6, 9, ruleId, warnText("1.0", "1.0.equals(x)"), false)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.FLOAT_IN_ACCURATE_CALCULATIONS)
+    fun `should detect comparison with float literal`() {
+        lintMethod(
+                """
+                    |class Example {
+                    |    fun foo() {
+                    |        x > 1.0
+                    |        1.0 > x
+                    |        x.compareTo(1.0)
+                    |        1.0.compareTo(x)
+                    |    }
+                    |}
+                """.trimMargin(),
+                LintError(3, 9, ruleId, warnText("1.0", "x > 1.0"), false),
+                LintError(4, 9, ruleId, warnText("1.0", "1.0 > x"), false),
+                LintError(5, 9, ruleId, warnText("1.0", "x.compareTo(1.0)"), false),
+                LintError(6, 9, ruleId, warnText("1.0", "1.0.compareTo(x)"), false)
         )
     }
 
