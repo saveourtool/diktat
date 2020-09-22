@@ -25,6 +25,7 @@ class VariableGenericTypeDeclarationRule(private val configRules: List<RulesConf
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun handleProperty(node: ASTNode) {
 
         val callExpr = node.findChildByType(CALL_EXPRESSION)
