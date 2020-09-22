@@ -20,30 +20,27 @@ class VariableGenericTypeDeclarationRule(private val configRules: List<RulesConf
         emitWarn = emit
         isFixMode = autoCorrect
 
-        if (node.elementType == PROPERTY || node.elementType == VALUE_PARAMETER) {
-            handleProperty(node)
+        when(node.elementType) {
+            PROPERTY, VALUE_PARAMETER -> handleProperty(node)
         }
     }
 
     private fun handleProperty(node: ASTNode) {
 
-        val rightSide = node.findChildByType(CALL_EXPRESSION)
+        val callExpr = node.findChildByType(CALL_EXPRESSION)
 
-        val hasGenericTypeReference: Boolean = node.findChildByType(TYPE_REFERENCE)?.textContains('<') ?: false
-                && node.findChildByType(TYPE_REFERENCE)?.textContains('>') ?: false
+        val rightSide = Regex("<([a-zA-Z, <>]*)>").find(node.findChildByType(CALL_EXPRESSION)?.text ?: "")
+        val leftSide = Regex("<([a-zA-Z, <>]*)>").find(node.findChildByType(TYPE_REFERENCE)?.text ?: "")
 
-        val rightSideHasGenericType: Boolean = rightSide?.textContains('<') ?: false
-                && rightSide?.textContains('>') ?: false
-
-        if ((hasGenericTypeReference && rightSideHasGenericType)) {
+        if ((rightSide != null && leftSide != null) && rightSide.groupValues.first() == leftSide.groupValues.first()) {
             Warnings.GENERIC_VARIABLE_WRONG_DECLARATION.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
-                rightSide!!.removeChild(rightSide.findChildByType(TYPE_ARGUMENT_LIST)!!)
+                callExpr!!.removeChild(callExpr.findChildByType(TYPE_ARGUMENT_LIST)!!)
             }
         }
 
-        if (!hasGenericTypeReference && rightSideHasGenericType) {
+        if (leftSide == null && rightSide != null) {
             Warnings.GENERIC_VARIABLE_WRONG_DECLARATION.warn(configRules, emitWarn, isFixMode, node.text, node.startOffset, node)
         }
-    }
 
+    }
 }

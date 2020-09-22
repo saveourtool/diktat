@@ -44,7 +44,7 @@ class VariableGenericTypeDeclarationRuleWarnTest : LintTestBase(::VariableGeneri
 
     @Test
     @Tag(GENERIC_VARIABLE_WRONG_DECLARATION)
-    fun `property in function good`() {
+    fun `property in function as parameter good`() {
         lintMethod(
                 """
                     |class SomeClass {
@@ -58,7 +58,7 @@ class VariableGenericTypeDeclarationRuleWarnTest : LintTestBase(::VariableGeneri
 
     @Test
     @Tag(GENERIC_VARIABLE_WRONG_DECLARATION)
-    fun `property in function bad`() {
+    fun `property in function as parameter bad`() {
         lintMethod(
                 """
                     |class SomeClass {
@@ -69,6 +69,92 @@ class VariableGenericTypeDeclarationRuleWarnTest : LintTestBase(::VariableGeneri
                 """.trimMargin(),
                 LintError(2,25, ruleId,
                         "${Warnings.GENERIC_VARIABLE_WRONG_DECLARATION.warnText()} myVariable: Map<Int, String> = emptyMap<Int, String>()", true)
+        )
+    }
+
+    @Test
+    @Tag(GENERIC_VARIABLE_WRONG_DECLARATION)
+    fun `property in function good`() {
+        lintMethod(
+                """
+                    |class SomeClass {
+                    |   private fun someFunc() {
+                    |       val myVariable: Map<Int, String> = emptyMap()
+                    |   }
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(GENERIC_VARIABLE_WRONG_DECLARATION)
+    fun `property in function bad`() {
+        lintMethod(
+                """
+                    |class SomeClass {
+                    |   private fun someFunc() {
+                    |       val myVariable: Map<Int, String> = emptyMap<Int, String>()
+                    |   }
+                    |}
+                """.trimMargin(),
+                LintError(3,8, ruleId,
+                        "${Warnings.GENERIC_VARIABLE_WRONG_DECLARATION.warnText()} val myVariable: Map<Int, String> = emptyMap<Int, String>()", true)
+        )
+    }
+
+    @Test
+    @Tag(GENERIC_VARIABLE_WRONG_DECLARATION)
+    fun `property in class good`() {
+        lintMethod(
+                """
+                    |class SomeClass(val myVariable: Map<Int, String> = emptyMap()) {
+                    |
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(GENERIC_VARIABLE_WRONG_DECLARATION)
+    fun `property in class bad`() {
+        lintMethod(
+                """
+                    |class SomeClass(val myVariable: Map<Int, String> = emptyMap<Int, String>()) {
+                    |
+                    |}
+                """.trimMargin(),
+                LintError(1,17, ruleId,
+                        "${Warnings.GENERIC_VARIABLE_WRONG_DECLARATION.warnText()} val myVariable: Map<Int, String> = emptyMap<Int, String>()", true)
+        )
+    }
+
+    @Test
+    @Tag(GENERIC_VARIABLE_WRONG_DECLARATION)
+    fun `property with multiple generics`() {
+        lintMethod(
+                """
+                    |class SomeClass {
+                    |   private fun someFunc() {
+                    |       val myVariable: Map<Int, Map<String>> = emptyMap<Int, Map<String>>()
+                    |   }
+                    |}
+                """.trimMargin(),
+                LintError(3,8, ruleId,
+                        "${Warnings.GENERIC_VARIABLE_WRONG_DECLARATION.warnText()} val myVariable: Map<Int, Map<String>> = emptyMap<Int, Map<String>>()", true)
+        )
+    }
+
+    @Test
+    @Tag(GENERIC_VARIABLE_WRONG_DECLARATION)
+    fun `should not trigger`() {
+        lintMethod(
+                """
+                    |class SomeClass {
+                    |   private fun someFunc() {
+                    |       var myVariable: Map<Int, Any> = emptyMap<Int, String>()
+                    |   }
+                    |}
+                """.trimMargin()
         )
     }
 }
