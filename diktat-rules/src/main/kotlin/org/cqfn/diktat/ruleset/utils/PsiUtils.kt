@@ -25,6 +25,7 @@ import org.jetbrains.kotlin.psi.psiUtil.referenceExpression
  * Checks if this [KtExpression] contains only constant literals, strings with possibly constant expressions in templates,
  * method calls on literals.
  */
+@Suppress("UnsafeCallOnNullableType")
 fun KtExpression.containsOnlyConstants(): Boolean =
         when (this) {
             is KtConstantExpression -> true
@@ -47,6 +48,7 @@ fun KtExpression.containsOnlyConstants(): Boolean =
  * Here we assume that property can be declared only in block, since declaration is not an expression in kotlin
  * and compiler prohibits things like `if (condition) val x = 0`.
  */
+@Suppress("UnsafeCallOnNullableType")
 fun KtProperty.getDeclarationScope() = getParentOfType<KtBlockExpression>(true)!!
         .let { if (it is KtIfExpression) it.then!! else it }
         .let { if (it is KtTryExpression) it.tryBlock else it }

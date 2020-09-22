@@ -149,4 +149,6 @@ object WarningNames {
     const val LOCAL_VARIABLE_EARLY_DECLARATION: String = "LOCAL_VARIABLE_EARLY_DECLARATION"
 
     const val NULLABLE_PROPERTY_TYPE: String = "NULLABLE_PROPERTY_TYPE"
+
+    const val TYPE_ALIAS: String = "TYPE_ALIAS"
 }

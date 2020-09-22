@@ -40,9 +40,8 @@ class AnnotationNewLineRule(private val configRules: List<RulesConfig>) : Rule("
 
 
     private fun checkAnnotation(node: ASTNode) {
-        if (node.hasChildOfType(MODIFIER_LIST)) {
-            val modList = node.findChildByType(MODIFIER_LIST)
-            fixAnnotation(modList!!)
+        node.findChildByType(MODIFIER_LIST)?.let { modList ->
+            fixAnnotation(modList)
         }
     }
 

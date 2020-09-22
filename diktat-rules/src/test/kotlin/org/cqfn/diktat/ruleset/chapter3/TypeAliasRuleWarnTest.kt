@@ -1,0 +1,77 @@
+package org.cqfn.diktat.ruleset.chapter3
+
+import com.pinterest.ktlint.core.LintError
+import generated.WarningNames
+import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ruleset.constants.Warnings.TYPE_ALIAS
+import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
+import org.cqfn.diktat.ruleset.rules.TypeAliasRule
+import org.cqfn.diktat.util.LintTestBase
+import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.Test
+
+class TypeAliasRuleWarnTest : LintTestBase(::TypeAliasRule) {
+
+    private val ruleId = "$DIKTAT_RULE_SET_ID:type-alias"
+
+    private val rulesConfigListShortType: List<RulesConfig> = listOf(
+            RulesConfig(TYPE_ALIAS.name, true,
+                    mapOf("typeReferenceLength" to "4"))
+    )
+
+    @Test
+    @Tag(WarningNames.TYPE_ALIAS)
+    fun `string concatenation - only strings`() {
+        lintMethod(
+                """
+                    | val b: MutableMap<String, MutableList<String>>
+                    | val b = listof<Int>()
+                """.trimMargin(),
+                LintError(1,9, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.TYPE_ALIAS)
+    fun `check long lambda property`() {
+        lintMethod(
+                """
+                    | var emitWarn: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit
+                    | var emitWarn: (offset: Int, (T) -> Boolean) -> Unit
+                """.trimMargin(),
+                LintError(1,16, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false),
+                LintError(2,16, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.TYPE_ALIAS)
+    fun `correct type length`() {
+        lintMethod(
+                """
+                    | var emitWarn: Int
+                    | val b = mutableMapOf<String, MutableList<String>>()
+                    | 
+                    | fun foo(): MutableMap<String, MutableList<String>> {
+                    | }
+                    | 
+                """.trimMargin(),
+                LintError(4,13, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.TYPE_ALIAS)
+    fun `correct type length but with configuration`() {
+        lintMethod(
+                """
+                    | var emitWarn: Int
+                    | val flag: (T) -> Boolean
+                    | val list: List<List<Int>>
+                    | 
+                """.trimMargin(),
+                LintError(3,12, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false),
+                rulesConfigList = rulesConfigListShortType
+        )
+    }
+}

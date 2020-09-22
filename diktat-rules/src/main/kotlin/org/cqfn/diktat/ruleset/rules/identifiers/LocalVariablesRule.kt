@@ -94,6 +94,7 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
             .filter { it.value.size > 1 }
             .toMap<PsiElement, List<KtProperty>>()
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun handleLocalProperty(property: KtProperty, usages: List<KtNameReferenceExpression>) {
         val declarationScope = property.getDeclarationScope()
 
@@ -102,6 +103,7 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
         checkLineNumbers(property, firstUsageStatementLine, firstUsageLine = firstUsage.node.lineNumber()!!)
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun handleConsecutiveDeclarations(statement: PsiElement, properties: List<KtProperty>) {
         // need to check that properties are declared consecutively with only maybe empty lines
         properties
@@ -112,6 +114,7 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
                 }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkLineNumbers(property: KtProperty, firstUsageStatementLine: Int, offset: Int = 0, firstUsageLine: Int? = null) {
         val numLinesToSkip = property
                 .siblings(forward = true, withItself = false)
@@ -129,6 +132,7 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
      * Returns the [KtBlockExpression] with which a property should be compared.
      * @return either the line on which the property is used if it is first used in the same scope, or the block in the same scope as declaration
      */
+    @Suppress("UnsafeCallOnNullableType")
     private fun getFirstUsageStatementOrBlock(usages: List<KtNameReferenceExpression>, declarationScope: KtBlockExpression): PsiElement {
         val firstUsage = usages.minBy { it.node.lineNumber()!! }!!
         val firstUsageScope = firstUsage.getParentOfType<KtBlockExpression>(true)

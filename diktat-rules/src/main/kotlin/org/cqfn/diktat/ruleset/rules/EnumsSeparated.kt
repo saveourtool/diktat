@@ -44,6 +44,7 @@ class EnumsSeparated(private val configRules: List<RulesConfig>) : Rule("enum-se
     }
 
     //Fixme prefer enum classes if it is possible instead of variables
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkEnumEntry(node: ASTNode) {
         val enumEntries = node.findChildByType(CLASS_BODY)!!.getAllChildrenWithType(ENUM_ENTRY)
         if (enumEntries.isEmpty() || (isEnumSimple(enumEntries) && isEnumOneLine(enumEntries)))
@@ -69,6 +70,7 @@ class EnumsSeparated(private val configRules: List<RulesConfig>) : Rule("enum-se
         return SIMPLE_ENUM.containsAll(enumEntries.last().allSiblings(withSelf = true).map { it.elementType })
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkLastEnum(node: ASTNode) {
         if (!node.hasChildOfType(SEMICOLON)) {
             ENUMS_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, "enums must end with semicolon",
