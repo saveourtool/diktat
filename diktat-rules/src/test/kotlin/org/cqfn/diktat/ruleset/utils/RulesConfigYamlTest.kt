@@ -14,6 +14,11 @@ import java.io.File
  * This file is needed to be in tact with latest changes in Warnings.kt
  */
 class RulesConfigYamlTest {
+
+    private val pathMap = mapOf("diktat-analysis.yml" to "diKTat/diktat-rules/src/main/resources/diktat-analysis.yml",
+    "diktat-analysis-huawei.yml" to "diKTat/diktat-rules/src/main/resources/diktat-analysis-huawei.yml",
+            "parent/diktat-analysis.yml" to "diKTat/diktat-analysis.yml")
+
     @Test
     fun `read rules config yml`() {
         compareRulesAndConfig("diktat-analysis.yml")
@@ -23,6 +28,7 @@ class RulesConfigYamlTest {
     }
 
     private fun compareRulesAndConfig(nameConfig: String, nameConfigToText: String? = null) {
+        val filePath = if (nameConfigToText != null) pathMap[nameConfigToText] else pathMap[nameConfig]
         val allRulesFromConfig = readAllRulesFromConfig(nameConfig)
         val allRulesFromCode = readAllRulesFromCode()
 
@@ -34,8 +40,8 @@ class RulesConfigYamlTest {
             val ruleYaml = jacksonMapper.writeValueAsString(ymlCodeSnippet)
             Assertions.assertTrue(foundRule != null) {
                 """
-                   Cannot find warning ${rule.ruleName()} in ${nameConfigToText ?: nameConfig}.
-                   You can fix it by adding the following code below to ${nameConfigToText ?: nameConfig}:
+                   Cannot find warning ${rule.ruleName()} in $filePath.
+                   You can fix it by adding the following code below to $filePath:
                    $ruleYaml
                 """
             }
@@ -46,7 +52,7 @@ class RulesConfigYamlTest {
             val ruleFound = allRulesFromCode.find { it.ruleName() == warningName || warningName == "DIKTAT_COMMON" } != null
             Assertions.assertTrue(ruleFound) {
                 """
-                    Found rule (warning) in ${nameConfigToText ?: nameConfig}: <$warningName> that does not exist in the code. Misprint or configuration was renamed? 
+                    Found rule (warning) in $filePath: <$warningName> that does not exist in the code. Misprint or configuration was renamed? 
                 """.trimIndent()
             }
         }
