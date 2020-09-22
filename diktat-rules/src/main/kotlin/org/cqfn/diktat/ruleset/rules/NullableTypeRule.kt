@@ -27,6 +27,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.NULLABLE_PROPERTY_TYPE
 import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
+import org.cqfn.diktat.ruleset.utils.prettyPrint
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -49,7 +50,7 @@ class NullableTypeRule(private val configRules: List<RulesConfig>) : Rule("nulla
 
     private fun checkProperty(node: ASTNode) {
         if (node.hasChildOfType(VAL_KEYWORD) && node.hasChildOfType(EQ) && node.hasChildOfType(TYPE_REFERENCE)) {
-            if (!node.hasChildOfType(NULL) && node.findAllNodesWithSpecificType(QUEST).isNotEmpty()) {
+            if (!node.hasChildOfType(NULL) && node.findChildByType(TYPE_REFERENCE)!!.findAllNodesWithSpecificType(QUEST).isNotEmpty()) {
                 NULLABLE_PROPERTY_TYPE.warn(configRules, emitWarn, isFixMode, "don't use nullable type",
                         node.findChildByType(TYPE_REFERENCE)!!.startOffset, node)
             } else if (node.hasChildOfType(NULL)) {
@@ -71,7 +72,7 @@ class NullableTypeRule(private val configRules: List<RulesConfig>) : Rule("nulla
             "Double" -> FixedParam(FLOAT_CONSTANT, FLOAT_LITERAL, "0.0")
             "Float" -> FixedParam(FLOAT_CONSTANT, FLOAT_LITERAL, "0.0F")
             "Long" -> FixedParam(INTEGER_CONSTANT, INTEGER_LITERAL, "0L")
-            "Char" -> FixedParam(CHARACTER_CONSTANT, CHARACTER_LITERAL, "\'\'")
+            "Char" -> FixedParam(CHARACTER_CONSTANT, CHARACTER_LITERAL, "")
             "String" -> FixedParam(null, null, "", true)
             else -> findFixableForCollectionParam(reference.text)
         }

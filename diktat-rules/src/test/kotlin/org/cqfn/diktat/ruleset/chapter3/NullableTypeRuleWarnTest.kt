@@ -69,5 +69,4 @@ class NullableTypeRuleWarnTest : LintTestBase(::NullableTypeRule) {
                 LintError(5, 15, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} don't use nullable type", false)
         )
     }
-
 }
