@@ -34,7 +34,6 @@ class AccurateCalculationsRule(private val configRules: List<RulesConfig>) : Rul
         private val arithmeticOperationsFunctions = listOf("equals", "compareTo")
     }
 
-    @Suppress("UnsafeCallOnNullableType")
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
@@ -48,6 +47,7 @@ class AccurateCalculationsRule(private val configRules: List<RulesConfig>) : Rul
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun handleBinaryExpression(expression: KtBinaryExpression) = expression
             .takeIf { it.operationToken in arithmeticOperationTokens }
             ?.let { expr ->
