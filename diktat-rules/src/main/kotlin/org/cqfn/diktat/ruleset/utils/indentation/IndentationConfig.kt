@@ -1,6 +1,7 @@
 package org.cqfn.diktat.ruleset.utils.indentation
 
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
+import org.cqfn.diktat.ruleset.rules.files.IndentationRule
 
 internal class IndentationConfig(config: Map<String, String>) : RuleConfiguration(config) {
     val newlineAtEnd = config["newlineAtEnd"]?.toBoolean() ?: true
@@ -24,5 +25,5 @@ internal class IndentationConfig(config: Map<String, String>) : RuleConfiguratio
     /**
      * The indentation size for each file
      */
-    val indentationSize = config["indentationSize"]?.toInt() ?: 4
+    val indentationSize = config["indentationSize"]?.toInt() ?: IndentationRule.INDENT_SIZE
 }

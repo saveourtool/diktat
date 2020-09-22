@@ -46,6 +46,7 @@ import org.jetbrains.kotlin.utils.addToStdlib.firstNotNullResult
  */
 class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indentation") {
     companion object {
+        const val INDENT_SIZE = 4
         private val increasingTokens = listOf(LPAR, LBRACE, LBRACKET)
         private val decreasingTokens = listOf(RPAR, RBRACE, RBRACKET)
     }
