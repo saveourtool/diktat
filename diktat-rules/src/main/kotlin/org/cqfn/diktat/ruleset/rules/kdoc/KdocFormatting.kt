@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.rules.kdoc
 
-import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
@@ -18,15 +17,26 @@ import com.pinterest.ktlint.core.ast.nextSibling
 import com.pinterest.ktlint.core.ast.prevSibling
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.BLANK_LINE_AFTER_KDOC
-import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NEWLINES_BEFORE_BASIC_TAGS
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_EMPTY_KDOC
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NEWLINES_BEFORE_BASIC_TAGS
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_DEPRECATED_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_EMPTY_TAGS
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WRONG_SPACES_AFTER_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WRONG_TAGS_ORDER
-import org.cqfn.diktat.ruleset.utils.*
+import org.cqfn.diktat.ruleset.utils.allSiblings
+import org.cqfn.diktat.ruleset.utils.countSubStringOccurrences
+import org.cqfn.diktat.ruleset.utils.findChildAfter
+import org.cqfn.diktat.ruleset.utils.findChildBefore
+import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
+import org.cqfn.diktat.ruleset.utils.getFileName
+import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
+import org.cqfn.diktat.ruleset.utils.getIdentifierName
+import org.cqfn.diktat.ruleset.utils.getRootNode
+import org.cqfn.diktat.ruleset.utils.hasChildMatching
+import org.cqfn.diktat.ruleset.utils.kDocTags
+import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -60,7 +70,7 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
         isFixMode = autoCorrect
         emitWarn = emit
-        fileName = node.getRootNode().getUserData(KtLint.FILE_PATH_USER_DATA_KEY)!!
+        fileName = node.getRootNode().getFileName()
 
         val declarationTypes = setOf(CLASS, FUN, PROPERTY)
 
@@ -79,12 +89,13 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkBlankLineAfterKdoc(node: ASTNode) {
         val kdoc = node.getFirstChildWithType(KDOC)
         val nodeAfterKdoc = kdoc?.treeNext
-        val name = node.getFirstChildWithType(ElementType.IDENTIFIER)
+        val name = node.getIdentifierName()!!
         if (nodeAfterKdoc?.elementType == WHITE_SPACE && nodeAfterKdoc.text.countSubStringOccurrences("\n") > 1) {
-            BLANK_LINE_AFTER_KDOC.warnAndFix(configRules, emitWarn, isFixMode, name!!.text, nodeAfterKdoc.startOffset, nodeAfterKdoc) {
+            BLANK_LINE_AFTER_KDOC.warnAndFix(configRules, emitWarn, isFixMode, name.text, nodeAfterKdoc.startOffset, nodeAfterKdoc) {
                 nodeAfterKdoc.leaveOnlyOneNewLine()
             }
         }
@@ -104,14 +115,14 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
         return isKdocNotEmpty
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkNoDeprecatedTag(node: ASTNode) {
         val kDocTags = node.kDocTags()
         kDocTags?.find { it.name == "deprecated" }
             ?.let { kDocTag ->
                 KDOC_NO_DEPRECATED_TAG.warnAndFix(configRules, emitWarn, isFixMode, kDocTag.text, kDocTag.node.startOffset, kDocTag.node) {
                     val kDocSection = kDocTag.node.treeParent
-                    val deprecatedTagNode = kDocSection.getChildren(TokenSet.create(KDOC_TAG))
-                        .find { "@deprecated" in it.text }!!
+                    val deprecatedTagNode = kDocTag.node
                     kDocSection.removeRange(deprecatedTagNode.prevSibling { it.elementType == WHITE_SPACE }!!,
                         deprecatedTagNode.nextSibling { it.elementType == WHITE_SPACE }
                     )
@@ -122,6 +133,7 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
                 }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkEmptyTags(kDocTags: Collection<KDocTag>?) {
         kDocTags?.filter {
             it.getSubjectName() == null && it.getContent().isEmpty()
@@ -130,6 +142,7 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkSpaceAfterTag(kDocTags: Collection<KDocTag>?) {
         // tags can have 'parameters' and content, either can be missing
         // we always can find white space after tag name, but after tag parameters only if content is present
@@ -163,13 +176,14 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
         )
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkBasicTagsOrder(node: ASTNode) {
         val kDocTags = node.kDocTags()
         // distinct basic tags which are present in current KDoc, in proper order
         val basicTagsOrdered = basicTagsList.filter { basicTag ->
             kDocTags?.find { it.knownTag == basicTag } != null
         }
-        // all basic tags from curent KDoc
+        // all basic tags from current KDoc
         val basicTags = kDocTags?.filter { basicTagsOrdered.contains(it.knownTag) }
         val isTagsInCorrectOrder = basicTags
                 ?.fold(mutableListOf<KDocTag>()) { acc, kDocTag ->
@@ -188,14 +202,15 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
                         .map { it.node }
 
                 basicTagsOrdered.forEachIndexed { index, tag ->
-                    val tagNode = kDocTags.find { it.knownTag == tag }?.node
-                    kDocSection.addChild(tagNode!!.clone() as CompositeElement, basicTagChildren[index])
+                    val tagNode = kDocTags.find { it.knownTag == tag }!!.node
+                    kDocSection.addChild(tagNode.clone() as CompositeElement, basicTagChildren[index])
                     kDocSection.removeChild(basicTagChildren[index])
                 }
             }
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkEmptyLineBeforeBasicTags(basicTags: List<KDocTag>) {
         val firstBasicTag = basicTags.firstOrNull()
         if (firstBasicTag != null) {
@@ -257,6 +272,7 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkNewLineAfterSpecialTags(node: ASTNode) {
         val presentSpecialTagNodes = node.getFirstChildWithType(KDOC_SECTION)
                 ?.getAllChildrenWithType(KDOC_TAG)
@@ -272,7 +288,7 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
                     && specialTagNode.lastChildNode.treePrev.treePrev.elementType != KDOC_LEADING_ASTERISK
         }
 
-        if (presentSpecialTagNodes != null && poorlyFormattedTagNodes!!.isNotEmpty()) {
+        if (poorlyFormattedTagNodes != null && poorlyFormattedTagNodes.isNotEmpty()) {
             KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS.warnAndFix(configRules, emitWarn, isFixMode,
                 poorlyFormattedTagNodes.joinToString(", ") { "@${(it.psi as KDocTag).name!!}" },
                 poorlyFormattedTagNodes.first().startOffset, node) {
