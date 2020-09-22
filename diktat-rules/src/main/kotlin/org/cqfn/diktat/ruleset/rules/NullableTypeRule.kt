@@ -48,6 +48,7 @@ class NullableTypeRule(private val configRules: List<RulesConfig>) : Rule("nulla
             checkProperty(node)
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkProperty(node: ASTNode) {
         if (node.hasChildOfType(VAL_KEYWORD) && node.hasChildOfType(EQ) && node.hasChildOfType(TYPE_REFERENCE)) {
             if (!node.hasChildOfType(NULL) && node.findChildByType(TYPE_REFERENCE)!!.findAllNodesWithSpecificType(QUEST).isNotEmpty()) {
