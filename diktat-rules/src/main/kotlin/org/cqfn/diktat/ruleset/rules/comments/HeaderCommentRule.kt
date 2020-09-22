@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.rules.comments
 
-import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
@@ -13,19 +12,24 @@ import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.common.config.rules.isRuleEnabled
+import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_CONTAINS_DATE_OR_AUTHOR
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_MISSING_OR_WRONG_COPYRIGHT
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_NOT_BEFORE_PACKAGE
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_WRONG_FORMAT
+import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_COPYRIGHT_YEAR
 import org.cqfn.diktat.ruleset.utils.findChildAfter
 import org.cqfn.diktat.ruleset.utils.findChildBefore
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
+import org.cqfn.diktat.ruleset.utils.getFileName
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.moveChildBefore
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
+import java.time.LocalDate
 
 /**
  * Visitor for header comment in .kt file:
@@ -49,12 +53,18 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
         emitWarn = emit
 
         if (node.elementType == FILE) {
-            fileName = node.getUserData(KtLint.FILE_PATH_USER_DATA_KEY)!!
+            fileName = node.getFileName()
             checkCopyright(node)
             if (checkHeaderKdocPosition(node)) {
                 checkHeaderKdoc(node)
             }
         }
+    }
+
+    companion object {
+        val hyphenRegex = Regex("""\b(\d+-\d+)\b""")
+        val afterCopyrightRegex = Regex("""((©|\([cC]\))+ *\d+)""")
+        val curYear = LocalDate.now().year
     }
 
     private fun checkCopyright(node: ASTNode) {
@@ -71,9 +81,8 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
                 .any { commentNode ->
                     copyrightWords.any { commentNode.text.contains(it, ignoreCase = true) }
                 }
-
         if (isWrongCopyright || isMissingCopyright || isCopyrightInsideKdoc) {
-            HEADER_MISSING_OR_WRONG_COPYRIGHT.warnAndFix(configRules, emitWarn, isFixMode, fileName, node.startOffset) {
+            HEADER_MISSING_OR_WRONG_COPYRIGHT.warnAndFix(configRules, emitWarn, isFixMode, fileName, node.startOffset, node) {
                 if (headerComment != null) {
                     node.removeChild(headerComment)
                 }
@@ -90,6 +99,39 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
                 )
             }
         }
+
+        val copyrightWithCorrectYear = makeCopyrightCorrectYear(copyrightText)
+
+        if (copyrightWithCorrectYear.isNotEmpty()){
+            WRONG_COPYRIGHT_YEAR.warnAndFix(configRules, emitWarn, isFixMode, fileName, node.startOffset, node) {
+                (headerComment as LeafElement).replaceWithText(headerComment.text.replace(copyrightText, copyrightWithCorrectYear))
+            }
+        }
+    }
+
+    private fun makeCopyrightCorrectYear(copyrightText: String) : String {
+        val hyphenYear = hyphenRegex.find(copyrightText)
+
+        if (hyphenYear != null) {
+            val copyrightYears = hyphenYear.value.split("-")
+            if (copyrightYears[1].toInt() != curYear) {
+                val validYears = "${copyrightYears[0]}-${curYear}"
+                return copyrightText.replace(hyphenRegex, validYears)
+            }
+        }
+
+        val afterCopyrightYear = afterCopyrightRegex.find(copyrightText)
+
+        if (afterCopyrightYear != null) {
+            val copyrightYears = afterCopyrightYear.value.split("(c)", "(C)", "©")
+
+            if (copyrightYears[1].trim().toInt() != curYear) {
+                val validYears = "${copyrightYears[0]}-${curYear}"
+                return copyrightText.replace(afterCopyrightRegex, validYears)
+            }
+        }
+
+        return ""
     }
 
     /**
@@ -100,10 +142,9 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
      */
     private fun checkHeaderKdocPosition(node: ASTNode): Boolean {
         val firstKdoc = node.findChildAfter(IMPORT_LIST, KDOC)
-        val hasOrphanedKdocAfterImports = firstKdoc != null && firstKdoc.treeParent.elementType == FILE
-        if (configRules.isRuleEnabled(HEADER_NOT_BEFORE_PACKAGE) && node.findChildBefore(PACKAGE_DIRECTIVE, KDOC) == null
-                && hasOrphanedKdocAfterImports) {
-            HEADER_NOT_BEFORE_PACKAGE.warnAndFix(configRules, emitWarn, isFixMode, fileName, firstKdoc!!.startOffset) {
+        // if `firstKdoc.treeParent` is File then it's a KDoc not bound to any other structures
+        if (node.findChildBefore(PACKAGE_DIRECTIVE, KDOC) == null && firstKdoc != null && firstKdoc.treeParent.elementType == FILE) {
+            HEADER_NOT_BEFORE_PACKAGE.warnAndFix(configRules, emitWarn, isFixMode, fileName, firstKdoc.startOffset, firstKdoc) {
                 node.moveChildBefore(firstKdoc, node.getFirstChildWithType(PACKAGE_DIRECTIVE), true)
                 // ensure there is no empty line between copyright and header kdoc
                 node.findChildBefore(PACKAGE_DIRECTIVE, BLOCK_COMMENT)?.apply {
@@ -124,7 +165,7 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
         if (headerKdoc == null) {
             val nDeclaredClasses = node.getAllChildrenWithType(ElementType.CLASS).size
             if (nDeclaredClasses == 0 || nDeclaredClasses > 1) {
-                HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warn(configRules, emitWarn, isFixMode, fileName, node.startOffset)
+                HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warn(configRules, emitWarn, isFixMode, fileName, node.startOffset, node)
             }
         } else {
             // fixme we should also check date of creation, but it can be in different formats
@@ -132,13 +173,13 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
                     .filter { it.contains("@author") }
                     .forEach {
                         HEADER_CONTAINS_DATE_OR_AUTHOR.warn(configRules, emitWarn, isFixMode,
-                                it.trim(), headerKdoc.startOffset)
+                                it.trim(), headerKdoc.startOffset, headerKdoc)
                     }
 
             if (headerKdoc.treeNext != null && headerKdoc.treeNext.elementType == WHITE_SPACE
                     && headerKdoc.treeNext.text.count { it == '\n' } != 2) {
                 HEADER_WRONG_FORMAT.warnAndFix(configRules, emitWarn, isFixMode,
-                        "header KDoc should have a new line after", headerKdoc.startOffset) {
+                        "header KDoc should have a new line after", headerKdoc.startOffset, headerKdoc) {
                     node.replaceChild(headerKdoc.treeNext, PsiWhiteSpaceImpl("\n\n"))
                 }
             }

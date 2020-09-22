@@ -33,6 +33,9 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
 import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
+import org.jetbrains.kotlin.psi.KtThrowExpression
+import org.jetbrains.kotlin.psi.psiUtil.parents
+import org.jetbrains.kotlin.psi.psiUtil.referenceExpression
 
 /**
  * This rule checks that whenever the method has arguments, return value, can throw exceptions,
@@ -62,7 +65,7 @@ class KdocMethods(private val configRules: List<RulesConfig>) : Rule("kdoc-metho
 
         if (node.elementType == FUN && node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside()) {
             val config = configRules.getCommonConfiguration().value
-            val fileName = node.getRootNode().getUserData(FILE_PATH_USER_DATA_KEY)!!
+            val fileName = node.getRootNode().getFileName()
             val isTestMethod = node.hasTestAnnotation() || isLocatedInTest(fileName.splitPathToDirs(), config.testAnchors)
             if (!isTestMethod && !node.isStandardMethod() && !node.isSingleLineGetterOrSetter()) {
                 checkSignatureDescription(node)
@@ -72,6 +75,7 @@ class KdocMethods(private val configRules: List<RulesConfig>) : Rule("kdoc-metho
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkSignatureDescription(node: ASTNode) {
         val kDoc = node.getFirstChildWithType(KDOC)
         val kDocTags = kDoc?.kDocTags()
@@ -100,7 +104,7 @@ class KdocMethods(private val configRules: List<RulesConfig>) : Rule("kdoc-metho
         if (kDoc == null && anyTagFailed) {
             addKdocTemplate(node, name, missingParameters, explicitlyThrownExceptions, returnCheckFailed)
         } else if (kDoc == null) {
-            MISSING_KDOC_ON_FUNCTION.warn(configRules, emitWarn, false, name, node.startOffset)
+            MISSING_KDOC_ON_FUNCTION.warn(configRules, emitWarn, false, name, node.startOffset, node)
         }
     }
 
@@ -131,25 +135,28 @@ class KdocMethods(private val configRules: List<RulesConfig>) : Rule("kdoc-metho
     private fun getExplicitlyThrownExceptions(node: ASTNode): Set<String> {
         val codeBlock = node.getFirstChildWithType(BLOCK)
         val throwKeywords = codeBlock?.findAllNodesWithSpecificType(THROW)
-        return throwKeywords?.map {
-            // fixme probably `throws` can have other expression types
-            it.findChildByType(CALL_EXPRESSION)
-                    ?.findChildByType(REFERENCE_EXPRESSION)?.text!!
-        }?.toSet() ?: setOf()
+        return throwKeywords
+                ?.map { it.psi as KtThrowExpression }
+                ?.mapNotNull { it.thrownExpression?.referenceExpression()?.text }
+                ?.toSet()
+                ?: setOf()
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun handleParamCheck(node: ASTNode,
                                  kDoc: ASTNode?,
                                  missingParameters: Collection<String?>,
                                  kDocMissingParameters: List<KDocTag>,
                                  kDocTags: Collection<KDocTag>?) {
+
         kDocMissingParameters.forEach {
             KDOC_WITHOUT_PARAM_TAG.warn(configRules, emitWarn, false,
-                    "${it.getSubjectName()} param isn't present in argument list", it.node.startOffset)
+                    "${it.getSubjectName()} param isn't present in argument list", it.node.startOffset,
+                    it.node)
         }
         if (missingParameters.isNotEmpty()) {
             KDOC_WITHOUT_PARAM_TAG.warnAndFix(configRules, emitWarn, isFixMode,
-                    "${node.getIdentifierName()!!.text} (${missingParameters.joinToString()})", node.startOffset) {
+                    "${node.getIdentifierName()!!.text} (${missingParameters.joinToString()})", node.startOffset, node) {
                 val beforeTag = kDocTags?.find { it.knownTag == KDocKnownTag.RETURN }
                         ?: kDocTags?.find { it.knownTag == KDocKnownTag.THROWS }
                 missingParameters.forEach {
@@ -163,11 +170,13 @@ class KdocMethods(private val configRules: List<RulesConfig>) : Rule("kdoc-metho
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun handleReturnCheck(node: ASTNode,
                                   kDoc: ASTNode?,
                                   kDocTags: Collection<KDocTag>?
     ) {
-        KDOC_WITHOUT_RETURN_TAG.warnAndFix(configRules, emitWarn, isFixMode, node.getIdentifierName()!!.text, node.startOffset) {
+        KDOC_WITHOUT_RETURN_TAG.warnAndFix(configRules, emitWarn, isFixMode, node.getIdentifierName()!!.text,
+                node.startOffset, node) {
             val beforeTag = kDocTags?.find { it.knownTag == KDocKnownTag.THROWS }
             kDoc?.insertTagBefore(beforeTag?.node) {
                 addChild(LeafPsiElement(KDOC_TAG_NAME, "@return"))
@@ -175,12 +184,13 @@ class KdocMethods(private val configRules: List<RulesConfig>) : Rule("kdoc-metho
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun handleThrowsCheck(node: ASTNode,
                                   kDoc: ASTNode?,
                                   missingExceptions: Collection<String>
     ) {
         KDOC_WITHOUT_THROWS_TAG.warnAndFix(configRules, emitWarn, isFixMode,
-                "${node.getIdentifierName()!!.text} (${missingExceptions.joinToString()})", node.startOffset) {
+                "${node.getIdentifierName()!!.text} (${missingExceptions.joinToString()})", node.startOffset, node) {
             missingExceptions.forEach {
                 kDoc?.insertTagBefore(null) {
                     addChild(LeafPsiElement(KDOC_TAG_NAME, "@throws"))
@@ -191,13 +201,14 @@ class KdocMethods(private val configRules: List<RulesConfig>) : Rule("kdoc-metho
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun addKdocTemplate(node: ASTNode,
                                 name: String,
                                 missingParameters: Collection<String?>,
                                 explicitlyThrownExceptions: Collection<String>,
                                 returnCheckFailed: Boolean
     ) {
-        MISSING_KDOC_ON_FUNCTION.warnAndFix(configRules, emitWarn, isFixMode, name, node.startOffset) {
+        MISSING_KDOC_ON_FUNCTION.warnAndFix(configRules, emitWarn, isFixMode, name, node.startOffset, node) {
             val kDocTemplate = "/**\n" +
                     (missingParameters.joinToString("") { " * @param $it\n" } +
                             (if (returnCheckFailed) " * @return\n" else "") +
@@ -215,7 +226,7 @@ class KdocMethods(private val configRules: List<RulesConfig>) : Rule("kdoc-metho
         if (kdocTextNodes.size == 1) {
             val kdocText = kdocTextNodes.first().text.trim()
             if (kdocText.matches(uselessKdocRegex)) {
-                KDOC_TRIVIAL_KDOC_ON_FUNCTION.warn(configRules, emitWarn, isFixMode, kdocText, kdocTextNodes.first().startOffset)
+                KDOC_TRIVIAL_KDOC_ON_FUNCTION.warn(configRules, emitWarn, isFixMode, kdocText, kdocTextNodes.first().startOffset, node)
             }
         }
     }

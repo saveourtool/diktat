@@ -1,14 +1,11 @@
 package org.cqfn.diktat.ruleset.rules
 
-import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.ast.ElementType.DOT
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.isLeaf
-import com.pinterest.ktlint.core.ast.parent
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getCommonConfig
 import org.cqfn.diktat.common.config.rules.getCommonConfiguration
@@ -18,16 +15,8 @@ import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_PATH
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_PREFIX
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_SYMBOLS
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_MISSING
-import org.cqfn.diktat.ruleset.utils.getAllLeafsWithSpecificType
-import org.cqfn.diktat.ruleset.utils.getRootNode
-import org.cqfn.diktat.ruleset.utils.hasUppercaseLetter
-import org.cqfn.diktat.ruleset.utils.isASCIILettersAndDigits
-import org.cqfn.diktat.ruleset.utils.isJavaKeyWord
-import org.cqfn.diktat.ruleset.utils.isKotlinKeyWord
-import org.cqfn.diktat.ruleset.utils.splitPathToDirs
-import org.cqfn.diktat.ruleset.utils.toLower
+import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.lexer.KtTokens.PACKAGE_KEYWORD
@@ -68,38 +57,36 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
         domainName = configuration.domainName
 
         if (node.elementType == PACKAGE_DIRECTIVE) {
-            val fileName = node.getRootNode().getUserData(KtLint.FILE_PATH_USER_DATA_KEY)!!
+            val fileName = node.getRootNode().getFileName()
             // calculating package name based on the directory where the file is placed
             val realPackageName = calculateRealPackageName(fileName)
 
             // if node isLeaf - this means that there is no package name declared
             if (node.isLeaf()) {
-                checkMissingPackageName(node, realPackageName, fileName)
+                warnAndFixMissingPackageName(node, realPackageName, fileName)
                 return
             }
 
             // getting all identifiers from existing package name into the list like [org, diktat, project]
-            val wordsInPackageName = mutableListOf<ASTNode>()
-            node.getAllLeafsWithSpecificType(IDENTIFIER, wordsInPackageName)
+            val wordsInPackageName = node.findAllNodesWithSpecificType(IDENTIFIER)
 
             // no need to check that packageIdentifiers is empty, because in this case parsing will fail
-            checkPackageName(wordsInPackageName)
+            checkPackageName(wordsInPackageName, node)
             // fix in checkFilePathMatchesWithPackageName is much more aggressive than fixes in checkPackageName, they can conflict
-            checkFilePathMatchesWithPackageName(wordsInPackageName, realPackageName)
+            checkFilePathMatchesWithPackageName(wordsInPackageName, realPackageName, node)
         }
     }
 
     /**
      * checking and fixing the case when package directive is missing in the file
      */
-    private fun checkMissingPackageName(packageDirectiveNode: ASTNode, realPackageName: List<String>, fileName: String) {
-        PACKAGE_NAME_MISSING.warnAndFix(configRules, emitWarn, isFixMode, fileName, packageDirectiveNode.startOffset) {
+    private fun warnAndFixMissingPackageName(initialPackageDirectiveNode: ASTNode, realPackageName: List<String>, fileName: String) {
+        PACKAGE_NAME_MISSING.warnAndFix(configRules, emitWarn, isFixMode, fileName,
+                initialPackageDirectiveNode.startOffset, initialPackageDirectiveNode) {
             if (realPackageName.isNotEmpty()) {
-                packageDirectiveNode.addChild(LeafPsiElement(PACKAGE_KEYWORD, PACKAGE_KEYWORD.toString()), null)
-                packageDirectiveNode.addChild(PsiWhiteSpaceImpl(" "), null)
-                createAndInsertPackageName(packageDirectiveNode, null, realPackageName)
-                packageDirectiveNode.addChild(PsiWhiteSpaceImpl("\n"), null)
-                packageDirectiveNode.addChild(PsiWhiteSpaceImpl("\n"), null)
+                // creating node for package directive using Kotlin parser
+                val newPackageDirectiveName = realPackageName.joinToString(PACKAGE_SEPARATOR)
+                insertNewPackageName(initialPackageDirectiveNode, newPackageDirectiveName)
             }
         }
     }
@@ -113,7 +100,7 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
 
         return if (!filePathParts.contains(PACKAGE_PATH_ANCHOR)) {
             log.error("Not able to determine a path to a scanned file or src directory cannot be found in it's path." +
-                " Will not be able to determine correct package name. It can happen due to missing <src> directory in the path")
+                    " Will not be able to determine correct package name. It can happen due to missing <src> directory in the path")
             listOf()
         } else {
             // creating a real package name:
@@ -121,40 +108,37 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
             // 2) removing src/main/kotlin/java/e.t.c dirs and removing file name
             // 3) adding company's domain name at the beginning
             val fileSubDir = filePathParts.subList(filePathParts.lastIndexOf(PACKAGE_PATH_ANCHOR), filePathParts.size - 1)
-                .dropWhile { LANGUAGE_DIR_NAMES.contains(it) }
+                    .dropWhile { LANGUAGE_DIR_NAMES.contains(it) }
             // no need to add DOMAIN_NAME to the package name if it is already in path
             val domainPrefix = if (!fileSubDir.joinToString(PACKAGE_SEPARATOR).startsWith(domainName)) domainName.split(PACKAGE_SEPARATOR) else listOf()
             domainPrefix + fileSubDir
         }
     }
 
-    /**
-     * FixMe: need to support auto correction of:
-     * 1) directory should match with package name
-     * 2) if package in incorrect case -> transform to lower
-     */
-    private fun checkPackageName(wordsInPackageName: List<ASTNode>) {
+    private fun checkPackageName(wordsInPackageName: List<ASTNode>, packageDirectiveNode: ASTNode) {
         // all words should be in a lower case (lower case letters/digits/underscore)
         wordsInPackageName
-            .filter { word -> word.text.hasUppercaseLetter() }
-            .forEach {
-                PACKAGE_NAME_INCORRECT_CASE.warnAndFix(configRules, emitWarn, isFixMode, it.text, it.startOffset) {
-                    it.toLower()
+                .filter { word -> word.text.hasUppercaseLetter() }
+                .forEach {
+                    PACKAGE_NAME_INCORRECT_CASE.warnAndFix(configRules, emitWarn, isFixMode, it.text, it.startOffset, it) {
+                        it.toLower()
+                    }
                 }
-            }
 
         // package name should start from a company's domain name
         if (!isDomainMatches(wordsInPackageName)) {
-            PACKAGE_NAME_INCORRECT_PREFIX.warnAndFix(configRules, emitWarn, isFixMode, domainName, wordsInPackageName[0].startOffset) {
-                val parentNodeToInsert = wordsInPackageName[0].parent(DOT_QUALIFIED_EXPRESSION)!!
-                createAndInsertPackageName(parentNodeToInsert, wordsInPackageName[0].treeParent, domainName.split(PACKAGE_SEPARATOR))
+            PACKAGE_NAME_INCORRECT_PREFIX.warnAndFix(configRules, emitWarn, isFixMode, domainName,
+                    wordsInPackageName[0].startOffset, wordsInPackageName[0]) {
+                val oldPackageName = wordsInPackageName.map { it.text }.joinToString(PACKAGE_SEPARATOR)
+                val newPackageName = "$domainName$PACKAGE_SEPARATOR$oldPackageName"
+                insertNewPackageName(packageDirectiveNode, newPackageName)
             }
         }
 
         // all words should contain only ASCII letters or digits
         wordsInPackageName
-            .filter { word -> !correctSymbolsAreUsed(word.text) }
-            .forEach { PACKAGE_NAME_INCORRECT_SYMBOLS.warn(configRules, emitWarn, isFixMode, it.text, it.startOffset) }
+                .filter { word -> !correctSymbolsAreUsed(word.text) }
+                .forEach { PACKAGE_NAME_INCORRECT_SYMBOLS.warn(configRules, emitWarn, isFixMode, it.text, it.startOffset, it) }
 
         // all words should contain only ASCII letters or digits
         wordsInPackageName.forEach { correctPackageWordSeparatorsUsed(it) }
@@ -175,7 +159,7 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
      */
     private fun correctPackageWordSeparatorsUsed(word: ASTNode) {
         if (word.text.contains("_") && !exceptionForUnderscore(word.text)) {
-            INCORRECT_PACKAGE_SEPARATOR.warnAndFix(configRules, emitWarn, isFixMode, word.text, word.startOffset) {
+            INCORRECT_PACKAGE_SEPARATOR.warnAndFix(configRules, emitWarn, isFixMode, word.text, word.startOffset, word) {
                 (word as LeafPsiElement).replaceWithText(word.text.replace("_", ""))
             }
         }
@@ -190,8 +174,8 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
         val wordFromPackage = word.replace("_", "")
 
         return wordFromPackage[0].isDigit() ||
-            wordFromPackage.isKotlinKeyWord() ||
-            wordFromPackage.isJavaKeyWord()
+                wordFromPackage.isKotlinKeyWord() ||
+                wordFromPackage.isJavaKeyWord()
     }
 
     /**
@@ -209,49 +193,41 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
         return true
     }
 
-    /**
-     * method for creating and inserting package name into the parentNode
-     * Will create composite object = (Identifier + Dot) and insert it into the children list of parent node
-     * FixMe: check if proper line/char numbers are added
-     */
-    private fun createAndInsertPackageName(parentNode: ASTNode, insertBeforeNode: ASTNode?, packageNameToInsert: List<String>) {
-        var compositeElementWithNameAndDot: CompositeElement? = null
-        var childDot: LeafPsiElement? = null
-        var childPackageNamePart: LeafPsiElement?
 
-        packageNameToInsert.forEach { name ->
-            // creating Composite object = ((IDENTIFIER) + (DOT))
-            compositeElementWithNameAndDot = CompositeElement(REFERENCE_EXPRESSION)
-            childDot = LeafPsiElement(DOT, PACKAGE_SEPARATOR)
-            childPackageNamePart = LeafPsiElement(IDENTIFIER, name)
+    @Suppress("UnsafeCallOnNullableType")
+    private fun insertNewPackageName(packageDirectiveNode: ASTNode, packageName: String) {
+        // package name can be dot qualified expression or a reference expression in case it contains only one word
+        val packageNameNode = packageDirectiveNode.findChildByType(DOT_QUALIFIED_EXPRESSION)
+                ?: packageDirectiveNode.findChildByType(REFERENCE_EXPRESSION)
 
-            // putting composite node first in the parent tree and adding IDENTIFIER and DOT as children to it after
-            parentNode.addChild(compositeElementWithNameAndDot!!, insertBeforeNode)
-            compositeElementWithNameAndDot!!.addChild(childPackageNamePart!!)
-            compositeElementWithNameAndDot!!.addChild(childDot!!)
+        val generatedPackageDirective = KotlinParser()
+                .createNode("$PACKAGE_KEYWORD $packageName", true)
+
+        if (packageNameNode == null) {
+            // there is missing package statement in a file, so it will be created and inserted
+            val newPackageDirective = generatedPackageDirective.findLeafWithSpecificType(PACKAGE_DIRECTIVE)!!
+            packageDirectiveNode.treeParent.replaceChild(packageDirectiveNode, newPackageDirective)
+            newPackageDirective.treeParent.addChild(PsiWhiteSpaceImpl("\n\n"), newPackageDirective.treeNext)
+
+        } else {
+            // simply replacing only node connected with the package name, all other nodes remain unchanged
+            packageDirectiveNode.replaceChild(packageNameNode,
+                    generatedPackageDirective.findLeafWithSpecificType(DOT_QUALIFIED_EXPRESSION)!!)
         }
 
-        // removing extra DOT that is not needed if we were inserting the whole package name (not just a part) to the parent
-        if (insertBeforeNode == null) {
-            compositeElementWithNameAndDot!!.removeChild(childDot!!)
-        }
     }
 
     /**
      * checking and fixing package directive if it does not match with the directory where the file is stored
      */
-    private fun checkFilePathMatchesWithPackageName(packageNameParts: List<ASTNode>, realName: List<String>) {
-        if (realName.isNotEmpty() && packageNameParts.map { node -> node.text } != realName) {
-            PACKAGE_NAME_INCORRECT_PATH.warnAndFix(configRules, emitWarn, isFixMode, realName.joinToString(PACKAGE_SEPARATOR), packageNameParts[0].startOffset) {
-                // need to get first top-level DOT-QUALIFIED-EXPRESSION
-                // -- PACKAGE_DIRECTIVE
-                //    -- DOT_QUALIFIED_EXPRESSION
-                val parentNode = packageNameParts[0]
-                    .parent(PACKAGE_DIRECTIVE)!!
-                    .findChildByType(DOT_QUALIFIED_EXPRESSION)!!
-
-                parentNode.getChildren(null).forEach { node -> parentNode.removeChild(node) }
-                createAndInsertPackageName(parentNode, null, realName)
+    private fun checkFilePathMatchesWithPackageName(packageNameParts: List<ASTNode>,
+                                                    realNameParts: List<String>, packageDirective: ASTNode) {
+        if (realNameParts.isNotEmpty() && packageNameParts.map { node -> node.text } != realNameParts) {
+            val realPackageNameStr = realNameParts.joinToString(PACKAGE_SEPARATOR)
+            val offset = packageNameParts[0].startOffset
+            PACKAGE_NAME_INCORRECT_PATH.warnAndFix(configRules, emitWarn, isFixMode,
+                    realPackageNameStr, offset, packageNameParts[0]) {
+                insertNewPackageName(packageDirective, realPackageNameStr)
             }
         }
     }

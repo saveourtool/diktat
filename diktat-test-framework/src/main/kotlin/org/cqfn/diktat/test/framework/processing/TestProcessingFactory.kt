@@ -21,7 +21,7 @@ class TestProcessingFactory(private val argReader: TestArgumentsReader) {
     fun processTests() {
         val failedTests = AtomicInteger(0)
         val passedTests = AtomicInteger(0)
-        val testList: List<String>? = if (argReader.shouldRunAllTests()) {
+        val testList: List<String> = if (argReader.shouldRunAllTests()) {
             log.info("Will run all available test cases")
             allTestsFromResources
         } else {
@@ -30,9 +30,11 @@ class TestProcessingFactory(private val argReader: TestArgumentsReader) {
         }
 
         val testStream: Stream<String> =
-                if (argReader.properties.isParallelMode) testList!!.parallelStream() else testList!!.stream()
+                if (argReader.properties.isParallelMode) testList.parallelStream() else testList.stream()
 
         testStream.map { test: String -> findTestInResources(test) }
+                .filter { it != null }
+                .map { it as TestConfig }
                 .forEach { test: TestConfig ->
                     if (processTest(test)) passedTests.incrementAndGet() else failedTests.incrementAndGet()
                 }
@@ -40,13 +42,13 @@ class TestProcessingFactory(private val argReader: TestArgumentsReader) {
         log.info("Test processing finished. Passed tests: [${passedTests}]. Failed tests: [${failedTests}]")
     }
 
-    private fun findTestInResources(test: String): TestConfig =
+    private fun findTestInResources(test: String): TestConfig? =
             TestConfigReader("${argReader.properties.testConfigsRelativePath}/$test.json", javaClass.classLoader)
-                    .config!!
-                    .setTestName(test)
+                    .config
+                    ?.setTestName(test)
 
 
-    private val allTestsFromResources: List<String>?
+    private val allTestsFromResources: List<String>
         get() {
             val fileURL = javaClass.getResource("/${argReader.properties.testConfigsRelativePath}")
             if (fileURL == null) {
@@ -75,7 +77,7 @@ class TestProcessingFactory(private val argReader: TestArgumentsReader) {
             ExecutionType.CHECK_WARN -> TestCheckWarn()
         }
 
-        return test.initTestProcessor(testConfig, argReader.properties)!!
+        return test.initTestProcessor(testConfig, argReader.properties)
                 .runTest()
     }
 }

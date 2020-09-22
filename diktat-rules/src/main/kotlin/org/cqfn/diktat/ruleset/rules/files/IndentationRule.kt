@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.rules.files
 
-import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.FILE
@@ -17,6 +16,7 @@ import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getAllLeafsWithSpecificType
+import org.cqfn.diktat.ruleset.utils.getFileName
 import org.cqfn.diktat.ruleset.utils.indentBy
 import org.cqfn.diktat.ruleset.utils.indentation.AssignmentOperatorChecker
 import org.cqfn.diktat.ruleset.utils.indentation.ConditionalsAndLoopsWithoutBracesChecker
@@ -65,7 +65,7 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
         emitWarn = emit
 
         if (node.elementType == FILE) {
-            fileName = node.getUserData(KtLint.FILE_PATH_USER_DATA_KEY)!!
+            fileName = node.getFileName()
             configuration = IndentationConfig(configRules.getRuleConfig(WRONG_INDENTATION)?.configuration
                     ?: mapOf())
             
@@ -99,7 +99,7 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
                 .filter { it.textContains('\t') }
                 .apply { if (isEmpty()) return true }
                 .forEach {
-                    WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "tabs are not allowed for indentation", it.startOffset + it.text.indexOf('\t')) {
+                    WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "tabs are not allowed for indentation", it.startOffset + it.text.indexOf('\t'), it) {
                         (it as LeafPsiElement).replaceWithText(it.text.replace("\t", " ".repeat(INDENT_SIZE)))
                     }
                 }
@@ -113,7 +113,7 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
         if (configuration.newlineAtEnd) {
             val lastChild = node.lastChildNode
             if (lastChild.elementType != WHITE_SPACE || lastChild.text.count { it == '\n' } != 1) {
-                WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "no newline at the end of file $fileName", node.startOffset + node.textLength) {
+                WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "no newline at the end of file $fileName", node.startOffset + node.textLength, node) {
                     if (lastChild.elementType != WHITE_SPACE) {
                         node.addChild(PsiWhiteSpaceImpl("\n"), null)
                     } else {
@@ -167,7 +167,7 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
         }
         if (checkResult?.isCorrect != true && expectedIndent != indentError.actual) {
             WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "expected $expectedIndent but was ${indentError.actual}",
-                    whiteSpace.startOffset + whiteSpace.text.lastIndexOf('\n') + 1) {
+                    whiteSpace.startOffset + whiteSpace.text.lastIndexOf('\n') + 1, whiteSpace.node) {
                 whiteSpace.node.indentBy(expectedIndent)
             }
         }

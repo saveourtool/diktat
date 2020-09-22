@@ -130,12 +130,13 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
         if (node.treeNext.numWhiteSpaces()?.let { it > 0 } == true) {
             // there is either whitespace or newline after constructor keyword
             WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "keyword '${node.text}' should not be separated from " +
-                    "'(' with a whitespace", node.startOffset) {
+                    "'(' with a whitespace", node.startOffset, node) {
                 node.treeParent.removeChild(node.treeNext)
             }
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun handleKeywordWithParOrBrace(node: ASTNode) {
         if (node.treeNext.numWhiteSpaces() != 1) {
             // there is either not single whitespace or newline after keyword
@@ -145,7 +146,7 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
                 return
             }
             WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "keyword '${node.text}' should be separated from " +
-                    "'${nextCodeLeaf.text}' with a whitespace", nextCodeLeaf.startOffset) {
+                    "'${nextCodeLeaf.text}' with a whitespace", nextCodeLeaf.startOffset, nextCodeLeaf) {
                 node.leaveSingleWhiteSpace()
             }
         }
@@ -154,6 +155,7 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
     /**
      * This method covers all other opening braces, not covered in [handleKeywordWithParOrBrace].
      */
+    @Suppress("UnsafeCallOnNullableType")
     private fun handleLbrace(node: ASTNode) {
         val whitespaceOrPrevNode = node.parent({ it.treePrev != null }, strict = false)!!.treePrev
         val isFromLambdaAsArgument = node
@@ -173,13 +175,13 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
         if (isFromLambdaAsArgument) {
             if (numWhiteSpace != 0) {
                 WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "there should be no whitespace before '{' of lambda" +
-                        " inside argument list", node.startOffset) {
+                        " inside argument list", node.startOffset, node) {
                     whitespaceOrPrevNode.treeParent.removeChild(whitespaceOrPrevNode)
                 }
             }
         } else if (prevNode.elementType !in keywordsWithSpaceAfter) {
             if (numWhiteSpace != 1) {
-                WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "there should be a whitespace before '{'", node.startOffset) {
+                WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "there should be a whitespace before '{'", node.startOffset, node) {
                     prevNode.leaveSingleWhiteSpace()
                 }
             }
@@ -206,6 +208,7 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun handleToken(node: ASTNode, requiredSpacesBefore: Int?, requiredSpacesAfter: Int?) {
         require(requiredSpacesBefore != null || requiredSpacesAfter != null)
         val spacesBefore = node.parent({ it.treePrev != null }, strict = false)!!.treePrev.numWhiteSpaces()
@@ -223,7 +226,7 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
                     getDescription(requiredSpacesBefore != null, requiredSpacesAfter != null, requiredSpacesBefore, requiredSpacesAfter) +
                     ", but has" +
                     getDescription(isErrorBefore, isErrorAfter, spacesBefore, spacesAfter)
-            WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, freeText, node.startOffset) {
+            WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, freeText, node.startOffset, node) {
                 node.fixSpaceAround(requiredSpacesBefore, requiredSpacesAfter)
             }
         }
@@ -234,12 +237,13 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
         // the second condition corresponds to the last line of file
         val isEol = node.textContains('\n') || node.psi.parentsWithSelf.all { it.nextSibling == null }
         if (hasSpaces && isEol) {
-            WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "there should be no spaces in the end of line", node.startOffset) {
+            WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "there should be no spaces in the end of line", node.startOffset, node) {
                 (node as LeafElement).replaceWithText(node.text.trimStart(' '))
             }
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun handleLpar(node: ASTNode) {
         if (node.treeParent.treeParent.elementType == SECONDARY_CONSTRUCTOR) {
             // there is separate handler for 'constructor' keyword to provide custom warning message

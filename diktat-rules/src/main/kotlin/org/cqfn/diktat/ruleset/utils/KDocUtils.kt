@@ -9,6 +9,7 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
+import org.jetbrains.kotlin.kdoc.psi.api.KDoc
 import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
 
 fun ASTNode.kDocTags(): Collection<KDocTag>? {
@@ -25,6 +26,7 @@ fun Iterable<KDocTag>.hasKnownKDocTag(knownTag: KDocKnownTag): Boolean =
  * @param beforeTag tag before which the new one will be placed
  * @param consumer lambda which should be used to fill new tag with data, accepts CompositeElement as an argument
  */
+@Suppress("UnsafeCallOnNullableType")
 inline fun ASTNode.insertTagBefore(beforeTag: ASTNode?,
                                    consumer: CompositeElement.() -> Unit) {
     require(this.elementType == ElementType.KDOC && this.hasChildOfType(KDOC_SECTION)) { "kDoc tags can be inserted only into KDOC node" }

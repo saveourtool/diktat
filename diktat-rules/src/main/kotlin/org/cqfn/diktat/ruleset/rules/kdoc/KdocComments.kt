@@ -40,7 +40,7 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
         isFixMode = autoCorrect
 
         val config = configRules.getCommonConfiguration().value
-        val fileName = node.getRootNode().getUserData(FILE_PATH_USER_DATA_KEY)!!
+        val fileName = node.getRootNode().getFileName()
         if (!(node.hasTestAnnotation() || isLocatedInTest(fileName.splitPathToDirs(), config.testAnchors)))
             when (node.elementType) {
                 FILE -> checkTopLevelDoc(node)
@@ -70,13 +70,14 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
     /**
      * raises warning if protected, public or internal code element does not have a Kdoc
      */
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkDoc(node: ASTNode, warning: Warnings) {
         val kdoc = node.getFirstChildWithType(KDOC)
         val modifier = node.getFirstChildWithType(MODIFIER_LIST)
         val name = node.getIdentifierName()
 
         if (modifier.isAccessibleOutside() && kdoc == null) {
-            warning.warn(configRules, emitWarn, isFixMode, name!!.text, node.startOffset)
+            warning.warn(configRules, emitWarn, isFixMode, name!!.text, node.startOffset,node)
         }
     }
 }

@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.rules.files
 
-import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
@@ -45,7 +44,7 @@ class BlankLinesRule(private val configRules: List<RulesConfig>) : Rule("blank-l
                 // if both are present, this is not beginning or end
                 // if both are null, then this block is empty and is handled in another rule
                 val freeText = "do not put newlines ${if (node.treePrev.elementType == LBRACE) "in the beginning" else "at the end"} of code blocks"
-                TOO_MANY_BLANK_LINES.warnAndFix(configRules, emitWarn, isFixMode, freeText, node.startOffset) {
+                TOO_MANY_BLANK_LINES.warnAndFix(configRules, emitWarn, isFixMode, freeText, node.startOffset, node) {
                     node.leaveOnlyOneNewLine()
                 }
             }
@@ -53,7 +52,7 @@ class BlankLinesRule(private val configRules: List<RulesConfig>) : Rule("blank-l
     }
 
     private fun handleTooManyBlankLines(node: ASTNode) {
-        TOO_MANY_BLANK_LINES.warnAndFix(configRules, emitWarn, isFixMode, "do not use more than two consecutive blank lines", node.startOffset) {
+        TOO_MANY_BLANK_LINES.warnAndFix(configRules, emitWarn, isFixMode, "do not use more than two consecutive blank lines", node.startOffset, node) {
             node.leaveExactlyNumNewLines(2)
         }
     }

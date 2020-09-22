@@ -114,7 +114,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
     private fun handleSemicolon(node: ASTNode) {
         if (node.isEol() && node.treeParent.elementType != ENUM_ENTRY) {
             // semicolon at the end of line which is not part of enum members declarations
-            REDUNDANT_SEMICOLON.warnAndFix(configRules, emitWarn, isFixMode, node.extractLineOfText(), node.startOffset) {
+            REDUNDANT_SEMICOLON.warnAndFix(configRules, emitWarn, isFixMode, node.extractLineOfText(), node.startOffset, node) {
                 node.treeParent.removeChild(node)
             }
         }
@@ -130,7 +130,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         // at the beginning of the line.
         if (node.prevCodeSibling()?.isFollowedByNewline() == true) {
             WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
-                    "should break a line after and not before ${node.text}", node.startOffset) {
+                    "should break a line after and not before ${node.text}", node.startOffset, node) {
                 node.run {
                     treeParent.removeChild(treePrev)
                     if (!isFollowedByNewline()) {
@@ -161,7 +161,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
             } else {
                 "should break a line before and not after ${node.text}"
             }
-            WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, freeText, node.startOffset) {
+            WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, freeText, node.startOffset, node) {
                 node.selfOrOperationReferenceParent().run {
                     if (!isBeginByNewline()) {
                         // prepend newline
@@ -188,7 +188,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
             val isNotAnonymous = parent.treeParent.elementType in listOf(CALL_EXPRESSION, PRIMARY_CONSTRUCTOR, SECONDARY_CONSTRUCTOR, FUN)
             if (prevWhiteSpace != null && isNotAnonymous) {
                 WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
-                        "opening parentheses should not be separated from constructor or function name", node.startOffset) {
+                        "opening parentheses should not be separated from constructor or function name", node.startOffset, node) {
                     prevWhiteSpace.treeParent.removeChild(prevWhiteSpace)
                 }
             }
@@ -203,7 +203,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
                     it.elementType == WHITE_SPACE && it.text.contains("\n")
                 }
         if (prevNewLine != null) {
-            WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, "newline should be placed only after comma", node.startOffset) {
+            WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, "newline should be placed only after comma", node.startOffset, node) {
                 prevNewLine.treeParent.removeChild(prevNewLine)
             }
         }
@@ -221,7 +221,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
                         .toList()
                 if (newlinesBeforeArrow.isNotEmpty() || !arrowNode.isFollowedByNewline()) {
                     WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
-                            "in lambda with several lines in body newline should be placed after an arrow", arrowNode.startOffset) {
+                            "in lambda with several lines in body newline should be placed after an arrow", arrowNode.startOffset, arrowNode) {
                         // fixme: replacement logic can be sophisticated for better appearance?
                         newlinesBeforeArrow.forEach { it.treeParent.replaceChild(it, PsiWhiteSpaceImpl(" ")) }
                         arrowNode.treeNext.takeIf { it.elementType == WHITE_SPACE }?.leaveOnlyOneNewLine()
@@ -232,7 +232,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
                 val lbraceNode = node.treeParent.firstChildNode
                 if (!lbraceNode.isFollowedByNewline()) {
                     WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
-                            "in lambda with several lines in body newline should be placed after an opening brace", lbraceNode.startOffset) {
+                            "in lambda with several lines in body newline should be placed after an opening brace", lbraceNode.startOffset, lbraceNode) {
                         lbraceNode.treeNext.let {
                             if (it.elementType == WHITE_SPACE) {
                                 it.leaveOnlyOneNewLine()
@@ -246,6 +246,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun handleReturnStatement(node: ASTNode) {
         val blockNode = node.treeParent.takeIf { it.elementType == BLOCK && it.treeParent.elementType == FUN }
         val returnsUnit = node.children().count() == 1  // the only child is RETURN_KEYWORD
@@ -260,7 +261,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
                 .takeIf { it.size == 1 }
                 ?.also {
                     WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
-                            "functions with single return statement should be simplified to expression body", node.startOffset) {
+                            "functions with single return statement should be simplified to expression body", node.startOffset, node) {
                         val funNode = blockNode.treeParent
                         // if return type is not Unit, then there should be type specification
                         // otherwise code won't compile and colon being null is correctly invalid
