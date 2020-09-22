@@ -1,17 +1,25 @@
 package org.cqfn.diktat.util
 
+import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.RuleSetProvider
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.test.framework.processing.TestComparatorUnit
 import org.junit.jupiter.api.Assertions
 
-open class FixTestBase(private val resourceFilePath: String,
-                       private val ruleSupplier: (rulesConfigList: List<RulesConfig>) -> Rule,
-                       rulesConfigList: List<RulesConfig> = emptyList()
-) {
+open class FixTestBase(protected val resourceFilePath: String,
+                       private val ruleSetProviderRef: (rulesConfigList: List<RulesConfig>?) -> RuleSetProvider,
+                       private val cb: (LintError, Boolean) -> Unit = defaultCallback,
+                       private val rulesConfigList: List<RulesConfig>? = null) {
     private val testComparatorUnit = TestComparatorUnit(resourceFilePath) { text, fileName ->
-        format(ruleSupplier, text, fileName, rulesConfigList)
+        format(ruleSetProviderRef, text, fileName, rulesConfigList, cb = cb)
     }
+
+    constructor(resourceFilePath: String,
+                ruleSupplier: (rulesConfigList: List<RulesConfig>) -> Rule,
+                rulesConfigList: List<RulesConfig>? = null,
+                cb: (LintError, Boolean) -> Unit = defaultCallback) : this(resourceFilePath,
+            { overrideRulesConfigList -> DiktatRuleSetProvider4Test(ruleSupplier, overrideRulesConfigList) }, cb, rulesConfigList)
 
     protected fun fixAndCompare(expectedPath: String, testPath: String) {
         Assertions.assertTrue(
@@ -24,7 +32,7 @@ open class FixTestBase(private val resourceFilePath: String,
                                 testPath: String,
                                 overrideRulesConfigList: List<RulesConfig>) {
         val testComparatorUnit = TestComparatorUnit(resourceFilePath) { text, fileName ->
-            format(ruleSupplier, text, fileName, overrideRulesConfigList)
+            format(ruleSetProviderRef, text, fileName, overrideRulesConfigList)
         }
         Assertions.assertTrue(
                 testComparatorUnit
