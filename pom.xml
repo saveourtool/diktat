@@ -53,6 +53,7 @@
         <kotlinpoet.version>1.6.0</kotlinpoet.version>
         <detekt.version>1.13.1</detekt.version>
         <dokka.version>1.4.0</dokka.version>
+        <jacoco.version>0.8.6</jacoco.version>
     </properties>
 
     <modules>
@@ -227,6 +228,11 @@
                     <artifactId>exec-maven-plugin</artifactId>
                     <version>3.0.0</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${jacoco.version}</version>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
@@ -345,7 +351,6 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.6</version>
                 <executions>
                     <execution>
                         <goals>
