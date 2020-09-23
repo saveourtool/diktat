@@ -68,6 +68,7 @@ class TestProcessingFactory(private val argReader: TestArgumentsReader) {
             }
         }
 
+    @Suppress("FUNCTION_BOOLEAN_PREFIX")
     private fun processTest(testConfig: TestConfig): Boolean {
         val test: TestBase = when (testConfig.executionType) {
             ExecutionType.MIXED ->

@@ -43,13 +43,11 @@ data class RulesConfig(
 open class RuleConfiguration(protected val config: Map<String, String>)
 object EmptyConfiguration : RuleConfiguration(mapOf())
 
-@Suppress("TYPE_ALIAS")
-typealias RulesConfigReaderBase = JsonResourceConfigReader<List<RulesConfig>>
-
 /**
  * class returns the list of configurations that we have read from a yml: diktat-analysis.yml
  */
-open class RulesConfigReader(override val classLoader: ClassLoader) : RulesConfigReaderBase() {
+@Suppress("TYPE_ALIAS")
+open class RulesConfigReader(override val classLoader: ClassLoader) : JsonResourceConfigReader<List<RulesConfig>>() {
     /**
      * Parse resource file into list of [RulesConfig]
      *

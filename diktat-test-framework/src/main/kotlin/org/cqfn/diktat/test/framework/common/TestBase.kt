@@ -3,6 +3,9 @@ package org.cqfn.diktat.test.framework.common
 import org.cqfn.diktat.test.framework.config.TestConfig
 import org.cqfn.diktat.test.framework.config.TestFrameworkProperties
 
+/**
+ * Base interface for different test runners
+ */
 interface TestBase {
     /**
      * simple test runner that depends on the test execution type
@@ -25,7 +28,5 @@ interface TestBase {
      * @param command - command to execute in shell
      * @return execution result - in default implementation returns inputStream
      */
-    fun executeCommand(command: String): ExecutionResult {
-        return LocalCommandExecutor(command).executeCommand()
-    }
+    fun executeCommand(command: String) = LocalCommandExecutor(command).executeCommand()
 }
