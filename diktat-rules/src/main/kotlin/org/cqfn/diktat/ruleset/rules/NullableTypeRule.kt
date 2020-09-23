@@ -97,6 +97,7 @@ class NullableTypeRule(private val configRules: List<RulesConfig>) : Rule("nulla
                 else -> null
             }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun findSubstitution(node: ASTNode, fixedParam: FixedParam) {
         if (fixedParam.isString)
             replaceValueForString(node)
