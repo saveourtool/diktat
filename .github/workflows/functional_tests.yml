@@ -27,7 +27,7 @@ jobs:
           ./ktlint -R diktat-$DIKTAT_VERSION.ja "**/src/main/kotlin/**/*.kt > out
           export some = $(cat out)
           
-      - if: contains(env.some, "Error:")
+      - if: contains(env.some, 'Error:')
         run: |
           exit 1
         
