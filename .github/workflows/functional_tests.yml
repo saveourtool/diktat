@@ -27,8 +27,8 @@ jobs:
           ./ktlint -R diktat-$DIKTAT_VERSION.jar "**/src/main/kotlin/**/*.kt" >output.txt 2>&1
           echo $?
           
-      - if: contains(output.txt, "exit code 1") || contains(output.txt, "exit code 0")
-        run: exit 1
+#       - if: contains(output.txt, "exit code 1") || contains(output.txt, "exit code 0")
+#         run: exit 1
         
       - name: Run diKTat from gradle
         run: gradle diktatCheck
