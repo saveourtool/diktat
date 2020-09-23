@@ -23,7 +23,6 @@ import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.prevSibling
 import org.cqfn.diktat.ruleset.rules.files.IndentationError
-import org.cqfn.diktat.ruleset.rules.files.IndentationRule.Companion.INDENT_SIZE
 import org.cqfn.diktat.ruleset.rules.files.lastIndent
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
@@ -44,7 +43,7 @@ internal class AssignmentOperatorChecker(configuration: IndentationConfig) : Cus
         val prevNode = whiteSpace.prevSibling.node
         if (prevNode.elementType == EQ && prevNode.treeNext.let { it.elementType == WHITE_SPACE && it.textContains('\n') }) {
             return CheckResult.from(indentError.actual, (whiteSpace.parentIndent()
-                    ?: indentError.expected) + INDENT_SIZE, true)
+                    ?: indentError.expected) + configuration.indentationSize, true)
         }
         return null
     }
@@ -69,7 +68,7 @@ internal class ValueParameterListChecker(configuration: IndentationConfig) : Cus
                 // fixme: probably there is a better way to find column number
                 parameterList.parents().last().text.substringBefore(parameterAfterLpar.text).lines().last().count()
             } else if (parameterAfterLpar == null && configuration.extendedIndentOfParameters) {
-                indentError.expected + INDENT_SIZE
+                indentError.expected + configuration.indentationSize
             } else {
                 indentError.expected
             }
@@ -87,7 +86,7 @@ internal class ExpressionIndentationChecker(configuration: IndentationConfig) : 
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
         if (whiteSpace.parent.node.elementType == BINARY_EXPRESSION && whiteSpace.prevSibling.node.elementType == OPERATION_REFERENCE) {
             val expectedIndent = (whiteSpace.parentIndent() ?: indentError.expected) +
-                    (if (configuration.extendedIndentAfterOperators) 2 else 1) * INDENT_SIZE
+                    (if (configuration.extendedIndentAfterOperators) 2 else 1) * configuration.indentationSize
             return CheckResult.from(indentError.actual, expectedIndent)
         }
         return null
@@ -117,10 +116,10 @@ internal class SuperTypeListChecker(config: IndentationConfig) : CustomIndentati
         if (whiteSpace.nextSibling.node.elementType == SUPER_TYPE_LIST) {
             val hasNewlineBeforeColon = whiteSpace.node.prevSibling { it.elementType == COLON }!!
                     .treePrev.takeIf { it.elementType == WHITE_SPACE }?.textContains('\n') ?: false
-            val expectedIndent = indentError.expected + (if (hasNewlineBeforeColon) 2 else 1) * INDENT_SIZE
+            val expectedIndent = indentError.expected + (if (hasNewlineBeforeColon) 2 else 1) * configuration.indentationSize
             return CheckResult.from(indentError.actual, expectedIndent)
         } else if (whiteSpace.parent.node.elementType == SUPER_TYPE_LIST) {
-            val expectedIndent = whiteSpace.parentIndent() ?: (indentError.expected + INDENT_SIZE)
+            val expectedIndent = whiteSpace.parentIndent() ?: (indentError.expected + configuration.indentationSize)
             return CheckResult.from(indentError.actual, expectedIndent)
         }
         return null
@@ -128,7 +127,7 @@ internal class SuperTypeListChecker(config: IndentationConfig) : CustomIndentati
 }
 
 /**
- * This checker performs the following check: When dot call start on a new line, it should be indented by [INDENT_SIZE]
+ * This checker performs the following check: When dot call start on a new line, it should be indented by [IndentationConfig.indentationSize]
  */
 internal class DotCallChecker(config: IndentationConfig) : CustomIndentationChecker(config) {
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
@@ -136,7 +135,7 @@ internal class DotCallChecker(config: IndentationConfig) : CustomIndentationChec
             it.elementType in listOf(DOT, SAFE_ACCESS) && it.treeNext.elementType in listOf(CALL_EXPRESSION, REFERENCE_EXPRESSION)
         }?.let {
             return CheckResult.from(indentError.actual, (whiteSpace.parentIndent()
-                    ?: indentError.expected) + INDENT_SIZE, true)
+                    ?: indentError.expected) + configuration.indentationSize, true)
         }
         return null
     }
@@ -157,7 +156,7 @@ internal class ConditionalsAndLoopsWithoutBracesChecker(config: IndentationConfi
                 .takeIf { it }
                 ?.let {
                     CheckResult.from(indentError.actual, (whiteSpace.parentIndent()
-                            ?: indentError.expected) + INDENT_SIZE, false)
+                            ?: indentError.expected) + configuration.indentationSize, false)
                 }
     }
 }

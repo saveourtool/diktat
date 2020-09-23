@@ -171,6 +171,7 @@
     extendedIndentOfParameters: true
     alignedParameters: true
     extendedIndentAfterOperators: true
+    indentationSize: 4
 - name: EMPTY_BLOCK_STRUCTURE_ERROR
   enabled: true
   configuration:
@@ -228,6 +229,13 @@
 - name: WRONG_MULTIPLE_MODIFIERS_ORDER
   enabled: true
   configuration: {}
+- name: CONFUSING_IDENTIFIER_NAMING
+  enabled: true
+  configuration: {}
+- name: WRONG_COPYRIGHT_YEAR
+  enabled: true
+  configuration: {}
+# Inspection that checks if local variables are declared close to the first usage site
 - name: LOCAL_VARIABLE_EARLY_DECLARATION
   enabled: true
   configuration: {}
