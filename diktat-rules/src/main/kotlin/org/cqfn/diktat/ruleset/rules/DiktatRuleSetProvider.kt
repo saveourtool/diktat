@@ -10,6 +10,7 @@ import org.cqfn.diktat.ruleset.rules.files.FileSize
 import org.cqfn.diktat.ruleset.rules.files.FileStructureRule
 import org.cqfn.diktat.ruleset.rules.files.IndentationRule
 import org.cqfn.diktat.ruleset.rules.files.NewlinesRule
+import org.cqfn.diktat.ruleset.rules.identifiers.LocalVariablesRule
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocComments
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocFormatting
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocMethods
@@ -33,6 +34,7 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
                 ::PackageNaming,
                 ::FileSize,
                 ::IdentifierNaming,
+                ::LocalVariablesRule,
                 ::ClassLikeStructuresOrderRule,
                 ::BracesInConditionalsAndLoopsRule,
                 ::BlockStructureBraces,
@@ -47,6 +49,7 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
                 ::SortRule,
                 ::StringConcatenationRule,
                 ::LineLength,
+                ::TypeAliasRule,
                 ::BlankLinesRule,
                 ::WhiteSpaceRule,
                 ::WhenMustHaveElseRule,

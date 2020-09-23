@@ -51,7 +51,9 @@
         <commons-cli.version>1.4</commons-cli.version>
         <diktat-check.version>0.1.0</diktat-check.version>
         <kotlinpoet.version>1.6.0</kotlinpoet.version>
+        <detekt.version>1.13.1</detekt.version>
         <dokka.version>1.4.0</dokka.version>
+        <jacoco.version>0.8.6</jacoco.version>
     </properties>
 
     <modules>
@@ -226,6 +228,11 @@
                     <artifactId>exec-maven-plugin</artifactId>
                     <version>3.0.0</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${jacoco.version}</version>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
@@ -260,9 +267,26 @@
             <!-- ========= CI/CD tools========== -->
 
             <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.1.2</version>
+                <executions>
+                    <execution>
+                        <id>detekt</id>
+                        <phase>none</phase>
+                        <goals>
+                            <goal>build-classpath</goal>
+                        </goals>
+                        <configuration>
+                            <outputProperty>maven.compile.classpath</outputProperty>
+                            <pathSeparator>${path.separator}</pathSeparator>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>com.github.ozsie</groupId>
                 <artifactId>detekt-maven-plugin</artifactId>
-                <version>1.13.1</version>
+                <version>${detekt.version}</version>
                 <executions>
                     <execution>
                         <id>detekt</id>
@@ -272,8 +296,10 @@
                         </goals>
                         <configuration>
                             <config>detekt-config.yml</config>
+                            <classPath>${maven.compile.classpath}</classPath>
                             <languageVersion>1.3</languageVersion>
                             <jvmTarget>1.8</jvmTarget>
+                            <excludes>**/resources/**/*.kt</excludes>
                         </configuration>
                     </execution>
                 </executions>
@@ -289,7 +315,8 @@
                         <phase>none</phase>
                         <configuration>
                             <target name="ktlint">
-                                <java taskname="ktlint" dir="${maven.multiModuleProjectDirectory}" fork="true" failonerror="true"
+                                <java taskname="ktlint" dir="${maven.multiModuleProjectDirectory}" fork="true"
+                                      failonerror="true"
                                       classpathref="maven.plugin.classpath" classname="com.pinterest.ktlint.Main">
                                     <arg value="${project.basedir}/src/main/kotlin/**/*.kt"/>
                                     <arg value="${project.basedir}/src/test/kotlin/**/*.kt"/>
@@ -324,7 +351,11 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.5</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/generation/**</exclude>
+                    </excludes>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>

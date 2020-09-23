@@ -16,25 +16,31 @@ class PackagePathFixTest : FixTestBase(
 
     @Test
     @Tag(WarningNames.PACKAGE_NAME_INCORRECT_PATH)
-    fun `fixing package name that differs from a path (fix)`() {
+    fun `fixing package name that differs from a path`() {
         fixAndCompare("org/cqfn/diktat/some/name/FixIncorrectExpected.kt", "org/cqfn/diktat/some/name/FixIncorrectTest.kt")
     }
 
     @Test
-    @Tag(WarningNames.PACKAGE_NAME_MISSING)
-    fun `fix missing package name with a proper location (fix)`() {
-        fixAndCompare("org/cqfn/diktat/some/name/FixMissingExpected.kt", "org/cqfn/diktat/some/name/FixMissingTest.kt")
+    @Tag(WarningNames.PACKAGE_NAME_INCORRECT_PATH)
+    fun `fixing package name that differs from a path - regression one-word package name`() {
+        fixAndCompare("org/cqfn/diktat/some/name/FixPackageRegressionExpected.kt", "org/cqfn/diktat/some/name/FixPackageRegressionTest.kt")
     }
 
     @Test
     @Tag(WarningNames.PACKAGE_NAME_INCORRECT_PATH)
-    fun `fixing package name that differs from a path without domain (fix)`() {
+    fun `fixing package name that differs from a path without domain`() {
         fixAndCompare("some/FixIncorrectExpected.kt", "some/FixIncorrectTest.kt")
     }
 
     @Test
     @Tag(WarningNames.PACKAGE_NAME_MISSING)
-    fun `fix missing package name with a proper location without domain (fix)`() {
+    fun `fix missing package name with a proper location without domain`() {
         fixAndCompare("some/FixMissingExpected.kt", "some/FixMissingTest.kt")
+    }
+
+    @Test
+    @Tag(WarningNames.PACKAGE_NAME_MISSING)
+    fun `fix missing package name with a proper location`() {
+        fixAndCompare("org/cqfn/diktat/some/name/FixMissingExpected.kt", "org/cqfn/diktat/some/name/FixMissingTest.kt")
     }
 }

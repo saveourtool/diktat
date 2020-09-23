@@ -1,8 +1,12 @@
 package org.cqfn.diktat.ruleset.utils
 
+import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.ast.ElementType
+import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION
+import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.CONST_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.FILE
+import com.pinterest.ktlint.core.ast.ElementType.FILE_ANNOTATION_LIST
 import com.pinterest.ktlint.core.ast.ElementType.INTERNAL_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
@@ -13,7 +17,9 @@ import com.pinterest.ktlint.core.ast.ElementType.PUBLIC_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isLeaf
 import com.pinterest.ktlint.core.ast.isRoot
+import com.pinterest.ktlint.core.ast.lineNumber
 import com.pinterest.ktlint.core.ast.parent
+import org.cqfn.diktat.ruleset.rules.PackageNaming
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.TokenType
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
@@ -21,6 +27,7 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.psi.KtAnnotationEntry
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.psiUtil.parents
@@ -239,8 +246,8 @@ fun ASTNode.findLeafWithSpecificType(elementType: IElementType): ASTNode? {
 /**
  * This method performs tree traversal and returns all nodes with specific element type
  */
-fun ASTNode.findAllNodesWithSpecificType(elementType: IElementType): List<ASTNode> {
-    val initialAcc = if (this.elementType == elementType) mutableListOf(this) else mutableListOf()
+fun ASTNode.findAllNodesWithSpecificType(elementType: IElementType, withSelf: Boolean = true): List<ASTNode> {
+    val initialAcc = if (this.elementType == elementType && withSelf) mutableListOf(this) else mutableListOf()
     return initialAcc + this.getChildren(null).flatMap {
         it.findAllNodesWithSpecificType(elementType)
     }
@@ -301,14 +308,33 @@ fun ASTNode?.isAccessibleOutside(): Boolean =
             true
         }
 
+fun ASTNode.hasSuppress(warningName: String): Boolean {
+    return parent({ node ->
+        val annotationNode = if (node.elementType != FILE) {
+            node.findChildByType(MODIFIER_LIST)
+        } else {
+            node.findChildByType(FILE_ANNOTATION_LIST)
+        }
+        annotationNode?.findAllNodesWithSpecificType(ANNOTATION_ENTRY)
+                ?.map { it.psi as KtAnnotationEntry }
+                ?.any {
+                    it.shortName.toString() == Suppress::class.simpleName
+                            && it.valueArgumentList?.arguments
+                            ?.firstOrNull()?.text?.trim('"', ' ').equals(warningName) ?: false
+                } ?: false
+    }, strict = false) != null
+}
+
 /**
  * creation of operation reference in a node
  */
-fun ASTNode.createOperationReference(elementType: IElementType, text: String){
+fun ASTNode.createOperationReference(elementType: IElementType, text: String) {
     val operationReference = CompositeElement(OPERATION_REFERENCE)
     this.addChild(operationReference, null)
     operationReference.addChild(LeafPsiElement(elementType, text), null)
 }
+
+fun ASTNode.numNewLines() = text.count { it == '\n' }
 
 /**
  * removing all newlines in WHITE_SPACE node and replacing it to a one newline saving the initial indenting format
@@ -352,14 +378,15 @@ fun ASTNode.moveChildBefore(childToMove: ASTNode, beforeThisNode: ASTNode?, with
     val nextMovedChild = childToMove.treeNext?.let { it.clone() as ASTNode }?.takeIf { withNextNode }
     val nextOldChild = childToMove.treeNext.takeIf { withNextNode && it != null }
     addChild(movedChild, beforeThisNode)
-    if (nextMovedChild != null) {
+    if (nextMovedChild != null && nextOldChild != null) {
         addChild(nextMovedChild, beforeThisNode)
-        removeChild(nextOldChild!!)
+        removeChild(nextOldChild)
     }
     removeChild(childToMove)
     return ReplacementResult(listOfNotNull(childToMove, nextOldChild), listOfNotNull(movedChild, nextMovedChild))
 }
 
+@Suppress("UnsafeCallOnNullableType")
 fun ASTNode.findLBrace(): ASTNode? {
     return when (this.elementType) {
         ElementType.THEN, ElementType.ELSE, ElementType.FUN, ElementType.TRY, ElementType.CATCH, ElementType.FINALLY ->
@@ -386,8 +413,12 @@ fun ASTNode.isChildAfterGroup(child: ASTNode, group: List<ASTNode>): Boolean =
         getChildren(null).indexOf(child) > (group.map { getChildren(null).indexOf(it) }.max() ?: 0)
 
 fun ASTNode.isChildBeforeAnother(child: ASTNode, beforeChild: ASTNode): Boolean = areChildrenBeforeGroup(listOf(child), listOf(beforeChild))
+
 fun ASTNode.isChildBeforeGroup(child: ASTNode, group: List<ASTNode>): Boolean = areChildrenBeforeGroup(listOf(child), group)
+
 fun ASTNode.areChildrenBeforeChild(children: List<ASTNode>, beforeChild: ASTNode): Boolean = areChildrenBeforeGroup(children, listOf(beforeChild))
+
+@Suppress("UnsafeCallOnNullableType")
 fun ASTNode.areChildrenBeforeGroup(children: List<ASTNode>, group: List<ASTNode>): Boolean {
     require(children.isNotEmpty() && group.isNotEmpty()) { "no sense to operate on empty lists" }
     return children.map { getChildren(null).indexOf(it) }.max()!! < group.map { getChildren(null).indexOf(it) }.min()!!
@@ -422,6 +453,41 @@ fun ASTNode.extractLineOfText(): String {
             .takeWhileInclusive { it.size <= 1 }
             .forEach { text.add(it.first()) }
     return text.joinToString(separator = "").trim()
+}
+
+/**
+ * Checks node has `@Test` annotation
+ */
+fun ASTNode.hasTestAnnotation(): Boolean {
+    return findChildByType(MODIFIER_LIST)
+            ?.getAllChildrenWithType(ElementType.ANNOTATION_ENTRY)
+            ?.flatMap { it.findAllNodesWithSpecificType(ElementType.CONSTRUCTOR_CALLEE) }
+            ?.any { it.findLeafWithSpecificType(ElementType.IDENTIFIER)?.text == "Test" }
+            ?: false
+}
+
+/**
+ * Checks node is located in file src/test/**/*Test.kt
+ * @param testAnchors names of test directories, e.g. "test", "jvmTest"
+ */
+fun isLocatedInTest(filePathParts: List<String>, testAnchors: List<String>): Boolean {
+    return filePathParts
+            .takeIf { it.contains(PackageNaming.PACKAGE_PATH_ANCHOR) }
+            ?.run { subList(lastIndexOf(PackageNaming.PACKAGE_PATH_ANCHOR), size) }
+            ?.run {
+                // e.g. src/test/ClassTest.kt, other files like src/test/Utils.kt are still checked
+                testAnchors.any { contains(it) } && last().substringBeforeLast('.').endsWith("Test")
+            }
+            ?: false
+}
+
+fun ASTNode.firstLineOfText(suffix: String = "") = text.lines().run { singleOrNull() ?: (first() + suffix) }
+
+fun ASTNode.lastLineNumber() = lineNumber()?.plus(text.count { it == '\n' })
+
+fun ASTNode.getFileName(): String = getUserData(KtLint.FILE_PATH_USER_DATA_KEY).let {
+    require(it != null) { "File path is not present in user data" }
+    it
 }
 
 data class ReplacementResult(val oldNodes: List<ASTNode>, val newNodes: List<ASTNode>) {

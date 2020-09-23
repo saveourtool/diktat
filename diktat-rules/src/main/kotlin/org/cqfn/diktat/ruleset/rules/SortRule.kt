@@ -37,13 +37,15 @@ class SortRule(private val configRules: List<RulesConfig>) : Rule("sort-rule") {
                 configRules.getRuleConfig(WRONG_DECLARATIONS_ORDER)?.configuration ?: mapOf()
         )
 
-        if (node.isClassEnum() && node.hasChildOfType(CLASS_BODY) && configuration.sortEnum)
-            sortEnum(node.findChildByType(CLASS_BODY)!!)
-        if (((node.psi as? KtObjectDeclaration)?.isCompanion() == true) && node.hasChildOfType(CLASS_BODY) &&
+        val classBody = node.findChildByType(CLASS_BODY)
+        if (node.isClassEnum() && classBody != null && configuration.sortEnum)
+            sortEnum(classBody)
+        if ((node.psi as? KtObjectDeclaration)?.isCompanion() == true && classBody != null &&
                 configuration.sortProperty)
-            sortProperty(node.findChildByType(CLASS_BODY)!!)
+            sortProperty(classBody)
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun sortProperty(node: ASTNode) {
         val propertyList = node.getChildren(null)
                 .filter { it.elementType == PROPERTY }
@@ -59,7 +61,7 @@ class SortRule(private val configRules: List<RulesConfig>) : Rule("sort-rule") {
             if (mutableList != sortedListOfList[index]) {
                 WRONG_DECLARATIONS_ORDER.warnAndFix(configRules, emitWarn, isFixMode,
                         "constant properties inside companion object order is incorrect",
-                        mutableList.first().startOffset) {
+                        mutableList.first().startOffset, mutableList.first()) {
                     swapSortNodes(sortedListOfList[index], mutableList, node)
                 }
             }
@@ -91,13 +93,14 @@ class SortRule(private val configRules: List<RulesConfig>) : Rule("sort-rule") {
         return orderListOfList.toList()
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun sortEnum(node: ASTNode) {
         val enumEntryList = node.getChildren(null).filter { it.elementType == ElementType.ENUM_ENTRY }
         if (enumEntryList.size <= 1)
             return
         val sortList = enumEntryList.sortedBy { it.findChildByType(IDENTIFIER)!!.text }
         if (enumEntryList != sortList) {
-            WRONG_DECLARATIONS_ORDER.warnAndFix(configRules, emitWarn, isFixMode, "enum entries order is incorrect", node.startOffset) {
+            WRONG_DECLARATIONS_ORDER.warnAndFix(configRules, emitWarn, isFixMode, "enum entries order is incorrect", node.startOffset, node) {
                 val (isEndSemicolon, isEndSpace) = removeLastSemicolonAndSpace(enumEntryList.last())
                 val hasTrailingComma  = (sortList.last() != enumEntryList.last() && enumEntryList.last().hasChildOfType(COMMA))
                 swapSortNodes(sortList, enumEntryList, node)
@@ -111,6 +114,7 @@ class SortRule(private val configRules: List<RulesConfig>) : Rule("sort-rule") {
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun removeLastSemicolonAndSpace(node: ASTNode): Pair<Boolean, Boolean> {
         val isSemicolon = node.hasChildOfType(SEMICOLON)
         if (isSemicolon)
