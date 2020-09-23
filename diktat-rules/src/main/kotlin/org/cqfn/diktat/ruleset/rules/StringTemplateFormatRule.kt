@@ -18,6 +18,8 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 /**
  * In String templates there should not be redundant curly braces. In case of using a not complex statement (one argument)
  * there should not be curly braces.
+ *
+ * FixMe: The important caveat here: in "$foo" kotlin compiler adds implicit call to foo.toString() in case foo type is not string.
  */
 class StringTemplateFormatRule(private val configRules: List<RulesConfig>) : Rule("string-template-format") {
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
@@ -56,9 +58,9 @@ class StringTemplateFormatRule(private val configRules: List<RulesConfig>) : Rul
 
     @Suppress("UnsafeCallOnNullableType")
     private fun handleShortStringTemplate(node: ASTNode) {
-        val identifierName = node.findChildByType(REFERENCE_EXPRESSION)!!.text
+        val identifierName = node.findChildByType(REFERENCE_EXPRESSION)?.text
 
-        if (node.treeParent.text.trim('"', '$') == identifierName) {
+        if (identifierName != null && node.treeParent.text.trim('"', '$') == identifierName) {
             Warnings.STRING_TEMPLATE_QUOTES.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
                 val identifier = node.findChildByType(REFERENCE_EXPRESSION)!!.copyElement()
                 // node.treeParent is String template that we need to delete
