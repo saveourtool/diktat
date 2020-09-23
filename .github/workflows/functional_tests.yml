@@ -28,7 +28,7 @@ jobs:
           
       - run: |
           cat output.txt
-          grep 'Process completed with exit code 1.' output.txt
+          grep '##[error]Process completed with exit code 1.' output.txt
         
       - name: Run diKTat from gradle
         run: gradle diktatCheck
