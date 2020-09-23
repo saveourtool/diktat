@@ -26,8 +26,8 @@ jobs:
           curl -sSLO https://github.com/cqfn/diKTat/releases/download/v$DIKTAT_VERSION/diktat-$DIKTAT_VERSION.jar
           ./ktlint -R diktat-$DIKTAT_VERSION.jar "**/src/main/kotlin/**/*.kt" >out 2>err
           
-      - if: contains(err, "exit code 1") || contains(err, "exit code 0")
-        run: exit 1
+    
+      - run: cat err
         
       - name: Run diKTat from gradle
         run: gradle diktatCheck
