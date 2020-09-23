@@ -33,7 +33,9 @@ class NoVarRuleWarnTest : LintTestBase(::ImmutableValNoVarRule) {
     fun `2`() {
         lintMethod(
                 """
-                    | for (x in 0..10) println(x)
+                    | fun foo() { 
+                    |     for (x in 0..10) println(x)
+                    | }
                 """.trimMargin()
         )
     }

@@ -28,7 +28,7 @@ val diktatCheck by tasks.creating(JavaExec::class) {
     main = "com.pinterest.ktlint.Main"
 
     // specify proper path to sources that should be checked here
-    args = listOf("src/main/kotlin/**/*.kt")
+    args = listOf("diktat-*/src/main/kotlin/**/*.kt")
 }
 
 val diktatFormat by tasks.creating(JavaExec::class) {

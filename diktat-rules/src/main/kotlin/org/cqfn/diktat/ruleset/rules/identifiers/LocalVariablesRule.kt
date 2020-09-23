@@ -133,7 +133,7 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
      * @return either the line on which the property is used if it is first used in the same scope, or the block in the same scope as declaration
      */
     @Suppress("UnsafeCallOnNullableType")
-    private fun getFirstUsageStatementOrBlock(usages: List<KtNameReferenceExpression>, declarationScope: KtBlockExpression): PsiElement {
+    private fun getFirstUsageStatementOrBlock(usages: List<KtNameReferenceExpression>, declarationScope: KtBlockExpression?): PsiElement {
         val firstUsage = usages.minBy { it.node.lineNumber()!! }!!
         val firstUsageScope = firstUsage.getParentOfType<KtBlockExpression>(true)
 

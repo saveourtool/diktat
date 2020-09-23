@@ -49,39 +49,10 @@ fun KtExpression.containsOnlyConstants(): Boolean =
  * and compiler prohibits things like `if (condition) val x = 0`.
  */
 @Suppress("UnsafeCallOnNullableType")
-fun KtProperty.getDeclarationScope() = getParentOfType<KtBlockExpression>(true)!!
+fun KtProperty.getDeclarationScope() = getParentOfType<KtBlockExpression>(true)
         .let { if (it is KtIfExpression) it.then!! else it }
         .let { if (it is KtTryExpression) it.tryBlock else it }
-        as KtBlockExpression
-
-/**
- * Finds all references to [property] in the same code block.
- * @return list of references as [KtNameReferenceExpression]
- */
-fun findUsagesOf(property: KtProperty) = property
-        .getDeclarationScope()
-        .let { declarationScope ->
-            val name = property.nameAsName
-            declarationScope
-                    .node
-                    .findAllNodesWithSpecificType(ElementType.REFERENCE_EXPRESSION)
-                    .map { it.psi as KtNameReferenceExpression }
-                    .filter { it.getReferencedNameAsName() == name }
-                    .filterNot {
-                        // to avoid false triggering on objects' fields with same name as local property
-                        (it.parent as? KtDotQualifiedExpression)?.run {
-                            receiverExpression != it && selectorExpression?.referenceExpression() == it
-                        } ?: false
-                    }
-                    .filterNot { ref ->
-                        // to exclude usages of local properties and lambda arguments with same name
-                        ref.parents.mapNotNull { it as? KtBlockExpression }.takeWhile { it != declarationScope }.any { block ->
-                            block.getChildrenOfType<KtProperty>().any { it.nameAsName == name } ||
-                                    (block.parent.let { it as? KtFunctionLiteral }?.valueParameters?.any { it.nameAsName == name }
-                                            ?: false)
-                        }
-                    }
-        }
+        as KtBlockExpression?
 
 /**
  * Checks if this [PsiElement] is an ancestor of [block].
