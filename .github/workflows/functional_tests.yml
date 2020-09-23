@@ -29,7 +29,7 @@ jobs:
       - name: Check output
         id: cli-check
         continue-on-error: true
-        run: grep 'Error:' out
+        run: grep -E '^Error:' out
           
       - if: steps.cli-check.outcome == 'success'
         run: exit 1
