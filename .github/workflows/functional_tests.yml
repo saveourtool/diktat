@@ -30,7 +30,7 @@ jobs:
           
       - if: contains(env.some, 'Error:')
         run: |
-          exit 1
+          cat out
         
       - name: Run diKTat from gradle
         run: gradle diktatCheck
