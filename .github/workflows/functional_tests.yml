@@ -28,7 +28,6 @@ jobs:
           
     
       - run: |
-          cat out
           cat err
         
       - name: Run diKTat from gradle
