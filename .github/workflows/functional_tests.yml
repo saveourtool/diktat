@@ -9,7 +9,7 @@ on:
 env:
   DIKTAT_VERSION: 0.1.0
   KTLINT_VERSION: 0.37.1
-  some: ''
+  some: 'Error:'
 
 jobs:
   run-functional-tests:
