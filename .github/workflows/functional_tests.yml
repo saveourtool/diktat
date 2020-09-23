@@ -9,7 +9,7 @@ on:
 env:
   DIKTAT_VERSION: 0.1.0
   KTLINT_VERSION: 0.37.1
-  some: 'Some'
+  CHECK: 'Some'
 
 jobs:
   run-functional-tests:
@@ -28,10 +28,10 @@ jobs:
           ./ktlint -R diktat-$DIKTAT_VERSION.ja "**/src/main/kotlin/**/*.kt" > out
           
       - run: |
-          export some=`cat out`
-          echo $some
+          export CHECK=`cat out`
+          echo $CHECK
           
-      - if: contains(env.some, 'Error:')
+      - if: startsWith(env.CHECK, 'Error:')
         run: |
           cat out
         
