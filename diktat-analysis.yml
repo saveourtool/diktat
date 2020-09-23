@@ -236,9 +236,11 @@
   enabled: true
   configuration:
     typeReferenceLength: '25' # max length of type reference
-- name: REDUNDANT_CURLY_BRACES
+# Inspection that checks if string template has redundant curly braces
+- name: STRING_TEMPLATE_CURLY_BRACES
   enabled: true
   configuration: {}
-- name: REDUNDANT_QUOTES
+# Inspection that checks if string template has redundant quotes
+- name: STRING_TEMPLATE_QUOTES
   enabled: true
   configuration: {}

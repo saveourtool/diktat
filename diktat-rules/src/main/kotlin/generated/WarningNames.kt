@@ -150,7 +150,7 @@ object WarningNames {
 
     const val TYPE_ALIAS: String = "TYPE_ALIAS"
 
-    const val REDUNDANT_CURLY_BRACES: String = "REDUNDANT_CURLY_BRACES"
+    const val STRING_TEMPLATE_CURLY_BRACES: String = "STRING_TEMPLATE_CURLY_BRACES"
 
-    const val REDUNDANT_QUOTES: String = "REDUNDANT_QUOTES"
+    const val STRING_TEMPLATE_QUOTES: String = "STRING_TEMPLATE_QUOTES"
 }

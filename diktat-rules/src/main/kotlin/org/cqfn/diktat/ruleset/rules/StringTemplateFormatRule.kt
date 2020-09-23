@@ -29,12 +29,9 @@ class StringTemplateFormatRule(private val configRules: List<RulesConfig>) : Rul
         emitWarn = emit
         isFixMode = autoCorrect
 
-        if (node.elementType == LONG_STRING_TEMPLATE_ENTRY) {
-            handleLongStringTemplate(node)
-        }
-
-        if (node.elementType == SHORT_STRING_TEMPLATE_ENTRY) {
-            handleShortStringTemplate(node)
+        when (node.elementType) {
+            LONG_STRING_TEMPLATE_ENTRY -> handleLongStringTemplate(node)
+            SHORT_STRING_TEMPLATE_ENTRY -> handleShortStringTemplate(node)
         }
     }
 
@@ -43,7 +40,7 @@ class StringTemplateFormatRule(private val configRules: List<RulesConfig>) : Rul
         // Checking if in long templates {a.foo()} there are function calls or class toString call
         if (node.findAllNodesWithSpecificType(COLONCOLON).isEmpty()
                 && node.findAllNodesWithSpecificType(DOT_QUALIFIED_EXPRESSION).isEmpty()) {
-            Warnings.REDUNDANT_CURLY_BRACES.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
+            Warnings.STRING_TEMPLATE_CURLY_BRACES.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
                 val identifierName = node.findChildByType(REFERENCE_EXPRESSION)!!.text
                 val shortTemplate = CompositeElement(SHORT_STRING_TEMPLATE_ENTRY)
                 val reference = CompositeElement(REFERENCE_EXPRESSION)
@@ -62,7 +59,7 @@ class StringTemplateFormatRule(private val configRules: List<RulesConfig>) : Rul
         val identifierName = node.findChildByType(REFERENCE_EXPRESSION)!!.text
 
         if (node.treeParent.text.trim('"', '$') == identifierName) {
-            Warnings.REDUNDANT_QUOTES.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
+            Warnings.STRING_TEMPLATE_QUOTES.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
                 val identifier = node.findChildByType(REFERENCE_EXPRESSION)!!.copyElement()
                 // node.treeParent is String template that we need to delete
                 node.treeParent.treeParent.addChild(identifier, node.treeParent)
