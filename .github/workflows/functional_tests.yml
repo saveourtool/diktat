@@ -27,7 +27,7 @@ jobs:
           ./ktlint -R diktat-$DIKTAT_VERSION.jar "**/src/main/kotlin/**/*.kt" >out 2>err
           
     
-      - run: cat err
+      - run: cat out
         
       - name: Run diKTat from gradle
         run: gradle diktatCheck
