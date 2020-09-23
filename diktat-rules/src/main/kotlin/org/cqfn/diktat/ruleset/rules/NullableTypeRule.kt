@@ -104,14 +104,16 @@ class NullableTypeRule(private val configRules: List<RulesConfig>) : Rule("nulla
             replaceValue(node, fixedParam.insertConstantType, fixedParam.insertType, fixedParam.textNode)
         else
             replaceValueByText(node, fixedParam.textNode)
+        val nullableNode = node.findChildByType(TYPE_REFERENCE)!!.findChildByType(NULLABLE_TYPE)!!
+        val userTypeNode = nullableNode.firstChildNode
+        node.findChildByType(TYPE_REFERENCE)!!.replaceChild(nullableNode, userTypeNode)
     }
 
     @Suppress("UnsafeCallOnNullableType")
     private fun replaceValueByText(node: ASTNode, nodeText: String) {
         val newNode = KotlinParser().createNode(nodeText)
         if (newNode.elementType == CALL_EXPRESSION) {
-            node.addChild(newNode, node.findChildByType(NULL))
-            node.removeChild(node.findChildByType(NULL)!!)
+            node.replaceChild(node.findChildByType(NULL)!!, newNode)
         }
     }
 
@@ -132,5 +134,5 @@ class NullableTypeRule(private val configRules: List<RulesConfig>) : Rule("nulla
         value.addChild(LeafPsiElement(CLOSING_QUOTE, ""))
     }
 
-    data class FixedParam(val insertConstantType: IElementType?, val insertType: IElementType?, val textNode: String, val isString: Boolean = false)
+    private data class FixedParam(val insertConstantType: IElementType?, val insertType: IElementType?, val textNode: String, val isString: Boolean = false)
 }
