@@ -168,8 +168,8 @@ fun ASTNode.findChildAfter(afterThisNodeType: IElementType, childNodeType: IElem
  * method that traverses previous nodes until it finds needed node or it finds stop node
  * @return ASTNode?
  */
-fun ASTNode.prevNodeUntilNode(stopNodeType: IElementType, checkNodeType: IElementType) =
-        siblings(false).firstOrNull { it.elementType != stopNodeType && it.elementType == checkNodeType }
+fun ASTNode.prevNodeUntilNode(stopNodeType: IElementType, checkNodeType: IElementType) : ASTNode? =
+        siblings(false).takeWhile { it.elementType != stopNodeType }.find { it.elementType == checkNodeType }
 
 
 fun ASTNode.allSiblings(withSelf: Boolean = false): List<ASTNode> =
