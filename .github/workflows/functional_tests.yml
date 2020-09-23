@@ -33,8 +33,7 @@ jobs:
         run: grep 'Error' out
           
       - if: steps.cli-check.outcome == 'success'
-        run: |
-          cat out
+        run: exit 1
         
       - name: Run diKTat from gradle
         run: gradle diktatCheck
