@@ -2,19 +2,7 @@ package org.cqfn.diktat.ruleset.utils
 
 import com.pinterest.ktlint.core.ast.ElementType
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
-import org.jetbrains.kotlin.psi.KtBinaryExpression
-import org.jetbrains.kotlin.psi.KtBlockExpression
-import org.jetbrains.kotlin.psi.KtCallExpression
-import org.jetbrains.kotlin.psi.KtConstantExpression
-import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
-import org.jetbrains.kotlin.psi.KtExpression
-import org.jetbrains.kotlin.psi.KtFunctionLiteral
-import org.jetbrains.kotlin.psi.KtIfExpression
-import org.jetbrains.kotlin.psi.KtNameReferenceExpression
-import org.jetbrains.kotlin.psi.KtProperty
-import org.jetbrains.kotlin.psi.KtReferenceExpression
-import org.jetbrains.kotlin.psi.KtStringTemplateExpression
-import org.jetbrains.kotlin.psi.KtTryExpression
+import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
 import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 import org.jetbrains.kotlin.psi.psiUtil.isAncestor
@@ -49,10 +37,18 @@ fun KtExpression.containsOnlyConstants(): Boolean =
  * and compiler prohibits things like `if (condition) val x = 0`.
  */
 @Suppress("UnsafeCallOnNullableType")
-fun KtProperty.getDeclarationScope() = getParentOfType<KtBlockExpression>(true)
-        .let { if (it is KtIfExpression) it.then!! else it }
-        .let { if (it is KtTryExpression) it.tryBlock else it }
-        as KtBlockExpression?
+fun KtProperty.getDeclarationScope() =
+    // FixMe: class body is missing here
+    this.getParentOfType<KtBlockExpression>(true)
+            .let { if (it is KtIfExpression) it.then!! else it }
+            .let { if (it is KtTryExpression) it.tryBlock else it }
+            as KtBlockExpression?
+
+@Suppress("UnsafeCallOnNullableType")
+fun KtProperty.getClassScope() {
+    val parentBlock = this.getParentOfType<KtClassBody>(true)
+
+}
 
 /**
  * Checks if this [PsiElement] is an ancestor of [block].

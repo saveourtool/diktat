@@ -7,20 +7,39 @@ import org.junit.jupiter.api.Test
 @Suppress("UnsafeCallOnNullableType")
 class VariableSearchASTUtilsTest {
     @Test
-    fun `testing proper variables search`() {
+    fun `testing proper variables search in function`() {
         applyToCode("""
-            val a = "myVal"
             fun foo(a: Int) {
                 fun foo1() {
+                    val o = "1"
                     val a = "other"
-                    println(a)
+                    println(a.o)
                 }
             }
         """.trimIndent(), 0) {
             node, counter ->
             if (node.elementType == FILE) {
-                val a = node.collectAllVariablesWithUsagesInFile()
-                a.forEach { (key, value) -> println(">>> RES " + key) }
+                val a = node.collectAllDeclaredVariablesWithUsages()
+                a.forEach { (key, value) -> println(">>> RES " + key.text + value.map{it.text}.joinToString(",")) }
+            }
+        }
+    }
+
+    @Test
+    fun `testing proper variables search in class`() {
+        applyToCode("""
+            class SomeClass {
+                val someVal = 0
+                fun foo(a: Int) {
+                    someVal++
+                }
+            }
+        """.trimIndent(), 0) {
+            node, counter ->
+            if (node.elementType == FILE) {
+                val a = node.collectAllDeclaredVariablesWithUsages()
+                println(a)
+                a.forEach { (key, value) -> println(">>> RES " + key.text + value.map{it.text}.joinToString(",")) }
             }
         }
     }
