@@ -18,6 +18,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Run diKTat from cli
+        continue-on-error: true
         run: |
           cat pom.xml | grep "<diktat-check.version>.*</diktat-check.version>" | head -1 |awk -F'[><]' '{ENVIRON[DIKTAT_VERSION]=$3 ; print ENVIRON[DIKTAT_VERSION]}'
           cat pom.xml | grep "<ktlint.version>.*</ktlint.version>" | head -1 |awk -F'[><]' '{ENVIRON[KTLINE_VERSION]=$3 ; print ENVIRON[KTLINE_VERSION]}'
