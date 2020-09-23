@@ -9,7 +9,7 @@ on:
 env:
   DIKTAT_VERSION: 0.1.0
   KTLINT_VERSION: 0.37.1
-  some: 'Error:'
+  some: 'Some'
 
 jobs:
   run-functional-tests:
@@ -27,6 +27,7 @@ jobs:
           curl -sSLO https://github.com/cqfn/diKTat/releases/download/v$DIKTAT_VERSION/diktat-$DIKTAT_VERSION.jar
           ./ktlint -R diktat-$DIKTAT_VERSION.ja "**/src/main/kotlin/**/*.kt" > out
           cat out > $some
+          cat $some
           
       - if: contains(env.some, 'Error:')
         run: |
