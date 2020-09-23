@@ -74,4 +74,17 @@ class TypeAliasRuleWarnTest : LintTestBase(::TypeAliasRule) {
                 rulesConfigList = rulesConfigListShortType
         )
     }
+
+    @Test
+    @Tag(WarningNames.TYPE_ALIAS)
+    fun `should ignore inheritance`() {
+        lintMethod(
+                """
+                    | class A : JsonResourceConfigReader<List<RulesConfig>>() {
+                    |   fun foo() : JsonResourceConfigReader<List<RulesConfig>> {}
+                    | }
+                """.trimMargin(),
+                LintError(2,16, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false)
+        )
+    }
 }
