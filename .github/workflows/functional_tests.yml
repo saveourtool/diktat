@@ -25,7 +25,8 @@ jobs:
           curl -sSLO https://github.com/cqfn/diKTat/releases/download/v$DIKTAT_VERSION/diktat-$DIKTAT_VERSION.jar
           ./ktlint -R diktat-$DIKTAT_VERSION.jar "**/src/main/kotlin/**/*.kt" &> output.txt
           
-        if: ${{grep "Process completed with exit code 1." output.txt}}
+      - if: job.status == 'failure'
+        run: grep "Process completed with exit code 1." output.txt
         
       - name: Run diKTat from gradle
         run: gradle diktatCheck
