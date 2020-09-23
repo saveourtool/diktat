@@ -27,9 +27,7 @@ jobs:
           curl -sSLO https://github.com/cqfn/diKTat/releases/download/v$DIKTAT_VERSION/diktat-$DIKTAT_VERSION.jar
           ./ktlint -R diktat-$DIKTAT_VERSION.ja "**/src/main/kotlin/**/*.kt" > out
           
-      - run: |
-          export CHECK=`cat out`
-          echo $CHECK
+      - run: grep 'Error' out
           
       - if: startsWith(env.CHECK, 'Error:')
         run: |
