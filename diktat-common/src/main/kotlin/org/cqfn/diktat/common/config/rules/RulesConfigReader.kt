@@ -43,10 +43,13 @@ data class RulesConfig(
 open class RuleConfiguration(protected val config: Map<String, String>)
 object EmptyConfiguration : RuleConfiguration(mapOf())
 
+@Suppress("TYPE_ALIAS")
+typealias RulesConfigReaderBase = JsonResourceConfigReader<List<RulesConfig>>
+
 /**
  * class returns the list of configurations that we have read from a yml: diktat-analysis.yml
  */
-open class RulesConfigReader(override val classLoader: ClassLoader) : JsonResourceConfigReader<List<RulesConfig>>() {
+open class RulesConfigReader(override val classLoader: ClassLoader) : RulesConfigReaderBase() {
     /**
      * Parse resource file into list of [RulesConfig]
      *
@@ -95,9 +98,16 @@ fun List<RulesConfig>.getCommonConfiguration() = lazy { CommonConfiguration(getC
  * @param configuration map of common configuration
  */
 class CommonConfiguration(configuration: Map<String, String>?) {
+    /**
+     * List of directory names which will be used to detect test sources
+     */
     val testAnchors: List<String> by lazy {
         (configuration ?: mapOf()).getOrDefault("testDirs", "test").split(',')
     }
+
+    /**
+     * Start of package name, which shoould be common, e.g. org.example.myproject
+     */
     val domainName: String by lazy {
         (configuration ?: mapOf()).getOrDefault("domainName", "")
     }

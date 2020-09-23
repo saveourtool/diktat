@@ -41,4 +41,5 @@ jobs:
           mvn versions:set -DnewVersion=${{ env.BASE_VERSION }}-SNAPSHOT
           mvn versions:set-property -Dproperty=diktat-check.version -DnewVersion=${{ env.BASE_VERSION }}-pre
       - name: Run diktat snapshot via ktlint
-        run: mvn -B antrun:run@diktat
+        # we need to compile project once more with snapshot version for antrun to work properly
+        run: mvn -B compile antrun:run@diktat

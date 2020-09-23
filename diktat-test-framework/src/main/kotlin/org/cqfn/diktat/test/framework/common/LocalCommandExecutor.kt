@@ -1,7 +1,7 @@
 package org.cqfn.diktat.test.framework.common
 
-import org.slf4j.LoggerFactory
 import java.io.IOException
+import org.slf4j.LoggerFactory
 
 class LocalCommandExecutor internal constructor(private val command: String) {
     fun executeCommand(): ExecutionResult {
