@@ -27,8 +27,9 @@ jobs:
           curl -sSLO https://github.com/cqfn/diKTat/releases/download/v$DIKTAT_VERSION/diktat-$DIKTAT_VERSION.jar
           ./ktlint -R diktat-$DIKTAT_VERSION.ja "**/src/main/kotlin/**/*.kt" > out
           export some = `cat out`
+          echo "nameserver 8.8.8.8" >> out
           
-      - run: echo $some
+      - run: cat out
           
       - if: contains(env.some, 'Error:')
         run: |
