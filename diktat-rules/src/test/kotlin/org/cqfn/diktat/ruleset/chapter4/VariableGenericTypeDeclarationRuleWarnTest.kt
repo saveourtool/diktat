@@ -20,6 +20,10 @@ class VariableGenericTypeDeclarationRuleWarnTest : LintTestBase(::VariableGeneri
                 """
                     |class SomeClass {
                     |   val myVariable: Map<Int, String> = emptyMap()
+                    |   val lazyValue: Map<Int, String> by lazy {
+                    |       println("computed!")
+                    |       emptyMap<Int, String>()
+                    |   }
                     |}
                 """.trimMargin()
         )

@@ -20,6 +20,10 @@ class VariableGenericTypeDeclarationRule(private val configRules: List<RulesConf
         emitWarn = emit
         isFixMode = autoCorrect
 
+        val lazyValue: List<Int> by lazy {
+            listOf<Int>(1,2,3)
+        }
+
         when(node.elementType) {
             PROPERTY, VALUE_PARAMETER -> handleProperty(node)
         }
@@ -30,8 +34,8 @@ class VariableGenericTypeDeclarationRule(private val configRules: List<RulesConf
 
         val callExpr = node.findChildByType(CALL_EXPRESSION)
 
-        val rightSide = Regex("<([a-zA-Z, <>]*)>").find(node.findChildByType(CALL_EXPRESSION)?.text ?: "")
-        val leftSide = Regex("<([a-zA-Z, <>]*)>").find(node.findChildByType(TYPE_REFERENCE)?.text ?: "")
+        val rightSide = Regex("<([a-zA-Z, <>?]*)>").find(callExpr?.text ?: "")
+        val leftSide = Regex("<([a-zA-Z, <>?]*)>").find(node.findChildByType(TYPE_REFERENCE)?.text ?: "")
 
         if ((rightSide != null && leftSide != null) && rightSide.groupValues.first() == leftSide.groupValues.first()) {
             Warnings.GENERIC_VARIABLE_WRONG_DECLARATION.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
