@@ -92,6 +92,8 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     WRONG_DECLARATIONS_ORDER(true, "declarations of constants and enum members should be sorted alphabetically"),
     WRONG_MULTIPLE_MODIFIERS_ORDER(true, "sequence of modifiers is incorrect"),
     LOCAL_VARIABLE_EARLY_DECLARATION(false, "local variables should be declared close to the line where they are first used"),
+
+    // ======== chapter 4 ========
     TYPE_ALIAS(false, "variable's type is too complex and should be replaced with typealias"),
     ;
 
@@ -125,7 +127,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
 
         if (configs.isRuleEnabled(this) && !node.hasSuppress(name)) {
             emit(offset,
-                    "${this.warnText()} $freeText",
+                    "${this.warnText()} ${freeText.lines().first()}",
                     autoCorrected
             )
         }
