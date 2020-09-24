@@ -4,6 +4,7 @@ import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.COLONCOLON
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
+import com.pinterest.ktlint.core.ast.ElementType.LITERAL_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.LONG_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.SHORT_STRING_TEMPLATE_ENTRY
@@ -43,15 +44,22 @@ class StringTemplateFormatRule(private val configRules: List<RulesConfig>) : Rul
         if (node.findAllNodesWithSpecificType(COLONCOLON).isEmpty()
                 && node.findAllNodesWithSpecificType(DOT_QUALIFIED_EXPRESSION).isEmpty()) {
             Warnings.STRING_TEMPLATE_CURLY_BRACES.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
-                val identifierName = node.findChildByType(REFERENCE_EXPRESSION)!!.text
-                val shortTemplate = CompositeElement(SHORT_STRING_TEMPLATE_ENTRY)
-                val reference = CompositeElement(REFERENCE_EXPRESSION)
+                val identifierName = node.findChildByType(REFERENCE_EXPRESSION)
+                if (identifierName != null) {
+                    val shortTemplate = CompositeElement(SHORT_STRING_TEMPLATE_ENTRY)
+                    val reference = CompositeElement(REFERENCE_EXPRESSION)
 
-                node.treeParent.addChild(shortTemplate, node)
-                shortTemplate.addChild(LeafPsiElement(SHORT_TEMPLATE_ENTRY_START, "$"), null)
-                shortTemplate.addChild(reference)
-                reference.addChild(LeafPsiElement(IDENTIFIER, identifierName))
-                node.treeParent.removeChild(node)
+                    node.treeParent.addChild(shortTemplate, node)
+                    shortTemplate.addChild(LeafPsiElement(SHORT_TEMPLATE_ENTRY_START, "$"), null)
+                    shortTemplate.addChild(reference)
+                    reference.addChild(LeafPsiElement(IDENTIFIER, identifierName.text))
+                    node.treeParent.removeChild(node)
+                } else {
+                    val stringTemplate = node.treeParent
+                    val appropriateText = node.text.trim('$', '{', '}')
+                    stringTemplate.addChild(LeafPsiElement(LITERAL_STRING_TEMPLATE_ENTRY, appropriateText), node)
+                    stringTemplate.removeChild(node)
+                }
             }
         }
     }
