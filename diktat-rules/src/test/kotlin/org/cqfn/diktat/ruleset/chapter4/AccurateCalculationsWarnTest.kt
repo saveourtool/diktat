@@ -146,4 +146,30 @@ class AccurateCalculationsWarnTest : LintTestBase(::AccurateCalculationsRule) {
                 LintError(14, 9, ruleId, warnText("x", "x /= 2"), false)
         )
     }
+
+    @Test
+    @Tag(WarningNames.FLOAT_IN_ACCURATE_CALCULATIONS)
+    fun `should allow arithmetic operations inside abs in comparison`() {
+        lintMethod(
+                """
+                    |import kotlin.math.abs
+                    |
+                    |fun foo() {
+                    |    if (abs(1.0 - 0.999) < 1e-6) {
+                    |        println("Comparison with tolerance")
+                    |    }
+                    |    
+                    |    if (abs(1.0 - 0.999) < eps) {
+                    |        println("Comparison with tolerance using epsilon")
+                    |    }
+                    |    
+                    |    val x = 1.0
+                    |    val y = 0.999
+                    |    if (abs(x - y) < eps) {
+                    |        println("Comparison with tolerance using epsilon")
+                    |    }
+                    |}
+                """.trimMargin()
+        )
+    }
 }

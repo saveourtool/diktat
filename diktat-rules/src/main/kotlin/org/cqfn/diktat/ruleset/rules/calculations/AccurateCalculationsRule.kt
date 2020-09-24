@@ -13,11 +13,13 @@ import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
 import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.KtNameReferenceExpression
+import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
 
 /**
  * Rule that checks that floating-point numbers are not used for accurate calculations
  * 1. Checks that floating-point numbers are not used in arithmetic binary expressions
+ *    Exception: allows arithmetic operations only when absolute value of result is immediately used in comparison
  * Fixme: detect variables by type, not only floating-point literals
  */
 class AccurateCalculationsRule(private val configRules: List<RulesConfig>) : Rule("accurate-calculations") {
@@ -31,7 +33,9 @@ class AccurateCalculationsRule(private val configRules: List<RulesConfig>) : Rul
                 KtTokens.GT, KtTokens.LT, KtTokens.LTEQ, KtTokens.GTEQ,
                 KtTokens.EQEQ
         )
+        private val comparisonOperators = listOf(KtTokens.LT, KtTokens.LTEQ, KtTokens.GT, KtTokens.GTEQ)
         private val arithmeticOperationsFunctions = listOf("equals", "compareTo")
+        private val comparisonFunctions = listOf("compareTo")
     }
 
     override fun visit(node: ASTNode,
@@ -50,11 +54,13 @@ class AccurateCalculationsRule(private val configRules: List<RulesConfig>) : Rul
     @Suppress("UnsafeCallOnNullableType")
     private fun handleBinaryExpression(expression: KtBinaryExpression) = expression
             .takeIf { it.operationToken in arithmeticOperationTokens }
-            ?.let { expr ->
+            ?.takeUnless { it.parentsWithSelf.any(::isComparisonWithAbs) }
+            ?.run {
                 // !! is safe because `KtBinaryExpression#left` is annotated `Nullable IfNotParsed`
-                val floatValue = expr.left!!.takeIf { it.isFloatingPoint() }
-                        ?: expr.right!!.takeIf { it.isFloatingPoint() }
-                checkFloatValue(floatValue, expr)
+                val floatValue = left!!.takeIf { it.isFloatingPoint() }
+                        ?: right!!.takeIf { it.isFloatingPoint() }
+                checkFloatValue(floatValue, this)
+                println()
             }
 
     private fun handleFunction(expression: KtDotQualifiedExpression) = expression
@@ -80,6 +86,22 @@ class AccurateCalculationsRule(private val configRules: List<RulesConfig>) : Rul
                     "float value of <${floatValue.text}> used in arithmetic expression in ${expression.text}", expression.startOffset, expression.node)
         }
     }
+
+    private fun isComparisonWithAbs(psiElement: PsiElement): Boolean = psiElement
+            .takeIf {
+                it is KtBinaryExpression && it.operationToken in comparisonOperators
+            }
+            ?.run {
+                if (this is KtBinaryExpression) {
+                    (left as? KtCallExpression ?: right as? KtCallExpression)
+                } else {
+                    this as KtCallExpression
+                }
+            }
+            ?.run { calleeExpression as? KtNameReferenceExpression }
+            ?.getReferencedName()
+            ?.equals("abs")
+            ?: false
 }
 
 private fun PsiElement.isFloatingPoint() =
