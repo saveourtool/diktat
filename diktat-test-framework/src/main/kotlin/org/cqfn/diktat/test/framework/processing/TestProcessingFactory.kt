@@ -14,9 +14,25 @@ import kotlin.system.exitProcess
 
 @Suppress("ForbiddenComment")
 class TestProcessingFactory(private val argReader: TestArgumentsReader) {
-    companion object {
-        private val log = LoggerFactory.getLogger(TestProcessingFactory::class.java)
-    }
+    private val allTestsFromResources: List<String>
+        get() {
+            val fileUrl = javaClass.getResource("/${argReader.properties.testConfigsRelativePath}")
+            if (fileUrl == null) {
+                log.error("Not able to get directory with test configuration files: " +
+                        argReader.properties.testConfigsRelativePath)
+                exitProcess(5)
+            }
+            val resource = File(fileUrl.file)
+            try {
+                return resource.walk()
+                        .filter { file -> file.isFile }
+                        .map { file -> file.name.replace(".json", "") }
+                        .toList()
+            } catch (e: IOException) {
+                log.error("Got -all option, but cannot read config files ", e)
+                exitProcess(3)
+            }
+        }
 
     fun processTests() {
         val failedTests = AtomicInteger(0)
@@ -47,27 +63,6 @@ class TestProcessingFactory(private val argReader: TestArgumentsReader) {
                     .config
                     ?.setTestName(test)
 
-
-    private val allTestsFromResources: List<String>
-        get() {
-            val fileURL = javaClass.getResource("/${argReader.properties.testConfigsRelativePath}")
-            if (fileURL == null) {
-                log.error("Not able to get directory with test configuration files: " +
-                        argReader.properties.testConfigsRelativePath)
-                exitProcess(5)
-            }
-            val resource = File(fileURL.file)
-            try {
-                return resource.walk()
-                        .filter { file -> file.isFile }
-                        .map { file -> file.name.replace(".json", "") }
-                        .toList()
-            } catch (e: IOException) {
-                log.error("Got -all option, but cannot read config files ", e)
-                exitProcess(3)
-            }
-        }
-
     @Suppress("FUNCTION_BOOLEAN_PREFIX")
     private fun processTest(testConfig: TestConfig): Boolean {
         val test: TestBase = when (testConfig.executionType) {
@@ -80,5 +75,9 @@ class TestProcessingFactory(private val argReader: TestArgumentsReader) {
 
         return test.initTestProcessor(testConfig, argReader.properties)
                 .runTest()
+    }
+
+    companion object {
+        private val log = LoggerFactory.getLogger(TestProcessingFactory::class.java)
     }
 }
