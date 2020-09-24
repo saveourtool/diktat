@@ -453,4 +453,102 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
                 LintError(2, 50, ruleId, tokenWarn(",", 1, 0, 0, 1), true)
         )
     }
+
+    @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
+    fun `space after annotation`() {
+        lintMethod(
+                """
+                    |@Annotation ("Text")
+                    |fun foo() {
+                    |
+                    |}
+                """.trimMargin(),
+                LintError(1, 13, ruleId, tokenWarn("(\"Text\")", 1, null, 0, null), true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
+    fun `check space on both sides of equals`() {
+        lintMethod(
+                """ 
+                    |fun foo() {
+                    |   val q=10
+                    |   var w = 10
+                    |   w=q
+                    |}
+                """.trimMargin(),
+                LintError(2, 9, ruleId, tokenWarn("=", 0, 0, 1, 1), true),
+                LintError(4, 5, ruleId, tokenWarn("=", 0, 0, 1, 1), true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
+    fun `check eq in other cases`() {
+        lintMethod(
+                """ 
+                    |fun foo()=10
+                    |
+                    |val q =goo(text=ty)
+                """.trimMargin(),
+                LintError(1, 10, ruleId, tokenWarn("=", 0, 0, 1, 1), true),
+                LintError(3, 7, ruleId, tokenWarn("=", null, 0, 1, 1), true),
+                LintError(3, 16, ruleId, tokenWarn("=", 0, 0, 1, 1), true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
+    fun `singe space after open brace`() {
+        lintMethod(
+                """ 
+                    |fun foo() {
+                    |   "${"$"}{foo()}"
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
+    fun `array initializers in annotations`() {
+        lintMethod(
+                """ 
+                    |@RequestMapping(value =["/"], method = [RequestMethod.GET])
+                    |fun foo() {
+                    |   a[0]
+                    |}
+                """.trimMargin(),
+                LintError(1, 23, ruleId, tokenWarn("=", null, 0, 1, 1), true),
+                LintError(1, 24, ruleId, tokenWarn("[", 0, null, 1, 0), true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
+    fun `lambda as rigth value in arguments`() {
+        lintMethod(
+                """
+                    |fun foo() {
+                    |   Example(cb = { _, _ -> Unit })
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
+    fun `lambdas as argument for function`() {
+        lintMethod(
+                """
+                    |val q = foo(bar, { it.baz() })
+                    |val q = foo({ it.baz() })
+                    |val q = foo( { it.baz() })
+                """.trimMargin(),
+                LintError(3, 14, ruleId,
+                        "${WRONG_WHITESPACE.warnText()} there should be no whitespace before '{' of lambda inside argument list", true)
+        )
+    }
 }
