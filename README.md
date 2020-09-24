@@ -5,6 +5,7 @@
 ![diKTat code style](https://github.com/cqfn/diKTat/workflows/Run%20diKTat/badge.svg)
 
 [![Releases](https://img.shields.io/github/v/release/cqfn/diKTat)](https://github.com/cqfn/diKTat/releases)
+![Maven Central](https://img.shields.io/maven-central/v/org.cqfn.diktat/diktat-rules)
 [![License](https://img.shields.io/github/license/cqfn/diKtat)](https://github.com/cqfn/diKTat/blob/master/LICENSE)
 [![Hits-of-Code](https://hitsofcode.com/github/cqfn/diktat)](https://hitsofcode.com/view/github/cqfn/diktat)
 [![codecov](https://codecov.io/gh/cqfn/diKTat/branch/master/graph/badge.svg)](https://codecov.io/gh/cqfn/diKTat)

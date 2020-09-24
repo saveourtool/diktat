@@ -97,6 +97,8 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     TYPE_ALIAS(false, "variable's type is too complex and should be replaced with typealias"),
     STRING_TEMPLATE_CURLY_BRACES(true, "string template has redundant curly braces"),
     STRING_TEMPLATE_QUOTES(true, "string template has redundant quotes"),
+    // FixMe: change float literal to BigDecimal? Or kotlin equivalent?
+    FLOAT_IN_ACCURATE_CALCULATIONS(false, "floating-point values shouldn't be used in accurate calculations"),
     ;
 
     /**
