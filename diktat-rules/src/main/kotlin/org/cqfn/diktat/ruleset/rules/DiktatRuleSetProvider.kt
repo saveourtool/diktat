@@ -33,6 +33,7 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
                 ::KdocFormatting,
                 ::FileNaming,
                 ::PackageNaming,
+                ::StringTemplateFormatRule,
                 ::FileSize,
                 ::IdentifierNaming,
                 ::LocalVariablesRule,

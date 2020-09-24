@@ -246,6 +246,14 @@
   enabled: true
   configuration:
     typeReferenceLength: '25' # max length of type reference
+# Inspection that checks if string template has redundant curly braces
+- name: STRING_TEMPLATE_CURLY_BRACES
+  enabled: true
+  configuration: {}
+# Inspection that checks if string template has redundant quotes
+- name: STRING_TEMPLATE_QUOTES
+  enabled: true
+  configuration: {}
 # Checks that floating-point values are not used in arithmetic expressions
 - name: FLOAT_IN_ACCURATE_CALCULATIONS
   enabled: true
