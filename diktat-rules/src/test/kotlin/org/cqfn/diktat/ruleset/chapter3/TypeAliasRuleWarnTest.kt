@@ -27,7 +27,7 @@ class TypeAliasRuleWarnTest : LintTestBase(::TypeAliasRule) {
                     | val b: MutableMap<String, MutableList<String>>
                     | val b = listof<Int>()
                 """.trimMargin(),
-                LintError(1,9, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false)
+                LintError(1, 9, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false)
         )
     }
 
@@ -39,8 +39,8 @@ class TypeAliasRuleWarnTest : LintTestBase(::TypeAliasRule) {
                     | var emitWarn: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit
                     | var emitWarn: (offset: Int, (T) -> Boolean) -> Unit
                 """.trimMargin(),
-                LintError(1,16, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false),
-                LintError(2,16, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false)
+                LintError(1, 16, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false),
+                LintError(2, 16, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false)
         )
     }
 
@@ -56,7 +56,7 @@ class TypeAliasRuleWarnTest : LintTestBase(::TypeAliasRule) {
                     | }
                     | 
                 """.trimMargin(),
-                LintError(4,13, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false)
+                LintError(4, 13, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false)
         )
     }
 
@@ -70,10 +70,11 @@ class TypeAliasRuleWarnTest : LintTestBase(::TypeAliasRule) {
                     | val list: List<List<Int>>
                     | 
                 """.trimMargin(),
-                LintError(3,12, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false),
+                LintError(3, 12, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false),
                 rulesConfigList = rulesConfigListShortType
         )
     }
+
 
     @Test
     @Tag(WarningNames.TYPE_ALIAS)
@@ -82,9 +83,48 @@ class TypeAliasRuleWarnTest : LintTestBase(::TypeAliasRule) {
                 """
                     | class A : JsonResourceConfigReader<List<RulesConfig>>() {
                     |   fun foo() : JsonResourceConfigReader<List<RulesConfig>> {}
+                    |   val q: JsonResourceConfigReader<List<RulesConfig>>? = null
+                    |   fun goo() {
+                    |       class B : JsonResourceConfigReader<List<RulesConfig>> {}
+                    |   }
                     | }
                 """.trimMargin(),
-                LintError(2,16, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false)
+                LintError(2, 16, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false),
+                LintError(3, 11, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.TYPE_ALIAS)
+    fun `check correct examle`() {
+        lintMethod(
+                """
+                    |typealias jsonType = JsonResourceConfigReader<List<RulesConfig>> 
+                    |class A : JsonResourceConfigReader<List<RulesConfig>>() {
+                    |   
+                    |   fun foo() : jsonType {}
+                    |   val q: jsonType? = null
+                    |   fun goo() {
+                    |       class B : JsonResourceConfigReader<List<RulesConfig>> {}
+                    |   }
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.TYPE_ALIAS)
+    fun `check lazy property`() {
+        lintMethod(
+                """
+                    |class A {
+                    |   val q: List<Map<Int, Int>> by lazy  {
+                    |       emptyList<Map<Int, Int>>()
+                    |   }
+                    |}
+                """.trimMargin(),
+                LintError(2, 11, ruleId, "${TYPE_ALIAS.warnText()} too long type reference", false),
+                rulesConfigList = rulesConfigListShortType
         )
     }
 }

@@ -12,7 +12,6 @@ import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.TYPE_ALIAS
 import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import org.jetbrains.kotlin.psi.psiUtil.parents
 
 /**
  * This rule checks if variable has long type reference and two or more nested generics.
@@ -33,7 +32,7 @@ class TypeAliasRule(private val configRules: List<RulesConfig>) : Rule("type-ali
         emitWarn = emit
         isFixMode = autoCorrect
 
-        if (node.elementType == TYPE_REFERENCE && node.parents().map { it.elementType }.any { it == FUN || it == PROPERTY }) {
+        if (node.elementType == TYPE_REFERENCE && (node.treeParent.elementType == FUN || node.treeParent.elementType == PROPERTY)) {
             checkTypeReference(node, TypeAliasConfiguration(configRules.getRuleConfig(TYPE_ALIAS)?.configuration ?: mapOf()))
         }
     }
