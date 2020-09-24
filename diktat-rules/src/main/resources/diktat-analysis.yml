@@ -173,6 +173,7 @@
     extendedIndentOfParameters: true
     alignedParameters: true
     extendedIndentAfterOperators: true
+    indentationSize: 4
 - name: EMPTY_BLOCK_STRUCTURE_ERROR
   enabled: true
   configuration:
