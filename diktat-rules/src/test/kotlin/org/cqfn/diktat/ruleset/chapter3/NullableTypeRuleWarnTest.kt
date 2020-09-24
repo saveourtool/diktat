@@ -87,12 +87,13 @@ class NullableTypeRuleWarnTest : LintTestBase(::NullableTypeRule) {
 
     @Test
     @Tag(WarningNames.TYPE_ALIAS)
-    fun `shouldn't trigger on collection factory`() {
+    fun `should trigger on collection factory`() {
         lintMethod(
                 """
                     | val q: List<Int>? = emptyList<Int>()
                     | val w: List<Map<Int, Int>> = emptyList<Map<Int, Int>>()
                     | val c: Set<Int>? = setOf() 
+                    | val d: List<Int?> = emptyList()
                 """.trimMargin(),
                 LintError(1, 9, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} don't use nullable type", false),
                 LintError(3, 9, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} don't use nullable type", false)

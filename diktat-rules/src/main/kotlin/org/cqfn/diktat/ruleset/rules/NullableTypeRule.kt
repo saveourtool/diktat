@@ -26,7 +26,6 @@ import com.pinterest.ktlint.core.ast.ElementType.VAL_KEYWORD
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.NULLABLE_PROPERTY_TYPE
 import org.cqfn.diktat.ruleset.utils.KotlinParser
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
@@ -57,8 +56,11 @@ class NullableTypeRule(private val configRules: List<RulesConfig>) : Rule("nulla
     @Suppress("UnsafeCallOnNullableType")
     private fun checkProperty(node: ASTNode) {
         if (node.hasChildOfType(VAL_KEYWORD) && node.hasChildOfType(EQ) && node.hasChildOfType(TYPE_REFERENCE)) {
-            if (!node.hasChildOfType(NULL) && node.findChildByType(TYPE_REFERENCE)!!.findAllNodesWithSpecificType(QUEST).isNotEmpty() &&
-                    !node.hasChildOfType(DOT_QUALIFIED_EXPRESSION)) {
+            val typeReferenceNode = node.findChildByType(TYPE_REFERENCE)!!
+            if (!node.hasChildOfType(NULL) &&
+                    !node.hasChildOfType(DOT_QUALIFIED_EXPRESSION) &&
+                    typeReferenceNode.hasChildOfType(NULLABLE_TYPE) &&
+                    typeReferenceNode.findChildByType(NULLABLE_TYPE)!!.hasChildOfType(QUEST)) {
                 if (node.findChildByType(CALL_EXPRESSION)?.findChildByType(REFERENCE_EXPRESSION)?.text ?: "emptyList" in allowExpression) {
                     NULLABLE_PROPERTY_TYPE.warn(configRules, emitWarn, isFixMode, "don't use nullable type",
                             node.findChildByType(TYPE_REFERENCE)!!.startOffset, node)
