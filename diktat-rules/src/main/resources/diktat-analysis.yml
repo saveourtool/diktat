@@ -254,3 +254,7 @@
 - name: STRING_TEMPLATE_QUOTES
   enabled: true
   configuration: {}
+# Checks that floating-point values are not used in arithmetic expressions
+- name: FLOAT_IN_ACCURATE_CALCULATIONS
+  enabled: true
+  configuration: {}
