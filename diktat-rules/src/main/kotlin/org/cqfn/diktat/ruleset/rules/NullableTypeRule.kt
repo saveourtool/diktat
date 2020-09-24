@@ -35,6 +35,11 @@ import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 
 class NullableTypeRule(private val configRules: List<RulesConfig>) : Rule("nullable-type") {
 
+    companion object {
+        private val allowExpression = listOf("emptyList", "emptySequence", "emptyArray", "emptyMap", "emptySet",
+                "listOf", "mapOf", "arrayOf", "sequenceOf", "setOf")
+    }
+
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
 
@@ -46,15 +51,18 @@ class NullableTypeRule(private val configRules: List<RulesConfig>) : Rule("nulla
 
         if (node.elementType == PROPERTY)
             checkProperty(node)
+
     }
 
     @Suppress("UnsafeCallOnNullableType")
     private fun checkProperty(node: ASTNode) {
         if (node.hasChildOfType(VAL_KEYWORD) && node.hasChildOfType(EQ) && node.hasChildOfType(TYPE_REFERENCE)) {
             if (!node.hasChildOfType(NULL) && node.findChildByType(TYPE_REFERENCE)!!.findAllNodesWithSpecificType(QUEST).isNotEmpty() &&
-                    !node.hasChildOfType(DOT_QUALIFIED_EXPRESSION) && !node.hasChildOfType(CALL_EXPRESSION)) {
-                NULLABLE_PROPERTY_TYPE.warn(configRules, emitWarn, isFixMode, "don't use nullable type",
-                        node.findChildByType(TYPE_REFERENCE)!!.startOffset, node)
+                    !node.hasChildOfType(DOT_QUALIFIED_EXPRESSION)) {
+                if (node.findChildByType(CALL_EXPRESSION)?.findChildByType(REFERENCE_EXPRESSION)?.text ?: "emptyList" in allowExpression) {
+                    NULLABLE_PROPERTY_TYPE.warn(configRules, emitWarn, isFixMode, "don't use nullable type",
+                            node.findChildByType(TYPE_REFERENCE)!!.startOffset, node)
+                }
             } else if (node.hasChildOfType(NULL)) {
                 val fixedParam = findFixableParam(node)
                 NULLABLE_PROPERTY_TYPE.warnAndFix(configRules, emitWarn, isFixMode, "initialize explicitly",
