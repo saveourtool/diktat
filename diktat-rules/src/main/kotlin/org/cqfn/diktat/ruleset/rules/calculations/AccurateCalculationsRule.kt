@@ -28,6 +28,7 @@ class AccurateCalculationsRule(private val configRules: List<RulesConfig>) : Rul
         private val arithmeticOperationTokens = listOf(KtTokens.PLUS, KtTokens.PLUSEQ, KtTokens.PLUSPLUS,
                 KtTokens.MINUS, KtTokens.MINUSEQ, KtTokens.MINUSMINUS,
                 KtTokens.MUL, KtTokens.MULTEQ, KtTokens.DIV, KtTokens.DIVEQ,
+                KtTokens.PERC, KtTokens.PERCEQ,
                 KtTokens.GT, KtTokens.LT, KtTokens.LTEQ, KtTokens.GTEQ,
                 KtTokens.EQEQ
         )

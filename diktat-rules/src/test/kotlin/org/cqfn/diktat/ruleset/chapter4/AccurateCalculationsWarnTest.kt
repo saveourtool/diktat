@@ -130,6 +130,8 @@ class AccurateCalculationsWarnTest : LintTestBase(::AccurateCalculationsRule) {
                     |        x *= 2
                     |        x / 2
                     |        x /= 2
+                    |        x % 2
+                    |        x %= 2
                     |    }
                     |}
                 """.trimMargin(),
@@ -143,7 +145,9 @@ class AccurateCalculationsWarnTest : LintTestBase(::AccurateCalculationsRule) {
                 LintError(11, 9, ruleId, warnText("x", "x * 2"), false),
                 LintError(12, 9, ruleId, warnText("x", "x *= 2"), false),
                 LintError(13, 9, ruleId, warnText("x", "x / 2"), false),
-                LintError(14, 9, ruleId, warnText("x", "x /= 2"), false)
+                LintError(14, 9, ruleId, warnText("x", "x /= 2"), false),
+                LintError(15, 9, ruleId, warnText("x", "x % 2"), false),
+                LintError(16, 9, ruleId, warnText("x", "x %= 2"), false)
         )
     }
 }
