@@ -126,8 +126,11 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
              node: ASTNode) {
 
         if (configs.isRuleEnabled(this) && !node.hasSuppress(name)) {
+            val trimmedFreeText = freeText
+                    .lines()
+                    .run { if (size > 1) "${first()}..." else first() }
             emit(offset,
-                    "${this.warnText()} ${freeText.lines().first()}",
+                    "${this.warnText()} $trimmedFreeText",
                     autoCorrected
             )
         }
