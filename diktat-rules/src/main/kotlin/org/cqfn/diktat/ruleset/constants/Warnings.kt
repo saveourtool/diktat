@@ -93,6 +93,8 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     WRONG_MULTIPLE_MODIFIERS_ORDER(true, "sequence of modifiers is incorrect"),
     LOCAL_VARIABLE_EARLY_DECLARATION(false, "local variables should be declared close to the line where they are first used"),
     TYPE_ALIAS(false, "variable's type is too complex and should be replaced with typealias"),
+    STRING_TEMPLATE_CURLY_BRACES(true, "string template has redundant curly braces"),
+    STRING_TEMPLATE_QUOTES(true, "string template has redundant quotes"),
     ;
 
     /**
