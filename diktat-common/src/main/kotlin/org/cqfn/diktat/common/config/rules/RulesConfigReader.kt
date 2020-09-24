@@ -46,7 +46,6 @@ object EmptyConfiguration : RuleConfiguration(mapOf())
 /**
  * class returns the list of configurations that we have read from a yml: diktat-analysis.yml
  */
-@Suppress("TYPE_ALIAS")
 open class RulesConfigReader(override val classLoader: ClassLoader) : JsonResourceConfigReader<List<RulesConfig>>() {
     /**
      * Parse resource file into list of [RulesConfig]
