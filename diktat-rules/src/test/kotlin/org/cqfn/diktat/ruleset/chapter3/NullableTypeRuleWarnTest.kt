@@ -69,4 +69,19 @@ class NullableTypeRuleWarnTest : LintTestBase(::NullableTypeRule) {
                 LintError(5, 15, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} don't use nullable type", false)
         )
     }
+
+    @Test
+    @Tag(WarningNames.NULLABLE_PROPERTY_TYPE)
+    fun `d nullable type with initialize`() {
+        lintMethod(
+                """
+                    |class A {
+                    |   val rulesConfigList: List<RulesConfig>? = RulesConfigReader(javaClass.classLoader).readResource("src/test/resources/test-rules-config.yml")
+                    |   val q: Int? = foo()
+                    |   val e: A.Q? = null
+                    |}
+                """.trimMargin(),
+                LintError(4, 18, ruleId, "${NULLABLE_PROPERTY_TYPE.warnText()} initialize explicitly", false)
+        )
+    }
 }
