@@ -34,7 +34,12 @@ class SomeClass {
         */
     }
 
-/**
+    /**
+     * Useless kdoc comment
+     * Line
+     */
+
+    /**
      * This is a useless function
      */
     fun someUselessFunction() {

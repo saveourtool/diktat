@@ -143,6 +143,30 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting){
 
     @Test
     @Tag(WarningNames.WRONG_NEWLINES_AROUND_KDOC)
+    fun `check new line above comment bad` () {
+        val code =
+                """
+                    |package org.cqfn.diktat.ruleset.chapter3
+                    |
+                    |class Example {
+                    |    private val log = LoggerFactory.getLogger(Example.javaClass)
+                    |    
+                    |    // Another Comment
+                    |    private val some = 5
+                    |    
+                    |    fun someFunc() {
+                    |       /* First comment */
+                    |       val first = 5 /* Some comment */;/* Bad comment */ val a = 5
+                    |    }
+                    |}
+                """.trimMargin()
+
+        lintMethod(code,
+                LintError(11,41,ruleId, "${Warnings.WRONG_NEWLINES_AROUND_KDOC.warnText()} /* Bad comment */", true))
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES_AROUND_KDOC)
     fun `check file new line above comment good` () {
         val code =
                 """
@@ -400,5 +424,21 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting){
 
         lintMethod(code,
                 LintError(8,17,ruleId, "${Warnings.FIRST_COMMENT_NO_SPACES.warnText()} // Bad Comment ", true))
+    }
+
+    @Test
+    @Tag(WarningNames.COMMENT_WHITE_SPACE)
+    fun `check comment in class bad` () {
+        val code =
+                """
+                    |package org.cqfn.diktat.ruleset.chapter3
+                    |
+                    |class Example { 
+                    |    // First Comment
+                    |    private val log = LoggerFactory.getLogger(Example.javaClass) // secondComment
+                    |}
+                """.trimMargin()
+
+        lintMethod(code)
     }
 }

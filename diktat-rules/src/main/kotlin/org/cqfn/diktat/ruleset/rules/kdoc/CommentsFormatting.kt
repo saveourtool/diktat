@@ -160,9 +160,6 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
             if (node.isBlockOrClassBody())
                 // Just check white spaces before comment
                 checkFirstCommentSpaces(node)
-            else
-                // TreeParent is property. Then check white spaces before property
-                checkFirstCommentSpaces(node.treeParent)
             return
         }
 

@@ -33,6 +33,12 @@ class SomeClass {
             Don't fix this comment
         */
     }
+
+    /**
+     *Useless kdoc comment
+     *Line
+     */
+
     /**
      * This is a useless function
      */
