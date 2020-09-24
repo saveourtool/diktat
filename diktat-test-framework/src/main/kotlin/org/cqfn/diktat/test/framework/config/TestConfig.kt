@@ -23,29 +23,34 @@ class TestConfig @JsonCreator internal constructor(
         // option that controls if changes and automatic fix should be done directly in file
         @param:JsonProperty("inPlace", defaultValue = "false") val inPlace: Boolean
 ) {
-    enum class ExecutionType {
-        COMPARE, CHECK_WARN, MIXED
-    }
-
-    // different profiles that can be used to control common processing part for tests
-// (processing differs for different programming languages)
-    enum class TestProfile {
-        CXX, PYTHON, JAVA, KT
-    }
-
-    // testName - it is not included in config content, but is injected on runtime by setter
+    /**
+     * test name - it is not included in config content, but is injected on runtime by setter
+     */
     var testName: String? = null
         private set
 
     // FixMe: not used by for now, fix the description when the class will be ready
-    override fun toString(): String {
-        return """(executionCommand: $executionCommand, expectedResultFile: $expectedResultFile, inPlace: $inPlace,
-                executionType: $executionCommand)"""
-    }
+    override fun toString() =
+            """(executionCommand: $executionCommand, expectedResultFile: $expectedResultFile, inPlace: $inPlace,
+                    executionType: $executionCommand)"""
 
-    fun setTestName(testName: String?): TestConfig {
+    fun setTestName(testName: String): TestConfig {
         this.testName = testName
         return this
     }
 
+    /**
+     * Different modes of tests execution
+     */
+    enum class ExecutionType {
+        CHECK_WARN, COMPARE, MIXED
+    }
+
+    /**
+     * different profiles that can be used to control common processing part for tests
+     * (processing differs for different programming languages)
+     */
+    enum class TestProfile {
+        CXX, JAVA, KT, PYTHON
+    }
 }
