@@ -3,6 +3,8 @@ package org.cqfn.diktat.ruleset.constants
 import org.cqfn.diktat.common.config.rules.Rule
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.isRuleEnabled
+import org.cqfn.diktat.ruleset.utils.hasSuppress
+import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 /**
  * This class represent individual inspections of diktat code style.
@@ -54,6 +56,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     KDOC_NO_DEPRECATED_TAG(true, "KDoc doesn't support @deprecated tag, use @Deprecated annotation instead"),
     HEADER_WRONG_FORMAT(true, "file header comments should be properly formatted"),
     HEADER_MISSING_OR_WRONG_COPYRIGHT(true, "file header comment must include copyright information inside a block comment"),
+    WRONG_COPYRIGHT_YEAR(true, "year defined in copyright and current year are different"),
     HEADER_CONTAINS_DATE_OR_AUTHOR(false, "file header comment should not contain creation date and author name"),
     HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE(false, "files that contain multiple or no classes should contain description of what is inside of this file"),
     HEADER_NOT_BEFORE_PACKAGE(true, "header KDoc should be placed before package and imports"),
@@ -88,6 +91,14 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     LONG_NUMERICAL_VALUES_SEPARATED(true, "long numerical values should be separated with underscore"),
     WRONG_DECLARATIONS_ORDER(true, "declarations of constants and enum members should be sorted alphabetically"),
     WRONG_MULTIPLE_MODIFIERS_ORDER(true, "sequence of modifiers is incorrect"),
+    LOCAL_VARIABLE_EARLY_DECLARATION(false, "local variables should be declared close to the line where they are first used"),
+
+    // ======== chapter 4 ========
+    TYPE_ALIAS(false, "variable's type is too complex and should be replaced with typealias"),
+    STRING_TEMPLATE_CURLY_BRACES(true, "string template has redundant curly braces"),
+    STRING_TEMPLATE_QUOTES(true, "string template has redundant quotes"),
+    // FixMe: change float literal to BigDecimal? Or kotlin equivalent?
+    FLOAT_IN_ACCURATE_CALCULATIONS(false, "floating-point values shouldn't be used in accurate calculations"),
     ;
 
     /**
@@ -95,7 +106,10 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
      */
     override fun ruleName() = this.name
 
-    fun warnText(): String = "[${ruleName()}] ${this.warn}:"
+    /**
+     * Warning message that will be logged to analysis report
+     */
+    fun warnText() = "[${ruleName()}] ${this.warn}:"
 
     @Suppress("LongParameterList")
     fun warnAndFix(configRules: List<RulesConfig>,
@@ -103,27 +117,34 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
                    isFixMode: Boolean,
                    freeText: String,
                    offset: Int,
+                   node: ASTNode,
                    canBeAutoCorrected: Boolean = this.canBeAutoCorrected,
                    autoFix: () -> Unit) {
-        warn(configRules, emit, canBeAutoCorrected, freeText, offset)
-        fix(configRules, autoFix, isFixMode)
+        warn(configRules, emit, canBeAutoCorrected, freeText, offset, node)
+        fix(configRules, autoFix, isFixMode, node)
     }
 
+    @Suppress("LongParameterList")
     fun warn(configs: List<RulesConfig>,
              emit: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit),
              autoCorrected: Boolean,
              freeText: String,
-             offset: Int) {
-        if (configs.isRuleEnabled(this)) {
+             offset: Int,
+             node: ASTNode) {
+
+        if (configs.isRuleEnabled(this) && !node.hasSuppress(name)) {
+            val trimmedFreeText = freeText
+                    .lines()
+                    .run { if (size > 1) "${first()}..." else first() }
             emit(offset,
-                    "${this.warnText()} $freeText",
+                    "${this.warnText()} $trimmedFreeText",
                     autoCorrected
             )
         }
     }
 
-    private inline fun fix(configs: List<RulesConfig>, autoFix: () -> Unit, isFix: Boolean) {
-        if (configs.isRuleEnabled(this) && isFix) {
+    private inline fun fix(configs: List<RulesConfig>, autoFix: () -> Unit, isFix: Boolean, node: ASTNode) {
+        if (configs.isRuleEnabled(this) && isFix && !node.hasSuppress(name)) {
             autoFix()
         }
     }

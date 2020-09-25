@@ -11,7 +11,6 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.readValue
 import java.io.BufferedReader
 import java.io.File
-import java.util.stream.Collectors
 import org.cqfn.diktat.common.config.reader.JsonResourceConfigReader
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -82,6 +81,32 @@ open class RulesConfigReader(override val classLoader: ClassLoader) : JsonResour
 
     companion object {
         val log: Logger = LoggerFactory.getLogger(RulesConfigReader::class.java)
+    }
+}
+
+/**
+ * @return common configuration from list of all rules configuration
+ */
+fun List<RulesConfig>.getCommonConfiguration() = lazy { CommonConfiguration(getCommonConfig()?.configuration) }
+
+/**
+ * class returns the list of common configurations that we have read from a configuration map
+ *
+ * @param configuration map of common configuration
+ */
+class CommonConfiguration(configuration: Map<String, String>?) {
+    /**
+     * List of directory names which will be used to detect test sources
+     */
+    val testAnchors: List<String> by lazy {
+        (configuration ?: mapOf()).getOrDefault("testDirs", "test").split(',')
+    }
+
+    /**
+     * Start of package name, which shoould be common, e.g. org.example.myproject
+     */
+    val domainName: String by lazy {
+        (configuration ?: mapOf()).getOrDefault("domainName", "")
     }
 }
 

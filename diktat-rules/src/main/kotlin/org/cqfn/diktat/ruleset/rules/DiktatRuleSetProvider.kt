@@ -3,6 +3,7 @@ package org.cqfn.diktat.ruleset.rules
 import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.RuleSetProvider
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
+import org.cqfn.diktat.ruleset.rules.calculations.AccurateCalculationsRule
 import org.cqfn.diktat.ruleset.rules.comments.CommentsRule
 import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule
 import org.cqfn.diktat.ruleset.rules.files.BlankLinesRule
@@ -10,6 +11,7 @@ import org.cqfn.diktat.ruleset.rules.files.FileSize
 import org.cqfn.diktat.ruleset.rules.files.FileStructureRule
 import org.cqfn.diktat.ruleset.rules.files.IndentationRule
 import org.cqfn.diktat.ruleset.rules.files.NewlinesRule
+import org.cqfn.diktat.ruleset.rules.identifiers.LocalVariablesRule
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocComments
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocFormatting
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocMethods
@@ -31,8 +33,10 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
                 ::KdocFormatting,
                 ::FileNaming,
                 ::PackageNaming,
+                ::StringTemplateFormatRule,
                 ::FileSize,
                 ::IdentifierNaming,
+                ::LocalVariablesRule,
                 ::ClassLikeStructuresOrderRule,
                 ::BracesInConditionalsAndLoopsRule,
                 ::BlockStructureBraces,
@@ -46,7 +50,9 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
                 ::HeaderCommentRule,
                 ::SortRule,
                 ::StringConcatenationRule,
+                ::AccurateCalculationsRule,
                 ::LineLength,
+                ::TypeAliasRule,
                 ::BlankLinesRule,
                 ::WhiteSpaceRule,
                 ::WhenMustHaveElseRule,
