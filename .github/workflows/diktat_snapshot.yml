@@ -42,4 +42,9 @@ jobs:
           mvn versions:set-property -Dproperty=diktat-check.version -DnewVersion=${{ env.BASE_VERSION }}-pre
       - name: Run diktat snapshot via ktlint
         # we need to compile project once more with snapshot version for antrun to work properly
-        run: mvn -B compile antrun:run@diktat
+        # antrun plugin always uses fail-fast mode, so all modules need to be checked separately
+        run: |
+          mvn -B compile
+          mvn -B antrun:run@diktat --pl diktat-common || echo "LintErrors encountered"
+          mvn -B antrun:run@diktat --pl diktat-test-framework
+          mvn -B antrun:run@diktat --pl diktat-rules
