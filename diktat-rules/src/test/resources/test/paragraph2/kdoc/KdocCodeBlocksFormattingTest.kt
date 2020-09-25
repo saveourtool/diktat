@@ -40,7 +40,7 @@ class SomeClass {
      */
 
     /**
-     * This is a useless function
+     *     This is a useless function
      */
     fun someUselessFunction() {
 

@@ -12,6 +12,8 @@ import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.IF
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
+import com.pinterest.ktlint.core.ast.ElementType.KDOC_CODE_BLOCK_TEXT
+import com.pinterest.ktlint.core.ast.ElementType.KDOC_LEADING_ASTERISK
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_SECTION
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_TEXT
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
@@ -112,7 +114,12 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
         if (node.treeParent.elementType == BLOCK && node.treeNext != null) {
             // Checking if comment is inside a code block like fun{}
             // Not checking last comment as well
-            checkCommentsInCodeBlocks(node)
+            if (isFirstComment(node)) {
+                if (node.isBlockOrClassBody())
+                // Just check white spaces before comment
+                    checkFirstCommentSpaces(node)
+                return
+            }
         } else if (node.treeParent.lastChildNode != node && node.treeParent.elementType != IF) {
             // Else the comment is in CLASS_BODY and not in IF block
             checkClassComment(node)
@@ -206,26 +213,36 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
         }
 
         if (node.elementType == KDOC) {
-            if (node.findAllNodesWithSpecificType(KDOC_SECTION).all { it.text.trim('*').length - it.text.trim('*', ' ').length == configuration.maxSpacesInComment})
+            if (node.findAllNodesWithSpecificType(KDOC_LEADING_ASTERISK).all { it.treeNext.elementType == WHITE_SPACE })
+                return
+
+            if (node.findAllNodesWithSpecificType(KDOC_SECTION).all { it.text.trim('*').length - it.text.trim('*', ' ').length >= configuration.maxSpacesInComment})
                 return
         }
 
         COMMENT_WHITE_SPACE.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
-            var commentText = node.text.drop(2).trim()
+            val commentText = node.text.drop(2).trim()
 
             when (node.elementType) {
                 EOL_COMMENT -> (node as LeafPsiElement).replaceWithText("// $commentText")
                 BLOCK_COMMENT -> (node as LeafPsiElement).replaceWithText("/* $commentText")
                 KDOC -> {
                     node.findAllNodesWithSpecificType(KDOC_TEXT).forEach {
-                        if (!it.text.startsWith(" ".repeat(configuration.maxSpacesInComment))) {
-                            commentText = it.text.trim()
-                            val indent = " ".repeat(configuration.maxSpacesInComment)
-                            (it as LeafPsiElement).replaceWithText("$indent$commentText")
-                        }
+                        modifyKdocText(it, configuration)
+                    }
+                    node.findAllNodesWithSpecificType(KDOC_CODE_BLOCK_TEXT).forEach {
+                        modifyKdocText(it, configuration)
                     }
                 }
             }
+        }
+    }
+
+    private fun modifyKdocText(node: ASTNode, configuration: CommentsFormattingConfiguration) {
+        if (!node.text.startsWith(" ".repeat(configuration.maxSpacesInComment))) {
+            val commentText = node.text.trim()
+            val indent = " ".repeat(configuration.maxSpacesInComment)
+            (node as LeafPsiElement).replaceWithText("$indent$commentText")
         }
     }
 
@@ -270,7 +287,7 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
             return if (node.treePrev.isWhiteSpace())
                 node.treePrev.treePrev.elementType == LBRACE
             else
-                node.treePrev.elementType == LBRACE
+                node.treePrev == null || node.treePrev.elementType == LBRACE // null is handled for functional literal
         }
 
         // When comment inside of a PROPERTY

@@ -98,7 +98,6 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting){
 
         lintMethod(code,
                 LintError(4,5, ruleId, "${Warnings.COMMENT_WHITE_SPACE.warnText()} //First Comment", true),
-                LintError(7,5, ruleId, "${Warnings.COMMENT_WHITE_SPACE.warnText()} /**\n    *      Some comment\n    */", true),
                 LintError(11,5, ruleId, "${Warnings.COMMENT_WHITE_SPACE.warnText()} /*     Comment */", true))
     }
 
@@ -139,30 +138,6 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting){
                 """.trimMargin()
 
         lintMethod(code)
-    }
-
-    @Test
-    @Tag(WarningNames.WRONG_NEWLINES_AROUND_KDOC)
-    fun `check new line above comment bad` () {
-        val code =
-                """
-                    |package org.cqfn.diktat.ruleset.chapter3
-                    |
-                    |class Example {
-                    |    private val log = LoggerFactory.getLogger(Example.javaClass)
-                    |    
-                    |    // Another Comment
-                    |    private val some = 5
-                    |    
-                    |    fun someFunc() {
-                    |       /* First comment */
-                    |       val first = 5 /* Some comment */;/* Bad comment */ val a = 5
-                    |    }
-                    |}
-                """.trimMargin()
-
-        lintMethod(code,
-                LintError(11,41,ruleId, "${Warnings.WRONG_NEWLINES_AROUND_KDOC.warnText()} /* Bad comment */", true))
     }
 
     @Test

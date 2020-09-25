@@ -23,8 +23,7 @@ class SomeClass {
         else
 // Some Comment
             print(a)
-
-/* Block Comment */
+        /* Block Comment */
         val some = 4
 
         /* This is a block comment */
@@ -40,7 +39,7 @@ class SomeClass {
      */
 
     /**
-     * This is a useless function
+     *     This is a useless function
      */
     fun someUselessFunction() {
 // This is a useless value
