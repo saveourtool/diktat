@@ -40,7 +40,8 @@ class VariableGenericTypeDeclarationRule(private val configRules: List<RulesConf
         val leftSide = Regex("<([a-zA-Z, <>?]*)>").find(node.findChildByType(TYPE_REFERENCE)?.text ?: "")
 
         if ((rightSide != null && leftSide != null) && rightSide.groupValues.first() == leftSide.groupValues.first()) {
-            Warnings.GENERIC_VARIABLE_WRONG_DECLARATION.warnAndFix(configRules, emitWarn, isFixMode, "type arguments are unnecessary in ${callExpr?.text}", node.startOffset, node) {
+            Warnings.GENERIC_VARIABLE_WRONG_DECLARATION.warnAndFix(configRules, emitWarn, isFixMode,
+                    "type arguments are unnecessary in ${callExpr?.text}", node.startOffset, node) {
                 callExpr!!.removeChild(callExpr.findChildByType(TYPE_ARGUMENT_LIST)!!)
             }
         }
