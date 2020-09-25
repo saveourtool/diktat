@@ -13,11 +13,6 @@ import java.util.stream.Collectors
 @Suppress("ForbiddenComment")
 class TestComparatorUnit(private val resourceFilePath: String,
                          private val function: (expectedText: String, testFilePath: String) -> String) {
-
-    companion object {
-        val log: Logger = LoggerFactory.getLogger(TestComparatorUnit::class.java)
-    }
-
     fun compareFilesFromResources(expectedResult: String, testFileStr: String): Boolean {
         val expectedPath = javaClass.classLoader.getResource("$resourceFilePath/$expectedResult")
         val testPath = javaClass.classLoader.getResource("$resourceFilePath/$testFileStr")
@@ -49,5 +44,9 @@ class TestComparatorUnit(private val resourceFilePath: String,
             println("Not able to read file: $fileName")
         }
         return list
+    }
+
+    companion object {
+        val log: Logger = LoggerFactory.getLogger(TestComparatorUnit::class.java)
     }
 }
