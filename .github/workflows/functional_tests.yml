@@ -38,6 +38,7 @@ jobs:
         
       - name: Check gradle
         run: |
+          cat out
           if [ -z "`grep -E "[VARIABLE_NAME_INCORRECT_FORMAT]" out`" ]; then exit 1; fi
         
       - name: Run diKTat from maven
