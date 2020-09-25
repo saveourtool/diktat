@@ -31,6 +31,8 @@ jobs:
         continue-on-error: true
         run: |
           cat out
+          if [[ $? == 0 ]]; then
+            echo "Success"
           
       - if: steps.cli-check.outcome == 'success'
         run: exit 1
