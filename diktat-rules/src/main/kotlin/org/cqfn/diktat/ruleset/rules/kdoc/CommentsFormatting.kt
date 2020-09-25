@@ -291,7 +291,8 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
         }
 
         // When comment inside of a PROPERTY
-        if (node.treeParent.elementType != FILE)
+        if (node.treeParent.elementType != FILE && node.treeParent.treePrev != null
+                && node.treeParent.treePrev.treePrev != null)
             return node.treeParent.treePrev.treePrev.elementType == LBRACE
 
         return node.treeParent.getAllChildrenWithType(node.elementType).first() == node
