@@ -28,12 +28,9 @@ jobs:
           
       - name: Check output
         id: cli-check
-        continue-on-error: true
         run: |
           cat out
-          
-      - if: steps.cli-check.outcome == 'success'
-        run: exit 1
+          grep -E "[VARIABLE_NAME_INCORRECT_FORMAT]" out
         
       - name: Run diKTat from gradle
         continue-on-error: true
