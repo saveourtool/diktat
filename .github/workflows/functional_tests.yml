@@ -24,15 +24,13 @@ jobs:
           cat pom.xml | grep "<ktlint.version>.*</ktlint.version>" | head -1 |awk -F'[><]' '{ENVIRON[KTLINE_VERSION]=$3 ; print ENVIRON[KTLINE_VERSION]}'
           curl -sSLO https://github.com/pinterest/ktlint/releases/download/$KTLINT_VERSION/ktlint && chmod a+x ktlint
           curl -sSLO https://github.com/cqfn/diKTat/releases/download/v$DIKTAT_VERSION/diktat-$DIKTAT_VERSION.jar
-          ./ktlint -R diktat-$DIKTAT_VERSION.jar "**/src/main/kotlin/**/*.kt" &> out
+          ./ktlint -R diktat-$DIKTAT_VERSION.jar "diktat-rules/src/test/kotlin/**/FunctionalTestFile.kt" > out
           
       - name: Check output
         id: cli-check
         continue-on-error: true
         run: |
           cat out
-          if [[ $? == 0 ]]; then
-            echo "Success"
           
       - if: steps.cli-check.outcome == 'success'
         run: exit 1
