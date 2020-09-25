@@ -92,8 +92,14 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     WRONG_DECLARATIONS_ORDER(true, "declarations of constants and enum members should be sorted alphabetically"),
     WRONG_MULTIPLE_MODIFIERS_ORDER(true, "sequence of modifiers is incorrect"),
     LOCAL_VARIABLE_EARLY_DECLARATION(false, "local variables should be declared close to the line where they are first used"),
+
+    // ======== chapter 4 ========
     TYPE_ALIAS(false, "variable's type is too complex and should be replaced with typealias"),
     GENERIC_VARIABLE_WRONG_DECLARATION(true, "variable should have explicit type declaration"),
+    STRING_TEMPLATE_CURLY_BRACES(true, "string template has redundant curly braces"),
+    STRING_TEMPLATE_QUOTES(true, "string template has redundant quotes"),
+    // FixMe: change float literal to BigDecimal? Or kotlin equivalent?
+    FLOAT_IN_ACCURATE_CALCULATIONS(false, "floating-point values shouldn't be used in accurate calculations"),
     ;
 
     /**

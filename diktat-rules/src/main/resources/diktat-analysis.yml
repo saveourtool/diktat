@@ -173,6 +173,7 @@
     extendedIndentOfParameters: true
     alignedParameters: true
     extendedIndentAfterOperators: true
+    indentationSize: 4
 - name: EMPTY_BLOCK_STRUCTURE_ERROR
   enabled: true
   configuration:
@@ -246,5 +247,17 @@
   configuration:
     typeReferenceLength: '25' # max length of type reference
 - name: GENERIC_VARIABLE_WRONG_DECLARATION
+  enabled: true
+  configuration: {}
+# Inspection that checks if string template has redundant curly braces
+- name: STRING_TEMPLATE_CURLY_BRACES
+  enabled: true
+  configuration: {}
+# Inspection that checks if string template has redundant quotes
+- name: STRING_TEMPLATE_QUOTES
+  enabled: true
+  configuration: {}
+# Checks that floating-point values are not used in arithmetic expressions
+- name: FLOAT_IN_ACCURATE_CALCULATIONS
   enabled: true
   configuration: {}
