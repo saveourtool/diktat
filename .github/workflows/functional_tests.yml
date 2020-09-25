@@ -38,7 +38,7 @@ jobs:
         
       - name: Check gradle
         run: |
-          echo `wc -c err`
+          cat err
           if [ "`wc -c err`" == "       0 err" ]; then exit 1; fi
         
       - name: Run diKTat from maven
