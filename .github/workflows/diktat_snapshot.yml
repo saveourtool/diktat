@@ -27,10 +27,10 @@ jobs:
         # set project version which will then be used to run diktat from local maven repo
         # base version is stored in env variable for later usage
         run: |
-          snapshot_version=$(printf 'VERSION=${project.version}\n0\n' | mvn help:evaluate | grep '^VERSION' | cut -d= -f2)
+          snapshot_version=$(printf 'VERSION=${project.version}\n0\n' | mvn -B help:evaluate | grep '^VERSION' | cut -d= -f2)
           base_version=${snapshot_version%-SNAPSHOT}
           echo ::set-env name=BASE_VERSION::$base_version
-          mvn versions:set -DnewVersion=$base_version-pre
+          mvn -B versions:set -DnewVersion=$base_version-pre
       - name: Build and install
         # install diktat with version 'base_version-pre' to local maven repo
         run: mvn -B clean install
@@ -38,8 +38,8 @@ jobs:
         # revert project version to avoid cycle dependency
         # set diktat version in antrun dependencies to the version which was built in the previous step
         run: |
-          mvn versions:set -DnewVersion=${{ env.BASE_VERSION }}-SNAPSHOT
-          mvn versions:set-property -Dproperty=diktat-check.version -DnewVersion=${{ env.BASE_VERSION }}-pre
+          mvn -B versions:set -DnewVersion=${{ env.BASE_VERSION }}-SNAPSHOT
+          mvn -B versions:set-property -Dproperty=diktat-check.version -DnewVersion=${{ env.BASE_VERSION }}-pre
       - name: Run diktat snapshot via ktlint
         # we need to compile project once more with snapshot version for antrun to work properly
         # antrun plugin always uses fail-fast mode, so all modules need to be checked separately
