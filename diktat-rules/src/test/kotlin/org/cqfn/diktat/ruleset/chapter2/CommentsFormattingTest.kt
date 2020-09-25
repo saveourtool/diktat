@@ -203,8 +203,8 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting){
 
         lintMethod(code,
                 LintError(2,1,ruleId, "${Warnings.WRONG_NEWLINES_AROUND_KDOC.warnText()} /* Some comment */", true),
-                LintError(6,1,ruleId, "${Warnings.WRONG_NEWLINES_AROUND_KDOC.warnText()} /**\n* Some comment 2\n*/", true),
-                LintError(8,3,ruleId, "${Warnings.WRONG_NEWLINES_AROUND_KDOC.warnText()} redundant blank line after /**\n* Some comment 2\n*/", true))
+                LintError(6,1,ruleId, "${Warnings.WRONG_NEWLINES_AROUND_KDOC.warnText()} /**...", true),
+                LintError(8,3,ruleId, "${Warnings.WRONG_NEWLINES_AROUND_KDOC.warnText()} redundant blank line after /**...", true))
     }
 
     @Test
