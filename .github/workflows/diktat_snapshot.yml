@@ -44,7 +44,7 @@ jobs:
         # we need to compile project once more with snapshot version for antrun to work properly
         # antrun plugin always uses fail-fast mode, so all modules need to be checked separately
         run: |
-          mvn -B compile
+          mvn -B install
           mvn -B antrun:run@diktat --pl diktat-common || echo "LintErrors encountered"
           mvn -B antrun:run@diktat --pl diktat-test-framework
           mvn -B antrun:run@diktat --pl diktat-rules
