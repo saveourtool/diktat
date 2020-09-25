@@ -30,7 +30,7 @@ jobs:
         id: cli-check
         continue-on-error: true
         run: |
-          cat err
+          cat out
           
       - if: steps.cli-check.outcome == 'success'
         run: exit 1
