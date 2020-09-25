@@ -1,5 +1,5 @@
 package org.cqfn.diktat.ruleset.funcTest
 
-class SomeClass {
+class FunctionalTestFile {
     val AAAA = 5
 }
