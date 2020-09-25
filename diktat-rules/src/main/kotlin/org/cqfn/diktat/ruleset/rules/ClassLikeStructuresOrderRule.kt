@@ -40,8 +40,8 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  * Rule that checks order of declarations inside classes, interfaces and objects.
  */
 class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) : Rule("class-like-structures") {
-    private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
+    private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
@@ -61,10 +61,12 @@ class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) :
         val allProperties = node.getChildren(TokenSet.create(PROPERTY))
         val constProperties = allProperties.filter { it.findLeafWithSpecificType(CONST_KEYWORD) != null }.toMutableList()
         val lateInitProperties = allProperties.filter { it.findLeafWithSpecificType(LATEINIT_KEYWORD) != null }.toMutableList()
-        val loggers = allProperties.filter {
-            (it.findChildByType(MODIFIER_LIST) == null || it.findLeafWithSpecificType(PRIVATE_KEYWORD) != null)
-                    && it.getIdentifierName()!!.text.contains(loggerPropertyRegex)
-        }.toMutableList()
+        val loggers = allProperties
+                .filter {
+                    (it.findChildByType(MODIFIER_LIST) == null || it.findLeafWithSpecificType(PRIVATE_KEYWORD) != null) &&
+                            it.getIdentifierName()!!.text.contains(loggerPropertyRegex)
+                }
+                .toMutableList()
         val properties = allProperties.filter { it !in lateInitProperties && it !in loggers && it !in constProperties }.toMutableList()
         val initBlocks = node.getChildren(TokenSet.create(CLASS_INITIALIZER)).toMutableList()
         val constructors = node.getChildren(TokenSet.create(SECONDARY_CONSTRUCTOR)).toMutableList()
