@@ -64,6 +64,7 @@ class DiktatMojo : AbstractMojo() {
      */
     override fun execute() {
         log.info("Starting diktat:check goal with inputs $input")
+        val lintErrors = mutableListOf<LintError>()
         File(input)
                 .walk()
                 .filter { file ->
@@ -73,7 +74,6 @@ class DiktatMojo : AbstractMojo() {
                 .forEach { file ->
                     log.info("Checking file $file")
                     val text = file.readText()
-                    val lintErrors = mutableListOf<LintError>()
                     try {
                         reporter.before(file.path)
                         KtLint.lint(
@@ -91,14 +91,14 @@ class DiktatMojo : AbstractMojo() {
                                 )
                         )
                         reporter.after(file.path)
-                        if (lintErrors.isNotEmpty()) {
-                            throw MojoFailureException("There are ${lintErrors.size} lint errors")
-                        }
                     } catch (e: RuleExecutionException) {
                         log.error("Received exception", e)
                         throw MojoExecutionException("Error during check", e)
                     }
                 }
         reporter.afterAll()
+        if (lintErrors.isNotEmpty()) {
+            throw MojoFailureException("There are ${lintErrors.size} lint errors")
+        }
     }
 }
