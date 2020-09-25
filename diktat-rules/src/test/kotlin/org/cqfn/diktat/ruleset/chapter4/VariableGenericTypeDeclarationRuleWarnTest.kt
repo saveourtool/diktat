@@ -40,7 +40,7 @@ class VariableGenericTypeDeclarationRuleWarnTest : LintTestBase(::VariableGeneri
                     |}
                 """.trimMargin(),
                 LintError(2,4, ruleId,
-                        "${Warnings.GENERIC_VARIABLE_WRONG_DECLARATION.warnText()} val myVariable: Map<Int, String> = emptyMap<Int, String>()", true),
+                        "${Warnings.GENERIC_VARIABLE_WRONG_DECLARATION.warnText()} type arguments are unnecessary in emptyMap<Int, String>()", true),
                 LintError(3,4, ruleId,
                         "${Warnings.GENERIC_VARIABLE_WRONG_DECLARATION.warnText()} val any = Array<Any>(3) { \"\" }", false)
         )
@@ -72,7 +72,7 @@ class VariableGenericTypeDeclarationRuleWarnTest : LintTestBase(::VariableGeneri
                     |}
                 """.trimMargin(),
                 LintError(2,25, ruleId,
-                        "${Warnings.GENERIC_VARIABLE_WRONG_DECLARATION.warnText()} myVariable: Map<Int, String> = emptyMap<Int, String>()", true)
+                        "${Warnings.GENERIC_VARIABLE_WRONG_DECLARATION.warnText()} type arguments are unnecessary in emptyMap<Int, String>()", true)
         )
     }
 
@@ -102,7 +102,7 @@ class VariableGenericTypeDeclarationRuleWarnTest : LintTestBase(::VariableGeneri
                     |}
                 """.trimMargin(),
                 LintError(3,8, ruleId,
-                        "${Warnings.GENERIC_VARIABLE_WRONG_DECLARATION.warnText()} val myVariable: Map<Int, String> = emptyMap<Int, String>()", true)
+                        "${Warnings.GENERIC_VARIABLE_WRONG_DECLARATION.warnText()} type arguments are unnecessary in emptyMap<Int, String>()", true)
         )
     }
 
@@ -128,7 +128,7 @@ class VariableGenericTypeDeclarationRuleWarnTest : LintTestBase(::VariableGeneri
                     |}
                 """.trimMargin(),
                 LintError(1,17, ruleId,
-                        "${Warnings.GENERIC_VARIABLE_WRONG_DECLARATION.warnText()} val myVariable: Map<Int, String> = emptyMap<Int, String>()", true)
+                        "${Warnings.GENERIC_VARIABLE_WRONG_DECLARATION.warnText()} type arguments are unnecessary in emptyMap<Int, String>()", true)
         )
     }
 
@@ -144,7 +144,7 @@ class VariableGenericTypeDeclarationRuleWarnTest : LintTestBase(::VariableGeneri
                     |}
                 """.trimMargin(),
                 LintError(3,8, ruleId,
-                        "${Warnings.GENERIC_VARIABLE_WRONG_DECLARATION.warnText()} val myVariable: Map<Int, Map<String>> = emptyMap<Int, Map<String>>()", true)
+                        "${Warnings.GENERIC_VARIABLE_WRONG_DECLARATION.warnText()} type arguments are unnecessary in emptyMap<Int, Map<String>>()", true)
         )
     }
 
