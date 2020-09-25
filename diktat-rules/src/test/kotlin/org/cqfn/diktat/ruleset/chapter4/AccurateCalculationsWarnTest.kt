@@ -163,15 +163,17 @@ class AccurateCalculationsWarnTest : LintTestBase(::AccurateCalculationsRule) {
                     |        println("Comparison with tolerance")
                     |    }
                     |    
-                    |    if (abs(1.0 - 0.999) < eps) {
-                    |        println("Comparison with tolerance using epsilon")
-                    |    }
+                    |    1e-6 > abs(1.0 - 0.999)
+                    |    abs(1.0 - 0.999).compareTo(1e-6) < 0
+                    |    1e-6.compareTo(abs(1.0 - 0.999)) < 0
+                    |    
+                    |    abs(1.0 - 0.999) < eps
+                    |    eps > abs(1.0 - 0.999)
                     |    
                     |    val x = 1.0
                     |    val y = 0.999
-                    |    if (abs(x - y) < eps) {
-                    |        println("Comparison with tolerance using epsilon")
-                    |    }
+                    |    abs(x - y) < eps
+                    |    eps > abs(x - y)
                     |}
                 """.trimMargin()
         )

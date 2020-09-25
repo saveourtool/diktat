@@ -5,6 +5,7 @@ import com.pinterest.ktlint.core.ast.ElementType
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.FLOAT_IN_ACCURATE_CALCULATIONS
 import org.cqfn.diktat.ruleset.utils.findLocalDeclaration
+import org.cqfn.diktat.ruleset.utils.getFunctionName
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.lexer.KtTokens
@@ -67,10 +68,8 @@ class AccurateCalculationsRule(private val configRules: List<RulesConfig>) : Rul
     private fun handleFunction(expression: KtDotQualifiedExpression) = expression
             .takeIf { it.selectorExpression is KtCallExpression }
             ?.run { receiverExpression to selectorExpression as KtCallExpression }
-            ?.takeIf {
-                (it.second.calleeExpression as? KtNameReferenceExpression)
-                        ?.getReferencedName() in arithmeticOperationsFunctions
-            }
+            ?.takeIf { it.second.getFunctionName() in arithmeticOperationsFunctions }
+            ?.takeUnless { expression.parentsWithSelf.any(::isComparisonWithAbs) }
             ?.let { (receiverExpression, selectorExpression) ->
                 val floatValue = receiverExpression.takeIf { it.isFloatingPoint() }
                         ?: selectorExpression
@@ -88,24 +87,55 @@ class AccurateCalculationsRule(private val configRules: List<RulesConfig>) : Rul
         }
     }
 
-    private fun isComparisonWithAbs(psiElement: PsiElement): Boolean = psiElement
-            .takeIf {
-                it is KtBinaryExpression && it.operationToken in comparisonOperators
+    private fun isComparisonWithAbs(psiElement: PsiElement) =
+            when (psiElement) {
+                is KtBinaryExpression -> psiElement.isComparisonWithAbs()
+                is KtDotQualifiedExpression -> psiElement.isComparisonWithAbs()
+                else -> false
             }
-            ?.run {
-                if (this is KtBinaryExpression) {
-                    (left as? KtCallExpression ?: right as? KtCallExpression)
-                } else {
-                    this as KtCallExpression
-                }
-            }
+
+    private fun KtBinaryExpression.isComparisonWithAbs() =
+            takeIf { it.operationToken in comparisonOperators }
+            ?.run { left as? KtCallExpression ?: right as? KtCallExpression }
             ?.run { calleeExpression as? KtNameReferenceExpression }
             ?.getReferencedName()
             ?.equals("abs")
             ?: false
+
+    private fun KtDotQualifiedExpression.isComparisonWithAbs() =
+            takeIf {
+                it.selectorExpression.run {
+                    this is KtCallExpression && getFunctionName() in comparisonFunctions
+                }
+            }
+            ?.run {
+                (selectorExpression as KtCallExpression)
+                        .valueArguments
+                        .singleOrNull()
+                        ?.let { it.getArgumentExpression() as? KtCallExpression }
+                        ?.isAbsOfFloat()
+                        ?: false ||
+                        (receiverExpression as? KtCallExpression).isAbsOfFloat()
+            }
+            ?: false
+
+    private fun KtCallExpression?.isAbsOfFloat() = this
+            ?.run {
+                (calleeExpression as? KtNameReferenceExpression)
+                        ?.getReferencedName()
+                        ?.equals("abs")
+                        ?.and(
+                                valueArguments
+                                        .singleOrNull()
+                                        ?.getArgumentExpression()
+                                        ?.isFloatingPoint()
+                                        ?: false)
+                        ?: false
+            }
+            ?: false
 }
 
-private fun PsiElement.isFloatingPoint() =
+private fun PsiElement.isFloatingPoint(): Boolean =
         node.elementType == ElementType.FLOAT_LITERAL ||
                 node.elementType == ElementType.FLOAT_CONSTANT ||
                 ((this as? KtNameReferenceExpression)
@@ -113,4 +143,7 @@ private fun PsiElement.isFloatingPoint() =
                         ?.initializer
                         ?.node
                         ?.run { elementType == ElementType.FLOAT_LITERAL || elementType == ElementType.FLOAT_CONSTANT }
+                        ?: false) ||
+                ((this as? KtBinaryExpression)
+                        ?.run { left!!.isFloatingPoint() && right!!.isFloatingPoint() }
                         ?: false)
