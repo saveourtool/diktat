@@ -34,7 +34,11 @@ jobs:
         
       - name: Run diKTat from gradle
         continue-on-error: true
-        run: gradle diktatCheck
+        run: gradle diktatCheck > out 2> err
+        
+      - name: Check gradle
+        run: |
+          if [ "`wc -c err`" == "       0 err"]; then exit 1; fi
         
       - name: Run diKTat from maven
         continue-on-error: true
