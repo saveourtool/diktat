@@ -38,9 +38,12 @@ jobs:
         
       - name: Check gradle
         run: |
-          cat err
-          if [ "`wc -c err`" == "       0 err" ]; then exit 1; fi
+          if [ -z "`grep -E "[VARIABLE_NAME_INCORRECT_FORMAT]" out`" ]; then exit 1; fi
         
       - name: Run diKTat from maven
         continue-on-error: true
-        run: mvn -B antrun:run@diktat
+        run: mvn -B antrun:run@diktat > out
+        
+      - name: Check maven
+        run: |
+          if [ -z "`grep -E "[VARIABLE_NAME_INCORRECT_FORMAT]" out`" ]; then exit 1; fi
