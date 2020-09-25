@@ -95,9 +95,16 @@ fun List<RulesConfig>.getCommonConfiguration() = lazy { CommonConfiguration(getC
  * @param configuration map of common configuration
  */
 class CommonConfiguration(configuration: Map<String, String>?) {
+    /**
+     * List of directory names which will be used to detect test sources
+     */
     val testAnchors: List<String> by lazy {
         (configuration ?: mapOf()).getOrDefault("testDirs", "test").split(',')
     }
+
+    /**
+     * Start of package name, which shoould be common, e.g. org.example.myproject
+     */
     val domainName: String by lazy {
         (configuration ?: mapOf()).getOrDefault("domainName", "")
     }
