@@ -30,6 +30,47 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting){
         lintMethod(code)
     }
 
+
+    @Test
+    @Tag(WarningNames.COMMENT_WHITE_SPACE)
+    fun `check white space before comment bad 2` () {
+        val code =
+                """
+                    |package org.cqfn.diktat.ruleset.chapter3
+                    |
+                    |class Example {
+                    |    val s = RulesConfig(WRONG_INDENTATION.name, true,
+                    |            mapOf(
+                    |                    "newlineAtEnd" to "true",     // comment
+                    |                    "extendedIndentOfParameters" to "true",
+                    |                    "alignedParameters" to "true",
+                    |                    "extendedIndentAfterOperators" to "true"
+                    |            )
+                    |    )
+                    |}
+                """.trimMargin()
+
+        lintMethod(code,
+                LintError(6,51,ruleId,"${Warnings.COMMENT_WHITE_SPACE.warnText()} // comment", true))
+    }
+
+    @Test
+    @Tag(WarningNames.COMMENT_WHITE_SPACE)
+    fun `check white space before comment bad 3` () {
+        val code =
+                """
+                    |package org.cqfn.diktat.ruleset.chapter3
+                    |
+                    |@Suppress("RULE")    // asdasd
+                    |class Example {
+                    |
+                    |}
+                """.trimMargin()
+
+        lintMethod(code,
+                LintError(3,22,ruleId,"${Warnings.COMMENT_WHITE_SPACE.warnText()} // asdasd", true))
+    }
+
     @Test
     @Tag(WarningNames.COMMENT_WHITE_SPACE)
     fun `check white space before comment good2` () {
