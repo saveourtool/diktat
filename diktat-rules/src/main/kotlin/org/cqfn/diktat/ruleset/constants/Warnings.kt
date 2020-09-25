@@ -106,7 +106,10 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
      */
     override fun ruleName() = this.name
 
-    fun warnText(): String = "[${ruleName()}] ${this.warn}:"
+    /**
+     * Warning message that will be logged to analysis report
+     */
+    fun warnText() = "[${ruleName()}] ${this.warn}:"
 
     @Suppress("LongParameterList")
     fun warnAndFix(configRules: List<RulesConfig>,

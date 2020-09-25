@@ -1,9 +1,17 @@
 package org.cqfn.diktat.test.framework.common
 
-import org.slf4j.LoggerFactory
 import java.io.IOException
+import org.slf4j.LoggerFactory
 
+/**
+ * Class that wraps shell [command] and can execute it
+ */
 class LocalCommandExecutor internal constructor(private val command: String) {
+    /**
+     * Execute [command]
+     *
+     * @return [ExecutionResult] of command execution
+     */
     fun executeCommand(): ExecutionResult {
         try {
             log.info("Executing command: {}", command)
