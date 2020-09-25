@@ -31,7 +31,6 @@ jobs:
         continue-on-error: true
         run: |
           cat err
-          grep -E '^Error:' out
           
       - if: steps.cli-check.outcome == 'success'
         run: exit 1
