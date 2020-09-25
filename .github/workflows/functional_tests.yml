@@ -39,12 +39,13 @@ jobs:
       - name: Check gradle
         run: |
           cat out
-          if [ -z "`grep -E "[VARIABLE_NAME_INCORRECT_FORMAT]" out`" ]; then exit 1; fi
+          grep -E "[VARIABLE_NAME_INCORRECT_FORMAT]" out
         
       - name: Run diKTat from maven
         continue-on-error: true
-        run: mvn -B antrun:run@diktat > out
+        run: mvn -B antrun:run@functional-test > out
         
       - name: Check maven
         run: |
-          if [ -z "`grep -E "[VARIABLE_NAME_INCORRECT_FORMAT]" out`" ]; then exit 1; fi
+          cat out
+          grep -E "[VARIABLE_NAME_INCORRECT_FORMAT]" out
