@@ -9,17 +9,21 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
-import org.jetbrains.kotlin.kdoc.psi.api.KDoc
 import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
+import org.jetbrains.kotlin.utils.addToStdlib.ifNotEmpty
 
-fun ASTNode.kDocTags(): Collection<KDocTag>? {
+fun ASTNode.kDocTags(): List<KDocTag>? {
     require(this.elementType == ElementType.KDOC) { "kDoc tags can be retrieved only from KDOC node" }
-    return this.getFirstChildWithType(KDOC_SECTION)
-        ?.getAllChildrenWithType(ElementType.KDOC_TAG)?.map { it.psi as KDocTag }
+    return this.getAllChildrenWithType(KDOC_SECTION)
+            .map { sectionNode ->
+                sectionNode.getAllChildrenWithType(ElementType.KDOC_TAG)
+                        .map { its -> its.psi as KDocTag }
+            }
+            .flatten()
 }
 
 fun Iterable<KDocTag>.hasKnownKDocTag(knownTag: KDocKnownTag): Boolean =
-    this.find { it.knownTag == knownTag } != null
+        this.find { it.knownTag == knownTag } != null
 
 /**
  * This method inserts a new tag into KDoc before specified another tag, aligning it with the rest of this KDoc

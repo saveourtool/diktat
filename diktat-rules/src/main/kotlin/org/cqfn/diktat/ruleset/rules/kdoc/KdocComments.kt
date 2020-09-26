@@ -1,27 +1,39 @@
 package org.cqfn.diktat.ruleset.rules.kdoc
 
-import com.pinterest.ktlint.core.KtLint.FILE_PATH_USER_DATA_KEY
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
+import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FUN
+import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
+import com.pinterest.ktlint.core.ast.ElementType.KDOC_END
+import com.pinterest.ktlint.core.ast.ElementType.KDOC_START
+import com.pinterest.ktlint.core.ast.ElementType.KDOC_TEXT
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
+import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
+import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER
+import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.parent
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getCommonConfiguration
 import org.cqfn.diktat.ruleset.constants.Warnings
-import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_CLASS_ELEMENTS
-import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_TOP_LEVEL
+import org.cqfn.diktat.ruleset.constants.Warnings.*
 import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
+import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
+import org.jetbrains.kotlin.psi.psiUtil.parents
 
 /**
  * This rule checks the following features in KDocs:
  * 1) All top-level (file level) functions and classes with public or internal access should have KDoc
  * 2) All internal elements in class like class, property or function should be documented with KDoc
+ * 3) All property in constructor doesn't contain comment
  */
 class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comments") {
     companion object {
@@ -43,9 +55,67 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
         val fileName = node.getRootNode().getFileName()
         if (!(node.hasTestAnnotation() || isLocatedInTest(fileName.splitPathToDirs(), config.testAnchors)))
             when (node.elementType) {
-                FILE -> checkTopLevelDoc(node)
+                FILE -> {checkTopLevelDoc(node); println(node.prettyPrint())}
                 CLASS -> checkClassElements(node)
+                VALUE_PARAMETER -> checkValueParameter(node)
             }
+    }
+
+    private fun checkValueParameter(node: ASTNode) {
+        if (node.parents().none { it.elementType == PRIMARY_CONSTRUCTOR}) return
+        val prevComment = if (node.treePrev.elementType == EOL_COMMENT) node.treePrev
+        else if (node.treePrev.elementType == WHITE_SPACE && node.treePrev.treePrev.elementType == EOL_COMMENT ) node.treePrev.treePrev
+        else if (node.hasChildOfType(KDOC)) node.findChildByType(KDOC)!!
+        else return
+        val kDocBeforeClass = node.parent({it.elementType == CLASS})!!.findChildByType(KDOC)
+        if (kDocBeforeClass != null)
+            checkKDocBeforeClass(node, kDocBeforeClass, prevComment)
+        else
+            createKDocWithProperty(node, prevComment)
+    }
+
+    private fun createKDocWithProperty(node: ASTNode, prevComment: ASTNode) {
+        val classNode = node.parent({it.elementType == CLASS})!!
+        val newKDoctext = if (prevComment.elementType == KDOC) prevComment.text else {
+            "/**\n * ${prevComment.text}\n */"
+        }
+        val newKDoc = KotlinParser().createNode(newKDoctext)
+        classNode.addChild(newKDoc, classNode.firstChildNode)
+    }
+
+    private fun checkKDocBeforeClass(node: ASTNode, kDocBeforeClass: ASTNode, prevComment: ASTNode) {
+        val propertyInKDoc = kDocBeforeClass.kDocTags()?.firstOrNull { it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == node.findChildByType(IDENTIFIER)!!.text }?.node
+        val propertyKDoc = prevComment.copyElement()
+        val insertText = if (prevComment.elementType == KDOC){
+            propertyKDoc.removeChild(propertyKDoc.findChildByType(KDOC_START)!!)
+            propertyKDoc.removeChild(propertyKDoc.findChildByType(KDOC_END)!!)
+            propertyKDoc.text
+        } else propertyKDoc.text
+        println(prevComment.prettyPrint())
+        KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixMode, insertText, prevComment.startOffset, node){
+            if (propertyInKDoc != null) {
+                if (propertyInKDoc.hasChildOfType(KDOC_TEXT)) {
+                    val q = "* @property ${node.findChildByType(IDENTIFIER)!!.text}"
+                    /*val kDocText = propertyInKDoc.findChildByType(KDOC_TEXT)!!
+                    (kDocText as LeafPsiElement).replaceWithText("${kDocText.text} ${prevComment.text}")*/
+                } else {
+                    propertyInKDoc.addChild(PsiWhiteSpaceImpl(" "), null)
+                    propertyInKDoc.addChild(LeafPsiElement(KDOC_TEXT, prevComment.text), null)
+                }
+            } else {
+                createPropertySection(kDocBeforeClass, node, prevComment)
+            }
+            node.treeParent.removeRange(prevComment, node)
+        }
+    }
+
+    private fun createPropertySection(kDoc: ASTNode, node: ASTNode, prevComment: ASTNode){
+        val allKDocText = kDoc.text
+        val endKDoc = kDoc.findChildByType(KDOC_END)!!.text
+        val newKDocText = StringBuilder(allKDocText).insert(allKDocText.indexOf(endKDoc),
+                "* @property ${node.findChildByType(IDENTIFIER)!!.text} ${prevComment.text.removeRange(0,2)}\n")
+        val newKDocNode = KotlinParser().createNode(newKDocText.toString()).findChildByType(KDOC)!!
+        kDoc.treeParent.replaceChild(kDoc, newKDocNode)
     }
 
     private fun checkClassElements(node: ASTNode) {
@@ -77,7 +147,7 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
         val name = node.getIdentifierName()
 
         if (modifier.isAccessibleOutside() && kdoc == null) {
-            warning.warn(configRules, emitWarn, isFixMode, name!!.text, node.startOffset,node)
+            warning.warn(configRules, emitWarn, isFixMode, name!!.text, node.startOffset, node)
         }
     }
 }

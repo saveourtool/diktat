@@ -203,4 +203,106 @@ class KdocWarnTest : LintTestBase(::KdocComments) {
                 """.trimMargin()
         )
     }
+
+    @Test
+    fun `check simple primary constructor with comment`() {
+        lintMethod(
+                """
+                    |/**
+                    | * @property name d
+                    | * @param adsf
+                    | * @return something
+                    | */
+                    |class Example constructor (
+                    |   // short
+                    |   val name: String
+                    |) {
+                    |}
+                """.trimMargin(),
+                LintError(7, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} // short", true)
+        )
+    }
+
+    @Test
+    fun `check simple secondary constructor with comment`() {
+        lintMethod(
+                """
+                    |/**
+                    | * @property name d
+                    | * @property anotherName text
+                    | */
+                    |class Example {
+                    |   constructor(
+                    |   // name
+                    |   name: String,
+                    |   anotherName: String,
+                    |   OneMoreName: String
+                    |   )
+                    |}
+                """.trimMargin(),
+                LintError(7, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} // name", true)
+        )
+    }
+
+    @Test
+    fun `check wihtout property in KDoc`() {
+        lintMethod(
+                """
+                    |/**
+                    | * @property anotherName text
+                    | */
+                    |class Example {
+                    |   constructor(
+                    |   //some descriptions
+                    |   name: String,
+                    |   anotherName: String,
+                    |   OneMoreName: String
+                    |   )
+                    |}
+                """.trimMargin(),
+                LintError(6, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} //some descriptions", true)
+        )
+    }
+
+    @Test
+    fun `check another constructor`() {
+        lintMethod(
+                """
+                    |/**
+                    | * @return some
+                    | */
+                    |class Example (
+                    |   //some descriptions
+                    |   name: String,
+                    |   anotherName: String,
+                    |   OneMoreName: String
+                    |   ) {
+                    |}
+                """.trimMargin(),
+                LintError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} //some descriptions", true)
+        )
+    }
+
+    @Test
+    fun `check danother constructor`() {
+        lintMethod(
+                """
+                    |/**
+                    | * @return some
+                    | */
+                    |class Example (
+                    |   /**
+                    |    * some descriptions
+                    |    * @return fdv
+                    |    */
+                    |    
+                    |   name: String,
+                    |   anotherName: String,
+                    |   OneMoreName: String
+                    |   ) {
+                    |}
+                """.trimMargin(),
+                LintError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} //some descriptions", true)
+        )
+    }
 }

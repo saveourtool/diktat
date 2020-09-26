@@ -258,3 +258,7 @@
 - name: FLOAT_IN_ACCURATE_CALCULATIONS
   enabled: true
   configuration: {}
+# Checks that property in constructor doesn't contains comment
+- name: KDOC_NO_CONSTRUCTOR_PROPERTY
+  enabled: true
+  configuration: {}
