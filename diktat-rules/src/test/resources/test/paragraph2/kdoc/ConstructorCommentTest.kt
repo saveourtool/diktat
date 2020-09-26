@@ -19,17 +19,6 @@ class A(
 
 }
 
-/**
- * @property Age age
- */
-class B {
-    constructor(
-            //13
-            age: Int,
-            name: String
-    ){}
-}
-
 class Out{
     /**
      * Inner class

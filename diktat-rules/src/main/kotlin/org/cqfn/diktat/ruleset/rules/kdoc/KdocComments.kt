@@ -75,47 +75,56 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
     }
 
     private fun createKDocWithProperty(node: ASTNode, prevComment: ASTNode) {
-        val classNode = node.parent({it.elementType == CLASS})!!
-        val newKDoctext = if (prevComment.elementType == KDOC) prevComment.text else {
-            "/**\n * ${prevComment.text}\n */"
+        KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixMode, prevComment.text, prevComment.startOffset, node) {
+            val classNode = node.parent({ it.elementType == CLASS })!!
+            val newKDocText = if (prevComment.elementType == KDOC) prevComment.text else {
+                "/**\n * ${prevComment.text.removePrefix("//")}\n */"
+            }
+            val newKDoc = KotlinParser().createNode(newKDocText).findChildByType(KDOC)!!
+            classNode.addChild(PsiWhiteSpaceImpl("\n"), classNode.firstChildNode)
+            classNode.addChild(newKDoc, classNode.firstChildNode)
+            if (prevComment.elementType == EOL_COMMENT) {
+                node.treeParent.removeRange(prevComment, node)
+            } else {
+                if (prevComment.treeNext.elementType == WHITE_SPACE)
+                    node.removeChild(prevComment.treeNext)
+                node.removeChild(prevComment)
+            }
         }
-        val newKDoc = KotlinParser().createNode(newKDoctext)
-        classNode.addChild(newKDoc, classNode.firstChildNode)
     }
 
     private fun checkKDocBeforeClass(node: ASTNode, kDocBeforeClass: ASTNode, prevComment: ASTNode) {
-        val propertyInKDoc = kDocBeforeClass.kDocTags()?.firstOrNull { it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == node.findChildByType(IDENTIFIER)!!.text }?.node
+        val propertyInClassKDoc = kDocBeforeClass.kDocTags()?.firstOrNull { it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == node.findChildByType(IDENTIFIER)!!.text }?.node
         val propertyKDoc = prevComment.copyElement()
         val insertText = if (prevComment.elementType == KDOC){
             propertyKDoc.removeChild(propertyKDoc.findChildByType(KDOC_START)!!)
             propertyKDoc.removeChild(propertyKDoc.findChildByType(KDOC_END)!!)
             propertyKDoc.text
         } else propertyKDoc.text
-        println(prevComment.prettyPrint())
         KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixMode, insertText, prevComment.startOffset, node){
-            if (propertyInKDoc != null) {
-                if (propertyInKDoc.hasChildOfType(KDOC_TEXT)) {
-                    val q = "* @property ${node.findChildByType(IDENTIFIER)!!.text}"
-                    /*val kDocText = propertyInKDoc.findChildByType(KDOC_TEXT)!!
-                    (kDocText as LeafPsiElement).replaceWithText("${kDocText.text} ${prevComment.text}")*/
-                } else {
-                    propertyInKDoc.addChild(PsiWhiteSpaceImpl(" "), null)
-                    propertyInKDoc.addChild(LeafPsiElement(KDOC_TEXT, prevComment.text), null)
-                }
-            } else {
-                createPropertySection(kDocBeforeClass, node, prevComment)
-            }
-            node.treeParent.removeRange(prevComment, node)
+            if (prevComment.elementType  == EOL_COMMENT)
+                handleCommentBefore(node, kDocBeforeClass, prevComment, propertyInClassKDoc)
+            else
+                handleKDocBefore(node, kDocBeforeClass, prevComment, propertyInClassKDoc)
         }
     }
 
-    private fun createPropertySection(kDoc: ASTNode, node: ASTNode, prevComment: ASTNode){
-        val allKDocText = kDoc.text
-        val endKDoc = kDoc.findChildByType(KDOC_END)!!.text
-        val newKDocText = StringBuilder(allKDocText).insert(allKDocText.indexOf(endKDoc),
-                "* @property ${node.findChildByType(IDENTIFIER)!!.text} ${prevComment.text.removeRange(0,2)}\n")
-        val newKDocNode = KotlinParser().createNode(newKDocText.toString()).findChildByType(KDOC)!!
-        kDoc.treeParent.replaceChild(kDoc, newKDocNode)
+    private fun handleKDocBefore(node: ASTNode, kDocBeforeClass: ASTNode, prevComment: ASTNode, propertyInClassKDoc: ASTNode?) {
+
+    }
+
+    private fun handleCommentBefore(node: ASTNode, kDocBeforeClass: ASTNode, prevComment: ASTNode, propertyInClassKDoc: ASTNode?) {
+        if (propertyInClassKDoc !=  null){
+            propertyInClassKDoc.addChild(LeafPsiElement(KDOC_TEXT, prevComment.text), null)
+        } else {
+            val allKDocText = kDocBeforeClass.text
+            val endKDoc = kDocBeforeClass.findChildByType(KDOC_END)!!.text
+            val newKDocText = StringBuilder(allKDocText).insert(allKDocText.indexOf(endKDoc),
+                    "* @property ${node.findChildByType(IDENTIFIER)!!.text} ${prevComment.text.removeRange(0,2)}\n")
+            val newKDocNode = KotlinParser().createNode(newKDocText.toString()).findChildByType(KDOC)!!
+            kDocBeforeClass.treeParent.replaceChild(kDocBeforeClass, newKDocNode)
+        }
+        node.treeParent.removeRange(prevComment, node)
     }
 
     private fun checkClassElements(node: ASTNode) {
