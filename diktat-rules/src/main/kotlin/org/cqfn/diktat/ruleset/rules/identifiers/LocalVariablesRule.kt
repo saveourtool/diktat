@@ -79,7 +79,7 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
                         (it.initializer?.containsOnlyConstants() ?: false) ||
                         (it.initializer as? KtCallExpression).isWhitelistedMethod()
             }
-            .associateWith { findUsagesOf(it, node.psi as KtFile) }
+            .associateWith { it.findUsagesOf(node.psi as KtFile) }
             .filterNot { it.value.isEmpty() }
 
     private fun groupPropertiesByUsages(propertiesToUsages: Map<KtProperty, List<KtNameReferenceExpression>>) = propertiesToUsages

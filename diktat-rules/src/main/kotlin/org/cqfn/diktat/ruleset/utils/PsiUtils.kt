@@ -44,12 +44,6 @@ fun KtProperty.getDeclarationScope() =
             .let { if (it is KtTryExpression) it.tryBlock else it }
             as KtBlockExpression?
 
-@Suppress("UnsafeCallOnNullableType")
-fun KtProperty.getClassScope() {
-    val parentBlock = this.getParentOfType<KtClassBody>(true)
-
-}
-
 /**
  * Checks if this [PsiElement] is an ancestor of [block].
  * Nodes like `IF`, `TRY` are parents of `ELSE`, `CATCH`, but their scopes are not intersecting, and false is returned in this case.

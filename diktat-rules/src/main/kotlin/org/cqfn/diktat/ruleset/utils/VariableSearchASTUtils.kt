@@ -2,15 +2,16 @@ package org.cqfn.diktat.ruleset.utils
 
 import com.pinterest.ktlint.core.ast.ElementType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
+import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.referenceExpression
 
 /**
  * [this] - root node of a type File that is used to search all declared properties (variables)
  * and it's usages (rvalues).
+ * (!) ONLY for nodes of File elementType
  *
  * @return a map of a property to it's usages
  */
@@ -23,62 +24,45 @@ fun ASTNode.collectAllDeclaredVariablesWithUsages(): Map<KtProperty, List<KtName
     return this
             .findAllNodesWithSpecificType(ElementType.PROPERTY)
             .map { it.psi as KtProperty }
-            .associateWith { findUsagesOf(it, fileNode) }
-            .filterNot { it.value.isEmpty() }
+            .associateWith { it.findUsagesOf(fileNode) }
 }
 
 /**
- * Finds all references to [property] in the same code block.
+ * Finds all references to [this] in the same code block.
+ * [this] - usages of this property will be searched
+ * @param fileNode - top level root node (elementType == File)
  * @return list of references as [KtNameReferenceExpression]
  */
-fun findUsagesOf(property: KtProperty, fileNode: KtFile): List<KtNameReferenceExpression> {
-    println(fileNode.node.prettyPrint())
-    return property
-            .getDeclarationScope()
-            .let { declarationScope ->
-                val variableName = property.nameAsName
-                // if declaration scope is not null - then we have found out the block where this variable is stored
-                // else - it is a global variable on a file level
-                declarationScope?.findAllUsagesOfVariableInBlock(variableName)
-                        ?: fileNode.findAllUsagesOfVariableInFile(variableName)
-            }
-}
-
-/**
- * getting all usages of a variable inside the same block (where variable was declared)
- */
-private fun KtFile.findAllUsagesOfVariableInFile(propertyName: Name?): List<KtNameReferenceExpression> {
-    return emptyList()
-/*    return this
-            .node
-            .findAllNodesWithSpecificType(ElementType.REFERENCE_EXPRESSION)
-            .map { it.psi as KtNameReferenceExpression }
-            .filter { it.getReferencedNameAsName() == propertyName }
-            .filterNot { expression ->
-                // to avoid false triggering on objects' fields with same name as property
-                isReferenceToFieldOfObject(expression) ||
-                        // to exclude usages of local properties from other context (shadowed) and lambda arguments with same name
-                        isReferenceToVariableWithSameName(expression, this, propertyName)
-            }*/
-}
-
-
-/**
- * getting all usages of a variable inside the same block (where variable was declared)
- */
-private fun KtBlockExpression.findAllUsagesOfVariableInBlock(propertyName: Name?): List<KtNameReferenceExpression> {
+fun KtProperty.findUsagesOf(fileNode: KtFile): List<KtNameReferenceExpression> {
     return this
-            .node
-            .findAllNodesWithSpecificType(ElementType.REFERENCE_EXPRESSION)
-            .map { it.psi as KtNameReferenceExpression }
-            .filter { it.getReferencedNameAsName() == propertyName }
-            .filterNot { expression ->
-                // to avoid false triggering on objects' fields with same name as property
-                isReferenceToFieldOfObject(expression) ||
-                        // to exclude usages of local properties from other context (shadowed) and lambda arguments with same name
-                        isReferenceToVariableWithSameName(expression, this, propertyName)
+            .getDeclarationScope()
+            // if declaration scope is not null - then we have found out the block where this variable is stored
+            // else - it is a global variable on a file level or a property on the class level
+            .let { declarationScope ->
+                // searching in the scope with declaration (in the context)
+                declarationScope?.getAllUsagesOfProperty(this)
+                        // searching on the class level in class body
+                        ?: (this.getParentOfType<KtClassBody>(true)?.getAllUsagesOfProperty(this))
+                        // searching on the file level
+                        ?: fileNode.getAllUsagesOfProperty(this)
             }
 }
+
+/**
+ * getting all usages of a variable inside the same (or nested) block (where variable was declared)
+ */
+private fun KtElement.getAllUsagesOfProperty(property: KtProperty) =
+        this.node.findAllNodesWithSpecificType(ElementType.REFERENCE_EXPRESSION)
+                // filtering out all usages that are declared in the same context but are going before the variable declaration
+                .filter { it.isGoingAfter(property.node) }
+                .map { it.psi as KtNameReferenceExpression }
+                .filter { it.getReferencedNameAsName() == property.nameAsName }
+                .filterNot { expression ->
+                    // to avoid false triggering on objects' fields with same name as property
+                    isReferenceToFieldOfObject(expression) ||
+                            // to exclude usages of local properties from other context (shadowed) and lambda arguments with same name
+                            isReferenceToOtherVariableWithSameName(expression, this, property)
+                }
 
 /**
  * filtering object's fields (expressions) that have same name as variable
@@ -91,16 +75,27 @@ private fun isReferenceToFieldOfObject(expression: KtNameReferenceExpression) =
 
 /**
  * filtering local properties from other context (shadowed) and lambda and function arguments with same name
- */
-private fun isReferenceToVariableWithSameName(expression: KtNameReferenceExpression, codeBlock: KtBlockExpression, propertyName: Name?) =
-        expression.parents
-                .mapNotNull { it as? KtBlockExpression }
-                .takeWhile { codeBlock != it }
-                .any { block ->
-                    block.getChildrenOfType<KtProperty>().any { it.nameAsName == propertyName } ||
-                            block.parent
-                                    .let { it as? KtFunctionLiteral }
-                                    ?.valueParameters
-                                    ?.any { it.nameAsName == propertyName }
-                            ?: false
-                }
+ *  going through all parent scopes from bottom to top until we will find the scope where the initial variable was declared
+ *  all these scopes are on lower level of inheritance that's why if in one of these scopes we will find any
+ *  variable declaration with the same name - we will understand that it is usage of another variable
+*/
+private fun isReferenceToOtherVariableWithSameName(expression: KtNameReferenceExpression, codeBlock: KtElement, property: KtProperty): Boolean {
+    return expression.parents
+            // getting all block expressions/class bodies/file node from bottom to the top
+            // FixMe: Object companion is not resolved properly yet
+            .filter { it is KtBlockExpression || it is KtClassBody || it is KtFile }
+            // until we reached the block that contains the initial declaration
+            .takeWhile { codeBlock != it }
+            .any { block ->
+                // this is not the expression that we needed if:
+                //  1) there is a new shadowed declaration for this expression (but the declaration should stay on the previous line!)
+                //  2) or there one of top blocks is a function/lambda that has arguments with the same name
+                // FixMe: in class or a file the declaration can easily go after the usage (by lines of code)
+                block.getChildrenOfType<KtProperty>().any { it.nameAsName == property.nameAsName && expression.node.isGoingAfter(it.node) } ||
+                        block.parent
+                                .let { it as? KtFunctionLiteral }
+                                ?.valueParameters
+                                ?.any { it.nameAsName == property.nameAsName }
+                        ?: false
+            }
+}
