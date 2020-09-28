@@ -112,10 +112,9 @@ class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) :
                     ?.isFollowedByNewline()
                     ?: false
             val hasAnnotationsBefore = (node.psi as KtProperty)
-                    .run {
-                        annotationEntries.any { it.node.isFollowedByNewline() }
-                    }
-            val whiteSpaceBefore = previousProperty.nextSibling { it.elementType == WHITE_SPACE }!!
+                    .annotationEntries
+                    .any { it.node.isFollowedByNewline() }
+            val whiteSpaceBefore = previousProperty.nextSibling { it.elementType == WHITE_SPACE } ?: return
             val numRequiredNewLines = 1 + (if (hasCommentBefore || hasAnnotationsBefore) 1 else 0)
             if (whiteSpaceBefore.text.count { it == '\n' } != numRequiredNewLines)
                 BLANK_LINE_BETWEEN_PROPERTIES.warnAndFix(configRules, emitWarn, isFixMode, node.getIdentifierName()!!.text, node.startOffset, node) {
