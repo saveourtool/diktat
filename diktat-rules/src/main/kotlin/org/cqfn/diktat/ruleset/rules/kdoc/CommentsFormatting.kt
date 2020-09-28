@@ -218,8 +218,8 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
         if (node.elementType == KDOC) {
             val section = node.getFirstChildWithType(KDOC_SECTION)
             if (section != null
-                    && section.findChildrenMatching(KDOC_TEXT){ it.treePrev.elementType == KDOC_LEADING_ASTERISK }
-                            .all { it.text.startsWith(" ".repeat(configuration.maxSpacesInComment)) })
+                    && section.findChildrenMatching(KDOC_TEXT){ (it.treePrev != null && it.treePrev.elementType == KDOC_LEADING_ASTERISK) || it.treePrev == null }
+                            .all { it.text.startsWith(" ".repeat(configuration.maxSpacesInComment)) }) // it.treePrev == null if there is no \n at the beginning of KDoc
                 return
 
             if (section != null
