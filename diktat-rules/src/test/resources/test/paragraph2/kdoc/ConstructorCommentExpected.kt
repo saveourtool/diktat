@@ -28,3 +28,29 @@ class Out{
             name: String
     ){}
 }
+
+/**
+ *
+ * some text
+*/
+class A (
+        name: String
+){}
+
+/**
+ * @property name another text
+ * some text
+*/
+class A (
+        name: String
+){}
+
+/**
+ * @property name another text
+ */
+class A (
+        /**
+         * @property name some text
+         */
+        name: String
+){}

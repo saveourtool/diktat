@@ -205,6 +205,7 @@ class KdocWarnTest : LintTestBase(::KdocComments) {
     }
 
     @Test
+    @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY)
     fun `check simple primary constructor with comment`() {
         lintMethod(
                 """
@@ -224,7 +225,8 @@ class KdocWarnTest : LintTestBase(::KdocComments) {
     }
 
     @Test
-    fun `check simple secondary constructor with comment`() {
+    @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY)
+    fun `shouldn't trigger because not primary constructor`() {
         lintMethod(
                 """
                     |/**
@@ -239,32 +241,12 @@ class KdocWarnTest : LintTestBase(::KdocComments) {
                     |   OneMoreName: String
                     |   )
                     |}
-                """.trimMargin(),
-                LintError(7, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} // name", true)
+                """.trimMargin()
         )
     }
 
     @Test
-    fun `check wihtout property in KDoc`() {
-        lintMethod(
-                """
-                    |/**
-                    | * @property anotherName text
-                    | */
-                    |class Example {
-                    |   constructor(
-                    |   //some descriptions
-                    |   name: String,
-                    |   anotherName: String,
-                    |   OneMoreName: String
-                    |   )
-                    |}
-                """.trimMargin(),
-                LintError(6, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} //some descriptions", true)
-        )
-    }
-
-    @Test
+    @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY)
     fun `check another constructor`() {
         lintMethod(
                 """
@@ -284,6 +266,7 @@ class KdocWarnTest : LintTestBase(::KdocComments) {
     }
 
     @Test
+    @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY)
     fun `check danother constructor`() {
         lintMethod(
                 """
@@ -302,7 +285,7 @@ class KdocWarnTest : LintTestBase(::KdocComments) {
                     |   ) {
                     |}
                 """.trimMargin(),
-                LintError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} //some descriptions", true)
+                LintError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} /**...", true)
         )
     }
 }

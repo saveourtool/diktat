@@ -13,3 +13,10 @@ class A constructor(
 class A constructor(
         val name: String
 ){}
+
+class A constructor(
+        /**
+         * text
+         */
+        @param:JsonProperty("shortName") private val shortName: String
+){}
