@@ -8,7 +8,6 @@ import com.pinterest.ktlint.core.ast.ElementType.CLASS_INITIALIZER
 import com.pinterest.ktlint.core.ast.ElementType.COMPANION_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.CONST_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
-import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.LATEINIT_KEYWORD
@@ -19,6 +18,7 @@ import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.SECONDARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.lineNumber
 import com.pinterest.ktlint.core.ast.nextSibling
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevSibling
@@ -29,11 +29,13 @@ import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.findLeafWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getIdentifierName
 import org.cqfn.diktat.ruleset.utils.handleIncorrectOrder
+import org.cqfn.diktat.ruleset.utils.isFollowedByNewline
 import org.cqfn.diktat.ruleset.utils.leaveExactlyNumNewLines
 import org.cqfn.diktat.ruleset.utils.loggerPropertyRegex
 import org.cqfn.diktat.ruleset.utils.moveChildBefore
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.psiUtil.parents
 
 /**
@@ -101,12 +103,19 @@ class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) :
         val previousProperty = node.prevSibling { it.elementType == PROPERTY }
 
         if (previousProperty != null) {
-            val commentOnThis = node.findChildByType(TokenSet.create(KDOC, EOL_COMMENT, BLOCK_COMMENT))
+            val hasCommentBefore = node
+                    .findChildByType(TokenSet.create(KDOC, EOL_COMMENT, BLOCK_COMMENT))
+                    ?.isFollowedByNewline()
+                    ?: false
+            val hasAnnotationsBefore = (node.psi as KtProperty)
+                    .run {
+                        annotationEntries.any { it.node.isFollowedByNewline() }
+                    }
             val whiteSpaceBefore = previousProperty.nextSibling { it.elementType == WHITE_SPACE }!!
-            val nRequiredNewLines = if (commentOnThis == null) 1 else 2
-            if (whiteSpaceBefore.text.count { it == '\n' } != nRequiredNewLines)
+            val numRequiredNewLines = 1 + (if (hasCommentBefore || hasAnnotationsBefore) 1 else 0)
+            if (whiteSpaceBefore.text.count { it == '\n' } != numRequiredNewLines)
                 BLANK_LINE_BETWEEN_PROPERTIES.warnAndFix(configRules, emitWarn, isFixMode, node.getIdentifierName()!!.text, node.startOffset, node) {
-                    whiteSpaceBefore.leaveExactlyNumNewLines(nRequiredNewLines)
+                    whiteSpaceBefore.leaveExactlyNumNewLines(numRequiredNewLines)
                 }
         }
     }

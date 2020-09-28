@@ -711,7 +711,7 @@ import javax.swing.event.ActionEvent;
 ### <a name="s3.2"></a>>Recommendation 3.2: The declaration part of a class-like code structures (class/interface/e.t.c) should be in the following order: compile-time constants (for objects), class properties, late-init class properties, init-blocks, constructors, public methods, internal methods, protected methods, private methods, companion object. Their declaration should be separated by blank lines.
 
 Notes:
-1. There should be no blank lines between properties without comments;
+1. There should be no blank lines between properties. Exceptions: when there is a comment before property on a separate line or annotations on a separate line.
 2. Properties with comments/Kdoc should be separated by a newline before the comment/Kdoc
 3. Enum entries and constant properties (`const val`) in companion objects should be sorted alphabetically.
 
