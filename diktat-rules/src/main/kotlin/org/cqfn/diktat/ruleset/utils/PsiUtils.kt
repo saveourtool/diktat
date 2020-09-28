@@ -97,3 +97,22 @@ fun PsiElement.isContainingScope(block: KtBlockExpression): Boolean {
     }
     return isAncestor(block, false)
 }
+
+/**
+ * Method that tries to find a local property declaration with the same name as current [KtNameReferenceExpression] element
+ */
+fun KtNameReferenceExpression.findLocalDeclaration(): KtProperty? = parents
+        .mapNotNull { it as? KtBlockExpression }
+        .mapNotNull { blockExpression ->
+            blockExpression
+                    .statements
+                    .takeWhile { !it.isAncestor(this, true) }
+                    .mapNotNull { it as? KtProperty }
+                    .find {
+                        it.isLocal &&
+                                it.hasInitializer() &&
+                                it.name?.equals(getReferencedName())
+                                ?: false
+                    }
+        }
+        .firstOrNull()

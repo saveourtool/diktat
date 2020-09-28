@@ -68,9 +68,6 @@
 - name: MISSING_KDOC_CLASS_ELEMENTS
   enabled: true
   configuration: {}
-- name: BLANK_LINE_AFTER_KDOC
-  enabled: true
-  configuration: {}
 - name: KDOC_WITHOUT_PARAM_TAG
   enabled: true
   configuration: {}
@@ -147,9 +144,11 @@
 - name: FILE_NO_BLANK_LINE_BETWEEN_BLOCKS
   enabled: true
   configuration: {}
+# Check: warns if wildcard imports are used except allows. (e.g. import org.cqfn.diktat.*)
 - name: FILE_WILDCARD_IMPORTS
   enabled: true
-  configuration: {}
+  configuration:
+    allowedWildcards: "" # Allowed wildcards for imports (e.g. "import org.cqfn.diktat.*, import org.jetbrains.kotlin.*")
 - name: NO_BRACES_IN_CONDITIONALS_AND_LOOPS
   enabled: true
   configuration: {}
@@ -171,6 +170,7 @@
     extendedIndentOfParameters: true
     alignedParameters: true
     extendedIndentAfterOperators: true
+    indentationSize: 4
 - name: EMPTY_BLOCK_STRUCTURE_ERROR
   enabled: true
   configuration:
@@ -231,6 +231,27 @@
 - name: CONFUSING_IDENTIFIER_NAMING
   enabled: true
   configuration: {}
+# Inspection that checks if there is a blank line before kDoc and none after
+- name: WRONG_NEWLINES_AROUND_KDOC
+  enabled: true
+  configuration: {}
+# Inspection that checks if there is no blank lines before first comment
+- name: FIRST_COMMENT_NO_SPACES
+  enabled: true
+  configuration: {}
+# Inspection that checks if there are blank lines between code and comment and between code start token and comment's text
+- name: COMMENT_WHITE_SPACE
+  enabled: true
+  configuration:
+    maxSpacesBeforeComment: 2
+    maxSpacesInComment: 1
+# Inspection that checks if all comment's are inside if-else code blocks. Exception is general if comment
+- name: IF_ELSE_COMMENTS
+  enabled: true
+  configuration: {}
+- name: WRONG_COPYRIGHT_YEAR
+  enabled: true
+  configuration: {}
 # Inspection that checks if local variables are declared close to the first usage site
 - name: LOCAL_VARIABLE_EARLY_DECLARATION
   enabled: true
@@ -244,3 +265,15 @@
   enabled: true
   configuration:
     typeReferenceLength: '25' # max length of type reference
+# Inspection that checks if string template has redundant curly braces
+- name: STRING_TEMPLATE_CURLY_BRACES
+  enabled: true
+  configuration: {}
+# Inspection that checks if string template has redundant quotes
+- name: STRING_TEMPLATE_QUOTES
+  enabled: true
+  configuration: {}
+# Checks that floating-point values are not used in arithmetic expressions
+- name: FLOAT_IN_ACCURATE_CALCULATIONS
+  enabled: true
+  configuration: {}
