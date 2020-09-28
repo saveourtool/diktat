@@ -24,16 +24,15 @@ fun ASTNode.collectAllDeclaredVariablesWithUsages(): Map<KtProperty, List<KtName
     return this
             .findAllNodesWithSpecificType(ElementType.PROPERTY)
             .map { it.psi as KtProperty }
-            .associateWith { it.findUsagesOf(fileNode) }
+            .associateWith { it.getAllUsages() }
 }
 
 /**
  * Finds all references to [this] in the same code block.
  * [this] - usages of this property will be searched
- * @param fileNode - top level root node (elementType == File)
  * @return list of references as [KtNameReferenceExpression]
  */
-fun KtProperty.findUsagesOf(fileNode: KtFile): List<KtNameReferenceExpression> {
+fun KtProperty.getAllUsages(): List<KtNameReferenceExpression> {
     return this
             .getDeclarationScope()
             // if declaration scope is not null - then we have found out the block where this variable is stored
@@ -44,7 +43,7 @@ fun KtProperty.findUsagesOf(fileNode: KtFile): List<KtNameReferenceExpression> {
                         // searching on the class level in class body
                         ?: (this.getParentOfType<KtClassBody>(true)?.getAllUsagesOfProperty(this))
                         // searching on the file level
-                        ?: fileNode.getAllUsagesOfProperty(this)
+                        ?: (this.getParentOfType<KtFile>(true)!!.getAllUsagesOfProperty(this))
             }
 }
 
@@ -97,5 +96,6 @@ private fun isReferenceToOtherVariableWithSameName(expression: KtNameReferenceEx
                                 ?.valueParameters
                                 ?.any { it.nameAsName == property.nameAsName }
                         ?: false
+                // FixMe: also see very strange behavior of Kotlin in tests (disabled)
             }
 }

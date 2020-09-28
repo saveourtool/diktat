@@ -9,7 +9,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.LOCAL_VARIABLE_EARLY_DECLARATION
 import org.cqfn.diktat.ruleset.utils.containsOnlyConstants
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
-import org.cqfn.diktat.ruleset.utils.findUsagesOf
+import org.cqfn.diktat.ruleset.utils.getAllUsages
 import org.cqfn.diktat.ruleset.utils.getDeclarationScope
 import org.cqfn.diktat.ruleset.utils.lastLineNumber
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -79,7 +79,7 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
                         (it.initializer?.containsOnlyConstants() ?: false) ||
                         (it.initializer as? KtCallExpression).isWhitelistedMethod()
             }
-            .associateWith { it.findUsagesOf(node.psi as KtFile) }
+            .associateWith { it.getAllUsages() }
             .filterNot { it.value.isEmpty() }
 
     private fun groupPropertiesByUsages(propertiesToUsages: Map<KtProperty, List<KtNameReferenceExpression>>) = propertiesToUsages
