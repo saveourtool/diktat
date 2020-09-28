@@ -56,7 +56,7 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
         val isBlocks = mutableListOf<IsExpressions>()
         val notIsBlocks = mutableListOf<IsExpressions>()
 
-        val conditionBlock = node.findAllNodesWithSpecificType(CONDITION).first()
+        val conditionBlock = node.getFirstChildWithType(CONDITION)!!
 
         conditionBlock.findAllNodesWithSpecificType(IS_EXPRESSION).map { it.text }.forEach {
             if (it.contains("!is")) {
