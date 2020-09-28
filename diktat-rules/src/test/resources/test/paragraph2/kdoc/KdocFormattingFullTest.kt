@@ -15,6 +15,5 @@ class Example {
      *
      * @return doubled value
      */
-
     fun test(a: Int): Int = 2 * a
 }
