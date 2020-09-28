@@ -9,6 +9,12 @@ class SomeClass {
         val a = 5  // Right side comment good
         val c = 6  // Side comment
 
+        when (this) {
+            is AnotherClass -> println()
+            // Comment
+            is Any -> println()
+        }
+
         /* General if comment */
         if (a == 5) {
 

@@ -35,7 +35,6 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 
-
 /**
  * This class handles rule 2.6
  * Part 1:
@@ -121,8 +120,9 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
                     checkFirstCommentSpaces(node)
                 return
             }
-        } else if (node.treeParent.lastChildNode != node && node.treeParent.elementType != IF) {
-            // Else the comment is in CLASS_BODY and not in IF block
+        } else if (node.treeParent.lastChildNode != node && node.treeParent.elementType != IF
+                && node.treeParent.firstChildNode == node && node.treeParent.elementType != VALUE_ARGUMENT_LIST) {
+            // Else it's a class comment
             checkClassComment(node)
         }
     }
@@ -215,7 +215,8 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
         if (node.elementType == KDOC) {
             val section = node.getFirstChildWithType(KDOC_SECTION)
             if (section != null
-                    && section.getAllChildrenWithType(KDOC_TEXT).all { it.text.startsWith(" ".repeat(configuration.maxSpacesInComment)) })
+                    && section.findChildrenMatching(KDOC_TEXT){ it.treePrev.elementType == KDOC_LEADING_ASTERISK }
+                            .all { it.text.startsWith(" ".repeat(configuration.maxSpacesInComment)) })
                 return
 
             if (section != null
