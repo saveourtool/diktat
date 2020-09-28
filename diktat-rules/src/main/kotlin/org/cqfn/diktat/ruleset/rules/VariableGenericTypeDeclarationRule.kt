@@ -10,6 +10,7 @@ import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
+import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 /**
@@ -35,7 +36,7 @@ class VariableGenericTypeDeclarationRule(private val configRules: List<RulesConf
 
     @Suppress("UnsafeCallOnNullableType")
     private fun handleProperty(node: ASTNode) {
-        val callExpr = if (node.findChildByType(CALL_EXPRESSION) != null) {
+        val callExpr = if (node.hasChildOfType(CALL_EXPRESSION)) {
             node.findChildByType(CALL_EXPRESSION)
         } else {
             node.findChildByType(DOT_QUALIFIED_EXPRESSION)?.getAllChildrenWithType(CALL_EXPRESSION)?.lastOrNull()
@@ -57,6 +58,6 @@ class VariableGenericTypeDeclarationRule(private val configRules: List<RulesConf
     }
 
     companion object VariableSide {
-        val sideRegex = Regex("<([a-zA-Z, <>?]*)>")
+        val sideRegex = Regex("<([a-zA-Z, <>?]+)>")
     }
 }
