@@ -25,6 +25,7 @@ class VariableGenericTypeDeclarationRuleWarnTest : LintTestBase(::VariableGeneri
                     |       emptyMap<Int, String>()
                     |   }
                     |   val sideRegex = Regex("<([a-zA-Z, <>?]+)>")
+                    |   val str = someMethod("mapOf<String>")
                     |   val x = foo.bar<Bar>().baz()
                     |}
                 """.trimMargin()

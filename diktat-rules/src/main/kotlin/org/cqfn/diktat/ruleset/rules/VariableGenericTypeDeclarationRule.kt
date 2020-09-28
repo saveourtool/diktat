@@ -58,6 +58,6 @@ class VariableGenericTypeDeclarationRule(private val configRules: List<RulesConf
     }
 
     companion object VariableSide {
-        val sideRegex = Regex("<([a-zA-Z, <>?]+)>")
+        val sideRegex = Regex("<([a-zA-Z, ?<>]+)>(?=([^\"]*\"[^\"]*\")*[^\"]*\$)")
     }
 }
