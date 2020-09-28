@@ -11,6 +11,7 @@ import org.cqfn.diktat.ruleset.rules.files.FileSize
 import org.cqfn.diktat.ruleset.rules.files.FileStructureRule
 import org.cqfn.diktat.ruleset.rules.files.IndentationRule
 import org.cqfn.diktat.ruleset.rules.files.NewlinesRule
+import org.cqfn.diktat.ruleset.rules.kdoc.CommentsFormatting
 import org.cqfn.diktat.ruleset.rules.identifiers.LocalVariablesRule
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocComments
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocFormatting
@@ -43,6 +44,7 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
                 ::EmptyBlock,
                 ::EnumsSeparated,
                 ::SingleLineStatementsRule,
+                ::CommentsFormatting,
                 ::ConsecutiveSpacesRule,
                 ::LongNumericalValuesSeparatedRule,
                 ::MultipleModifiersSequence,
