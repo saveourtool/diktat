@@ -189,12 +189,14 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
         if (node.treeParent.firstChildNode != node) {
             if (!node.treePrev.isWhiteSpace()) {
                 // if comment is like this: val a = 5// Comment
-                COMMENT_WHITE_SPACE.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
+                COMMENT_WHITE_SPACE.warnAndFix(configRules, emitWarn, isFixMode,
+                        "There are no spaces before ${node.text}. Should be ${configuration.maxSpacesBeforeComment}", node.startOffset, node) {
                     node.treeParent.addChild(PsiWhiteSpaceImpl(" ".repeat(configuration.maxSpacesBeforeComment)), node)
                 }
             } else if (!node.treePrev.textContains('\n') && node.treePrev.text.length != configuration.maxSpacesBeforeComment) {
                 // if there are too many spaces before comment
-                COMMENT_WHITE_SPACE.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
+                COMMENT_WHITE_SPACE.warnAndFix(configRules, emitWarn, isFixMode,
+                        "There are too many spaces after ${node.text}. Should be ${configuration.maxSpacesBeforeComment}", node.startOffset, node) {
                     (node.treePrev as LeafPsiElement).replaceWithText(" ".repeat(configuration.maxSpacesBeforeComment))
                 }
             }
@@ -226,7 +228,8 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
                 return
         }
 
-        COMMENT_WHITE_SPACE.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
+        COMMENT_WHITE_SPACE.warnAndFix(configRules, emitWarn, isFixMode,
+                "There should be ${configuration.maxSpacesInComment} space before ${node.text} comment token", node.startOffset, node) {
             val commentText = node.text.drop(2).trim()
 
             when (node.elementType) {
