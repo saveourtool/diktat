@@ -100,9 +100,19 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
 
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkKDocBeforeClass(node: ASTNode, kDocBeforeClass: ASTNode, prevComment: ASTNode) {
-        val propertyInClassKDoc = kDocBeforeClass.kDocTags()?.firstOrNull { it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == node.findChildByType(IDENTIFIER)!!.text }?.node
-        val propertyInLocalKDoc = if (prevComment.elementType == KDOC) prevComment.kDocTags()?.firstOrNull { it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == node.findChildByType(IDENTIFIER)!!.text }?.node else null
+        val propertyInClassKDoc = kDocBeforeClass
+                .kDocTags()
+                ?.firstOrNull { it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == node.findChildByType(IDENTIFIER)!!.text }
+                ?.node
+        val propertyInLocalKDoc = if (prevComment.elementType == KDOC)
+            prevComment
+                    .kDocTags()
+                    ?.firstOrNull { it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == node.findChildByType(IDENTIFIER)!!.text }
+                    ?.node
+        else
+            null
         val isFixable = prevComment.elementType != KDOC || propertyInClassKDoc == null || propertyInLocalKDoc == null
         KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixable, prevComment.text, prevComment.startOffset, node, isFixable) {
             if (prevComment.elementType == EOL_COMMENT)
