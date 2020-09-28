@@ -8,7 +8,6 @@ import com.pinterest.ktlint.core.ast.ElementType.CLASS_INITIALIZER
 import com.pinterest.ktlint.core.ast.ElementType.COMPANION_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.CONST_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
-import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.LATEINIT_KEYWORD
@@ -101,11 +100,7 @@ class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) :
     @Suppress("UnsafeCallOnNullableType")
     private fun checkNewLinesBeforeProperty(node: ASTNode) {
         // checking only top-level and class-level properties
-        val isTopLevelOrClassProperty = node
-                .treeParent
-                .elementType
-                .let { it == FILE || it == CLASS_BODY }
-        if (!isTopLevelOrClassProperty) {
+        if (node.treeParent.elementType != CLASS_BODY) {
             return
         }
 
