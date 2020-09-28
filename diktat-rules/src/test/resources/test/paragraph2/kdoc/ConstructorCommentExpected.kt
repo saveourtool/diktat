@@ -5,7 +5,7 @@ package test.paragraph2.kdoc
  * @property name  should replace
 */
 class A constructor(
-        name: String
+        val name: String
 )
 
 /**
@@ -25,7 +25,7 @@ class Out{
      * @property name Jack
 */
     class In(
-            name: String
+            val name: String
     ){}
 }
 
@@ -34,7 +34,7 @@ class Out{
  * some text
 */
 class A (
-        name: String
+        var name: String
 ){}
 
 /**
@@ -42,7 +42,7 @@ class A (
  * some text
 */
 class A (
-        name: String
+        var name: String
 ){}
 
 /**
@@ -52,5 +52,5 @@ class A (
         /**
          * @property name some text
          */
-        name: String
+        val name: String
 ){}
