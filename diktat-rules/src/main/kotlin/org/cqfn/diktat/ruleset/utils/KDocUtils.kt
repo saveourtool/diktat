@@ -14,12 +14,11 @@ import org.jetbrains.kotlin.utils.addToStdlib.ifNotEmpty
 
 fun ASTNode.kDocTags(): List<KDocTag>? {
     require(this.elementType == ElementType.KDOC) { "kDoc tags can be retrieved only from KDOC node" }
-    return this.getAllChildrenWithType(KDOC_SECTION)
-            .map { sectionNode ->
+    return this.getAllChildrenWithType(KDOC_SECTION).flatMap {
+            sectionNode ->
                 sectionNode.getAllChildrenWithType(ElementType.KDOC_TAG)
                         .map { its -> its.psi as KDocTag }
             }
-            .flatten()
 }
 
 fun Iterable<KDocTag>.hasKnownKDocTag(knownTag: KDocKnownTag): Boolean =

@@ -236,8 +236,8 @@ class KdocWarnTest : LintTestBase(::KdocComments) {
                     |class Example {
                     |   constructor(
                     |   // name
-                    |   name: String,
-                    |   anotherName: String,
+                    |   var name: String,
+                    |   val anotherName: String,
                     |   OneMoreName: String
                     |   )
                     |}
@@ -255,13 +255,32 @@ class KdocWarnTest : LintTestBase(::KdocComments) {
                     | */
                     |class Example (
                     |   //some descriptions
-                    |   name: String,
+                    |   val name: String,
                     |   anotherName: String,
                     |   OneMoreName: String
                     |   ) {
                     |}
                 """.trimMargin(),
                 LintError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} //some descriptions", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY)
+    fun `check not property`() {
+        lintMethod(
+                """
+                    |/**
+                    | * @return some
+                    | */
+                    |class Example (
+                    |   //some descriptions
+                    |   name: String,
+                    |   anotherName: String,
+                    |   OneMoreName: String
+                    |   ) {
+                    |}
+                """.trimMargin()
         )
     }
 
@@ -279,7 +298,7 @@ class KdocWarnTest : LintTestBase(::KdocComments) {
                     |    * @return fdv
                     |    */
                     |    
-                    |   name: String,
+                    |   val name: String,
                     |   anotherName: String,
                     |   OneMoreName: String
                     |   ) {

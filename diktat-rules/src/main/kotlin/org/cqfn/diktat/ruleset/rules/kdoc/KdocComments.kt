@@ -14,6 +14,8 @@ import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER
+import com.pinterest.ktlint.core.ast.ElementType.VAL_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.VAR_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.parent
 import org.cqfn.diktat.common.config.rules.RulesConfig
@@ -65,11 +67,17 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
 
     @Suppress("UnsafeCallOnNullableType")
     private fun checkValueParameter(node: ASTNode) {
-        if (node.parents().none { it.elementType == PRIMARY_CONSTRUCTOR }) return
-        val prevComment = if (node.treePrev.elementType == EOL_COMMENT) node.treePrev
-        else if (node.treePrev.elementType == WHITE_SPACE && node.treePrev.treePrev.elementType == EOL_COMMENT) node.treePrev.treePrev
-        else if (node.hasChildOfType(KDOC)) node.findChildByType(KDOC)!!
-        else return
+        if (node.parents().none { it.elementType == PRIMARY_CONSTRUCTOR } ||
+                !(node.hasChildOfType(VAL_KEYWORD) || node.hasChildOfType(VAR_KEYWORD))) return
+        val prevComment = if (node.treePrev.elementType == EOL_COMMENT) {
+            node.treePrev
+        } else if (node.treePrev.elementType == WHITE_SPACE && node.treePrev.treePrev.elementType == EOL_COMMENT) {
+            node.treePrev.treePrev
+        } else if (node.hasChildOfType(KDOC)) {
+            node.findChildByType(KDOC)!!
+        } else {
+            return
+        }
         val kDocBeforeClass = node.parent({ it.elementType == CLASS })!!.findChildByType(KDOC)
         if (kDocBeforeClass != null)
             checkKDocBeforeClass(node, kDocBeforeClass, prevComment)
