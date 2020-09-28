@@ -36,11 +36,8 @@ class VariableGenericTypeDeclarationRule(private val configRules: List<RulesConf
 
     @Suppress("UnsafeCallOnNullableType")
     private fun handleProperty(node: ASTNode) {
-        val callExpr = if (node.hasChildOfType(CALL_EXPRESSION)) {
-            node.findChildByType(CALL_EXPRESSION)
-        } else {
-            node.findChildByType(DOT_QUALIFIED_EXPRESSION)?.getAllChildrenWithType(CALL_EXPRESSION)?.lastOrNull()
-        }
+        val callExpr = node.findChildByType(CALL_EXPRESSION)
+                ?: node.findChildByType(DOT_QUALIFIED_EXPRESSION)?.getAllChildrenWithType(CALL_EXPRESSION)?.lastOrNull()
 
         val rightSide = sideRegex.find(callExpr?.text ?: "")
         val leftSide = sideRegex.find(node.findChildByType(TYPE_REFERENCE)?.text ?: "")
