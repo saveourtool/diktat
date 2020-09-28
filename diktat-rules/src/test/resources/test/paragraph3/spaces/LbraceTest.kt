@@ -5,5 +5,6 @@ class Example{
         list.run{
             map  { bar(it) }
         }
+        lister.map { "${ruleId}" }
     }
 }

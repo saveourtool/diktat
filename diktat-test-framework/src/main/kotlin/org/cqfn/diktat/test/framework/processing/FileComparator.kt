@@ -11,10 +11,10 @@ import java.util.StringJoiner
 import java.util.stream.Collectors
 
 class FileComparator {
-    private var expectedResultFile: File
-    private var actualResultList: List<String?>?
+    private val expectedResultFile: File
+    private val actualResultList: List<String?>
 
-    constructor (expectedResultFile: File, actualResultList: List<String?>?) {
+    constructor(expectedResultFile: File, actualResultList: List<String?>) {
         this.expectedResultFile = expectedResultFile
         this.actualResultList = actualResultList
     }
@@ -28,7 +28,7 @@ class FileComparator {
      * @return true in case files are different
      * false - in case they are equals
      */
-    @Suppress("ReturnCount")
+    @Suppress("ReturnCount", "FUNCTION_BOOLEAN_PREFIX")
     fun compareFilesEqual(): Boolean {
         try {
             val expect = readFile(expectedResultFile.absolutePath)
@@ -40,7 +40,9 @@ class FileComparator {
                 return true
             }
             val deltasJoiner = StringJoiner(System.lineSeparator())
-            patch.deltas.map { it.toString() }
+            patch
+                    .deltas
+                    .map { it.toString() }
                     .forEach { delta -> deltasJoiner.add(delta) }
 
             log.error("""Expected result from <${expectedResultFile.name}> and actual formatted are different.
@@ -69,5 +71,4 @@ class FileComparator {
     companion object {
         private val log = LoggerFactory.getLogger(FileComparator::class.java)
     }
-
 }

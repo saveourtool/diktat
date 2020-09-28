@@ -535,14 +535,14 @@ The module's external interface declaration and its comments should clearly conv
 ## <a name="c2.4"></a>Code comments
 
 ### <a name="r2.6"></a>Rule 2.6 Add a blank line between the body of the comment and Kdoc tag-blocks; there must be 1 space between the comment character and the content of the comment; there must be a newline between a Kdoc and the previous code above
-1. Add a blank line between the body of the comment and Kdoc tag-blocks; there must be 1 space between the comment character and the content of the comment; there must be a newline between a Kdoc and the previous code above.
+1. There must be 1 space between the comment character and the content of the comment; there must be a newline between a Kdoc and the previous code above; there should be no empty line between Kdoc and code it is describing.
  No need to add a blank line before a first comment in this particular name space (code block), for example between function declaration and first comment in a function body.  
 
 Examples: 
 ```kotlin
 /** 
  * This is the short overview comment for the example interface.
- *                   /* Add a blank line between the general comment text and each KDoc tag */
+ * 
  * @since 1.6
  */
  public interface Example {
@@ -563,7 +563,7 @@ Examples:
                       /* Add a blank line above the comment */
      /**
       * These possibilities include: Formatting of header comments
-      *                /* 注释正文与其下的各个KDoc tag之间加1个空行 */
+      * 
       * @return the rounds of battle of fox and dog
       * @throws ProblemException if lazy dog wins
       */
@@ -711,7 +711,7 @@ import javax.swing.event.ActionEvent;
 ### <a name="s3.2"></a>>Recommendation 3.2: The declaration part of a class-like code structures (class/interface/e.t.c) should be in the following order: compile-time constants (for objects), class properties, late-init class properties, init-blocks, constructors, public methods, internal methods, protected methods, private methods, companion object. Their declaration should be separated by blank lines.
 
 Notes:
-1. There should be no blank lines between properties without comments;
+1. There should be no blank lines between properties. Exceptions: when there is a comment before property on a separate line or annotations on a separate line.
 2. Properties with comments/Kdoc should be separated by a newline before the comment/Kdoc
 3. Enum entries and constant properties (`const val`) in companion objects should be sorted alphabetically.
 
