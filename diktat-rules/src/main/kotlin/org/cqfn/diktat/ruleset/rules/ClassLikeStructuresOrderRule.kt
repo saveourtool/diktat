@@ -8,6 +8,7 @@ import com.pinterest.ktlint.core.ast.ElementType.CLASS_INITIALIZER
 import com.pinterest.ktlint.core.ast.ElementType.COMPANION_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.CONST_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
+import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.LATEINIT_KEYWORD
@@ -18,7 +19,6 @@ import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.SECONDARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.lineNumber
 import com.pinterest.ktlint.core.ast.nextSibling
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevSibling
@@ -100,6 +100,15 @@ class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) :
 
     @Suppress("UnsafeCallOnNullableType")
     private fun checkNewLinesBeforeProperty(node: ASTNode) {
+        // checking only top-level and class-level properties
+        val isTopLevelOrClassProperty = node
+                .treeParent
+                .elementType
+                .let { it == FILE || it == CLASS_BODY }
+        if (!isTopLevelOrClassProperty) {
+            return
+        }
+
         val previousProperty = node.prevSibling { it.elementType == PROPERTY }
 
         if (previousProperty != null) {

@@ -121,4 +121,25 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
                 LintError(11, 5, ruleId, "${BLANK_LINE_BETWEEN_PROPERTIES.warnText()} BAZ", true)
         )
     }
+
+    @Test
+    @Tag(WarningNames.BLANK_LINE_BETWEEN_PROPERTIES)
+    fun `regression - should check only class-level and top-level properties`() {
+        lintMethod(
+                """class Example {
+                    |    fun foo() {
+                    |        val bar = 0
+                    |        
+                    |        val baz = 1
+                    |    }
+                    |    
+                    |    class Nested {
+                    |        val bar = 0
+                    |        val baz = 1
+                    |    }
+                    |}
+                """.trimMargin()
+//                LintError(10, )
+        )
+    }
 }
