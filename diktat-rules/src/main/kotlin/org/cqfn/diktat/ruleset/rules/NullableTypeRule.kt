@@ -57,14 +57,15 @@ class NullableTypeRule(private val configRules: List<RulesConfig>) : Rule("nulla
     private fun checkProperty(node: ASTNode) {
         if (node.hasChildOfType(VAL_KEYWORD) && node.hasChildOfType(EQ) && node.hasChildOfType(TYPE_REFERENCE)) {
             val typeReferenceNode = node.findChildByType(TYPE_REFERENCE)!!
+            // check that property has nullable type, right value one of allow expression
             if (!node.hasChildOfType(NULL) &&
                     !node.hasChildOfType(DOT_QUALIFIED_EXPRESSION) &&
                     typeReferenceNode.hasChildOfType(NULLABLE_TYPE) &&
-                    typeReferenceNode.findChildByType(NULLABLE_TYPE)!!.hasChildOfType(QUEST)) {
-                if (node.findChildByType(CALL_EXPRESSION)?.findChildByType(REFERENCE_EXPRESSION)?.text ?: "emptyList" in allowExpression) {
+                    typeReferenceNode.findChildByType(NULLABLE_TYPE)!!.hasChildOfType(QUEST) &&
+                    (node.findChildByType(CALL_EXPRESSION)?.findChildByType(REFERENCE_EXPRESSION) == null ||
+                            node.findChildByType(CALL_EXPRESSION)!!.findChildByType(REFERENCE_EXPRESSION)!!.text in allowExpression)) {
                     NULLABLE_PROPERTY_TYPE.warn(configRules, emitWarn, isFixMode, "don't use nullable type",
                             node.findChildByType(TYPE_REFERENCE)!!.startOffset, node)
-                }
             } else if (node.hasChildOfType(NULL)) {
                 val fixedParam = findFixableParam(node)
                 NULLABLE_PROPERTY_TYPE.warnAndFix(configRules, emitWarn, isFixMode, "initialize explicitly",
