@@ -316,7 +316,7 @@
                         <configuration>
                             <target name="ktlint">
                                 <java taskname="ktlint" dir="${maven.multiModuleProjectDirectory}" fork="true"
-                                      failonerror="false"
+                                      failonerror="true"
                                       classpathref="maven.plugin.classpath" classname="com.pinterest.ktlint.Main">
                                     <arg value="${project.basedir}/src/main/kotlin/**/*.kt"/>
                                     <arg value="${project.basedir}/src/test/kotlin/**/*.kt"/>
