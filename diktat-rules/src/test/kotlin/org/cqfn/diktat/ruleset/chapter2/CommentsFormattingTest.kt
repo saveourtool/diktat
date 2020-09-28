@@ -51,7 +51,7 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting){
                 """.trimMargin()
 
         lintMethod(code,
-                LintError(6,51,ruleId,"${Warnings.COMMENT_WHITE_SPACE.warnText()} There are too many spaces after // comment. Should be 2", true))
+                LintError(6,51,ruleId,"${Warnings.COMMENT_WHITE_SPACE.warnText()} There should be 2 space(s) before comment text, but there are too many in // comment", true))
     }
 
     @Test
@@ -68,7 +68,7 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting){
                 """.trimMargin()
 
         lintMethod(code,
-                LintError(3,22,ruleId,"${Warnings.COMMENT_WHITE_SPACE.warnText()} There are too many spaces after // asdasd. Should be 2", true))
+                LintError(3,22,ruleId,"${Warnings.COMMENT_WHITE_SPACE.warnText()} There should be 2 space(s) before comment text, but there are too many in // asdasd", true))
     }
 
     @Test
@@ -139,8 +139,8 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting){
                 """.trimMargin()
 
         lintMethod(code,
-                LintError(4,5, ruleId, "${Warnings.COMMENT_WHITE_SPACE.warnText()} There should be 1 space before //First Comment comment token", true),
-                LintError(11,5, ruleId, "${Warnings.COMMENT_WHITE_SPACE.warnText()} There should be 1 space before /*     Comment */ comment token", true))
+                LintError(4,5, ruleId, "${Warnings.COMMENT_WHITE_SPACE.warnText()} There should be 1 space(s) before comment token in //First Comment", true),
+                LintError(11,5, ruleId, "${Warnings.COMMENT_WHITE_SPACE.warnText()} There should be 1 space(s) before comment token in /*     Comment */", true))
     }
 
     @Test
@@ -279,7 +279,7 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting){
                 """.trimMargin()
 
         lintMethod(code,
-                LintError(5,13, ruleId, "${Warnings.COMMENT_WHITE_SPACE.warnText()} There are no spaces before // This is a comment. Should be 2", true))
+                LintError(5,13, ruleId, "${Warnings.COMMENT_WHITE_SPACE.warnText()} There should be 2 space(s) before comment text, but are none in // This is a comment", true))
     }
 
     @Test
