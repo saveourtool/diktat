@@ -213,10 +213,14 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
         }
 
         if (node.elementType == KDOC) {
-            if (node.findAllNodesWithSpecificType(KDOC_LEADING_ASTERISK).all { it.treeNext.elementType == WHITE_SPACE })
+            val section = node.getFirstChildWithType(KDOC_SECTION)
+            if (section != null
+                    && section.getAllChildrenWithType(KDOC_TEXT).all { it.text.startsWith(" ".repeat(configuration.maxSpacesInComment)) })
                 return
 
-            if (node.findAllNodesWithSpecificType(KDOC_SECTION).all { it.text.trim('*').length - it.text.trim('*', ' ').length >= configuration.maxSpacesInComment})
+            if (section != null
+                    && section.getAllChildrenWithType(KDOC_CODE_BLOCK_TEXT).isNotEmpty()
+                    && section.getAllChildrenWithType(KDOC_CODE_BLOCK_TEXT).all { it.text.startsWith(" ".repeat(configuration.maxSpacesInComment)) })
                 return
         }
 

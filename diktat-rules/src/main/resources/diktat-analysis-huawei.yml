@@ -248,7 +248,7 @@
 - name: COMMENT_WHITE_SPACE
   enabled: true
   configuration:
-    maxSpacesBeforeComment: 1
+    maxSpacesBeforeComment: 2
     maxSpacesInComment: 1
 # Inspection that checks if all comment's are inside if-else code blocks. Exception is general if comment
 - name: IF_ELSE_COMMENTS

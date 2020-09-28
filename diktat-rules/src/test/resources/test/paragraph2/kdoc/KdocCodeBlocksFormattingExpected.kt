@@ -6,8 +6,8 @@ package test.paragraph2.kdoc
 class SomeClass {
 /* block comment to func */
     fun testFunc() {
-        val a = 5 // Right side comment good
-        val c = 6 // Side comment
+        val a = 5  // Right side comment good
+        val c = 6  // Side comment
 
         /* General if comment */
         if (a == 5) {

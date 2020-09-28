@@ -81,6 +81,7 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting){
                     |/* This is a comment */
                     |class Example {
                     |    /**
+                    |    *
                     |    * Some Comment
                     |    */
                     |    private val log = LoggerFactory.getLogger(Example.javaClass)
@@ -157,7 +158,7 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting){
                     |    
                     |    fun someFunc() {
                     |       /* First comment */
-                    |       val first = 5 // Some comment
+                    |       val first = 5  // Some comment
                     |       
                     |       /**
                     |       * kDoc comment
@@ -169,7 +170,7 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting){
                     |       * asdasd
                     |       */
                     |       fun testFunc() {
-                    |           val a = 5 // Some Comment
+                    |           val a = 5  // Some Comment
                     |           
                     |           // Fun in fun Block
                     |           val b = 6
@@ -257,7 +258,7 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting){
                     |
                     |/* Some comment */
                     |class Example {
-                    |   val a = 5 // This is a comment
+                    |   val a = 5  // This is a comment
                     |}
                 """.trimMargin()
 
@@ -364,7 +365,7 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting){
                     |       // general if comment
                     |       if(a = 5) {
                     |       
-                    |       } /* Some comment */ else {
+                    |       }  /* Some comment */ else {
                     |           print(5)
                     |       }
                     |   }
@@ -387,7 +388,7 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting){
                     |       // general if comment
                     |       if(a = 5) {
                     |       
-                    |       } /* Some comment */ else
+                    |       }  /* Some comment */ else
                     |           print(5)
                     |   }
                     |}
@@ -431,7 +432,7 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting){
                     |       // general if comment
                     |       if(a = 5) {
                     |       
-                    |       } else { // Bad Comment 
+                    |       } else {  // Bad Comment 
                     |           print(5)
                     |       }
                     |   }
@@ -439,7 +440,7 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting){
                 """.trimMargin()
 
         lintMethod(code,
-                LintError(8,17,ruleId, "${Warnings.FIRST_COMMENT_NO_SPACES.warnText()} // Bad Comment ", true))
+                LintError(8,18,ruleId, "${Warnings.FIRST_COMMENT_NO_SPACES.warnText()} // Bad Comment ", true))
     }
 
     @Test
@@ -451,7 +452,7 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting){
                     |
                     |class Example { 
                     |    // First Comment
-                    |    private val log = LoggerFactory.getLogger(Example.javaClass) // secondComment
+                    |    private val log = LoggerFactory.getLogger(Example.javaClass)  // secondComment
                     |}
                 """.trimMargin()
 
