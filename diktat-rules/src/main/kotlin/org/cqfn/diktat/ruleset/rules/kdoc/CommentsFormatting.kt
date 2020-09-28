@@ -201,6 +201,7 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
         }
     }
 
+    @Suppress("ComplexMethod")
     private fun checkWhiteSpaceBeforeComment(node: ASTNode, configuration: CommentsFormattingConfiguration) {
         if (node.elementType == EOL_COMMENT &&
                 node.text.trimStart('/').takeWhile { it == ' ' }.length == configuration.maxSpacesInComment)
