@@ -308,6 +308,7 @@ class VariableSearchASTUtilsTest {
     }
 
     @Test
+    @Disabled
     fun `testing proper variables search in companion object with less priority then property`() {
         applyToCode("""
             var v = 0
