@@ -288,4 +288,44 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                 """.trimMargin()
         )
     }
+
+    @Test
+    @Tag(SMART_CAST_NEEDED)
+    fun `if with shadowed var good`() {
+        lintMethod(
+                """
+                    |class Test {
+                    |   val x = ""
+                    |   fun someFun() {
+                    |       if (x is String) {
+                    |           val x = 5
+                    |           val a = (x as String).length
+                    |       }
+                    |   }
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(SMART_CAST_NEEDED)
+    fun `if with shadowed var bad`() {
+        lintMethod(
+                """
+                    |class Test {
+                    |   val x = ""
+                    |   fun someFun() {
+                    |       if (x is String) {
+                    |           val x = 5
+                    |           val a = (x as String).length
+                    |           if (x is Int) {
+                    |               val b = (x as Int).value
+                    |           }
+                    |       }
+                    |   }
+                    |}
+                """.trimMargin(),
+                LintError(8, 25, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as Int", true)
+        )
+    }
 }

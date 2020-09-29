@@ -1,12 +1,14 @@
 package org.cqfn.diktat.ruleset.rules
 
 import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_WITH_TYPE
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CONDITION
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.ELSE
+import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.IF
 import com.pinterest.ktlint.core.ast.ElementType.IS_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
@@ -18,13 +20,11 @@ import com.pinterest.ktlint.core.ast.ElementType.WHEN_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.WHILE
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.SMART_CAST_NEEDED
-import org.cqfn.diktat.ruleset.utils.KotlinParser
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
-import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
-import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
-import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
-import org.cqfn.diktat.ruleset.utils.hasChildOfType
+import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.psi.*
+import org.jetbrains.kotlin.psi.psiUtil.isAncestor
+import org.jetbrains.kotlin.psi.psiUtil.parents
 
 class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-cast-rule") {
 
@@ -87,6 +87,7 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
             // Find all as expressions that are inside this current block
             val asList = thenBlock.findAllNodesWithSpecificType(BINARY_WITH_TYPE).filter { it.text.contains(" as ")
                     && it.findParentNodeWithSpecificType(BLOCK) == thenBlock }
+                    .filterNot { (it.getFirstChildWithType(REFERENCE_EXPRESSION)?.psi as KtNameReferenceExpression).hasLocalDeclaration() != null }
             checkAsExpressions(asList, blocks)
         } else {
             val asList = then.findAllNodesWithSpecificType(BINARY_WITH_TYPE).filter {  it.text.contains(" as ") }
@@ -145,6 +146,22 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
             }
         }
     }
+
+    private fun KtNameReferenceExpression.hasLocalDeclaration(): KtProperty? = parents
+            .mapNotNull { it as? KtBlockExpression }
+            .first()
+            .let { blockExpression ->
+                blockExpression
+                        .statements
+                        .takeWhile { !it.isAncestor(this, true) }
+                        .mapNotNull { it as? KtProperty }
+                        .find {
+                            it.isLocal &&
+                                    it.hasInitializer() &&
+                                    it.name?.equals(getReferencedName())
+                                    ?: false
+                        }
+            }
 
     class AsExpressions(val identifier: String, val type: String, val node:ASTNode)
 
