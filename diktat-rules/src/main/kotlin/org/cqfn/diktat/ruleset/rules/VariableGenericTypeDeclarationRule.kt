@@ -12,6 +12,9 @@ import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.psi.KtCallExpression
+import org.jetbrains.kotlin.psi.KtParameter
+import org.jetbrains.kotlin.psi.KtProperty
 
 /**
  * This Rule checks if declaration of a generic variable is appropriate.
@@ -39,22 +42,24 @@ class VariableGenericTypeDeclarationRule(private val configRules: List<RulesConf
         val callExpr = node.findChildByType(CALL_EXPRESSION)
                 ?: node.findChildByType(DOT_QUALIFIED_EXPRESSION)?.getAllChildrenWithType(CALL_EXPRESSION)?.lastOrNull()
 
-        val rightSide = sideRegex.find(callExpr?.text ?: "")
-        val leftSide = sideRegex.find(node.findChildByType(TYPE_REFERENCE)?.text ?: "")
+        val rightSide = (callExpr?.psi as? KtCallExpression)?.typeArgumentList?.arguments
+        val leftSide = if (node.elementType == PROPERTY) {
+            (node.psi as? KtProperty)?.typeReference?.typeElement?.typeArgumentsAsTypes
+        } else {
+            (node.psi as? KtParameter)?.typeReference?.typeElement?.typeArgumentsAsTypes
+        }
 
-        if ((rightSide != null && leftSide != null) && rightSide.groupValues.first() == leftSide.groupValues.first()) {
+        if ((rightSide != null && leftSide != null) &&
+                rightSide.size == leftSide.size &&
+                rightSide.zip(leftSide).all { (first, second) -> first.text == second.text }) {
             Warnings.GENERIC_VARIABLE_WRONG_DECLARATION.warnAndFix(configRules, emitWarn, isFixMode,
-                    "type arguments are unnecessary in ${callExpr?.text}", node.startOffset, node) {
-                callExpr!!.removeChild(callExpr.findChildByType(TYPE_ARGUMENT_LIST)!!)
+                    "type arguments are unnecessary in ${callExpr.text}", node.startOffset, node) {
+                callExpr.removeChild(callExpr.findChildByType(TYPE_ARGUMENT_LIST)!!)
             }
         }
 
         if (leftSide == null && rightSide != null) {
             Warnings.GENERIC_VARIABLE_WRONG_DECLARATION.warn(configRules, emitWarn, isFixMode, node.text, node.startOffset, node)
         }
-    }
-
-    companion object VariableSide {
-        val sideRegex = Regex("<([a-zA-Z, ?<>]+)>(?=([^\"]*\"[^\"]*\")*[^\"]*\$)")
     }
 }
