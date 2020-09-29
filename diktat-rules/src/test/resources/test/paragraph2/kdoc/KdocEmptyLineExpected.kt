@@ -21,7 +21,6 @@ class SomeName {
 
 }
 
-
 /**
  * another Kdoc
  */

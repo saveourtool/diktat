@@ -61,8 +61,6 @@ object WarningNames {
 
     const val KDOC_WITHOUT_THROWS_TAG: String = "KDOC_WITHOUT_THROWS_TAG"
 
-    const val BLANK_LINE_AFTER_KDOC: String = "BLANK_LINE_AFTER_KDOC"
-
     const val KDOC_EMPTY_KDOC: String = "KDOC_EMPTY_KDOC"
 
     const val KDOC_WRONG_SPACES_AFTER_TAG: String = "KDOC_WRONG_SPACES_AFTER_TAG"
@@ -93,6 +91,14 @@ object WarningNames {
     const val HEADER_NOT_BEFORE_PACKAGE: String = "HEADER_NOT_BEFORE_PACKAGE"
 
     const val COMMENTED_OUT_CODE: String = "COMMENTED_OUT_CODE"
+
+    const val WRONG_NEWLINES_AROUND_KDOC: String = "WRONG_NEWLINES_AROUND_KDOC"
+
+    const val FIRST_COMMENT_NO_SPACES: String = "FIRST_COMMENT_NO_SPACES"
+
+    const val COMMENT_WHITE_SPACE: String = "COMMENT_WHITE_SPACE"
+
+    const val IF_ELSE_COMMENTS: String = "IF_ELSE_COMMENTS"
 
     const val FILE_IS_TOO_LONG: String = "FILE_IS_TOO_LONG"
 
@@ -155,6 +161,6 @@ object WarningNames {
     const val STRING_TEMPLATE_CURLY_BRACES: String = "STRING_TEMPLATE_CURLY_BRACES"
 
     const val STRING_TEMPLATE_QUOTES: String = "STRING_TEMPLATE_QUOTES"
-  
+
     const val FLOAT_IN_ACCURATE_CALCULATIONS: String = "FLOAT_IN_ACCURATE_CALCULATIONS"
 }
