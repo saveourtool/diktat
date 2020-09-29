@@ -142,4 +142,40 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
 //                LintError(10, )
         )
     }
+
+    @Test
+    @Tag(WarningNames.BLANK_LINE_BETWEEN_PROPERTIES)
+    fun `should allow blank lines around properties with custom getters and setters - positive example`() {
+        lintMethod(
+                """
+                    |class Example {
+                    |    private val foo
+                    |        get() = 0
+                    |        
+                    |    private var backing = 0
+                    |    
+                    |    var bar
+                    |        get() = backing
+                    |        set(value) { backing = value }
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.BLANK_LINE_BETWEEN_PROPERTIES)
+    fun `should allow blank lines around properties with custom getters and setters - positive example without blank lines`() {
+        lintMethod(
+                """
+                    |class Example {
+                    |    private val foo
+                    |        get() = 0
+                    |    private var backing = 0
+                    |    var bar
+                    |        get() = backing
+                    |        set(value) { backing = value }
+                    |}
+                """.trimMargin()
+        )
+    }
 }
