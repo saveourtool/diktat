@@ -100,4 +100,17 @@ class NullableTypeRuleWarnTest : LintTestBase(::NullableTypeRule) {
         )
     }
 
+    @Test
+    @Tag(WarningNames.TYPE_ALIAS)
+    fun `shouldn't trigger`() {
+        lintMethod(
+                """
+                    | val superClassName: String? = node
+                    |   .getFirstChildWithType(ElementType.SUPER_TYPE_LIST)
+                    |   ?.findLeafWithSpecificType(TYPE_REFERENCE)
+                    |   ?.text
+                    |   
+                    | private val rulesConfigList: List<RulesConfig>? = rulesConfigList ?: RulesConfigReader(javaClass.classLoader).readResource("diktat-analysis.yml")
+                """.trimMargin())
+    }
 }

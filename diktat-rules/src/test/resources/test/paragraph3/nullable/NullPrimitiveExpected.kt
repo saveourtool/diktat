@@ -7,4 +7,5 @@ class A {
     val d: Short = 0
     val f: Byte = 0
     val g: Long = 0L
+    val h: Char = ''
 }

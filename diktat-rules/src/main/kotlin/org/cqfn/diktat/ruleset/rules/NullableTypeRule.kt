@@ -26,7 +26,9 @@ import com.pinterest.ktlint.core.ast.ElementType.VAL_KEYWORD
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.NULLABLE_PROPERTY_TYPE
 import org.cqfn.diktat.ruleset.utils.KotlinParser
+import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
+import org.cqfn.diktat.ruleset.utils.prettyPrint
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -59,7 +61,7 @@ class NullableTypeRule(private val configRules: List<RulesConfig>) : Rule("nulla
             val typeReferenceNode = node.findChildByType(TYPE_REFERENCE)!!
             // check that property has nullable type, right value one of allow expression
             if (!node.hasChildOfType(NULL) &&
-                    !node.hasChildOfType(DOT_QUALIFIED_EXPRESSION) &&
+                    node.findAllNodesWithSpecificType(DOT_QUALIFIED_EXPRESSION).isEmpty() &&
                     typeReferenceNode.hasChildOfType(NULLABLE_TYPE) &&
                     typeReferenceNode.findChildByType(NULLABLE_TYPE)!!.hasChildOfType(QUEST) &&
                     (node.findChildByType(CALL_EXPRESSION)?.findChildByType(REFERENCE_EXPRESSION) == null ||
@@ -86,7 +88,7 @@ class NullableTypeRule(private val configRules: List<RulesConfig>) : Rule("nulla
             "Double" -> FixedParam(FLOAT_CONSTANT, FLOAT_LITERAL, "0.0")
             "Float" -> FixedParam(FLOAT_CONSTANT, FLOAT_LITERAL, "0.0F")
             "Long" -> FixedParam(INTEGER_CONSTANT, INTEGER_LITERAL, "0L")
-            "Char" -> FixedParam(CHARACTER_CONSTANT, CHARACTER_LITERAL, "")
+            "Char" -> FixedParam(CHARACTER_CONSTANT, CHARACTER_LITERAL, "''")
             "String" -> FixedParam(null, null, "", true)
             else -> findFixableForCollectionParam(reference.text)
         }
