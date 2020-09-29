@@ -316,6 +316,7 @@
                         <phase>none</phase>
                         <goals>
                             <goal>check</goal>
+                            <goal>fix</goal>
                         </goals>
                         <configuration>
                             <debug>true</debug>
