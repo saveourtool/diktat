@@ -276,3 +276,8 @@
 - name: FLOAT_IN_ACCURATE_CALCULATIONS
   enabled: true
   configuration: {}
+# Checks that function length isn't too long
+- name: TOO_LONG_FUNCTION
+  enabled: true
+  configuration:
+    maxFunctionLength: "30" # max length of function

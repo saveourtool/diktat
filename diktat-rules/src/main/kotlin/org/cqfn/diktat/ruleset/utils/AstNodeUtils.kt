@@ -267,6 +267,16 @@ fun ASTNode.findAllNodesWithSpecificType(elementType: IElementType, withSelf: Bo
 }
 
 /**
+ * This method performs tree traversal and returns all nodes with specific element types
+ */
+fun ASTNode.findAllNodesWithSpecificTypes(elementTypes: List<IElementType>, withSelf: Boolean = true): List<ASTNode> {
+    val initialAcc = if (this.elementType in elementTypes && withSelf) mutableListOf(this) else mutableListOf()
+    return initialAcc + this.getChildren(null).flatMap {
+        it.findAllNodesWithSpecificTypes(elementTypes)
+    }
+}
+
+/**
  * Check a node of type CLASS if it is a enum class
  */
 fun ASTNode.isClassEnum(): Boolean = (psi as? KtClass)?.isEnum() ?: false
