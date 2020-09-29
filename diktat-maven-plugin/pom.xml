@@ -14,6 +14,7 @@
 
     <properties>
         <maven.api.version>3.6.3</maven.api.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencies>
@@ -49,6 +50,8 @@
     </dependencies>
 
     <build>
+        <sourceDirectory>src/main/kotlin</sourceDirectory>
+        <testSourceDirectory>src/test/kotlin</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
@@ -92,6 +95,10 @@
                 <configuration>
                     <goalPrefix>diktat</goalPrefix>
                     <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
+                    <extractors>
+                        <!-- Use only the Kotlin extractor (also supports annotated Java sources) -->
+                        <extractor>kotlin</extractor>
+                    </extractors>
                 </configuration>
                 <executions>
                     <execution>
@@ -107,7 +114,49 @@
                         </goals>
                     </execution>
                 </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.github.gantsign.maven.plugin-tools</groupId>
+                        <artifactId>kotlin-maven-plugin-tools</artifactId>
+                        <version>0.9.25</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <version>1.0.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>set-system-properties</goal>
+                        </goals>
+                        <configuration>
+                            <properties>
+                                <property>
+                                    <name>idea.io.use.nio2</name>
+                                    <value>true</value>
+                                </property>
+                                <property>
+                                    <name>idea.io.use.fallback</name>
+                                    <value>true</value>
+                                </property>
+                            </properties>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>bintray-gantsign-maven</id>
+            <name>bintray-plugins</name>
+            <url>https://dl.bintray.com/gantsign/maven</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
 </project>

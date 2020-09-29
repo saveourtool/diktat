@@ -24,4 +24,4 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-diktat-
       - name: Run diktat itself via ktlint
-        run: mvn -B antrun:run@diktat
+        run: mvn -B diktat:check@diktat

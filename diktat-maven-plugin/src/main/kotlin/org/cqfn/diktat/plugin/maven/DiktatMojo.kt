@@ -3,6 +3,7 @@ package org.cqfn.diktat.plugin.maven
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.RuleExecutionException
+import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.reporter.plain.PlainReporter
 import org.apache.maven.plugin.AbstractMojo
 import org.apache.maven.plugin.MojoExecutionException
@@ -14,34 +15,23 @@ import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
 import java.io.File
 
 /**
- * Main [Mojo] that call [DiktatRuleSetProvider]'s rules on [input] files
- * todo: extract parameter descriptions to plugin.xml
- * todo: provide editorconfig for ktlint?
- * todo: use this plugin instead of antrun
+ * Main [Mojo] that call [DiktatRuleSetProvider]'s rules on [inputs] files
  */
 @Mojo(name = "check")
 class DiktatMojo : AbstractMojo() {
     /**
      * Paths that will be scanned for .kt(s) files
      */
-    @Parameter(property = "diktat.inputs", defaultValue = "\${project.basedir}/src")
-    var input = "\${project.basedir}/src"
+    @Parameter(property = "diktat.inputs")
+    var inputs = listOf("\${project.basedir}/src")
 
     /**
      * Flag that indicates whether to turn debug logging on
      */
-    @Parameter(property = "debug"/*, defaultValue = "false"*/)
-    var debug = true
+    @Parameter(property = "debug")
+    var debug = false
 
-    /**
-     * A list of [com.pinterest.ktlint.core.RuleSet] that will be used during check
-     */
-    private val ruleSets by lazy {
-        listOf(DiktatRuleSetProvider(diktatConfigFile).get())
-    }
-
-    // todo use logger's output stream
-    // todo choose reporter
+    // FixMe: Reporter should be chosen via plugin configuration
     private val reporter = PlainReporter(System.out)
 
     /**
@@ -57,16 +47,48 @@ class DiktatMojo : AbstractMojo() {
     lateinit var mavenProject: MavenProject
 
     /**
-     * Perform code check using [ruleSets]
+     * Perform code check using diktat ruleset
      *
      * @throws MojoFailureException if code style check was not passed
      * @throws MojoExecutionException if [RuleExecutionException] has been thrown
      */
     override fun execute() {
-        log.info("Starting diktat:check goal with inputs $input")
+        val configFile = resolveConfig()
+        if (!File(configFile).exists()) {
+            throw MojoExecutionException("Configuration file $configFile doesn't exist")
+        }
+        log.info("Starting diktat:check goal with configuration file $configFile and inputs $inputs")
+
+        val ruleSets by lazy {
+            listOf(DiktatRuleSetProvider(configFile).get())
+        }
         val lintErrors = mutableListOf<LintError>()
-        File(input)
-                .walk()
+
+        inputs
+                .map(::File)
+                .forEach {
+                    checkDirectory(it, lintErrors, ruleSets)
+                }
+
+        reporter.afterAll()
+        if (lintErrors.isNotEmpty()) {
+            throw MojoFailureException("There are ${lintErrors.size} lint errors")
+        }
+    }
+
+    private fun resolveConfig(): String {
+        if (File(diktatConfigFile).isAbsolute) {
+            return diktatConfigFile
+        }
+
+        return generateSequence(mavenProject) { it.parent }
+                .map { File(it.basedir, diktatConfigFile) }
+                .first { it.exists() }
+                .absolutePath
+    }
+
+    private fun checkDirectory(directory: File, lintErrors: MutableList<LintError>, ruleSets: Iterable<RuleSet>) {
+        directory.walk()
                 .filter { file ->
                     file.isDirectory || file.extension.let { it == "kt" || it == "kts" }
                 }
@@ -96,9 +118,5 @@ class DiktatMojo : AbstractMojo() {
                         throw MojoExecutionException("Error during check", e)
                     }
                 }
-        reporter.afterAll()
-        if (lintErrors.isNotEmpty()) {
-            throw MojoFailureException("There are ${lintErrors.size} lint errors")
-        }
     }
 }
