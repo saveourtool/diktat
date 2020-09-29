@@ -20,6 +20,7 @@ import org.cqfn.diktat.ruleset.utils.getFileName
 import org.cqfn.diktat.ruleset.utils.indentBy
 import org.cqfn.diktat.ruleset.utils.indentation.AssignmentOperatorChecker
 import org.cqfn.diktat.ruleset.utils.indentation.ConditionalsAndLoopsWithoutBracesChecker
+import org.cqfn.diktat.ruleset.utils.indentation.CustomGettersAndSettersChecker
 import org.cqfn.diktat.ruleset.utils.indentation.CustomIndentationChecker
 import org.cqfn.diktat.ruleset.utils.indentation.DotCallChecker
 import org.cqfn.diktat.ruleset.utils.indentation.ExpressionIndentationChecker
@@ -68,7 +69,7 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
             fileName = node.getFileName()
             configuration = IndentationConfig(configRules.getRuleConfig(WRONG_INDENTATION)?.configuration
                     ?: mapOf())
-            
+
             customIndentationCheckers = listOf(
                 ::AssignmentOperatorChecker,
                 ::ConditionalsAndLoopsWithoutBracesChecker,
@@ -76,7 +77,8 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
                 ::ValueParameterListChecker,
                 ::ExpressionIndentationChecker,
                 ::DotCallChecker,
-                ::KDocIndentationChecker
+                ::KDocIndentationChecker,
+                ::CustomGettersAndSettersChecker
             ).map { it.invoke(configuration) }
 
             if (checkIsIndentedWithSpaces(node)) {
