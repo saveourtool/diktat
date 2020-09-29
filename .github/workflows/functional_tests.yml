@@ -46,6 +46,4 @@ jobs:
         run: mvn -B diktat:check@functional-test > out
 
       - name: Check maven
-        run: |
-          cat out
-          if [ -z "`grep -E "[VARIABLE_NAME_INCORRECT_FORMAT]" out`" ]; then exit 1; fi
+        run: grep -E "[VARIABLE_NAME_INCORRECT_FORMAT]" out
