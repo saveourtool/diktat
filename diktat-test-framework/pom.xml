@@ -56,6 +56,11 @@
         </dependency>
         <dependency>
             <groupId>io.github.java-diff-utils</groupId>
+            <artifactId>java-diff-utils-parent</artifactId>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>io.github.java-diff-utils</groupId>
             <artifactId>java-diff-utils</artifactId>
         </dependency>
         <dependency>
