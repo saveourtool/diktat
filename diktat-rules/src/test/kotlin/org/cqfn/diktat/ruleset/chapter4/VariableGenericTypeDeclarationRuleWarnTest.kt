@@ -24,6 +24,9 @@ class VariableGenericTypeDeclarationRuleWarnTest : LintTestBase(::VariableGeneri
                     |       println("computed!")
                     |       emptyMap<Int, String>()
                     |   }
+                    |   val sideRegex = Regex("<([a-zA-Z, <>?]+)>")
+                    |   val str = someMethod("mapOf<String>")
+                    |   val x = foo.bar<Bar>().baz()
                     |}
                 """.trimMargin()
         )
@@ -37,12 +40,15 @@ class VariableGenericTypeDeclarationRuleWarnTest : LintTestBase(::VariableGeneri
                     |class SomeClass {
                     |   val myVariable: Map<Int, String> = emptyMap<Int, String>()
                     |   val any = Array<Any>(3) { "" }
+                    |   val x = foo.bar<Bar>().baz<Some>()
                     |}
                 """.trimMargin(),
                 LintError(2,4, ruleId,
                         "${Warnings.GENERIC_VARIABLE_WRONG_DECLARATION.warnText()} type arguments are unnecessary in emptyMap<Int, String>()", true),
                 LintError(3,4, ruleId,
-                        "${Warnings.GENERIC_VARIABLE_WRONG_DECLARATION.warnText()} val any = Array<Any>(3) { \"\" }", false)
+                        "${Warnings.GENERIC_VARIABLE_WRONG_DECLARATION.warnText()} val any = Array<Any>(3) { \"\" }", false),
+                LintError(4,4, ruleId,
+                        "${Warnings.GENERIC_VARIABLE_WRONG_DECLARATION.warnText()} val x = foo.bar<Bar>().baz<Some>()", false)
         )
     }
 

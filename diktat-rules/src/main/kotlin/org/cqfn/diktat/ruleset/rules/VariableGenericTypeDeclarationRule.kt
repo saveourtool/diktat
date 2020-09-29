@@ -2,12 +2,15 @@ package org.cqfn.diktat.ruleset.rules
 
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_ARGUMENT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
+import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
+import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 /**
@@ -33,11 +36,11 @@ class VariableGenericTypeDeclarationRule(private val configRules: List<RulesConf
 
     @Suppress("UnsafeCallOnNullableType")
     private fun handleProperty(node: ASTNode) {
-
         val callExpr = node.findChildByType(CALL_EXPRESSION)
+                ?: node.findChildByType(DOT_QUALIFIED_EXPRESSION)?.getAllChildrenWithType(CALL_EXPRESSION)?.lastOrNull()
 
-        val rightSide = Regex("<([a-zA-Z, <>?]*)>").find(callExpr?.text ?: "")
-        val leftSide = Regex("<([a-zA-Z, <>?]*)>").find(node.findChildByType(TYPE_REFERENCE)?.text ?: "")
+        val rightSide = sideRegex.find(callExpr?.text ?: "")
+        val leftSide = sideRegex.find(node.findChildByType(TYPE_REFERENCE)?.text ?: "")
 
         if ((rightSide != null && leftSide != null) && rightSide.groupValues.first() == leftSide.groupValues.first()) {
             Warnings.GENERIC_VARIABLE_WRONG_DECLARATION.warnAndFix(configRules, emitWarn, isFixMode,
@@ -49,6 +52,9 @@ class VariableGenericTypeDeclarationRule(private val configRules: List<RulesConf
         if (leftSide == null && rightSide != null) {
             Warnings.GENERIC_VARIABLE_WRONG_DECLARATION.warn(configRules, emitWarn, isFixMode, node.text, node.startOffset, node)
         }
+    }
 
+    companion object VariableSide {
+        val sideRegex = Regex("<([a-zA-Z, ?<>]+)>(?=([^\"]*\"[^\"]*\")*[^\"]*\$)")
     }
 }
