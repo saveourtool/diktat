@@ -114,12 +114,23 @@ class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) :
             val hasAnnotationsBefore = (node.psi as KtProperty)
                     .annotationEntries
                     .any { it.node.isFollowedByNewline() }
+            // if this or previous property has custom accessors (getter and/or setter), blank line is allowed before it
+            val hasCustomAccessors = (node.psi as KtProperty).accessors.isNotEmpty() ||
+                    (previousProperty.psi as KtProperty).accessors.isNotEmpty()
+
             val whiteSpaceBefore = previousProperty.nextSibling { it.elementType == WHITE_SPACE } ?: return
-            val numRequiredNewLines = 1 + (if (hasCommentBefore || hasAnnotationsBefore) 1 else 0)
-            if (whiteSpaceBefore.text.count { it == '\n' } != numRequiredNewLines)
+            val isBlankLineRequired = hasCommentBefore || hasAnnotationsBefore || hasCustomAccessors
+            val numRequiredNewLines = 1 + (if (isBlankLineRequired) 1 else 0)
+            val actualNewLines = whiteSpaceBefore.text.count { it == '\n' }
+            // for some cases we do not check strict number of blank lines, but allow actual number to be less or equal
+            val isLessLinesAllowed = hasCustomAccessors
+            if (!isLessLinesAllowed && actualNewLines != numRequiredNewLines ||
+                    isLessLinesAllowed && actualNewLines > numRequiredNewLines
+            ) {
                 BLANK_LINE_BETWEEN_PROPERTIES.warnAndFix(configRules, emitWarn, isFixMode, node.getIdentifierName()!!.text, node.startOffset, node) {
                     whiteSpaceBefore.leaveExactlyNumNewLines(numRequiredNewLines)
                 }
+            }
         }
     }
 

@@ -286,5 +286,48 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
         )
     }
 
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
+    fun `custom getters and setters should increase indentation - positive example`() {
+        lintMethod(
+                """
+                    |class Example {
+                    |    private val foo
+                    |        get() = 0
+                    |        
+                    |    private var backing = 0
+                    |    
+                    |    var bar
+                    |        get() = backing
+                    |        set(value) { backing = value }
+                    |}
+                    |
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
+    fun `custom getters and setters should increase indentation`() {
+        lintMethod(
+                """
+                    |class Example {
+                    |    private val foo
+                    |            get() = 0
+                    |        
+                    |    private var backing = 0
+                    |    
+                    |    var bar
+                    |    get() = backing
+                    |    set(value) { backing = value }
+                    |}
+                    |
+                """.trimMargin(),
+                LintError(3, 1, ruleId, warnText(8, 12), true),
+                LintError(8, 1, ruleId, warnText(8, 4), true),
+                LintError(9, 1, ruleId, warnText(8, 4), true)
+        )
+    }
+
     private fun warnText(expected: Int, actual: Int) = "${WRONG_INDENTATION.warnText()} expected $expected but was $actual"
 }
