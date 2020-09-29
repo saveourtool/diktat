@@ -33,14 +33,10 @@ class ImmutableValNoVarRule(private val configRules: List<RulesConfig>) : Rule("
                     .filter { it.isLocal && it.name != null && it.parent is KtBlockExpression }
                     .filter { it.isVar }
                     .forEach { property ->
-                        val usedInAccumulators = property.getAllUsages()
-                                .filter {
-                                            it.getParentOfType<KtWhileExpression>(true) != null ||
-                                            it.getParentOfType<KtDoWhileExpression>(true) != null ||
-                                            it.getParentOfType<KtForExpression>(true) != null ||
-                                            it.getParentOfType<KtLambdaExpression>(true) != null
-                                }
-                                .isNotEmpty()
+                        val usedInAccumulators = property.getAllUsages().any {
+                            it.getParentOfType<KtLoopExpression>(true) != null ||
+                                    it.getParentOfType<KtLambdaExpression>(true) != null
+                        }
 
                         if (!usedInAccumulators) {
                             SAY_NO_TO_VAR.warn(configRules, emitWarn, isFixMode, property.text, property.node.startOffset, property.node)

@@ -16,8 +16,7 @@ import org.jetbrains.kotlin.psi.psiUtil.referenceExpression
  * @return a map of a property to it's usages
  */
 fun ASTNode.collectAllDeclaredVariablesWithUsages(): Map<KtProperty, List<KtNameReferenceExpression>> {
-    val fileNode = this.psi
-    require(fileNode is KtFile) {
+    require(this.elementType == ElementType.FILE) {
         "To collect all variables in a file you need to provide file root node"
     }
 
