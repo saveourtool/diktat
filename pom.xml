@@ -151,12 +151,12 @@
                 <groupId>io.github.java-diff-utils</groupId>
                 <artifactId>java-diff-utils-parent</artifactId>
                 <type>pom</type>
-                <version>4.8</version>
+                <version>4.7</version>
             </dependency>
             <dependency>
                 <groupId>io.github.java-diff-utils</groupId>
                 <artifactId>java-diff-utils</artifactId>
-                <version>4.8</version>
+                <version>4.7</version>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
