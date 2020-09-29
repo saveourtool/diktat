@@ -165,17 +165,17 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
 
     @Suppress("UnsafeCallOnNullableType")
     private fun handleKDcoAndBlock(node: ASTNode, prevComment: ASTNode, kDocBeforeClass: ASTNode, propertyInClassKDoc: ASTNode?, propertyInLocalKDoc: ASTNode?) {
-        val KDocText = if (prevComment.elementType == KDOC)
+        val kDocText = if (prevComment.elementType == KDOC)
             prevComment.text.removePrefix("/**").removeSuffix("*/")
         else
             prevComment.text.removePrefix("/*").removeSuffix("*/")
         val isFixable = (propertyInClassKDoc != null && propertyInLocalKDoc != null) ||
-                (propertyInClassKDoc == null && propertyInLocalKDoc == null && KDocText.replace("\n+".toRegex(), "").lines().size != 1)
+                (propertyInClassKDoc == null && propertyInLocalKDoc == null && kDocText.replace("\n+".toRegex(), "").lines().size != 1)
         KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, !isFixable, prevComment.text, prevComment.startOffset, node, !isFixable) {
             if (propertyInClassKDoc == null && propertyInLocalKDoc == null)
-                insertTextInKDoc(kDocBeforeClass, " * @property ${node.findChildByType(IDENTIFIER)!!.text} ${KDocText.replace("\n+".toRegex(), "").removePrefix("*")}")
+                insertTextInKDoc(kDocBeforeClass, " * @property ${node.findChildByType(IDENTIFIER)!!.text} ${kDocText.replace("\n+".toRegex(), "").removePrefix("*")}")
             else
-                insertTextInKDoc(kDocBeforeClass, "${KDocText.trim()}\n")
+                insertTextInKDoc(kDocBeforeClass, "${kDocText.trim()}\n")
 
             if (prevComment.treeNext.elementType == WHITE_SPACE)
                 node.removeChild(prevComment.treeNext)
