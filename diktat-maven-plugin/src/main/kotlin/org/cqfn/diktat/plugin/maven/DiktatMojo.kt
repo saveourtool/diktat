@@ -22,7 +22,7 @@ class DiktatCheckMojo : DiktatBaseMojo() {
 @Mojo(name = "fix")
 class DiktatFixMojo : DiktatBaseMojo() {
     override fun runAction(params: KtLint.Params) {
-        val fileName = params.fileName!!
+        val fileName = params.fileName
         val filePath = params.userData["file_path"] ?: error("File path should be provided")
         val fileContent = File(filePath).readText(charset("UTF-8"))
         val formattedText = KtLint.format(params)
