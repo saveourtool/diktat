@@ -1,7 +1,7 @@
 package test.paragraph2.kdoc
 
 /**
- * comment
+ * @property name comment
  */
 class A constructor(
         val name: String
@@ -14,9 +14,26 @@ class A constructor(
         val name: String
 ){}
 
-class A constructor(
-        /**
+/**
          * text
          */
+class A constructor(
         @param:JsonProperty("shortName") private val shortName: String
+){}
+
+/**
+ * @property name
+  * @property lastName
+*/
+class A constructor(
+        private var name: String,
+        val lastName: String
+){}
+
+/**
+ * @property name
+         * hello
+          */
+class A constructor(
+        val name: String
 ){}

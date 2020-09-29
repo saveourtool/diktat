@@ -1,6 +1,7 @@
 package org.cqfn.diktat.ruleset.rules.kdoc
 
 import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
@@ -69,30 +70,63 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
     private fun checkValueParameter(node: ASTNode) {
         if (node.parents().none { it.elementType == PRIMARY_CONSTRUCTOR } ||
                 !(node.hasChildOfType(VAL_KEYWORD) || node.hasChildOfType(VAR_KEYWORD))) return
-        val prevComment = if (node.treePrev.elementType == EOL_COMMENT) {
-            node.treePrev
-        } else if (node.treePrev.elementType == WHITE_SPACE && node.treePrev.treePrev.elementType == EOL_COMMENT) {
+        val prevComment = if (node.treePrev.elementType == WHITE_SPACE &&
+                (node.treePrev.treePrev.elementType == EOL_COMMENT ||
+                        node.treePrev.treePrev.elementType == BLOCK_COMMENT)) {
             node.treePrev.treePrev
         } else if (node.hasChildOfType(KDOC)) {
             node.findChildByType(KDOC)!!
+        } else if (node.treePrev.elementType == BLOCK_COMMENT || node.treePrev.elementType == EOL_COMMENT) {
+            node.treePrev
         } else {
-            return
+            null
         }
         val kDocBeforeClass = node.parent({ it.elementType == CLASS })!!.findChildByType(KDOC)
-        if (kDocBeforeClass != null)
-            checkKDocBeforeClass(node, kDocBeforeClass, prevComment)
-        else
-            createKDocWithProperty(node, prevComment)
+        if (prevComment != null) {
+            if (kDocBeforeClass != null)
+                checkKDocBeforeClass(node, kDocBeforeClass, prevComment)
+            else
+                createKDocWithProperty(node, prevComment)
+        } else {
+            if (kDocBeforeClass != null)
+                checkBasicKDocBeforeClass(node, kDocBeforeClass)
+            else
+                createKDocBasicKDoc(node)
+        }
+    }
+
+    @Suppress("UnsafeCallOnNullableType")
+    private fun checkBasicKDocBeforeClass(node: ASTNode, kDocBeforeClass: ASTNode) {
+        val propertyInClassKDoc = kDocBeforeClass
+                .kDocTags()
+                ?.firstOrNull { it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == node.findChildByType(IDENTIFIER)!!.text }
+        if (propertyInClassKDoc == null && node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside()) {
+            KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixMode,
+                    "add ${node.findChildByType(IDENTIFIER)!!.text} in KDoc", node.startOffset, node) {
+                insertTextInKDoc(kDocBeforeClass, " * @property ${node.findChildByType(IDENTIFIER)!!.text}\n")
+            }
+        }
+    }
+
+    @Suppress("UnsafeCallOnNullableType")
+    private fun createKDocBasicKDoc(node: ASTNode) {
+        KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixMode,
+                "add ${node.findChildByType(IDENTIFIER)!!.text} in KDoc", node.startOffset, node) {
+            val newKDoc = KotlinParser().createNode("/**\n * @property ${node.findChildByType(IDENTIFIER)!!.text}\n */")
+            val classNode = node.parent({ it.elementType == CLASS })!!
+            classNode.addChild(PsiWhiteSpaceImpl("\n"), classNode.firstChildNode)
+            classNode.addChild(newKDoc.findChildByType(KDOC)!!, classNode.firstChildNode)
+        }
     }
 
     @Suppress("UnsafeCallOnNullableType")
     private fun createKDocWithProperty(node: ASTNode, prevComment: ASTNode) {
-        val modifier = node.getFirstChildWithType(MODIFIER_LIST)
-        KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, modifier.isAccessibleOutside(),
-                prevComment.text, prevComment.startOffset, node, modifier.isAccessibleOutside()) {
+        KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixMode, prevComment.text, prevComment.startOffset, node) {
             val classNode = node.parent({ it.elementType == CLASS })!!
-            val newKDocText = if (prevComment.elementType == KDOC) prevComment.text else {
-                "/**\n * ${prevComment.text.removePrefix("//")}\n */"
+            val newKDocText = if (prevComment.elementType == KDOC) prevComment.text else if (prevComment.elementType == EOL_COMMENT) {
+                "/**\n * @property ${node.findChildByType(IDENTIFIER)!!.text} ${prevComment.text.removePrefix("//")}\n */"
+            } else {
+                "/**\n * @property ${node.findChildByType(IDENTIFIER)!!.text}${prevComment.text.removePrefix("/*").removeSuffix("*/")} */"
             }
             val newKDoc = KotlinParser().createNode(newKDocText).findChildByType(KDOC)!!
             classNode.addChild(PsiWhiteSpaceImpl("\n"), classNode.firstChildNode)
@@ -105,7 +139,6 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
                 node.removeChild(prevComment)
             }
         }
-
     }
 
     @Suppress("UnsafeCallOnNullableType")
@@ -121,27 +154,44 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
                     ?.node
         else
             null
-        val isFixable = prevComment.elementType != KDOC || propertyInClassKDoc == null || propertyInLocalKDoc == null
-        KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixable, prevComment.text, prevComment.startOffset, node, isFixable) {
-            if (prevComment.elementType == EOL_COMMENT)
+        if (prevComment.elementType == KDOC || prevComment.elementType == BLOCK_COMMENT) {
+            handleKDcoAndBlock(node, prevComment, kDocBeforeClass, propertyInClassKDoc, propertyInLocalKDoc)
+        } else {
+            KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixMode, prevComment.text, prevComment.startOffset, node) {
                 handleCommentBefore(node, kDocBeforeClass, prevComment, propertyInClassKDoc)
-            else
-                handleKDocBefore(node, kDocBeforeClass, prevComment)
+            }
         }
     }
 
-    private fun handleKDocBefore(node: ASTNode, kDocBeforeClass: ASTNode, prevComment: ASTNode) {
-        val insertText = "${prevComment.text.removePrefix("/**").removeSuffix("*/").trim()}\n"
-        insertTextInKDoc(kDocBeforeClass, insertText)
-        if (prevComment.treeNext.elementType == WHITE_SPACE)
-            node.removeChild(prevComment.treeNext)
-        node.removeChild(prevComment)
+    @Suppress("UnsafeCallOnNullableType")
+    private fun handleKDcoAndBlock(node: ASTNode, prevComment: ASTNode, kDocBeforeClass: ASTNode, propertyInClassKDoc: ASTNode?, propertyInLocalKDoc: ASTNode?) {
+        val KDocText = if (prevComment.elementType == KDOC)
+            prevComment.text.removePrefix("/**").removeSuffix("*/")
+        else
+            prevComment.text.removePrefix("/*").removeSuffix("*/")
+        val isFixable = (propertyInClassKDoc != null && propertyInLocalKDoc != null) ||
+                (propertyInClassKDoc == null && propertyInLocalKDoc == null && KDocText.replace("\n+".toRegex(), "").lines().size != 1)
+        KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, !isFixable, prevComment.text, prevComment.startOffset, node, !isFixable) {
+            if (propertyInClassKDoc == null && propertyInLocalKDoc == null)
+                insertTextInKDoc(kDocBeforeClass, " * @property ${node.findChildByType(IDENTIFIER)!!.text} ${KDocText.replace("\n+".toRegex(), "").removePrefix("*")}")
+            else
+                insertTextInKDoc(kDocBeforeClass, "${KDocText.trim()}\n")
+
+            if (prevComment.treeNext.elementType == WHITE_SPACE)
+                node.removeChild(prevComment.treeNext)
+            node.removeChild(prevComment)
+        }
     }
 
     @Suppress("UnsafeCallOnNullableType")
     private fun handleCommentBefore(node: ASTNode, kDocBeforeClass: ASTNode, prevComment: ASTNode, propertyInClassKDoc: ASTNode?) {
         if (propertyInClassKDoc != null) {
-            propertyInClassKDoc.addChild(LeafPsiElement(KDOC_TEXT, prevComment.text), null)
+            if (propertyInClassKDoc.hasChildOfType(KDOC_TEXT)) {
+                val kdocText = propertyInClassKDoc.findChildByType(KDOC_TEXT)!!
+                (kdocText as LeafPsiElement).replaceWithText("${kdocText.text} ${prevComment.text}")
+            } else {
+                propertyInClassKDoc.addChild(LeafPsiElement(KDOC_TEXT, prevComment.text), null)
+            }
         } else {
             insertTextInKDoc(kDocBeforeClass, "* @property ${node.findChildByType(IDENTIFIER)!!.text} ${prevComment.text.removeRange(0, 2)}\n")
         }

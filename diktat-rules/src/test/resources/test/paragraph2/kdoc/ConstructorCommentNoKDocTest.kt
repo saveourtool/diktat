@@ -18,3 +18,15 @@ class A constructor(
          */
         @param:JsonProperty("shortName") private val shortName: String
 ){}
+
+class A constructor(
+        private var name: String,
+        val lastName: String
+){}
+
+class A constructor(
+        /*
+         * hello
+         */
+        val name: String
+){}
