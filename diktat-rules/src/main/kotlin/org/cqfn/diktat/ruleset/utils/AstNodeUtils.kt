@@ -506,3 +506,17 @@ data class ReplacementResult(val oldNodes: List<ASTNode>, val newNodes: List<AST
         require(oldNodes.size == newNodes.size)
     }
 }
+
+
+/**
+ * checks that this one node is placed after the other node in code (by comparing lines of code where nodes start)
+ */
+fun ASTNode.isGoingAfter(otherNode: ASTNode): Boolean {
+    val thisLineNumber = this.lineNumber()
+    val otherLineNumber = otherNode.lineNumber()
+
+    require(thisLineNumber != null) { "Node ${this.text} should have a line number" }
+    require(otherLineNumber != null) { "Node ${otherNode.text} should have a line number" }
+
+    return (thisLineNumber > otherLineNumber)
+}

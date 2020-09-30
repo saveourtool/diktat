@@ -9,7 +9,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.LOCAL_VARIABLE_EARLY_DECLARATION
 import org.cqfn.diktat.ruleset.utils.containsOnlyConstants
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
-import org.cqfn.diktat.ruleset.utils.findUsagesOf
+import org.cqfn.diktat.ruleset.utils.getAllUsages
 import org.cqfn.diktat.ruleset.utils.getDeclarationScope
 import org.cqfn.diktat.ruleset.utils.lastLineNumber
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -82,7 +82,7 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
                         (it.initializer?.containsOnlyConstants() ?: false) ||
                         (it.initializer as? KtCallExpression).isWhitelistedMethod()
             }
-            .associateWith(::findUsagesOf)
+            .associateWith { it.getAllUsages() }
             .filterNot { it.value.isEmpty() }
 
     private fun groupPropertiesByUsages(propertiesToUsages: Map<KtProperty, List<KtNameReferenceExpression>>) = propertiesToUsages
@@ -133,7 +133,7 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
      * @return either the line on which the property is used if it is first used in the same scope, or the block in the same scope as declaration
      */
     @Suppress("UnsafeCallOnNullableType")
-    private fun getFirstUsageStatementOrBlock(usages: List<KtNameReferenceExpression>, declarationScope: KtBlockExpression): PsiElement {
+    private fun getFirstUsageStatementOrBlock(usages: List<KtNameReferenceExpression>, declarationScope: KtBlockExpression?): PsiElement {
         val firstUsage = usages.minBy { it.node.lineNumber()!! }!!
         val firstUsageScope = firstUsage.getParentOfType<KtBlockExpression>(true)
 
