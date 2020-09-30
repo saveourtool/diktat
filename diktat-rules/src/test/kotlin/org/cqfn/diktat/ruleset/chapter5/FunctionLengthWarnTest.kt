@@ -90,4 +90,20 @@ class FunctionLengthWarnTest : LintTestBase(::FunctionLength) {
                 rulesConfigList = shortrulesConfigList
         )
     }
+
+    @Test
+    @Tag(WarningNames.TOO_LONG_FUNCTION)
+    fun `only empty lines`() {
+        lintMethod(
+                """
+                    |fun foo(list: List<ASTNode>) {
+                    |               
+                    |           
+                    |                           
+                    |       
+                    |}
+                """.trimMargin(),
+                rulesConfigList = shortrulesConfigList
+        )
+    }
 }

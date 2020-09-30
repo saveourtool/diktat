@@ -40,8 +40,8 @@ class FunctionLength(private val configRules: List<RulesConfig>) : Rule("functio
     }
 
     private fun checkFun(node: ASTNode, maxFunctionLength: Long) {
-        node.findAllNodesWithCondition { it.elementType in FUNCTION_ALLOW_COMMENT }.forEach { it.treeParent.removeChild(it) }
-        val functionText = node.text.lines().filter { it.isNotBlankAndEmpty() }
+        node.findAllNodesWithCondition({it.elementType in FUNCTION_ALLOW_COMMENT }).forEach { it.treeParent.removeChild(it) }
+        val functionText = node.text.lines().filter { it.isNotBlank() }
         if (functionText.size > maxFunctionLength)
             TOO_LONG_FUNCTION.warn(configRules,emitWarn, isFixMode,
                     "max length is $maxFunctionLength, but you have ${functionText.size}", node.startOffset, node)
