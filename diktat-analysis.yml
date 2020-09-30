@@ -266,6 +266,13 @@
 - name: STRING_TEMPLATE_CURLY_BRACES
   enabled: true
   configuration: {}
+  typeReferenceLength: '25' # max length of type reference
+# Variables with `val` modifier - are immutable (read-only). Usage of such variables instead of `var` variables increases
+# robustness and readability of code, because `var` variables can be reassigned several times in the business logic.
+# This rule prohibits usage of `var`s as local variables - the only exception is accumulators and counters
+- name: SAY_NO_TO_VAR
+  enabled: true
+  configuration: {}
 # Inspection that checks if string template has redundant quotes
 - name: STRING_TEMPLATE_QUOTES
   enabled: true

@@ -30,7 +30,7 @@ jobs:
         id: cli-check
         run: |
           cat out
-          grep -E "[VARIABLE_NAME_INCORRECT_FORMAT]" out
+          grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out
         
       - name: Run diKTat from gradle
         continue-on-error: true
@@ -39,7 +39,7 @@ jobs:
       - name: Check gradle
         run: |
           cat out
-          grep -E "[VARIABLE_NAME_INCORRECT_FORMAT]" out
+          grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out
         
       - name: Run diKTat from maven
         continue-on-error: true
@@ -48,4 +48,4 @@ jobs:
       - name: Check maven
         run: |
           cat out
-          grep -E "[VARIABLE_NAME_INCORRECT_FORMAT]" out
+          grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out

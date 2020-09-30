@@ -35,14 +35,15 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
 
 /**
- * Performs the following check: assignment operator increases indent by one step for the expression after it
+ * Performs the following check: assignment operator increases indent by one step for the expression after it.
+ * If [IndentationConfig.extendedIndentAfterOperators] is set to true, indentation is increased by two steps instead.
  */
 internal class AssignmentOperatorChecker(configuration: IndentationConfig) : CustomIndentationChecker(configuration) {
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
         val prevNode = whiteSpace.prevSibling.node
         if (prevNode.elementType == EQ && prevNode.treeNext.let { it.elementType == WHITE_SPACE && it.textContains('\n') }) {
             return CheckResult.from(indentError.actual, (whiteSpace.parentIndent()
-                    ?: indentError.expected) + configuration.indentationSize, true)
+                    ?: indentError.expected) + (if (configuration.extendedIndentAfterOperators) 2 else 1) * configuration.indentationSize, true)
         }
         return null
     }

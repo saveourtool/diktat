@@ -158,6 +158,8 @@ object WarningNames {
 
     const val TYPE_ALIAS: String = "TYPE_ALIAS"
 
+    const val SAY_NO_TO_VAR: String = "SAY_NO_TO_VAR"
+
     const val GENERIC_VARIABLE_WRONG_DECLARATION: String = "GENERIC_VARIABLE_WRONG_DECLARATION"
 
     const val STRING_TEMPLATE_CURLY_BRACES: String = "STRING_TEMPLATE_CURLY_BRACES"
