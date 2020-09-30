@@ -27,23 +27,23 @@ import org.cqfn.diktat.ruleset.rules.files.lastIndent
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
 import org.jetbrains.kotlin.psi.KtBlockExpression
-import org.jetbrains.kotlin.psi.KtClass
-import org.jetbrains.kotlin.psi.KtClassInitializer
 import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.KtLoopExpression
-import org.jetbrains.kotlin.psi.KtSuperTypeList
+import org.jetbrains.kotlin.psi.KtProperty
+import org.jetbrains.kotlin.psi.KtPropertyAccessor
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
 
 /**
- * Performs the following check: assignment operator increases indent by one step for the expression after it
+ * Performs the following check: assignment operator increases indent by one step for the expression after it.
+ * If [IndentationConfig.extendedIndentAfterOperators] is set to true, indentation is increased by two steps instead.
  */
 internal class AssignmentOperatorChecker(configuration: IndentationConfig) : CustomIndentationChecker(configuration) {
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
         val prevNode = whiteSpace.prevSibling.node
         if (prevNode.elementType == EQ && prevNode.treeNext.let { it.elementType == WHITE_SPACE && it.textContains('\n') }) {
             return CheckResult.from(indentError.actual, (whiteSpace.parentIndent()
-                    ?: indentError.expected) + configuration.indentationSize, true)
+                    ?: indentError.expected) + (if (configuration.extendedIndentAfterOperators) 2 else 1) * configuration.indentationSize, true)
         }
         return null
     }
@@ -158,6 +158,20 @@ internal class ConditionalsAndLoopsWithoutBracesChecker(config: IndentationConfi
                     CheckResult.from(indentError.actual, (whiteSpace.parentIndent()
                             ?: indentError.expected) + configuration.indentationSize, false)
                 }
+    }
+}
+
+/**
+ * This [CustomIndentationChecker] check indentation before custom getters and setters on property.
+ */
+internal class CustomGettersAndSettersChecker(config: IndentationConfig) : CustomIndentationChecker(config) {
+    override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
+        val parent = whiteSpace.parent
+        if (parent is KtProperty && whiteSpace.nextSibling is KtPropertyAccessor) {
+            return CheckResult.from(indentError.actual, (parent.parentIndent()
+                    ?: indentError.expected) + configuration.indentationSize, true)
+        }
+        return null
     }
 }
 

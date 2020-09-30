@@ -20,6 +20,7 @@ import org.cqfn.diktat.ruleset.utils.getFileName
 import org.cqfn.diktat.ruleset.utils.indentBy
 import org.cqfn.diktat.ruleset.utils.indentation.AssignmentOperatorChecker
 import org.cqfn.diktat.ruleset.utils.indentation.ConditionalsAndLoopsWithoutBracesChecker
+import org.cqfn.diktat.ruleset.utils.indentation.CustomGettersAndSettersChecker
 import org.cqfn.diktat.ruleset.utils.indentation.CustomIndentationChecker
 import org.cqfn.diktat.ruleset.utils.indentation.DotCallChecker
 import org.cqfn.diktat.ruleset.utils.indentation.ExpressionIndentationChecker
@@ -68,7 +69,7 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
             fileName = node.getFileName()
             configuration = IndentationConfig(configRules.getRuleConfig(WRONG_INDENTATION)?.configuration
                     ?: mapOf())
-            
+
             customIndentationCheckers = listOf(
                 ::AssignmentOperatorChecker,
                 ::ConditionalsAndLoopsWithoutBracesChecker,
@@ -76,7 +77,8 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
                 ::ValueParameterListChecker,
                 ::ExpressionIndentationChecker,
                 ::DotCallChecker,
-                ::KDocIndentationChecker
+                ::KDocIndentationChecker,
+                ::CustomGettersAndSettersChecker
             ).map { it.invoke(configuration) }
 
             if (checkIsIndentedWithSpaces(node)) {
@@ -112,8 +114,10 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
     private fun checkNewlineAtEnd(node: ASTNode) {
         if (configuration.newlineAtEnd) {
             val lastChild = node.lastChildNode
-            if (lastChild.elementType != WHITE_SPACE || lastChild.text.count { it == '\n' } != 1) {
-                WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "no newline at the end of file $fileName", node.startOffset + node.textLength, node) {
+            val numBlankLinesAfter = lastChild.text.count { it == '\n' }
+            if (lastChild.elementType != WHITE_SPACE || numBlankLinesAfter != 1) {
+                val warnText = if (numBlankLinesAfter == 0) "no newline" else "too many blank lines"
+                WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "$warnText at the end of file $fileName", node.startOffset + node.textLength, node) {
                     if (lastChild.elementType != WHITE_SPACE) {
                         node.addChild(PsiWhiteSpaceImpl("\n"), null)
                     } else {
