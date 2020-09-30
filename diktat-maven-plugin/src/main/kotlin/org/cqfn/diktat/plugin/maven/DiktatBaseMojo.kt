@@ -34,7 +34,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
     private val reporter = PlainReporter(System.out)
 
     /**
-     * Path to diktat yml config file
+     * Path to diktat yml config file. Can be either absolute or relative to project's root directory.
      */
     @Parameter(property = "diktat.config", defaultValue = "diktat-analysis.yml")
     lateinit var diktatConfigFile: String
@@ -58,7 +58,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         if (!File(configFile).exists()) {
             throw MojoExecutionException("Configuration file $configFile doesn't exist")
         }
-        log.info("Starting diktat:check goal with configuration file $configFile and inputs $inputs")
+        log.info("Running diKTat plugin with configuration file $configFile and inputs $inputs")
 
         val ruleSets by lazy {
             listOf(DiktatRuleSetProvider(configFile).get())
@@ -88,6 +88,9 @@ abstract class DiktatBaseMojo : AbstractMojo() {
                 .absolutePath
     }
 
+    /**
+     * @throws MojoExecutionException if [RuleExecutionException] has been thrown by ktlint
+     */
     private fun checkDirectory(directory: File, lintErrors: MutableList<LintError>, ruleSets: Iterable<RuleSet>) {
         directory.walk()
                 .filter { file ->

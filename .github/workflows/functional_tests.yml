@@ -46,4 +46,6 @@ jobs:
         run: mvn -B diktat:check@functional-test > out
 
       - name: Check maven
-        run: grep -E "[VARIABLE_NAME_INCORRECT_FORMAT]" out
+        run: |
+          cat out
+          grep -E "[VARIABLE_NAME_INCORRECT_FORMAT]" out
