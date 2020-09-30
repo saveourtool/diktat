@@ -2,7 +2,14 @@ package org.cqfn.diktat.ruleset.utils
 
 import com.pinterest.ktlint.core.ast.ElementType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import org.jetbrains.kotlin.psi.*
+import org.jetbrains.kotlin.psi.KtClassBody
+import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
+import org.jetbrains.kotlin.psi.KtNameReferenceExpression
+import org.jetbrains.kotlin.psi.KtProperty
+import org.jetbrains.kotlin.psi.KtFile
+import org.jetbrains.kotlin.psi.KtBlockExpression
+import org.jetbrains.kotlin.psi.KtElement
+import org.jetbrains.kotlin.psi.KtFunctionLiteral
 import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
 import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 import org.jetbrains.kotlin.psi.psiUtil.parents
@@ -31,6 +38,7 @@ fun ASTNode.collectAllDeclaredVariablesWithUsages(): Map<KtProperty, List<KtName
  * [this] - usages of this property will be searched
  * @return list of references as [KtNameReferenceExpression]
  */
+@Suppress("UnsafeCallOnNullableType")
 fun KtProperty.getAllUsages(): List<KtNameReferenceExpression> {
     return this
             .getDeclarationScope()

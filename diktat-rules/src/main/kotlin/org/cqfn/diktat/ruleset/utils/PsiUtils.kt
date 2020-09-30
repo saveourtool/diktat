@@ -2,12 +2,22 @@ package org.cqfn.diktat.ruleset.utils
 
 import com.pinterest.ktlint.core.ast.ElementType
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
-import org.jetbrains.kotlin.psi.*
-import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
+import org.jetbrains.kotlin.psi.KtBinaryExpression
+import org.jetbrains.kotlin.psi.KtBlockExpression
+import org.jetbrains.kotlin.psi.KtCallExpression
+import org.jetbrains.kotlin.psi.KtConstantExpression
+import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
+import org.jetbrains.kotlin.psi.KtExpression
+import org.jetbrains.kotlin.psi.KtFunctionLiteral
+import org.jetbrains.kotlin.psi.KtIfExpression
+import org.jetbrains.kotlin.psi.KtNameReferenceExpression
+import org.jetbrains.kotlin.psi.KtProperty
+import org.jetbrains.kotlin.psi.KtReferenceExpression
+import org.jetbrains.kotlin.psi.KtStringTemplateExpression
+import org.jetbrains.kotlin.psi.KtTryExpression
 import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 import org.jetbrains.kotlin.psi.psiUtil.isAncestor
 import org.jetbrains.kotlin.psi.psiUtil.parents
-import org.jetbrains.kotlin.psi.psiUtil.referenceExpression
 
 /**
  * Checks if this [KtExpression] contains only constant literals, strings with possibly constant expressions in templates,

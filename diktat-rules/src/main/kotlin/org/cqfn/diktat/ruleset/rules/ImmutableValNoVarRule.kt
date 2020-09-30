@@ -7,7 +7,10 @@ import org.cqfn.diktat.ruleset.constants.Warnings.SAY_NO_TO_VAR
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getAllUsages
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import org.jetbrains.kotlin.psi.*
+import org.jetbrains.kotlin.psi.KtBlockExpression
+import org.jetbrains.kotlin.psi.KtLambdaExpression
+import org.jetbrains.kotlin.psi.KtLoopExpression
+import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 
 /**
