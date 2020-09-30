@@ -103,6 +103,9 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     STRING_TEMPLATE_QUOTES(true, "string template has redundant quotes"),
     // FixMe: change float literal to BigDecimal? Or kotlin equivalent?
     FLOAT_IN_ACCURATE_CALCULATIONS(false, "floating-point values shouldn't be used in accurate calculations"),
+
+    // ======== chapter 4 ========
+    NESTED_BLOCK(false, "function has many nested block, simplified it"),
     ;
 
     /**
