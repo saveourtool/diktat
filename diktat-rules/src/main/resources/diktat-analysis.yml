@@ -1,6 +1,7 @@
 - name: DIKTAT_COMMON
   configuration:
-    domainName: your.package.name.here
+    # put your package name here - it will be autofixed and checked
+    domainName: your.name.here
     testDirs: test
 - name: CLASS_NAME_INCORRECT
   enabled: true
@@ -116,8 +117,8 @@
 - name: HEADER_MISSING_OR_WRONG_COPYRIGHT
   enabled: true
   configuration:
-    isCopyrightMandatory: false
-    copyrightText: ''
+    isCopyrightMandatory: true
+    copyrightText: 'Copyright (c) Your Company Name Here. 2010-2020'
 - name: HEADER_NOT_BEFORE_PACKAGE
   enabled: true
   configuration: {}
