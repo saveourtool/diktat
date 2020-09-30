@@ -15,7 +15,6 @@ import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.NESTED_BLOCK
-import org.cqfn.diktat.ruleset.utils.prettyPrint
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 
@@ -51,7 +50,7 @@ class NestedFunctionBlock(private val configRules: List<RulesConfig>) : Rule("ne
     private fun dfsBlock(node: ASTNode, blockCount: Int, maxNestedBlockCount: Long) {
         if (blockCount > maxNestedBlockCount) {
             val functionNode = node.parent({ it.elementType == FUN })!!.findChildByType(IDENTIFIER)!!
-            NESTED_BLOCK.warn(configRules, emitWarn, isFixMode, "${functionNode.text}", node.startOffset, functionNode)
+            NESTED_BLOCK.warn(configRules, emitWarn, isFixMode, functionNode.text, node.startOffset, functionNode)
             return
         } else {
             findBlocks(node).forEach {
