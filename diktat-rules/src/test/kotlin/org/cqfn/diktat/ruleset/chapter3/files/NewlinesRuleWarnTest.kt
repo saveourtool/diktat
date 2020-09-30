@@ -511,7 +511,6 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |fun foo(): String {
                     |        val isParallelMode: Boolean
                     |            get() = java.lang.Boolean.getBoolean(properties.getProperty("parallel.mode"))
-                    |        val a = listOf(1,2,3).map{ }.filter{ }
                     |}
                 """.trimMargin()
         )

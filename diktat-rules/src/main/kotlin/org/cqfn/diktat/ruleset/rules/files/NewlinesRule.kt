@@ -146,7 +146,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
             return
         }
         val isIncorrect = node.run {
-            if (isCallsChain()) {
+            if (isCallsChain() && containsManyFunctions()) {
                 val isSingleLineIfElse = parent({ it.elementType == IF }, true)?.isSingleLineIfElse() ?: false
                 // to follow functional style these operators should be started by newline
                 (isFollowedByNewline() || !isBeginByNewline()) && !isSingleLineIfElse
@@ -305,16 +305,21 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
                     getAllLeafsWithSpecificType(SAFE_ACCESS, it)
                 }
             }
-            ?.filter { it.getParentExpressions().count() > 1
-                    && (it.getParentExpressions().any { node -> node.text.contains(Regex("""\(([a-zA-Z ]*)\)""")) }
-                    || it.getParentExpressions().any { node -> node.text.contains(Regex("""\{([a-zA-Z ]*)}""")) })
-            }
+            ?.filter { it.getParentExpressions().count() > 1 }
             ?.count()
             ?.let { it > 1 }
             ?: false
 
     private fun ASTNode.getParentExpressions() =
             parents().takeWhile { it.elementType in chainExpressionTypes && it.elementType != LAMBDA_ARGUMENT }
+
+    private fun ASTNode.containsManyFunctions() =
+            parents().takeWhile { it.elementType == DOT_QUALIFIED_EXPRESSION }
+                    .lastOrNull()
+                    ?.let {
+                        (Regex("""\((.*?)\)""").findAll(it.text).count()) +
+                                (Regex("""\{(.*?)}""").findAll(it.text).count()) > 1
+                    } ?: true
 
     /**
      * This method should be called on OPERATION_REFERENCE in the middle of BINARY_EXPRESSION
