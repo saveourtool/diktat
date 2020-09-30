@@ -8,6 +8,7 @@ class Example {
     @get:JvmName("getIsValid")
     val isValid = true
     val foo: Int = 1
+
     /**
      * @param x
      * @param y
