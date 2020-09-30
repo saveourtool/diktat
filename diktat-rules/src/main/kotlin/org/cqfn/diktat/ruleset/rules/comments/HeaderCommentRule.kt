@@ -163,8 +163,9 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
     private fun checkHeaderKdoc(node: ASTNode) {
         val headerKdoc = node.findChildBefore(PACKAGE_DIRECTIVE, KDOC)
         if (headerKdoc == null) {
-            val nDeclaredClasses = node.getAllChildrenWithType(ElementType.CLASS).size
-            if (nDeclaredClasses == 0 || nDeclaredClasses > 1) {
+            val nDeclaredClassesAndObjects = node.getAllChildrenWithType(ElementType.CLASS).size +
+                    node.getAllChildrenWithType(ElementType.OBJECT_DECLARATION).size
+            if (nDeclaredClassesAndObjects == 0 || nDeclaredClassesAndObjects > 1) {
                 HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warn(configRules, emitWarn, isFixMode, fileName, node.startOffset, node)
             }
         } else {
