@@ -43,7 +43,7 @@ jobs:
         
       - name: Run diKTat from maven
         continue-on-error: true
-        run: mvn -B compile antrun:run@functional-test > out
+        run: mvn -B antrun:run@functional-test > out
         
       - name: Check maven
         run: |
