@@ -10,12 +10,6 @@ import org.junit.jupiter.api.Test
 class KdocFormattingFixTest: FixTestBase("test/paragraph2/kdoc/", ::KdocFormatting) {
 
     @Test
-    @Tag(WarningNames.BLANK_LINE_AFTER_KDOC)
-    fun `there should be no blank line between kdoc and it's declaration code`() {
-        fixAndCompare("KdocEmptyLineExpected.kt", "KdocEmptyLineTest.kt")
-    }
-
-    @Test
     @Tag(WarningNames.KDOC_WRONG_SPACES_AFTER_TAG)
     fun `there should be exactly one white space after tag name`() {
         fixAndCompare("SpacesAfterTagExpected.kt", "SpacesAfterTagTest.kt")

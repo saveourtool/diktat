@@ -68,9 +68,6 @@
 - name: MISSING_KDOC_CLASS_ELEMENTS
   enabled: true
   configuration: {}
-- name: BLANK_LINE_AFTER_KDOC
-  enabled: true
-  configuration: {}
 - name: KDOC_WITHOUT_PARAM_TAG
   enabled: true
   configuration: {}
@@ -239,11 +236,32 @@
 - name: LOCAL_VARIABLE_EARLY_DECLARATION
   enabled: true
   configuration: {}
+# Inspection that checks if there is a blank line before kDoc and none after
+- name: WRONG_NEWLINES_AROUND_KDOC
+  enabled: true
+  configuration: {}
+# Inspection that checks if there is no blank lines before first comment
+- name: FIRST_COMMENT_NO_SPACES
+  enabled: true
+  configuration: {}
+# Inspection that checks if there are blank lines between code and comment and between code start token and comment's text
+- name: COMMENT_WHITE_SPACE
+  enabled: true
+  configuration:
+    maxSpacesBeforeComment: 2
+    maxSpacesInComment: 1
+# Inspection that checks if all comment's are inside if-else code blocks. Exception is general if comment
+- name: IF_ELSE_COMMENTS
+  enabled: true
+  configuration: {}
 # Type aliases provide alternative names for existing types when type's reference text is longer 25 chars
 - name: TYPE_ALIAS
   enabled: true
   configuration:
     typeReferenceLength: '25' # max length of type reference
+- name: GENERIC_VARIABLE_WRONG_DECLARATION
+  enabled: true
+  configuration: {}
 # Inspection that checks if string template has redundant curly braces
 - name: STRING_TEMPLATE_CURLY_BRACES
   enabled: true
