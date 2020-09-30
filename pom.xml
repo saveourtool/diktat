@@ -52,7 +52,8 @@
         <diktat-check.version>0.1.0</diktat-check.version>
         <kotlinpoet.version>1.6.0</kotlinpoet.version>
         <detekt.version>1.13.1</detekt.version>
-        <dokka.version>1.4.0</dokka.version>
+        <dokka.version>1.4.10</dokka.version>
+        <jacoco.version>0.8.6</jacoco.version>
     </properties>
 
     <modules>
@@ -149,7 +150,7 @@
             <dependency>
                 <groupId>io.github.java-diff-utils</groupId>
                 <artifactId>java-diff-utils</artifactId>
-                <version>4.7</version>
+                <version>4.8</version>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
@@ -226,6 +227,11 @@
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>exec-maven-plugin</artifactId>
                     <version>3.0.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${jacoco.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -321,6 +327,24 @@
                             <goal>run</goal>
                         </goals>
                     </execution>
+
+                    <execution>
+                        <id>functional-test</id>
+                        <phase>none</phase>
+                        <inherited>false</inherited>
+                        <configuration>
+                            <target name="ktlint">
+                                <java taskname="ktlint" dir="${maven.multiModuleProjectDirectory}" fork="true"
+                                      failonerror="true"
+                                      classpathref="maven.plugin.classpath" classname="com.pinterest.ktlint.Main">
+                                    <arg value="diktat-rules/src/test/resources/test/funcTest/*.kt"/>
+                                </java>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
                 </executions>
                 <dependencies>
                     <dependency>
@@ -345,7 +369,11 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.5</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/generation/**</exclude>
+                    </excludes>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>

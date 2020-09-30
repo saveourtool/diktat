@@ -77,11 +77,18 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
                     |    // another property
                     |    private val BAR = 43
                     |    
+                    |    @Annotated
+                    |    private val qux = 43
+                    |    
+                    |    // annotated property
+                    |    @Annotated
+                    |    private val quux = 43
+                    |    
                     |    /**
                     |     * Yet another property.
                     |     */
                     |    private val BAZ = 44
-                    |    private lateinit var lateFoo: Int
+                    |    @Annotated private lateinit var lateFoo: Int
                     |}
                 """.trimMargin())
     }
@@ -96,6 +103,11 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
                     |    private val FOO = 42
                     |    // another property
                     |    private val BAR = 43
+                    |    @Anno
+                    |    private val qux = 43
+                    |    // annotated property
+                    |    @Anno
+                    |    private val quux = 43
                     |    /**
                     |     * Yet another property.
                     |     */
@@ -104,7 +116,66 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
                     |}
                 """.trimMargin(),
                 LintError(4, 5, ruleId, "${BLANK_LINE_BETWEEN_PROPERTIES.warnText()} BAR", true),
-                LintError(6, 5, ruleId, "${BLANK_LINE_BETWEEN_PROPERTIES.warnText()} BAZ", true)
+                LintError(6, 5, ruleId, "${BLANK_LINE_BETWEEN_PROPERTIES.warnText()} qux", true),
+                LintError(8, 5, ruleId, "${BLANK_LINE_BETWEEN_PROPERTIES.warnText()} quux", true),
+                LintError(11, 5, ruleId, "${BLANK_LINE_BETWEEN_PROPERTIES.warnText()} BAZ", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.BLANK_LINE_BETWEEN_PROPERTIES)
+    fun `regression - should check only class-level and top-level properties`() {
+        lintMethod(
+                """class Example {
+                    |    fun foo() {
+                    |        val bar = 0
+                    |        
+                    |        val baz = 1
+                    |    }
+                    |    
+                    |    class Nested {
+                    |        val bar = 0
+                    |        val baz = 1
+                    |    }
+                    |}
+                """.trimMargin()
+//                LintError(10, )
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.BLANK_LINE_BETWEEN_PROPERTIES)
+    fun `should allow blank lines around properties with custom getters and setters - positive example`() {
+        lintMethod(
+                """
+                    |class Example {
+                    |    private val foo
+                    |        get() = 0
+                    |        
+                    |    private var backing = 0
+                    |    
+                    |    var bar
+                    |        get() = backing
+                    |        set(value) { backing = value }
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.BLANK_LINE_BETWEEN_PROPERTIES)
+    fun `should allow blank lines around properties with custom getters and setters - positive example without blank lines`() {
+        lintMethod(
+                """
+                    |class Example {
+                    |    private val foo
+                    |        get() = 0
+                    |    private var backing = 0
+                    |    var bar
+                    |        get() = backing
+                    |        set(value) { backing = value }
+                    |}
+                """.trimMargin()
         )
     }
 }

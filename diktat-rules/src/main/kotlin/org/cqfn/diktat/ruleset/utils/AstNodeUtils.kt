@@ -164,6 +164,14 @@ fun ASTNode.findChildAfter(afterThisNodeType: IElementType, childNodeType: IElem
     return null
 }
 
+/**
+ * method that traverses previous nodes until it finds needed node or it finds stop node
+ * @return ASTNode?
+ */
+fun ASTNode.prevNodeUntilNode(stopNodeType: IElementType, checkNodeType: IElementType) : ASTNode? =
+        siblings(false).takeWhile { it.elementType != stopNodeType }.find { it.elementType == checkNodeType }
+
+
 fun ASTNode.allSiblings(withSelf: Boolean = false): List<ASTNode> =
         siblings(false).toList() + (if (withSelf) listOf(this) else listOf()) + siblings(true)
 
@@ -242,6 +250,11 @@ fun ASTNode.findLeafWithSpecificType(elementType: IElementType): ASTNode? {
     }
     return null
 }
+
+/**
+ * This method counts number of \n in node's text
+ */
+fun ASTNode.numNewLines() = text.count { it == '\n' }
 
 /**
  * This method performs tree traversal and returns all nodes with specific element type
@@ -333,8 +346,6 @@ fun ASTNode.createOperationReference(elementType: IElementType, text: String) {
     this.addChild(operationReference, null)
     operationReference.addChild(LeafPsiElement(elementType, text), null)
 }
-
-fun ASTNode.numNewLines() = text.count { it == '\n' }
 
 /**
  * removing all newlines in WHITE_SPACE node and replacing it to a one newline saving the initial indenting format

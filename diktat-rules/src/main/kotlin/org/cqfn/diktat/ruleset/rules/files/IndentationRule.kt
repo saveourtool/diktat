@@ -20,6 +20,7 @@ import org.cqfn.diktat.ruleset.utils.getFileName
 import org.cqfn.diktat.ruleset.utils.indentBy
 import org.cqfn.diktat.ruleset.utils.indentation.AssignmentOperatorChecker
 import org.cqfn.diktat.ruleset.utils.indentation.ConditionalsAndLoopsWithoutBracesChecker
+import org.cqfn.diktat.ruleset.utils.indentation.CustomGettersAndSettersChecker
 import org.cqfn.diktat.ruleset.utils.indentation.CustomIndentationChecker
 import org.cqfn.diktat.ruleset.utils.indentation.DotCallChecker
 import org.cqfn.diktat.ruleset.utils.indentation.ExpressionIndentationChecker
@@ -68,7 +69,7 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
             fileName = node.getFileName()
             configuration = IndentationConfig(configRules.getRuleConfig(WRONG_INDENTATION)?.configuration
                     ?: mapOf())
-            
+
             customIndentationCheckers = listOf(
                 ::AssignmentOperatorChecker,
                 ::ConditionalsAndLoopsWithoutBracesChecker,
@@ -76,7 +77,8 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
                 ::ValueParameterListChecker,
                 ::ExpressionIndentationChecker,
                 ::DotCallChecker,
-                ::KDocIndentationChecker
+                ::KDocIndentationChecker,
+                ::CustomGettersAndSettersChecker
             ).map { it.invoke(configuration) }
 
             if (checkIsIndentedWithSpaces(node)) {
@@ -100,7 +102,7 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
                 .apply { if (isEmpty()) return true }
                 .forEach {
                     WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "tabs are not allowed for indentation", it.startOffset + it.text.indexOf('\t'), it) {
-                        (it as LeafPsiElement).replaceWithText(it.text.replace("\t", " ".repeat(INDENT_SIZE)))
+                        (it as LeafPsiElement).replaceWithText(it.text.replace("\t", " ".repeat(configuration.indentationSize)))
                     }
                 }
         return isFixMode  // true if we changed all tabs to spaces
@@ -128,7 +130,7 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
      * Traverses the tree, keeping track of regular and exceptional indentations
      */
     private fun checkIndentation(node: ASTNode) {
-        val context = IndentContext()
+        val context = IndentContext(configuration)
         node.visit { astNode ->
             context.checkAndReset(astNode)
             if (astNode.elementType in increasingTokens) {
@@ -176,16 +178,16 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
     /**
      * Class that contains state needed to calculate indent and keep track of exceptional indents
      */
-    private class IndentContext {
+    private class IndentContext(private val config: IndentationConfig) {
         private var regularIndent = 0
         private val exceptionalIndents = mutableListOf<ExceptionalIndent>()
 
         fun inc() {
-            regularIndent += INDENT_SIZE
+            regularIndent += config.indentationSize
         }
 
         fun dec() {
-            regularIndent -= INDENT_SIZE
+            regularIndent -= config.indentationSize
         }
 
         fun indent() = regularIndent + exceptionalIndents.sumBy { it.indent }
