@@ -43,7 +43,7 @@ jobs:
 
       - name: Run diKTat from maven
         continue-on-error: true
-        run: mvn -B diktat:check@functional-test > out
+        run: mvn -B diktat:check@functional-test &> out
 
       - name: Check maven
         run: |
