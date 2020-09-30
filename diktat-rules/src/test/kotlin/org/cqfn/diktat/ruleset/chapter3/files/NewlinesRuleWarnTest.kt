@@ -502,4 +502,18 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 LintError(2, 5, ruleId, singleReturnWarn, true)
         )
     }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
+    fun `should not trigger`() {
+        lintMethod(
+                """
+                    |fun foo(): String {
+                    |        val isParallelMode: Boolean
+                    |            get() = java.lang.Boolean.getBoolean(properties.getProperty("parallel.mode"))
+                    |        val a = listOf(1,2,3).map{ }.filter{ }
+                    |}
+                """.trimMargin()
+        )
+    }
 }

@@ -305,7 +305,10 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
                     getAllLeafsWithSpecificType(SAFE_ACCESS, it)
                 }
             }
-            ?.filter { it.getParentExpressions().count() > 1 }
+            ?.filter { it.getParentExpressions().count() > 1
+                    && (it.getParentExpressions().any { node -> node.text.contains(Regex("""\(([a-zA-Z ]*)\)""")) }
+                    || it.getParentExpressions().any { node -> node.text.contains(Regex("""\{([a-zA-Z ]*)}""")) })
+            }
             ?.count()
             ?.let { it > 1 }
             ?: false
