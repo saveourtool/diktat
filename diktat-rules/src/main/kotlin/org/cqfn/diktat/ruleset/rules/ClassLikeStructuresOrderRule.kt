@@ -8,7 +8,6 @@ import com.pinterest.ktlint.core.ast.ElementType.CLASS_INITIALIZER
 import com.pinterest.ktlint.core.ast.ElementType.COMPANION_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.CONST_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
-import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.LATEINIT_KEYWORD
@@ -29,11 +28,13 @@ import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.findLeafWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getIdentifierName
 import org.cqfn.diktat.ruleset.utils.handleIncorrectOrder
+import org.cqfn.diktat.ruleset.utils.isFollowedByNewline
 import org.cqfn.diktat.ruleset.utils.leaveExactlyNumNewLines
 import org.cqfn.diktat.ruleset.utils.loggerPropertyRegex
 import org.cqfn.diktat.ruleset.utils.moveChildBefore
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.psiUtil.parents
 
 /**
@@ -98,16 +99,36 @@ class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) :
 
     @Suppress("UnsafeCallOnNullableType")
     private fun checkNewLinesBeforeProperty(node: ASTNode) {
+        // checking only top-level and class-level properties
+        if (node.treeParent.elementType != CLASS_BODY) {
+            return
+        }
+
         val previousProperty = node.prevSibling { it.elementType == PROPERTY }
 
         if (previousProperty != null) {
-            val commentOnThis = node.findChildByType(TokenSet.create(KDOC, EOL_COMMENT, BLOCK_COMMENT))
-            val whiteSpaceBefore = previousProperty.nextSibling { it.elementType == WHITE_SPACE }!!
-            val nRequiredNewLines = if (commentOnThis == null) 1 else 2
-            if (whiteSpaceBefore.text.count { it == '\n' } != nRequiredNewLines)
+            val hasCommentBefore = node
+                    .findChildByType(TokenSet.create(KDOC, EOL_COMMENT, BLOCK_COMMENT))
+                    ?.isFollowedByNewline()
+                    ?: false
+            val hasAnnotationsBefore = (node.psi as KtProperty)
+                    .annotationEntries
+                    .any { it.node.isFollowedByNewline() }
+            val hasCustomAccessors = (node.psi as KtProperty).accessors.isNotEmpty() ||
+                    (previousProperty.psi as KtProperty).accessors.isNotEmpty()
+
+            val whiteSpaceBefore = previousProperty.nextSibling { it.elementType == WHITE_SPACE } ?: return
+            val isBlankLineRequired = hasCommentBefore || hasAnnotationsBefore || hasCustomAccessors
+            val numRequiredNewLines = 1 + (if (isBlankLineRequired) 1 else 0)
+            val actualNewLines = whiteSpaceBefore.text.count { it == '\n' }
+            // for some cases (now - if this or previous property has custom accessors), blank line is allowed before it
+            if (!hasCustomAccessors && actualNewLines != numRequiredNewLines ||
+                    hasCustomAccessors && actualNewLines > numRequiredNewLines
+            ) {
                 BLANK_LINE_BETWEEN_PROPERTIES.warnAndFix(configRules, emitWarn, isFixMode, node.getIdentifierName()!!.text, node.startOffset, node) {
-                    whiteSpaceBefore.leaveExactlyNumNewLines(nRequiredNewLines)
+                    whiteSpaceBefore.leaveExactlyNumNewLines(numRequiredNewLines)
                 }
+            }
         }
     }
 
