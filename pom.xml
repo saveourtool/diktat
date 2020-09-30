@@ -331,12 +331,13 @@
                     <execution>
                         <id>functional-test</id>
                         <phase>none</phase>
+                        <inherited>false</inherited>
                         <configuration>
                             <target name="ktlint">
                                 <java taskname="ktlint" dir="${maven.multiModuleProjectDirectory}" fork="true"
                                       failonerror="true"
                                       classpathref="maven.plugin.classpath" classname="com.pinterest.ktlint.Main">
-                                    <arg value="${project.basedir}/src/test/resources/test/funcTest/*.kt"/>
+                                    <arg value="diktat-rules/src/test/resources/test/funcTest/*.kt"/>
                                 </java>
                             </target>
                         </configuration>
