@@ -1,15 +1,22 @@
+/**
+ * MOJOs for goals of diktat plugin
+ */
+
 package org.cqfn.diktat.plugin.maven
 
 import com.pinterest.ktlint.core.KtLint
+import java.io.File
 import org.apache.maven.plugins.annotations.Mojo
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
-import java.io.File
 
 /**
  * Main [Mojo] that call [DiktatRuleSetProvider]'s rules on [inputs] files
  */
 @Mojo(name = "check")
 class DiktatCheckMojo : DiktatBaseMojo() {
+    /**
+     * @param params instance of [KtLint.Params] used in analysis
+     */
     override fun runAction(params: KtLint.Params) {
         KtLint.lint(params)
     }
@@ -21,6 +28,9 @@ class DiktatCheckMojo : DiktatBaseMojo() {
  */
 @Mojo(name = "fix")
 class DiktatFixMojo : DiktatBaseMojo() {
+    /**
+     * @param params instance of [KtLint.Params] used in analysis
+     */
     override fun runAction(params: KtLint.Params) {
         val fileName = params.fileName
         val filePath = params.userData["file_path"] ?: error("File path should be provided")
