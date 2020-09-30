@@ -267,13 +267,13 @@ fun ASTNode.findAllNodesWithSpecificType(elementType: IElementType, withSelf: Bo
 }
 
 /**
- * This method performs tree traversal and returns all nodes with specific element types
+ * This method performs tree traversal and returns all nodes which satisfy the condition
  */
-fun ASTNode.findAllNodesWithSpecificTypes(elementTypes: List<IElementType>, withSelf: Boolean = true): List<ASTNode> {
-    val initialAcc = if (this.elementType in elementTypes && withSelf) mutableListOf(this) else mutableListOf()
-    return initialAcc + this.getChildren(null).flatMap {
-        it.findAllNodesWithSpecificTypes(elementTypes)
-    }
+fun ASTNode.findAllNodesWithCondition(condition: (ASTNode) -> Boolean): List<ASTNode> {
+    val result = if (condition(this)) mutableListOf(this) else mutableListOf()
+   return result + this.getChildren(null).flatMap {
+       it.findAllNodesWithCondition(condition)
+   }
 }
 
 /**
