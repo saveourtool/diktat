@@ -141,6 +141,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         }
     }
 
+    @Suppress("ComplexMethod")
     private fun handleOperatorWithLineBreakBefore(node: ASTNode) {
         if (node.isDotFromPackageOrImport()) {
             return
