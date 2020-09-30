@@ -49,3 +49,5 @@ jobs:
         run: |
           cat out
           grep -E "[VARIABLE_NAME_INCORRECT_FORMAT]" out
+          echo exit code is $?
+          exit 1
