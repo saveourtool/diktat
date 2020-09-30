@@ -14,7 +14,7 @@ import org.cqfn.diktat.util.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
-import java.nio.file.Path
+import java.io.File
 
 // fixme: run as a separate maven goal/module?
 class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
@@ -51,7 +51,9 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     @Tag("DiktatRuleSetProvider")
     fun `smoke test #2`() {
         // fixme: path shouldn't point to `target` directory
-        val expectedFileAbsolutePath = Path.of(Path.of("target/test-classes/$resourceFilePath").toAbsolutePath().toString(), "Example2Test.kt_copy")
+        // val expectedFileAbsolutePath = Path.of(Path.of("target/test-classes/$resourceFilePath").toAbsolutePath().toString(), "Example2Test.kt_copy")
+
+        val expectedFileAbsolutePath = File("target/test-classes/$resourceFilePath/Example2Test.kt_copy").absolutePath
         fixAndCompare("Example2Expected.kt", "Example2Test.kt")
         unfixedLintErrors.assertEquals(
                 LintError(1, 1, "$DIKTAT_RULE_SET_ID:file-naming", "${FILE_NAME_INCORRECT.warnText()} Example2Test.kt_copy", true), // todo this is a false one
