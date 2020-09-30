@@ -166,6 +166,7 @@ class AccurateCalculationsWarnTest : LintTestBase(::AccurateCalculationsRule) {
                     |    1e-6 > abs(1.0 - 0.999)
                     |    abs(1.0 - 0.999).compareTo(1e-6) < 0
                     |    1e-6.compareTo(abs(1.0 - 0.999)) < 0
+                    |    abs(1.0 - 0.999) == 1e-6
                     |    
                     |    abs(1.0 - 0.999) < eps
                     |    eps > abs(1.0 - 0.999)
@@ -174,8 +175,12 @@ class AccurateCalculationsWarnTest : LintTestBase(::AccurateCalculationsRule) {
                     |    val y = 0.999
                     |    abs(x - y) < eps
                     |    eps > abs(x - y)
+                    |    abs(1.0 - 0.999) == eps
                     |}
-                """.trimMargin()
+                """.trimMargin(),
+                LintError(11, 5, ruleId, warnText("1e-6", "abs(1.0 - 0.999) == 1e-6"), false),
+                LintError(11, 9, ruleId, warnText("1.0", "1.0 - 0.999"), false),
+                LintError(20, 9, ruleId, warnText("1.0", "1.0 - 0.999"), false)
         )
     }
 }
