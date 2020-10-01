@@ -5,6 +5,7 @@ import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.ARROW
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
+import com.pinterest.ktlint.core.ast.ElementType.CALLABLE_REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CATCH_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
@@ -115,8 +116,9 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
             CONSTRUCTOR_KEYWORD -> handleConstructor(node)
             in keywordsWithSpaceAfter -> handleKeywordWithParOrBrace(node)
             // operators and operator-like symbols
-            OPERATION_REFERENCE, COLONCOLON, DOT, ARROW, SAFE_ACCESS, EQ -> handleBinaryOperator(node)
+            OPERATION_REFERENCE, DOT, ARROW, SAFE_ACCESS, EQ -> handleBinaryOperator(node)
             COLON -> handleColon(node)
+            COLONCOLON -> handleColonColon(node)
             COMMA, SEMICOLON -> handleToken(node, 0, 1)
             QUEST -> if (node.treeParent.elementType == NULLABLE_TYPE) handleToken(node, 0, null)
             // braces and other symbols
@@ -196,6 +198,19 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
                 WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "there should be a whitespace before '{'", node.startOffset, node) {
                     prevNode.leaveSingleWhiteSpace()
                 }
+            }
+        }
+    }
+
+    private fun handleColonColon(node: ASTNode) {
+        if (node.treeParent.elementType == CALLABLE_REFERENCE_EXPRESSION) {
+            if (node.treeParent.firstChildNode != node) {
+                // callable reference has receiver and shouldn't have any spaces around
+                handleBinaryOperator(node)
+            } else {
+                // callable reference doesn't have receiver, it should stick to reference name and spaces before are determined
+                // by other cases of this rule
+                handleToken(node, null, 0)
             }
         }
     }
