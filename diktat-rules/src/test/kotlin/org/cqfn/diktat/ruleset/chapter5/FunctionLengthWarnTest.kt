@@ -126,6 +126,31 @@ class FunctionLengthWarnTest : LintTestBase(::FunctionLength) {
 
     @Test
     @Tag(WarningNames.TOO_LONG_FUNCTION)
+    fun `check suppress`() {
+        lintMethod(
+                """
+                    |class A() {
+                    |   val x = 10
+                    |   val y  = 11
+                    |   
+                    |   @Suppress("TOO_LONG_FUNCTION")
+                    |   fun foo() {
+                    |       if(true) {
+                    |           while(true) {
+                    |               println(x)
+                    |               println(y)
+                    |           }
+                    |       }
+                    |   }
+                    |
+                    |}
+                """.trimMargin(),
+                rulesConfigList = shortRulesConfigList
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.TOO_LONG_FUNCTION)
     fun `only empty lines`() {
         lintMethod(
                 """
@@ -154,6 +179,10 @@ class FunctionLengthWarnTest : LintTestBase(::FunctionLength) {
                     |       println(123)
                     |   }
                     |
+                    |}
+                    |
+                    |abstract class B {
+                    |   abstract fun foo()
                     |}
                 """.trimMargin(),
                 rulesConfigList = shortRulesWithoutHeaderConfigList
