@@ -105,6 +105,7 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
 
+    @Suppress("ComplexMethod")
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
