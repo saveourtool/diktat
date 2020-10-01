@@ -17,8 +17,6 @@ val KOTLIN = KtTokens.KEYWORDS.types.map { line -> line.toString() }
 
 val loggerPropertyRegex = "(log|LOG|logger)".toRegex()
 
-fun String.isNotBlankAndEmpty() = isNotEmpty() && isNotBlank()
-
 fun String.isJavaKeyWord() = JAVA.contains(this)
 fun String.isKotlinKeyWord() = KOTLIN.contains(this)
 

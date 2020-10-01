@@ -11,6 +11,7 @@ import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.TOO_LONG_FUNCTION
 import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.psi.KtFunction
 
 /**
  * Rule 5.1.1 check function length
@@ -35,19 +36,22 @@ class FunctionLength(private val configRules: List<RulesConfig>) : Rule("functio
                 configRules.getRuleConfig(TOO_LONG_FUNCTION)?.configuration ?: mapOf()
         )
 
-        if (node.elementType == FUN)
-            checkFun(node.copyElement(), configuration.maxFunctionLength)
+        if (node.elementType == FUN) {
+            val copyNode = if (configuration.isIncludeHeader) node.copyElement() else (node.psi as KtFunction).bodyExpression!!.node
+            checkFun(copyNode, configuration.maxFunctionLength, node.startOffset)
+        }
     }
 
-    private fun checkFun(node: ASTNode, maxFunctionLength: Long) {
-        node.findAllNodesWithCondition({it.elementType in FUNCTION_ALLOW_COMMENT }).forEach { it.treeParent.removeChild(it) }
+    private fun checkFun(node: ASTNode, maxFunctionLength: Long, startOffset: Int) {
+        node.findAllNodesWithCondition({ it.elementType in FUNCTION_ALLOW_COMMENT }).forEach { it.treeParent.removeChild(it) }
         val functionText = node.text.lines().filter { it.isNotBlank() }
         if (functionText.size > maxFunctionLength)
-            TOO_LONG_FUNCTION.warn(configRules,emitWarn, isFixMode,
-                    "max length is $maxFunctionLength, but you have ${functionText.size}", node.startOffset, node)
+            TOO_LONG_FUNCTION.warn(configRules, emitWarn, isFixMode,
+                    "max length is $maxFunctionLength, but you have ${functionText.size}", startOffset, node)
     }
 
     class FunctionLengthConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
         val maxFunctionLength = config["maxFunctionLength"]?.toLong() ?: MAX_FUNCTION_LENGTH
+        val isIncludeHeader = config["isIncludeHeader"]?.toBoolean() ?: true
     }
 }
