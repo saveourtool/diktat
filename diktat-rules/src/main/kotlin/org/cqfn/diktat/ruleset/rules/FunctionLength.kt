@@ -26,6 +26,7 @@ class FunctionLength(private val configRules: List<RulesConfig>) : Rule("functio
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
 
+    @Suppress("UnsafeCallOnNullableType")
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
