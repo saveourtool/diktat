@@ -166,7 +166,7 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
                 // fixme: a hack to keep extended indent for the whole chain of dot call expressions
                 if (parent.elementType != DOT_QUALIFIED_EXPRESSION) parent else astNode.parents().takeWhile { it.elementType == DOT_QUALIFIED_EXPRESSION }.last()
             }
-            context.addException(exceptionInitiatorNode, expectedIndent - indentError.expected)
+            context.addException(exceptionInitiatorNode, expectedIndent - indentError.expected, checkResult.includeLastChild)
         }
         if (checkResult?.isCorrect != true && expectedIndent != indentError.actual) {
             WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "expected $expectedIndent but was ${indentError.actual}",
@@ -193,15 +193,17 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
 
         fun indent() = regularIndent + exceptionalIndents.sumBy { it.indent }
 
-        fun addException(initiator: ASTNode, indent: Int) = exceptionalIndents.add(ExceptionalIndent(initiator, indent))
+        fun addException(initiator: ASTNode, indent: Int, includeLastChild: Boolean) =
+                exceptionalIndents.add(ExceptionalIndent(initiator, indent, includeLastChild))
         fun checkAndReset(astNode: ASTNode) = exceptionalIndents.retainAll { it.isActive(astNode) }
 
-        private data class ExceptionalIndent(val initiator: ASTNode, val indent: Int) {
+        private data class ExceptionalIndent(val initiator: ASTNode, val indent: Int, val includeLastChild: Boolean = true) {
             /**
              * Checks whether this exceptional indent is still active. This is a hypotheses that exceptional indentation will end
              * outside of node where it appeared, e.g. when an expression after assignment operator is over.
              */
-            fun isActive(currentNode: ASTNode): Boolean = currentNode.parents().contains(initiator)
+            fun isActive(currentNode: ASTNode): Boolean = currentNode.parents().contains(initiator) &&
+                    (includeLastChild || currentNode.treeNext != initiator.lastChildNode)
         }
     }
 }

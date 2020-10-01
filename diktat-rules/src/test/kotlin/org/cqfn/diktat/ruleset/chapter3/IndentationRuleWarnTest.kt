@@ -331,5 +331,28 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
         )
     }
 
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
+    fun `regression - indentation should be increased inside parameter list for multiline parameters`() {
+        lintMethod(
+                """
+                    |fun foo() {
+                    |    bar(
+                    |            param1 = baz(
+                    |                    1,
+                    |                    2
+                    |            ),
+                    |            param2 = { elem ->
+                    |                elem.qux()
+                    |            },
+                    |            param3 = x
+                    |                .y()
+                    |    )
+                    |}
+                    |
+                """.trimMargin()
+        )
+    }
+
     private fun warnText(expected: Int, actual: Int) = "${WRONG_INDENTATION.warnText()} expected $expected but was $actual"
 }

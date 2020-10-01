@@ -13,7 +13,6 @@ import com.pinterest.ktlint.core.ast.ElementType.KDOC_SECTION
 import com.pinterest.ktlint.core.ast.ElementType.LPAR
 import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.RPAR
 import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS
 import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_LIST
 import com.pinterest.ktlint.core.ast.ElementType.THEN
@@ -33,6 +32,7 @@ import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.KtPropertyAccessor
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
+import org.jetbrains.kotlin.psi.psiUtil.siblings
 
 /**
  * Performs the following check: assignment operator increases indent by one step for the expression after it.
@@ -56,7 +56,10 @@ internal class AssignmentOperatorChecker(configuration: IndentationConfig) : Cus
 @Suppress("ForbiddenComment")
 internal class ValueParameterListChecker(configuration: IndentationConfig) : CustomIndentationChecker(configuration) {
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
-        if (whiteSpace.parent.node.elementType in listOf(VALUE_PARAMETER_LIST, VALUE_ARGUMENT_LIST) && whiteSpace.nextSibling.node.elementType != RPAR) {
+        // this check should trigger only for the first newline inside parameter list
+        if (whiteSpace.parent.node.elementType.let { it == VALUE_PARAMETER_LIST || it == VALUE_ARGUMENT_LIST } &&
+                whiteSpace.siblings(forward = false, withItself = false).none { it.textContains('\n') }
+        ) {
             val parameterList = whiteSpace.parent.node
             // parameters in lambdas are VALUE_PARAMETER_LIST and might have no LPAR: list { elem -> ... }
             val parameterAfterLpar = parameterList
@@ -73,7 +76,7 @@ internal class ValueParameterListChecker(configuration: IndentationConfig) : Cus
                 indentError.expected
             }
 
-            return CheckResult.from(indentError.actual, expectedIndent)
+            return CheckResult.from(indentError.actual, expectedIndent, adjustNext = true, includeLastChild = false)
         }
         return null
     }
