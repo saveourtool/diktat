@@ -47,9 +47,9 @@ The full list of available supported rules and inspections is [here](info/availa
 
 To **autofix** all code style violations use `-F` option.
 
-## Run with Maven Plugin
+## Run with Maven
 
-You can see how it is configured in our project for self-checks: [pom.xml](pom.xml)
+### Use maven-antrun-plugin
 
 Add this plugin to your pom.xml:
 <details>
@@ -118,6 +118,46 @@ In case you want to add autofixer with diKTat ruleset just extend
 the snippet above with `<arg value="-F"/>`.
 
 To run diktat to check/fix code style - run `$ mvn antrun:run@diktat`.
+
+### Use the new diktat-maven-plugin
+
+You can see how it is configured in our project for self-checks: [pom.xml](pom.xml).
+This plugin should be available since version 0.1.1. It requires less configuration but may contain bugs.
+If you use it and encounter any problems, feel free to open issues on [github](https://github.com/cqfn/diktat/issues).
+
+Add this plugin to your pom.xml:
+<details>
+  <summary><b>Maven plugin snippet</b></summary><br>
+  
+```xml
+            <plugin>
+                <groupId>org.cqfn.diktat</groupId>
+                <artifactId>diktat-maven-plugin</artifactId>
+                <version>${diktat.version}</version>
+                <executions>
+                    <execution>
+                        <id>diktat</id>
+                        <phase>none</phase>
+                        <goals>
+                            <goal>check</goal>
+                            <goal>fix</goal>
+                        </goals>
+                        <configuration>
+                            <inputs>
+                                <input>${project.basedir}/src/main/kotlin</input>
+                                <input>${project.basedir}/src/test/kotlin</input>
+                            </inputs>
+                            <diktatConfigFile>diktat-analysis.yml</diktatConfigFile>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+```
+
+</details>
+
+To run diktat check use command `$ mvn diktat:check@diktat`.
+To run diktat in autocorrect mode use command `$ mvn diktat:fix@diktat`.
 
 ## Run with Gradle Plugin 
 
