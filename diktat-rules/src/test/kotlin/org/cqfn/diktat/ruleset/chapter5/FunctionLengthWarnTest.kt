@@ -129,11 +129,12 @@ class FunctionLengthWarnTest : LintTestBase(::FunctionLength) {
     fun `check suppress`() {
         lintMethod(
                 """
+                    |@Suppress("TOO_LONG_FUNCTION")
                     |class A() {
                     |   val x = 10
                     |   val y  = 11
                     |   
-                    |   @Suppress("TOO_LONG_FUNCTION")
+                    |   
                     |   fun foo() {
                     |       if(true) {
                     |           while(true) {

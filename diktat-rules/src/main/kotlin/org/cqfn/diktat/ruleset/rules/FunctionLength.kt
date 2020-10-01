@@ -38,18 +38,19 @@ class FunctionLength(private val configRules: List<RulesConfig>) : Rule("functio
         )
 
         if (node.elementType == FUN) {
-            val copyNode = if (configuration.isIncludeHeader) node.copyElement() else (node.psi as KtFunction).bodyExpression?.node
-            checkFun(copyNode, configuration.maxFunctionLength, node.startOffset)
+            checkFun(node, configuration)
         }
     }
 
-    private fun checkFun(node: ASTNode?, maxFunctionLength: Long, startOffset: Int) {
-        if (node == null) return
-        node.findAllNodesWithCondition({ it.elementType in FUNCTION_ALLOW_COMMENT }).forEach { it.treeParent.removeChild(it) }
-        val functionText = node.text.lines().filter { it.isNotBlank() }
-        if (functionText.size > maxFunctionLength)
+    private fun checkFun(node: ASTNode, configuration: FunctionLengthConfiguration) {
+        val copyNode = if (configuration.isIncludeHeader) node.copyElement()
+        else (node.psi as KtFunction).bodyExpression?.node ?: return
+        copyNode.findAllNodesWithCondition({ it.elementType in FUNCTION_ALLOW_COMMENT }).forEach { it.treeParent.removeChild(it) }
+        val functionText = copyNode.text.lines().filter { it.isNotBlank() }
+        if (functionText.size > configuration.maxFunctionLength)
             TOO_LONG_FUNCTION.warn(configRules, emitWarn, isFixMode,
-                    "max length is $maxFunctionLength, but you have ${functionText.size}", startOffset, node)
+                    "max length is ${configuration.maxFunctionLength}, but you have ${functionText.size}",
+                    node.startOffset, node)
     }
 
     class FunctionLengthConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
