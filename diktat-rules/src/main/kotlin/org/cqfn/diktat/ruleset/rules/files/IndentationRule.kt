@@ -14,7 +14,6 @@ import com.pinterest.ktlint.core.ast.visit
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getAllLeafsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getFileName
 import org.cqfn.diktat.ruleset.utils.indentBy
@@ -116,7 +115,7 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
             val lastChild = node.lastChildNode
             val numBlankLinesAfter = lastChild.text.count { it == '\n' }
             if (lastChild.elementType != WHITE_SPACE || numBlankLinesAfter != 1) {
-                val warnText = if (numBlankLinesAfter == 0) "no newline" else "too many blank lines"
+                val warnText = if (lastChild.elementType != WHITE_SPACE || numBlankLinesAfter == 0) "no newline" else "too many blank lines"
                 WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "$warnText at the end of file $fileName", node.startOffset + node.textLength, node) {
                     if (lastChild.elementType != WHITE_SPACE) {
                         node.addChild(PsiWhiteSpaceImpl("\n"), null)
@@ -202,7 +201,7 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
              * Checks whether this exceptional indent is still active. This is a hypotheses that exceptional indentation will end
              * outside of node where it appeared, e.g. when an expression after assignment operator is over.
              */
-            fun isActive(currentNode: ASTNode): Boolean = initiator.findAllNodesWithSpecificType(currentNode.elementType).contains(currentNode)
+            fun isActive(currentNode: ASTNode): Boolean = currentNode.parents().contains(initiator)
         }
     }
 }
