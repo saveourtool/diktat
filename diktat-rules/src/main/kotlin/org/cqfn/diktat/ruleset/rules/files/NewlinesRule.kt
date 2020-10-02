@@ -23,6 +23,7 @@ import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.IF
 import com.pinterest.ktlint.core.ast.ElementType.IMPORT_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_ARGUMENT
+import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.LPAR
 import com.pinterest.ktlint.core.ast.ElementType.MINUS
 import com.pinterest.ktlint.core.ast.ElementType.MINUSEQ
@@ -43,6 +44,7 @@ import com.pinterest.ktlint.core.ast.ElementType.SEMICOLON
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.nextCodeSibling
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevCodeSibling
@@ -52,6 +54,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_NEWLINES
 import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
 import org.cqfn.diktat.ruleset.utils.emptyBlockList
 import org.cqfn.diktat.ruleset.utils.extractLineOfText
+import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getAllLeafsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.isBeginByNewline
 import org.cqfn.diktat.ruleset.utils.isEol
@@ -315,6 +318,10 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
                     if (it.treeParent.treeParent != null && it.treeParent.treeParent.elementType == VALUE_PARAMETER_LIST)
                         return@filter false
 
+                    // if first callee is multiline lambda, then we let user decide how to line lambda
+                    if (dotExprs.size == 2 && isMultilineLambda(it.treeParent))
+                        return@filter false
+
                     val firstCallee = 1
                     return@filter if (dotExprs[firstCallee].contains('(') || dotExprs[firstCallee].contains('{')) {
                         true
@@ -329,6 +336,12 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
 
     private fun ASTNode.getParentExpressions() =
             parents().takeWhile { it.elementType in chainExpressionTypes && it.elementType != LAMBDA_ARGUMENT }
+
+    private fun isMultilineLambda(node: ASTNode): Boolean {
+        val leftBrace = node.findAllNodesWithSpecificType(LBRACE).firstOrNull()
+
+        return leftBrace != null && leftBrace.treeNext.isWhiteSpaceWithNewline()
+    }
 
     /**
      * This method should be called on OPERATION_REFERENCE in the middle of BINARY_EXPRESSION

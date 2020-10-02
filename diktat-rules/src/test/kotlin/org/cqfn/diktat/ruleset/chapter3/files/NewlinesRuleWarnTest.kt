@@ -511,8 +511,36 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |fun foo(): String {
                     |        val isParallelMode: Boolean
                     |            get() = java.lang.Boolean.getBoolean(properties.getProperty("parallel.mode"))
+                    |        
+                    |        allProperties.filter {
+                    |           predicate(it)
+                    |        }
+                    |        .foo()
+                    |        .bar()
+                    |        
+                    |        allProperties
+                    |        .filter {
+                    |           predicate(it)
+                    |        }
+                    |        .foo()
+                    |        .bar()
                     |}
                 """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
+    fun `should trigger on non-multiline lambdas`() {
+        lintMethod(
+                """
+                    |fun foo(): String {
+                    |        allProperties.filter { predicate(it) }
+                    |        .foo()
+                    |        .bar()
+                    |}
+                """.trimMargin(),
+                LintError(2, 22, ruleId,"${WRONG_NEWLINES.warnText()} should follow functional style at .", true)
         )
     }
 }
