@@ -124,4 +124,31 @@ class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
                 """.trimMargin()
         )
     }
+
+    @Test
+    @Tag(WarningNames.NESTED_BLOCK)
+    fun `check with lambda`() {
+        lintMethod(
+                """
+                    private fun findBlocks(node: ASTNode): List<ASTNode> {
+                        val result = mutableListOf<ASTNode>()
+                        node.getChildren(null).forEach {
+                            when (it.elementType) {
+                                IF -> Pair(it.findChildByType(THEN)?.findChildByType(BLOCK), it.findChildByType(ELSE)?.findChildByType(BLOCK))
+                                WHEN -> Pair(it, null)
+                                WHEN_ENTRY -> Pair(it.findChildByType(BLOCK), null)
+                                FUN -> Pair(it.findChildByType(BLOCK), null)
+                                else -> Pair(it.findChildByType(BODY)?.findChildByType(BLOCK), null)
+                            }.let { pair ->
+                                pair.let {
+                                    pair.first?.let { it1 -> result.add(it1) }
+                                    pair.second?.let { it2 -> result.add(it2) }
+                                }
+                            }
+                        }
+                        return result
+                    }
+                """.trimMargin()
+        )
+    }
 }

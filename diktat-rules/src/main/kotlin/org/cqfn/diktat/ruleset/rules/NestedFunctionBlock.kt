@@ -64,6 +64,7 @@ class NestedFunctionBlock(private val configRules: List<RulesConfig>) : Rule("ne
         }
     }
 
+    @Suppress("NestedBlockDepth ")
     private fun findBlocks(node: ASTNode): List<ASTNode> {
         val result = mutableListOf<ASTNode>()
         node.getChildren(null).forEach {
