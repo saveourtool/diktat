@@ -97,6 +97,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     LOCAL_VARIABLE_EARLY_DECLARATION(false, "local variables should be declared close to the line where they are first used"),
 
     // ======== chapter 4 ========
+    NULLABLE_PROPERTY_TYPE(true, "try to avoid use of nullable types"),
     TYPE_ALIAS(false, "variable's type is too complex and should be replaced with typealias"),
     SAY_NO_TO_VAR(false, "Usage of a mutable variables with [var] modifier - is a bad style, use [val] instead"),
     GENERIC_VARIABLE_WRONG_DECLARATION(true, "variable should have explicit type declaration"),

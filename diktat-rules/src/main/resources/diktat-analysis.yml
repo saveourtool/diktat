@@ -257,6 +257,10 @@
 - name: LOCAL_VARIABLE_EARLY_DECLARATION
   enabled: true
   configuration: {}
+# Try to avoid initialize val by null (e.g. val a: Int? = null -> val a: Int = 0)
+- name: NULLABLE_PROPERTY_TYPE
+  enabled: true
+  configuration: {}
 # Type aliases provide alternative names for existing types when type's reference text is longer 25 chars
 - name: TYPE_ALIAS
   enabled: true
