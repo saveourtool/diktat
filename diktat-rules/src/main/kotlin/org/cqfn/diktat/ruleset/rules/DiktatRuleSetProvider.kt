@@ -57,9 +57,11 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
                 ::AccurateCalculationsRule,
                 ::LineLength,
                 ::TypeAliasRule,
+                ::FunctionLength,
                 ::BlankLinesRule,
                 ::WhiteSpaceRule,
                 ::WhenMustHaveElseRule,
+                ::ImmutableValNoVarRule,
                 ::FileStructureRule,  // this rule should be right before indentation because it should operate on already valid code
                 ::NewlinesRule,  // newlines need to be inserted right before fixing indentation
                 ::IndentationRule  // indentation rule should be the last because it fixes formatting after all the changes done by previous rules

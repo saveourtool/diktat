@@ -98,13 +98,16 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
 
     // ======== chapter 4 ========
     TYPE_ALIAS(false, "variable's type is too complex and should be replaced with typealias"),
+    SAY_NO_TO_VAR(false, "Usage of a mutable variables with [var] modifier - is a bad style, use [val] instead"),
     GENERIC_VARIABLE_WRONG_DECLARATION(true, "variable should have explicit type declaration"),
     STRING_TEMPLATE_CURLY_BRACES(true, "string template has redundant curly braces"),
     STRING_TEMPLATE_QUOTES(true, "string template has redundant quotes"),
     // FixMe: change float literal to BigDecimal? Or kotlin equivalent?
     FLOAT_IN_ACCURATE_CALCULATIONS(false, "floating-point values shouldn't be used in accurate calculations"),
 
-    // ======== chapter 4 ========
+
+    // ======== chapter 5 ========
+    TOO_LONG_FUNCTION(false, "function is too long: split it or make more primitive"),
     NESTED_BLOCK(false, "function has many nested block, simplified it"),
     ;
 

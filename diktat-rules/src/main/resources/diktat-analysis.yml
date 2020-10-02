@@ -1,6 +1,7 @@
 - name: DIKTAT_COMMON
   configuration:
-    domainName: your.package.name.here
+    # put your package name here - it will be autofixed and checked
+    domainName: your.name.here
     testDirs: test
 - name: CLASS_NAME_INCORRECT
   enabled: true
@@ -116,8 +117,8 @@
 - name: HEADER_MISSING_OR_WRONG_COPYRIGHT
   enabled: true
   configuration:
-    isCopyrightMandatory: false
-    copyrightText: ''
+    isCopyrightMandatory: true
+    copyrightText: 'Copyright (c) Your Company Name Here. 2010-2020'
 - name: HEADER_NOT_BEFORE_PACKAGE
   enabled: true
   configuration: {}
@@ -268,6 +269,12 @@
 - name: STRING_TEMPLATE_CURLY_BRACES
   enabled: true
   configuration: {}
+# Variables with `val` modifier - are immutable (read-only). Usage of such variables instead of `var` variables increases
+# robustness and readability of code, because `var` variables can be reassigned several times in the business logic.
+# This rule prohibits usage of `var`s as local variables - the only exception is accumulators and counters
+- name: SAY_NO_TO_VAR
+  enabled: true
+  configuration: {}
 # Inspection that checks if string template has redundant quotes
 - name: STRING_TEMPLATE_QUOTES
   enabled: true
@@ -276,6 +283,12 @@
 - name: FLOAT_IN_ACCURATE_CALCULATIONS
   enabled: true
   configuration: {}
+# Checks that function length isn't too long
+- name: TOO_LONG_FUNCTION
+  enabled: true
+  configuration:
+    maxFunctionLength: '30' # max length of function
+    isIncludeHeader: 'false' # count function's header
 # Checks that function doesn't have too many nested blocks
 - name: NESTED_BLOCK
   enabled: true
