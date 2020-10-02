@@ -26,7 +26,6 @@ class FunctionLength(private val configRules: List<RulesConfig>) : Rule("functio
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
 
-    @Suppress("UnsafeCallOnNullableType")
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
@@ -44,9 +43,9 @@ class FunctionLength(private val configRules: List<RulesConfig>) : Rule("functio
 
     private fun checkFun(node: ASTNode, configuration: FunctionLengthConfiguration) {
         val copyNode = if (configuration.isIncludeHeader) {
-            node.copyElement()
+            node.clone() as ASTNode
         } else {
-            (node.psi as KtFunction).bodyExpression?.node ?: return
+            ((node.psi as KtFunction).bodyExpression?.node?.clone() ?: return) as ASTNode
         }
         copyNode.findAllNodesWithCondition({ it.elementType in FUNCTION_ALLOW_COMMENT }).forEach { it.treeParent.removeChild(it) }
         val functionText = copyNode.text.lines().filter { it.isNotBlank() }

@@ -287,5 +287,5 @@
 - name: TOO_LONG_FUNCTION
   enabled: true
   configuration:
-    maxFunctionLength: "30" # max length of function
-    isIncludeHeader: "false" # count function's header
+    maxFunctionLength: '30' # max length of function
+    isIncludeHeader: 'false' # count function's header
