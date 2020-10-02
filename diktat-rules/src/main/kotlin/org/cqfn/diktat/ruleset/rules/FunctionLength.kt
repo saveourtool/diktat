@@ -43,8 +43,11 @@ class FunctionLength(private val configRules: List<RulesConfig>) : Rule("functio
     }
 
     private fun checkFun(node: ASTNode, configuration: FunctionLengthConfiguration) {
-        val copyNode = if (configuration.isIncludeHeader) node.copyElement()
-        else (node.psi as KtFunction).bodyExpression?.node ?: return
+        val copyNode = if (configuration.isIncludeHeader) {
+            node.copyElement()
+        } else {
+            (node.psi as KtFunction).bodyExpression?.node ?: return
+        }
         copyNode.findAllNodesWithCondition({ it.elementType in FUNCTION_ALLOW_COMMENT }).forEach { it.treeParent.removeChild(it) }
         val functionText = copyNode.text.lines().filter { it.isNotBlank() }
         if (functionText.size > configuration.maxFunctionLength)

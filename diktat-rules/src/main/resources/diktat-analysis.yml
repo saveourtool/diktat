@@ -288,4 +288,4 @@
   enabled: true
   configuration:
     maxFunctionLength: "30" # max length of function
-    isIncludeHeader: "true" # count function's header
+    isIncludeHeader: "false" # count function's header
