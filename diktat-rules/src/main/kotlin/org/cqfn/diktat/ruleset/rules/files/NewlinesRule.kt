@@ -41,6 +41,7 @@ import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS
 import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.SECONDARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.SEMICOLON
+import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
@@ -309,24 +310,18 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
                     getAllLeafsWithSpecificType(SAFE_ACCESS, it)
                 }
             }
-            // fixme: we can't distinguish fully qualified names from chain of calls for now
             ?.filter {
-                if (it.elementType == DOT) {
-                    val dotExprs = it.treeParent.text.split(".")
-
-                    // should skip node's that are val params. For example: b.some(z.a()) -> skip z.a()
-                    if (it.treeParent.treeParent != null && it.treeParent.treeParent.elementType == VALUE_PARAMETER_LIST)
-                        return@filter false
-
-                    // if first callee is multiline lambda, then we let user decide how to line lambda
-                    if (dotExprs.size == 2 && isMultilineLambda(it.treeParent))
-                        return@filter false
-
-                    val firstCallee = 1
-                    return@filter if (dotExprs[firstCallee].contains('(') || dotExprs[firstCallee].contains('{')) {
-                        true
-                    } else dotExprs.last().contains('(') || dotExprs.last().contains('{')
-                }
+                // should skip node's that are val params. For example: b.some(z.a()) -> skip z.a()
+                if (it.treeParent.treeParent != null && it.treeParent.treeParent.elementType == VALUE_ARGUMENT)
+                    return@filter false
+                true
+            }
+            ?.dropWhile { !it.treeParent.textContains('(') && !it.treeParent.textContains('{') }
+            // fixme: we can't distinguish fully qualified names from chain of calls for now
+            ?.filterIndexed { index, it ->
+                // if first callee is multiline lambda, then we let user decide how to line lambda
+                if (index == 0 && isMultilineLambda(it.treeParent))
+                    return@filterIndexed false
                 true
             }
             ?.filter { it.getParentExpressions().count() > 1 }
@@ -337,11 +332,9 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
     private fun ASTNode.getParentExpressions() =
             parents().takeWhile { it.elementType in chainExpressionTypes && it.elementType != LAMBDA_ARGUMENT }
 
-    private fun isMultilineLambda(node: ASTNode): Boolean {
-        val leftBrace = node.findAllNodesWithSpecificType(LBRACE).firstOrNull()
+    private fun isMultilineLambda(node: ASTNode): Boolean =
+            node.findAllNodesWithSpecificType(LAMBDA_ARGUMENT).firstOrNull()?.text?.count { it == '\n' } ?: -1 > 0
 
-        return leftBrace != null && leftBrace.treeNext.isWhiteSpaceWithNewline()
-    }
 
     /**
      * This method should be called on OPERATION_REFERENCE in the middle of BINARY_EXPRESSION

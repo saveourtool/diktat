@@ -524,6 +524,12 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |        }
                     |        .foo()
                     |        .bar()
+                    |        
+                    |        allProperties?.filter {
+                    |           predicate(it)
+                    |        }
+                    |        .foo()
+                    |        .bar()
                     |}
                 """.trimMargin()
         )
@@ -538,9 +544,14 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |        allProperties.filter { predicate(it) }
                     |        .foo()
                     |        .bar()
+                    |        
+                    |        allProperties?.filter { predicate(it) }
+                    |        .foo()
+                    |        .bar()
                     |}
                 """.trimMargin(),
-                LintError(2, 22, ruleId,"${WRONG_NEWLINES.warnText()} should follow functional style at .", true)
+                LintError(2, 22, ruleId,"${WRONG_NEWLINES.warnText()} should follow functional style at .", true),
+                LintError(6, 22, ruleId,"${WRONG_NEWLINES.warnText()} should follow functional style at ?.", true)
         )
     }
 }
