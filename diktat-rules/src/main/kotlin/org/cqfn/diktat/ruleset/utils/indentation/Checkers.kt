@@ -138,7 +138,7 @@ internal class DotCallChecker(config: IndentationConfig) : CustomIndentationChec
             it.elementType in listOf(DOT, SAFE_ACCESS) && it.treeNext.elementType in listOf(CALL_EXPRESSION, REFERENCE_EXPRESSION)
         }?.let {
             return CheckResult.from(indentError.actual, (whiteSpace.parentIndent()
-                    ?: indentError.expected) + configuration.indentationSize, true)
+                    ?: indentError.expected) + (if (configuration.extendedIndentBeforeDot) 2 else 1) * configuration.indentationSize, true)
         }
         return null
     }

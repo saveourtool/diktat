@@ -33,6 +33,8 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
+import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
+import org.jetbrains.kotlin.com.intellij.util.containers.Stack
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
 import org.jetbrains.kotlin.utils.addToStdlib.firstNotNullResult
@@ -49,6 +51,7 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
         const val INDENT_SIZE = 4
         private val increasingTokens = listOf(LPAR, LBRACE, LBRACKET)
         private val decreasingTokens = listOf(RPAR, RBRACE, RBRACKET)
+        private val matchingTokens = increasingTokens.zip(decreasingTokens)
     }
 
     private lateinit var configuration: IndentationConfig
@@ -70,14 +73,14 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
                     ?: mapOf())
 
             customIndentationCheckers = listOf(
-                ::AssignmentOperatorChecker,
-                ::ConditionalsAndLoopsWithoutBracesChecker,
-                ::SuperTypeListChecker,
-                ::ValueParameterListChecker,
-                ::ExpressionIndentationChecker,
-                ::DotCallChecker,
-                ::KDocIndentationChecker,
-                ::CustomGettersAndSettersChecker
+                    ::AssignmentOperatorChecker,
+                    ::ConditionalsAndLoopsWithoutBracesChecker,
+                    ::SuperTypeListChecker,
+                    ::ValueParameterListChecker,
+                    ::ExpressionIndentationChecker,
+                    ::DotCallChecker,
+                    ::KDocIndentationChecker,
+                    ::CustomGettersAndSettersChecker
             ).map { it.invoke(configuration) }
 
             if (checkIsIndentedWithSpaces(node)) {
@@ -135,10 +138,10 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
         node.visit { astNode ->
             context.checkAndReset(astNode)
             if (astNode.elementType in increasingTokens) {
-                context.inc()
+                context.storeIncrementingToken(astNode.elementType)
             } else if (astNode.elementType in decreasingTokens && !astNode.treePrev.let { it.elementType == WHITE_SPACE && it.textContains('\n') }) {
                 // if decreasing token is after WHITE_SPACE with \n, indents are corrected in visitWhiteSpace method
-                context.dec()
+                context.dec(astNode.elementType)
             } else if (astNode.elementType == WHITE_SPACE && astNode.textContains('\n') && astNode.treeNext != null) {
                 // we check only WHITE_SPACE nodes with newlines, other than the last line in file; correctness of newlines should be checked elsewhere
                 visitWhiteSpace(astNode, context)
@@ -148,10 +151,12 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
 
     @Suppress("ForbiddenComment")
     private fun visitWhiteSpace(astNode: ASTNode, context: IndentContext) {
+        context.maybeIncrement()
+
         val whiteSpace = astNode.psi as PsiWhiteSpace
         if (astNode.treeNext.elementType in decreasingTokens) {
             // if newline is followed by closing token, it should already be indented less
-            context.dec()
+            context.dec(astNode.treeNext.elementType)
         }
 
         val indentError = IndentationError(context.indent(), astNode.text.lastIndent())
@@ -177,24 +182,42 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
     }
 
     /**
-     * Class that contains state needed to calculate indent and keep track of exceptional indents
+     * Class that contains state needed to calculate indent and keep track of exceptional indents.
+     * Tokens from [increasingTokens] are stored in stack [activeTokens]. When [WHITE_SPACE] with line break is encountered,
+     * if stack is not empty, indentation is increased. When token from [decreasingTokens] is encountered, it's counterpart is removed
+     * from stack. If there has been a [WHITE_SPACE] with line break between them, indentation is decreased.
      */
     private class IndentContext(private val config: IndentationConfig) {
         private var regularIndent = 0
         private val exceptionalIndents = mutableListOf<ExceptionalIndent>()
+        private val activeTokens = Stack<IElementType>()
 
-        fun inc() {
-            regularIndent += config.indentationSize
+        fun storeIncrementingToken(token: IElementType) = token
+                .also { require(it in increasingTokens) { "Only tokens that increase indentation should be passed to this method" } }
+                .let(activeTokens::push)
+
+        fun maybeIncrement() {
+            if (activeTokens.isNotEmpty() && activeTokens.peek() != WHITE_SPACE) {
+                regularIndent += config.indentationSize
+                activeTokens.push(WHITE_SPACE)
+            }
         }
 
-        fun dec() {
-            regularIndent -= config.indentationSize
+        fun dec(token: IElementType) {
+            if (activeTokens.peek() == WHITE_SPACE) {
+                while (activeTokens.peek() == WHITE_SPACE) activeTokens.pop()
+                regularIndent -= config.indentationSize
+            }
+            if (activeTokens.isNotEmpty() && activeTokens.peek() == matchingTokens.find { it.second == token }?.first) {
+                activeTokens.pop()
+            }
         }
 
         fun indent() = regularIndent + exceptionalIndents.sumBy { it.indent }
 
         fun addException(initiator: ASTNode, indent: Int, includeLastChild: Boolean) =
                 exceptionalIndents.add(ExceptionalIndent(initiator, indent, includeLastChild))
+
         fun checkAndReset(astNode: ASTNode) = exceptionalIndents.retainAll { it.isActive(astNode) }
 
         private data class ExceptionalIndent(val initiator: ASTNode, val indent: Int, val includeLastChild: Boolean = true) {

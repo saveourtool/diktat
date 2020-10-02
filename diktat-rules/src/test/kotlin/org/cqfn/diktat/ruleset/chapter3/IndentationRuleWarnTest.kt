@@ -1,13 +1,12 @@
 package org.cqfn.diktat.ruleset.chapter3
 
 import com.pinterest.ktlint.core.LintError
-import org.cqfn.diktat.common.config.rules.RulesConfig
 import generated.WarningNames
+import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.files.IndentationRule
 import org.cqfn.diktat.util.LintTestBase
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
@@ -19,6 +18,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                             "extendedIndentOfParameters" to "true",
                             "alignedParameters" to "true",
                             "extendedIndentAfterOperators" to "true",
+                            "extendedIndentBeforeDot" to "false",
                             "indentationSize" to "4"
                     )
             )
@@ -210,12 +210,12 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                 """
                     |fun foo() {
                     |    Integer
-                    |        .valueOf(2).also {
-                    |            println(it)
-                    |        }
-                    |        ?.also {
-                    |            println("Also with safe access")
-                    |        }
+                    |            .valueOf(2).also {
+                    |                println(it)
+                    |            }
+                    |            ?.also {
+                    |                println("Also with safe access")
+                    |            }
                     |}
                     |
                 """.trimMargin()
@@ -274,13 +274,18 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
 
     @Test
     @Tag(WarningNames.WRONG_INDENTATION)
-    @Disabled("todo")
     fun `opening braces should not increase indent when placed on the same line`() {
         lintMethod(
                 """
                     |fun foo() {
                     |    consume(Example(
-                    |            t1, t2, t3)
+                    |            t1, t2, t3
+                    |    ))
+                    |
+                    |    bar(baz(
+                    |            1,
+                    |            2
+                    |    )
                     |    )
                     |}
                     |
@@ -346,7 +351,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |                elem.qux()
                     |            },
                     |            param3 = x
-                    |                .y()
+                    |                    .y()
                     |    )
                     |}
                     |
