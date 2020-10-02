@@ -114,8 +114,10 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
     private fun checkNewlineAtEnd(node: ASTNode) {
         if (configuration.newlineAtEnd) {
             val lastChild = node.lastChildNode
-            if (lastChild.elementType != WHITE_SPACE || lastChild.text.count { it == '\n' } != 1) {
-                WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "no newline at the end of file $fileName", node.startOffset + node.textLength, node) {
+            val numBlankLinesAfter = lastChild.text.count { it == '\n' }
+            if (lastChild.elementType != WHITE_SPACE || numBlankLinesAfter != 1) {
+                val warnText = if (numBlankLinesAfter == 0) "no newline" else "too many blank lines"
+                WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "$warnText at the end of file $fileName", node.startOffset + node.textLength, node) {
                     if (lastChild.elementType != WHITE_SPACE) {
                         node.addChild(PsiWhiteSpaceImpl("\n"), null)
                     } else {
