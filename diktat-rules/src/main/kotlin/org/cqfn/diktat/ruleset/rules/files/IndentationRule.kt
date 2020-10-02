@@ -2,6 +2,7 @@ package org.cqfn.diktat.ruleset.rules.files
 
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.ELSE
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.LBRACKET
@@ -9,6 +10,7 @@ import com.pinterest.ktlint.core.ast.ElementType.LPAR
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.RBRACKET
 import com.pinterest.ktlint.core.ast.ElementType.RPAR
+import com.pinterest.ktlint.core.ast.ElementType.THEN
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.visit
 import org.cqfn.diktat.common.config.rules.RulesConfig
@@ -35,7 +37,11 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.com.intellij.util.containers.Stack
+import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
+import org.jetbrains.kotlin.psi.KtIfExpression
+import org.jetbrains.kotlin.psi.KtLoopExpression
 import org.jetbrains.kotlin.psi.psiUtil.parents
+import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
 import org.jetbrains.kotlin.utils.addToStdlib.firstNotNullResult
 
@@ -168,8 +174,16 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
         val expectedIndent = checkResult?.expectedIndent ?: indentError.expected
         if (checkResult?.adjustNext == true) {
             val exceptionInitiatorNode = astNode.treeParent.let { parent ->
-                // fixme: a hack to keep extended indent for the whole chain of dot call expressions
-                if (parent.elementType != DOT_QUALIFIED_EXPRESSION) parent else astNode.parents().takeWhile { it.elementType == DOT_QUALIFIED_EXPRESSION }.last()
+                when (parent.psi) {
+                    // fixme: custom logic for determining exceptional indent initiator, should be moved elsewhere
+                    is KtDotQualifiedExpression -> {
+                        // get the topmost expression to keep extended indent for the whole chain of dot call expressions
+                        astNode.parents().takeWhile { it.elementType == DOT_QUALIFIED_EXPRESSION }.last()
+                    }
+                    is KtIfExpression -> parent.findChildByType(THEN) ?: parent.findChildByType(ELSE) ?: parent
+                    is KtLoopExpression -> (parent.psi as KtLoopExpression).body?.node ?: parent
+                    else -> parent
+                }
             }
             context.addException(exceptionInitiatorNode, expectedIndent - indentError.expected, checkResult.includeLastChild)
         }
@@ -225,7 +239,7 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
              * Checks whether this exceptional indent is still active. This is a hypotheses that exceptional indentation will end
              * outside of node where it appeared, e.g. when an expression after assignment operator is over.
              */
-            fun isActive(currentNode: ASTNode): Boolean = currentNode.parents().contains(initiator) &&
+            fun isActive(currentNode: ASTNode): Boolean = currentNode.psi.parentsWithSelf.any { it.node == initiator } &&
                     (includeLastChild || currentNode.treeNext != initiator.lastChildNode)
         }
     }

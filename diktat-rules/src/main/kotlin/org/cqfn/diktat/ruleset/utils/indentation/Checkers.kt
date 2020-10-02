@@ -158,8 +158,7 @@ internal class ConditionalsAndLoopsWithoutBracesChecker(config: IndentationConfi
         }
                 .takeIf { it }
                 ?.let {
-                    CheckResult.from(indentError.actual, (whiteSpace.parentIndent()
-                            ?: indentError.expected) + configuration.indentationSize, false)
+                    CheckResult.from(indentError.actual, indentError.expected + configuration.indentationSize, true)
                 }
     }
 }

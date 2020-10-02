@@ -172,7 +172,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
         lintMethod(
                 """
                     |fun <T> foo(list: List<T>) {
-                    |    val a = list.filter { 
+                    |    val a = list.filter {
                     |        predicate(it)
                     |    }
                     |    
@@ -356,6 +356,39 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |}
                     |
                 """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
+    fun `regression - nested blocks inside loops and conditionals without braces should be properly indented`() {
+        lintMethod(
+                """
+                    |fun foo() {
+                    |    if (condition)
+                    |        list.filter {
+                    |            bar()
+                    |        }
+                    |            .call(
+                    |                param1,
+                    |                param2
+                    |            )
+                    |    else
+                    |        list
+                    |            .filter {
+                    |                baz()
+                    |            }
+                    |}
+                    |
+                """.trimMargin(),
+                rulesConfigList = listOf(
+                        RulesConfig(WRONG_INDENTATION.name, true,
+                                mapOf(
+                                        "extendedIndentOfParameters" to "false",
+                                        "extendedIndentBeforeDot" to "false"
+                                )
+                        )
+                )
         )
     }
 
