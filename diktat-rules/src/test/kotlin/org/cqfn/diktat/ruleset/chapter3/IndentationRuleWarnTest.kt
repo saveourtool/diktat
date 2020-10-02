@@ -287,6 +287,12 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |            2
                     |    )
                     |    )
+                    |
+                    |    bar(baz(
+                    |            1,
+                    |            2),
+                    |        3  // fixme: should it be indented by 8?
+                    |    )
                     |}
                     |
                 """.trimMargin()
