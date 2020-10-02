@@ -1411,7 +1411,7 @@ if (abs(foo - bar) > 1e-6f) {
 }
 ```
 
-### <a name="r4.1.3"></a> Rule 4.1.3 Try to use 'val' instead of 'var' for variable declaration
+### <a name="r4.1.3"></a> Rule 4.1.3 Try to use 'val' instead of 'var' for variable declaration [SAY_NO_TO_VAR]
 
 Variables with `val` modifier - are immutable (read-only). Usage of such variables instead of `var` variables increases robustness and readability of code,
 because `var` variables can be reassigned several times in the business logic. Of course, in some scenarios with loops or accumulators only `var`s can be used and are allowed.

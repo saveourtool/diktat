@@ -17,7 +17,9 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
             RulesConfig(WRONG_INDENTATION.name, true,
                     mapOf(
                             "extendedIndentOfParameters" to "true",
-                            "alignedParameters" to "true"
+                            "alignedParameters" to "true",
+                            "extendedIndentAfterOperators" to "true",
+                            "indentationSize" to "4"
                     )
             )
     )
@@ -58,7 +60,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |class Example {
                     |    private val foo = 0
                     |    private val fuu =
-                    |        0
+                    |            0
                     |    
                     |    fun bar() {
                     |        if (foo > 0) {
@@ -175,9 +177,9 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |    }
                     |    
                     |    val b =
-                    |        list.filter { 
-                    |            predicate(it)
-                    |        }
+                    |            list.filter { 
+                    |                predicate(it)
+                    |            }
                     |}
                     |
                 """.trimMargin()

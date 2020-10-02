@@ -375,7 +375,8 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
                 |   TestProcessingFactory(TestArgumentsReader(args, properties, javaClass.classLoader)).processTests()
                 |  }
                 |}
-            """.trimMargin()
+            """.trimMargin(),
+                rulesConfigList = rulesConfigList
         )
     }
 
@@ -399,7 +400,8 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
                 |
                 |class Some {}
             """.trimMargin(),
-                LintError(1,1, ruleId, "${HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warnText()} $testFileName")
+                LintError(1,1, ruleId, "${HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warnText()} $testFileName"),
+                rulesConfigList = rulesConfigList
         )
     }
 }
