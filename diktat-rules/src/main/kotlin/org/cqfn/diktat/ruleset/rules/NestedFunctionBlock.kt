@@ -20,6 +20,9 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.psi.KtClass
 
+/**
+ * Rule 5.1.2 Nested blokcs
+ */
 class NestedFunctionBlock(private val configRules: List<RulesConfig>) : Rule("nested-block") {
 
     companion object {
@@ -39,32 +42,33 @@ class NestedFunctionBlock(private val configRules: List<RulesConfig>) : Rule("ne
                 configRules.getRuleConfig(NESTED_BLOCK)?.configuration ?: mapOf()
         )
 
-        if (node.elementType == FUN)
+        if (node.elementType == FUN) {
             checkFunForNestedBlocks(node, configuration.maxNestedBlockQuantity)
+        }
     }
 
     private fun checkFunForNestedBlocks(node: ASTNode, maxNestedBlockCount: Long) {
-        val classParentNode = node.parent({it.elementType == CLASS})
+        val classParentNode = node.parent({ it.elementType == CLASS })
         if (classParentNode != null && (classParentNode.psi as KtClass).isLocal) return
         node.getChildren(TokenSet.create(BLOCK)).forEach {
-            dfsBlock(it, node,1, maxNestedBlockCount)
+            dfsBlock(it, node, 1, maxNestedBlockCount)
         }
     }
 
     @Suppress("UnsafeCallOnNullableType")
-    private fun dfsBlock(node: ASTNode, initialNode: ASTNode,  blockCount: Int, maxNestedBlockCount: Long) {
+    private fun dfsBlock(node: ASTNode, initialNode: ASTNode, blockCount: Int, maxNestedBlockCount: Long) {
         if (blockCount > maxNestedBlockCount) {
             NESTED_BLOCK.warn(configRules, emitWarn, isFixMode, initialNode.findChildByType(IDENTIFIER)!!.text,
                     initialNode.startOffset, initialNode)
             return
         } else {
             findBlocks(node).forEach {
-                dfsBlock(it, initialNode,blockCount + 1, maxNestedBlockCount)
+                dfsBlock(it, initialNode, blockCount + 1, maxNestedBlockCount)
             }
         }
     }
 
-    @Suppress("NestedBlockDepth ")
+    @Suppress("NestedBlockDepth")
     private fun findBlocks(node: ASTNode): List<ASTNode> {
         val result = mutableListOf<ASTNode>()
         node.getChildren(null).forEach {
