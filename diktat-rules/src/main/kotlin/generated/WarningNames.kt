@@ -165,4 +165,6 @@ object WarningNames {
     const val STRING_TEMPLATE_QUOTES: String = "STRING_TEMPLATE_QUOTES"
 
     const val FLOAT_IN_ACCURATE_CALCULATIONS: String = "FLOAT_IN_ACCURATE_CALCULATIONS"
+
+    const val NESTED_BLOCK: String = "NESTED_BLOCK"
 }

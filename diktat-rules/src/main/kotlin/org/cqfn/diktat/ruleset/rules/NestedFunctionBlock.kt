@@ -3,6 +3,7 @@ package org.cqfn.diktat.ruleset.rules
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.BODY
+import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.ELSE
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
@@ -17,6 +18,7 @@ import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.NESTED_BLOCK
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.psi.KtClass
 
 class NestedFunctionBlock(private val configRules: List<RulesConfig>) : Rule("nested-block") {
 
@@ -38,23 +40,26 @@ class NestedFunctionBlock(private val configRules: List<RulesConfig>) : Rule("ne
         )
 
         if (node.elementType == FUN)
-            checkNestedBlock(node, configuration.maxNestedBlockQuantity)
+            checkFunForNestedBlocks(node, configuration.maxNestedBlockQuantity)
     }
 
-    private fun checkNestedBlock(node: ASTNode, maxNestedBlockCount: Long) {
+    private fun checkFunForNestedBlocks(node: ASTNode, maxNestedBlockCount: Long) {
+        val classParentNode = node.parent({it.elementType == CLASS})
+        if (classParentNode != null && (classParentNode.psi as KtClass).isLocal) return
         node.getChildren(TokenSet.create(BLOCK)).forEach {
-            dfsBlock(it, 1, maxNestedBlockCount)
+            dfsBlock(it, node,1, maxNestedBlockCount)
         }
     }
 
-    private fun dfsBlock(node: ASTNode, blockCount: Int, maxNestedBlockCount: Long) {
+    @Suppress("UnsafeCallOnNullableType")
+    private fun dfsBlock(node: ASTNode, initialNode: ASTNode,  blockCount: Int, maxNestedBlockCount: Long) {
         if (blockCount > maxNestedBlockCount) {
-            val functionNode = node.parent({ it.elementType == FUN })!!.findChildByType(IDENTIFIER)!!
-            NESTED_BLOCK.warn(configRules, emitWarn, isFixMode, functionNode.text, node.startOffset, functionNode)
+            NESTED_BLOCK.warn(configRules, emitWarn, isFixMode, initialNode.findChildByType(IDENTIFIER)!!.text,
+                    initialNode.startOffset, initialNode)
             return
         } else {
             findBlocks(node).forEach {
-                dfsBlock(it, blockCount + 1, maxNestedBlockCount)
+                dfsBlock(it, initialNode,blockCount + 1, maxNestedBlockCount)
             }
         }
     }
@@ -66,6 +71,7 @@ class NestedFunctionBlock(private val configRules: List<RulesConfig>) : Rule("ne
                 IF -> Pair(it.findChildByType(THEN)?.findChildByType(BLOCK), it.findChildByType(ELSE)?.findChildByType(BLOCK))
                 WHEN -> Pair(it, null)
                 WHEN_ENTRY -> Pair(it.findChildByType(BLOCK), null)
+                FUN -> Pair(it.findChildByType(BLOCK), null)
                 else -> Pair(it.findChildByType(BODY)?.findChildByType(BLOCK), null)
             }.let { pair ->
                 pair.let {

@@ -48,6 +48,7 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
                 ::CommentsFormatting,
                 ::ConsecutiveSpacesRule,
                 ::LongNumericalValuesSeparatedRule,
+                ::NestedFunctionBlock,
                 ::MultipleModifiersSequence,
                 ::AnnotationNewLineRule,
                 ::HeaderCommentRule,
