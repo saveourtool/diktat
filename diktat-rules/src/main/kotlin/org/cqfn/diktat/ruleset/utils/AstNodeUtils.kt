@@ -259,11 +259,17 @@ fun ASTNode.numNewLines() = text.count { it == '\n' }
 /**
  * This method performs tree traversal and returns all nodes with specific element type
  */
-fun ASTNode.findAllNodesWithSpecificType(elementType: IElementType, withSelf: Boolean = true): List<ASTNode> {
-    val initialAcc = if (this.elementType == elementType && withSelf) mutableListOf(this) else mutableListOf()
-    return initialAcc + this.getChildren(null).flatMap {
-        it.findAllNodesWithSpecificType(elementType)
-    }
+fun ASTNode.findAllNodesWithSpecificType(elementType: IElementType, withSelf: Boolean = true) =
+        findAllNodesWithCondition({it.elementType == elementType}, withSelf)
+
+/**
+ * This method performs tree traversal and returns all nodes which satisfy the condition
+ */
+fun ASTNode.findAllNodesWithCondition(condition: (ASTNode) -> Boolean, withSelf: Boolean = true): List<ASTNode> {
+    val result = if (condition(this) && withSelf) mutableListOf(this) else mutableListOf()
+   return result + this.getChildren(null).flatMap {
+       it.findAllNodesWithCondition(condition)
+   }
 }
 
 /**
@@ -505,4 +511,18 @@ data class ReplacementResult(val oldNodes: List<ASTNode>, val newNodes: List<AST
     init {
         require(oldNodes.size == newNodes.size)
     }
+}
+
+
+/**
+ * checks that this one node is placed after the other node in code (by comparing lines of code where nodes start)
+ */
+fun ASTNode.isGoingAfter(otherNode: ASTNode): Boolean {
+    val thisLineNumber = this.lineNumber()
+    val otherLineNumber = otherNode.lineNumber()
+
+    require(thisLineNumber != null) { "Node ${this.text} should have a line number" }
+    require(otherLineNumber != null) { "Node ${otherNode.text} should have a line number" }
+
+    return (thisLineNumber > otherLineNumber)
 }

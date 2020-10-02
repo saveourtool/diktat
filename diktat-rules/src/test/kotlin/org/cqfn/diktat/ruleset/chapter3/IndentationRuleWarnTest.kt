@@ -17,7 +17,9 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
             RulesConfig(WRONG_INDENTATION.name, true,
                     mapOf(
                             "extendedIndentOfParameters" to "true",
-                            "alignedParameters" to "true"
+                            "alignedParameters" to "true",
+                            "extendedIndentAfterOperators" to "true",
+                            "indentationSize" to "4"
                     )
             )
     )
@@ -58,7 +60,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |class Example {
                     |    private val foo = 0
                     |    private val fuu =
-                    |        0
+                    |            0
                     |    
                     |    fun bar() {
                     |        if (foo > 0) {
@@ -175,9 +177,9 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |    }
                     |    
                     |    val b =
-                    |        list.filter { 
-                    |            predicate(it)
-                    |        }
+                    |            list.filter { 
+                    |                predicate(it)
+                    |            }
                     |}
                     |
                 """.trimMargin()
@@ -283,6 +285,49 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |}
                     |
                 """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
+    fun `custom getters and setters should increase indentation - positive example`() {
+        lintMethod(
+                """
+                    |class Example {
+                    |    private val foo
+                    |        get() = 0
+                    |        
+                    |    private var backing = 0
+                    |    
+                    |    var bar
+                    |        get() = backing
+                    |        set(value) { backing = value }
+                    |}
+                    |
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
+    fun `custom getters and setters should increase indentation`() {
+        lintMethod(
+                """
+                    |class Example {
+                    |    private val foo
+                    |            get() = 0
+                    |        
+                    |    private var backing = 0
+                    |    
+                    |    var bar
+                    |    get() = backing
+                    |    set(value) { backing = value }
+                    |}
+                    |
+                """.trimMargin(),
+                LintError(3, 1, ruleId, warnText(8, 12), true),
+                LintError(8, 1, ruleId, warnText(8, 4), true),
+                LintError(9, 1, ruleId, warnText(8, 4), true)
         )
     }
 

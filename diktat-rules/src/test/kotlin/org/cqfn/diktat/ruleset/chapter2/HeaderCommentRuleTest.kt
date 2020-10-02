@@ -357,4 +357,51 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
                 rulesConfigList = listOf()
         )
     }
+
+
+    @Test
+    @Tag(WarningNames.HEADER_NOT_BEFORE_PACKAGE)
+    fun `header KDoc object check`() {
+        lintMethod(
+                """
+                |package org.cqfn.diktat.example
+                |
+                |import org.cqfn.diktat.example.Foo
+                |
+                |object TestEntry {
+                |@JvmStatic
+                |fun main(args: Array<String>) {
+                |   val properties = TestFrameworkProperties("org/cqfn/diktat/test/framework/test_framework.properties")
+                |   TestProcessingFactory(TestArgumentsReader(args, properties, javaClass.classLoader)).processTests()
+                |  }
+                |}
+            """.trimMargin(),
+                rulesConfigList = rulesConfigList
+        )
+    }
+
+
+    @Test
+    @Tag(WarningNames.HEADER_NOT_BEFORE_PACKAGE)
+    fun `header KDoc object and class check`() {
+        lintMethod(
+                """
+                |package org.cqfn.diktat.example
+                |
+                |import org.cqfn.diktat.example.Foo
+                |
+                |object TestEntry {
+                |@JvmStatic
+                |fun main(args: Array<String>) {
+                |   val properties = TestFrameworkProperties("org/cqfn/diktat/test/framework/test_framework.properties")
+                |   TestProcessingFactory(TestArgumentsReader(args, properties, javaClass.classLoader)).processTests()
+                |  }
+                |}
+                |
+                |class Some {}
+            """.trimMargin(),
+                LintError(1,1, ruleId, "${HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warnText()} $testFileName"),
+                rulesConfigList = rulesConfigList
+        )
+    }
 }

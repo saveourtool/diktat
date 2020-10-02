@@ -1,13 +1,14 @@
 /*
- * Copyright (c) Huawei Technologies Co., Ltd. 2012-2020. All rights reserved.
+ * Copyright (c) Your Company Name Here. 2010-2020
  */
 
-package org.cqfn.diktat.test.smoke
+package your.name.here
 
 class Example {
-    @get:JvmName ("getIsValid")
+    @get:JvmName("getIsValid")
     val isValid = true
-    val foo: Int =1
+    val foo: Int = 1
+
     /**
      * @param x
      * @param y
@@ -28,9 +29,9 @@ class Example {
      * @return
      */
     fun String.splitPathToDirs(): List<String> =
-        this
-            .replace("\\", "/")
-            .replace("//", "/")
-            .split("/")
+            this
+                .replace("\\", "/")
+                .replace("//", "/")
+                .split("/")
 }
 

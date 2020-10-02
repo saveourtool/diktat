@@ -5,7 +5,7 @@ class Foo :
     Comparable<Any>,
     Appendable {
     val test =
-        12
+            12
 
     @Deprecated("Foo")
     fun foo1(
@@ -52,14 +52,14 @@ class Foo :
     }
 
     private val f =
-        { a: Int -> a * 2 }
+            { a: Int -> a * 2 }
 
     fun longMethod(
             @Named("param1") param1: Int,
             param2: String
     ) {
         @Deprecated val foo =
-            1
+                1
     }
 
     fun multilineMethod(
@@ -71,8 +71,8 @@ class Foo :
             .trim()
             .length
         val barLen =
-            bar?.length ?: x
-            ?: -1
+                bar?.length ?: x
+                ?: -1
         if (foo.length > 0 &&
                 barLen > 0
         ) {
@@ -89,5 +89,5 @@ enum class Enumeration {
 }
 
 fun veryLongExpressionBodyMethod() =
-    "abc"
+        "abc"
 
