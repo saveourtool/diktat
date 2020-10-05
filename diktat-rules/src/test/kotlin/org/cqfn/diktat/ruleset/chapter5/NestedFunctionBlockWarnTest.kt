@@ -2,6 +2,7 @@ package org.cqfn.diktat.ruleset.chapter5
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
+import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings.NESTED_BLOCK
 import org.cqfn.diktat.ruleset.rules.NestedFunctionBlock
@@ -12,6 +13,10 @@ import org.junit.jupiter.api.Test
 class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
 
     private val ruleId = "$DIKTAT_RULE_SET_ID:nested-block"
+
+    private val rulesConfigList = listOf(
+            RulesConfig(NESTED_BLOCK.name, true, mapOf("maxNestedBlockQuantity" to "2"))
+    )
 
     @Test
     @Tag(WarningNames.NESTED_BLOCK)
@@ -110,7 +115,7 @@ class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
                     |           if (true) {
                     |               if (false) {
                     |                   while(true) {
-                    |                       if(false){
+                    |                       if(false) {
                     |                           println("ne")
                     |                       }
                     |                   }
@@ -121,7 +126,8 @@ class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
                     |       }
                     |   }
                     |}
-                """.trimMargin()
+                """.trimMargin(),
+                LintError(2,4, ruleId, "${NESTED_BLOCK.warnText()} A", false)
         )
     }
 
@@ -149,6 +155,33 @@ class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
                         return result
                     }
                 """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.NESTED_BLOCK)
+    fun `check with anonymous class`() {
+        lintMethod(
+                """
+                    
+                    val q = list.filter {it == 0}
+                    
+                    val keyListener = KeyAdapter { keyEvent ->
+                        if (true) {
+                        } else if (false){
+                            when(x){
+                                10 -> println(x)
+                            }
+                        }
+                    }
+                    
+                    val keyListener = object : KeyAdapter() { 
+                        override fun keyPressed(keyEvent : KeyEvent) {
+                        }
+                    } 
+                """.trimMargin(),
+                LintError(4,50, ruleId, "${NESTED_BLOCK.warnText()} { keyEvent ->...", false),
+                rulesConfigList = rulesConfigList
         )
     }
 }

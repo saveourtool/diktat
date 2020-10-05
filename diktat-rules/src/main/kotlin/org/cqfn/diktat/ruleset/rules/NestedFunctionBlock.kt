@@ -4,10 +4,13 @@ import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.BODY
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
+import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.ELSE
 import com.pinterest.ktlint.core.ast.ElementType.FUN
+import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_LITERAL
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.IF
+import com.pinterest.ktlint.core.ast.ElementType.OBJECT_DECLARATION
 import com.pinterest.ktlint.core.ast.ElementType.THEN
 import com.pinterest.ktlint.core.ast.ElementType.WHEN
 import com.pinterest.ktlint.core.ast.ElementType.WHEN_ENTRY
@@ -29,6 +32,10 @@ class NestedFunctionBlock(private val configRules: List<RulesConfig>) : Rule("ne
         private const val MAX_NESTED_BLOCK_COUNT = 4L
     }
 
+    val configuration: NestedBlockConfiguration by lazy {
+        NestedBlockConfiguration(configRules.getRuleConfig(NESTED_BLOCK)?.configuration ?: mapOf())
+    }
+
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
 
@@ -38,16 +45,20 @@ class NestedFunctionBlock(private val configRules: List<RulesConfig>) : Rule("ne
         emitWarn = emit
         isFixMode = autoCorrect
 
-        val configuration = NestedBlockConfiguration(
-                configRules.getRuleConfig(NESTED_BLOCK)?.configuration ?: mapOf()
-        )
-
-        if (node.elementType == FUN) {
-            checkFunForNestedBlocks(node, configuration.maxNestedBlockQuantity)
+        when (node.elementType) {
+            FUN, FUNCTION_LITERAL -> handleFunForNestedBlocks(node, configuration.maxNestedBlockQuantity)
+            CLASS, OBJECT_DECLARATION -> handleLocalCLassForNestedBlocks(node, configuration.maxNestedBlockQuantity)
         }
     }
 
-    private fun checkFunForNestedBlocks(node: ASTNode, maxNestedBlockCount: Long) {
+    private fun handleLocalCLassForNestedBlocks(node: ASTNode, maxNestedBlockCount: Long) {
+        if (node.elementType == CLASS && !(node.psi as KtClass).isLocal) return
+        node.getChildren(TokenSet.create(CLASS_BODY)).forEach {
+            dfsBlock(it, node, 1, maxNestedBlockCount)
+        }
+    }
+
+    private fun handleFunForNestedBlocks(node: ASTNode, maxNestedBlockCount: Long) {
         val classParentNode = node.parent({ it.elementType == CLASS })
         if (classParentNode != null && (classParentNode.psi as KtClass).isLocal) return
         node.getChildren(TokenSet.create(BLOCK)).forEach {
@@ -58,7 +69,8 @@ class NestedFunctionBlock(private val configRules: List<RulesConfig>) : Rule("ne
     @Suppress("UnsafeCallOnNullableType")
     private fun dfsBlock(node: ASTNode, initialNode: ASTNode, blockCount: Int, maxNestedBlockCount: Long) {
         if (blockCount > maxNestedBlockCount) {
-            NESTED_BLOCK.warn(configRules, emitWarn, isFixMode, initialNode.findChildByType(IDENTIFIER)!!.text,
+            NESTED_BLOCK.warn(configRules, emitWarn, isFixMode, initialNode.findChildByType(IDENTIFIER)?.text
+                    ?: initialNode.text,
                     initialNode.startOffset, initialNode)
             return
         } else {
@@ -68,21 +80,21 @@ class NestedFunctionBlock(private val configRules: List<RulesConfig>) : Rule("ne
         }
     }
 
-    @Suppress("NestedBlockDepth")
     private fun findBlocks(node: ASTNode): List<ASTNode> {
         val result = mutableListOf<ASTNode>()
-        node.getChildren(null).forEach {
-            when (it.elementType) {
-                IF -> Pair(it.findChildByType(THEN)?.findChildByType(BLOCK), it.findChildByType(ELSE)?.findChildByType(BLOCK))
-                WHEN -> Pair(it, null)
-                WHEN_ENTRY -> Pair(it.findChildByType(BLOCK), null)
-                FUN -> Pair(it.findChildByType(BLOCK), null)
-                else -> Pair(it.findChildByType(BODY)?.findChildByType(BLOCK), null)
+        node.getChildren(null).forEach { childNode ->
+            when (childNode.elementType) {
+                IF -> Pair(childNode.findChildByType(THEN)?.findChildByType(BLOCK),
+                        (childNode.findChildByType(ELSE)?.findChildByType(BLOCK)
+                                ?: if(childNode.findChildByType(ELSE)?.findChildByType(IF) != null)
+                                    childNode.findChildByType(ELSE) else null))
+                WHEN -> Pair(childNode, null)
+                WHEN_ENTRY -> Pair(childNode.findChildByType(BLOCK), null)
+                FUN -> Pair(childNode.findChildByType(BLOCK), null)
+                else -> Pair(childNode.findChildByType(BODY)?.findChildByType(BLOCK), null)
             }.let { pair ->
-                pair.let {
-                    pair.first?.let { it1 -> result.add(it1) }
-                    pair.second?.let { it2 -> result.add(it2) }
-                }
+                pair.first?.let { result.add(it) }
+                pair.second?.let { result.add(it) }
             }
         }
         return result

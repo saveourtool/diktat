@@ -108,7 +108,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
 
     // ======== chapter 5 ========
     TOO_LONG_FUNCTION(false, "function is too long: split it or make more primitive"),
-    NESTED_BLOCK(false, "function has many nested block, simplified it"),
+    NESTED_BLOCK(false, "function has too many nested blocks and should be simplified"),
     ;
 
     /**
