@@ -57,6 +57,7 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
                 ::LineLength,
                 ::TypeAliasRule,
                 ::FunctionLength,
+                ::LambdaParameterOrder,
                 ::BlankLinesRule,
                 ::NullableTypeRule,
                 ::WhiteSpaceRule,
