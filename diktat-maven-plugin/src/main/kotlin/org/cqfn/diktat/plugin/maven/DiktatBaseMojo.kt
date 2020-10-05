@@ -122,8 +122,8 @@ abstract class DiktatBaseMojo : AbstractMojo() {
                     runAction(params)
                     reporter.after(file.path)
                 } catch (e: RuleExecutionException) {
-                    log.error("Received exception", e)
-                    throw MojoExecutionException("Error during check", e)
+                    log.error("Unhandled exception during rule execution: ", e)
+                    throw MojoExecutionException("Unhandled exception during rule execution", e)
                 }
             }
     }
