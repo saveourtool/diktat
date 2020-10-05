@@ -156,6 +156,8 @@ object WarningNames {
 
     const val LOCAL_VARIABLE_EARLY_DECLARATION: String = "LOCAL_VARIABLE_EARLY_DECLARATION"
 
+    const val NULLABLE_PROPERTY_TYPE: String = "NULLABLE_PROPERTY_TYPE"
+
     const val TYPE_ALIAS: String = "TYPE_ALIAS"
 
     const val SAY_NO_TO_VAR: String = "SAY_NO_TO_VAR"
@@ -167,4 +169,6 @@ object WarningNames {
     const val STRING_TEMPLATE_QUOTES: String = "STRING_TEMPLATE_QUOTES"
 
     const val FLOAT_IN_ACCURATE_CALCULATIONS: String = "FLOAT_IN_ACCURATE_CALCULATIONS"
+
+    const val TOO_LONG_FUNCTION: String = "TOO_LONG_FUNCTION"
 }
