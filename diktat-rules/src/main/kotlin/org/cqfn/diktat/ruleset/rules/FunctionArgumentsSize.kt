@@ -34,6 +34,7 @@ class FunctionArgumentsSize(private val configRules: List<RulesConfig>) : Rule("
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkFun(node: ASTNode, maxParameterSize: Long) {
         val parameterList = (node.psi as KtFunction).valueParameters.size
         if (parameterList > maxParameterSize){
