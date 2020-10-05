@@ -109,6 +109,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
 
     // ======== chapter 5 ========
     TOO_LONG_FUNCTION(false, "function is too long: split it or make more primitive"),
+    AVOID_NESTED_FUNCTIONS(true, "try to avoid using nested functions"),
     ;
 
     /**
