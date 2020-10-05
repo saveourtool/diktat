@@ -97,6 +97,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     LOCAL_VARIABLE_EARLY_DECLARATION(false, "local variables should be declared close to the line where they are first used"),
 
     // ======== chapter 4 ========
+    NULLABLE_PROPERTY_TYPE(true, "try to avoid use of nullable types"),
     TYPE_ALIAS(false, "variable's type is too complex and should be replaced with typealias"),
     SMART_CAST_NEEDED(true, "You can omit casting"),
     SAY_NO_TO_VAR(false, "Usage of a mutable variables with [var] modifier - is a bad style, use [val] instead"),
@@ -105,6 +106,10 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     STRING_TEMPLATE_QUOTES(true, "string template has redundant quotes"),
     // FixMe: change float literal to BigDecimal? Or kotlin equivalent?
     FLOAT_IN_ACCURATE_CALCULATIONS(false, "floating-point values shouldn't be used in accurate calculations"),
+
+
+    // ======== chapter 5 ========
+    TOO_LONG_FUNCTION(false, "function is too long: split it or make more primitive"),
     ;
 
     /**
