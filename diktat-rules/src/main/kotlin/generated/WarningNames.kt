@@ -171,4 +171,6 @@ object WarningNames {
     const val FLOAT_IN_ACCURATE_CALCULATIONS: String = "FLOAT_IN_ACCURATE_CALCULATIONS"
 
     const val TOO_LONG_FUNCTION: String = "TOO_LONG_FUNCTION"
+
+    const val AVOID_NESTED_FUNCTIONS: String = "AVOID_NESTED_FUNCTIONS"
 }
