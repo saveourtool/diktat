@@ -23,7 +23,6 @@ import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.IF
 import com.pinterest.ktlint.core.ast.ElementType.IMPORT_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_ARGUMENT
-import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.LPAR
 import com.pinterest.ktlint.core.ast.ElementType.MINUS
 import com.pinterest.ktlint.core.ast.ElementType.MINUSEQ
@@ -45,7 +44,7 @@ import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
+import com.pinterest.ktlint.core.ast.isLeaf
 import com.pinterest.ktlint.core.ast.nextCodeSibling
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevCodeSibling
@@ -56,7 +55,6 @@ import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
 import org.cqfn.diktat.ruleset.utils.emptyBlockList
 import org.cqfn.diktat.ruleset.utils.extractLineOfText
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
-import org.cqfn.diktat.ruleset.utils.getAllLeafsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.isBeginByNewline
 import org.cqfn.diktat.ruleset.utils.isEol
 import org.cqfn.diktat.ruleset.utils.isFollowedByNewline
@@ -65,6 +63,7 @@ import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
+import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.psi.psiUtil.children
 import org.jetbrains.kotlin.psi.psiUtil.parents
@@ -155,6 +154,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
                 val isSingleLineIfElse = parent({ it.elementType == IF }, true)?.isSingleLineIfElse() ?: false
                 // to follow functional style these operators should be started by newline
                 (isFollowedByNewline() || !isBeginByNewline()) && !isSingleLineIfElse
+                        && (!isFirstCall() || !isMultilineLambda(treeParent))
             } else {
                 // unless statement is simple and on single line, these operators cannot have newline after
                 isFollowedByNewline() && !isSingleDotStatementOnSingleLine()
@@ -283,6 +283,20 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
                 }
     }
 
+
+    private fun ASTNode.getOrderedCallExpressions(elementTypeDot: IElementType, elementTypeSafeCall: IElementType, result: MutableList<ASTNode>) {
+        // if statements here have the only right order - don't change it
+        if (this.isLeaf()) {
+            if (this.elementType == elementTypeDot || this.elementType == elementTypeSafeCall) {
+                result.add(this)
+            }
+        } else {
+            this.getChildren(null).forEach {
+                it.getOrderedCallExpressions(elementTypeDot, elementTypeSafeCall, result)
+            }
+        }
+    }
+
     /**
      * This function is needed because many operators are represented as a single child of [OPERATION_REFERENCE] node
      * e.g. [ANDAND] is a single child of [OPERATION_REFERENCE]
@@ -299,41 +313,44 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
     private fun ASTNode.isDotFromPackageOrImport() = elementType == DOT &&
             parent({ it.elementType == IMPORT_DIRECTIVE || it.elementType == PACKAGE_DIRECTIVE }, true) != null
 
-    /**
-     *  taking all expressions inside complex expression until we reach lambda arguments
-     */
     private fun ASTNode.isCallsChain() = getParentExpressions()
             .lastOrNull()
             ?.run {
                 mutableListOf<ASTNode>().also {
-                    getAllLeafsWithSpecificType(DOT, it)
-                    getAllLeafsWithSpecificType(SAFE_ACCESS, it)
+                    getOrderedCallExpressions(DOT, SAFE_ACCESS, it)
                 }
             }
-            ?.filter {
+            ?.filterNot {
                 // should skip node's that are val params. For example: b.some(z.a()) -> skip z.a()
-                if (it.treeParent.treeParent != null && it.treeParent.treeParent.elementType == VALUE_ARGUMENT)
-                    return@filter false
-                true
+                it.treeParent.treeParent != null && it.treeParent.treeParent.elementType == VALUE_ARGUMENT
             }
             ?.dropWhile { !it.treeParent.textContains('(') && !it.treeParent.textContains('{') }
             // fixme: we can't distinguish fully qualified names from chain of calls for now
-            ?.filterIndexed { index, it ->
-                // if first callee is multiline lambda, then we let user decide how to line lambda
-                if (index == 0 && isMultilineLambda(it.treeParent))
-                    return@filterIndexed false
-                true
-            }
             ?.filter { it.getParentExpressions().count() > 1 }
             ?.count()
             ?.let { it > 1 }
             ?: false
 
+    /**
+     *  taking all expressions inside complex expression until we reach lambda arguments
+     */
     private fun ASTNode.getParentExpressions() =
             parents().takeWhile { it.elementType in chainExpressionTypes && it.elementType != LAMBDA_ARGUMENT }
 
     private fun isMultilineLambda(node: ASTNode): Boolean =
             node.findAllNodesWithSpecificType(LAMBDA_ARGUMENT).firstOrNull()?.text?.count { it == '\n' } ?: -1 > 0
+
+    /**
+     * Getting the first call expression in call chain
+     */
+    private fun ASTNode.isFirstCall() = getParentExpressions()
+            .lastOrNull()
+            ?.run {
+                val firstCallee = mutableListOf<ASTNode>().also {
+                    getOrderedCallExpressions(DOT, SAFE_ACCESS, it)
+                }.first()
+                findAllNodesWithSpecificType(firstCallee.elementType, false).first() === this@isFirstCall
+            } ?: false
 
 
     /**

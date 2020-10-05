@@ -509,18 +509,13 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
         lintMethod(
                 """
                     |fun foo(): String {
-                    |        val isParallelMode: Boolean
-                    |            get() = java.lang.Boolean.getBoolean(properties.getProperty("parallel.mode"))
-                    |        
-                    |        allProperties.filter {
+                    |
+                    |       val a = java.lang.Boolean.getBoolean(properties.getProperty("parallel.mode"))
+                    |
+                    |        allProperties?.filter {
                     |           predicate(it)
-                    |        }
-                    |        .foo()
-                    |        .bar()
-                    |        
-                    |        allProperties
-                    |        .filter {
-                    |           predicate(it)
+                    |           val x = listOf(1,2,3).filter { it < 3 }
+                    |           x == 0
                     |        }
                     |        .foo()
                     |        .bar()
@@ -530,6 +525,21 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |        }
                     |        .foo()
                     |        .bar()
+                    |        .let {
+                    |           it.some()
+                    |        }
+                    |        
+                    |        allProperties
+                    |        ?.filter {
+                    |           predicate(it)
+                    |        }
+                    |        .foo()
+                    |        .bar()
+                    |        .let {
+                    |           mutableListOf().also {
+                    |               
+                    |           }
+                    |        }
                     |}
                 """.trimMargin()
         )
@@ -548,10 +558,17 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |        allProperties?.filter { predicate(it) }
                     |        .foo()
                     |        .bar()
+                    |        
+                    |        list.foo()
+                    |           .bar()
+                    |           .filter {
+                    |               baz()
+                    |           }
                     |}
                 """.trimMargin(),
                 LintError(2, 22, ruleId,"${WRONG_NEWLINES.warnText()} should follow functional style at .", true),
-                LintError(6, 22, ruleId,"${WRONG_NEWLINES.warnText()} should follow functional style at ?.", true)
+                LintError(6, 22, ruleId,"${WRONG_NEWLINES.warnText()} should follow functional style at ?.", true),
+                LintError(10, 13, ruleId,"${WRONG_NEWLINES.warnText()} should follow functional style at .", true)
         )
     }
 }
