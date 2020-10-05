@@ -122,7 +122,7 @@ To run diktat to check/fix code style - run `$ mvn antrun:run@diktat`.
 ### Use the new diktat-maven-plugin
 
 You can see how it is configured in our project for self-checks: [pom.xml](pom.xml).
-This plugin should be available since version 0.1.1. It requires less configuration but may contain bugs.
+This plugin should be available since version 0.1.2. It requires less configuration but may contain bugs.
 If you use it and encounter any problems, feel free to open issues on [github](https://github.com/cqfn/diktat/issues).
 
 Add this plugin to your pom.xml:
@@ -176,9 +176,7 @@ dependencies {
     }
 
     // diktat ruleset
-    ktlint("org.cqfn.diktat:diktat-rules:0.1.1") {
-        exclude("org.slf4j", "slf4j-log4j12")
-    }
+    ktlint("org.cqfn.diktat:diktat-rules:0.1.1")
 }
 
 val outputDir = "${project.buildDir}/reports/diktat/"
