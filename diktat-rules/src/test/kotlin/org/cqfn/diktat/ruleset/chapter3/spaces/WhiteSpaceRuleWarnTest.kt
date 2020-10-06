@@ -551,4 +551,40 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
                         "${WRONG_WHITESPACE.warnText()} there should be no whitespace before '{' of lambda inside argument list", true)
         )
     }
+
+    @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
+    fun `regression - prefix coloncolon should be checked separately - positive example`() {
+        lintMethod(
+                """
+                    |fun foo() {
+                    |    Example(::ClassName)
+                    |    bar(param1, ::ClassName)
+                    |    bar(param1, param2 = ::ClassName)
+                    |    list.map(::operationReference)
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
+    fun `regression - prefix coloncolon should be checked separately`() {
+        lintMethod(
+                """
+                    |fun foo() {
+                    |    Example( :: ClassName)
+                    |    bar(param1,  :: ClassName)
+                    |    bar(param1, param2 = :: ClassName)
+                    |    list.map(:: operationReference)
+                    |}
+                """.trimMargin(),
+                LintError(2, 12, ruleId, tokenWarn("(", null, 1, 0, 0), true),
+                LintError(2, 14, ruleId, tokenWarn("::", null, 1, null, 0), true),
+                LintError(3, 15, ruleId, tokenWarn(",", null, 2, 0, 1), true),
+                LintError(3, 18, ruleId, tokenWarn("::", null, 1, null, 0), true),
+                LintError(4, 26, ruleId, tokenWarn("::", null, 1, null, 0), true),
+                LintError(5, 14, ruleId, tokenWarn("::", null, 1, null, 0), true)
+        )
+    }
 }
