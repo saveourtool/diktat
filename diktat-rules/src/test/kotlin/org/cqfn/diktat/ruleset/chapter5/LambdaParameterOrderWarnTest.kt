@@ -2,7 +2,7 @@ package org.cqfn.diktat.ruleset.chapter5
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
-import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_FUNCTION_ARGUMENTS_ORDER
+import org.cqfn.diktat.ruleset.constants.Warnings.LAMBDA_IS_NOT_LAST_PARAMETER
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.LambdaParameterOrder
 import org.cqfn.diktat.util.LintTestBase
@@ -14,7 +14,7 @@ class LambdaParameterOrderWarnTest : LintTestBase(::LambdaParameterOrder) {
     private val ruleId = "$DIKTAT_RULE_SET_ID:lambda-parameter-order"
 
     @Test
-    @Tag(WarningNames.WRONG_FUNCTION_ARGUMENTS_ORDER)
+    @Tag(WarningNames.LAMBDA_IS_NOT_LAST_PARAMETER)
     fun `check simple example`() {
         lintMethod(
                 """
@@ -22,15 +22,14 @@ class LambdaParameterOrderWarnTest : LintTestBase(::LambdaParameterOrder) {
                     |
                     |fun foo(a: Int, b: Int, myLambda: () -> Unit) = true
                     |
-                    |@Suppress("WRONG_FUNCTION_ARGUMENTS_ORDER")
+                    |@Suppress("LAMBDA_IS_NOT_LAST_PARAMETER")
                     |fun foo(a: Int, myLambda: () -> Unit, b: Int) { }
                     |
                     |fun foo(a: Int, myLambdab: () -> Unit, myLambda: () -> Unit)
                     |
                     |fun foo(a: Int? = null, myLambdab: () -> Unit, myLambda: () -> Unit)
                 """.trimMargin(),
-                LintError(1,17, ruleId, "${WRONG_FUNCTION_ARGUMENTS_ORDER.warnText()} myLambda: () -> Unit", false),
-                LintError(1,39, ruleId, "${WRONG_FUNCTION_ARGUMENTS_ORDER.warnText()} b: Int", false)
+                LintError(1,17, ruleId, "${LAMBDA_IS_NOT_LAST_PARAMETER.warnText()} foo", false)
         )
     }
 }

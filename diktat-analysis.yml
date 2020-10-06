@@ -292,6 +292,6 @@
     maxFunctionLength: '30' # max length of function
     isIncludeHeader: 'false' # count function's header
 # Checks that lambda inside function parameters is in the end
-- name: WRONG_FUNCTION_ARGUMENTS_ORDER
+- name: LAMBDA_IS_NOT_LAST_PARAMETER
   enabled: true
   configuration: {}
