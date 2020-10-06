@@ -30,8 +30,24 @@ class OverloadingArgumentsFunctionWarnTest : LintTestBase(::OverloadingArguments
                     |
                     |@Suppress("WRONG_OVERLOADING_FUNCTION_ARGUMENTS")
                     |fun goo(a: Float)
+                    |
+                    |fun goo(a: Double? = 0.0) {}
+                    |
+                    |override fun goo() {}
+                    |
+                    |class A {
+                    |   fun foo() {}
+                    |}
+                    |
+                    |abstract class B {
+                    |   abstract fun foo(a: Int)
+                    |   
+                    |   fun foo(){}
+                    |}
                 """.trimMargin(),
-                LintError(1,1, ruleId, "${WRONG_OVERLOADING_FUNCTION_ARGUMENTS.warnText()} foo", false)
+                LintError(1,1, ruleId, "${WRONG_OVERLOADING_FUNCTION_ARGUMENTS.warnText()} foo", false),
+                LintError(16,1, ruleId, "${WRONG_OVERLOADING_FUNCTION_ARGUMENTS.warnText()} goo", false),
+                LintError(25,4, ruleId, "${WRONG_OVERLOADING_FUNCTION_ARGUMENTS.warnText()} foo", false)
         )
     }
 }
