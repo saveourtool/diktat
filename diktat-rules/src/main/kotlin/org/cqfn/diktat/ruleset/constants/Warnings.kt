@@ -10,7 +10,7 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
  * This class represent individual inspections of diktat code style.
  * A [Warnings] entry contains rule name, warning message and is used in code check.
  */
-@Suppress("ForbiddenComment", "MagicNumber")
+@Suppress("ForbiddenComment", "MagicNumber", "TOO_MANY_PARAMETERS")
 enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: String) : Rule {
     // ======== chapter 1 ========
     PACKAGE_NAME_MISSING(true, "no package name declared in a file"),
