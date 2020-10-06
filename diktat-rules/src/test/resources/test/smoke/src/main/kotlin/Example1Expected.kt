@@ -30,8 +30,8 @@ class Example {
      */
     fun String.splitPathToDirs(): List<String> =
             this
-                .replace("\\", "/")
-                .replace("//", "/")
-                .split("/")
+                    .replace("\\", "/")
+                    .replace("//", "/")
+                    .split("/")
 }
 

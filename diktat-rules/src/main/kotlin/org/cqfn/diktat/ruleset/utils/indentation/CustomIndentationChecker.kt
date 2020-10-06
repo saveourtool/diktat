@@ -14,9 +14,11 @@ internal abstract class CustomIndentationChecker(protected val configuration: In
 
 /**
  * @property adjustNext Indicates whether the indent returned by this exception checker needs to be applied to other nodes with same parent
+ * @property includeLastChild Indicates whether the white space before the last child node of the initiator node should have increased indent or not
  */
-internal data class CheckResult(val isCorrect: Boolean, val expectedIndent: Int, val adjustNext: Boolean) {
+internal data class CheckResult(val isCorrect: Boolean, val expectedIndent: Int, val adjustNext: Boolean, val includeLastChild: Boolean = true) {
     companion object {
-        fun from(actual: Int, expected: Int, adjustNext: Boolean = false) = CheckResult(actual == expected, expected, adjustNext)
+        fun from(actual: Int, expected: Int, adjustNext: Boolean = false, includeLastChild: Boolean = true) =
+                CheckResult(actual == expected, expected, adjustNext, includeLastChild)
     }
 }

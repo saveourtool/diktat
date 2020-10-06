@@ -13,10 +13,10 @@ import com.pinterest.ktlint.core.ast.ElementType.KDOC_SECTION
 import com.pinterest.ktlint.core.ast.ElementType.LPAR
 import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.RPAR
 import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS
 import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_LIST
 import com.pinterest.ktlint.core.ast.ElementType.THEN
+import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
@@ -33,6 +33,7 @@ import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.KtPropertyAccessor
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
+import org.jetbrains.kotlin.psi.psiUtil.siblings
 
 /**
  * Performs the following check: assignment operator increases indent by one step for the expression after it.
@@ -51,29 +52,47 @@ internal class AssignmentOperatorChecker(configuration: IndentationConfig) : Cus
 
 /**
  * Performs the following check: When breaking parameter list of a method/class constructor it can be aligned with 8 spaces
- * or a parameter that was moved to a newline can be on the same level as the previous argument
+ * or in a method/class declaration a parameter that was moved to a newline can be on the same level as the previous argument.
  */
 @Suppress("ForbiddenComment")
 internal class ValueParameterListChecker(configuration: IndentationConfig) : CustomIndentationChecker(configuration) {
+    /**
+     * This check triggers if the following conditions are met:
+     * 1. line break is inside value parameter or value argument list (function declaration or invocation)
+     * 2. there are no other line breaks before this node
+     * 3. there are no more arguments after this node
+     */
+    private fun isCheckNeeded(whiteSpace: PsiWhiteSpace) =
+            whiteSpace.parent.node.elementType.let { it == VALUE_PARAMETER_LIST || it == VALUE_ARGUMENT_LIST } &&
+                    whiteSpace.siblings(forward = false, withItself = false).none { it is PsiWhiteSpace && it.textContains('\n') } &&
+                    // no need to trigger when there are no more parameters in the list
+                    whiteSpace.siblings(forward = true, withItself = false).any {
+                        it.node.elementType.run { this == VALUE_ARGUMENT || this == VALUE_PARAMETER }
+                    }
+
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
-        if (whiteSpace.parent.node.elementType in listOf(VALUE_PARAMETER_LIST, VALUE_ARGUMENT_LIST) && whiteSpace.nextSibling.node.elementType != RPAR) {
+        if (isCheckNeeded(whiteSpace)) {
             val parameterList = whiteSpace.parent.node
             // parameters in lambdas are VALUE_PARAMETER_LIST and might have no LPAR: list { elem -> ... }
             val parameterAfterLpar = parameterList
                     .findChildByType(LPAR)
                     ?.treeNext
-                    ?.takeIf { it.elementType == VALUE_PARAMETER }
+                    ?.takeIf {
+                        it.elementType != WHITE_SPACE &&
+                                // there can be multiline arguments and in this case we don't align parameters with them
+                                !it.textContains('\n')
+                    }
 
-            val expectedIndent = if (parameterAfterLpar != null && configuration.alignedParameters) {
+            val expectedIndent = if (parameterAfterLpar != null && configuration.alignedParameters && parameterList.elementType == VALUE_PARAMETER_LIST) {
                 // fixme: probably there is a better way to find column number
                 parameterList.parents().last().text.substringBefore(parameterAfterLpar.text).lines().last().count()
-            } else if (parameterAfterLpar == null && configuration.extendedIndentOfParameters) {
+            } else if (configuration.extendedIndentOfParameters) {
                 indentError.expected + configuration.indentationSize
             } else {
                 indentError.expected
             }
 
-            return CheckResult.from(indentError.actual, expectedIndent)
+            return CheckResult.from(indentError.actual, expectedIndent, adjustNext = true, includeLastChild = false)
         }
         return null
     }
@@ -135,7 +154,7 @@ internal class DotCallChecker(config: IndentationConfig) : CustomIndentationChec
             it.elementType in listOf(DOT, SAFE_ACCESS) && it.treeNext.elementType in listOf(CALL_EXPRESSION, REFERENCE_EXPRESSION)
         }?.let {
             return CheckResult.from(indentError.actual, (whiteSpace.parentIndent()
-                    ?: indentError.expected) + configuration.indentationSize, true)
+                    ?: indentError.expected) + (if (configuration.extendedIndentBeforeDot) 2 else 1) * configuration.indentationSize, true)
         }
         return null
     }
@@ -150,13 +169,13 @@ internal class ConditionalsAndLoopsWithoutBracesChecker(config: IndentationConfi
         val nextNode = whiteSpace.nextSibling.node
         return when (parent) {
             is KtLoopExpression -> nextNode.elementType == BODY && parent.body !is KtBlockExpression
-            is KtIfExpression -> nextNode.elementType.let { it == THEN || it == ELSE } && parent.then !is KtBlockExpression
+            is KtIfExpression -> nextNode.elementType == THEN && parent.then !is KtBlockExpression ||
+                    nextNode.elementType == ELSE && parent.`else`.let { it !is KtBlockExpression && it !is KtIfExpression }
             else -> false
         }
                 .takeIf { it }
                 ?.let {
-                    CheckResult.from(indentError.actual, (whiteSpace.parentIndent()
-                            ?: indentError.expected) + configuration.indentationSize, false)
+                    CheckResult.from(indentError.actual, indentError.expected + configuration.indentationSize, true)
                 }
     }
 }
