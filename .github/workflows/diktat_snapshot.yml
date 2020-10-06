@@ -43,6 +43,6 @@ jobs:
       - name: Run diktat snapshot via ktlint
         run: |
           mvn -B diktat:check@diktat --pl diktat-common || echo "LintErrors encountered"
-          mvn -B diktat:check@diktat --pl diktat-maven-plugin || echo "LintErrors encountered"
+          mvn -B diktat:check@diktat --pl diktat-maven-plugin
           mvn -B diktat:check@diktat --pl diktat-test-framework || echo "LintErrors encountered"
           mvn -B diktat:check@diktat --pl diktat-rules

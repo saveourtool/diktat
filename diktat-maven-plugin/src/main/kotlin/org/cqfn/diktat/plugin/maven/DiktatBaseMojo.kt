@@ -66,7 +66,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         val ruleSets by lazy {
             listOf(DiktatRuleSetProvider(configFile).get())
         }
-        val lintErrors = mutableListOf<LintError>()
+        val lintErrors: MutableList<LintError> = mutableListOf()
 
         inputs
             .map(::File)
@@ -102,29 +102,35 @@ abstract class DiktatBaseMojo : AbstractMojo() {
             }
             .filter { it.isFile }
             .forEach { file ->
-                log.info("Checking file $file")
-                val text = file.readText()
+                log.debug("Checking file $file")
                 try {
                     reporter.before(file.path)
-                    val params =
-                        KtLint.Params(
-                                fileName = file.name,
-                                text = text,
-                                ruleSets = ruleSets,
-                                userData = mapOf("file_path" to file.path),
-                                script = file.extension.equals("kts", ignoreCase = true),
-                                cb = { lintError, isCorrected ->
-                                    reporter.onLintError(file.path, lintError, isCorrected)
-                                    lintErrors.add(lintError)
-                                },
-                                debug = debug
-                        )
-                    runAction(params)
+                    checkFile(file, lintErrors, ruleSets)
                     reporter.after(file.path)
                 } catch (e: RuleExecutionException) {
                     log.error("Unhandled exception during rule execution: ", e)
                     throw MojoExecutionException("Unhandled exception during rule execution", e)
                 }
             }
+    }
+
+    private fun checkFile(file: File,
+                          lintErrors: MutableList<LintError>,
+                          ruleSets: Iterable<RuleSet>) {
+        val text = file.readText()
+        val params =
+                KtLint.Params(
+                        fileName = file.name,
+                        text = text,
+                        ruleSets = ruleSets,
+                        userData = mapOf("file_path" to file.path),
+                        script = file.extension.equals("kts", ignoreCase = true),
+                        cb = { lintError, isCorrected ->
+                            reporter.onLintError(file.path, lintError, isCorrected)
+                            lintErrors.add(lintError)
+                        },
+                        debug = debug
+                )
+        runAction(params)
     }
 }
