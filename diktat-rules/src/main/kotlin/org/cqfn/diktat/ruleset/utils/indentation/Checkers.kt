@@ -52,7 +52,7 @@ internal class AssignmentOperatorChecker(configuration: IndentationConfig) : Cus
 
 /**
  * Performs the following check: When breaking parameter list of a method/class constructor it can be aligned with 8 spaces
- * or a parameter that was moved to a newline can be on the same level as the previous argument
+ * or in a method/class declaration a parameter that was moved to a newline can be on the same level as the previous argument.
  */
 @Suppress("ForbiddenComment")
 internal class ValueParameterListChecker(configuration: IndentationConfig) : CustomIndentationChecker(configuration) {
@@ -78,15 +78,15 @@ internal class ValueParameterListChecker(configuration: IndentationConfig) : Cus
                     .findChildByType(LPAR)
                     ?.treeNext
                     ?.takeIf {
-                        (it.elementType == VALUE_PARAMETER || it.elementType == VALUE_ARGUMENT) &&
+                        it.elementType != WHITE_SPACE &&
                                 // there can be multiline arguments and in this case we don't align parameters with them
                                 !it.textContains('\n')
                     }
 
-            val expectedIndent = if (parameterAfterLpar != null && configuration.alignedParameters) {
+            val expectedIndent = if (parameterAfterLpar != null && configuration.alignedParameters && parameterList.elementType == VALUE_PARAMETER_LIST) {
                 // fixme: probably there is a better way to find column number
                 parameterList.parents().last().text.substringBefore(parameterAfterLpar.text).lines().last().count()
-            } else if (parameterAfterLpar == null && configuration.extendedIndentOfParameters) {
+            } else if (configuration.extendedIndentOfParameters) {
                 indentError.expected + configuration.indentationSize
             } else {
                 indentError.expected
@@ -169,7 +169,8 @@ internal class ConditionalsAndLoopsWithoutBracesChecker(config: IndentationConfi
         val nextNode = whiteSpace.nextSibling.node
         return when (parent) {
             is KtLoopExpression -> nextNode.elementType == BODY && parent.body !is KtBlockExpression
-            is KtIfExpression -> nextNode.elementType.let { it == THEN || it == ELSE } && parent.then !is KtBlockExpression
+            is KtIfExpression -> nextNode.elementType == THEN && parent.then !is KtBlockExpression ||
+                    nextNode.elementType == ELSE && parent.`else`.let { it !is KtBlockExpression && it !is KtIfExpression }
             else -> false
         }
                 .takeIf { it }

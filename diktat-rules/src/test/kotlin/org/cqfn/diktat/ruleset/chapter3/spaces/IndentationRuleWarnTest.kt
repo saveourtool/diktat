@@ -285,6 +285,43 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
 
     @Test
     @Tag(WarningNames.WRONG_INDENTATION)
+    fun `loops and conditionals without braces should be indented - if-else with mixed braces`() {
+        lintMethod(
+                """
+                    |fun foo() {
+                    |    if (condition) {
+                    |        bar()
+                    |    } else
+                    |        baz()
+                    |        
+                    |    if (condition)
+                    |        bar()
+                    |    else {
+                    |        baz()
+                    |    }
+                    |        
+                    |    if (condition)
+                    |        bar()
+                    |    else if (condition2) {
+                    |        baz()
+                    |    } else
+                    |        qux()
+                    |        
+                    |    if (condition)
+                    |        bar()
+                    |    else if (condition2)
+                    |        baz()
+                    |    else {
+                    |        qux()
+                    |    }
+                    |}
+                    |
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
     fun `opening braces should not increase indent when placed on the same line`() {
         lintMethod(
                 """

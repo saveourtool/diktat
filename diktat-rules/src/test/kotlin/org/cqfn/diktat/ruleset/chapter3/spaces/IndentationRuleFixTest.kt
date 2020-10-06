@@ -21,6 +21,11 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
                 )
         )
 ) {
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
+    fun `parameters should be properly aligned`() {
+        fixAndCompare("IndentationParametersExpected.kt", "IndentationParametersTest.kt")
+    }
 
     @Test
     @Tag(WarningNames.WRONG_INDENTATION)
