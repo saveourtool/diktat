@@ -27,6 +27,7 @@ class LambdaParameterOrder(private val configRules: List<RulesConfig>) : Rule("l
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkArguments(node: ASTNode) {
         val funArguments = (node.psi as KtFunction).valueParameters
         val sortArguments = funArguments.sortedBy { it.typeReference?.node?.hasChildOfType(FUNCTION_TYPE) }
