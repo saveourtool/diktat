@@ -31,7 +31,6 @@ import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.KtLoopExpression
 import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.KtPropertyAccessor
-import org.jetbrains.kotlin.psi.KtValueArgument
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
 import org.jetbrains.kotlin.psi.psiUtil.siblings
@@ -57,15 +56,22 @@ internal class AssignmentOperatorChecker(configuration: IndentationConfig) : Cus
  */
 @Suppress("ForbiddenComment")
 internal class ValueParameterListChecker(configuration: IndentationConfig) : CustomIndentationChecker(configuration) {
+    /**
+     * This check triggers if the following conditions are met:
+     * 1. line break is inside value parameter or value argument list (function declaration or invocation)
+     * 2. there are no other line breaks before this node
+     * 3. there are no more arguments after this node
+     */
+    private fun isCheckNeeded(whiteSpace: PsiWhiteSpace) =
+            whiteSpace.parent.node.elementType.let { it == VALUE_PARAMETER_LIST || it == VALUE_ARGUMENT_LIST } &&
+                    whiteSpace.siblings(forward = false, withItself = false).none { it is PsiWhiteSpace && it.textContains('\n') } &&
+                    // no need to trigger when there are no more parameters in the list
+                    whiteSpace.siblings(forward = true, withItself = false).any {
+                        it.node.elementType.run { this == VALUE_ARGUMENT || this == VALUE_PARAMETER }
+                    }
+
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
-        // this check should trigger only for the first newline inside parameter list
-        if (whiteSpace.parent.node.elementType.let { it == VALUE_PARAMETER_LIST || it == VALUE_ARGUMENT_LIST } &&
-                whiteSpace.siblings(forward = false, withItself = false).none { it is PsiWhiteSpace && it.textContains('\n') } &&
-                // no need to trigger when there are no more parameters in the list
-                whiteSpace.siblings(forward = true, withItself = false).any {
-                    it.node.elementType.run { this == VALUE_ARGUMENT || this == VALUE_PARAMETER }
-                }
-        ) {
+        if (isCheckNeeded(whiteSpace)) {
             val parameterList = whiteSpace.parent.node
             // parameters in lambdas are VALUE_PARAMETER_LIST and might have no LPAR: list { elem -> ... }
             val parameterAfterLpar = parameterList
