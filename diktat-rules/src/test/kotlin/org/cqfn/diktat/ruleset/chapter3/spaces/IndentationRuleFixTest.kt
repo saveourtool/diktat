@@ -1,4 +1,4 @@
-package org.cqfn.diktat.ruleset.chapter3
+package org.cqfn.diktat.ruleset.chapter3.spaces
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import generated.WarningNames

@@ -16,6 +16,7 @@ import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS
 import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_LIST
 import com.pinterest.ktlint.core.ast.ElementType.THEN
+import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
@@ -30,6 +31,7 @@ import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.KtLoopExpression
 import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.KtPropertyAccessor
+import org.jetbrains.kotlin.psi.KtValueArgument
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
 import org.jetbrains.kotlin.psi.psiUtil.siblings
@@ -58,14 +60,22 @@ internal class ValueParameterListChecker(configuration: IndentationConfig) : Cus
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
         // this check should trigger only for the first newline inside parameter list
         if (whiteSpace.parent.node.elementType.let { it == VALUE_PARAMETER_LIST || it == VALUE_ARGUMENT_LIST } &&
-                whiteSpace.siblings(forward = false, withItself = false).none { it.textContains('\n') }
+                whiteSpace.siblings(forward = false, withItself = false).none { it is PsiWhiteSpace && it.textContains('\n') } &&
+                // no need to trigger when there are no more parameters in the list
+                whiteSpace.siblings(forward = true, withItself = false).any {
+                    it.node.elementType.run { this == VALUE_ARGUMENT || this == VALUE_PARAMETER }
+                }
         ) {
             val parameterList = whiteSpace.parent.node
             // parameters in lambdas are VALUE_PARAMETER_LIST and might have no LPAR: list { elem -> ... }
             val parameterAfterLpar = parameterList
                     .findChildByType(LPAR)
                     ?.treeNext
-                    ?.takeIf { it.elementType == VALUE_PARAMETER }
+                    ?.takeIf {
+                        (it.elementType == VALUE_PARAMETER || it.elementType == VALUE_ARGUMENT) &&
+                                // there can be multiline arguments and in this case we don't align parameters with them
+                                !it.textContains('\n')
+                    }
 
             val expectedIndent = if (parameterAfterLpar != null && configuration.alignedParameters) {
                 // fixme: probably there is a better way to find column number

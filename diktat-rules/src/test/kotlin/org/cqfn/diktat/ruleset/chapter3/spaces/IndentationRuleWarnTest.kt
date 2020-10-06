@@ -1,4 +1,4 @@
-package org.cqfn.diktat.ruleset.chapter3
+package org.cqfn.diktat.ruleset.chapter3.spaces
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
@@ -18,6 +18,17 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                             "extendedIndentOfParameters" to "true",
                             "alignedParameters" to "true",
                             "extendedIndentAfterOperators" to "true",
+                            "extendedIndentBeforeDot" to "false",
+                            "indentationSize" to "4"
+                    )
+            )
+    )
+    private val disabledOptionsRulesConfigList = listOf(
+            RulesConfig(WRONG_INDENTATION.name, true,
+                    mapOf(
+                            "extendedIndentOfParameters" to "false",
+                            "alignedParameters" to "false",
+                            "extendedIndentAfterOperators" to "false",
                             "extendedIndentBeforeDot" to "false",
                             "indentationSize" to "4"
                     )
@@ -291,11 +302,29 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |    bar(baz(
                     |            1,
                     |            2),
-                    |        3  // fixme: should it be indented by 8?
+                    |            3
                     |    )
                     |}
                     |
                 """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
+    fun `opening braces should not increase indent when placed on the same line - with disabled options`() {
+        lintMethod(
+                """
+                    |fun foo() {
+                    |    bar(baz(
+                    |        1,
+                    |        2),
+                    |        3
+                    |    )
+                    |}
+                    |
+                """.trimMargin(),
+                rulesConfigList = disabledOptionsRulesConfigList
         )
     }
 
