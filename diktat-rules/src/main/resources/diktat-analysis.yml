@@ -293,6 +293,11 @@
   configuration:
     maxFunctionLength: '30' # max length of function
     isIncludeHeader: 'false' # count function's header
+# Checks that function doesn't contains too many parameters
+- name: TOO_MANY_PARAMETERS
+  enabled: true
+  configuration:
+    maxParameterListSize: '5' # max parameters size
 # Checks that function use default values, instead overloading
 - name: WRONG_OVERLOADING_FUNCTION_ARGUMENTS
   enabled: true
