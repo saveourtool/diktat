@@ -236,6 +236,10 @@
 - name: LOCAL_VARIABLE_EARLY_DECLARATION
   enabled: true
   configuration: {}
+# Try to avoid initialize val by null (e.g. val a: Int? = null -> val a: Int = 0)
+- name: NULLABLE_PROPERTY_TYPE
+  enabled: true
+  configuration: {}
 # Inspection that checks if there is a blank line before kDoc and none after
 - name: WRONG_NEWLINES_AROUND_KDOC
   enabled: true
@@ -281,3 +285,9 @@
 - name: FLOAT_IN_ACCURATE_CALCULATIONS
   enabled: true
   configuration: {}
+# Checks that function length isn't too long
+- name: TOO_LONG_FUNCTION
+  enabled: true
+  configuration:
+    maxFunctionLength: '30' # max length of function
+    isIncludeHeader: 'false' # count function's header
