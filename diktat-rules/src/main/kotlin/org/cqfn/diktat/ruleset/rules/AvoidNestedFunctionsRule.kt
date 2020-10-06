@@ -43,6 +43,7 @@ class AvoidNestedFunctionsRule(private val configRules: List<RulesConfig>) : Rul
     }
 
     // FixMe: need to detect all properties, which local function is using and add them to params of this function
+    @Suppress("UnsafeCallOnNullableType")
     private fun handleNestedFunctions(node: ASTNode) {
         if (node.hasParent(FUN)) {
             val funcName = node.getFirstChildWithType(IDENTIFIER)!!.text
