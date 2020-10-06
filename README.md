@@ -7,8 +7,11 @@
 [![Releases](https://img.shields.io/github/v/release/cqfn/diKTat)](https://github.com/cqfn/diKTat/releases)
 ![Maven Central](https://img.shields.io/maven-central/v/org.cqfn.diktat/diktat-rules)
 [![License](https://img.shields.io/github/license/cqfn/diKtat)](https://github.com/cqfn/diKTat/blob/master/LICENSE)
-[![Hits-of-Code](https://hitsofcode.com/github/cqfn/diktat)](https://hitsofcode.com/view/github/cqfn/diktat)
 [![codecov](https://codecov.io/gh/cqfn/diKTat/branch/master/graph/badge.svg)](https://codecov.io/gh/cqfn/diKTat)
+
+[![Hits-of-Code](https://hitsofcode.com/github/cqfn/diktat)](https://hitsofcode.com/view/github/cqfn/diktat)
+![Lines of code](https://img.shields.io/tokei/lines/github/cqfn/diktat)
+![GitHub repo size](https://img.shields.io/github/repo-size/cqfn/diktat)
 
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fcqfn%2FdiKTat.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fcqfn%2FdiKTat?ref=badge_shield)
 [![Awesome Kotlin Badge](https://kotlin.link/awesome-kotlin.svg)](https://github.com/KotlinBy/awesome-kotlin)
@@ -47,9 +50,9 @@ The full list of available supported rules and inspections is [here](info/availa
 
 To **autofix** all code style violations use `-F` option.
 
-## Run with Maven Plugin
+## Run with Maven
 
-You can see how it is configured in our project for self-checks: [pom.xml](pom.xml)
+### Use maven-antrun-plugin
 
 Add this plugin to your pom.xml:
 <details>
@@ -119,6 +122,46 @@ the snippet above with `<arg value="-F"/>`.
 
 To run diktat to check/fix code style - run `$ mvn antrun:run@diktat`.
 
+### Use the new diktat-maven-plugin
+
+You can see how it is configured in our project for self-checks: [pom.xml](pom.xml).
+This plugin should be available since version 0.1.2. It requires less configuration but may contain bugs.
+If you use it and encounter any problems, feel free to open issues on [github](https://github.com/cqfn/diktat/issues).
+
+Add this plugin to your pom.xml:
+<details>
+  <summary><b>Maven plugin snippet</b></summary><br>
+  
+```xml
+            <plugin>
+                <groupId>org.cqfn.diktat</groupId>
+                <artifactId>diktat-maven-plugin</artifactId>
+                <version>${diktat.version}</version>
+                <executions>
+                    <execution>
+                        <id>diktat</id>
+                        <phase>none</phase>
+                        <goals>
+                            <goal>check</goal>
+                            <goal>fix</goal>
+                        </goals>
+                        <configuration>
+                            <inputs>
+                                <input>${project.basedir}/src/main/kotlin</input>
+                                <input>${project.basedir}/src/test/kotlin</input>
+                            </inputs>
+                            <diktatConfigFile>diktat-analysis.yml</diktatConfigFile>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+```
+
+</details>
+
+To run diktat check use command `$ mvn diktat:check@diktat`.
+To run diktat in autocorrect mode use command `$ mvn diktat:fix@diktat`.
+
 ## Run with Gradle Plugin 
 
 You can see how it is configured in our project for self-checks: [build.gradle.kts](build.gradle.kts).
@@ -136,9 +179,7 @@ dependencies {
     }
 
     // diktat ruleset
-    ktlint("org.cqfn.diktat:diktat-rules:0.1.1") {
-        exclude("org.slf4j", "slf4j-log4j12")
-    }
+    ktlint("org.cqfn.diktat:diktat-rules:0.1.1")
 }
 
 val outputDir = "${project.buildDir}/reports/diktat/"
