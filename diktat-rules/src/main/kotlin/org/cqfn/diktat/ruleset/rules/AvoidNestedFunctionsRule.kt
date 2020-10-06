@@ -6,6 +6,7 @@ import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
+import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.OVERRIDE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
@@ -61,8 +62,8 @@ class AvoidNestedFunctionsRule(private val configRules: List<RulesConfig>) : Rul
                 val funcSeq = lastFunc.parents().filter { it.elementType == FUN }.toMutableList()
                 funcSeq.add(0, lastFunc)
                 val firstFunc = funcSeq.last()
-                funcSeq.dropLast(1).forEach {
-                    val parent = it.findParentNodeWithSpecificType(FUN)!!
+                funcSeq.dropLast(1).forEachIndexed { index, it ->
+                    val parent = funcSeq[index + 1]
                     if (it.treePrev.isWhiteSpaceWithNewline()) {
                         parent.removeChild(it.treePrev)
                     }
@@ -75,11 +76,11 @@ class AvoidNestedFunctionsRule(private val configRules: List<RulesConfig>) : Rul
     }
 
     private fun isNestedFunction(node: ASTNode) : Boolean =
-        node.hasParent(FUN) && node.hasFunParentUntil(CLASS_BODY) && !node.hasChildOfType(OVERRIDE_KEYWORD)
+        node.hasParent(FUN) && node.hasFunParentUntil(CLASS_BODY) && !node.hasChildOfType(MODIFIER_LIST)
 
 
     private fun ASTNode.hasFunParentUntil(stopNode: IElementType) : Boolean =
-            parents().takeWhile { it.elementType != stopNode || it.elementType != FILE }.find { it.elementType == FUN } != null
+            parents().asSequence().toList().takeWhile { it.elementType != stopNode }.any { it.elementType == FUN }
     /**
      * Checks if local function has no usage of outside properties
      */

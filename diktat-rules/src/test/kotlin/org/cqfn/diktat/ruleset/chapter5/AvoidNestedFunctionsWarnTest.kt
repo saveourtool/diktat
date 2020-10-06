@@ -68,4 +68,25 @@ class AvoidNestedFunctionsWarnTest : LintTestBase(::AvoidNestedFunctionsRule) {
                 """.trimMargin()
         )
     }
+
+    @Test
+    @Tag(AVOID_NESTED_FUNCTIONS)
+    fun `nested functions in anonymous class`() {
+        lintMethod(
+                """
+                    |class SomeClass {
+                    |fun some() {
+                    |       listOf(
+                    |              RuleSet("test", object : Rule("astnode-utils-test") {
+                    |                   override fun visit(node: ASTNode,
+                    |                   autoCorrect: Boolean,
+                    |                   emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
+                    |                   applyToNode(node, counter)
+                    |                   }
+                    |           }))
+                    |   }
+                    |}
+                """.trimMargin()
+        )
+    }
 }
