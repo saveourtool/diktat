@@ -9,6 +9,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.LAMBDA_IS_NOT_LAST_PARAMETER
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtFunction
+import org.jetbrains.kotlin.utils.addToStdlib.ifNotEmpty
 
 class LambdaParameterOrder(private val configRules: List<RulesConfig>) : Rule("lambda-parameter-order") {
 
@@ -31,12 +32,9 @@ class LambdaParameterOrder(private val configRules: List<RulesConfig>) : Rule("l
     private fun checkArguments(node: ASTNode) {
         val funArguments = (node.psi as KtFunction).valueParameters
         val sortArguments = funArguments.sortedBy { it.typeReference?.node?.hasChildOfType(FUNCTION_TYPE) }
-        funArguments.forEachIndexed { index, ktParameter ->
-            if (ktParameter != sortArguments[index]) {
-                LAMBDA_IS_NOT_LAST_PARAMETER.warn(configRules, emitWarn, isFixMode, node.findChildByType(IDENTIFIER)!!.text,
-                        ktParameter.node.startOffset, node)
-                return
-            }
+        funArguments.filterIndexed {index, ktParameter -> ktParameter != sortArguments[index] }.ifNotEmpty {
+            LAMBDA_IS_NOT_LAST_PARAMETER.warn(configRules, emitWarn, isFixMode, node.findChildByType(IDENTIFIER)!!.text,
+                    first().node.startOffset, node)
         }
     }
 }
