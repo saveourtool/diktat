@@ -35,7 +35,6 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |    fun foo() {};
                     |    val a = 0;
                     |    val b = if (condition) { bar(); baz()} else qux
-                    |    val c = java.lang.Boolean.getBoolean(properties.getProperty("parallel.mode"))
                     |};
                 """.trimMargin(),
                 LintError(6, 17, ruleId, "${REDUNDANT_SEMICOLON.warnText()} fun foo() {};", true),

@@ -2,8 +2,11 @@ package org.cqfn.diktat.ruleset.rules
 
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
+import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
+import com.pinterest.ktlint.core.ast.ElementType.OVERRIDE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER
@@ -17,12 +20,15 @@ import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getAllLeafsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
+import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.cqfn.diktat.ruleset.utils.hasParent
 import org.cqfn.diktat.ruleset.utils.prettyPrint
+import org.cqfn.diktat.ruleset.utils.prevNodeUntilNode
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
+import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.kotlin.psi.psiUtil.parents
 
@@ -45,7 +51,7 @@ class AvoidNestedFunctionsRule(private val configRules: List<RulesConfig>) : Rul
     // FixMe: need to detect all properties, which local function is using and add them to params of this function
     @Suppress("UnsafeCallOnNullableType")
     private fun handleNestedFunctions(node: ASTNode) {
-        if (node.hasParent(FUN)) {
+        if (isNestedFunction(node)) {
             val funcName = node.getFirstChildWithType(IDENTIFIER)!!.text
 
             AVOID_NESTED_FUNCTIONS.warnAndFix(configRules, emitWarn, isFixMode, "fun $funcName", node.startOffset, node,
@@ -55,22 +61,25 @@ class AvoidNestedFunctionsRule(private val configRules: List<RulesConfig>) : Rul
                 val funcSeq = lastFunc.parents().filter { it.elementType == FUN }.toMutableList()
                 funcSeq.add(0, lastFunc)
                 val firstFunc = funcSeq.last()
-
-                funcSeq.forEach {
-                    if (it != firstFunc) {
-                        val parent = it.findParentNodeWithSpecificType(FUN)!!
-                        if (it.treePrev.isWhiteSpaceWithNewline()) {
-                            parent.removeChild(it.treePrev)
-                        }
-                        firstFunc.treeParent.addChild(it.clone() as ASTNode, firstFunc)
-                        firstFunc.treeParent.addChild(PsiWhiteSpaceImpl("\n"), firstFunc)
-                        parent.removeChild(it)
+                funcSeq.dropLast(1).forEach {
+                    val parent = it.findParentNodeWithSpecificType(FUN)!!
+                    if (it.treePrev.isWhiteSpaceWithNewline()) {
+                        parent.removeChild(it.treePrev)
                     }
+                    firstFunc.treeParent.addChild(it.clone() as ASTNode, firstFunc)
+                    firstFunc.treeParent.addChild(PsiWhiteSpaceImpl("\n"), firstFunc)
+                    parent.removeChild(it)
                 }
             }
         }
     }
 
+    private fun isNestedFunction(node: ASTNode) : Boolean =
+        node.hasParent(FUN) && node.hasFunParentUntil(CLASS_BODY) && !node.hasChildOfType(OVERRIDE_KEYWORD)
+
+
+    private fun ASTNode.hasFunParentUntil(stopNode: IElementType) : Boolean =
+            parents().takeWhile { it.elementType != stopNode || it.elementType != FILE }.find { it.elementType == FUN } != null
     /**
      * Checks if local function has no usage of outside properties
      */

@@ -17,4 +17,10 @@ class AvoidNestedFunctionsFixTest : FixTestBase("test/paragraph5/nested_function
     fun `fix several nested functions`() {
         fixAndCompare("AvoidNestedFunctionsSeveralExample.kt", "AvoidNestedFunctionsSeveralTest.kt")
     }
+
+    @Test
+    @Tag(WarningNames.AVOID_NESTED_FUNCTIONS)
+    fun `should not change`() {
+        fixAndCompare("AvoidNestedFunctionsNoTriggerExample.kt", "AvoidNestedFunctionsNoTriggerTest.kt")
+    }
 }
