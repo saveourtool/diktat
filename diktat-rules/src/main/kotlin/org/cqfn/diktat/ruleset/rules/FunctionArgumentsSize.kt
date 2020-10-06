@@ -36,14 +36,14 @@ class FunctionArgumentsSize(private val configRules: List<RulesConfig>) : Rule("
 
     @Suppress("UnsafeCallOnNullableType")
     private fun checkFun(node: ASTNode, maxParameterSize: Long) {
-        val parameterList = (node.psi as KtFunction).valueParameters.size
-        if (parameterList > maxParameterSize){
+        val parameterListSize = (node.psi as KtFunction).valueParameters.size
+        if (parameterListSize > maxParameterSize){
             TOO_MANY_PARAMETERS.warn(configRules, emitWarn, isFixMode,
-                    "${node.findChildByType(IDENTIFIER)!!.text} has $parameterList, but allowed $maxParameterSize", node.startOffset, node)
+                    "${node.findChildByType(IDENTIFIER)!!.text} has $parameterListSize, but allowed $maxParameterSize", node.startOffset, node)
         }
     }
 
     class FunctionArgumentsSizeConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
-        val maxParameterSize = config["maxParametersSize"]?.toLongOrNull()?: maxDefaultParameterSize
+        val maxParameterSize = config["maxParameterListSize"]?.toLongOrNull()?: maxDefaultParameterSize
     }
 }

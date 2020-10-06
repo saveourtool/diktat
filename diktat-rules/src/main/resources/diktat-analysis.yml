@@ -297,4 +297,4 @@
 - name: TOO_MANY_PARAMETERS
   enabled: true
   configuration:
-    maxParametersSize: '5' # max parameters size
+    maxParameterListSize: '5' # max parameters size
