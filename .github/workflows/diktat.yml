@@ -24,4 +24,5 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-diktat-
       - name: Run diktat itself via ktlint
-        run: mvn -B diktat:check@diktat
+        # fixme: change to diktat:check when diktat plugin is released
+        run: mvn -B antrun:run@diktat
