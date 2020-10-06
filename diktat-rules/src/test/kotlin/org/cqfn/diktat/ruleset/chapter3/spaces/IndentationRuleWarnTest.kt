@@ -312,7 +312,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |    else if (condition2)
                     |        baz()
                     |    else {
-                    |        qux()
+                    |        quux()
                     |    }
                     |}
                     |
