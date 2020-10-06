@@ -16,7 +16,7 @@ class FunctionArgumentsSizeWarnTest: LintTestBase(::FunctionArgumentsSize) {
 
     private val rulesConfigList: List<RulesConfig> = listOf(
             RulesConfig(TOO_MANY_PARAMETERS.name, true,
-                    mapOf("maxParametersSize" to "1"))
+                    mapOf("maxParameterListSize" to "1"))
     )
 
     @Test
