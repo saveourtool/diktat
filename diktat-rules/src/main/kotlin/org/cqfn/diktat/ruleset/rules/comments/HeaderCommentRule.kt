@@ -177,8 +177,8 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
                                 it.trim(), headerKdoc.startOffset, headerKdoc)
                     }
 
-            if (headerKdoc.treeNext != null && headerKdoc.treeNext.elementType == WHITE_SPACE
-                    && headerKdoc.treeNext.text.count { it == '\n' } != 2) {
+            if (headerKdoc.treeNext != null && headerKdoc.treeNext.elementType == WHITE_SPACE &&
+                    headerKdoc.treeNext.text.count { it == '\n' } != 2) {
                 HEADER_WRONG_FORMAT.warnAndFix(configRules, emitWarn, isFixMode,
                         "header KDoc should have a new line after", headerKdoc.startOffset, headerKdoc) {
                     node.replaceChild(headerKdoc.treeNext, PsiWhiteSpaceImpl("\n\n"))
