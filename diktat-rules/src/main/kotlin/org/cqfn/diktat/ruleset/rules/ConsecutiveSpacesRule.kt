@@ -62,8 +62,8 @@ class ConsecutiveSpacesRule(private val configRules: List<RulesConfig>) : Rule("
 
     private fun squeezeSpacesToOne(node: ASTNode, configuration: TooManySpacesRuleConfiguration) {
         val spaces = node.textLength
-        if (spaces > configuration.numberOfSpaces && !node.isWhiteSpaceWithNewline()
-                && !node.hasEolComment()) {
+        if (spaces > configuration.numberOfSpaces && !node.isWhiteSpaceWithNewline() &&
+                !node.hasEolComment()) {
             TOO_MANY_CONSECUTIVE_SPACES.warnAndFix(configRules, emitWarn, isFixMode,
                     "found: $spaces. need to be: ${configuration.numberOfSpaces}", node.startOffset, node) {
                 node.squeezeSpaces()

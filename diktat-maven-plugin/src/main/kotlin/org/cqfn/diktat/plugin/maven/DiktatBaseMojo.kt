@@ -69,10 +69,10 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         val lintErrors: MutableList<LintError> = mutableListOf()
 
         inputs
-            .map(::File)
-            .forEach {
-                checkDirectory(it, lintErrors, ruleSets)
-            }
+                .map(::File)
+                .forEach {
+                    checkDirectory(it, lintErrors, ruleSets)
+                }
 
         reporter.afterAll()
         if (lintErrors.isNotEmpty()) {
@@ -86,9 +86,9 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         }
 
         return generateSequence(mavenProject) { it.parent }
-            .map { File(it.basedir, diktatConfigFile) }
-            .first { it.exists() }
-            .absolutePath
+                .map { File(it.basedir, diktatConfigFile) }
+                .first { it.exists() }
+                .absolutePath
     }
 
     /**
@@ -96,22 +96,22 @@ abstract class DiktatBaseMojo : AbstractMojo() {
      */
     private fun checkDirectory(directory: File, lintErrors: MutableList<LintError>, ruleSets: Iterable<RuleSet>) {
         directory
-            .walk()
-            .filter { file ->
-                file.isDirectory || file.extension.let { it == "kt" || it == "kts" }
-            }
-            .filter { it.isFile }
-            .forEach { file ->
-                log.debug("Checking file $file")
-                try {
-                    reporter.before(file.path)
-                    checkFile(file, lintErrors, ruleSets)
-                    reporter.after(file.path)
-                } catch (e: RuleExecutionException) {
-                    log.error("Unhandled exception during rule execution: ", e)
-                    throw MojoExecutionException("Unhandled exception during rule execution", e)
+                .walk()
+                .filter { file ->
+                    file.isDirectory || file.extension.let { it == "kt" || it == "kts" }
                 }
-            }
+                .filter { it.isFile }
+                .forEach { file ->
+                    log.debug("Checking file $file")
+                    try {
+                        reporter.before(file.path)
+                        checkFile(file, lintErrors, ruleSets)
+                        reporter.after(file.path)
+                    } catch (e: RuleExecutionException) {
+                        log.error("Unhandled exception during rule execution: ", e)
+                        throw MojoExecutionException("Unhandled exception during rule execution", e)
+                    }
+                }
     }
 
     private fun checkFile(file: File,

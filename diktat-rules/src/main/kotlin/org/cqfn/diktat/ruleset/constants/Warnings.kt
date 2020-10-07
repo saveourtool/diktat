@@ -109,6 +109,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
 
     // ======== chapter 5 ========
     TOO_LONG_FUNCTION(false, "function is too long: split it or make more primitive"),
+    LAMBDA_IS_NOT_LAST_PARAMETER(false, "lambda inside function parameters should be in the end"),
     TOO_MANY_PARAMETERS(false, "function has too many parameters"),
     WRONG_OVERLOADING_FUNCTION_ARGUMENTS(false, "use default argument instead of function overloading"),
     ;

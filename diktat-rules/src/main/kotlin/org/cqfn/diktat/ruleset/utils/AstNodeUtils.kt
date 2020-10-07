@@ -339,7 +339,8 @@ fun ASTNode.hasSuppress(warningName: String): Boolean {
                 ?.any {
                     it.shortName.toString() == Suppress::class.simpleName
                             && it.valueArgumentList?.arguments
-                            ?.firstOrNull()?.text?.trim('"', ' ').equals(warningName) ?: false
+                            ?.any { annotationName -> annotationName.text.trim('"', ' ') == warningName }
+                            ?: false
                 } ?: false
     }, strict = false) != null
 }

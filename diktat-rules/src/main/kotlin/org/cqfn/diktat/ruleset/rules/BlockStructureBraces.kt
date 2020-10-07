@@ -81,9 +81,9 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
     @Suppress("UnsafeCallOnNullableType")
     private fun checkClass(node: ASTNode, configuration: BlockStructureBracesConfiguration) {
         if (node.hasChildOfType(CLASS_BODY) && !node.findChildByType(CLASS_BODY).isBlockEmpty()) {
-                checkOpenBraceOnSameLine(node, CLASS_BODY, configuration)
-                checkCloseBrace(node.findChildByType(CLASS_BODY)!!, configuration)
-            }
+            checkOpenBraceOnSameLine(node, CLASS_BODY, configuration)
+            checkCloseBrace(node.findChildByType(CLASS_BODY)!!, configuration)
+        }
     }
 
     @Suppress("UnsafeCallOnNullableType")  // `catch` and `finally` clauses should always have body in `{}`, therefore !!
@@ -123,7 +123,7 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
 
     private fun checkWhen(node: ASTNode, configuration: BlockStructureBracesConfiguration) {
         /// WHEN expression doesn't contain BLOCK element and LBRECE isn't the first child, so we should to find it.
-        val childrenAfterLBrace =  node.getChildren(null).toList().run { subList(indexOfFirst { it.elementType == LBRACE }, size) }
+        val childrenAfterLBrace = node.getChildren(null).toList().run { subList(indexOfFirst { it.elementType == LBRACE }, size) }
         if (!emptyBlockList.containsAll(childrenAfterLBrace.distinct().map { it.elementType })) {
             checkOpenBraceOnSameLine(node, LBRACE, configuration)
             checkCloseBrace(node, configuration)
