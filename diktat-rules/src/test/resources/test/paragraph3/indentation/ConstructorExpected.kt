@@ -8,3 +8,8 @@ class Example(protected val property1: Type1,
             property2, defaultValue)
 }
 
+sealed class SealedExample {
+    class Subclass(val property1: Type1, val property2: Type2,
+                   val property3: Type3) : SealedExample()
+}
+

@@ -10,6 +10,7 @@ import com.pinterest.ktlint.core.ast.ElementType.LPAR
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.RBRACKET
 import com.pinterest.ktlint.core.ast.ElementType.RPAR
+import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.THEN
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.visit
@@ -180,7 +181,7 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
                     // fixme: custom logic for determining exceptional indent initiator, should be moved elsewhere
                     is KtDotQualifiedExpression -> {
                         // get the topmost expression to keep extended indent for the whole chain of dot call expressions
-                        astNode.parents().takeWhile { it.elementType == DOT_QUALIFIED_EXPRESSION }.last()
+                        astNode.parents().takeWhile { it.elementType == DOT_QUALIFIED_EXPRESSION || it.elementType == SAFE_ACCESS_EXPRESSION }.last()
                     }
                     is KtIfExpression -> parent.findChildByType(THEN) ?: parent.findChildByType(ELSE) ?: parent
                     is KtLoopExpression -> (parent.psi as KtLoopExpression).body?.node ?: parent

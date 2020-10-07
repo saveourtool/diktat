@@ -1,6 +1,8 @@
 package org.cqfn.diktat.ruleset.utils.indentation
 
 import com.pinterest.ktlint.core.ast.ElementType.ARROW
+import com.pinterest.ktlint.core.ast.ElementType.AS_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.AS_SAFE
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.BODY
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
@@ -9,6 +11,7 @@ import com.pinterest.ktlint.core.ast.ElementType.DOT
 import com.pinterest.ktlint.core.ast.ElementType.ELSE
 import com.pinterest.ktlint.core.ast.ElementType.ELVIS
 import com.pinterest.ktlint.core.ast.ElementType.EQ
+import com.pinterest.ktlint.core.ast.ElementType.IS_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_END
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_LEADING_ASTERISK
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_SECTION
@@ -23,16 +26,19 @@ import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.nextCodeSibling
 import com.pinterest.ktlint.core.ast.prevSibling
 import org.cqfn.diktat.ruleset.rules.files.IndentationError
 import org.cqfn.diktat.ruleset.rules.files.lastIndent
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
 import org.jetbrains.kotlin.psi.KtBlockExpression
+import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
 import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.KtLoopExpression
 import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.KtPropertyAccessor
+import org.jetbrains.kotlin.psi.KtSafeQualifiedExpression
 import org.jetbrains.kotlin.psi.KtWhenEntry
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
@@ -167,10 +173,16 @@ internal class DotCallChecker(config: IndentationConfig) : CustomIndentationChec
                 .takeIf { nextNode ->
                     nextNode.elementType.let { it == DOT || it == SAFE_ACCESS } &&
                             nextNode.treeNext.elementType in listOf(CALL_EXPRESSION, REFERENCE_EXPRESSION) ||
-                            nextNode.elementType == OPERATION_REFERENCE && nextNode.firstChildNode.elementType == ELVIS
+                            nextNode.elementType == OPERATION_REFERENCE && nextNode.firstChildNode.elementType.let {
+                        it == ELVIS || it == IS_EXPRESSION || it == AS_KEYWORD || it == AS_SAFE
+                    }
                 }
                 ?.let {
-                    return CheckResult.from(indentError.actual, (whiteSpace.parentIndent()
+                    // we need to get indent before the first expression in calls chain
+                    return CheckResult.from(indentError.actual, (whiteSpace.run {
+                        parents.takeWhile { it is KtDotQualifiedExpression || it is KtSafeQualifiedExpression }.lastOrNull() ?: this
+                    }
+                            .parentIndent()
                             ?: indentError.expected) + (if (configuration.extendedIndentBeforeDot) 2 else 1) * configuration.indentationSize, true)
                 }
         return null
@@ -183,11 +195,11 @@ internal class DotCallChecker(config: IndentationConfig) : CustomIndentationChec
 internal class ConditionalsAndLoopsWithoutBracesChecker(config: IndentationConfig) : CustomIndentationChecker(config) {
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
         val parent = whiteSpace.parent
-        val nextNode = whiteSpace.nextSibling.node
+        val nextNode = whiteSpace.node.nextCodeSibling()  // if there is comment after if or else, it should be indented too
         return when (parent) {
-            is KtLoopExpression -> nextNode.elementType == BODY && parent.body !is KtBlockExpression
-            is KtIfExpression -> nextNode.elementType == THEN && parent.then !is KtBlockExpression ||
-                    nextNode.elementType == ELSE && parent.`else`.let { it !is KtBlockExpression && it !is KtIfExpression }
+            is KtLoopExpression -> nextNode?.elementType == BODY && parent.body !is KtBlockExpression
+            is KtIfExpression -> nextNode?.elementType == THEN && parent.then !is KtBlockExpression ||
+                    nextNode?.elementType == ELSE && parent.`else`.let { it !is KtBlockExpression && it !is KtIfExpression }
             else -> false
         }
                 .takeIf { it }
