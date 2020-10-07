@@ -19,6 +19,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
 import org.cqfn.diktat.ruleset.utils.getAllLeafsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getFileName
 import org.cqfn.diktat.ruleset.utils.indentBy
+import org.cqfn.diktat.ruleset.utils.indentation.ArrowInWhenChecker
 import org.cqfn.diktat.ruleset.utils.indentation.AssignmentOperatorChecker
 import org.cqfn.diktat.ruleset.utils.indentation.ConditionalsAndLoopsWithoutBracesChecker
 import org.cqfn.diktat.ruleset.utils.indentation.CustomGettersAndSettersChecker
@@ -60,7 +61,9 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
         private val matchingTokens = increasingTokens.zip(decreasingTokens)
     }
 
-    private lateinit var configuration: IndentationConfig
+    private val configuration: IndentationConfig by lazy {
+        IndentationConfig(configRules.getRuleConfig(WRONG_INDENTATION)?.configuration ?: mapOf())
+    }
     private lateinit var customIndentationCheckers: List<CustomIndentationChecker>
 
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
@@ -75,8 +78,6 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
 
         if (node.elementType == FILE) {
             fileName = node.getFileName()
-            configuration = IndentationConfig(configRules.getRuleConfig(WRONG_INDENTATION)?.configuration
-                    ?: mapOf())
 
             customIndentationCheckers = listOf(
                     ::AssignmentOperatorChecker,
@@ -86,7 +87,8 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
                     ::ExpressionIndentationChecker,
                     ::DotCallChecker,
                     ::KDocIndentationChecker,
-                    ::CustomGettersAndSettersChecker
+                    ::CustomGettersAndSettersChecker,
+                    ::ArrowInWhenChecker
             ).map { it.invoke(configuration) }
 
             if (checkIsIndentedWithSpaces(node)) {

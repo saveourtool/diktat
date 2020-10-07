@@ -1,11 +1,13 @@
 package org.cqfn.diktat.ruleset.utils.indentation
 
+import com.pinterest.ktlint.core.ast.ElementType.ARROW
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.BODY
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.COLON
 import com.pinterest.ktlint.core.ast.ElementType.DOT
 import com.pinterest.ktlint.core.ast.ElementType.ELSE
+import com.pinterest.ktlint.core.ast.ElementType.ELVIS
 import com.pinterest.ktlint.core.ast.ElementType.EQ
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_END
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_LEADING_ASTERISK
@@ -31,6 +33,7 @@ import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.KtLoopExpression
 import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.KtPropertyAccessor
+import org.jetbrains.kotlin.psi.KtWhenEntry
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
 import org.jetbrains.kotlin.psi.psiUtil.siblings
@@ -85,7 +88,16 @@ internal class ValueParameterListChecker(configuration: IndentationConfig) : Cus
 
             val expectedIndent = if (parameterAfterLpar != null && configuration.alignedParameters && parameterList.elementType == VALUE_PARAMETER_LIST) {
                 // fixme: probably there is a better way to find column number
-                parameterList.parents().last().text.substringBefore(parameterAfterLpar.text).lines().last().count()
+                // find first parent node which contains lines above this property or is the first in the file
+                // and count column number using strings
+                parameterList
+                        .parents()
+                        .map { it.text.substringBefore(parameterAfterLpar.text).lineSequence() }
+                        .run {
+                            find { it.count() > 1 } ?: last()
+                        }
+                        .last()
+                        .length
             } else if (configuration.extendedIndentOfParameters) {
                 indentError.expected + configuration.indentationSize
             } else {
@@ -146,16 +158,21 @@ internal class SuperTypeListChecker(config: IndentationConfig) : CustomIndentati
 }
 
 /**
- * This checker performs the following check: When dot call start on a new line, it should be indented by [IndentationConfig.indentationSize]
+ * This checker performs the following check: When dot call start on a new line, it should be indented by [IndentationConfig.indentationSize].
+ * Same is true for safe calls (`?.`) and elvis operator (`?:`).
  */
 internal class DotCallChecker(config: IndentationConfig) : CustomIndentationChecker(config) {
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
-        whiteSpace.nextSibling.node.takeIf {
-            it.elementType in listOf(DOT, SAFE_ACCESS) && it.treeNext.elementType in listOf(CALL_EXPRESSION, REFERENCE_EXPRESSION)
-        }?.let {
-            return CheckResult.from(indentError.actual, (whiteSpace.parentIndent()
-                    ?: indentError.expected) + (if (configuration.extendedIndentBeforeDot) 2 else 1) * configuration.indentationSize, true)
-        }
+        whiteSpace.nextSibling.node
+                .takeIf { nextNode ->
+                    nextNode.elementType.let { it == DOT || it == SAFE_ACCESS } &&
+                            nextNode.treeNext.elementType in listOf(CALL_EXPRESSION, REFERENCE_EXPRESSION) ||
+                            nextNode.elementType == OPERATION_REFERENCE && nextNode.firstChildNode.elementType == ELVIS
+                }
+                ?.let {
+                    return CheckResult.from(indentError.actual, (whiteSpace.parentIndent()
+                            ?: indentError.expected) + (if (configuration.extendedIndentBeforeDot) 2 else 1) * configuration.indentationSize, true)
+                }
         return null
     }
 }
@@ -188,6 +205,20 @@ internal class CustomGettersAndSettersChecker(config: IndentationConfig) : Custo
         val parent = whiteSpace.parent
         if (parent is KtProperty && whiteSpace.nextSibling is KtPropertyAccessor) {
             return CheckResult.from(indentError.actual, (parent.parentIndent()
+                    ?: indentError.expected) + configuration.indentationSize, true)
+        }
+        return null
+    }
+}
+
+/**
+ * Performs the following check: arrow in `when` expression increases indent by one step for the expression after it.
+ */
+internal class ArrowInWhenChecker(configuration: IndentationConfig) : CustomIndentationChecker(configuration) {
+    override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
+        val prevNode = whiteSpace.prevSibling.node
+        if (prevNode.elementType == ARROW && whiteSpace.parent is KtWhenEntry) {
+            return CheckResult.from(indentError.actual, (whiteSpace.parentIndent()
                     ?: indentError.expected) + configuration.indentationSize, true)
         }
         return null

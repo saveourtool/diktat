@@ -38,4 +38,10 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
     fun `indentation rule - verbose example from ktlint`() {
         fixAndCompare("IndentFullExpected.kt", "IndentFullTest.kt")
     }
+
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
+    fun `regression - incorrect fixing in constructor parameter list`() {
+        fixAndCompare("ConstructorExpected.kt", "ConstructorTest.kt")
+    }
 }

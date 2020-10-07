@@ -199,6 +199,26 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
 
     @Test
     @Tag(WarningNames.WRONG_INDENTATION)
+    fun `when lambda is assigned, indentation is increased by one step`() {
+        lintMethod(
+                """
+                    |fun foo() {
+                    |    val a = { x: Int ->
+                    |        x * 2
+                    |    }
+                    |    
+                    |    val b =
+                    |            { x: Int ->
+                    |                x * 2
+                    |            }
+                    |}
+                    |
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
     fun `should check indentation in KDocs`() {
         lintMethod(
                 """
@@ -227,6 +247,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |            ?.also {
                     |                println("Also with safe access")
                     |            }
+                    |            ?: Integer.valueOf(0)
                     |}
                     |
                 """.trimMargin()
@@ -461,6 +482,53 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                                 )
                         )
                 )
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
+    fun `arrows in when expression should increase indentation - positive example`() {
+        lintMethod(
+                """
+                    |fun foo() {
+                    |    when (x) {
+                    |        X_1 ->
+                    |            foo(x)
+                    |        X_2 -> bar(x)
+                    |        X_3 -> {
+                    |            baz(x)
+                    |        }
+                    |        else ->
+                    |            qux(x)
+                    |    }
+                    |}
+                    |
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
+    fun `arrows in when expression should increase indentation`() {
+        lintMethod(
+                """
+                    |fun foo() {
+                    |    when (x) {
+                    |        X_1 ->
+                    |        foo(x)
+                    |        X_2 -> bar(x)
+                    |        X_3 -> {
+                    |        baz(x)
+                    |        }
+                    |        else ->
+                    |        qux(x)
+                    |    }
+                    |}
+                    |
+                """.trimMargin(),
+                LintError(4, 1, ruleId, warnText(12, 8), true),
+                LintError(7, 1, ruleId, warnText(12, 8), true),
+                LintError(10, 1, ruleId, warnText(12, 8), true)
         )
     }
 
