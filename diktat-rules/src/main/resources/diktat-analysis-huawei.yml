@@ -294,3 +294,12 @@
 - name: AVOID_NESTED_FUNCTIONS
   enabled: true
   configuration: {}
+# Checks that lambda inside function parameters is in the end
+- name: LAMBDA_IS_NOT_LAST_PARAMETER
+  enabled: true
+  configuration: {}
+# Checks that function doesn't contains too many parameters
+- name: TOO_MANY_PARAMETERS
+  enabled: true
+  configuration:
+    maxParameterListSize: '5' # max parameters size

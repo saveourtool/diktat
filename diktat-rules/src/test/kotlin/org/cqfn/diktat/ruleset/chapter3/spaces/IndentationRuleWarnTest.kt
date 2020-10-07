@@ -1,13 +1,12 @@
-package org.cqfn.diktat.ruleset.chapter3
+package org.cqfn.diktat.ruleset.chapter3.spaces
 
 import com.pinterest.ktlint.core.LintError
-import org.cqfn.diktat.common.config.rules.RulesConfig
 import generated.WarningNames
+import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.files.IndentationRule
 import org.cqfn.diktat.util.LintTestBase
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
@@ -19,6 +18,18 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                             "extendedIndentOfParameters" to "true",
                             "alignedParameters" to "true",
                             "extendedIndentAfterOperators" to "true",
+                            "extendedIndentBeforeDot" to "false",
+                            "indentationSize" to "4"
+                    )
+            )
+    )
+    private val disabledOptionsRulesConfigList = listOf(
+            RulesConfig(WRONG_INDENTATION.name, true,
+                    mapOf(
+                            "extendedIndentOfParameters" to "false",
+                            "alignedParameters" to "false",
+                            "extendedIndentAfterOperators" to "false",
+                            "extendedIndentBeforeDot" to "false",
                             "indentationSize" to "4"
                     )
             )
@@ -172,7 +183,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
         lintMethod(
                 """
                     |fun <T> foo(list: List<T>) {
-                    |    val a = list.filter { 
+                    |    val a = list.filter {
                     |        predicate(it)
                     |    }
                     |    
@@ -210,12 +221,12 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                 """
                     |fun foo() {
                     |    Integer
-                    |        .valueOf(2).also {
-                    |            println(it)
-                    |        }
-                    |        ?.also {
-                    |            println("Also with safe access")
-                    |        }
+                    |            .valueOf(2).also {
+                    |                println(it)
+                    |            }
+                    |            ?.also {
+                    |                println("Also with safe access")
+                    |            }
                     |}
                     |
                 """.trimMargin()
@@ -274,17 +285,83 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
 
     @Test
     @Tag(WarningNames.WRONG_INDENTATION)
-    @Disabled("todo")
+    fun `loops and conditionals without braces should be indented - if-else with mixed braces`() {
+        lintMethod(
+                """
+                    |fun foo() {
+                    |    if (condition) {
+                    |        bar()
+                    |    } else
+                    |        baz()
+                    |        
+                    |    if (condition)
+                    |        bar()
+                    |    else {
+                    |        baz()
+                    |    }
+                    |        
+                    |    if (condition)
+                    |        bar()
+                    |    else if (condition2) {
+                    |        baz()
+                    |    } else
+                    |        qux()
+                    |        
+                    |    if (condition)
+                    |        bar()
+                    |    else if (condition2)
+                    |        baz()
+                    |    else {
+                    |        quux()
+                    |    }
+                    |}
+                    |
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
     fun `opening braces should not increase indent when placed on the same line`() {
         lintMethod(
                 """
                     |fun foo() {
                     |    consume(Example(
-                    |            t1, t2, t3)
+                    |            t1, t2, t3
+                    |    ))
+                    |
+                    |    bar(baz(
+                    |            1,
+                    |            2
+                    |    )
+                    |    )
+                    |
+                    |    bar(baz(
+                    |            1,
+                    |            2),
+                    |            3
                     |    )
                     |}
                     |
                 """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
+    fun `opening braces should not increase indent when placed on the same line - with disabled options`() {
+        lintMethod(
+                """
+                    |fun foo() {
+                    |    bar(baz(
+                    |        1,
+                    |        2),
+                    |        3
+                    |    )
+                    |}
+                    |
+                """.trimMargin(),
+                rulesConfigList = disabledOptionsRulesConfigList
         )
     }
 
@@ -328,6 +405,62 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                 LintError(3, 1, ruleId, warnText(8, 12), true),
                 LintError(8, 1, ruleId, warnText(8, 4), true),
                 LintError(9, 1, ruleId, warnText(8, 4), true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
+    fun `regression - indentation should be increased inside parameter list for multiline parameters`() {
+        lintMethod(
+                """
+                    |fun foo() {
+                    |    bar(
+                    |            param1 = baz(
+                    |                    1,
+                    |                    2
+                    |            ),
+                    |            param2 = { elem ->
+                    |                elem.qux()
+                    |            },
+                    |            param3 = x
+                    |                    .y()
+                    |    )
+                    |}
+                    |
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
+    fun `regression - nested blocks inside loops and conditionals without braces should be properly indented`() {
+        lintMethod(
+                """
+                    |fun foo() {
+                    |    if (condition)
+                    |        list.filter {
+                    |            bar()
+                    |        }
+                    |            .call(
+                    |                param1,
+                    |                param2
+                    |            )
+                    |    else
+                    |        list
+                    |            .filter {
+                    |                baz()
+                    |            }
+                    |}
+                    |
+                """.trimMargin(),
+                rulesConfigList = listOf(
+                        RulesConfig(WRONG_INDENTATION.name, true,
+                                mapOf(
+                                        "extendedIndentOfParameters" to "false",
+                                        "extendedIndentBeforeDot" to "false"
+                                )
+                        )
+                )
         )
     }
 
