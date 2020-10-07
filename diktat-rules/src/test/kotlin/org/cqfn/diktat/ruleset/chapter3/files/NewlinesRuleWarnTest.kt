@@ -564,11 +564,19 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |           .filter {
                     |               baz()
                     |           }
+                    |           
+                    |        list.filter {
+                    |           
+                    |        }
+                    |        .map(::foo).filter {
+                    |           bar()
+                    |         }
                     |}
                 """.trimMargin(),
                 LintError(2, 22, ruleId,"${WRONG_NEWLINES.warnText()} should follow functional style at .", true),
                 LintError(6, 22, ruleId,"${WRONG_NEWLINES.warnText()} should follow functional style at ?.", true),
-                LintError(10, 13, ruleId,"${WRONG_NEWLINES.warnText()} should follow functional style at .", true)
+                LintError(10, 13, ruleId,"${WRONG_NEWLINES.warnText()} should follow functional style at .", true),
+                LintError(19, 20, ruleId,"${WRONG_NEWLINES.warnText()} should follow functional style at .", true)
         )
     }
 }

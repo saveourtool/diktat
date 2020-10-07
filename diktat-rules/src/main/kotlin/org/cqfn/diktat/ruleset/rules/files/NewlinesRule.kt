@@ -338,7 +338,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
                 }
             }
             ?.dropWhile { !it.treeParent.textContains('(') && !it.treeParent.textContains('{') }
-            // fixme: we can't distinguish fully qualified names from chain of calls for now
+            // fixme: we can't distinguish fully qualified names (like java.lang) from chain of property accesses (like list.size) for now
             ?.filter { it.getParentExpressions().count() > 1 }
             ?.count()
             ?.let { it > 1 }
