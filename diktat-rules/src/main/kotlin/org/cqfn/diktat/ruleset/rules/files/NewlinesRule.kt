@@ -5,6 +5,7 @@ import com.pinterest.ktlint.core.ast.ElementType.ANDAND
 import com.pinterest.ktlint.core.ast.ElementType.ARROW
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
+import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.CALLABLE_REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.COLON
@@ -16,12 +17,14 @@ import com.pinterest.ktlint.core.ast.ElementType.DOT
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.ELVIS
 import com.pinterest.ktlint.core.ast.ElementType.ENUM_ENTRY
+import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.EQ
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_LITERAL
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.IF
 import com.pinterest.ktlint.core.ast.ElementType.IMPORT_DIRECTIVE
+import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_ARGUMENT
 import com.pinterest.ktlint.core.ast.ElementType.LPAR
 import com.pinterest.ktlint.core.ast.ElementType.MINUS
@@ -34,6 +37,7 @@ import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.PLUS
 import com.pinterest.ktlint.core.ast.ElementType.PLUSEQ
 import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
+import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.RETURN
 import com.pinterest.ktlint.core.ast.ElementType.RETURN_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS
@@ -61,10 +65,18 @@ import org.cqfn.diktat.ruleset.utils.isFollowedByNewline
 import org.cqfn.diktat.ruleset.utils.isSingleLineIfElse
 import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.ir.expressions.IrStatementOrigin
+import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
+import org.jetbrains.kotlin.psi.KtExpression
+import org.jetbrains.kotlin.psi.KtExpressionImpl
+import org.jetbrains.kotlin.psi.KtPostfixExpression
+import org.jetbrains.kotlin.psi.KtQualifiedExpression
+import org.jetbrains.kotlin.psi.KtSafeQualifiedExpression
 import org.jetbrains.kotlin.psi.psiUtil.children
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.siblings
@@ -92,6 +104,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
 
         private val expressionTypes = TokenSet.create(DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION, CALLABLE_REFERENCE_EXPRESSION, BINARY_EXPRESSION)
         private val chainExpressionTypes = TokenSet.create(DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION)
+        private val dropChainValues = TokenSet.create(EOL_COMMENT, WHITE_SPACE, BLOCK_COMMENT, KDOC)
     }
 
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
@@ -284,16 +297,20 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
     }
 
 
-    private fun ASTNode.getOrderedCallExpressions(elementTypeDot: IElementType, elementTypeSafeCall: IElementType, result: MutableList<ASTNode>) {
+    private fun ASTNode.getOrderedCallExpressions(psi: PsiElement, result: MutableList<ASTNode>) {
         // if statements here have the only right order - don't change it
-        if (this.isLeaf()) {
-            if (this.elementType == elementTypeDot || this.elementType == elementTypeSafeCall) {
-                result.add(this)
-            }
-        } else {
-            this.getChildren(null).forEach {
-                it.getOrderedCallExpressions(elementTypeDot, elementTypeSafeCall, result)
-            }
+
+        if (psi.children.isNotEmpty() && (psi.children[0].node.elementType == REFERENCE_EXPRESSION
+                || psi.children[0].node.elementType == CALL_EXPRESSION)) {
+            result.add(psi.children[0].node.siblings(true)
+                    .dropWhile { it.elementType in dropChainValues }
+                    .first()) // node treeNext is ".", "?.", "!!", "::"
+        } else if (psi.children.isNotEmpty()) {
+            getOrderedCallExpressions(psi.children[0], result)
+
+            result.add(psi.children[0].node.siblings(true)
+                    .dropWhile { it.elementType in dropChainValues }
+                    .first()) // node treeNext is ".", "?.", "!!", "::"
         }
     }
 
@@ -317,12 +334,8 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
             .lastOrNull()
             ?.run {
                 mutableListOf<ASTNode>().also {
-                    getOrderedCallExpressions(DOT, SAFE_ACCESS, it)
+                    getOrderedCallExpressions(psi, it)
                 }
-            }
-            ?.filterNot {
-                // should skip node's that are val params. For example: b.some(z.a()) -> skip z.a()
-                it.treeParent.treeParent != null && it.treeParent.treeParent.elementType == VALUE_ARGUMENT
             }
             ?.dropWhile { !it.treeParent.textContains('(') && !it.treeParent.textContains('{') }
             // fixme: we can't distinguish fully qualified names from chain of calls for now
@@ -347,7 +360,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
             .lastOrNull()
             ?.run {
                 val firstCallee = mutableListOf<ASTNode>().also {
-                    getOrderedCallExpressions(DOT, SAFE_ACCESS, it)
+                    getOrderedCallExpressions(psi, it)
                 }.first()
                 findAllNodesWithSpecificType(firstCallee.elementType, false).first() === this@isFirstCall
             } ?: false
