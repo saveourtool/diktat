@@ -30,9 +30,8 @@ class OverloadingArgumentsFunction(private val configRules: List<RulesConfig>) :
     @Suppress("UnsafeCallOnNullableType")
     private fun checkFun(funPsi: KtFunction) {
         val allOverloadFunction = funPsi.node.allSiblings(withSelf = false)
-                .map { it.psi }
-                .filter { it.node.elementType == FUN }
-                .map { it as KtFunction }
+                .filter { it.elementType == FUN }
+                .map { it.psi as KtFunction }
                 .filter { it.nameIdentifier!!.text == funPsi.nameIdentifier!!.text && it.valueParameters.containsAll(funPsi.valueParameters) }
         if (allOverloadFunction.isNotEmpty()) {
             WRONG_OVERLOADING_FUNCTION_ARGUMENTS.warn(configRules, emitWarn, isFixMode, funPsi.node.findChildByType(IDENTIFIER)!!.text, funPsi.startOffset, funPsi.node)
