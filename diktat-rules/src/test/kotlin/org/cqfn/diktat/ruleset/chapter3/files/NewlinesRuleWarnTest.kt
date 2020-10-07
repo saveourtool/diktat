@@ -502,4 +502,81 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 LintError(2, 5, ruleId, singleReturnWarn, true)
         )
     }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
+    fun `should not trigger`() {
+        lintMethod(
+                """
+                    |fun foo(): String {
+                    |
+                    |       val a = java.lang.Boolean.getBoolean(properties.getProperty("parallel.mode"))
+                    |
+                    |        allProperties?.filter {
+                    |           predicate(it)
+                    |           val x = listOf(1,2,3).filter { it < 3 }
+                    |           x == 0
+                    |        }
+                    |        .foo()
+                    |        .bar()
+                    |        
+                    |        allProperties?.filter {
+                    |           predicate(it)
+                    |        }
+                    |        .foo()
+                    |        .bar()
+                    |        .let {
+                    |           it.some()
+                    |        }
+                    |        
+                    |        allProperties
+                    |        ?.filter {
+                    |           predicate(it)
+                    |        }
+                    |        .foo()
+                    |        .bar()
+                    |        .let {
+                    |           mutableListOf().also {
+                    |               
+                    |           }
+                    |        }
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
+    fun `should trigger on non-multiline lambdas`() {
+        lintMethod(
+                """
+                    |fun foo(): String {
+                    |        allProperties.filter { predicate(it) }
+                    |        .foo()
+                    |        .bar()
+                    |        
+                    |        allProperties?.filter { predicate(it) }
+                    |        .foo()
+                    |        .bar()
+                    |        
+                    |        list.foo()
+                    |           .bar()
+                    |           .filter {
+                    |               baz()
+                    |           }
+                    |           
+                    |        list.filter {
+                    |           
+                    |        }
+                    |        .map(::foo).filter {
+                    |           bar()
+                    |         }
+                    |}
+                """.trimMargin(),
+                LintError(2, 22, ruleId,"${WRONG_NEWLINES.warnText()} should follow functional style at .", true),
+                LintError(6, 22, ruleId,"${WRONG_NEWLINES.warnText()} should follow functional style at ?.", true),
+                LintError(10, 13, ruleId,"${WRONG_NEWLINES.warnText()} should follow functional style at .", true),
+                LintError(19, 20, ruleId,"${WRONG_NEWLINES.warnText()} should follow functional style at .", true)
+        )
+    }
 }
