@@ -1,33 +1,20 @@
 package org.cqfn.diktat.ruleset.rules
 
 import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
-import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
-import com.pinterest.ktlint.core.ast.ElementType.OVERRIDE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER
-import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
-import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.AVOID_NESTED_FUNCTIONS
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithCondition
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
-import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
-import org.cqfn.diktat.ruleset.utils.getAllLeafsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.cqfn.diktat.ruleset.utils.hasParent
-import org.cqfn.diktat.ruleset.utils.prettyPrint
-import org.cqfn.diktat.ruleset.utils.prevNodeUntilNode
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
-import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.psi.KtFunction
@@ -75,23 +62,22 @@ class AvoidNestedFunctionsRule(private val configRules: List<RulesConfig>) : Rul
         }
     }
 
-    private fun isNestedFunction(node: ASTNode) : Boolean =
-        node.hasParent(FUN) && node.hasFunParentUntil(CLASS_BODY) && !node.hasChildOfType(MODIFIER_LIST)
+    private fun isNestedFunction(node: ASTNode): Boolean =
+            node.hasParent(FUN) && node.hasFunParentUntil(CLASS_BODY) && !node.hasChildOfType(MODIFIER_LIST)
 
 
-    private fun ASTNode.hasFunParentUntil(stopNode: IElementType) : Boolean =
+    private fun ASTNode.hasFunParentUntil(stopNode: IElementType): Boolean =
             parents().asSequence().toList().takeWhile { it.elementType != stopNode }.any { it.elementType == FUN }
+
     /**
      * Checks if local function has no usage of outside properties
      */
     @Suppress("UnsafeCallOnNullableType")
     private fun checkFunctionReferences(func: ASTNode): Boolean {
         val localProperties = mutableListOf<ASTNode>()
-        func.getAllLeafsWithSpecificType(PROPERTY, localProperties)
+        localProperties.addAll(func.findAllNodesWithSpecificType(PROPERTY))
         val propertiesNames = mutableListOf<String>()
-        localProperties.forEach {
-            propertiesNames.add(it.getFirstChildWithType(IDENTIFIER)!!.text)
-        }
+        propertiesNames.addAll(localProperties.map { it.getFirstChildWithType(IDENTIFIER)!!.text })
         propertiesNames.addAll(getParameterNames(func))
 
         return func.findAllNodesWithSpecificType(REFERENCE_EXPRESSION).all { propertiesNames.contains(it.text) }
@@ -101,10 +87,11 @@ class AvoidNestedFunctionsRule(private val configRules: List<RulesConfig>) : Rul
      * Collects all function parameters' names
      * @return List of names
      */
+    @Suppress("UnsafeCallOnNullableType")
     private fun getParameterNames(node: ASTNode): List<String> {
         val paramsNames = mutableListOf<String>()
         (node.psi as KtFunction).valueParameters.forEach {
-            paramsNames.add(it.name ?: "_")
+            paramsNames.add(it.name!!)
         }
         return paramsNames
     }
