@@ -300,8 +300,8 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
     private fun ASTNode.getOrderedCallExpressions(psi: PsiElement, result: MutableList<ASTNode>) {
         // if statements here have the only right order - don't change it
 
-        if (psi.children.isNotEmpty() && (psi.children[0].node.elementType == REFERENCE_EXPRESSION
-                || psi.children[0].node.elementType == CALL_EXPRESSION)) {
+        if (psi.children.isNotEmpty() && (psi.children[0].node.elementType != DOT_QUALIFIED_EXPRESSION
+                        && psi.children[0].node.elementType != SAFE_ACCESS_EXPRESSION )) {
             result.add(psi.children[0].node.siblings(true)
                     .dropWhile { it.elementType in dropChainValues }
                     .first()) // node treeNext is ".", "?.", "!!", "::"
