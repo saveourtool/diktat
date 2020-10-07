@@ -87,3 +87,5 @@ fun KtNameReferenceExpression.findLocalDeclaration(): KtProperty? = parents
                     }
         }
         .firstOrNull()
+
+fun KtCallExpression.getFunctionName() = (calleeExpression as? KtNameReferenceExpression)?.getReferencedName()

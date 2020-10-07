@@ -6,7 +6,7 @@ import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 
 /**
  * List of standard methods which do not need mandatory documentation
-  */
+ */
 internal val STANDARD_METHODS = listOf("main", "equals", "hashCode", "toString", "clone", "finalize")
 
 internal const val GET_PREFIX = "get"

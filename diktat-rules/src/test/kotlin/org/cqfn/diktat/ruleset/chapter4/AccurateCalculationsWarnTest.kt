@@ -150,4 +150,37 @@ class AccurateCalculationsWarnTest : LintTestBase(::AccurateCalculationsRule) {
                 LintError(16, 9, ruleId, warnText("x", "x %= 2"), false)
         )
     }
+
+    @Test
+    @Tag(WarningNames.FLOAT_IN_ACCURATE_CALCULATIONS)
+    fun `should allow arithmetic operations inside abs in comparison`() {
+        lintMethod(
+                """
+                    |import kotlin.math.abs
+                    |
+                    |fun foo() {
+                    |    if (abs(1.0 - 0.999) < 1e-6) {
+                    |        println("Comparison with tolerance")
+                    |    }
+                    |    
+                    |    1e-6 > abs(1.0 - 0.999)
+                    |    abs(1.0 - 0.999).compareTo(1e-6) < 0
+                    |    1e-6.compareTo(abs(1.0 - 0.999)) < 0
+                    |    abs(1.0 - 0.999) == 1e-6
+                    |    
+                    |    abs(1.0 - 0.999) < eps
+                    |    eps > abs(1.0 - 0.999)
+                    |    
+                    |    val x = 1.0
+                    |    val y = 0.999
+                    |    abs(x - y) < eps
+                    |    eps > abs(x - y)
+                    |    abs(1.0 - 0.999) == eps
+                    |}
+                """.trimMargin(),
+                LintError(11, 5, ruleId, warnText("1e-6", "abs(1.0 - 0.999) == 1e-6"), false),
+                LintError(11, 9, ruleId, warnText("1.0", "1.0 - 0.999"), false),
+                LintError(20, 9, ruleId, warnText("1.0", "1.0 - 0.999"), false)
+        )
+    }
 }
