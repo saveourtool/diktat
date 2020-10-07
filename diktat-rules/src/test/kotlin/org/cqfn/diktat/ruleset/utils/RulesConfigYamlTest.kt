@@ -16,7 +16,7 @@ import java.io.File
 class RulesConfigYamlTest {
 
     private val pathMap = mapOf("diktat-analysis.yml" to "diKTat/diktat-rules/src/main/resources/diktat-analysis.yml",
-    "diktat-analysis-huawei.yml" to "diKTat/diktat-rules/src/main/resources/diktat-analysis-huawei.yml",
+            "diktat-analysis-huawei.yml" to "diKTat/diktat-rules/src/main/resources/diktat-analysis-huawei.yml",
             "parent/diktat-analysis.yml" to "diKTat/diktat-analysis.yml")
 
     @Test

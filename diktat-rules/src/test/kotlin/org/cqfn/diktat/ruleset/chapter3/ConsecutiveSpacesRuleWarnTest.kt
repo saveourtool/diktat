@@ -148,7 +148,7 @@ class ConsecutiveSpacesRuleWarnTest : LintTestBase(::ConsecutiveSpacesRule) {
                     |   var value = t
                     |}
                 """.trimMargin()
-                )
+        )
     }
 
     @Test
