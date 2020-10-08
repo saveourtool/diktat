@@ -81,6 +81,36 @@ class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
 
     @Test
     @Tag(WarningNames.NESTED_BLOCK)
+    fun `check simple nested block with try`() {
+        lintMethod(
+                """
+                    |fun foo() {
+                    |
+                    |   if (true) {
+                    |       if (false) {
+                    |           try {
+                    |               try{
+                    |                   try{
+                    |                   
+                    |                   } catch(ex: Exception){
+                    |                       try{
+                    |                           println("hi")
+                    |                       } catch(ex: Exception){}
+                    |                   }
+                    |               } catch(ex: Exception){}
+                    |           } catch(ex: Exception){}
+                    |       }
+                    |   } else {
+                    |       println("dscsds")
+                    |   }
+                    |}
+                """.trimMargin(),
+                LintError(1,1, ruleId, "${NESTED_BLOCK.warnText()} foo", false)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.NESTED_BLOCK)
     fun `check simple nested block of function`() {
         lintMethod(
                 """
@@ -98,11 +128,9 @@ class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
                     |       println("dscsds")
                     |   }
                     |}
-                """.trimMargin(),
-                LintError(1,1, ruleId, "${NESTED_BLOCK.warnText()} foo", false)
+                """.trimMargin()
         )
     }
-
 
     @Test
     @Tag(WarningNames.NESTED_BLOCK)
@@ -116,7 +144,9 @@ class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
                     |               if (false) {
                     |                   while(true) {
                     |                       if(false) {
-                    |                           println("ne")
+                    |                           try {
+                    |                               println("ne")
+                    |                           } catch (e: Exception) {}
                     |                       }
                     |                   }
                     |               }
@@ -125,9 +155,13 @@ class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
                     |           }
                     |       }
                     |   }
+                    |   if(true) {
+                    |       while(true) {
+                    |       }
+                    |   }
                     |}
                 """.trimMargin(),
-                LintError(2,4, ruleId, "${NESTED_BLOCK.warnText()} A", false)
+                LintError(3,8, ruleId, "${NESTED_BLOCK.warnText()} goo", false)
         )
     }
 
@@ -168,9 +202,11 @@ class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
                     
                     val keyListener = KeyAdapter { keyEvent ->
                         if (true) {
-                        } else if (false){
-                            when(x){
-                                10 -> println(x)
+                        } else if (false) {
+                            while(true) {
+                                if(true) {
+                                    println(10)
+                                }
                             }
                         }
                     }
@@ -182,6 +218,37 @@ class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
                 """.trimMargin(),
                 LintError(4,50, ruleId, "${NESTED_BLOCK.warnText()} { keyEvent ->...", false),
                 rulesConfigList = rulesConfigList
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.NESTED_BLOCK)
+    fun `check simple nested block inside class`() {
+        lintMethod(
+                """
+                    |class A {
+                    |   fun foo() {
+                    |       if(true) {
+                    |           if(false) {
+                    |               if(true) {
+                    |                   when(x) {
+                    |                   }
+                    |               }
+                    |           }
+                    |       }
+                    |   }
+                    |   
+                    |   fun goo() {
+                    |       if(true){
+                    |           if(false){
+                    |               if(true){ 
+                    |               }
+                    |           }
+                    |       }
+                    |   }
+                    |}
+                """.trimMargin(),
+                LintError(2,4, ruleId, "${NESTED_BLOCK.warnText()} foo", false)
         )
     }
 }
