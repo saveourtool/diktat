@@ -67,7 +67,7 @@ class AvoidNestedFunctionsRule(private val configRules: List<RulesConfig>) : Rul
 
 
     private fun ASTNode.hasFunParentUntil(stopNode: IElementType): Boolean =
-            parents().asSequence().toList().takeWhile { it.elementType != stopNode }.any { it.elementType == FUN }
+            parents().asSequence().takeWhile { it.elementType != stopNode }.any { it.elementType == FUN }
 
     /**
      * Checks if local function has no usage of outside properties
@@ -88,11 +88,7 @@ class AvoidNestedFunctionsRule(private val configRules: List<RulesConfig>) : Rul
      * @return List of names
      */
     @Suppress("UnsafeCallOnNullableType")
-    private fun getParameterNames(node: ASTNode): List<String> {
-        val paramsNames = mutableListOf<String>()
-        (node.psi as KtFunction).valueParameters.forEach {
-            paramsNames.add(it.name!!)
-        }
-        return paramsNames
-    }
+    private fun getParameterNames(node: ASTNode): List<String> =
+        (node.psi as KtFunction).valueParameters.map { it.name!! }
+
 }
