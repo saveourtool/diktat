@@ -172,8 +172,10 @@ object WarningNames {
 
     const val TOO_LONG_FUNCTION: String = "TOO_LONG_FUNCTION"
 
+    const val AVOID_NESTED_FUNCTIONS: String = "AVOID_NESTED_FUNCTIONS"
+
     const val LAMBDA_IS_NOT_LAST_PARAMETER: String = "LAMBDA_IS_NOT_LAST_PARAMETER"
-  
+
     const val TOO_MANY_PARAMETERS: String = "TOO_MANY_PARAMETERS"
 
 }
