@@ -34,6 +34,7 @@ import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
 import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
+import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.KtLoopExpression
 import org.jetbrains.kotlin.psi.KtProperty
@@ -79,6 +80,7 @@ internal class ValueParameterListChecker(configuration: IndentationConfig) : Cus
                         it.node.elementType.run { this == VALUE_ARGUMENT || this == VALUE_PARAMETER }
                     }
 
+    @ExperimentalStdlibApi  // to use `scan` on sequence
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
         if (isCheckNeeded(whiteSpace)) {
             val parameterList = whiteSpace.parent.node
@@ -93,17 +95,13 @@ internal class ValueParameterListChecker(configuration: IndentationConfig) : Cus
                     }
 
             val expectedIndent = if (parameterAfterLpar != null && configuration.alignedParameters && parameterList.elementType == VALUE_PARAMETER_LIST) {
-                // fixme: probably there is a better way to find column number
-                // find first parent node which contains lines above this property or is the first in the file
-                // and count column number using strings
-                parameterList
-                        .parents()
-                        .map { it.text.substringBefore(parameterAfterLpar.text).lineSequence() }
-                        .run {
-                            find { it.count() > 1 } ?: last()
-                        }
-                        .last()
-                        .length
+                // count column number of the first parameter
+                val ktFile = whiteSpace.parents.last() as KtFile
+                ktFile.text
+                        .lineSequence()
+                        .scan(0 to "") { (length, _), s -> length + s.length to s }
+                        .first { it.first > parameterAfterLpar.startOffset }
+                        .let { (_, line) -> line.substringBefore(parameterAfterLpar.text).length }
             } else if (configuration.extendedIndentOfParameters) {
                 indentError.expected + configuration.indentationSize
             } else {
@@ -124,7 +122,7 @@ internal class ExpressionIndentationChecker(configuration: IndentationConfig) : 
         if (whiteSpace.parent.node.elementType == BINARY_EXPRESSION && whiteSpace.prevSibling.node.elementType == OPERATION_REFERENCE) {
             val expectedIndent = (whiteSpace.parentIndent() ?: indentError.expected) +
                     (if (configuration.extendedIndentAfterOperators) 2 else 1) * configuration.indentationSize
-            return CheckResult.from(indentError.actual, expectedIndent)
+            return CheckResult.from(indentError.actual, expectedIndent, true)
         }
         return null
     }

@@ -551,6 +551,23 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |            // another comment about the next call
                     |            ?.filter { it.bar() }
                     |            ?.count()
+                    |    
+                    |    list.any { predicate(it) } &&
+                    |            list.any {
+                    |                predicate(it)
+                    |            }
+                    |    
+                    |    list.any { predicate(it) } &&
+                    |            // comment
+                    |            list.any {
+                    |                predicate(it)
+                    |            }
+                    |    
+                    |    list.filter {
+                    |        predicate(it) &&
+                    |                // comment
+                    |                predicate(it)
+                    |    }
                     |}
                     |
                 """.trimMargin()
