@@ -24,6 +24,9 @@ class NestedFunctionBlock(private val configRules: List<RulesConfig>) : Rule("ne
 
     companion object {
         private const val MAX_NESTED_BLOCK_COUNT = 4L
+        /**
+         * Nodes of these types reset counter of nested blocks
+         */
         private val NULLIFICATION_TYPE = listOf(CLASS, FUN, OBJECT_DECLARATION, FUNCTION_LITERAL)
     }
 
@@ -45,9 +48,8 @@ class NestedFunctionBlock(private val configRules: List<RulesConfig>) : Rule("ne
     }
 
     private fun countNestedBlocks(node: ASTNode, maxNestedBlockCount: Long) {
-        if (node.elementType == CLASS && !(node.psi as KtClass).isLocal) return
-        node.findAllNodesWithSpecificType(LBRACE).reversed().forEach { blockNode ->
-            val blockParent = blockNode
+        node.findAllNodesWithSpecificType(LBRACE).reversed().forEach { lbraceNode ->
+            val blockParent = lbraceNode
                     .parents()
                     .takeWhile { it != node }
                     .takeIf { parentList -> parentList.map { it.elementType }.none { it in NULLIFICATION_TYPE } }
