@@ -5,6 +5,7 @@ import com.pinterest.ktlint.core.ast.ElementType.ANDAND
 import com.pinterest.ktlint.core.ast.ElementType.ARROW
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
+import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.CALLABLE_REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.COLON
@@ -16,12 +17,14 @@ import com.pinterest.ktlint.core.ast.ElementType.DOT
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.ELVIS
 import com.pinterest.ktlint.core.ast.ElementType.ENUM_ENTRY
+import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.EQ
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_LITERAL
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.IF
 import com.pinterest.ktlint.core.ast.ElementType.IMPORT_DIRECTIVE
+import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_ARGUMENT
 import com.pinterest.ktlint.core.ast.ElementType.LPAR
 import com.pinterest.ktlint.core.ast.ElementType.MINUS
@@ -34,15 +37,18 @@ import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.PLUS
 import com.pinterest.ktlint.core.ast.ElementType.PLUSEQ
 import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
+import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.RETURN
 import com.pinterest.ktlint.core.ast.ElementType.RETURN_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS
 import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.SECONDARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.SEMICOLON
+import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.isLeaf
 import com.pinterest.ktlint.core.ast.nextCodeSibling
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevCodeSibling
@@ -52,16 +58,25 @@ import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_NEWLINES
 import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
 import org.cqfn.diktat.ruleset.utils.emptyBlockList
 import org.cqfn.diktat.ruleset.utils.extractLineOfText
-import org.cqfn.diktat.ruleset.utils.getAllLeafsWithSpecificType
+import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.isBeginByNewline
 import org.cqfn.diktat.ruleset.utils.isEol
 import org.cqfn.diktat.ruleset.utils.isFollowedByNewline
 import org.cqfn.diktat.ruleset.utils.isSingleLineIfElse
 import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
+import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.ir.expressions.IrStatementOrigin
+import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
+import org.jetbrains.kotlin.psi.KtExpression
+import org.jetbrains.kotlin.psi.KtExpressionImpl
+import org.jetbrains.kotlin.psi.KtPostfixExpression
+import org.jetbrains.kotlin.psi.KtQualifiedExpression
+import org.jetbrains.kotlin.psi.KtSafeQualifiedExpression
 import org.jetbrains.kotlin.psi.psiUtil.children
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.siblings
@@ -89,6 +104,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
 
         private val expressionTypes = TokenSet.create(DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION, CALLABLE_REFERENCE_EXPRESSION, BINARY_EXPRESSION)
         private val chainExpressionTypes = TokenSet.create(DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION)
+        private val dropChainValues = TokenSet.create(EOL_COMMENT, WHITE_SPACE, BLOCK_COMMENT, KDOC)
     }
 
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
@@ -141,6 +157,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         }
     }
 
+    @Suppress("ComplexMethod")
     private fun handleOperatorWithLineBreakBefore(node: ASTNode) {
         if (node.isDotFromPackageOrImport()) {
             return
@@ -150,6 +167,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
                 val isSingleLineIfElse = parent({ it.elementType == IF }, true)?.isSingleLineIfElse() ?: false
                 // to follow functional style these operators should be started by newline
                 (isFollowedByNewline() || !isBeginByNewline()) && !isSingleLineIfElse
+                        && (!isFirstCall() || !isMultilineLambda(treeParent))
             } else {
                 // unless statement is simple and on single line, these operators cannot have newline after
                 isFollowedByNewline() && !isSingleDotStatementOnSingleLine()
@@ -278,6 +296,24 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
                 }
     }
 
+
+    private fun ASTNode.getOrderedCallExpressions(psi: PsiElement, result: MutableList<ASTNode>) {
+        // if statements here have the only right order - don't change it
+
+        if (psi.children.isNotEmpty() && (psi.children[0].node.elementType != DOT_QUALIFIED_EXPRESSION
+                        && psi.children[0].node.elementType != SAFE_ACCESS_EXPRESSION )) {
+            result.add(psi.children[0].node.siblings(true)
+                    .dropWhile { it.elementType in dropChainValues }
+                    .first()) // node treeNext is ".", "?.", "!!", "::"
+        } else if (psi.children.isNotEmpty()) {
+            getOrderedCallExpressions(psi.children[0], result)
+
+            result.add(psi.children[0].node.siblings(true)
+                    .dropWhile { it.elementType in dropChainValues }
+                    .first()) // node treeNext is ".", "?.", "!!", "::"
+        }
+    }
+
     /**
      * This function is needed because many operators are represented as a single child of [OPERATION_REFERENCE] node
      * e.g. [ANDAND] is a single child of [OPERATION_REFERENCE]
@@ -294,24 +330,41 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
     private fun ASTNode.isDotFromPackageOrImport() = elementType == DOT &&
             parent({ it.elementType == IMPORT_DIRECTIVE || it.elementType == PACKAGE_DIRECTIVE }, true) != null
 
-    /**
-     *  taking all expressions inside complex expression until we reach lambda arguments
-     */
     private fun ASTNode.isCallsChain() = getParentExpressions()
             .lastOrNull()
             ?.run {
                 mutableListOf<ASTNode>().also {
-                    getAllLeafsWithSpecificType(DOT, it)
-                    getAllLeafsWithSpecificType(SAFE_ACCESS, it)
+                    getOrderedCallExpressions(psi, it)
                 }
             }
+            ?.dropWhile { !it.treeParent.textContains('(') && !it.treeParent.textContains('{') }
+            // fixme: we can't distinguish fully qualified names (like java.lang) from chain of property accesses (like list.size) for now
             ?.filter { it.getParentExpressions().count() > 1 }
             ?.count()
             ?.let { it > 1 }
             ?: false
 
+    /**
+     *  taking all expressions inside complex expression until we reach lambda arguments
+     */
     private fun ASTNode.getParentExpressions() =
             parents().takeWhile { it.elementType in chainExpressionTypes && it.elementType != LAMBDA_ARGUMENT }
+
+    private fun isMultilineLambda(node: ASTNode): Boolean =
+            node.findAllNodesWithSpecificType(LAMBDA_ARGUMENT).firstOrNull()?.text?.count { it == '\n' } ?: -1 > 0
+
+    /**
+     * Getting the first call expression in call chain
+     */
+    private fun ASTNode.isFirstCall() = getParentExpressions()
+            .lastOrNull()
+            ?.run {
+                val firstCallee = mutableListOf<ASTNode>().also {
+                    getOrderedCallExpressions(psi, it)
+                }.first()
+                findAllNodesWithSpecificType(firstCallee.elementType, false).first() === this@isFirstCall
+            } ?: false
+
 
     /**
      * This method should be called on OPERATION_REFERENCE in the middle of BINARY_EXPRESSION
