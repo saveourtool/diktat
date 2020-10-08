@@ -14,7 +14,6 @@ import org.cqfn.diktat.ruleset.constants.Warnings.NESTED_BLOCK
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.psiUtil.parents
 
 /**
