@@ -30,6 +30,7 @@ import com.pinterest.ktlint.core.ast.nextCodeSibling
 import com.pinterest.ktlint.core.ast.prevSibling
 import org.cqfn.diktat.ruleset.rules.files.IndentationError
 import org.cqfn.diktat.ruleset.rules.files.lastIndent
+import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
 import org.jetbrains.kotlin.psi.KtBlockExpression
@@ -168,11 +169,13 @@ internal class SuperTypeListChecker(config: IndentationConfig) : CustomIndentati
  * Same is true for safe calls (`?.`) and elvis operator (`?:`).
  */
 internal class DotCallChecker(config: IndentationConfig) : CustomIndentationChecker(config) {
+    private fun ASTNode.isDotBeforeCallOrReference() = elementType.let { it == DOT || it == SAFE_ACCESS } &&
+            treeNext.elementType.let { it == CALL_EXPRESSION || it == REFERENCE_EXPRESSION }
+
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
         whiteSpace.nextSibling.node
                 .takeIf { nextNode ->
-                    nextNode.elementType.let { it == DOT || it == SAFE_ACCESS } &&
-                            nextNode.treeNext.elementType in listOf(CALL_EXPRESSION, REFERENCE_EXPRESSION) ||
+                    nextNode.isDotBeforeCallOrReference() ||
                             nextNode.elementType == OPERATION_REFERENCE && nextNode.firstChildNode.elementType.let {
                                 it == ELVIS || it == IS_EXPRESSION || it == AS_KEYWORD || it == AS_SAFE
                             }

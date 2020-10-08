@@ -176,18 +176,7 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
 
         val expectedIndent = checkResult?.expectedIndent ?: indentError.expected
         if (checkResult?.adjustNext == true) {
-            val exceptionInitiatorNode = astNode.treeParent.let { parent ->
-                when (parent.psi) {
-                    // fixme: custom logic for determining exceptional indent initiator, should be moved elsewhere
-                    is KtDotQualifiedExpression -> {
-                        // get the topmost expression to keep extended indent for the whole chain of dot call expressions
-                        astNode.parents().takeWhile { it.elementType == DOT_QUALIFIED_EXPRESSION || it.elementType == SAFE_ACCESS_EXPRESSION }.last()
-                    }
-                    is KtIfExpression -> parent.findChildByType(THEN) ?: parent.findChildByType(ELSE) ?: parent
-                    is KtLoopExpression -> (parent.psi as KtLoopExpression).body?.node ?: parent
-                    else -> parent
-                }
-            }
+            val exceptionInitiatorNode = astNode.getExceptionalIndentInitiator()
             context.addException(exceptionInitiatorNode, expectedIndent - indentError.expected, checkResult.includeLastChild)
         }
         if (checkResult?.isCorrect != true && expectedIndent != indentError.actual) {
@@ -195,6 +184,19 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
                     whiteSpace.startOffset + whiteSpace.text.lastIndexOf('\n') + 1, whiteSpace.node) {
                 whiteSpace.node.indentBy(expectedIndent)
             }
+        }
+    }
+
+    private fun ASTNode.getExceptionalIndentInitiator() = treeParent.let { parent ->
+        when (parent.psi) {
+            // fixme: custom logic for determining exceptional indent initiator, should be moved elsewhere
+            is KtDotQualifiedExpression -> {
+                // get the topmost expression to keep extended indent for the whole chain of dot call expressions
+                parents().takeWhile { it.elementType == DOT_QUALIFIED_EXPRESSION || it.elementType == SAFE_ACCESS_EXPRESSION }.last()
+            }
+            is KtIfExpression -> parent.findChildByType(THEN) ?: parent.findChildByType(ELSE) ?: parent
+            is KtLoopExpression -> (parent.psi as KtLoopExpression).body?.node ?: parent
+            else -> parent
         }
     }
 
