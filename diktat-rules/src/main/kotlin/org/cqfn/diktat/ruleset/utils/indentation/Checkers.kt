@@ -99,8 +99,10 @@ internal class ValueParameterListChecker(configuration: IndentationConfig) : Cus
                 val ktFile = whiteSpace.parents.last() as KtFile
                 ktFile.text
                         .lineSequence()
-                        .scan(0 to "") { (length, _), s -> length + s.length to s }
-                        .first { it.first > parameterAfterLpar.startOffset }
+                        .scan(0 to "") { (length, _), s -> length + s.length + 1 to s }
+                        .run {
+                            find { it.first > parameterAfterLpar.startOffset } ?: last()
+                        }
                         .let { (_, line) -> line.substringBefore(parameterAfterLpar.text).length }
             } else if (configuration.extendedIndentOfParameters) {
                 indentError.expected + configuration.indentationSize
@@ -172,8 +174,8 @@ internal class DotCallChecker(config: IndentationConfig) : CustomIndentationChec
                     nextNode.elementType.let { it == DOT || it == SAFE_ACCESS } &&
                             nextNode.treeNext.elementType in listOf(CALL_EXPRESSION, REFERENCE_EXPRESSION) ||
                             nextNode.elementType == OPERATION_REFERENCE && nextNode.firstChildNode.elementType.let {
-                        it == ELVIS || it == IS_EXPRESSION || it == AS_KEYWORD || it == AS_SAFE
-                    }
+                                it == ELVIS || it == IS_EXPRESSION || it == AS_KEYWORD || it == AS_SAFE
+                            }
                 }
                 ?.let {
                     // we need to get indent before the first expression in calls chain
