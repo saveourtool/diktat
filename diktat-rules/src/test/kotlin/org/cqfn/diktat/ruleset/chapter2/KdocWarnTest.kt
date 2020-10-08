@@ -221,7 +221,7 @@ class KdocWarnTest : LintTestBase(::KdocComments) {
                     |) {
                     |}
                 """.trimMargin(),
-                LintError(7, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} // short", true)
+                LintError(7, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} name", true)
         )
     }
 
@@ -237,8 +237,8 @@ class KdocWarnTest : LintTestBase(::KdocComments) {
                     |class Example {
                     |   constructor(
                     |   // name
-                    |   var name: String,
-                    |   val anotherName: String,
+                    |   name: String,
+                    |   anotherName: String,
                     |   OneMoreName: String
                     |   )
                     |}
@@ -262,7 +262,26 @@ class KdocWarnTest : LintTestBase(::KdocComments) {
                     |   ) {
                     |}
                 """.trimMargin(),
-                LintError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} //some descriptions", true)
+                LintError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} name", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY)
+    fun `check constructor with block comment`() {
+        lintMethod(
+                """
+                    |/**
+                    | * @return some
+                    | */
+                    |class Example (
+                    |   /*some descriptions*/val name: String,
+                    |   anotherName: String,
+                    |   OneMoreName: String
+                    |   ) {
+                    |}
+                """.trimMargin(),
+                LintError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} /*some descriptions*/", true)
         )
     }
 

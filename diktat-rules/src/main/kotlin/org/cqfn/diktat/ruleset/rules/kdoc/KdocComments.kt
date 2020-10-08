@@ -37,7 +37,7 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  * This rule checks the following features in KDocs:
  * 1) All top-level (file level) functions and classes with public or internal access should have KDoc
  * 2) All internal elements in class like class, property or function should be documented with KDoc
- * 3) All property in constructor doesn't contain comment
+ * 3) All properties declared in the primary constructor are documented using `@property` tag in class KDoc
  */
 class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comments") {
 
@@ -76,7 +76,7 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
             node.treePrev.treePrev
         } else if (node.hasChildOfType(KDOC)) {
             node.findChildByType(KDOC)!!
-        } else if (node.treePrev.elementType == BLOCK_COMMENT || node.treePrev.elementType == EOL_COMMENT) {
+        } else if (node.treePrev.elementType == BLOCK_COMMENT) {
             node.treePrev
         } else {
             null
@@ -104,6 +104,28 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
             KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixMode,
                     "add ${node.findChildByType(IDENTIFIER)!!.text} in KDoc", node.startOffset, node) {
                 insertTextInKDoc(kDocBeforeClass, " * @property ${node.findChildByType(IDENTIFIER)!!.text}\n")
+            }
+        }
+    }
+
+    @Suppress("UnsafeCallOnNullableType")
+    private fun checkKDocBeforeClass(node: ASTNode, kDocBeforeClass: ASTNode, prevComment: ASTNode) {
+        val propertyInClassKDoc = kDocBeforeClass
+                .kDocTags()
+                ?.firstOrNull { it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == node.findChildByType(IDENTIFIER)!!.text }
+                ?.node
+        val propertyInLocalKDoc = if (prevComment.elementType == KDOC)
+            prevComment
+                    .kDocTags()
+                    ?.firstOrNull { it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == node.findChildByType(IDENTIFIER)!!.text }
+                    ?.node
+        else
+            null
+        if (prevComment.elementType == KDOC || prevComment.elementType == BLOCK_COMMENT) {
+            handleKDcoAndBlock(node, prevComment, kDocBeforeClass, propertyInClassKDoc, propertyInLocalKDoc)
+        } else {
+            KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixMode, node.findChildByType(IDENTIFIER)!!.text, prevComment.startOffset, node) {
+                handleCommentBefore(node, kDocBeforeClass, prevComment, propertyInClassKDoc)
             }
         }
     }
@@ -137,28 +159,6 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
                 if (prevComment.treeNext.elementType == WHITE_SPACE)
                     node.removeChild(prevComment.treeNext)
                 node.removeChild(prevComment)
-            }
-        }
-    }
-
-    @Suppress("UnsafeCallOnNullableType")
-    private fun checkKDocBeforeClass(node: ASTNode, kDocBeforeClass: ASTNode, prevComment: ASTNode) {
-        val propertyInClassKDoc = kDocBeforeClass
-                .kDocTags()
-                ?.firstOrNull { it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == node.findChildByType(IDENTIFIER)!!.text }
-                ?.node
-        val propertyInLocalKDoc = if (prevComment.elementType == KDOC)
-            prevComment
-                    .kDocTags()
-                    ?.firstOrNull { it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == node.findChildByType(IDENTIFIER)!!.text }
-                    ?.node
-        else
-            null
-        if (prevComment.elementType == KDOC || prevComment.elementType == BLOCK_COMMENT) {
-            handleKDcoAndBlock(node, prevComment, kDocBeforeClass, propertyInClassKDoc, propertyInLocalKDoc)
-        } else {
-            KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixMode, prevComment.text, prevComment.startOffset, node) {
-                handleCommentBefore(node, kDocBeforeClass, prevComment, propertyInClassKDoc)
             }
         }
     }
