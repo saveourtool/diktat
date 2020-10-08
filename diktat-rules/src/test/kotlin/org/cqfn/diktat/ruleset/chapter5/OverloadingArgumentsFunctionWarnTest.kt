@@ -50,4 +50,36 @@ class OverloadingArgumentsFunctionWarnTest : LintTestBase(::OverloadingArguments
                 LintError(25,4, ruleId, "${WRONG_OVERLOADING_FUNCTION_ARGUMENTS.warnText()} foo", false)
         )
     }
+
+    @Test
+    @Tag(WarningNames.WRONG_OVERLOADING_FUNCTION_ARGUMENTS)
+    fun `check simple`() {
+        lintMethod(
+                """
+                    private fun isComparisonWithAbs(psiElement: PsiElement) =
+                        when (psiElement) {
+                            is KtBinaryExpression -> psiElement.isComparisonWithAbs()
+                            is KtDotQualifiedExpression -> psiElement.isComparisonWithAbs()
+                            else -> false
+                        }
+
+                    private fun KtBinaryExpression.isComparisonWithAbs() =
+                            takeIf { it.operationToken in comparisonOperators }
+                            ?.run { left as? KtCallExpression ?: right as? KtCallExpression }
+                            ?.run { calleeExpression as? KtNameReferenceExpression }
+                            ?.getReferencedName()
+                            ?.equals("abs")
+                            ?: false
+                            
+                    private fun KtBinaryExpression.isComparisonWithAbs(a: Int) =
+                            takeIf { it.operationToken in comparisonOperators }
+                            ?.run { left as? KtCallExpression ?: right as? KtCallExpression }
+                            ?.run { calleeExpression as? KtNameReferenceExpression }
+                            ?.getReferencedName()
+                            ?.equals("abs")
+                            ?: false
+                """.trimMargin(),
+                LintError(8,21, ruleId, "${WRONG_OVERLOADING_FUNCTION_ARGUMENTS.warnText()} isComparisonWithAbs", false)
+        )
+    }
 }
