@@ -337,12 +337,10 @@ fun ASTNode.hasSuppress(warningName: String): Boolean {
         annotationNode?.findAllNodesWithSpecificType(ANNOTATION_ENTRY)
                 ?.map { it.psi as KtAnnotationEntry }
                 ?.any {
-                    it.shortName.toString() == Suppress::class.simpleName &&
-                            it.valueArgumentList?.arguments
-                                    ?.firstOrNull()
-                                    ?.text
-                                    ?.trim('"', ' ')
-                                    .equals(warningName)
+                    it.shortName.toString() == Suppress::class.simpleName
+                            && it.valueArgumentList?.arguments
+                            ?.any { annotationName -> annotationName.text.trim('"', ' ') == warningName }
+                            ?: false
                 } ?: false
     }, strict = false) != null
 }
