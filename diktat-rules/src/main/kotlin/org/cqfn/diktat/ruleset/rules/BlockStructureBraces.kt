@@ -177,8 +177,10 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
     }
 
     private fun checkOpenBraceEndLine(node: ASTNode, beforeType: IElementType) {
-        val newNode = (if (beforeType == THEN || beforeType == ELSE)
-            node.findChildByType(beforeType) else node)?.findLBrace()?.treeNext ?: return
+        val newNode = (if (beforeType == THEN || beforeType == ELSE) node.findChildByType(beforeType) else node)
+                ?.findLBrace()
+                ?.treeNext
+                ?: return
         if (checkBraceNode(newNode)) {
             BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "incorrect same line after opening brace",
                     newNode.startOffset, newNode) {

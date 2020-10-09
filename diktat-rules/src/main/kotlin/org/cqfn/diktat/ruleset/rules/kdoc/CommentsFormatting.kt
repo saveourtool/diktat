@@ -120,8 +120,8 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
                     checkFirstCommentSpaces(node)
                 return
             }
-        } else if (node.treeParent.lastChildNode != node && node.treeParent.elementType != IF
-                && node.treeParent.firstChildNode == node && node.treeParent.elementType != VALUE_ARGUMENT_LIST) {
+        } else if (node.treeParent.lastChildNode != node && node.treeParent.elementType != IF &&
+                node.treeParent.firstChildNode == node && node.treeParent.elementType != VALUE_ARGUMENT_LIST) {
             // Else it's a class comment
             checkClassComment(node)
         }
@@ -209,22 +209,22 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
                 node.text.trimStart('/').takeWhile { it == ' ' }.length == configuration.maxSpacesInComment)
             return
 
-        if (node.elementType == BLOCK_COMMENT
-                && (node.text.trim('/', '*').takeWhile { it == ' ' }.length == configuration.maxSpacesInComment
-                        || node.text.trim('/', '*').takeWhile { it == '\n' }.isNotEmpty())) {
+        if (node.elementType == BLOCK_COMMENT &&
+                (node.text.trim('/', '*').takeWhile { it == ' ' }.length == configuration.maxSpacesInComment ||
+                        node.text.trim('/', '*').takeWhile { it == '\n' }.isNotEmpty())) {
             return
         }
 
         if (node.elementType == KDOC) {
             val section = node.getFirstChildWithType(KDOC_SECTION)
-            if (section != null
-                    && section.findChildrenMatching(KDOC_TEXT){ (it.treePrev != null && it.treePrev.elementType == KDOC_LEADING_ASTERISK) || it.treePrev == null }
-                            .all { it.text.startsWith(" ".repeat(configuration.maxSpacesInComment)) }) // it.treePrev == null if there is no \n at the beginning of KDoc
+            if (section != null &&
+                    section.findChildrenMatching(KDOC_TEXT){ (it.treePrev != null && it.treePrev.elementType == KDOC_LEADING_ASTERISK) || it.treePrev == null }
+                        .all { it.text.startsWith(" ".repeat(configuration.maxSpacesInComment)) }) // it.treePrev == null if there is no \n at the beginning of KDoc
                 return
 
-            if (section != null
-                    && section.getAllChildrenWithType(KDOC_CODE_BLOCK_TEXT).isNotEmpty()
-                    && section.getAllChildrenWithType(KDOC_CODE_BLOCK_TEXT).all { it.text.startsWith(" ".repeat(configuration.maxSpacesInComment)) })
+            if (section != null &&
+                    section.getAllChildrenWithType(KDOC_CODE_BLOCK_TEXT).isNotEmpty() &&
+                    section.getAllChildrenWithType(KDOC_CODE_BLOCK_TEXT).all { it.text.startsWith(" ".repeat(configuration.maxSpacesInComment)) })
                 return
         }
 
@@ -280,8 +280,8 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
 
     private fun checkFirstCommentSpaces(node: ASTNode) {
         if (node.treePrev.isWhiteSpace()) {
-            if (node.treePrev.numNewLines() > 1
-                    || node.treePrev.numNewLines() == 0) {
+            if (node.treePrev.numNewLines() > 1 ||
+                    node.treePrev.numNewLines() == 0) {
                 FIRST_COMMENT_NO_SPACES.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
                     (node.treePrev as LeafPsiElement).replaceWithText("\n")
                 }
@@ -300,8 +300,8 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
         }
 
         // When comment inside of a PROPERTY
-        if (node.treeParent.elementType != FILE && node.treeParent.treePrev != null
-                && node.treeParent.treePrev.treePrev != null)
+        if (node.treeParent.elementType != FILE && node.treeParent.treePrev != null &&
+                node.treeParent.treePrev.treePrev != null)
             return node.treeParent.treePrev.treePrev.elementType == LBRACE
 
         return node.treeParent.getAllChildrenWithType(node.elementType).first() == node
