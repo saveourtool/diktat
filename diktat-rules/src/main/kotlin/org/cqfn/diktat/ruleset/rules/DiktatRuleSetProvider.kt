@@ -11,6 +11,7 @@ import org.cqfn.diktat.ruleset.rules.files.FileSize
 import org.cqfn.diktat.ruleset.rules.files.FileStructureRule
 import org.cqfn.diktat.ruleset.rules.files.IndentationRule
 import org.cqfn.diktat.ruleset.rules.files.NewlinesRule
+import org.cqfn.diktat.ruleset.rules.kdoc.CommentsFormatting
 import org.cqfn.diktat.ruleset.rules.identifiers.LocalVariablesRule
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocComments
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocFormatting
@@ -42,7 +43,9 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
                 ::BlockStructureBraces,
                 ::EmptyBlock,
                 ::EnumsSeparated,
+                ::VariableGenericTypeDeclarationRule,
                 ::SingleLineStatementsRule,
+                ::CommentsFormatting,
                 ::ConsecutiveSpacesRule,
                 ::LongNumericalValuesSeparatedRule,
                 ::MultipleModifiersSequence,
@@ -53,9 +56,15 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
                 ::AccurateCalculationsRule,
                 ::LineLength,
                 ::TypeAliasRule,
+                ::FunctionLength,
+                ::LambdaParameterOrder,
+                ::FunctionArgumentsSize,
                 ::BlankLinesRule,
+                ::NullableTypeRule,
                 ::WhiteSpaceRule,
                 ::WhenMustHaveElseRule,
+                ::ImmutableValNoVarRule,
+                ::AvoidNestedFunctionsRule,
                 ::FileStructureRule,  // this rule should be right before indentation because it should operate on already valid code
                 ::NewlinesRule,  // newlines need to be inserted right before fixing indentation
                 ::IndentationRule  // indentation rule should be the last because it fixes formatting after all the changes done by previous rules

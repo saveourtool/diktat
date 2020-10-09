@@ -163,8 +163,9 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
     private fun checkHeaderKdoc(node: ASTNode) {
         val headerKdoc = node.findChildBefore(PACKAGE_DIRECTIVE, KDOC)
         if (headerKdoc == null) {
-            val nDeclaredClasses = node.getAllChildrenWithType(ElementType.CLASS).size
-            if (nDeclaredClasses == 0 || nDeclaredClasses > 1) {
+            val nDeclaredClassesAndObjects = node.getAllChildrenWithType(ElementType.CLASS).size +
+                    node.getAllChildrenWithType(ElementType.OBJECT_DECLARATION).size
+            if (nDeclaredClassesAndObjects == 0 || nDeclaredClassesAndObjects > 1) {
                 HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warn(configRules, emitWarn, isFixMode, fileName, node.startOffset, node)
             }
         } else {
@@ -176,8 +177,8 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
                                 it.trim(), headerKdoc.startOffset, headerKdoc)
                     }
 
-            if (headerKdoc.treeNext != null && headerKdoc.treeNext.elementType == WHITE_SPACE
-                    && headerKdoc.treeNext.text.count { it == '\n' } != 2) {
+            if (headerKdoc.treeNext != null && headerKdoc.treeNext.elementType == WHITE_SPACE &&
+                    headerKdoc.treeNext.text.count { it == '\n' } != 2) {
                 HEADER_WRONG_FORMAT.warnAndFix(configRules, emitWarn, isFixMode,
                         "header KDoc should have a new line after", headerKdoc.startOffset, headerKdoc) {
                     node.replaceChild(headerKdoc.treeNext, PsiWhiteSpaceImpl("\n\n"))

@@ -45,7 +45,6 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     KDOC_WITHOUT_PARAM_TAG(true, "all methods which take arguments should have @param tags in KDoc"),
     KDOC_WITHOUT_RETURN_TAG(true, "all methods which return values should have @return tag in KDoc"),
     KDOC_WITHOUT_THROWS_TAG(true, "all methods which throw exceptions should have @throws tag in KDoc"),
-    BLANK_LINE_AFTER_KDOC(true, "there should be no empty line between Kdoc and code it is describing"),
     KDOC_EMPTY_KDOC(false, "KDoc should never be empty"),
     KDOC_WRONG_SPACES_AFTER_TAG(true, "there should be exactly one white space after tag name in KDoc"),
     KDOC_WRONG_TAGS_ORDER(true, "in KDoc standard tags are arranged in order @param, @return, @throws, but are"),
@@ -62,6 +61,10 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE(false, "files that contain multiple or no classes should contain description of what is inside of this file"),
     HEADER_NOT_BEFORE_PACKAGE(true, "header KDoc should be placed before package and imports"),
     COMMENTED_OUT_CODE(false, "you should not comment out code, use VCS to save it in history and delete this block"),
+    WRONG_NEWLINES_AROUND_KDOC(true, "there should be a blank line above the kDoc and there should not be no blank lines after kDoc"),
+    FIRST_COMMENT_NO_SPACES(true, "there should not be any spaces before first comment"),
+    COMMENT_WHITE_SPACE(true, "there should be a white space between code and comment also between code start token and comment text"),
+    IF_ELSE_COMMENTS(true, "invalid comments structure. Comment should be inside the block"),
 
     // ======== chapter 3 ========
     FILE_IS_TOO_LONG(false, "file has more number of lines than expected"),
@@ -95,11 +98,21 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     LOCAL_VARIABLE_EARLY_DECLARATION(false, "local variables should be declared close to the line where they are first used"),
 
     // ======== chapter 4 ========
+    NULLABLE_PROPERTY_TYPE(true, "try to avoid use of nullable types"),
     TYPE_ALIAS(false, "variable's type is too complex and should be replaced with typealias"),
+    SAY_NO_TO_VAR(false, "Usage of a mutable variables with [var] modifier - is a bad style, use [val] instead"),
+    GENERIC_VARIABLE_WRONG_DECLARATION(true, "variable should have explicit type declaration"),
     STRING_TEMPLATE_CURLY_BRACES(true, "string template has redundant curly braces"),
     STRING_TEMPLATE_QUOTES(true, "string template has redundant quotes"),
     // FixMe: change float literal to BigDecimal? Or kotlin equivalent?
     FLOAT_IN_ACCURATE_CALCULATIONS(false, "floating-point values shouldn't be used in accurate calculations"),
+
+
+    // ======== chapter 5 ========
+    TOO_LONG_FUNCTION(false, "function is too long: split it or make more primitive"),
+    AVOID_NESTED_FUNCTIONS(true, "try to avoid using nested functions"),
+    LAMBDA_IS_NOT_LAST_PARAMETER(false, "lambda inside function parameters should be in the end"),
+    TOO_MANY_PARAMETERS(false, "function has too many parameters"),
     ;
 
     /**
@@ -107,7 +120,10 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
      */
     override fun ruleName() = this.name
 
-    fun warnText(): String = "[${ruleName()}] ${this.warn}:"
+    /**
+     * Warning message that will be logged to analysis report
+     */
+    fun warnText() = "[${ruleName()}] ${this.warn}:"
 
     @Suppress("LongParameterList")
     fun warnAndFix(configRules: List<RulesConfig>,

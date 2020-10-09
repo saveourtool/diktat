@@ -11,9 +11,7 @@ dependencies {
     }
 
     // diktat ruleset
-    ktlint("org.cqfn.diktat:diktat-rules:0.1.0") {
-        exclude("org.slf4j", "slf4j-log4j12")
-    }
+    ktlint("org.cqfn.diktat:diktat-rules:0.1.1")
 }
 
 val outputDir = "${project.buildDir}/reports/diktat/"
@@ -28,7 +26,7 @@ val diktatCheck by tasks.creating(JavaExec::class) {
     main = "com.pinterest.ktlint.Main"
 
     // specify proper path to sources that should be checked here
-    args = listOf("src/main/kotlin/**/*.kt")
+    args = listOf("**/src/main/kotlin/**/*.kt", "diktat-rules/src/test/resources/test/funcTest/FunctionalTestFile.kt")
 }
 
 val diktatFormat by tasks.creating(JavaExec::class) {
@@ -40,5 +38,5 @@ val diktatFormat by tasks.creating(JavaExec::class) {
     main = "com.pinterest.ktlint.Main"
 
     // specify proper path to sources that should be checked here
-    args = listOf("-F", "src/main/kotlin/**/*.kt")
+    args = listOf("-F", "**/src/main/kotlin/**/*.kt", "diktat-rules/src/test/resources/test/funcTest/FunctionalTestFile.kt")
 }
