@@ -150,6 +150,7 @@
   enabled: true
   configuration:
     allowedWildcards: "" # Allowed wildcards for imports (e.g. "import org.cqfn.diktat.*, import org.jetbrains.kotlin.*")
+    useRecommendedImportsOrder: true
 - name: NO_BRACES_IN_CONDITIONALS_AND_LOOPS
   enabled: true
   configuration: {}
