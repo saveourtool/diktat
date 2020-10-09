@@ -218,6 +218,7 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
                 return ImportGroups(android, ownDomain, others, java, kotlin)
             }
 
+            @Suppress("UnsafeCallOnNullableType")
             private inline fun List<KtImportDirective>.partitionByImportParts(predicate: (List<Name>) -> Boolean) =
                 partition {
                     it.importPath!!.fqName.pathSegments().let(predicate)
