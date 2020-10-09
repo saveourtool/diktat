@@ -162,17 +162,20 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
             }
 
         node.removeRange(imports.first(), imports.last())
-        sortedImportsGroups.forEachIndexed { groupIndex, group ->
-            group.forEachIndexed { index, importNode ->
-                node.addChild(importNode, null)
-                if (index != group.size - 1) {
-                    node.addChild(PsiWhiteSpaceImpl("\n"), null)
+        sortedImportsGroups.filterNot { it.isEmpty() }
+            .run {
+                forEachIndexed { groupIndex, group ->
+                    group.forEachIndexed { index, importNode ->
+                        node.addChild(importNode, null)
+                        if (index != group.size - 1) {
+                            node.addChild(PsiWhiteSpaceImpl("\n"), null)
+                        }
+                    }
+                    if (groupIndex != size - 1) {
+                        node.addChild(PsiWhiteSpaceImpl("\n\n"), null)
+                    }
                 }
             }
-            if (groupIndex != sortedImportsGroups.size - 1) {
-                node.addChild(PsiWhiteSpaceImpl("\n\n"), null)
-            }
-        }
     }
 
     private fun ASTNode.getSiblingBlocks(
