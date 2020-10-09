@@ -378,7 +378,7 @@ class KdocWarnTest : LintTestBase(::KdocComments) {
                     |   ) {
                     |}
                 """.trimMargin(),
-                LintError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} add name in KDoc", true)
+                LintError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} add <name> to KDoc", true)
         )
     }
 
@@ -394,8 +394,8 @@ class KdocWarnTest : LintTestBase(::KdocComments) {
                     |}
                 """.trimMargin(),
                 LintError(1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} Example"),
-                LintError(2, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} add name in KDoc", true),
-                LintError(3, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} add surname in KDoc", true)
+                LintError(2, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} add <name> to KDoc", true),
+                LintError(3, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} add <surname> to KDoc", true)
         )
     }
 }
