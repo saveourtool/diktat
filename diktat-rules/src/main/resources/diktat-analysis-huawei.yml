@@ -137,7 +137,8 @@
   configuration: {}
 - name: FILE_UNORDERED_IMPORTS
   enabled: true
-  configuration: {}
+  configuration:
+    useRecommendedImportsOrder: true
 - name: FILE_INCORRECT_BLOCKS_ORDER
   enabled: true
   configuration: {}
