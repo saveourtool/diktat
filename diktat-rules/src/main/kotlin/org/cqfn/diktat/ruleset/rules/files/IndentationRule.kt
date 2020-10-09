@@ -190,10 +190,9 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
     private fun ASTNode.getExceptionalIndentInitiator() = treeParent.let { parent ->
         when (parent.psi) {
             // fixme: custom logic for determining exceptional indent initiator, should be moved elsewhere
-            is KtDotQualifiedExpression -> {
+            is KtDotQualifiedExpression ->
                 // get the topmost expression to keep extended indent for the whole chain of dot call expressions
                 parents().takeWhile { it.elementType == DOT_QUALIFIED_EXPRESSION || it.elementType == SAFE_ACCESS_EXPRESSION }.last()
-            }
             is KtIfExpression -> parent.findChildByType(THEN) ?: parent.findChildByType(ELSE) ?: parent
             is KtLoopExpression -> (parent.psi as KtLoopExpression).body?.node ?: parent
             else -> parent

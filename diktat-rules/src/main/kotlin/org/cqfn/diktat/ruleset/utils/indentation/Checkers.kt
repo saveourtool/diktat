@@ -96,12 +96,14 @@ internal class ValueParameterListChecker(configuration: IndentationConfig) : Cus
                     }
 
             val expectedIndent = if (parameterAfterLpar != null && configuration.alignedParameters && parameterList.elementType == VALUE_PARAMETER_LIST) {
-                // count column number of the first parameter
                 val ktFile = whiteSpace.parents.last() as KtFile
+                // count column number of the first parameter
                 ktFile.text
                         .lineSequence()
+                        // calculate offset for every line end, `+1` for `\n` which is trimmed in `lineSequence`
                         .scan(0 to "") { (length, _), s -> length + s.length + 1 to s }
                         .run {
+                            // find the line where `parameterAfterLpar` resides
                             find { it.first > parameterAfterLpar.startOffset } ?: last()
                         }
                         .let { (_, line) -> line.substringBefore(parameterAfterLpar.text).length }
