@@ -156,6 +156,8 @@ object WarningNames {
 
     const val LOCAL_VARIABLE_EARLY_DECLARATION: String = "LOCAL_VARIABLE_EARLY_DECLARATION"
 
+    const val NULLABLE_PROPERTY_TYPE: String = "NULLABLE_PROPERTY_TYPE"
+
     const val TYPE_ALIAS: String = "TYPE_ALIAS"
 
     const val SAY_NO_TO_VAR: String = "SAY_NO_TO_VAR"
@@ -169,6 +171,12 @@ object WarningNames {
     const val FLOAT_IN_ACCURATE_CALCULATIONS: String = "FLOAT_IN_ACCURATE_CALCULATIONS"
 
     const val TOO_LONG_FUNCTION: String = "TOO_LONG_FUNCTION"
+
+    const val AVOID_NESTED_FUNCTIONS: String = "AVOID_NESTED_FUNCTIONS"
+
+    const val LAMBDA_IS_NOT_LAST_PARAMETER: String = "LAMBDA_IS_NOT_LAST_PARAMETER"
+
+    const val TOO_MANY_PARAMETERS: String = "TOO_MANY_PARAMETERS"
 
     const val NESTED_BLOCK: String = "NESTED_BLOCK"
 }

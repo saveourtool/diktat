@@ -97,6 +97,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     LOCAL_VARIABLE_EARLY_DECLARATION(false, "local variables should be declared close to the line where they are first used"),
 
     // ======== chapter 4 ========
+    NULLABLE_PROPERTY_TYPE(true, "try to avoid use of nullable types"),
     TYPE_ALIAS(false, "variable's type is too complex and should be replaced with typealias"),
     SAY_NO_TO_VAR(false, "Usage of a mutable variables with [var] modifier - is a bad style, use [val] instead"),
     GENERIC_VARIABLE_WRONG_DECLARATION(true, "variable should have explicit type declaration"),
@@ -108,6 +109,9 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
 
     // ======== chapter 5 ========
     TOO_LONG_FUNCTION(false, "function is too long: split it or make more primitive"),
+    AVOID_NESTED_FUNCTIONS(true, "try to avoid using nested functions"),
+    LAMBDA_IS_NOT_LAST_PARAMETER(false, "lambda inside function parameters should be in the end"),
+    TOO_MANY_PARAMETERS(false, "function has too many parameters"),
     NESTED_BLOCK(false, "function has too many nested blocks and should be simplified"),
     ;
 

@@ -32,7 +32,7 @@ class FileSize(private val configRules: List<RulesConfig>) : Rule("file-size") {
         if (node.elementType == ElementType.FILE) {
             fileName = node.getFileName()
             val configuration = FileSizeConfiguration(
-                this.configRules.getRuleConfig(FILE_IS_TOO_LONG)?.configuration ?: mapOf()
+                    this.configRules.getRuleConfig(FILE_IS_TOO_LONG)?.configuration ?: mapOf()
             )
             val ignoreFolders = configuration.ignoreFolders
 

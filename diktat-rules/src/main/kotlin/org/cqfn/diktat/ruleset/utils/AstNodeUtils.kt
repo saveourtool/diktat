@@ -168,7 +168,7 @@ fun ASTNode.findChildAfter(afterThisNodeType: IElementType, childNodeType: IElem
  * method that traverses previous nodes until it finds needed node or it finds stop node
  * @return ASTNode?
  */
-fun ASTNode.prevNodeUntilNode(stopNodeType: IElementType, checkNodeType: IElementType) : ASTNode? =
+fun ASTNode.prevNodeUntilNode(stopNodeType: IElementType, checkNodeType: IElementType): ASTNode? =
         siblings(false).takeWhile { it.elementType != stopNodeType }.find { it.elementType == checkNodeType }
 
 
@@ -260,16 +260,16 @@ fun ASTNode.numNewLines() = text.count { it == '\n' }
  * This method performs tree traversal and returns all nodes with specific element type
  */
 fun ASTNode.findAllNodesWithSpecificType(elementType: IElementType, withSelf: Boolean = true) =
-        findAllNodesWithCondition({it.elementType == elementType}, withSelf)
+        findAllNodesWithCondition({ it.elementType == elementType }, withSelf)
 
 /**
  * This method performs tree traversal and returns all nodes which satisfy the condition
  */
 fun ASTNode.findAllNodesWithCondition(condition: (ASTNode) -> Boolean, withSelf: Boolean = true): List<ASTNode> {
     val result = if (condition(this) && withSelf) mutableListOf(this) else mutableListOf()
-   return result + this.getChildren(null).flatMap {
-       it.findAllNodesWithCondition(condition)
-   }
+    return result + this.getChildren(null).flatMap {
+        it.findAllNodesWithCondition(condition)
+    }
 }
 
 /**
@@ -339,7 +339,8 @@ fun ASTNode.hasSuppress(warningName: String): Boolean {
                 ?.any {
                     it.shortName.toString() == Suppress::class.simpleName
                             && it.valueArgumentList?.arguments
-                            ?.firstOrNull()?.text?.trim('"', ' ').equals(warningName) ?: false
+                            ?.any { annotationName -> annotationName.text.trim('"', ' ') == warningName }
+                            ?: false
                 } ?: false
     }, strict = false) != null
 }

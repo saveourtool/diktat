@@ -13,7 +13,7 @@ env:
 jobs:
   run-functional-tests:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v2
 
@@ -25,26 +25,27 @@ jobs:
           curl -sSLO https://github.com/pinterest/ktlint/releases/download/$KTLINT_VERSION/ktlint && chmod a+x ktlint
           curl -sSLO https://github.com/cqfn/diKTat/releases/download/v$DIKTAT_VERSION/diktat-$DIKTAT_VERSION.jar
           ./ktlint -R diktat-$DIKTAT_VERSION.jar "diktat-rules/src/test/resources/test/funcTest/FunctionalTestFile.kt" > out
-          
+
       - name: Check output
         id: cli-check
         run: |
           cat out
           grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out
-        
+
       - name: Run diKTat from gradle
         continue-on-error: true
         run: gradle diktatCheck > out 2> err
-        
+
       - name: Check gradle
         run: |
           cat out
           grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out
-        
+
       - name: Run diKTat from maven
         continue-on-error: true
-        run: mvn -B antrun:run@functional-test > out
-        
+        # fixme: change to diktat:check when diktat plugin is released
+        run: mvn -B antrun:run@functional-test &> out
+
       - name: Check maven
         run: |
           cat out
