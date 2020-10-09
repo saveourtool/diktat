@@ -303,3 +303,8 @@
   enabled: true
   configuration:
     maxParameterListSize: '5' # max parameters size
+# Checks that function doesn't have too many nested blocks
+- name: NESTED_BLOCK
+  enabled: true
+  configuration:
+    maxNestedBlockQuantity: '4'
