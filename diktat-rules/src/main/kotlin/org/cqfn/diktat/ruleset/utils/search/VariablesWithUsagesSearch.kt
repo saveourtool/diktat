@@ -19,7 +19,7 @@ class VariablesWithUsagesSearch(fileNode: ASTNode,
                 .filter { it.getReferencedNameAsName() == property.nameAsName }
                 .filterNot { expression ->
                     // to avoid false triggering on objects' fields with same name as property
-                    isReferenceToFieldOfObject(expression) ||
+                    expression.isReferenceToFieldOfObject() ||
                             // to exclude usages of local properties from other context (shadowed) and lambda arguments with same name
                             isReferenceToOtherVariableWithSameName(expression, this, property)
                 }

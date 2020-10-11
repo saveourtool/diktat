@@ -57,10 +57,12 @@ abstract class VariableSearch(val node: ASTNode, private val filterForVariables:
     /**
      * filtering object's fields (expressions) that have same name as variable
      */
-    protected fun isReferenceToFieldOfObject(expression: KtNameReferenceExpression) =
-            (expression.parent as? KtDotQualifiedExpression)?.run {
-                receiverExpression != expression && selectorExpression?.referenceExpression() == expression
-            } ?: false
+    protected fun KtNameReferenceExpression.isReferenceToFieldOfObject(): Boolean {
+        val expression = this
+        return (expression.parent as? KtDotQualifiedExpression)?.run {
+            receiverExpression != expression && selectorExpression?.referenceExpression() == expression
+        } ?: false
+    }
 
     /**
      * filtering local properties from other context (shadowed) and lambda and function arguments with same name
