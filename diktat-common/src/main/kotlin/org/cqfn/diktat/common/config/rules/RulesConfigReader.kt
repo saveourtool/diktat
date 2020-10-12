@@ -46,7 +46,7 @@ object EmptyConfiguration : RuleConfiguration(mapOf())
  * class returns the list of configurations that we have read from a yml: diktat-analysis.yml
  */
 open class RulesConfigReader(override val classLoader: ClassLoader) : JsonResourceConfigReader<List<RulesConfig>>() {
-    private val yamlSerializer by lazy { Yaml(configuration = YamlConfiguration(strictMode = false)) }
+    private val yamlSerializer by lazy { Yaml(configuration = YamlConfiguration(strictMode = true)) }
 
     /**
      * Parse resource file into list of [RulesConfig]
