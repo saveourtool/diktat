@@ -72,7 +72,7 @@ class Foo :
                 .length
         val barLen =
                 bar?.length ?: x
-                ?: -1
+                        ?: -1
         if (foo.length > 0 &&
                 barLen > 0
         ) {

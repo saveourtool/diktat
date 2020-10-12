@@ -144,8 +144,8 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
                         VARIABLE_NAME_INCORRECT.warn(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset, node)
                     }
                     // check if identifier of a property has a confusing name
-                    if (CONFUSING_IDENTIFIER_NAMES.contains(variableName.text) && !validCatchIdentifier(variableName)
-                            && node.elementType == ElementType.PROPERTY) {
+                    if (CONFUSING_IDENTIFIER_NAMES.contains(variableName.text) && !validCatchIdentifier(variableName) &&
+                            node.elementType == ElementType.PROPERTY) {
                         warnConfusingName(variableName)
                     }
                     // check for constant variables - check for val from companion object or on global file level
@@ -211,8 +211,8 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
         val result = if (destructingDeclaration != null) {
             destructingDeclaration.getAllChildrenWithType(DESTRUCTURING_DECLARATION_ENTRY)
                     .map { it.getIdentifierName()!! }
-        } else if (node.parents().count() > 1 && node.treeParent.elementType == VALUE_PARAMETER_LIST
-                && node.treeParent.treeParent.elementType == FUNCTION_TYPE) {
+        } else if (node.parents().count() > 1 && node.treeParent.elementType == VALUE_PARAMETER_LIST &&
+                node.treeParent.treeParent.elementType == FUNCTION_TYPE) {
             listOfNotNull(node.getIdentifierName())
         } else {
             listOf(node.getIdentifierName()!!)

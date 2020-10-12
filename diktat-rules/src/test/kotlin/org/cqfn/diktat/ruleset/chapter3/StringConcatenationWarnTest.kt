@@ -143,7 +143,7 @@ class StringConcatenationWarnTest : LintTestBase(::StringConcatenationRule) {
                     |
                 """.trimMargin(),
                 LintError(1, 10, ruleId, Warnings.STRING_CONCATENATION.warnText() +
-                       " \"my string\" + (\"third string\" + (\"str\" + 5 * 12 / 100))", canBeAutoCorrected)
+                        " \"my string\" + (\"third string\" + (\"str\" + 5 * 12 / 100))", canBeAutoCorrected)
         )
     }
 
