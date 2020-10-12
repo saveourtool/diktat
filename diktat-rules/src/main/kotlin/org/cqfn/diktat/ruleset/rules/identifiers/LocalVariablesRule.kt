@@ -95,8 +95,7 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
         val declarationScope = property.getDeclarationScope()
 
         val firstUsageStatementLine = getFirstUsageStatementOrBlock(usages, declarationScope).node.lineNumber()!!
-        val firstUsage = usages.minByOrNull { it.node.lineNumber()!! }!!
-        checkLineNumbers(property, firstUsageStatementLine, firstUsageLine = firstUsage.node.lineNumber()!!)
+        checkLineNumbers(property, firstUsageStatementLine, firstUsageLine = usages.minOf { it.node.lineNumber()!! })
     }
 
     @Suppress("UnsafeCallOnNullableType")
