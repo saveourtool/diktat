@@ -94,7 +94,7 @@ class OverloadingArgumentsFunctionWarnTest : LintTestBase(::OverloadingArguments
 
     @Test
     @Tag(WarningNames.WRONG_OVERLOADING_FUNCTION_ARGUMENTS)
-    fun `check simple edxample`() {
+    fun `check methods with different return types`() {
         lintMethod(
                 """
                     private fun KtBinaryExpression.isComparisonWithAbs(a: Int): Boolean {
@@ -104,6 +104,18 @@ class OverloadingArgumentsFunctionWarnTest : LintTestBase(::OverloadingArguments
                             ?.getReferencedName()
                             ?.equals("abs")
                             ?: false 
+                    }
+                    
+                    private fun KtBinaryExpression.isComparisonWithAbs(a: Int): Int {
+                            val q = takeIf { it.operationToken in comparisonOperators }
+                            ?.run { left as? KtCallExpression ?: right as? KtCallExpression }
+                            ?.run { calleeExpression as? KtNameReferenceExpression }
+                            ?.getReferencedName()
+                            ?.equals("abs")
+                            ?: false 
+                            
+                            if (q) return 10
+                            return 11
                     }
                 """.trimMargin()
         )
