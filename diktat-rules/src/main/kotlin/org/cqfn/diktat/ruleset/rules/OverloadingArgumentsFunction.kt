@@ -7,11 +7,10 @@ import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_OVERLOADING_FUNCTION_ARGUMENTS
 import org.cqfn.diktat.ruleset.utils.allSiblings
-import org.cqfn.diktat.ruleset.utils.prettyPrint
+import org.cqfn.diktat.ruleset.utils.findChildAfter
+import org.cqfn.diktat.ruleset.utils.findChildBefore
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtFunction
-import org.jetbrains.kotlin.psi.psiUtil.referenceExpression
-import org.jetbrains.kotlin.psi.psiUtil.siblings
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
 
 class OverloadingArgumentsFunction(private val configRules: List<RulesConfig>) : Rule("overloading-default-values") {
@@ -33,10 +32,13 @@ class OverloadingArgumentsFunction(private val configRules: List<RulesConfig>) :
     @Suppress("UnsafeCallOnNullableType")
     private fun checkFun(funPsi: KtFunction) {
         val allOverloadFunction = funPsi.node.allSiblings(withSelf = false)
+                .asSequence()
                 .filter { it.elementType == FUN }
                 .map { it.psi as KtFunction }
                 .filter { it.nameIdentifier!!.text == funPsi.nameIdentifier!!.text && it.valueParameters.containsAll(funPsi.valueParameters) }
-                .filter { funPsi.node.findChildByType(TYPE_REFERENCE)?.text == it.node.findChildByType(TYPE_REFERENCE)?.text }
+                .filter { funPsi.node.findChildBefore(IDENTIFIER, TYPE_REFERENCE)?.text == it.node.findChildBefore(IDENTIFIER, TYPE_REFERENCE)?.text }
+                .filter  {funPsi.node.findChildAfter(IDENTIFIER, TYPE_REFERENCE)?.text == it.node.findChildAfter(IDENTIFIER, TYPE_REFERENCE)?.text }
+                .toList()
         if (allOverloadFunction.isNotEmpty()) {
             WRONG_OVERLOADING_FUNCTION_ARGUMENTS.warn(configRules, emitWarn, isFixMode, funPsi.node.findChildByType(IDENTIFIER)!!.text, funPsi.startOffset, funPsi.node)
         }

@@ -78,8 +78,34 @@ class OverloadingArgumentsFunctionWarnTest : LintTestBase(::OverloadingArguments
                             ?.getReferencedName()
                             ?.equals("abs")
                             ?: false
+                            
+                    private fun KtBinaryExpression.isComparisonWithAbs(a: Int): Boolean {
+                            return takeIf { it.operationToken in comparisonOperators }
+                            ?.run { left as? KtCallExpression ?: right as? KtCallExpression }
+                            ?.run { calleeExpression as? KtNameReferenceExpression }
+                            ?.getReferencedName()
+                            ?.equals("abs")
+                            ?: false 
+                    }
                 """.trimMargin(),
                 LintError(8,21, ruleId, "${WRONG_OVERLOADING_FUNCTION_ARGUMENTS.warnText()} isComparisonWithAbs", false)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_OVERLOADING_FUNCTION_ARGUMENTS)
+    fun `check simple edxample`() {
+        lintMethod(
+                """
+                    private fun KtBinaryExpression.isComparisonWithAbs(a: Int): Boolean {
+                            return takeIf { it.operationToken in comparisonOperators }
+                            ?.run { left as? KtCallExpression ?: right as? KtCallExpression }
+                            ?.run { calleeExpression as? KtNameReferenceExpression }
+                            ?.getReferencedName()
+                            ?.equals("abs")
+                            ?: false 
+                    }
+                """.trimMargin()
         )
     }
 }
