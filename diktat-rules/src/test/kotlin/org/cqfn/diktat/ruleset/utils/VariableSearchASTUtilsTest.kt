@@ -18,7 +18,7 @@ class VariableSearchASTUtilsTest {
                     println(a.o)
                 }
             }
-        """.trimIndent(), 0) { node, counter ->
+        """.trimIndent(), 0) { node, _ ->
             if (node.elementType == FILE) {
                 val vars = node.collectAllDeclaredVariablesWithUsages().mapKeys { it.key.text }
                 val keys = vars.keys
@@ -42,7 +42,7 @@ class VariableSearchASTUtilsTest {
                     var v = 0
                 }
             }
-        """.trimIndent(), 0) { node, counter ->
+        """.trimIndent(), 0) { node, _ ->
             if (node.elementType == FILE) {
                 val vars = node.collectAllDeclaredVariablesWithUsages().mapKeys { it.key.text }
                 val keys = vars.keys
@@ -68,7 +68,7 @@ class VariableSearchASTUtilsTest {
                     var v = 0
                 }
             }
-        """.trimIndent(), 0) { node, counter ->
+        """.trimIndent(), 0) { node, _ ->
             if (node.elementType == FILE) {
                 val vars = node.collectAllDeclaredVariablesWithUsages().mapKeys { it.key.text }
                 val keys = vars.keys
@@ -92,7 +92,7 @@ class VariableSearchASTUtilsTest {
                     ++v
                 }
             }
-        """.trimIndent(), 0) { node, counter ->
+        """.trimIndent(), 0) { node, _ ->
             if (node.elementType == FILE) {
                 val vars = node.collectAllDeclaredVariablesWithUsages().mapKeys { it.key.text }
                 val keys = vars.keys
@@ -117,7 +117,7 @@ class VariableSearchASTUtilsTest {
                     }
                 }
             }
-        """.trimIndent(), 0) { node, counter ->
+        """.trimIndent(), 0) { node, _ ->
             if (node.elementType == FILE) {
                 val vars = node.collectAllDeclaredVariablesWithUsages().mapKeys { it.key.text }
                 val keys = vars.keys
@@ -140,7 +140,7 @@ class VariableSearchASTUtilsTest {
                     someVal++
                 }
             }
-        """.trimIndent(), 0) { node, counter ->
+        """.trimIndent(), 0) { node, _ ->
             if (node.elementType == FILE) {
                 val vars = node.collectAllDeclaredVariablesWithUsages().mapKeys { it.key.text }
                 val keys = vars.keys
@@ -161,7 +161,7 @@ class VariableSearchASTUtilsTest {
                     someVal++
                 }
             }
-        """.trimIndent(), 0) { node, counter ->
+        """.trimIndent(), 0) { node, _ ->
             if (node.elementType == FILE) {
                 val vars = node.collectAllDeclaredVariablesWithUsages().mapKeys { it.key.text }
                 val keys = vars.keys
@@ -186,7 +186,7 @@ class VariableSearchASTUtilsTest {
                     }
                 }
             }
-        """.trimIndent(), 0) { node, counter ->
+        """.trimIndent(), 0) { node, _ ->
             if (node.elementType == FILE) {
                 val vars = node.collectAllDeclaredVariablesWithUsages().mapKeys { it.key.text }
                 val keys = vars.keys
@@ -206,7 +206,7 @@ class VariableSearchASTUtilsTest {
                     println(a)
                 }
             }
-        """.trimIndent(), 0) { node, counter ->
+        """.trimIndent(), 0) { node, _ ->
             if (node.elementType == FILE) {
                 val vars = node.collectAllDeclaredVariablesWithUsages().mapKeys { it.key.text }
                 val keys = vars.keys
@@ -228,7 +228,7 @@ class VariableSearchASTUtilsTest {
                     v++
                 }
             }
-        """.trimIndent(), 0) { node, counter ->
+        """.trimIndent(), 0) { node, _ ->
             if (node.elementType == FILE) {
                 val vars = node.collectAllDeclaredVariablesWithUsages().mapKeys { it.key.text }
                 val keys = vars.keys
@@ -258,7 +258,7 @@ class VariableSearchASTUtilsTest {
                     v++
                 }
             }
-        """.trimIndent(), 0) { node, counter ->
+        """.trimIndent(), 0) { node, _ ->
             if (node.elementType == FILE) {
                 val vars = node.collectAllDeclaredVariablesWithUsages().mapKeys { it.key.text }
                 val keys = vars.keys
@@ -290,7 +290,7 @@ class VariableSearchASTUtilsTest {
                     v++
                 }
             }
-        """.trimIndent(), 0) { node, counter ->
+        """.trimIndent(), 0) { node, _ ->
             if (node.elementType == FILE) {
                 val vars = node.collectAllDeclaredVariablesWithUsages().mapKeys { it.key.text }
                 val keys = vars.keys
@@ -324,7 +324,7 @@ class VariableSearchASTUtilsTest {
             
                 var v = 3
             }
-        """.trimIndent(), 0) { node, counter ->
+        """.trimIndent(), 0) { node, _ ->
             if (node.elementType == FILE) {
                 val vars = node.collectAllDeclaredVariablesWithUsages().mapKeys { it.key.text }
                 val keys = vars.keys
@@ -356,7 +356,7 @@ class VariableSearchASTUtilsTest {
                     v++
                 }
             }
-        """.trimIndent(), 0) { node, counter ->
+        """.trimIndent(), 0) { node, _ ->
             if (node.elementType == FILE) {
                 val vars = node.collectAllDeclaredVariablesWithUsages().mapKeys { it.key.text }
                 val keys = vars.keys
@@ -378,7 +378,7 @@ class VariableSearchASTUtilsTest {
             
                 var v = 1
             }
-        """.trimIndent(), 0) { node, counter ->
+        """.trimIndent(), 0) { node, _ ->
             if (node.elementType == FILE) {
                 val vars = node.collectAllDeclaredVariablesWithUsages().mapKeys { it.key.text }
                 val keys = vars.keys

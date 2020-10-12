@@ -7,8 +7,8 @@ on:
     branches: [ master ]
 
 env:
-  DIKTAT_VERSION: 0.1.0
-  KTLINT_VERSION: 0.37.1
+  DIKTAT_VERSION: 0.1.1
+  KTLINT_VERSION: 0.39.0
 
 jobs:
   run-functional-tests:

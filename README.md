@@ -32,7 +32,7 @@ The full list of available supported rules and inspections is [here](info/availa
 
    **OR** use curl:
     ```bash
-    curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.37.1/ktlint && chmod a+x ktlint
+    curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.39.0/ktlint && chmod a+x ktlint
     # another option is "brew install ktlint"
     ```
    
@@ -89,7 +89,7 @@ Add this plugin to your pom.xml:
               <dependency>
                   <groupId>com.pinterest</groupId>
                   <artifactId>ktlint</artifactId>
-                  <version>0.37.1</version>
+                  <version>0.39.0</version>
                   <exclusions>
                       <exclusion>  <!-- without this exclusion both rulesets are enabled which we discourage -->
                           <groupId>com.pinterest.ktlint</groupId>
@@ -173,7 +173,7 @@ Add the code below to your `build.gradle.kts`:
 val ktlint by configurations.creating
 
 dependencies {
-    ktlint("com.pinterest:ktlint:0.37.1") {
+    ktlint("com.pinterest:ktlint:0.39.0") {
         // need to exclude standard ruleset to use only diktat rules
         exclude("com.pinterest.ktlint", "ktlint-ruleset-standard")
     }

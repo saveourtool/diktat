@@ -99,7 +99,7 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
         val declarationScope = property.getDeclarationScope()
 
         val firstUsageStatementLine = getFirstUsageStatementOrBlock(usages, declarationScope).node.lineNumber()!!
-        val firstUsage = usages.minBy { it.node.lineNumber()!! }!!
+        val firstUsage = usages.minByOrNull { it.node.lineNumber()!! }!!
         checkLineNumbers(property, firstUsageStatementLine, firstUsageLine = firstUsage.node.lineNumber()!!)
     }
 
@@ -134,7 +134,7 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
      */
     @Suppress("UnsafeCallOnNullableType")
     private fun getFirstUsageStatementOrBlock(usages: List<KtNameReferenceExpression>, declarationScope: KtBlockExpression?): PsiElement {
-        val firstUsage = usages.minBy { it.node.lineNumber()!! }!!
+        val firstUsage = usages.minByOrNull { it.node.lineNumber()!! }!!
         val firstUsageScope = firstUsage.getParentOfType<KtBlockExpression>(true)
 
         return if (firstUsageScope == declarationScope) {
@@ -144,7 +144,7 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
                     .find { it.parent == declarationScope }!!
         } else {
             // first usage is in deeper block compared to declaration, need to check how close is declaration to the first line of the block
-            usages.minBy { it.node.lineNumber()!! }!!
+            usages.minByOrNull { it.node.lineNumber()!! }!!
                     .parentsWithSelf
                     .find { it.parent == declarationScope }!!
         }

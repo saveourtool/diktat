@@ -40,7 +40,7 @@
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib</artifactId>
+            <artifactId>kotlin-stdlib-jdk8</artifactId>
         </dependency>
         <dependency>
             <!-- guava is used for string case utils -->
@@ -81,7 +81,7 @@
                         </goals>
                         <configuration>
                             <sourceDirs>
-                                <source>src/main/kotlin/generated</source>
+                                <source>${project.basedir}/src/main/kotlin/generated</source>
                             </sourceDirs>
                             <jvmTarget>1.8</jvmTarget>
                         </configuration>
@@ -94,7 +94,6 @@
                         </goals>
                         <configuration>
                             <sourceDirs>
-                                <source>src/main/java</source>
                                 <source>src/main/kotlin</source>
                                 <source>src/main/resources</source>
                             </sourceDirs>
@@ -109,7 +108,6 @@
                         </goals>
                         <configuration>
                             <sourceDirs>
-                                <source>src/test/java</source>
                                 <source>src/test/kotlin</source>
                             </sourceDirs>
                             <jvmTarget>1.8</jvmTarget>

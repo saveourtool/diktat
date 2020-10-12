@@ -12,7 +12,7 @@ class FunctionASTNodeUtilsTest {
         applyToCode("fun foo() { }", 1) { node, counter ->
             if (node.elementType == FUN) {
                 Assertions.assertFalse(node.hasParameters())
-                Assertions.assertTrue(node.parameterNames()!!.isEmpty())
+                Assertions.assertTrue(node.parameterNames().isEmpty())
                 counter.incrementAndGet()
             }
         }
