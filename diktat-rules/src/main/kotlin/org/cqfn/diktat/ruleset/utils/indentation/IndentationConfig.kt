@@ -23,6 +23,12 @@ internal class IndentationConfig(config: Map<String, String>) : RuleConfiguratio
     val extendedIndentAfterOperators = config["extendedIndentAfterOperators"]?.toBoolean() ?: true
 
     /**
+     * If true, when dot qualified expression starts on a new line, this line will be indented with
+     * two indentations instead of one
+     */
+    val extendedIndentBeforeDot = config["extendedIndentBeforeDot"]?.toBoolean() ?: true
+
+    /**
      * The indentation size for each file
      */
     val indentationSize = config["indentationSize"]?.toInt() ?: IndentationRule.INDENT_SIZE

@@ -1,4 +1,4 @@
-package org.cqfn.diktat.ruleset.chapter3
+package org.cqfn.diktat.ruleset.chapter3.spaces
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import generated.WarningNames
@@ -21,6 +21,11 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
                 )
         )
 ) {
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
+    fun `parameters should be properly aligned`() {
+        fixAndCompare("IndentationParametersExpected.kt", "IndentationParametersTest.kt")
+    }
 
     @Test
     @Tag(WarningNames.WRONG_INDENTATION)
@@ -32,5 +37,11 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
     @Tag(WarningNames.WRONG_INDENTATION)
     fun `indentation rule - verbose example from ktlint`() {
         fixAndCompare("IndentFullExpected.kt", "IndentFullTest.kt")
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
+    fun `regression - incorrect fixing in constructor parameter list`() {
+        fixAndCompare("ConstructorExpected.kt", "ConstructorTest.kt")
     }
 }

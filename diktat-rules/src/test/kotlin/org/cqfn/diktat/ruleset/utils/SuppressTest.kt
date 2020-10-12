@@ -15,11 +15,13 @@ class SuppressTest : LintTestBase(::IdentifierNaming) {
     fun `test suppress on class`() {
         val code =
                 """
-                  @Suppress("FUNCTION_NAME_INCORRECT_CASE")
+                  @Suppress("FUNCTION_NAME_INCORRECT_CASE", "BACKTICKS_PROHIBITED")
                   class SomeClass {
                     fun /* */ methODTREE(): String {
 
                     }
+                    
+                    fun `some`() {}
                   }
                 """.trimIndent()
         lintMethod(code)
