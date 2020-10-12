@@ -138,7 +138,6 @@ fun ASTNode.findChildBefore(beforeThisNodeType: IElementType, childNodeType: IEl
             .find { it.elementType == childNodeType }
             ?.let { return it }
 
-    log.warn("Not able to find a node with type $childNodeType before $beforeThisNodeType")
     return null
 }
 
@@ -160,7 +159,6 @@ fun ASTNode.findChildAfter(afterThisNodeType: IElementType, childNodeType: IElem
         }
     }
 
-    log.warn("Not able to find a node with type $childNodeType after $afterThisNodeType")
     return null
 }
 
