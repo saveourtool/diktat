@@ -290,6 +290,10 @@
   configuration:
     maxFunctionLength: '30' # max length of function
     isIncludeHeader: 'false' # count function's header
+# Warns if there are nested functions
+- name: AVOID_NESTED_FUNCTIONS
+  enabled: true
+  configuration: {}
 # Checks that lambda inside function parameters is in the end
 - name: LAMBDA_IS_NOT_LAST_PARAMETER
   enabled: true
@@ -299,6 +303,11 @@
   enabled: true
   configuration:
     maxParameterListSize: '5' # max parameters size
+# Checks that function doesn't have too many nested blocks
+- name: NESTED_BLOCK
+  enabled: true
+  configuration:
+    maxNestedBlockQuantity: '4'
 # Checks that function use default values, instead overloading
 - name: WRONG_OVERLOADING_FUNCTION_ARGUMENTS
   enabled: true

@@ -7,6 +7,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.files.IndentationRule
 import org.cqfn.diktat.util.LintTestBase
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
@@ -199,6 +200,26 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
 
     @Test
     @Tag(WarningNames.WRONG_INDENTATION)
+    fun `when lambda is assigned, indentation is increased by one step`() {
+        lintMethod(
+                """
+                    |fun foo() {
+                    |    val a = { x: Int ->
+                    |        x * 2
+                    |    }
+                    |    
+                    |    val b =
+                    |            { x: Int ->
+                    |                x * 2
+                    |            }
+                    |}
+                    |
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
     fun `should check indentation in KDocs`() {
         lintMethod(
                 """
@@ -227,6 +248,12 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |            ?.also {
                     |                println("Also with safe access")
                     |            }
+                    |            ?: Integer.valueOf(0)
+                    |
+                    |    bar
+                    |            .baz()
+                    |            as Baz
+                    |            as? Baz
                     |}
                     |
                 """.trimMargin()
@@ -461,6 +488,106 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                                 )
                         )
                 )
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
+    fun `arrows in when expression should increase indentation - positive example`() {
+        lintMethod(
+                """
+                    |fun foo() {
+                    |    when (x) {
+                    |        X_1 ->
+                    |            foo(x)
+                    |        X_2 -> bar(x)
+                    |        X_3 -> {
+                    |            baz(x)
+                    |        }
+                    |        else ->
+                    |            qux(x)
+                    |    }
+                    |}
+                    |
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
+    fun `arrows in when expression should increase indentation`() {
+        lintMethod(
+                """
+                    |fun foo() {
+                    |    when (x) {
+                    |        X_1 ->
+                    |        foo(x)
+                    |        X_2 -> bar(x)
+                    |        X_3 -> {
+                    |        baz(x)
+                    |        }
+                    |        else ->
+                    |        qux(x)
+                    |    }
+                    |}
+                    |
+                """.trimMargin(),
+                LintError(4, 1, ruleId, warnText(12, 8), true),
+                LintError(7, 1, ruleId, warnText(12, 8), true),
+                LintError(10, 1, ruleId, warnText(12, 8), true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
+    fun `comments should not turn off exceptional indentation`() {
+        lintMethod(
+                """
+                    |fun foo() {
+                    |    list
+                    |            .map(::foo)
+                    |            // comment about the next call
+                    |            .filter { it.bar() }
+                    |            // another comment about the next call
+                    |            ?.filter { it.bar() }
+                    |            ?.count()
+                    |    
+                    |    list.any { predicate(it) } &&
+                    |            list.any {
+                    |                predicate(it)
+                    |            }
+                    |    
+                    |    list.any { predicate(it) } &&
+                    |            // comment
+                    |            list.any {
+                    |                predicate(it)
+                    |            }
+                    |    
+                    |    list.filter {
+                    |        predicate(it) &&
+                    |                // comment
+                    |                predicate(it)
+                    |    }
+                    |}
+                    |
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
+    @Disabled("https://github.com/cqfn/diKTat/issues/377")
+    fun `closing parenthesis bug`() {
+        lintMethod(
+                """
+                    |fun foo() {
+                    |    return x +
+                    |            (y +
+                    |                    foo(x)
+                    |            )
+                    |}
+                    |
+                """.trimMargin()
         )
     }
 
