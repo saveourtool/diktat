@@ -10,7 +10,7 @@ import org.jetbrains.kotlin.psi.KtNameReferenceExpression
 import org.jetbrains.kotlin.psi.KtProperty
 
 class VariablesWithAssignmentSearch(fileNode: ASTNode,
-                                    filterForVariables: (KtProperty) -> Boolean) : VariableSearch(fileNode, filterForVariables) {
+                                    filterForVariables: (KtProperty) -> Boolean) : VariablesSearch(fileNode, filterForVariables) {
 
     /**
      * searching for all assignments of variables in current context [this]
@@ -25,7 +25,7 @@ class VariablesWithAssignmentSearch(fileNode: ASTNode,
                     // FixMe: also there can be some tricky cases with setters, but I am not able to imagine them now
                     it.isGoingAfter(property.node) &&
                             (it.psi as KtBinaryExpression).operationToken == ElementType.EQ &&
-                            (it.psi as KtBinaryExpression).left!!.node.elementType == ElementType.REFERENCE_EXPRESSION
+                            (it.psi as KtBinaryExpression).left?.node?.elementType == ElementType.REFERENCE_EXPRESSION
                 }
                 .map { (it.psi as KtBinaryExpression).left as KtNameReferenceExpression }
                 // checking that name of the property in usage matches with the name in the declaration

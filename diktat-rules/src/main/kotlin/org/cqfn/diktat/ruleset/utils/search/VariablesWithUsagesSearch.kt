@@ -9,7 +9,7 @@ import org.jetbrains.kotlin.psi.KtNameReferenceExpression
 import org.jetbrains.kotlin.psi.KtProperty
 
 class VariablesWithUsagesSearch(fileNode: ASTNode,
-                                filterForVariables: (KtProperty) -> Boolean) : VariableSearch(fileNode, filterForVariables) {
+                                filterForVariables: (KtProperty) -> Boolean) : VariablesSearch(fileNode, filterForVariables) {
 
     override fun KtElement.getAllSearchResults(property: KtProperty): List<KtNameReferenceExpression> {
         return this.node.findAllNodesWithSpecificType(ElementType.REFERENCE_EXPRESSION)
