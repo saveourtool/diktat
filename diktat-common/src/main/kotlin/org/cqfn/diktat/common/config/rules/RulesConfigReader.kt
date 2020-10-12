@@ -4,11 +4,10 @@
 
 package org.cqfn.diktat.common.config.rules
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
-import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.fasterxml.jackson.module.kotlin.readValue
+import com.charleskorn.kaml.Yaml
+import com.charleskorn.kaml.YamlConfiguration
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
 import java.io.BufferedReader
 import java.io.File
 import org.cqfn.diktat.common.config.reader.JsonResourceConfigReader
@@ -30,7 +29,7 @@ interface Rule {
 /**
  * Configuration of individual [Rule]
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
+@Serializable
 data class RulesConfig(
         val name: String,
         val enabled: Boolean = true,
@@ -47,6 +46,8 @@ object EmptyConfiguration : RuleConfiguration(mapOf())
  * class returns the list of configurations that we have read from a yml: diktat-analysis.yml
  */
 open class RulesConfigReader(override val classLoader: ClassLoader) : JsonResourceConfigReader<List<RulesConfig>>() {
+    private val yamlSerializer by lazy { Yaml(configuration = YamlConfiguration(strictMode = false)) }
+
     /**
      * Parse resource file into list of [RulesConfig]
      *
@@ -54,10 +55,8 @@ open class RulesConfigReader(override val classLoader: ClassLoader) : JsonResour
      * @return list of [RulesConfig]
      */
     override fun parseResource(fileStream: BufferedReader): List<RulesConfig> {
-        val mapper = ObjectMapper(YAMLFactory())
-        mapper.registerModule(KotlinModule())
         return fileStream.use { stream ->
-            mapper.readValue(stream)
+            yamlSerializer.decodeFromString(stream.readLines().joinToString(separator = "\n"))
         }
     }
 
@@ -87,7 +86,9 @@ open class RulesConfigReader(override val classLoader: ClassLoader) : JsonResour
 /**
  * @return common configuration from list of all rules configuration
  */
-fun List<RulesConfig>.getCommonConfiguration() = lazy { CommonConfiguration(getCommonConfig()?.configuration) }
+fun List<RulesConfig>.getCommonConfiguration() = lazy {
+    CommonConfiguration(getCommonConfig()?.configuration)
+}
 
 /**
  * class returns the list of common configurations that we have read from a configuration map

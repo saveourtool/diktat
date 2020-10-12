@@ -1,27 +1,26 @@
 package org.cqfn.diktat.test.framework.config
 
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.annotation.JsonProperty
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 /**
  * This class is used to serialize/deserialize json representation
  * that is used to store command line arguments
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
+@Serializable
 @Suppress("ForbiddenComment")
-class TestConfig @JsonCreator internal constructor(
+class TestConfig internal constructor(
         // command line execution command, use shell like "cmd", "bash" or other
-        @param:JsonProperty("executionCommand") val executionCommand: String,
+    val executionCommand: String,
         // expected result file can be a full path or a relative path to a resource
-        @param:JsonProperty("expectedResultFile") val expectedResultFile: String,
+    val expectedResultFile: String,
         // testFile can be a full path or a relative path to a resource
-        @param:JsonProperty("testFile") val testFile: String,
+    val testFile: String,
         // executionType that  controls processing of the test (like COMPARE, MIXED, CHECK_WARN, e.t.c)
-        @param:JsonProperty("executionType") val executionType: ExecutionType,
-        @param:JsonProperty("profile") val testProfile: TestProfile,
+    val executionType: ExecutionType,
+    @SerialName("profile") val testProfile: TestProfile,
         // option that controls if changes and automatic fix should be done directly in file
-        @param:JsonProperty("inPlace", defaultValue = "false") val inPlace: Boolean
+    val inPlace: Boolean = false
 ) {
     /**
      * test name - it is not included in config content, but is injected on runtime by setter

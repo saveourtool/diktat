@@ -18,24 +18,14 @@
             <artifactId>kotlin-stdlib-jdk8</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
+            <groupId>org.jetbrains.kotlinx</groupId>
+            <artifactId>kotlinx-serialization-json-jvm</artifactId>
+            <version>${kotlinx.serialization.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.dataformat</groupId>
-            <artifactId>jackson-dataformat-yaml</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-module-kotlin</artifactId>
+            <groupId>com.charleskorn.kaml</groupId>
+            <artifactId>kaml</artifactId>
+            <version>0.24.0</version>
         </dependency>
         <dependency>
             <groupId>commons-cli</groupId>
@@ -79,6 +69,9 @@
                                 <source>src/main/resources</source>
                             </sourceDirs>
                             <jvmTarget>1.8</jvmTarget>
+                            <compilerPlugins>
+                                <plugin>kotlinx-serialization</plugin>
+                            </compilerPlugins>
                         </configuration>
                     </execution>
                     <execution>
@@ -95,6 +88,13 @@
                         </configuration>
                     </execution>
                 </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.jetbrains.kotlin</groupId>
+                        <artifactId>kotlin-maven-serialization</artifactId>
+                        <version>${kotlin.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>
