@@ -2,16 +2,14 @@ package org.cqfn.diktat.ruleset.rules.identifiers
 
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.FILE
-import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.isPartOfComment
 import com.pinterest.ktlint.core.ast.lineNumber
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.LOCAL_VARIABLE_EARLY_DECLARATION
 import org.cqfn.diktat.ruleset.utils.containsOnlyConstants
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
-import org.cqfn.diktat.ruleset.utils.getAllUsages
 import org.cqfn.diktat.ruleset.utils.getDeclarationScope
 import org.cqfn.diktat.ruleset.utils.lastLineNumber
+import org.cqfn.diktat.ruleset.utils.search.findAllVariablesWithUsages
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
@@ -57,7 +55,7 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
 
         if (node.elementType == FILE) {
             // collect all local properties and associate with corresponding references
-            val propertiesToUsages = collectPropertiesWithUsages(node)
+            val propertiesToUsages = collectLocalPropertiesWithUsages(node)
 
             // find all usages which include more than one property
             val multiPropertyUsages = groupPropertiesByUsages(propertiesToUsages)
@@ -73,16 +71,14 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
         }
     }
 
-    private fun collectPropertiesWithUsages(node: ASTNode) = node
-            .findAllNodesWithSpecificType(PROPERTY)
-            .map { it.psi as KtProperty }
-            .filter { it.isLocal && it.name != null && it.parent is KtBlockExpression }
-            .filter {
-                it.isVar && it.initializer == null ||
-                        (it.initializer?.containsOnlyConstants() ?: false) ||
-                        (it.initializer as? KtCallExpression).isWhitelistedMethod()
+    private fun collectLocalPropertiesWithUsages(node: ASTNode) = node
+            .findAllVariablesWithUsages { propertyNode ->
+                propertyNode.isLocal && propertyNode.name != null && propertyNode.parent is KtBlockExpression &&
+                        (propertyNode.isVar && propertyNode.initializer == null ||
+                        (propertyNode.initializer?.containsOnlyConstants() ?: false) ||
+                        (propertyNode.initializer as? KtCallExpression).isWhitelistedMethod())
             }
-            .associateWith { it.getAllUsages() }
+
             .filterNot { it.value.isEmpty() }
 
     private fun groupPropertiesByUsages(propertiesToUsages: Map<KtProperty, List<KtNameReferenceExpression>>) = propertiesToUsages
