@@ -59,6 +59,7 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
             if (checkFileHasCode(node)) {
                 checkCodeBlocksOrderAndEmptyLines(node)
             }
+            return
         }
     }
 
