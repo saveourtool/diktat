@@ -5,7 +5,7 @@
 
     <groupId>org.cqfn.diktat</groupId>
     <artifactId>diktat-parent</artifactId>
-    <version>0.1.2-SNAPSHOT</version>
+    <version>0.1.3-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>diktat</name>
@@ -49,7 +49,7 @@
         <jackson.version>2.11.3</jackson.version>
         <slf4j.version>1.7.30</slf4j.version>
         <commons-cli.version>1.4</commons-cli.version>
-        <diktat-check.version>0.1.1</diktat-check.version>
+        <diktat-check.version>0.1.2</diktat-check.version>
         <kotlinpoet.version>1.6.0</kotlinpoet.version>
         <detekt.version>1.14.0</detekt.version>
         <dokka.version>1.4.10</dokka.version>
@@ -163,7 +163,14 @@
                 <artifactId>assertj-core</artifactId>
                 <version>3.17.0</version>
             </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-all</artifactId>
+                <version>1.10.19</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
+
     </dependencyManagement>
 
     <pluginRepositories>
@@ -341,67 +348,6 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-
-            <!-- todo: remove antrun completely after diktat-maven-plugin is released -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>3.0.0</version>
-                <executions>
-                    <execution>
-                        <id>diktat</id>
-                        <phase>none</phase>
-                        <configuration>
-                            <target name="ktlint">
-                                <java taskname="ktlint" dir="${maven.multiModuleProjectDirectory}" fork="true"
-                                      failonerror="true"
-                                      classpathref="maven.plugin.classpath" classname="com.pinterest.ktlint.Main">
-                                    <arg value="${project.basedir}/src/main/kotlin/**/*.kt"/>
-                                    <arg value="${project.basedir}/src/test/kotlin/**/*.kt"/>
-                                </java>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>functional-test</id>
-                        <phase>none</phase>
-                        <inherited>false</inherited>
-                        <configuration>
-                            <target name="ktlint">
-                                <java taskname="ktlint" dir="${maven.multiModuleProjectDirectory}" fork="true"
-                                      failonerror="true"
-                                      classpathref="maven.plugin.classpath" classname="com.pinterest.ktlint.Main">
-                                    <arg value="diktat-rules/src/test/resources/test/funcTest/*.kt"/>
-                                </java>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.pinterest</groupId>
-                        <artifactId>ktlint</artifactId>
-                        <version>${ktlint.version}</version>
-                        <exclusions>
-                            <exclusion>
-                                <groupId>com.pinterest.ktlint</groupId>
-                                <artifactId>ktlint-ruleset-standard</artifactId>
-                            </exclusion>
-                        </exclusions>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.cqfn.diktat</groupId>
-                        <artifactId>diktat-rules</artifactId>
-                        <version>${diktat-check.version}</version>
-                    </dependency>
-                </dependencies>
             </plugin>
 
             <plugin>
