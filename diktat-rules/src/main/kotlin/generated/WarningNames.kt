@@ -173,4 +173,12 @@ object WarningNames {
     const val SMART_CAST_NEEDED: String = "SMART_CAST_NEEDED"
 
     const val TOO_LONG_FUNCTION: String = "TOO_LONG_FUNCTION"
+
+    const val AVOID_NESTED_FUNCTIONS: String = "AVOID_NESTED_FUNCTIONS"
+
+    const val LAMBDA_IS_NOT_LAST_PARAMETER: String = "LAMBDA_IS_NOT_LAST_PARAMETER"
+
+    const val TOO_MANY_PARAMETERS: String = "TOO_MANY_PARAMETERS"
+
+    const val NESTED_BLOCK: String = "NESTED_BLOCK"
 }

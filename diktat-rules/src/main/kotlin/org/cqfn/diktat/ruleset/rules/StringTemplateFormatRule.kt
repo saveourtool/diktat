@@ -41,8 +41,8 @@ class StringTemplateFormatRule(private val configRules: List<RulesConfig>) : Rul
     @Suppress("UnsafeCallOnNullableType")
     private fun handleLongStringTemplate(node: ASTNode) {
         // Checking if in long templates {a.foo()} there are function calls or class toString call
-        if (node.findAllNodesWithSpecificType(COLONCOLON).isEmpty()
-                && node.findAllNodesWithSpecificType(DOT_QUALIFIED_EXPRESSION).isEmpty()) {
+        if (node.findAllNodesWithSpecificType(COLONCOLON).isEmpty() &&
+                node.findAllNodesWithSpecificType(DOT_QUALIFIED_EXPRESSION).isEmpty()) {
             Warnings.STRING_TEMPLATE_CURLY_BRACES.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
                 val identifierName = node.findChildByType(REFERENCE_EXPRESSION)
                 if (identifierName != null) {

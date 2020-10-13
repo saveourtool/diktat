@@ -51,7 +51,7 @@
         <commons-cli.version>1.4</commons-cli.version>
         <diktat-check.version>0.1.1</diktat-check.version>
         <kotlinpoet.version>1.6.0</kotlinpoet.version>
-        <detekt.version>1.13.1</detekt.version>
+        <detekt.version>1.14.0</detekt.version>
         <dokka.version>1.4.10</dokka.version>
         <jacoco.version>0.8.6</jacoco.version>
     </properties>
@@ -61,6 +61,7 @@
         <module>diktat-rules</module>
         <module>diktat-test-framework</module>
         <module>diktat-ruleset</module>
+        <module>diktat-maven-plugin</module>
     </modules>
 
     <distributionManagement>
@@ -162,7 +163,14 @@
                 <artifactId>assertj-core</artifactId>
                 <version>3.17.0</version>
             </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-all</artifactId>
+                <version>1.10.19</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
+
     </dependencyManagement>
 
     <pluginRepositories>
@@ -306,6 +314,44 @@
             </plugin>
 
             <plugin>
+                <groupId>org.cqfn.diktat</groupId>
+                <artifactId>diktat-maven-plugin</artifactId>
+                <version>${diktat-check.version}</version>
+                <executions>
+                    <execution>
+                        <id>diktat</id>
+                        <phase>none</phase>
+                        <goals>
+                            <goal>check</goal>
+                            <goal>fix</goal>
+                        </goals>
+                        <configuration>
+                            <debug>true</debug>
+                            <inputs>
+                                <input>${project.basedir}/src/main/kotlin</input>
+                                <input>${project.basedir}/src/test/kotlin</input>
+                            </inputs>
+                            <diktatConfigFile>diktat-analysis.yml</diktatConfigFile>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>functional-test</id>
+                        <phase>none</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <inputs>
+                                <input>${project.basedir}/src/test/resources/test/funcTest</input>
+                            </inputs>
+                            <diktatConfigFile>diktat-analysis.yml</diktatConfigFile>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- todo: remove antrun completely after diktat-maven-plugin is released -->
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>3.0.0</version>
@@ -327,7 +373,6 @@
                             <goal>run</goal>
                         </goals>
                     </execution>
-
                     <execution>
                         <id>functional-test</id>
                         <phase>none</phase>

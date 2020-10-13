@@ -1,7 +1,9 @@
 name: Run deteKT
 
 on:
-  pull_request
+  push:
+    branches: [ master ]
+  pull_request:
 
 jobs:
   test:
@@ -21,5 +23,6 @@ jobs:
           key: ${{ runner.os }}-maven-detekt-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-detekt-
+      # when running detekt with type resolution, we need to have all project modules compiled too
       - name: running deteKT
         run: mvn -B compile dependency:build-classpath@detekt detekt:check@detekt

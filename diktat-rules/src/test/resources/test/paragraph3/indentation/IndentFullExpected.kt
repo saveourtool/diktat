@@ -46,9 +46,9 @@ class Foo :
 
     fun foo3() {
         Integer
-            .parseInt("32").let {
-                println("parsed $it")
-            }
+                .parseInt("32").let {
+                    println("parsed $it")
+                }
     }
 
     private val f =
@@ -68,11 +68,11 @@ class Foo :
             x: Int?
     ) {
         foo.toUpperCase()
-            .trim()
-            .length
+                .trim()
+                .length
         val barLen =
                 bar?.length ?: x
-                ?: -1
+                        ?: -1
         if (foo.length > 0 &&
                 barLen > 0
         ) {
