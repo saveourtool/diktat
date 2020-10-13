@@ -160,6 +160,8 @@ object WarningNames {
 
     const val TYPE_ALIAS: String = "TYPE_ALIAS"
 
+    const val SMART_CAST_NEEDED: String = "SMART_CAST_NEEDED"
+
     const val SAY_NO_TO_VAR: String = "SAY_NO_TO_VAR"
 
     const val GENERIC_VARIABLE_WRONG_DECLARATION: String = "GENERIC_VARIABLE_WRONG_DECLARATION"
@@ -169,8 +171,6 @@ object WarningNames {
     const val STRING_TEMPLATE_QUOTES: String = "STRING_TEMPLATE_QUOTES"
 
     const val FLOAT_IN_ACCURATE_CALCULATIONS: String = "FLOAT_IN_ACCURATE_CALCULATIONS"
-
-    const val SMART_CAST_NEEDED: String = "SMART_CAST_NEEDED"
 
     const val TOO_LONG_FUNCTION: String = "TOO_LONG_FUNCTION"
 

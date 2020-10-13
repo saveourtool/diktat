@@ -177,6 +177,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |       }
                     |       else {
                     |           print((x as String).length)
+                    |           val a = ""
                     |           if (a !is String) {
                     |           
                     |           } else {
@@ -187,7 +188,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |}
                 """.trimMargin(),
                 LintError(8, 19, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as String", true),
-                LintError(12, 23, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} a as String", true)
+                LintError(13, 23, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} a as String", true)
         )
     }
 
@@ -326,6 +327,25 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |}
                 """.trimMargin(),
                 LintError(8, 25, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as Int", true)
+        )
+    }
+
+    @Test
+    @Tag(SMART_CAST_NEEDED)
+    fun `if with shadowed var bad 2`() {
+        lintMethod(
+                """
+                    |class Test {
+                    |   val x = ""
+                    |   fun someFun() {
+                    |       if (x is String) {
+                    |           val x = 5
+                    |           val a = (x as Int).length
+                    |       }
+                    |   }
+                    |}
+                """.trimMargin(),
+                LintError(6, 21, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as Int", true)
         )
     }
 }

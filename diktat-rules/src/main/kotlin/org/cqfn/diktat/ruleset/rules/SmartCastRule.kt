@@ -4,12 +4,15 @@ import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_WITH_TYPE
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.CONDITION
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.ELSE
+import com.pinterest.ktlint.core.ast.ElementType.FILE
+import com.pinterest.ktlint.core.ast.ElementType.FLOAT_CONSTANT
 import com.pinterest.ktlint.core.ast.ElementType.IF
+import com.pinterest.ktlint.core.ast.ElementType.INTEGER_CONSTANT
 import com.pinterest.ktlint.core.ast.ElementType.IS_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.STRING_TEMPLATE
 import com.pinterest.ktlint.core.ast.ElementType.THEN
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.WHEN
@@ -23,6 +26,8 @@ import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
+import org.cqfn.diktat.ruleset.utils.hasParent
+import org.cqfn.diktat.ruleset.utils.search.findAllVariablesWithUsages
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtNameReferenceExpression
@@ -41,8 +46,10 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
         emitWarn = emit
         isFixMode = autoCorrect
 
-        if (node.elementType == IF) {
-            handleIfBlock(node)
+        if (node.elementType == FILE) {
+            val usages = collectLocalPropertiesWithUsages(node)
+            val properMap = collectReferenceList(usages)
+            handleProp(properMap)
         }
 
         if (node.elementType == WHEN) {
@@ -50,51 +57,136 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
         }
     }
 
-    @Suppress("UnsafeCallOnNullableType")
-    private fun handleIfBlock(node: ASTNode) {
-        /*
-            There are 2 conditions.
-            1) if has 'is' in condition, then we check all 'as' keywords in 'then block'
-            2) if has '!is' -> NOT_IS in condition, then we check all 'as' keywords in else's 'then block'
-         */
-        val isBlocks = mutableListOf<IsExpressions>()
-        val notIsBlocks = mutableListOf<IsExpressions>()
-
-        val conditionBlock = node.getFirstChildWithType(CONDITION)!!
-
-        conditionBlock.findAllNodesWithSpecificType(IS_EXPRESSION).map { it.text }.forEach {
-            if (it.contains("!is")) {
-                val split = it.split("!is").map { part -> part.trim() }
-                notIsBlocks.add(IsExpressions(split[0], split[1]))
-            } else {
-                val split = it.split("is").map { part -> part.trim() }
-                isBlocks.add(IsExpressions(split[0], split[1]))
+    // Divide in is and as expr
+    private fun handleProp(propMap: Map<KtProperty, List<KtNameReferenceExpression>>) {
+        propMap.keys.forEach { key ->
+            val isExpr = mutableListOf<KtNameReferenceExpression>()
+            val asExpr = mutableListOf<KtNameReferenceExpression>()
+            propMap.getValue(key).forEach {
+                if (it.node.hasParent(IS_EXPRESSION)
+                        && (it.node.treeParent.text.contains(" is ")
+                                || it.node.treeParent.text.contains(" !is ")))
+                    isExpr.add(it)
+                else if (it.node.hasParent(BINARY_WITH_TYPE)
+                        && it.node.treeParent.text.contains(" as "))
+                    asExpr.add(it)
             }
-        }
-
-        val elseBlock = node.findAllNodesWithSpecificType(ELSE).firstOrNull { it.firstChildNode.elementType != IF }
-
-        if (isBlocks.isNotEmpty()) {
-            val then = node.findChildByType(THEN)!!
-            handleThenBlock(then, isBlocks)
-        }
-
-        if (notIsBlocks.isNotEmpty() && elseBlock != null) {
-            handleThenBlock(elseBlock, notIsBlocks)
+            val groups = groupIsAndAsExpr(isExpr, asExpr, key)
+            handleGroups(groups)
         }
     }
+
+    /**
+     * If condition == is then we are looking for then block
+     * If condition == !is then we are looking for else block
+     */
+    private fun handleGroups(groups: Map<KtNameReferenceExpression, List<KtNameReferenceExpression>>) {
+        if (groups.isNotEmpty()) {
+            groups.keys.forEach {
+                if (it.node.treeParent.text.contains(" is ")) {
+                    groups.getValue(it).forEach { asCall ->
+                        if (asCall.node.findParentNodeWithSpecificType(THEN) != null) {
+                            SMART_CAST_NEEDED.warnAndFix(configRules, emitWarn, isFixMode, asCall.node.treeParent.text, asCall.node.startOffset,
+                                    asCall.node) {
+                                val dotExpr = asCall.node.findParentNodeWithSpecificType(DOT_QUALIFIED_EXPRESSION)!!
+                                val afterDotPart = dotExpr.text.split(".")[1]
+                                val text = "${asCall.node.text}.$afterDotPart"
+                                dotExpr.treeParent.addChild(KotlinParser().createNode(text), dotExpr)
+                                dotExpr.treeParent.removeChild(dotExpr)
+                            }
+                        }
+                    }
+                } else if (it.node.treeParent.text.contains(" !is ")) {
+                    groups.getValue(it).forEach { asCall ->
+                        if (asCall.node.findParentNodeWithSpecificType(ELSE) != null) {
+                            SMART_CAST_NEEDED.warnAndFix(configRules, emitWarn, isFixMode, asCall.node.treeParent.text, asCall.node.startOffset,
+                                    asCall.node) {
+                                val dotExpr = asCall.node.findParentNodeWithSpecificType(DOT_QUALIFIED_EXPRESSION)!!
+                                val afterDotPart = dotExpr.text.split(".")[1]
+                                val text = "${asCall.node.text}.$afterDotPart"
+                                dotExpr.treeParent.addChild(KotlinParser().createNode(text), dotExpr)
+                                dotExpr.treeParent.removeChild(dotExpr)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Groups is and as expressions, so that their are used in same if block
+     */
+    private fun groupIsAndAsExpr(isExpr: List<KtNameReferenceExpression>,
+                                 asExpr: List<KtNameReferenceExpression>,
+                                 prop: KtProperty)
+            : Map<KtNameReferenceExpression, List<KtNameReferenceExpression>> {
+        val groupedExprs = mutableMapOf<KtNameReferenceExpression, List<KtNameReferenceExpression>>()
+
+        if (isExpr.isEmpty() && asExpr.isNotEmpty()) {
+            handleZeroIsCase(asExpr, prop)
+            return emptyMap()
+        }
+
+        isExpr.forEach {
+            val list = mutableListOf<KtNameReferenceExpression>()
+            asExpr.forEach { asCall ->
+                if (asCall.node.findParentNodeWithSpecificType(IF)
+                        == it.node.findParentNodeWithSpecificType(IF))
+                    list.add(asCall)
+            }
+            groupedExprs[it] = list
+        }
+        return groupedExprs
+    }
+
+    private fun getPropertyType(prop: KtProperty): String {
+        when (prop.initializer?.node?.elementType) {
+            STRING_TEMPLATE -> return "String"
+            INTEGER_CONSTANT -> return "Int"
+        }
+        if (prop.initializer?.node?.elementType == FLOAT_CONSTANT) {
+            if (prop.initializer?.text!!.endsWith("f"))
+                return "Float"
+            return "Double"
+        }
+        return "Not defined"
+    }
+
+    private fun handleZeroIsCase(asExpr: List<KtNameReferenceExpression>, prop: KtProperty) {
+        val propType = getPropertyType(prop)
+        if (propType == "Not defined")
+            return
+        asExpr
+                .map { it.node }
+                .forEach {
+                    if (it.treeParent.text.endsWith(propType)) {
+                        SMART_CAST_NEEDED.warnAndFix(configRules, emitWarn, isFixMode, it.treeParent.text, it.startOffset,
+                                it) {
+                            val dotExpr = it.findParentNodeWithSpecificType(DOT_QUALIFIED_EXPRESSION)!!
+                            val afterDotPart = dotExpr.text.split(".")[1]
+                            val text = "${it.text}.$afterDotPart"
+                            dotExpr.treeParent.addChild(KotlinParser().createNode(text), dotExpr)
+                            dotExpr.treeParent.removeChild(dotExpr)
+                        }
+                    }
+                }
+    }
+
 
     private fun handleThenBlock(then: ASTNode, blocks: List<IsExpressions>) {
         val thenBlock = then.findChildByType(BLOCK)
 
         if (thenBlock != null) {
             // Find all as expressions that are inside this current block
-            val asList = thenBlock.findAllNodesWithSpecificType(BINARY_WITH_TYPE).filter { it.text.contains(" as ")
-                    && it.findParentNodeWithSpecificType(BLOCK) == thenBlock }
+            val asList = thenBlock.findAllNodesWithSpecificType(BINARY_WITH_TYPE).filter {
+                it.text.contains(" as ")
+                        && it.findParentNodeWithSpecificType(BLOCK) == thenBlock
+            }
                     .filterNot { (it.getFirstChildWithType(REFERENCE_EXPRESSION)?.psi as KtNameReferenceExpression).hasLocalDeclaration() != null }
             checkAsExpressions(asList, blocks)
         } else {
-            val asList = then.findAllNodesWithSpecificType(BINARY_WITH_TYPE).filter {  it.text.contains(" as ") }
+            val asList = then.findAllNodesWithSpecificType(BINARY_WITH_TYPE).filter { it.text.contains(" as ") }
             checkAsExpressions(asList, blocks)
         }
     }
@@ -167,7 +259,33 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
                         }
             }
 
-    class AsExpressions(val identifier: String, val type: String, val node:ASTNode)
+    private fun collectLocalPropertiesWithUsages(node: ASTNode) = node
+            .findAllVariablesWithUsages { propertyNode ->
+                propertyNode.name != null
+            }
+
+    /**
+     * Gets references, which contains is or as keywords
+     * @returns Map of property and list of expressions
+     */
+    private fun collectReferenceList(propertiesToUsages: Map<KtProperty, List<KtNameReferenceExpression>>)
+            : Map<KtProperty, List<KtNameReferenceExpression>> {
+        val properMap: MutableMap<KtProperty, List<KtNameReferenceExpression>> = mutableMapOf()
+        propertiesToUsages.keys.forEach {
+            val list: MutableList<KtNameReferenceExpression> = mutableListOf()
+            propertiesToUsages.getValue(it).forEach { entry ->
+                if (entry.parent.node.elementType == IS_EXPRESSION
+                        || entry.parent.node.elementType == BINARY_WITH_TYPE) {
+                    list.add(entry)
+                }
+            }
+            properMap[it] = list
+        }
+        return properMap
+    }
+
+
+    class AsExpressions(val identifier: String, val type: String, val node: ASTNode)
 
     class IsExpressions(val identifier: String, val type: String)
 }
