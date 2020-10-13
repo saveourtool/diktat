@@ -20,12 +20,12 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
 
     private val rulesConfigListWildCardImport: List<RulesConfig> = listOf(
             RulesConfig(FILE_WILDCARD_IMPORTS.name, true,
-                    mapOf("allowedWildcards" to "import org.cqfn.diktat.example.*"))
+                    mapOf("allowedWildcards" to "org.cqfn.diktat.example.*"))
     )
 
     private val rulesConfigListWildCardImports: List<RulesConfig> = listOf(
             RulesConfig(FILE_WILDCARD_IMPORTS.name, true,
-                    mapOf("allowedWildcards" to "import org.cqfn.diktat.example.*, import org.cqfn.diktat.ruleset.constants.Warnings.*"))
+                    mapOf("allowedWildcards" to "org.cqfn.diktat.example.*, org.cqfn.diktat.ruleset.constants.Warnings.*"))
     )
 
     @Test
