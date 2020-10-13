@@ -308,3 +308,7 @@
   enabled: true
   configuration:
     maxNestedBlockQuantity: '4'
+# Checks that function use default values, instead overloading
+- name: WRONG_OVERLOADING_FUNCTION_ARGUMENTS
+  enabled: true
+  configuration: {}

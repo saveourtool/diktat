@@ -113,6 +113,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     LAMBDA_IS_NOT_LAST_PARAMETER(false, "lambda inside function parameters should be in the end"),
     TOO_MANY_PARAMETERS(false, "function has too many parameters"),
     NESTED_BLOCK(false, "function has too many nested blocks and should be simplified"),
+    WRONG_OVERLOADING_FUNCTION_ARGUMENTS(false, "use default argument instead of function overloading"),
     ;
 
     /**
