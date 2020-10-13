@@ -3,6 +3,7 @@ package org.cqfn.diktat.ruleset.rules
 import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.RuleSetProvider
 import org.cqfn.diktat.common.config.rules.DIKTAT_COMMON
+import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.calculations.AccurateCalculationsRule
@@ -36,12 +37,7 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
         }
         val configRules = RulesConfigReader(javaClass.classLoader)
             .readResource(diktatConfigFile)
-            ?.onEach { config ->
-                require(config.name == DIKTAT_COMMON || config.name in Warnings.names) {
-                    val closestMatch = Warnings.names.minBy { it.editorDistance(config.name) }
-                    "Warning name <${config.name}> in configuration file is invalid, did you mean <$closestMatch>?"
-                }
-            }
+            ?.onEach(::validate)
             ?: listOf()
         val rules = listOf(
                 ::CommentsRule,
@@ -96,6 +92,12 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
                 *rules
         )
     }
+
+    private fun validate(config: RulesConfig) =
+        require(config.name == DIKTAT_COMMON || config.name in Warnings.names) {
+            val closestMatch = Warnings.names.minBy { it.editorDistance(config.name) }
+            "Warning name <${config.name}> in configuration file is invalid, did you mean <$closestMatch>?"
+        }
 
     companion object {
         private val log = LoggerFactory.getLogger(DiktatRuleSetProvider::class.java)
