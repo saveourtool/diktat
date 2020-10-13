@@ -499,6 +499,10 @@ fun isLocatedInTest(filePathParts: List<String>, testAnchors: List<String>): Boo
 
 fun ASTNode.firstLineOfText(suffix: String = "") = text.lines().run { singleOrNull() ?: (first() + suffix) }
 
+fun ASTNode.calculateLineColByOffset(): (offset: Int) -> Pair<Int, Int> {
+    return buildPositionInTextLocator(text)
+}
+
 fun ASTNode.lastLineNumber() = lineNumber()?.plus(text.count { it == '\n' })
 
 fun ASTNode.getFileName(): String = getUserData(KtLint.FILE_PATH_USER_DATA_KEY).let {
