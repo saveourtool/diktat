@@ -23,7 +23,7 @@ class VariablesSearchTest {
                     o = 17
                 }
             }
-        """.trimIndent(), 0) { node, counter ->
+        """.trimIndent(), 0) { node, _ ->
             if (node.elementType != ElementType.FILE) {
                 val thrown = Assertions.assertThrows(IllegalArgumentException::class.java) {
                     val variablesSearchAbstract: VariablesSearch = Mockito.mock(VariablesSearch::class.java, Mockito.CALLS_REAL_METHODS)

@@ -1,6 +1,7 @@
 package org.cqfn.diktat.ruleset.utils
 
 import org.jetbrains.kotlin.lexer.KtTokens
+import kotlin.math.min
 
 val JAVA = arrayOf("abstract", "assert", "boolean",
         "break", "byte", "case", "catch", "char", "class", "const",
@@ -62,4 +63,33 @@ fun String.removePrefix(): String {
     if (this.isLowerCamelCase()) return this[1].toLowerCase() + this.substring(2)
     if (this.isUpperSnakeCase()) return this.substring(2)
     return this
+}
+
+fun String.editorDistance(another: String): Int {
+    val acc = Array(length) {
+        Array(another.length) { 0 }
+    }
+
+    acc[0].indices.forEach {
+        acc[0][it] = it
+    }
+
+    acc.indices.forEach {
+        acc[it][0] = it
+    }
+
+    (1 until acc.size).forEach { row ->
+        (1 until acc[0].size).forEach { col ->
+            val cost = if (get(row) == another[col]) 0 else 1
+            acc[row][col] = min(
+                min(acc[row - 1][col] + 1, acc[row][col - 1] + 1),
+                acc[row - 1][col - 1] + cost
+            )
+            if (row > 1 && col > 1 && get(row) == another[col - 1] && get(row - 1) == another[col]) {
+                acc[row][col] = min(acc[row][col], acc[row - 2][col - 2] + 1)
+            }
+        }
+    }
+
+    return acc.last().last()
 }

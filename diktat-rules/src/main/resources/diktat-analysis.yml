@@ -40,13 +40,13 @@
   enabled: true
   configuration: {}
 - name: PACKAGE_NAME_INCORRECT_PREFIX
-  enabled: true
+  enabled: false
   configuration: {}
 - name: PACKAGE_NAME_INCORRECT_SYMBOLS
   enabled: true
   configuration: {}
 - name: PACKAGE_NAME_INCORRECT_PATH
-  enabled: true
+  enabled: false
   configuration: {}
 - name: PACKAGE_NAME_MISSING
   enabled: true
