@@ -1,54 +1,26 @@
-It is necessary to conform to a specific style of code during software development, otherwise it will lead to difficulties in reading and writing the program. The static analyzer, in turn, has methods for finding and correcting style errors. There are both open source\footnote{PMD: \url{http://pmd.sourceforge.net/}, Rubocop: \url{https://github.com/rubocop-hq/rubocop},
-PHPCS: \url{https://github.com/squizlabs/PHP_CodeSniffer}
-FindSecBugs: \url{https://find-sec-bugs.github.io/}, ESLint: \url{https://eslint.org/}, Checkstyle: \url{https://checkstyle.sourceforge.io/}.}
-(PMD, Rubocop, PHPCS, FindSecBugs, ESLint, Checkstyle, to name a few) and commercial\footnote{IBM Security AppScan: \url{https://www.hcltechsw.com/wps/portal/products/appscan},
-PVS-Studio: \url{https://www.viva64.com/en/pvs-studio/},
-SonarQube: \url{https://www.sonarqube.org/},
-Parasoft: \url{https://www.parasoft.com/}}
-(IBM Security AppScan, PVS-Studio, SonarQube, Parasoft) static analyzers
-on the market.
+It is necessary to conform to a specific style of code during software development, otherwise it will reduce the ability to better understand programmers’ intent and
+ﬁnd more functional defects. Analyzers, in turn, have methods for finding and correcting style errors.
 
-Of the tasks solved by static code analysis programs, two main ones can be distinguished: identifying errors
-in programs and recommending code formatting. That is, the analyzer allows you to check whether the source
-code complies with the accepted coding standard. Also, a static analyzer can be used to determine the
-maintainability of a code, which is how easy it is to analyze, modify and adapt a given software.
+There are two types of code analysis: static and dynamic. The first is the process of identifying errors in the source code of the program, the second is the method
+ of analyzing the code directly during its execution.
 
-Functional quality aspects are typically quite susceptible to formal definition
-and quantification.
-% (\todo: examples!!).
-Functional quality is also an essential
-requirement in any domain of software development. On the other hand,
-maintainability is a lot less straightforward to formally specify or quantify.
-%\todo: refs.
-Also, in certain applications it appears less important than
-functional correctness, although in business domain it is recognized as an
-essential property.
-% (\todo: ref).
-As a result, there are currently a lot more
-research and practical tools addressing functional quality aspects of code than
-maintainability \citep{Overview_Static_Code_Analysis_in_Software_Development}.
-Another aspect of static analysis tools that may have hindered their application
-to maintainability, is that they are predominantly rule-based. Since there has
-not yet been a consensus on how to formalize maintainability, it is challenging
-to devise a set of formal rules to detect it.
+Static analysis can be thought of as an automated code review process. Of the tasks solved by static code analysis programs, two main ones can be
+distinguished: identifying errors in programs and recommending code formatting. That is, the analyzer allows you to check whether the source code complies with the
+accepted coding standard. Also, a static analyzer can be used to determine the maintainability of a code, which is how easy it is to analyze, modify and adapt a given
+software. Static analysis tools allow you to identify a large number of errors in the design phase, which significantly reduces the development cost of the entire project.
+Static analysis covers the entire code - it checks even those code fragments that are difficult to test. It does not depend on the compiler used and the environment
+in which the compiled program will be executed.There are both open source\footnote{KtLint: \url{https://github.com/pinterest/ktlint},
+Detekt: \url{https://github.com/detekt/detekt}}, and commercial \footnote{IBM Security AppScan: \url{https://www.hcltechsw.com/wps/portal/products/appscan},
+PVS-Studio: \url{https://www.viva64.com/en/pvs-studio/}}.
 
-We designed our new tool Aibolit to help developers identify patterns in their
-code  that may cause maintainability issues. It is a next generation static
-analysis tool that uses a machine learning (ML) model as an underlying quality
-prediction mechanism. From the perspective of ML, our product is a recommender
-system. For a given class file, it gives suggestions to the developer to alter
-their code. The recommendations come in the form of \textit{code patterns} that
-are detected in the code and advised to be removed.
+DiKTat - is a formal strict code style (\url{https://github.com/cqfn/diKTat}) and a linter with a set of rules that implement this code style. Basically, it is a collection
+of Kotlin code style rules implemented as AST visitors on top of KTlint framework (\url{https://github.com/pinterest/ktlint}). Diktat warns and fixes code style errors and
+code smells based on configuration file. DiKTat is a highly configurable framework, that can be extended further by adding custom rules. It can be run as command line
+application or with maven or gradle plugins. In this paper, we will explain how DiKTat works, describes advantages and disadvantages and how it differs from other static
+analyzers.
 
-Our choice to design Aibolit as a ML-based system alleviates some important
-shortcomings of rule-based static analyzers. By design, ML algorithms capture
-statistical relations in the external world (data). Therefore, they can be a
-good way to model imprecisely and subjectively defined properties of code, such
-as its maintainability. Moreover, rule-based system are known to not scale well
-to the diversity of empirically observed cases, and they tend to get very hard
-to extend and maintain \citep{LenatFeigenbaum1987}. The ML
-approach does not require
-manual system adaptation as new observations or new features (patterns) come
-along. In fact, Aibolit provides an easy way for developers to integrate a code
-pattern of their liking into the recommender system and to analyze the pattern`s
-impact on code quality.
+So why did we decide to create diKTat? We looked at similar projects and realized that they have defects. That’s why we came to a conclusion that we need to create
+convenient and easy-to-use tool for developers. Why is it easy-to-use? First of all, diKTat has its own highly configurable ruleset. You just need to fill your own options
+on rules in ruleset or either use default one. Basically, ruleset is an yml file with a description of each rule. Secondly, there are a lot of developers that use different
+tools for building projects. Most popular are Maven and Gradle. DiKTat supports these ones and it also has cli. Finally, each developer has their own codestyle and sometimes
+they don’t want static analyzers to trigger on some lines of code. In diKTat you can easily disable a rule.
