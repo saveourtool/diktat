@@ -31,6 +31,9 @@ class TestArgumentsReader(
     private val cliArguments: List<CliArgument>? = readResource(properties.testFrameworkArgsRelativePath)
     private val cmd: CommandLine
 
+    /**
+     * List of tests provided by user
+     */
     val tests: List<String>
         get() {
             val tests = cmd.getOptionValue("t")

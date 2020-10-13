@@ -34,6 +34,10 @@ class TestConfig @JsonCreator internal constructor(
             """(executionCommand: $executionCommand, expectedResultFile: $expectedResultFile, inPlace: $inPlace,
                     executionType: $executionCommand)"""
 
+    /**
+     * @param testName
+     * @return [TestConfig] with updated [testName]
+     */
     fun setTestName(testName: String): TestConfig {
         this.testName = testName
         return this
