@@ -350,67 +350,6 @@
                 </executions>
             </plugin>
 
-            <!-- todo: remove antrun completely after diktat-maven-plugin is released -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>3.0.0</version>
-                <executions>
-                    <execution>
-                        <id>diktat</id>
-                        <phase>none</phase>
-                        <configuration>
-                            <target name="ktlint">
-                                <java taskname="ktlint" dir="${maven.multiModuleProjectDirectory}" fork="true"
-                                      failonerror="true"
-                                      classpathref="maven.plugin.classpath" classname="com.pinterest.ktlint.Main">
-                                    <arg value="${project.basedir}/src/main/kotlin/**/*.kt"/>
-                                    <arg value="${project.basedir}/src/test/kotlin/**/*.kt"/>
-                                </java>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>functional-test</id>
-                        <phase>none</phase>
-                        <inherited>false</inherited>
-                        <configuration>
-                            <target name="ktlint">
-                                <java taskname="ktlint" dir="${maven.multiModuleProjectDirectory}" fork="true"
-                                      failonerror="true"
-                                      classpathref="maven.plugin.classpath" classname="com.pinterest.ktlint.Main">
-                                    <arg value="diktat-rules/src/test/resources/test/funcTest/*.kt"/>
-                                </java>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.pinterest</groupId>
-                        <artifactId>ktlint</artifactId>
-                        <version>${ktlint.version}</version>
-                        <exclusions>
-                            <exclusion>
-                                <groupId>com.pinterest.ktlint</groupId>
-                                <artifactId>ktlint-ruleset-standard</artifactId>
-                            </exclusion>
-                        </exclusions>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.cqfn.diktat</groupId>
-                        <artifactId>diktat-rules</artifactId>
-                        <version>${diktat-check.version}</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
-
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>

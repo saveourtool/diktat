@@ -43,8 +43,7 @@ jobs:
 
       - name: Run diKTat from maven
         continue-on-error: true
-        # fixme: change to diktat:check when diktat plugin is released
-        run: mvn -B antrun:run@functional-test &> out
+        run: mvn -B diktat:check@functional-test &> out
 
       - name: Check maven
         run: |
