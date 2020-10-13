@@ -29,6 +29,7 @@ import java.io.File
 const val DIKTAT_RULE_SET_ID = "diktat-ruleset"
 
 class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analysis.yml") : RuleSetProvider {
+    @Suppress("LongMethod")
     override fun get(): RuleSet {
         log.debug("Will run $DIKTAT_RULE_SET_ID with $diktatConfigFile (it can be placed to the run directory or the default file from resources will be used)")
         if (!File(diktatConfigFile).exists()) {
