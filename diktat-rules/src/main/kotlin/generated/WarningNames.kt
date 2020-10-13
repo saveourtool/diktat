@@ -179,4 +179,6 @@ object WarningNames {
     const val TOO_MANY_PARAMETERS: String = "TOO_MANY_PARAMETERS"
 
     const val NESTED_BLOCK: String = "NESTED_BLOCK"
+
+    const val WRONG_OVERLOADING_FUNCTION_ARGUMENTS: String = "WRONG_OVERLOADING_FUNCTION_ARGUMENTS"
 }

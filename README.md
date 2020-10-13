@@ -36,11 +36,11 @@ The full list of available supported rules and inspections is [here](info/availa
     # another option is "brew install ktlint"
     ```
    
-2. Load diKTat manually: [here](https://github.com/cqfn/diKTat/releases/download/v0.1.1/diktat.jar)
+2. Load diKTat manually: [here](https://github.com/cqfn/diKTat/releases/download/v0.1.2/diktat.jar)
 
    **OR** use curl:
    ```bash
-   $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v0.1.1/diktat-0.1.1.jar
+   $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v0.1.2/diktat-0.1.2.jar
    ```
    
 3. Finally, run KTlint (with diKTat injected) to check your `*.kt` files in `dir/your/dir`:
@@ -100,7 +100,7 @@ Add this plugin to your pom.xml:
               <dependency>
                   <groupId>org.cqfn.diktat</groupId>
                   <artifactId>diktat-rules</artifactId>
-                  <version>0.1.1</version> <!-- replace it with diktat latest version -->
+                  <version>0.1.2</version> <!-- replace it with diktat latest version -->
                   <exclusions>
                       <exclusion>
                           <groupId>org.slf4j</groupId>
@@ -125,8 +125,7 @@ To run diktat to check/fix code style - run `$ mvn antrun:run@diktat`.
 ### Use the new diktat-maven-plugin
 
 You can see how it is configured in our project for self-checks: [pom.xml](pom.xml).
-This plugin should be available since version 0.1.2. It requires less configuration but may contain bugs.
-If you use it and encounter any problems, feel free to open issues on [github](https://github.com/cqfn/diktat/issues).
+This plugin is available since version 0.1.2. If you use it and encounter any problems, feel free to open issues on [github](https://github.com/cqfn/diktat/issues).
 
 Add this plugin to your pom.xml:
 <details>
@@ -179,7 +178,7 @@ dependencies {
     }
 
     // diktat ruleset
-    ktlint("org.cqfn.diktat:diktat-rules:0.1.1")
+    ktlint("org.cqfn.diktat:diktat-rules:0.1.2")
 }
 
 val outputDir = "${project.buildDir}/reports/diktat/"
