@@ -237,6 +237,15 @@
                     <groupId>org.jetbrains.kotlin</groupId>
                     <artifactId>kotlin-maven-plugin</artifactId>
                     <version>${kotlin.version}</version>
+                    <configuration>
+                        <jvmTarget>1.8</jvmTarget>
+                        <apiVersion>1.3</apiVersion>
+                        <sourceDirs>
+                            <source>src/main/kotlin</source>
+                            <source>src/main/resources</source>
+                        </sourceDirs>
+                    </configuration>
+                    <inherited>true</inherited>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
