@@ -69,6 +69,7 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
             if (checkFileHasCode(node)) {
                 checkCodeBlocksOrderAndEmptyLines(node)
             }
+            return
         }
     }
 
@@ -132,10 +133,13 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         val imports = node.getChildren(TokenSet.create(IMPORT_DIRECTIVE)).toList()
 
         // importPath can be null if import name cannot be parsed, which should be a very rare case, therefore !! should be safe here
-        imports.filter { (it.psi as KtImportDirective).importPath!!.isAllUnder && it.text !in wildCardImportsConfig.allowedWildcards }
-            .forEach {
-                FILE_WILDCARD_IMPORTS.warn(configRules, emitWarn, isFixMode, it.text, it.startOffset, it)
-            }
+        imports
+                .filter {
+                    (it.psi as KtImportDirective).importPath!!.run {
+                        isAllUnder && toString() !in wildCardImportsConfig.allowedWildcards
+                    }
+                }
+                .forEach { FILE_WILDCARD_IMPORTS.warn(configRules, emitWarn, isFixMode, it.text, it.startOffset, it) }
 
         val sortedImportsGroups = if (importsGroupingConfig.useRecommendedImportsOrder) {
             ImportGroups.create(imports.map { it.psi as KtImportDirective }, domainName).toList()

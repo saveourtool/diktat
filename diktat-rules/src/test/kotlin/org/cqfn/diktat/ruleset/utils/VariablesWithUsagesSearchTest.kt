@@ -1,13 +1,14 @@
 package org.cqfn.diktat.ruleset.utils
 
 import com.pinterest.ktlint.core.ast.ElementType.FILE
+import org.cqfn.diktat.ruleset.utils.search.findAllVariablesWithUsages
 import org.cqfn.diktat.util.applyToCode
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 @Suppress("UnsafeCallOnNullableType")
-class VariableSearchASTUtilsTest {
+class VariablesWithUsagesSearchTest {
     @Test
     fun `testing proper variables search in function`() {
         applyToCode("""
@@ -18,9 +19,9 @@ class VariableSearchASTUtilsTest {
                     println(a.o)
                 }
             }
-        """.trimIndent(), 0) { node, counter ->
+        """.trimIndent(), 0) { node, _ ->
             if (node.elementType == FILE) {
-                val vars = node.collectAllDeclaredVariablesWithUsages().mapKeys { it.key.text }
+                val vars = node.findAllVariablesWithUsages().mapKeys { it.key.text }
                 val keys = vars.keys
                 val var1 = keys.elementAt(0)
                 val var2 = keys.elementAt(1)
@@ -42,9 +43,9 @@ class VariableSearchASTUtilsTest {
                     var v = 0
                 }
             }
-        """.trimIndent(), 0) { node, counter ->
+        """.trimIndent(), 0) { node, _ ->
             if (node.elementType == FILE) {
-                val vars = node.collectAllDeclaredVariablesWithUsages().mapKeys { it.key.text }
+                val vars = node.findAllVariablesWithUsages().mapKeys { it.key.text }
                 val keys = vars.keys
                 val var1 = keys.elementAt(0)
                 val var2 = keys.elementAt(1)
@@ -68,9 +69,9 @@ class VariableSearchASTUtilsTest {
                     var v = 0
                 }
             }
-        """.trimIndent(), 0) { node, counter ->
+        """.trimIndent(), 0) { node, _ ->
             if (node.elementType == FILE) {
-                val vars = node.collectAllDeclaredVariablesWithUsages().mapKeys { it.key.text }
+                val vars = node.findAllVariablesWithUsages().mapKeys { it.key.text }
                 val keys = vars.keys
                 val var1 = keys.elementAt(0)
                 val var2 = keys.elementAt(1)
@@ -92,9 +93,9 @@ class VariableSearchASTUtilsTest {
                     ++v
                 }
             }
-        """.trimIndent(), 0) { node, counter ->
+        """.trimIndent(), 0) { node, _ ->
             if (node.elementType == FILE) {
-                val vars = node.collectAllDeclaredVariablesWithUsages().mapKeys { it.key.text }
+                val vars = node.findAllVariablesWithUsages().mapKeys { it.key.text }
                 val keys = vars.keys
                 val var1 = keys.elementAt(0)
                 assertEquals("val v = 0", var1)
@@ -117,9 +118,9 @@ class VariableSearchASTUtilsTest {
                     }
                 }
             }
-        """.trimIndent(), 0) { node, counter ->
+        """.trimIndent(), 0) { node, _ ->
             if (node.elementType == FILE) {
-                val vars = node.collectAllDeclaredVariablesWithUsages().mapKeys { it.key.text }
+                val vars = node.findAllVariablesWithUsages().mapKeys { it.key.text }
                 val keys = vars.keys
                 val var1 = keys.elementAt(0)
                 val var2 = keys.elementAt(1)
@@ -140,9 +141,9 @@ class VariableSearchASTUtilsTest {
                     someVal++
                 }
             }
-        """.trimIndent(), 0) { node, counter ->
+        """.trimIndent(), 0) { node, _ ->
             if (node.elementType == FILE) {
-                val vars = node.collectAllDeclaredVariablesWithUsages().mapKeys { it.key.text }
+                val vars = node.findAllVariablesWithUsages().mapKeys { it.key.text }
                 val keys = vars.keys
                 val var1 = keys.elementAt(0)
                 assertEquals("val someVal = 0", var1)
@@ -161,9 +162,9 @@ class VariableSearchASTUtilsTest {
                     someVal++
                 }
             }
-        """.trimIndent(), 0) { node, counter ->
+        """.trimIndent(), 0) { node, _ ->
             if (node.elementType == FILE) {
-                val vars = node.collectAllDeclaredVariablesWithUsages().mapKeys { it.key.text }
+                val vars = node.findAllVariablesWithUsages().mapKeys { it.key.text }
                 val keys = vars.keys
                 val var1 = keys.elementAt(0)
                 val var2 = keys.elementAt(1)
@@ -186,9 +187,9 @@ class VariableSearchASTUtilsTest {
                     }
                 }
             }
-        """.trimIndent(), 0) { node, counter ->
+        """.trimIndent(), 0) { node, _ ->
             if (node.elementType == FILE) {
-                val vars = node.collectAllDeclaredVariablesWithUsages().mapKeys { it.key.text }
+                val vars = node.findAllVariablesWithUsages().mapKeys { it.key.text }
                 val keys = vars.keys
                 val var1 = keys.elementAt(0)
                 assertEquals("var a = 5", var1)
@@ -206,9 +207,9 @@ class VariableSearchASTUtilsTest {
                     println(a)
                 }
             }
-        """.trimIndent(), 0) { node, counter ->
+        """.trimIndent(), 0) { node, _ ->
             if (node.elementType == FILE) {
-                val vars = node.collectAllDeclaredVariablesWithUsages().mapKeys { it.key.text }
+                val vars = node.findAllVariablesWithUsages().mapKeys { it.key.text }
                 val keys = vars.keys
                 val var1 = keys.elementAt(0)
                 assertEquals("var a = 5", var1)
@@ -228,9 +229,9 @@ class VariableSearchASTUtilsTest {
                     v++
                 }
             }
-        """.trimIndent(), 0) { node, counter ->
+        """.trimIndent(), 0) { node, _ ->
             if (node.elementType == FILE) {
-                val vars = node.collectAllDeclaredVariablesWithUsages().mapKeys { it.key.text }
+                val vars = node.findAllVariablesWithUsages().mapKeys { it.key.text }
                 val keys = vars.keys
                 val var1 = keys.elementAt(0)
                 val var2 = keys.elementAt(1)
@@ -258,9 +259,9 @@ class VariableSearchASTUtilsTest {
                     v++
                 }
             }
-        """.trimIndent(), 0) { node, counter ->
+        """.trimIndent(), 0) { node, _ ->
             if (node.elementType == FILE) {
-                val vars = node.collectAllDeclaredVariablesWithUsages().mapKeys { it.key.text }
+                val vars = node.findAllVariablesWithUsages().mapKeys { it.key.text }
                 val keys = vars.keys
                 val var1 = keys.elementAt(0)
                 val var2 = keys.elementAt(1)
@@ -290,9 +291,9 @@ class VariableSearchASTUtilsTest {
                     v++
                 }
             }
-        """.trimIndent(), 0) { node, counter ->
+        """.trimIndent(), 0) { node, _ ->
             if (node.elementType == FILE) {
-                val vars = node.collectAllDeclaredVariablesWithUsages().mapKeys { it.key.text }
+                val vars = node.findAllVariablesWithUsages().mapKeys { it.key.text }
                 val keys = vars.keys
                 val var1 = keys.elementAt(0)
                 val var2 = keys.elementAt(1)
@@ -324,9 +325,9 @@ class VariableSearchASTUtilsTest {
             
                 var v = 3
             }
-        """.trimIndent(), 0) { node, counter ->
+        """.trimIndent(), 0) { node, _ ->
             if (node.elementType == FILE) {
-                val vars = node.collectAllDeclaredVariablesWithUsages().mapKeys { it.key.text }
+                val vars = node.findAllVariablesWithUsages().mapKeys { it.key.text }
                 val keys = vars.keys
                 val var1 = keys.elementAt(0)
                 val var2 = keys.elementAt(1)
@@ -356,9 +357,9 @@ class VariableSearchASTUtilsTest {
                     v++
                 }
             }
-        """.trimIndent(), 0) { node, counter ->
+        """.trimIndent(), 0) { node, _ ->
             if (node.elementType == FILE) {
-                val vars = node.collectAllDeclaredVariablesWithUsages().mapKeys { it.key.text }
+                val vars = node.findAllVariablesWithUsages().mapKeys { it.key.text }
                 val keys = vars.keys
                 val var1 = keys.elementAt(0)
                 assertEquals("var v = 1", var1)
@@ -378,9 +379,9 @@ class VariableSearchASTUtilsTest {
             
                 var v = 1
             }
-        """.trimIndent(), 0) { node, counter ->
+        """.trimIndent(), 0) { node, _ ->
             if (node.elementType == FILE) {
-                val vars = node.collectAllDeclaredVariablesWithUsages().mapKeys { it.key.text }
+                val vars = node.findAllVariablesWithUsages().mapKeys { it.key.text }
                 val keys = vars.keys
                 val var1 = keys.elementAt(0)
 
@@ -389,5 +390,4 @@ class VariableSearchASTUtilsTest {
             }
         }
     }
-
 }
