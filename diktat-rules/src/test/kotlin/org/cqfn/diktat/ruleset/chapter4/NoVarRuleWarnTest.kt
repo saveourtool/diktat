@@ -35,6 +35,7 @@ class NoVarRuleWarnTest : LintTestBase(::ImmutableValNoVarRule) {
                 """
                     | fun foo() { 
                     |     var a = emptyList()
+                    |     a = 15
                     |     var y = 0
                     |     a.forEach { x ->
                     |        y = x + 1
