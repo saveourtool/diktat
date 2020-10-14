@@ -2,8 +2,7 @@
 name: Bug report
 about: Create a report to help us improve
 title: ''
-labels: ''
-assignees: ''
+labels: 'bug'
 
 ---
 
@@ -18,7 +17,7 @@ assignees: ''
 ## Environment information
 * diktat version:
 * build tool (maven/gradle):
-* how is diktat run (CLI, plugin, etc.)
-* kotlin version
-* operating system
-* link to a project (if your project is public)
+* how is diktat run (CLI, plugin, etc.):
+* kotlin version:
+* operating system:
+* link to a project (if your project is public):
