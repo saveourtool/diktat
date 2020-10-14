@@ -20,7 +20,7 @@
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib</artifactId>
+            <artifactId>kotlin-stdlib-jdk8</artifactId>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -88,7 +88,6 @@
                                 <source>src/main/kotlin</source>
                                 <source>src/main/resources</source>
                             </sourceDirs>
-                            <jvmTarget>1.8</jvmTarget>
                         </configuration>
                     </execution>
                     <execution>
