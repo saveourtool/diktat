@@ -8,7 +8,7 @@ on:
 
 env:
   DIKTAT_VERSION: 0.1.2
-  KTLINT_VERSION: 0.37.1
+  KTLINT_VERSION: 0.39.0
 
 jobs:
   run-functional-tests:
