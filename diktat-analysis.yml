@@ -313,3 +313,7 @@
 - name: WRONG_OVERLOADING_FUNCTION_ARGUMENTS
   enabled: true
   configuration: {}
+# Checks that property in constructor doesn't contains comment
+- name: KDOC_NO_CONSTRUCTOR_PROPERTY
+  enabled: true
+  configuration: {}

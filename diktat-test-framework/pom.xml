@@ -72,7 +72,6 @@
                                 <source>src/main/kotlin</source>
                                 <source>src/main/resources</source>
                             </sourceDirs>
-                            <jvmTarget>1.8</jvmTarget>
                             <compilerPlugins>
                                 <plugin>kotlinx-serialization</plugin>
                             </compilerPlugins>

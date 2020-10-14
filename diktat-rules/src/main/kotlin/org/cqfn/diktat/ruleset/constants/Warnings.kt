@@ -53,6 +53,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS(true, "in KDoc there should be exactly one empty line after special tags"),
     KDOC_NO_EMPTY_TAGS(false, "no empty descriptions in tag blocks are allowed"),
     KDOC_NO_DEPRECATED_TAG(true, "KDoc doesn't support @deprecated tag, use @Deprecated annotation instead"),
+    KDOC_NO_CONSTRUCTOR_PROPERTY(true, "replace comment before property with @property tag in KDoc"),
     HEADER_WRONG_FORMAT(true, "file header comments should be properly formatted"),
     HEADER_MISSING_OR_WRONG_COPYRIGHT(true, "file header comment must include copyright information inside a block comment"),
     WRONG_COPYRIGHT_YEAR(true, "year defined in copyright and current year are different"),
