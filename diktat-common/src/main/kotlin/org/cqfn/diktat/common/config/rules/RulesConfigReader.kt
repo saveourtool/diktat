@@ -59,7 +59,7 @@ open class RulesConfigReader(override val classLoader: ClassLoader) : JsonResour
      * @param fileStream a [BufferedReader] representing loaded rules config file
      * @return list of [RulesConfig]
      */
-    override fun parseResource(fileStream: BufferedReader) = fileStream.use { stream ->
+    override fun parseResource(fileStream: BufferedReader): List<RulesConfig> = fileStream.use { stream ->
         yamlSerializer.decodeFromString(stream.readLines().joinToString(separator = "\n"))
     }
 
