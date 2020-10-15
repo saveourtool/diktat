@@ -1,27 +1,22 @@
 package org.cqfn.diktat.common.cli
 
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.annotation.JsonProperty
 import org.apache.commons.cli.Option
+import kotlinx.serialization.*
 
 /**
  * This class is used to serialize/deserialize json representation
  * that is used to store command line arguments
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
-class CliArgument @JsonCreator internal constructor(
+@Serializable
+data class CliArgument (
         // short argument representation like -h
-        @param:JsonProperty("shortName") private val shortName: String,
-        @param:JsonProperty("helpDescr") private val helpDescr: String,
+        private val shortName: String,
+        private val helpDescr: String,
         // long argument representation like --help
-        @param:JsonProperty("longName") private val longName: String,
+        private val longName: String,
         // indicates if option should have explicit argument
-        @param:JsonProperty("hasArgs") private val hasArgs: Boolean,
-        @param:JsonProperty("isRequired") private val isRequired: Boolean) {
-    override fun toString(): String = "(shortName: " + shortName + ", helpDescr: " + helpDescr + ", longName: " +
-            longName + ", hasArgs: " + hasArgs + ", isRequired: " + isRequired + ")"
-
+        private val hasArgs: Boolean,
+        private val isRequired: Boolean) {
     /**
      * Converts parameters received from json to [Option]
      *
