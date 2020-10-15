@@ -1,6 +1,7 @@
 package org.cqfn.diktat.test.framework.config
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import java.io.BufferedReader
 import java.io.IOException
 import java.util.stream.Collectors
@@ -21,7 +22,7 @@ class TestConfigReader(configFilePath: String, override val classLoader: ClassLo
      */
     @Throws(IOException::class)
     override fun parseResource(fileStream: BufferedReader): TestConfig {
-        val jsonValue = fileStream.lines().collect(Collectors.joining())
-        return ObjectMapper().readValue(jsonValue, TestConfig::class.java)
+        val jsonValue: String = fileStream.lines().collect(Collectors.joining())
+        return Json.decodeFromString<TestConfig>(jsonValue)
     }
 }

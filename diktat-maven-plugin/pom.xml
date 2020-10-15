@@ -35,7 +35,7 @@
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib</artifactId>
+            <artifactId>kotlin-stdlib-jdk8</artifactId>
         </dependency>
         <dependency>
             <groupId>org.cqfn.diktat</groupId>
@@ -63,13 +63,6 @@
                         <goals>
                             <goal>compile</goal>
                         </goals>
-                        <configuration>
-                            <sourceDirs>
-                                <source>src/main/kotlin</source>
-                                <source>src/main/resources</source>
-                            </sourceDirs>
-                            <jvmTarget>1.8</jvmTarget>
-                        </configuration>
                     </execution>
                     <execution>
                         <id>test-compile</id>
@@ -81,7 +74,6 @@
                             <sourceDirs>
                                 <source>src/test/kotlin</source>
                             </sourceDirs>
-                            <jvmTarget>1.8</jvmTarget>
                         </configuration>
                     </execution>
                 </executions>

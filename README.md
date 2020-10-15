@@ -3,44 +3,46 @@
 ![Build and test](https://github.com/cqfn/diKTat/workflows/Build%20and%20test/badge.svg)
 ![deteKT static analysis](https://github.com/cqfn/diKTat/workflows/Run%20deteKT/badge.svg)
 ![diKTat code style](https://github.com/cqfn/diKTat/workflows/Run%20diKTat/badge.svg)
+[![License](https://img.shields.io/github/license/cqfn/diKtat)](https://github.com/cqfn/diKTat/blob/master/LICENSE)
+[![codecov](https://codecov.io/gh/cqfn/diKTat/branch/master/graph/badge.svg)](https://codecov.io/gh/cqfn/diKTat)
 
 [![Releases](https://img.shields.io/github/v/release/cqfn/diKTat)](https://github.com/cqfn/diKTat/releases)
 ![Maven Central](https://img.shields.io/maven-central/v/org.cqfn.diktat/diktat-rules)
-[![License](https://img.shields.io/github/license/cqfn/diKtat)](https://github.com/cqfn/diKTat/blob/master/LICENSE)
-[![codecov](https://codecov.io/gh/cqfn/diKTat/branch/master/graph/badge.svg)](https://codecov.io/gh/cqfn/diKTat)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fcqfn%2FdiKTat.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fcqfn%2FdiKTat?ref=badge_shield)
+[![ktlint](https://img.shields.io/badge/code%20style-%E2%9D%A4-FF4081.svg)](https://ktlint.github.io/)
+[![Chat on Telegram](https://img.shields.io/badge/Chat%20on-Telegram-brightgreen.svg)](https://t.me/joinchat/AAAAAFDg-ipuZFGyBGPPeg)
 
 [![Hits-of-Code](https://hitsofcode.com/github/cqfn/diktat)](https://hitsofcode.com/view/github/cqfn/diktat)
 ![Lines of code](https://img.shields.io/tokei/lines/github/cqfn/diktat)
 ![GitHub repo size](https://img.shields.io/github/repo-size/cqfn/diktat)
-
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fcqfn%2FdiKTat.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fcqfn%2FdiKTat?ref=badge_shield)
 [![Awesome Kotlin Badge](https://kotlin.link/awesome-kotlin.svg)](https://github.com/KotlinBy/awesome-kotlin)
-[![ktlint](https://img.shields.io/badge/code%20style-%E2%9D%A4-FF4081.svg)](https://ktlint.github.io/)
-[![Chat on Telegram](https://img.shields.io/badge/Chat%20on-Telegram-brightgreen.svg)](https://t.me/joinchat/AAAAAFDg-ipuZFGyBGPPeg)
 
-### (!) See [diKTat codestyle](info/diktat-kotlin-coding-style-guide-en.md) first.
-### (!) Also see [the list of all supported rules](info/available-rules.md).
-### (!) Have a look at [maven and gradle examples](https://github.com/akuleshov7/diktat-examples).
-### (!) Check and try diktat/ktlint [online demo](https://ktlint-demo.herokuapp.com)
 
-DiKTat is a collection of [Kotlin](https://kotlinlang.org/) code style rules implemented
-as AST visitors on top of [KTlint](https://ktlint.github.io/).
-The full list of available supported rules and inspections is [here](info/available-rules.md).
+DiKTat is a strict [coding standard ](info/diktat-kotlin-coding-style-guide-en.md) for Kotlin and a collection of [Kotlin](https://kotlinlang.org/) code style rules implemented
+as AST visitors on the top of [KTlint](https://ktlint.github.io/). It can be used for detecting and autofixing code smells in CI/CD process. 
+The full list of available supported rules and inspections can be found [here](info/available-rules.md).
+
+
+| See first | !!! |
+| ----------------- | ------------------------ |
+|[diKTat codestyle](info/diktat-kotlin-coding-style-guide-en.md)|[supported rules](info/available-rules.md)|                                                      |
+|[maven and gradle](https://github.com/akuleshov7/diktat-examples)|[online demo](https://ktlint-demo.herokuapp.com)|
+
 
 ## Run as CLI-application
 1. Install KTlint manually: [here](https://github.com/pinterest/ktlint/releases)
 
    **OR** use curl:
     ```bash
-    curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.37.1/ktlint && chmod a+x ktlint
+    curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.39.0/ktlint && chmod a+x ktlint
     # another option is "brew install ktlint"
     ```
    
-2. Load diKTat manually: [here](https://github.com/cqfn/diKTat/releases/download/v0.1.2/diktat.jar)
+2. Load diKTat manually: [here](https://github.com/cqfn/diKTat/releases/download/v0.1.1/diktat.jar)
 
    **OR** use curl:
    ```bash
-   $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v0.1.2/diktat-0.1.2.jar
+   $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v0.1.1/diktat-0.1.1.jar
    ```
    
 3. Finally, run KTlint (with diKTat injected) to check your `*.kt` files in `dir/your/dir`:
@@ -89,7 +91,7 @@ Add this plugin to your pom.xml:
               <dependency>
                   <groupId>com.pinterest</groupId>
                   <artifactId>ktlint</artifactId>
-                  <version>0.37.1</version>
+                  <version>0.39.0</version>
                   <exclusions>
                       <exclusion>  <!-- without this exclusion both rulesets are enabled which we discourage -->
                           <groupId>com.pinterest.ktlint</groupId>
@@ -100,7 +102,7 @@ Add this plugin to your pom.xml:
               <dependency>
                   <groupId>org.cqfn.diktat</groupId>
                   <artifactId>diktat-rules</artifactId>
-                  <version>0.1.2</version> <!-- replace it with diktat latest version -->
+                  <version>0.1.1</version> <!-- replace it with diktat latest version -->
                   <exclusions>
                       <exclusion>
                           <groupId>org.slf4j</groupId>
@@ -125,7 +127,8 @@ To run diktat to check/fix code style - run `$ mvn antrun:run@diktat`.
 ### Use the new diktat-maven-plugin
 
 You can see how it is configured in our project for self-checks: [pom.xml](pom.xml).
-This plugin is available since version 0.1.2. If you use it and encounter any problems, feel free to open issues on [github](https://github.com/cqfn/diktat/issues).
+This plugin should be available since version 0.1.2. It requires less configuration but may contain bugs.
+If you use it and encounter any problems, feel free to open issues on [github](https://github.com/cqfn/diktat/issues).
 
 Add this plugin to your pom.xml:
 <details>
@@ -172,13 +175,13 @@ Add the code below to your `build.gradle.kts`:
 val ktlint by configurations.creating
 
 dependencies {
-    ktlint("com.pinterest:ktlint:0.37.1") {
+    ktlint("com.pinterest:ktlint:0.39.0") {
         // need to exclude standard ruleset to use only diktat rules
         exclude("com.pinterest.ktlint", "ktlint-ruleset-standard")
     }
 
     // diktat ruleset
-    ktlint("org.cqfn.diktat:diktat-rules:0.1.2")
+    ktlint("org.cqfn.diktat:diktat-rules:0.1.1")
 }
 
 val outputDir = "${project.buildDir}/reports/diktat/"
