@@ -1,14 +1,15 @@
 package org.cqfn.diktat.test.framework.config
 
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
 import java.io.BufferedReader
 import java.io.IOException
 import java.util.stream.Collectors
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import org.cqfn.diktat.common.config.reader.JsonResourceConfigReader
 
 /**
  * A [JsonResourceConfigReader] to read tests configuration as [TestConfig]
+ * @property classLoader a [ClassLoader] to load configutation file
  */
 class TestConfigReader(configFilePath: String, override val classLoader: ClassLoader) : JsonResourceConfigReader<TestConfig?>() {
     /**
