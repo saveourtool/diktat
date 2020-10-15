@@ -1,6 +1,7 @@
 package org.cqfn.diktat.ruleset.utils
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.charleskorn.kaml.Yaml
+import kotlinx.serialization.encodeToString
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
 import org.cqfn.diktat.common.config.rules.getRuleConfig
@@ -35,15 +36,14 @@ class RulesConfigYamlTest {
         allRulesFromCode.forEach { rule ->
             val foundRule = allRulesFromConfig.getRuleConfig(rule)
             val ymlCodeSnippet = RulesConfig(rule.ruleName(), true, mapOf())
-            val jacksonMapper = jacksonObjectMapper()
 
-            val ruleYaml = jacksonMapper.writeValueAsString(ymlCodeSnippet)
+            val ruleYaml = Yaml.default.encodeToString(ymlCodeSnippet)
             Assertions.assertTrue(foundRule != null) {
                 """
                    Cannot find warning ${rule.ruleName()} in $filePath.
                    You can fix it by adding the following code below to $filePath:
                    $ruleYaml
-                """
+                """.trimIndent()
             }
         }
 

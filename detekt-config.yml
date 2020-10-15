@@ -810,4 +810,4 @@ style:
   WildcardImport:
     active: true
     excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/iosTest/**']
-    excludeImports: ['org.cqfn.diktat.ruleset.utils.*', 'java.util.*', 'kotlinx.android.synthetic.*']
+    excludeImports: ['org.cqfn.diktat.ruleset.utils.*', 'java.util.*', 'kotlinx.android.synthetic.*', 'kotlinx.serialization']

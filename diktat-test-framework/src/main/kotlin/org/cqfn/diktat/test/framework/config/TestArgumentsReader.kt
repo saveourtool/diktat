@@ -1,7 +1,7 @@
 package org.cqfn.diktat.test.framework.config
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import java.io.BufferedReader
 import java.io.IOException
 import java.util.stream.Collectors
@@ -90,7 +90,7 @@ class TestArgumentsReader(
     @Throws(IOException::class)
     override fun parseResource(fileStream: BufferedReader): List<CliArgument> {
         val jsonValue = fileStream.lines().collect(Collectors.joining())
-        return jacksonObjectMapper().readValue(jsonValue)
+        return Json.decodeFromString<List<CliArgument>>(jsonValue)
     }
 
     companion object {
