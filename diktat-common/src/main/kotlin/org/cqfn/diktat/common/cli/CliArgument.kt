@@ -1,20 +1,20 @@
 package org.cqfn.diktat.common.cli
 
-import org.apache.commons.cli.Option
 import kotlinx.serialization.*
+import org.apache.commons.cli.Option
 
 /**
  * This class is used to serialize/deserialize json representation
  * that is used to store command line arguments
+ * @property shortName short argument representation like -h
+ * @property longName long argument representation like --help
+ * @property hasArgs indicates if option should have explicit argument
  */
 @Serializable
-data class CliArgument (
-        // short argument representation like -h
+data class CliArgument(
         private val shortName: String,
         private val helpDescr: String,
-        // long argument representation like --help
         private val longName: String,
-        // indicates if option should have explicit argument
         private val hasArgs: Boolean,
         private val isRequired: Boolean) {
     /**
