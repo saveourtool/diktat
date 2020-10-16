@@ -41,7 +41,7 @@ class EnumValueCaseTest : FixTestBase("test/paragraph1/naming", ::IdentifierNami
     @Test
     @Tag(WarningNames.ENUM_VALUE)
     fun `incorrect enum unknown style`() {
-        assertThrows<IllegalArgumentException> {
+        assertThrows<IllegalStateException> {
             IdentifierNaming.IdentifierNamingConfiguration(
                     rulesConfigEnumUnknownStyle.getRuleConfig(Warnings.ENUM_VALUE)
                             ?.configuration ?: mapOf()

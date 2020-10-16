@@ -47,6 +47,7 @@ import org.cqfn.diktat.ruleset.utils.removePrefix
 import org.cqfn.diktat.ruleset.utils.toLowerCamelCase
 import org.cqfn.diktat.ruleset.utils.toPascalCase
 import org.cqfn.diktat.ruleset.utils.toUpperSnakeCase
+import org.cqfn.diktat.ruleset.utils.Style
 import org.jetbrains.kotlin.builtins.PrimitiveType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -296,12 +297,12 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
             val configuration = IdentifierNamingConfiguration(configRules.getRuleConfig(ENUM_VALUE)?.configuration
                     ?: mapOf())
             val validator = when (configuration.enumStyle) {
-                EnumStyles.PASCAL_CASE -> String::isPascalCase
-                EnumStyles.SNAKE_CASE -> String::isUpperSnakeCase
+                Style.PASCAL_CASE -> String::isPascalCase
+                Style.SNAKE_CASE -> String::isUpperSnakeCase
             }
             val autofix = when (configuration.enumStyle) {
-                EnumStyles.PASCAL_CASE -> String::toPascalCase
-                EnumStyles.SNAKE_CASE -> String::toUpperSnakeCase
+                Style.PASCAL_CASE -> String::toPascalCase
+                Style.SNAKE_CASE -> String::toUpperSnakeCase
             }
             if (!validator(value.text)) {
                 ENUM_VALUE.warnAndFix(configRules, emitWarn, isFixMode, value.text, value.startOffset, value) {
@@ -391,13 +392,18 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
         return node.text == "e" && node.findParentNodeWithSpecificType(CATCH) != null && prevCatchKeyWord
     }
 
-    enum class EnumStyles {
-        PASCAL_CASE,
-        SNAKE_CASE,
-    }
-
     class IdentifierNamingConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
-        val enumStyle = config["enumStyle"]?.let { EnumStyles.valueOf(it.toUpperSnakeCase()) }
-                ?: EnumStyles.SNAKE_CASE
+        private val Style.isEnumStyle: Boolean
+            get() = listOf(Style.PASCAL_CASE, Style.SNAKE_CASE).contains(this)
+
+        val enumStyle = config["enumStyle"]?.let { styleString ->
+            val style = Style.values().firstOrNull {
+                it.name == styleString.toUpperSnakeCase()
+            }
+            if (style == null || !style.isEnumStyle) {
+                error("$styleString is unsupported for enum style")
+            }
+            style
+        } ?: Style.SNAKE_CASE
     }
 }
