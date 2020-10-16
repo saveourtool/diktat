@@ -9,7 +9,7 @@ class Example : SuperExample {
         when(expression) { }
     }
 
-    fun bar() {
+    fun bar () {
         if  (condition) { }
         for  (i in 1..100) { }
         when  (expression) { }
