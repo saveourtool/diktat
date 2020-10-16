@@ -158,3 +158,8 @@ private fun convertUnknownCaseToUpperSnake(str: String): String {
 
 private fun String.getFirstLetterOrDigit() =
         indexOfFirst { it.isLetterOrDigit() }
+
+enum class Style {
+    PASCAL_CASE,
+    SNAKE_CASE,
+}

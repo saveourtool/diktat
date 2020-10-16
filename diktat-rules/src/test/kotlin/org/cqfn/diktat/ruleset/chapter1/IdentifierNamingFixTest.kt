@@ -30,7 +30,7 @@ class IdentifierNamingFixTest : FixTestBase(
     @Test
     @Tag(WarningNames.ENUM_VALUE)
     fun `incorrect enum values case fix`() {
-        fixAndCompare("enum_/EnumValueCaseExpected.kt", "enum_/EnumValueCaseTest.kt")
+        fixAndCompare("enum_/EnumValueSnakeCaseExpected.kt", "enum_/EnumValueSnakeCaseTest.kt")
     }
 
     @Test
