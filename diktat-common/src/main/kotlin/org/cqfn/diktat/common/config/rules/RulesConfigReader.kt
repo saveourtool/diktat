@@ -6,10 +6,10 @@ package org.cqfn.diktat.common.config.rules
 
 import com.charleskorn.kaml.Yaml
 import com.charleskorn.kaml.YamlConfiguration
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
 import java.io.BufferedReader
 import java.io.File
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
 import org.cqfn.diktat.common.config.reader.JsonResourceConfigReader
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -28,6 +28,9 @@ interface Rule {
 
 /**
  * Configuration of individual [Rule]
+ * @property name name of the rule
+ * @property enabled
+ * @property configuration a map of strings with configuration options
  */
 @Serializable
 data class RulesConfig(
@@ -38,12 +41,14 @@ data class RulesConfig(
 
 /**
  * Configuration that allows customizing additional options of particular rules.
+ * @property config a map of strings with configuration options for a particular rule
  */
 open class RuleConfiguration(protected val config: Map<String, String>)
 object EmptyConfiguration : RuleConfiguration(mapOf())
 
 /**
  * class returns the list of configurations that we have read from a yml: diktat-analysis.yml
+ * @property classLoader a [ClassLoader] used to load configuration file
  */
 open class RulesConfigReader(override val classLoader: ClassLoader) : JsonResourceConfigReader<List<RulesConfig>>() {
     private val yamlSerializer by lazy { Yaml(configuration = YamlConfiguration(strictMode = true)) }
@@ -54,10 +59,8 @@ open class RulesConfigReader(override val classLoader: ClassLoader) : JsonResour
      * @param fileStream a [BufferedReader] representing loaded rules config file
      * @return list of [RulesConfig]
      */
-    override fun parseResource(fileStream: BufferedReader): List<RulesConfig> {
-        return fileStream.use { stream ->
-            yamlSerializer.decodeFromString(stream.readLines().joinToString(separator = "\n"))
-        }
+    override fun parseResource(fileStream: BufferedReader): List<RulesConfig> = fileStream.use { stream ->
+        yamlSerializer.decodeFromString(stream.readLines().joinToString(separator = "\n"))
     }
 
     /**

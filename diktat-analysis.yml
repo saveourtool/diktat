@@ -146,7 +146,8 @@
   configuration: {}
 - name: FILE_WILDCARD_IMPORTS
   enabled: true
-  configuration: {}
+  configuration:
+    allowedWildcards: "kotlinx.serialization.*"
 - name: NO_BRACES_IN_CONDITIONALS_AND_LOOPS
   enabled: true
   configuration: {}

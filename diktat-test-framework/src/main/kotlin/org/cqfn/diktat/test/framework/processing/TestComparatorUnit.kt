@@ -1,18 +1,28 @@
 package org.cqfn.diktat.test.framework.processing
 
-import org.apache.commons.io.FileUtils
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.ArrayList
 import java.util.stream.Collectors
+import org.apache.commons.io.FileUtils
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
-@Suppress("ForbiddenComment")
+/**
+ * Class that can apply transformation to an input file and then compare with expected result and output difference.
+ * @property function a transformation that will be applied to the file
+ */
+@Suppress("ForbiddenComment", "TYPE_ALIAS")
 class TestComparatorUnit(private val resourceFilePath: String,
                          private val function: (expectedText: String, testFilePath: String) -> String) {
+    /**
+     * @param expectedResult
+     * @param testFileStr
+     * @return true if transformed file equals expected result, false otherwise
+     */
+    @Suppress("FUNCTION_BOOLEAN_PREFIX")
     fun compareFilesFromResources(expectedResult: String, testFileStr: String): Boolean {
         val expectedPath = javaClass.classLoader.getResource("$resourceFilePath/$expectedResult")
         val testPath = javaClass.classLoader.getResource("$resourceFilePath/$testFileStr")
@@ -36,6 +46,10 @@ class TestComparatorUnit(private val resourceFilePath: String,
         return FileComparator(expectedFile, actualResult.split("\n")).compareFilesEqual()
     }
 
+    /**
+     * @param fileName
+     * @return file content as a list of lines
+     */
     fun readFile(fileName: String): List<String> {
         var list: List<String> = ArrayList()
         try {

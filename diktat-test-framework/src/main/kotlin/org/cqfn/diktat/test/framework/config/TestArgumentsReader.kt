@@ -1,11 +1,11 @@
 package org.cqfn.diktat.test.framework.config
 
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
 import java.io.BufferedReader
 import java.io.IOException
 import java.util.stream.Collectors
 import kotlin.system.exitProcess
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import org.apache.commons.cli.CommandLine
 import org.apache.commons.cli.CommandLineParser
 import org.apache.commons.cli.DefaultParser
@@ -31,6 +31,9 @@ class TestArgumentsReader(
     private val cliArguments: List<CliArgument>? = readResource(properties.testFrameworkArgsRelativePath)
     private val cmd: CommandLine
 
+    /**
+     * List of tests provided by user
+     */
     val tests: List<String>
         get() {
             val tests = cmd.getOptionValue("t")
