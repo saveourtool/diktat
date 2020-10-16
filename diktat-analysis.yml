@@ -10,7 +10,8 @@
   configuration: {}
 - name: ENUM_VALUE
   enabled: true
-  configuration: {}
+  configuration:
+    enumStyle: snakeCase
 - name: EXCEPTION_SUFFIX
   enabled: true
   configuration: {}
