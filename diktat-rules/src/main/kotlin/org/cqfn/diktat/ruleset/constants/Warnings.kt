@@ -28,7 +28,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     CONSTANT_UPPERCASE(true, "<val> properties from companion object or on file level mostly in all cases are constants - please use upper snake case for them"),
     VARIABLE_HAS_PREFIX(true, "variable has prefix (like mVariable or M_VARIABLE), generally it is a bad code style (Android - is the only exception)"),
     IDENTIFIER_LENGTH(false, "identifier's length is incorrect, it should be in range of [2, 64] symbols"),
-    ENUM_VALUE(true, "in the same way as constants, enum values should be in UPPER_CASE snake format"),
+    ENUM_VALUE(true, "enum values should be in selected UPPER_CASE snake/PascalCase format"),
     GENERIC_NAME(true, "generic name should contain only one single capital letter, it can be followed by a number"),
     FUNCTION_NAME_INCORRECT_CASE(true, "function/method name should be in lowerCamelCase"),
     FUNCTION_BOOLEAN_PREFIX(true, "functions that return the value of Boolean type should have <is> or <has> prefix"),
