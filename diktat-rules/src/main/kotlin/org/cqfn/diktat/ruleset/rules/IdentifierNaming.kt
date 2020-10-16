@@ -10,7 +10,9 @@ import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_TYPE
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.prevCodeSibling
+import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.BACKTICKS_PROHIBITED
 import org.cqfn.diktat.ruleset.constants.Warnings.CLASS_NAME_INCORRECT
 import org.cqfn.diktat.ruleset.constants.Warnings.CONSTANT_UPPERCASE
@@ -291,10 +293,20 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
     private fun checkEnumValues(node: ASTNode): List<ASTNode> {
         val enumValues: List<ASTNode> = node.getChildren(null).filter { it.elementType == ElementType.IDENTIFIER }
         enumValues.forEach { value ->
-            if (!value.text.isUpperSnakeCase()) {
+            val configuration = IdentifierNamingConfiguration(configRules.getRuleConfig(ENUM_VALUE)?.configuration
+                    ?: mapOf())
+            val validator = when (configuration.enumStyle) {
+                EnumStyles.PASCAL_CASE -> String::isPascalCase
+                EnumStyles.SNAKE_CASE -> String::isUpperSnakeCase
+            }
+            val autofix = when (configuration.enumStyle) {
+                EnumStyles.PASCAL_CASE -> String::toPascalCase
+                EnumStyles.SNAKE_CASE -> String::toUpperSnakeCase
+            }
+            if (!validator(value.text)) {
                 ENUM_VALUE.warnAndFix(configRules, emitWarn, isFixMode, value.text, value.startOffset, value) {
                     // FixMe: add tests for this
-                    (value as LeafPsiElement).replaceWithText(value.text.toUpperSnakeCase())
+                    (value as LeafPsiElement).replaceWithText(autofix(value.text))
                 }
             }
 
@@ -377,5 +389,15 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
         val parentValueParamList = node.findParentNodeWithSpecificType(VALUE_PARAMETER_LIST)
         val prevCatchKeyWord = parentValueParamList?.prevCodeSibling()?.elementType == CATCH_KEYWORD
         return node.text == "e" && node.findParentNodeWithSpecificType(CATCH) != null && prevCatchKeyWord
+    }
+
+    enum class EnumStyles {
+        PASCAL_CASE,
+        SNAKE_CASE,
+    }
+
+    class IdentifierNamingConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
+        val enumStyle = config["enumStyle"]?.let { EnumStyles.valueOf(it.toUpperSnakeCase()) }
+                ?: EnumStyles.SNAKE_CASE
     }
 }
