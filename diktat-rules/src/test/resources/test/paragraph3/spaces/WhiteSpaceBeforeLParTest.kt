@@ -15,3 +15,8 @@ class Example : SuperExample {
         when  (expression) { }
     }
 }
+
+data class Example (
+    val foo: Foo,
+    val bar: Bar
+)
