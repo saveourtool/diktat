@@ -10,7 +10,7 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
  * This class represent individual inspections of diktat code style.
  * A [Warnings] entry contains rule name, warning message and is used in code check.
  */
-@Suppress("ForbiddenComment", "MagicNumber")
+@Suppress("ForbiddenComment", "MagicNumber", "WRONG_DECLARATIONS_ORDER")
 enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: String) : Rule {
     // ======== chapter 1 ========
     PACKAGE_NAME_MISSING(true, "no package name declared in a file"),
@@ -107,7 +107,6 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     // FixMe: change float literal to BigDecimal? Or kotlin equivalent?
     FLOAT_IN_ACCURATE_CALCULATIONS(false, "floating-point values shouldn't be used in accurate calculations"),
 
-
     // ======== chapter 5 ========
     TOO_LONG_FUNCTION(false, "function is too long: split it or make more primitive"),
     AVOID_NESTED_FUNCTIONS(true, "try to avoid using nested functions"),
@@ -147,7 +146,6 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
              freeText: String,
              offset: Int,
              node: ASTNode) {
-
         if (configs.isRuleEnabled(this) && !node.hasSuppress(name)) {
             val trimmedFreeText = freeText
                     .lines()

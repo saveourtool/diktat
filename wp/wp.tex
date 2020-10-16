@@ -1,0 +1,108 @@
+\documentclass[12pt]{article}
+\usepackage{pgf}
+\usepackage{setspace}
+  \setstretch{1.1}
+\usepackage[top=1.3in, left=1.4in, includefoot]{geometry}
+\usepackage{charter}
+\usepackage{listings}
+\usepackage{authblk}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+	backgroundcolor=\color{backcolour},
+	commentstyle=\color{codegreen},
+	keywordstyle=\color{magenta},
+	numberstyle=\tiny\color{codegray},
+	stringstyle=\color{codepurple},
+	basicstyle=\sffamily\footnotesize,
+	breakatwhitespace=false,
+	breaklines=true,
+	captionpos=b,
+	keepspaces=true,
+	numbers=left,
+	numbersep=5pt,
+	showspaces=false,
+	showstringspaces=false,
+	showtabs=false,
+	tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\title{
+  \includegraphics[height=250pt]{logo.png}\\
+  \vspace{10pt}
+  \textsc{DiKTat:}\\
+  Static Code Analysis}
+\author{Andrey Kuleshov, Peter Trifanov, Kumar Denis, Tsay Alexander}
+\affil{Huawei Technologies Co., Ltd. \\ System Programming Lab \\ Russian Research Institute (RRI) \\ Moscow, Russia}
+
+\begin{document}
+
+\maketitle
+
+\pagebreak
+
+\begin{abstract}
+
+DiKTat is a collection of Kotlin code style rules implemented as AST visitors on top of KTlint. Diktat warns and fixes code style errors based on configuration file. DiKTat can be extended further by adding custom rules. In this paper, we explain how DiKTat works, describe advantages and disadvantages and how it differs from other static analyzers.
+
+\end{abstract}
+
+\newpage
+
+\tableofcontents
+
+\newpage
+
+\section{Introduction}
+\label{sec:intro}
+\input{sections/introduction}
+
+\newpage
+
+\section{How does diKTat work}
+\subsection{The idea}
+\subsection{Rules description}
+\subsection{How diKTat detects issues}
+\subsection{DiKTat implementation}
+\subsection{Unique detection algorithms}
+\subsection{Examples}
+
+\newpage
+
+\section{Analysis of similar projects}
+\subsection{Ktlint}
+\subsection{Detekt}
+\newpage
+
+\section{How to use diKTat}
+\subsection{Maven}
+\subsection{Gradle}
+\subsection{CLI-application}
+\subsection{How to configure ruleset}
+\newpage
+
+\section{DiKTat on big projects}
+
+\newpage
+\section{Appendix}
+\subsection{Main components}
+\subsubsection{Data diagram}
+\subsubsection{Class diagram}
+\subsubsection{Component view}
+
+\subsection{Diagrams of system usage}
+\subsubsection{Use-case diagram}
+\subsubsection{Activity diagram}
+\subsubsection{Data Flow Diagram}
+
+\newpage
+\section{References}
+
+
+\end{document}

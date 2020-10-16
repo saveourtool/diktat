@@ -111,7 +111,7 @@ class KdocMethods(private val configRules: List<RulesConfig>) : Rule("kdoc-metho
     private fun getMissingParameters(node: ASTNode, kDocTags: Collection<KDocTag>?): Pair<List<String?>, List<KDocTag>> {
         val parameterNames = node.parameterNames()
         val kDocParamList = kDocTags?.filter { it.knownTag == KDocKnownTag.PARAM && it.getSubjectName() != null }
-        return if (parameterNames == null || parameterNames.isEmpty()) {
+        return if (parameterNames.isEmpty()) {
             Pair(emptyList(), kDocParamList ?: listOf())
         } else if (kDocParamList != null && kDocParamList.isNotEmpty()) {
             Pair(parameterNames.minus(kDocParamList.map { it.getSubjectName() }), kDocParamList.filter { it.getSubjectName() !in parameterNames })

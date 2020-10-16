@@ -1,17 +1,20 @@
 package org.cqfn.diktat.test.framework.processing
 
-import org.slf4j.LoggerFactory
-import org.cqfn.diktat.test.framework.common.TestBase
-import org.cqfn.diktat.test.framework.config.TestArgumentsReader
-import org.cqfn.diktat.test.framework.config.TestConfig
-import org.cqfn.diktat.test.framework.config.TestConfig.ExecutionType
-import org.cqfn.diktat.test.framework.config.TestConfigReader
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.stream.Stream
 import kotlin.system.exitProcess
+import org.cqfn.diktat.test.framework.common.TestBase
+import org.cqfn.diktat.test.framework.config.TestArgumentsReader
+import org.cqfn.diktat.test.framework.config.TestConfig
+import org.cqfn.diktat.test.framework.config.TestConfig.ExecutionType
+import org.cqfn.diktat.test.framework.config.TestConfigReader
+import org.slf4j.LoggerFactory
 
+/**
+ * A class that runs tests based on configuration
+ */
 @Suppress("ForbiddenComment")
 class TestProcessingFactory(private val argReader: TestArgumentsReader) {
     private val allTestsFromResources: List<String>
@@ -24,7 +27,8 @@ class TestProcessingFactory(private val argReader: TestArgumentsReader) {
             }
             val resource = File(fileUrl.file)
             try {
-                return resource.walk()
+                return resource
+                        .walk()
                         .filter { file -> file.isFile }
                         .map { file -> file.name.replace(".json", "") }
                         .toList()
@@ -34,6 +38,9 @@ class TestProcessingFactory(private val argReader: TestArgumentsReader) {
             }
         }
 
+    /**
+     * Run all tests specified in input parameters and log results
+     */
     fun processTests() {
         val failedTests = AtomicInteger(0)
         val passedTests = AtomicInteger(0)
@@ -48,14 +55,15 @@ class TestProcessingFactory(private val argReader: TestArgumentsReader) {
         val testStream: Stream<String> =
                 if (argReader.properties.isParallelMode) testList.parallelStream() else testList.stream()
 
-        testStream.map { test: String -> findTestInResources(test) }
+        testStream
+                .map { test: String -> findTestInResources(test) }
                 .filter { it != null }
                 .map { it as TestConfig }
                 .forEach { test: TestConfig ->
                     if (processTest(test)) passedTests.incrementAndGet() else failedTests.incrementAndGet()
                 }
 
-        log.info("Test processing finished. Passed tests: [${passedTests}]. Failed tests: [${failedTests}]")
+        log.info("Test processing finished. Passed tests: [$passedTests]. Failed tests: [$failedTests]")
     }
 
     private fun findTestInResources(test: String): TestConfig? =
