@@ -10,7 +10,8 @@
 | [2 Comments](#c2)   | [Kdoc](#c2.1), [File header](#c2.2), [Function header comments](#c2.3), [Code comments](#c2.4) |
 | [3 General format](#c3)   | [File-related rules](#c3.1), [Indentation](#c3.2), [Empty blocks](#c3.3), [Line width](#c3.4), [Line breaks (newlines)](#c3.5), [Blank lines](#c3.6), [Horiznotal alignment](#c3.7), [Enumerations](#c3.8), [Variable declaration](#c3.9), [When expression](#c3.10), [Annotations](#c3.11), [Comment layout](#c3.12), [Modifiers](#c3.13), [Strings](#c3.14)|
 | [4 Variables and types](#c4) | [Variables](#c4.1), [Types](#c4.2), [Null safety and variable declarations](#4.3)|
-| [5 Functions](#c5)      | [Function design](#c5.1) [Function parameters](#c5.2)|
+| [5 Functions](#c5)      | [Function design](#c5.1), [Function parameters](#c5.2)|
+| [6 Classes](#c6)      | [Classes](#c6.1), [Interfaces](#c6.2), [Objects](#c6.3)|
 
  # <a name="c0"></a> Foreword
 
@@ -1641,3 +1642,249 @@ Good example:
      // ...
  }
 ``` 
+
+
+# <a name="c6"></a>6 Classes, interfaces and functions
+### <a name="c6.1"></a>6.1 Classes
+### <a name="r6.1.1"></a> Rule 6.1.1: Primary constructor should be define implicitly in the declaration of class
+In case class contains only one explicit constructor - it should be converted to implicit primary constructor.
+Bad example:
+```kotlin
+class Test {
+    var a: Int
+    constructor(a: Int) {
+        this.a = a
+    }
+}
+```
+
+Good example:
+```kotlin
+class Test(var a: Int) { 
+    // ...
+}
+
+// in case of any annotations or modifer used on constructor:
+class Test private constructor(var a: Int) { 
+    // ...
+}
+```
+
+### <a name="r6.1.2"></a> Rule 6.1.2: Prefer data classes instead of classes without any functional logic
+Some people say that data class - is a code smell, but in case you really need to use it and your is becoming more simple because of that -
+you can use Kotlin `data classes`. Main purpose of these classes is to hold data.
+But also `data classes` will automatically generate several useful methods:
+- equals()/hashCode() pair;
+- toString()
+- componentN() functions corresponding to the properties in their order of declaration;
+- copy() function
+
+So instead of using `normal` classes:
+```kotlin
+class Test {
+    var a: Int = 0
+    var b: Int = 0
+    
+    constructor(a:Int, b: Int) {
+        this.a = a
+        this.b = b
+    }
+}
+
+// or
+class Test(var a: Int = 0, var b: Int = 0)
+ 
+// or
+class Test() {
+    var a: Int = 0
+    var b: Int = 0
+}
+```
+
+Prefer:
+```kotlin
+data class Test1(var a: Int = 0, var b: Int = 0)
+```
+
+Exception: Note, that data classes cannot be abstract, open, sealed or inner, that's why these types of classes cannot be changed to data class.
+
+### <a name="r6.1.3"></a> Rule 6.1.3: Do not use the primary constructor if it is empty and has no sense
+The primary constructor is part of the class header: it goes after the class name (and optional type parameters).
+But in is useless - it can be omitted. 
+
+Bad example:
+```kotlin
+// simple case that does not need a primary constructor
+class Test() {
+    var a: Int = 0
+    var b: Int = 0
+}
+
+// empty primary constructor is not needed here also
+// it can be replaced with a primary contructor with one argument or removed
+class Test() {
+    var a  = "Property"
+
+    init {
+        println("some init")
+    }
+
+    constructor(a: String): this() {
+        this.a = a
+    }
+}
+```
+
+Good example:
+```
+// the good example here is a data class, but this example shows that you should get rid of braces for primary constructor
+class Test {
+    var a: Int = 0
+    var b: Int = 0
+}
+```
+
+### <a name="r6.1.4"></a> Rule 6.1.4: several init blocks are redundant and generally should not be used in your class
+The primary constructor cannot contain any code. That's why Kotlin has introduced `init` blocks.
+These blocks are used to store the code that should be run during the initialization of the class.
+Kotlin allows to write multiple initialization blocks that are executed in the same order as they appear in the class body.
+Even when you have the (rule 3.2)[#s3.2] this makes code less readable as the programmer needs to keep in mind all init blocks and trace the execution of the code.
+So in your code you should try to use single `init` block to reduce the complexity. In case you need to do some logging or make some calculations before the assignment 
+of some class property - you can use powerful functional programming. This will reduce the possibility of the error, when occasioanlly someone will change the order of your `init` blocks. 
+And it will make the logic of the code more coupled. It is always enough to use one `init` block to implement your idea in Kotlin.
+
+Bad example:
+```kotlin
+class YourClass(var name: String) {    
+    init {
+        println("First initializer block that prints ${name}")
+    }
+    
+    val property = "Property: ${name.length}".also(::println)
+    
+    init {
+        println("Second initializer block that prints ${name.length}")
+    }
+}
+```
+
+Good example:
+```kotlin
+class YourClass(var name: String) {
+    init {
+        println("First initializer block that prints ${name}")
+    }
+
+    val property = "Property: ${name.length}".also { prop ->
+        println(prop)
+        println("Second initializer block that prints ${name.length}")
+    }
+}
+```
+
+### <a name="r6.1.5"></a> Rule 6.1.5: Explicit supertype qualification should not be used if there is not clash between called methods
+Bad example:
+```kotlin
+open class Rectangle {
+    open fun draw() { /* ... */ }
+}
+
+class Square() : Rectangle() {
+    override fun draw() {
+        super<Rectangle>.draw() // no need in super<Rectangle> here
+    }
+}
+```
+
+### <a name="r6.1.6"></a> Rule 6.1.6: Abstract class should have at least one abstract method
+Abstract classes are used to force a developer to implement some of its parts in its inheritors.
+In case when abstract class has no abstract methods - then it was set `abstract` incorrectly and can be converted to a normal class.
+Bad example:
+```kotlin
+abstract class NotAbstract {
+    fun foo() {}
+    
+    fun test() {}
+}
+```
+
+Good example:
+```kotlin
+abstract class NotAbstract {
+    abstract fun foo()
+    
+    fun test() {}
+}
+
+// OR
+class NotAbstract {
+    fun foo() {}
+    
+    fun test() {}
+}
+```
+
+
+### <a name="r6.1.7"></a> Rule 6.1.7: in case of using "implicit backing property" scheme, the name of real and back property should be the same
+Kotlin has a mechanism of [backing properties](https://kotlinlang.org/docs/reference/properties.html#backing-properties).
+In some cases implicit backing is not enough and it should be done explicitly:
+```kotlin
+private var _table: Map<String, Int>? = null
+val table: Map<String, Int>
+    get() {
+        if (_table == null) {
+            _table = HashMap() // Type parameters are inferred
+        }
+        return _table ?: throw AssertionError("Set to null by another thread")
+    }
+```
+
+In this case the name of backing property (`_table`) should be the same to the name of real property (`table`), but should have underscore (`_`) prefix.
+
+### <a name="r6.1.8"></a> Recommendation 6.1.8: avoid using custom getters and setters
+Kotlin has a perfect mechanism of [properties](https://kotlinlang.org/docs/reference/properties.html#properties-and-fields).
+Kotlin compiler automatically generates `get` and `set` methods for properties and also lets the possibility to override it:
+```kotlin 
+// Bad example ======
+class A {
+    var size: Int = 0
+        set(value) {
+            println("Side effect")
+            field = value
+        }
+        get() = this.hashCode() * 2
+}
+```
+
+From the callee code these methods look like an access to this property: `A().isEmpty = true` for setter and `A().isEmpty` for getter.
+But in all cases it is very confusing when `get` and `set` are overriden for a developer who uses this particular class. 
+Developer expects to get the value of the property, but receives some unknown value and some extra side effect hidden by the custom getter/setter. 
+Use extra functions for it instead.
+
+Good example:
+```kotlin 
+// Bad example ======
+class A {
+    var size: Int = 0
+    fun initSize(value: Int) { 
+        // some custom logic
+    }
+    
+    fun goodNameThatDescribesThisGetter() = this.hashCode() * 2
+}
+```
+
+### <a name="r6.1.9"></a> Rule 6.1.9: never use the name of a variable in the custom getter or setter
+Even if you have ignored [recommendation 6.1.8](#r6.1.8) you should be careful with using the name of the property in your custom getter/setter
+as it can accidentally cause a recursive call and a `StackOverflow Error`. Use `field` keyword instead.
+
+Very bad example:
+```kotlin
+    var isEmpty: Boolean
+        set(value) {
+            println("Side effect")
+            isEmpty = value
+        }
+        get() = isEmpty
+```
+
