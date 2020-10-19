@@ -23,9 +23,8 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
  * This rule makes each annotation applied to a class, method or constructor is on its own line. Except: if first annotation of constructor, class or method
  */
 class AnnotationNewLineRule(private val configRules: List<RulesConfig>) : Rule("annotation-new-line") {
-
-    private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
+    private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
@@ -38,7 +37,6 @@ class AnnotationNewLineRule(private val configRules: List<RulesConfig>) : Rule("
         }
     }
 
-
     private fun checkAnnotation(node: ASTNode) {
         node.findChildByType(MODIFIER_LIST)?.let { modList ->
             fixAnnotation(modList)
@@ -46,14 +44,15 @@ class AnnotationNewLineRule(private val configRules: List<RulesConfig>) : Rule("
     }
 
     private fun fixAnnotation(node: ASTNode) {
-        if (node.getAllChildrenWithType(ANNOTATION_ENTRY).size <= 1)
+        if (node.getAllChildrenWithType(ANNOTATION_ENTRY).size <= 1) {
             return
-
-        node.getAllChildrenWithType(ANNOTATION_ENTRY).forEach {
-            if (!it.isFollowedByNewline() || !it.isBeginByNewline())
-                deleteSpaces(it, !it.isFollowedByNewline(), !it.isBeginByNewline())
         }
 
+        node.getAllChildrenWithType(ANNOTATION_ENTRY).forEach {
+            if (!it.isFollowedByNewline() || !it.isBeginByNewline()) {
+                deleteSpaces(it, !it.isFollowedByNewline(), !it.isBeginByNewline())
+            }
+        }
     }
 
     private fun deleteSpaces(node: ASTNode, rightSide: Boolean, leftSide: Boolean) {

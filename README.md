@@ -3,36 +3,38 @@
 ![Build and test](https://github.com/cqfn/diKTat/workflows/Build%20and%20test/badge.svg)
 ![deteKT static analysis](https://github.com/cqfn/diKTat/workflows/Run%20deteKT/badge.svg)
 ![diKTat code style](https://github.com/cqfn/diKTat/workflows/Run%20diKTat/badge.svg)
+[![License](https://img.shields.io/github/license/cqfn/diKtat)](https://github.com/cqfn/diKTat/blob/master/LICENSE)
+[![codecov](https://codecov.io/gh/cqfn/diKTat/branch/master/graph/badge.svg)](https://codecov.io/gh/cqfn/diKTat)
 
 [![Releases](https://img.shields.io/github/v/release/cqfn/diKTat)](https://github.com/cqfn/diKTat/releases)
 ![Maven Central](https://img.shields.io/maven-central/v/org.cqfn.diktat/diktat-rules)
-[![License](https://img.shields.io/github/license/cqfn/diKtat)](https://github.com/cqfn/diKTat/blob/master/LICENSE)
-[![codecov](https://codecov.io/gh/cqfn/diKTat/branch/master/graph/badge.svg)](https://codecov.io/gh/cqfn/diKTat)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fcqfn%2FdiKTat.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fcqfn%2FdiKTat?ref=badge_shield)
+[![ktlint](https://img.shields.io/badge/code%20style-%E2%9D%A4-FF4081.svg)](https://ktlint.github.io/)
+[![Chat on Telegram](https://img.shields.io/badge/Chat%20on-Telegram-brightgreen.svg)](https://t.me/joinchat/AAAAAFDg-ipuZFGyBGPPeg)
 
 [![Hits-of-Code](https://hitsofcode.com/github/cqfn/diktat)](https://hitsofcode.com/view/github/cqfn/diktat)
 ![Lines of code](https://img.shields.io/tokei/lines/github/cqfn/diktat)
 ![GitHub repo size](https://img.shields.io/github/repo-size/cqfn/diktat)
-
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fcqfn%2FdiKTat.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fcqfn%2FdiKTat?ref=badge_shield)
 [![Awesome Kotlin Badge](https://kotlin.link/awesome-kotlin.svg)](https://github.com/KotlinBy/awesome-kotlin)
-[![ktlint](https://img.shields.io/badge/code%20style-%E2%9D%A4-FF4081.svg)](https://ktlint.github.io/)
-[![Chat on Telegram](https://img.shields.io/badge/Chat%20on-Telegram-brightgreen.svg)](https://t.me/joinchat/AAAAAFDg-ipuZFGyBGPPeg)
 
-### (!) See [diKTat codestyle](info/diktat-kotlin-coding-style-guide-en.md) first.
-### (!) Also see [the list of all supported rules](info/available-rules.md).
-### (!) Have a look at [maven and gradle examples](https://github.com/akuleshov7/diktat-examples).
-### (!) Check and try diktat/ktlint [online demo](https://ktlint-demo.herokuapp.com)
 
-DiKTat is a collection of [Kotlin](https://kotlinlang.org/) code style rules implemented
-as AST visitors on top of [KTlint](https://ktlint.github.io/).
-The full list of available supported rules and inspections is [here](info/available-rules.md).
+DiKTat is a strict [coding standard ](info/diktat-kotlin-coding-style-guide-en.md) for Kotlin and a collection of [Kotlin](https://kotlinlang.org/) code style rules implemented
+as AST visitors on the top of [KTlint](https://ktlint.github.io/). It can be used for detecting and autofixing code smells in CI/CD process. 
+The full list of available supported rules and inspections can be found [here](info/available-rules.md).
+
+
+| See first | !!! |
+| ----------------- | ------------------------ |
+|[diKTat codestyle](info/diktat-kotlin-coding-style-guide-en.md)|[supported rules](info/available-rules.md)|                                                      |
+|[examples of usage](https://github.com/akuleshov7/diktat-examples)|[online demo](https://ktlint-demo.herokuapp.com)|
+
 
 ## Run as CLI-application
 1. Install KTlint manually: [here](https://github.com/pinterest/ktlint/releases)
 
    **OR** use curl:
     ```bash
-    curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.37.1/ktlint && chmod a+x ktlint
+    curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.39.0/ktlint && chmod a+x ktlint
     # another option is "brew install ktlint"
     ```
    
@@ -89,7 +91,7 @@ Add this plugin to your pom.xml:
               <dependency>
                   <groupId>com.pinterest</groupId>
                   <artifactId>ktlint</artifactId>
-                  <version>0.37.1</version>
+                  <version>0.39.0</version>
                   <exclusions>
                       <exclusion>  <!-- without this exclusion both rulesets are enabled which we discourage -->
                           <groupId>com.pinterest.ktlint</groupId>
@@ -173,7 +175,7 @@ Add the code below to your `build.gradle.kts`:
 val ktlint by configurations.creating
 
 dependencies {
-    ktlint("com.pinterest:ktlint:0.37.1") {
+    ktlint("com.pinterest:ktlint:0.39.0") {
         // need to exclude standard ruleset to use only diktat rules
         exclude("com.pinterest.ktlint", "ktlint-ruleset-standard")
     }

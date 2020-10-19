@@ -5,13 +5,13 @@ repositories {
     jcenter()
 }
 dependencies {
-    ktlint("com.pinterest:ktlint:0.37.1") {
+    ktlint("com.pinterest:ktlint:0.39.0") {
         // need to exclude standard ruleset to use only diktat rules
         exclude("com.pinterest.ktlint", "ktlint-ruleset-standard")
     }
 
     // diktat ruleset
-    ktlint("org.cqfn.diktat:diktat-rules:0.1.1")
+    ktlint("org.cqfn.diktat:diktat-rules:0.1.2")
 }
 
 val outputDir = "${project.buildDir}/reports/diktat/"

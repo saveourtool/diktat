@@ -5,7 +5,7 @@
 
     <groupId>org.cqfn.diktat</groupId>
     <artifactId>diktat-parent</artifactId>
-    <version>0.1.2-SNAPSHOT</version>
+    <version>0.1.3-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>diktat</name>
@@ -41,16 +41,17 @@
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <kotlin.version>1.3.72</kotlin.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <kotlin.version>1.4.10</kotlin.version>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
-        <ktlint.version>0.37.1</ktlint.version>
+        <kotlinx.serialization.version>1.0.0</kotlinx.serialization.version>
+        <ktlint.version>0.39.0</ktlint.version>
         <junit.version>5.7.0</junit.version>
-        <guava.version>29.0-jre</guava.version>
-        <jackson.version>2.11.3</jackson.version>
+        <guava.version>30.0-jre</guava.version>
         <slf4j.version>1.7.30</slf4j.version>
         <commons-cli.version>1.4</commons-cli.version>
-        <diktat-check.version>0.1.1</diktat-check.version>
-        <kotlinpoet.version>1.6.0</kotlinpoet.version>
+        <diktat-check.version>0.1.2</diktat-check.version>
+        <kotlinpoet.version>1.7.1</kotlinpoet.version>
         <detekt.version>1.14.0</detekt.version>
         <dokka.version>1.4.10</dokka.version>
         <jacoco.version>0.8.6</jacoco.version>
@@ -80,7 +81,7 @@
             </dependency>
             <dependency>
                 <groupId>org.jetbrains.kotlin</groupId>
-                <artifactId>kotlin-stdlib</artifactId>
+                <artifactId>kotlin-stdlib-jdk8</artifactId>
                 <version>${kotlin.version}</version>
             </dependency>
             <dependency>
@@ -97,31 +98,6 @@
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-core</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-annotations</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.dataformat</groupId>
-                <artifactId>jackson-dataformat-yaml</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.module</groupId>
-                <artifactId>jackson-module-kotlin</artifactId>
-                <version>${jackson.version}</version>
             </dependency>
             <dependency>
                 <groupId>commons-cli</groupId>
@@ -214,6 +190,11 @@
                     <version>3.0.0-M5</version>
                 </plugin>
                 <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-plugin-plugin</artifactId>
+                    <version>3.6.0</version>
+                </plugin>
+                <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>versions-maven-plugin</artifactId>
                     <version>2.8.1</version>
@@ -230,6 +211,15 @@
                     <groupId>org.jetbrains.kotlin</groupId>
                     <artifactId>kotlin-maven-plugin</artifactId>
                     <version>${kotlin.version}</version>
+                    <configuration>
+                        <jvmTarget>1.8</jvmTarget>
+                        <apiVersion>1.3</apiVersion>
+                        <sourceDirs>
+                            <source>src/main/kotlin</source>
+                            <source>src/main/resources</source>
+                        </sourceDirs>
+                    </configuration>
+                    <inherited>true</inherited>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
@@ -348,67 +338,6 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-
-            <!-- todo: remove antrun completely after diktat-maven-plugin is released -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>3.0.0</version>
-                <executions>
-                    <execution>
-                        <id>diktat</id>
-                        <phase>none</phase>
-                        <configuration>
-                            <target name="ktlint">
-                                <java taskname="ktlint" dir="${maven.multiModuleProjectDirectory}" fork="true"
-                                      failonerror="true"
-                                      classpathref="maven.plugin.classpath" classname="com.pinterest.ktlint.Main">
-                                    <arg value="${project.basedir}/src/main/kotlin/**/*.kt"/>
-                                    <arg value="${project.basedir}/src/test/kotlin/**/*.kt"/>
-                                </java>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>functional-test</id>
-                        <phase>none</phase>
-                        <inherited>false</inherited>
-                        <configuration>
-                            <target name="ktlint">
-                                <java taskname="ktlint" dir="${maven.multiModuleProjectDirectory}" fork="true"
-                                      failonerror="true"
-                                      classpathref="maven.plugin.classpath" classname="com.pinterest.ktlint.Main">
-                                    <arg value="diktat-rules/src/test/resources/test/funcTest/*.kt"/>
-                                </java>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.pinterest</groupId>
-                        <artifactId>ktlint</artifactId>
-                        <version>${ktlint.version}</version>
-                        <exclusions>
-                            <exclusion>
-                                <groupId>com.pinterest.ktlint</groupId>
-                                <artifactId>ktlint-ruleset-standard</artifactId>
-                            </exclusion>
-                        </exclusions>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.cqfn.diktat</groupId>
-                        <artifactId>diktat-rules</artifactId>
-                        <version>${diktat-check.version}</version>
-                    </dependency>
-                </dependencies>
             </plugin>
 
             <plugin>

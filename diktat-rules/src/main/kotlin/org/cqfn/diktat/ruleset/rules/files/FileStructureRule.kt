@@ -111,9 +111,13 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         val imports = node.getChildren(TokenSet.create(IMPORT_DIRECTIVE)).toList()
 
         // importPath can be null if import name cannot be parsed, which should be a very rare case, therefore !! should be safe here
-        imports.filter { (it.psi as KtImportDirective).importPath!!.isAllUnder && it.text !in configuration.allowedWildcards }.forEach {
-            FILE_WILDCARD_IMPORTS.warn(configRules, emitWarn, isFixMode, it.text, it.startOffset, it)
-        }
+        imports
+                .filter {
+                    (it.psi as KtImportDirective).importPath!!.run {
+                        isAllUnder && toString() !in configuration.allowedWildcards
+                    }
+                }
+                .forEach { FILE_WILDCARD_IMPORTS.warn(configRules, emitWarn, isFixMode, it.text, it.startOffset, it) }
 
         val sortedImports = imports.sortedBy { it.text }
         if (sortedImports != imports) {

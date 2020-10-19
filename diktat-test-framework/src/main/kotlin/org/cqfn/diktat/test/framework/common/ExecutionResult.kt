@@ -5,5 +5,7 @@ package org.cqfn.diktat.test.framework.common
  *
  * @param stdOut standard output
  * @param stdErr error stream
+ * @property stdOut content from stdout stream
+ * @property stdErr content from stderr stream
  */
 data class ExecutionResult(val stdOut: List<String>, val stdErr: List<String>)
