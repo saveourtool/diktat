@@ -83,6 +83,7 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
      * If condition == is then we are looking for then block
      * If condition == !is then we are looking for else block
      */
+    @Suppress("NestedBlockDepth")
     private fun handleGroups(groups: Map<KtNameReferenceExpression, List<KtNameReferenceExpression>>) {
         groups.keys.forEach {
             if (it.node.treeParent.text.contains(" is ")) {
