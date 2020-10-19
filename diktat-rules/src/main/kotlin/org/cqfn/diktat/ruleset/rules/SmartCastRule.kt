@@ -74,7 +74,8 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
                     asExpr.add(it)
             }
             val groups = groupIsAndAsExpr(isExpr, asExpr, key)
-            handleGroups(groups)
+            if (groups.isNotEmpty())
+                handleGroups(groups)
         }
     }
 
@@ -83,31 +84,30 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
      * If condition == !is then we are looking for else block
      */
     private fun handleGroups(groups: Map<KtNameReferenceExpression, List<KtNameReferenceExpression>>) {
-        if (groups.isNotEmpty()) {
-            groups.keys.forEach {
-                if (it.node.treeParent.text.contains(" is ")) {
-                    groups.getValue(it).forEach { asCall ->
-                        if (asCall.node.findParentNodeWithSpecificType(THEN) != null) {
-                            raiseWarning(asCall)
-                        }
+        groups.keys.forEach {
+            if (it.node.treeParent.text.contains(" is ")) {
+                groups.getValue(it).forEach { asCall ->
+                    if (asCall.node.findParentNodeWithSpecificType(THEN) != null) {
+                        raiseWarning(asCall.node)
                     }
-                } else if (it.node.treeParent.text.contains(" !is ")) {
-                    groups.getValue(it).forEach { asCall ->
-                        if (asCall.node.findParentNodeWithSpecificType(ELSE) != null) {
-                            raiseWarning(asCall)
-                        }
+                }
+            } else if (it.node.treeParent.text.contains(" !is ")) {
+                groups.getValue(it).forEach { asCall ->
+                    if (asCall.node.findParentNodeWithSpecificType(ELSE) != null) {
+                        raiseWarning(asCall.node)
                     }
                 }
             }
         }
     }
 
-    private fun raiseWarning(asCall: KtNameReferenceExpression) {
-        SMART_CAST_NEEDED.warnAndFix(configRules, emitWarn, isFixMode, asCall.node.treeParent.text, asCall.node.startOffset,
-                asCall.node) {
-            val dotExpr = asCall.node.findParentNodeWithSpecificType(DOT_QUALIFIED_EXPRESSION)!!
+    @Suppress("UnsafeCallOnNullableType")
+    private fun raiseWarning(asCall: ASTNode) {
+        SMART_CAST_NEEDED.warnAndFix(configRules, emitWarn, isFixMode, asCall.treeParent.text, asCall.startOffset,
+                asCall) {
+            val dotExpr = asCall.findParentNodeWithSpecificType(DOT_QUALIFIED_EXPRESSION)!!
             val afterDotPart = dotExpr.text.split(".")[1]
-            val text = "${asCall.node.text}.$afterDotPart"
+            val text = "${asCall.text}.$afterDotPart"
             dotExpr.treeParent.addChild(KotlinParser().createNode(text), dotExpr)
             dotExpr.treeParent.removeChild(dotExpr)
         }
@@ -139,6 +139,7 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
         return groupedExprs
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun getPropertyType(prop: KtProperty): String {
         when (prop.initializer?.node?.elementType) {
             STRING_TEMPLATE -> return "String"
@@ -152,6 +153,7 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
         return "Not defined"
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun handleZeroIsCase(asExpr: List<KtNameReferenceExpression>, prop: KtProperty) {
         val propType = getPropertyType(prop)
         if (propType == "Not defined")
@@ -160,14 +162,7 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
                 .map { it.node }
                 .forEach {
                     if (it.treeParent.text.endsWith(propType)) {
-                        SMART_CAST_NEEDED.warnAndFix(configRules, emitWarn, isFixMode, it.treeParent.text, it.startOffset,
-                                it) {
-                            val dotExpr = it.findParentNodeWithSpecificType(DOT_QUALIFIED_EXPRESSION)!!
-                            val afterDotPart = dotExpr.text.split(".")[1]
-                            val text = "${it.text}.$afterDotPart"
-                            dotExpr.treeParent.addChild(KotlinParser().createNode(text), dotExpr)
-                            dotExpr.treeParent.removeChild(dotExpr)
-                        }
+                        raiseWarning(it)
                     }
                 }
     }
