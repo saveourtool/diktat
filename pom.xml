@@ -44,14 +44,14 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <kotlin.version>1.4.10</kotlin.version>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
+        <kotlinx.serialization.version>1.0.0</kotlinx.serialization.version>
         <ktlint.version>0.39.0</ktlint.version>
         <junit.version>5.7.0</junit.version>
-        <guava.version>29.0-jre</guava.version>
-        <jackson.version>2.11.3</jackson.version>
+        <guava.version>30.0-jre</guava.version>
         <slf4j.version>1.7.30</slf4j.version>
         <commons-cli.version>1.4</commons-cli.version>
         <diktat-check.version>0.1.2</diktat-check.version>
-        <kotlinpoet.version>1.6.0</kotlinpoet.version>
+        <kotlinpoet.version>1.7.1</kotlinpoet.version>
         <detekt.version>1.14.0</detekt.version>
         <dokka.version>1.4.10</dokka.version>
         <jacoco.version>0.8.6</jacoco.version>
@@ -85,12 +85,6 @@
                 <version>${kotlin.version}</version>
             </dependency>
             <dependency>
-                <!-- temporary override for jackson-kotlin and kotlinpoet -->
-                <groupId>org.jetbrains.kotlin</groupId>
-                <artifactId>kotlin-reflect</artifactId>
-                <version>${kotlin.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-compiler-embeddable</artifactId>
                 <version>${kotlin.version}</version>
@@ -104,31 +98,6 @@
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-core</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-annotations</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.dataformat</groupId>
-                <artifactId>jackson-dataformat-yaml</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.module</groupId>
-                <artifactId>jackson-module-kotlin</artifactId>
-                <version>${jackson.version}</version>
             </dependency>
             <dependency>
                 <groupId>commons-cli</groupId>
@@ -219,6 +188,11 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>3.0.0-M5</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-plugin-plugin</artifactId>
+                    <version>3.6.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>

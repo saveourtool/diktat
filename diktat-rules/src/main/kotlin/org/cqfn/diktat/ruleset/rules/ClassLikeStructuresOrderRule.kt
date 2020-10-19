@@ -44,6 +44,11 @@ class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) :
     private var isFixMode: Boolean = false
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
 
+    /**
+     * @param node
+     * @param autoCorrect
+     * @param emit
+     */
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
                        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
@@ -72,29 +77,42 @@ class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) :
         val initBlocks = node.getChildren(TokenSet.create(CLASS_INITIALIZER)).toMutableList()
         val constructors = node.getChildren(TokenSet.create(SECONDARY_CONSTRUCTOR)).toMutableList()
         val methods = node.getChildren(TokenSet.create(FUN)).toMutableList()
-        val (usedClasses, unusedClasses) = node.getChildren(TokenSet.create(CLASS)).partition { classNode ->
-            classNode.getIdentifierName()?.let { identifierNode ->
-                node.parents().last().findAllNodesWithSpecificType(REFERENCE_EXPRESSION).any { ref ->
-                    ref.parent({ it == classNode }) == null && ref.text.contains(identifierNode.text)
+        val (usedClasses, unusedClasses) = node
+                .getChildren(TokenSet.create(CLASS))
+                .partition { classNode ->
+                    classNode.getIdentifierName()?.let { identifierNode ->
+                        node
+                                .parents()
+                                .last()
+                                .findAllNodesWithSpecificType(REFERENCE_EXPRESSION)
+                                .any { ref ->
+                                    ref.parent({ it == classNode }) == null && ref.text.contains(identifierNode.text)
+                                }
+                    } ?: false
                 }
-            } ?: false
-        }.let { it.first.toMutableList() to it.second.toMutableList() }
+                .let { it.first.toMutableList() to it.second.toMutableList() }
         val companion = node.getChildren(TokenSet.create(OBJECT_DECLARATION))
                 .find { it.findChildByType(MODIFIER_LIST)?.findLeafWithSpecificType(COMPANION_KEYWORD) != null }
         val blocks = Blocks(AllProperties(loggers, constProperties, properties, lateInitProperties),
                 initBlocks, constructors, methods, usedClasses, listOfNotNull(companion).toMutableList(),
                 unusedClasses)
 
-        blocks.allBlockFlattened().reversed().handleIncorrectOrder(blocks::getSiblingBlocks) { astNode, beforeThisNode ->
-            WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnAndFix(configRules, emitWarn, isFixMode, astNode.elementType.toString() + ": " + astNode.text, astNode.startOffset, astNode) {
-                val replacement = node.moveChildBefore(astNode, beforeThisNode, true)
-                replacement.oldNodes.forEachIndexed { idx, oldNode ->
-                    blocks.allBlocks().find { oldNode in it }?.apply {
-                        this[indexOf(oldNode)] = replacement.newNodes[idx]
+        blocks
+                .allBlockFlattened()
+                .reversed()
+                .handleIncorrectOrder(blocks::getSiblingBlocks) { astNode, beforeThisNode ->
+                    WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnAndFix(configRules, emitWarn, isFixMode, "${astNode.elementType}: ${astNode.text}", astNode.startOffset, astNode) {
+                        val replacement = node.moveChildBefore(astNode, beforeThisNode, true)
+                        replacement.oldNodes.forEachIndexed { idx, oldNode ->
+                            blocks
+                                    .allBlocks()
+                                    .find { oldNode in it }
+                                    ?.apply {
+                                        this[indexOf(oldNode)] = replacement.newNodes[idx]
+                                    }
+                        }
                     }
                 }
-            }
-        }
     }
 
     @Suppress("UnsafeCallOnNullableType")
@@ -132,11 +150,28 @@ class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) :
         }
     }
 
+    /**
+     * Data class containing different groups of properties in file
+     *
+     * @property loggers loggers (for example, properties called `log` or `logger`)
+     * @property constProperties `const val`s
+     * @property properties all other properties
+     * @property lateInitProperties `lateinit var`s
+     */
     private data class AllProperties(val loggers: MutableList<ASTNode>,
                                      val constProperties: MutableList<ASTNode>,
                                      val properties: MutableList<ASTNode>,
                                      val lateInitProperties: MutableList<ASTNode>)
 
+    /**
+     * @property allProperties an instance of [AllProperties]
+     * @property initBlocks `init` blocks
+     * @property constructors constructors
+     * @property methods functions
+     * @property usedClasses nested classes that are used in the enclosing class
+     * @property companion `companion object`s
+     * @property unusedClasses nested classes that are *not* used in the enclosing class
+     */
     private data class Blocks(val allProperties: AllProperties,
                               val initBlocks: MutableList<ASTNode>,
                               val constructors: MutableList<ASTNode>,
@@ -148,6 +183,9 @@ class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) :
             require(companion.size in 0..1)
         }
 
+        /**
+         * @return all groups of structures in the class
+         */
         fun allBlocks() = with(allProperties) {
             listOf(loggers, constProperties, properties, lateInitProperties,
                     initBlocks, constructors, methods, usedClasses, companion, unusedClasses)
@@ -155,6 +193,10 @@ class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) :
 
         fun allBlockFlattened() = allBlocks().flatten()
 
+        /**
+         * @param node
+         * @return nodes between which the [node] should be placed
+         */
         fun getSiblingBlocks(node: ASTNode): Pair<ASTNode?, ASTNode> {
             require(node in allBlockFlattened())
             val lastElement = allBlockFlattened().last()

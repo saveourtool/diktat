@@ -1,7 +1,6 @@
 package org.cqfn.diktat.test.framework.processing
 
 import com.github.difflib.DiffUtils
-import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.IOException
 import java.nio.file.Files
@@ -9,7 +8,11 @@ import java.nio.file.Paths
 import java.util.ArrayList
 import java.util.StringJoiner
 import java.util.stream.Collectors
+import org.slf4j.LoggerFactory
 
+/**
+ * A class that is capable of comparing files content
+ */
 class FileComparator {
     private val expectedResultFile: File
     private val actualResultList: List<String?>
@@ -19,7 +22,7 @@ class FileComparator {
         this.actualResultList = actualResultList
     }
 
-    constructor (expectedResultFile: File, actualResultFile: File) {
+    constructor(expectedResultFile: File, actualResultFile: File) {
         this.expectedResultFile = expectedResultFile
         this.actualResultList = readFile(actualResultFile.absolutePath)
     }
@@ -48,15 +51,15 @@ class FileComparator {
             log.error("""Expected result from <${expectedResultFile.name}> and actual formatted are different.
 |                        See difference below:
 |                           Expected  vs  Actual ${System.lineSeparator()}$deltasJoiner""".trimMargin())
-
         } catch (e: RuntimeException) {
-            log.error("Not able to prepare diffs between <${expectedResultFile.name}> and <${actualResultList}>", e)
+            log.error("Not able to prepare diffs between <${expectedResultFile.name}> and <$actualResultList>", e)
         }
         return false
     }
 
     /**
      * @param fileName - file where to write these list to, separated with newlines
+     * @return a list of lines from the file
      */
     fun readFile(fileName: String): List<String> {
         var list: List<String> = ArrayList()
