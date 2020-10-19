@@ -85,12 +85,6 @@
                 <version>${kotlin.version}</version>
             </dependency>
             <dependency>
-                <!-- temporary override for and kotlinpoet -->
-                <groupId>org.jetbrains.kotlin</groupId>
-                <artifactId>kotlin-reflect</artifactId>
-                <version>${kotlin.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-compiler-embeddable</artifactId>
                 <version>${kotlin.version}</version>
