@@ -32,6 +32,8 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtNameReferenceExpression
 import org.jetbrains.kotlin.psi.KtProperty
+import org.jetbrains.kotlin.psi.psiUtil.hasActualModifier
+import org.jetbrains.kotlin.psi.psiUtil.hasExpectModifier
 import org.jetbrains.kotlin.psi.psiUtil.isAncestor
 import org.jetbrains.kotlin.psi.psiUtil.parents
 
@@ -86,31 +88,28 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
                 if (it.node.treeParent.text.contains(" is ")) {
                     groups.getValue(it).forEach { asCall ->
                         if (asCall.node.findParentNodeWithSpecificType(THEN) != null) {
-                            SMART_CAST_NEEDED.warnAndFix(configRules, emitWarn, isFixMode, asCall.node.treeParent.text, asCall.node.startOffset,
-                                    asCall.node) {
-                                val dotExpr = asCall.node.findParentNodeWithSpecificType(DOT_QUALIFIED_EXPRESSION)!!
-                                val afterDotPart = dotExpr.text.split(".")[1]
-                                val text = "${asCall.node.text}.$afterDotPart"
-                                dotExpr.treeParent.addChild(KotlinParser().createNode(text), dotExpr)
-                                dotExpr.treeParent.removeChild(dotExpr)
-                            }
+                            raiseWarning(asCall)
                         }
                     }
                 } else if (it.node.treeParent.text.contains(" !is ")) {
                     groups.getValue(it).forEach { asCall ->
                         if (asCall.node.findParentNodeWithSpecificType(ELSE) != null) {
-                            SMART_CAST_NEEDED.warnAndFix(configRules, emitWarn, isFixMode, asCall.node.treeParent.text, asCall.node.startOffset,
-                                    asCall.node) {
-                                val dotExpr = asCall.node.findParentNodeWithSpecificType(DOT_QUALIFIED_EXPRESSION)!!
-                                val afterDotPart = dotExpr.text.split(".")[1]
-                                val text = "${asCall.node.text}.$afterDotPart"
-                                dotExpr.treeParent.addChild(KotlinParser().createNode(text), dotExpr)
-                                dotExpr.treeParent.removeChild(dotExpr)
-                            }
+                            raiseWarning(asCall)
                         }
                     }
                 }
             }
+        }
+    }
+
+    private fun raiseWarning(asCall: KtNameReferenceExpression) {
+        SMART_CAST_NEEDED.warnAndFix(configRules, emitWarn, isFixMode, asCall.node.treeParent.text, asCall.node.startOffset,
+                asCall.node) {
+            val dotExpr = asCall.node.findParentNodeWithSpecificType(DOT_QUALIFIED_EXPRESSION)!!
+            val afterDotPart = dotExpr.text.split(".")[1]
+            val text = "${asCall.node.text}.$afterDotPart"
+            dotExpr.treeParent.addChild(KotlinParser().createNode(text), dotExpr)
+            dotExpr.treeParent.removeChild(dotExpr)
         }
     }
 

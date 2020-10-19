@@ -166,9 +166,9 @@ public object WarningNames {
 
     public const val TYPE_ALIAS: String = "TYPE_ALIAS"
 
-    public const val SAY_NO_TO_VAR: String = "SAY_NO_TO_VAR"
+    public const val SMART_CAST_NEEDED: String = "SMART_CAST_NEEDED"
 
-    const val SMART_CAST_NEEDED: String = "SMART_CAST_NEEDED"
+    public const val SAY_NO_TO_VAR: String = "SAY_NO_TO_VAR"
 
     public const val GENERIC_VARIABLE_WRONG_DECLARATION: String =
             "GENERIC_VARIABLE_WRONG_DECLARATION"
