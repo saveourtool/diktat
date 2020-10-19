@@ -124,7 +124,7 @@ No special prefix or suffix should be used in these names. For example, the foll
 
 4. Usage of `` and free naming for functions and identifiers are prohibited. For example - not recommended to use: 
     ```kotlin
-       val "my dummy name-with-minus" = "value" 
+       val `my dummy name-with-minus` = "value" 
    ```
    The only exception can be - is function names in Unit tests.
 
@@ -155,7 +155,7 @@ No special prefix or suffix should be used in these names. For example, the foll
 | Type | Naming style |
 | ---- | ---- |
 | Interfaces, classes, annotations, enumerated types, object type names | Camel case starting with capital letter, test classes have Test suffix, the filename is 'TopClassName'.kt  |
-| Class fields, local variables, methods, method parameters| Camel case starting with small letter, test methods may be underlines with '_'|
+| Class fields, variables, methods, method parameters| Camel case starting with small letter, test methods may be underlines with '_', the only exception is [backing properties](#r6.1.7)
 | Static constants, enumerated values | Only uppercase underlined with '_' |
 | Generic type variable | Single capital letter, can be followed by a number, for example: E, T, U, X, T2 |
 | Exceptions | Same as class names, but with suffix Exception, like: AccessException, NullPointerException, e.t.c|
@@ -1646,7 +1646,7 @@ Good example:
 
 # <a name="c6"></a>6 Classes, interfaces and functions
 ### <a name="c6.1"></a>6.1 Classes
-### <a name="r6.1.1"></a> Rule 6.1.1: Primary constructor should be define implicitly in the declaration of class
+### <a name="r6.1.1"></a> Rule 6.1.1: Primary constructor should be defined implicitly in the declaration of the class
 In case class contains only one explicit constructor - it should be converted to implicit primary constructor.
 Bad example:
 ```kotlin
@@ -1671,7 +1671,7 @@ class Test private constructor(var a: Int) {
 ```
 
 ### <a name="r6.1.2"></a> Rule 6.1.2: Prefer data classes instead of classes without any functional logic
-Some people say that data class - is a code smell, but in case you really need to use it and your is becoming more simple because of that -
+Some people say that data class - is a code smell. But in case you really need to use it and your x1code is becoming more simple because of that -
 you can use Kotlin `data classes`. Main purpose of these classes is to hold data.
 But also `data classes` will automatically generate several useful methods:
 - equals()/hashCode() pair;
@@ -1840,6 +1840,7 @@ val table: Map<String, Int>
 ```
 
 In this case the name of backing property (`_table`) should be the same to the name of real property (`table`), but should have underscore (`_`) prefix.
+It is one of the exceptions from the [identifier names rule](#r1.2)
 
 ### <a name="r6.1.8"></a> Recommendation 6.1.8: avoid using custom getters and setters
 Kotlin has a perfect mechanism of [properties](https://kotlinlang.org/docs/reference/properties.html#properties-and-fields).
@@ -1866,7 +1867,7 @@ Good example:
 // Bad example ======
 class A {
     var size: Int = 0
-    fun initSize(value: Int) { 
+    fun initSize(value: Int) {
         // some custom logic
     }
     
@@ -1887,4 +1888,3 @@ Very bad example:
         }
         get() = isEmpty
 ```
-
