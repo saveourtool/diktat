@@ -51,7 +51,7 @@
         <slf4j.version>1.7.30</slf4j.version>
         <commons-cli.version>1.4</commons-cli.version>
         <diktat-check.version>0.1.2</diktat-check.version>
-        <kotlinpoet.version>1.6.0</kotlinpoet.version>
+        <kotlinpoet.version>1.7.1</kotlinpoet.version>
         <detekt.version>1.14.0</detekt.version>
         <dokka.version>1.4.10</dokka.version>
         <jacoco.version>0.8.6</jacoco.version>
@@ -82,12 +82,6 @@
             <dependency>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-stdlib-jdk8</artifactId>
-                <version>${kotlin.version}</version>
-            </dependency>
-            <dependency>
-                <!-- temporary override for and kotlinpoet -->
-                <groupId>org.jetbrains.kotlin</groupId>
-                <artifactId>kotlin-reflect</artifactId>
                 <version>${kotlin.version}</version>
             </dependency>
             <dependency>
