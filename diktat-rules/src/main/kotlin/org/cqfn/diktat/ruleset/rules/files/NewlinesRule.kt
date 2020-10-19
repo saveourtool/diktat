@@ -8,6 +8,7 @@ import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.CALLABLE_REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.COLON
 import com.pinterest.ktlint.core.ast.ElementType.COLONCOLON
 import com.pinterest.ktlint.core.ast.ElementType.COMMA
@@ -37,46 +38,44 @@ import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.PLUS
 import com.pinterest.ktlint.core.ast.ElementType.PLUSEQ
 import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
-import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.RETURN
 import com.pinterest.ktlint.core.ast.ElementType.RETURN_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS
 import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.SECONDARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.SEMICOLON
-import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT
+import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_LIST
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
+import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.isLeaf
 import com.pinterest.ktlint.core.ast.nextCodeSibling
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevCodeSibling
+import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.REDUNDANT_SEMICOLON
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_NEWLINES
 import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
 import org.cqfn.diktat.ruleset.utils.emptyBlockList
 import org.cqfn.diktat.ruleset.utils.extractLineOfText
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
+import org.cqfn.diktat.ruleset.utils.getIdentifierName
 import org.cqfn.diktat.ruleset.utils.isBeginByNewline
 import org.cqfn.diktat.ruleset.utils.isEol
 import org.cqfn.diktat.ruleset.utils.isFollowedByNewline
 import org.cqfn.diktat.ruleset.utils.isSingleLineIfElse
 import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
+import org.cqfn.diktat.ruleset.utils.log
+import org.jetbrains.kotlin.backend.common.onlyIf
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
-import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
-import org.jetbrains.kotlin.ir.expressions.IrStatementOrigin
-import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
-import org.jetbrains.kotlin.psi.KtExpression
-import org.jetbrains.kotlin.psi.KtExpressionImpl
-import org.jetbrains.kotlin.psi.KtPostfixExpression
-import org.jetbrains.kotlin.psi.KtQualifiedExpression
-import org.jetbrains.kotlin.psi.KtSafeQualifiedExpression
+import org.jetbrains.kotlin.psi.KtParameterList
+import org.jetbrains.kotlin.psi.KtSuperTypeList
 import org.jetbrains.kotlin.psi.psiUtil.children
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.siblings
@@ -91,6 +90,7 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
  * 6. Ensures that function or constructor name isn't separated from `(` by space or newline
  * 7. Ensures that in multiline lambda newline follows arrow or, in case of lambda without explicit parameters, opening brace
  * 8. Checks that functions with single `return` are simplified to functions with expression body
+ * 9. parameter or argument lists and supertype lists that have more than 2 elements should be separated by newlines
  */
 @Suppress("ForbiddenComment")
 class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines") {
@@ -107,8 +107,11 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         private val dropChainValues = TokenSet.create(EOL_COMMENT, WHITE_SPACE, BLOCK_COMMENT, KDOC)
     }
 
-    private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
+    private val configuration by lazy {
+        NewlinesRuleConfiguration(configRules.getRuleConfig(WRONG_NEWLINES)?.configuration ?: emptyMap())
+    }
     private var isFixMode: Boolean = false
+    private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
@@ -124,9 +127,13 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
             COMMA -> handleComma(node)
             BLOCK -> handleLambdaBody(node)
             RETURN -> handleReturnStatement(node)
+            SUPER_TYPE_LIST, VALUE_PARAMETER_LIST -> handleList(node)
         }
     }
 
+    /**
+     * Check that EOL semicolon is used only in enums
+     */
     private fun handleSemicolon(node: ASTNode) {
         if (node.isEol() && node.treeParent.elementType != ENUM_ENTRY) {
             // semicolon at the end of line which is not part of enum members declarations
@@ -213,6 +220,9 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         }
     }
 
+    /**
+     * Check that newline is not placed before a comma
+     */
     private fun handleComma(node: ASTNode) {
         val prevNewLine = node
                 .parent({ it.treePrev != null }, strict = false)
@@ -296,6 +306,64 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
                 }
     }
 
+    /**
+     * Checks that members of [VALUE_PARAMETER_LIST] (list of function parameters at declaration site) are separated with newlines.
+     * Also checks that entries of [SUPER_TYPE_LIST] are separated by newlines.
+     */
+    private fun handleList(node: ASTNode) {
+        val (numEntries, entryType) = when (node.elementType) {
+            VALUE_PARAMETER_LIST -> (node.psi as KtParameterList).parameters.size to "value parameters"
+            SUPER_TYPE_LIST -> (node.psi as KtSuperTypeList).entries.size to "supertype list entries"
+            else -> {
+                log.warn("Unexpected node element type ${node.elementType}")
+                return
+            }
+        }
+        if (numEntries > configuration.maxParametersInOneLine) {
+            when (node.elementType) {
+                VALUE_PARAMETER_LIST -> handleFirstValueParameter(node)
+            }
+
+            node
+                .children()
+                .filter {
+                    it.elementType == COMMA &&
+                        !it.treeNext.run { elementType == WHITE_SPACE && textContains('\n') }
+                }
+                .toList()
+                .onlyIf({ isNotEmpty() }) { invalidCommas ->
+                    WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
+                        "$entryType should be placed on different lines in declaration of <${node.getParentIdentifier()}>", node.startOffset, node) {
+                        invalidCommas.forEach { comma ->
+                            val nextWhiteSpace = comma.treeNext.takeIf { it.elementType == WHITE_SPACE }
+                            comma.appendNewlineMergingWhiteSpace(nextWhiteSpace, nextWhiteSpace?.treeNext ?: comma.treeNext)
+                        }
+                    }
+                }
+        }
+    }
+
+    private fun handleFirstValueParameter(node: ASTNode) {
+        node
+            .children()
+            .takeWhile { !it.textContains('\n') }
+            .filter { it.elementType == VALUE_PARAMETER }
+            .toList()
+            .onlyIf({ size > 1 }) {
+                WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, "first parameter should be placed on a separate line " +
+                        "or all other parameters should be aligned with it in declaration of <${node.getParentIdentifier()}>", node.startOffset, node) {
+                    node.appendNewlineMergingWhiteSpace(it.first().treePrev.takeIf { it.elementType == WHITE_SPACE }, it.first())
+                }
+            }
+    }
+
+    @Suppress("UnsafeCallOnNullableType")
+    private fun ASTNode.getParentIdentifier() = when (treeParent.elementType) {
+        PRIMARY_CONSTRUCTOR -> treeParent.treeParent
+        SECONDARY_CONSTRUCTOR -> parent(CLASS)!!
+        else -> treeParent
+    }
+        .getIdentifierName()?.text
 
     private fun ASTNode.getOrderedCallExpressions(psi: PsiElement, result: MutableList<ASTNode>) {
         // if statements here have the only right order - don't change it
@@ -372,4 +440,11 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
     private fun ASTNode.isInfixCall() = elementType == OPERATION_REFERENCE &&
             firstChildNode.elementType == IDENTIFIER &&
             treeParent.elementType == BINARY_EXPRESSION
+}
+
+private class NewlinesRuleConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
+    /**
+     * If the number of parameters on one line is more than this threshold, all parameters should be placed on separate lines.
+     */
+    val maxParametersInOneLine = config["maxParametersInOneLine"]?.toInt() ?: 2
 }
