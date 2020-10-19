@@ -1,7 +1,6 @@
 package org.cqfn.diktat.ruleset.chapter3
 
 import com.pinterest.ktlint.core.LintError
-import generated.WarningNames
 import generated.WarningNames.STRING_TEMPLATE_CURLY_BRACES
 import generated.WarningNames.STRING_TEMPLATE_QUOTES
 import org.cqfn.diktat.ruleset.constants.Warnings
@@ -83,6 +82,20 @@ class StringTemplateRuleWarnTest : LintTestBase(::StringTemplateFormatRule) {
                     |       val price = ""${'"'}
                     |       ${'$'}9.99
                     |       ""${'"'}
+                    |   }
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(STRING_TEMPLATE_CURLY_BRACES)
+    fun `underscore after braces - braces should not be removed`() {
+        lintMethod(
+                """
+                    |class Some {
+                    |   fun some() {
+                    |       val copyTestFile = File("${'$'}{testFile()} copy ${'$'}{testFile}_copy")
                     |   }
                     |}
                 """.trimMargin()

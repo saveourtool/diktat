@@ -1,6 +1,7 @@
 package org.cqfn.diktat.ruleset.rules
 
 import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.COLONCOLON
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
@@ -12,6 +13,7 @@ import com.pinterest.ktlint.core.ast.ElementType.SHORT_TEMPLATE_ENTRY_START
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
+import org.cqfn.diktat.ruleset.utils.hasAnyChildOfTypes
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -41,8 +43,9 @@ class StringTemplateFormatRule(private val configRules: List<RulesConfig>) : Rul
     @Suppress("UnsafeCallOnNullableType")
     private fun handleLongStringTemplate(node: ASTNode) {
         // Checking if in long templates {a.foo()} there are function calls or class toString call
-        if (node.findAllNodesWithSpecificType(COLONCOLON).isEmpty() &&
-                node.findAllNodesWithSpecificType(DOT_QUALIFIED_EXPRESSION).isEmpty()) {
+        if (node.findAllNodesWithSpecificType(COLONCOLON).isEmpty()
+                && node.findAllNodesWithSpecificType(DOT_QUALIFIED_EXPRESSION).isEmpty()
+                && bracesCanBeOmitted(node)) {
             Warnings.STRING_TEMPLATE_CURLY_BRACES.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
                 val identifierName = node.findChildByType(REFERENCE_EXPRESSION)
                 if (identifierName != null) {
@@ -77,4 +80,8 @@ class StringTemplateFormatRule(private val configRules: List<RulesConfig>) : Rul
             }
         }
     }
+
+    private fun bracesCanBeOmitted(node: ASTNode) = !node.hasAnyChildOfTypes(CALL_EXPRESSION)
+            && !node.treeNext.text.startsWith("_")
+
 }
