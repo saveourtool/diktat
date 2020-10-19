@@ -595,9 +595,11 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |          var arg2: Int,
                 |          arg3: Int) { }
             """.trimMargin(),
-            LintError(3, 10, ruleId, "${WRONG_NEWLINES.warnText()} first parameter should be placed on a separate line or all other parameters should be aligned with it in declaration of <Foo>", true),
+            LintError(3, 10, ruleId, "${WRONG_NEWLINES.warnText()} first parameter should be placed on a separate line or all other parameters " +
+                    "should be aligned with it in declaration of <Foo>", true),
             LintError(3, 10, ruleId, "${WRONG_NEWLINES.warnText()} value parameters should be placed on different lines in declaration of <Foo>", true),
-            LintError(4, 16, ruleId, "${WRONG_NEWLINES.warnText()} first parameter should be placed on a separate line or all other parameters should be aligned with it in declaration of <Foo>", true),
+            LintError(4, 16, ruleId, "${WRONG_NEWLINES.warnText()} first parameter should be placed on a separate line or all other parameters " +
+                    "should be aligned with it in declaration of <Foo>", true),
             LintError(4, 16, ruleId, "${WRONG_NEWLINES.warnText()} value parameters should be placed on different lines in declaration of <Foo>", true)
         )
     }
@@ -615,7 +617,8 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |        arg2: Int,
                 |        arg3: Int) { }
             """.trimMargin(),
-            LintError(3, 8, ruleId, "${WRONG_NEWLINES.warnText()} first parameter should be placed on a separate line or all other parameters should be aligned with it in declaration of <bar>", true),
+            LintError(3, 8, ruleId, "${WRONG_NEWLINES.warnText()} first parameter should be placed on a separate line or all other parameters " +
+                    "should be aligned with it in declaration of <bar>", true),
             LintError(3, 8, ruleId, "${WRONG_NEWLINES.warnText()} value parameters should be placed on different lines in declaration of <bar>", true)
         )
     }
