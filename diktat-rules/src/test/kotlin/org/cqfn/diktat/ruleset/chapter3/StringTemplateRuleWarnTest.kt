@@ -21,6 +21,7 @@ class StringTemplateRuleWarnTest : LintTestBase(::StringTemplateFormatRule) {
                 """
                     |class Some { 
                     |   val template = "${'$'}{::String} ${'$'}{asd.moo()}"
+                    |   val some = "${'$'}{foo as Foo}"
                     |}
                 """.trimMargin()
         )

@@ -3,6 +3,7 @@ package org.cqfn.diktat.ruleset.rules
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.BINARY_WITH_TYPE
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CLOSING_QUOTE
 import com.pinterest.ktlint.core.ast.ElementType.COLONCOLON
@@ -46,9 +47,7 @@ class StringTemplateFormatRule(private val configRules: List<RulesConfig>) : Rul
     @Suppress("UnsafeCallOnNullableType")
     private fun handleLongStringTemplate(node: ASTNode) {
         // Checking if in long templates {a.foo()} there are function calls or class toString call
-        if (node.findAllNodesWithSpecificType(COLONCOLON).isEmpty()
-                && node.findAllNodesWithSpecificType(DOT_QUALIFIED_EXPRESSION).isEmpty()
-                && bracesCanBeOmitted(node)) {
+        if (bracesCanBeOmitted(node)) {
             Warnings.STRING_TEMPLATE_CURLY_BRACES.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
                 val identifierName = node.findChildByType(REFERENCE_EXPRESSION)
                 if (identifierName != null) {
@@ -85,7 +84,12 @@ class StringTemplateFormatRule(private val configRules: List<RulesConfig>) : Rul
     }
 
     private fun bracesCanBeOmitted(node: ASTNode) = !node.hasAnyChildOfTypes(CALL_EXPRESSION)
-            && (node.treeNext.text.startsWith(" ") || node.treeNext.elementType == CLOSING_QUOTE)
-            && node.findAllNodesWithSpecificType(BINARY_EXPRESSION).isEmpty()
+            && (node.treeNext.text.startsWith(" ")
+                || node.treeNext.elementType == CLOSING_QUOTE
+                || node.treeNext.text.startsWith(","))
+            && node.findAllNodesWithSpecificType(BINARY_EXPRESSION).isEmpty() // ${index + 1}
+            && node.findAllNodesWithSpecificType(BINARY_WITH_TYPE).isEmpty() // ${foo as Foo}
+            && node.findAllNodesWithSpecificType(COLONCOLON).isEmpty() // ${::String}
+            && node.findAllNodesWithSpecificType(DOT_QUALIFIED_EXPRESSION).isEmpty() // ${a.b.c}
 
 }
