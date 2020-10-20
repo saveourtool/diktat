@@ -4,13 +4,12 @@ import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.SAY_NO_TO_VAR
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
-import org.cqfn.diktat.ruleset.utils.getAllUsages
+import org.cqfn.diktat.ruleset.utils.search.findAllVariablesWithAssignments
+import org.cqfn.diktat.ruleset.utils.search.findAllVariablesWithUsages
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtLambdaExpression
 import org.jetbrains.kotlin.psi.KtLoopExpression
-import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 
 /**
@@ -29,22 +28,33 @@ class ImmutableValNoVarRule(private val configRules: List<RulesConfig>) : Rule("
         emitWarn = emit
         isFixMode = autoCorrect
 
-        if (node.elementType == ElementType.FUN) {
-            node.findAllNodesWithSpecificType(ElementType.PROPERTY)
-                    .map { it.psi as KtProperty }
-                    // we can force to be immutable only variables that are from local context (not from class and not from file-level)
-                    .filter { it.isLocal && it.name != null && it.parent is KtBlockExpression }
-                    .filter { it.isVar }
-                    .forEach { property ->
-                        val usedInAccumulators = property.getAllUsages().any {
-                            it.getParentOfType<KtLoopExpression>(true) != null ||
-                                    it.getParentOfType<KtLambdaExpression>(true) != null
-                        }
+        if (node.elementType == ElementType.FILE) {
+            // we will raise warning for cases when var property has no assignments
+            val varNoAssignments = node
+                    .findAllVariablesWithAssignments { it.name != null && it.isVar }
+                    .filter { it.value.isEmpty() }
 
-                        if (!usedInAccumulators) {
-                            SAY_NO_TO_VAR.warn(configRules, emitWarn, isFixMode, property.text, property.node.startOffset, property.node)
-                        }
-                    }
+            varNoAssignments.forEach { (property, usages) ->
+                    // FixMe: raise another warning and fix the code (change to val) for variables without assignment
+            }
+
+            // we can force to be immutable only variables that are from local context (not from class and not from file-level)
+            val usages = node
+                    .findAllVariablesWithUsages { it.isLocal && it.name != null && it.parent is KtBlockExpression && it.isVar }
+                    .filter { !varNoAssignments.containsKey(it.key) }
+
+            usages.forEach { (property, usages) ->
+                val usedInAccumulators = usages.any {
+                    it.getParentOfType<KtLoopExpression>(true) != null ||
+                            it.getParentOfType<KtLambdaExpression>(true) != null
+                }
+
+                if (!usedInAccumulators) {
+                    SAY_NO_TO_VAR.warn(configRules, emitWarn, isFixMode, property.text, property.node.startOffset, property.node)
+                }
+            }
+
+            return
         }
     }
 }

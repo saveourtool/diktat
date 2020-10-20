@@ -33,12 +33,8 @@ import org.jetbrains.kotlin.psi.KtWhenExpression
 import org.jetbrains.kotlin.psi.psiUtil.astReplace
 
 class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig>) : Rule("braces-rule") {
-    companion object {
-        private const val indentStep = 4
-    }
-
-    private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
+    private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
@@ -62,9 +58,16 @@ class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig
         val thenNode = ifPsi.then?.node
         val elseKeyword = ifPsi.elseKeyword
         val elseNode = ifPsi.`else`?.node
-        val indent = node.prevSibling { it.elementType == WHITE_SPACE }?.text?.lines()?.last()?.count { it == ' ' } ?: 0
+        val indent = node
+                .prevSibling { it.elementType == WHITE_SPACE }
+                ?.text
+                ?.lines()
+                ?.last()
+                ?.count { it == ' ' } ?: 0
 
-        if (node.isSingleLineIfElse()) return
+        if (node.isSingleLineIfElse()) {
+            return
+        }
 
         if (thenNode?.elementType != BLOCK) {
             NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnAndFix(configRules, emitWarn, isFixMode, "IF",
@@ -101,7 +104,11 @@ class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig
         if (loopBodyNode == null || loopBodyNode.elementType != BLOCK) {
             NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnAndFix(configRules, emitWarn, isFixMode, node.elementType.toString(), node.startOffset, node) {
                 // fixme proper way to calculate indent? or get step size (instead of hardcoded 4)
-                val indent = node.prevSibling { it.elementType == WHITE_SPACE }!!.text.lines().last().count { it == ' ' }
+                val indent = node.prevSibling { it.elementType == WHITE_SPACE }!!
+                        .text
+                        .lines()
+                        .last()
+                        .count { it == ' ' }
                 if (loopBody != null) {
                     loopBody.replaceWithBlock(indent)
                 } else {
@@ -118,7 +125,9 @@ class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig
 
     @Suppress("UnsafeCallOnNullableType")
     private fun checkWhenBranches(node: ASTNode) {
-        (node.psi as KtWhenExpression).entries.asSequence()
+        (node.psi as KtWhenExpression)
+                .entries
+                .asSequence()
                 .filter { it.expression != null && it.expression!!.node.elementType == BLOCK }
                 .map { it.expression as KtBlockExpression }
                 .filter { it.statements.size == 1 }
@@ -131,7 +140,7 @@ class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig
 
     private fun KtElement.replaceWithBlock(indent: Int) {
         this.astReplace(KtBlockExpression(
-                "{\n${" ".repeat(indent + indentStep)}$text\n${" ".repeat(indent)}}"
+                "{\n${" ".repeat(indent + INDENT_STEP)}$text\n${" ".repeat(indent)}}"
         ))
     }
 
@@ -145,5 +154,8 @@ class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig
         if (secondChild != null) {
             replaceChild(secondChild, PsiWhiteSpaceImpl(" "))
         }
+    }
+    companion object {
+        private const val INDENT_STEP = 4
     }
 }
