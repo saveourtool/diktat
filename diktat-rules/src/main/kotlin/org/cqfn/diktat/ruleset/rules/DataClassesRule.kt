@@ -52,7 +52,7 @@ class DataClassesRule(private val configRule: List<RulesConfig>) : Rule("data-cl
         USE_DATA_CLASS.warn(configRule, emitWarn, isFixMode, "${(node.psi as KtClass).name}", node.startOffset, node)
     }
 
-    @Suppress("UnsafeCallOnNullableType ")
+    @Suppress("UnsafeCallOnNullableType")
     private fun ASTNode.canBeDataClass() : Boolean {
         if (hasChildOfType(MODIFIER_LIST)) {
             val list = getFirstChildWithType(MODIFIER_LIST)!!
@@ -62,7 +62,7 @@ class DataClassesRule(private val configRule: List<RulesConfig>) : Rule("data-cl
         return findAllNodesWithSpecificType(FUN).isEmpty()
     }
 
-    @Suppress("UnsafeCallOnNullableType ")
+    @Suppress("UnsafeCallOnNullableType")
     private fun ASTNode.isDataClass(): Boolean {
         if (hasChildOfType(MODIFIER_LIST)) {
             val list = getFirstChildWithType(MODIFIER_LIST)!!
