@@ -1,5 +1,6 @@
 package org.cqfn.diktat.ruleset.smoke
 
+import com.charleskorn.kaml.InvalidPropertyValueException
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
@@ -40,7 +41,6 @@ class RulesConfigValidationTest {
 
     @Test
     fun `should throw error on invalid yml config`() {
-        // fixme: jackson's exceptions are handled and not rethrown
         file.writeText(
             """
                 |- name: PACKAGE_NAME_MISSING
@@ -48,7 +48,9 @@ class RulesConfigValidationTest {
                 |  configuration:
             """.trimMargin()
         )
-        DiktatRuleSetProvider(file.absolutePath).get()
+        assertThrows<InvalidPropertyValueException> {
+            DiktatRuleSetProvider(file.absolutePath).get()
+        }
     }
 
     @Test
