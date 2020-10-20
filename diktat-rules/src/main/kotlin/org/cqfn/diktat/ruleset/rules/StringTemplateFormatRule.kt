@@ -8,7 +8,9 @@ import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CLOSING_QUOTE
 import com.pinterest.ktlint.core.ast.ElementType.COLONCOLON
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.FLOAT_CONSTANT
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
+import com.pinterest.ktlint.core.ast.ElementType.INTEGER_CONSTANT
 import com.pinterest.ktlint.core.ast.ElementType.LITERAL_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.LONG_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
@@ -17,6 +19,7 @@ import com.pinterest.ktlint.core.ast.ElementType.SHORT_TEMPLATE_ENTRY_START
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
+import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.hasAnyChildOfTypes
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
@@ -83,13 +86,16 @@ class StringTemplateFormatRule(private val configRules: List<RulesConfig>) : Rul
         }
     }
 
-    private fun bracesCanBeOmitted(node: ASTNode) = !node.hasAnyChildOfTypes(CALL_EXPRESSION)
-            && (node.treeNext.text.startsWith(" ")
+    @Suppress("UnsafeCallOnNullableType")
+    private fun bracesCanBeOmitted(node: ASTNode): Boolean {
+        return if (node.findAllNodesWithSpecificType(REFERENCE_EXPRESSION).size == 1) {
+            node.findAllNodesWithSpecificType(REFERENCE_EXPRESSION).first().treeParent.elementType == LONG_STRING_TEMPLATE_ENTRY
+        } else {
+            node.hasAnyChildOfTypes(FLOAT_CONSTANT, INTEGER_CONSTANT)
+        } && !node.hasAnyChildOfTypes(CALL_EXPRESSION)
+                && (node.treeNext.text.startsWith(" ")
                 || node.treeNext.elementType == CLOSING_QUOTE
                 || node.treeNext.text.startsWith(","))
-            && node.findAllNodesWithSpecificType(BINARY_EXPRESSION).isEmpty() // ${index + 1}
-            && node.findAllNodesWithSpecificType(BINARY_WITH_TYPE).isEmpty() // ${foo as Foo}
-            && node.findAllNodesWithSpecificType(COLONCOLON).isEmpty() // ${::String}
-            && node.findAllNodesWithSpecificType(DOT_QUALIFIED_EXPRESSION).isEmpty() // ${a.b.c}
 
+    }
 }
