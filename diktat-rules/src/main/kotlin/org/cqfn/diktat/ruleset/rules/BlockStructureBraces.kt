@@ -29,6 +29,7 @@ import com.pinterest.ktlint.core.ast.ElementType.WHILE
 import com.pinterest.ktlint.core.ast.ElementType.WHILE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
+import java.lang.Exception
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
@@ -44,12 +45,10 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.KtTryExpression
-import java.lang.Exception
 
 class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("block-structure") {
-
-    private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
+    private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
@@ -74,8 +73,9 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
 
     private fun checkLambda(node: ASTNode, configuration: BlockStructureBracesConfiguration) {
         val isSingleLineLambda = node.text.lines().size == 1
-        if (!isSingleLineLambda)
+        if (!isSingleLineLambda) {
             checkCloseBrace(node, configuration)
+        }
     }
 
     @Suppress("UnsafeCallOnNullableType")
@@ -123,8 +123,11 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
 
     private fun checkWhen(node: ASTNode, configuration: BlockStructureBracesConfiguration) {
         /// WHEN expression doesn't contain BLOCK element and LBRECE isn't the first child, so we should to find it.
-        val childrenAfterLBrace = node.getChildren(null).toList().run { subList(indexOfFirst { it.elementType == LBRACE }, size) }
-        if (!emptyBlockList.containsAll(childrenAfterLBrace.distinct().map { it.elementType })) {
+        val childrenAfterLbrace = node
+                .getChildren(null)
+                .toList()
+                .run { subList(indexOfFirst { it.elementType == LBRACE }, size) }
+        if (!emptyBlockList.containsAll(childrenAfterLbrace.distinct().map { it.elementType })) {
             checkOpenBraceOnSameLine(node, LBRACE, configuration)
             checkCloseBrace(node, configuration)
         }
@@ -160,7 +163,9 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
     }
 
     private fun checkOpenBraceOnSameLine(node: ASTNode, beforeType: IElementType, configuration: BlockStructureBracesConfiguration) {
-        if (!configuration.openBrace) return
+        if (!configuration.openBrace) {
+            return
+        }
         val nodeBefore = node.findChildByType(beforeType)
         val braceSpace = nodeBefore?.treePrev
         if (braceSpace == null || checkBraceNode(braceSpace, true)) {
@@ -210,9 +215,11 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
 
     @Suppress("UnsafeCallOnNullableType")
     private fun checkCloseBrace(node: ASTNode, configuration: BlockStructureBracesConfiguration) {
-        if (!configuration.closeBrace) return
+        if (!configuration.closeBrace) {
+            return
+        }
         val space = node.findChildByType(RBRACE)!!.treePrev
-        if (checkBraceNode(space))
+        if (checkBraceNode(space)) {
             BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "no newline before closing brace",
                     (space.treeNext ?: node.findChildByType(RBRACE))!!.startOffset, node) {
                 if (space.elementType != WHITE_SPACE) {
@@ -221,6 +228,7 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
                     (space as LeafPsiElement).replaceWithText("\n")
                 }
             }
+        }
     }
 
     private fun checkBraceNode(node: ASTNode, shouldContainNewline: Boolean = false) =

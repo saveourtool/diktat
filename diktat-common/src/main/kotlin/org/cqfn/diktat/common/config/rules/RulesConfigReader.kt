@@ -4,13 +4,12 @@
 
 package org.cqfn.diktat.common.config.rules
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
-import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.fasterxml.jackson.module.kotlin.readValue
+import com.charleskorn.kaml.Yaml
+import com.charleskorn.kaml.YamlConfiguration
 import java.io.BufferedReader
 import java.io.File
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
 import org.cqfn.diktat.common.config.reader.JsonResourceConfigReader
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -29,8 +28,11 @@ interface Rule {
 
 /**
  * Configuration of individual [Rule]
+ * @property name name of the rule
+ * @property enabled
+ * @property configuration a map of strings with configuration options
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
+@Serializable
 data class RulesConfig(
         val name: String,
         val enabled: Boolean = true,
@@ -39,26 +41,26 @@ data class RulesConfig(
 
 /**
  * Configuration that allows customizing additional options of particular rules.
+ * @property config a map of strings with configuration options for a particular rule
  */
 open class RuleConfiguration(protected val config: Map<String, String>)
 object EmptyConfiguration : RuleConfiguration(mapOf())
 
 /**
  * class returns the list of configurations that we have read from a yml: diktat-analysis.yml
+ * @property classLoader a [ClassLoader] used to load configuration file
  */
 open class RulesConfigReader(override val classLoader: ClassLoader) : JsonResourceConfigReader<List<RulesConfig>>() {
+    private val yamlSerializer by lazy { Yaml(configuration = YamlConfiguration(strictMode = true)) }
+
     /**
      * Parse resource file into list of [RulesConfig]
      *
      * @param fileStream a [BufferedReader] representing loaded rules config file
      * @return list of [RulesConfig]
      */
-    override fun parseResource(fileStream: BufferedReader): List<RulesConfig> {
-        val mapper = ObjectMapper(YAMLFactory())
-        mapper.registerModule(KotlinModule())
-        return fileStream.use { stream ->
-            mapper.readValue(stream)
-        }
+    override fun parseResource(fileStream: BufferedReader): List<RulesConfig> = fileStream.use { stream ->
+        yamlSerializer.decodeFromString(stream.readLines().joinToString(separator = "\n"))
     }
 
     /**
@@ -87,7 +89,9 @@ open class RulesConfigReader(override val classLoader: ClassLoader) : JsonResour
 /**
  * @return common configuration from list of all rules configuration
  */
-fun List<RulesConfig>.getCommonConfiguration() = lazy { CommonConfiguration(getCommonConfig()?.configuration) }
+fun List<RulesConfig>.getCommonConfiguration() = lazy {
+    CommonConfiguration(getCommonConfig()?.configuration)
+}
 
 /**
  * class returns the list of common configurations that we have read from a configuration map
