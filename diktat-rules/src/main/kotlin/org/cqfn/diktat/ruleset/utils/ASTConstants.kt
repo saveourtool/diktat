@@ -19,12 +19,9 @@ val emptyBlockList = listOf(LBRACE, WHITE_SPACE, RBRACE)
 
 internal const val EMPTY_BLOCK_TEXT = "{}"
 
-enum class StandardPlatforms {
-    ANDROID, JAVA, KOTLIN
+enum class StandardPlatforms(val packages: List<String>) {
+    ANDROID(listOf("android", "androidx", "com.android")),
+    JAVA(listOf("java", "javax")),
+    KOTLIN(listOf("kotlin", "kotlinx")),
+    ;
 }
-
-internal val standardPackages = mapOf(
-    StandardPlatforms.ANDROID to listOf("android", "androidx", "com.android"),
-    StandardPlatforms.JAVA to listOf("java", "javax"),
-    StandardPlatforms.KOTLIN to listOf("kotlin", "kotlinx")
-)
