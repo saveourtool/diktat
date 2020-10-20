@@ -1,7 +1,9 @@
 package org.cqfn.diktat.ruleset.rules
 
 import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.CLOSING_QUOTE
 import com.pinterest.ktlint.core.ast.ElementType.COLONCOLON
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
@@ -82,6 +84,6 @@ class StringTemplateFormatRule(private val configRules: List<RulesConfig>) : Rul
     }
 
     private fun bracesCanBeOmitted(node: ASTNode) = !node.hasAnyChildOfTypes(CALL_EXPRESSION)
-            && !node.treeNext.text.startsWith("_")
+            && (node.treeNext.text.startsWith(" ") || node.treeNext.elementType == CLOSING_QUOTE)
 
 }

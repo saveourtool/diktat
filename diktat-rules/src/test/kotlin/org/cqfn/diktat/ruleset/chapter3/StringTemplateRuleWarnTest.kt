@@ -57,18 +57,16 @@ class StringTemplateRuleWarnTest : LintTestBase(::StringTemplateFormatRule) {
 
     @Test
     @Tag(STRING_TEMPLATE_CURLY_BRACES)
-    fun `long string template bad example 2`() {
+    fun `should not trigger on dot after braces`() {
         lintMethod(
                 """
                     |class Some {
                     |   fun some() {
                     |       val s = "abs"
                     |       println("${'$'}{s}.length is ${'$'}{s.length}")
-                    |
                     |   }
                     |}
-                """.trimMargin(),
-                LintError(4, 17, ruleId, "${Warnings.STRING_TEMPLATE_CURLY_BRACES.warnText()} ${'$'}{s}", true)
+                """.trimMargin()
         )
     }
 

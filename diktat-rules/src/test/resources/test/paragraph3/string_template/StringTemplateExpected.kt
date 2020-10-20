@@ -8,6 +8,6 @@ class SomeClass {
 
         val m = "1.0"
 
-        val template = "$x, ${asd.moo()}"
+        val template = "${x}, ${asd.moo()}"
     }
 }
