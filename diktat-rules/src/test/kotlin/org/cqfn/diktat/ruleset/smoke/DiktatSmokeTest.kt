@@ -1,12 +1,14 @@
 package org.cqfn.diktat.ruleset.smoke
 
 import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NAME_INCORRECT
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NAME_MATCH_CLASS
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_EMPTY_TAGS
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_CLASS_ELEMENTS
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_TOP_LEVEL
+import org.cqfn.diktat.ruleset.constants.Warnings.USE_DATA_CLASS
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
 import org.cqfn.diktat.util.FixTestBase
@@ -57,7 +59,8 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
         fixAndCompare("Example2Expected.kt", "Example2Test.kt")
         unfixedLintErrors.assertEquals(
                 LintError(1, 1, "$DIKTAT_RULE_SET_ID:file-naming", "${FILE_NAME_INCORRECT.warnText()} Example2Test.kt_copy", true), // todo this is a false one
-                LintError(1, 1, "$DIKTAT_RULE_SET_ID:header-comment", "${HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warnText()} $expectedFileAbsolutePath", false)
+                LintError(1, 1, "$DIKTAT_RULE_SET_ID:header-comment", "${HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warnText()} $expectedFileAbsolutePath", false),
+                LintError(1, 1, "$DIKTAT_RULE_SET_ID:data-classes", "${USE_DATA_CLASS.warnText()} TestException", false)
         )
     }
 

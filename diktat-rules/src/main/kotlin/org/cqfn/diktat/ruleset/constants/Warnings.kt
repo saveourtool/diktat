@@ -114,6 +114,9 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     TOO_MANY_PARAMETERS(false, "function has too many parameters"),
     NESTED_BLOCK(false, "function has too many nested blocks and should be simplified"),
     WRONG_OVERLOADING_FUNCTION_ARGUMENTS(false, "use default argument instead of function overloading"),
+
+    // ======== chapter 6 ========
+    USE_DATA_CLASS(false, "this class can be made as data class"),
     ;
 
     /**
