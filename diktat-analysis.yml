@@ -319,3 +319,7 @@
 - name: KDOC_NO_CONSTRUCTOR_PROPERTY
   enabled: true
   configuration: {}
+# Checks that never use the name of a variable in the custom getter or setter
+- name: WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR
+  enabled: true
+  configuration: {}
