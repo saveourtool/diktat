@@ -316,3 +316,6 @@
 - name: KDOC_NO_CONSTRUCTOR_PROPERTY
   enabled: true
   configuration: {}
+- name: "SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY"
+  enabled: true
+  configuration: {}
