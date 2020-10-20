@@ -92,7 +92,7 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
  * 8. Checks that functions with single `return` are simplified to functions with expression body
  * 9. parameter or argument lists and supertype lists that have more than 2 elements should be separated by newlines
  */
-@Suppress("ForbiddenComment", "LargeClass")
+@Suppress("ForbiddenComment")
 class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines") {
     companion object {
         // fixme: these token sets can be not full, need to add new once as corresponding cases are discovered.
