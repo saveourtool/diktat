@@ -60,4 +60,10 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
                 LintError(1, 1, "$DIKTAT_RULE_SET_ID:header-comment", "${HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warnText()} $expectedFileAbsolutePath", false)
         )
     }
+
+    @Test
+    @Tag("DiktatRuleSetProvider")
+    fun `regression - shouldn't throw exception in cases similar to #371`() {
+        fixAndCompare("Bug1Expected.kt", "Bug1Test.kt")
+    }
 }

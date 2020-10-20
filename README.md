@@ -26,7 +26,7 @@ The full list of available supported rules and inspections can be found [here](i
 | See first | !!! |
 | ----------------- | ------------------------ |
 |[diKTat codestyle](info/diktat-kotlin-coding-style-guide-en.md)|[supported rules](info/available-rules.md)|                                                      |
-|[maven and gradle](https://github.com/akuleshov7/diktat-examples)|[online demo](https://ktlint-demo.herokuapp.com)|
+|[examples of usage](https://github.com/akuleshov7/diktat-examples)|[online demo](https://ktlint-demo.herokuapp.com)|
 
 
 ## Run as CLI-application
