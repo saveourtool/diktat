@@ -4,6 +4,7 @@ import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.RuleSetProvider
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
 import org.cqfn.diktat.ruleset.rules.calculations.AccurateCalculationsRule
+import org.cqfn.diktat.ruleset.rules.classes.SingleConstructorRule
 import org.cqfn.diktat.ruleset.rules.comments.CommentsRule
 import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule
 import org.cqfn.diktat.ruleset.rules.files.BlankLinesRule
@@ -61,12 +62,13 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
                 ::FunctionLength,
                 ::LambdaParameterOrder,
                 ::FunctionArgumentsSize,
+                ::SingleConstructorRule,
                 ::BlankLinesRule,
                 ::NullableTypeRule,
-                ::WhiteSpaceRule,
                 ::WhenMustHaveElseRule,
                 ::ImmutableValNoVarRule,
                 ::AvoidNestedFunctionsRule,
+                ::WhiteSpaceRule,
                 ::FileStructureRule,  // this rule should be right before indentation because it should operate on already valid code
                 ::NewlinesRule,  // newlines need to be inserted right before fixing indentation
                 ::IndentationRule  // indentation rule should be the last because it fixes formatting after all the changes done by previous rules

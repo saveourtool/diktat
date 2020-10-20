@@ -114,6 +114,9 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     TOO_MANY_PARAMETERS(false, "function has too many parameters"),
     NESTED_BLOCK(false, "function has too many nested blocks and should be simplified"),
     WRONG_OVERLOADING_FUNCTION_ARGUMENTS(false, "use default argument instead of function overloading"),
+
+    // ======== chapter 6 ========
+    SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY(true, "if a class has single constructor, it should be converted to a primary constructor"),
     ;
 
     /**

@@ -189,4 +189,7 @@ public object WarningNames {
 
     public const val WRONG_OVERLOADING_FUNCTION_ARGUMENTS: String =
             "WRONG_OVERLOADING_FUNCTION_ARGUMENTS"
+
+    public const val SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY: String =
+            "SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY"
 }
