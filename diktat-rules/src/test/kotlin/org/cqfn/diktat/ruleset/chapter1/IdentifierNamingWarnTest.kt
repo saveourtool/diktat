@@ -2,6 +2,7 @@ package org.cqfn.diktat.ruleset.chapter1
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
+import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.constants.Warnings.BACKTICKS_PROHIBITED
 import org.cqfn.diktat.ruleset.constants.Warnings.CLASS_NAME_INCORRECT
@@ -206,14 +207,38 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
         val code =
                 """
                   enum class TEST_ONE {
-                    first_value, secondValue, thirdVALUE
+                    first_value, secondValue, thirdVALUE, FourthValue
                   }
                 """.trimIndent()
         lintMethod(code,
                 LintError(1, 12, ruleId, "${CLASS_NAME_INCORRECT.warnText()} TEST_ONE", true),
                 LintError(2, 3, ruleId, "${ENUM_VALUE.warnText()} first_value", true),
                 LintError(2, 16, ruleId, "${ENUM_VALUE.warnText()} secondValue", true),
-                LintError(2, 29, ruleId, "${ENUM_VALUE.warnText()} thirdVALUE", true)
+                LintError(2, 29, ruleId, "${ENUM_VALUE.warnText()} thirdVALUE", true),
+                LintError(2, 41, ruleId, "${ENUM_VALUE.warnText()} FourthValue", true)
+        )
+    }
+
+    @Test
+    @Tags(Tag(WarningNames.ENUM_VALUE), Tag(WarningNames.CLASS_NAME_INCORRECT))
+    fun `check case for pascal case enum values (check - negative)`() {
+        val code =
+                """
+                  enum class TEST_ONE {
+                    first_value, secondValue, thirdVALUE, FOURTH_VALUE
+                  }
+                """.trimIndent()
+        val rulesConfigPascalCaseEnum: List<RulesConfig> = listOf(
+                RulesConfig(ENUM_VALUE.name, true,
+                        mapOf("enumStyle" to "pascalCase"))
+        )
+        lintMethod(code,
+                LintError(1, 12, ruleId, "${CLASS_NAME_INCORRECT.warnText()} TEST_ONE", true),
+                LintError(2, 3, ruleId, "${ENUM_VALUE.warnText()} first_value", true),
+                LintError(2, 16, ruleId, "${ENUM_VALUE.warnText()} secondValue", true),
+                LintError(2, 29, ruleId, "${ENUM_VALUE.warnText()} thirdVALUE", true),
+                LintError(2, 41, ruleId, "${ENUM_VALUE.warnText()} FOURTH_VALUE", true),
+                rulesConfigList = rulesConfigPascalCaseEnum
         )
     }
 

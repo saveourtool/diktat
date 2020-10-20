@@ -24,8 +24,8 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  * This rule checks for nested functions and warns if it finds any.
  */
 class AvoidNestedFunctionsRule(private val configRules: List<RulesConfig>) : Rule("avoid-nested-functions") {
-    private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
+    private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
 
     override fun visit(node: ASTNode, autoCorrect: Boolean, emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
         emitWarn = emit
@@ -46,7 +46,10 @@ class AvoidNestedFunctionsRule(private val configRules: List<RulesConfig>) : Rul
                     canBeAutoCorrected = checkFunctionReferences(node)) {
                 // We take last nested function, then add and remove child from bottom to top
                 val lastFunc = node.findAllNodesWithSpecificType(FUN).last()
-                val funcSeq = lastFunc.parents().filter { it.elementType == FUN }.toMutableList()
+                val funcSeq = lastFunc
+                        .parents()
+                        .filter { it.elementType == FUN }
+                        .toMutableList()
                 funcSeq.add(0, lastFunc)
                 val firstFunc = funcSeq.last()
                 funcSeq.dropLast(1).forEachIndexed { index, it ->
@@ -65,9 +68,11 @@ class AvoidNestedFunctionsRule(private val configRules: List<RulesConfig>) : Rul
     private fun isNestedFunction(node: ASTNode): Boolean =
             node.hasParent(FUN) && node.hasFunParentUntil(CLASS_BODY) && !node.hasChildOfType(MODIFIER_LIST)
 
-
     private fun ASTNode.hasFunParentUntil(stopNode: IElementType): Boolean =
-            parents().asSequence().takeWhile { it.elementType != stopNode }.any { it.elementType == FUN }
+            parents()
+                    .asSequence()
+                    .takeWhile { it.elementType != stopNode }
+                    .any { it.elementType == FUN }
 
     /**
      * Checks if local function has no usage of outside properties
@@ -85,10 +90,10 @@ class AvoidNestedFunctionsRule(private val configRules: List<RulesConfig>) : Rul
 
     /**
      * Collects all function parameters' names
+     *
      * @return List of names
      */
     @Suppress("UnsafeCallOnNullableType")
     private fun getParameterNames(node: ASTNode): List<String> =
-        (node.psi as KtFunction).valueParameters.map { it.name!! }
-
+            (node.psi as KtFunction).valueParameters.map { it.name!! }
 }
