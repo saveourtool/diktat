@@ -80,6 +80,7 @@ class StringTemplateRuleWarnTest : LintTestBase(::StringTemplateFormatRule) {
                     |       val price = ""${'"'}
                     |       ${'$'}9.99
                     |       ""${'"'}
+                    |       val some = "${'$'}{index + 1}"
                     |   }
                     |}
                 """.trimMargin()
