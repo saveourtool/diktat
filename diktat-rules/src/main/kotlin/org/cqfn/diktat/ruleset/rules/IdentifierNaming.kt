@@ -7,6 +7,7 @@ import com.pinterest.ktlint.core.ast.ElementType.CATCH_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.DESTRUCTURING_DECLARATION
 import com.pinterest.ktlint.core.ast.ElementType.DESTRUCTURING_DECLARATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_TYPE
+import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.prevCodeSibling
@@ -91,7 +92,7 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
         isFixMode = autoCorrect
         emitWarn = emit
 
-        // backticks are prohibited everywhere except test methods that are marked with @Test annotation
+        // backticks are prohibited for identifier declarations everywhere except test methods that are marked with @Test annotation
         if (isIdentifierWithBackticks(node)) {
             return
         }
@@ -121,13 +122,16 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
      */
     private fun isIdentifierWithBackticks(node: ASTNode): Boolean {
         val identifier = node.getIdentifierName()
-        val identifierText = identifier?.text
-        if (identifierText?.startsWith('`') == true && identifierText.endsWith('`')) {
-            // the only exception is test method with @Test annotation
-            if (!(node.elementType == ElementType.FUN && node.hasTestAnnotation())) {
-                BACKTICKS_PROHIBITED.warn(configRules, emitWarn, isFixMode, identifierText, identifier.startOffset, identifier)
+        if (identifier != null && node.elementType != REFERENCE_EXPRESSION) {
+            // node is a symbol declaration with present identifier
+            val identifierText = identifier.text
+            if (identifierText.startsWith('`') && identifierText.endsWith('`')) {
+                // the only exception is test method with @Test annotation
+                if (!(node.elementType == ElementType.FUN && node.hasTestAnnotation())) {
+                    BACKTICKS_PROHIBITED.warn(configRules, emitWarn, isFixMode, identifierText, identifier.startOffset, identifier)
+                }
+                return true
             }
-            return true
         }
 
         return false
