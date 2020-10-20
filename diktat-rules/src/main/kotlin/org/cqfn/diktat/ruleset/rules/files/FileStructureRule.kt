@@ -20,10 +20,12 @@ import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NO_BLANK_LINE_BETWEEN_BLO
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_UNORDERED_IMPORTS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_WILDCARD_IMPORTS
 import org.cqfn.diktat.ruleset.rules.PackageNaming.Companion.PACKAGE_SEPARATOR
+import org.cqfn.diktat.ruleset.utils.StandardPlatforms
 import org.cqfn.diktat.ruleset.utils.findChildBefore
 import org.cqfn.diktat.ruleset.utils.getFileName
 import org.cqfn.diktat.ruleset.utils.handleIncorrectOrder
 import org.cqfn.diktat.ruleset.utils.moveChildBefore
+import org.cqfn.diktat.ruleset.utils.standardPackages
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -59,10 +61,10 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         if (node.elementType == ElementType.FILE) {
             fileName = node.getFileName()
             val wildcardImportsConfig = WildCardImportsConfig(
-                this.configRules.getRuleConfig(FILE_WILDCARD_IMPORTS)?.configuration ?: mapOf()
+                this.configRules.getRuleConfig(FILE_WILDCARD_IMPORTS)?.configuration ?: emptyMap()
             )
             val importsGroupingConfig = ImportsGroupingConfig(
-                this.configRules.getRuleConfig(FILE_UNORDERED_IMPORTS)?.configuration ?: mapOf()
+                this.configRules.getRuleConfig(FILE_UNORDERED_IMPORTS)?.configuration ?: emptyMap()
             )
             node.findChildByType(IMPORT_LIST)
                 ?.let { checkImportsOrder(it, wildcardImportsConfig, importsGroupingConfig) }
@@ -74,7 +76,10 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
     }
 
     private fun checkFileHasCode(node: ASTNode): Boolean {
-        val codeTokens = TokenSet.andNot(TokenSet.ANY, TokenSet.create(WHITE_SPACE, KDOC, BLOCK_COMMENT, EOL_COMMENT, PACKAGE_DIRECTIVE, IMPORT_LIST))
+        val codeTokens = TokenSet.andNot(
+            TokenSet.ANY,
+            TokenSet.create(WHITE_SPACE, KDOC, BLOCK_COMMENT, EOL_COMMENT, PACKAGE_DIRECTIVE, IMPORT_LIST)
+        )
         val hasCode = node.getChildren(codeTokens).isNotEmpty()
         if (!hasCode) {
             FILE_CONTAINS_ONLY_COMMENTS.warn(configRules, emitWarn, isFixMode, fileName, node.startOffset, node)
@@ -142,7 +147,7 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
                 .forEach { FILE_WILDCARD_IMPORTS.warn(configRules, emitWarn, isFixMode, it.text, it.startOffset, it) }
 
         val sortedImportsGroups = if (importsGroupingConfig.useRecommendedImportsOrder) {
-            ImportGroups.create(imports.map { it.psi as KtImportDirective }, domainName).toList()
+            regroupImports(imports.map { it.psi as KtImportDirective })
                 .map { group -> group.map { it.node } }
         } else {
             listOf(imports)
@@ -194,49 +199,37 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         else -> error("Only BLOCK_COMMENT, KDOC and FILE_ANNOTATION_LIST are valid inputs.")
     }
 
-    private data class ImportGroups(
-        val android: List<KtImportDirective>,
-        val ownDomain: List<KtImportDirective>,
-        val others: List<KtImportDirective>,
-        val javaCore: List<KtImportDirective>,
-        val kotlinCore: List<KtImportDirective>
-    ) {
-        fun toList() = listOf(android, ownDomain, others, javaCore, kotlinCore)
-
-        companion object {
-            fun create(imports: List<KtImportDirective>, domainName: String): ImportGroups {
-                val (android, notAndroid) = imports.partitionByImportParts {
-                    it.isStandardAndroid()
-                }
-
-                val (ownDomain, tmp) = notAndroid.partitionByImportParts { paths ->
-                    paths.map { it.identifier }.zip(domainName.split(PACKAGE_SEPARATOR)).all { it.first == it.second }
-                }
-
-                val (others, javaAndKotlin) = tmp.partitionByImportParts {
-                    !it.isStandardJava() && !it.isStandardKotlin()
-                }
-
-                val (java, kotlin) = javaAndKotlin.partitionByImportParts { it.isStandardJava() }
-
-                return ImportGroups(android, ownDomain, others, java, kotlin)
-            }
-
-            @Suppress("UnsafeCallOnNullableType")
-            private inline fun List<KtImportDirective>.partitionByImportParts(predicate: (List<Name>) -> Boolean) =
-                partition {
-                    it.importPath!!.fqName.pathSegments().let(predicate)
-                }
-
-            private fun List<Name>.isStandardAndroid() =
-                first().identifier.let { it == "android" || it == "androidx" } ||
-                        first().identifier == "com" && getOrNull(1)?.identifier == "android"
-
-            private fun List<Name>.isStandardJava() = first().identifier.let { it == "java" || it == "javax" }
-
-            private fun List<Name>.isStandardKotlin() = first().identifier.let { it == "kotlin" || it == "kotlinx" }
+    private fun regroupImports(imports: List<KtImportDirective>): List<List<KtImportDirective>> {
+        val (android, notAndroid) = imports.partition {
+            it.isStandard(StandardPlatforms.ANDROID)
         }
+
+        val (ownDomain, tmp) = notAndroid.partition { import ->
+            import.importPath?.fqName?.pathSegments()
+                ?.zip(domainName.split(PACKAGE_SEPARATOR).map(Name::identifier))
+                ?.all { it.first == it.second }
+                ?: false
+        }
+
+        val (others, javaAndKotlin) = tmp.partition {
+            !it.isStandard(StandardPlatforms.JAVA) && !it.isStandard(StandardPlatforms.KOTLIN)
+        }
+
+        val (java, kotlin) = javaAndKotlin.partition { it.isStandard(StandardPlatforms.JAVA) }
+
+        return listOf(android, ownDomain, others, java, kotlin)
     }
+
+    private val standardImportsAsName = StandardPlatforms.values()
+        .associate { it to standardPackages[it]!! }
+        .mapValues { (_, value) ->
+            value.map { it.split(PACKAGE_SEPARATOR).map(Name::identifier) }
+        }
+
+    private fun KtImportDirective.isStandard(platformName: StandardPlatforms) = standardImportsAsName[platformName]?.any { names ->
+        names.zip(importPath?.fqName?.pathSegments() ?: emptyList())
+            .all { it.first == it.second }
+    } ?: false
 
     class WildCardImportsConfig(config: Map<String, String>) : RuleConfiguration(config) {
         val allowedWildcards = config["allowedWildcards"]?.split(",")?.map { it.trim() } ?: listOf()

@@ -136,9 +136,11 @@
 - name: FILE_CONTAINS_ONLY_COMMENTS
   enabled: true
   configuration: {}
+  # order imports alphabetically
 - name: FILE_UNORDERED_IMPORTS
   enabled: true
   configuration:
+    # use logical imports grouping with sorting inside of a group
     useRecommendedImportsOrder: true
 - name: FILE_INCORRECT_BLOCKS_ORDER
   enabled: true
