@@ -4,6 +4,13 @@
 
 package your.name.here
 
+import org.slf4j.LoggerFactory
+
+import java.io.IOException
+import java.util.Properties
+
+import kotlin.system.exitProcess
+
 /**
  * @property foo
  * @property bar

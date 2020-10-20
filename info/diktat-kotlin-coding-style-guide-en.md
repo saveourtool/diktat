@@ -656,56 +656,34 @@ b) Each of the above code blocks should be separated by a blank line.
 c) Import statements are ordered alphabetically, without line breaks, and are not using wildcards *
 d) Recommendation: in one .kt source file there should be only one class declaration and its name should match with the filename
 
-### <a name="s3.1"></a>Recommendation 3.1: import statements should appear in the following order: Android, internal company imports, external commercial organizations, other open source third parties, net/org open source organizations, and finally java core dependencies. Each group should be separated by a blank line.
+### <a name="s3.1"></a>Recommendation 3.1: import statements should appear in the following order: Android, internal company imports, external imports, java core dependencies and finally, kotlin standard library. Each group should be separated by a blank line.
 
-Note: Static imports are placed above all other imports (using the same sorting method as for regular imports). 
 From top to bottom, the order is the following:
-1. static imports
-2. Android
-3. Imports of packages used internally in your organization
-4. Other commercial organizations
-5. Open source imports
-6. net/org open source dependencies
-7. javacard
-8. java core packages
+1. Android
+2. Imports of packages used internally in your organization
+3. Imports from other non-core dependencies
+4. java core packages
+5. kotlin stdlib
 
-Each category sorted in alphabetical order. This style is compatible with [Android import order] (https://source.android.com/setup/contribute/code-style#order-import-statements). 
+Each category should be sorted in alphabetical order. This style is compatible with [Android import order](https://source.android.com/setup/contribute/code-style#order-import-statements).
 
-Recommended example：
+Recommended example:
+```kotlin
+import android.* // android
+import androidx.* // android
+import com.android.* // android
 
-```java
-import static all.other.imports; // static imports
+import com.your.company.* // your company's libs
+import your.company.* // your company's libs
 
-import android.*; // android
+import com.fasterxml.jackson.databind.ObjectMapper // other third-party dependencies
+import org.junit.jupiter.api.Assertions
 
-import androidx.*; // android
+import java.io.IOException // java core packages
+import java.net.URL
 
-import com.android.*; // android
-
-import your.company.*; // your company's libs
-
-import com.your.company.*; // your company's libs
-
-import com.google.common.io.Files; // other business organizations
-
-import lombok.extern.slf4j.Sl4j;  // Other open source third parties
-
-import maven.*;  // Other open source third parties
-
-import net.sf.json.*; //  open source organization starting with .net
-
-import org.linux.apache.server.SoapServer; // open source organization starting with .org
-
-import javacard.*;
-
-import java.io.IOException; // java core packages
-import java.net.URL;
-
-import java.rmi.RmiServer;  // java core packages
-import java.rmi.server.Server;
-
-import javax.swing.JPanel;  // java extensions 
-import javax.swing.event.ActionEvent;
+import kotlin.system.exitProcess  // kotlin standard library
+import kotlinx.coroutines.*  // official kotlin extension library
 ```
 
 ### <a name="s3.2"></a>>Recommendation 3.2: The declaration part of a class-like code structures (class/interface/e.t.c) should be in the following order: compile-time constants (for objects), class properties, late-init class properties, init-blocks, constructors, public methods, internal methods, protected methods, private methods, companion object. Their declaration should be separated by blank lines.
