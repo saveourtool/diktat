@@ -4,27 +4,19 @@ import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
-import com.pinterest.ktlint.core.ast.ElementType.COMMA
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
-import com.pinterest.ktlint.core.ast.ElementType.LPAR
 import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
-import com.pinterest.ktlint.core.ast.ElementType.RBRACE
-import com.pinterest.ktlint.core.ast.ElementType.RPAR
 import com.pinterest.ktlint.core.ast.ElementType.SECONDARY_CONSTRUCTOR
-import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY
+import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getIdentifierName
 import org.cqfn.diktat.ruleset.utils.isGoingAfter
-import org.jetbrains.kotlin.BlockExpressionElementType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
-import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
-import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
@@ -38,6 +30,7 @@ import org.jetbrains.kotlin.psi.psiUtil.asAssignment
 class SingleConstructorRule(private val config: List<RulesConfig>) : Rule("single-constructor") {
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
+    private val kotlinParser by lazy { KotlinParser() }
 
     override fun visit(
         node: ASTNode,
@@ -69,13 +62,19 @@ class SingleConstructorRule(private val config: List<RulesConfig>) : Rule("singl
         }
     }
 
+    /**
+     * This method does the following:
+     * - Inside the single secondary constructor find all assignments.
+     * - Some of assigned values will have `this` qualifier, they are definitely class properties.
+     * - For other assigned variables that are not declared in the same scope we check if they are properties.
+     * - Create primary constructor moving all properties that we collected.
+     * - Create init block with other statements from the secondary constructor.
+     * - Finally, remove the secondary constructor.
+     */
     @Suppress("UnsafeCallOnNullableType")
     private fun convertConstructorToPrimary(classNode: ASTNode, secondaryCtor: ASTNode) {
-        // Inside the single secondary constructor find all assignments.
-        // Some of assigned values will have `this` qualifier, they are definitely class properties.
-        // For other assigned variables that are not declared in the same scope we will check later if they are properties.
-
-        val (assignments, otherStatements) = (secondaryCtor.psi as KtSecondaryConstructor).bodyBlockExpression
+        val (assignments, otherStatements) = (secondaryCtor.psi as KtSecondaryConstructor)
+            .bodyBlockExpression
             ?.statements
             ?.partition { (it as? KtBinaryExpression)?.asAssignment() != null }
             ?: emptyList<KtExpression>() to emptyList()
@@ -117,7 +116,6 @@ class SingleConstructorRule(private val config: List<RulesConfig>) : Rule("singl
             }
             .distinct()
 
-        // move them; todo: with their initial values (unless they are `lateinit`) to the primary
         classNode.convertSecondaryConstructorToPrimary(secondaryCtor, declarationsAssignedInCtor, otherStatements)
     }
 
@@ -126,39 +124,25 @@ class SingleConstructorRule(private val config: List<RulesConfig>) : Rule("singl
                                                              otherStatements: List<KtExpression>) {
         require(elementType == CLASS)
 
-        val primaryCtorNode = CompositeElement(PRIMARY_CONSTRUCTOR)
+        val primaryCtorNode = kotlinParser.createPrimaryConstructor("(${declarationsAssignedInCtor.joinToString(", ") { it.text }})").node
         addChild(primaryCtorNode, findChildByType(CLASS_BODY))
-        val valueParameterList = CompositeElement(VALUE_PARAMETER_LIST)
-        primaryCtorNode.addChild(valueParameterList)
-        valueParameterList.addChild(LeafPsiElement(LPAR, "("))
-        declarationsAssignedInCtor.forEachIndexed { index, ktProperty ->
-            valueParameterList.addChild(ktProperty.node.clone() as ASTNode, null)
-            if (index != declarationsAssignedInCtor.size - 1) {
-                valueParameterList.addChild(LeafPsiElement(COMMA, ","), null)
-            }
-            ktProperty.node.run { treeParent.removeChild(this) }
+        declarationsAssignedInCtor.forEach { ktProperty ->
+            ktProperty.node.let { treeParent.removeChild(it) }
         }
-        valueParameterList.addChild(LeafPsiElement(RPAR, ")"))
 
         if (otherStatements.isNotEmpty()) {
-            findChildByType(CLASS_BODY)
-                ?.run {
-                    val beforeNode =
-                        findChildByType(LBRACE)!!.let { if (it.treeNext.elementType == WHITE_SPACE) it.treeNext else it }
-                    val classInitializer = CompositeElement(ElementType.CLASS_INITIALIZER)
-                    addChild(PsiWhiteSpaceImpl("\n"), beforeNode)
-                    addChild(classInitializer, beforeNode)
-                    classInitializer.addChild(LeafPsiElement(ElementType.INIT_KEYWORD, KtTokens.INIT_KEYWORD.value))
-                    val initBlock = BlockExpressionElementType().createCompositeNode()
-                    classInitializer.addChild(initBlock)
-                    initBlock.addChild(LeafPsiElement(LBRACE, "{"))
-                    otherStatements.forEach {
-                        initBlock.addChild(PsiWhiteSpaceImpl("\n"))
-                        initBlock.addChild(it.node.clone() as ASTNode)
-                    }
-                    initBlock.addChild(PsiWhiteSpaceImpl("\n"))
-                    initBlock.addChild(LeafPsiElement(RBRACE, "}"))
-                }
+            findChildByType(CLASS_BODY)?.run {
+                val beforeNode = findChildByType(LBRACE)!!.let { if (it.treeNext.elementType == WHITE_SPACE) it.treeNext else it }
+                val classInitializer = kotlinParser.createNode(
+                    """
+                    |init {
+                    |    ${otherStatements.joinToString("\n") { it.text }}
+                    |}
+                """.trimMargin()
+                )
+                addChild(PsiWhiteSpaceImpl("\n"), beforeNode)
+                addChild(classInitializer, beforeNode)
+            }
         }
 
         findChildByType(CLASS_BODY)?.removeChild(secondaryCtor)
