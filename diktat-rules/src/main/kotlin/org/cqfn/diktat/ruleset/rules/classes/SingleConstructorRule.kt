@@ -119,6 +119,7 @@ class SingleConstructorRule(private val config: List<RulesConfig>) : Rule("singl
         classNode.convertSecondaryConstructorToPrimary(secondaryCtor, declarationsAssignedInCtor, otherStatements)
     }
 
+    @Suppress("UnsafeCallOnNullableType", "NestedBlockDepth")
     private fun ASTNode.convertSecondaryConstructorToPrimary(secondaryCtor: ASTNode,
                                                              declarationsAssignedInCtor: List<KtProperty>,
                                                              otherStatements: List<KtExpression>) {
