@@ -24,100 +24,8 @@ import org.jetbrains.kotlin.psi.psiUtil.startOffset
  * Fixme: detect variables by type, not only floating-point literals
  */
 class AccurateCalculationsRule(private val configRules: List<RulesConfig>) : Rule("accurate-calculations") {
-    private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
-
-    companion object {
-        private val arithmeticOperationTokens = listOf(KtTokens.PLUS, KtTokens.PLUSEQ, KtTokens.PLUSPLUS,
-                KtTokens.MINUS, KtTokens.MINUSEQ, KtTokens.MINUSMINUS,
-                KtTokens.MUL, KtTokens.MULTEQ, KtTokens.DIV, KtTokens.DIVEQ,
-                KtTokens.PERC, KtTokens.PERCEQ,
-                KtTokens.GT, KtTokens.LT, KtTokens.LTEQ, KtTokens.GTEQ,
-                KtTokens.EQEQ
-        )
-        private val comparisonOperators = listOf(KtTokens.LT, KtTokens.LTEQ, KtTokens.GT, KtTokens.GTEQ)
-        private val arithmeticOperationsFunctions = listOf("equals", "compareTo")
-        private val comparisonFunctions = listOf("compareTo")
-    }
-
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
-        when (val psi = node.psi) {
-            is KtBinaryExpression -> handleBinaryExpression(psi)
-            is KtDotQualifiedExpression -> handleFunction(psi)
-            else -> return
-        }
-    }
-
-    @Suppress("UnsafeCallOnNullableType")
-    private fun handleBinaryExpression(expression: KtBinaryExpression) = expression
-            .takeIf { it.operationToken in arithmeticOperationTokens }
-            ?.takeUnless { it.parentsWithSelf.any(::isComparisonWithAbs) }
-            ?.run {
-                // !! is safe because `KtBinaryExpression#left` is annotated `Nullable IfNotParsed`
-                val floatValue = left!!.takeIf { it.isFloatingPoint() }
-                        ?: right!!.takeIf { it.isFloatingPoint() }
-                checkFloatValue(floatValue, this)
-                println()
-            }
-
-    private fun handleFunction(expression: KtDotQualifiedExpression) = expression
-            .takeIf { it.selectorExpression is KtCallExpression }
-            ?.run { receiverExpression to selectorExpression as KtCallExpression }
-            ?.takeIf { it.second.getFunctionName() in arithmeticOperationsFunctions }
-            ?.takeUnless { expression.parentsWithSelf.any(::isComparisonWithAbs) }
-            ?.let { (receiverExpression, selectorExpression) ->
-                val floatValue = receiverExpression.takeIf { it.isFloatingPoint() }
-                        ?: selectorExpression
-                                .valueArguments
-                                .find { it.getArgumentExpression()?.isFloatingPoint() ?: false }
-
-                checkFloatValue(floatValue, expression)
-            }
-
-    private fun checkFloatValue(floatValue: PsiElement?, expression: KtExpression) {
-        if (floatValue != null) {
-            // float value is used in comparison
-            FLOAT_IN_ACCURATE_CALCULATIONS.warn(configRules, emitWarn, isFixMode,
-                    "float value of <${floatValue.text}> used in arithmetic expression in ${expression.text}", expression.startOffset, expression.node)
-        }
-    }
-
-    private fun isComparisonWithAbs(psiElement: PsiElement) =
-            when (psiElement) {
-                is KtBinaryExpression -> psiElement.isComparisonWithAbs()
-                is KtDotQualifiedExpression -> psiElement.isComparisonWithAbs()
-                else -> false
-            }
-
-    private fun KtBinaryExpression.isComparisonWithAbs() =
-            takeIf { it.operationToken in comparisonOperators }
-            ?.run { left as? KtCallExpression ?: right as? KtCallExpression }
-            ?.run { calleeExpression as? KtNameReferenceExpression }
-            ?.getReferencedName()
-            ?.equals("abs")
-            ?: false
-
-    private fun KtDotQualifiedExpression.isComparisonWithAbs() =
-            takeIf {
-                it.selectorExpression.run {
-                    this is KtCallExpression && getFunctionName() in comparisonFunctions
-                }
-            }
-            ?.run {
-                (selectorExpression as KtCallExpression)
-                        .valueArguments
-                        .singleOrNull()
-                        ?.let { it.getArgumentExpression() as? KtCallExpression }
-                        ?.isAbsOfFloat()
-                        ?: false ||
-                        (receiverExpression as? KtCallExpression).isAbsOfFloat()
-            }
-            ?: false
+    private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
 
     private fun KtCallExpression?.isAbsOfFloat() = this
             ?.run {
@@ -133,6 +41,102 @@ class AccurateCalculationsRule(private val configRules: List<RulesConfig>) : Rul
                         ?: false
             }
             ?: false
+    private fun KtDotQualifiedExpression.isComparisonWithAbs() =
+            takeIf {
+                it.selectorExpression.run {
+                    this is KtCallExpression && getFunctionName() in comparisonFunctions
+                }
+            }
+                    ?.run {
+                        (selectorExpression as KtCallExpression)
+                                .valueArguments
+                                .singleOrNull()
+                                ?.let { it.getArgumentExpression() as? KtCallExpression }
+                                ?.isAbsOfFloat()
+                                ?: false ||
+                                (receiverExpression as? KtCallExpression).isAbsOfFloat()
+                    }
+                    ?: false
+
+    private fun KtBinaryExpression.isComparisonWithAbs() =
+            takeIf { it.operationToken in comparisonOperators }
+                    ?.run { left as? KtCallExpression ?: right as? KtCallExpression }
+                    ?.run { calleeExpression as? KtNameReferenceExpression }
+                    ?.getReferencedName()
+                    ?.equals("abs")
+                    ?: false
+
+    private fun isComparisonWithAbs(psiElement: PsiElement) =
+            when (psiElement) {
+                is KtBinaryExpression -> psiElement.isComparisonWithAbs()
+                is KtDotQualifiedExpression -> psiElement.isComparisonWithAbs()
+                else -> false
+            }
+
+    private fun checkFloatValue(floatValue: PsiElement?, expression: KtExpression) {
+        if (floatValue != null) {
+            // float value is used in comparison
+            FLOAT_IN_ACCURATE_CALCULATIONS.warn(configRules, emitWarn, isFixMode,
+                    "float value of <${floatValue.text}> used in arithmetic expression in ${expression.text}", expression.startOffset, expression.node)
+        }
+    }
+
+    private fun handleFunction(expression: KtDotQualifiedExpression) = expression
+            .takeIf { it.selectorExpression is KtCallExpression }
+            ?.run { receiverExpression to selectorExpression as KtCallExpression }
+            ?.takeIf { it.second.getFunctionName() in arithmeticOperationsFunctions }
+            ?.takeUnless { expression.parentsWithSelf.any(::isComparisonWithAbs) }
+            ?.let { (receiverExpression, selectorExpression) ->
+                val floatValue = receiverExpression.takeIf { it.isFloatingPoint() }
+                        ?: selectorExpression
+                                .valueArguments
+                                .find { it.getArgumentExpression()?.isFloatingPoint() ?: false }
+
+                checkFloatValue(floatValue, expression)
+            }
+
+    @Suppress("UnsafeCallOnNullableType")
+    private fun handleBinaryExpression(expression: KtBinaryExpression) = expression
+            .takeIf { it.operationToken in arithmeticOperationTokens }
+            ?.takeUnless { it.parentsWithSelf.any(::isComparisonWithAbs) }
+            ?.run {
+                // !! is safe because `KtBinaryExpression#left` is annotated `Nullable IfNotParsed`
+                val floatValue = left!!.takeIf { it.isFloatingPoint() }
+                        ?: right!!.takeIf { it.isFloatingPoint() }
+                checkFloatValue(floatValue, this)
+                println()
+            }
+
+    /**
+     * @param node
+     * @param autoCorrect
+     * @param emit
+     */
+    override fun visit(node: ASTNode,
+                       autoCorrect: Boolean,
+                       emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
+        emitWarn = emit
+        isFixMode = autoCorrect
+
+        when (val psi = node.psi) {
+            is KtBinaryExpression -> handleBinaryExpression(psi)
+            is KtDotQualifiedExpression -> handleFunction(psi)
+            else -> return
+        }
+    }
+
+    companion object {
+        private val arithmeticOperationTokens = listOf(KtTokens.PLUS, KtTokens.PLUSEQ, KtTokens.PLUSPLUS,
+                KtTokens.MINUS, KtTokens.MINUSEQ, KtTokens.MINUSMINUS,
+                KtTokens.MUL, KtTokens.MULTEQ, KtTokens.DIV, KtTokens.DIVEQ,
+                KtTokens.PERC, KtTokens.PERCEQ,
+                KtTokens.GT, KtTokens.LT, KtTokens.LTEQ, KtTokens.GTEQ,
+                KtTokens.EQEQ
+        )
+        private val comparisonOperators = listOf(KtTokens.LT, KtTokens.LTEQ, KtTokens.GT, KtTokens.GTEQ)
+        private val arithmeticOperationsFunctions = listOf("equals", "compareTo")
+        private val comparisonFunctions = listOf("compareTo")
+    }
 }
 
 @Suppress("UnsafeCallOnNullableType")

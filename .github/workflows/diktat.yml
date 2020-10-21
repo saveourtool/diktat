@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.3.3
       - name: Set up JDK 11
         uses: actions/setup-java@v1
         with:
@@ -23,6 +23,5 @@ jobs:
           key: ${{ runner.os }}-maven-diktat-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-diktat-
-      - name: Run diktat itself via ktlint
-        # fixme: change to diktat:check when diktat plugin is released
-        run: mvn -B antrun:run@diktat
+      - name: Run diktat via maven plugin
+        run: mvn -B diktat:check@diktat

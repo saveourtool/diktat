@@ -1,6 +1,6 @@
 package org.cqfn.diktat.test.resources.test.paragraph1.naming.enum_
 
-enum class EnumValueCaseTest {
+enum class EnumValueSnakeCaseTest {
     PA_SC_SAL_L,
     PASC_ASL_F,
     START_PSAAA_DFE,

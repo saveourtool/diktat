@@ -45,6 +45,7 @@ class FileSize(private val configRules: List<RulesConfig>) : Rule("file-size") {
                     checkFileSize(node, configuration.maxSize)
                 }
             }
+            return
         }
     }
 
