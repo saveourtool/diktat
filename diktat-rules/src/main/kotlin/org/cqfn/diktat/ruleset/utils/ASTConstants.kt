@@ -18,3 +18,10 @@ internal const val SET_PREFIX = "set"
 val emptyBlockList = listOf(LBRACE, WHITE_SPACE, RBRACE)
 
 internal const val EMPTY_BLOCK_TEXT = "{}"
+
+enum class StandardPlatforms(val packages: List<String>) {
+    ANDROID(listOf("android", "androidx", "com.android")),
+    JAVA(listOf("java", "javax")),
+    KOTLIN(listOf("kotlin", "kotlinx")),
+    ;
+}

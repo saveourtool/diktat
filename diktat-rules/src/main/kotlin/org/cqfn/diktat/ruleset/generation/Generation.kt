@@ -10,7 +10,7 @@ import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule.Companion.afterC
 import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule.Companion.curYear
 import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule.Companion.hyphenRegex
 
-private val AUTO_GENERATION_COMMENT =
+private val autoGenerationComment =
         """
             | This document was auto generated, please don't modify it.
             | This document contains all enum properties from Warnings.kt as Strings.
@@ -25,7 +25,8 @@ private fun generateWarningNames() {
     val enumValNames = Warnings.values().map { it.name }
 
     val propertyList = enumValNames.map {
-        PropertySpec.builder(it, String::class)
+        PropertySpec
+                .builder(it, String::class)
                 .addModifiers(KModifier.CONST)
                 .initializer("\"$it\"")
                 .build()
@@ -40,10 +41,10 @@ private fun generateWarningNames() {
             .builder("generated", "WarningNames")
             .addType(fileBody)
             .indent("    ")
-            .addComment(AUTO_GENERATION_COMMENT)
+            .addComment(autoGenerationComment)
             .build()
 
-    kotlinFile.writeTo(File("diktat-rules/src/main/kotlin")) // fixme: need to add it to pom
+    kotlinFile.writeTo(File("diktat-rules/src/main/kotlin"))  // fixme: need to add it to pom
 }
 
 private fun validateYear() {

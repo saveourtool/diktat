@@ -10,7 +10,7 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
  * This class represent individual inspections of diktat code style.
  * A [Warnings] entry contains rule name, warning message and is used in code check.
  */
-@Suppress("ForbiddenComment", "MagicNumber")
+@Suppress("ForbiddenComment", "MagicNumber", "WRONG_DECLARATIONS_ORDER")
 enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: String) : Rule {
     // ======== chapter 1 ========
     PACKAGE_NAME_MISSING(true, "no package name declared in a file"),
@@ -28,7 +28,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     CONSTANT_UPPERCASE(true, "<val> properties from companion object or on file level mostly in all cases are constants - please use upper snake case for them"),
     VARIABLE_HAS_PREFIX(true, "variable has prefix (like mVariable or M_VARIABLE), generally it is a bad code style (Android - is the only exception)"),
     IDENTIFIER_LENGTH(false, "identifier's length is incorrect, it should be in range of [2, 64] symbols"),
-    ENUM_VALUE(true, "in the same way as constants, enum values should be in UPPER_CASE snake format"),
+    ENUM_VALUE(true, "enum values should be in selected UPPER_CASE snake/PascalCase format"),
     GENERIC_NAME(true, "generic name should contain only one single capital letter, it can be followed by a number"),
     FUNCTION_NAME_INCORRECT_CASE(true, "function/method name should be in lowerCamelCase"),
     FUNCTION_BOOLEAN_PREFIX(true, "functions that return the value of Boolean type should have <is> or <has> prefix"),
@@ -53,6 +53,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS(true, "in KDoc there should be exactly one empty line after special tags"),
     KDOC_NO_EMPTY_TAGS(false, "no empty descriptions in tag blocks are allowed"),
     KDOC_NO_DEPRECATED_TAG(true, "KDoc doesn't support @deprecated tag, use @Deprecated annotation instead"),
+    KDOC_NO_CONSTRUCTOR_PROPERTY(true, "replace comment before property with @property tag in KDoc"),
     HEADER_WRONG_FORMAT(true, "file header comments should be properly formatted"),
     HEADER_MISSING_OR_WRONG_COPYRIGHT(true, "file header comment must include copyright information inside a block comment"),
     WRONG_COPYRIGHT_YEAR(true, "year defined in copyright and current year are different"),
@@ -106,7 +107,6 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     // FixMe: change float literal to BigDecimal? Or kotlin equivalent?
     FLOAT_IN_ACCURATE_CALCULATIONS(false, "floating-point values shouldn't be used in accurate calculations"),
 
-
     // ======== chapter 5 ========
     TOO_LONG_FUNCTION(false, "function is too long: split it or make more primitive"),
     AVOID_NESTED_FUNCTIONS(true, "try to avoid using nested functions"),
@@ -146,7 +146,6 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
              freeText: String,
              offset: Int,
              node: ASTNode) {
-
         if (configs.isRuleEnabled(this) && !node.hasSuppress(name)) {
             val trimmedFreeText = freeText
                     .lines()

@@ -10,7 +10,8 @@
   configuration: {}
 - name: ENUM_VALUE
   enabled: true
-  configuration: {}
+  configuration:
+    enumStyle: snakeCase
 - name: EXCEPTION_SUFFIX
   enabled: true
   configuration: {}
@@ -135,9 +136,12 @@
 - name: FILE_CONTAINS_ONLY_COMMENTS
   enabled: true
   configuration: {}
+  # order imports alphabetically
 - name: FILE_UNORDERED_IMPORTS
   enabled: true
-  configuration: {}
+  configuration:
+    # use logical imports grouping with sorting inside of a group
+    useRecommendedImportsOrder: true
 - name: FILE_INCORRECT_BLOCKS_ORDER
   enabled: true
   configuration: {}
@@ -146,7 +150,8 @@
   configuration: {}
 - name: FILE_WILDCARD_IMPORTS
   enabled: true
-  configuration: {}
+  configuration:
+    allowedWildcards: "kotlinx.serialization.*"
 - name: NO_BRACES_IN_CONDITIONALS_AND_LOOPS
   enabled: true
   configuration: {}
@@ -271,7 +276,6 @@
 - name: STRING_TEMPLATE_CURLY_BRACES
   enabled: true
   configuration: {}
-  typeReferenceLength: '25' # max length of type reference
 # Variables with `val` modifier - are immutable (read-only). Usage of such variables instead of `var` variables increases
 # robustness and readability of code, because `var` variables can be reassigned several times in the business logic.
 # This rule prohibits usage of `var`s as local variables - the only exception is accumulators and counters
@@ -312,5 +316,9 @@
     maxNestedBlockQuantity: '4'
 # Checks that function use default values, instead overloading
 - name: WRONG_OVERLOADING_FUNCTION_ARGUMENTS
+  enabled: true
+  configuration: {}
+# Checks that property in constructor doesn't contains comment
+- name: KDOC_NO_CONSTRUCTOR_PROPERTY
   enabled: true
   configuration: {}
