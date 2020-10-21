@@ -1,9 +1,8 @@
 package org.cqfn.diktat.ruleset.chapter6
 
 import generated.WarningNames
-import org.cqfn.diktat.util.FixTestBase
 import org.cqfn.diktat.ruleset.rules.classes.SingleConstructorRule
-import org.junit.jupiter.api.Disabled
+import org.cqfn.diktat.util.FixTestBase
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
@@ -16,8 +15,7 @@ class SingleConstructorRuleFixTest : FixTestBase("test/chapter6/classes", ::Sing
 
     @Test
     @Tag(WarningNames.SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY)
-    @Disabled("Not implemented yet")
     fun `should convert secondary constructor to a primary and init block`() {
-        TODO()
+        fixAndCompare("ConstructorWithInitExpected.kt", "ConstructorWithInitTest.kt")
     }
 }
