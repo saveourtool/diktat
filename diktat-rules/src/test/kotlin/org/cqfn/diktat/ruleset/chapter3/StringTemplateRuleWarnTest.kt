@@ -60,7 +60,7 @@ class StringTemplateRuleWarnTest : LintTestBase(::StringTemplateFormatRule) {
 
     @Test
     @Tag(STRING_TEMPLATE_CURLY_BRACES)
-    fun `should not trigger on dot after braces`() {
+    fun `should trigger on dot after braces`() {
         lintMethod(
                 """
                     |class Some {
@@ -69,7 +69,8 @@ class StringTemplateRuleWarnTest : LintTestBase(::StringTemplateFormatRule) {
                     |       println("${'$'}{s}.length is ${'$'}{s.length}")
                     |   }
                     |}
-                """.trimMargin()
+                """.trimMargin(),
+                LintError(4, 17, ruleId, "${Warnings.STRING_TEMPLATE_CURLY_BRACES.warnText()} ${'$'}{s}", true)
         )
     }
 

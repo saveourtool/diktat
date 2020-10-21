@@ -88,14 +88,18 @@ class StringTemplateFormatRule(private val configRules: List<RulesConfig>) : Rul
 
     @Suppress("UnsafeCallOnNullableType")
     private fun bracesCanBeOmitted(node: ASTNode): Boolean {
-        return if (node.findAllNodesWithSpecificType(REFERENCE_EXPRESSION).size == 1) {
-            node.findAllNodesWithSpecificType(REFERENCE_EXPRESSION).first().treeParent.elementType == LONG_STRING_TEMPLATE_ENTRY
+        val onlyOneRefExpr = node
+                .findAllNodesWithSpecificType(REFERENCE_EXPRESSION)
+                .singleOrNull()
+                ?.treeParent
+                ?.elementType == LONG_STRING_TEMPLATE_ENTRY
+        return if (onlyOneRefExpr) {
+            true
         } else {
             node.hasAnyChildOfTypes(FLOAT_CONSTANT, INTEGER_CONSTANT)
-        } && !node.hasAnyChildOfTypes(CALL_EXPRESSION)
-                && (node.treeNext.text.startsWith(" ")
+        } && (!(node.treeNext.text.take(1).first().isLetterOrDigit()
+                || node.treeNext.text.startsWith("_"))
                 || node.treeNext.elementType == CLOSING_QUOTE
-                || node.treeNext.text.startsWith(","))
-
+                )
     }
 }

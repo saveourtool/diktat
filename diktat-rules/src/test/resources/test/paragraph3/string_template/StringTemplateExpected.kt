@@ -9,5 +9,9 @@ class SomeClass {
         val m = "1.0"
 
         val template = "$x, ${asd.moo()}"
+
+        val trippleQuotes = """$x"""
+
+        val test = """${'$'}"""
     }
 }
