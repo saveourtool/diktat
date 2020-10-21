@@ -1,9 +1,10 @@
 package org.cqfn.diktat.ruleset.chapter6
 
 import com.pinterest.ktlint.core.LintError
+import generated.WarningNames.USE_DATA_CLASS
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
-import org.cqfn.diktat.ruleset.rules.DataClassesRule
+import org.cqfn.diktat.ruleset.rules.classes.DataClassesRule
 import org.cqfn.diktat.util.LintTestBase
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -12,7 +13,7 @@ class DataClassesRuleWarnTest : LintTestBase(::DataClassesRule) {
     private val ruleId = "$DIKTAT_RULE_SET_ID:data-classes"
 
     @Test
-    @Tag("USE_DATA_CLASS")
+    @Tag(USE_DATA_CLASS)
     fun `trigger on default class`() {
         lintMethod(
                 """
@@ -25,7 +26,22 @@ class DataClassesRuleWarnTest : LintTestBase(::DataClassesRule) {
     }
 
     @Test
-    @Tag("USE_DATA_CLASS")
+    @Tag(USE_DATA_CLASS)
+    fun `should trigger - dont forget to consider this class in fix`() {
+        lintMethod(
+                """
+                    |class Test {
+                    |   var a: Int = 0
+                    |          get() = field
+                    |          set(value: Int) { field = value}
+                    |}
+                """.trimMargin(),
+                LintError(1, 1, ruleId, "${Warnings.USE_DATA_CLASS.warnText()} Test")
+        )
+    }
+
+    @Test
+    @Tag(USE_DATA_CLASS)
     fun `should not trigger on class with bad modifiers`() {
         lintMethod(
                 """
@@ -47,7 +63,7 @@ class DataClassesRuleWarnTest : LintTestBase(::DataClassesRule) {
     }
 
     @Test
-    @Tag("USE_DATA_CLASS")
+    @Tag(USE_DATA_CLASS)
     fun `should not trigger on classes with functions`() {
         lintMethod(
                 """

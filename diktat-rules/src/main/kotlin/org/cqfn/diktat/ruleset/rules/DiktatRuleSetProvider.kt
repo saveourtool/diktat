@@ -4,6 +4,7 @@ import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.RuleSetProvider
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
 import org.cqfn.diktat.ruleset.rules.calculations.AccurateCalculationsRule
+import org.cqfn.diktat.ruleset.rules.classes.DataClassesRule
 import org.cqfn.diktat.ruleset.rules.comments.CommentsRule
 import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule
 import org.cqfn.diktat.ruleset.rules.files.BlankLinesRule

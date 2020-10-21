@@ -1,17 +1,20 @@
-package org.cqfn.diktat.ruleset.rules
+package org.cqfn.diktat.ruleset.rules.classes
 
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.ABSTRACT_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
+import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.DATA_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.INNER_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.OPEN_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.SEALED_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_LIST
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.USE_DATA_CLASS
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
+import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -54,12 +57,14 @@ class DataClassesRule(private val configRule: List<RulesConfig>) : Rule("data-cl
 
     @Suppress("UnsafeCallOnNullableType")
     private fun ASTNode.canBeDataClass() : Boolean {
+        val classBody = getFirstChildWithType(CLASS_BODY)
         if (hasChildOfType(MODIFIER_LIST)) {
             val list = getFirstChildWithType(MODIFIER_LIST)!!
-            return list.getChildren(null).any { it.elementType !in BAD_MODIFIERS }
-                    && findAllNodesWithSpecificType(FUN).isEmpty()
+            return list.getChildren(null).none { it.elementType in BAD_MODIFIERS }
+                    && classBody?.getAllChildrenWithType(FUN)?.isEmpty() ?: false
+                    && getFirstChildWithType(SUPER_TYPE_LIST) == null
         }
-        return findAllNodesWithSpecificType(FUN).isEmpty()
+        return classBody?.getAllChildrenWithType(FUN)?.isEmpty() ?: false && getFirstChildWithType(SUPER_TYPE_LIST) == null
     }
 
     @Suppress("UnsafeCallOnNullableType")

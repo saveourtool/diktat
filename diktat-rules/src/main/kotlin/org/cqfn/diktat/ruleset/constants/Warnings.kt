@@ -116,7 +116,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     WRONG_OVERLOADING_FUNCTION_ARGUMENTS(false, "use default argument instead of function overloading"),
 
     // ======== chapter 6 ========
-    USE_DATA_CLASS(false, "this class can be made as data class"),
+    USE_DATA_CLASS(false, "this class can be converted to a data class"),
     ;
 
     /**
