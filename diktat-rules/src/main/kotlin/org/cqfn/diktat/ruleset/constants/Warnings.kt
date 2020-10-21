@@ -116,7 +116,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     WRONG_OVERLOADING_FUNCTION_ARGUMENTS(false, "use default argument instead of function overloading"),
 
     // ======== chapter 6 ========
-    WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR(false, "Use field keyword instead of property name"),
+    WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR(false, "Use `field` keyword instead of property name inside property accessors"),
     ;
 
     /**

@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.chapter6
 
-
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR
@@ -64,10 +63,16 @@ class PropertyAccessorFieldsWarnTest : LintTestBase(::PropertyAccessorFields) {
                     |       println(12345)
                     |       return isNotEmpty
                     |   }
+                    |   
+                    |   var isNotOk: Boolean = false
+                    |   set(values) {
+                    |       this.isNotOk = values
+                    |   }
                     |}
                 """.trimMargin(),
-                LintError(4,4, ruleId, "${WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warnText()} set(values) {..."),
-                LintError(14,4, ruleId, "${WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warnText()} get() {...")
+                LintError(4, 4, ruleId, "${WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warnText()} set(values) {..."),
+                LintError(14, 4, ruleId, "${WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warnText()} get() {..."),
+                LintError(20, 4, ruleId, "${WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warnText()} set(values) {...")
         )
     }
 
@@ -86,10 +91,16 @@ class PropertyAccessorFieldsWarnTest : LintTestBase(::PropertyAccessorFields) {
                     |       isEmpty = values
                     |   }
                     |   
+                    |   var isNotOk: Boolean = false
+                    |   set(valuess) {
+                    |       var isNotOk = true
+                    |       isNotOk = valuess
+                    |   }
+                    |   
                     |   var isOk: Boolean = false
                     |   set(valuess) {
-                    |       var isEmpty = true
-                    |       isEmpty = valuess
+                    |       isOk = valuess
+                    |       var isOk = true
                     |   }
                     |   
                     |   var isNotEmpty: Boolean = true
@@ -100,8 +111,9 @@ class PropertyAccessorFieldsWarnTest : LintTestBase(::PropertyAccessorFields) {
                     |   get() = field
                     |}
                 """.trimMargin(),
-                LintError(4,4, ruleId, "${WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warnText()} set(values) {..."),
-                LintError(18,4, ruleId, "${WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warnText()} set(value) {...")
+                LintError(4, 4, ruleId, "${WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warnText()} set(values) {..."),
+                LintError(18, 4, ruleId, "${WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warnText()} set(valuess) {..."),
+                LintError(24, 4, ruleId, "${WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warnText()} set(value) {...")
         )
     }
 }
