@@ -16,7 +16,6 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.psi.KtProperty
 
-
 /**
  * Rule check that never use the name of a variable in the custom getter or setter
  */
@@ -37,20 +36,20 @@ class PropertyAccessorFields(private val configRules: List<RulesConfig>) : Rule(
             checkPropertyAccessor(node)
     }
 
+    //fixme should use shadow-check when it will be done
     private fun checkPropertyAccessor(node: ASTNode) {
         val leftValue = node.treeParent.findChildByType(IDENTIFIER) ?: return
-        val isUsedPropertyName = node.findAllNodesWithSpecificType(REFERENCE_EXPRESSION)
+        val usedPropertyNameList = node.findAllNodesWithSpecificType(REFERENCE_EXPRESSION)
                 .mapNotNull { it.findChildByType(IDENTIFIER) }
-                .any {
+                .firstOrNull {
                     it.text == leftValue.text &&
-                            it.treeParent.treeParent.elementType != DOT_QUALIFIED_EXPRESSION ||
-                            it.treeParent.treeParent.firstChildNode.elementType == THIS_EXPRESSION
+                            (it.treeParent.treeParent.elementType != DOT_QUALIFIED_EXPRESSION ||
+                                    it.treeParent.treeParent.firstChildNode.elementType == THIS_EXPRESSION)
                 }
-        val firstReferenceExpression = node.findAllNodesWithSpecificType(REFERENCE_EXPRESSION).first()
         val isContainLocalVarSameName = node.findChildByType(BLOCK)?.getChildren(TokenSet.create(PROPERTY))
                 ?.filter { (it.psi as KtProperty).nameIdentifier?.text == leftValue.text }
-                ?.none { firstReferenceExpression.isGoingAfter(it) } ?: true
-        if (isUsedPropertyName && isContainLocalVarSameName)
+                ?.none { usedPropertyNameList?.isGoingAfter(it) ?: false } ?: true
+        if (usedPropertyNameList != null && isContainLocalVarSameName)
             WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warn(configRules, emitWarn, isFixMode, node.text, node.startOffset, node)
     }
 }
