@@ -614,6 +614,12 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |
                 |fun bar(arg1: Int, arg2: Int, arg3: Int) { }
                 |
+                |// should not trigger on functional types
+                |fun bar(arg1: (_arg1: Int, _arg2: Int, _arg3: Int) -> Int) { }
+                |
+                |// should not trigger on functional type receivers
+                |fun bar(arg1: Foo.(_arg1: Int, _arg2: Int, _arg3: Int) -> Int) { }
+                |
                 |fun baz(arg1: Int,
                 |        arg2: Int,
                 |        arg3: Int) { }

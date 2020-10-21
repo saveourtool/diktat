@@ -22,6 +22,8 @@ import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.EQ
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_LITERAL
+import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_TYPE
+import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_TYPE_RECEIVER
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.IF
 import com.pinterest.ktlint.core.ast.ElementType.IMPORT_DIRECTIVE
@@ -311,6 +313,11 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
      * Also checks that entries of [SUPER_TYPE_LIST] are separated by newlines.
      */
     private fun handleList(node: ASTNode) {
+        if (node.elementType == VALUE_PARAMETER_LIST && node.treeParent.elementType.let { it == FUNCTION_TYPE || it == FUNCTION_TYPE_RECEIVER }) {
+            // do not check other value lists
+            return
+        }
+
         val (numEntries, entryType) = when (node.elementType) {
             VALUE_PARAMETER_LIST -> (node.psi as KtParameterList).parameters.size to "value parameters"
             SUPER_TYPE_LIST -> (node.psi as KtSuperTypeList).entries.size to "supertype list entries"
