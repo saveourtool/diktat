@@ -1,5 +1,6 @@
 package org.cqfn.diktat.ruleset.utils
 
+//fixme this code is copy-pasted from ktlint. Change it
 internal typealias LineAndColumn = Pair<Int, Int>
 
 /**
