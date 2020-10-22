@@ -75,6 +75,10 @@ class DataClassesRuleWarnTest : LintTestBase(::DataClassesRule) {
                     |data class CheckInner {
                     |   inner class Inner {}
                     |}
+                    |
+                    |enum class Num {
+                    |
+                    |}
                 """.trimMargin()
         )
     }

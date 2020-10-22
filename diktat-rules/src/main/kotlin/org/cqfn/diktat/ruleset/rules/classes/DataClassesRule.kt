@@ -6,6 +6,7 @@ import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.DATA_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.ENUM_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.INNER_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
@@ -16,7 +17,6 @@ import com.pinterest.ktlint.core.ast.ElementType.SEALED_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_LIST
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.USE_DATA_CLASS
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
@@ -32,7 +32,7 @@ class DataClassesRule(private val configRule: List<RulesConfig>) : Rule("data-cl
     private var isFixMode: Boolean = false
 
     companion object {
-        private val BAD_MODIFIERS = listOf(OPEN_KEYWORD, ABSTRACT_KEYWORD, INNER_KEYWORD, SEALED_KEYWORD)
+        private val BAD_MODIFIERS = listOf(OPEN_KEYWORD, ABSTRACT_KEYWORD, INNER_KEYWORD, SEALED_KEYWORD, ENUM_KEYWORD)
     }
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
@@ -81,11 +81,10 @@ class DataClassesRule(private val configRule: List<RulesConfig>) : Rule("data-cl
         val propertiesWithAccessors = node.getAllChildrenWithType(PROPERTY).filter { it.hasChildOfType(PROPERTY_ACCESSOR) }
 
         if (propertiesWithAccessors.isNotEmpty()) {
-            propertiesWithAccessors.forEach {
+            return propertiesWithAccessors.any {
                 val accessors = it.getAllChildrenWithType(PROPERTY_ACCESSOR)
 
-                if (!areGoodAccessors(accessors))
-                    return false
+                areGoodAccessors(accessors)
             }
         }
 
@@ -100,7 +99,7 @@ class DataClassesRule(private val configRule: List<RulesConfig>) : Rule("data-cl
 
                 return block
                         .getChildren(null)
-                        .filter { expr -> expr.psi as? KtExpression != null }
+                        .filter { expr -> expr.psi is KtExpression }
                         .count() <= 1
             }
         }
