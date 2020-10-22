@@ -1,6 +1,7 @@
 package org.cqfn.diktat.ruleset.smoke
 
 import com.pinterest.ktlint.core.LintError
+import org.cqfn.diktat.ruleset.constants.Warnings.EMPTY_BLOCK_STRUCTURE_ERROR
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NAME_INCORRECT
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NAME_MATCH_CLASS
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE
@@ -41,9 +42,11 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
                 LintError(1, 1, "$DIKTAT_RULE_SET_ID:kdoc-formatting", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
                 LintError(4, 17, "$DIKTAT_RULE_SET_ID:kdoc-comments", "${MISSING_KDOC_TOP_LEVEL.warnText()} Example", false),
                 LintError(6, 13, "$DIKTAT_RULE_SET_ID:kdoc-comments", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} isValid", false),
-                LintError(10, 3, "$DIKTAT_RULE_SET_ID:kdoc-comments", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} foo", false), // todo what's with offset?
-                LintError(11, 7, "$DIKTAT_RULE_SET_ID:kdoc-formatting", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
-                LintError(15, 14, "$DIKTAT_RULE_SET_ID:kdoc-formatting", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false)
+                LintError(9, 25, "$DIKTAT_RULE_SET_ID:kdoc-comments", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} foo", false),
+                LintError(12, 13, "$DIKTAT_RULE_SET_ID:kdoc-formatting", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
+                LintError(12, 47, "$DIKTAT_RULE_SET_ID:empty-block-structure", "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} empty blocks are forbidden unless it is function with override keyword", false),
+                LintError(14, 6, "$DIKTAT_RULE_SET_ID:kdoc-formatting", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
+                LintError(17, 45, "$DIKTAT_RULE_SET_ID:kdoc-formatting", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false)
         )
     }
 
