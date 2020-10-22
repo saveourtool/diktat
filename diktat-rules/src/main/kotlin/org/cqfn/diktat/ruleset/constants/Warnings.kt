@@ -162,4 +162,10 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
             autoFix()
         }
     }
+
+    companion object {
+        val names by lazy {
+            values().map { it.name }
+        }
+    }
 }

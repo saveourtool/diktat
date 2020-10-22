@@ -38,16 +38,16 @@
   configuration: {}
 - name: PACKAGE_NAME_INCORRECT_CASE
   enabled: true
-  configuration: {}
+  configuration: {} # configuration domainName is taken from DIKTAT_COMMON
 - name: PACKAGE_NAME_INCORRECT_PREFIX
-  enabled: true
+  enabled: false
   configuration: {}
 - name: PACKAGE_NAME_INCORRECT_SYMBOLS
   enabled: true
   configuration: {}
 - name: PACKAGE_NAME_INCORRECT_PATH
-  enabled: true
-  configuration: {}
+  enabled: false
+  configuration: {} # configuration domainName is taken from DIKTAT_COMMON
 - name: PACKAGE_NAME_MISSING
   enabled: true
   configuration: {}
