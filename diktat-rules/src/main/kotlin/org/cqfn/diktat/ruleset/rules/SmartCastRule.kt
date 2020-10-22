@@ -155,9 +155,7 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
 
     @Suppress("UnsafeCallOnNullableType")
     private fun handleZeroIsCase(asExpr: List<KtNameReferenceExpression>, prop: KtProperty) {
-        val propType = getPropertyType(prop)
-        if (propType.isNullOrBlank())
-            return
+        val propType = getPropertyType(prop) ?: return
         asExpr
                 .map { it.node }
                 .forEach {
