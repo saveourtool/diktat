@@ -180,7 +180,7 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
                     .filterNot { (it.getFirstChildWithType(REFERENCE_EXPRESSION)?.psi as KtNameReferenceExpression).getLocalDeclaration() != null }
             checkAsExpressions(asList, blocks)
         } else {
-            val asList = then.findAllNodesWithSpecificType(BINARY_WITH_TYPE).filter { it.text.contains(" as ") }
+            val asList = then.findAllNodesWithSpecificType(BINARY_WITH_TYPE).filter { it.text.contains(KtTokens.AS_KEYWORD.value) }
             checkAsExpressions(asList, blocks)
         }
     }
@@ -229,10 +229,11 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
                 val type = it.getFirstChildWithType(WHEN_CONDITION_IS_PATTERN)!!
                         .getFirstChildWithType(TYPE_REFERENCE)!!.text
 
-                val callExpr = it.getFirstChildWithType(CALL_EXPRESSION)!!
+                val callExpr = it.findAllNodesWithSpecificType(BINARY_WITH_TYPE).firstOrNull()
                 val blocks = listOf(IsExpressions(identifier, type))
 
-                handleThenBlock(callExpr, blocks)
+                if (callExpr != null)
+                    handleThenBlock(callExpr, blocks)
             }
         }
     }

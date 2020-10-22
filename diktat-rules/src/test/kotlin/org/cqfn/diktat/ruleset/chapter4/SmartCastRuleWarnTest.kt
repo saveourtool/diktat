@@ -204,6 +204,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |       when (x) {
                     |           is Int -> print((x as Int).length)
                     |           is String -> print("String")
+                    |           is Long -> x as Int
                     |       }
                     |   }
                     |}
