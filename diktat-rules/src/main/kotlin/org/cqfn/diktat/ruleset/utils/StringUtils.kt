@@ -1,7 +1,6 @@
 package org.cqfn.diktat.ruleset.utils
 
 import org.jetbrains.kotlin.lexer.KtTokens
-import kotlin.math.min
 
 val JAVA = arrayOf("abstract", "assert", "boolean",
         "break", "byte", "case", "catch", "char", "class", "const",
