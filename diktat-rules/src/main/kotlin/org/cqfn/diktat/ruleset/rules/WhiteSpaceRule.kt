@@ -68,6 +68,9 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.psi.KtBinaryExpression
+import org.jetbrains.kotlin.psi.KtPostfixExpression
+import org.jetbrains.kotlin.psi.KtPrefixExpression
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
 
@@ -117,7 +120,8 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
             CONSTRUCTOR_KEYWORD -> handleConstructor(node)
             in keywordsWithSpaceAfter -> handleKeywordWithParOrBrace(node)
             // operators and operator-like symbols
-            OPERATION_REFERENCE, DOT, ARROW, SAFE_ACCESS, EQ -> handleBinaryOperator(node)
+            DOT, ARROW, SAFE_ACCESS, EQ -> handleBinaryOperator(node)
+            OPERATION_REFERENCE -> handleOperator(node)
             COLON -> handleColon(node)
             COLONCOLON -> handleColonColon(node)
             COMMA, SEMICOLON -> handleToken(node, 0, 1)
@@ -227,6 +231,14 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
             ANNOTATION_ENTRY -> handleToken(node, 0, 0)  // e.g. @param:JsonProperty
             // fixme: find examples or delete this line
             else -> log.warn("Colon with treeParent.elementType=${node.treeParent.elementType}, not handled by WhiteSpaceRule")
+        }
+    }
+
+    private fun handleOperator(node: ASTNode) {
+        when (node.treeParent.psi) {
+            is KtPrefixExpression -> handleToken(node, null, 0)
+            is KtPostfixExpression -> handleToken(node, 0, null)
+            is KtBinaryExpression -> handleBinaryOperator(node)
         }
     }
 
