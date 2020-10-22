@@ -42,6 +42,23 @@ class DataClassesRuleWarnTest : LintTestBase(::DataClassesRule) {
 
     @Test
     @Tag(USE_DATA_CLASS)
+    fun `should not trigger if there is some logic in accessor`() {
+        lintMethod(
+                """
+                    |class Test {
+                    |   var a: Int = 0
+                    |          get() = field
+                    |          set(value: Int) { 
+                    |              field = value
+                    |              someFun(value)
+                    |          }
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(USE_DATA_CLASS)
     fun `should not trigger on class with bad modifiers`() {
         lintMethod(
                 """
