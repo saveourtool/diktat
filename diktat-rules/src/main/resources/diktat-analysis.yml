@@ -323,3 +323,7 @@
 - name: KDOC_NO_CONSTRUCTOR_PROPERTY
   enabled: true
   configuration: {}
+# Checks if class can be made as data class
+- name: USE_DATA_CLASS
+  enabled: true
+  configuration: {}
