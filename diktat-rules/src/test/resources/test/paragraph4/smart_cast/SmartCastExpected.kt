@@ -6,6 +6,7 @@ class Some {
     fun someFunc() {
         if (x is String) {
             print(x.length)
+            var a = x
         }
     }
 }
