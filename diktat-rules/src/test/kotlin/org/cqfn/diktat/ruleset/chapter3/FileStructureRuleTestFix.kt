@@ -1,9 +1,11 @@
 package org.cqfn.diktat.ruleset.chapter3
 
 import generated.WarningNames
+import org.cqfn.diktat.common.config.rules.DIKTAT_COMMON
+import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.files.FileStructureRule
 import org.cqfn.diktat.util.FixTestBase
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
@@ -35,11 +37,32 @@ class FileStructureRuleTestFix : FixTestBase("test/paragraph3/file_structure", :
     @Test
     @Tag(WarningNames.FILE_UNORDERED_IMPORTS)
     fun `should reorder imports alphabetically with saving of EOL comments`() {
-        fixAndCompare("ReorderingImportsExpected.kt", "ReorderingImportsTest.kt")
+        fixAndCompare(
+            "ReorderingImportsExpected.kt", "ReorderingImportsTest.kt",
+            overrideRulesConfigList = listOf(
+                RulesConfig(
+                    Warnings.FILE_UNORDERED_IMPORTS.name, true,
+                    mapOf("useRecommendedImportsOrder" to "false")
+                )
+            )
+        )
     }
 
     @Test
     @Tag(WarningNames.FILE_UNORDERED_IMPORTS)
-    @Disabled("not yet implemented")
-    fun `should reorder imports according to recommendation 3_1`() = Unit
+    fun `should reorder imports according to recommendation 3_1`() {
+        fixAndCompare(
+            "ReorderingImportsRecommendedExpected.kt", "ReorderingImportsRecommendedTest.kt",
+            overrideRulesConfigList = listOf(
+                RulesConfig(
+                    DIKTAT_COMMON, true,
+                    mapOf("domainName" to "org.cqfn.diktat")
+                ),
+                RulesConfig(
+                    Warnings.FILE_UNORDERED_IMPORTS.name, true,
+                    mapOf("useRecommendedImportsOrder" to "true")
+                )
+            )
+        )
+    }
 }

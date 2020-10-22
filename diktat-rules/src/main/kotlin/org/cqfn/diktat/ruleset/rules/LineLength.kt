@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.rules
 
-import com.pinterest.ktlint.core.KtLint.calculateLineColByOffset
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
@@ -40,6 +39,7 @@ import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.LONG_LINE
 import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
+import org.cqfn.diktat.ruleset.utils.calculateLineColByOffset
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
@@ -101,7 +101,7 @@ class LineLength(private val configRules: List<RulesConfig>) : Rule("line-length
                 val newNode = node.psi.findElementAt(offset + configuration.lineLength.toInt())!!.node
                 if ((newNode.elementType != KDOC_TEXT && newNode.elementType != KDOC_MARKDOWN_INLINE_LINK) ||
                         !isKDocValid(newNode)) {
-                    positionByOffset = calculateLineColByOffset(node.treeParent.text)
+                    positionByOffset = node.treeParent.calculateLineColByOffset()
                     val fixableType = isFixable(newNode, configuration)
                     LONG_LINE.warnAndFix(configRules, emitWarn, isFixMode,
                             "max line length ${configuration.lineLength}, but was ${it.length}",
@@ -394,12 +394,12 @@ class LineLength(private val configRules: List<RulesConfig>) : Rule("line-length
     }
 
     sealed class LongLineFixableCases {
-        object None: LongLineFixableCases()
-        class Comment(val node: ASTNode, val indexLastSpace: Int): LongLineFixableCases()
-        class Condition(val maximumLineLength: Long, val leftOffset: Int, val binList: MutableList<ASTNode>): LongLineFixableCases()
-        class Fun(val node: ASTNode): LongLineFixableCases()
-        class Property(val node: ASTNode, val indexLastSpace: Int, val text: String): LongLineFixableCases()
+        object None : LongLineFixableCases()
+        class Comment(val node: ASTNode, val indexLastSpace: Int) : LongLineFixableCases()
+        class Condition(val maximumLineLength: Long, val leftOffset: Int, val binList: MutableList<ASTNode>) : LongLineFixableCases()
+        class Fun(val node: ASTNode) : LongLineFixableCases()
+        class Property(val node: ASTNode, val indexLastSpace: Int, val text: String) : LongLineFixableCases()
         class PropertyWithTemplateEntry(val node: ASTNode, val maximumLineLength: Long,
-                                        val leftOffset: Int, val binList: MutableList<ASTNode>): LongLineFixableCases()
+                                        val leftOffset: Int, val binList: MutableList<ASTNode>) : LongLineFixableCases()
     }
 }
