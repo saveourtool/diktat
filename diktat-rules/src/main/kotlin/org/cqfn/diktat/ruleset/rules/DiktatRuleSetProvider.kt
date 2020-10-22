@@ -14,12 +14,12 @@ import org.cqfn.diktat.ruleset.rules.files.FileSize
 import org.cqfn.diktat.ruleset.rules.files.FileStructureRule
 import org.cqfn.diktat.ruleset.rules.files.IndentationRule
 import org.cqfn.diktat.ruleset.rules.files.NewlinesRule
-import org.cqfn.diktat.ruleset.rules.kdoc.CommentsFormatting
 import org.cqfn.diktat.ruleset.rules.identifiers.LocalVariablesRule
+import org.cqfn.diktat.ruleset.rules.kdoc.CommentsFormatting
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocComments
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocFormatting
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocMethods
-import org.cqfn.diktat.ruleset.utils.editorDistance
+import org.jetbrains.kotlin.org.jline.utils.Levenshtein
 import org.slf4j.LoggerFactory
 import java.io.File
 
@@ -33,13 +33,16 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
     override fun get(): RuleSet {
         log.debug("Will run $DIKTAT_RULE_SET_ID with $diktatConfigFile (it can be placed to the run directory or the default file from resources will be used)")
         if (!File(diktatConfigFile).exists()) {
-            log.warn("File $diktatConfigFile not found in file system, the file included in jar will be used. " +
-                    "Some configuration options will be disabled or substituted with defaults.")
+            log.warn("Configuration file $diktatConfigFile not found in file system, the file included in jar will be used. " +
+                    "Some configuration options will be disabled or substituted with defaults. " +
+                    "Custom configuration file should be placed in diktat working directory if run from CLI " +
+                    "or provided as configuration options in plugins."
+            )
         }
         val configRules = RulesConfigReader(javaClass.classLoader)
             .readResource(diktatConfigFile)
             ?.onEach(::validate)
-            ?: listOf()
+            ?: emptyList()
         val rules = listOf(
                 ::CommentsRule,
                 ::KdocComments,
@@ -96,7 +99,7 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
 
     private fun validate(config: RulesConfig) =
         require(config.name == DIKTAT_COMMON || config.name in Warnings.names) {
-            val closestMatch = Warnings.names.minBy { it.editorDistance(config.name) }
+            val closestMatch = Warnings.names.minBy { Levenshtein.distance(it, config.name) }
             "Warning name <${config.name}> in configuration file is invalid, did you mean <$closestMatch>?"
         }
 

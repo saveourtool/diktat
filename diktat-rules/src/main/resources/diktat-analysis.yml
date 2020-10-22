@@ -38,7 +38,7 @@
   configuration: {}
 - name: PACKAGE_NAME_INCORRECT_CASE
   enabled: true
-  configuration: {}
+  configuration: {} # configuration domainName is taken from DIKTAT_COMMON
 - name: PACKAGE_NAME_INCORRECT_PREFIX
   enabled: false
   configuration: {}
@@ -47,7 +47,7 @@
   configuration: {}
 - name: PACKAGE_NAME_INCORRECT_PATH
   enabled: false
-  configuration: {}
+  configuration: {} # configuration domainName is taken from DIKTAT_COMMON
 - name: PACKAGE_NAME_MISSING
   enabled: true
   configuration: {}
