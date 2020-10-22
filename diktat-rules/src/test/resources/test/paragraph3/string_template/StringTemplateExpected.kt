@@ -13,5 +13,7 @@ class SomeClass {
         val trippleQuotes = """$x"""
 
         val test = """${'$'}"""
+
+        val test2= "${'$'}1"
     }
 }
