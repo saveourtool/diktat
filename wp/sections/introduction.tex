@@ -1,26 +1,6 @@
-It is necessary to conform to a specific style of code during software development, otherwise it will reduce the ability to better understand programmers’ intent and
-ﬁnd more functional defects. Analyzers, in turn, have methods for finding and correcting style errors.
+It is necessary to conform to a specific style of code during software development, otherwise it will reduce the ability to better understand programmers’ intent and ﬁnd more functional defects. Analyzers, in turn, have methods for finding and correcting style errors. 
 
-There are two types of code analysis: static and dynamic. The first is the process of identifying errors in the source code of the program, the second is the method
- of analyzing the code directly during its execution.
+There are two types of code analysis: static and dynamic. The first is the process of identifying errors in the source code of the program, the second is the method of analyzing the code directly during its execution.
 
-Static analysis can be thought of as an automated code review process. Of the tasks solved by static code analysis programs, two main ones can be
-distinguished: identifying errors in programs and recommending code formatting. That is, the analyzer allows you to check whether the source code complies with the
-accepted coding standard. Also, a static analyzer can be used to determine the maintainability of a code, which is how easy it is to analyze, modify and adapt a given
-software. Static analysis tools allow you to identify a large number of errors in the design phase, which significantly reduces the development cost of the entire project.
-Static analysis covers the entire code - it checks even those code fragments that are difficult to test. It does not depend on the compiler used and the environment
-in which the compiled program will be executed.There are both open source\footnote{KtLint: \url{https://github.com/pinterest/ktlint},
-Detekt: \url{https://github.com/detekt/detekt}}, and commercial \footnote{IBM Security AppScan: \url{https://www.hcltechsw.com/wps/portal/products/appscan},
-PVS-Studio: \url{https://www.viva64.com/en/pvs-studio/}}.
-
-DiKTat - is a formal strict code style (\url{https://github.com/cqfn/diKTat}) and a linter with a set of rules that implement this code style. Basically, it is a collection
-of Kotlin code style rules implemented as AST visitors on top of KTlint framework (\url{https://github.com/pinterest/ktlint}). Diktat warns and fixes code style errors and
-code smells based on configuration file. DiKTat is a highly configurable framework, that can be extended further by adding custom rules. It can be run as command line
-application or with maven or gradle plugins. In this paper, we will explain how DiKTat works, describes advantages and disadvantages and how it differs from other static
-analyzers.
-
-So why did we decide to create diKTat? We looked at similar projects and realized that they have defects. That’s why we came to a conclusion that we need to create
-convenient and easy-to-use tool for developers. Why is it easy-to-use? First of all, diKTat has its own highly configurable ruleset. You just need to fill your own options
-on rules in ruleset or either use default one. Basically, ruleset is an yml file with a description of each rule. Secondly, there are a lot of developers that use different
-tools for building projects. Most popular are Maven and Gradle. DiKTat supports these ones and it also has cli. Finally, each developer has their own codestyle and sometimes
-they don’t want static analyzers to trigger on some lines of code. In diKTat you can easily disable a rule.
+Static analysis can be thought of as an automated code review process. Of the tasks solved by static code analysis programs, two main ones can be distinguished: identifying errors in programs and recommending code formatting. That is, the analyzer allows you to check whether the source code complies with the accepted coding standard. Also, a static analyzer can be used to determine the maintainability of a code, which is how easy it is to analyze, modify and adapt a given software. Static analysis tools allow you to identify a large number of errors in the design phase, which significantly reduces the development cost of the entire project. Static analysis covers the entire code - it checks even those code fragments that are difficult to test. It does not depend on the compiler used and the environment in which the compiled program will be executed.There are both open source\footnote{KtLint: \url{https://github.com/pinterest/ktlint}, Detekt: \url{https://github.com/detekt/detekt}}, 
+and commercial \footnote{IBM Security AppScan: \url{https://www.hcltechsw.com/wps/portal/products/appscan}, PVS-Studio: \url{https://www.viva64.com/en/pvs-studio/}}.

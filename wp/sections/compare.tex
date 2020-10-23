@@ -1,0 +1,34 @@
+\subsection{About Ktlint}
+\par Ktlint is a popular an anti-bikeshedding Kotlin linter with built-in formatter. It tries to capture (reflect) official code style from kotlinlang.org and Android Kotlin Style Guide and then automatically apply these rules to your codebase. It claims to be simple and easy to use. Ktlint has been developing since 2016 and from then on it has 3.8k stars, 299 forks and 390 closed PRs (at least on the moment of writing this whitepaper). There have been written over 15k lines of code. Ktlint has it's own ruleset, which divides on standard and experimental rules. Ktlint can be used as a plugin via Maven or Gradle.
+
+\subsection{About Detekt}
+\par Detekt is a static code analysis tool. It operates on an abstract syntax tree provided by Kotlin compiler. Detekt supports such features as code smell analysis, highly configurable rule sets, IntelliJ integration and third-party integrations for Maven, Bazel and Github actions and many more. It has been developing since 2016 and today it has 3.2k stars, 411 forks and 1850 closed PRs. It has around 45k lines of code.
+
+\subsection{About diKTat}
+\par So why are we better? First of all, we support much more rules than ktlint. Our ruleset includes more than 100 rules. Secondly, diKTat is configurable. A lot of rules have it's own settings, which can be easily understood. For example, you can choose whether you need a copyright or choose a length of line. Finally, diKTat is very easy to configure. You don't need to spend hours only to understand what each rule is doing. Our ruleset is a yml file, where each rule is commented out.
+
+
+
+Ideas: may be find ktlint and detekt in big projects, use insights to draw graphs. 
+
+
+\subsection{Summary}
+
+\begin{center}
+\begin{tabular}{ |p{3cm}|p{3cm}|p{3cm}|p{3cm}|  }
+\hline
+\multicolumn{4}{|c|}{\textbf{Comparing table}} \\
+\hline
+& diKTat& ktlint &detekt \\
+\hline
+starting year & 2020 & 2016 & 2016 \\
+stars & 125 & 3.2k & 3.8k \\ 
+forks & 11 & 299 & 411 \\
+closed PRs & 226 & 390 & 1850 \\
+lines of code & 22k & 15k & 45k \\
+number of rules & >100 & ~20 & > 100 \\
+\hline
+
+\hline
+\end{tabular}
+\end{center}

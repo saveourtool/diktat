@@ -1,4 +1,6 @@
-\documentclass[12pt]{article}
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
 \usepackage{pgf}
 \usepackage{setspace}
   \setstretch{1.1}
@@ -6,6 +8,9 @@
 \usepackage{charter}
 \usepackage{listings}
 \usepackage{authblk}
+\usepackage{hyperref}
+\usepackage{tocloft}
+\usepackage{float}
 
 \definecolor{codegreen}{rgb}{0,0.6,0}
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
@@ -34,78 +39,51 @@
 \lstset{style=mystyle}
 
 \title{
-  \includegraphics[height=250pt]{logo.png}\\
-  \vspace{10pt}
-  \textsc{DiKTat:}\\
-  Static Code Analysis}
-\author{Yegor Bugayenko, Andrey Kuleshov, Peter Trifanov, Kumar Denis, Tsay Alexander}
-\affil{Huawei Technologies Co., Ltd. \\ System Programming Lab \\ Russian Research Institute (RRI) \\ Moscow, Russia}
-
+  \includegraphics[height=250pt]{wp/pictures/logo.png}\\
+  }
 \begin{document}
-
+\author{}
 \maketitle
-
 \pagebreak
-
-\begin{abstract}
-
-DiKTat is a collection of Kotlin code style rules implemented as AST visitors on top of KTlint. Diktat warns and fixes code style errors based on configuration file. DiKTat can be extended further by adding custom rules. In this paper, we explain how DiKTat works, describe advantages and disadvantages and how it differs from other static analyzers.
-
-\end{abstract}
-
-\newpage
-
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
 \tableofcontents
-
-\newpage
+\pagebreak
 
 \section{Introduction}
 \label{sec:intro}
 \input{sections/introduction}
 
-\newpage
+\section{Definition}
+\label{sec:definition}
+\input{sections/definition}
 
-\section{How does diKTat work}
-\subsection{The idea}
-\subsection{Rules description}
-\subsection{How diKTat detects issues}
-\subsection{DiKTat implementation}
-\subsection{Examples}
+\section{diKTat}
+\label{sec:diKTat}
+\input{sections/diKTat}
 
-\newpage
+\section{Comparative analysis}
+\label{sec:compare}
+\input{sections/compare}
 
-\section{Analysis of similar projects}
-\subsection{Ktlint}
-\subsection{Detekt}
-\newpage
+\section{How does it work}
+\label{sec:work}
+\input{sections/work}
+
+\section{Killer-Feature}
+\label{sec:feature}
+\input{sections/feature}
 
 \section{How to use diKTat}
-\subsection{Maven}
-\input{sections/chapter 4/maven}
-\subsection{Gradle}
-\input{sections/chapter 4/gradle}
-\subsection{CLI-application}
-\input{sections/chapter 4/cli}
-\subsection{How to configure ruleset}
-\input{sections/chapter 4/rulesetConfigure}
-\newpage
+\label{sec:download}
+\input{sections/download}
 
-\section{DiKTat on big projects}
+%rename this section%
+\section{Examples}
+\label{sec:examples}
+\input{sections/examples}
 
-\newpage
 \section{Appendix}
-\subsection{Main components}
-\subsubsection{Data diagram}
-\subsubsection{Class diagram}
-\subsubsection{Component view}
-
-\subsection{Diagrams of system usage}
-\subsubsection{Use-case diagram}
-\subsubsection{Activity diagram}
-\subsubsection{Data Flow Diagram}
-
-\newpage
-\section{References}
-
+\label{sec:appendix}
+\input{sections/appendix}
 
 \end{document}
