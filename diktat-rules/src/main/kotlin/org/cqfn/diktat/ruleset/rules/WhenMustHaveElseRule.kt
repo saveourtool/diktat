@@ -7,17 +7,17 @@ import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.ELSE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.EQ
-import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_LITERAL
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
+import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.RETURN
 import com.pinterest.ktlint.core.ast.ElementType.WHEN_ENTRY
+import com.pinterest.ktlint.core.ast.prevSibling
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
-import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.cqfn.diktat.ruleset.utils.hasParent
 import org.cqfn.diktat.ruleset.utils.isBeginByNewline
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -69,21 +69,27 @@ class WhenMustHaveElseRule(private val configRules: List<RulesConfig>) : Rule("n
     }
 
     private fun isStatement(node: ASTNode) : Boolean {
-
         // Checks if there is return before when
         if (node.hasParent(RETURN)) {
             return false
         }
 
+        // Checks if `when` is the last statement in lambda body
         if (node.treeParent.elementType == BLOCK && node.treeParent.treeParent.elementType == FUNCTION_LITERAL) {
             if (node.treeParent.lastChildNode == node) {
                 return false
             }
         }
 
-        if (node.treeParent.elementType == FUN && node.treeParent.hasChildOfType(EQ))
+        if (node.treeParent.elementType == WHEN_ENTRY && node.prevSibling { it.elementType == ARROW } != null) {
+            // `when` is used as a branch in another `when`
             return false
-        else {
+        }
+
+        if (node.prevSibling { it.elementType == EQ || it.elementType == OPERATION_REFERENCE && it.firstChildNode.elementType == EQ } != null) {
+            // `when` is used in an assignment or in a function with expression body
+            return false
+        } else {
             return !node.hasParent(PROPERTY)
         }
     }
