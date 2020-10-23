@@ -166,6 +166,8 @@ public object WarningNames {
 
     public const val TYPE_ALIAS: String = "TYPE_ALIAS"
 
+    public const val SMART_CAST_NEEDED: String = "SMART_CAST_NEEDED"
+
     public const val SAY_NO_TO_VAR: String = "SAY_NO_TO_VAR"
 
     public const val GENERIC_VARIABLE_WRONG_DECLARATION: String =
@@ -191,4 +193,7 @@ public object WarningNames {
             "WRONG_OVERLOADING_FUNCTION_ARGUMENTS"
 
     public const val USE_DATA_CLASS: String = "USE_DATA_CLASS"
+
+    public const val WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR: String =
+            "WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR"
 }
