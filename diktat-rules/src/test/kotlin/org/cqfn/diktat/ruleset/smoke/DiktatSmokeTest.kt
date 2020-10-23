@@ -50,7 +50,8 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
                 LintError(3, 26, "$DIKTAT_RULE_SET_ID:kdoc-comments", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} isValid", false),
                 LintError(6, 9, "$DIKTAT_RULE_SET_ID:kdoc-comments", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} foo", false),
                 LintError(8, 19, "$DIKTAT_RULE_SET_ID:kdoc-formatting", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
-                LintError(10, 5, "$DIKTAT_RULE_SET_ID:empty-block-structure", "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} empty blocks are forbidden unless it is function with override keyword", false),
+                LintError(10, 5, "$DIKTAT_RULE_SET_ID:empty-block-structure", EMPTY_BLOCK_STRUCTURE_ERROR.warnText() +
+                        " empty blocks are forbidden unless it is function with override keyword", false),
                 LintError(12, 41, "$DIKTAT_RULE_SET_ID:kdoc-formatting", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
                 LintError(14, 34, "$DIKTAT_RULE_SET_ID:kdoc-formatting", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false)
         )
