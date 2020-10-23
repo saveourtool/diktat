@@ -2,7 +2,6 @@ package org.cqfn.diktat.ruleset.utils
 
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.ast.ElementType
-import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.CONST_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.FILE
@@ -514,6 +513,10 @@ fun isLocatedInTest(filePathParts: List<String>, testAnchors: List<String>): Boo
 fun ASTNode.firstLineOfText(suffix: String = "") = text.lines().run { singleOrNull() ?: (first() + suffix) }
 
 fun ASTNode.lastLineNumber(isFixMode: Boolean) = getLineNumber(isFixMode)?.plus(text.count { it == '\n' })
+
+fun ASTNode.calculateLineColByOffset(): (offset: Int) -> Pair<Int, Int> {
+    return buildPositionInTextLocator(text)
+}
 
 fun ASTNode.getFileName(): String = getUserData(KtLint.FILE_PATH_USER_DATA_KEY).let {
     require(it != null) { "File path is not present in user data" }

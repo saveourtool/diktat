@@ -117,6 +117,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
 
     // ======== chapter 6 ========
     SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY(true, "if a class has single constructor, it should be converted to a primary constructor"),
+    USE_DATA_CLASS(false, "this class can be converted to a data class"),
     ;
 
     /**
@@ -163,6 +164,12 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     private inline fun fix(configs: List<RulesConfig>, autoFix: () -> Unit, isFix: Boolean, node: ASTNode) {
         if (configs.isRuleEnabled(this) && isFix && !node.hasSuppress(name)) {
             autoFix()
+        }
+    }
+
+    companion object {
+        val names by lazy {
+            values().map { it.name }
         }
     }
 }

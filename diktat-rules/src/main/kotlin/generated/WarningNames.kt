@@ -192,4 +192,6 @@ public object WarningNames {
 
     public const val SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY: String =
             "SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY"
+
+    public const val USE_DATA_CLASS: String = "USE_DATA_CLASS"
 }

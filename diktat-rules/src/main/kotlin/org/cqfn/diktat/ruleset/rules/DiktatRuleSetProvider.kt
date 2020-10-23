@@ -2,8 +2,12 @@ package org.cqfn.diktat.ruleset.rules
 
 import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.RuleSetProvider
+import org.cqfn.diktat.common.config.rules.DIKTAT_COMMON
+import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
+import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.calculations.AccurateCalculationsRule
+import org.cqfn.diktat.ruleset.rules.classes.DataClassesRule
 import org.cqfn.diktat.ruleset.rules.classes.SingleConstructorRule
 import org.cqfn.diktat.ruleset.rules.comments.CommentsRule
 import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule
@@ -12,12 +16,14 @@ import org.cqfn.diktat.ruleset.rules.files.FileSize
 import org.cqfn.diktat.ruleset.rules.files.FileStructureRule
 import org.cqfn.diktat.ruleset.rules.files.IndentationRule
 import org.cqfn.diktat.ruleset.rules.files.NewlinesRule
-import org.cqfn.diktat.ruleset.rules.kdoc.CommentsFormatting
 import org.cqfn.diktat.ruleset.rules.identifiers.LocalVariablesRule
+import org.cqfn.diktat.ruleset.rules.kdoc.CommentsFormatting
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocComments
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocFormatting
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocMethods
+import org.jetbrains.kotlin.org.jline.utils.Levenshtein
 import org.slf4j.LoggerFactory
+import java.io.File
 
 /**
  * this constant will be used everywhere in the code to mark usage of Diktat ruleset
@@ -25,9 +31,20 @@ import org.slf4j.LoggerFactory
 const val DIKTAT_RULE_SET_ID = "diktat-ruleset"
 
 class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analysis.yml") : RuleSetProvider {
+    @Suppress("LongMethod")
     override fun get(): RuleSet {
         log.debug("Will run $DIKTAT_RULE_SET_ID with $diktatConfigFile (it can be placed to the run directory or the default file from resources will be used)")
-        val configRules = RulesConfigReader(javaClass.classLoader).readResource(diktatConfigFile) ?: listOf()
+        if (!File(diktatConfigFile).exists()) {
+            log.warn("Configuration file $diktatConfigFile not found in file system, the file included in jar will be used. " +
+                    "Some configuration options will be disabled or substituted with defaults. " +
+                    "Custom configuration file should be placed in diktat working directory if run from CLI " +
+                    "or provided as configuration options in plugins."
+            )
+        }
+        val configRules = RulesConfigReader(javaClass.classLoader)
+            .readResource(diktatConfigFile)
+            ?.onEach(::validate)
+            ?: emptyList()
         val rules = listOf(
                 ::CommentsRule,
                 ::KdocComments,
@@ -37,6 +54,7 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
                 ::PackageNaming,
                 ::StringTemplateFormatRule,
                 ::FileSize,
+                ::DataClassesRule,
                 ::IdentifierNaming,
                 ::LocalVariablesRule,
                 ::ClassLikeStructuresOrderRule,
@@ -82,6 +100,12 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
                 *rules
         )
     }
+
+    private fun validate(config: RulesConfig) =
+        require(config.name == DIKTAT_COMMON || config.name in Warnings.names) {
+            val closestMatch = Warnings.names.minBy { Levenshtein.distance(it, config.name) }
+            "Warning name <${config.name}> in configuration file is invalid, did you mean <$closestMatch>?"
+        }
 
     companion object {
         private val log = LoggerFactory.getLogger(DiktatRuleSetProvider::class.java)
