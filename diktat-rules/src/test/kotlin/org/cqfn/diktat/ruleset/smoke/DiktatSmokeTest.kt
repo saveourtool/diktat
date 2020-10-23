@@ -19,7 +19,7 @@ import java.io.File
 
 // fixme: run as a separate maven goal/module?
 class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
-        { DiktatRuleSetProvider() },
+        { DiktatRuleSetProvider("../diktat-analysis.yml") }, // using same yml config as for diktat code style check
         { lintError, _ -> unfixedLintErrors.add(lintError) },
         null
 ) {
