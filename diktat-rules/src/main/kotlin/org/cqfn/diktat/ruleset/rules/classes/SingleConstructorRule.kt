@@ -5,6 +5,7 @@ import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
+import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.SECONDARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
@@ -125,7 +126,10 @@ class SingleConstructorRule(private val config: List<RulesConfig>) : Rule("singl
                                                              otherStatements: List<KtExpression>) {
         require(elementType == CLASS)
 
-        val primaryCtorNode = kotlinParser.createPrimaryConstructor("(${declarationsAssignedInCtor.joinToString(", ") { it.text }})").node
+        val primaryCtorNode = kotlinParser.createPrimaryConstructor(
+            (secondaryCtor.findChildByType(MODIFIER_LIST)?.text?.plus(" constructor ") ?: "") +
+                    "(${declarationsAssignedInCtor.joinToString(", ") { it.text }})"
+        ).node
         addChild(primaryCtorNode, findChildByType(CLASS_BODY))
         declarationsAssignedInCtor.forEach { ktProperty ->
             ktProperty.node.let { treeParent.removeChild(it) }

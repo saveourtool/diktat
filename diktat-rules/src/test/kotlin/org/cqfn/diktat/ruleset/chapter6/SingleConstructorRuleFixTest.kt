@@ -18,4 +18,10 @@ class SingleConstructorRuleFixTest : FixTestBase("test/chapter6/classes", ::Sing
     fun `should convert secondary constructor to a primary and init block`() {
         fixAndCompare("ConstructorWithInitExpected.kt", "ConstructorWithInitTest.kt")
     }
+
+    @Test
+    @Tag(WarningNames.SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY)
+    fun `should convert secondary constructor to a primary saving modifiers`() {
+        fixAndCompare("ConstructorWithModifiersExpected.kt", "ConstructorWithModifiersTest.kt")
+    }
 }
