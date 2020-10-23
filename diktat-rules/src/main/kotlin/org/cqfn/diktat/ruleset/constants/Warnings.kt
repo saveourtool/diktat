@@ -116,6 +116,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     WRONG_OVERLOADING_FUNCTION_ARGUMENTS(false, "use default argument instead of function overloading"),
 
     // ======== chapter 6 ========
+    USE_DATA_CLASS(false, "this class can be converted to a data class"),
     WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR(false, "Use `field` keyword instead of property name inside property accessors"),
     ;
 
@@ -163,6 +164,12 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     private inline fun fix(configs: List<RulesConfig>, autoFix: () -> Unit, isFix: Boolean, node: ASTNode) {
         if (configs.isRuleEnabled(this) && isFix && !node.hasSuppress(name)) {
             autoFix()
+        }
+    }
+
+    companion object {
+        val names by lazy {
+            values().map { it.name }
         }
     }
 }

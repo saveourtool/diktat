@@ -1,8 +1,11 @@
-/*
- * Copyright (c) Your Company Name Here. 2010-2020
- */
+package org.cqfn.diktat
 
-package your.name.here
+import org.slf4j.LoggerFactory
+
+import java.io.IOException
+import java.util.Properties
+
+import kotlin.system.exitProcess
 
 /**
  * @property foo

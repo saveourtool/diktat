@@ -190,6 +190,8 @@ public object WarningNames {
     public const val WRONG_OVERLOADING_FUNCTION_ARGUMENTS: String =
             "WRONG_OVERLOADING_FUNCTION_ARGUMENTS"
 
+    public const val USE_DATA_CLASS: String = "USE_DATA_CLASS"
+
     public const val WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR: String =
             "WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR"
 }

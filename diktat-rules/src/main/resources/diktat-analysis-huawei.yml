@@ -135,9 +135,12 @@
 - name: FILE_CONTAINS_ONLY_COMMENTS
   enabled: true
   configuration: {}
+  # order imports alphabetically
 - name: FILE_UNORDERED_IMPORTS
   enabled: true
-  configuration: {}
+  configuration:
+    # use logical imports grouping with sorting inside of a group
+    useRecommendedImportsOrder: true
 - name: FILE_INCORRECT_BLOCKS_ORDER
   enabled: true
   configuration: {}
@@ -146,7 +149,9 @@
   configuration: {}
 - name: FILE_WILDCARD_IMPORTS
   enabled: true
-  configuration: {}
+  configuration:
+    allowedWildcards: "" # Allowed wildcards for imports (e.g. "import org.cqfn.diktat.*, import org.jetbrains.kotlin.*")
+    useRecommendedImportsOrder: true
 - name: NO_BRACES_IN_CONDITIONALS_AND_LOOPS
   enabled: true
   configuration: {}
@@ -314,6 +319,10 @@
   configuration: {}
 # Checks that property in constructor doesn't contains comment
 - name: KDOC_NO_CONSTRUCTOR_PROPERTY
+  enabled: true
+  configuration: {}
+# Checks if class can be made as data class
+- name: USE_DATA_CLASS
   enabled: true
   configuration: {}
 # Checks that never use the name of a variable in the custom getter or setter

@@ -529,6 +529,18 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
     }
 
     @Test
+    @Tag(WarningNames.BACKTICKS_PROHIBITED)
+    fun `regression - backticks should be forbidden only in declarations`() {
+        lintMethod(
+            """
+                |fun foo() {
+                |    it.assertThat(actual.detail).`as`("Detailed message").isEqualTo(expected.detail)
+                |}
+            """.trimMargin()
+        )
+    }
+
+    @Test
     @Tag(WarningNames.VARIABLE_NAME_INCORRECT_FORMAT)
     fun `should not trigger on underscore`() {
         val code =
