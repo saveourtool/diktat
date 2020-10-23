@@ -39,7 +39,7 @@ class PropertyAccessorFields(private val configRules: List<RulesConfig>) : Rule(
     //fixme should use shadow-check when it will be done
     private fun checkPropertyAccessor(node: ASTNode) {
         val leftValue = node.treeParent.findChildByType(IDENTIFIER) ?: return
-        val usedPropertyNameList = node.findAllNodesWithSpecificType(REFERENCE_EXPRESSION)
+        val firstReferenceWithSameName = node.findAllNodesWithSpecificType(REFERENCE_EXPRESSION)
                 .mapNotNull { it.findChildByType(IDENTIFIER) }
                 .firstOrNull {
                     it.text == leftValue.text &&
@@ -48,8 +48,8 @@ class PropertyAccessorFields(private val configRules: List<RulesConfig>) : Rule(
                 }
         val isContainLocalVarSameName = node.findChildByType(BLOCK)?.getChildren(TokenSet.create(PROPERTY))
                 ?.filter { (it.psi as KtProperty).nameIdentifier?.text == leftValue.text }
-                ?.none { usedPropertyNameList?.isGoingAfter(it) ?: false } ?: true
-        if (usedPropertyNameList != null && isContainLocalVarSameName)
+                ?.none { firstReferenceWithSameName?.isGoingAfter(it) ?: false } ?: true
+        if (firstReferenceWithSameName != null && isContainLocalVarSameName)
             WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warn(configRules, emitWarn, isFixMode, node.text, node.startOffset, node)
     }
 }
