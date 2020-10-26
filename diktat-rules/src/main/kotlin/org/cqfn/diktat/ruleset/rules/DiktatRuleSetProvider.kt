@@ -7,6 +7,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.calculations.AccurateCalculationsRule
+import org.cqfn.diktat.ruleset.rules.classes.AbstractClassesRule
 import org.cqfn.diktat.ruleset.rules.classes.DataClassesRule
 import org.cqfn.diktat.ruleset.rules.classes.SingleInitRule
 import org.cqfn.diktat.ruleset.rules.comments.CommentsRule
@@ -65,6 +66,7 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
                 ::SmartCastRule,
                 ::PropertyAccessorFields,
                 ::EnumsSeparated,
+                ::AbstractClassesRule,
                 ::VariableGenericTypeDeclarationRule,
                 ::SingleLineStatementsRule,
                 ::CommentsFormatting,
