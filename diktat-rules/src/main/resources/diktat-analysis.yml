@@ -334,3 +334,7 @@
 - name: WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR
   enabled: true
   configuration: {}
+# Checks that there are abstract functions in abstract class
+- name: CLASS_SHOULD_NOT_BE_ABSTRACT
+  enabled: true
+  configuration: {}
