@@ -331,27 +331,11 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
                 VALUE_PARAMETER_LIST -> handleFirstValueParameter(node)
             }
 
-            node
-                .children()
-                .filter {
-                    it.elementType == COMMA &&
-                        !it.treeNext.run { elementType == WHITE_SPACE && textContains('\n') }
-                }
-                .toList()
-                .onlyIf({ isNotEmpty() }) { invalidCommas ->
-                    WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
-                        "$entryType should be placed on different lines in declaration of <${node.getParentIdentifier()}>", node.startOffset, node) {
-                        invalidCommas.forEach { comma ->
-                            val nextWhiteSpace = comma.treeNext.takeIf { it.elementType == WHITE_SPACE }
-                            comma.appendNewlineMergingWhiteSpace(nextWhiteSpace, nextWhiteSpace?.treeNext ?: comma.treeNext)
-                        }
-                    }
-                }
+            handleValueParameterList(node, entryType)
         }
     }
 
-    private fun handleFirstValueParameter(node: ASTNode) {
-        node
+    private fun handleFirstValueParameter(node: ASTNode) = node
             .children()
             .takeWhile { !it.textContains('\n') }
             .filter { it.elementType == VALUE_PARAMETER }
@@ -362,7 +346,23 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
                     node.appendNewlineMergingWhiteSpace(it.first().treePrev.takeIf { it.elementType == WHITE_SPACE }, it.first())
                 }
             }
-    }
+
+    private fun handleValueParameterList(node: ASTNode, entryType: String) = node
+            .children()
+            .filter {
+                it.elementType == COMMA &&
+                        !it.treeNext.run { elementType == WHITE_SPACE && textContains('\n') }
+            }
+            .toList()
+            .onlyIf({ isNotEmpty() }) { invalidCommas ->
+                WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
+                    "$entryType should be placed on different lines in declaration of <${node.getParentIdentifier()}>", node.startOffset, node) {
+                    invalidCommas.forEach { comma ->
+                        val nextWhiteSpace = comma.treeNext.takeIf { it.elementType == WHITE_SPACE }
+                        comma.appendNewlineMergingWhiteSpace(nextWhiteSpace, nextWhiteSpace?.treeNext ?: comma.treeNext)
+                    }
+                }
+            }
 
     @Suppress("UnsafeCallOnNullableType")
     private fun ASTNode.getParentIdentifier() = when (treeParent.elementType) {
