@@ -45,6 +45,7 @@ class UselessOverride(private val configRules: List<RulesConfig>) : Rule("useles
             checkFun(node)
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkFun(node: ASTNode) {
         if (node.getChildren(TokenSet.create(MODIFIER_LIST)).any { it.elementType == OVERRIDE_KEYWORD })
             return
