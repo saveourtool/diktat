@@ -7,6 +7,7 @@ import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
+import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isWhiteSpace
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.CLASS_SHOULD_NOT_BE_ABSTRACT
@@ -50,9 +51,11 @@ class AbstractClassesRule(private val configRule: List<RulesConfig>) : Rule("abs
             CLASS_SHOULD_NOT_BE_ABSTRACT.warnAndFix(configRule, emitWarn, isFixMode, identifier, node.startOffset, node) {
                 val modList = classNode.getFirstChildWithType(MODIFIER_LIST)!!
                 if (modList.getChildren(null).size > 1) {
+                    // we are deleting one keyword, so we need to delete extra space
+                    val spaceInModifiers = modList.getFirstChildWithType(WHITE_SPACE)
                     modList.removeChild(modList.getFirstChildWithType(ABSTRACT_KEYWORD)!!)
-                    if (modList.firstChildNode.isWhiteSpace()) {
-                        modList.removeChild(modList.firstChildNode)
+                    if (spaceInModifiers != null && spaceInModifiers.isWhiteSpace()) {
+                        modList.removeChild(spaceInModifiers)
                     }
                 } else {
                     classNode.removeChild(modList)

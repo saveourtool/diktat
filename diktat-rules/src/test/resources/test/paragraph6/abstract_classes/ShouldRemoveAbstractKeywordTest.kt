@@ -8,6 +8,10 @@ abstract class Some() {
     abstract inner class Any {
         fun func(){}
     }
+
+    inner abstract class Second {
+        fun someFunc(){}
+    }
 }
 
 abstract class Another {
