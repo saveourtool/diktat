@@ -86,6 +86,7 @@ import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
  * 7. There should be no space before `[`
  * 8. There should be no space between a method or constructor name (both at declaration and at call site) and a parenthesis.
  * 9. There should be no space after `(`, `[` and `<` (in templates); no space before `)`, `]`, `>` (in templates)
+ * 10. There should be no spaces between prefix/postfix operator (like `!!` or `++`) and it's operand
  */
 @Suppress("ForbiddenComment")
 class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizontal-whitespace") {

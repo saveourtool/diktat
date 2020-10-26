@@ -1115,6 +1115,8 @@ fun baz() {
 
   9. Never put a space after `(`, `[`, `<` (when used as bracket in templates) or before `)`, `]`, `>` (when used as bracket in templates)
 
+  10. There should be no spaces between prefix/postfix operator (like `!!` or `++`) and it's operand
+
 ### <a name="s3.8"></a>Recommendation 3.8: No spaces should be inserted for horizontal alignment
 
 *Horizontal alignment* - is a practice to add additional spaces in the code, to align code blocks on the same level with previous code blocks.
