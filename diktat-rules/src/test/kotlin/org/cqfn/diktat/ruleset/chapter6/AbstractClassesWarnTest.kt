@@ -39,4 +39,21 @@ class AbstractClassesWarnTest : LintTestBase(::AbstractClassesRule) {
                 LintError(1, 37, ruleId, "${Warnings.CLASS_SHOULD_NOT_BE_ABSTRACT.warnText()} Some", true)
         )
     }
+
+    @Test
+    @Tag(CLASS_SHOULD_NOT_BE_ABSTRACT)
+    fun `should remove abstract with inner`() {
+        lintMethod(
+                """
+                    |class Some(val a: Int = 5) {
+                    |    fun func() {}
+                    |    
+                    |    inner abstract class Inner {
+                    |       fun another()
+                    |    }
+                    |}
+                """.trimMargin(),
+                LintError(4, 32, ruleId, "${Warnings.CLASS_SHOULD_NOT_BE_ABSTRACT.warnText()} Inner", true)
+        )
+    }
 }

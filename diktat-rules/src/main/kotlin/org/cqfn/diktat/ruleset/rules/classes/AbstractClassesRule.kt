@@ -31,13 +31,13 @@ class AbstractClassesRule(private val configRule: List<RulesConfig>) : Rule("abs
         if (node.elementType == CLASS) {
             val classBody = node.getFirstChildWithType(CLASS_BODY) ?: return
 
-            if (checkAbstractModifier(node)) {
+            if (hasAbstractModifier(node)) {
                 handleAbstractClass(classBody, node)
             }
         }
     }
 
-    private fun checkAbstractModifier(node: ASTNode): Boolean =
+    private fun hasAbstractModifier(node: ASTNode): Boolean =
             node.getFirstChildWithType(MODIFIER_LIST)?.hasChildOfType(ABSTRACT_KEYWORD) ?: false
 
     @Suppress("UnsafeCallOnNullableType")
@@ -46,11 +46,19 @@ class AbstractClassesRule(private val configRule: List<RulesConfig>) : Rule("abs
 
         val identifier = classNode.getFirstChildWithType(IDENTIFIER)!!.text
 
-        if (functions.isNotEmpty() && functions.none { checkAbstractModifier(it) }) {
+        if (functions.isNotEmpty() && functions.none { hasAbstractModifier(it) }) {
             CLASS_SHOULD_NOT_BE_ABSTRACT.warnAndFix(configRule, emitWarn, isFixMode, identifier, node.startOffset, node) {
-                classNode.removeChild(classNode.getFirstChildWithType(MODIFIER_LIST)!!)
-                if (classNode.firstChildNode.isWhiteSpace()) {
-                    classNode.removeChild(classNode.firstChildNode)
+                val modList = classNode.getFirstChildWithType(MODIFIER_LIST)!!
+                if (modList.getChildren(null).size > 1) {
+                    modList.removeChild(modList.getFirstChildWithType(ABSTRACT_KEYWORD)!!)
+                    if (modList.firstChildNode.isWhiteSpace()) {
+                        modList.removeChild(modList.firstChildNode)
+                    }
+                } else {
+                    classNode.removeChild(modList)
+                    if (classNode.firstChildNode.isWhiteSpace()) {
+                        classNode.removeChild(classNode.firstChildNode)
+                    }
                 }
             }
         }
