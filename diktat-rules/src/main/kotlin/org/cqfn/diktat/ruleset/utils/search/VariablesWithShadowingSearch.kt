@@ -2,7 +2,6 @@ package org.cqfn.diktat.ruleset.utils.search
 
 import com.pinterest.ktlint.core.ast.ElementType
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
-import org.cqfn.diktat.ruleset.utils.isGoingAfter
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtProperty

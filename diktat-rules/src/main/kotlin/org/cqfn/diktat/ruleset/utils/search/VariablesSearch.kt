@@ -1,9 +1,9 @@
 package org.cqfn.diktat.ruleset.utils.search
 
 import com.pinterest.ktlint.core.ast.ElementType
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
-import org.cqfn.diktat.ruleset.utils.getDeclarationScope
-import org.cqfn.diktat.ruleset.utils.isGoingAfter
+import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
+import com.pinterest.ktlint.core.ast.lineNumber
+import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtClassBody
 import org.jetbrains.kotlin.psi.KtElement
@@ -50,7 +50,7 @@ abstract class VariablesSearch(val node: ASTNode, private val filterForVariables
     @Suppress("UnsafeCallOnNullableType")
     fun KtProperty.getSearchResults(): List<KtElement> {
         return this
-                .getDeclarationScope()
+                .getLocalDeclarationScope()
                 // if declaration scope is not null - then we have found out the block where this variable is stored
                 // else - it is a global variable on a file level or a property on the class level
                 .let { declarationScope ->
@@ -108,3 +108,58 @@ abstract class VariablesSearch(val node: ASTNode, private val filterForVariables
  */
 @SuppressWarnings("FunctionOnlyReturningConstant")
 fun default(node: KtProperty) = true
+
+
+/**
+ * @return true if [this] is a shadow of [identifier], false otherwise
+ *
+ * for example:
+ * val a = 5 // [identifier]
+ * if () { val a = 6 // shadow [this]}
+ *
+ * for these properties it will return true
+ *
+ */
+fun ASTNode.isShadowOf(identifier: ASTNode): Boolean {
+    val propertyScope = identifier.psi.getDeclarationScope()
+    return this.isGoingAfter(identifier) && this.inNestedScopeOf(propertyScope) && this.text == identifier.text
+
+    /*
+                block.node.getChildren(TokenSet.create(ElementType.VALUE_ARGUMENT, ElementType.PROPERTY))
+                        .any { it.text == this.text && property.node.isGoingAfter(it) } ||
+                        block.parent
+                                .let { it as? KtFunctionLiteral }
+                                ?.valueParameters
+                                ?.any { it.nameAsName?.asString() == this.text }
+                        ?: false
+                // FixMe: also see very strange behavior of Kotlin in tests (disabled)
+            }
+     */
+}
+
+/**
+ * checks that this one node is placed after the other node in code (by comparing lines of code where nodes start)
+ */
+fun ASTNode.isGoingAfter(otherNode: ASTNode): Boolean {
+    val thisLineNumber = this.lineNumber()
+    val otherLineNumber = otherNode.lineNumber()
+
+    require(thisLineNumber != null) { "Node ${this.text} should have a line number" }
+    require(otherLineNumber != null) { "Node ${otherNode.text} should have a line number" }
+
+    return (thisLineNumber > otherLineNumber)
+}
+
+/**
+ * checks that [this] node is placed in the nested block of [scope]
+ */
+fun ASTNode.inNestedScopeOf(scope: KtElement?) =
+        this.psi.parents
+                // getting all block expressions/class bodies/file node from bottom to the top
+                // FixMe: Object companion is not resolved properly yet
+                .filter { it is KtBlockExpression || it is KtClassBody || it is KtFile }
+                // until we reached the block that contains the initial declaration
+                .takeWhile { scope != it }
+                .toList()
+                .isNotEmpty()
+

@@ -7,7 +7,7 @@ import com.pinterest.ktlint.core.ast.lineNumber
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.LOCAL_VARIABLE_EARLY_DECLARATION
 import org.cqfn.diktat.ruleset.utils.containsOnlyConstants
-import org.cqfn.diktat.ruleset.utils.getDeclarationScope
+import org.cqfn.diktat.ruleset.utils.getLocalDeclarationScope
 import org.cqfn.diktat.ruleset.utils.lastLineNumber
 import org.cqfn.diktat.ruleset.utils.search.findAllVariablesWithUsages
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -80,7 +80,7 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
 
     private fun groupPropertiesByUsages(propertiesToUsages: Map<KtProperty, List<KtElement>>) = propertiesToUsages
             .mapValues { (property, usages) ->
-                getFirstUsageStatementOrBlock(usages, property.getDeclarationScope())
+                getFirstUsageStatementOrBlock(usages, property.getLocalDeclarationScope())
             }
             .map { it.value to it.key }
             .groupByTo(mutableMapOf(), { it.first }) { it.second }
@@ -90,7 +90,7 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
     @Suppress("UnsafeCallOnNullableType")
     private fun handleLocalProperty(property: KtElement, usages: List<KtElement>) {
         require(property is KtProperty)
-        val declarationScope = property.getDeclarationScope()
+        val declarationScope = property.getLocalDeclarationScope()
 
         val firstUsageStatementLine = getFirstUsageStatementOrBlock(usages, declarationScope).node.lineNumber()!!
         val firstUsage = usages.minBy { it.node.lineNumber()!! }!!

@@ -20,6 +20,7 @@ import com.pinterest.ktlint.core.ast.isRoot
 import com.pinterest.ktlint.core.ast.lineNumber
 import com.pinterest.ktlint.core.ast.parent
 import org.cqfn.diktat.ruleset.rules.PackageNaming
+import org.cqfn.diktat.ruleset.utils.search.isShadowOf
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.TokenType
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
@@ -27,9 +28,7 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
-import org.jetbrains.kotlin.psi.KtAnnotationEntry
-import org.jetbrains.kotlin.psi.KtClass
-import org.jetbrains.kotlin.psi.KtIfExpression
+import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.siblings
 import org.slf4j.Logger
@@ -510,18 +509,4 @@ data class ReplacementResult(val oldNodes: List<ASTNode>, val newNodes: List<AST
     init {
         require(oldNodes.size == newNodes.size)
     }
-}
-
-
-/**
- * checks that this one node is placed after the other node in code (by comparing lines of code where nodes start)
- */
-fun ASTNode.isGoingAfter(otherNode: ASTNode): Boolean {
-    val thisLineNumber = this.lineNumber()
-    val otherLineNumber = otherNode.lineNumber()
-
-    require(thisLineNumber != null) { "Node ${this.text} should have a line number" }
-    require(otherLineNumber != null) { "Node ${otherNode.text} should have a line number" }
-
-    return (thisLineNumber > otherLineNumber)
 }
