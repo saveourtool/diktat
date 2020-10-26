@@ -333,3 +333,7 @@
 - name: WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR
   enabled: true
   configuration: {}
+# Checks that override function is useful
+- name: USELESS_OVERRIDE
+  enabled: true
+  configuration: {}

@@ -196,4 +196,6 @@ public object WarningNames {
 
     public const val WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR: String =
             "WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR"
+
+    public const val USELESS_OVERRIDE: String = "USELESS_OVERRIDE"
 }
