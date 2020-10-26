@@ -54,20 +54,20 @@ class AbstractClassesRule(private val configRule: List<RulesConfig>) : Rule("abs
                     val abstractKeyword = modList.getFirstChildWithType(ABSTRACT_KEYWORD)!!
 
                     // we are deleting one keyword, so we need to delete extra space
-                    val spaceInModifiers = if (abstractKeyword == modList.lastChildNode) {
-                        modList.treeNext
-                    } else {
+                    val spaceInModifiers = if (abstractKeyword == modList.firstChildNode) {
                         abstractKeyword.treeNext
+                    } else {
+                        abstractKeyword.treePrev
                     }
-                    modList.removeChild(modList.getFirstChildWithType(ABSTRACT_KEYWORD)!!)
+                    modList.removeChild(abstractKeyword)
                     if (spaceInModifiers != null && spaceInModifiers.isWhiteSpace()) {
                         modList.removeChild(spaceInModifiers)
                     }
                 } else {
-                    classNode.removeChild(modList)
-                    if (classNode.firstChildNode.isWhiteSpace()) {
-                        classNode.removeChild(classNode.firstChildNode)
+                    if (modList.treeNext.isWhiteSpace()) {
+                        classNode.removeChild(modList.treeNext)
                     }
+                    classNode.removeChild(modList)
                 }
             }
         }
