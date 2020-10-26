@@ -40,6 +40,7 @@ class AbstractClassesRule(private val configRule: List<RulesConfig>) : Rule("abs
     private fun checkAbstractModifier(node: ASTNode): Boolean =
             node.getFirstChildWithType(MODIFIER_LIST)?.hasChildOfType(ABSTRACT_KEYWORD) ?: false
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun handleAbstractClass(node: ASTNode, classNode: ASTNode) {
         val functions = node.getAllChildrenWithType(FUN)
 
