@@ -52,7 +52,7 @@
         <commons-cli.version>1.4</commons-cli.version>
         <diktat-check.version>0.1.2</diktat-check.version>
         <kotlinpoet.version>1.7.1</kotlinpoet.version>
-        <detekt.version>1.14.0</detekt.version>
+        <detekt.version>1.14.2</detekt.version>
         <dokka.version>1.4.10</dokka.version>
         <jacoco.version>0.8.6</jacoco.version>
     </properties>
@@ -137,7 +137,7 @@
             <dependency>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
-                <version>3.17.0</version>
+                <version>3.18.0</version>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>

@@ -21,7 +21,7 @@ class VariablesWithAssignmentsSearchTest {
                     o = 17
                 }
             }
-        """.trimIndent(), 0) { node, counter ->
+        """.trimIndent(), 0) { node, _ ->
             if (node.elementType == FILE) {
                 val vars = node.findAllVariablesWithAssignments().mapKeys { it.key.text }
                 val keys = vars.keys
@@ -47,7 +47,7 @@ class VariablesWithAssignmentsSearchTest {
                     }
                 }
             }
-        """.trimIndent(), 0) { node, counter ->
+        """.trimIndent(), 0) { node, _ ->
             if (node.elementType == FILE) {
                 val vars = node.findAllVariablesWithAssignments().mapKeys { it.key.text }
                 val keys = vars.keys
@@ -66,7 +66,7 @@ class VariablesWithAssignmentsSearchTest {
                     var a = 1
                     a++
                 }
-        """.trimIndent(), 0) { node, counter ->
+        """.trimIndent(), 0) { node, _ ->
             if (node.elementType == FILE) {
                 val vars = node.findAllVariablesWithAssignments().mapKeys { it.key.text }
                 val keys = vars.keys

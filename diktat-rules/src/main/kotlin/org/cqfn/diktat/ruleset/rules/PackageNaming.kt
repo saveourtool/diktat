@@ -53,7 +53,7 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
         if (domainNameConfiguration == null) {
             log.error("Not able to find an external configuration for domain name in the common configuration (is it missing in yml config?)")
         }
-        val configuration = configRules.getCommonConfiguration().value
+        val configuration by configRules.getCommonConfiguration()
         domainName = configuration.domainName
 
         if (node.elementType == PACKAGE_DIRECTIVE) {

@@ -269,6 +269,9 @@
   enabled: true
   configuration:
     typeReferenceLength: '25' # max length of type reference
+- name: SMART_CAST_NEEDED
+  enabled: true
+  configuration: {}
 - name: GENERIC_VARIABLE_WRONG_DECLARATION
   enabled: true
   configuration: {}
@@ -320,5 +323,17 @@
   configuration: {}
 # Checks that property in constructor doesn't contains comment
 - name: KDOC_NO_CONSTRUCTOR_PROPERTY
+  enabled: true
+  configuration: {}
+# Checks if class can be made as data class
+- name: USE_DATA_CLASS
+  enabled: true
+  configuration: {}
+# Checks that never use the name of a variable in the custom getter or setter
+- name: WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR
+  enabled: true
+  configuration: {}
+# Checks that there are abstract functions in abstract class
+- name: CLASS_SHOULD_NOT_BE_ABSTRACT
   enabled: true
   configuration: {}
