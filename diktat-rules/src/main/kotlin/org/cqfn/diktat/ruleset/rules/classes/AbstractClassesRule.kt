@@ -51,8 +51,14 @@ class AbstractClassesRule(private val configRule: List<RulesConfig>) : Rule("abs
             CLASS_SHOULD_NOT_BE_ABSTRACT.warnAndFix(configRule, emitWarn, isFixMode, identifier, node.startOffset, node) {
                 val modList = classNode.getFirstChildWithType(MODIFIER_LIST)!!
                 if (modList.getChildren(null).size > 1) {
+                    val abstractKeyword = modList.getFirstChildWithType(ABSTRACT_KEYWORD)!!
+
                     // we are deleting one keyword, so we need to delete extra space
-                    val spaceInModifiers = modList.getFirstChildWithType(WHITE_SPACE)
+                    val spaceInModifiers = if (abstractKeyword == modList.lastChildNode) {
+                        modList.treeNext
+                    } else {
+                        abstractKeyword.treeNext
+                    }
                     modList.removeChild(modList.getFirstChildWithType(ABSTRACT_KEYWORD)!!)
                     if (spaceInModifiers != null && spaceInModifiers.isWhiteSpace()) {
                         modList.removeChild(spaceInModifiers)

@@ -5,7 +5,7 @@ class Some() {
 
     fun another(){}
 
-    inner class Any {
+    @SomeAnnotation @Another inner class Any {
         fun func(){}
     }
 

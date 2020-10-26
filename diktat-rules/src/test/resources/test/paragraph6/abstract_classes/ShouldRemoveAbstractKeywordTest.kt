@@ -5,7 +5,7 @@ abstract class Some() {
 
     fun another(){}
 
-    abstract inner class Any {
+    @SomeAnnotation @Another abstract inner class Any {
         fun func(){}
     }
 
