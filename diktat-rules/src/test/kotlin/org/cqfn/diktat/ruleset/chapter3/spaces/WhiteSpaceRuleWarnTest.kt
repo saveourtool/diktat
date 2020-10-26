@@ -4,7 +4,7 @@ import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_WHITESPACE
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
-import org.cqfn.diktat.ruleset.rules.WhiteSpaceRule
+import org.cqfn.diktat.ruleset.rules.files.WhiteSpaceRule
 import org.cqfn.diktat.util.LintTestBase
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test

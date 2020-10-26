@@ -119,6 +119,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     // ======== chapter 6 ========
     USE_DATA_CLASS(false, "this class can be converted to a data class"),
     WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR(false, "Use `field` keyword instead of property name inside property accessors"),
+    MULTIPLE_INIT_BLOCKS(true, "Avoid using multiple `init` blocks, this logic can be moved to constructors or properties declarations"),
     ;
 
     /**

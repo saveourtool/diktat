@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter3.spaces
 
 import generated.WarningNames
-import org.cqfn.diktat.ruleset.rules.WhiteSpaceRule
+import org.cqfn.diktat.ruleset.rules.files.WhiteSpaceRule
 import org.cqfn.diktat.util.FixTestBase
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test

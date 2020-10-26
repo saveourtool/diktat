@@ -8,6 +8,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfigReader
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.calculations.AccurateCalculationsRule
 import org.cqfn.diktat.ruleset.rules.classes.DataClassesRule
+import org.cqfn.diktat.ruleset.rules.classes.SingleInitRule
 import org.cqfn.diktat.ruleset.rules.comments.CommentsRule
 import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule
 import org.cqfn.diktat.ruleset.rules.files.BlankLinesRule
@@ -15,6 +16,7 @@ import org.cqfn.diktat.ruleset.rules.files.FileSize
 import org.cqfn.diktat.ruleset.rules.files.FileStructureRule
 import org.cqfn.diktat.ruleset.rules.files.IndentationRule
 import org.cqfn.diktat.ruleset.rules.files.NewlinesRule
+import org.cqfn.diktat.ruleset.rules.files.WhiteSpaceRule
 import org.cqfn.diktat.ruleset.rules.identifiers.LocalVariablesRule
 import org.cqfn.diktat.ruleset.rules.kdoc.CommentsFormatting
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocComments
@@ -83,10 +85,11 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
                 ::FunctionArgumentsSize,
                 ::BlankLinesRule,
                 ::NullableTypeRule,
-                ::WhiteSpaceRule,
+                ::SingleInitRule,
                 ::WhenMustHaveElseRule,
                 ::ImmutableValNoVarRule,
                 ::AvoidNestedFunctionsRule,
+                ::WhiteSpaceRule,  // this rule should be after other rules that can cause wrong spacing
                 ::FileStructureRule,  // this rule should be right before indentation because it should operate on already valid code
                 ::NewlinesRule,  // newlines need to be inserted right before fixing indentation
                 ::IndentationRule  // indentation rule should be the last because it fixes formatting after all the changes done by previous rules
