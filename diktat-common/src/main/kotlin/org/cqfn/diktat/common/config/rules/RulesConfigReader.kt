@@ -4,15 +4,18 @@
 
 package org.cqfn.diktat.common.config.rules
 
+import org.cqfn.diktat.common.config.reader.JsonResourceConfigReader
+
 import com.charleskorn.kaml.Yaml
 import com.charleskorn.kaml.YamlConfiguration
-import java.io.BufferedReader
-import java.io.File
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
-import org.cqfn.diktat.common.config.reader.JsonResourceConfigReader
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+
+import java.io.BufferedReader
+import java.io.File
+
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
 
 const val DIKTAT_COMMON = "DIKTAT_COMMON"
 
@@ -98,7 +101,7 @@ fun List<RulesConfig>.getCommonConfiguration() = lazy {
  *
  * @param configuration map of common configuration
  */
-class CommonConfiguration(configuration: Map<String, String>?) {
+data class CommonConfiguration(private val configuration: Map<String, String>?) {
     /**
      * List of directory names which will be used to detect test sources
      */
