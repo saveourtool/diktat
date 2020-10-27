@@ -36,11 +36,15 @@ class StringTemplateRuleWarnTest : LintTestBase(::StringTemplateFormatRule) {
                     |   val template = "${'$'}{a} ${'$'}{asd.moo()}"
                     |   val some = "${'$'}{1.0}"
                     |   val another = "${'$'}{1}"
+                    |   val singleLetterCase = "${'$'}{ref}"
+                    |   val digitsWithLetters = "${'$'}{1.0}asd"
                     |}
                 """.trimMargin(),
                 LintError(2, 20, ruleId, "${Warnings.STRING_TEMPLATE_CURLY_BRACES.warnText()} ${'$'}{a}", true),
                 LintError(3, 16, ruleId, "${Warnings.STRING_TEMPLATE_CURLY_BRACES.warnText()} ${'$'}{1.0}", true),
-                LintError(4, 19, ruleId, "${Warnings.STRING_TEMPLATE_CURLY_BRACES.warnText()} ${'$'}{1}", true)
+                LintError(4, 19, ruleId, "${Warnings.STRING_TEMPLATE_CURLY_BRACES.warnText()} ${'$'}{1}", true),
+                LintError(5, 28, ruleId, "${Warnings.STRING_TEMPLATE_CURLY_BRACES.warnText()} ${'$'}{ref}", true),
+                LintError(6, 29, ruleId, "${Warnings.STRING_TEMPLATE_CURLY_BRACES.warnText()} ${'$'}{1.0}", true)
         )
     }
 

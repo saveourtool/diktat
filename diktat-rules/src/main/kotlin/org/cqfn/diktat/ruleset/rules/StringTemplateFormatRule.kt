@@ -94,12 +94,11 @@ class StringTemplateFormatRule(private val configRules: List<RulesConfig>) : Rul
                 ?.treeParent
                 ?.elementType == LONG_STRING_TEMPLATE_ENTRY
         return if (onlyOneRefExpr) {
-            true
+            !(node.treeNext.text.first().isLetterOrDigit() // checking if first letter is valid
+                    || node.treeNext.text.startsWith("_"))
+                    || node.treeNext.elementType == CLOSING_QUOTE
         } else {
-            node.hasAnyChildOfTypes(FLOAT_CONSTANT, INTEGER_CONSTANT)
-        } && (!(node.treeNext.text.first().isLetterOrDigit() // checking if first letter is valid
-                || node.treeNext.text.startsWith("_"))
-                || node.treeNext.elementType == CLOSING_QUOTE
-                )
+            node.hasAnyChildOfTypes(FLOAT_CONSTANT, INTEGER_CONSTANT) // it also fixes "${1.0}asd" cases
+        }
     }
 }
