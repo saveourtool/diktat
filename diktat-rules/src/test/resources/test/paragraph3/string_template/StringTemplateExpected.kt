@@ -17,5 +17,7 @@ class SomeClass {
         val test = """${'$'}"""
 
         val test2= "${'$'}1"
+
+        val digitsWithLetters = "1.0asd"
     }
 }
