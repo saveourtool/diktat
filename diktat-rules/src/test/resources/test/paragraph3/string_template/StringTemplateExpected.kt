@@ -10,6 +10,8 @@ class SomeClass {
 
         val template = "$x, ${asd.moo()}"
 
+        val binExpr = "${foo as Foo}"
+
         val trippleQuotes = """$x"""
 
         val test = """${'$'}"""

@@ -97,7 +97,7 @@ class StringTemplateFormatRule(private val configRules: List<RulesConfig>) : Rul
             true
         } else {
             node.hasAnyChildOfTypes(FLOAT_CONSTANT, INTEGER_CONSTANT)
-        } && (!(node.treeNext.text.take(1).first().isLetterOrDigit()
+        } && (!(node.treeNext.text.toCharArray().first().isLetterOrDigit() // checking if first letter is valid
                 || node.treeNext.text.startsWith("_"))
                 || node.treeNext.elementType == CLOSING_QUOTE
                 )
