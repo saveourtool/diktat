@@ -46,34 +46,36 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
             ?.onEach(::validate)
             ?: emptyList()
         val rules = listOf(
+                // comments & documentation
                 ::CommentsRule,
                 ::KdocComments,
                 ::KdocMethods,
                 ::KdocFormatting,
+                ::CommentsFormatting,
+                // naming
                 ::FileNaming,
                 ::PackageNaming,
-                ::StringTemplateFormatRule,
-                ::FileSize,
-                ::DataClassesRule,
                 ::IdentifierNaming,
-                ::LocalVariablesRule,
+                // code structure
                 ::ClassLikeStructuresOrderRule,
+                ::WhenMustHaveElseRule,
                 ::BracesInConditionalsAndLoopsRule,
                 ::BlockStructureBraces,
                 ::EmptyBlock,
+                ::EnumsSeparated,
+                ::SingleLineStatementsRule,
+                ::MultipleModifiersSequence,
+                // other rules
+                ::StringTemplateFormatRule,
+                ::DataClassesRule,
+                ::LocalVariablesRule,
                 ::SmartCastRule,
                 ::PropertyAccessorFields,
-                ::EnumsSeparated,
                 ::AbstractClassesRule,
                 ::VariableGenericTypeDeclarationRule,
-                ::SingleLineStatementsRule,
-                ::CommentsFormatting,
-                ::ConsecutiveSpacesRule,
                 ::LongNumericalValuesSeparatedRule,
                 ::NestedFunctionBlock,
-                ::MultipleModifiersSequence,
                 ::AnnotationNewLineRule,
-                ::HeaderCommentRule,
                 ::SortRule,
                 ::StringConcatenationRule,
                 ::AccurateCalculationsRule,
@@ -84,11 +86,14 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
                 ::LambdaParameterOrder,
                 ::FunctionArgumentsSize,
                 ::BlankLinesRule,
+                ::FileSize,
                 ::NullableTypeRule,
-                ::WhiteSpaceRule,
-                ::WhenMustHaveElseRule,
                 ::ImmutableValNoVarRule,
                 ::AvoidNestedFunctionsRule,
+                // formatting: moving blocks, adding line breaks, indentations etc.
+                ::ConsecutiveSpacesRule,
+                ::WhiteSpaceRule,
+                ::HeaderCommentRule,
                 ::FileStructureRule,  // this rule should be right before indentation because it should operate on already valid code
                 ::NewlinesRule,  // newlines need to be inserted right before fixing indentation
                 ::IndentationRule  // indentation rule should be the last because it fixes formatting after all the changes done by previous rules
