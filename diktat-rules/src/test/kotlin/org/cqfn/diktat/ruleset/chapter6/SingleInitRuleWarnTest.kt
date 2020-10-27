@@ -40,4 +40,20 @@ class SingleInitRuleWarnTest: LintTestBase(::SingleInitRule) {
             LintError(1, 15, ruleId, "${Warnings.MULTIPLE_INIT_BLOCKS.warnText()} in class <Example> found 2 `init` blocks", true)
         )
     }
+
+    @Test
+    @Tag(WarningNames.MULTIPLE_INIT_BLOCKS)
+    fun `should warn if properties are assigned in init block`() {
+        lintMethod(
+            """
+                |class A(baseUrl: String) {
+                |    private val customUrl: String
+                |    init {
+                |        customUrl = "${'$'}baseUrl/myUrl"
+                |    }
+                |}
+            """.trimMargin(),
+            LintError(3, 5, ruleId, "${Warnings.MULTIPLE_INIT_BLOCKS.warnText()} `init` block has assignments that can be moved to declarations", true)
+        )
+    }
 }
