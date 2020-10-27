@@ -80,6 +80,7 @@ class SingleInitRule(private val configRule: List<RulesConfig>) : Rule("multiple
         firstInitBlock.parent(CLASS_BODY)?.let(::removeEmptyBlocks)
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun moveAssignmentsToProperties(properties: List<ASTNode>, initBlock: ASTNode) {
         initBlock
             .findChildByType(BLOCK)
@@ -122,7 +123,7 @@ class SingleInitRule(private val configRule: List<RulesConfig>) : Rule("multiple
     private fun removeEmptyBlocks(node: ASTNode) {
         node.getAllChildrenWithType(CLASS_INITIALIZER)
             .filter {
-                (it.findChildByType(BLOCK)!!.psi as KtBlockExpression).statements.isEmpty()
+                (it.findChildByType(BLOCK)?.psi as KtBlockExpression?)?.statements?.isEmpty() ?: false
             }
             .forEach {
                 it.treeParent.removeChild(it)
