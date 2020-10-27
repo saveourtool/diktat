@@ -75,10 +75,9 @@ class WhenMustHaveElseRule(private val configRules: List<RulesConfig>) : Rule("n
         }
 
         // Checks if `when` is the last statement in lambda body
-        if (node.treeParent.elementType == BLOCK && node.treeParent.treeParent.elementType == FUNCTION_LITERAL) {
-            if (node.treeParent.lastChildNode == node) {
-                return false
-            }
+        if (node.treeParent.elementType == BLOCK && node.treeParent.treeParent.elementType == FUNCTION_LITERAL &&
+            node.treeParent.lastChildNode == node) {
+            return false
         }
 
         if (node.treeParent.elementType == WHEN_ENTRY && node.prevSibling { it.elementType == ARROW } != null) {
