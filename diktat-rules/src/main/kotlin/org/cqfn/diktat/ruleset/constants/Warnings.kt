@@ -100,6 +100,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     // ======== chapter 4 ========
     NULLABLE_PROPERTY_TYPE(true, "try to avoid use of nullable types"),
     TYPE_ALIAS(false, "variable's type is too complex and should be replaced with typealias"),
+    SMART_CAST_NEEDED(true, "You can omit explicit casting"),
     SAY_NO_TO_VAR(false, "Usage of a mutable variables with [var] modifier - is a bad style, use [val] instead"),
     GENERIC_VARIABLE_WRONG_DECLARATION(true, "variable should have explicit type declaration"),
     STRING_TEMPLATE_CURLY_BRACES(true, "string template has redundant curly braces"),
@@ -114,6 +115,11 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     TOO_MANY_PARAMETERS(false, "function has too many parameters"),
     NESTED_BLOCK(false, "function has too many nested blocks and should be simplified"),
     WRONG_OVERLOADING_FUNCTION_ARGUMENTS(false, "use default argument instead of function overloading"),
+
+    // ======== chapter 6 ========
+    USE_DATA_CLASS(false, "this class can be converted to a data class"),
+    WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR(false, "Use `field` keyword instead of property name inside property accessors"),
+    CLASS_SHOULD_NOT_BE_ABSTRACT(true, "class should not be abstract, because it has no abstract functions"),
     ;
 
     /**
@@ -160,6 +166,12 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     private inline fun fix(configs: List<RulesConfig>, autoFix: () -> Unit, isFix: Boolean, node: ASTNode) {
         if (configs.isRuleEnabled(this) && isFix && !node.hasSuppress(name)) {
             autoFix()
+        }
+    }
+
+    companion object {
+        val names by lazy {
+            values().map { it.name }
         }
     }
 }

@@ -1,13 +1,14 @@
-/*
- * Copyright (c) Your Company Name Here. 2010-2020
- */
-
-package your.name.here
+package org.cqfn.diktat
 
 class Example {
     @get:JvmName("getIsValid")
     val isValid = true
     val foo: Int = 1
+
+    /**
+     * @return
+     */
+    fun Foo.foo() { }
 
     /**
      * @param x
