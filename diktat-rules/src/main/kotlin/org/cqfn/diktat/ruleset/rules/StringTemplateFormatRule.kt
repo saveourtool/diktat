@@ -1,9 +1,16 @@
 package org.cqfn.diktat.ruleset.rules
 
 import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.ast.ElementType
+import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.BINARY_WITH_TYPE
+import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.CLOSING_QUOTE
 import com.pinterest.ktlint.core.ast.ElementType.COLONCOLON
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.FLOAT_CONSTANT
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
+import com.pinterest.ktlint.core.ast.ElementType.INTEGER_CONSTANT
 import com.pinterest.ktlint.core.ast.ElementType.LITERAL_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.LONG_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
@@ -12,6 +19,8 @@ import com.pinterest.ktlint.core.ast.ElementType.SHORT_TEMPLATE_ENTRY_START
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
+import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
+import org.cqfn.diktat.ruleset.utils.hasAnyChildOfTypes
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -41,8 +50,7 @@ class StringTemplateFormatRule(private val configRules: List<RulesConfig>) : Rul
     @Suppress("UnsafeCallOnNullableType")
     private fun handleLongStringTemplate(node: ASTNode) {
         // Checking if in long templates {a.foo()} there are function calls or class toString call
-        if (node.findAllNodesWithSpecificType(COLONCOLON).isEmpty() &&
-                node.findAllNodesWithSpecificType(DOT_QUALIFIED_EXPRESSION).isEmpty()) {
+        if (bracesCanBeOmitted(node)) {
             Warnings.STRING_TEMPLATE_CURLY_BRACES.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
                 val identifierName = node.findChildByType(REFERENCE_EXPRESSION)
                 if (identifierName != null) {
@@ -75,6 +83,22 @@ class StringTemplateFormatRule(private val configRules: List<RulesConfig>) : Rul
                 node.treeParent.treeParent.addChild(identifier, node.treeParent)
                 node.treeParent.treeParent.removeChild(node.treeParent)
             }
+        }
+    }
+
+    @Suppress("UnsafeCallOnNullableType")
+    private fun bracesCanBeOmitted(node: ASTNode): Boolean {
+        val onlyOneRefExpr = node
+                .findAllNodesWithSpecificType(REFERENCE_EXPRESSION)
+                .singleOrNull()
+                ?.treeParent
+                ?.elementType == LONG_STRING_TEMPLATE_ENTRY
+        return if (onlyOneRefExpr) {
+            !(node.treeNext.text.first().isLetterOrDigit() // checking if first letter is valid
+                    || node.treeNext.text.startsWith("_"))
+                    || node.treeNext.elementType == CLOSING_QUOTE
+        } else {
+            node.hasAnyChildOfTypes(FLOAT_CONSTANT, INTEGER_CONSTANT) // it also fixes "${1.0}asd" cases
         }
     }
 }

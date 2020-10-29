@@ -1,7 +1,8 @@
 package org.cqfn.diktat.common.cli
 
-import kotlinx.serialization.*
 import org.apache.commons.cli.Option
+
+import kotlinx.serialization.*
 
 /**
  * This class is used to serialize/deserialize json representation
