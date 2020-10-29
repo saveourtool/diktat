@@ -1,16 +1,19 @@
 package org.cqfn.diktat.test.framework.processing
 
-import java.io.File
-import java.io.IOException
-import java.util.concurrent.atomic.AtomicInteger
-import java.util.stream.Stream
-import kotlin.system.exitProcess
 import org.cqfn.diktat.test.framework.common.TestBase
 import org.cqfn.diktat.test.framework.config.TestArgumentsReader
 import org.cqfn.diktat.test.framework.config.TestConfig
 import org.cqfn.diktat.test.framework.config.TestConfig.ExecutionType
 import org.cqfn.diktat.test.framework.config.TestConfigReader
+
 import org.slf4j.LoggerFactory
+
+import java.io.File
+import java.io.IOException
+import java.util.concurrent.atomic.AtomicInteger
+import java.util.stream.Stream
+
+import kotlin.system.exitProcess
 
 /**
  * A class that runs tests based on configuration

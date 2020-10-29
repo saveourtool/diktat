@@ -1,13 +1,15 @@
 package org.cqfn.diktat.test.framework.processing
 
-import java.io.File
-import org.apache.commons.io.FileUtils
 import org.cqfn.diktat.test.framework.common.ExecutionResult
 import org.cqfn.diktat.test.framework.common.TestBase
 import org.cqfn.diktat.test.framework.config.TestConfig
 import org.cqfn.diktat.test.framework.config.TestFrameworkProperties
+
+import org.apache.commons.io.FileUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+
+import java.io.File
 
 /**
  * A class that runs tests and compares output with expected result

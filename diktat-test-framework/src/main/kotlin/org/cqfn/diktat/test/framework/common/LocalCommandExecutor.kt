@@ -1,7 +1,8 @@
 package org.cqfn.diktat.test.framework.common
 
-import java.io.IOException
 import org.slf4j.LoggerFactory
+
+import java.io.IOException
 
 /**
  * Class that wraps shell [command] and can execute it
