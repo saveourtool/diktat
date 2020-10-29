@@ -13,4 +13,10 @@ class UselessOverrideFixTest : FixTestBase("test/paragraph6/useless-override", :
     fun `fix nested functions`() {
         fixAndCompare("UselessOverrideExpected.kt", "UselessOverrideTest.kt")
     }
+
+    @Test
+    @Tag(WarningNames.USELESS_OVERRIDE)
+    fun `fix nestedd functions`() {
+        fixAndCompare("SeveravalSyperTypesExpected.kt", "SeveravalSyperTypesTest.kt")
+    }
 }

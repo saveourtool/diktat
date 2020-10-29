@@ -58,4 +58,27 @@ class UselessOverrideWarnTest: LintTestBase(::UselessOverride) {
                 LintError(16,25, ruleId, "${USELESS_OVERRIDE.warnText()} draw", true)
         )
     }
+
+    @Test
+    @Tag(WarningNames.USELESS_OVERRIDE)
+    fun `check simple wronfg examples`() {
+        lintMethod(
+                """
+                    open class Rectangle {
+                        open fun draw() { /* ... */ }
+                    }
+                    
+                    class Square2() : Rectangle(), Keke {
+                        override fun draw() {
+                            super<Rectangle>.draw()
+                            super.draw()
+                        }
+                        
+                        private fun goo() {}
+                        
+                        private fun goo() {}
+                    }
+                """.trimMargin()
+        )
+    }
 }
