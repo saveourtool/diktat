@@ -1,7 +1,6 @@
 package org.cqfn.diktat.ruleset.utils.search
 
 import com.pinterest.ktlint.core.ast.ElementType
-import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.lineNumber
 import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -122,19 +121,7 @@ fun default(node: KtProperty) = true
  */
 fun ASTNode.isShadowOf(identifier: ASTNode): Boolean {
     val propertyScope = identifier.psi.getDeclarationScope()
-    return this.isGoingAfter(identifier) && this.inNestedScopeOf(propertyScope) && this.text == identifier.text
-
-    /*
-                block.node.getChildren(TokenSet.create(ElementType.VALUE_ARGUMENT, ElementType.PROPERTY))
-                        .any { it.text == this.text && property.node.isGoingAfter(it) } ||
-                        block.parent
-                                .let { it as? KtFunctionLiteral }
-                                ?.valueParameters
-                                ?.any { it.nameAsName?.asString() == this.text }
-                        ?: false
-                // FixMe: also see very strange behavior of Kotlin in tests (disabled)
-            }
-     */
+    return this.isGoingAfter(identifier) && this.isInNestedScopeOf(propertyScope) && this.text == identifier.text
 }
 
 /**
@@ -147,13 +134,13 @@ fun ASTNode.isGoingAfter(otherNode: ASTNode): Boolean {
     require(thisLineNumber != null) { "Node ${this.text} should have a line number" }
     require(otherLineNumber != null) { "Node ${otherNode.text} should have a line number" }
 
-    return (thisLineNumber > otherLineNumber)
+    return (thisLineNumber >= otherLineNumber)
 }
 
 /**
  * checks that [this] node is placed in the nested block of [scope]
  */
-fun ASTNode.inNestedScopeOf(scope: KtElement?) =
+fun ASTNode.isInNestedScopeOf(scope: KtElement?) =
         this.psi.parents
                 // getting all block expressions/class bodies/file node from bottom to the top
                 // FixMe: Object companion is not resolved properly yet
@@ -163,3 +150,11 @@ fun ASTNode.inNestedScopeOf(scope: KtElement?) =
                 .toList()
                 .isNotEmpty()
 
+
+fun ASTNode.getChildScopes() {
+    val currentScope = this.psi.getDeclarationScope()
+    val childrenScope = currentScope.getChildrenRecursively<KtBlockExpression>() +
+            currentScope.getChildrenRecursively<KtClassBody>()
+
+    println(childrenScope)
+}

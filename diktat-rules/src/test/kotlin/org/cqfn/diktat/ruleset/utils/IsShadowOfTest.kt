@@ -22,7 +22,7 @@ class IsShadowOfTest {
                     val a = 1 // properties[2]
                 }
             }
-        """.trimIndent(), 3) { node, _ ->
+        """.trimIndent(), 0) { node, _ ->
             if (node.elementType == FILE) {
                 val properties = node.findAllNodesWithSpecificType(PROPERTY).map { it.findChildByType(IDENTIFIER) }
                 assertTrue(properties[2]!!.isShadowOf(properties[1]!!))
@@ -41,7 +41,7 @@ class IsShadowOfTest {
                     val a = 1 // properties[1]
                 }
             }
-        """.trimIndent(), 1) { node, _ ->
+        """.trimIndent(), 0) { node, _ ->
             if (node.elementType == FILE) {
                 val parameters = node.findAllNodesWithSpecificType(VALUE_PARAMETER).map { it.findChildByType(IDENTIFIER) }
                 val properties = node.findAllNodesWithSpecificType(PROPERTY).map { it.findChildByType(IDENTIFIER) }
@@ -85,10 +85,96 @@ class IsShadowOfTest {
                 val parameters = node.findAllNodesWithSpecificType(VALUE_PARAMETER).map { it.findChildByType(IDENTIFIER) }
                 val properties = node.findAllNodesWithSpecificType(PROPERTY).map { it.findChildByType(IDENTIFIER) }
                 assertTrue(parameters[1]!!.isShadowOf(parameters[0]!!))
-                assertTrue(parameters[1]!!.isShadowOf(parameters[0]!!))
+                assertTrue(properties[0]!!.isShadowOf(parameters[0]!!))
+                assertTrue(properties[0]!!.isShadowOf(parameters[1]!!))
+            }
+        }
+    }
+
+    @Test
+    fun `testing isShadowOf with different functions in same context`() {
+        applyToCode("""
+            fun foo(a: Int) { // parameters[0]
+            }
+            
+            fun foo(b: Int) { // parameters[1]
+            }
+        """.trimIndent(), 0) { node, _ ->
+            if (node.elementType == FILE) {
+                val parameters = node.findAllNodesWithSpecificType(VALUE_PARAMETER).map { it.findChildByType(IDENTIFIER) }
+                assertFalse(parameters[1]!!.isShadowOf(parameters[0]!!))
+            }
+        }
+    }
+
+    @Test
+    fun `testing isShadowOf with classes and internal stuff`() {
+        applyToCode("""
+            class A(val a: Int) { // parameters[0]
+                fun foo(a: Int) { // parameters[1]
+                    val a = 0 // properties[0]
+                }
+            }
+        """.trimIndent(), 0) { node, _ ->
+            if (node.elementType == FILE) {
+                val parameters = node.findAllNodesWithSpecificType(VALUE_PARAMETER).map { it.findChildByType(IDENTIFIER) }
+                val properties = node.findAllNodesWithSpecificType(PROPERTY).map { it.findChildByType(IDENTIFIER) }
+                assertTrue(properties[0]!!.isShadowOf(parameters[0]!!))
+                assertTrue(properties[0]!!.isShadowOf(parameters[0]!!))
+            }
+        }
+    }
+
+    @Test
+    fun `testing isShadowOf with different classes in same context`() {
+        applyToCode("""
+            class A(val a: Int) { // parameters[0]
+            }
+            
+            class B(val a: Int) { // parameters[1]
+            }
+        """.trimIndent(), 0) { node, _ ->
+            if (node.elementType == FILE) {
+                val parameters = node.findAllNodesWithSpecificType(VALUE_PARAMETER).map { it.findChildByType(IDENTIFIER) }
+                assertFalse(parameters[1]!!.isShadowOf(parameters[0]!!))
+            }
+        }
+    }
+
+    @Test
+    fun `testing isShadowOf complex case`() {
+        applyToCode("""
+            val a = 5
+            class A(val a: Int) { // parameters[0]
+                class B(val a: Int) { // parameters[1]
+                    fun foo(a: Int) { // parameters[2]
+                        val a = 0 // properties[0]
+                    }
+                }
+            }
+            
+            class B(var a: Int) { // parameters[3]
+                init {
+                    val a = 0 // properties[1]
+                }
+                
+                companion object {
+                    val a = 0 // properties[2]
+                }
+                
+                fun foo(a: Int) { // parameters[4]
+                    val a = 1 // properties[3]
+                }
+            }
+        """.trimIndent(), 0) { node, _ ->
+            if (node.elementType == FILE) {
+                val parameters = node.findAllNodesWithSpecificType(VALUE_PARAMETER).map { it.findChildByType(IDENTIFIER) }
+                val properties = node.findAllNodesWithSpecificType(PROPERTY).map { it.findChildByType(IDENTIFIER) }
+                // Static analysis in Idea does not treat companion object and init blocks as shadowing, but it is definitely it
+                assertTrue(properties[1]!!.isShadowOf(parameters[3]!!))
+                assertTrue(properties[2]!!.isShadowOf(parameters[3]!!))
+                assertTrue(properties[2]!!.isShadowOf(parameters[2]!!))
             }
         }
     }
 }
-
-

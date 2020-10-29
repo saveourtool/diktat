@@ -1,6 +1,7 @@
 package org.cqfn.diktat.ruleset.utils
 
 import com.pinterest.ktlint.core.ast.ElementType
+import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
@@ -81,3 +82,13 @@ fun KtNameReferenceExpression.findLocalDeclaration(): KtProperty? = parents
         .firstOrNull()
 
 fun KtCallExpression.getFunctionName() = (calleeExpression as? KtNameReferenceExpression)?.getReferencedName()
+
+/**
+ * This method performs tree traversal and returns all PsiElements which satisfy the condition
+ * It is extremely useful when you need to find all children that are KtBlock, KtParameter, e.t.c
+ * [T] - is a type of psi element that we want to find in the list of the children
+ */
+inline fun <reified T : PsiElement> PsiElement.getChildrenRecursively(withSelf: Boolean = true) =
+        this.node.findAllNodesWithCondition({ it.psi is T }, withSelf).map { it.psi }
+
+
