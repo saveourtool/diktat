@@ -120,6 +120,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     USE_DATA_CLASS(false, "this class can be converted to a data class"),
     WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR(false, "Use `field` keyword instead of property name inside property accessors"),
     CLASS_SHOULD_NOT_BE_ABSTRACT(true, "class should not be abstract, because it has no abstract functions"),
+    NO_CORRESPONDING_PROPERTY(false, "there is no corresponding property")
     ;
 
     /**
