@@ -43,7 +43,6 @@ import org.jetbrains.kotlin.psi.KtImportDirective
  * 5. Ensures there are no wildcard imports
  */
 class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file-structure") {
-
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
     private var fileName: String = ""
@@ -91,12 +90,13 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         val copyrightComment = node.findChildBefore(PACKAGE_DIRECTIVE, BLOCK_COMMENT)
         val headerKdoc = node.findChildBefore(PACKAGE_DIRECTIVE, KDOC)
         val fileAnnotations = node.findChildByType(FILE_ANNOTATION_LIST)
-        // PACKAGE_DIRECTIVE node is always present in regular kt files and might be absent in kts
-        // kotlin compiler itself enforces it's position in the file if it is present
-        // fixme: handle cases when this node is not present
+        // PACKAGE_DIRECTIVE node is always present in regular kt files and might be absent in kts.
+        // Kotlin compiler itself enforces it's position in the file if it is present.
+        // If package directive is missing in .kt file (default package), the node is still present in the AST.
+        // fixme: handle cases when this node is not present (.kts files?)
         val packageDirectiveNode = (node.psi as KtFile).packageDirective?.node ?: return
         // fixme: find cases when node.psi.importLists.size > 1, handle cases when it's not present
-        val importsList = (node.psi as KtFile).importList?.node ?: return
+        val importsList = (node.psi as KtFile).importList?.takeIf { it.imports.isNotEmpty() }?.node
 
         // checking order
         listOfNotNull(copyrightComment, headerKdoc, fileAnnotations).handleIncorrectOrder({
@@ -186,6 +186,9 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
             }
     }
 
+    /**
+     * @return a pair of nodes between which [this] node should be placed, i.e. after the first and before the second element
+     */
     private fun ASTNode.getSiblingBlocks(
         copyrightComment: ASTNode?,
         headerKdoc: ASTNode?,

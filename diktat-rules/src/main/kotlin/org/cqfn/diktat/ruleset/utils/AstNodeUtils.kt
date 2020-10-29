@@ -450,6 +450,11 @@ fun ASTNode.areChildrenBeforeGroup(children: List<ASTNode>, group: List<ASTNode>
     return children.map { getChildren(null).indexOf(it) }.max()!! < group.map { getChildren(null).indexOf(it) }.min()!!
 }
 
+/**
+ * A function that rearranges nodes in a [this] list.
+ * @param getSiblingBlocks a function which returns nodes that should be before and after the current node
+ * @param incorrectPositionHandler function that moves the current node with respect to node before which in should be placed
+ */
 fun List<ASTNode>.handleIncorrectOrder(
     getSiblingBlocks: ASTNode.() -> Pair<ASTNode?, ASTNode>,
     incorrectPositionHandler: (nodeToMove: ASTNode, beforeThisNode: ASTNode) -> Unit
