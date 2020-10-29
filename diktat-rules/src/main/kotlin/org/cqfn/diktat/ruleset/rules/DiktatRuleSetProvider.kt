@@ -45,6 +45,9 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
             .readResource(diktatConfigFile)
             ?.onEach(::validate)
             ?: emptyList()
+        // Note: the order of rules is important in autocorrect mode. For example, all rules that add new code should be invoked before rules that fix formatting.
+        // We don't have a way to enforce a specific order, so we should just be careful when adding new rules to this list and, when possible,
+        // cover new rules in smoke test as well. If a rule needs to be at a specific position in a list, please add comment explaining it (like for NewlinesRule).
         val rules = listOf(
                 // comments & documentation
                 ::CommentsRule,
