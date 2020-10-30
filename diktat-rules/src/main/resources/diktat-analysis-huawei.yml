@@ -191,7 +191,8 @@
   configuration: {}
 - name: WRONG_NEWLINES
   enabled: true
-  configuration: {}
+  configuration:
+    maxParametersInOneLine: 2
 - name: TOO_MANY_CONSECUTIVE_SPACES
   enabled: true
   configuration:
