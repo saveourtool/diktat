@@ -1,18 +1,20 @@
 package org.cqfn.diktat.plugin.maven
 
+import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
+
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.RuleExecutionException
 import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.reporter.plain.PlainReporter
-import java.io.File
 import org.apache.maven.plugin.AbstractMojo
 import org.apache.maven.plugin.MojoExecutionException
 import org.apache.maven.plugin.MojoFailureException
 import org.apache.maven.plugins.annotations.Mojo
 import org.apache.maven.plugins.annotations.Parameter
 import org.apache.maven.project.MavenProject
-import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
+
+import java.io.File
 
 /**
  * Base [Mojo] for checking and fixing code using diktat

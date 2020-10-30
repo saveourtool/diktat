@@ -4,10 +4,12 @@
 
 package org.cqfn.diktat.plugin.maven
 
-import com.pinterest.ktlint.core.KtLint
-import java.io.File
-import org.apache.maven.plugins.annotations.Mojo
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
+
+import com.pinterest.ktlint.core.KtLint
+import org.apache.maven.plugins.annotations.Mojo
+
+import java.io.File
 
 /**
  * Main [Mojo] that call [DiktatRuleSetProvider]'s rules on [inputs] files

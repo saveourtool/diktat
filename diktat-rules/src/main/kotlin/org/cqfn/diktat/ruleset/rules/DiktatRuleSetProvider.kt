@@ -9,6 +9,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.calculations.AccurateCalculationsRule
 import org.cqfn.diktat.ruleset.rules.classes.AbstractClassesRule
 import org.cqfn.diktat.ruleset.rules.classes.DataClassesRule
+import org.cqfn.diktat.ruleset.rules.classes.SingleInitRule
 import org.cqfn.diktat.ruleset.rules.comments.CommentsRule
 import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule
 import org.cqfn.diktat.ruleset.rules.files.BlankLinesRule
@@ -16,6 +17,7 @@ import org.cqfn.diktat.ruleset.rules.files.FileSize
 import org.cqfn.diktat.ruleset.rules.files.FileStructureRule
 import org.cqfn.diktat.ruleset.rules.files.IndentationRule
 import org.cqfn.diktat.ruleset.rules.files.NewlinesRule
+import org.cqfn.diktat.ruleset.rules.files.WhiteSpaceRule
 import org.cqfn.diktat.ruleset.rules.identifiers.LocalVariablesRule
 import org.cqfn.diktat.ruleset.rules.kdoc.CommentsFormatting
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocComments
@@ -45,35 +47,41 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
             .readResource(diktatConfigFile)
             ?.onEach(::validate)
             ?: emptyList()
+        // Note: the order of rules is important in autocorrect mode. For example, all rules that add new code should be invoked before rules that fix formatting.
+        // We don't have a way to enforce a specific order, so we should just be careful when adding new rules to this list and, when possible,
+        // cover new rules in smoke test as well. If a rule needs to be at a specific position in a list, please add comment explaining it (like for NewlinesRule).
         val rules = listOf(
+                // comments & documentation
                 ::CommentsRule,
                 ::KdocComments,
                 ::KdocMethods,
                 ::KdocFormatting,
+                ::CommentsFormatting,
+                // naming
                 ::FileNaming,
                 ::PackageNaming,
-                ::StringTemplateFormatRule,
-                ::FileSize,
-                ::DataClassesRule,
                 ::IdentifierNaming,
-                ::LocalVariablesRule,
+                // code structure
                 ::ClassLikeStructuresOrderRule,
+                ::WhenMustHaveElseRule,
                 ::BracesInConditionalsAndLoopsRule,
                 ::BlockStructureBraces,
                 ::EmptyBlock,
+                ::EnumsSeparated,
+                ::SingleLineStatementsRule,
+                ::MultipleModifiersSequence,
+                // other rules
+                ::StringTemplateFormatRule,
+                ::DataClassesRule,
+                ::LocalVariablesRule,
                 ::SmartCastRule,
                 ::PropertyAccessorFields,
-                ::EnumsSeparated,
                 ::AbstractClassesRule,
+                ::SingleInitRule,
                 ::VariableGenericTypeDeclarationRule,
-                ::SingleLineStatementsRule,
-                ::CommentsFormatting,
-                ::ConsecutiveSpacesRule,
                 ::LongNumericalValuesSeparatedRule,
                 ::NestedFunctionBlock,
-                ::MultipleModifiersSequence,
                 ::AnnotationNewLineRule,
-                ::HeaderCommentRule,
                 ::SortRule,
                 ::StringConcatenationRule,
                 ::AccurateCalculationsRule,
@@ -84,11 +92,14 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
                 ::LambdaParameterOrder,
                 ::FunctionArgumentsSize,
                 ::BlankLinesRule,
+                ::FileSize,
                 ::NullableTypeRule,
-                ::WhiteSpaceRule,
-                ::WhenMustHaveElseRule,
                 ::ImmutableValNoVarRule,
                 ::AvoidNestedFunctionsRule,
+                // formatting: moving blocks, adding line breaks, indentations etc.
+                ::ConsecutiveSpacesRule,
+                ::WhiteSpaceRule,  // this rule should be after other rules that can cause wrong spacing
+                ::HeaderCommentRule,
                 ::FileStructureRule,  // this rule should be right before indentation because it should operate on already valid code
                 ::NewlinesRule,  // newlines need to be inserted right before fixing indentation
                 ::IndentationRule  // indentation rule should be the last because it fixes formatting after all the changes done by previous rules
