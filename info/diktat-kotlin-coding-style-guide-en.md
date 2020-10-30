@@ -1750,10 +1750,10 @@ These blocks are used to store the code that should be run during the initializa
 Kotlin allows to write multiple initialization blocks that are executed in the same order as they appear in the class body.
 Even when you have the (rule 3.2)[#s3.2] this makes code less readable as the programmer needs to keep in mind all init blocks and trace the execution of the code.
 So in your code you should try to use single `init` block to reduce the complexity. In case you need to do some logging or make some calculations before the assignment 
-of some class property - you can use powerful functional programming. This will reduce the possibility of the error, when occasioanlly someone will change the order of your `init` blocks. 
+of some class property - you can use powerful functional programming. This will reduce the possibility of the error, when occasionally someone will change the order of your `init` blocks. 
 And it will make the logic of the code more coupled. It is always enough to use one `init` block to implement your idea in Kotlin.
 
-Bad example A:
+Bad example:
 ```kotlin
 class YourClass(var name: String) {    
     init {
@@ -1768,7 +1768,7 @@ class YourClass(var name: String) {
 }
 ```
 
-Good example A:
+Good example:
 ```kotlin
 class YourClass(var name: String) {
     init {
@@ -1782,8 +1782,8 @@ class YourClass(var name: String) {
 }
 ```
 
-Also - init block was not added to Kotlin to help you simply initialize your properties it is needed for more conplex tasks. 
-So if `init` block contains only assignments of variables - move it directly to properties so they will be correctly initialized near the declaration.
+Also - init block was not added to Kotlin to help you simply initialize your properties it is needed for more complex tasks. 
+So if `init` block contains only assignments of variables - move it directly to properties, so they will be correctly initialized near the declaration.
 In some case this rule can be in clash with [6.1.1](#r6.1.1), but that should not stop you.
 Bad example:
 ```kotlin
@@ -1798,7 +1798,7 @@ class A(baseUrl: String) {
 Good example:
 ```kotlin
 class A(baseUrl: String) {
-    private val customUrl = customUrl = "$baseUrl/myUrl"
+    private val customUrl = "$baseUrl/myUrl"
 }
 ```
 
