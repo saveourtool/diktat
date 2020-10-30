@@ -6,6 +6,11 @@ class Example {
     val foo: Int = 1
 
     /**
+     * @return
+     */
+    fun Foo.foo() { }
+
+    /**
      * @param x
      * @param y
      * @return

@@ -51,14 +51,13 @@ class WhenMustHaveElseRule(private val configRules: List<RulesConfig>) : Rule("n
         }
     }
 
-
-    //FixMe: If a when statement of type enum or sealed contains all values of a enum - there is no need to have "else" branch.
-
     private fun checkEntries(node: ASTNode) {
         if (!hasElse(node)) {
             Warnings.WHEN_WITHOUT_ELSE.warnAndFix(configRules, emitWarn, isFixMode, "else was not found", node.startOffset, node) {
                 val whenEntryElse = CompositeElement(WHEN_ENTRY)
-                node.appendNewlineMergingWhiteSpace(node.lastChildNode.treePrev, node.lastChildNode.treePrev)
+                if (!node.lastChildNode.isBeginByNewline()) {
+                    node.appendNewlineMergingWhiteSpace(node.lastChildNode.treePrev, node.lastChildNode)
+                }
                 node.addChild(whenEntryElse, node.lastChildNode)
                 addChildren(whenEntryElse)
                 if(!whenEntryElse.isBeginByNewline()) {
@@ -93,7 +92,11 @@ class WhenMustHaveElseRule(private val configRules: List<RulesConfig>) : Rule("n
         }
     }
 
-    private fun hasElse(node: ASTNode): Boolean = (node.psi as KtWhenExpression).elseExpression != null
+    /**
+     * Check if this `when` has `else` branch. If `else` branch is empty, `(node.psi as KtWhenExpression).elseExpression` returns `null`,
+     * so we need to manually check if any entry contains `else` keyword.
+     */
+    private fun hasElse(node: ASTNode): Boolean = (node.psi as KtWhenExpression).entries.any { it.isElse }
 
     private fun addChildren(node: ASTNode) {
         val block = PsiBlockStatementImpl()
@@ -106,7 +109,6 @@ class WhenMustHaveElseRule(private val configRules: List<RulesConfig>) : Rule("n
             addChild(block, null)
         }
 
-
         block.apply{
             addChild(LeafPsiElement(LBRACE, "{"), null)
             addChild(PsiWhiteSpaceImpl("\n"),null)
@@ -114,6 +116,5 @@ class WhenMustHaveElseRule(private val configRules: List<RulesConfig>) : Rule("n
             addChild(PsiWhiteSpaceImpl("\n"),null)
             addChild(LeafPsiElement(RBRACE, "}"), null)
         }
-
     }
 }

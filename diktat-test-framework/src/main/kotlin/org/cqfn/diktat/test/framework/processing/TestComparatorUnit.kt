@@ -1,14 +1,15 @@
 package org.cqfn.diktat.test.framework.processing
 
+import org.apache.commons.io.FileUtils
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+
 import java.io.File
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.ArrayList
 import java.util.stream.Collectors
-import org.apache.commons.io.FileUtils
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 
 /**
  * Class that can apply transformation to an input file and then compare with expected result and output difference.

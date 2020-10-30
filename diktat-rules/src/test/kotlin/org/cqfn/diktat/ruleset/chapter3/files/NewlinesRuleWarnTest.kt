@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
+@Suppress("LargeClass")
 class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
     private val ruleId = "$DIKTAT_RULE_SET_ID:newlines"
     private val shouldBreakAfter = "${WRONG_NEWLINES.warnText()} should break a line after and not before"
@@ -577,6 +578,77 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 LintError(6, 22, ruleId,"${WRONG_NEWLINES.warnText()} should follow functional style at ?.", true),
                 LintError(10, 13, ruleId,"${WRONG_NEWLINES.warnText()} should follow functional style at .", true),
                 LintError(19, 20, ruleId,"${WRONG_NEWLINES.warnText()} should follow functional style at .", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
+    fun `should suggest newlines in a long argument list of a constructor`() {
+        lintMethod(
+            """
+                |class Foo(val arg1: Int, arg2: Int) { }
+                |
+                |class Foo(val arg1: Int, arg2: Int, arg3: Int) { 
+                |    constructor(arg1: Int, arg2: String, arg3: String) : this(arg1, 0, 0) { }
+                |}
+                |
+                |class Foo(val arg1: Int,
+                |          var arg2: Int,
+                |          arg3: Int) { }
+            """.trimMargin(),
+            LintError(3, 10, ruleId, "${WRONG_NEWLINES.warnText()} first parameter should be placed on a separate line or all other parameters " +
+                    "should be aligned with it in declaration of <Foo>", true),
+            LintError(3, 10, ruleId, "${WRONG_NEWLINES.warnText()} value parameters should be placed on different lines in declaration of <Foo>", true),
+            LintError(4, 16, ruleId, "${WRONG_NEWLINES.warnText()} first parameter should be placed on a separate line or all other parameters " +
+                    "should be aligned with it in declaration of <Foo>", true),
+            LintError(4, 16, ruleId, "${WRONG_NEWLINES.warnText()} value parameters should be placed on different lines in declaration of <Foo>", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
+    fun `should suggest newlines in a long argument list`() {
+        lintMethod(
+            """
+                |fun foo(arg1: Int, arg2: Int) { }
+                |
+                |fun bar(arg1: Int, arg2: Int, arg3: Int) { }
+                |
+                |// should not trigger on functional types
+                |fun bar(arg1: (_arg1: Int, _arg2: Int, _arg3: Int) -> Int) { }
+                |
+                |// should not trigger on functional type receivers
+                |fun bar(arg1: Foo.(_arg1: Int, _arg2: Int, _arg3: Int) -> Int) { }
+                |
+                |fun baz(arg1: Int,
+                |        arg2: Int,
+                |        arg3: Int) { }
+            """.trimMargin(),
+            LintError(3, 8, ruleId, "${WRONG_NEWLINES.warnText()} first parameter should be placed on a separate line or all other parameters " +
+                    "should be aligned with it in declaration of <bar>", true),
+            LintError(3, 8, ruleId, "${WRONG_NEWLINES.warnText()} value parameters should be placed on different lines in declaration of <bar>", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
+    fun `should suggest newlines in a long supertype list`() {
+        lintMethod(
+            """
+                |class Foo :
+                |    FooBase<Bar>(),
+                |    BazInterface,
+                |    BazSuperclass { }
+                |    
+                |class Foo : FooBase<Bar>(), BazInterface,
+                |    BazSuperclass { }
+                |
+                |class Foo : FooBase<Bar>(), BazInterface, BazSuperclass { }
+                |
+                |class Foo : FooBase<Bar>() { }
+            """.trimMargin(),
+            LintError(6, 13, ruleId, "${WRONG_NEWLINES.warnText()} supertype list entries should be placed on different lines in declaration of <Foo>", true),
+            LintError(9, 13, ruleId, "${WRONG_NEWLINES.warnText()} supertype list entries should be placed on different lines in declaration of <Foo>", true)
         )
     }
 }
