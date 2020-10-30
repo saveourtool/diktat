@@ -76,4 +76,10 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     fun `regression - shouldn't throw exception in cases similar to #371`() {
         fixAndCompare("Bug1Expected.kt", "Bug1Test.kt")
     }
+
+    @Test
+    @Tag("DiktatRuleSetProvider")
+    fun `smoke test #3`() {
+        fixAndCompare("Example3Expected.kt", "Example3Test.kt")
+    }
 }

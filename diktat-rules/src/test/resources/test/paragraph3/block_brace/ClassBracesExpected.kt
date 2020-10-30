@@ -13,3 +13,7 @@ class C{
         private val id = 11
 }
 }
+
+class D {
+val x = 0
+}
