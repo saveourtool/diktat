@@ -4,18 +4,18 @@ import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings.USELESS_OVERRIDE
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
-import org.cqfn.diktat.ruleset.rules.UselessOverride
+import org.cqfn.diktat.ruleset.rules.UselessSupertype
 import org.cqfn.diktat.util.LintTestBase
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class UselessOverrideWarnTest: LintTestBase(::UselessOverride) {
+class UselessSupertypeWarnTest: LintTestBase(::UselessSupertype) {
 
     private val ruleId = "$DIKTAT_RULE_SET_ID:useless-override"
 
     @Test
     @Tag(WarningNames.USELESS_OVERRIDE)
-    fun `check simple wrong examples`() {
+    fun `check simple wrong example`() {
         lintMethod(
                 """
                     open class Rectangle {
@@ -54,31 +54,38 @@ class UselessOverrideWarnTest: LintTestBase(::UselessOverride) {
                         }
                     }
                 """.trimMargin(),
-                LintError(6,25, ruleId, "${USELESS_OVERRIDE.warnText()} draw", true),
-                LintError(16,25, ruleId, "${USELESS_OVERRIDE.warnText()} draw", true)
+                LintError(11,35, ruleId, "${USELESS_OVERRIDE.warnText()} Rectangle", true),
+                LintError(21,35, ruleId, "${USELESS_OVERRIDE.warnText()} Rectangle", true)
         )
     }
 
     @Test
     @Tag(WarningNames.USELESS_OVERRIDE)
-    fun `check simple wronfg examples`() {
+    fun `check example with two super`() {
         lintMethod(
                 """
                     open class Rectangle {
                         open fun draw() { /* ... */ }
                     }
                     
-                    class Square2() : Rectangle(), Keke {
+                    interface KK {
+                        fun draw() {}
+                        fun kk() {}
+                    }
+                    
+                    class Square2() : Rectangle(), KK {
                         override fun draw() {
                             super<Rectangle>.draw()
-                            super.draw()
+                            super<KK>.draw()
                         }
                         
-                        private fun goo() {}
-                        
-                        private fun goo() {}
+                        private fun goo() {
+                            super<KK>.kk()
+                        }
+
                     }
-                """.trimMargin()
+                """.trimMargin(),
+                LintError(17,35, ruleId, "${USELESS_OVERRIDE.warnText()} KK", true)
         )
     }
 }

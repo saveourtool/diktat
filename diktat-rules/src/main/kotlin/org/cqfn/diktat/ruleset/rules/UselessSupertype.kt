@@ -9,6 +9,7 @@ import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
+import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.OPEN_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.SUPER_EXPRESSION
@@ -17,7 +18,7 @@ import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import com.pinterest.ktlint.core.ast.parent
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.Warnings.*
+import org.cqfn.diktat.ruleset.constants.Warnings.USELESS_OVERRIDE
 import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.psiUtil.siblings
@@ -26,7 +27,7 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
  * rule 6.1.5
  * Explicit supertype qualification should not be used if there is not clash between called methods
  */
-class UselessOverride(private val configRules: List<RulesConfig>) : Rule("useless-override") {
+class UselessSupertype(private val configRules: List<RulesConfig>) : Rule("useless-override") {
 
     companion object {
         private val SUPER_TYPE = listOf(SUPER_TYPE_CALL_ENTRY, SUPER_TYPE_ENTRY)
@@ -46,7 +47,6 @@ class UselessOverride(private val configRules: List<RulesConfig>) : Rule("useles
     }
 
     private fun checkClass(node: ASTNode) {
-        println(node.prettyPrint())
         val superNodes = node.findAllNodesWithCondition({ it.elementType in SUPER_TYPE }).ifEmpty { return }
         val overrideNodes = node.findAllNodesWithSpecificType(DOT_QUALIFIED_EXPRESSION)
                 .mapNotNull { findFunWithSuper(it) }.ifEmpty { return }
@@ -57,12 +57,14 @@ class UselessOverride(private val configRules: List<RulesConfig>) : Rule("useles
     }
 
     private fun handleManyImpl(superNodes: List<ASTNode>, overrideNodes: List<Pair<ASTNode, ASTNode>>) {
-        val q = findAllSupers(superNodes, overrideNodes.map { it.second.text })?.filter { it.value == 1 }?.map { it.key } ?: return
-        overrideNodes.filter {
-            it.second.text in q
-        }.map {
-            removeSupertype(it.first)
-        }
+        val uselessSuperType = findAllSupers(superNodes, overrideNodes.map { it.second.text })?.filter { it.value == 1 }?.map { it.key }
+                ?: return
+        overrideNodes
+                .filter {
+                    it.second.text in uselessSuperType
+                }.map {
+                    removeSupertype(it.first)
+                }
     }
 
     @Suppress("UnsafeCallOnNullableType")
@@ -75,6 +77,14 @@ class UselessOverride(private val configRules: List<RulesConfig>) : Rule("useles
         }
     }
 
+    /**
+     * Method finds pair of identifier supertype and method name else return null
+     * example: super<A>.foo() -> return Pair(A, foo)
+     *          super.foo() -> null
+     * @param node - node of type DOT_QUALIFIED_EXPRESSION
+     *
+     * @return pair of identifier
+     */
     @Suppress("UnsafeCallOnNullableType")
     private fun findFunWithSuper(node: ASTNode): Pair<ASTNode, ASTNode>? {
         return Pair(
@@ -87,6 +97,16 @@ class UselessOverride(private val configRules: List<RulesConfig>) : Rule("useles
                         ?.first() ?: return null)
     }
 
+    /**
+     * The method looks in the same file for all super interfaces or a class, in each it looks for methods
+     * that can be overridden and creates a map with a key - the name of the method and value - the number of times it meets
+     *
+     * @param superTypeList - list of identifiers super classes
+     * @param methodsName - name of overrides methods
+     *
+     * @return map name of method and the number of times it meets
+     */
+    @Suppress("UnsafeCallOnNullableType")
     private fun findAllSupers(superTypeList: List<ASTNode>, methodsName: List<String>): MutableMap<String, Int>? {
         val fileNode = superTypeList.first().parent({ it.elementType == FILE })!!
         val superNodesIdentifier = superTypeList.map { it.findAllNodesWithSpecificType(IDENTIFIER).first().text }
@@ -96,17 +116,20 @@ class UselessOverride(private val configRules: List<RulesConfig>) : Rule("useles
         }).mapNotNull { it.findChildByType(CLASS_BODY) }
         if (superNodes.size != superTypeList.size)
             return null
-        val functionNameResult = mutableMapOf<String, Int>()
+        val functionNameMap = mutableMapOf<String, Int>()
         superNodes.forEach { classBody ->
             val overrideFunctions = classBody.findAllNodesWithSpecificType(FUN)
                     .filter {
-                        (if (classBody.treeParent.hasChildOfType(CLASS_KEYWORD)) it.hasChildOfType(OPEN_KEYWORD) else true) &&
+                        (if (classBody.treeParent.hasChildOfType(CLASS_KEYWORD)) it.findChildByType(MODIFIER_LIST)!!.hasChildOfType(OPEN_KEYWORD) else true) &&
                                 it.getIdentifierName()!!.text in methodsName
                     }
             overrideFunctions.forEach {
-                functionNameResult[it.getIdentifierName()!!.text]?.plus(1) ?: functionNameResult.put(it.getIdentifierName()!!.text, 1)
+                if (functionNameMap.containsKey(it.getIdentifierName()!!.text))
+                    functionNameMap[it.getIdentifierName()!!.text] = functionNameMap[it.getIdentifierName()!!.text]!! + 1
+                else
+                    functionNameMap[it.getIdentifierName()!!.text] = 1
             }
         }
-        return functionNameResult
+        return functionNameMap
     }
 }

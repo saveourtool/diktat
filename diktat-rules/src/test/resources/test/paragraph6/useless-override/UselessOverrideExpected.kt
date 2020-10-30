@@ -5,10 +5,24 @@ open class Rectangle {
 }
 
 class Square() : Rectangle() {
+    override fun draw() {
+        /**
+         *
+         * hehe
+         */
+        super.draw()
     }
+}
 
 class Square2() : Rectangle() {
+    override fun draw() {
+        //hehe
+        /*
+            hehe
+        */
+        super.draw()
     }
+}
 
 class Square2() : Rectangle() {
     override fun draw() {
