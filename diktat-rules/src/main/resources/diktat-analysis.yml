@@ -343,6 +343,6 @@
   enabled: true
   configuration: {}
 # Checks that override function is useful
-- name: USELESS_OVERRIDE
+- name: USELESS_SUPERTYPE
   enabled: true
   configuration: {}
