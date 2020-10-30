@@ -134,17 +134,7 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         }
 
         // checking empty lines
-        arrayOf(copyrightComment, headerKdoc, fileAnnotations, packageDirectiveNode, importsList).forEach { astNode ->
-            // if package directive is missing, node is still present, but it's text is empty, so we need to check treeNext to get meaningful results
-            astNode?.nextSibling { it.text.isNotEmpty() }?.apply {
-                if (elementType == WHITE_SPACE && text.count { it == '\n' } != 2) {
-                    FILE_NO_BLANK_LINE_BETWEEN_BLOCKS.warnAndFix(configRules, emitWarn, isFixMode, astNode.text.lines().first(),
-                        astNode.startOffset, astNode) {
-                        (this as LeafPsiElement).replaceWithText("\n\n${text.replace("\n", "")}")
-                    }
-                }
-            }
-        }
+        insertNewlinesBetweenBlocks(listOf(copyrightComment, headerKdoc, fileAnnotations, packageDirectiveNode, importsList))
     }
 
     @Suppress("UnsafeCallOnNullableType")
@@ -203,6 +193,20 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
                     }
                 }
             }
+    }
+
+    private fun insertNewlinesBetweenBlocks(blocks: List<ASTNode?>) {
+        blocks.forEach { astNode ->
+            // if package directive is missing, node is still present, but it's text is empty, so we need to check treeNext to get meaningful results
+            astNode?.nextSibling { it.text.isNotEmpty() }?.apply {
+                if (elementType == WHITE_SPACE && text.count { it == '\n' } != 2) {
+                    FILE_NO_BLANK_LINE_BETWEEN_BLOCKS.warnAndFix(configRules, emitWarn, isFixMode, astNode.text.lines().first(),
+                        astNode.startOffset, astNode) {
+                        (this as LeafPsiElement).replaceWithText("\n\n${text.replace("\n", "")}")
+                    }
+                }
+            }
+        }
     }
 
     /**
