@@ -103,6 +103,7 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     /**
      * Disable some of the rules.
      */
+    @Suppress("UnsafeCallOnNullableType")
     private fun overrideRulesConfig(rulesToDisable: List<Warnings>) {
         val rulesConfig = RulesConfigReader(javaClass.classLoader).readResource(configFilePath)!!
             .toMutableList()

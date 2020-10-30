@@ -29,6 +29,7 @@ import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.psi.KtAnnotationEntry
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtIfExpression
+import org.jetbrains.kotlin.psi.psiUtil.children
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.siblings
 import org.slf4j.Logger
@@ -392,11 +393,10 @@ fun ASTNode.moveChildBefore(
     beforeThisNode: ASTNode?,
     withNextNode: Boolean = false
 ): ReplacementResult {
-    require(childToMove in getChildren(null)) { "can only move child of this node" }
-    require(beforeThisNode?.let { it in getChildren(null) }
-        ?: true) { "can only place node before another child of this node" }
+    require(childToMove in children()) { "can only move child of this node" }
+    require(beforeThisNode == null || beforeThisNode in children()) { "can only place node before another child of this node" }
     val movedChild = childToMove.clone() as ASTNode
-    val nextMovedChild = childToMove.treeNext?.let { it.clone() as ASTNode }?.takeIf { withNextNode }
+    val nextMovedChild = childToMove.treeNext?.takeIf { withNextNode }?.let { it.clone() as ASTNode }
     val nextOldChild = childToMove.treeNext.takeIf { withNextNode && it != null }
     addChild(movedChild, beforeThisNode)
     if (nextMovedChild != null && nextOldChild != null) {
