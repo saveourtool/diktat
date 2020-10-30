@@ -1013,13 +1013,12 @@ use:
 override fun toString() = "hi"
 ```
 
-7. If argument list in function declaration (including constructors)/function call contains more than 2 arguments - these arguments should be split by newlines in the following style:
+7. If argument list in function declaration (including constructors) contains more than 2 arguments, these arguments should be split by newlines:
  ```kotlin
-val a = checkMissingPackageName(
-        node,
-        realPackageName,
-        params.fileName!!
-)
+class Foo(val a: String,
+          b: String,
+          val c: String) {
+}
 
 fun foo(
         a: String,
@@ -1029,6 +1028,20 @@ fun foo(
 
 }
  ```
+
+If and only if the first parameter is on the same line as an opening parenthesis, all parameters can horizontally aligned by the first parameter.
+Otherwise, there should be a line break after an opening parenthesis.
+
+Kotlin 1.4 introduced a trailing comma as an optional feature, so it is generally recommended to place all parameters on a separate line
+and append trailing comma. It makes resolving of merge conflicts easier.
+
+8. If supertype list has more than 2 elements, they should be separated by newlines
+```kotlin
+class MyFavouriteVeryLongClassHolder :
+    MyLongHolder<MyFavouriteVeryLongClass>(),
+    SomeOtherInterface,
+    AndAnotherOne { }
+```
 
 ### <a name="c3.6"></a>Blank lines
 
