@@ -336,3 +336,7 @@
 - name: CLASS_SHOULD_NOT_BE_ABSTRACT
   enabled: true
   configuration: {}
+# In case of using "implicit backing property" scheme, the name of real and back property should be the same
+- name: NO_CORRESPONDING_PROPERTY
+  enabled: true
+  configuration: {}

@@ -198,4 +198,6 @@ public object WarningNames {
             "WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR"
 
     public const val CLASS_SHOULD_NOT_BE_ABSTRACT: String = "CLASS_SHOULD_NOT_BE_ABSTRACT"
+
+    public const val NO_CORRESPONDING_PROPERTY: String = "NO_CORRESPONDING_PROPERTY"
 }

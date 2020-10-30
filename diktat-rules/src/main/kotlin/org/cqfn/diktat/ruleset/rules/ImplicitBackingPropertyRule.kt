@@ -1,6 +1,7 @@
 package org.cqfn.diktat.ruleset.rules
 
 import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
@@ -25,13 +26,13 @@ class ImplicitBackingPropertyRule(private val configRules: List<RulesConfig>) : 
         emitWarn = emit
         isFixMode = autoCorrect
 
-        if (node.elementType == FILE) {
+        if (node.elementType == CLASS_BODY) {
             findAllProperties(node)
         }
     }
 
     private fun findAllProperties(node: ASTNode) {
-        val properties = node.findAllNodesWithSpecificType(PROPERTY)
+        val properties = node.getChildren(null).filter { it.elementType == PROPERTY }
 
         val propsWithBackSymbol = mutableListOf<String>()
 
@@ -71,13 +72,4 @@ class ImplicitBackingPropertyRule(private val configRules: List<RulesConfig>) : 
                 "_$propName has no corresponding property with name $propName", node.startOffset, node)
     }
 
-    private fun List<ASTNode>.hasElementWithIdentifierName(name: String): Boolean {
-        forEach {
-            val identifier = it.getIdentifierName()!!.text
-
-            if (identifier == name)
-                return true
-        }
-        return false
-    }
 }

@@ -51,4 +51,45 @@ class ImplicitBackingPropertyWarnTest: LintTestBase(::ImplicitBackingPropertyRul
                 """.trimMargin()
         )
     }
+
+    @Test
+    @Tag("")
+    fun `don't trigger on regular backing property`() {
+        lintMethod(
+                """
+                    |class Some(val a: Int = 5) {
+                    |   private var _a: Map<String, Int>? = null
+                    |   private val _some:Int? = null
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag("")
+    fun `don't trigger on regular property`() {
+        lintMethod(
+                """
+                    |class Some(val a: Int = 5) {
+                    |   private var a: Map<String, Int>? = null
+                    |   private val some:Int? = null
+                    |   private val _prop: String? = null
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag("")
+    fun `should not trigger if property has field in accessor`() {
+        lintMethod(
+                """
+                    |class Some(val a: Int = 5) {
+                    |   val table:Map<String, Int>
+                    |       set(value) { field = value }
+                    |   val _table: Map<String,Int>? = null
+                    |}
+                """.trimMargin()
+        )
+    }
 }
