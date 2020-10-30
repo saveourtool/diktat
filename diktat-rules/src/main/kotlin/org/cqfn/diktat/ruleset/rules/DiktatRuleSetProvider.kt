@@ -75,7 +75,6 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
                 ::ImplicitBackingPropertyRule,
                 ::StringTemplateFormatRule,
                 ::DataClassesRule,
-                ::LocalVariablesRule,
                 ::SmartCastRule,
                 ::PropertyAccessorFields,
                 ::AbstractClassesRule,

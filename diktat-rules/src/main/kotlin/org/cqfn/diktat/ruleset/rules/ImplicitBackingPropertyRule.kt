@@ -31,6 +31,7 @@ class ImplicitBackingPropertyRule(private val configRules: List<RulesConfig>) : 
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun findAllProperties(node: ASTNode) {
         val properties = node.getChildren(null).filter { it.elementType == PROPERTY }
 
