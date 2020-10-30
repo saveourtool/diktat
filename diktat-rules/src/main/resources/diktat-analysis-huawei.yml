@@ -191,7 +191,8 @@
   configuration: {}
 - name: WRONG_NEWLINES
   enabled: true
-  configuration: {}
+  configuration:
+    maxParametersInOneLine: 2
 - name: TOO_MANY_CONSECUTIVE_SPACES
   enabled: true
   configuration:
@@ -334,5 +335,13 @@
   configuration: {}
 # Checks that never use the name of a variable in the custom getter or setter
 - name: WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR
+  enabled: true
+  configuration: {}
+# Checks that classes have only one init block
+- name: MULTIPLE_INIT_BLOCKS
+  enabled: true
+  configuration: {}
+# Checks that there are abstract functions in abstract class
+- name: CLASS_SHOULD_NOT_BE_ABSTRACT
   enabled: true
   configuration: {}

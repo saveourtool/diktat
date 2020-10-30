@@ -1,4 +1,4 @@
-package org.cqfn.diktat.ruleset.rules
+package org.cqfn.diktat.ruleset.rules.files
 
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
@@ -68,6 +68,9 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.psi.KtBinaryExpression
+import org.jetbrains.kotlin.psi.KtPostfixExpression
+import org.jetbrains.kotlin.psi.KtPrefixExpression
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
 
@@ -83,6 +86,7 @@ import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
  * 7. There should be no space before `[`
  * 8. There should be no space between a method or constructor name (both at declaration and at call site) and a parenthesis.
  * 9. There should be no space after `(`, `[` and `<` (in templates); no space before `)`, `]`, `>` (in templates)
+ * 10. There should be no spaces between prefix/postfix operator (like `!!` or `++`) and it's operand
  */
 @Suppress("ForbiddenComment")
 class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizontal-whitespace") {
@@ -117,7 +121,8 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
             CONSTRUCTOR_KEYWORD -> handleConstructor(node)
             in keywordsWithSpaceAfter -> handleKeywordWithParOrBrace(node)
             // operators and operator-like symbols
-            OPERATION_REFERENCE, DOT, ARROW, SAFE_ACCESS, EQ -> handleBinaryOperator(node)
+            DOT, ARROW, SAFE_ACCESS, EQ -> handleBinaryOperator(node)
+            OPERATION_REFERENCE -> handleOperator(node)
             COLON -> handleColon(node)
             COLONCOLON -> handleColonColon(node)
             COMMA, SEMICOLON -> handleToken(node, 0, 1)
@@ -227,6 +232,14 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
             ANNOTATION_ENTRY -> handleToken(node, 0, 0)  // e.g. @param:JsonProperty
             // fixme: find examples or delete this line
             else -> log.warn("Colon with treeParent.elementType=${node.treeParent.elementType}, not handled by WhiteSpaceRule")
+        }
+    }
+
+    private fun handleOperator(node: ASTNode) {
+        when (node.treeParent.psi) {
+            is KtPrefixExpression -> handleToken(node, null, 0)
+            is KtPostfixExpression -> handleToken(node, 0, null)
+            is KtBinaryExpression -> handleBinaryOperator(node)
         }
     }
 

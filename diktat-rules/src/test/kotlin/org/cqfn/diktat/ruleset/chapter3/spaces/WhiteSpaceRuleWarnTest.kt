@@ -4,7 +4,7 @@ import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_WHITESPACE
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
-import org.cqfn.diktat.ruleset.rules.WhiteSpaceRule
+import org.cqfn.diktat.ruleset.rules.files.WhiteSpaceRule
 import org.cqfn.diktat.util.LintTestBase
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -245,12 +245,12 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
                 LintError(7, 31, ruleId, tokenWarn("::", 1, null, 0, 0), true),
                 LintError(7, 38, ruleId, tokenWarn("?.", 1, null, 0, 0), true),
                 LintError(7, 54, ruleId, tokenWarn("->", null, 0, 1, 1), true),
-                LintError(7, 74, ruleId, tokenWarn("!!", 1, null, 0, 0), true),
+                LintError(7, 74, ruleId, tokenWarn("!!", 1, null, 0, null), true),
                 LintError(8, 21, ruleId, tokenWarn(".", 1, 1, 0, 0), true),
                 LintError(8, 32, ruleId, tokenWarn("::", 1, 1, 0, 0), true),
                 LintError(8, 40, ruleId, tokenWarn("?.", 1, 1, 0, 0), true),
                 LintError(8, 56, ruleId, tokenWarn("->", 0, 0, 1, 1), true),
-                LintError(8, 76, ruleId, tokenWarn("!!", 1, 1, 0, 0), true),
+                LintError(8, 76, ruleId, tokenWarn("!!", 1, null, 0, null), true),
                 LintError(8, 79, ruleId, tokenWarn(".", 1, null, 0, 0), true),
                 LintError(9, 20, ruleId, tokenWarn(".", null, 1, 0, 0), true),
                 LintError(9, 30, ruleId, tokenWarn("::", null, 1, 0, 0), true),
@@ -585,6 +585,28 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
                 LintError(3, 18, ruleId, tokenWarn("::", null, 1, null, 0), true),
                 LintError(4, 26, ruleId, tokenWarn("::", null, 1, null, 0), true),
                 LintError(5, 14, ruleId, tokenWarn("::", null, 1, null, 0), true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
+    fun `regression - should correctly handle prefix and postfix operators`() {
+        lintMethod(
+            """
+                |fun foo() {
+                |    var index = 1
+                |    --index
+                |    return index++
+                |}
+                |
+                |fun bar() {
+                |    var index = 1
+                |    -- index
+                |    return index ++
+                |}
+            """.trimMargin(),
+            LintError(9, 5, ruleId, tokenWarn("--", null, 1, null, 0), true),
+            LintError(10, 18, ruleId, tokenWarn("++", 1, null, 0, null), true)
         )
     }
 }

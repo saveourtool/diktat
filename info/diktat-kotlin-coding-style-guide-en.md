@@ -1013,13 +1013,12 @@ use:
 override fun toString() = "hi"
 ```
 
-7. If argument list in function declaration (including constructors)/function call contains more than 2 arguments - these arguments should be split by newlines in the following style:
+7. If argument list in function declaration (including constructors) contains more than 2 arguments, these arguments should be split by newlines:
  ```kotlin
-val a = checkMissingPackageName(
-        node,
-        realPackageName,
-        params.fileName!!
-)
+class Foo(val a: String,
+          b: String,
+          val c: String) {
+}
 
 fun foo(
         a: String,
@@ -1029,6 +1028,20 @@ fun foo(
 
 }
  ```
+
+If and only if the first parameter is on the same line as an opening parenthesis, all parameters can horizontally aligned by the first parameter.
+Otherwise, there should be a line break after an opening parenthesis.
+
+Kotlin 1.4 introduced a trailing comma as an optional feature, so it is generally recommended to place all parameters on a separate line
+and append trailing comma. It makes resolving of merge conflicts easier.
+
+8. If supertype list has more than 2 elements, they should be separated by newlines
+```kotlin
+class MyFavouriteVeryLongClassHolder :
+    MyLongHolder<MyFavouriteVeryLongClass>(),
+    SomeOtherInterface,
+    AndAnotherOne { }
+```
 
 ### <a name="c3.6"></a>Blank lines
 
@@ -1114,6 +1127,8 @@ fun baz() {
   ```
 
   9. Never put a space after `(`, `[`, `<` (when used as bracket in templates) or before `)`, `]`, `>` (when used as bracket in templates)
+
+  10. There should be no spaces between prefix/postfix operator (like `!!` or `++`) and it's operand
 
 ### <a name="s3.8"></a>Recommendation 3.8: No spaces should be inserted for horizontal alignment
 
@@ -1735,10 +1750,10 @@ These blocks are used to store the code that should be run during the initializa
 Kotlin allows to write multiple initialization blocks that are executed in the same order as they appear in the class body.
 Even when you have the (rule 3.2)[#s3.2] this makes code less readable as the programmer needs to keep in mind all init blocks and trace the execution of the code.
 So in your code you should try to use single `init` block to reduce the complexity. In case you need to do some logging or make some calculations before the assignment 
-of some class property - you can use powerful functional programming. This will reduce the possibility of the error, when occasioanlly someone will change the order of your `init` blocks. 
+of some class property - you can use powerful functional programming. This will reduce the possibility of the error, when occasionally someone will change the order of your `init` blocks. 
 And it will make the logic of the code more coupled. It is always enough to use one `init` block to implement your idea in Kotlin.
 
-Bad example A:
+Bad example:
 ```kotlin
 class YourClass(var name: String) {    
     init {
@@ -1753,7 +1768,7 @@ class YourClass(var name: String) {
 }
 ```
 
-Good example A:
+Good example:
 ```kotlin
 class YourClass(var name: String) {
     init {
@@ -1767,8 +1782,8 @@ class YourClass(var name: String) {
 }
 ```
 
-Also - init block was not added to Kotlin to help you simply initialize your properties it is needed for more conplex tasks. 
-So if `init` block contains only assignments of variables - move it directly to properties so they will be correctly initialized near the declaration.
+Also - init block was not added to Kotlin to help you simply initialize your properties it is needed for more complex tasks. 
+So if `init` block contains only assignments of variables - move it directly to properties, so they will be correctly initialized near the declaration.
 In some case this rule can be in clash with [6.1.1](#r6.1.1), but that should not stop you.
 Bad example:
 ```kotlin
@@ -1783,7 +1798,7 @@ class A(baseUrl: String) {
 Good example:
 ```kotlin
 class A(baseUrl: String) {
-    private val customUrl = customUrl = "$baseUrl/myUrl"
+    private val customUrl = "$baseUrl/myUrl"
 }
 ```
 
