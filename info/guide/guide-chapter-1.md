@@ -1,76 +1,11 @@
-
- ### <a name="c0"></a> Foreword
- ### <a name="c0.1"></a>Purpose of this document   
-
-For code to be considered "good", it must entail the following characteristics:
-1.	Simplicity
-2.	Maintainability
-3.	Reliability
-4.	Testability
-5.	Efficiency
-6.	Portability
-7.	Reusability
-
-Programming is a profession that involves creativity.
-Software developers can reference this specification, which will enhance their ability to write consistent, easy-to-read, and high-quality code.
-This will ultimately improve product competitiveness and software development efficiency.
-
-### <a name="c0.2"></a> General principles
-
-As a very modern and advanced programming language (completely like other languages), Kotlin complies with the following general principles:
-1.	Clarity: Clarity is a necessary feature of programs that are easy to maintain and refactor.
-2.	Simplicity: Simple code is easy to understand and implement.
-3.	Consistency: Unification is particularly important when the same team works on the same project, utilizing similar styles. It enables code to be easily modified, reviewed, and understood by the team members.
-
-In addition, we need to consider the following factors when programming on Kotlin:
-1. Write clean and simple Kotlin code
-
-Kotlin combines two of the main programming paradigms: functional and object-oriented.
-Both of these paradigms are trusted, well-known software engineering practices.
-As a young programming language, Kotlin builds on well-established languages such as Java, C++, C#, and Scala.
-This is why Kotlin introduces many features that help you write cleaner, more readable code, while also reducing the number of complex code structures. For example: type and null safety, extension functions, infix syntax, immutability, val/var differentiation, expression-oriented features, when statements, much easier work with collections, type auto conversion, and other syntactic sugar.
-
-  
-2. Follow Kotlin idioms
-
-The author of Kotlin, Andrey Breslav, mentioned that it is both pragmatic and practical, but not academic.
-Its pragmatic features enable ideas to easily be transformed into real working software. This programming language is closer to natural languages than its predecessors, and it implements the following design principles: readability, reusability, interoperability, security, and tool-friendliness (https://blog.jetbrains.com/kotlin/2018/10/kotlinconf-2018-announcements/).
-
-3.Use Kotlin efficiently
-
-Some Kotlin features help you write higher-performance code: including rich coroutine library, sequences, inline functions/classes, arrays of basic types, tailRec, and CallsInPlace of contract.
- 
-### <a name="c0.3"></a> Terminology   
-
-**Rules**: conventions that should be followed when programming.
-
-**Recommendations**: conventions that should be considered when programming.
-
-**Explanation**: necessary explanations of rules and recommendations.
-
-**Example**: examples (recommended and not recommended) of the rules and recommendations.
-
-Unless otherwise stated, this specification applies to versions 1.3 and later of Kotlin.
-
-### <a name="c0.4"></a>Scope
-
-This specification applies to all software coded in Kotlin within the company.
-
-### <a name="c0.5"></a>Exception
-
-Even though exceptions may exist, it is important to understand why rules and recommendations are needed.
-Depending on your project situation or personal habits, you can break some of the rules. However, remember that one exception leads to many and can completely destroy the consistency of code. As such, there should be very few exceptions.
-When modifying open-source code or third-party code, you can choose to implement the style used by the code (as opposed to using the existing specifications) to maintain consistency.
-Software that is directly based on the interface of the Android native operating system, such as the Android Framework, remains consistent with the Android style.
-
 ### <a name="c1"></a>1 Naming
 In programming, it is difficult to meaningfully and appropriately name variables, functions, classes, etc. Good names clearly express the main ideas and functionality of your code, as well as avoid misinterpretation, unnecessary coding and decoding, magic numbers, and inappropriate abbreviations.
 
-### <a name="r1.1"></a>Rule 1.1: file encoding format must be UTF-8 only
+### <a name="r1.0.1"></a>Rule 1.0.1: file encoding format must be UTF-8 only
 The source file encoding format (including comments) must be UTF-8 only. The ASCII horizontal space character (0x20, that is, space) is the only permitted white space character. Tabs should not be used for indentation.
 
 ### <a name="c1.1"></a>Identifiers naming
-### <a name="r1.1"></a> Rule 1.1.1: Identifiers
+### <a name="r1.1.1"></a> Rule 1.1.1: Identifiers
 1.	All identifiers should use only ASCII letters or digits, and the names should match regular expressions \w{2,64}.
 Explanation: Each valid identifier name should match the regular expression \ w {2,64}.
 {2,64} means that the name length is 2 to 64 characters, and the length of the variable name should be proportional to its life range, functionality, and responsibility.
@@ -126,7 +61,7 @@ The only exception can be - is function names in Unit tests.
 | Exceptions | Same as class names, but with a suffix Exception, for example: `AccessException` and `NullPointerException`|
 
 ### <a name="c1.2"></a>Packages naming
-### <a name="r1.3"></a> Package names are in lower case and separated by dots. Code developed within your company should start with `your.company.domain`, and numbers are permitted in package names.
+### <a name="r1.2.1"></a> Rule 1.2.1: Package names are in lower case and separated by dots. Code developed within your company should start with `your.company.domain`, and numbers are permitted in package names.
 Package names are all written in lowercase, and consecutive words are simply concatenated together (no underscores). Package names should contain both the product and module names, as well as the department or team name to prevent conflicts with other teams.  Numbers are not permitted. For example: `org.apache.commons.lang3`, `xxx.yyy.v2`.
 
 **Exceptions：** 
@@ -141,7 +76,7 @@ package your.company.domain.mobilecontrol.views
  ```
 
 ### <a name="c1.3"></a> Classes, enumerations, interfaces
-### <a name="r1.4"></a> Rule 1.4: Classes, enumerations, interface names use camel case nomenclature
+### <a name="r1.3.1"></a> Rule 1.3.1: Classes, enumerations, interface names use camel case nomenclature
 1.	The class name is usually a noun or phrase with a noun using the camel case nomenclature, such as UpperCamelCase. For example: Character or ImmutableList. The name of an interface can also be a noun or phrase with a noun (such as List), or an adjective or phrase with adjectives (such as Readable). Note that verbs should not be used to name classes; however, nouns (such as Customer, WikiPage, and Account) can be used. Try to avoid vague words like Manager and Process.
 2.	Test classes start with the name of the class they are testing and end with Test. For example: HashTest or HashIntegrationTest
 
@@ -162,7 +97,7 @@ class Order {}
 ```
 
 ### <a name="c1.4"></a>Functions
-### <a name="r1.5"></a> Rule 1.5: function names should be in camel case
+### <a name="r1.4.1"></a> Rule 1.4.1: function names should be in camel case
 
 1.	Function names are usually verbs or verb phrases, and use the camel case nomenclature lowerCamelCase. For example: `sendMessage`, `stopProcess`, or `calculateValue`.
 The format is as follows:
@@ -211,7 +146,7 @@ g) Callback function allows preposition + verb form naming, such as: `onCreate()
 2.	An underscore can be included in the JUnit test function name, and should be a logical component used to separate names. Each logical part is written in lowerCamelCase. For example: a typical pattern _, such as pop_emptyStack
 
 ### <a name="c1.5"></a> Constants 
-### <a name="r1.6"></a> Rule 1.6 Constant names should be in UPPER case, words separated by underscore
+### <a name="r1.5.1"></a> Rule 1.5.1 Constant names should be in UPPER case, words separated by underscore
 
 1.	Constants are attributes created with the const keyword, or top-level/`val` local variables of an object that holds immutable data. In most cases, constants can be identified as a `const val` property from the `object`/`companion object`/file top level. These variables contain a fixed constant value that typically should never be changed by programmers. This includes basic types, strings, immutable types, and immutable collections of immutable types. If an object state can be changed, the value is not a constant.
 
@@ -240,7 +175,7 @@ Magic numbers can be avoided through the following methods:
  ```
 
 ### <a name="c1.6"></a> Non-constant fields
-### <a name="r1.7"></a> Rule 1.7: The name of the non-constant field should use camel case and start with a lowercase letter.
+### <a name="r1.6.1"></a> Rule 1.6.1: The name of the non-constant field should use camel case and start with a lowercase letter.
 
 A local variable cannot be treated as a constant even if it is final and immutable. Therefore, it should not use the preceding rules. The name of variables with a type from collections (sets, lists, etc.) should contain plural nouns.
 For example: `var namesList: List<String>`
@@ -260,7 +195,7 @@ val users: List<String> = listOf();
 val mutableCollection: MutableSet<String> = HashSet()
 ```
 
-### <a name="s1.1"></a> Recommendation 1.1: Avoid using Boolean variable names with negative meaning.
+### <a name="r1.6.2"></a> Recommendation 1.6.2: Avoid using Boolean variable names with negative meaning.
 
 *Note*: When using a logical operator and name with negative meaning, the code may be difficult to understand, which is referred to as the "double negative". For instance, it is not easy to understand the meaning of !isNotError. The JavaBeans specification automatically generates isXxx() getters for attributes of Boolean classes. However, methods that return Boolean do not all have this notation. For Boolean local variables or methods, it is highly recommended that you add non-meaningful prefixes, including is (which is commonly used by JavaBeans), or has, can, should, must. Modern integrated development environments (IDEs) such as Intellij are already capable of doing this for you when you generate getters in Java. For Kotlin, this process is even easier as everything is on the byte-code level under the hood.
 
