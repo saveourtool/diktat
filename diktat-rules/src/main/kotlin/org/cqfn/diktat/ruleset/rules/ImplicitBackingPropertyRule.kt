@@ -59,6 +59,7 @@ class ImplicitBackingPropertyRule(private val configRules: List<RulesConfig>) : 
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun handleReferenceExpressions(node:ASTNode,
                                            expressions: List<ASTNode>,
                                            backingPropertiesNames: List<String>) {
