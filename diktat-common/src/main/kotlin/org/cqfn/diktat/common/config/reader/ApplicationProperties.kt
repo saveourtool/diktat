@@ -1,9 +1,11 @@
 package org.cqfn.diktat.common.config.reader
 
+import org.slf4j.LoggerFactory
+
 import java.io.IOException
 import java.util.Properties
+
 import kotlin.system.exitProcess
-import org.slf4j.LoggerFactory
 
 /**
  * Base class for working with properties files.

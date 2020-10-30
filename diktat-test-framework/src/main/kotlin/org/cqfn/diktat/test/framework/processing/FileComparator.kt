@@ -1,6 +1,8 @@
 package org.cqfn.diktat.test.framework.processing
 
 import com.github.difflib.DiffUtils
+import org.slf4j.LoggerFactory
+
 import java.io.File
 import java.io.IOException
 import java.nio.file.Files
@@ -8,7 +10,6 @@ import java.nio.file.Paths
 import java.util.ArrayList
 import java.util.StringJoiner
 import java.util.stream.Collectors
-import org.slf4j.LoggerFactory
 
 /**
  * A class that is capable of comparing files content

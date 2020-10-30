@@ -1,4 +1,4 @@
-package org.cqfn.diktat.ruleset.rules
+package org.cqfn.diktat.ruleset.rules.files
 
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
