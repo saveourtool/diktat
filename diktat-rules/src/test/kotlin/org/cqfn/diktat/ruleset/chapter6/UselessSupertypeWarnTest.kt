@@ -2,7 +2,7 @@ package org.cqfn.diktat.ruleset.chapter6
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
-import org.cqfn.diktat.ruleset.constants.Warnings.USELESS_OVERRIDE
+import org.cqfn.diktat.ruleset.constants.Warnings.USELESS_SUPERTYPE
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.UselessSupertype
 import org.cqfn.diktat.util.LintTestBase
@@ -54,8 +54,8 @@ class UselessSupertypeWarnTest: LintTestBase(::UselessSupertype) {
                         }
                     }
                 """.trimMargin(),
-                LintError(11,35, ruleId, "${USELESS_OVERRIDE.warnText()} Rectangle", true),
-                LintError(21,35, ruleId, "${USELESS_OVERRIDE.warnText()} Rectangle", true)
+                LintError(11,35, ruleId, "${USELESS_SUPERTYPE.warnText()} Rectangle", true),
+                LintError(21,35, ruleId, "${USELESS_SUPERTYPE.warnText()} Rectangle", true)
         )
     }
 
@@ -85,7 +85,7 @@ class UselessSupertypeWarnTest: LintTestBase(::UselessSupertype) {
 
                     }
                 """.trimMargin(),
-                LintError(17,35, ruleId, "${USELESS_OVERRIDE.warnText()} KK", true)
+                LintError(17,35, ruleId, "${USELESS_SUPERTYPE.warnText()} KK", true)
         )
     }
 }
