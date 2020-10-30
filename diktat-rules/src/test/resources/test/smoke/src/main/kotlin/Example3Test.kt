@@ -1,4 +1,4 @@
-package test.paragraph3.block_brace
+package test.smoke.src.main.kotlin
 
 class HttpClient(var name: String) {
     var url: String = ""

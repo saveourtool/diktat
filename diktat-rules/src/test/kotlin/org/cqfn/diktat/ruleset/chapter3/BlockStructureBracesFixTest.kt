@@ -43,10 +43,4 @@ class BlockStructureBracesFixTest : FixTestBase ("test/paragraph3/block_brace", 
     fun `should fix open and close brace in try-catch-finally expression`() {
         fixAndCompare("TryBraceExpected.kt", "TryBraceTest.kt")
     }
-
-    @Test
-    @Tag(WarningNames.BRACES_BLOCK_STRUCTURE_ERROR)
-    fun `should fix open and close brace in common expression`() {
-        fixAndCompare("CommonExpected.kt", "CommonTest.kt")
-    }
 }

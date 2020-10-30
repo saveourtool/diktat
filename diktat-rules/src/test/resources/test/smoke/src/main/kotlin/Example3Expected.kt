@@ -1,5 +1,8 @@
-package test.paragraph3.block_brace
+package org.cqfn.diktat
 
+/**
+ * @property name
+ */
 class HttpClient(var name: String) {
     var url: String = ""
     var port: String = ""
@@ -17,3 +20,4 @@ fun mains() {
             }
             .doRequest()
 }
+
