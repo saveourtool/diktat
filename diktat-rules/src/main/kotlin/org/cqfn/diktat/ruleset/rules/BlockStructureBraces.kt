@@ -46,6 +46,16 @@ import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.KtTryExpression
 
+/**
+ * This rule checks that *non-empty* code blocks with braces follow the K&R style (1TBS or OTBS style):
+ * - The opening brace is on the same same line with the first line of the code block
+ * - The closing brace is on it's new line
+ * - The closing brace can be followed by a new line. Only exceptions are: `else`, `finally`, `while` (from do-while statement) or `catch` keywords.
+ *   These keywords should not be split from the closing brace by a newline.
+ * Exceptions:
+ * - opening brace of lambda
+ * - braces around `else`/`catch`/`finally`/`while` (in `do-while` loop)
+ */
 class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("block-structure") {
     private var isFixMode: Boolean = false
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
