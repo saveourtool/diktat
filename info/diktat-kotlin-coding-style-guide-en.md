@@ -8,112 +8,89 @@
 | [0 Intro](#c0.1)    | [Purpose](#c0.1), [General principles](#c0.2), [Terminology](#c0.3), [Scope](#c0.4), [Exception](#c0.5) |
 | [1 Naming](#c1)     | [Identifiers](#c1.1), [Package naming](#c1.2), [Classes, enumeration and interfaces](#c1.3), [Functions](#c1.4), [Constants](#c1.5), [Variables](#c1.6) |
 | [2 Comments](#c2)   | [Kdoc](#c2.1), [File header](#c2.2), [Function header comments](#c2.3), [Code comments](#c2.4) |
-| [3 General format](#c3)   | [File-related rules](#c3.1), [Indentation](#c3.2), [Empty blocks](#c3.3), [Line width](#c3.4), [Line breaks (newlines)](#c3.5), [Blank lines](#c3.6), [Horiznotal alignment](#c3.7), [Enumerations](#c3.8), [Variable declaration](#c3.9), [When expression](#c3.10), [Annotations](#c3.11), [Comment layout](#c3.12), [Modifiers](#c3.13), [Strings](#c3.14)|
+| [3 General format](#c3)   | [File-related rules](#c3.1), [Indentation](#c3.2), [Empty blocks](#c3.3), [Line width](#c3.4), [Line breaks (newlines)](#c3.5), [Blank lines](#c3.6), [Horizontal alignment](#c3.7), [Enumerations](#c3.8), [Variable declaration](#c3.9), [When expression](#c3.10), [Annotations](#c3.11), [Comment layout](#c3.12), [Modifiers](#c3.13), [Strings](#c3.14)|
 | [4 Variables and types](#c4) | [Variables](#c4.1), [Types](#c4.2), [Null safety and variable declarations](#4.3)|
-| [5 Functions](#c5)      | [Function design](#c5.1), [Function parameters](#c5.2)|
-| [6 Classes](#c6)      | [Classes](#c6.1), [Extension functions](#c6.2), [Interfaces](#c6.3), [Objects](#c6.4)|
+| [5 Functions](#c5)      | [Function design](#c5.1) [Function parameters](#c5.2)|
 
- # <a name="c0"></a> Foreword
+ ### <a name="c0"></a> Foreword
+ ### <a name="c0.1"></a>Purpose of this document   
 
- ## <a name="c0.1"></a>Purpose of this document   
+For code to be considered "good", it must entail the following characteristics:
+1.	Simplicity
+2.	Maintainability
+3.	Reliability
+4.	Testability
+5.	Efficiency
+6.	Portability
+7.	Reusability
+Programming is a profession that involves creativity.
+Software developers can reference this specification, which will enhance their ability to write consistent, easy-to-read, and high-quality code.
+This will ultimately improve product competitiveness and software development efficiency.
 
-When you want to call your code "good" you always think that this code is 
-  1) Simple
-  2) Maintainable
-  3) Reliable
-  4) Testable
-  5) Efficient
-  6) Portable
-  7) Reusable
-  
- Programming is a creative job. 
- This specification is used as a guide for software developers to grow up good programming habits and to help developers to 
- write consistent, easy-to-read, high-quality code, so it will improve product competitiveness software development efficiency.
+### <a name="c0.2"></a> General principles
 
-## <a name="c0.2"></a> General principles
+As a very modern and advanced programming language (completely like other languages), Kotlin complies with the following general principles:
+1.	Clarity: Clarity is a necessary feature of programs that are easy to maintain and refactor.
+2.	Simplicity: Simple code is easy to understand and implement.
+3.	Consistency: Unification is particularly important when the same team works on the same project, utilizing similar styles. It enables code to be easily modified, reviewed, and understood by the team members.
 
-Even being very modern and advanced programming language, but absolutely as the same as with other languages，Kotlin follow general principles:
+In addition, we need to consider the following factors when programming on Kotlin:
+1. Write clean and simple Kotlin code
 
-1. Clarity first. Clarity is a necessary feature of programs that are easy to maintain and refactor.
-
-2. Simplicity is great and beautiful. Such simple code  is easy to understand and easy to implement.
-
-3. Consistency. Unification is great when people that work in the same team and do the same project have same style habbits.
-In this case it is much easier to change, review and understand code of your teammate.  
-
-In addition while programming on Kotlin need to pay attention on the following aspects:
-
-1.Try to write clean and simple Kotlin code
-
-Kotlin combines two main programming paradigms: functional and object oriented.
-Both them are trusted and well known software engineering practices. Kotlin is young language and it stands on the shoulders 
-of such mature languages as Java, C++, C#, Scala. That's why Kotlin introduces many features that help to write cleaner, more readable code and reduces annoying code structures. 
-For example: type and null safety, extension functions, infix syntax, immutability, val/var differentiation, expression-oriented features, when statements, much easier work with collections,
-type autocoversion and other syntactic sugar.
+Kotlin combines two of the main programming paradigms: functional and object-oriented.
+Both of these paradigms are trusted, well-known software engineering practices.
+As a young programming language, Kotlin builds on well-established languages such as Java, C++, C#, and Scala.
+This is why Kotlin introduces many features that help you write cleaner, more readable code, while also reducing the number of complex code structures. For example: type and null safety, extension functions, infix syntax, immutability, val/var differentiation, expression-oriented features, when statements, much easier work with collections, type auto conversion, and other syntactic sugar.
 
   
-2.Follow Kotlin idioms
+2. Follow Kotlin idioms
 
-Kotlin author Andrey Breslav mentioned that Kotlin language is pragmatic and practical, not academic.
-Being prgmatic means that you can easily transform the ideas in people's minds into real working software. This programming language is more and more closer to natural languages than it's ancestors.
-Kotlin's design principles are [readability, reusability, interoperability, security, tool-friendliness]
- (https://blog.jetbrains.com/kotlin/2018/10/kotlinconf-2018-announcements/).
+The author of Kotlin, Andrey Breslav, mentioned that it is both pragmatic and practical, but not academic.
+Its pragmatic features enable ideas to easily be transformed into real working software. This programming language is closer to natural languages than its predecessors, and it implements the following design principles: readability, reusability, interoperability, security, and tool-friendliness (https://blog.jetbrains.com/kotlin/2018/10/kotlinconf-2018-announcements/).
 
 3.Use Kotlin efficiently
 
-Some features of Kotlin help to write higher performance code: including rich coroutine library, sequences, inline functions/classes, arrays of basic types, tailRec, CallsInPlace of contract, etc.
- ## <a name="c0.3"></a> Terminology   
+Some Kotlin features help you write higher-performance code: including rich coroutine library, sequences, inline functions/classes, arrays of basic types, tailRec, and CallsInPlace of contract.
+ 
+### <a name="c0.3"></a> Terminology   
 
 **Rules**: conventions that should be followed when programming.
 
-**Recommendations**: Conventions that should be considered when programming.
+**Recommendations**: conventions that should be considered when programming.
 
-**Explanation**: Provide necessary explanations for this rule / recommendation.
+**Explanation**: necessary explanations of rules and recommendations.
 
-**Example**: Give examples of this rule / suggestion from good and bad aspects.
+**Example**: examples (recommended and not recommended) of the rules and recommendations.
 
- The version of Kotlin to which this specification applies, unless otherwise specified, applies to versions 1.3 and above.
+Unless otherwise stated, this specification applies to versions 1.3 and later of Kotlin.
 
-## <a name="c0.4"></a>Scope
+### <a name="c0.4"></a>Scope
 
-This specification applies to all software coded in Kotlin language within the company.
+This specification applies to all software coded in Kotlin within the company.
 
-## <a name="c0.5"></a>Exception
+### <a name="c0.5"></a>Exception
 
-Whether it is a 'rule' or a 'recommendation', you must understand the reason why it is needed and why it's better for you to use it.
-However, there may be exceptions to some rules and recommendations.
+Even though exceptions may exist, it is important to understand why rules and recommendations are needed.
+Depending on your project situation or personal habits, you can break some of the rules. However, remember that one exception leads to many and can completely destroy the consistency of code. As such, there should be very few exceptions.
+When modifying open-source code or third-party code, you can choose to implement the style used by the code (as opposed to using the existing specifications) to maintain consistency.
+Software that is directly based on the interface of the Android native operating system, such as the Android Framework, remains consistent with the Android style.
 
-Depending on your situation or personal habits in your project you can violate part of these rules.
-But remember that one exception leads to many and can completely destroy the consistency of the code. 
-There should be very few exceptions to the 'rules'. It is strongly recommended to follow both 'rules' and 'recommendations'. 
+### <a name="c1"></a>1 Naming
+In programming, it is difficult to meaningfully and appropriately name variables, functions, classes, etc. Good names clearly express the main ideas and functionality of your code, as well as avoid misinterpretation, unnecessary coding and decoding, magic numbers, and inappropriate abbreviations.
 
-When modifying open source code or third-party code, you may not use the existing specifications and follow the style used by open source code or third-party code to save a unified style.
-
-Software based directly on the interface of the Android native operating system interface, such as the Android Framework, remains consistent with the Android style.
-
-## <a name="c1"></a>1 Naming
-Naming your variables/functions/classes e.t.c meaningfully and appropriately is a difficult thing in programming.
-You can call your naming good when your code can express the idea and it's functionality clearly, avoid misleading, 
-avoid unnecessary coding and decoding, do not use magic numbers, do not use inappropriate abbreviations.
 ### <a name="r1.1"></a>Rule 1.1: 
-Rule 1.1 The source file encoding format (including comments) must be UTF-8 only.
-The ASCII horizontal space character (0x20, that is, space) is the only white space character allowed. Tabs are not used for indentation..
+The source file encoding format (including comments) must be UTF-8 only. The ASCII horizontal space character (0x20, that is, space) is the only permitted white space character. Tabs are not used for indentation.
 
 ### <a name="c1.1"></a>Identifiers
-
 ### <a name="r1.2"></a> Rule 1.2:
-1. All identifiers should use only ASCII letters or digits, and the names should match regular expressions \w{2,64}
+1.	All identifiers should use only ASCII letters or digits, and the names should match regular expressions \w{2,64}.
+Explanation: Each valid identifier name should match the regular expression \ w {2,64}.
+{2,64} means that the name length is 2 to 64 characters, and the length of the variable name should be proportional to its life range, functionality, and responsibility.
+Name lengths of less than 31 symbols are generally recommended, but this depends on the project. Otherwise, class declaration with generics or inheritance from a super class can cause line breaking for example. No special prefix or suffix should be used in the names. The following examples are inappropriate: name_, mName, s_name, and kName.
 
-Explanation: Each valid name of identifier should match regular expression \ w {2,64}. 
-{2,64} means that the length of the name is from 2 to 64 characters, also the length of the variable name should be proportional to its life range,
- functionality and responsibility. It depends on the project, but generally it is suggested to have length of names less than 31 symbols. Otherwise
- for example class declaration with generics or inheritance from a super class can cause line breaking.
-No special prefix or suffix should be used in these names. For example, the following are inappropriate: name_, mName, s_name, and kName.
+2.	For files, choose names that describe their content. Use camel case (PascalCase) and `.kt` extension.
 
-2. For files choose names that describe the content of this file, use camel case (PascalCase) and .kt extension. 
-
-3. Typical examples of camel case naming：
-
+3.	Typical examples of naming:
 | Meaning | Correct |Incorrect|
 | ---- | ---- | ---- |
 | "XML Http Request" | XmlHttpRequest | XMLHTTPRequest |
@@ -122,20 +99,21 @@ No special prefix or suffix should be used in these names. For example, the foll
 | "supports IPv6 on iOS" | supportsIpv6OnIos | supportsIPv6OnIOS |
 | "YouTube importer" | YouTubeImporter | YoutubeImporter |
 
-4. Usage of `` and free naming for functions and identifiers are prohibited. For example - not recommended to use: 
-    ```kotlin
-       val `my dummy name-with-minus` = "value" 
-   ```
-   The only exception can be - is function names in Unit tests.
+4.	The usage of (``) and free naming for functions and identifiers are prohibited. For example - not recommended to use:
+    
+```kotlin
+   val `my dummy name-with-minus` = "value" 
+```
 
-5. Backticks (``) should not be used for identifiers except names of test methods (marked with @Test annotation):
+The only exception can be - is function names in Unit tests.
+
+5.	Backticks (``) should not be used for identifiers, except the names of test methods (marked with @Test annotation):
 ```kotlin
      @Test fun `my test`() { /*...*/ }
 ``` 
-6. The following table contains some confusing characters. You should be careful when using them as identifiers. 
-   And better use other names instead of these identifiers.
+6.  The following table contains some characters that cause confusion. Be careful when using them as identifiers, or use other names instead.
    
-   | Expected      | Confusing name           | Suggested name |
+   | Expected      | Confusing name           | Suggested name   |
    | ------------- | ------------------------ | ---------------- |
    | 0 (zero)      | O, D                     | obj, dgt         |
    | 1 (one)       | I, l                     | it, ln, line     |
@@ -147,47 +125,39 @@ No special prefix or suffix should be used in these names. For example, the foll
    | rn, m         | m,rn                     | mbr, item        |
 
  **Exceptions**
- - i,j,k variables that are used in loops is a standard for industry. It is allowed to use 1 symbol for such variables.
- - e variable can be used for catching exceptions in catch block: `catch (e: Exception) {}`
- - Java community generally suggests not to use prefixes, but in case of developing code for Android you can use s prefix for static fields
-  and m for non-public non-static fields. PLease note that prefixing can also do harm for the style together with auto generation of getters and setters.
-
+ - The i,j,k variables used in loops are part of the industry standard. One symbol can be used for for such variables.
+ - The `e` variable can be used to catch exceptions in catch block: `catch (e: Exception) {}`
+ - The Java community generally does not recommend the use of prefixes; however, when developing Android code, you can use the s and m prefixes for static and non-public non-static fields, respectively. Note that prefixing can also negatively affect the style together with auto-generation of getters and setters.
+ 
 | Type | Naming style |
 | ---- | ---- |
-| Interfaces, classes, annotations, enumerated types, object type names | Camel case starting with capital letter, test classes have Test suffix, the filename is 'TopClassName'.kt  |
-| Class fields, variables, methods, method parameters| Camel case starting with small letter, test methods may be underlines with '_', the only exception is [backing properties](#r6.1.7)
-| Static constants, enumerated values | Only uppercase underlined with '_' |
-| Generic type variable | Single capital letter, can be followed by a number, for example: E, T, U, X, T2 |
-| Exceptions | Same as class names, but with suffix Exception, like: AccessException, NullPointerException, e.t.c|
+| Interfaces, classes, annotations, enumerated types, and object type names | Camel case starting with a capital letter. Test classes have a Test suffix. The filename is 'TopClassName'.kt.  |
+| Class fields, local variables, methods, and method parameters | Camel case starting with a small letter. Test methods may be underlines  with '_'., the only exception is [backing properties](#r6.1.7)
+| Static constants and enumerated values | Only uppercase underlined with '_' |
+| Generic type variable | Single capital letter, which can be followed by a number, for example: `E, T, U, X, T2` |
+| Exceptions | Same as class names, but with a suffix Exception, for example: `AccessException` and `NullPointerException`|
 
 ### <a name="c1.2"></a>Packages naming
-
-### <a name="r1.3"></a> Rule 1.3: package name is in lower case and separated by dots, code developed internally in your company should start with your.company.domain, and the package name is allowed to have numbers
-
-Package names are all lowercase, consecutive words are simply concatenated together (no underscores) plus it should contain product name and module name.
-Also it should contain department or team name to prevent conflicts with other teams.
-Package names are allowed to have numbers, like org.apache.commons.lang3, xxx.yyy.v2.
+### <a name="r1.3"></a> Package names are in lower case and separated by dots. Code developed within your company should start with `your.company.domain`, and numbers are permitted in package names.
+Package names are all written in lowercase, and consecutive words are simply concatenated together (no underscores). Package names should contain both the product and module names, as well as the department or team name to prevent conflicts with other teams.  Numbers are not permitted. For example: `org.apache.commons.lang3`, `xxx.yyy.v2`.
 
 **Exceptions：** 
 
-- In some special cases, such as open source projects or commercial cooperation, package naming should not start with your.company.domain
-- In some cases, if the package name starts with a number or other characters, but these characters cannot be used at the beginning of the Java/Kotlin package name, or the package name contains reserved Java keywords, underscores are allowed.
+- In certain cases, such as open-source projects or commercial cooperation, package names should not start with `your.company.domain`.- In some cases, if the package name starts with a number or other characters, but these characters cannot be used at the beginning of the Java/Kotlin package name, or the package name contains reserved Java keywords, underscores are allowed.
+- Underscores are sometimes permitted if the package name starts with a number or other character, which cannot be used at the beginning of the Java/Kotlin package name; or the package name contains reserved Java keywords. For example: org.example.hyphenated_name, int_.example, com.example._123name   
    For example: `org.example.hyphenated_name`,` int_.example`, `com.example._123name`
 
-Valid example: 
+**Valid example**: 
  ```kotlin
- your.company.domain.mobilecontrol.views
+package your.company.domain.mobilecontrol.views
  ```
 
-### <a name="c1.3"></a> Classes, enumerations and interfaces
+### <a name="c1.3"></a> Classes, enumerations, interfaces
+### <a name="r1.4"></a> Rule 1.4: Classes, enumerations, interface names use camel case nomenclature
+1.	The class name is usually a noun or phrase with a noun using the camel case nomenclature, such as UpperCamelCase. For example: Character or ImmutableList. The name of an interface can also be a noun or phrase with a noun (such as List), or an adjective or phrase with adjectives (such as Readable). Note that verbs should not be used to name classes; however, nouns (such as Customer, WikiPage, and Account) can be used. Try to avoid vague words like Manager and Process.
+2.	Test classes start with the name of the class they are testing and end with Test. For example: HashTest or HashIntegrationTest
 
- ### <a name="r1.4"></a> Rule 1.4: Classes, enumerations, and interface names use camel case nomenclature
-1. The class name is usually a noun or a phrase with a noun, using the camel case nomenclature, like: UpperCamelCase.  For example: Character or ImmutableList.
-The name of an interface can also be a noun or a phrase with a noun (such as List), but sometimes it can be an adjective or phrase with adjectives (such as Readable). 
-Note, that the naming of classes should not use verbs, but should use nouns, such as Customer, WikiPage, and Account; but try to avoid vague words like Manager, Process, e.t.c
-2. Test classes start with the name of the class they are testing and end with Test. For example, HashTest or HashIntegrationTest.
-
-Incorrect examples：
+**Invalid example**: 
 ```kotlin
 class marcoPolo {} 
 class XMLService {} 
@@ -195,7 +165,7 @@ interface TAPromotion {}
 class info {}
 ```
 
-Correct version：
+**Valid example**: 
 ```kotlin
 class MarcoPolo {}
 class XmlService {}
@@ -204,36 +174,33 @@ class Order {}
 ```
 
 ### <a name="c1.4"></a>Functions
-
 ### <a name="r1.5"></a> Rule 1.5: function names should be in camel case
 
- 1) The function name is usually a verb or verb phrase, and uses the camel case nomenclature lowerCamelCase. For example, sendMessage, stopProcess or calculateValue
-
+1.	Function names are usually verbs or verb phrases, and use the camel case nomenclature lowerCamelCase. For example: `sendMessage`, `stopProcess`, or `calculateValue`.
 The format is as follows:
 
- a) In case of getting, modifying or calculating some value: ```get + non-boolean field()``` 
- But note, that getters are automatically generated by Kotlin compiler for some classes and it is preferred to use special get syntax for fields:
-     ```kotlin
-     private val field: String
-         get() {
-         }
-     ```
- Also it is preferred to call property access syntax instead of calling getter directly (in this case Kotlin compiler will automatically call corresponding getter)
- 
- b) is + boolean variable name()
+a) To get, modify, or calculate a certain value: get + non-boolean field(). However, note that getters are automatically generated by the Kotlin compiler for some classes, and the special get syntax is preferred for fields: kotlin private val field: String get() { }.
+```kotlin
+private val field: String
+get() {
+}
+``` 
+Additionally, calling property access syntax is preferred to calling getter directly. (In this case, the Kotlin compiler will automatically call the corresponding getter).
 
- c) set + field/attribute name(). But note, that Kotlin has absolutely same syntax and code generation as described for getters in point a
+b) `is` + boolean variable name()
 
- d) has + Noun / adjective ()
+c) `set` + field/attribute name(). However, note that the syntax and code generation for Kotlin are completely the same as those described for the getters in point a.
 
- e) verb()
-    The verb is mainly used on the object of the action itself, such as document.print ();
+d) `has` + Noun / adjective ()
 
- f) verb + noun() 
+e) verb()
+The verb is mainly used on the object of the action itself, such as `document.print ()`
 
-g) Callback function allows preposition + verb form naming, such as: onCreate(), onDestroy(), toString()
+f) verb + noun() 
 
-Bad examples:
+g) Callback function allows preposition + verb form naming, such as: `onCreate()`, `onDestroy()`, `toString()`
+
+**Invalid example**: 
 
  ```kotlin
    fun type(): String
@@ -243,7 +210,7 @@ Bad examples:
    fun KeyListener(Listener)
  ```
 
-Correct examples：
+**Valid example**: 
 
  ```kotlin
    fun getType(): String
@@ -253,38 +220,31 @@ Correct examples：
    fun addKeyListener(Listener)
  ```
 
-2)An underscore may be included in the JUnit test function name, underscore should be a logical component that is used to separate names,
- and each logical part is written in lowerCamelCase.
- For example: a typical pattern <methodUnderTest> _ <state>, such as pop_emptyStack.
-### <a name="c1.5"></a> Constants 
+2.	An underscore can be included in the JUnit test function name, and should be a logical component used to separate names. Each logical part is written in lowerCamelCase. For example: a typical pattern _, such as pop_emptyStack
 
+### <a name="c1.5"></a> Constants 
 ### <a name="r1.6"></a> Rule 1.6 Constant names should be in UPPER case, words separated by underscore
 
-1. Constants are attributes created with const keyword, or top-level/"val" local variables of an object that hold immutable data.
- In most cases constants can be identified as const val property from object/companion object/file top level
- These variables contain fixed constant value that generaly should never be changed by a programmer.
- This includes basic types, strings, immutable types and immutable collections of immutable types. If any state of an object can be changed, then this is not a constant.
+1.	Constants are attributes created with the const keyword, or top-level/`val` local variables of an object that holds immutable data. In most cases, constants can be identified as a `const val` property from the `object`/`companion object`/file top level. These variables contain a fixed constant value that typically should never be changed by programmers. This includes basic types, strings, immutable types, and immutable collections of immutable types. If an object state can be changed, the value is not a constant.
 
-2. Constant names should contain only UPPERCASE letters, separated by underscores. They should have val or const val modifier to explicitly make them final.
- In most cases if you need to specify a constant value - you need to create it with "const val" modifier. Definitely not all "val" variables are constants. 
+2. Constant names should contain only uppercase letters separated by underscores. They should have a val or const val modifier to explicitly make them final. In most cases, if you need to specify a constant value, then you need to create it with the "const val" modifier. Note that not all `val` variables are constants.
 
-3. Such objects that have immutable content like Logger, Lock, e.t.c. can be in uppercase as constant or can have camel case as regular variables.
+3. Objects that have immutable content, such as `Logger` and `Lock`, can be in uppercase as constants or have camel case as regular variables.
 
-4. Don't use magic numbers, use meaningful constants instead. SQL or logging strings should not be treated as "magic numbers" and should not be defined as string constants;
- "Magic constants" like NUM_FIVE = 5 or NUM_5 = 5 should not be treated as constants. Because in case someone will change it to NUM_5 = 50 or 55 it will be easy to make a mistake. 
- In general, such constants can represent business logic values like measures, capacity, scope, location, tax rate, promotional discounts, power base multiples in the algorithm, etc.
- How to avoid magic numbers:
- - use library functions and APIs. For example, instead of checking that size == 0 use isEmpty() function. To work with time use built-ins from java.time API.
- - enumerations can be used for naming patterns, see [Recommended usage scenario for enumeration in 3.9] (# s3.9)
+4. Use meaningful constants instead of `magic numbers`. SQL or logging strings should not be treated as "magic numbers", nor should they be defined as string constants. "Magic constants" like `NUM_FIVE = 5` or `NUM_5 = 5` should not be treated as constants. This is because mistakes will easily be made if they are changed to `NUM_5 = 50` or 55.
+Typically, these constants represent business logic values like measures, capacity, scope, location, tax rate, promotional discounts, and power base multiples in algorithms. 
+Magic numbers can be avoided through the following methods:
+- use library functions and APIs. For example, instead of checking that `size == 0` use `isEmpty()` function. To work with `time` use built-ins from `java.time API`.
+- Enumerations can be used to name patterns. Refer to [Recommended usage scenario for enumeration in 3.9](#s3.9)
  
-Bad example:
+**Invalid example**: 
 
  ```kotlin
  var int MAXUSERNUM = 200;
  val String sL = "Launcher";
  ```
 
-Correct example：
+**Valid example**:
 
  ```kotlin
  const val int MAX_USER_NUM = 200;
@@ -292,41 +252,31 @@ Correct example：
  ```
 
 ### <a name="c1.6"></a> Non-constant fields
+### <a name="r1.7"></a> Rule 1.7: The name of the non-constant field should use camel case and start with a lowercase letter.
 
- ### <a name="r1.7"></a> Rule 1.7: The name of the non-constant field should use camel case and starts with lower letter. 
+A local variable cannot be treated as a constant even if it is final and immutable. Therefore, it should not use the preceding rules. The name of variables with a type from collections (sets, lists, etc.) should contain plural nouns.
+For example: `var namesList: List<String>`
 
-Variable, attribute, parameter and other non-constant field names should usually be nouns or phrases with noun.
-These fields should use lowerCamelCase formatting.
+Names of non-constant variables should use lower camel case. The name of the final immutable field used to store the singleton object can use the same notation with camel case.
 
-Even if a local variable is final and immutable but it cannot be treated as a constant then it should not be using same rules as described for constants.
-Name of variables with a type from collections (sets, lists, e.t.c) should contain nouns in plural form. For example: ```var namesList: List<String>```
+**Invalid example**: 
+```kotlin
+customername: String
+user: List<String> = listof()
+```
 
-Name of non-constant variable should use lower camel case. The name of the final immutable field that is used to store the singleton object can use the same notation with camel case.
-
-Bad examples：
-
- ```kotlin
- customername: String
- user: List<String> = listof()
- ```
-
-Correct examples：
-
- ```kotlin
+**Valid example**: 
+```kotlin
 var customerName: String
 val users: List<String> = listOf();
 val mutableCollection: MutableSet<String> = HashSet()
- ```
+```
 
-### <a name="s1.1"></a> Recommendation 1.1: Avoid using boolean variable names with negative meaning 
+### <a name="s1.1"></a> Recommendation 1.1: Avoid using Boolean variable names with negative meaning.
 
-Note: When using logical operator and the name that has negative meaning, there will be problems of understanding, so called "double negative". It is not straight forward to understand what !isNotError means .
-The JavaBeans specification automatically generates isXxx () getters for attributes of boolean classes. But it is not mandatory for all such methods that return boolean to have such notation.
-For Boolean local variables or methods, it is highly recommended to add non-meaningful prefixes, including `is` which is commonly used by JavaBeans, or` has`, `can`,` should`, `must`.
-Modern IDEs (like Intellij) already do that for you when you try to generate getters in Java. For Kotlin it is even easier as everything is on byte-code level under the hood. 
+*Note*: When using a logical operator and name with negative meaning, the code may be difficult to understand, which is referred to as the "double negative". For instance, it is not easy to understand the meaning of !isNotError. The JavaBeans specification automatically generates isXxx() getters for attributes of Boolean classes. However, methods that return Boolean do not all have this notation. For Boolean local variables or methods, it is highly recommended that you add non-meaningful prefixes, including is (which is commonly used by JavaBeans), or has, can, should, must. Modern integrated development environments (IDEs) such as Intellij are already capable of doing this for you when you generate getters in Java. For Kotlin, this process is even easier as everything is on the byte-code level under the hood.
 
-Bad examples：
-
+**Invalid example**: 
 ```kotlin
 val isNoError: Boolean
 val isNotFound: Boolean
@@ -334,8 +284,7 @@ fun empty()
 fun next();
 ```
 
-Correct examples：
-
+**Valid example**:
 ```kotlin
 val isError: Boolean
 val isFound: Boolean
@@ -346,7 +295,7 @@ fun isEmpty()
 fun hasNext()
 ```
 
- ## <a name="c2"></a>Chapter 2  comments
+### <a name="c2"></a>Chapter 2  comments
 
   The best practice is to begin your comment with a short summary, it can be an abstract in one sentence and it can be detailed later.
   You should balance between writing no comments at all and obvious comments for most each line of code.
@@ -356,7 +305,7 @@ fun hasNext()
   Imagine that you are writting comments for yourself from the future. It will help you even after a long time when you will return to the code to understand the ideas.
   Also comments are also very useful for your successors, who will be able easily get into your code.
  
- ### <a name="c2.1"></a> General form of Kdoc 
+### <a name="c2.1"></a> General form of Kdoc 
  
 KDoc is a combination of JavaDoc's block tags syntax (extended to support specific constructions of Kotlin) and Markdown's inline markup.
 The basic format of KDoc is shown in the following example:
@@ -478,7 +427,7 @@ Other KDoc tags (such as @param type parameters, @see, etc.) can be added as fol
  * @since 1.6
  */
 ```
-## <a name="c2.2"></a>Comments to the file header
+### <a name="c2.2"></a>Comments to the file header
 
 ### <a name="r2.4"></a>Rule 2.4 The file header comments must include copyright information, should NOT contain creation date and author name (it is antipattern - use VCS for history management). Files that contain multiple or no classes should also contain some description of what is inside of this file.
 File header comments should be stored BEFORE package name and imports. 
@@ -520,8 +469,7 @@ Note the following when writing file header or comments for top-level classes:
 - Industry is not using any history information in comments. History can be found in VCS (git/svn/e.t.c). It is not recommended to include historical data in the comments of the Kotlin source code.
 
 
-## <a name="c2.3"></a>Function header comments
-
+### <a name="c2.3"></a>Function header comments
 ### <a name="r2.5"></a>Rule 2.5 Prohibit empty or useless function comments
 
 Function header comments are placed above function declarations or definitions. There should be no newline between a function declaration and it's Kdoc. 
@@ -533,7 +481,7 @@ Avoid dummy useless comments.
 The function header comment content is optional, but not limited to: function description, return value, performance constraints, usage, memory conventions, algorithm implementation, reentrant requirements, etc.
 The module's external interface declaration and its comments should clearly convey important and useful information.
 
-## <a name="c2.4"></a>Code comments
+### <a name="c2.4"></a>Code comments
 
 ### <a name="r2.6"></a>Rule 2.6 Add a blank line between the body of the comment and Kdoc tag-blocks; there must be 1 space between the comment character and the content of the comment; there must be a newline between a Kdoc and the previous code above
 1. There must be 1 space between the comment character and the content of the comment; there must be a newline between a Kdoc and the previous code above; there should be no empty line between Kdoc and code it is describing.
@@ -633,7 +581,7 @@ They should all have a unified style to facilitate the unified processing of tex
 
 In the version development stage, such annotations can be used to highlight the issues in code, but all of them should be fixed before release of a new production version.
 
- ## <a name="c3"></a>3 Typesetting
+### <a name="c3"></a>3 Typesetting
 
 ### <a name="c3.1"></a> File-related rules
 
@@ -706,9 +654,8 @@ The declaration part of a class or interface should be in the following order:
 **Exception：**
 All variants of a (private) val logger should be placed in the beginning of the class ((private) val log/LOG/logger/e.t.c)
 
- ### <a name="c3.1"></a> Braces
-
- #### <a name="r3.3"></a>Rule 3.3 Braces must be used in conditional statements and loop blocks
+### <a name="c3.1"></a> Braces
+### <a name="r3.3"></a>Rule 3.3 Braces must be used in conditional statements and loop blocks
 
 In `if`, `else`, `for`, `do`, and `while` statements, even if the program body is empty or contains only one statement, braces should be used.
 In special Kotlin `when` statement no need to use braces for statements with 1 line. Valid example:
@@ -748,7 +695,7 @@ if (condition) {
 }
 ```
 
-#### <a name="r3.4"></a> Rule 3.4 For *non-empty* blocks and block structures, the opening brace is placed at the end of the line
+### <a name="r3.4"></a> Rule 3.4 For *non-empty* blocks and block structures, the opening brace is placed at the end of the line
 
 For *non-empty* code blocks with braces, they should follow the K&R style (1TBS or OTBS style):
  - The opening brace is on the same same line with the first line of the code block
@@ -802,7 +749,6 @@ Good example：
  ```
 
 ### <a name="c3.2"></a> Indentation
-
 ### <a name="r3.5"></a>Rule 3.5: Use spaces for indentation, indenting is equal to 4 spaces
 
 Only spaces are allowed for indentation and each indentation should equal to 4 spaces (tabs are not allowed). 
@@ -874,8 +820,7 @@ Exceptions:
             B()
     ```
 ### <a name="c3.3"></a> Empty blocks
-
-#### <a name="s3.3"></a>Recommendation 3.3: try to avoid empty blocks; multiple braces should start a new line
+### <a name="s3.3"></a>Recommendation 3.3: try to avoid empty blocks; multiple braces should start a new line
 
 An empty code block can be closed immediately on the same line as well as the block can be closed on the next line.
 But it is preferred to have a newline between opening and closing braces `{}` (see examples below).
@@ -912,7 +857,6 @@ try {
 ```
 
 ### <a name="c3.4"></a>Line width
-
 ### <a name="s3.5"></a> Recommendation 3.4: line length should be less than 120 symbols
 
 This international code style prohibits non-latin (non ASCII) symbols in the code. But in case you would like to use them anyway - please use the following convention:
@@ -930,8 +874,8 @@ This international code style prohibits non-latin (non ASCII) symbols in the cod
   2. The `package` and `import` statements.
   3. The command line in the comment so that it can be cut and pasted into the shell for use.
 
+<!-- =============================================================================== -->
 ### <a name="c3.5"></a> Line breaks (newlines)
-
 ### <a name="s3.4"></a> Recommendation 3.5 No more than one statement per line
 There should not be more than one code statement in one line (this recommendation prohibits usage of code with ";")
 Such code is prohibited as it makes code visibility worse:
@@ -939,7 +883,7 @@ Such code is prohibited as it makes code visibility worse:
 val a = ""; val b = ""
 ```
 
-#### <a name="r3.6"></a>Rule 3.6 line break style rules if the line is split
+### <a name="r3.6"></a>Rule 3.6 line break style rules if the line is split
 
 1. Compared to Java Kotlin allows not to put semicolon (';') after each statement separated by newline.
  There should be no redundant semicolon at the end of lines.
@@ -1031,7 +975,6 @@ fun foo(
  ```
 
 ### <a name="c3.6"></a>Blank lines
-
 ### <a name="s3.6"></a>Recommendation 3.6: Reduce unnecessary blank lines and keep the code compact
 
 By reducing unnecessary blank lines, you can display more code on one screen and that makes the code more readable.
@@ -1051,7 +994,6 @@ fun baz() {
 ```
 
 ###<a name="c3.7"></a> Horizontal space
-
 ### <a name="s3.7"></a> Recommendation 3.7: Usage of whitespace for code separation
 
   Note: this rule corresponds to the case when symbols are located on the same line. In some cases there could be a line break instead of a space, but this logic is described in other rules.
@@ -1148,7 +1090,6 @@ enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean
  ```
 
 ###<a name="c3.8"></a> Enumerations
-
 ### <a name="s3.9"></a>Recommendation 3.9: enum values are separated by comma and a line break. ';' is put on the new line
 1) Enum values are separated by comma and a line break. ';' is put on the new line:
      ```Kotlin
@@ -1183,8 +1124,7 @@ enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean
     }
   ```
 
-#### <a name="c3.9"></a> Variable declaration
-
+### <a name="c3.9"></a> Variable declaration
 ### <a name="r3.7"></a>Rule 3.7: declare one variable on one line
 
 Each property or variable declaration should be declared on separate line. Bad example: `val n1: Int; val n2: Int`.
@@ -1203,7 +1143,6 @@ Each when statement contains an `else` statement group, even if it does not cont
 The compiler can issue a warning when it is missing.
 
 ### <a name="c3.11"></a> Annotations
-
 ### <a name="s3.11"></a> Recommendation 3.11: Each annotation applied to a class, method or constructor is on its own line
 
 1. Annotations applied to the class, method, or constructor are placed on separate lines (one annotation per line). Example:
@@ -1238,7 +1177,6 @@ class SomeClass {
  **Hint：** To have automatic formatting by IDEs use `/*...*/` block comments.
 
 ### <a name="c3.13"></a> Modifiers
-
 ### <a name="s3.12"></a> Recommendation 3.12 If a declaration has multiple modifiers, always follow the sequence below
 Recommended sequence:
 
@@ -1276,8 +1214,7 @@ val bytes = 0b11010010_01101001_10010100_10010010
 ```
 
 ### <a name="c3.14"></a> Strings
-
-### <a name="r3.8"></a>Rule 3.14.1: Concatenation Strings is prohibited when string fits one line, use raw strings and string templates instead.
+### <a name="r3.14.1"></a>Rule 3.14.1: Concatenation Strings is prohibited when string fits one line, use raw strings and string templates instead.
 Kotlin significantly enhanced work with Strings:
 [String templates](https://kotlinlang.org/docs/reference/basic-types.html#string-templates), [Raw strings](https://kotlinlang.org/docs/reference/basic-types.html#string-literals)
 That's why code looks much better when instead of using explicit concatenation to use proper Kotlin strings in case your line is not too long and you do not need to split it with newlines.
@@ -1324,10 +1261,8 @@ val someString = myArgument
 ```
 
 
- # <a name="c4"></a>4 Variables and types
-
+### <a name="c4"></a>4 Variables and types
 ### <a name="c4.1"></a>Variables
-
 ### <a name="r4.1.1"></a> Rule 4.1.1: Do not use Float and Double when accurate calculations are needed
 Floating point numbers provide a good approximation over a wide range of values, but they cannot produce accurate results in some cases.
 Binary floating-point numbers are unsuitable for precise calculations, because it is impossible to represent 0.1 or any other negative power of 10 in a `binary representation` with a finite length.
@@ -1398,7 +1333,6 @@ Variables with `val` modifier - are immutable (read-only). Usage of such variabl
 because `var` variables can be reassigned several times in the business logic. Of course, in some scenarios with loops or accumulators only `var`s can be used and are allowed.
  
 ### <a name="c4.2"></a>Types
-
 ### <a name="s4.2.1"></a>Recommendation 4.2.1: Use Contracts and smart cast as much as possible
 
 Kotlin compiler introduced [Smart casts](https://kotlinlang.org/docs/reference/typecasts.html#smart-casts) that help to reduce the size of code.
@@ -1517,9 +1451,8 @@ Recommended:
 val myVariable: Map<Int, String> = emptyMap() 
 ```
 
-# <a name="c5"></a>5 Functions
-
-## <a name="c5.1"></a>Function design
+### <a name="c5"></a>5 Functions
+### <a name="c5.1"></a>Function design
 
 Knowledge of how to build design patterns and avoid code smells helps to write clean code. This and functional style should be unified together when you write the code on Kotlin.
 Ideas of functional style are the following: function - is the smallest unit of combinable and reusable code. Functions should have clean logic,
@@ -1576,7 +1509,6 @@ fun foo() {
 ```  
 
 ### <a name="c5.2"></a> Function arguments
-
 ### <a name="r5.2.1"></a>Rule 5.2.1 The lambda parameter of the function should be placed in the last place in the argument list
 
 With a such notation it is easier to use curly brackets, code becoming more readable.
