@@ -201,5 +201,5 @@ public object WarningNames {
 
     public const val CLASS_SHOULD_NOT_BE_ABSTRACT: String = "CLASS_SHOULD_NOT_BE_ABSTRACT"
 
-    public const val USELESS_OVERRIDE: String = "USELESS_OVERRIDE"
+    public const val USELESS_SUPERTYPE: String = "USELESS_SUPERTYPE"
 }

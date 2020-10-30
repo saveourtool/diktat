@@ -14,7 +14,7 @@ class UselessSupertypeWarnTest: LintTestBase(::UselessSupertype) {
     private val ruleId = "$DIKTAT_RULE_SET_ID:useless-override"
 
     @Test
-    @Tag(WarningNames.USELESS_OVERRIDE)
+    @Tag(WarningNames.USELESS_SUPERTYPE)
     fun `check simple wrong example`() {
         lintMethod(
                 """
@@ -60,7 +60,7 @@ class UselessSupertypeWarnTest: LintTestBase(::UselessSupertype) {
     }
 
     @Test
-    @Tag(WarningNames.USELESS_OVERRIDE)
+    @Tag(WarningNames.USELESS_SUPERTYPE)
     fun `check example with two super`() {
         lintMethod(
                 """
