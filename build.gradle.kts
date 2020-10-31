@@ -11,7 +11,7 @@ dependencies {
     }
 
     // diktat ruleset
-    ktlint("org.cqfn.diktat:diktat-rules:0.1.2")
+    ktlint("org.cqfn.diktat:diktat-rules:0.1.3")
 }
 
 val outputDir = "${project.buildDir}/reports/diktat/"
