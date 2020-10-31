@@ -22,6 +22,7 @@ import com.pinterest.ktlint.core.ast.ElementType.THEN
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isWhiteSpace
+import com.pinterest.ktlint.core.ast.prevSibling
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
@@ -38,16 +39,16 @@ import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 /**
  * This class handles rule 2.6
  * Part 1:
- * there must be 1 space between the comment character and the content of the comment;
- * there must be a newline between a Kdoc and the previous code above and no blank lines after.
- * No need to add a blank line before a first comment in this particular name space (code block), for example between function declaration and first comment in a function body.
+ * * there must be 1 space between the comment character and the content of the comment;
+ * * there must be a newline between a Kdoc and the previous code above and no blank lines after.
+ * * No need to add a blank line before a first comment in this particular name space (code block), for example between function declaration
+ *   and first comment in a function body.
  *
  * Part 2:
- * Leave one single space between the comment on the right side of the code and the code.
- * Comments in if else should be inside code blocks. Exception: General if comment
+ * * Leave one single space between the comment on the right side of the code and the code.
+ * * Comments in if else should be inside code blocks. Exception: General if comment
  */
 class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-comments-codeblocks-formatting") {
-
     companion object {
         private const val MAX_SPACES = 1
         private const val APPROPRIATE_COMMENT_SPACES = 1
@@ -65,22 +66,15 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
         val configuration = CommentsFormattingConfiguration(
                 configRules.getRuleConfig(COMMENT_WHITE_SPACE)?.configuration ?: mapOf())
 
-
         when (node.elementType) {
             CLASS, FUN, PROPERTY -> {
                 checkBlankLineAfterKdoc(node, EOL_COMMENT)
                 checkBlankLineAfterKdoc(node, KDOC)
                 checkBlankLineAfterKdoc(node, BLOCK_COMMENT)
             }
-            IF -> {
-                handleIfElse(node)
-            }
-            EOL_COMMENT, BLOCK_COMMENT -> {
-                handleEolAndBlockComments(node, configuration)
-            }
-            KDOC -> {
-                handleKdocComments(node, configuration)
-            }
+            IF -> handleIfElse(node)
+            EOL_COMMENT, BLOCK_COMMENT -> handleEolAndBlockComments(node, configuration)
+            KDOC -> handleKdocComments(node, configuration)
         }
     }
 
@@ -257,15 +251,14 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
 
     private fun checkClassComment(node: ASTNode) {
         if (isFirstComment(node)) {
-            if (node.isBlockOrClassBody())
+            if (node.isBlockOrClassBody()) {
                 checkFirstCommentSpaces(node)
-            else
+            } else {
                 checkFirstCommentSpaces(node.treeParent)
-
-            return
-        }
-
-        if (node.treeParent.elementType != FILE && !node.treeParent.treePrev.isWhiteSpace()) {
+            }
+        } else if (node.treeParent.elementType != FILE && !node.treeParent.treePrev.isWhiteSpace()) {
+            // fixme: we might face more issues because newline node is inserted in a wrong place which causes consecutive
+            //  white spaces to be split among nodes on different levels. But this requires investigation.
             WRONG_NEWLINES_AROUND_KDOC.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
                 node.treeParent.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node.treeParent)
             }
@@ -289,24 +282,25 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
         }
     }
 
-
     private fun isFirstComment(node: ASTNode): Boolean {
-        // In case when comment is inside of a function or class
-        if (node.isBlockOrClassBody()) {
-            return if (node.treePrev.isWhiteSpace())
+        return if (node.isBlockOrClassBody()) {
+            // In case when comment is inside of a function or class
+            if (node.treePrev.isWhiteSpace()) {
                 node.treePrev.treePrev.elementType == LBRACE
-            else
-                node.treePrev == null || node.treePrev.elementType == LBRACE // null is handled for functional literal
+            } else {
+                node.treePrev == null || node.treePrev.elementType == LBRACE  // null is handled for functional literal
+            }
+        } else if (node.treeParent?.treeParent?.elementType == FILE && node.treeParent.prevSibling { it.text.isNotBlank() } == null) {
+            // `treeParent` is the first not-empty node in a file
+            true
+        } else if (node.treeParent.elementType != FILE && node.treeParent.treePrev != null &&
+                node.treeParent.treePrev.treePrev != null) {
+            // When comment inside of a PROPERTY
+            node.treeParent.treePrev.treePrev.elementType == LBRACE
+        } else {
+            node.treeParent.getAllChildrenWithType(node.elementType).first() == node
         }
-
-        // When comment inside of a PROPERTY
-        if (node.treeParent.elementType != FILE && node.treeParent.treePrev != null &&
-                node.treeParent.treePrev.treePrev != null)
-            return node.treeParent.treePrev.treePrev.elementType == LBRACE
-
-        return node.treeParent.getAllChildrenWithType(node.elementType).first() == node
     }
-
 
     private fun ASTNode.isBlockOrClassBody() : Boolean = treeParent.elementType == BLOCK || treeParent.elementType == CLASS_BODY
 
