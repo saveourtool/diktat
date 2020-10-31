@@ -32,7 +32,7 @@ class TestArgumentsReader(
         override val classLoader: ClassLoader
 ) : JsonResourceConfigReader<List<CliArgument>?>() {
     private val cliArguments: List<CliArgument>? = readResource(properties.testFrameworkArgsRelativePath)
-    private val cmd: CommandLine
+    private val cmd: CommandLine by lazy { parseArguments() }
 
     /**
      * List of tests provided by user
@@ -62,10 +62,6 @@ class TestArgumentsReader(
             }
             return options
         }
-
-    init {
-        cmd = parseArguments()
-    }
 
     private fun parseArguments(): CommandLine {
         val parser: CommandLineParser = DefaultParser()
