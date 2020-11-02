@@ -16,6 +16,9 @@ import org.cqfn.diktat.ruleset.utils.getIdentifierName
 import org.cqfn.diktat.ruleset.utils.hasAnyChildOfTypes
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
+/**
+ * This rule checks if there is a backing property for field with property accessors, in case they don't use field keyword
+ */
 class ImplicitBackingPropertyRule(private val configRules: List<RulesConfig>) : Rule("implicit-backing-property") {
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
@@ -35,12 +38,10 @@ class ImplicitBackingPropertyRule(private val configRules: List<RulesConfig>) : 
     private fun findAllProperties(node: ASTNode) {
         val properties = node.getChildren(null).filter { it.elementType == PROPERTY }
 
-        val propsWithBackSymbol = mutableListOf<String>()
-
-        properties
+        val propsWithBackSymbol = properties
                 .filter { it.getFirstChildWithType(IDENTIFIER)!!.text.startsWith("_") }
-                .forEach {
-                    propsWithBackSymbol.add(it.getFirstChildWithType(IDENTIFIER)!!.text)
+                .map {
+                    it.getFirstChildWithType(IDENTIFIER)!!.text
                 }
 
         properties.filter { it.hasAnyChildOfTypes(PROPERTY_ACCESSOR) }.forEach {
@@ -64,14 +65,14 @@ class ImplicitBackingPropertyRule(private val configRules: List<RulesConfig>) : 
     private fun handleReferenceExpressions(node:ASTNode,
                                            expressions: List<ASTNode>,
                                            backingPropertiesNames: List<String>) {
-        if (expressions.none { backingPropertiesNames.contains(it.text) || it.text != "field" }) {
+        if (expressions.none { backingPropertiesNames.contains(it.text) || it.text == "field" }) {
             raiseWarning(node, node.getFirstChildWithType(IDENTIFIER)!!.text)
         }
     }
 
     private fun raiseWarning(node:ASTNode, propName: String) {
         NO_CORRESPONDING_PROPERTY.warn(configRules, emitWarn, isFixMode,
-                "_$propName has no corresponding property with name $propName", node.startOffset, node)
+                "$propName has no corresponding property with name _$propName", node.startOffset, node)
     }
 
 }

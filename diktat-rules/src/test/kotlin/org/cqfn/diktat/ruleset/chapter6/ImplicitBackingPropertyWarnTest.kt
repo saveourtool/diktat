@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter6
 
 import com.pinterest.ktlint.core.LintError
-import generated.WarningNames
+import generated.WarningNames.NO_CORRESPONDING_PROPERTY
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.ImplicitBackingPropertyRule
@@ -13,7 +13,7 @@ class ImplicitBackingPropertyWarnTest: LintTestBase(::ImplicitBackingPropertyRul
     private val ruleId = "$DIKTAT_RULE_SET_ID:implicit-backing-property"
 
     @Test
-    @Tag("")
+    @Tag(NO_CORRESPONDING_PROPERTY)
     fun `not trigger on backing property`() {
         lintMethod(
                 """
@@ -33,27 +33,28 @@ class ImplicitBackingPropertyWarnTest: LintTestBase(::ImplicitBackingPropertyRul
     }
 
     @Test
-    @Tag("")
+    @Tag(NO_CORRESPONDING_PROPERTY)
     fun `trigger on backing property`() {
         lintMethod(
                 """
                     |class Some(val a: Int = 5) {
-                    |   private var _a: Map<String, Int>? = null
+                    |   private var a: Map<String, Int>? = null
                     |   val table:Map<String, Int>
                     |       get() {
-                    |           if (_a == null) {
-                    |               _a = HashMap()
+                    |           if (a == null) {
+                    |               a = HashMap()
                     |           }
-                    |           return _a ?: throw AssertionError("Set to null by another thread")
+                    |           return a ?: throw AssertionError("Set to null by another thread")
                     |       }
                     |       set(value) {field = value}
                     |}
-                """.trimMargin()
+                """.trimMargin(),
+                LintError(3,4,ruleId, "${Warnings.NO_CORRESPONDING_PROPERTY.warnText()} table has no corresponding property with name _table")
         )
     }
 
     @Test
-    @Tag("")
+    @Tag(NO_CORRESPONDING_PROPERTY)
     fun `don't trigger on regular backing property`() {
         lintMethod(
                 """
@@ -66,7 +67,7 @@ class ImplicitBackingPropertyWarnTest: LintTestBase(::ImplicitBackingPropertyRul
     }
 
     @Test
-    @Tag("")
+    @Tag(NO_CORRESPONDING_PROPERTY)
     fun `don't trigger on regular property`() {
         lintMethod(
                 """
@@ -80,7 +81,7 @@ class ImplicitBackingPropertyWarnTest: LintTestBase(::ImplicitBackingPropertyRul
     }
 
     @Test
-    @Tag("")
+    @Tag(NO_CORRESPONDING_PROPERTY)
     fun `should not trigger if property has field in accessor`() {
         lintMethod(
                 """
