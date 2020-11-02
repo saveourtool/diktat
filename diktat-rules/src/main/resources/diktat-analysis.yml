@@ -343,3 +343,7 @@
 - name: CLASS_SHOULD_NOT_BE_ABSTRACT
   enabled: true
   configuration: {}
+# Checks if class instantiation can be wrapped in `apply` for better readability
+- name: COMPACT_OBJECT_INITIALIZATION
+  enabled: true
+  configuration: {}
