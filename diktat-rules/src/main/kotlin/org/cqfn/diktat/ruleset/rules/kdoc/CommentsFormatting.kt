@@ -154,6 +154,7 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun moveCommentToElse(node: ASTNode,
                                   elseBlock: ASTNode,
                                   elseKeyWord: ASTNode,
