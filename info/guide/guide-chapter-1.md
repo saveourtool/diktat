@@ -14,6 +14,7 @@ Name lengths of less than 31 symbols are generally recommended, but this depends
 2.	For files, choose names that describe their content. Use camel case (PascalCase) and `.kt` extension.
 
 3.	Typical examples of naming:
+
 | Meaning | Correct |Incorrect|
 | ---- | ---- | ---- |
 | "XML Http Request" | XmlHttpRequest | XMLHTTPRequest |
