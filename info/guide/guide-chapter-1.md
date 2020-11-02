@@ -2,18 +2,19 @@
 In programming, it is difficult to meaningfully and appropriately name variables, functions, classes, etc. Good names clearly express the main ideas and functionality of your code, as well as avoid misinterpretation, unnecessary coding and decoding, magic numbers, and inappropriate abbreviations.
 
 ### <a name="r1.0.1"></a>Rule 1.0.1: file encoding format must be UTF-8 only
-The source file encoding format (including comments) must be UTF-8 only. The ASCII horizontal space character (0x20, that is, space) is the only permitted white space character. Tabs should not be used for indentation.
+The source file encoding format (including comments) must be `UTF-8` only. The `ASCII` horizontal space character (0x20, that is, space) is the only permitted white space character. Tabs should not be used for indentation.
 
 ### <a name="c1.1"></a>Identifiers naming
 ### <a name="r1.1.1"></a> Rule 1.1.1: Identifiers
-1.	All identifiers should use only ASCII letters or digits, and the names should match regular expressions \w{2,64}.
-Explanation: Each valid identifier name should match the regular expression \ w {2,64}.
-{2,64} means that the name length is 2 to 64 characters, and the length of the variable name should be proportional to its life range, functionality, and responsibility.
-Name lengths of less than 31 symbols are generally recommended, but this depends on the project. Otherwise, class declaration with generics or inheritance from a super class can cause line breaking for example. No special prefix or suffix should be used in the names. The following examples are inappropriate: name_, mName, s_name, and kName.
+1.	All identifiers should use only ASCII letters or digits, and the names should match regular expressions `\w{2,64}`.
+Each valid identifier name should match the regular expression `\w{2,64}`.
+`{2,64}` means that the name length is 2 to 64 characters, and the length of the variable name should be proportional to its life range, functionality, and responsibility.
+Name lengths of less than 31 symbols are generally recommended, but this depends on the project. Otherwise, class declaration with generics or inheritance from a super class can cause line breaking for example. No special prefix or suffix should be used in the names. The following examples are inappropriate: `name_`, `mName`, `s_name`, and `kName`.
 
 2.	For files, choose names that describe their content. Use camel case (PascalCase) and `.kt` extension.
 
 3.	Typical examples of naming:
+
 | Meaning | Correct |Incorrect|
 | ---- | ---- | ---- |
 | "XML Http Request" | XmlHttpRequest | XMLHTTPRequest |
