@@ -10,6 +10,11 @@ import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.children
+import com.pinterest.ktlint.core.ast.isPartOfComment
+import com.pinterest.ktlint.core.ast.isWhiteSpace
+import com.pinterest.ktlint.core.ast.nextSibling
+import com.pinterest.ktlint.core.ast.prevSibling
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getCommonConfiguration
@@ -21,7 +26,6 @@ import org.cqfn.diktat.ruleset.constants.Warnings.FILE_UNORDERED_IMPORTS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_WILDCARD_IMPORTS
 import org.cqfn.diktat.ruleset.rules.PackageNaming.Companion.PACKAGE_SEPARATOR
 import org.cqfn.diktat.ruleset.utils.StandardPlatforms
-import org.cqfn.diktat.ruleset.utils.findChildBefore
 import org.cqfn.diktat.ruleset.utils.getFileName
 import org.cqfn.diktat.ruleset.utils.handleIncorrectOrder
 import org.cqfn.diktat.ruleset.utils.moveChildBefore
@@ -43,7 +47,6 @@ import org.jetbrains.kotlin.psi.KtImportDirective
  * 5. Ensures there are no wildcard imports
  */
 class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file-structure") {
-
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
     private var fileName: String = ""
@@ -87,45 +90,51 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
     }
 
     private fun checkCodeBlocksOrderAndEmptyLines(node: ASTNode) {
-        // fixme handle other elements that could be present before package (other comments)
-        val copyrightComment = node.findChildBefore(PACKAGE_DIRECTIVE, BLOCK_COMMENT)
-        val headerKdoc = node.findChildBefore(PACKAGE_DIRECTIVE, KDOC)
-        val fileAnnotations = node.findChildByType(FILE_ANNOTATION_LIST)
-        // PACKAGE_DIRECTIVE node is always present in regular kt files and might be absent in kts
-        // kotlin compiler itself enforces it's position in the file if it is present
-        // fixme: handle cases when this node is not present
-        val packageDirectiveNode = (node.psi as KtFile).packageDirective?.node ?: return
-        // fixme: find cases when node.psi.importLists.size > 1, handle cases when it's not present
-        val importsList = (node.psi as KtFile).importList?.node ?: return
+        // PACKAGE_DIRECTIVE node is always present in regular kt files and might be absent in kts.
+        // Kotlin compiler itself enforces it's position in the file if it is present.
+        // If package directive is missing in .kt file (default package), the node is still present in the AST.
+        // fixme: find and handle cases when this node is not present (.kts files?)
+        val packageDirectiveNode = (node.psi as KtFile).packageDirective?.takeUnless { it.isRoot }?.node
+        // fixme: find cases when node.psi.importLists.size > 1, handle cases when it's not present (null)
+        val importsList = (node.psi as KtFile).importList?.takeIf { it.imports.isNotEmpty() }?.node
+
+        // this node will be an anchor with respect to which we will look for all other nodes
+        val firstCodeNode = packageDirectiveNode
+            ?: importsList
+            ?: node.children().firstOrNull {
+                // taking nodes with actual code
+                !it.isWhiteSpace() && !it.isPartOfComment() &&
+                        // but not the ones we are going to move
+                        it.elementType != FILE_ANNOTATION_LIST&& it.elementType != IMPORT_LIST &&
+                        // if we are here, then package is default and we don't need to select the empty PACKAGE_DIRECTIVE node
+                        it.elementType != PACKAGE_DIRECTIVE
+            }
+            ?: return  // at this point it means the file contains only comments
+        // fixme: handle other elements that could be present before package (other comments)
+        var copyrightComment = firstCodeNode.prevSibling { it.elementType == BLOCK_COMMENT }
+        var headerKdoc = firstCodeNode.prevSibling { it.elementType == KDOC }
+        var fileAnnotations = node.findChildByType(FILE_ANNOTATION_LIST)
 
         // checking order
         listOfNotNull(copyrightComment, headerKdoc, fileAnnotations).handleIncorrectOrder({
-            getSiblingBlocks(copyrightComment, headerKdoc, fileAnnotations, packageDirectiveNode)
+            getSiblingBlocks(copyrightComment, headerKdoc, fileAnnotations, firstCodeNode)
         }) { astNode, beforeThisNode ->
-            FILE_INCORRECT_BLOCKS_ORDER.warnAndFix(
-                configRules,
-                emitWarn,
-                isFixMode,
-                astNode.text.lines().first(),
-                astNode.startOffset,
-                astNode
-            ) {
-                node.moveChildBefore(astNode, beforeThisNode, true)
+            FILE_INCORRECT_BLOCKS_ORDER.warnAndFix(configRules, emitWarn, isFixMode, astNode.text.lines().first(), astNode.startOffset, astNode) {
+                val result = node.moveChildBefore(astNode, beforeThisNode, true)
+                result.newNodes.first().run {
+                    // reassign values to the nodes that could have been moved
+                    when (elementType) {
+                        BLOCK_COMMENT -> copyrightComment = this
+                        KDOC -> headerKdoc = this
+                        FILE_ANNOTATION_LIST -> fileAnnotations = this
+                    }
+                }
                 astNode.treeNext?.let { node.replaceChild(it, PsiWhiteSpaceImpl("\n\n")) }
             }
         }
 
         // checking empty lines
-        arrayOf(copyrightComment, headerKdoc, fileAnnotations, packageDirectiveNode, importsList).forEach { astNode ->
-            astNode?.treeNext?.apply {
-                if (elementType == WHITE_SPACE && text.count { it == '\n' } != 2) {
-                    FILE_NO_BLANK_LINE_BETWEEN_BLOCKS.warnAndFix(configRules, emitWarn, isFixMode, astNode.text.lines().first(),
-                        astNode.startOffset, astNode) {
-                        (this as LeafPsiElement).replaceWithText("\n\n${text.replace("\n", "")}")
-                    }
-                }
-            }
-        }
+        insertNewlinesBetweenBlocks(listOf(copyrightComment, headerKdoc, fileAnnotations, packageDirectiveNode, importsList))
     }
 
     @Suppress("UnsafeCallOnNullableType")
@@ -186,6 +195,23 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
             }
     }
 
+    private fun insertNewlinesBetweenBlocks(blocks: List<ASTNode?>) {
+        blocks.forEach { astNode ->
+            // if package directive is missing, node is still present, but it's text is empty, so we need to check treeNext to get meaningful results
+            astNode?.nextSibling { it.text.isNotEmpty() }?.apply {
+                if (elementType == WHITE_SPACE && text.count { it == '\n' } != 2) {
+                    FILE_NO_BLANK_LINE_BETWEEN_BLOCKS.warnAndFix(configRules, emitWarn, isFixMode, astNode.text.lines().first(),
+                        astNode.startOffset, astNode) {
+                        (this as LeafPsiElement).replaceWithText("\n\n${text.replace("\n", "")}")
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * @return a pair of nodes between which [this] node should be placed, i.e. after the first and before the second element
+     */
     private fun ASTNode.getSiblingBlocks(
         copyrightComment: ASTNode?,
         headerKdoc: ASTNode?,
