@@ -44,7 +44,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <kotlin.version>1.4.10</kotlin.version>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
-        <kotlinx.serialization.version>1.0.0</kotlinx.serialization.version>
+        <kotlinx.serialization.version>1.0.1</kotlinx.serialization.version>
         <ktlint.version>0.39.0</ktlint.version>
         <junit.version>5.7.0</junit.version>
         <guava.version>30.0-jre</guava.version>
