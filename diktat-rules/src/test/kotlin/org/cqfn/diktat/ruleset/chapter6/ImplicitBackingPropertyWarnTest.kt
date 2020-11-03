@@ -96,4 +96,20 @@ class ImplicitBackingPropertyWarnTest: LintTestBase(::ImplicitBackingPropertyRul
                 """.trimMargin()
         )
     }
+
+    @Test
+    @Tag(NO_CORRESPONDING_PROPERTY)
+    fun `should not trigger on property with constant return`() {
+        lintMethod(
+                """
+                    |class Some(val a: Int = 5) {
+                    |   val table:Int
+                    |       get() {
+                    |           return 3
+                    |       }
+                    |       set(value) { field = value }
+                    |}
+                """.trimMargin()
+        )
+    }
 }

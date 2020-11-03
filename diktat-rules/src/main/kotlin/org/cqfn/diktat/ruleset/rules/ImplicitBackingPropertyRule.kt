@@ -4,10 +4,13 @@ import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.FILE
+import com.pinterest.ktlint.core.ast.ElementType.GET_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY_ACCESSOR
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.RETURN
+import com.pinterest.ktlint.core.ast.ElementType.SET_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.NO_CORRESPONDING_PROPERTY
@@ -16,6 +19,7 @@ import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.getIdentifierName
 import org.cqfn.diktat.ruleset.utils.hasAnyChildOfTypes
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
+import org.cqfn.diktat.ruleset.utils.prettyPrint
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 /**
@@ -54,12 +58,26 @@ class ImplicitBackingPropertyRule(private val configRules: List<RulesConfig>) : 
     private fun validateAccessors(node: ASTNode, propsWithBackSymbol: List<String>) {
         val accessors = node.findAllNodesWithSpecificType(PROPERTY_ACCESSOR).filter { it.hasChildOfType(BLOCK) } // exclude inline get
 
-        accessors.forEach {
-            val refExprs = it.findAllNodesWithSpecificType(REFERENCE_EXPRESSION)
+        accessors.filter { it.hasChildOfType(GET_KEYWORD) }.forEach { handleGetAccessors(it, node, propsWithBackSymbol) }
+        accessors.filter { it.hasChildOfType(SET_KEYWORD) }.forEach { handleSetAccessors(it, node, propsWithBackSymbol) }
+    }
 
-            if (refExprs.isNotEmpty()) {
-                handleReferenceExpressions(node, refExprs, propsWithBackSymbol)
-            }
+    private fun handleGetAccessors(accessor: ASTNode, node: ASTNode, propsWithBackSymbol: List<String>) {
+        val refExprs = accessor
+                .findAllNodesWithSpecificType(RETURN)
+                .flatMap { _return -> _return.findAllNodesWithSpecificType(REFERENCE_EXPRESSION) }
+
+        // If refExprs is empty then we assume that it returns some constant
+        if (refExprs.isNotEmpty()) {
+            handleReferenceExpressions(node, refExprs, propsWithBackSymbol)
+        }
+    }
+
+    private fun handleSetAccessors(accessor: ASTNode, node: ASTNode, propsWithBackSymbol: List<String>) {
+        val refExprs = accessor.findAllNodesWithSpecificType(REFERENCE_EXPRESSION)
+
+        if (refExprs.isNotEmpty()) {
+            handleReferenceExpressions(node, refExprs, propsWithBackSymbol)
         }
     }
 
