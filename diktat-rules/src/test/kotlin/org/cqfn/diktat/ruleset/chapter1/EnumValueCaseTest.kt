@@ -1,11 +1,12 @@
 package org.cqfn.diktat.ruleset.chapter1
 
-import generated.WarningNames
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.IdentifierNaming
 import org.cqfn.diktat.util.FixTestBase
+
+import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -15,12 +16,10 @@ class EnumValueCaseTest : FixTestBase("test/paragraph1/naming", ::IdentifierNami
             RulesConfig(Warnings.ENUM_VALUE.name, true,
                     mapOf("enumStyle" to "snakeCase"))
     )
-
     private val rulesConfigPascalCaseEnum: List<RulesConfig> = listOf(
             RulesConfig(Warnings.ENUM_VALUE.name, true,
                     mapOf("enumStyle" to "pascalCase"))
     )
-
     private val rulesConfigEnumUnknownStyle: List<RulesConfig> = listOf(
             RulesConfig(Warnings.ENUM_VALUE.name, true,
                     mapOf("enumStyle" to "otherCase"))

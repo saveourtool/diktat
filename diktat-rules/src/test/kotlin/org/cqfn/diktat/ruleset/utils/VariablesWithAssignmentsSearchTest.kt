@@ -1,8 +1,9 @@
 package org.cqfn.diktat.ruleset.utils
 
-import com.pinterest.ktlint.core.ast.ElementType.FILE
 import org.cqfn.diktat.ruleset.utils.search.findAllVariablesWithAssignments
 import org.cqfn.diktat.util.applyToCode
+
+import com.pinterest.ktlint.core.ast.ElementType.FILE
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
