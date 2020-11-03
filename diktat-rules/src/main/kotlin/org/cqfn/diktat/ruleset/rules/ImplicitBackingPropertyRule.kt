@@ -1,6 +1,7 @@
 package org.cqfn.diktat.ruleset.rules
 
 import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
@@ -14,6 +15,7 @@ import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.getIdentifierName
 import org.cqfn.diktat.ruleset.utils.hasAnyChildOfTypes
+import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 /**
@@ -50,7 +52,7 @@ class ImplicitBackingPropertyRule(private val configRules: List<RulesConfig>) : 
     }
 
     private fun validateAccessors(node: ASTNode, propsWithBackSymbol: List<String>) {
-        val accessors = node.findAllNodesWithSpecificType(PROPERTY_ACCESSOR)
+        val accessors = node.findAllNodesWithSpecificType(PROPERTY_ACCESSOR).filter { it.hasChildOfType(BLOCK) } // exclude inline get
 
         accessors.forEach {
             val refExprs = it.findAllNodesWithSpecificType(REFERENCE_EXPRESSION)

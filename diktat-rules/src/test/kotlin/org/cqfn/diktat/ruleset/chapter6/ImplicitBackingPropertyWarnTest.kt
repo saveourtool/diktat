@@ -46,7 +46,7 @@ class ImplicitBackingPropertyWarnTest: LintTestBase(::ImplicitBackingPropertyRul
                     |           }
                     |           return a ?: throw AssertionError("Set to null by another thread")
                     |       }
-                    |       set(value) {field = value}
+                    |       set(value) { field = value }
                     |}
                 """.trimMargin(),
                 LintError(3,4,ruleId, "${Warnings.NO_CORRESPONDING_PROPERTY.warnText()} table has no corresponding property with name _table")
@@ -89,6 +89,9 @@ class ImplicitBackingPropertyWarnTest: LintTestBase(::ImplicitBackingPropertyRul
                     |   val table:Map<String, Int>
                     |       set(value) { field = value }
                     |   val _table: Map<String,Int>? = null
+                    |
+                    |   val some: Int
+                    |       get() = 3
                     |}
                 """.trimMargin()
         )
