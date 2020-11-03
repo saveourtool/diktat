@@ -9,6 +9,7 @@ on:
 env:
   DIKTAT_VERSION: 0.1.2
   KTLINT_VERSION: 0.39.0
+  GRADLE_OPTS: -Dorg.gradle.daemon=false  # to speed up gradle run
 
 jobs:
   run-functional-tests:
@@ -28,9 +29,9 @@ jobs:
         run: |
           unzip -q -d tmp diktat-$DIKTAT_VERSION.jar
           DIKTAT_CONFIG=diktat-analysis.yml
-          ls -l $DIKTAT_CONFIG
+          md5sum $DIKTAT_CONFIG
           find tmp -name $DIKTAT_CONFIG -exec cp "{}" . \;
-          ls -l $DIKTAT_CONFIG
+          md5sum $DIKTAT_CONFIG
 
       - name: Run diKTat from cli
         continue-on-error: true
