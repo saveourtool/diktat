@@ -1,12 +1,13 @@
 package org.cqfn.diktat.ruleset.utils
 
-import com.pinterest.ktlint.core.ast.ElementType.FUN
 import org.cqfn.diktat.util.applyToCode
+
+import com.pinterest.ktlint.core.ast.ElementType.FUN
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
 @Suppress("UnsafeCallOnNullableType")
-class FunctionASTNodeUtilsTest {
+class FunctionAstNodeUtilsTest {
     @Test
     fun `should detect parameters in function - no parameters`() {
         applyToCode("fun foo() { }", 1) { node, counter ->

@@ -6,6 +6,8 @@ import org.cqfn.diktat.common.config.rules.isRuleEnabled
 import org.cqfn.diktat.ruleset.utils.hasSuppress
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
+typealias EmitType = ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
+
 /**
  * This class represent individual inspections of diktat code style.
  * A [Warnings] entry contains rule name, warning message and is used in code check.
@@ -135,7 +137,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
 
     @Suppress("LongParameterList")
     fun warnAndFix(configRules: List<RulesConfig>,
-                   emit: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit),
+                   emit: EmitType,
                    isFixMode: Boolean,
                    freeText: String,
                    offset: Int,
@@ -148,7 +150,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
 
     @Suppress("LongParameterList")
     fun warn(configs: List<RulesConfig>,
-             emit: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit),
+             emit: EmitType,
              autoCorrected: Boolean,
              freeText: String,
              offset: Int,

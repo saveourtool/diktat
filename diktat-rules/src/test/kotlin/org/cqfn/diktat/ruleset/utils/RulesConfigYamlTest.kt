@@ -1,21 +1,23 @@
 package org.cqfn.diktat.ruleset.utils
 
-import com.charleskorn.kaml.Yaml
-import kotlinx.serialization.encodeToString
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
+
+import com.charleskorn.kaml.Yaml
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+
 import java.io.File
+
+import kotlinx.serialization.encodeToString
 
 /**
  * Special test that checks that developer has not forgotten to add his warning to a diktat-analysis.yml
  * This file is needed to be in tact with latest changes in Warnings.kt
  */
 class RulesConfigYamlTest {
-
     private val pathMap = mapOf("diktat-analysis.yml" to "diKTat/diktat-rules/src/main/resources/diktat-analysis.yml",
             "diktat-analysis-huawei.yml" to "diKTat/diktat-rules/src/main/resources/diktat-analysis-huawei.yml",
             "parent/diktat-analysis.yml" to "diKTat/diktat-analysis.yml")
