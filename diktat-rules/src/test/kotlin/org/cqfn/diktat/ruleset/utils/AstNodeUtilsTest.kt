@@ -1,5 +1,8 @@
 package org.cqfn.diktat.ruleset.utils
 
+import org.cqfn.diktat.ruleset.constants.EmitType
+import org.cqfn.diktat.util.applyToCode
+
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleSet
@@ -19,7 +22,6 @@ import com.pinterest.ktlint.core.ast.ElementType.VAL_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isLeaf
 import com.pinterest.ktlint.core.ast.nextSibling
-import org.cqfn.diktat.util.applyToCode
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
@@ -28,8 +30,7 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
 @Suppress("LargeClass", "UnsafeCallOnNullableType")
-class ASTNodeUtilsTest {
-
+class AstNodeUtilsTest {
     @Test
     fun `String representation of ASTNode`() {
         val code = """
@@ -291,8 +292,9 @@ class ASTNodeUtilsTest {
         applyToCode(code, 0) { node, _ ->
             val setParent = if (node.treeParent != null) {
                 node.treeParent.getChildren(null).toSet()
-            } else
+            } else {
                 setOf(node)
+            }
             val setSibling = node.allSiblings(true).toSet()
             Assertions.assertEquals(setParent, setSibling)
             Assertions.assertTrue(setParent.isNotEmpty())
@@ -301,26 +303,22 @@ class ASTNodeUtilsTest {
 
     @Test
     fun `regression - check for companion object`() {
-        var code = """
+        applyToCode("""
                 object Test {
                     val id = 1
             	}
-        """.trimIndent()
-
-        applyToCode(code, 1) { node, counter ->
+            """.trimIndent(), 1) { node, counter ->
             if (node.elementType == PROPERTY) {
                 Assertions.assertFalse(node.isNodeFromCompanionObject())
                 counter.incrementAndGet()
             }
         }
 
-        code = """
+        applyToCode("""
                 companion object Test {
                     val id = 1
             	}
-        """.trimIndent()
-
-        applyToCode(code, 1) { node, counter ->
+            """.trimIndent(), 1) { node, counter ->
             if (node.elementType == PROPERTY) {
                 Assertions.assertTrue(node.isNodeFromCompanionObject())
                 counter.incrementAndGet()
@@ -401,11 +399,12 @@ class ASTNodeUtilsTest {
             
         """.trimIndent()
         applyToCode(code, 8) { node, counter ->
-            if (node.elementType != FILE)
+            if (node.elementType != FILE) {
                 node.getChildren(null).forEach {
                     Assertions.assertFalse(it.isNodeFromFileLevel())
                     counter.incrementAndGet()
                 }
+            }
         }
     }
 
@@ -425,8 +424,9 @@ class ASTNodeUtilsTest {
         """.trimIndent()
         var isVal = false
         applyToCode(code, 0) { node, _ ->
-            if (node.isValProperty())
+            if (node.isValProperty()) {
                 isVal = true
+            }
         }
         Assertions.assertTrue(isVal)
     }
@@ -447,8 +447,9 @@ class ASTNodeUtilsTest {
         """.trimIndent()
         var isConst = false
         applyToCode(code, 0) { node, _ ->
-            if (node.isConst())
+            if (node.isConst()) {
                 isConst = true
+            }
         }
         Assertions.assertTrue(isConst)
     }
@@ -469,8 +470,9 @@ class ASTNodeUtilsTest {
         """.trimIndent()
         var isVar = false
         applyToCode(code, 0) { node, _ ->
-            if (node.isVarProperty())
+            if (node.isVarProperty()) {
                 isVar = true
+            }
         }
         Assertions.assertTrue(isVar)
     }
@@ -487,11 +489,12 @@ class ASTNodeUtilsTest {
             }
         """.trimIndent()
         val list = mutableListOf<ASTNode>()
-        val leafWithTypeList = mutableListOf<ASTNode>()
+        val leafWithTypeList: MutableList<ASTNode> = mutableListOf()
         var firstNode: ASTNode? = null
         applyToCode(code, 0) { node, _ ->
-            if (firstNode == null)
+            if (firstNode == null) {
                 firstNode = node
+            }
             if (node.isLeaf() && node.elementType == WHITE_SPACE) {
                 leafWithTypeList.add(node)
             }
@@ -515,8 +518,9 @@ class ASTNodeUtilsTest {
         var firstNode: ASTNode? = null
         var resultNode: ASTNode? = null
         applyToCode(code, 0) { node, _ ->
-            if (firstNode == null)
+            if (firstNode == null) {
                 firstNode = node
+            }
             if (resultNode == null && node.elementType == CLASS_BODY) {
                 resultNode = node
             }
@@ -537,10 +541,11 @@ class ASTNodeUtilsTest {
             }
         """.trimIndent()
         var firstNode: ASTNode? = null
-        val listResults = mutableListOf<ASTNode>()
+        val listResults: MutableList<ASTNode> = mutableListOf()
         applyToCode(code, 0) { node, _ ->
-            if (firstNode == null)
+            if (firstNode == null) {
                 firstNode = node
+            }
             if (node.elementType == IDENTIFIER) {
                 listResults.add(node)
             }
@@ -625,7 +630,10 @@ class ASTNodeUtilsTest {
                 val parent = node.treeParent
                 val firstText = node.text
                 node.leaveOnlyOneNewLine()
-                val secondText = parent.getChildren(null).last().text
+                val secondText = parent
+                        .getChildren(null)
+                        .last()
+                        .text
                 Assertions.assertEquals("\n", secondText)
                 Assertions.assertEquals("\n\n", firstText)
                 counter.incrementAndGet()
@@ -721,25 +729,29 @@ private class PrettyPrintingVisitor(private val elementType: IElementType,
                                     private val level: Int,
                                     private val maxLevel: Int,
                                     private val expected: String) : Rule("print-ast") {
+    override fun visit(node: ASTNode,
+                       autoCorrect: Boolean,
+                       emit: EmitType) {
+        if (node.elementType == elementType) {
+            Assertions.assertEquals(
+                    expected.replace("\n", System.lineSeparator()),
+                    node.prettyPrint(level, maxLevel)
+            )
+        }
+    }
     companion object {
-        fun assertStringRepr(elementType: IElementType, code: String, level: Int = 0, maxLevel: Int = -1, expected: String) {
+        fun assertStringRepr(
+                elementType: IElementType,
+                code: String,
+                level: Int = 0,
+                maxLevel: Int = -1,
+                expected: String) {
             KtLint.lint(
                     KtLint.Params(
                             text = code,
                             ruleSets = listOf(RuleSet("test", PrettyPrintingVisitor(elementType, level, maxLevel, expected))),
                             cb = { _, _ -> Unit }
                     )
-            )
-        }
-    }
-
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
-        if (node.elementType == elementType) {
-            Assertions.assertEquals(
-                    expected.replace("\n", System.lineSeparator()),
-                    node.prettyPrint(level, maxLevel)
             )
         }
     }

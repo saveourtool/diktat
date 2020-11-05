@@ -1,20 +1,19 @@
 package org.cqfn.diktat.ruleset.chapter1
 
-import com.pinterest.ktlint.core.LintError
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import generated.WarningNames
-import org.junit.jupiter.api.Test
-import org.cqfn.diktat.ruleset.rules.PackageNaming
 import org.cqfn.diktat.ruleset.constants.Warnings.*
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
+import org.cqfn.diktat.ruleset.rules.PackageNaming
 import org.cqfn.diktat.util.LintTestBase
 import org.cqfn.diktat.util.testFileName
+
+import com.pinterest.ktlint.core.LintError
+import generated.WarningNames
 import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.Test
 
 class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
-
     private val ruleId: String = "$DIKTAT_RULE_SET_ID:package-naming"
-
     private val rulesConfigList: List<RulesConfig> = listOf(
             RulesConfig("DIKTAT_COMMON", true, mapOf("domainName" to "org.cqfn.diktat"))
     )
