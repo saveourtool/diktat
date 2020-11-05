@@ -27,6 +27,7 @@ class CompactInitialization(private val configRules: List<RulesConfig>) : Rule("
 
         node.psi
             .let { it as? KtProperty }
+            ?.takeIf { it.hasInitializer() }
             ?.let(::handleProperty)
     }
 
@@ -57,37 +58,28 @@ class CompactInitialization(private val configRules: List<RulesConfig>) : Rule("
 
     @Suppress("UnsafeCallOnNullableType")
     private fun moveAssignmentIntoApply(property: KtProperty, assignment: KtBinaryExpression) {
-        val applyExpression = (property.initializer as? KtDotQualifiedExpression)?.selectorExpression
-            ?.takeIf { it is KtCallExpression && it.getFunctionName() == "apply" } ?: run {
-            // add apply block
-            property.node.run {
-                val newInitializerNode = kotlinParser.createNode("${property.initializer!!.text}.apply {}")
-                replaceChild(property.initializer!!.node, newInitializerNode)
-            }
-            (property.initializer as KtDotQualifiedExpression).selectorExpression!!
-        }
-        (applyExpression as KtCallExpression).run {
+        val applyExpression = getOrCreateApplyBlock(property)
+        applyExpression.run {
             lambdaArguments.singleOrNull()
                 ?.run {
                     getLambdaExpression()?.run {
-                        functionLiteral
-                                // note: we are dealing with function literal: braces belong to KtFunctionLiteral, but it's body is a KtBlockExpression
-                                // which therefore doesn't have braces
+                        val bodyExpression = functionLiteral
+                            // note: we are dealing with function literal: braces belong to KtFunctionLiteral, but it's body is a KtBlockExpression
+                            // which therefore doesn't have braces
                             .bodyExpression!!
                             .node
-                            .let { bodyExpression ->
-                                assignment.node.siblings(forward = false)
-                                    .takeWhile { it != property.node }
-                                    .toList()
-                                    .reversed()
-                                    .forEach {
-                                        bodyExpression.addChild(it.clone() as ASTNode, null)
-                                        it.run { treeParent.removeChild(this) }
-                                    }
-                                bodyExpression.addChild(kotlinParser.createNode(assignment.text.substringAfter('.')), null)
-                                assignment.node.run { treeParent.removeChild(this) }
+                        assignment.node.siblings(forward = false)
+                            .takeWhile { it != property.node }
+                            .toList()
+                            .reversed()
+                            .forEach {
+                                bodyExpression.addChild(it.clone() as ASTNode, null)
+                                it.treeParent.removeChild(it)
                             }
+                        bodyExpression.addChild(kotlinParser.createNode(assignment.text.substringAfter('.')), null)
+                        assignment.node.run { treeParent.removeChild(this) }
                     } ?: run {
+                        // todo
                     }
                 }
                 ?: run {
@@ -95,5 +87,16 @@ class CompactInitialization(private val configRules: List<RulesConfig>) : Rule("
 //                    valueArguments
                 }
         }
+    }
+
+    @Suppress("UnsafeCallOnNullableType")
+    private fun getOrCreateApplyBlock(property: KtProperty): KtCallExpression = (property.initializer as? KtDotQualifiedExpression)?.selectorExpression
+        ?.let { it as? KtCallExpression }?.takeIf { it.getFunctionName() == "apply" } ?: run {
+        // add apply block
+        property.node.run {
+            val newInitializerNode = kotlinParser.createNode("${property.initializer!!.text}.apply {}")
+            replaceChild(property.initializer!!.node, newInitializerNode)
+        }
+        (property.initializer as KtDotQualifiedExpression).selectorExpression!! as KtCallExpression
     }
 }
