@@ -3,6 +3,7 @@ package org.cqfn.diktat.ruleset.chapter6
 import generated.WarningNames
 import org.cqfn.diktat.ruleset.rules.classes.SingleConstructorRule
 import org.cqfn.diktat.util.FixTestBase
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
@@ -23,5 +24,12 @@ class SingleConstructorRuleFixTest : FixTestBase("test/chapter6/classes", ::Sing
     @Tag(WarningNames.SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY)
     fun `should convert secondary constructor to a primary saving modifiers`() {
         fixAndCompare("ConstructorWithModifiersExpected.kt", "ConstructorWithModifiersTest.kt")
+    }
+
+    @Test
+    @Tag(WarningNames.SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY)
+    @Disabled("Not yet implemented")
+    fun `should wrap assignments and required local variables into a run block`() {
+        fixAndCompare("AssignmentWithLocalPropertyExpected.kt", "AssignmentWithLocalPropertyTest.kt")
     }
 }

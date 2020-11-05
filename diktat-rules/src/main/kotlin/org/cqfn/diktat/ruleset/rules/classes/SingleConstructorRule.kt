@@ -10,6 +10,7 @@ import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.SECONDARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY
 import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
@@ -28,15 +29,21 @@ import org.jetbrains.kotlin.psi.KtSecondaryConstructor
 import org.jetbrains.kotlin.psi.KtThisExpression
 import org.jetbrains.kotlin.psi.psiUtil.asAssignment
 
+/**
+ * This rule ensures that if a class has a single constructor, this constructor is primary.
+ * Secondary constructor is converted into primary, statements that are not assignments are moved into an `init` block.
+ * FixMe: Code is being broken if properties initialization depends on local variables. In these cases local variables should
+ *  not be moved to an `init` block but rather wrapped together with the assignment into a `run` block.
+ */
 class SingleConstructorRule(private val config: List<RulesConfig>) : Rule("single-constructor") {
-    private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
     private val kotlinParser by lazy { KotlinParser() }
+    private lateinit var emitWarn: EmitType
 
     override fun visit(
         node: ASTNode,
         autoCorrect: Boolean,
-        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit
+        emit: EmitType
     ) {
         emitWarn = emit
         isFixMode = autoCorrect
@@ -127,7 +134,11 @@ class SingleConstructorRule(private val config: List<RulesConfig>) : Rule("singl
         require(elementType == CLASS)
 
         val primaryCtorNode = kotlinParser.createPrimaryConstructor(
-            (secondaryCtor.findChildByType(MODIFIER_LIST)?.text?.plus(" constructor ") ?: "") +
+            (secondaryCtor
+                .findChildByType(MODIFIER_LIST)
+                ?.text
+                ?.plus(" constructor ")
+                ?: "") +
                     "(${declarationsAssignedInCtor.joinToString(", ") { it.text }})"
         ).node
         addChild(primaryCtorNode, findChildByType(CLASS_BODY))
