@@ -10,10 +10,20 @@ import java.io.File
  * Documentation should be added to available-rules.md
  */
 class AvailableRulesDocTest {
-    companion object {
-        const val availableRulesFile = "../info/available-rules.md"
-        const val tableDelimiter = "-----"
-        const val ruleNameHeader = "Rule name"
+    private fun getAllRulesFromDoc(): List<String> {
+        val listWithRulesFromDoc: MutableList<String> = mutableListOf()
+        File(AVAILABLE_RULES_FILE).forEachLine { line ->
+            val splitMarkDown = line
+                    .split("|")
+
+            val ruleName = splitMarkDown.get(3).trim()
+
+            if (!ruleName.startsWith(TABLE_DELIMITER) &&
+                    !ruleName.startsWith(RULE_NAME_HEADER)) {
+                listWithRulesFromDoc.add(ruleName)
+            }
+        }
+        return listWithRulesFromDoc
     }
 
     @Test
@@ -28,9 +38,9 @@ class AvailableRulesDocTest {
                 val docs = "| | | $ruleName" +
                         "|  |  |  | |"
                 """
-                    Cannot find warning $ruleName in $availableRulesFile.
-                    You can fix it by adding the following description below with more info to $availableRulesFile:
-                    add $docs to $availableRulesFile
+                    Cannot find warning $ruleName in $AVAILABLE_RULES_FILE.
+                    You can fix it by adding the following description below with more info to $AVAILABLE_RULES_FILE:
+                    add $docs to $AVAILABLE_RULES_FILE
                 """
             }
         }
@@ -46,19 +56,9 @@ class AvailableRulesDocTest {
         }
     }
 
-    private fun getAllRulesFromDoc(): List<String> {
-        val listWithRulesFromDoc = mutableListOf<String>()
-        File(availableRulesFile).forEachLine { line ->
-            val splitMarkDown = line
-                    .split("|")
-
-            val ruleName = splitMarkDown.get(3).trim()
-
-            if (!ruleName.startsWith(tableDelimiter) &&
-                    !ruleName.startsWith(ruleNameHeader)) {
-                listWithRulesFromDoc.add(ruleName)
-            }
-        }
-        return listWithRulesFromDoc
+    companion object {
+        const val AVAILABLE_RULES_FILE = "../info/available-rules.md"
+        const val RULE_NAME_HEADER = "Rule name"
+        const val TABLE_DELIMITER = "-----"
     }
 }

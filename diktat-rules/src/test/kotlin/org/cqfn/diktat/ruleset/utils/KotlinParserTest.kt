@@ -1,5 +1,7 @@
 package org.cqfn.diktat.ruleset.utils
 
+import org.cqfn.diktat.util.applyToCode
+
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_KEYWORD
@@ -13,16 +15,13 @@ import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
-import org.cqfn.diktat.util.applyToCode
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
-import org.jetbrains.kotlin.psi.KtPsiFactory
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 class KotlinParserTest {
-
     @Test
     fun `test simple property`() {
         val node = KotlinParser().createNode("val x: Int = 10")
@@ -110,6 +109,12 @@ class KotlinParserTest {
         val function = """
             |fun foo() = "Hello"
             """.trimMargin()
+        var nodeToApply: ASTNode? = null
+        applyToCode(emptyClass, 0) { newNode, _ ->
+            if (nodeToApply == null) {
+                nodeToApply = newNode
+            }
+        }
         val resultClass = """
             |package org.cqfn.diktat.ruleset.utils
             |
@@ -119,13 +124,11 @@ class KotlinParserTest {
             |fun foo() = "Hello"
             |}
             """.trimMargin()
-        var nodeToApply: ASTNode? = null
         var resultNode: ASTNode? = null
-        applyToCode(emptyClass, 0) { newNode, _ ->
-            if (nodeToApply == null) nodeToApply = newNode
-        }
         applyToCode(resultClass, 0) { newNode, _ ->
-            if (resultNode == null) resultNode = newNode
+            if (resultNode == null) {
+                resultNode = newNode
+            }
         }
         Assertions.assertTrue(nodeToApply!!.prettyPrint() == KotlinParser().createNode(emptyClass, true).prettyPrint())
         val classNode = nodeToApply!!.findChildByType(CLASS)!!.findChildByType(CLASS_BODY)!!
@@ -192,13 +195,13 @@ class KotlinParserTest {
             |*/
             |fun foo()
             """.trimMargin()
-        val KDocText = """
+        val kdocText = """
             /**
             * [link]haha
             */
         """.trimIndent()
         val node = KotlinParser().createNode(code)
         Assertions.assertEquals(KDOC, node.findChildByType(FUN)!!.firstChildNode.elementType)
-        Assertions.assertEquals(KDocText, node.findChildByType(FUN)!!.firstChildNode.text)
+        Assertions.assertEquals(kdocText, node.findChildByType(FUN)!!.firstChildNode.text)
     }
 }

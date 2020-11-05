@@ -9,6 +9,7 @@ on:
 env:
   DIKTAT_VERSION: 0.1.2
   KTLINT_VERSION: 0.39.0
+  GRADLE_OPTS: -Dorg.gradle.daemon=false  # to speed up gradle run
 
 jobs:
   run-functional-tests:
@@ -17,14 +18,25 @@ jobs:
     steps:
       - uses: actions/checkout@v2.3.3
 
-      - name: Run diKTat from cli
-        continue-on-error: true
+      - name: Setup environment
         run: |
           cat pom.xml | grep "<diktat-check.version>.*</diktat-check.version>" | head -1 |awk -F'[><]' '{ENVIRON[DIKTAT_VERSION]=$3 ; print ENVIRON[DIKTAT_VERSION]}'
           cat pom.xml | grep "<ktlint.version>.*</ktlint.version>" | head -1 |awk -F'[><]' '{ENVIRON[KTLINE_VERSION]=$3 ; print ENVIRON[KTLINE_VERSION]}'
           curl -sSLO https://github.com/pinterest/ktlint/releases/download/$KTLINT_VERSION/ktlint && chmod a+x ktlint
           curl -sSLO https://github.com/cqfn/diKTat/releases/download/v$DIKTAT_VERSION/diktat-$DIKTAT_VERSION.jar
-          ./ktlint -R diktat-$DIKTAT_VERSION.jar "diktat-rules/src/test/resources/test/funcTest/FunctionalTestFile.kt" > out
+
+      - name: Copy diktat-analysis.yml from release
+        run: |
+          unzip -q -d tmp diktat-$DIKTAT_VERSION.jar
+          DIKTAT_CONFIG=diktat-analysis.yml
+          md5sum $DIKTAT_CONFIG
+          find tmp -name $DIKTAT_CONFIG -exec cp "{}" . \;
+          md5sum $DIKTAT_CONFIG
+
+      - name: Run diKTat from cli
+        continue-on-error: true
+        run: |
+          ./ktlint -R diktat-$DIKTAT_VERSION.jar "diktat-rules/src/test/resources/test/funcTest/FunctionalTestFile.kt" &> out
 
       - name: Check output
         id: cli-check
@@ -34,7 +46,7 @@ jobs:
 
       - name: Run diKTat from gradle
         continue-on-error: true
-        run: gradle diktatCheck > out 2> err
+        run: gradle diktatFunctionalTest &> out
 
       - name: Check gradle
         run: |
