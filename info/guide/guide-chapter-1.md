@@ -1,19 +1,21 @@
-### <a name="c1"></a>1 Naming
+### <a name="c1"></a>Chapter 1: Naming
 In programming, it is difficult to meaningfully and appropriately name variables, functions, classes, etc. Good names clearly express the main ideas and functionality of your code, as well as avoid misinterpretation, unnecessary coding and decoding, magic numbers, and inappropriate abbreviations.
 
-### <a name="r1.0.1"></a>Rule 1.0.1: file encoding format must be UTF-8 only
+### <a name="r1.0.1"></a> Rule 1.0.1: file encoding format must be UTF-8 only
 The source file encoding format (including comments) must be UTF-8 only. The ASCII horizontal space character (0x20, that is, space) is the only permitted white space character. Tabs should not be used for indentation.
 
-### <a name="c1.1"></a>Identifiers naming
+<!-- =============================================================================== -->
+### <a name="c1.1"></a> Identifiers naming
 ### <a name="r1.1.1"></a> Rule 1.1.1: Identifiers
-1.	All identifiers should use only ASCII letters or digits, and the names should match regular expressions \w{2,64}.
-Explanation: Each valid identifier name should match the regular expression \ w {2,64}.
-{2,64} means that the name length is 2 to 64 characters, and the length of the variable name should be proportional to its life range, functionality, and responsibility.
+1.	All identifiers should use only ASCII letters or digits, and the names should match regular expressions `\w{2,64}`.
+Explanation: Each valid identifier name should match the regular expression `\w{2,64}`.
+`{2,64}` means that the name length is 2 to 64 characters, and the length of the variable name should be proportional to its life range, functionality, and responsibility.
 Name lengths of less than 31 symbols are generally recommended, but this depends on the project. Otherwise, class declaration with generics or inheritance from a super class can cause line breaking for example. No special prefix or suffix should be used in the names. The following examples are inappropriate: name_, mName, s_name, and kName.
 
 2.	For files, choose names that describe their content. Use camel case (PascalCase) and `.kt` extension.
 
 3.	Typical examples of naming:
+
 | Meaning | Correct |Incorrect|
 | ---- | ---- | ---- |
 | "XML Http Request" | XmlHttpRequest | XMLHTTPRequest |
@@ -60,7 +62,8 @@ The only exception can be - is function names in Unit tests.
 | Generic type variable | Single capital letter, which can be followed by a number, for example: `E, T, U, X, T2` |
 | Exceptions | Same as class names, but with a suffix Exception, for example: `AccessException` and `NullPointerException`|
 
-### <a name="c1.2"></a>Packages naming
+<!-- =============================================================================== -->
+### <a name="c1.2"></a> Packages naming
 ### <a name="r1.2.1"></a> Rule 1.2.1: Package names are in lower case and separated by dots. Code developed within your company should start with `your.company.domain`, and numbers are permitted in package names.
 Package names are all written in lowercase, and consecutive words are simply concatenated together (no underscores). Package names should contain both the product and module names, as well as the department or team name to prevent conflicts with other teams.  Numbers are not permitted. For example: `org.apache.commons.lang3`, `xxx.yyy.v2`.
 
@@ -75,6 +78,7 @@ Package names are all written in lowercase, and consecutive words are simply con
 package your.company.domain.mobilecontrol.views
  ```
 
+<!-- =============================================================================== -->
 ### <a name="c1.3"></a> Classes, enumerations, interfaces
 ### <a name="r1.3.1"></a> Rule 1.3.1: Classes, enumerations, interface names use camel case nomenclature
 1.	The class name is usually a noun or phrase with a noun using the camel case nomenclature, such as UpperCamelCase. For example: Character or ImmutableList. The name of an interface can also be a noun or phrase with a noun (such as List), or an adjective or phrase with adjectives (such as Readable). Note that verbs should not be used to name classes; however, nouns (such as Customer, WikiPage, and Account) can be used. Try to avoid vague words like Manager and Process.
@@ -96,7 +100,8 @@ interface TaPromotion {}
 class Order {}
 ```
 
-### <a name="c1.4"></a>Functions
+<!-- =============================================================================== -->
+### <a name="c1.4"></a> Functions
 ### <a name="r1.4.1"></a> Rule 1.4.1: function names should be in camel case
 
 1.	Function names are usually verbs or verb phrases, and use the camel case nomenclature lowerCamelCase. For example: `sendMessage`, `stopProcess`, or `calculateValue`.
@@ -145,6 +150,7 @@ g) Callback function allows preposition + verb form naming, such as: `onCreate()
 
 2.	An underscore can be included in the JUnit test function name, and should be a logical component used to separate names. Each logical part is written in lowerCamelCase. For example: a typical pattern _, such as pop_emptyStack
 
+<!-- =============================================================================== -->
 ### <a name="c1.5"></a> Constants 
 ### <a name="r1.5.1"></a> Rule 1.5.1 Constant names should be in UPPER case, words separated by underscore
 
@@ -174,6 +180,7 @@ Magic numbers can be avoided through the following methods:
  const val String APPLICATION_NAME = "Launcher";
  ```
 
+<!-- =============================================================================== -->
 ### <a name="c1.6"></a> Non-constant fields
 ### <a name="r1.6.1"></a> Rule 1.6.1: The name of the non-constant field should use camel case and start with a lowercase letter.
 
