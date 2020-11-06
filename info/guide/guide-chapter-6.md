@@ -1,8 +1,8 @@
 # <a name="c6"></a> 6. Classes, interfaces and functions
 <!-- =============================================================================== -->
 ### <a name="c6.1"></a> 6.1 Classes
-### <a name="r6.1.1"></a> Rule 6.1.1: Primary constructor should be defined implicitly in the declaration of the class.
-In case class contains only one explicit constructor - it should be converted to implicit primary constructor.
+### <a name="r6.1.1"></a> Rule 6.1.1:  When a class has a single constructor, it should be defined as a primary constructor in the declaration of the class.
+In case class contains only one explicit constructor - it should be converted to a primary constructor.
 
 **Invalid example**:
 ```kotlin
@@ -20,7 +20,7 @@ class Test(var a: Int) {
     // ...
 }
 
-// in case of any annotations or modifer used on constructor:
+// in case of any annotations or modifiers used on constructor:
 class Test private constructor(var a: Int) { 
     // ...
 }
