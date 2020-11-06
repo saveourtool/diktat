@@ -1,16 +1,19 @@
 package org.cqfn.diktat.ruleset.chapter6
 
 import com.pinterest.ktlint.core.LintError
+import generated.WarningNames.TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.TrivialPropertyAccessors
 import org.cqfn.diktat.util.LintTestBase
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class TrivialPropertyAccessorsWarnTest : LintTestBase(::TrivialPropertyAccessors) {
     private val ruleId = "$DIKTAT_RULE_SET_ID:trivial-property-accessors"
 
     @Test
+    @Tag(TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED)
     fun `should trigger on trivial getter and setter`() {
         lintMethod(
                 """
@@ -26,6 +29,7 @@ class TrivialPropertyAccessorsWarnTest : LintTestBase(::TrivialPropertyAccessors
     }
 
     @Test
+    @Tag(TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED)
     fun `should trigger on trivial getter`() {
         lintMethod(
                 """
@@ -39,6 +43,7 @@ class TrivialPropertyAccessorsWarnTest : LintTestBase(::TrivialPropertyAccessors
     }
 
     @Test
+    @Tag(TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED)
     fun `should not trigger on getter and setter`() {
         lintMethod(
                 """
