@@ -70,6 +70,7 @@ data class Test1(var a: Int = 0, var b: Int = 0)
 ```
 
 **Exception #1**: Note, that data classes cannot be abstract, open, sealed or inner, that's why these types of classes cannot be changed to data class.
+
 **Exception #2**: No need to convert a class to data class in case this class extends some other class or implements an interface.
 
 ### <a name="r6.1.3"></a> Rule 6.1.3: Do not use the primary constructor if it is empty and has no sense.
@@ -112,7 +113,7 @@ class Test {
 The primary constructor cannot contain any code. That's why Kotlin has introduced `init` blocks.
 These blocks are used to store the code that should be run during the initialization of the class.
 Kotlin allows to write multiple initialization blocks that are executed in the same order as they appear in the class body.
-Even when you have the (rule 3.2)[#s3.2] this makes code less readable as the programmer needs to keep in mind all init blocks and trace the execution of the code.
+Even when you have the [Rule 3.1.2](#r3.1.2) this makes code less readable as the programmer needs to keep in mind all init blocks and trace the execution of the code.
 So in your code you should try to use single `init` block to reduce the complexity. In case you need to do some logging or make some calculations before the assignment 
 of some class property - you can use powerful functional programming. This will reduce the possibility of the error, when occasionally someone will change the order of your `init` blocks. 
 And it will make the logic of the code more coupled. It is always enough to use one `init` block to implement your idea in Kotlin.

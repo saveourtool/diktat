@@ -1,4 +1,4 @@
-## <a name="c1"></a> 1. Naming
+# <a name="c1"></a> 1. Naming
 In programming, it is difficult to meaningfully and appropriately name variables, functions, classes, etc. Good names clearly express the main ideas and functionality of your code, as well as avoid misinterpretation, unnecessary coding and decoding, magic numbers, and inappropriate abbreviations.
 
 ### <a name="r1.0.1"></a> Rule 1.0.1: file encoding format must be UTF-8 only

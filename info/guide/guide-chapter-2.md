@@ -1,4 +1,4 @@
-## <a name="c2"></a> 2. Comments
+# <a name="c2"></a> 2. Comments
 
 The best practice involves beginning your code with a short summary, which can be one sentence.
 You should balance between writing no comments at all and obvious comments for each line of code.
