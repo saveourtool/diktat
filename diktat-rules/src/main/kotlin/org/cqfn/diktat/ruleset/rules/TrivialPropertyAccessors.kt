@@ -48,6 +48,7 @@ class TrivialPropertyAccessors(private val configRules: List<RulesConfig>) : Rul
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun handleSetAccessor(node: ASTNode) {
         val block = node.getFirstChildWithType(BLOCK)!!
 
@@ -62,7 +63,7 @@ class TrivialPropertyAccessors(private val configRules: List<RulesConfig>) : Rul
         }
     }
 
-
+    @Suppress("UnsafeCallOnNullableType")
     private fun handleGetAccessor(node: ASTNode) {
         if (!node.hasChildOfType(BLOCK)) {
             // handle only get() = field
