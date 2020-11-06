@@ -43,7 +43,7 @@ class TrivialPropertyAccessors(private val configRules: List<RulesConfig>) : Rul
     private fun handlePropertyAccessors(node: ASTNode) {
         if ((node.psi as KtPropertyAccessor).isGetter) {
             handleGetAccessor(node)
-        } else if ((node.psi as KtPropertyAccessor).isSetter) {
+        } else {
             handleSetAccessor(node)
         }
     }
