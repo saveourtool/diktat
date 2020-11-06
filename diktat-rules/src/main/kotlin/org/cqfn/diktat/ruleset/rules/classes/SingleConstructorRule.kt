@@ -141,7 +141,7 @@ class SingleConstructorRule(private val config: List<RulesConfig>) : Rule("singl
                     }
                     .filterValues { left -> left.getReferencedName() in classProperties.mapNotNull { it.name } }
 
-    @Suppress("UnsafeCallOnNullableType", "NestedBlockDepth", "GENERIC_VARIABLE_WRONG_DECLARATION")
+    @Suppress("NestedBlockDepth", "GENERIC_VARIABLE_WRONG_DECLARATION")
     private fun ASTNode.convertSecondaryConstructorToPrimary(
             secondaryCtor: ASTNode,
             declarationsAssignedInCtor: List<KtProperty>,
@@ -184,6 +184,7 @@ class SingleConstructorRule(private val config: List<RulesConfig>) : Rule("singl
         findChildByType(CLASS_BODY)?.removeChild(secondaryCtor)
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun getNonTrivialParameters(secondaryCtor: ASTNode,
                                         nonTrivialAssignments: Collection<KtBinaryExpression>,
                                         localProperties: List<KtProperty>) = (secondaryCtor.psi as KtSecondaryConstructor)
