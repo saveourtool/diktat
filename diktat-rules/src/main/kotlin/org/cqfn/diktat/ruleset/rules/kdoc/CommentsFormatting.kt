@@ -204,7 +204,7 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
     }
 
     private fun checkSpaceBetweenPropertyAndComment(node: ASTNode, configuration: CommentsFormattingConfiguration) {
-        if (node.treeParent.firstChildNode != node) {
+        if (node.treeParent.firstChildNode != node && node.treeParent.elementType != FILE) {
             if (!node.treePrev.isWhiteSpace()) {
                 // if comment is like this: val a = 5// Comment
                 COMMENT_WHITE_SPACE.warnAndFix(configRules, emitWarn, isFixMode,

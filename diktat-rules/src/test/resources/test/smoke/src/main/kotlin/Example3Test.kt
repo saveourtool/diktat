@@ -1,4 +1,6 @@
-package test.smoke.src.main.kotlin
+/*
+ * Copyright (c) Your Company Name Here. 2010-2020
+ */
 
 class HttpClient {
     var name: String
