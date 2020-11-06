@@ -346,3 +346,7 @@
 - name: CLASS_SHOULD_NOT_BE_ABSTRACT
   enabled: true
   configuration: {}
+# Checks if extension function with the same signature don't have related classes
+- name: EXTENSION_FUNCTION_SAME_SIGNATURE
+  enabled: true
+  configuration: {}

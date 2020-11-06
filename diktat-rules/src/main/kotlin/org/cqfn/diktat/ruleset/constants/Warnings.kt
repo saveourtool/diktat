@@ -124,6 +124,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR(false, "Use `field` keyword instead of property name inside property accessors"),
     MULTIPLE_INIT_BLOCKS(true, "Avoid using multiple `init` blocks, this logic can be moved to constructors or properties declarations"),
     CLASS_SHOULD_NOT_BE_ABSTRACT(true, "class should not be abstract, because it has no abstract functions"),
+    EXTENSION_FUNCTION_SAME_SIGNATURE(false, "extension functions should not have same signature if their classes are related")
     ;
 
     /**

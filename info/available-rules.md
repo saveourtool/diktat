@@ -96,3 +96,4 @@
 |    6 |     6.1.4 | MULTIPLE_INIT_BLOCKS                   | Checks that classes have only one init block | yes | no | - |
 |    6 |     6.1.6 | CLASS_SHOULD_NOT_BE_ABSTRACT           | Checks: if abstract class has any abstract method. If not, warns that class should not be abstract<br>Fix: deletes abstract modifier                                         | yes | - | - |
 |    6 |     6.1.9 | WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR | Check: used the name of a variable in the custom getter or setter                                                                                                            |  no | - |
+|    6 |     6.2.2 | EXTENSION_FUNCTION_SAME_SIGNATURE      | Checks if extension function has the same signature as another extension function and their classes are related                                                              | no | - | - |
