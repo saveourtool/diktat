@@ -6,5 +6,4 @@ class Test (a: Int){
     init {
     this.a = a + 42
 }
-
 }

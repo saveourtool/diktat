@@ -6,6 +6,7 @@ import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.SECONDARY_CONSTRUCTOR
+import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY
@@ -166,19 +167,23 @@ class SingleConstructorRule(private val config: List<RulesConfig>) : Rule("singl
                 ?.text
                 ?.plus(" constructor ")
                 ?: "") +
-                    "(${
-                        declarationsAssignedInCtor.run {
-                            joinToString(
-                                ", ",
-                                postfix = if (isNotEmpty() && neededSecondaryCtorArguments.isNotEmpty()) ", " else ""
-                            ) { it.text }
-                        }
-                    }" +
-                    "${neededSecondaryCtorArguments.joinToString(", ") { it.text }})"
-        ).node
+                    "(" +
+                    declarationsAssignedInCtor.run {
+                        joinToString(
+                            ", ",
+                            postfix = if (isNotEmpty() && neededSecondaryCtorArguments.isNotEmpty()) ", " else ""
+                        ) { it.text }
+                    } +
+                    neededSecondaryCtorArguments.joinToString(", ") { it.text } +
+                    ")"
+        )
+            .node
         addChild(primaryCtorNode, findChildByType(CLASS_BODY))
         declarationsAssignedInCtor.forEach { ktProperty ->
-            ktProperty.node.let { treeParent.removeChild(it) }
+            ktProperty.node.run {
+                treePrev.takeIf { it.elementType == WHITE_SPACE }?.let { treeParent.removeChild(it) }
+                treeParent.removeChild(this)
+            }
         }
 
         if (otherStatements.isNotEmpty() || nonTrivialAssignments.isNotEmpty()) {
@@ -195,6 +200,9 @@ class SingleConstructorRule(private val config: List<RulesConfig>) : Rule("singl
             }
         }
 
+        secondaryCtor.run { treePrev.takeIf { it.elementType == WHITE_SPACE } ?: treeNext }
+            .takeIf { it.elementType == WHITE_SPACE }
+            ?.run { treeParent.removeChild(this) }
         findChildByType(CLASS_BODY)?.removeChild(secondaryCtor)
     }
 }

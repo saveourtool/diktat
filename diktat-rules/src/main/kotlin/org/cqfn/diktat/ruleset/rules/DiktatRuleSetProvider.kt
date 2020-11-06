@@ -54,6 +54,7 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
         val rules = listOf(
                 // comments & documentation
                 ::CommentsRule,
+                ::SingleConstructorRule,  // this rule can add properties to a primary constructor, so should be before KdocComments
                 ::KdocComments,
                 ::KdocMethods,
                 ::KdocFormatting,
@@ -92,7 +93,6 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
                 ::FunctionLength,
                 ::LambdaParameterOrder,
                 ::FunctionArgumentsSize,
-                ::SingleConstructorRule,
                 ::BlankLinesRule,
                 ::FileSize,
                 ::NullableTypeRule,

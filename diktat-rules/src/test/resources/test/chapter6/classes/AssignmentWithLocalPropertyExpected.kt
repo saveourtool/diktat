@@ -7,5 +7,4 @@ class Foo (a: Int){
     val f = F(a)
 this.a = f.foo()
 }
-
 }
