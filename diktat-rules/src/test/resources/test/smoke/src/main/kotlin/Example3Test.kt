@@ -22,3 +22,11 @@ fun mains() {
             }
     httpClient.doRequest()
 }
+
+class Example {
+    fun foo() {
+        if (condition1)
+            if (condition2)
+                bar()
+    }
+}
