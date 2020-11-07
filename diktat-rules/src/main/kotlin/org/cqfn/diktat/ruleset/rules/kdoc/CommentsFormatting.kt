@@ -43,7 +43,6 @@ import com.pinterest.ktlint.core.ast.prevSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
-import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 
 /**
  * This class handles rule 2.6
@@ -58,6 +57,12 @@ import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
  * * Comments in if else should be inside code blocks. Exception: General if comment
  */
 class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-comments-codeblocks-formatting") {
+    companion object {
+        private const val APPROPRIATE_COMMENT_SPACES = 1
+        private const val MAX_SPACES = 1
+        private val COMMENT_TYPE = listOf(EOL_COMMENT, KDOC, BLOCK_COMMENT)
+    }
+
     private var isFixMode: Boolean = false
     private lateinit var emitWarn: EmitType
 
@@ -76,11 +81,7 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
                 configRules.getRuleConfig(COMMENT_WHITE_SPACE)?.configuration ?: mapOf())
 
         when (node.elementType) {
-            CLASS, FUN, PROPERTY -> {
-                checkBlankLineAfterKdoc(node, EOL_COMMENT)
-                checkBlankLineAfterKdoc(node, KDOC)
-                checkBlankLineAfterKdoc(node, BLOCK_COMMENT)
-            }
+            CLASS, FUN, PROPERTY -> checkBlankLineAfterKdoc(node)
             IF -> handleIfElse(node)
             EOL_COMMENT, BLOCK_COMMENT -> handleEolAndBlockComments(node, configuration)
             KDOC -> handleKdocComments(node, configuration)
@@ -90,12 +91,14 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
         }
     }
 
-    private fun checkBlankLineAfterKdoc(node: ASTNode, type: IElementType) {
-        val kdoc = node.getFirstChildWithType(type)
-        val nodeAfterKdoc = kdoc?.treeNext
-        if (nodeAfterKdoc?.elementType == WHITE_SPACE && nodeAfterKdoc.numNewLines() > 1) {
-            WRONG_NEWLINES_AROUND_KDOC.warnAndFix(configRules, emitWarn, isFixMode, "redundant blank line after ${kdoc.text}", nodeAfterKdoc.startOffset, nodeAfterKdoc) {
-                nodeAfterKdoc.leaveOnlyOneNewLine()
+    private fun checkBlankLineAfterKdoc(node: ASTNode) {
+        COMMENT_TYPE.forEach {
+            val kdoc = node.getFirstChildWithType(it)
+            val nodeAfterKdoc = kdoc?.treeNext
+            if (nodeAfterKdoc?.elementType == WHITE_SPACE && nodeAfterKdoc.numNewLines() > 1) {
+                WRONG_NEWLINES_AROUND_KDOC.warnAndFix(configRules, emitWarn, isFixMode, "redundant blank line after ${kdoc.text}", nodeAfterKdoc.startOffset, nodeAfterKdoc) {
+                    nodeAfterKdoc.leaveOnlyOneNewLine()
+                }
             }
         }
     }
@@ -106,12 +109,12 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
         } else if (node.treeParent.elementType != IF) {
             checkClassComment(node)
         }
-        checkWhiteSpaceBeforeComment(node, configuration)
+        checkWhiteSpaceBegginInComment(node, configuration)
     }
 
     private fun handleEolAndBlockComments(node: ASTNode, configuration: CommentsFormattingConfiguration) {
         if (node.treeParent.elementType != FILE)  basicCommentsChecks(node, configuration)
-        checkWhiteSpaceBeforeComment(node, configuration)
+        checkWhiteSpaceBegginInComment(node, configuration)
     }
 
     private fun basicCommentsChecks(node: ASTNode, configuration: CommentsFormattingConfiguration) {
@@ -222,7 +225,7 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
     }
 
     @Suppress("ComplexMethod", "TOO_LONG_FUNCTION")
-    private fun checkWhiteSpaceBeforeComment(node: ASTNode, configuration: CommentsFormattingConfiguration) {
+    private fun checkWhiteSpaceBegginInComment(node: ASTNode, configuration: CommentsFormattingConfiguration) {
         if (node.elementType == EOL_COMMENT &&
                 node
                         .text
@@ -355,9 +358,5 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
          * Number of spaces after comment sign (`//` or other)
          */
         val maxSpacesInComment = config["maxSpacesInComment"]?.toIntOrNull() ?: APPROPRIATE_COMMENT_SPACES
-    }
-    companion object {
-        private const val APPROPRIATE_COMMENT_SPACES = 1
-        private const val MAX_SPACES = 1
     }
 }
