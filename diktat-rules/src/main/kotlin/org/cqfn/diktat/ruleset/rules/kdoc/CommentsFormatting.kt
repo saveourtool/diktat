@@ -110,12 +110,12 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
     }
 
     private fun handleEolAndBlockComments(node: ASTNode, configuration: CommentsFormattingConfiguration) {
-        basicCommentsChecks(node, configuration)
+        if (node.treeParent.elementType != FILE)  basicCommentsChecks(node, configuration)
         checkWhiteSpaceBeforeComment(node, configuration)
     }
 
     private fun basicCommentsChecks(node: ASTNode, configuration: CommentsFormattingConfiguration) {
-        checkSpaceBetweenPropertyAndComment(node, configuration)
+        checkSpaceBeforeComment(node, configuration)
 
         if (node.treeParent.elementType == BLOCK && node.treeNext != null) {
             // Checking if comment is inside a code block like fun{}
@@ -203,8 +203,8 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
         }
     }
 
-    private fun checkSpaceBetweenPropertyAndComment(node: ASTNode, configuration: CommentsFormattingConfiguration) {
-        if (node.treeParent.firstChildNode != node && node.treeParent.elementType != FILE) {
+    private fun checkSpaceBeforeComment(node: ASTNode, configuration: CommentsFormattingConfiguration) {
+        if (node.treeParent.firstChildNode != node) {
             if (!node.treePrev.isWhiteSpace()) {
                 // if comment is like this: val a = 5// Comment
                 COMMENT_WHITE_SPACE.warnAndFix(configRules, emitWarn, isFixMode,
