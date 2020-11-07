@@ -26,7 +26,7 @@ import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtNamedFunction
 
 typealias RelatedClasses = List<Pair<String, String>>
-typealias SimilarSignatures =  List<Pair<ExtensionFunctionsSameNameRule.ExtensionFunction, ExtensionFunctionsSameNameRule.ExtensionFunction>>
+typealias SimilarSignatures = List<Pair<ExtensionFunctionsSameNameRule.ExtensionFunction, ExtensionFunctionsSameNameRule.ExtensionFunction>>
 
 /**
  * This rule checks if extension functions with the same signature don't have related classes
@@ -42,7 +42,7 @@ class ExtensionFunctionsSameNameRule(private val configRules: List<RulesConfig>)
         isFixMode = autoCorrect
 
         /**
-         * 1) Collect all classes that extend other classes
+         * 1) Collect all classes that extend other classes (collect related classes)
          * 2) Collect all extension functions with same signature
          * 3) Check if classes of functions are related
          */
@@ -76,8 +76,8 @@ class ExtensionFunctionsSameNameRule(private val configRules: List<RulesConfig>)
 
     private fun collectAllExtensionFunctions(node: ASTNode) : SimilarSignatures {
         val extensionFunctionList = node.findAllNodesWithSpecificType(FUN).filter { it.hasChildOfType(TYPE_REFERENCE) && it.hasChildOfType(DOT) }
-        val distinctFunctionSignatures = mutableMapOf<FunctionSignature, ASTNode>()
-        val extensionFunctions = mutableListOf<Pair<ExtensionFunction, ExtensionFunction>>()
+        val distinctFunctionSignatures = mutableMapOf<FunctionSignature, ASTNode>() // maps function signatures on node it is used by
+        val extensionFunctionsPairs = mutableListOf<Pair<ExtensionFunction, ExtensionFunction>>() // pairs extension functions with same signature
 
         extensionFunctionList.forEach {
             val functionName = (it.psi as KtNamedFunction).name!!
@@ -85,9 +85,10 @@ class ExtensionFunctionsSameNameRule(private val configRules: List<RulesConfig>)
             val returnType = it.findChildAfter(COLON, TYPE_REFERENCE)?.text
             val className = it.findChildBefore(DOT, TYPE_REFERENCE)!!.text
             val signature = FunctionSignature(functionName, params, returnType)
+
             if (distinctFunctionSignatures.contains(signature)) {
                 val secondFuncClassName = distinctFunctionSignatures[signature]!!.findChildBefore(DOT, TYPE_REFERENCE)!!.text
-                extensionFunctions.add(Pair(
+                extensionFunctionsPairs.add(Pair(
                         ExtensionFunction(secondFuncClassName, signature, distinctFunctionSignatures[signature]!!),
                         ExtensionFunction(className, signature, it)))
             } else {
@@ -95,7 +96,7 @@ class ExtensionFunctionsSameNameRule(private val configRules: List<RulesConfig>)
             }
         }
 
-        return extensionFunctions
+        return extensionFunctionsPairs
     }
 
     private fun handleFunctions(relatedClasses: RelatedClasses, functions: SimilarSignatures) {

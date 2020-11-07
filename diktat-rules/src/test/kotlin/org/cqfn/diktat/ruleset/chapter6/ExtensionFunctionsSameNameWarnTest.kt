@@ -1,6 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter6
 
 import com.pinterest.ktlint.core.LintError
+import generated.WarningNames.EXTENSION_FUNCTION_SAME_SIGNATURE
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.ExtensionFunctionsSameNameRule
@@ -12,6 +13,7 @@ class ExtensionFunctionsSameNameWarnTest : LintTestBase(::ExtensionFunctionsSame
     private val ruleId = "$DIKTAT_RULE_SET_ID:extension-functions-same-name"
 
     @Test
+    @Tag(EXTENSION_FUNCTION_SAME_SIGNATURE)
     fun `should trigger on functions with same signatures`() {
         lintMethod(
                 """
@@ -31,6 +33,7 @@ class ExtensionFunctionsSameNameWarnTest : LintTestBase(::ExtensionFunctionsSame
     }
 
     @Test
+    @Tag(EXTENSION_FUNCTION_SAME_SIGNATURE)
     fun `should not trigger on functions with different signatures`() {
         lintMethod(
                 """
@@ -48,6 +51,7 @@ class ExtensionFunctionsSameNameWarnTest : LintTestBase(::ExtensionFunctionsSame
     }
 
     @Test
+    @Tag(EXTENSION_FUNCTION_SAME_SIGNATURE)
     fun `should not trigger on functions with unrelated classes`() {
         lintMethod(
                 """
@@ -57,6 +61,25 @@ class ExtensionFunctionsSameNameWarnTest : LintTestBase(::ExtensionFunctionsSame
                 |
                 |fun C.foo() = "C"
                 |fun B.foo() = "B"
+                |
+                |fun printClassName(s: A) { print(s.foo()) }
+                |
+                |fun main() { printClassName(B()) }
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(EXTENSION_FUNCTION_SAME_SIGNATURE)
+    fun `should not trigger on regular func`() {
+        lintMethod(
+                """
+                |interface A
+                |class B: A
+                |class C
+                |
+                |fun foo() = "C"
+                |fun bar() = "B"
                 |
                 |fun printClassName(s: A) { print(s.foo()) }
                 |
