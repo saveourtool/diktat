@@ -6,6 +6,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.ExtensionFunctionsSameNameRule
 import org.cqfn.diktat.util.LintTestBase
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
@@ -85,6 +86,24 @@ class ExtensionFunctionsSameNameWarnTest : LintTestBase(::ExtensionFunctionsSame
                 |
                 |fun main() { printClassName(B()) }
             """.trimMargin()
+        )
+    }
+
+    @Test
+    @Disabled
+    @Tag(EXTENSION_FUNCTION_SAME_SIGNATURE)
+    fun `should trigger on classes in other files`() {
+        lintMethod(
+                """
+                |fun A.foo() = "A"
+                |fun B.foo() = "B"
+                |
+                |fun printClassName(s: A) { print(s.foo()) }
+                |
+                |fun main() { printClassName(B()) }
+            """.trimMargin(),
+                LintError(1, 1, ruleId, "${Warnings.EXTENSION_FUNCTION_SAME_SIGNATURE.warnText()} fun A.foo() and fun B.foo()"),
+                LintError(2, 1, ruleId, "${Warnings.EXTENSION_FUNCTION_SAME_SIGNATURE.warnText()} fun A.foo() and fun B.foo()")
         )
     }
 }

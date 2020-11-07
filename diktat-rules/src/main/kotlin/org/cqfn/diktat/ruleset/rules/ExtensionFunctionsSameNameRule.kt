@@ -54,6 +54,8 @@ class ExtensionFunctionsSameNameRule(private val configRules: List<RulesConfig>)
 
     }
 
+    // Fixme: should find all related classes in project, not only in file
+    @Suppress("UnsafeCallOnNullableType")
     private fun collectAllRelatedClasses(node: ASTNode) : List<Pair<String, String>> {
         val classListWithInheritance = node.findAllNodesWithSpecificType(CLASS)
                 .filterNot { (it.psi as KtClass).isInterface() }
@@ -74,6 +76,7 @@ class ExtensionFunctionsSameNameRule(private val configRules: List<RulesConfig>)
         return pairs
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun collectAllExtensionFunctions(node: ASTNode) : SimilarSignatures {
         val extensionFunctionList = node.findAllNodesWithSpecificType(FUN).filter { it.hasChildOfType(TYPE_REFERENCE) && it.hasChildOfType(DOT) }
         val distinctFunctionSignatures = mutableMapOf<FunctionSignature, ASTNode>() // maps function signatures on node it is used by
