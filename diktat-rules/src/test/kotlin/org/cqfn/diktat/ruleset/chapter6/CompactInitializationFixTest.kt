@@ -18,4 +18,10 @@ class CompactInitializationFixTest: FixTestBase("test/chapter6/compact_initializ
     fun `should wrap properties into apply also moving comments`() {
         fixAndCompare("ExampleWithCommentsExpected.kt", "ExampleWithCommentsTest.kt")
     }
+
+    @Test
+    @Tag(WarningNames.COMPACT_OBJECT_INITIALIZATION)
+    fun `should wrap properties into apply - existing apply with value argument`() {
+        fixAndCompare("ApplyWithValueArgumentExpected.kt", "ApplyWithValueArgumentTest.kt")
+    }
 }
