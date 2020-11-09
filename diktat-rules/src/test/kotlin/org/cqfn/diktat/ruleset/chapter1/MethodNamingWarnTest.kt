@@ -1,24 +1,24 @@
 package org.cqfn.diktat.ruleset.chapter1
 
-import com.pinterest.ktlint.core.LintError
-import generated.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings.FUNCTION_BOOLEAN_PREFIX
 import org.cqfn.diktat.ruleset.constants.Warnings.FUNCTION_NAME_INCORRECT_CASE
-import org.junit.jupiter.api.Test
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.IdentifierNaming
 import org.cqfn.diktat.util.LintTestBase
+
+import com.pinterest.ktlint.core.LintError
+import generated.WarningNames
 import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.Test
 
 class MethodNamingWarnTest : LintTestBase(::IdentifierNaming) {
-
     private val ruleId: String = "$DIKTAT_RULE_SET_ID:identifier-naming"
 
     @Test
     @Tag(WarningNames.FUNCTION_NAME_INCORRECT_CASE)
     fun `method name incorrect, part 1`() {
         val code =
-            """
+                """
                   class SomeClass {
                     fun /* */ methODTREE(): String {
 
@@ -32,7 +32,7 @@ class MethodNamingWarnTest : LintTestBase(::IdentifierNaming) {
     @Tag(WarningNames.FUNCTION_NAME_INCORRECT_CASE)
     fun `method name incorrect, part 2`() {
         val code =
-            """
+                """
                   class TestPackageName {
                     fun method_two(): String {
                         return ""
@@ -46,7 +46,7 @@ class MethodNamingWarnTest : LintTestBase(::IdentifierNaming) {
     @Tag(WarningNames.FUNCTION_NAME_INCORRECT_CASE)
     fun `method name incorrect, part 3`() {
         val code =
-            """
+                """
                     fun String.methODTREE(): String {
                         fun TEST(): Unit {
                             return ""
@@ -63,7 +63,7 @@ class MethodNamingWarnTest : LintTestBase(::IdentifierNaming) {
     @Tag(WarningNames.FUNCTION_NAME_INCORRECT_CASE)
     fun `method name incorrect, part 4`() {
         val code =
-            """
+                """
                   class TestPackageName {
                     fun methODTREE(): String {
                     }
@@ -76,7 +76,7 @@ class MethodNamingWarnTest : LintTestBase(::IdentifierNaming) {
     @Tag(WarningNames.FUNCTION_NAME_INCORRECT_CASE)
     fun `method name incorrect, part 5`() {
         val code =
-            """
+                """
                   class TestPackageName {
                     fun methODTREE() {
                     }
@@ -89,7 +89,7 @@ class MethodNamingWarnTest : LintTestBase(::IdentifierNaming) {
     @Tag(WarningNames.FUNCTION_BOOLEAN_PREFIX)
     fun `boolean method name incorrect`() {
         val code =
-            """
+                """
                  fun someBooleanCheck(): Boolean {
                      return false
                  }

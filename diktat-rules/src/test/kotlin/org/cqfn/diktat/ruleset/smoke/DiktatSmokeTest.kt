@@ -1,6 +1,12 @@
 package org.cqfn.diktat.ruleset.smoke
 
+import com.charleskorn.kaml.Yaml
+import com.charleskorn.kaml.YamlConfiguration
 import com.pinterest.ktlint.core.LintError
+import kotlinx.serialization.encodeToString
+import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.common.config.rules.RulesConfigReader
+import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.constants.Warnings.EMPTY_BLOCK_STRUCTURE_ERROR
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NAME_INCORRECT
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NAME_MATCH_CLASS
@@ -12,6 +18,7 @@ import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
 import org.cqfn.diktat.util.FixTestBase
 import org.cqfn.diktat.util.assertEquals
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -25,12 +32,15 @@ import java.io.File
  * fixme: run as a separate maven goal/module?
  */
 class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
-        { DiktatRuleSetProvider("../diktat-analysis.yml") }, // using same yml config as for diktat code style check
+        { DiktatRuleSetProvider(configFilePath) },
         { lintError, _ -> unfixedLintErrors.add(lintError) },
         null
 ) {
     companion object {
+        private const val DEFAULT_CONFIG_PATH = "../diktat-analysis.yml"
         private val unfixedLintErrors: MutableList<LintError> = mutableListOf()
+        // by default using same yml config as for diktat code style check, but allow to override
+        private var configFilePath = DEFAULT_CONFIG_PATH
     }
 
     @BeforeEach
@@ -75,5 +85,47 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     @Tag("DiktatRuleSetProvider")
     fun `regression - shouldn't throw exception in cases similar to #371`() {
         fixAndCompare("Bug1Expected.kt", "Bug1Test.kt")
+    }
+
+    @Test
+    @Tag("DiktatRuleSetProvider")
+    fun `smoke test #3`() {
+        fixAndCompare("Example3Expected.kt", "Example3Test.kt")
+    }
+
+    @Test
+    @Tag("DiktatRuleSetProvider")
+    fun `regression - should not fail if package is not set`() {
+        overrideRulesConfig(listOf(Warnings.PACKAGE_NAME_MISSING, Warnings.PACKAGE_NAME_INCORRECT_PATH,
+            Warnings.PACKAGE_NAME_INCORRECT_PREFIX))
+        fixAndCompare("DefaultPackageExpected.kt", "DefaultPackageTest.kt")
+    }
+
+    @AfterEach
+    fun `revert configuration file to default`() {
+        configFilePath = DEFAULT_CONFIG_PATH
+    }
+
+    /**
+     * Disable some of the rules.
+     */
+    @Suppress("UnsafeCallOnNullableType")
+    private fun overrideRulesConfig(rulesToDisable: List<Warnings>) {
+        val rulesConfig = RulesConfigReader(javaClass.classLoader).readResource(configFilePath)!!
+            .toMutableList()
+            .also { rulesConfig ->
+                rulesToDisable.forEach { warning ->
+                    rulesConfig.removeIf { it.name ==  warning.name }
+                    rulesConfig.add(RulesConfig(warning.name, enabled = false, configuration = emptyMap()))
+                }
+            }
+        createTempFile()
+            .also {
+                configFilePath = it.absolutePath
+            }
+            .writeText(
+                Yaml(configuration = YamlConfiguration(strictMode = true))
+                    .encodeToString(rulesConfig)
+            )
     }
 }

@@ -18,14 +18,14 @@
 [![Awesome Kotlin Badge](https://kotlin.link/awesome-kotlin.svg)](https://github.com/KotlinBy/awesome-kotlin)
 
 
-DiKTat is a strict [coding standard ](info/diktat-kotlin-coding-style-guide-en.md) for Kotlin and a collection of [Kotlin](https://kotlinlang.org/) code style rules implemented
+DiKTat is a strict [coding standard ](info/guide/diktat-coding-convention.md) for Kotlin and a collection of [Kotlin](https://kotlinlang.org/) code style rules implemented
 as AST visitors on the top of [KTlint](https://ktlint.github.io/). It can be used for detecting and autofixing code smells in CI/CD process. 
 The full list of available supported rules and inspections can be found [here](info/available-rules.md).
 
 
 | See first | !!! |
 | ----------------- | ------------------------ |
-|[diKTat codestyle](info/diktat-kotlin-coding-style-guide-en.md)|[supported rules](info/available-rules.md)|                                                      |
+|[diKTat codestyle](info/guide/diktat-coding-convention.md)|[supported rules](info/available-rules.md)|                                                      |
 |[examples of usage](https://github.com/akuleshov7/diktat-examples)|[online demo](https://ktlint-demo.herokuapp.com)|
 
 
@@ -127,7 +127,7 @@ To run diktat to check/fix code style - run `$ mvn antrun:run@diktat`.
 ### Use the new diktat-maven-plugin
 
 You can see how it is configured in our project for self-checks: [pom.xml](pom.xml).
-This plugin should be available since version 0.1.2. It requires less configuration but may contain bugs.
+This plugin should be available since version 0.1.3. It requires less configuration but may contain bugs.
 If you use it and encounter any problems, feel free to open issues on [github](https://github.com/cqfn/diktat/issues).
 
 Add this plugin to your pom.xml:

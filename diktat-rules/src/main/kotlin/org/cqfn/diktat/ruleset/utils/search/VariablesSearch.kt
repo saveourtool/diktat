@@ -19,9 +19,9 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.referenceExpression
 
 /**
- *  @param node - root node of a type File that is used to search all declared properties (variables)
+ *  @param node root node of a type File that is used to search all declared properties (variables)
  *  it should be ONLY node of File elementType
- *  @param filterForVariables - condition to filter
+ *  @param filterForVariables condition to filter
  */
 abstract class VariablesSearch(val node: ASTNode, private val filterForVariables: (KtProperty) -> Boolean) {
 
