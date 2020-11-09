@@ -206,4 +206,7 @@ public object WarningNames {
     public const val MULTIPLE_INIT_BLOCKS: String = "MULTIPLE_INIT_BLOCKS"
 
     public const val CLASS_SHOULD_NOT_BE_ABSTRACT: String = "CLASS_SHOULD_NOT_BE_ABSTRACT"
+
+    public const val TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED: String =
+            "TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED"
 }
