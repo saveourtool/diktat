@@ -350,7 +350,7 @@
 - name: CLASS_SHOULD_NOT_BE_ABSTRACT
   enabled: true
   configuration: {}
-# Checks that override function is useful
+# Checks explicit supertype qualification
 - name: USELESS_SUPERTYPE
   enabled: true
   configuration: {}

@@ -19,6 +19,7 @@ import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_LIST
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import com.pinterest.ktlint.core.ast.parent
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.USELESS_SUPERTYPE
 import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -35,7 +36,7 @@ class UselessSupertype(private val configRules: List<RulesConfig>) : Rule("usele
         private val SUPER_TYPE = listOf(SUPER_TYPE_CALL_ENTRY, SUPER_TYPE_ENTRY)
     }
 
-    private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
+    private lateinit var emitWarn: EmitType
     private var isFixMode: Boolean = false
 
     override fun visit(node: ASTNode,
@@ -60,7 +61,9 @@ class UselessSupertype(private val configRules: List<RulesConfig>) : Rule("usele
     }
 
     private fun handleManyImpl(superNodes: List<ASTNode>, overrideNodes: List<Pair<ASTNode, ASTNode>>) {
-        val uselessSuperType = findAllSupers(superNodes, overrideNodes.map { it.second.text })?.filter { it.value == 1 }?.map { it.key }
+        val uselessSuperType = findAllSupers(superNodes, overrideNodes.map { it.second.text })
+                ?.filter { it.value == 1 } // filtering methods whose names occur only once
+                ?.map { it.key } // take their names
                 ?: return
         overrideNodes
                 .filter {
@@ -119,7 +122,7 @@ class UselessSupertype(private val configRules: List<RulesConfig>) : Rule("usele
         }).mapNotNull { it.findChildByType(CLASS_BODY) }
         if (superNodes.size != superTypeList.size)
             return null
-        val functionNameMap = mutableMapOf<String, Int>()
+        val functionNameMap = hashMapOf<String, Int>()
         superNodes.forEach { classBody ->
             val overrideFunctions = classBody.findAllNodesWithSpecificType(FUN)
                     .filter {
@@ -127,11 +130,7 @@ class UselessSupertype(private val configRules: List<RulesConfig>) : Rule("usele
                                 it.getIdentifierName()!!.text in methodsName
                     }
             overrideFunctions.forEach {
-                functionNameMap[it.getIdentifierName()!!.text] = functionNameMap.getOrDefault(it.getIdentifierName()!!.text, 0) + 1
-                /*if (functionNameMap.containsKey(it.getIdentifierName()!!.text))
-                    functionNameMap[it.getIdentifierName()!!.text] = functionNameMap[it.getIdentifierName()!!.text]!! + 1
-                else
-                    functionNameMap[it.getIdentifierName()!!.text] = 1*/
+                functionNameMap.compute(it.getIdentifierName()!!.text) { _, oldValue -> (oldValue ?: 0) + 1}
             }
         }
         return functionNameMap.toMap()
