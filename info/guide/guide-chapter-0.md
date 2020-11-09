@@ -1,5 +1,6 @@
- ### <a name="c0"></a> Foreword
- ### <a name="c0.1"></a>Purpose of this document   
+## <a name="c0"></a> 0. Preface
+ <!-- =============================================================================== -->
+### <a name="c0.1"></a> 0.1 Purpose of this document   
 
 For code to be considered "good", it must entail the following characteristics:
 1.	Simplicity
@@ -14,7 +15,8 @@ Programming is a profession that involves creativity.
 Software developers can reference this specification, which will enhance their ability to write consistent, easy-to-read, and high-quality code.
 This will ultimately improve product competitiveness and software development efficiency.
 
-### <a name="c0.2"></a> General principles
+<!-- =============================================================================== -->
+### <a name="c0.2"></a> 0.2 General principles
 
 As a very modern and advanced programming language (completely like other languages), Kotlin complies with the following general principles:
 1.	Clarity: Clarity is a necessary feature of programs that are easy to maintain and refactor.
@@ -38,8 +40,9 @@ In addition, we need to consider the following factors when programming on Kotli
 3. Use Kotlin efficiently
 
     Some Kotlin features help you write higher-performance code: including rich coroutine library, sequences, inline functions/classes, arrays of basic types, tailRec, and CallsInPlace of contract.
- 
-### <a name="c0.3"></a> Terminology   
+
+<!-- =============================================================================== -->
+### <a name="c0.3"></a> 0.3 Terminology   
 
 **Rules**: conventions that should be followed when programming.
 
@@ -47,15 +50,14 @@ In addition, we need to consider the following factors when programming on Kotli
 
 **Explanation**: necessary explanations of rules and recommendations.
 
-**Example**: examples (recommended and not recommended) of the rules and recommendations.
+**Valid Example**: examples (recommended) of rules and recommendations.
+
+**Invalid Example**: examples (not recommended) of rules and recommendations.
 
 Unless otherwise stated, this specification applies to versions 1.3 and later of Kotlin.
 
-### <a name="c0.4"></a>Scope
-
-This specification applies to all software coded in Kotlin within the company.
-
-### <a name="c0.5"></a>Exception
+<!-- =============================================================================== -->
+### <a name="c0.4"></a> 0.4 Exceptions
 
 Even though exceptions may exist, it is important to understand why rules and recommendations are needed.
 Depending on your project situation or personal habits, you can break some of the rules. However, remember that one exception leads to many and can completely destroy the consistency of code. As such, there should be very few exceptions.

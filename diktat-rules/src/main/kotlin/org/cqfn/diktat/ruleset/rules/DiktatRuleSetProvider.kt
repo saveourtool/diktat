@@ -9,6 +9,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.calculations.AccurateCalculationsRule
 import org.cqfn.diktat.ruleset.rules.classes.AbstractClassesRule
 import org.cqfn.diktat.ruleset.rules.classes.DataClassesRule
+import org.cqfn.diktat.ruleset.rules.classes.SingleConstructorRule
 import org.cqfn.diktat.ruleset.rules.classes.SingleInitRule
 import org.cqfn.diktat.ruleset.rules.comments.CommentsRule
 import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule
@@ -53,6 +54,7 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
         val rules = listOf(
                 // comments & documentation
                 ::CommentsRule,
+                ::SingleConstructorRule,  // this rule can add properties to a primary constructor, so should be before KdocComments
                 ::KdocComments,
                 ::KdocMethods,
                 ::KdocFormatting,
