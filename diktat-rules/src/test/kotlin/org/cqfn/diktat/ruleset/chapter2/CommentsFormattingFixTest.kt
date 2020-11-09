@@ -29,4 +29,10 @@ class CommentsFormattingFixTest: FixTestBase("test/paragraph2/kdoc/", ::Comments
     fun `test example from code style`() {
         fixAndCompare("KdocCodeBlockFormattingExampleExpected.kt", "KdocCodeBlockFormattingExampleTest.kt")
     }
+
+    @Test
+    @Tag(WRONG_NEWLINES_AROUND_KDOC)
+    fun `regression - should not insert newline before the first comment in a file`() {
+        fixAndCompare("NoPackageNoImportExpected.kt", "NoPackageNoImportTest.kt")
+    }
 }

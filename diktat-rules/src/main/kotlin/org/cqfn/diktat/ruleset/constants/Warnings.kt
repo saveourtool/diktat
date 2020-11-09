@@ -6,6 +6,8 @@ import org.cqfn.diktat.common.config.rules.isRuleEnabled
 import org.cqfn.diktat.ruleset.utils.hasSuppress
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
+typealias EmitType = ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
+
 /**
  * This class represent individual inspections of diktat code style.
  * A [Warnings] entry contains rule name, warning message and is used in code check.
@@ -117,6 +119,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     WRONG_OVERLOADING_FUNCTION_ARGUMENTS(false, "use default argument instead of function overloading"),
 
     // ======== chapter 6 ========
+    SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY(true, "if a class has single constructor, it should be converted to a primary constructor"),
     USE_DATA_CLASS(false, "this class can be converted to a data class"),
     WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR(false, "Use `field` keyword instead of property name inside property accessors"),
     MULTIPLE_INIT_BLOCKS(true, "Avoid using multiple `init` blocks, this logic can be moved to constructors or properties declarations"),
@@ -135,7 +138,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
 
     @Suppress("LongParameterList")
     fun warnAndFix(configRules: List<RulesConfig>,
-                   emit: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit),
+                   emit: EmitType,
                    isFixMode: Boolean,
                    freeText: String,
                    offset: Int,
@@ -148,7 +151,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
 
     @Suppress("LongParameterList")
     fun warn(configs: List<RulesConfig>,
-             emit: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit),
+             emit: EmitType,
              autoCorrected: Boolean,
              freeText: String,
              offset: Int,
