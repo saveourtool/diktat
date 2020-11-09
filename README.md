@@ -174,7 +174,7 @@ Add the code below to your `build.gradle.kts`:
 ```kotlin
 object Versions {
     const val ktlint = "0.39.0"
-    const val diktat = "0.1.2"
+    const val diktat = "0.1.3"
 }
 
 tasks {
