@@ -73,12 +73,6 @@ class TrivialPropertyAccessors(private val configRules: List<RulesConfig>) : Rul
             ) {
                 raiseWarning(node)
             }
-        } else {
-            // handle set(param) = param case
-            val references = node.findAllNodesWithSpecificType(REFERENCE_EXPRESSION)
-            if (references.size == 1 && references.first().text == valueParamName) {
-                raiseWarning(node)
-            }
         }
     }
 
