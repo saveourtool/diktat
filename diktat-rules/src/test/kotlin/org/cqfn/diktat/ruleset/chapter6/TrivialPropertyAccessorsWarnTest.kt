@@ -30,15 +30,17 @@ class TrivialPropertyAccessorsWarnTest : LintTestBase(::TrivialPropertyAccessors
 
     @Test
     @Tag(TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED)
-    fun `should trigger on trivial getter`() {
+    fun `should trigger on trivial getter and setter equal case`() {
         lintMethod(
                 """
                     |class Test {
                     |   val prop: Int = 0
                     |       get() = field
+                    |       set(param) = param
                     |}
                 """.trimMargin(),
-                LintError(3, 8, ruleId, "${Warnings.TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED.warnText()} get() = field", true)
+                LintError(3, 8, ruleId, "${Warnings.TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED.warnText()} get() = field", true),
+                LintError(4, 8, ruleId, "${Warnings.TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED.warnText()} set(param) = param", true)
         )
     }
 

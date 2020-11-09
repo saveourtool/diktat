@@ -3,17 +3,22 @@ package org.cqfn.diktat.ruleset.rules
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
+import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
+import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY_ACCESSOR
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isWhiteSpace
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
+import org.cqfn.diktat.ruleset.utils.getIdentifierName
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
+import org.cqfn.diktat.ruleset.utils.prettyPrint
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtPropertyAccessor
@@ -26,7 +31,7 @@ class TrivialPropertyAccessors(private val configRules: List<RulesConfig>) : Rul
     private var isFixMode: Boolean = false
 
     companion object {
-        private val EXCESS_CHILDREN_TYPES = listOf(LBRACE, RBRACE, WHITE_SPACE)
+        private val EXCESS_CHILDREN_TYPES = listOf(LBRACE, RBRACE, WHITE_SPACE, EOL_COMMENT, BLOCK_COMMENT)
     }
 
     override fun visit(node: ASTNode,
@@ -50,16 +55,30 @@ class TrivialPropertyAccessors(private val configRules: List<RulesConfig>) : Rul
 
     @Suppress("UnsafeCallOnNullableType")
     private fun handleSetAccessor(node: ASTNode) {
-        val block = node.getFirstChildWithType(BLOCK)!!
+        val valueParamName = node
+                .getFirstChildWithType(VALUE_PARAMETER_LIST)!!
+                .firstChildNode
+                .getIdentifierName()!!
+                .text
 
-        val blockChildren = block.getChildren(null).filter { it.elementType !in EXCESS_CHILDREN_TYPES }
+        if (node.hasChildOfType(BLOCK)) {
+            val block = node.getFirstChildWithType(BLOCK)!!
 
-        if (blockChildren.size == 1
-                && blockChildren[0].elementType == BINARY_EXPRESSION
-                && (blockChildren[0].psi as KtBinaryExpression).left?.text == "field"
-                && (blockChildren[0].psi as KtBinaryExpression).right?.text == "value"
-        ) {
-            raiseWarning(node)
+            val blockChildren = block.getChildren(null).filter { it.elementType !in EXCESS_CHILDREN_TYPES }
+
+            if (blockChildren.size == 1
+                    && blockChildren.first().elementType == BINARY_EXPRESSION
+                    && (blockChildren.first().psi as KtBinaryExpression).left?.text == "field"
+                    && (blockChildren.first().psi as KtBinaryExpression).right?.text == valueParamName
+            ) {
+                raiseWarning(node)
+            }
+        } else {
+            // handle set(param) = param case
+            val references = node.findAllNodesWithSpecificType(REFERENCE_EXPRESSION)
+            if (references.size == 1 && references.first().text == valueParamName) {
+                raiseWarning(node)
+            }
         }
     }
 
@@ -68,7 +87,7 @@ class TrivialPropertyAccessors(private val configRules: List<RulesConfig>) : Rul
         if (!node.hasChildOfType(BLOCK)) {
             // handle only get() = field
             val references = node.findAllNodesWithSpecificType(REFERENCE_EXPRESSION)
-            if (references.size == 1 && references[0].text == "field") {
+            if (references.size == 1 && references.first().text == "field") {
                 raiseWarning(node)
             }
         } else {
@@ -76,7 +95,7 @@ class TrivialPropertyAccessors(private val configRules: List<RulesConfig>) : Rul
 
             val references = block.findAllNodesWithSpecificType(REFERENCE_EXPRESSION)
 
-            if (references.size == 1 && references[0].text == "field") {
+            if (references.size == 1 && references.first().text == "field") {
                 raiseWarning(node)
             }
         }
