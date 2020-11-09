@@ -109,12 +109,12 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
         } else if (node.treeParent.elementType != IF) {
             checkClassComment(node)
         }
-        checkWhiteSpaceBegginInComment(node, configuration)
+        checkWhiteSpaceBeginInComment(node, configuration)
     }
 
     private fun handleEolAndBlockComments(node: ASTNode, configuration: CommentsFormattingConfiguration) {
         if (node.treeParent.elementType != FILE)  basicCommentsChecks(node, configuration)
-        checkWhiteSpaceBegginInComment(node, configuration)
+        checkWhiteSpaceBeginInComment(node, configuration)
     }
 
     private fun basicCommentsChecks(node: ASTNode, configuration: CommentsFormattingConfiguration) {
@@ -225,7 +225,7 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
     }
 
     @Suppress("ComplexMethod", "TOO_LONG_FUNCTION")
-    private fun checkWhiteSpaceBegginInComment(node: ASTNode, configuration: CommentsFormattingConfiguration) {
+    private fun checkWhiteSpaceBeginInComment(node: ASTNode, configuration: CommentsFormattingConfiguration) {
         if (node.elementType == EOL_COMMENT &&
                 node
                         .text
