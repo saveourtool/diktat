@@ -22,6 +22,8 @@ import org.jetbrains.kotlin.psi.psiUtil.startOffset
 /**
  * This rules checks if an object initialization can be wrapped into an `apply` function.
  * This is useful for classes that, e.g. have single constructor without parameters and setters for all the parameters.
+ * FixMe: When assigned variable's name is also a `this@apply`'s property, it should be changed to qualified name,
+ *  e.g `this@Foo`. But for this we need a mechanism to determine declaration scope and it's label.
  */
 class CompactInitialization(private val configRules: List<RulesConfig>) : Rule("class-compact-initialization") {
     private var isFixMode: Boolean = false
