@@ -81,6 +81,9 @@ public object WarningNames {
 
     public const val KDOC_NO_CONSTRUCTOR_PROPERTY: String = "KDOC_NO_CONSTRUCTOR_PROPERTY"
 
+    public const val KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT: String =
+            "KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT"
+
     public const val HEADER_WRONG_FORMAT: String = "HEADER_WRONG_FORMAT"
 
     public const val HEADER_MISSING_OR_WRONG_COPYRIGHT: String = "HEADER_MISSING_OR_WRONG_COPYRIGHT"

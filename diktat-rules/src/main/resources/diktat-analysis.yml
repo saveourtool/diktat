@@ -323,8 +323,12 @@
 - name: WRONG_OVERLOADING_FUNCTION_ARGUMENTS
   enabled: true
   configuration: {}
-# Checks that property in constructor doesn't contains comment
+# Checks that KDoc in constructor has property tag
 - name: KDOC_NO_CONSTRUCTOR_PROPERTY
+  enabled: true
+  configuration: {}
+# Checks that KDoc in constructor has property tag but with comment inside constructor
+- name: KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT
   enabled: true
   configuration: {}
 # if a class has single constructor, it should be converted to a primary constructor
