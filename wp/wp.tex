@@ -2,6 +2,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
 \usepackage{pgf}
+\usepackage{multicol}
 \usepackage{setspace}
   \setstretch{1.1}
 \usepackage[top=1.3in, left=1.4in, includefoot]{geometry}
@@ -110,11 +111,20 @@
 \label{sec:download}
 \input{sections/download}
 
-%rename this section%
 \section{Examples}
 \label{sec:examples}
 \input{sections/examples}
 
+\section{Conclusion \& Future Work}
+\label{sec:conclusion}
+\input{sections/conclusion}
+
+\newpage
+\nocite{*}
+\bibliographystyle{ieeetr}
+\bibliography{references.bib}
+
+\newpage
 \section{Appendix}
 \label{sec:appendix}
 \input{sections/appendix}
