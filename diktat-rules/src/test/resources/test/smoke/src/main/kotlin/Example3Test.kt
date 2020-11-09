@@ -1,9 +1,14 @@
 package test.smoke.src.main.kotlin
 
-class HttpClient(var name: String) {
+class HttpClient {
+    var name: String
     var url: String = ""
     var port: String = ""
     var timeout = 0
+
+    constructor(name: String) {
+        this.name = name
+    }
 
     fun doRequest() {}
 }
@@ -15,5 +20,5 @@ fun mains() {
                 port = "8080"
                 timeout = 100
             }
-            .doRequest()
+    httpClient.doRequest()
 }

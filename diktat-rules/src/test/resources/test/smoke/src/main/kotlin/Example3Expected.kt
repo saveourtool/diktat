@@ -18,6 +18,6 @@ fun mains() {
                 port = "8080"
                 timeout = 100
             }
-            .doRequest()
+    httpClient.doRequest()
 }
 

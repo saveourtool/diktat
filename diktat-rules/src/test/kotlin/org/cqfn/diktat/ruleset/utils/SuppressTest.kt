@@ -1,14 +1,14 @@
 package org.cqfn.diktat.ruleset.utils
 
-import com.pinterest.ktlint.core.LintError
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.IdentifierNaming
 import org.cqfn.diktat.util.LintTestBase
+
+import com.pinterest.ktlint.core.LintError
 import org.junit.jupiter.api.Test
 
 class SuppressTest : LintTestBase(::IdentifierNaming) {
-
     private val ruleId: String = "$DIKTAT_RULE_SET_ID:identifier-naming"
 
     @Test
@@ -47,7 +47,7 @@ class SuppressTest : LintTestBase(::IdentifierNaming) {
                     |   }
                     |}
                 """.trimMargin(),
-                LintError(12,14,ruleId, "${Warnings.FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREEASA",
+                LintError(12, 14, ruleId, "${Warnings.FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREEASA",
                         true)
         )
     }
@@ -140,8 +140,7 @@ class SuppressTest : LintTestBase(::IdentifierNaming) {
                   }
                 """.trimIndent()
         lintMethod(code,
-                LintError(3,13, "$DIKTAT_RULE_SET_ID:identifier-naming",
-                        "${Warnings.FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREE", true))
+                LintError(3, 13, "$DIKTAT_RULE_SET_ID:identifier-naming",
+                    "${Warnings.FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREE", true))
     }
-
 }
