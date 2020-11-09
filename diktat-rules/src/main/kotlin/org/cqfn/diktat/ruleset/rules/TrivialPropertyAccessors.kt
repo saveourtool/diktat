@@ -42,6 +42,7 @@ class TrivialPropertyAccessors(private val configRules: List<RulesConfig>) : Rul
 
         if (node.elementType == PROPERTY_ACCESSOR) {
             handlePropertyAccessors(node)
+            print(node.prettyPrint())
         }
     }
 
@@ -78,20 +79,9 @@ class TrivialPropertyAccessors(private val configRules: List<RulesConfig>) : Rul
 
     @Suppress("UnsafeCallOnNullableType")
     private fun handleGetAccessor(node: ASTNode) {
-        if (!node.hasChildOfType(BLOCK)) {
-            // handle only get() = field
-            val references = node.findAllNodesWithSpecificType(REFERENCE_EXPRESSION)
-            if (references.size == 1 && references.first().text == "field") {
-                raiseWarning(node)
-            }
-        } else {
-            val block = node.getFirstChildWithType(BLOCK)!!
-
-            val references = block.findAllNodesWithSpecificType(REFERENCE_EXPRESSION)
-
-            if (references.size == 1 && references.first().text == "field") {
-                raiseWarning(node)
-            }
+        val references = node.findAllNodesWithSpecificType(REFERENCE_EXPRESSION)
+        if (references.singleOrNull()?.text == "field") {
+            raiseWarning(node)
         }
     }
 
