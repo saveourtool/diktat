@@ -164,51 +164,54 @@ Add this plugin to your pom.xml:
 To run diktat check use command `$ mvn diktat:check@diktat`.
 To run diktat in autocorrect mode use command `$ mvn diktat:fix@diktat`.
 
-## Run with Gradle Plugin 
+## Run with Gradle 
 
 You can see how it is configured in our project for self-checks: [build.gradle.kts](build.gradle.kts).
 Add the code below to your `build.gradle.kts`:
 <details>
-  <summary><b>Gradle plugin snippet</b></summary><br>
+  <summary><b>Gradle snippet</b></summary><br>
   
 ```kotlin
-val ktlint by configurations.creating
+object Versions {
+    const val ktlint = "0.39.0"
+    const val diktat = "0.1.3"
+}
 
-dependencies {
-    ktlint("com.pinterest:ktlint:0.39.0") {
-        // need to exclude standard ruleset to use only diktat rules
-        exclude("com.pinterest.ktlint", "ktlint-ruleset-standard")
+tasks {
+    val ktlint: Configuration by configurations.creating
+    val diktatConfig: JavaExec.() -> Unit = {
+        group = "diktat"
+        classpath = ktlint
+        main = "com.pinterest.ktlint.Main"
+
+        inputs.files(project.fileTree(mapOf("dir" to "src", "include" to "**/*.kt")))
+        outputs.dir("${project.buildDir}/reports/diktat/")
+
+        outputs.upToDateWhen { false }  // Allows to run the task again (otherwise skipped till sources are changed).
+        isIgnoreExitValue = true  // Allows to skip the non-zero exit code, can be useful when other tasks depends on linter
+
+        dependencies {
+            ktlint("com.pinterest:ktlint:${Versions.ktlint}") {
+                exclude("com.pinterest.ktlint", "ktlint-ruleset-standard")
+            }
+
+            ktlint("org.cqfn.diktat:diktat-rules:${Versions.diktat}")
+        }
     }
 
-    // diktat ruleset
-    ktlint("org.cqfn.diktat:diktat-rules:0.1.1")
-}
+    create<JavaExec>("diktatCheck") {
+        diktatConfig()
+        description = "Check Kotlin code style."
 
-val outputDir = "${project.buildDir}/reports/diktat/"
-val inputFiles = project.fileTree(mapOf("dir" to "src", "include" to "**/*.kt"))
+        args = listOf("src/*/kotlin/**/*.kt")    // specify proper path to sources that should be checked here
+    }
 
-val diktatCheck by tasks.creating(JavaExec::class) {
-    inputs.files(inputFiles)
-    outputs.dir(outputDir)
+    create<JavaExec>("diktatFormat") {
+        diktatConfig()
+        description = "Fix Kotlin code style deviations."
 
-    description = "Check Kotlin code style."
-    classpath = ktlint
-    main = "com.pinterest.ktlint.Main"
-
-    // specify proper path to sources that should be checked here
-    args = listOf("src/main/kotlin/**/*.kt")
-}
-
-val diktatFormat by tasks.creating(JavaExec::class) {
-    inputs.files(inputFiles)
-    outputs.dir(outputDir)
-
-    description = "Fix Kotlin code style deviations."
-    classpath = ktlint
-    main = "com.pinterest.ktlint.Main"
-
-    // specify proper path to sources that should be checked here
-    args = listOf("-F", "src/main/kotlin/**/*.kt")
+        args = listOf("src/main/kotlin/**/*.kt")  // specify proper path to sources that should be checked here
+    }
 }
 ```
 

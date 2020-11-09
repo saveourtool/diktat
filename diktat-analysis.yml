@@ -350,6 +350,10 @@
 - name: CLASS_SHOULD_NOT_BE_ABSTRACT
   enabled: true
   configuration: {}
+# Checks if there are any trivial getters or setters
+- name: TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED
+  enabled: true
+  configuration: {}
 # Checks explicit supertype qualification
 - name: USELESS_SUPERTYPE
   enabled: true
