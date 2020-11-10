@@ -116,6 +116,8 @@ class KdocWarnTest : LintTestBase(::KdocComments) {
 
                         private class InternalClass {
                         }
+                        
+                        public fun main() {}
                     }
                 """.trimIndent()
         lintMethod(code,
