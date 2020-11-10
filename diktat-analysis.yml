@@ -326,6 +326,10 @@
 - name: KDOC_NO_CONSTRUCTOR_PROPERTY
   enabled: true
   configuration: {}
+# Checks that KDoc in constructor has property tag but with comment inside constructor
+- name: KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT
+  enabled: true
+  configuration: {}
 # if a class has single constructor, it should be converted to a primary constructor
 - name: SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY
   enabled: true
@@ -344,6 +348,10 @@
   configuration: {}
 # Checks that there are abstract functions in abstract class
 - name: CLASS_SHOULD_NOT_BE_ABSTRACT
+  enabled: true
+  configuration: {}
+# Checks if there are any trivial getters or setters
+- name: TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED
   enabled: true
   configuration: {}
 # Checks if extension function with the same signature don't have related classes
