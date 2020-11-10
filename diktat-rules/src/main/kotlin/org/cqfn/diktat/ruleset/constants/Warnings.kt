@@ -126,7 +126,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     MULTIPLE_INIT_BLOCKS(true, "Avoid using multiple `init` blocks, this logic can be moved to constructors or properties declarations"),
     CLASS_SHOULD_NOT_BE_ABSTRACT(true, "class should not be abstract, because it has no abstract functions"),
     TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED(true, "trivial property accessors are not recommended"),
-    EXTENSION_FUNCTION_SAME_SIGNATURE(false, "extension functions should not have same signature if their classes are related"),
+    EXTENSION_FUNCTION_SAME_SIGNATURE(false, "extension functions should not have same signature if their receiver classes are related"),
     ;
 
     /**

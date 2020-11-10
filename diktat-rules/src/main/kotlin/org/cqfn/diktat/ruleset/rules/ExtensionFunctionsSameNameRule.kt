@@ -24,6 +24,8 @@ import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtNamedFunction
+import org.jetbrains.kotlin.psi.KtParameter
+import org.jetbrains.kotlin.psi.KtParameterList
 
 typealias RelatedClasses = List<Pair<String, String>>
 typealias SimilarSignatures = List<Pair<ExtensionFunctionsSameNameRule.ExtensionFunction, ExtensionFunctionsSameNameRule.ExtensionFunction>>
@@ -62,15 +64,13 @@ class ExtensionFunctionsSameNameRule(private val configRules: List<RulesConfig>)
                 .filter { it.hasChildOfType(SUPER_TYPE_LIST) }
 
         val pairs = mutableListOf<Pair<String, String>>()
-        classListWithInheritance.forEach {
-            val callEntries = it.findChildByType(SUPER_TYPE_LIST)!!.getAllChildrenWithType(SUPER_TYPE_CALL_ENTRY)
+        classListWithInheritance.forEach { classNode ->
+            val callEntries = classNode.findChildByType(SUPER_TYPE_LIST)!!.getAllChildrenWithType(SUPER_TYPE_CALL_ENTRY)
 
             callEntries.forEach { entry ->
-                if (entry.hasChildOfType(VALUE_ARGUMENT_LIST)) {
-                    val className = (it.psi as KtClass).name!!
-                    val entryName = entry.findLeafWithSpecificType(IDENTIFIER)!!
-                    pairs.add(Pair(className, entryName.text))
-                }
+                val className = (classNode.psi as KtClass).name!!
+                val entryName = entry.findLeafWithSpecificType(IDENTIFIER)!!
+                pairs.add(Pair(className, entryName.text))
             }
         }
         return pairs
@@ -82,20 +82,21 @@ class ExtensionFunctionsSameNameRule(private val configRules: List<RulesConfig>)
         val distinctFunctionSignatures = mutableMapOf<FunctionSignature, ASTNode>() // maps function signatures on node it is used by
         val extensionFunctionsPairs = mutableListOf<Pair<ExtensionFunction, ExtensionFunction>>() // pairs extension functions with same signature
 
-        extensionFunctionList.forEach {
-            val functionName = (it.psi as KtNamedFunction).name!!
-            val params = it.getFirstChildWithType(VALUE_PARAMETER_LIST)!!.text
-            val returnType = it.findChildAfter(COLON, TYPE_REFERENCE)?.text
-            val className = it.findChildBefore(DOT, TYPE_REFERENCE)!!.text
+        extensionFunctionList.forEach { func ->
+            val functionName = (func.psi as KtNamedFunction).name!!
+            // List<String> is used to show param names in warning
+            val params = (func.getFirstChildWithType(VALUE_PARAMETER_LIST)!!.psi as KtParameterList).parameters.map { it.name!! }
+            val returnType = func.findChildAfter(COLON, TYPE_REFERENCE)?.text
+            val className = func.findChildBefore(DOT, TYPE_REFERENCE)!!.text
             val signature = FunctionSignature(functionName, params, returnType)
 
             if (distinctFunctionSignatures.contains(signature)) {
                 val secondFuncClassName = distinctFunctionSignatures[signature]!!.findChildBefore(DOT, TYPE_REFERENCE)!!.text
                 extensionFunctionsPairs.add(Pair(
                         ExtensionFunction(secondFuncClassName, signature, distinctFunctionSignatures[signature]!!),
-                        ExtensionFunction(className, signature, it)))
+                        ExtensionFunction(className, signature, func)))
             } else {
-                distinctFunctionSignatures[signature] = it
+                distinctFunctionSignatures[signature] = func
             }
         }
 
@@ -115,19 +116,15 @@ class ExtensionFunctionsSameNameRule(private val configRules: List<RulesConfig>)
     }
 
     private fun RelatedClasses.hasRelatedClasses(pair: Pair<String, String>): Boolean {
-        forEach {
-            if (it.first == pair.first && it.second == pair.second
-                    || it.first == pair.second && it.second == pair.first)
-                return true
-        }
-        return false
+        return any { it.first == pair.first && it.second == pair.second
+                || it.first == pair.second && it.second == pair.first }
     }
 
     private fun raiseWarning(node: ASTNode, firstFunc: ExtensionFunction, secondFunc: ExtensionFunction) {
         EXTENSION_FUNCTION_SAME_SIGNATURE.warn(configRules, emitWarn, isFixMode, "$firstFunc and $secondFunc", node.startOffset, node)
     }
 
-    data class FunctionSignature(val name: String, val parameters: String, val returnType: String?) {
+    data class FunctionSignature(val name: String, val parameters: List<String>, val returnType: String?) {
         override fun toString(): String {
             return "$name$parameters${if(returnType != null) ": $returnType" else ""}"
         }

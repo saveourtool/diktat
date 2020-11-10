@@ -20,16 +20,40 @@ class ExtensionFunctionsSameNameWarnTest : LintTestBase(::ExtensionFunctionsSame
                 """
                 |open class A
                 |class B: A(), C
+                |class D: A()
                 |
                 |fun A.foo() = "A"
                 |fun B.foo() = "B"
+                |fun D.foo() = "D"
                 |
                 |fun printClassName(s: A) { print(s.foo()) }
                 |
                 |fun main() { printClassName(B()) }
             """.trimMargin(),
-                LintError(4, 1, ruleId, "${Warnings.EXTENSION_FUNCTION_SAME_SIGNATURE.warnText()} fun A.foo() and fun B.foo()"),
-                LintError(5, 1, ruleId, "${Warnings.EXTENSION_FUNCTION_SAME_SIGNATURE.warnText()} fun A.foo() and fun B.foo()")
+                LintError(5, 1, ruleId, "${Warnings.EXTENSION_FUNCTION_SAME_SIGNATURE.warnText()} fun A.foo[] and fun B.foo[]"),
+                LintError(5, 1, ruleId, "${Warnings.EXTENSION_FUNCTION_SAME_SIGNATURE.warnText()} fun A.foo[] and fun D.foo[]"),
+                LintError(6, 1, ruleId, "${Warnings.EXTENSION_FUNCTION_SAME_SIGNATURE.warnText()} fun A.foo[] and fun B.foo[]"),
+                LintError(7, 1, ruleId, "${Warnings.EXTENSION_FUNCTION_SAME_SIGNATURE.warnText()} fun A.foo[] and fun D.foo[]"),
+        )
+    }
+
+    @Test
+    @Tag(EXTENSION_FUNCTION_SAME_SIGNATURE)
+    fun `should trigger on functions with same signatures 2`() {
+        lintMethod(
+                """
+                |open class A
+                |class B: A(), C
+                |
+                |fun A.foo(some: Int) = "A"
+                |fun B.foo(some: Int) = "B"
+                |
+                |fun printClassName(s: A) { print(s.foo()) }
+                |
+                |fun main() { printClassName(B()) }
+            """.trimMargin(),
+                LintError(4, 1, ruleId, "${Warnings.EXTENSION_FUNCTION_SAME_SIGNATURE.warnText()} fun A.foo[some] and fun B.foo[some]"),
+                LintError(5, 1, ruleId, "${Warnings.EXTENSION_FUNCTION_SAME_SIGNATURE.warnText()} fun A.foo[some] and fun B.foo[some]")
         )
     }
 
@@ -43,6 +67,24 @@ class ExtensionFunctionsSameNameWarnTest : LintTestBase(::ExtensionFunctionsSame
                 |
                 |fun A.foo(): Boolean = return true
                 |fun B.foo() = "B"
+                |
+                |fun printClassName(s: A) { print(s.foo()) }
+                |
+                |fun main() { printClassName(B()) }
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(EXTENSION_FUNCTION_SAME_SIGNATURE)
+    fun `should not trigger on functions with different signatures 2`() {
+        lintMethod(
+                """
+                |open class A
+                |class B: A(), C
+                |
+                |fun A.foo() = return true
+                |fun B.foo(some: Int) = "B"
                 |
                 |fun printClassName(s: A) { print(s.foo()) }
                 |
