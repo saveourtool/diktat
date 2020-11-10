@@ -458,4 +458,22 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting){
 
         lintMethod(code)
     }
+
+    @Test
+    @Tag(WarningNames.COMMENT_WHITE_SPACE)
+    fun `check comment on file level` () {
+        val code =
+                """
+                    | /*
+                    |  * heh
+                    |  */
+                    |package org.cqfn.diktat.ruleset.chapter3
+                    |
+                    |class Example {                   
+                    |}
+                """.trimMargin()
+
+        lintMethod(code,
+                LintError(1,2,ruleId, "${Warnings.COMMENT_WHITE_SPACE.warnText()} There should be 0 space(s) before comment text, but are none in /*...", true))
+    }
 }

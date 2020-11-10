@@ -8,14 +8,6 @@ import org.cqfn.diktat.ruleset.constants.Warnings.COMMENT_WHITE_SPACE
 import org.cqfn.diktat.ruleset.constants.Warnings.FIRST_COMMENT_NO_SPACES
 import org.cqfn.diktat.ruleset.constants.Warnings.IF_ELSE_COMMENTS
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_NEWLINES_AROUND_KDOC
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
-import org.cqfn.diktat.ruleset.utils.findChildrenMatching
-import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
-import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
-import org.cqfn.diktat.ruleset.utils.hasChildOfType
-import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
-import org.cqfn.diktat.ruleset.utils.numNewLines
-import org.cqfn.diktat.ruleset.utils.prevNodeUntilNode
 
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
@@ -40,6 +32,7 @@ import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isWhiteSpace
 import com.pinterest.ktlint.core.ast.prevSibling
+import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -113,7 +106,7 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
     }
 
     private fun handleEolAndBlockComments(node: ASTNode, configuration: CommentsFormattingConfiguration) {
-        if (node.treeParent.elementType != FILE)  basicCommentsChecks(node, configuration)
+        basicCommentsChecks(node, configuration)
         checkWhiteSpaceBeginInComment(node, configuration)
     }
 
@@ -207,19 +200,26 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
     }
 
     private fun checkSpaceBeforeComment(node: ASTNode, configuration: CommentsFormattingConfiguration) {
-        if (node.treeParent.firstChildNode != node) {
-            if (!node.treePrev.isWhiteSpace()) {
-                // if comment is like this: val a = 5// Comment
+        if (node.treeParent.firstChildNode == node)
+            return
+        if (node.treeParent.elementType == FILE) {
+            if (node.treePrev.isWhiteSpace()) {
                 COMMENT_WHITE_SPACE.warnAndFix(configRules, emitWarn, isFixMode,
-                        "There should be ${configuration.maxSpacesBeforeComment} space(s) before comment text, but are none in ${node.text}", node.startOffset, node) {
-                    node.treeParent.addChild(PsiWhiteSpaceImpl(" ".repeat(configuration.maxSpacesBeforeComment)), node)
+                        "There should be 0 space(s) before comment text, but are none in ${node.text}", node.startOffset, node) {
+                    node.treeParent.removeChild(node.treePrev)
                 }
-            } else if (!node.treePrev.textContains('\n') && node.treePrev.text.length != configuration.maxSpacesBeforeComment) {
-                // if there are too many spaces before comment
-                COMMENT_WHITE_SPACE.warnAndFix(configRules, emitWarn, isFixMode,
-                        "There should be ${configuration.maxSpacesBeforeComment} space(s) before comment text, but there are too many in ${node.text}", node.startOffset, node) {
-                    (node.treePrev as LeafPsiElement).replaceWithText(" ".repeat(configuration.maxSpacesBeforeComment))
-                }
+            }
+        } else if (!node.treePrev.isWhiteSpace()) {
+            // if comment is like this: val a = 5// Comment
+            COMMENT_WHITE_SPACE.warnAndFix(configRules, emitWarn, isFixMode,
+                    "There should be ${configuration.maxSpacesBeforeComment} space(s) before comment text, but are none in ${node.text}", node.startOffset, node) {
+                node.treeParent.addChild(PsiWhiteSpaceImpl(" ".repeat(configuration.maxSpacesBeforeComment)), node)
+            }
+        } else if (!node.treePrev.textContains('\n') && node.treePrev.text.length != configuration.maxSpacesBeforeComment) {
+            // if there are too many spaces before comment
+            COMMENT_WHITE_SPACE.warnAndFix(configRules, emitWarn, isFixMode,
+                    "There should be ${configuration.maxSpacesBeforeComment} space(s) before comment text, but there are too many in ${node.text}", node.startOffset, node) {
+                (node.treePrev as LeafPsiElement).replaceWithText(" ".repeat(configuration.maxSpacesBeforeComment))
             }
         }
     }
