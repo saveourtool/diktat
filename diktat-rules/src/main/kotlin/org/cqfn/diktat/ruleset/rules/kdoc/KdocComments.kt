@@ -278,9 +278,16 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
         val modifier = node.getFirstChildWithType(MODIFIER_LIST)
         val name = node.getIdentifierName()
 
-        if (modifier.isAccessibleOutside() && kdoc == null) {
+        if (modifier.isAccessibleOutside() && kdoc == null && !isTopLevelFunctionStandard(node)) {
             warning.warn(configRules, emitWarn, isFixMode, name!!.text, node.startOffset, node)
         }
+    }
+
+    private fun isTopLevelFunctionStandard(node: ASTNode) : Boolean {
+        if (node.elementType == FUN) {
+            return node.isStandardMethod()
+        }
+        return false
     }
     companion object {
         private val statementsToDocument = TokenSet.create(CLASS, FUN, PROPERTY)
