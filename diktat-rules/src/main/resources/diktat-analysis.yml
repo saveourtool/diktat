@@ -355,3 +355,7 @@
 - name: TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED
   enabled: true
   configuration: {}
+# Checks if there is class/object that can be replace with extension function
+- name: AVOID_USING_UTILITY_CLASS
+  enabled: true
+  configuration: {}
