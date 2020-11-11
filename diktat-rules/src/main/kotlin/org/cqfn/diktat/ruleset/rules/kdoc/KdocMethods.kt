@@ -34,6 +34,8 @@ import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.CALLABLE_REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.COLLECTION_LITERAL_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.COLON
+import com.pinterest.ktlint.core.ast.ElementType.DOT
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_SECTION
@@ -46,6 +48,9 @@ import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.THROW
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.WHEN_CONDITION_WITH_EXPRESSION
+import org.cqfn.diktat.ruleset.utils.findChildAfter
+import org.cqfn.diktat.ruleset.utils.findChildBefore
+import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -147,7 +152,7 @@ class KdocMethods(private val configRules: List<RulesConfig>) : Rule("kdoc-metho
             return false
         }
 
-        val explicitReturnType = node.getFirstChildWithType(TYPE_REFERENCE)
+        val explicitReturnType = node.findChildAfter(COLON, TYPE_REFERENCE)
         val hasExplicitNotUnitReturnType = explicitReturnType != null && explicitReturnType.text != "Unit"
         val hasExplicitUnitReturnType = explicitReturnType != null && explicitReturnType.text == "Unit"
         val isFunWithExpressionBody = expressionBodyTypes.any { node.hasChildOfType(it) }
