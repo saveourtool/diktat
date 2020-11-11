@@ -77,7 +77,7 @@ class TrivialPropertyAccessorsWarnTest : LintTestBase(::TrivialPropertyAccessors
 
     @Test
     @Tag(TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED)
-    fun `should not trigger on getter without braces`() {
+    fun `should trigger on getter without braces`() {
         lintMethod(
                 """
                     |class Test {
