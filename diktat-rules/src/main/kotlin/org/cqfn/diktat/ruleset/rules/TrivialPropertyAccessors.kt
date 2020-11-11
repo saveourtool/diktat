@@ -32,6 +32,7 @@ class TrivialPropertyAccessors(private val configRules: List<RulesConfig>) : Rul
 
     companion object {
         private val EXCESS_CHILDREN_TYPES = listOf(LBRACE, RBRACE, WHITE_SPACE, EOL_COMMENT, BLOCK_COMMENT)
+        private const val ONE_CHILD_IN_ARRAY = 1
     }
 
     override fun visit(node: ASTNode,
@@ -81,6 +82,8 @@ class TrivialPropertyAccessors(private val configRules: List<RulesConfig>) : Rul
         // It handles both cases: get() = ...  and  get() { return ... }
         val references = node.findAllNodesWithSpecificType(REFERENCE_EXPRESSION)
         if (references.singleOrNull()?.text == "field") {
+            raiseWarning(node)
+        } else if (node.getChildren(null).size == ONE_CHILD_IN_ARRAY) {
             raiseWarning(node)
         }
     }

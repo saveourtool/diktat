@@ -11,4 +11,6 @@ class Some {
 
     var testName: String? = null
         private set
+
+    val x = 0
 }

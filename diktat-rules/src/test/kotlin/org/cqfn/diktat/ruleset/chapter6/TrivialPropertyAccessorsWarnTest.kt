@@ -74,4 +74,18 @@ class TrivialPropertyAccessorsWarnTest : LintTestBase(::TrivialPropertyAccessors
                 """.trimMargin()
         )
     }
+
+    @Test
+    @Tag(TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED)
+    fun `should not trigger on getter without braces`() {
+        lintMethod(
+                """
+                    |class Test {
+                    |   val testName = 0
+                    |       get
+                    |}
+                """.trimMargin(),
+                LintError(3, 8, ruleId, "${Warnings.TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED.warnText()} get", true)
+        )
+    }
 }
