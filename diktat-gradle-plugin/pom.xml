@@ -17,9 +17,10 @@
     </modules>
 
     <properties>
-        <gradle.executable>${project.basedir}/gradlew.bat</gradle.executable>
+        <gradle.executable>${project.basedir}/gradlew</gradle.executable>
         <gradle.task>build</gradle.task>
         <gradle.builddir>build</gradle.builddir>
+        <skip.gradle.build>false</skip.gradle.build>
     </properties>
 
     <dependencies>
@@ -75,6 +76,7 @@
                                 <argument>-Pdescription=${project.description}</argument>
                                 <argument>-S</argument>
                             </arguments>
+                            <skip>${skip.gradle.build}</skip>
                         </configuration>
                         <goals>
                             <goal>exec</goal>
@@ -109,6 +111,7 @@
 <!--                                    <classifier>sources</classifier>-->
 <!--                                </artifact>-->
                             </artifacts>
+                            <skipAttach>${skip.gradle.build}</skipAttach>
                         </configuration>
                     </execution>
                 </executions>
@@ -136,4 +139,18 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>local-win-build</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                </os>
+            </activation>
+            <properties>
+                <skip.gradle.build>true</skip.gradle.build>
+            </properties>
+        </profile>
+    </profiles>
 </project>
