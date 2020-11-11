@@ -283,12 +283,8 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
         }
     }
 
-    private fun isTopLevelFunctionStandard(node: ASTNode) : Boolean {
-        if (node.elementType == FUN) {
-            return node.isStandardMethod()
-        }
-        return false
-    }
+    private fun isTopLevelFunctionStandard(node: ASTNode) : Boolean = node.elementType == FUN && node.isStandardMethod()
+
     companion object {
         private val statementsToDocument = TokenSet.create(CLASS, FUN, PROPERTY)
     }
