@@ -8,4 +8,7 @@ class Some {
     var propNotChange: Int = 7
         get() { return someCoolLogic(field) }
         set(value) { anotherCoolLogic(value) }
+
+    var testName: String? = null
+        private set
 }

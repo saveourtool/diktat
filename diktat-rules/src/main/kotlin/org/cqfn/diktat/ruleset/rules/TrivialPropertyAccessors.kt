@@ -56,12 +56,12 @@ class TrivialPropertyAccessors(private val configRules: List<RulesConfig>) : Rul
     @Suppress("UnsafeCallOnNullableType")
     private fun handleSetAccessor(node: ASTNode) {
         val valueParamName = node
-                .getFirstChildWithType(VALUE_PARAMETER_LIST)!!
-                .firstChildNode
-                .getIdentifierName()!!
-                .text
+                .getFirstChildWithType(VALUE_PARAMETER_LIST)
+                ?.firstChildNode
+                ?.getIdentifierName()
+                ?.text
 
-        if (node.hasChildOfType(BLOCK)) {
+        if (node.hasChildOfType(BLOCK) && !valueParamName.isNullOrEmpty()) {
             val block = node.getFirstChildWithType(BLOCK)!!
 
             val blockChildren = block.getChildren(null).filter { it.elementType !in EXCESS_CHILDREN_TYPES }
