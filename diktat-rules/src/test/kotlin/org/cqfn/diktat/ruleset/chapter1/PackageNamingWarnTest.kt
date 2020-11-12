@@ -211,4 +211,17 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
             )
         }
     }
+
+    @Test
+    @Tag(WarningNames.PACKAGE_NAME_INCORRECT_PATH)
+    fun `should respect KMP project structure - illegal source set name`() {
+        lintMethod(
+            """
+                |package org.cqfn.diktat
+            """.trimMargin(),
+            LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} org.cqfn.diktat.myProjectMain.kotlin.org.cqfn.diktat.example", true),
+            fileName = "/home/testu/project/src/myProjectMain/kotlin/org/cqfn/diktat/example/Example.kt",
+            rulesConfigList = rulesConfigList
+        )
+    }
 }

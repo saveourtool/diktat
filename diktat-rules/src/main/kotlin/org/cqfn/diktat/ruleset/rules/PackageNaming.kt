@@ -98,12 +98,10 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
         } else {
             // creating a real package name:
             // 1) getting a path after the base project directory (after "src" directory)
-            // 2) removing src/main/kotlin/java/e.t.c dirs (additional check for multiplatform project layout) and removing file name
+            // 2) removing src/main/kotlin/java/e.t.c dirs and removing file name
             // 3) adding company's domain name at the beginning
             val fileSubDir = filePathParts.subList(filePathParts.lastIndexOf(PACKAGE_PATH_ANCHOR), filePathParts.size - 1)
-                    .dropWhile {
-                        LANGUAGE_DIR_NAMES.contains(it) || it.endsWith("Main") || it.endsWith("Test")
-                    }
+                    .dropWhile { LANGUAGE_DIR_NAMES.contains(it) }
             // no need to add DOMAIN_NAME to the package name if it is already in path
             val domainPrefix = if (!fileSubDir.joinToString(PACKAGE_SEPARATOR).startsWith(domainName)) domainName.split(PACKAGE_SEPARATOR) else listOf()
             domainPrefix + fileSubDir
@@ -239,10 +237,17 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
         const val PACKAGE_PATH_ANCHOR = "src"
 
         /**
-         * Directories that are supposed to be first in sources file paths, relative to [PACKAGE_PATH_ANCHOR].
-         * This is a fixed set of directories, which should be later enhanced with patterns `*Main` and `*Test` for kotlin multiplatform project structure support.
+         * Targets described in [KMM documentation](https://kotlinlang.org/docs/reference/mpp-supported-platforms.html)
          */
-        val LANGUAGE_DIR_NAMES = listOf("src", "main", "test", "java", "kotlin")
+        private val kmmTargets = listOf("common", "jvm", "js", "android", "ios", "androidNativeArm32", "androidNativeArm64", "iosArm32", "iosArm64", "iosX64",
+            "watchosArm32", "watchosArm64", "watchosX86", "tvosArm64", "tvosX64", "macosX64", "linuxArm64", "linuxArm32Hfp", "linuxMips32", "linuxMipsel32", "linuxX64",
+            "mingwX64", "mingwX86", "wasm32")
+
+        /**
+         * Directories that are supposed to be first in sources file paths, relative to [PACKAGE_PATH_ANCHOR].
+         * For kotlin multiplatform projects directories for targets from [kmmTargets] are supported.
+         */
+        val LANGUAGE_DIR_NAMES = listOf("src", "main", "test", "java", "kotlin") + kmmTargets.flatMap { listOf("${it}Main", "${it}Test") }
 
         private val log = LoggerFactory.getLogger(PackageNaming::class.java)
     }
