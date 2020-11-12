@@ -5,9 +5,8 @@ import groovy.lang.Closure
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ExternalModuleDependency
-import org.gradle.api.tasks.JavaExec
 
-@Suppress("unused")
+@Suppress("unused", "MagicNumber")
 class DiktatGradlePlugin : Plugin<Project> {
     override fun apply(project: Project) {
         val diktatExtension = project.extensions.create(DIKTAT_EXTENSION, DiktatExtension::class.java)
@@ -33,19 +32,15 @@ class DiktatGradlePlugin : Plugin<Project> {
                 configuration.dependencies.add(project.dependencies.create("org.cqfn.diktat:diktat-rules:0.1.4-SNAPSHOT"))
             }
 
-            project.tasks.register(DIKTAT_CHECK_TASK, JavaExec::class.java) { javaExec ->
-                javaExec.group = "verification"
-                javaExec.classpath = diktatConfiguration
-                project.logger.debug("Setting diktatCheck classpath to ${diktatConfiguration.dependencies.toSet()}")
-                javaExec.mainClass.set("com.pinterest.ktlint.Main")
-                javaExec.setArgsString(diktatExtension.inputs.files.joinToString { it.path })
-            }
+            project.registerDiktatCheckTask(diktatExtension, diktatConfiguration)
+            project.registerDiktatFixTask(diktatExtension, diktatConfiguration)
         }
     }
 
     companion object {
         const val DIKTAT_EXTENSION = "diktat"
         const val DIKTAT_CHECK_TASK = "diktatCheck"
+        const val DIKTAT_FIX_TASK = "diktatFix"
         const val DIKTAT_CONFIGURATION = "diktat"
     }
 }

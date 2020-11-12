@@ -53,9 +53,45 @@ The full list of available supported rules and inspections can be found [here](i
 To **autofix** all code style violations use `-F` option.
 
 ## Run with Maven
+### Use the diktat-maven-plugin
+This plugin is available since version 0.1.3. You can see how it is configured in our project for self-checks: [pom.xml](pom.xml).
+If you use it and encounter any problems, feel free to open issues on [github](https://github.com/cqfn/diktat/issues).
+
+Add this plugin to your pom.xml:
+<details>
+  <summary><b>Maven plugin snippet</b></summary><br>
+
+```xml
+            <plugin>
+                <groupId>org.cqfn.diktat</groupId>
+                <artifactId>diktat-maven-plugin</artifactId>
+                <version>${diktat.version}</version>
+                <executions>
+                    <execution>
+                        <id>diktat</id>
+                        <phase>none</phase>
+                        <goals>
+                            <goal>check</goal>
+                            <goal>fix</goal>
+                        </goals>
+                        <configuration>
+                            <inputs>
+                                <input>${project.basedir}/src/main/kotlin</input>
+                                <input>${project.basedir}/src/test/kotlin</input>
+                            </inputs>
+                            <diktatConfigFile>diktat-analysis.yml</diktatConfigFile>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+```
+
+</details>
+
+To run diktat check use command `$ mvn diktat:check@diktat`.
+To run diktat in autocorrect mode use command `$ mvn diktat:fix@diktat`.
 
 ### Use maven-antrun-plugin
-
 Add this plugin to your pom.xml:
 <details>
   <summary><b>Maven plugin snippet</b></summary><br>
@@ -102,7 +138,7 @@ Add this plugin to your pom.xml:
               <dependency>
                   <groupId>org.cqfn.diktat</groupId>
                   <artifactId>diktat-rules</artifactId>
-                  <version>0.1.1</version> <!-- replace it with diktat latest version -->
+                  <version>0.1.3</version> <!-- replace it with diktat latest version -->
                   <exclusions>
                       <exclusion>
                           <groupId>org.slf4j</groupId>
@@ -124,49 +160,41 @@ the snippet above with `<arg value="-F"/>`.
 
 To run diktat to check/fix code style - run `$ mvn antrun:run@diktat`.
 
-### Use the new diktat-maven-plugin
-
-You can see how it is configured in our project for self-checks: [pom.xml](pom.xml).
-This plugin should be available since version 0.1.3. It requires less configuration but may contain bugs.
-If you use it and encounter any problems, feel free to open issues on [github](https://github.com/cqfn/diktat/issues).
-
-Add this plugin to your pom.xml:
-<details>
-  <summary><b>Maven plugin snippet</b></summary><br>
-  
-```xml
-            <plugin>
-                <groupId>org.cqfn.diktat</groupId>
-                <artifactId>diktat-maven-plugin</artifactId>
-                <version>${diktat.version}</version>
-                <executions>
-                    <execution>
-                        <id>diktat</id>
-                        <phase>none</phase>
-                        <goals>
-                            <goal>check</goal>
-                            <goal>fix</goal>
-                        </goals>
-                        <configuration>
-                            <inputs>
-                                <input>${project.basedir}/src/main/kotlin</input>
-                                <input>${project.basedir}/src/test/kotlin</input>
-                            </inputs>
-                            <diktatConfigFile>diktat-analysis.yml</diktatConfigFile>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+## Run with Gradle
+### Use diktat-gradle-plugin
+You can see how it is configured in our project for self-checks: [build.gradle.kts](build.gradle.kts).
+Add this plugin to your `build.gradle.kts`:
+```kotlin
+plugins {
+    id("org.cqfn.diktat.diktat-gradle-plugin") version "0.1.4"
+}
 ```
 
-</details>
+Or use buildscript syntax:
+```kotlin
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.cqfn.diktat:diktat-gradle-plugin:0.1.4")
+    }
+}
 
-To run diktat check use command `$ mvn diktat:check@diktat`.
-To run diktat in autocorrect mode use command `$ mvn diktat:fix@diktat`.
+apply(plugin = "org.cqfn.diktat.diktat-gradle-plugin")
+```
 
-## Run with Gradle Plugin 
+You can then configure diktat using `diktat` extension:
+```kotlin
+diktat {
+    inputs = files("src/**/*.kt")
+}
+```
 
-You can see how it is configured in our project for self-checks: [build.gradle.kts](build.gradle.kts).
+You can run diktat checks using task `diktatCheck` and automatically fix errors with tasks `diktatFix`.
+
+### Use gradle task
+You can create a `JavaExec` taks which runs ktlint with diktat ruleset.
 Add the code below to your `build.gradle.kts`:
 <details>
   <summary><b>Gradle plugin snippet</b></summary><br>
@@ -181,7 +209,7 @@ dependencies {
     }
 
     // diktat ruleset
-    ktlint("org.cqfn.diktat:diktat-rules:0.1.1")
+    ktlint("org.cqfn.diktat:diktat-rules:0.1.3")
 }
 
 val outputDir = "${project.buildDir}/reports/diktat/"
