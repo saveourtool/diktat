@@ -246,7 +246,7 @@ class A {
 ```
 
 From the callee code these methods look like an access to this property: `A().isEmpty = true` for setter and `A().isEmpty` for getter.
-But in all cases it is very confusing when `get` and `set` are overriden for a developer who uses this particular class. 
+But in all cases it is very confusing when `get` and `set` are overridden for a developer who uses this particular class. 
 Developer expects to get the value of the property, but receives some unknown value and some extra side effect hidden by the custom getter/setter. 
 Use extra functions for it instead.
 
