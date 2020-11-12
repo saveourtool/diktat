@@ -565,7 +565,7 @@ enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean
 }
 ```
 
-**Valid example:**：
+**Valid example:**
  ```kotlin
  private val nr: Int // no alignment, but looks fine
  private var color: Color // no alignment

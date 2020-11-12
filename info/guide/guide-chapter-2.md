@@ -72,7 +72,6 @@ fun isEmptyList(list: List<String>) = list.size == 0
      * @return battle between fox and dog 
      */
     protected abstract fun foo(Fox fox)
-                      /* 注释上面加1个空行 */ 
      /**
       * These possibilities include: Formatting of header comments
       *     / * Add a blank line between the comment text and each KDoc tag underneath * /

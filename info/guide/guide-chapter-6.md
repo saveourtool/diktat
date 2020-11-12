@@ -1,4 +1,4 @@
-# <a name="c6"></a> 6. Classes, interfaces and functions
+# <a name="c6"></a> 6. Classes, interfaces and extension functions
 <!-- =============================================================================== -->
 ### <a name="c6.1"></a> 6.1 Classes
 ### <a name="r6.1.1"></a> Rule 6.1.1: Primary constructor should be defined implicitly in the declaration of the class.
@@ -251,7 +251,7 @@ But in all cases it is very confusing when `get` and `set` are overriden for a d
 Developer expects to get the value of the property, but receives some unknown value and some extra side effect hidden by the custom getter/setter. 
 Use extra functions for it instead.
 
-**Valid example**:
+**Invalid example:**
 ```kotlin 
 // Bad example ======
 class A {
