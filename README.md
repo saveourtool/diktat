@@ -22,12 +22,29 @@ DiKTat is a strict [coding standard ](info/guide/diktat-coding-convention.md) fo
 as AST visitors on the top of [KTlint](https://ktlint.github.io/). It can be used for detecting and autofixing code smells in CI/CD process. 
 The full list of available supported rules and inspections can be found [here](info/available-rules.md).
 
+Now diKTat was already added to the lists of [static analysis tools](https://github.com/analysis-tools-dev/static-analysis) and to [kotlin-awesome](https://github.com/KotlinBy/awesome-kotlin). Thanks to the community for this support! 
 
-| See first | !!! |
-| ----------------- | ------------------------ |
-|[diKTat codestyle](info/guide/diktat-coding-convention.md)|[supported rules](info/available-rules.md)|                                                      |
-|[examples of usage](https://github.com/akuleshov7/diktat-examples)|[online demo](https://ktlint-demo.herokuapp.com)|
+## See first
 
+|  |  |  |  |
+| --- | --- | --- | --- |
+|[DiKTat codestyle](info/guide/diktat-coding-convention.md)|[Supported Rules](info/available-rules.md) | [Examples of Usage](https://github.com/akuleshov7/diktat-examples) | [Online Demo](https://ktlint-demo.herokuapp.com) |
+
+## Why should I use diktat in my CI/CD?
+
+There are several tools like `detekt` and `ktlint` that are doing static analysis. Why do I need diktat?
+
+First of all - actually you can combine diktat with any other static analyzers. And diKTat is even using ktlint framework for parsing the code into the AST.
+And we are trying to contribute to those projects. 
+Main features of diktat are the following:
+
+1) **More inspections.** It has 100+ inspections that are tightly coupled with it's codestyle.
+
+2) **Unique inspections** that are missing in other linters.
+
+3) **Highly configurable**. Each and every inspection can be configured and suppressed both from the code or from the configuration file.
+
+4) **Strict detailed coding convention** that you can use in your project.
 
 ## Run as CLI-application
 1. Install KTlint manually: [here](https://github.com/pinterest/ktlint/releases)
@@ -197,46 +214,49 @@ You can run diktat checks using task `diktatCheck` and automatically fix errors 
 You can create a `JavaExec` taks which runs ktlint with diktat ruleset.
 Add the code below to your `build.gradle.kts`:
 <details>
-  <summary><b>Gradle plugin snippet</b></summary><br>
+  <summary><b>Gradle snippet</b></summary><br>
   
 ```kotlin
-val ktlint by configurations.creating
+object Versions {
+    const val ktlint = "0.39.0"
+    const val diktat = "0.1.3"
+}
 
-dependencies {
-    ktlint("com.pinterest:ktlint:0.39.0") {
-        // need to exclude standard ruleset to use only diktat rules
-        exclude("com.pinterest.ktlint", "ktlint-ruleset-standard")
+tasks {
+    val ktlint: Configuration by configurations.creating
+    val diktatConfig: JavaExec.() -> Unit = {
+        group = "diktat"
+        classpath = ktlint
+        main = "com.pinterest.ktlint.Main"
+
+        inputs.files(project.fileTree(mapOf("dir" to "src", "include" to "**/*.kt")))
+        outputs.dir("${project.buildDir}/reports/diktat/")
+
+        outputs.upToDateWhen { false }  // Allows to run the task again (otherwise skipped till sources are changed).
+        isIgnoreExitValue = true  // Allows to skip the non-zero exit code, can be useful when other tasks depends on linter
+
+        dependencies {
+            ktlint("com.pinterest:ktlint:${Versions.ktlint}") {
+                exclude("com.pinterest.ktlint", "ktlint-ruleset-standard")
+            }
+
+            ktlint("org.cqfn.diktat:diktat-rules:${Versions.diktat}")
+        }
     }
 
-    // diktat ruleset
-    ktlint("org.cqfn.diktat:diktat-rules:0.1.3")
-}
+    create<JavaExec>("diktatCheck") {
+        diktatConfig()
+        description = "Check Kotlin code style."
 
-val outputDir = "${project.buildDir}/reports/diktat/"
-val inputFiles = project.fileTree(mapOf("dir" to "src", "include" to "**/*.kt"))
+        args = listOf("src/*/kotlin/**/*.kt")    // specify proper path to sources that should be checked here
+    }
 
-val diktatCheck by tasks.creating(JavaExec::class) {
-    inputs.files(inputFiles)
-    outputs.dir(outputDir)
+    create<JavaExec>("diktatFormat") {
+        diktatConfig()
+        description = "Fix Kotlin code style deviations."
 
-    description = "Check Kotlin code style."
-    classpath = ktlint
-    main = "com.pinterest.ktlint.Main"
-
-    // specify proper path to sources that should be checked here
-    args = listOf("src/main/kotlin/**/*.kt")
-}
-
-val diktatFormat by tasks.creating(JavaExec::class) {
-    inputs.files(inputFiles)
-    outputs.dir(outputDir)
-
-    description = "Fix Kotlin code style deviations."
-    classpath = ktlint
-    main = "com.pinterest.ktlint.Main"
-
-    // specify proper path to sources that should be checked here
-    args = listOf("-F", "src/main/kotlin/**/*.kt")
+        args = listOf("-F", "src/main/kotlin/**/*.kt")  // specify proper path to sources that should be checked here
+    }
 }
 ```
 
