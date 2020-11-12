@@ -182,4 +182,33 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
                 )
         )
     }
+
+    @Test
+    @Tag(WarningNames.PACKAGE_NAME_INCORRECT_PATH)
+    fun `should respect KMP project structure - positive example`() {
+        listOf("main", "test", "jvmMain", "jvmTest", "androidMain", "androidTest", "iosMain", "iosTest", "jsMain", "jsTest", "commonMain", "commonTest").forEach {
+            lintMethod(
+                """
+                    |package org.cqfn.diktat
+                """.trimMargin(),
+                fileName = "/home/testu/project/src/$it/kotlin/org/cqfn/diktat/Example.kt",
+                rulesConfigList = rulesConfigList
+            )
+        }
+    }
+
+    @Test
+    @Tag(WarningNames.PACKAGE_NAME_INCORRECT_PATH)
+    fun `should respect KMP project structure`() {
+        listOf("main", "test", "jvmMain", "jvmTest", "androidMain", "androidTest", "iosMain", "iosTest", "jsMain", "jsTest", "commonMain", "commonTest").forEach {
+            lintMethod(
+                """
+                    |package org.cqfn.diktat
+                """.trimMargin(),
+                LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} org.cqfn.diktat.example", true),
+                fileName = "/home/testu/project/src/$it/kotlin/org/cqfn/diktat/example/Example.kt",
+                rulesConfigList = rulesConfigList
+            )
+        }
+    }
 }
