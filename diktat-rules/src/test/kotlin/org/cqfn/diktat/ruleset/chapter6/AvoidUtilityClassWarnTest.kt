@@ -44,4 +44,37 @@ class AvoidUtilityClassWarnTest: LintTestBase(::AvoidUtilityClass) {
                 LintError(11,1, ruleId, "${AVOID_USING_UTILITY_CLASS.warnText()} StringUtils")
         )
     }
+
+    @Test
+    @Tag(WarningNames.AVOID_USING_UTILITY_CLASS)
+    fun `test with comment anf companion`() {
+        lintMethod(
+                """
+                    |
+                    |class StringUtils {
+                    |   companion object  {
+                    |       private val name = "Hello"
+                    |   }
+                    |   /**
+                    |    * @param tex
+                    |    */
+                    |   fun goo(tex: String): Int {
+                    |       //hehe
+                    |       return myString.count{ "something".contains(it) }
+                    |   }
+                    |}
+                    |
+                    |class StringUtil {
+                    |   /*
+                    |
+                    |    */
+                    |   val z = "hello"
+                    |   fun goo(tex: String): Int {
+                    |       return myString.count{ "something".contains(it) }
+                    |   }
+                    |}
+                """.trimMargin(),
+                LintError(2,1, ruleId, "${AVOID_USING_UTILITY_CLASS.warnText()} StringUtils")
+        )
+    }
 }

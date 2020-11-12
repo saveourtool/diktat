@@ -1,10 +1,13 @@
 package org.cqfn.diktat.ruleset.rules
 
 import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
+import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
+import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.OBJECT_DECLARATION
 import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
@@ -23,16 +26,16 @@ import org.jetbrains.kotlin.psi.psiUtil.children
 class AvoidUtilityClass(private val configRules: List<RulesConfig>) : Rule("avoid-utility-class") {
 
     companion object {
-        private val UTILITY_CLASS_CHILDREN = listOf(LBRACE, WHITE_SPACE, FUN, RBRACE)
+        private val UTILITY_CLASS_CHILDREN = listOf(LBRACE, WHITE_SPACE, FUN, RBRACE, KDOC,
+                EOL_COMMENT, BLOCK_COMMENT, OBJECT_DECLARATION)
     }
 
     private var isFixMode: Boolean = false
     private lateinit var emitWarn: EmitType
 
-    override fun visit(node: ASTNode, autoCorrect: Boolean, emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
+    override fun visit(node: ASTNode, autoCorrect: Boolean, emit: EmitType) {
         emitWarn = emit
         isFixMode = autoCorrect
-
         if (node.elementType == OBJECT_DECLARATION || node.elementType == CLASS ) {
             checkClass(node)
         }
@@ -40,7 +43,7 @@ class AvoidUtilityClass(private val configRules: List<RulesConfig>) : Rule("avoi
 
     private fun checkClass(node: ASTNode) {
         if (node.hasChildOfType(PRIMARY_CONSTRUCTOR)
-                || !node.findChildByType(IDENTIFIER)!!.text.toLowerCase().contains("util")) return
+                || node.findChildByType(IDENTIFIER)?.text?.toLowerCase()?.contains("util") == false) return
         node.findChildByType(CLASS_BODY)
                 ?.children()
                 ?.toList()
