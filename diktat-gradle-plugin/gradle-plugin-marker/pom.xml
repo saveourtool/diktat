@@ -12,19 +12,4 @@
             <version>${project.version}</version>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>com.github.ozsie</groupId>
-                <artifactId>detekt-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>detekt</id>
-                        <phase>none</phase>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 </project>

@@ -12,9 +12,6 @@
     <artifactId>diktat-gradle-plugin</artifactId>
     <!-- not to generate default artifact jar and be able to also deploy plugin marker's pom as a module -->
     <packaging>pom</packaging>
-    <modules>
-        <module>gradle-plugin-marker</module>
-    </modules>
 
     <properties>
         <gradle.executable>${project.basedir}/gradlew</gradle.executable>
@@ -159,6 +156,20 @@
     </build>
 
     <profiles>
+        <profile>
+            <!-- Do not include plugin marker module in builds where other modules are not installed -->
+            <!-- Because otherwise plugin-marker won't have all dependencies -->
+            <id>gradle-plugin-marker</id>
+            <activation>
+                <!-- Maven is awful so the only way to reliably have several profiles is activation by absence of property -->
+                <property>
+                    <name>!skipPluginMarker</name>
+                </property>
+            </activation>
+            <modules>
+                <module>gradle-plugin-marker</module>
+            </modules>
+        </profile>
         <profile>
             <id>local-win-build</id>
             <activation>
