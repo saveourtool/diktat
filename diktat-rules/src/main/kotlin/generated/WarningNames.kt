@@ -209,4 +209,6 @@ public object WarningNames {
 
     public const val TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED: String =
             "TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED"
+
+    public const val CUSTOM_GETTERS_SETTERS: String = "CUSTOM_GETTERS_SETTERS"
 }
