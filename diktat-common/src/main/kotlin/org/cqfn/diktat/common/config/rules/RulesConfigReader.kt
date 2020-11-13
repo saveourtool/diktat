@@ -115,6 +115,11 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
     val domainName: String by lazy {
         (configuration ?: mapOf()).getOrDefault("domainName", "")
     }
+
+    /**
+     * False if configuration has been read from config file, true if defaults are used
+     */
+    val isDefault = configuration == null
 }
 
 // ================== utils for List<RulesConfig> from yml config
@@ -130,7 +135,7 @@ fun List<RulesConfig>.getRuleConfig(rule: Rule): RulesConfig? = this.find { it.n
 /**
  * Get [RulesConfig] representing common configuration part that can be used in any rule
  */
-fun List<RulesConfig>.getCommonConfig() = find { it.name == DIKTAT_COMMON }
+private fun List<RulesConfig>.getCommonConfig() = find { it.name == DIKTAT_COMMON }
 
 /**
  * checking if in yml config particular rule is enabled or disabled
