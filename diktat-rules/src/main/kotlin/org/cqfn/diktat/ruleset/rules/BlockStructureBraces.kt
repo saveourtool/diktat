@@ -178,9 +178,7 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
                 if (braceSpace == null || braceSpace.elementType != WHITE_SPACE) {
                     node.addChild(PsiWhiteSpaceImpl(" "), nodeBefore)
                 } else {
-                    val spaceParent = braceSpace.treeParent
-                    spaceParent.addChild(PsiWhiteSpaceImpl(" "), braceSpace)
-                    spaceParent.removeChild(braceSpace)
+                    braceSpace.treeParent.replaceWhiteSpaceText(braceSpace, " ")
                 }
             }
         }

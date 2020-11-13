@@ -28,6 +28,16 @@ class Example {
                 bar()
             }
         }
+
+        if (condition3) {
+            if (condition4) {
+                foo()
+            } else {
+                bar()
+            }
+        } else {
+            foo()
+        }
     }
 }
 
