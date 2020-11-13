@@ -73,6 +73,7 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
                 ::SingleLineStatementsRule,
                 ::MultipleModifiersSequence,
                 ::TrivialPropertyAccessors,
+                ::CustomGetterSetterRule,
                 // other rules
                 ::StringTemplateFormatRule,
                 ::DataClassesRule,
