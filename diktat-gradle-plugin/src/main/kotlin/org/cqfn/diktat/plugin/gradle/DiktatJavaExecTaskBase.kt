@@ -12,13 +12,20 @@ import org.gradle.api.tasks.VerificationTask
 import javax.inject.Inject
 
 open class DiktatJavaExecTaskBase @Inject constructor(
+    gradleVersionString: String,
     diktatExtension: DiktatExtension,
     diktatConfiguration: Configuration,
     additionalFlags: Iterable<String> = emptyList()
     ) : JavaExec(), VerificationTask {
     init {
         group = "verification"
-        mainClass.set("com.pinterest.ktlint.Main")
+        val gradleVersion = GradleVersion.fromString(gradleVersionString)
+        if (gradleVersion.major >= 6 && gradleVersion.minor >= 4) {
+            // `main` is deprecated and replaced with `mainClass` since gradle 6.4
+            mainClass.set("com.pinterest.ktlint.Main")
+        } else {
+            main = "com.pinterest.ktlint.Main"
+        }
         classpath = diktatConfiguration
         project.logger.debug("Setting diktatCheck classpath to ${diktatConfiguration.dependencies.toSet()}")
         setArgs(additionalFlags.toMutableList().apply { add(diktatExtension.inputs.files.joinToString { it.path }) })
@@ -34,12 +41,12 @@ open class DiktatJavaExecTaskBase @Inject constructor(
 
 fun Project.registerDiktatCheckTask(diktatExtension: DiktatExtension, diktatConfiguration: Configuration): TaskProvider<DiktatJavaExecTaskBase> =
     tasks.register(
-        DIKTAT_CHECK_TASK, DiktatJavaExecTaskBase::class.java,
+        DIKTAT_CHECK_TASK, DiktatJavaExecTaskBase::class.java, gradle.gradleVersion,
         diktatExtension, diktatConfiguration, listOf(if (diktatExtension.debug) "--debug " else "")
     )
 
 fun Project.registerDiktatFixTask(diktatExtension: DiktatExtension, diktatConfiguration: Configuration): TaskProvider<DiktatJavaExecTaskBase> =
     tasks.register(
-        DIKTAT_FIX_TASK, DiktatJavaExecTaskBase::class.java,
+        DIKTAT_FIX_TASK, DiktatJavaExecTaskBase::class.java, gradle.gradleVersion,
         diktatExtension, diktatConfiguration, listOf("-F ", if (diktatExtension.debug) "--debug " else "")
     )

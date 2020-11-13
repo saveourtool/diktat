@@ -179,7 +179,7 @@ To run diktat to check/fix code style - run `$ mvn antrun:run@diktat`.
 
 ## Run with Gradle
 ### Use diktat-gradle-plugin
-The minimal required gradle version is 6.4. You can see how the plugin is configured in our project for self-checks: [build.gradle.kts](build.gradle.kts).
+You can see how the plugin is configured in our project for self-checks: [build.gradle.kts](build.gradle.kts).
 Add this plugin to your `build.gradle.kts`:
 ```kotlin
 plugins {
