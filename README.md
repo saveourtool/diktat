@@ -69,8 +69,7 @@ Main features of diktat are the following:
 
 To **autofix** all code style violations use `-F` option.
 
-## Run with Maven
-### Use the diktat-maven-plugin
+## Run with Maven using diktat-maven-plugin
 This plugin is available since version 0.1.3. You can see how it is configured in our project for self-checks: [pom.xml](pom.xml).
 If you use it and encounter any problems, feel free to open issues on [github](https://github.com/cqfn/diktat/issues).
 
@@ -108,77 +107,7 @@ Add this plugin to your pom.xml:
 To run diktat check use command `$ mvn diktat:check@diktat`.
 To run diktat in autocorrect mode use command `$ mvn diktat:fix@diktat`.
 
-### Use maven-antrun-plugin
-Add this plugin to your pom.xml:
-<details>
-  <summary><b>Maven plugin snippet</b></summary><br>
-  
-```xml
-<project>
-  [...]
-  <build>
-    <plugins>
-      <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-antrun-plugin</artifactId>
-          <version>3.0.0</version>
-          <executions>
-              <execution>
-                  <id>diktat</id>
-                  <phase>none</phase>
-                  <configuration>
-                      <target name="ktlint">
-                          <java taskname="ktlint" dir="${basedir}" fork="true" failonerror="true"
-                                classpathref="maven.plugin.classpath" classname="com.pinterest.ktlint.Main">
-                              <arg value="src/main/**/*.kt"/>
-                              <arg value="src/test/kotlin/**/*.kt"/>
-                          </java>
-                      </target>
-                  </configuration>
-                  <goals>
-                      <goal>run</goal>
-                  </goals>
-              </execution>
-          </executions>
-          <dependencies>
-              <dependency>
-                  <groupId>com.pinterest</groupId>
-                  <artifactId>ktlint</artifactId>
-                  <version>0.39.0</version>
-                  <exclusions>
-                      <exclusion>  <!-- without this exclusion both rulesets are enabled which we discourage -->
-                          <groupId>com.pinterest.ktlint</groupId>
-                          <artifactId>ktlint-ruleset-standard</artifactId>
-                      </exclusion>
-                  </exclusions>
-              </dependency>
-              <dependency>
-                  <groupId>org.cqfn.diktat</groupId>
-                  <artifactId>diktat-rules</artifactId>
-                  <version>0.1.3</version> <!-- replace it with diktat latest version -->
-                  <exclusions>
-                      <exclusion>
-                          <groupId>org.slf4j</groupId>
-                          <artifactId>slf4j-log4j12</artifactId>
-                      </exclusion>
-                  </exclusions>
-              </dependency>
-          </dependencies>
-      </plugin>
-    </plugins>
-  </build>
-</project>
-```
-
-</details>
-
-In case you want to add autofixer with diKTat ruleset just extend
-the snippet above with `<arg value="-F"/>`.
-
-To run diktat to check/fix code style - run `$ mvn antrun:run@diktat`.
-
-## Run with Gradle
-### Use diktat-gradle-plugin
+## Run with Gradle using diktat-gradle-plugin
 You can see how the plugin is configured in our project for self-checks: [build.gradle.kts](build.gradle.kts).
 Add this plugin to your `build.gradle.kts`:
 ```kotlin
@@ -204,65 +133,12 @@ apply(plugin = "org.cqfn.diktat.diktat-gradle-plugin")
 You can then configure diktat using `diktat` extension:
 ```kotlin
 diktat {
-    inputs = files("src/**/*.kt")
+    inputs = files("src/**/*.kt")  // file collection that will be checked by diktat
+    debug = true  // turn on debug logging
 }
 ```
 
 You can run diktat checks using task `diktatCheck` and automatically fix errors with tasks `diktatFix`.
-
-### Use gradle task
-You can create a `JavaExec` taks which runs ktlint with diktat ruleset.
-Add the code below to your `build.gradle.kts`:
-<details>
-  <summary><b>Gradle snippet</b></summary><br>
-  
-```kotlin
-object Versions {
-    const val ktlint = "0.39.0"
-    const val diktat = "0.1.3"
-}
-
-tasks {
-    val ktlint: Configuration by configurations.creating
-    val diktatConfig: JavaExec.() -> Unit = {
-        group = "diktat"
-        classpath = ktlint
-        main = "com.pinterest.ktlint.Main"
-
-        inputs.files(project.fileTree(mapOf("dir" to "src", "include" to "**/*.kt")))
-        outputs.dir("${project.buildDir}/reports/diktat/")
-
-        outputs.upToDateWhen { false }  // Allows to run the task again (otherwise skipped till sources are changed).
-        isIgnoreExitValue = true  // Allows to skip the non-zero exit code, can be useful when other tasks depends on linter
-
-        dependencies {
-            ktlint("com.pinterest:ktlint:${Versions.ktlint}") {
-                exclude("com.pinterest.ktlint", "ktlint-ruleset-standard")
-            }
-
-            ktlint("org.cqfn.diktat:diktat-rules:${Versions.diktat}")
-        }
-    }
-
-    create<JavaExec>("diktatCheck") {
-        diktatConfig()
-        description = "Check Kotlin code style."
-
-        args = listOf("src/*/kotlin/**/*.kt")    // specify proper path to sources that should be checked here
-    }
-
-    create<JavaExec>("diktatFormat") {
-        diktatConfig()
-        description = "Fix Kotlin code style deviations."
-
-        args = listOf("-F", "src/main/kotlin/**/*.kt")  // specify proper path to sources that should be checked here
-    }
-}
-```
-
-</details>
-
-To run diktat to check/fix code style - run `$ gradle diktatCheck`.
 
 ## Customizations via `diktat-analysis.yml`
 

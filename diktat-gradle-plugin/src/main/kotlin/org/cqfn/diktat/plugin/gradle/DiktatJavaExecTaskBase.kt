@@ -36,7 +36,10 @@ open class DiktatJavaExecTaskBase @Inject constructor(
         }
         classpath = diktatConfiguration
         project.logger.debug("Setting diktatCheck classpath to ${diktatConfiguration.dependencies.toSet()}")
-        args = additionalFlags.toMutableList().apply { add(diktatExtension.inputs.files.joinToString { it.path }) }
+        args = additionalFlags.toMutableList().apply {
+            add(if (diktatExtension.debug) "--debug" else "")
+            add(diktatExtension.inputs.files.joinToString { it.path })
+        }
     }
 
     /**
@@ -65,7 +68,7 @@ open class DiktatJavaExecTaskBase @Inject constructor(
 fun Project.registerDiktatCheckTask(diktatExtension: DiktatExtension, diktatConfiguration: Configuration): TaskProvider<DiktatJavaExecTaskBase> =
         tasks.register(
                 DIKTAT_CHECK_TASK, DiktatJavaExecTaskBase::class.java, gradle.gradleVersion,
-                diktatExtension, diktatConfiguration, listOf(if (diktatExtension.debug) "--debug " else "")
+                diktatExtension, diktatConfiguration
         )
 
 /**
@@ -76,5 +79,5 @@ fun Project.registerDiktatCheckTask(diktatExtension: DiktatExtension, diktatConf
 fun Project.registerDiktatFixTask(diktatExtension: DiktatExtension, diktatConfiguration: Configuration): TaskProvider<DiktatJavaExecTaskBase> =
         tasks.register(
                 DIKTAT_FIX_TASK, DiktatJavaExecTaskBase::class.java, gradle.gradleVersion,
-                diktatExtension, diktatConfiguration, listOf("-F ", if (diktatExtension.debug) "--debug " else "")
+                diktatExtension, diktatConfiguration, listOf("-F ")
         )

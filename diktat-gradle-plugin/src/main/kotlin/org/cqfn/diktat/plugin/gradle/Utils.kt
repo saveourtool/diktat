@@ -26,8 +26,8 @@ internal data class GradleVersion(
          * @return a [GradleVersion]
          */
         fun fromString(version: String): GradleVersion {
-            val (versionDigits, suffix) = version.split('-', limit = 2).run {
-                first() to getOrNull(1)
+            val (versionDigits, suffix) = version.split('-', limit = 2).let { splits ->
+                splits.first() to splits.getOrNull(1)
             }
             val digits = versionDigits.split('.', limit = 3).map { it.toInt() }
             return GradleVersion(digits.first(), digits.getOrElse(1) { 0 }, digits.getOrElse(2) { 0 }, suffix)

@@ -26,6 +26,7 @@ dependencies {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
+        // fixme: kotlin 1.3 is required for gradle <6.8
         languageVersion = "1.3"
         apiVersion = "1.3"
     }

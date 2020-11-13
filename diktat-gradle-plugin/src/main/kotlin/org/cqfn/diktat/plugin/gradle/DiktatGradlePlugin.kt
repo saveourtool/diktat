@@ -20,27 +20,25 @@ class DiktatGradlePlugin : Plugin<Project> {
         }
         diktatExtension.reporter = PlainReporter(System.out)
 
-        val gradleVersion = GradleVersion.fromString(project.gradle.gradleVersion)
-
         // only gradle 7+ (or maybe 6.8) will embed kotlin 1.4+, kx.serialization is incompatible with kotlin 1.3, so until then we have to use JavaExec wrapper
         // FixMe: when gradle with kotlin 1.4 is out, proper configurable tasks should be added
-        if (/*gradleVersion.major < 6 || gradleVersion.major == 6 && gradleVersion.minor < 8*/ true) {
-            // configuration to provide JavaExec with correct classpath
-            val diktatConfiguration = project.configurations.create(DIKTAT_CONFIGURATION) { configuration ->
-                configuration.isVisible = false
-                configuration.dependencies.add(project.dependencies.create("org.jetbrains.kotlin:kotlin-stdlib:1.4.10"))
-                configuration.dependencies.add(project.dependencies.create("com.pinterest:ktlint:0.39.0", closureOf<ExternalModuleDependency> {
-                    exclude(mutableMapOf(
-                            "group" to "com.pinterest.ktlint",
-                            "module" to "ktlint-ruleset-standard"
-                    ))
-                }))
-                configuration.dependencies.add(project.dependencies.create("org.cqfn.diktat:diktat-rules:0.1.4-SNAPSHOT"))
-            }
-
-            project.registerDiktatCheckTask(diktatExtension, diktatConfiguration)
-            project.registerDiktatFixTask(diktatExtension, diktatConfiguration)
+        // configuration to provide JavaExec with correct classpath
+        val diktatConfiguration = project.configurations.create(DIKTAT_CONFIGURATION) { configuration ->
+            configuration.isVisible = false
+            configuration.dependencies.add(project.dependencies.create("org.jetbrains.kotlin:kotlin-stdlib:1.4.10"))
+            configuration.dependencies.add(project.dependencies.create("com.pinterest:ktlint:0.39.0", closureOf<ExternalModuleDependency> {
+                exclude(
+                    mutableMapOf(
+                           "group" to "com.pinterest.ktlint",
+                          "module" to "ktlint-ruleset-standard"
+                    )
+                )
+            }))
+            configuration.dependencies.add(project.dependencies.create("org.cqfn.diktat:diktat-rules:0.1.4-SNAPSHOT"))
         }
+
+        project.registerDiktatCheckTask(diktatExtension, diktatConfiguration)
+        project.registerDiktatFixTask(diktatExtension, diktatConfiguration)
     }
 
     companion object {
