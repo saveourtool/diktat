@@ -3,34 +3,33 @@
 ### <a name="c4.1"></a> 4.1 Variables
 ### <a name="r4.1.1"></a> Rule 4.1.1: Do not use Float and Double types when accurate calculations are needed.
 Floating-point numbers provide a good approximation over a wide range of values, but they cannot produce accurate results in some cases.
-Binary floating-point numbers are unsuitable for precise calculations, because it is impossible to represent 0.1 or any other negative power of 10 in a `binary representation` with a finite length.
+Binary floating-point numbers are unsuitable for precise calculations because it is impossible to represent 0.1 or any other negative power of 10 in a `binary representation` with a finite length.
 
-The following example seems to be simple code that is obvious: 
+The following code example seems to be obvious: 
 ```kotlin
     val myValue = 2.0 - 1.1
     println(myValue)
 ``` 
 
-However, it will print a value such as: `0.8999999999999999`
+However, it will print the following value: `0.8999999999999999`
 
-As such, if you need to make precise calculations (for example, when dealing with currency, finance, or an exact science), `Int`, `Long`, `BigDecimal`, etc. are recommended.
-Among them, `BigDecimal` should serve as a good choice.
+Therefore, for precise calculations (for example, in finance or exact sciences), using such types as `Int`, `Long`, `BigDecimal`are recommended.
+The `BigDecimal` type should serve as a good choice.
 
 **Invalid example:** \
-If a float value contains more than six to seven decimal numbers, it will be rounded off.
+Float values containing more than six or seven decimal numbers will be rounded.
  ```kotlin
  val eFloat = 2.7182818284f // Float, will be rounded to 2.7182817
  ```
 
-**Valid example** (when accurate calculations are needed): 
+**Valid example** (when precise calculations are needed): 
  ```kotlin
     val income = BigDecimal("2.0")
     val expense = BigDecimal("1.1")
     println(income.subtract(expense)) // you will obtain 0.9 here
  ```
 
-### <a name="r4.1.2"></a> Rule 4.1.2: The numbers of a float type should not be directly compared with the equality operator (==) or other methods like compareTo and equals.
-
+### <a name="r4.1.2"></a> Rule 4.1.2: Numeric float type values should not be directly compared with the equality operator (==) or other methods like compareTo and equals (???).
 Since floating-point numbers involve precision problems in computer representation, it is better to use `BigDecimal` as recommended in [Rule 4.1.1](#r4.1.1) to make accurate computations and comparisons. The following code describes these problems.
 
 **Invalid example**:
@@ -67,9 +66,9 @@ if (abs(foo - bar) > 1e-6f) {
 ### <a name="r4.1.3"></a> Rule 4.1.3 Try to use 'val' instead of 'var' for variable declaration [SAY_NO_TO_VAR].
 
 Variables with the `val` modifier are immutable (read-only).
-Code robustness and readability increase through the use of such variables, as opposed to `var` variables.
-This is because var variables can be reassigned several times in the business logic.
-Of course, in some scenarios with loops or accumulators, only `var`s are permitted.
+Code robustness and readability increase when using `val` variables instead of `var` variables.
+This is because `var` variables can be reassigned several times in the business logic.
+However, in some scenarios with loops or accumulators, only `var`s are permitted.
 
 <!-- =============================================================================== -->
 ### <a name="c4.2"></a> 4.2 Types
@@ -104,7 +103,7 @@ fun bar(x: String?) {
 } 
 ```
 
-Smart cast and contracts are better because they reduce boilerplate code and forced type conversion.
+Smart cast and contracts are a better choice because they reduce boilerplate code and features forced type conversion.
 
 **Invalid example**:
 ```kotlin
@@ -122,12 +121,12 @@ fun foo(s: String?) {
 }
 ```
 
-### <a name="s4.2.2"></a>Recommendation 4.2.2: Try to use type alias to represent types and make code more readable.
+### <a name="s4.2.2"></a>Recommendation 4.2.2: Try to use type alias to represent types making code more readable.
 
 Type aliases provide alternative names for existing types.
-If the type name is too long, you can replace it with a shorter name. It helps to shorten long generic types.
+If the type name is too long, you can replace it with a shorter name, which helps to shorten long generic types.
 For example, code looks much more readable if you introduce a `typealias` instead of a long chain of nested generic types.
-We recommend the use of a `typealias` if the type contains **more than two** nested generic types and is longer than **25 chars**.
+We recommend using a `typealias` if the type contains **more than two** nested generic types and is longer than **25 chars**.
 
 **Invalid example**:
 ```kotlin
@@ -152,7 +151,7 @@ typealias Predicate<T> = (T) -> Boolean
 Kotlin is declared as a null-safe programming language. However, to achieve compatibility with Java, it still supports nullable types.
 
 ### <a name="s4.3.1"></a> Recommendation 4.3.1: Avoid declaring variables with nullable types, especially from Kotlin stdlib.
-To avoid `NullPointerException` and help compiler checks prevent NPE, try to avoid using nullable types (with `?` symbol).
+To avoid `NullPointerException` and help compiler checks prevent NPE (???) avoid using nullable types (with `?` symbol).
 
 **Invalid example**:
 ```kotlin 
@@ -165,8 +164,8 @@ val a: Int = 0
 ```
 
 Nevertheless, if you use Java libraries extensively, you will have to use nullable types and enrich your code with `!!` and `?` symbols.
-Avoid using nullable types for Kotlin stdlib (declared in [official documentation](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/)) avoid using nullable types. 
-Try to use initializers for empty collections. ), and try using initializers for empty collections. For example: If you want to initialize a list instead of using `null` use `emptyList()`.
+Avoid using nullable types for Kotlin stdlib (declared in [official documentation](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/)). 
+Try to use initializers for empty collections. For example, if you want to initialize a list instead of `null` use `emptyList()`.
 
 **Invalid example**:
 ```kotlin 
@@ -179,14 +178,14 @@ val a: List<Int> = emptyList()
 ```
 
 ### <a name="s4.3.2"></a> Recommendation 4.3.2: Variables of generic types should have an explicit type declaration.
-As in Java, classes in Kotlin may have type parameters. To create an instance of such a class, we typically need to provide type arguments:
+Like in Java, classes in Kotlin may have type parameters. To create an instance of such a class, we typically need to provide type arguments:
 
 ```kotlin
 val myVariable: Map<Int, String> = emptyMap<Int, String>() 
 ```
 
-However, the compiler can inherit type parameters from the right value, and as such, will not force users to explicitly declare the type.
-These declarations are not recommended because programmers would need to find its return value and understand the variable type by looking at the method.
+However, the compiler can inherit type parameters from the right value (???). Therefore, it will not force users to declare the type explicitly.
+These declarations are not recommended because programmers would need to find the return value and understand the variable type by looking at the method.
 
 **Invalid example**:
 ```kotlin
