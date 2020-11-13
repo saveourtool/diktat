@@ -203,9 +203,11 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
         if (node.treeParent.firstChildNode == node)
             return
         if (node.treeParent.elementType == FILE) {
+            //This case is for top-level comments that are located in the beginning of the line and therefore don't need any spaces before.
             if (node.treePrev.isWhiteSpace()) {
                 COMMENT_WHITE_SPACE.warnAndFix(configRules, emitWarn, isFixMode,
-                        "There should be 0 space(s) before comment text, but are none in ${node.text}", node.startOffset, node) {
+                        "There should be 0 space(s) before comment text, but are ${node.treePrev.text.count { it == ' ' }} in ${node.text}",
+                        node.startOffset, node) {
                     node.treeParent.removeChild(node.treePrev)
                 }
             }
