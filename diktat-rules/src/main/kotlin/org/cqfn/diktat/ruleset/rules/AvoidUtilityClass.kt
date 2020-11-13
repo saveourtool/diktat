@@ -42,8 +42,11 @@ class AvoidUtilityClass(private val configRules: List<RulesConfig>) : Rule("avoi
     }
 
     private fun checkClass(node: ASTNode) {
+        //checks that class/object doesn't contain primary constructor and its identifier doesn't has "utli"
         if (node.hasChildOfType(PRIMARY_CONSTRUCTOR)
-                || node.findChildByType(IDENTIFIER)?.text?.toLowerCase()?.contains("util") == false) return
+                || ( node.hasChildOfType(IDENTIFIER) &&
+                        !node.findChildByType(IDENTIFIER)!!.text.toLowerCase().contains("util")))
+            return
         node.findChildByType(CLASS_BODY)
                 ?.children()
                 ?.toList()

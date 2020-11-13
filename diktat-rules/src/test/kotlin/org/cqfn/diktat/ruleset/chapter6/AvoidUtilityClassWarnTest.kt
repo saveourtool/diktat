@@ -68,6 +68,8 @@ class AvoidUtilityClassWarnTest: LintTestBase(::AvoidUtilityClass) {
                     |   /*
                     |
                     |    */
+                    |   companion object  {
+                    |   }
                     |   val z = "hello"
                     |   fun goo(tex: String): Int {
                     |       return myString.count{ "something".contains(it) }
