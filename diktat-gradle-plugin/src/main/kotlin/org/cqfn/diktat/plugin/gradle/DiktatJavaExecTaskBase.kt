@@ -11,12 +11,21 @@ import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.VerificationTask
 import javax.inject.Inject
 
+/**
+ * A base diktat task for gradle <6.8, which wraps [JavaExec]
+ */
 open class DiktatJavaExecTaskBase @Inject constructor(
-    gradleVersionString: String,
-    diktatExtension: DiktatExtension,
-    diktatConfiguration: Configuration,
-    additionalFlags: Iterable<String> = emptyList()
-    ) : JavaExec(), VerificationTask {
+        gradleVersionString: String,
+        diktatExtension: DiktatExtension,
+        diktatConfiguration: Configuration,
+        additionalFlags: Iterable<String> = emptyList()
+) : JavaExec(), VerificationTask {
+    /**
+     * A backing [Property] for [getIgnoreFailures] and [setIgnoreFailures]
+     */
+    @get:Internal
+    internal val ignoreFailuresProp: Property<Boolean> = project.objects.property(Boolean::class.javaObjectType)
+
     init {
         group = "verification"
         if (isMainClassPropertySupported(gradleVersionString)) {
@@ -30,28 +39,42 @@ open class DiktatJavaExecTaskBase @Inject constructor(
         args = additionalFlags.toMutableList().apply { add(diktatExtension.inputs.files.joinToString { it.path }) }
     }
 
-    @get:Internal
-    internal val ignoreFailuresProp: Property<Boolean> = project.objects.property(Boolean::class.javaObjectType)
-
+    /**
+     * @param ignoreFailures whether failure in this plugin should be ignored by a build
+     */
     override fun setIgnoreFailures(ignoreFailures: Boolean) = ignoreFailuresProp.set(ignoreFailures)
 
+    /**
+     * @return whether failure in this plugin should be ignored by a build
+     */
+    @Suppress("FUNCTION_BOOLEAN_PREFIX")
     override fun getIgnoreFailures(): Boolean = ignoreFailuresProp.getOrElse(false)
 
     @Suppress("MagicNumber")
     private fun isMainClassPropertySupported(gradleVersionString: String) =
-        GradleVersion.fromString(gradleVersionString).run {
-            major >= 6 && minor >= 4
-        }
+            GradleVersion.fromString(gradleVersionString).run {
+                major >= 6 && minor >= 4
+            }
 }
 
+/**
+ * @param diktatExtension [DiktatExtension] with some values for task configuration
+ * @param diktatConfiguration dependencies of diktat run
+ * @return a [TaskProvider]
+ */
 fun Project.registerDiktatCheckTask(diktatExtension: DiktatExtension, diktatConfiguration: Configuration): TaskProvider<DiktatJavaExecTaskBase> =
-    tasks.register(
-        DIKTAT_CHECK_TASK, DiktatJavaExecTaskBase::class.java, gradle.gradleVersion,
-        diktatExtension, diktatConfiguration, listOf(if (diktatExtension.debug) "--debug " else "")
-    )
+        tasks.register(
+                DIKTAT_CHECK_TASK, DiktatJavaExecTaskBase::class.java, gradle.gradleVersion,
+                diktatExtension, diktatConfiguration, listOf(if (diktatExtension.debug) "--debug " else "")
+        )
 
+/**
+ * @param diktatExtension [DiktatExtension] with some values for task configuration
+ * @param diktatConfiguration dependencies of diktat run
+ * @return a [TaskProvider]
+ */
 fun Project.registerDiktatFixTask(diktatExtension: DiktatExtension, diktatConfiguration: Configuration): TaskProvider<DiktatJavaExecTaskBase> =
-    tasks.register(
-        DIKTAT_FIX_TASK, DiktatJavaExecTaskBase::class.java, gradle.gradleVersion,
-        diktatExtension, diktatConfiguration, listOf("-F ", if (diktatExtension.debug) "--debug " else "")
-    )
+        tasks.register(
+                DIKTAT_FIX_TASK, DiktatJavaExecTaskBase::class.java, gradle.gradleVersion,
+                diktatExtension, diktatConfiguration, listOf("-F ", if (diktatExtension.debug) "--debug " else "")
+        )

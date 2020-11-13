@@ -5,8 +5,14 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ExternalModuleDependency
 
+/**
+ * Plugin that configures diktat and registers tasks to run diktat
+ */
 @Suppress("unused", "MagicNumber")
 class DiktatGradlePlugin : Plugin<Project> {
+    /**
+     * @param project a gradle [Project] that the plugin is applied to
+     */
     override fun apply(project: Project) {
         val diktatExtension = project.extensions.create(DIKTAT_EXTENSION, DiktatExtension::class.java)
         diktatExtension.inputs = project.fileTree("src").apply {
@@ -24,8 +30,8 @@ class DiktatGradlePlugin : Plugin<Project> {
                 configuration.dependencies.add(project.dependencies.create("org.jetbrains.kotlin:kotlin-stdlib:1.4.10"))
                 configuration.dependencies.add(project.dependencies.create("com.pinterest:ktlint:0.39.0", closureOf<ExternalModuleDependency> {
                     exclude(mutableMapOf(
-                        "group" to "com.pinterest.ktlint",
-                        "module" to "ktlint-ruleset-standard"
+                            "group" to "com.pinterest.ktlint",
+                            "module" to "ktlint-ruleset-standard"
                     ))
                 }))
                 configuration.dependencies.add(project.dependencies.create("org.cqfn.diktat:diktat-rules:0.1.4-SNAPSHOT"))
@@ -37,9 +43,9 @@ class DiktatGradlePlugin : Plugin<Project> {
     }
 
     companion object {
-        const val DIKTAT_EXTENSION = "diktat"
         const val DIKTAT_CHECK_TASK = "diktatCheck"
-        const val DIKTAT_FIX_TASK = "diktatFix"
         const val DIKTAT_CONFIGURATION = "diktat"
+        const val DIKTAT_EXTENSION = "diktat"
+        const val DIKTAT_FIX_TASK = "diktatFix"
     }
 }
