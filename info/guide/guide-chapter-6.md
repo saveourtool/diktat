@@ -232,34 +232,39 @@ It is one of the exceptions from the [identifier names rule](#r1.2)
 Kotlin has a perfect mechanism of [properties](https://kotlinlang.org/docs/reference/properties.html#properties-and-fields).
 Kotlin compiler automatically generates `get` and `set` methods for properties and also provides the possibility to override it:
 ```kotlin 
-// Bad example ======
 class A {
     var size: Int = 0
         set(value) {
             println("Side effect")
             field = value
         }
-        get() = this.hashCode() * 2
+        // user of this class does not expect calling A.size receive size * 2 
+        get() = field * 2
 }
 ```
 
 From the callee code these methods look like an access to this property: `A().isEmpty = true` for setter and `A().isEmpty` for getter.
+
 However, when `get` and `set` are overridden, it is very confusing for a developer who uses this particular class. 
 The developer expects to get the property value but receives some unknown value and some extra side effects (or effect??? ) hidden by the custom getter/setter. 
 Use extra functions for it instead (??? for what?).
 
+
+
 **Valid example**:
 ```kotlin 
-// Bad example ======
 class A {
     var size: Int = 0
     fun initSize(value: Int) {
         // some custom logic
     }
     
-    fun goodNameThatDescribesThisGetter() = this.hashCode() * 2
+    // this will not confuse developer and he will get exactly what he expects    
+    fun goodNameThatDescribesThisGetter() = this.size * 2
 }
 ```
+
+**Exception:** `Private setters` are only exceptions that are not prohibited by this rule.
 
 ### <a name="r6.1.9"></a> Rule 6.1.9: never use the name of a variable in the custom getter or setter (possible_bug).
 Even (???) if you have ignored [recommendation 6.1.8](#r6.1.8) you should be careful with using the name of the property in your custom getter/setter
