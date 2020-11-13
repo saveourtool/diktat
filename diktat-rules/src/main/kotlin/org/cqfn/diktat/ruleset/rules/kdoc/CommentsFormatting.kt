@@ -31,6 +31,7 @@ import com.pinterest.ktlint.core.ast.ElementType.THEN
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isWhiteSpace
+import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.prevSibling
 import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -204,11 +205,15 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
             return
         if (node.treeParent.elementType == FILE) {
             //This case is for top-level comments that are located in the beginning of the line and therefore don't need any spaces before.
-            if (node.treePrev.isWhiteSpace()) {
+            if (!node.treePrev.isWhiteSpaceWithNewline() && node.treePrev.text.count { it == ' '} > 0) {
                 COMMENT_WHITE_SPACE.warnAndFix(configRules, emitWarn, isFixMode,
                         "There should be 0 space(s) before comment text, but are ${node.treePrev.text.count { it == ' ' }} in ${node.text}",
                         node.startOffset, node) {
-                    node.treeParent.removeChild(node.treePrev)
+                    if (node.treePrev.elementType == WHITE_SPACE)
+                        (node.treePrev as LeafPsiElement).replaceWithText("\n")
+
+                    else
+                        node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node)
                 }
             }
         } else if (!node.treePrev.isWhiteSpace()) {
