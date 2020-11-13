@@ -23,7 +23,8 @@ class DiktatGradlePlugin : Plugin<Project> {
         val gradleVersion = GradleVersion.fromString(project.gradle.gradleVersion)
 
         // only gradle 7+ (or maybe 6.8) will embed kotlin 1.4+, kx.serialization is incompatible with kotlin 1.3, so until then we have to use JavaExec wrapper
-        if (gradleVersion.major < 6 || gradleVersion.major == 6 && gradleVersion.minor < 8) {
+        // FixMe: when gradle with kotlin 1.4 is out, proper configurable tasks should be added
+        if (/*gradleVersion.major < 6 || gradleVersion.major == 6 && gradleVersion.minor < 8*/ true) {
             // configuration to provide JavaExec with correct classpath
             val diktatConfiguration = project.configurations.create(DIKTAT_CONFIGURATION) { configuration ->
                 configuration.isVisible = false
