@@ -39,3 +39,7 @@ gradlePlugin {
         }
     }
 }
+
+java {
+    withSourcesJar()
+}
