@@ -71,6 +71,7 @@
                                 <argument>-Pgroup=${project.groupId}</argument>
                                 <argument>-Pversion=${project.version}</argument>
                                 <argument>-Pdescription=${project.description}</argument>
+                                <argument>-PktlintVersion=${ktlint.version}</argument>
                                 <argument>-S</argument>
                             </arguments>
                             <skip>${skip.gradle.build}</skip>

@@ -1,5 +1,7 @@
 package org.cqfn.diktat.plugin.gradle
 
+import generated.KTLINT_VERSION
+import generated.DIKTAT_VERSION
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.DIKTAT_CHECK_TASK
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.DIKTAT_FIX_TASK
 import org.gradle.api.Project
@@ -36,6 +38,9 @@ open class DiktatJavaExecTaskBase @Inject constructor(
         }
         classpath = diktatConfiguration
         project.logger.debug("Setting diktatCheck classpath to ${diktatConfiguration.dependencies.toSet()}")
+        if (diktatExtension.debug) {
+            logger.lifecycle("Running diktat $DIKTAT_VERSION with ktlint $KTLINT_VERSION")
+        }
         args = additionalFlags.toMutableList().apply {
             add(if (diktatExtension.debug) "--debug" else "")
             add(diktatExtension.inputs.files.joinToString { it.path })

@@ -1,5 +1,7 @@
 package org.cqfn.diktat.plugin.gradle
 
+import generated.KTLINT_VERSION
+import generated.DIKTAT_VERSION
 import com.pinterest.ktlint.reporter.plain.PlainReporter
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -25,8 +27,7 @@ class DiktatGradlePlugin : Plugin<Project> {
         // configuration to provide JavaExec with correct classpath
         val diktatConfiguration = project.configurations.create(DIKTAT_CONFIGURATION) { configuration ->
             configuration.isVisible = false
-            configuration.dependencies.add(project.dependencies.create("org.jetbrains.kotlin:kotlin-stdlib:1.4.10"))
-            configuration.dependencies.add(project.dependencies.create("com.pinterest:ktlint:0.39.0", closureOf<ExternalModuleDependency> {
+            configuration.dependencies.add(project.dependencies.create("com.pinterest:ktlint:$KTLINT_VERSION", closureOf<ExternalModuleDependency> {
                 exclude(
                     mutableMapOf(
                            "group" to "com.pinterest.ktlint",
@@ -34,7 +35,7 @@ class DiktatGradlePlugin : Plugin<Project> {
                     )
                 )
             }))
-            configuration.dependencies.add(project.dependencies.create("org.cqfn.diktat:diktat-rules:0.1.4-SNAPSHOT"))
+            configuration.dependencies.add(project.dependencies.create("org.cqfn.diktat:diktat-rules:$DIKTAT_VERSION"))
         }
 
         project.registerDiktatCheckTask(diktatExtension, diktatConfiguration)
