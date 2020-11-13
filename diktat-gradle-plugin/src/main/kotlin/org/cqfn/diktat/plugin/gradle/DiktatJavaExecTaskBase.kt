@@ -19,8 +19,7 @@ open class DiktatJavaExecTaskBase @Inject constructor(
     ) : JavaExec(), VerificationTask {
     init {
         group = "verification"
-        val gradleVersion = GradleVersion.fromString(gradleVersionString)
-        if (gradleVersion.major >= 6 && gradleVersion.minor >= 4) {
+        if (isMainClassPropertySupported(gradleVersionString)) {
             // `main` is deprecated and replaced with `mainClass` since gradle 6.4
             mainClass.set("com.pinterest.ktlint.Main")
         } else {
@@ -28,7 +27,7 @@ open class DiktatJavaExecTaskBase @Inject constructor(
         }
         classpath = diktatConfiguration
         project.logger.debug("Setting diktatCheck classpath to ${diktatConfiguration.dependencies.toSet()}")
-        setArgs(additionalFlags.toMutableList().apply { add(diktatExtension.inputs.files.joinToString { it.path }) })
+        args = additionalFlags.toMutableList().apply { add(diktatExtension.inputs.files.joinToString { it.path }) }
     }
 
     @get:Internal
@@ -37,6 +36,12 @@ open class DiktatJavaExecTaskBase @Inject constructor(
     override fun setIgnoreFailures(ignoreFailures: Boolean) = ignoreFailuresProp.set(ignoreFailures)
 
     override fun getIgnoreFailures(): Boolean = ignoreFailuresProp.getOrElse(false)
+
+    @Suppress("MagicNumber")
+    private fun isMainClassPropertySupported(gradleVersionString: String) =
+        GradleVersion.fromString(gradleVersionString).run {
+            major >= 6 && minor >= 4
+        }
 }
 
 fun Project.registerDiktatCheckTask(diktatExtension: DiktatExtension, diktatConfiguration: Configuration): TaskProvider<DiktatJavaExecTaskBase> =
