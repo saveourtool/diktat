@@ -2,6 +2,8 @@ package org.cqfn.diktat.ruleset.rules
 
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.GET_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
+import com.pinterest.ktlint.core.ast.ElementType.PRIVATE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY_ACCESSOR
 import com.pinterest.ktlint.core.ast.ElementType.SET_KEYWORD
 import org.cqfn.diktat.common.config.rules.RulesConfig
@@ -28,11 +30,15 @@ class CustomGetterSetterRule(private val configRules: List<RulesConfig>) : Rule(
     }
 
     private fun checkForCustomGetersSetters(node: ASTNode) {
-        val setter = node.getFirstChildWithType(SET_KEYWORD)
         val getter = node.getFirstChildWithType(GET_KEYWORD)
+        val setter = node.getFirstChildWithType(SET_KEYWORD)
+        val isPrivateSetter = node.getFirstChildWithType(MODIFIER_LIST)?.hasAnyChildOfTypes(PRIVATE_KEYWORD) ?: false
 
         setter?.let {
-            Warnings.CUSTOM_GETTERS_SETTERS.warn(configRules, emitWarn, isFixMode, setter.text, setter.startOffset, node)
+            // only private custom setters are allowed
+            if (!isPrivateSetter) {
+                Warnings.CUSTOM_GETTERS_SETTERS.warn(configRules, emitWarn, isFixMode, setter.text, setter.startOffset, node)
+            }
         }
 
         getter?.let {

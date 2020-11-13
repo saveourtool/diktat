@@ -45,7 +45,45 @@ class CustomGetterSetterWarnTest : LintTestBase(::CustomGetterSetterRule) {
                     |        
                     |        fun get() = 47
                     |}
-                """.trimMargin()
+                """.trimMargin(),
+        )
+    }
+
+    @Test
+    @Tag(CUSTOM_GETTERS_SETTERS)
+    fun `exception case with private setter`() {
+        lintMethod(
+                """
+                    |class A {
+                    |    var size: Int = 0
+                    |        private set(value) {
+                    |            println("Side effect")
+                    |            field = value
+                    |        }
+                    |        get() = this.hashCode() * 2
+                    |}
+                """.trimMargin(),
+                LintError(7, 9, ruleId, "${Warnings.CUSTOM_GETTERS_SETTERS.warnText()} get"),
+        )
+    }
+
+    @Test
+    @Tag(CUSTOM_GETTERS_SETTERS)
+    fun `exception case with protected setter`() {
+        lintMethod(
+                """
+                    |class A {
+                    |    var size: Int = 0
+                    |        protected set(value) {
+                    |            println("Side effect")
+                    |            field = value
+                    |        }
+                    |        get() = this.hashCode() * 2
+                    |}
+                """.trimMargin(),
+                LintError(3, 19, ruleId, "${Warnings.CUSTOM_GETTERS_SETTERS.warnText()} set"),
+                LintError(7, 9, ruleId, "${Warnings.CUSTOM_GETTERS_SETTERS.warnText()} get"),
         )
     }
 }
+
