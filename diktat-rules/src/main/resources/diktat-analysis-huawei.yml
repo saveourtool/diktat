@@ -353,6 +353,14 @@
 - name: TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED
   enabled: true
   configuration: {}
+# Checks that no custom getters and setters are used for properties. It is a more wide rule than TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED
+# Kotlin compiler automatically generates `get` and `set` methods for properties and also lets the possibility to override it.
+# But in all cases it is very confusing when `get` and `set` are overridden for a developer who uses this particular class.
+# Developer expects to get the value of the property, but receives some unknown value and some extra side effect hidden by the custom getter/setter.
+# Use extra functions for it instead.
+- name: CUSTOM_GETTERS_SETTERS
+  enabled: true
+  configuration: { }
 # Checks if there is class/object that can be replace with extension function
 - name: AVOID_USING_UTILITY_CLASS
   enabled: true
