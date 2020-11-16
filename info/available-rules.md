@@ -99,3 +99,4 @@
 |    6 |     6.1.9 | WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR | Check: used the name of a variable in the custom getter or setter                                                                                                            |  no | - |
 |    6 |    6.1.10 | TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED  | Check: if there are any trivial getters or setters <br> Fix: Delete trivial getter or setter                                                                                 | yes | - | - |
 |    6 |    6.1.8  | CUSTOM_GETTERS_SETTERS                 | Check: Inspection that checks that no custom getters and setters are used for properties                                                                                     | no | - | - |
+|    6 |    6.1.11 | COMPACT_OBJECT_INITIALIZATION          | Checks if class instantiation can be wrapped in `apply` for better readability |  |  | |

@@ -295,7 +295,7 @@
                         <configuration>
                             <config>detekt-config.yml</config>
                             <classPath>${maven.compile.classpath}</classPath>
-                            <languageVersion>1.3</languageVersion>
+                            <languageVersion>1.4</languageVersion>
                             <jvmTarget>1.8</jvmTarget>
                             <excludes>**/resources/**/*.kt</excludes>
                         </configuration>
