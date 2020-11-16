@@ -335,7 +335,9 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
 
 class Foo {
     /**
+     *
      * @implNote lorem ipsum
+     *
      */
     private fun foo() {}
 }
