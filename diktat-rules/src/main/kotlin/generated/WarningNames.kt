@@ -182,6 +182,8 @@ public object WarningNames {
 
     public const val FLOAT_IN_ACCURATE_CALCULATIONS: String = "FLOAT_IN_ACCURATE_CALCULATIONS"
 
+    public const val AVOID_NULL_CHECKS: String = "AVOID_NULL_CHECKS"
+
     public const val TOO_LONG_FUNCTION: String = "TOO_LONG_FUNCTION"
 
     public const val AVOID_NESTED_FUNCTIONS: String = "AVOID_NESTED_FUNCTIONS"
@@ -215,4 +217,6 @@ public object WarningNames {
     public const val COMPACT_OBJECT_INITIALIZATION: String = "COMPACT_OBJECT_INITIALIZATION"
 
     public const val USELESS_SUPERTYPE: String = "USELESS_SUPERTYPE"
+
+    public const val EXTENSION_FUNCTION_SAME_SIGNATURE: String = "EXTENSION_FUNCTION_SAME_SIGNATURE"
 }

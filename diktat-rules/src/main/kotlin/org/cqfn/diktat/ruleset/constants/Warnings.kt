@@ -110,6 +110,8 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     STRING_TEMPLATE_QUOTES(true, "string template has redundant quotes"),
     // FixMe: change float literal to BigDecimal? Or kotlin equivalent?
     FLOAT_IN_ACCURATE_CALCULATIONS(false, "floating-point values shouldn't be used in accurate calculations"),
+    AVOID_NULL_CHECKS(false, "Try to avoid explicit null-checks. Use '.let/.also/?:/e.t.c' instead of"),
+
 
     // ======== chapter 5 ========
     TOO_LONG_FUNCTION(false, "function is too long: split it or make more primitive"),
@@ -125,10 +127,11 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR(false, "Use `field` keyword instead of property name inside property accessors"),
     MULTIPLE_INIT_BLOCKS(true, "Avoid using multiple `init` blocks, this logic can be moved to constructors or properties declarations"),
     CLASS_SHOULD_NOT_BE_ABSTRACT(true, "class should not be abstract, because it has no abstract functions"),
-    TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED(true, "trivial property accessors are not recommended"),
     CUSTOM_GETTERS_SETTERS(false, "Custom getters and setters are not recommended, use class methods instead"),
     COMPACT_OBJECT_INITIALIZATION(true, "class instance can be initialized in `apply` block"),
     USELESS_SUPERTYPE(true,"unnecessary supertype specification"),
+    TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED(true, "trivial property accessors are not recommended"),
+    EXTENSION_FUNCTION_SAME_SIGNATURE(false, "extension functions should not have same signature if their receiver classes are related"),
     ;
 
     /**
