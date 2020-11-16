@@ -98,6 +98,7 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
                 ::BlankLinesRule,
                 ::FileSize,
                 ::NullableTypeRule,
+                ::NullChecksRule,
                 ::ImmutableValNoVarRule,
                 ::AvoidNestedFunctionsRule,
                 // formatting: moving blocks, adding line breaks, indentations etc.
