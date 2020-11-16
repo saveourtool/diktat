@@ -1,4 +1,4 @@
-### <a name="c5"></a> 5. Functions
+# <a name="c5"></a> 5. Functions
 <!-- =============================================================================== -->
 ### <a name="c5.1"></a> 5.1 Function design
 You can write clean code by gaining knowledge of how to build design patterns and avoid code smells.

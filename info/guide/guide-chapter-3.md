@@ -1,4 +1,4 @@
-## <a name="c3"></a>3. General formatting (typesetting)
+# <a name="c3"></a>3. General formatting (typesetting)
 <!-- =============================================================================== -->
 ### <a name="c3.1"></a> 3.1 File-related rules
 ### <a name="r3.1.1"></a> Rule 3.1.1: Avoid files that are too long. Files should not exceed 2000 lines (non-empty and non-commented lines).
@@ -264,7 +264,7 @@ override fun foo() {
 }
 ``` 
 
-**Valid examples** (but note once again, that generally they empty blocks are prohibited):
+**Valid examples** (but note once again, that generally empty blocks are prohibited):
 
 ```kotlin
 fun doNothing() {} 
@@ -473,7 +473,7 @@ fun baz() {
 ```
 
 <!-- =============================================================================== -->
-###<a name="c3.8"></a> 3.8 Horizontal space
+### <a name="c3.8"></a> 3.8 Horizontal space
 ### <a name="s3.8.1"></a> Rule 3.8.1: Usage of whitespace for code separation
 
 **Note:** This recommendation corresponds to cases where symbols are located on the same line. However, in some cases, a line break could be used instead of a space. (This logic is described in another rule.)
@@ -496,7 +496,7 @@ fun baz() {
  - A colon in generic structures with the `where` keyword:  `where T : Type`
  - Arrow in lambdas: `(str: String) -> str.length()`
 
-**Exceptions：**
+**Exceptions:**
 
 - Two colons (`::`) are written without spaces:\
   `Object::toString`
@@ -565,7 +565,7 @@ enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean
 }
 ```
 
-**Valid example:**：
+**Valid example:**
  ```kotlin
  private val nr: Int // no alignment, but looks fine
  private var color: Color // no alignment
@@ -578,7 +578,7 @@ enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean
  ```
 
 <!-- =============================================================================== -->
-###<a name="c3.9"></a> 3.9 Enumerations
+### <a name="c3.9"></a> 3.9 Enumerations
 ### <a name="s3.9.1"></a>Recommendation 3.9.1: Enum values are separated by a comma and line break, with ';' placed on the new line.
 1) Enum values are separated by comma and a line break. `;` is put on the new line:
 ```kotlin
