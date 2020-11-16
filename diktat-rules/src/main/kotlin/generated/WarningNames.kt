@@ -213,4 +213,6 @@ public object WarningNames {
     public const val CUSTOM_GETTERS_SETTERS: String = "CUSTOM_GETTERS_SETTERS"
 
     public const val COMPACT_OBJECT_INITIALIZATION: String = "COMPACT_OBJECT_INITIALIZATION"
+
+    public const val USELESS_SUPERTYPE: String = "USELESS_SUPERTYPE"
 }
