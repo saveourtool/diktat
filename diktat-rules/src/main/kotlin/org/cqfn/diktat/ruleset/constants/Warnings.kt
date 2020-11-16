@@ -130,6 +130,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     USELESS_SUPERTYPE(true,"unnecessary supertype specification"),
     TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED(true, "trivial property accessors are not recommended"),
     EXTENSION_FUNCTION_SAME_SIGNATURE(false, "extension functions should not have same signature if their receiver classes are related"),
+    EMPTY_PRIMARY_CONSTRUCTOR(true, "avoid empty primary constructor"),
     ;
 
     /**
