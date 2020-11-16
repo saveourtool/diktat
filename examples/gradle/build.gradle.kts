@@ -12,7 +12,7 @@ dependencies {
     }
 
     // diktat ruleset
-    ktlint("org.cqfn.diktat:diktat-rules:0.1.0") {
+    ktlint("org.cqfn.diktat:diktat-rules:0.1.3") {
     }
 }
 
