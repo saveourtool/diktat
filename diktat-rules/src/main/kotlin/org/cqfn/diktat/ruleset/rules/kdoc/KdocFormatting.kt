@@ -76,8 +76,6 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
         emitWarn = emit
         fileName = node.getRootNode().getFileName()
 
-        val declarationTypes = setOf(CLASS, FUN, PROPERTY)
-
         if (node.elementType == KDOC && isKdocNotEmpty(node)) {
             checkNoDeprecatedTag(node)
             checkEmptyTags(node.kDocTags())
@@ -278,7 +276,7 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
         }
     }
 
-    @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
+    @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION", "ComplexMethod")
     private fun checkNewLineAfterSpecialTags(node: ASTNode) {
         val presentSpecialTagNodes = node
                 .getFirstChildWithType(KDOC_SECTION)
