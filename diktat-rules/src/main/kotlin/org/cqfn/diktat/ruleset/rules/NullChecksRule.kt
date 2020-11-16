@@ -19,7 +19,7 @@ import org.jetbrains.kotlin.psi.KtBinaryExpression
  */
 class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-checks") {
     private var isFixMode: Boolean = false
-    private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
+    private lateinit var emitWarn: EmitType
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
@@ -88,4 +88,3 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
         }
     }
 }
-
