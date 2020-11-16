@@ -1,4 +1,4 @@
-### <a name="c4"></a> 4. Variables and types
+# <a name="c4"></a> 4. Variables and types
 <!-- =============================================================================== -->
 ### <a name="c4.1"></a> 4.1 Variables
 ### <a name="r4.1.1"></a> Rule 4.1.1: Do not use Float and Double types when accurate calculations are needed.
