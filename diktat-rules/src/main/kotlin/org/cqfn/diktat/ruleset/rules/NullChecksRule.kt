@@ -1,6 +1,7 @@
 package org.cqfn.diktat.ruleset.rules
 
 import com.pinterest.ktlint.core.Rule
+import org.cqfn.diktat.ruleset.constants.EmitType
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CONDITION
