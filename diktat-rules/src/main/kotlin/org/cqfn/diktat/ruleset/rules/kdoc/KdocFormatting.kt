@@ -283,16 +283,15 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
                 ?.getAllChildrenWithType(KDOC_TAG)
                 ?.filter { (it.psi as KDocTag).name in specialTagNames }
 
-        val poorlyFormattedTagNodes = if (presentSpecialTagNodes != null && presentSpecialTagNodes.size > 1)
-            presentSpecialTagNodes.filterNot { specialTagNode ->
-                // empty line with just * followed by white space or end of block
-                specialTagNode.lastChildNode.elementType == KDOC_LEADING_ASTERISK &&
-                        (specialTagNode.treeNext == null || specialTagNode.treeNext.elementType == WHITE_SPACE &&
-                                specialTagNode.treeNext.text.count { it == '\n' } == 1) &&
-                        // and with no empty line before
-                        specialTagNode.lastChildNode.treePrev.elementType == WHITE_SPACE &&
-                        specialTagNode.lastChildNode.treePrev.treePrev.elementType != KDOC_LEADING_ASTERISK
-            } else { null }
+        val poorlyFormattedTagNodes = presentSpecialTagNodes?.filterNot { specialTagNode ->
+            // empty line with just * followed by white space or end of block
+            specialTagNode.lastChildNode.elementType == KDOC_LEADING_ASTERISK &&
+                    (specialTagNode.treeNext == null || specialTagNode.treeNext.elementType == WHITE_SPACE &&
+                            specialTagNode.treeNext.text.count { it == '\n' } == 1) &&
+                    // and with no empty line before
+                    specialTagNode.lastChildNode.treePrev.elementType == WHITE_SPACE &&
+                    specialTagNode.lastChildNode.treePrev.treePrev.elementType != KDOC_LEADING_ASTERISK
+        }
 
         if (poorlyFormattedTagNodes != null && poorlyFormattedTagNodes.isNotEmpty()) {
             KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS.warnAndFix(configRules, emitWarn, isFixMode,
