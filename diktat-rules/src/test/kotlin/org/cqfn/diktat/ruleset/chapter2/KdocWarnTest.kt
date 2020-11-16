@@ -65,6 +65,8 @@ class KdocWarnTest : LintTestBase(::KdocComments) {
                     internal fun someGoodNameNew(): String {
                         return " ";
                     }
+                    
+                    fun main() {}
                 """.trimIndent()
         lintMethod(code,
                 LintError(1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} someGoodName"),
@@ -116,6 +118,8 @@ class KdocWarnTest : LintTestBase(::KdocComments) {
 
                         private class InternalClass {
                         }
+                        
+                        public fun main() {}
                     }
                 """.trimIndent()
         lintMethod(code,

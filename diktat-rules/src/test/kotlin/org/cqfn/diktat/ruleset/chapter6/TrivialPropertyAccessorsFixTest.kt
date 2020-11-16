@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.chapter6
 
-import generated.WarningNames
 import generated.WarningNames.TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED
 import org.cqfn.diktat.util.FixTestBase
 import org.cqfn.diktat.ruleset.rules.TrivialPropertyAccessors
