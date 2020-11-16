@@ -365,3 +365,7 @@
 - name: COMPACT_OBJECT_INITIALIZATION
   enabled: true
   configuration: {}
+# Checks explicit supertype qualification
+- name: USELESS_SUPERTYPE
+  enabled: true
+  configuration: {}

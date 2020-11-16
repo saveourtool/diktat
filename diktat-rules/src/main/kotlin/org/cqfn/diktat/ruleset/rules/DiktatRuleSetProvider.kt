@@ -65,6 +65,7 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
                 ::PackageNaming,
                 ::IdentifierNaming,
                 // code structure
+                ::UselessSupertype,
                 ::ClassLikeStructuresOrderRule,
                 ::WhenMustHaveElseRule,
                 ::BracesInConditionalsAndLoopsRule,
