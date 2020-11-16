@@ -1,6 +1,6 @@
-## <a name="c0"></a> 0. Preface
+## <a name="c0"></a> Preface
  <!-- =============================================================================== -->
-### <a name="c0.1"></a> 0.1 Purpose of this document   
+### <a name="c0.1"></a> Purpose of this document   
 
 For code to be considered "good", it must entail the following characteristics:
 1.	Simplicity
@@ -16,7 +16,7 @@ Software developers can reference this specification, which will enhance their a
 This will ultimately improve product competitiveness and software development efficiency.
 
 <!-- =============================================================================== -->
-### <a name="c0.2"></a> 0.2 General principles
+### <a name="c0.2"></a> General principles
 
 As a very modern and advanced programming language (completely like other languages), Kotlin complies with the following general principles:
 1.	Clarity: Clarity is a necessary feature of programs that are easy to maintain and refactor.
@@ -42,7 +42,7 @@ In addition, we need to consider the following factors when programming on Kotli
     Some Kotlin features help you write higher-performance code: including rich coroutine library, sequences, inline functions/classes, arrays of basic types, tailRec, and CallsInPlace of contract.
 
 <!-- =============================================================================== -->
-### <a name="c0.3"></a> 0.3 Terminology   
+### <a name="c0.3"></a> Terminology   
 
 **Rules**: conventions that should be followed when programming.
 
@@ -57,13 +57,13 @@ In addition, we need to consider the following factors when programming on Kotli
 Unless otherwise stated, this specification applies to versions 1.3 and later of Kotlin.
 
 <!-- =============================================================================== -->
-### <a name="c0.4"></a> 0.4 Exceptions
+### <a name="c0.4"></a> Exceptions
 
 Even though exceptions may exist, it is important to understand why rules and recommendations are needed.
 Depending on your project situation or personal habits, you can break some of the rules. However, remember that one exception leads to many and can completely destroy the consistency of code. As such, there should be very few exceptions.
 When modifying open-source code or third-party code, you can choose to implement the style used by the code (as opposed to using the existing specifications) to maintain consistency.
 Software that is directly based on the interface of the Android native operating system, such as the Android Framework, remains consistent with the Android style.
-## <a name="c1"></a> 1. Naming
+# <a name="c1"></a> 1. Naming
 In programming, it is difficult to meaningfully and appropriately name variables, functions, classes, etc. Good names clearly express the main ideas and functionality of your code, as well as avoid misinterpretation, unnecessary coding and decoding, magic numbers, and inappropriate abbreviations.
 
 ### <a name="r1.0.1"></a> Rule 1.0.1: file encoding format must be UTF-8 only
@@ -133,7 +133,7 @@ Note that prefixing can also negatively affect the style, as well as the auto ge
 ### <a name="r1.2.1"></a> Rule 1.2.1: Package names are in lower case and separated by dots. Code developed within your company should start with `your.company.domain`, and numbers are permitted in package names.
 Package names are all written in lowercase, and consecutive words are simply concatenated together (no underscores). Package names should contain both the product and module names, as well as the department or team name to prevent conflicts with other teams.  Numbers are not permitted. For example: `org.apache.commons.lang3`, `xxx.yyy.v2`.
 
-**Exceptions：** 
+**Exceptions:** 
 
 - In certain cases, such as open-source projects or commercial cooperation, package names should not start with `your.company.domain`.- In some cases, if the package name starts with a number or other characters, but these characters cannot be used at the beginning of the Java/Kotlin package name, or the package name contains reserved Java keywords, underscores are allowed.
 - Underscores are sometimes permitted if the package name starts with a number or other character, which cannot be used at the beginning of the Java/Kotlin package name; or the package name contains reserved Java keywords. For example: org.example.hyphenated_name, int_.example, com.example._123name   
@@ -147,6 +147,7 @@ package your.company.domain.mobilecontrol.views
 <!-- =============================================================================== -->
 ### <a name="c1.3"></a> 1.3 Classes, enumerations, interfaces
 ### <a name="r1.3.1"></a> Rule 1.3.1: Classes, enumerations, interface names use camel case nomenclature
+
 1.	The class name is usually a noun or a noun phrase using the camel case nomenclature, such as UpperCamelCase. For example: `Character` or `ImmutableList`.
 The name of an interface can also be a noun or noun phrase (such as `List`), or an adjective or adjective phrase (such as `Readable`).
 Note that verbs should not be used to name classes; however, nouns (such as `Customer`, `WikiPage`, and `Account`) can be used. Try to avoid vague words like Manager and Process.
@@ -299,7 +300,7 @@ val shouldAbort: Boolean
 fun isEmpty()
 fun hasNext()
 ```
-## <a name="c2"></a> 2. Comments
+# <a name="c2"></a> 2. Comments
 
 The best practice involves beginning your code with a short summary, which can be one sentence.
 You should balance between writing no comments at all and obvious comments for each line of code.
@@ -373,7 +374,6 @@ fun isEmptyList(list: List<String>) = list.size == 0
      * @return battle between fox and dog 
      */
     protected abstract fun foo(Fox fox)
-                      /* 注释上面加1个空行 */ 
      /**
       * These possibilities include: Formatting of header comments
       *     / * Add a blank line between the comment text and each KDoc tag underneath * /
@@ -578,7 +578,7 @@ They should all have a unified style to facilitate the unified text search proce
 ```
 
 In the version development stage, these annotations can be used to highlight the issues in code, but all of them should be fixed before a new product version is released.
-## <a name="c3"></a>3. General formatting (typesetting)
+# <a name="c3"></a>3. General formatting (typesetting)
 <!-- =============================================================================== -->
 ### <a name="c3.1"></a> 3.1 File-related rules
 ### <a name="r3.1.1"></a> Rule 3.1.1: Avoid files that are too long. Files should not exceed 2000 lines (non-empty and non-commented lines).
@@ -844,7 +844,7 @@ override fun foo() {
 }
 ``` 
 
-**Valid examples** (but note once again, that generally they empty blocks are prohibited):
+**Valid examples** (but note once again, that generally empty blocks are prohibited):
 
 ```kotlin
 fun doNothing() {} 
@@ -1053,7 +1053,7 @@ fun baz() {
 ```
 
 <!-- =============================================================================== -->
-###<a name="c3.8"></a> 3.8 Horizontal space
+### <a name="c3.8"></a> 3.8 Horizontal space
 ### <a name="s3.8.1"></a> Rule 3.8.1: Usage of whitespace for code separation
 
 **Note:** This recommendation corresponds to cases where symbols are located on the same line. However, in some cases, a line break could be used instead of a space. (This logic is described in another rule.)
@@ -1076,7 +1076,7 @@ fun baz() {
  - A colon in generic structures with the `where` keyword:  `where T : Type`
  - Arrow in lambdas: `(str: String) -> str.length()`
 
-**Exceptions：**
+**Exceptions:**
 
 - Two colons (`::`) are written without spaces:\
   `Object::toString`
@@ -1145,7 +1145,7 @@ enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean
 }
 ```
 
-**Valid example:**：
+**Valid example:**
  ```kotlin
  private val nr: Int // no alignment, but looks fine
  private var color: Color // no alignment
@@ -1158,7 +1158,7 @@ enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean
  ```
 
 <!-- =============================================================================== -->
-###<a name="c3.9"></a> 3.9 Enumerations
+### <a name="c3.9"></a> 3.9 Enumerations
 ### <a name="s3.9.1"></a>Recommendation 3.9.1: Enum values are separated by a comma and line break, with ';' placed on the new line.
 1) Enum values are separated by comma and a line break. `;` is put on the new line:
 ```kotlin
@@ -1356,7 +1356,7 @@ val someString = "$myArgument"
 ```kotlin
 val someString = myArgument
 ```
-### <a name="c4"></a> 4. Variables and types
+# <a name="c4"></a> 4. Variables and types
 <!-- =============================================================================== -->
 ### <a name="c4.1"></a> 4.1 Variables
 ### <a name="r4.1.1"></a> Rule 4.1.1: Do not use Float and Double types when accurate calculations are needed.
@@ -1555,7 +1555,7 @@ val myVariable = emptyMap<Int, String>()
 ```kotlin
 val myVariable: Map<Int, String> = emptyMap() 
 ```
-### <a name="c5"></a> 5. Functions
+# <a name="c5"></a> 5. Functions
 <!-- =============================================================================== -->
 ### <a name="c5.1"></a> 5.1 Function design
 You can write clean code by gaining knowledge of how to build design patterns and avoid code smells.
@@ -1664,7 +1664,7 @@ private fun foo() {
      // ...
  }
 ``` 
-# <a name="c6"></a> 6. Classes, interfaces and functions
+# <a name="c6"></a> 6. Classes, interfaces and extension functions
 <!-- =============================================================================== -->
 ### <a name="c6.1"></a> 6.1 Classes
 ### <a name="r6.1.1"></a> Rule 6.1.1:  When a class has a single constructor, it should be defined as a primary constructor in the declaration of the class.
@@ -1736,6 +1736,7 @@ data class Test1(var a: Int = 0, var b: Int = 0)
 ```
 
 **Exception #1**: Note, that data classes cannot be abstract, open, sealed or inner, that's why these types of classes cannot be changed to data class.
+
 **Exception #2**: No need to convert a class to data class in case this class extends some other class or implements an interface.
 
 ### <a name="r6.1.3"></a> Rule 6.1.3: Do not use the primary constructor if it is empty and has no sense.
@@ -1778,7 +1779,7 @@ class Test {
 The primary constructor cannot contain any code. That's why Kotlin has introduced `init` blocks.
 These blocks are used to store the code that should be run during the initialization of the class.
 Kotlin allows to write multiple initialization blocks that are executed in the same order as they appear in the class body.
-Even when you have the (rule 3.2)[#s3.2] this makes code less readable as the programmer needs to keep in mind all init blocks and trace the execution of the code.
+Even when you have the [Rule 3.1.2](#r3.1.2) this makes code less readable as the programmer needs to keep in mind all init blocks and trace the execution of the code.
 So in your code you should try to use single `init` block to reduce the complexity. In case you need to do some logging or make some calculations before the assignment 
 of some class property - you can use powerful functional programming. This will reduce the possibility of the error, when occasionally someone will change the order of your `init` blocks. 
 And it will make the logic of the code more coupled. It is always enough to use one `init` block to implement your idea in Kotlin.
@@ -1916,7 +1917,7 @@ But in all cases it is very confusing when `get` and `set` are overriden for a d
 Developer expects to get the value of the property, but receives some unknown value and some extra side effect hidden by the custom getter/setter. 
 Use extra functions for it instead.
 
-**Valid example**:
+**Invalid example:**
 ```kotlin 
 // Bad example ======
 class A {

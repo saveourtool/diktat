@@ -63,6 +63,7 @@
         <module>diktat-test-framework</module>
         <module>diktat-ruleset</module>
         <module>diktat-maven-plugin</module>
+        <module>diktat-gradle-plugin</module>
     </modules>
 
     <distributionManagement>
@@ -164,6 +165,11 @@
     <build>
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>3.1.0</version>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>

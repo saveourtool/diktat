@@ -1,4 +1,4 @@
-## <a name="c1"></a> 1. Naming
+# <a name="c1"></a> 1. Naming
 In programming, it is difficult to meaningfully and appropriately name variables, functions, classes, etc. Good names clearly express the main ideas and functionality of your code, as well as avoid misinterpretation, unnecessary coding and decoding, magic numbers, and inappropriate abbreviations.
 
 ### <a name="r1.0.1"></a> Rule 1.0.1: file encoding format must be UTF-8 only
@@ -68,7 +68,7 @@ Note that prefixing can also negatively affect the style, as well as the auto ge
 ### <a name="r1.2.1"></a> Rule 1.2.1: Package names are in lower case and separated by dots. Code developed within your company should start with `your.company.domain`, and numbers are permitted in package names.
 Package names are all written in lowercase, and consecutive words are simply concatenated together (no underscores). Package names should contain both the product and module names, as well as the department or team name to prevent conflicts with other teams.  Numbers are not permitted. For example: `org.apache.commons.lang3`, `xxx.yyy.v2`.
 
-**Exceptions：** 
+**Exceptions:** 
 
 - In certain cases, such as open-source projects or commercial cooperation, package names should not start with `your.company.domain`.- In some cases, if the package name starts with a number or other characters, but these characters cannot be used at the beginning of the Java/Kotlin package name, or the package name contains reserved Java keywords, underscores are allowed.
 - Underscores are sometimes permitted if the package name starts with a number or other character, which cannot be used at the beginning of the Java/Kotlin package name; or the package name contains reserved Java keywords. For example: org.example.hyphenated_name, int_.example, com.example._123name   
@@ -82,6 +82,7 @@ package your.company.domain.mobilecontrol.views
 <!-- =============================================================================== -->
 ### <a name="c1.3"></a> 1.3 Classes, enumerations, interfaces
 ### <a name="r1.3.1"></a> Rule 1.3.1: Classes, enumerations, interface names use camel case nomenclature
+
 1.	The class name is usually a noun or a noun phrase using the camel case nomenclature, such as UpperCamelCase. For example: `Character` or `ImmutableList`.
 The name of an interface can also be a noun or noun phrase (such as `List`), or an adjective or adjective phrase (such as `Readable`).
 Note that verbs should not be used to name classes; however, nouns (such as `Customer`, `WikiPage`, and `Account`) can be used. Try to avoid vague words like Manager and Process.
