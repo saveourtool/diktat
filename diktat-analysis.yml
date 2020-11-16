@@ -283,13 +283,15 @@
 - name: CUSTOM_GETTERS_SETTERS
   enabled: true
 # Checks if class instantiation can be wrapped in `apply` for better readability
-- name: COMPACT_OBJECT_INITIALIZATION
-  enabled: true
-# Checks explicit supertype qualification
-- name: USELESS_SUPERTYPE
-  enabled: true
 # Checks if null-check was used explicitly (for example: if (a == null))
 # Try to avoid explicit null checks (explicit comparison with `null`)
 # Kotlin is declared as [Null-safe](https://kotlinlang.org/docs/reference/null-safety.html) language.
 # But Kotlin architects wanted Kotlin to be fully compatible with Java, that's why `null` keyword was also introduced in Kotlin.
 # There are several code-structures that can be used in Kotlin to avoid null-checks. For example: `?:`,  `.let {}`, `.also {}`, e.t.c
+- name: AVOID_NULL_CHECKS
+  enabled: true
+- name: COMPACT_OBJECT_INITIALIZATION
+  enabled: true
+# Checks explicit supertype qualification
+- name: USELESS_SUPERTYPE
+  enabled: true

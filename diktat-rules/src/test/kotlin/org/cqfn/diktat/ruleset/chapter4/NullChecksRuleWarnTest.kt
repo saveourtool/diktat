@@ -113,7 +113,7 @@ class NullChecksRuleWarnTest : LintTestBase(::NullChecksRule) {
                 |      }
                 | }
                 """.trimMargin(),
-                LintError(5, 19, ruleId, "${Warnings.AVOID_NULL_CHECKS.warnText()} myVar != null", true),
+                LintError(5, 19, ruleId, "${Warnings.AVOID_NULL_CHECKS.warnText()} myVar == null", false),
         )
     }
 }
