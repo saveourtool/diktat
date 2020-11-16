@@ -2,6 +2,7 @@ package org.cqfn.diktat.ruleset.rules
 
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
+import com.pinterest.ktlint.core.ast.ElementType.ARRAY_ACCESS_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_WITH_TYPE
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
@@ -93,12 +94,21 @@ class StringTemplateFormatRule(private val configRules: List<RulesConfig>) : Rul
                 .singleOrNull()
                 ?.treeParent
                 ?.elementType == LONG_STRING_TEMPLATE_ENTRY
-        return if (onlyOneRefExpr) {
-            !(node.treeNext.text.first().isLetterOrDigit() // checking if first letter is valid
+
+        val isArrayAccessExpression = node // this should be omitted in previous expression, used for safe warranties
+                .findAllNodesWithSpecificType(REFERENCE_EXPRESSION)
+                .singleOrNull()
+                ?.treeParent
+                ?.elementType == ARRAY_ACCESS_EXPRESSION
+
+        return if (onlyOneRefExpr && !isArrayAccessExpression) {
+            (!(node.treeNext.text.first().isLetterOrDigit() // checking if first letter is valid
                     || node.treeNext.text.startsWith("_"))
-                    || node.treeNext.elementType == CLOSING_QUOTE
-        } else {
+                    || node.treeNext.elementType == CLOSING_QUOTE)
+        } else if(!isArrayAccessExpression) {
             node.hasAnyChildOfTypes(FLOAT_CONSTANT, INTEGER_CONSTANT) // it also fixes "${1.0}asd" cases
+        } else {
+            false
         }
     }
 }
