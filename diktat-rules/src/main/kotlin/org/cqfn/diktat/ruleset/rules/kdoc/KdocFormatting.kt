@@ -302,7 +302,7 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
                         node.removeChild(node.lastChildNode)  // KDOC_LEADING_ASTERISK
                         node.removeChild(node.lastChildNode)  // WHITE_SPACE
                     }
-                    if (node.lastChildNode.elementType != KDOC_LEADING_ASTERISK) {
+                    if (node.treeParent.lastChildNode != node && node.lastChildNode.elementType != KDOC_LEADING_ASTERISK) {
                         val indent = node
                                 .prevSibling { it.elementType == WHITE_SPACE }
                                 ?.text
@@ -330,11 +330,4 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
     private fun ASTNode.applyToPrevSibling(elementType: IElementType, consumer: ASTNode.() -> Unit) {
         prevSibling { it.elementType == elementType }?.apply(consumer)
     }
-}
-
-class Foo {
-    /**
-     * @implNote lorem ipsum
-     */
-    private fun foo() {}
 }
