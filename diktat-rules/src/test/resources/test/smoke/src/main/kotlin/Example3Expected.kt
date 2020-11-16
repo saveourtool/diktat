@@ -1,5 +1,9 @@
 package org.cqfn.diktat
 
+/*
+ * Copyright (c) Your Company Name Here. 2010-2020
+ */
+
 /**
  * @property name
  */
@@ -14,7 +18,7 @@ class HttpClient(var name: String) {
 fun mains() {
     val httpClient = HttpClient("myConnection")
             .apply {
-                url = "http://pushkin.com"
+                url = "http://example.com"
                 port = "8080"
                 timeout = 100
             }

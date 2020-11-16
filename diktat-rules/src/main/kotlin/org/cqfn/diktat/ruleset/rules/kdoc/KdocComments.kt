@@ -3,10 +3,6 @@ package org.cqfn.diktat.ruleset.rules.kdoc
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getCommonConfiguration
 import org.cqfn.diktat.ruleset.constants.EmitType
-import org.cqfn.diktat.ruleset.constants.Warnings
-import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CONSTRUCTOR_PROPERTY
-import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_CLASS_ELEMENTS
-import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_TOP_LEVEL
 import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getFileName
@@ -40,6 +36,11 @@ import com.pinterest.ktlint.core.ast.ElementType.VAL_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.VAR_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.parent
+import org.cqfn.diktat.ruleset.constants.Warnings
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CONSTRUCTOR_PROPERTY
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT
+import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_TOP_LEVEL
+import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_CLASS_ELEMENTS
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -150,7 +151,7 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
         if (prevComment.elementType == KDOC || prevComment.elementType == BLOCK_COMMENT) {
             handleKdocAndBlock(node, prevComment, kdocBeforeClass, propertyInClassKdoc, propertyInLocalKdoc)
         } else {
-            KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixMode, node.findChildByType(IDENTIFIER)!!.text, prevComment.startOffset, node) {
+            KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnAndFix(configRules, emitWarn, isFixMode, node.findChildByType(IDENTIFIER)!!.text, prevComment.startOffset, node) {
                 handleCommentBefore(node, kdocBeforeClass, prevComment, propertyInClassKdoc)
             }
         }
@@ -169,7 +170,7 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
 
     @Suppress("UnsafeCallOnNullableType")
     private fun createKdocWithProperty(node: ASTNode, prevComment: ASTNode) {
-        KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixMode, prevComment.text, prevComment.startOffset, node) {
+        KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnAndFix(configRules, emitWarn, isFixMode, prevComment.text, prevComment.startOffset, node) {
             val classNode = node.parent({ it.elementType == CLASS })!!
             val newKdocText = if (prevComment.elementType == KDOC) {
                 prevComment.text
@@ -277,10 +278,13 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
         val modifier = node.getFirstChildWithType(MODIFIER_LIST)
         val name = node.getIdentifierName()
 
-        if (modifier.isAccessibleOutside() && kdoc == null) {
+        if (modifier.isAccessibleOutside() && kdoc == null && !isTopLevelFunctionStandard(node)) {
             warning.warn(configRules, emitWarn, isFixMode, name!!.text, node.startOffset, node)
         }
     }
+
+    private fun isTopLevelFunctionStandard(node: ASTNode) : Boolean = node.elementType == FUN && node.isStandardMethod()
+
     companion object {
         private val statementsToDocument = TokenSet.create(CLASS, FUN, PROPERTY)
     }

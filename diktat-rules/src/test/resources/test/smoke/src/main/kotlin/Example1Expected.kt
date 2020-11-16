@@ -5,9 +5,6 @@ class Example {
     val isValid = true
     val foo: Int = 1
 
-    /**
-     * @return
-     */
     fun Foo.foo() { }
 
     /**

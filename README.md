@@ -22,12 +22,29 @@ DiKTat is a strict [coding standard ](info/guide/diktat-coding-convention.md) fo
 as AST visitors on the top of [KTlint](https://ktlint.github.io/). It can be used for detecting and autofixing code smells in CI/CD process. 
 The full list of available supported rules and inspections can be found [here](info/available-rules.md).
 
+Now diKTat was already added to the lists of [static analysis tools](https://github.com/analysis-tools-dev/static-analysis) and to [kotlin-awesome](https://github.com/KotlinBy/awesome-kotlin). Thanks to the community for this support! 
 
-| See first | !!! |
-| ----------------- | ------------------------ |
-|[diKTat codestyle](info/guide/diktat-coding-convention.md)|[supported rules](info/available-rules.md)|                                                      |
-|[examples of usage](https://github.com/akuleshov7/diktat-examples)|[online demo](https://ktlint-demo.herokuapp.com)|
+## See first
 
+|  |  |  |  |
+| --- | --- | --- | --- |
+|[DiKTat codestyle](info/guide/diktat-coding-convention.md)|[Supported Rules](info/available-rules.md) | [Examples of Usage](https://github.com/akuleshov7/diktat-examples) | [Online Demo](https://ktlint-demo.herokuapp.com) |
+
+## Why should I use diktat in my CI/CD?
+
+There are several tools like `detekt` and `ktlint` that are doing static analysis. Why do I need diktat?
+
+First of all - actually you can combine diktat with any other static analyzers. And diKTat is even using ktlint framework for parsing the code into the AST.
+And we are trying to contribute to those projects. 
+Main features of diktat are the following:
+
+1) **More inspections.** It has 100+ inspections that are tightly coupled with it's codestyle.
+
+2) **Unique inspections** that are missing in other linters.
+
+3) **Highly configurable**. Each and every inspection can be configured and suppressed both from the code or from the configuration file.
+
+4) **Strict detailed coding convention** that you can use in your project.
 
 ## Run as CLI-application
 1. Install KTlint manually: [here](https://github.com/pinterest/ktlint/releases)
@@ -52,88 +69,14 @@ The full list of available supported rules and inspections can be found [here](i
 
 To **autofix** all code style violations use `-F` option.
 
-## Run with Maven
-
-### Use maven-antrun-plugin
-
-Add this plugin to your pom.xml:
-<details>
-  <summary><b>Maven plugin snippet</b></summary><br>
-  
-```xml
-<project>
-  [...]
-  <build>
-    <plugins>
-      <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-antrun-plugin</artifactId>
-          <version>3.0.0</version>
-          <executions>
-              <execution>
-                  <id>diktat</id>
-                  <phase>none</phase>
-                  <configuration>
-                      <target name="ktlint">
-                          <java taskname="ktlint" dir="${basedir}" fork="true" failonerror="true"
-                                classpathref="maven.plugin.classpath" classname="com.pinterest.ktlint.Main">
-                              <arg value="src/main/**/*.kt"/>
-                              <arg value="src/test/kotlin/**/*.kt"/>
-                          </java>
-                      </target>
-                  </configuration>
-                  <goals>
-                      <goal>run</goal>
-                  </goals>
-              </execution>
-          </executions>
-          <dependencies>
-              <dependency>
-                  <groupId>com.pinterest</groupId>
-                  <artifactId>ktlint</artifactId>
-                  <version>0.39.0</version>
-                  <exclusions>
-                      <exclusion>  <!-- without this exclusion both rulesets are enabled which we discourage -->
-                          <groupId>com.pinterest.ktlint</groupId>
-                          <artifactId>ktlint-ruleset-standard</artifactId>
-                      </exclusion>
-                  </exclusions>
-              </dependency>
-              <dependency>
-                  <groupId>org.cqfn.diktat</groupId>
-                  <artifactId>diktat-rules</artifactId>
-                  <version>0.1.1</version> <!-- replace it with diktat latest version -->
-                  <exclusions>
-                      <exclusion>
-                          <groupId>org.slf4j</groupId>
-                          <artifactId>slf4j-log4j12</artifactId>
-                      </exclusion>
-                  </exclusions>
-              </dependency>
-          </dependencies>
-      </plugin>
-    </plugins>
-  </build>
-</project>
-```
-
-</details>
-
-In case you want to add autofixer with diKTat ruleset just extend
-the snippet above with `<arg value="-F"/>`.
-
-To run diktat to check/fix code style - run `$ mvn antrun:run@diktat`.
-
-### Use the new diktat-maven-plugin
-
-You can see how it is configured in our project for self-checks: [pom.xml](pom.xml).
-This plugin should be available since version 0.1.3. It requires less configuration but may contain bugs.
+## Run with Maven using diktat-maven-plugin
+This plugin is available since version 0.1.3. You can see how it is configured in our project for self-checks: [pom.xml](pom.xml).
 If you use it and encounter any problems, feel free to open issues on [github](https://github.com/cqfn/diktat/issues).
 
 Add this plugin to your pom.xml:
 <details>
   <summary><b>Maven plugin snippet</b></summary><br>
-  
+
 ```xml
             <plugin>
                 <groupId>org.cqfn.diktat</groupId>
@@ -164,57 +107,38 @@ Add this plugin to your pom.xml:
 To run diktat check use command `$ mvn diktat:check@diktat`.
 To run diktat in autocorrect mode use command `$ mvn diktat:fix@diktat`.
 
-## Run with Gradle Plugin 
-
-You can see how it is configured in our project for self-checks: [build.gradle.kts](build.gradle.kts).
-Add the code below to your `build.gradle.kts`:
-<details>
-  <summary><b>Gradle plugin snippet</b></summary><br>
-  
+## Run with Gradle using diktat-gradle-plugin
+This plugin is available since version 0.1.4. You can see how the plugin is configured in our project for self-checks: [build.gradle.kts](build.gradle.kts).
+Add this plugin to your `build.gradle.kts`:
 ```kotlin
-val ktlint by configurations.creating
-
-dependencies {
-    ktlint("com.pinterest:ktlint:0.39.0") {
-        // need to exclude standard ruleset to use only diktat rules
-        exclude("com.pinterest.ktlint", "ktlint-ruleset-standard")
-    }
-
-    // diktat ruleset
-    ktlint("org.cqfn.diktat:diktat-rules:0.1.1")
-}
-
-val outputDir = "${project.buildDir}/reports/diktat/"
-val inputFiles = project.fileTree(mapOf("dir" to "src", "include" to "**/*.kt"))
-
-val diktatCheck by tasks.creating(JavaExec::class) {
-    inputs.files(inputFiles)
-    outputs.dir(outputDir)
-
-    description = "Check Kotlin code style."
-    classpath = ktlint
-    main = "com.pinterest.ktlint.Main"
-
-    // specify proper path to sources that should be checked here
-    args = listOf("src/main/kotlin/**/*.kt")
-}
-
-val diktatFormat by tasks.creating(JavaExec::class) {
-    inputs.files(inputFiles)
-    outputs.dir(outputDir)
-
-    description = "Fix Kotlin code style deviations."
-    classpath = ktlint
-    main = "com.pinterest.ktlint.Main"
-
-    // specify proper path to sources that should be checked here
-    args = listOf("-F", "src/main/kotlin/**/*.kt")
+plugins {
+    id("org.cqfn.diktat.diktat-gradle-plugin") version "0.1.4"
 }
 ```
 
-</details>
+Or use buildscript syntax:
+```kotlin
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.cqfn.diktat:diktat-gradle-plugin:0.1.4")
+    }
+}
 
-To run diktat to check/fix code style - run `$ gradle diktatCheck`.
+apply(plugin = "org.cqfn.diktat.diktat-gradle-plugin")
+```
+
+You can then configure diktat using `diktat` extension:
+```kotlin
+diktat {
+    inputs = files("src/**/*.kt")  // file collection that will be checked by diktat
+    debug = true  // turn on debug logging
+}
+```
+
+You can run diktat checks using task `diktatCheck` and automatically fix errors with tasks `diktatFix`.
 
 ## Customizations via `diktat-analysis.yml`
 

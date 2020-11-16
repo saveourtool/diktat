@@ -73,4 +73,21 @@ class WhenMustHaveElseWarnTest : LintTestBase(::WhenMustHaveElseRule) {
                 """.trimMargin()
         )
     }
+
+    @Test
+    @Tag(WarningNames.WHEN_WITHOUT_ELSE)
+    fun `regression - shouldn't check when in when branches and assignments`() {
+        lintMethod(
+            """
+                    |fun foo() {
+                    |    var x: Int
+                    |    x = when(it) {
+                    |        1 -> when (x) {
+                    |            2 -> foo()
+                    |        }
+                    |    }
+                    |}
+                """.trimMargin()
+        )
+    }
 }

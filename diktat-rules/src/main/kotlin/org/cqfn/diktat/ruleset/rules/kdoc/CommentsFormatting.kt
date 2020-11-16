@@ -8,14 +8,6 @@ import org.cqfn.diktat.ruleset.constants.Warnings.COMMENT_WHITE_SPACE
 import org.cqfn.diktat.ruleset.constants.Warnings.FIRST_COMMENT_NO_SPACES
 import org.cqfn.diktat.ruleset.constants.Warnings.IF_ELSE_COMMENTS
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_NEWLINES_AROUND_KDOC
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
-import org.cqfn.diktat.ruleset.utils.findChildrenMatching
-import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
-import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
-import org.cqfn.diktat.ruleset.utils.hasChildOfType
-import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
-import org.cqfn.diktat.ruleset.utils.numNewLines
-import org.cqfn.diktat.ruleset.utils.prevNodeUntilNode
 
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
@@ -39,11 +31,12 @@ import com.pinterest.ktlint.core.ast.ElementType.THEN
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isWhiteSpace
+import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.prevSibling
+import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
-import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 
 /**
  * This class handles rule 2.6
@@ -58,6 +51,12 @@ import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
  * * Comments in if else should be inside code blocks. Exception: General if comment
  */
 class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-comments-codeblocks-formatting") {
+    companion object {
+        private const val APPROPRIATE_COMMENT_SPACES = 1
+        private const val MAX_SPACES = 1
+        private val COMMENT_TYPE = listOf(EOL_COMMENT, KDOC, BLOCK_COMMENT)
+    }
+
     private var isFixMode: Boolean = false
     private lateinit var emitWarn: EmitType
 
@@ -76,11 +75,7 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
                 configRules.getRuleConfig(COMMENT_WHITE_SPACE)?.configuration ?: mapOf())
 
         when (node.elementType) {
-            CLASS, FUN, PROPERTY -> {
-                checkBlankLineAfterKdoc(node, EOL_COMMENT)
-                checkBlankLineAfterKdoc(node, KDOC)
-                checkBlankLineAfterKdoc(node, BLOCK_COMMENT)
-            }
+            CLASS, FUN, PROPERTY -> checkBlankLineAfterKdoc(node)
             IF -> handleIfElse(node)
             EOL_COMMENT, BLOCK_COMMENT -> handleEolAndBlockComments(node, configuration)
             KDOC -> handleKdocComments(node, configuration)
@@ -90,12 +85,14 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
         }
     }
 
-    private fun checkBlankLineAfterKdoc(node: ASTNode, type: IElementType) {
-        val kdoc = node.getFirstChildWithType(type)
-        val nodeAfterKdoc = kdoc?.treeNext
-        if (nodeAfterKdoc?.elementType == WHITE_SPACE && nodeAfterKdoc.numNewLines() > 1) {
-            WRONG_NEWLINES_AROUND_KDOC.warnAndFix(configRules, emitWarn, isFixMode, "redundant blank line after ${kdoc.text}", nodeAfterKdoc.startOffset, nodeAfterKdoc) {
-                nodeAfterKdoc.leaveOnlyOneNewLine()
+    private fun checkBlankLineAfterKdoc(node: ASTNode) {
+        COMMENT_TYPE.forEach {
+            val kdoc = node.getFirstChildWithType(it)
+            val nodeAfterKdoc = kdoc?.treeNext
+            if (nodeAfterKdoc?.elementType == WHITE_SPACE && nodeAfterKdoc.numNewLines() > 1) {
+                WRONG_NEWLINES_AROUND_KDOC.warnAndFix(configRules, emitWarn, isFixMode, "redundant blank line after ${kdoc.text}", nodeAfterKdoc.startOffset, nodeAfterKdoc) {
+                    nodeAfterKdoc.leaveOnlyOneNewLine()
+                }
             }
         }
     }
@@ -106,16 +103,16 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
         } else if (node.treeParent.elementType != IF) {
             checkClassComment(node)
         }
-        checkWhiteSpaceBeforeComment(node, configuration)
+        checkWhiteSpaceBeginInComment(node, configuration)
     }
 
     private fun handleEolAndBlockComments(node: ASTNode, configuration: CommentsFormattingConfiguration) {
         basicCommentsChecks(node, configuration)
-        checkWhiteSpaceBeforeComment(node, configuration)
+        checkWhiteSpaceBeginInComment(node, configuration)
     }
 
     private fun basicCommentsChecks(node: ASTNode, configuration: CommentsFormattingConfiguration) {
-        checkSpaceBetweenPropertyAndComment(node, configuration)
+        checkSpaceBeforeComment(node, configuration)
 
         if (node.treeParent.elementType == BLOCK && node.treeNext != null) {
             // Checking if comment is inside a code block like fun{}
@@ -203,26 +200,39 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
         }
     }
 
-    private fun checkSpaceBetweenPropertyAndComment(node: ASTNode, configuration: CommentsFormattingConfiguration) {
-        if (node.treeParent.firstChildNode != node) {
-            if (!node.treePrev.isWhiteSpace()) {
-                // if comment is like this: val a = 5// Comment
+    private fun checkSpaceBeforeComment(node: ASTNode, configuration: CommentsFormattingConfiguration) {
+        if (node.treeParent.firstChildNode == node)
+            return
+        if (node.treeParent.elementType == FILE) {
+            //This case is for top-level comments that are located in the beginning of the line and therefore don't need any spaces before.
+            if (!node.treePrev.isWhiteSpaceWithNewline() && node.treePrev.text.count { it == ' '} > 0) {
                 COMMENT_WHITE_SPACE.warnAndFix(configRules, emitWarn, isFixMode,
-                        "There should be ${configuration.maxSpacesBeforeComment} space(s) before comment text, but are none in ${node.text}", node.startOffset, node) {
-                    node.treeParent.addChild(PsiWhiteSpaceImpl(" ".repeat(configuration.maxSpacesBeforeComment)), node)
+                        "There should be 0 space(s) before comment text, but are ${node.treePrev.text.count { it == ' ' }} in ${node.text}",
+                        node.startOffset, node) {
+                    if (node.treePrev.elementType == WHITE_SPACE)
+                        (node.treePrev as LeafPsiElement).replaceWithText("\n")
+
+                    else
+                        node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node)
                 }
-            } else if (!node.treePrev.textContains('\n') && node.treePrev.text.length != configuration.maxSpacesBeforeComment) {
-                // if there are too many spaces before comment
-                COMMENT_WHITE_SPACE.warnAndFix(configRules, emitWarn, isFixMode,
-                        "There should be ${configuration.maxSpacesBeforeComment} space(s) before comment text, but there are too many in ${node.text}", node.startOffset, node) {
-                    (node.treePrev as LeafPsiElement).replaceWithText(" ".repeat(configuration.maxSpacesBeforeComment))
-                }
+            }
+        } else if (!node.treePrev.isWhiteSpace()) {
+            // if comment is like this: val a = 5// Comment
+            COMMENT_WHITE_SPACE.warnAndFix(configRules, emitWarn, isFixMode,
+                    "There should be ${configuration.maxSpacesBeforeComment} space(s) before comment text, but are none in ${node.text}", node.startOffset, node) {
+                node.treeParent.addChild(PsiWhiteSpaceImpl(" ".repeat(configuration.maxSpacesBeforeComment)), node)
+            }
+        } else if (!node.treePrev.textContains('\n') && node.treePrev.text.length != configuration.maxSpacesBeforeComment) {
+            // if there are too many spaces before comment
+            COMMENT_WHITE_SPACE.warnAndFix(configRules, emitWarn, isFixMode,
+                    "There should be ${configuration.maxSpacesBeforeComment} space(s) before comment text, but there are too many in ${node.text}", node.startOffset, node) {
+                (node.treePrev as LeafPsiElement).replaceWithText(" ".repeat(configuration.maxSpacesBeforeComment))
             }
         }
     }
 
     @Suppress("ComplexMethod", "TOO_LONG_FUNCTION")
-    private fun checkWhiteSpaceBeforeComment(node: ASTNode, configuration: CommentsFormattingConfiguration) {
+    private fun checkWhiteSpaceBeginInComment(node: ASTNode, configuration: CommentsFormattingConfiguration) {
         if (node.elementType == EOL_COMMENT &&
                 node
                         .text
@@ -355,9 +365,5 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
          * Number of spaces after comment sign (`//` or other)
          */
         val maxSpacesInComment = config["maxSpacesInComment"]?.toIntOrNull() ?: APPROPRIATE_COMMENT_SPACES
-    }
-    companion object {
-        private const val APPROPRIATE_COMMENT_SPACES = 1
-        private const val MAX_SPACES = 1
     }
 }

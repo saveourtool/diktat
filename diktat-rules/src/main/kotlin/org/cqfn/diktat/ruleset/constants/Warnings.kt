@@ -55,7 +55,8 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS(true, "in KDoc there should be exactly one empty line after special tags"),
     KDOC_NO_EMPTY_TAGS(false, "no empty descriptions in tag blocks are allowed"),
     KDOC_NO_DEPRECATED_TAG(true, "KDoc doesn't support @deprecated tag, use @Deprecated annotation instead"),
-    KDOC_NO_CONSTRUCTOR_PROPERTY(true, "replace comment before property with @property tag in KDoc"),
+    KDOC_NO_CONSTRUCTOR_PROPERTY(true, "all properties from the primary constructor should be documented in a @property tag in KDoc"),
+    KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT(true, "replace comment before property with @property tag in class KDoc"),
     HEADER_WRONG_FORMAT(true, "file header comments should be properly formatted"),
     HEADER_MISSING_OR_WRONG_COPYRIGHT(true, "file header comment must include copyright information inside a block comment"),
     WRONG_COPYRIGHT_YEAR(true, "year defined in copyright and current year are different"),
@@ -124,6 +125,10 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR(false, "Use `field` keyword instead of property name inside property accessors"),
     MULTIPLE_INIT_BLOCKS(true, "Avoid using multiple `init` blocks, this logic can be moved to constructors or properties declarations"),
     CLASS_SHOULD_NOT_BE_ABSTRACT(true, "class should not be abstract, because it has no abstract functions"),
+    TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED(true, "trivial property accessors are not recommended"),
+    CUSTOM_GETTERS_SETTERS(false, "Custom getters and setters are not recommended, use class methods instead"),
+    COMPACT_OBJECT_INITIALIZATION(true, "class instance can be initialized in `apply` block"),
+    USELESS_SUPERTYPE(true,"unnecessary supertype specification"),
     ;
 
     /**

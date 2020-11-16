@@ -65,6 +65,8 @@ class KdocWarnTest : LintTestBase(::KdocComments) {
                     internal fun someGoodNameNew(): String {
                         return " ";
                     }
+                    
+                    fun main() {}
                 """.trimIndent()
         lintMethod(code,
                 LintError(1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} someGoodName"),
@@ -116,6 +118,8 @@ class KdocWarnTest : LintTestBase(::KdocComments) {
 
                         private class InternalClass {
                         }
+                        
+                        public fun main() {}
                     }
                 """.trimIndent()
         lintMethod(code,
@@ -206,7 +210,7 @@ class KdocWarnTest : LintTestBase(::KdocComments) {
     }
 
     @Test
-    @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY)
+    @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT)
     fun `check simple primary constructor with comment`() {
         lintMethod(
                 """
@@ -221,7 +225,7 @@ class KdocWarnTest : LintTestBase(::KdocComments) {
                     |) {
                     |}
                 """.trimMargin(),
-                LintError(7, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} name", true)
+                LintError(7, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnText()} name", true)
         )
     }
 
@@ -247,7 +251,7 @@ class KdocWarnTest : LintTestBase(::KdocComments) {
     }
 
     @Test
-    @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY)
+    @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT)
     fun `check constructor with comment`() {
         lintMethod(
                 """
@@ -262,7 +266,7 @@ class KdocWarnTest : LintTestBase(::KdocComments) {
                     |   ) {
                     |}
                 """.trimMargin(),
-                LintError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} name", true)
+                LintError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnText()} name", true)
         )
     }
 
