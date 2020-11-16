@@ -108,7 +108,7 @@ To run diktat check use command `$ mvn diktat:check@diktat`.
 To run diktat in autocorrect mode use command `$ mvn diktat:fix@diktat`.
 
 ## Run with Gradle using diktat-gradle-plugin
-You can see how the plugin is configured in our project for self-checks: [build.gradle.kts](build.gradle.kts).
+This plugin is available since version 0.1.4. You can see how the plugin is configured in our project for self-checks: [build.gradle.kts](build.gradle.kts).
 Add this plugin to your `build.gradle.kts`:
 ```kotlin
 plugins {
