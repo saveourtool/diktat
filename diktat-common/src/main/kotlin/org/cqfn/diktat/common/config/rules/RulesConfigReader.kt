@@ -39,7 +39,7 @@ interface Rule {
 data class RulesConfig(
         val name: String,
         val enabled: Boolean = true,
-        val configuration: Map<String, String>
+        val configuration: Map<String, String> = emptyMap()
 )
 
 /**
