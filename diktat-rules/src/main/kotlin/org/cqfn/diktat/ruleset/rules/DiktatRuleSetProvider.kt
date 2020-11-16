@@ -8,6 +8,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfigReader
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.calculations.AccurateCalculationsRule
 import org.cqfn.diktat.ruleset.rules.classes.AbstractClassesRule
+import org.cqfn.diktat.ruleset.rules.classes.CompactInitialization
 import org.cqfn.diktat.ruleset.rules.classes.DataClassesRule
 import org.cqfn.diktat.ruleset.rules.classes.SingleConstructorRule
 import org.cqfn.diktat.ruleset.rules.classes.SingleInitRule
@@ -74,6 +75,7 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
                 ::MultipleModifiersSequence,
                 ::TrivialPropertyAccessors,
                 ::CustomGetterSetterRule,
+                ::CompactInitialization,
                 // other rules
                 ::StringTemplateFormatRule,
                 ::DataClassesRule,

@@ -211,4 +211,6 @@ public object WarningNames {
             "TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED"
 
     public const val CUSTOM_GETTERS_SETTERS: String = "CUSTOM_GETTERS_SETTERS"
+
+    public const val COMPACT_OBJECT_INITIALIZATION: String = "COMPACT_OBJECT_INITIALIZATION"
 }
