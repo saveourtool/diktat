@@ -127,6 +127,8 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     CLASS_SHOULD_NOT_BE_ABSTRACT(true, "class should not be abstract, because it has no abstract functions"),
     TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED(true, "trivial property accessors are not recommended"),
     CUSTOM_GETTERS_SETTERS(false, "Custom getters and setters are not recommended, use class methods instead"),
+    COMPACT_OBJECT_INITIALIZATION(true, "class instance can be initialized in `apply` block"),
+    USELESS_SUPERTYPE(true,"unnecessary supertype specification"),
     ;
 
     /**
