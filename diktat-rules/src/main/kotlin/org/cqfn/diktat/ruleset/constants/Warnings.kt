@@ -110,6 +110,8 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     STRING_TEMPLATE_QUOTES(true, "string template has redundant quotes"),
     // FixMe: change float literal to BigDecimal? Or kotlin equivalent?
     FLOAT_IN_ACCURATE_CALCULATIONS(false, "floating-point values shouldn't be used in accurate calculations"),
+    AVOID_NULL_CHECKS(false, "Try to avoid explicit null-checks. Use '.let/.also/?:/e.t.c' instead of"),
+
 
     // ======== chapter 5 ========
     TOO_LONG_FUNCTION(false, "function is too long: split it or make more primitive"),
