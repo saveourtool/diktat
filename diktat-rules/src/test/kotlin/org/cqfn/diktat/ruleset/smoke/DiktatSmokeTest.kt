@@ -103,6 +103,13 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
         fixAndCompare("DefaultPackageExpected.kt", "DefaultPackageTest.kt")
     }
 
+    @Test
+    @Tag("DiktatRuleSetProvider")
+    fun `smoke test with multiplatform project layout`() {
+        fixAndCompare("../../jsMain/kotlin/org/cqfn/diktat/scripts/ScriptExpected.kt",
+        "../../jsMain/kotlin/org/cqfn/diktat/scripts/ScriptTest.kt")
+    }
+
     @AfterEach
     fun `revert configuration file to default`() {
         configFilePath = DEFAULT_CONFIG_PATH
