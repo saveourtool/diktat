@@ -66,6 +66,7 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun isNullCheckBinaryExpession(condition: KtBinaryExpression): Boolean =
             // check that binary expession has `null` as right or left operand
             setOf(condition.right, condition.left).map { it!!.node.elementType }.contains(NULL) &&
