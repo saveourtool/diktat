@@ -1974,7 +1974,7 @@ class A {
 ### <a name="s6.1.11"></a> Rule 6.1.11: use apply for grouping object initialization.
 In the good old Java before functional programming became popular - lot of classes from commonly used libraries used configuration paradigm.
 To use these classes you had to create an object with the constructor that had 0-2 arguments and set the fields that were needed to run an object.
-In Kotlin to reduce the number of dummy code line and to group objects [`apply` extension](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/apply.html) was added:  
+In Kotlin to reduce the number of dummy code lines and to group objects [`apply` extension](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/apply.html) was added:
  
 **Invalid example**:
 ```kotlin
@@ -1988,7 +1988,7 @@ class HttpClient(var name: String) {
 
 fun main() {
     val httpClient = HttpClient("myConnection")
-    httpClient.url = "http://pushkin.com"
+    httpClient.url = "http://example.com"
     httpClient.port = "8080"
     httpClient.timeout = 100
     
@@ -2010,11 +2010,11 @@ class HttpClient(var name: String) {
 fun main() {
     val httpClient = HttpClient("myConnection")
             .apply {
-                url = "http://pushkin.com"
+                url = "http://example.com"
                 port = "8080"
                 timeout = 100
             }
-            .doRequest()
+    httpClient.doRequest()
 }
 ```
 

@@ -235,34 +235,36 @@ It is one of the exceptions from the [identifier names rule](#r1.2)
 Kotlin has a perfect mechanism of [properties](https://kotlinlang.org/docs/reference/properties.html#properties-and-fields).
 Kotlin compiler automatically generates `get` and `set` methods for properties and also lets the possibility to override it:
 ```kotlin 
-// Bad example ======
 class A {
     var size: Int = 0
         set(value) {
             println("Side effect")
             field = value
         }
-        get() = this.hashCode() * 2
+        // user of this class does not expect calling A.size receive size * 2 
+        get() = field * 2
 }
 ```
 
 From the callee code these methods look like an access to this property: `A().isEmpty = true` for setter and `A().isEmpty` for getter.
-But in all cases it is very confusing when `get` and `set` are overriden for a developer who uses this particular class. 
+But in all cases it is very confusing when `get` and `set` are overridden for a developer who uses this particular class. 
 Developer expects to get the value of the property, but receives some unknown value and some extra side effect hidden by the custom getter/setter. 
 Use extra functions for it instead.
 
 **Invalid example:**
 ```kotlin 
-// Bad example ======
 class A {
     var size: Int = 0
     fun initSize(value: Int) {
         // some custom logic
     }
     
-    fun goodNameThatDescribesThisGetter() = this.hashCode() * 2
+    // this will not confuse developer and he will get exactly what he expects    
+    fun goodNameThatDescribesThisGetter() = this.size * 2
 }
 ```
+
+**Exception:** `Private setters` are only exceptions that are not prohibited by this rule.
 
 ### <a name="r6.1.9"></a> Rule 6.1.9: never use the name of a variable in the custom getter or setter (possible_bug).
 Even if you have ignored [recommendation 6.1.8](#r6.1.8) you should be careful with using the name of the property in your custom getter/setter
@@ -308,7 +310,7 @@ class A {
 ### <a name="s6.1.11"></a> Rule 6.1.11: use apply for grouping object initialization.
 In the good old Java before functional programming became popular - lot of classes from commonly used libraries used configuration paradigm.
 To use these classes you had to create an object with the constructor that had 0-2 arguments and set the fields that were needed to run an object.
-In Kotlin to reduce the number of dummy code line and to group objects [`apply` extension](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/apply.html) was added:  
+In Kotlin to reduce the number of dummy code lines and to group objects [`apply` extension](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/apply.html) was added:
  
 **Invalid example**:
 ```kotlin
@@ -322,7 +324,7 @@ class HttpClient(var name: String) {
 
 fun main() {
     val httpClient = HttpClient("myConnection")
-    httpClient.url = "http://pushkin.com"
+    httpClient.url = "http://example.com"
     httpClient.port = "8080"
     httpClient.timeout = 100
     
@@ -344,11 +346,11 @@ class HttpClient(var name: String) {
 fun main() {
     val httpClient = HttpClient("myConnection")
             .apply {
-                url = "http://pushkin.com"
+                url = "http://example.com"
                 port = "8080"
                 timeout = 100
             }
-            .doRequest()
+    httpClient.doRequest()
 }
 ```
 
