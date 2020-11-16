@@ -288,3 +288,6 @@
 # Checks explicit supertype qualification
 - name: USELESS_SUPERTYPE
   enabled: true
+# Checks if extension function with the same signature don't have related classes
+- name: EXTENSION_FUNCTION_SAME_SIGNATURE
+  enabled: true
