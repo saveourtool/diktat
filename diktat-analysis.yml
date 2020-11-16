@@ -362,3 +362,11 @@
 - name: CUSTOM_GETTERS_SETTERS
   enabled: true
   configuration: { }
+# Checks if class instantiation can be wrapped in `apply` for better readability
+- name: COMPACT_OBJECT_INITIALIZATION
+  enabled: true
+  configuration: {}
+# Checks explicit supertype qualification
+- name: USELESS_SUPERTYPE
+  enabled: true
+  configuration: {}
