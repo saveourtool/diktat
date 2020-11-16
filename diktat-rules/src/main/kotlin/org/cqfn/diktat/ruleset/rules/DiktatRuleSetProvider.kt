@@ -104,6 +104,7 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
                 ::NullChecksRule,
                 ::ImmutableValNoVarRule,
                 ::AvoidNestedFunctionsRule,
+                ::ExtensionFunctionsSameNameRule,
                 // formatting: moving blocks, adding line breaks, indentations etc.
                 ::ConsecutiveSpacesRule,
                 ::WhiteSpaceRule,  // this rule should be after other rules that can cause wrong spacing

@@ -217,4 +217,6 @@ public object WarningNames {
     public const val COMPACT_OBJECT_INITIALIZATION: String = "COMPACT_OBJECT_INITIALIZATION"
 
     public const val USELESS_SUPERTYPE: String = "USELESS_SUPERTYPE"
+
+    public const val EXTENSION_FUNCTION_SAME_SIGNATURE: String = "EXTENSION_FUNCTION_SAME_SIGNATURE"
 }

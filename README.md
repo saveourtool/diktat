@@ -74,9 +74,6 @@ This plugin is available since version 0.1.3. You can see how it is configured i
 If you use it and encounter any problems, feel free to open issues on [github](https://github.com/cqfn/diktat/issues).
 
 Add this plugin to your pom.xml:
-<details>
-  <summary><b>Maven plugin snippet</b></summary><br>
-
 ```xml
             <plugin>
                 <groupId>org.cqfn.diktat</groupId>
@@ -102,10 +99,8 @@ Add this plugin to your pom.xml:
             </plugin>
 ```
 
-</details>
-
-To run diktat check use command `$ mvn diktat:check@diktat`.
-To run diktat in autocorrect mode use command `$ mvn diktat:fix@diktat`.
+To run diktat in **only-check** mode use command `$ mvn diktat:check@diktat`.
+To run diktat in **autocorrect** mode use command `$ mvn diktat:fix@diktat`.
 
 ## Run with Gradle using diktat-gradle-plugin
 This plugin is available since version 0.1.4. You can see how the plugin is configured in our project for self-checks: [build.gradle.kts](build.gradle.kts).
