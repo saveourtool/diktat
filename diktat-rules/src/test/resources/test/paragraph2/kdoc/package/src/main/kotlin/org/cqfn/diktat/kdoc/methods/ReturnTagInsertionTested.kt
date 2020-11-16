@@ -24,4 +24,16 @@ class Example {
      * @throws IllegalStateException never
      */
     fun test4(a: Int): Int = 0
+
+    /**
+     * Lorem ipsum
+     * @throws IllegalStateException never
+     */
+    fun test5() = 0
+
+    /**
+     * Lorem ipsum
+     * @throws IllegalStateException never
+     */
+    fun A.test6() = 0
 }

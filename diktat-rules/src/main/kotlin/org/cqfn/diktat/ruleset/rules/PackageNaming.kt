@@ -7,8 +7,8 @@ import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.isLeaf
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.common.config.rules.getCommonConfig
 import org.cqfn.diktat.common.config.rules.getCommonConfiguration
+import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.INCORRECT_PACKAGE_SEPARATOR
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_CASE
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_PATH
@@ -16,6 +16,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_PREFIX
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_SYMBOLS
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_MISSING
 import org.cqfn.diktat.ruleset.utils.*
+import org.jetbrains.kotlin.backend.common.onlyIf
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -32,29 +33,21 @@ import org.slf4j.LoggerFactory
  */
 @Suppress("ForbiddenComment")
 class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-naming") {
-    companion object {
-        const val PACKAGE_SEPARATOR = "."
-        const val PACKAGE_PATH_ANCHOR = "src"
-        val LANGUAGE_DIR_NAMES = listOf("src", "main", "test", "java", "kotlin")
-        private val log = LoggerFactory.getLogger(PackageNaming::class.java)
-    }
-
-    private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
+    private lateinit var emitWarn: EmitType
     private lateinit var domainName: String
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
-                       emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
+                       emit: EmitType) {
         isFixMode = autoCorrect
         emitWarn = emit
 
-        val domainNameConfiguration = configRules.getCommonConfig()?.configuration
-        if (domainNameConfiguration == null) {
+        val configuration by configRules.getCommonConfiguration()
+        domainName = configuration.onlyIf({ isDefault }) {
             log.error("Not able to find an external configuration for domain name in the common configuration (is it missing in yml config?)")
         }
-        val configuration by configRules.getCommonConfiguration()
-        domainName = configuration.domainName
+            .domainName
 
         if (node.elementType == PACKAGE_DIRECTIVE) {
             val fileName = node.getRootNode().getFileName()
@@ -93,7 +86,7 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
 
     /**
      * calculating real package name based on the directory path where the file is stored
-     * @return - list with words that are parts of package name like [org, diktat, name]
+     * @return list with words that are parts of package name like [org, diktat, name]
      */
     private fun calculateRealPackageName(fileName: String): List<String> {
         val filePathParts = fileName.splitPathToDirs()
@@ -129,7 +122,7 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
         if (!isDomainMatches(wordsInPackageName)) {
             PACKAGE_NAME_INCORRECT_PREFIX.warnAndFix(configRules, emitWarn, isFixMode, domainName,
                     wordsInPackageName[0].startOffset, wordsInPackageName[0]) {
-                val oldPackageName = wordsInPackageName.map { it.text }.joinToString(PACKAGE_SEPARATOR)
+                val oldPackageName = wordsInPackageName.joinToString(PACKAGE_SEPARATOR) { it.text }
                 val newPackageName = "$domainName$PACKAGE_SEPARATOR$oldPackageName"
                 insertNewPackageName(packageDirectiveNode, newPackageName)
             }
@@ -230,5 +223,32 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
                 insertNewPackageName(packageDirective, realPackageNameStr)
             }
         }
+    }
+
+    companion object {
+        /**
+         * Symbol that is used to separate parts in package name
+         */
+        const val PACKAGE_SEPARATOR = "."
+
+        /**
+         * Directory which is considered the start of sources file tree
+         */
+        const val PACKAGE_PATH_ANCHOR = "src"
+
+        /**
+         * Targets described in [KMM documentation](https://kotlinlang.org/docs/reference/mpp-supported-platforms.html)
+         */
+        private val kmmTargets = listOf("common", "jvm", "js", "android", "ios", "androidNativeArm32", "androidNativeArm64", "iosArm32", "iosArm64", "iosX64",
+            "watchosArm32", "watchosArm64", "watchosX86", "tvosArm64", "tvosX64", "macosX64", "linuxArm64", "linuxArm32Hfp", "linuxMips32", "linuxMipsel32", "linuxX64",
+            "mingwX64", "mingwX86", "wasm32")
+
+        /**
+         * Directories that are supposed to be first in sources file paths, relative to [PACKAGE_PATH_ANCHOR].
+         * For kotlin multiplatform projects directories for targets from [kmmTargets] are supported.
+         */
+        val LANGUAGE_DIR_NAMES = listOf("src", "main", "test", "java", "kotlin") + kmmTargets.flatMap { listOf("${it}Main", "${it}Test") }
+
+        private val log = LoggerFactory.getLogger(PackageNaming::class.java)
     }
 }
