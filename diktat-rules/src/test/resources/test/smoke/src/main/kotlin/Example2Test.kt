@@ -15,4 +15,6 @@ private fun foo (node: ASTNode) {
     when (node.elementType) {
         CLASS, FUN, PRIMARY_CONSTRUCTOR, SECONDARY_CONSTRUCTOR -> checkAnnotation(node)
     }
+    if (x) // comment
+        foo()
 }

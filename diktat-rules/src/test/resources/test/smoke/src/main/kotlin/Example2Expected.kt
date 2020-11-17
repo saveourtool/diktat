@@ -24,5 +24,9 @@ private fun foo(node: ASTNode) {
             // this is a generated else block
         }
     }
+    // comment
+    if (x) {
+        foo()
+    }
 }
 

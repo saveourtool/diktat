@@ -2,6 +2,7 @@ package org.cqfn.diktat.ruleset.rules
 
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
+import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.BODY
 import com.pinterest.ktlint.core.ast.ElementType.CATCH
 import com.pinterest.ktlint.core.ast.ElementType.CATCH_KEYWORD
@@ -11,12 +12,14 @@ import com.pinterest.ktlint.core.ast.ElementType.CLASS_INITIALIZER
 import com.pinterest.ktlint.core.ast.ElementType.DO_WHILE
 import com.pinterest.ktlint.core.ast.ElementType.ELSE
 import com.pinterest.ktlint.core.ast.ElementType.ELSE_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.FINALLY
 import com.pinterest.ktlint.core.ast.ElementType.FINALLY_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.FOR
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_LITERAL
 import com.pinterest.ktlint.core.ast.ElementType.IF
+import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.OBJECT_DECLARATION
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
@@ -51,6 +54,11 @@ import org.jetbrains.kotlin.psi.KtTryExpression
  * - braces around `else`/`catch`/`finally`/`while` (in `do-while` loop)
  */
 class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("block-structure") {
+
+    companion object {
+        val COMMENT_TYPE = listOf(BLOCK_COMMENT, EOL_COMMENT, KDOC)
+    }
+
     private var isFixMode: Boolean = false
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
 
@@ -178,6 +186,15 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
                 if (braceSpace == null || braceSpace.elementType != WHITE_SPACE) {
                     node.addChild(PsiWhiteSpaceImpl(" "), nodeBefore)
                 } else {
+                    if (braceSpace.treePrev.elementType in COMMENT_TYPE) {
+                        val commentBefore = braceSpace.treePrev
+                        if (commentBefore.treePrev.elementType == WHITE_SPACE){
+                            commentBefore.treeParent.removeChild(commentBefore.treePrev)
+                        }
+                        commentBefore.treeParent.removeChild(commentBefore)
+                        node.treeParent.addChild(commentBefore, node)
+                        node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node)
+                    }
                     braceSpace.treeParent.replaceWhiteSpaceText(braceSpace, " ")
                 }
             }
