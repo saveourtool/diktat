@@ -70,7 +70,7 @@ Main features of diktat are the following:
 To **autofix** all code style violations use `-F` option.
 
 ## Run with Maven using diktat-maven-plugin
-This plugin is available since version 0.1.3. You can see how it is configured in our project for self-checks: [pom.xml](pom.xml).
+This plugin is available since version 0.1.4. You can see how it is configured in our project for self-checks: [pom.xml](pom.xml).
 If you use it and encounter any problems, feel free to open issues on [github](https://github.com/cqfn/diktat/issues).
 
 Add this plugin to your pom.xml:
