@@ -28,7 +28,9 @@ jobs:
         # base version is stored in env variable for later usage
         run: |
           snapshot_version=$(printf 'VERSION=${project.version}\n0\n' | mvn -B help:evaluate | grep '^VERSION' | cut -d= -f2)
+          echo "snapshot_version=$snapshot_version"
           base_version=${snapshot_version%-SNAPSHOT}
+          echo "base_version=$base_version"
           echo "BASE_VERSION=$base_version" >> $GITHUB_ENV
           mvn -B versions:set -DnewVersion=$base_version-pre
       - name: Build and install
