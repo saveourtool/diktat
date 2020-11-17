@@ -55,11 +55,11 @@ Main features of diktat are the following:
     # another option is "brew install ktlint"
     ```
    
-2. Load diKTat manually: [here](https://github.com/cqfn/diKTat/releases/download/v0.1.1/diktat.jar)
+2. Load diKTat manually: [here](https://github.com/cqfn/diKTat/releases/download/v0.1.4/diktat.jar)
 
    **OR** use curl:
    ```bash
-   $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v0.1.1/diktat-0.1.1.jar
+   $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v0.1.4/diktat-0.1.4.jar
    ```
    
 3. Finally, run KTlint (with diKTat injected) to check your `*.kt` files in `dir/your/dir`:
