@@ -29,7 +29,7 @@ jobs:
         run: |
           snapshot_version=$(printf 'VERSION=${project.version}\n0\n' | mvn -B help:evaluate | grep '^VERSION' | cut -d= -f2)
           base_version=${snapshot_version%-SNAPSHOT}
-          echo ::set-env name=BASE_VERSION::$base_version
+          echo "BASE_VERSION=$base_version" >> $GITHUB_ENV
           mvn -B versions:set -DnewVersion=$base_version-pre
       - name: Build and install
         # install diktat with version 'base_version-pre' to local maven repo

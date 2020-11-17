@@ -29,8 +29,9 @@ jobs:
           DIKTAT_GPG_PUB: ${{ secrets.DIKTAT_PGP_PUB }}
           DIKTAT_GPG_SEC: ${{ secrets.DIKTAT_PGP_SEC }}
         run: |
-          echo ::set-env name=PREVIOUS_VERSION::$(printf 'VERSION=${diktat-check.version}\n0\n' | mvn help:evaluate | grep '^VERSION' | cut -d= -f2)
-          echo ::set-env name=RELEASE_VERSION::${GITHUB_REF#'refs/tags/v'}
+          previous_version=$(printf 'VERSION=${diktat-check.version}\n0\n' | mvn help:evaluate | grep '^VERSION' | cut -d= -f2)
+          echo "PREVIOUS_VERSION=$previous_version" >> $GITHUB_ENV
+          echo "RELEASE_VERSION=${GITHUB_REF#'refs/tags/v'}" >> $GITHUB_ENV
           echo "$DIKTAT_GPG_PUB" > ~/diktat.pubring.gpg
           echo "$DIKTAT_GPG_SEC" > ~/diktat.secring.gpg
           gpg --import ~/diktat.pubring.gpg
