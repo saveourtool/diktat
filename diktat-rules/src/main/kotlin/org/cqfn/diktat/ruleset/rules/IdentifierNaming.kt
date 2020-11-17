@@ -8,6 +8,7 @@ import com.pinterest.ktlint.core.ast.ElementType.DESTRUCTURING_DECLARATION
 import com.pinterest.ktlint.core.ast.ElementType.DESTRUCTURING_DECLARATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_TYPE
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.TYPE_PARAMETER
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.prevCodeSibling
@@ -52,6 +53,7 @@ import org.cqfn.diktat.ruleset.utils.Style
 import org.jetbrains.kotlin.builtins.PrimitiveType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
+import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.psi.psiUtil.parents
 
 /**
@@ -235,7 +237,7 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
      */
     private fun checkCLassNamings(node: ASTNode): List<ASTNode> {
         val genericType: ASTNode? = node.getTypeParameterList()
-        if (genericType != null && !validGenericTypeName(genericType.text)) {
+        if (genericType != null && !validGenericTypeName(genericType)) {
             GENERIC_NAME.warnAndFix(configRules, emitWarn, isFixMode, genericType.text, genericType.startOffset, genericType) {
                 // FixMe: should fix generic name here
             }
@@ -362,13 +364,12 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
      * check that generic name has single capital letter, can be followed by a number
      * this method will check it for both generic classes and generic methods
      */
-    private fun validGenericTypeName(generic: String): Boolean {
-        // removing whitespaces and <>
-        val genericName = generic.replace(">", "").replace("<", "").trim()
-        // first letter should always be a capital
-        return genericName[0] in 'A'..'Z' &&
-                // other letters - are digits
-                (genericName.length == 1 || genericName.substring(1).isDigits())
+    private fun validGenericTypeName(generic: ASTNode): Boolean {
+        return generic.getChildren(TokenSet.create(TYPE_PARAMETER)).all{
+            val typeText = it.getIdentifierName()?.text ?: return false
+            // first letter should always be a capital and other letters - are digits
+            typeText[0] in 'A'..'Z' &&  (typeText.length == 1 || typeText.substring(1).isDigits())
+        }
     }
 
     /**
