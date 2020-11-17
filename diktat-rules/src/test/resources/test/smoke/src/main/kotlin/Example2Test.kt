@@ -16,3 +16,13 @@ private fun foo (node: ASTNode) {
         CLASS, FUN, PRIMARY_CONSTRUCTOR, SECONDARY_CONSTRUCTOR -> checkAnnotation(node)
     }
 }
+
+/**
+ *  some
+ */
+fun foo() {
+    foo(
+            0,
+            { obj -> obj.bar() }
+    )
+}

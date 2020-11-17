@@ -26,3 +26,13 @@ private fun foo(node: ASTNode) {
     }
 }
 
+/**
+ *  some
+ */
+fun foo() {
+    foo(
+            0,
+            { obj -> obj.bar() }
+    )
+}
+
