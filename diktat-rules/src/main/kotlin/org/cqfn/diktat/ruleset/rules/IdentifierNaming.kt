@@ -8,6 +8,7 @@ import com.pinterest.ktlint.core.ast.ElementType.DESTRUCTURING_DECLARATION
 import com.pinterest.ktlint.core.ast.ElementType.DESTRUCTURING_DECLARATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_TYPE
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.TYPE_PARAMETER
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.prevCodeSibling
@@ -28,27 +29,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.OBJECT_NAME_INCORRECT
 import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_HAS_PREFIX
 import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_NAME_INCORRECT
 import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_NAME_INCORRECT_FORMAT
-import org.cqfn.diktat.ruleset.utils.checkLength
-import org.cqfn.diktat.ruleset.utils.containsOneLetterOrZero
-import org.cqfn.diktat.ruleset.utils.findChildAfter
-import org.cqfn.diktat.ruleset.utils.findLeafWithSpecificType
-import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
-import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
-import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
-import org.cqfn.diktat.ruleset.utils.getIdentifierName
-import org.cqfn.diktat.ruleset.utils.getTypeParameterList
-import org.cqfn.diktat.ruleset.utils.hasPrefix
-import org.cqfn.diktat.ruleset.utils.hasTestAnnotation
-import org.cqfn.diktat.ruleset.utils.isConstant
-import org.cqfn.diktat.ruleset.utils.isDigits
-import org.cqfn.diktat.ruleset.utils.isLowerCamelCase
-import org.cqfn.diktat.ruleset.utils.isPascalCase
-import org.cqfn.diktat.ruleset.utils.isUpperSnakeCase
-import org.cqfn.diktat.ruleset.utils.removePrefix
-import org.cqfn.diktat.ruleset.utils.toLowerCamelCase
-import org.cqfn.diktat.ruleset.utils.toPascalCase
-import org.cqfn.diktat.ruleset.utils.toUpperSnakeCase
-import org.cqfn.diktat.ruleset.utils.Style
+import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.builtins.PrimitiveType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -235,7 +216,7 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
      */
     private fun checkCLassNamings(node: ASTNode): List<ASTNode> {
         val genericType: ASTNode? = node.getTypeParameterList()
-        if (genericType != null && !validGenericTypeName(genericType.text)) {
+        if (genericType != null && !validGenericTypeName(genericType)) {
             GENERIC_NAME.warnAndFix(configRules, emitWarn, isFixMode, genericType.text, genericType.startOffset, genericType) {
                 // FixMe: should fix generic name here
             }
@@ -362,13 +343,12 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
      * check that generic name has single capital letter, can be followed by a number
      * this method will check it for both generic classes and generic methods
      */
-    private fun validGenericTypeName(generic: String): Boolean {
-        // removing whitespaces and <>
-        val genericName = generic.replace(">", "").replace("<", "").trim()
-        // first letter should always be a capital
-        return genericName[0] in 'A'..'Z' &&
-                // other letters - are digits
-                (genericName.length == 1 || genericName.substring(1).isDigits())
+    private fun validGenericTypeName(generic: ASTNode): Boolean {
+        generic.findChildByType(TYPE_PARAMETER)?.let {
+            val typeText = it.getIdentifierName()?.text ?: return false
+            return typeText[0] in 'A'..'Z' &&  (typeText.length == 1 || typeText.substring(1).isDigits())
+        }
+        return false
     }
 
     /**

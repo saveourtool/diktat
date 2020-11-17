@@ -224,7 +224,7 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
                         mapOf("enumStyle" to "pascalCase"))
         )
         val code =
-            """
+                """
                   enum class TEST_ONE {
                     first_value, secondValue, thirdVALUE, FOURTH_VALUE
                   }
@@ -591,5 +591,21 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
                 LintError(3, 9, ruleId, "${IDENTIFIER_LENGTH.warnText()} Z", false),
                 LintError(7, 5, ruleId, "${CONFUSING_IDENTIFIER_NAMING.warnText()} better name is: bt, nxt", false),
                 LintError(7, 5, ruleId, "${IDENTIFIER_LENGTH.warnText()} B", false))
+    }
+
+    @Test
+    @Tag(WarningNames.GENERIC_NAME)
+    fun `check generic types`() {
+        val code =
+                """
+                    interface Test<String>
+                    interface Test1<T: String>
+                    interface Test2<T : Collection<T>>
+                    interface Test3<out T>
+                    interface Test3<in T>
+                """.trimIndent()
+        lintMethod(code,
+                LintError(1,15, ruleId, "${GENERIC_NAME.warnText()} <String>", true)
+        )
     }
 }
