@@ -604,11 +604,15 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
                     interface Test3<out T>
                     interface Test3<in T>
                     interface Test4<in T, A, B>
-                    interface Test5<in T, A, Br>               
+                    interface Test5<in T, A, Br>
+                    interface Test6<in Tr>
+                    interface Test6<Tr: String>
                 """.trimIndent()
         lintMethod(code,
                 LintError(1,15, ruleId, "${GENERIC_NAME.warnText()} <String>", true),
-                LintError(7,16, ruleId, "${GENERIC_NAME.warnText()} <in T, A, Br>", true)
+                LintError(7,16, ruleId, "${GENERIC_NAME.warnText()} <in T, A, Br>", true),
+                LintError(8,16, ruleId, "${GENERIC_NAME.warnText()} <in Tr>", true),
+                LintError(9,16, ruleId, "${GENERIC_NAME.warnText()} <Tr: String>", true),
         )
     }
 }
