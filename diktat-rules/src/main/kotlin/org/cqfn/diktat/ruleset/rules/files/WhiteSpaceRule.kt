@@ -203,8 +203,7 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
                     whitespaceOrPrevNode.treeParent.removeChild(whitespaceOrPrevNode)
                 }
             }
-        } else if (prevNode.elementType !in keywordsWithSpaceAfter && prevNode.elementType != COMMA) {
-            // COMMA case is for lambda as last parameter on new line
+        } else if (prevNode.elementType !in keywordsWithSpaceAfter) {
             if (numWhiteSpace != 1) {
                 WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "there should be a whitespace before '{'", node.startOffset, node) {
                     prevNode.leaveSingleWhiteSpace()
