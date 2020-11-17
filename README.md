@@ -55,11 +55,11 @@ Main features of diktat are the following:
     # another option is "brew install ktlint"
     ```
    
-2. Load diKTat manually: [here](https://github.com/cqfn/diKTat/releases/download/v0.1.1/diktat.jar)
+2. Load diKTat manually: [here](https://github.com/cqfn/diKTat/releases/download/v0.1.4/diktat.jar)
 
    **OR** use curl:
    ```bash
-   $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v0.1.1/diktat-0.1.1.jar
+   $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v0.1.4/diktat-0.1.4.jar
    ```
    
 3. Finally, run KTlint (with diKTat injected) to check your `*.kt` files in `dir/your/dir`:
@@ -70,7 +70,7 @@ Main features of diktat are the following:
 To **autofix** all code style violations use `-F` option.
 
 ## Run with Maven using diktat-maven-plugin
-This plugin is available since version 0.1.4. You can see how it is configured in our project for self-checks: [pom.xml](pom.xml).
+This plugin is available since version 0.1.3. You can see how it is configured in our project for self-checks: [pom.xml](pom.xml).
 If you use it and encounter any problems, feel free to open issues on [github](https://github.com/cqfn/diktat/issues).
 
 Add this plugin to your pom.xml:
