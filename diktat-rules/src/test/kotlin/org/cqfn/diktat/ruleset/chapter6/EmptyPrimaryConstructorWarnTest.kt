@@ -26,7 +26,7 @@ class EmptyPrimaryConstructorWarnTest: LintTestBase(::AvoidEmptyPrimaryConstruct
                     |
                     |class Some1() {
                     |   val a = 10
-                    |   companion object() {}
+                    |   companion object {}
                     |}
                     |
                     |class Some2 {
@@ -34,6 +34,10 @@ class EmptyPrimaryConstructorWarnTest: LintTestBase(::AvoidEmptyPrimaryConstruct
                     |   constructor(a: String): this() {
                     |       this.a = a
                     |   }
+                    |}
+                    |
+                    |class Some3 private constructor () {
+                    |
                     |}
                 """.trimMargin(),
                 LintError(1,1,ruleId, "${EMPTY_PRIMARY_CONSTRUCTOR.warnText()} Some", true),
