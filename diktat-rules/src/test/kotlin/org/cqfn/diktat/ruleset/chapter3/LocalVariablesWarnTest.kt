@@ -549,4 +549,19 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                 """.trimMargin()
         )
     }
+
+    @Test
+    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    fun `should not trigger on triple quoted strings`() {
+        lintMethod(
+                """
+                    |class Example {
+                    |    fun some() {
+                    |       val code = ${"\"\"\"  class Some {\n \t\t fun for() {} \n \t} \"\"\".trimIndent()"} 
+                    |       bar(code)
+                    |    }
+                    |}
+                """.trimMargin()
+        )
+    }
 }
