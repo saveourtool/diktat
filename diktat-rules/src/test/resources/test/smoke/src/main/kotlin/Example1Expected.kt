@@ -33,3 +33,9 @@ class Example {
                     .split("/")
 }
 
+fun foo() {
+    foo(
+            0,
+            { obj -> obj.bar() }
+    )
+}

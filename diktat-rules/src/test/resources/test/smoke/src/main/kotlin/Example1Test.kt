@@ -18,3 +18,10 @@ return   x+ y}
             this.replace("\\", "/")        .replace("//", "/")
                     .split("/")
 }
+
+fun foo() {
+    foo(
+            0,
+            { obj -> obj.bar() }
+    )
+}
