@@ -28,6 +28,7 @@ jobs:
         env:
           DIKTAT_GPG_PUB: ${{ secrets.DIKTAT_PGP_PUB }}
           DIKTAT_GPG_SEC: ${{ secrets.DIKTAT_PGP_SEC }}
+        # Note: maven-help-plugin requires non-interactive mode (do not add -B flag).
         run: |
           previous_version=$(printf 'VERSION=${diktat-check.version}\n0\n' | mvn help:evaluate | grep '^VERSION' | cut -d= -f2)
           echo "PREVIOUS_VERSION=$previous_version" >> $GITHUB_ENV
