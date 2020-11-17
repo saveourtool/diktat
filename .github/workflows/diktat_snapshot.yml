@@ -6,9 +6,6 @@ on:
   pull_request:
     branches: [ master ]
 
-env:
-  ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-
 jobs:
   diktat_snapshot_check:
     runs-on: ubuntu-latest
@@ -27,12 +24,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-build
       - name: Set version
-        # set project version which will then be used to run diktat from local maven repo
-        # base version is stored in env variable for later usage
+        # Set project version which will then be used to run diktat from local maven repo.
+        # Base version is stored in env variable for later usage.
+        # Note: maven-help-plugin requires non-interactive mode (do not add -B flag).
         run: |
-          snapshot_version=$(printf 'VERSION=${project.version}\n0\n' | mvn -B help:evaluate | grep '^VERSION' | cut -d= -f2)
+          snapshot_version=$(printf 'VERSION=${project.version}\n0\n' | mvn help:evaluate | grep '^VERSION' | cut -d= -f2)
           base_version=${snapshot_version%-SNAPSHOT}
-          echo ::set-env name=BASE_VERSION::$base_version
+          echo "BASE_VERSION=$base_version" >> $GITHUB_ENV
           mvn -B versions:set -DnewVersion=$base_version-pre
       - name: Build and install
         # install diktat with version 'base_version-pre' to local maven repo
