@@ -8,4 +8,11 @@ class Example {
 
 
     fun bar() { }
+
+    fun foo() {
+        list.map {
+
+            bar()
+        }
+    }
 }
