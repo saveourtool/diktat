@@ -29,10 +29,31 @@ import org.cqfn.diktat.ruleset.constants.Warnings.OBJECT_NAME_INCORRECT
 import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_HAS_PREFIX
 import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_NAME_INCORRECT
 import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_NAME_INCORRECT_FORMAT
-import org.cqfn.diktat.ruleset.utils.*
+import org.cqfn.diktat.ruleset.utils.checkLength
+import org.cqfn.diktat.ruleset.utils.containsOneLetterOrZero
+import org.cqfn.diktat.ruleset.utils.findChildAfter
+import org.cqfn.diktat.ruleset.utils.findLeafWithSpecificType
+import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
+import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
+import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
+import org.cqfn.diktat.ruleset.utils.getIdentifierName
+import org.cqfn.diktat.ruleset.utils.getTypeParameterList
+import org.cqfn.diktat.ruleset.utils.hasPrefix
+import org.cqfn.diktat.ruleset.utils.hasTestAnnotation
+import org.cqfn.diktat.ruleset.utils.isConstant
+import org.cqfn.diktat.ruleset.utils.isDigits
+import org.cqfn.diktat.ruleset.utils.isLowerCamelCase
+import org.cqfn.diktat.ruleset.utils.isPascalCase
+import org.cqfn.diktat.ruleset.utils.isUpperSnakeCase
+import org.cqfn.diktat.ruleset.utils.removePrefix
+import org.cqfn.diktat.ruleset.utils.toLowerCamelCase
+import org.cqfn.diktat.ruleset.utils.toPascalCase
+import org.cqfn.diktat.ruleset.utils.toUpperSnakeCase
+import org.cqfn.diktat.ruleset.utils.Style
 import org.jetbrains.kotlin.builtins.PrimitiveType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
+import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.psi.psiUtil.parents
 
 /**
@@ -344,11 +365,11 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
      * this method will check it for both generic classes and generic methods
      */
     private fun validGenericTypeName(generic: ASTNode): Boolean {
-        generic.findChildByType(TYPE_PARAMETER)?.let {
+        return generic.getChildren(TokenSet.create(TYPE_PARAMETER)).all{
             val typeText = it.getIdentifierName()?.text ?: return false
-            return typeText[0] in 'A'..'Z' &&  (typeText.length == 1 || typeText.substring(1).isDigits())
+            // first letter should always be a capital and other letters - are digits
+            typeText[0] in 'A'..'Z' &&  (typeText.length == 1 || typeText.substring(1).isDigits())
         }
-        return false
     }
 
     /**

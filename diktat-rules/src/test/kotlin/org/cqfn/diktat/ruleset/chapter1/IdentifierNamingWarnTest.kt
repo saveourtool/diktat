@@ -603,9 +603,12 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
                     interface Test2<T : Collection<T>>
                     interface Test3<out T>
                     interface Test3<in T>
+                    interface Test4<in T, A, B>
+                    interface Test5<in T, A, Br>               
                 """.trimIndent()
         lintMethod(code,
-                LintError(1,15, ruleId, "${GENERIC_NAME.warnText()} <String>", true)
+                LintError(1,15, ruleId, "${GENERIC_NAME.warnText()} <String>", true),
+                LintError(7,16, ruleId, "${GENERIC_NAME.warnText()} <in T, A, Br>", true)
         )
     }
 }
