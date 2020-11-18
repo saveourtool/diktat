@@ -15,4 +15,8 @@ private fun foo (node: ASTNode) {
     when (node.elementType) {
         CLASS, FUN, PRIMARY_CONSTRUCTOR, SECONDARY_CONSTRUCTOR -> checkAnnotation(node)
     }
+    val qwe = a
+            && b
+    val qwe = a &&
+            b
 }
