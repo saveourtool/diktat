@@ -7,7 +7,7 @@ on:
     branches: [ master ]
 
 env:
-  DIKTAT_VERSION: 0.1.2
+  DIKTAT_VERSION: 0.1.5
   KTLINT_VERSION: 0.39.0
   GRADLE_OPTS: -Dorg.gradle.daemon=false  # to speed up gradle run
 
@@ -46,7 +46,10 @@ jobs:
 
       - name: Run diKTat from gradle
         continue-on-error: true
-        run: gradle diktatCheck &> out
+        run: |
+          cd examples/gradle-kotlin-dsl
+          gradle diktatCheck &> out
+          mv out ../../out
 
       - name: Check gradle
         run: |
