@@ -161,7 +161,7 @@
                 </os>
             </activation>
             <properties>
-                <skip.gradle.build>true</skip.gradle.build>
+                <gradle.executable>${project.basedir}/gradlew.bat</gradle.executable>
             </properties>
         </profile>
     </profiles>
