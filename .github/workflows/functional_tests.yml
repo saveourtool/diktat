@@ -46,7 +46,7 @@ jobs:
 
       - name: Run diKTat from gradle
         continue-on-error: true
-        run: gradle diktatFunctionalTest &> out
+        run: gradle diktatCheck &> out
 
       - name: Check gradle
         run: |
