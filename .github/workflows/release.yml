@@ -74,6 +74,7 @@ jobs:
           mvn versions:set-property -Dproperty=diktat-check.version -DnewVersion=${{ env.RELEASE_VERSION }}
           sed -i "s/$PREVIOUS_VERSION/$RELEASE_VERSION/g" README.md
           sed -i "s/$PREVIOUS_VERSION/$RELEASE_VERSION/g" build.gradle.kts
+          sed -i "s/$PREVIOUS_VERSION/$RELEASE_VERSION/g" .github/workflows/functional_tests.yml
       - name: Create pull request
         uses: peter-evans/create-pull-request@v3
         with:
