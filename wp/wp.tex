@@ -1,21 +1,22 @@
-\documentclass{article}
+\documentclass[acmlarge, screen, nonacm]{acmart}
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
 \usepackage{pgf}
 \usepackage{multicol}
 \usepackage{setspace}
-  \setstretch{1.1}
-\usepackage[top=1.3in, left=1.4in, includefoot]{geometry}
 \usepackage{charter}
 \usepackage{listings}
-\usepackage{authblk}
 \usepackage{hyperref}
-\usepackage{tocloft}
 \usepackage{float}
+\usepackage{placeins}
 \usepackage{graphicx}
 \graphicspath{ {./images/} }
 \usepackage{tikz}
 \usepackage{verbatim}
+\usepackage{cleveref}
+\usepackage{datetime}
+
+\crefname{figure}{Figure}{Figures}
 \usetikzlibrary{trees}
 \usetikzlibrary{arrows}
 
@@ -65,19 +66,54 @@
 }
 
 \lstset{style=mystyle}
+\settopmatter{printacmref=false}
+\setcopyright{none}
+\makeatletter
+\let\@authorsaddresses\@empty
 
-\title{
-  \includegraphics[height=250pt]{pictures/logo.png}\\
-  }
+\makeatletter
+\let\newdate\@date
+
+\settopmatter{printacmref=false}
+\setcopyright{none}
+\renewcommand\footnotetextcopyrightpermission[1]{}
+\pagestyle{plain}
+
 \begin{document}
 
-\author{}
-\maketitle
+\title[]{
+  \includegraphics[width = 230pt, height = 200pt]{wp/pictures/logo.png}\\
+  DiKTat - Kotlin linter
+}
 
-\pagebreak
-\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
-\tableofcontents
-\pagebreak
+\author{Andrey Kuleshov}
+\email{andrewkuleshov7@gmail.com}
+\affiliation{
+\institution{Lomonosov Moscow State University}
+\country{Russia}
+}
+\author{Petr Trifanov}
+\email{peter.trifanov@mail.ru}
+\affiliation{
+\institution{Lomonosov Moscow State University}
+\country{Russia}
+}
+\author{Denis Kumar}
+\email{qbextted0@gmail.com}
+\affiliation{
+\institution{Higher School of Economics}
+\country{Russia}
+}
+\author{Alexander Tsay}
+\email{aktsay6@gmail.com}
+\affiliation{
+\institution{Higher School of Economics}
+\country{Russia}
+}
+
+\renewcommand{\shortauthors}{}
+
+\maketitle
 
 \section{Introduction}
 \label{sec:intro}
