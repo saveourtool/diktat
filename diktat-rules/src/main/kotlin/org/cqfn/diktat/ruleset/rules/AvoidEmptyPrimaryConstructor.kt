@@ -5,11 +5,8 @@ import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.EMPTY_PRIMARY_CONSTRUCTOR
 import org.cqfn.diktat.ruleset.utils.getIdentifierName
-import org.cqfn.diktat.ruleset.utils.prettyPrint
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtClass
-import org.jetbrains.kotlin.psi.psiUtil.isPrivate
-import org.jetbrains.kotlin.psi.psiUtil.isPublic
 
 class AvoidEmptyPrimaryConstructor(private val configRules: List<RulesConfig>) : Rule("avoid-empty-primary-constructor") {
 
@@ -29,8 +26,7 @@ class AvoidEmptyPrimaryConstructor(private val configRules: List<RulesConfig>) :
 
     @Suppress("UnsafeCallOnNullableType")
     private fun checkCLass(node: KtClass) {
-        println(node.node.prettyPrint())
-        if(node.primaryConstructor?.valueParameters?.isNotEmpty() != false || node.primaryConstructor?.isPrivate() == true)
+        if(node.primaryConstructor?.valueParameters?.isNotEmpty() != false || node.primaryConstructorModifierList != null)
             return
         if (node.secondaryConstructors.isEmpty()) {
             warnOrFixOnEmptyPrimaryConstructor(node.node, true) {

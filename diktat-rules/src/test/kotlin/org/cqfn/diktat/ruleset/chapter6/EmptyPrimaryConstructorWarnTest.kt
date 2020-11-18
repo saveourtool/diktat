@@ -44,4 +44,19 @@ class EmptyPrimaryConstructorWarnTest: LintTestBase(::AvoidEmptyPrimaryConstruct
                 LintError(8,1,ruleId, "${EMPTY_PRIMARY_CONSTRUCTOR.warnText()} Some1", true)
         )
     }
+
+    @Test
+    @Tag(WarningNames.EMPTY_PRIMARY_CONSTRUCTOR)
+    fun `correct example with empty primary constructor and modifiers`() {
+        lintMethod(
+                """
+                    |class Some1 private constructor () {
+                    |
+                    |}
+                    |
+                    |class Some2 @Inject constructor() {
+                    |}
+                """.trimMargin()
+        )
+    }
 }
