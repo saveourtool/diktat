@@ -47,8 +47,8 @@ jobs:
 
       - name: Run diKTat from gradle kotlin DSL
         continue-on-error: true
+        working-directory: ./examples/gradle-kotlin-dsl
         run: |
-          cd examples/gradle-kotlin-dsl
           gradle diktatCheck &> out
           mv out ../..
 
