@@ -25,3 +25,10 @@ fun mains() {
     httpClient.doRequest()
 }
 
+class Foo {
+    /**
+     * @implNote lorem ipsum
+     */
+    private fun foo() {}
+}
+
