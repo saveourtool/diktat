@@ -50,13 +50,12 @@ jobs:
         working-directory: ./examples/gradle-kotlin-dsl
         run: |
           gradle diktatCheck &> out
-          mv out ../..
 
       - name: Check gradle from kotlin DSL
+        working-directory: ./examples/gradle-kotlin-dsl
         run: |
           cat out
           grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out
-          rm out
 
       - name: Run diKTat from gradle groovy DSL
         continue-on-error: true
