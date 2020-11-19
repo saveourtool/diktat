@@ -48,7 +48,7 @@ jobs:
       - name: Run diKTat from gradle kotlin DSL
         continue-on-error: true
         run: |
-          cd examples/gradle-kotlin-sdl
+          cd examples/gradle-kotlin-dsl
           gradle diktatCheck &> out
           mv out ../../out
 
@@ -61,7 +61,7 @@ jobs:
       - name: Run diKTat from gradle groovy DSL
         continue-on-error: true
         run: |
-          cd examples/gradle-groovy-sdl
+          cd examples/gradle-groovy-dsl
           gradle diktatCheck &> out
           mv out ../../out
 
