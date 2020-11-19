@@ -1,13 +1,14 @@
 package org.cqfn.diktat.ruleset.rules.classes
 
-import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.ast.isPartOfComment
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.ruleset.utils.getFunctionName
 import org.cqfn.diktat.ruleset.utils.log
+
+import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.ast.isPartOfComment
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
 import org.jetbrains.kotlin.psi.KtBinaryExpression
@@ -31,14 +32,15 @@ class CompactInitialization(private val configRules: List<RulesConfig>) : Rule("
     private lateinit var emitWarn: EmitType
 
     override fun visit(
-        node: ASTNode,
-        autoCorrect: Boolean,
-        emit: EmitType
+            node: ASTNode,
+            autoCorrect: Boolean,
+            emit: EmitType
     ) {
         emitWarn = emit
         isFixMode = autoCorrect
 
-        node.psi
+        node
+            .psi
             .let { it as? KtProperty }
             ?.takeIf { it.hasInitializer() }
             ?.let(::handleProperty)
@@ -59,7 +61,7 @@ class CompactInitialization(private val configRules: List<RulesConfig>) : Rule("
                     it is KtBinaryExpression && (it.left as? KtDotQualifiedExpression)?.run {
                         (receiverExpression as? KtNameReferenceExpression)?.getReferencedName() == propertyName
                     }
-                            ?: false
+                        ?: false
                 }
                 .map {
                     // collect as an assignment associated with assigned field name
@@ -69,8 +71,8 @@ class CompactInitialization(private val configRules: List<RulesConfig>) : Rule("
             .toList()
             .forEach { (assignment, field) ->
                 Warnings.COMPACT_OBJECT_INITIALIZATION.warnAndFix(
-                    configRules, emitWarn, isFixMode,
-                    field.text, assignment.startOffset, assignment.node
+                        configRules, emitWarn, isFixMode,
+                        field.text, assignment.startOffset, assignment.node
                 ) {
                     moveAssignmentIntoApply(property, assignment)
                 }
@@ -94,7 +96,9 @@ class CompactInitialization(private val configRules: List<RulesConfig>) : Rule("
                         .bodyExpression!!
                         .node
                     // move comments and empty lines before `assignment` into `apply`
-                    assignment.node.siblings(forward = false)
+                    assignment
+                        .node
+                        .siblings(forward = false)
                         .takeWhile { it != property.node }
                         .toList()
                         .reversed()
@@ -110,15 +114,18 @@ class CompactInitialization(private val configRules: List<RulesConfig>) : Rule("
     }
 
     @Suppress("UnsafeCallOnNullableType")
-    private fun getOrCreateApplyBlock(property: KtProperty): KtCallExpression = (property.initializer as? KtDotQualifiedExpression)?.selectorExpression
-        ?.let { it as? KtCallExpression }?.takeIf { it.getFunctionName() == "apply" } ?: run {
-        // add apply block
-        property.node.run {
-            val newInitializerNode = kotlinParser.createNode("${property.initializer!!.text}.apply {}")
-            replaceChild(property.initializer!!.node, newInitializerNode)
+    private fun getOrCreateApplyBlock(property: KtProperty): KtCallExpression = (property.initializer as? KtDotQualifiedExpression)
+        ?.selectorExpression
+        ?.let { it as? KtCallExpression }
+        ?.takeIf { it.getFunctionName() == "apply" }
+        ?: run {
+            // add apply block
+            property.node.run {
+                val newInitializerNode = kotlinParser.createNode("${property.initializer!!.text}.apply {}")
+                replaceChild(property.initializer!!.node, newInitializerNode)
+            }
+            (property.initializer as KtDotQualifiedExpression).selectorExpression!! as KtCallExpression
         }
-        (property.initializer as KtDotQualifiedExpression).selectorExpression!! as KtCallExpression
-    }
 
     /**
      * convert `apply(::foo)` to `apply { foo(this) }` if necessary
@@ -137,13 +144,14 @@ class CompactInitialization(private val configRules: List<RulesConfig>) : Rule("
             } else {
                 applyExpression.node.run {
                     treeParent.replaceChild(
-                        this,
-                        kotlinParser.createNode(
-                            """
-                            |apply {
-                            |    ${referenceExpression.getReferencedName()}(this)
-                            |}""".trimMargin()
-                        )
+                            this,
+                            kotlinParser.createNode(
+                                    """
+                                    |apply {
+                                    |    ${referenceExpression.getReferencedName()}(this)
+                                    |}
+                                    """.trimMargin()
+                            )
                     )
                 }
             }

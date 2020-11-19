@@ -3,6 +3,7 @@ package org.cqfn.diktat.ruleset.rules
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.SAY_NO_TO_VAR
 import org.cqfn.diktat.ruleset.utils.search.findAllVariablesWithAssignments
 import org.cqfn.diktat.ruleset.utils.search.findAllVariablesWithUsages
@@ -19,12 +20,12 @@ import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
  * FixMe: here we should also raise warnings for a reassignment of a var (if var has no assignments except in declaration - it can be final)
  */
 class ImmutableValNoVarRule(private val configRules: List<RulesConfig>) : Rule("no-var-rule") {
-    private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
+    private lateinit var emitWarn: EmitType
     private var isFixMode: Boolean = false
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
-                       emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
+                       emit: EmitType) {
         emitWarn = emit
         isFixMode = autoCorrect
 

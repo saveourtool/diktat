@@ -7,6 +7,7 @@ import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.prevSibling
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.COMMENTED_OUT_CODE
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -29,13 +30,13 @@ class CommentsRule(private val configRules: List<RulesConfig>) : Rule("comments"
         private val EOL_COMMENT_START = """// \S""".toRegex()
     }
 
-    private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
+    private lateinit var emitWarn: EmitType
     private var isFixMode: Boolean = false
     private lateinit var ktPsiFactory: KtPsiFactory
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
-                       emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit
+                       emit: EmitType
     ) {
         emitWarn = emit
         isFixMode = autoCorrect

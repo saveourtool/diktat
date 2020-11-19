@@ -1,9 +1,13 @@
 package org.cqfn.diktat.ruleset.rules
 
+import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ruleset.constants.EmitType
+import org.cqfn.diktat.ruleset.constants.Warnings.NO_BRACES_IN_CONDITIONALS_AND_LOOPS
+import org.cqfn.diktat.ruleset.utils.isSingleLineIfElse
+
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
-import com.pinterest.ktlint.core.ast.ElementType.CONDITION
 import com.pinterest.ktlint.core.ast.ElementType.DO_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.DO_WHILE
 import com.pinterest.ktlint.core.ast.ElementType.ELSE_KEYWORD
@@ -16,11 +20,7 @@ import com.pinterest.ktlint.core.ast.ElementType.WHEN
 import com.pinterest.ktlint.core.ast.ElementType.WHILE
 import com.pinterest.ktlint.core.ast.ElementType.WHILE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.nextSibling
 import com.pinterest.ktlint.core.ast.prevSibling
-import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.Warnings.NO_BRACES_IN_CONDITIONALS_AND_LOOPS
-import org.cqfn.diktat.ruleset.utils.isSingleLineIfElse
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -34,11 +34,11 @@ import org.jetbrains.kotlin.psi.psiUtil.astReplace
 
 class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig>) : Rule("braces-rule") {
     private var isFixMode: Boolean = false
-    private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
+    private lateinit var emitWarn: EmitType
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
-                       emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
+                       emit: EmitType) {
         emitWarn = emit
         isFixMode = autoCorrect
 
@@ -46,6 +46,7 @@ class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig
             IF -> checkIfNode(node)
             WHEN -> checkWhenBranches(node)
             FOR, WHILE, DO_WHILE -> checkLoop(node)
+            else -> return
         }
     }
 
@@ -59,11 +60,11 @@ class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig
         val elseKeyword = ifPsi.elseKeyword
         val elseNode = ifPsi.`else`?.node
         val indent = node
-                .prevSibling { it.elementType == WHITE_SPACE }
-                ?.text
-                ?.lines()
-                ?.last()
-                ?.count { it == ' ' } ?: 0
+            .prevSibling { it.elementType == WHITE_SPACE }
+            ?.text
+            ?.lines()
+            ?.last()
+            ?.count { it == ' ' } ?: 0
 
         if (node.isSingleLineIfElse()) {
             return
@@ -105,10 +106,10 @@ class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig
             NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnAndFix(configRules, emitWarn, isFixMode, node.elementType.toString(), node.startOffset, node) {
                 // fixme proper way to calculate indent? or get step size (instead of hardcoded 4)
                 val indent = node.prevSibling { it.elementType == WHITE_SPACE }!!
-                        .text
-                        .lines()
-                        .last()
-                        .count { it == ' ' }
+                    .text
+                    .lines()
+                    .last()
+                    .count { it == ' ' }
                 if (loopBody != null) {
                     loopBody.replaceWithBlock(indent)
                 } else {
@@ -126,16 +127,16 @@ class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig
     @Suppress("UnsafeCallOnNullableType")
     private fun checkWhenBranches(node: ASTNode) {
         (node.psi as KtWhenExpression)
-                .entries
-                .asSequence()
-                .filter { it.expression != null && it.expression!!.node.elementType == BLOCK }
-                .map { it.expression as KtBlockExpression }
-                .filter { it.statements.size == 1 }
-                .forEach {
-                    NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnAndFix(configRules, emitWarn, isFixMode, "WHEN", it.node.startOffset, it.node) {
-                        it.astReplace(it.firstStatement!!.node.psi)
-                    }
+            .entries
+            .asSequence()
+            .filter { it.expression != null && it.expression!!.node.elementType == BLOCK }
+            .map { it.expression as KtBlockExpression }
+            .filter { it.statements.size == 1 }
+            .forEach {
+                NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnAndFix(configRules, emitWarn, isFixMode, "WHEN", it.node.startOffset, it.node) {
+                    it.astReplace(it.firstStatement!!.node.psi)
                 }
+            }
     }
 
     private fun KtElement.replaceWithBlock(indent: Int) {
@@ -144,7 +145,10 @@ class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig
         ))
     }
 
-    private fun ASTNode.insertEmptyBlockBetweenChildren(firstChild: ASTNode, secondChild: ASTNode?, indent: Int) {
+    private fun ASTNode.insertEmptyBlockBetweenChildren(
+            firstChild: ASTNode,
+            secondChild: ASTNode?,
+            indent: Int) {
         val emptyBlock = CompositeElement(ElementType.BLOCK_CODE_FRAGMENT)
         addChild(emptyBlock, firstChild)
         addChild(PsiWhiteSpaceImpl(" "), emptyBlock)

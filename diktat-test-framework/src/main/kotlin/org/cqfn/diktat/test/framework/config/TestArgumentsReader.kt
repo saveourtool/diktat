@@ -37,31 +37,28 @@ class TestArgumentsReader(
     /**
      * List of tests provided by user
      */
-    val tests: List<String>
-        get() {
-            val tests = cmd.getOptionValue("t")
-            if (tests == null) {
-                log.error("""Missing option --test or -t. Not able to run tests, please provide test names or use --all
+    val tests: List<String> by lazy {
+        val tests = cmd.getOptionValue("t")
+        if (tests == null) {
+            log.error("""Missing option --test or -t. Not able to run tests, please provide test names or use --all
                          option to run all available tests""")
-                exitProcess(2)
-            }
-            return tests
-                    .split(",")
-                    .map { it.trim() }
+            exitProcess(2)
         }
-
-    private val declaredOptions: Options
-        get() {
-            val options = Options()
-            if (cliArguments != null) {
-                cliArguments
-                        .map { it.convertToOption() }
-                        .forEach { opt -> options.addOption(opt) }
-            } else {
-                exitProcess(1)
-            }
-            return options
+        tests
+            .split(",")
+            .map { it.trim() }
+    }
+    private val declaredOptions: Options by lazy {
+        val options = Options()
+        if (cliArguments != null) {
+            cliArguments
+                .map { it.convertToOption() }
+                .forEach { opt -> options.addOption(opt) }
+        } else {
+            exitProcess(1)
         }
+        options
+    }
 
     private fun parseArguments(): CommandLine {
         val parser: CommandLineParser = DefaultParser()

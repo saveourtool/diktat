@@ -18,6 +18,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     PACKAGE_NAME_MISSING(true, "no package name declared in a file"),
     PACKAGE_NAME_INCORRECT_CASE(true, "package name should be completely in a lower case"),
     PACKAGE_NAME_INCORRECT_PREFIX(true, "package name should start from company's domain"),
+
     // FixMe: should add autofix
     PACKAGE_NAME_INCORRECT_SYMBOLS(false, "package name should contain only latin (ASCII) letters or numbers. For separation of words use dot"),
     PACKAGE_NAME_INCORRECT_PATH(true, "package name does not match the directory hierarchy for this file, the real package name should be"),
@@ -87,6 +88,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     BACKTICKS_PROHIBITED(false, "Backticks should not be used in identifier's naming. The only exception test methods marked with @Test annotation"),
     REDUNDANT_SEMICOLON(true, "there should be no redundant semicolon at the end of lines"),
     WRONG_NEWLINES(true, "incorrect line breaking"),
+
     // FixMe: autofixing will be added for this rule
     STRING_CONCATENATION(false, "strings should not be concatenated using plus operator - use string templates instead if the statement fits one line"),
     TOO_MANY_BLANK_LINES(true, "too many consecutive blank lines"),
@@ -108,10 +110,10 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     GENERIC_VARIABLE_WRONG_DECLARATION(true, "variable should have explicit type declaration"),
     STRING_TEMPLATE_CURLY_BRACES(true, "string template has redundant curly braces"),
     STRING_TEMPLATE_QUOTES(true, "string template has redundant quotes"),
+
     // FixMe: change float literal to BigDecimal? Or kotlin equivalent?
     FLOAT_IN_ACCURATE_CALCULATIONS(false, "floating-point values shouldn't be used in accurate calculations"),
     AVOID_NULL_CHECKS(false, "Try to avoid explicit null-checks. Use '.let/.also/?:/e.t.c' instead of"),
-
 
     // ======== chapter 5 ========
     TOO_LONG_FUNCTION(false, "function is too long: split it or make more primitive"),
@@ -129,7 +131,7 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
     CLASS_SHOULD_NOT_BE_ABSTRACT(true, "class should not be abstract, because it has no abstract functions"),
     CUSTOM_GETTERS_SETTERS(false, "Custom getters and setters are not recommended, use class methods instead"),
     COMPACT_OBJECT_INITIALIZATION(true, "class instance can be initialized in `apply` block"),
-    USELESS_SUPERTYPE(true,"unnecessary supertype specification"),
+    USELESS_SUPERTYPE(true, "unnecessary supertype specification"),
     TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED(true, "trivial property accessors are not recommended"),
     EXTENSION_FUNCTION_SAME_SIGNATURE(false, "extension functions should not have same signature if their receiver classes are related"),
     ;
@@ -166,8 +168,8 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
              node: ASTNode) {
         if (configs.isRuleEnabled(this) && !node.hasSuppress(name)) {
             val trimmedFreeText = freeText
-                    .lines()
-                    .run { if (size > 1) "${first()}..." else first() }
+                .lines()
+                .run { if (size > 1) "${first()}..." else first() }
             emit(offset,
                     "${this.warnText()} $trimmedFreeText",
                     autoCorrected
@@ -175,7 +177,11 @@ enum class Warnings(private val canBeAutoCorrected: Boolean, private val warn: S
         }
     }
 
-    private inline fun fix(configs: List<RulesConfig>, autoFix: () -> Unit, isFix: Boolean, node: ASTNode) {
+    private inline fun fix(
+            configs: List<RulesConfig>,
+            autoFix: () -> Unit,
+            isFix: Boolean,
+            node: ASTNode) {
         if (configs.isRuleEnabled(this) && isFix && !node.hasSuppress(name)) {
             autoFix()
         }

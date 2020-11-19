@@ -13,6 +13,7 @@ import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isWhiteSpace
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
@@ -27,7 +28,7 @@ import org.jetbrains.kotlin.psi.KtPropertyAccessor
  * This rule checks if there are any trivial getters and setters and, if so, deletes them
  */
 class TrivialPropertyAccessors(private val configRules: List<RulesConfig>) : Rule("trivial-property-accessors") {
-    private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
+    private lateinit var emitWarn: EmitType
     private var isFixMode: Boolean = false
 
     companion object {
@@ -37,7 +38,7 @@ class TrivialPropertyAccessors(private val configRules: List<RulesConfig>) : Rul
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
-                       emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
+                       emit: EmitType) {
         emitWarn = emit
         isFixMode = autoCorrect
 

@@ -24,7 +24,7 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
-                       emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
+                       emit: EmitType) {
         emitWarn = emit
         isFixMode = autoCorrect
 

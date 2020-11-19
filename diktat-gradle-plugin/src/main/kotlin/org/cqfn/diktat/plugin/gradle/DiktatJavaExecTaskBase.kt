@@ -1,9 +1,10 @@
 package org.cqfn.diktat.plugin.gradle
 
-import generated.KTLINT_VERSION
-import generated.DIKTAT_VERSION
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.DIKTAT_CHECK_TASK
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.DIKTAT_FIX_TASK
+
+import generated.DIKTAT_VERSION
+import generated.KTLINT_VERSION
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.provider.Property
@@ -11,6 +12,7 @@ import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.VerificationTask
+
 import javax.inject.Inject
 
 /**
