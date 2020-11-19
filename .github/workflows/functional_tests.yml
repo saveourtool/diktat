@@ -50,7 +50,7 @@ jobs:
         run: |
           cd examples/gradle-kotlin-dsl
           gradle diktatCheck &> out
-          mv out ../../out
+          mv out ../..
 
       - name: Check gradle from kotlin DSL
         run: |
@@ -63,7 +63,7 @@ jobs:
         run: |
           cd examples/gradle-groovy-dsl
           gradle diktatCheck &> out
-          mv out ../../out
+          mv out ../..
 
       - name: Check gradle from groovy DSL
         run: |
