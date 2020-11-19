@@ -59,16 +59,15 @@ jobs:
 
       - name: Run diKTat from gradle groovy DSL
         continue-on-error: true
+          working-directory: ./examples/gradle-groovy-dsl
         run: |
-          cd examples/gradle-groovy-dsl
           gradle diktatCheck &> out
-          mv out ../..
 
       - name: Check gradle from groovy DSL
+        working-directory: ./examples/gradle-groovy-dsl
         run: |
           cat out
           grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out
-          rm out
 
       - name: Run diKTat from maven
         continue-on-error: true
