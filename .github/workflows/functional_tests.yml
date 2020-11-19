@@ -59,7 +59,7 @@ jobs:
 
       - name: Run diKTat from gradle groovy DSL
         continue-on-error: true
-          working-directory: ./examples/gradle-groovy-dsl
+        working-directory: ./examples/gradle-groovy-dsl
         run: |
           gradle diktatCheck &> out
 
