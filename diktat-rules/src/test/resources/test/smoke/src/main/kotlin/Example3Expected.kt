@@ -25,6 +25,26 @@ fun mains() {
     httpClient.doRequest()
 }
 
+class Example {
+    fun foo() {
+        if (condition1) {
+            if (condition2) {
+                bar()
+            }
+        }
+
+        if (condition3) {
+            if (condition4) {
+                foo()
+            } else {
+                bar()
+            }
+        } else {
+            foo()
+        }
+    }
+}
+
 class Foo {
     /**
      * @implNote lorem ipsum

@@ -101,6 +101,7 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
                 ::BlankLinesRule,
                 ::FileSize,
                 ::NullableTypeRule,
+                ::NullChecksRule,
                 ::ImmutableValNoVarRule,
                 ::AvoidNestedFunctionsRule,
                 ::ExtensionFunctionsSameNameRule,
