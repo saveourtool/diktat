@@ -97,6 +97,12 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
 
     @Test
     @Tag("DiktatRuleSetProvider")
+    fun `smoke test #4`() {
+        fixAndCompare("Example4Expected.kt", "Example4Test.kt")
+    }
+
+    @Test
+    @Tag("DiktatRuleSetProvider")
     fun `regression - should not fail if package is not set`() {
         overrideRulesConfig(listOf(Warnings.PACKAGE_NAME_MISSING, Warnings.PACKAGE_NAME_INCORRECT_PATH,
             Warnings.PACKAGE_NAME_INCORRECT_PREFIX))
