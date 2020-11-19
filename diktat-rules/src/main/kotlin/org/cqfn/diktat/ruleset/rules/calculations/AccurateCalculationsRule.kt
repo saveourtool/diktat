@@ -1,11 +1,13 @@
 package org.cqfn.diktat.ruleset.rules.calculations
 
-import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.ast.ElementType
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.FLOAT_IN_ACCURATE_CALCULATIONS
 import org.cqfn.diktat.ruleset.utils.findLocalDeclaration
 import org.cqfn.diktat.ruleset.utils.getFunctionName
+
+import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.ast.ElementType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.lexer.KtTokens
@@ -25,46 +27,46 @@ import org.jetbrains.kotlin.psi.psiUtil.startOffset
  */
 class AccurateCalculationsRule(private val configRules: List<RulesConfig>) : Rule("accurate-calculations") {
     private var isFixMode: Boolean = false
-    private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
+    private lateinit var emitWarn: EmitType
 
     private fun KtCallExpression?.isAbsOfFloat() = this
-            ?.run {
-                (calleeExpression as? KtNameReferenceExpression)
-                        ?.getReferencedName()
-                        ?.equals("abs")
-                        ?.and(
-                                valueArguments
-                                        .singleOrNull()
-                                        ?.getArgumentExpression()
-                                        ?.isFloatingPoint()
-                                        ?: false)
-                        ?: false
-            }
-            ?: false
+        ?.run {
+            (calleeExpression as? KtNameReferenceExpression)
+                ?.getReferencedName()
+                ?.equals("abs")
+                ?.and(
+                        valueArguments
+                            .singleOrNull()
+                            ?.getArgumentExpression()
+                            ?.isFloatingPoint()
+                            ?: false)
+                ?: false
+        }
+        ?: false
     private fun KtDotQualifiedExpression.isComparisonWithAbs() =
             takeIf {
                 it.selectorExpression.run {
                     this is KtCallExpression && getFunctionName() in comparisonFunctions
                 }
             }
-                    ?.run {
-                        (selectorExpression as KtCallExpression)
-                                .valueArguments
-                                .singleOrNull()
-                                ?.let { it.getArgumentExpression() as? KtCallExpression }
-                                ?.isAbsOfFloat()
-                                ?: false ||
-                                (receiverExpression as? KtCallExpression).isAbsOfFloat()
-                    }
-                    ?: false
+                ?.run {
+                    (selectorExpression as KtCallExpression)
+                        .valueArguments
+                        .singleOrNull()
+                        ?.let { it.getArgumentExpression() as? KtCallExpression }
+                        ?.isAbsOfFloat()
+                        ?: false ||
+                            (receiverExpression as? KtCallExpression).isAbsOfFloat()
+                }
+                ?: false
 
     private fun KtBinaryExpression.isComparisonWithAbs() =
             takeIf { it.operationToken in comparisonOperators }
-                    ?.run { left as? KtCallExpression ?: right as? KtCallExpression }
-                    ?.run { calleeExpression as? KtNameReferenceExpression }
-                    ?.getReferencedName()
-                    ?.equals("abs")
-                    ?: false
+                ?.run { left as? KtCallExpression ?: right as? KtCallExpression }
+                ?.run { calleeExpression as? KtNameReferenceExpression }
+                ?.getReferencedName()
+                ?.equals("abs")
+                ?: false
 
     private fun isComparisonWithAbs(psiElement: PsiElement) =
             when (psiElement) {
@@ -82,30 +84,30 @@ class AccurateCalculationsRule(private val configRules: List<RulesConfig>) : Rul
     }
 
     private fun handleFunction(expression: KtDotQualifiedExpression) = expression
-            .takeIf { it.selectorExpression is KtCallExpression }
-            ?.run { receiverExpression to selectorExpression as KtCallExpression }
-            ?.takeIf { it.second.getFunctionName() in arithmeticOperationsFunctions }
-            ?.takeUnless { expression.parentsWithSelf.any(::isComparisonWithAbs) }
-            ?.let { (receiverExpression, selectorExpression) ->
-                val floatValue = receiverExpression.takeIf { it.isFloatingPoint() }
-                        ?: selectorExpression
-                                .valueArguments
-                                .find { it.getArgumentExpression()?.isFloatingPoint() ?: false }
+        .takeIf { it.selectorExpression is KtCallExpression }
+        ?.run { receiverExpression to selectorExpression as KtCallExpression }
+        ?.takeIf { it.second.getFunctionName() in arithmeticOperationsFunctions }
+        ?.takeUnless { expression.parentsWithSelf.any(::isComparisonWithAbs) }
+        ?.let { (receiverExpression, selectorExpression) ->
+            val floatValue = receiverExpression.takeIf { it.isFloatingPoint() }
+                ?: selectorExpression
+                    .valueArguments
+                    .find { it.getArgumentExpression()?.isFloatingPoint() ?: false }
 
-                checkFloatValue(floatValue, expression)
-            }
+            checkFloatValue(floatValue, expression)
+        }
 
     @Suppress("UnsafeCallOnNullableType")
     private fun handleBinaryExpression(expression: KtBinaryExpression) = expression
-            .takeIf { it.operationToken in arithmeticOperationTokens }
-            ?.takeUnless { it.parentsWithSelf.any(::isComparisonWithAbs) }
-            ?.run {
-                // !! is safe because `KtBinaryExpression#left` is annotated `Nullable IfNotParsed`
-                val floatValue = left!!.takeIf { it.isFloatingPoint() }
-                        ?: right!!.takeIf { it.isFloatingPoint() }
-                checkFloatValue(floatValue, this)
-                println()
-            }
+        .takeIf { it.operationToken in arithmeticOperationTokens }
+        ?.takeUnless { it.parentsWithSelf.any(::isComparisonWithAbs) }
+        ?.run {
+            // !! is safe because `KtBinaryExpression#left` is annotated `Nullable IfNotParsed`
+            val floatValue = left!!.takeIf { it.isFloatingPoint() }
+                ?: right!!.takeIf { it.isFloatingPoint() }
+            checkFloatValue(floatValue, this)
+            println()
+        }
 
     /**
      * @param node
@@ -114,7 +116,7 @@ class AccurateCalculationsRule(private val configRules: List<RulesConfig>) : Rul
      */
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
-                       emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
+                       emit: EmitType) {
         emitWarn = emit
         isFixMode = autoCorrect
 
@@ -144,11 +146,11 @@ private fun PsiElement.isFloatingPoint(): Boolean =
         node.elementType == ElementType.FLOAT_LITERAL ||
                 node.elementType == ElementType.FLOAT_CONSTANT ||
                 ((this as? KtNameReferenceExpression)
-                        ?.findLocalDeclaration()
-                        ?.initializer
-                        ?.node
-                        ?.run { elementType == ElementType.FLOAT_LITERAL || elementType == ElementType.FLOAT_CONSTANT }
-                        ?: false) ||
+                    ?.findLocalDeclaration()
+                    ?.initializer
+                    ?.node
+                    ?.run { elementType == ElementType.FLOAT_LITERAL || elementType == ElementType.FLOAT_CONSTANT }
+                    ?: false) ||
                 ((this as? KtBinaryExpression)
-                        ?.run { left!!.isFloatingPoint() && right!!.isFloatingPoint() }
-                        ?: false)
+                    ?.run { left!!.isFloatingPoint() && right!!.isFloatingPoint() }
+                    ?: false)

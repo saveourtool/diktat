@@ -1,5 +1,13 @@
 package org.cqfn.diktat.ruleset.rules
 
+import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ruleset.constants.EmitType
+import org.cqfn.diktat.ruleset.constants.Warnings.AVOID_NESTED_FUNCTIONS
+import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
+import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
+import org.cqfn.diktat.ruleset.utils.hasChildOfType
+import org.cqfn.diktat.ruleset.utils.hasParent
+
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.FUN
@@ -8,12 +16,6 @@ import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
-import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.Warnings.AVOID_NESTED_FUNCTIONS
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
-import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
-import org.cqfn.diktat.ruleset.utils.hasChildOfType
-import org.cqfn.diktat.ruleset.utils.hasParent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
@@ -25,9 +27,11 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  */
 class AvoidNestedFunctionsRule(private val configRules: List<RulesConfig>) : Rule("avoid-nested-functions") {
     private var isFixMode: Boolean = false
-    private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
+    private lateinit var emitWarn: EmitType
 
-    override fun visit(node: ASTNode, autoCorrect: Boolean, emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
+    override fun visit(node: ASTNode,
+                       autoCorrect: Boolean,
+                       emit: EmitType) {
         emitWarn = emit
         isFixMode = autoCorrect
 
@@ -47,9 +51,9 @@ class AvoidNestedFunctionsRule(private val configRules: List<RulesConfig>) : Rul
                 // We take last nested function, then add and remove child from bottom to top
                 val lastFunc = node.findAllNodesWithSpecificType(FUN).last()
                 val funcSeq = lastFunc
-                        .parents()
-                        .filter { it.elementType == FUN }
-                        .toMutableList()
+                    .parents()
+                    .filter { it.elementType == FUN }
+                    .toMutableList()
                 funcSeq.add(0, lastFunc)
                 val firstFunc = funcSeq.last()
                 funcSeq.dropLast(1).forEachIndexed { index, it ->
@@ -70,9 +74,9 @@ class AvoidNestedFunctionsRule(private val configRules: List<RulesConfig>) : Rul
 
     private fun ASTNode.hasFunParentUntil(stopNode: IElementType): Boolean =
             parents()
-                    .asSequence()
-                    .takeWhile { it.elementType != stopNode }
-                    .any { it.elementType == FUN }
+                .asSequence()
+                .takeWhile { it.elementType != stopNode }
+                .any { it.elementType == FUN }
 
     /**
      * Checks if local function has no usage of outside properties

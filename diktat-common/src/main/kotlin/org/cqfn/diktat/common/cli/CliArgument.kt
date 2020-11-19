@@ -23,9 +23,7 @@ data class CliArgument(
      *
      * @return an [Option]
      */
-    fun convertToOption(): Option {
-        val resOption = Option(shortName, longName, hasArgs, helpDescr)
-        resOption.isRequired = isRequired
-        return resOption
+    fun convertToOption() = Option(shortName, longName, hasArgs, helpDescr).apply {
+        isRequired = this@CliArgument.isRequired
     }
 }
