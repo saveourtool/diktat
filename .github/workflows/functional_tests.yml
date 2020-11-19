@@ -70,10 +70,12 @@ jobs:
           grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out
 
       - name: Run diKTat from maven
+        working-directory: ./examples/maven
         continue-on-error: true
         run: mvn -B diktat:check &> out
 
       - name: Check maven
+        working-directory: ./examples/maven
         run: |
           cat out
           grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out

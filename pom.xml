@@ -330,19 +330,6 @@
                             <diktatConfigFile>diktat-analysis.yml</diktatConfigFile>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>functional-test</id>
-                        <phase>none</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                        <configuration>
-                            <inputs>
-                                <input>${project.basedir}/src/test/resources/test/funcTest</input>
-                            </inputs>
-                            <diktatConfigFile>diktat-analysis.yml</diktatConfigFile>
-                        </configuration>
-                    </execution>
                 </executions>
             </plugin>
 
