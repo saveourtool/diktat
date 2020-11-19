@@ -153,7 +153,7 @@ For example:
   # all rules are enabled by the default. To disable add 'enabled: false' to the config.
   enabled: true 
   configuration:
-    isCopyrightMandatory: true,
+    isCopyrightMandatory: true
     copyrightText: Copyright (c) Jeff Lebowski, 2012-2020. All rights reserved.
 ```
 Note, that you can specify and put `diktat-analysis.yml` that contains configuration of diktat in the parent directory of your project on the same level where `build.gradle/pom.xml` is stored. \
