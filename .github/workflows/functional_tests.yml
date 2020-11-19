@@ -36,7 +36,7 @@ jobs:
       - name: Run diKTat from cli
         continue-on-error: true
         run: |
-          ./ktlint -R diktat-$DIKTAT_VERSION.jar "diktat-rules/src/test/resources/test/funcTest/FunctionalTestFile.kt" &> out
+          ./ktlint -R diktat-$DIKTAT_VERSION.jar "examples/maven/src/main/kotlin/Test.kt" &> out
 
       - name: Check output
         id: cli-check

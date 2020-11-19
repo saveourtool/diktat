@@ -7,5 +7,7 @@ class incorrectname: Exception {
 	
 	// fun myCommentedFunction() {
 	// }
-	
+
+val Incorrect_Val = 5
+
 }
