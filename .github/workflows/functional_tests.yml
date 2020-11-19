@@ -14,9 +14,6 @@ env:
 jobs:
   run-functional-tests:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        buildDir: ['examples/maven', 'examples/gradle-groovy-dsl', 'examples/gradle-kotlin-dsl']
 
     steps:
       - uses: actions/checkout@v2.3.3
@@ -47,14 +44,35 @@ jobs:
           cat out
           grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out
 
-      - name: Run diKTat from {{ matrix.buildDir }}
+      - name: Run diKTat from gradle kotlin DSL
         continue-on-error: true
         run: |
-          cd ${{ matrix.buildDir }}
+          cd examples/gradle-kotlin-sdl
           gradle diktatCheck &> out
           mv out ../../out
 
-      - name: Check results from {{ matrix.buildDir }}
+      - name: Check gradle from kotlin DSL
+        run: |
+          cat out
+          grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out
+
+      - name: Run diKTat from gradle groovy DSL
+        continue-on-error: true
+        run: |
+          cd examples/gradle-groovy-sdl
+          gradle diktatCheck &> out
+          mv out ../../out
+
+      - name: Check gradle from groovy DSL
+        run: |
+          cat out
+          grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out
+
+      - name: Run diKTat from maven
+        continue-on-error: true
+        run: mvn -B diktat:check@functional-test &> out
+
+      - name: Check maven
         run: |
           cat out
           grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out

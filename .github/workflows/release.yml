@@ -75,6 +75,10 @@ jobs:
           sed -i "s/$PREVIOUS_VERSION/$RELEASE_VERSION/g" README.md
           sed -i "s/$PREVIOUS_VERSION/$RELEASE_VERSION/g" build.gradle.kts
           sed -i "s/$PREVIOUS_VERSION/$RELEASE_VERSION/g" .github/workflows/functional_tests.yml
+          for file in examples/maven/pom.xml examples/gadle-groovy-dsl/build.gradle examples/gradle-kotlin-dsl/build.gradle.kts
+          do
+            sed -i "s/$PREVIOUS_VERSION/$RELEASE_VERSION/g" $file
+          done
       - name: Create pull request
         uses: peter-evans/create-pull-request@v3
         with:
