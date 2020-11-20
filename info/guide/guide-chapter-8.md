@@ -73,7 +73,7 @@ myVar?.let {
 ```kotlin
 if (myVar != null) {
     println("not null")
-} else if (true) {
+} else if (anotherCondition) {
     println("Other condition")
 }
 ``` 
