@@ -67,13 +67,19 @@ jobs:
           asset_path: ./diktat-ruleset/target/diktat-${{ env.RELEASE_VERSION }}.jar
           asset_name: diktat-${{ env.RELEASE_VERSION }}.jar
           asset_content_type: application/zip
-      - name: Update versions in pom.xml and documentation
+      - name: Update versions in pom.xml and documentation, update examples
         id: update-versions
         run: |
           mvn -B versions:set -DnextSnapshot=true -DprocessAllModules=true versions:commit
           mvn versions:set-property -Dproperty=diktat-check.version -DnewVersion=${{ env.RELEASE_VERSION }}
           sed -i "s/$PREVIOUS_VERSION/$RELEASE_VERSION/g" README.md
           sed -i "s/$PREVIOUS_VERSION/$RELEASE_VERSION/g" build.gradle.kts
+          sed -i "s/$PREVIOUS_VERSION/$RELEASE_VERSION/g" .github/workflows/functional_tests.yml
+          for file in examples/maven/pom.xml examples/gradle-groovy-dsl/build.gradle examples/gradle-kotlin-dsl/build.gradle.kts
+          do
+            sed -i "s/$PREVIOUS_VERSION/$RELEASE_VERSION/g" $file
+            cp diktat-rules/src/main/resources/diktat-analysis.yml $(dirname $file)
+          done
       - name: Create pull request
         uses: peter-evans/create-pull-request@v3
         with:
