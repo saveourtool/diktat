@@ -103,7 +103,7 @@ To run diktat in **only-check** mode use command `$ mvn diktat:check@diktat`.
 To run diktat in **autocorrect** mode use command `$ mvn diktat:fix@diktat`.
 
 ## Run with Gradle using diktat-gradle-plugin
-This plugin is available since version 0.1.5. You can see how the plugin is configured in our project for self-checks: [build.gradle.kts](build.gradle.kts).
+This plugin is available since version 0.1.5. You can see how the plugin is configured in our examples: [build.gradle.kts](examples/gradle-kotlin-dsl/build.gradle.kts).
 Add this plugin to your `build.gradle.kts`:
 ```kotlin
 plugins {
@@ -153,7 +153,7 @@ For example:
   # all rules are enabled by the default. To disable add 'enabled: false' to the config.
   enabled: true 
   configuration:
-    isCopyrightMandatory: true,
+    isCopyrightMandatory: true
     copyrightText: Copyright (c) Jeff Lebowski, 2012-2020. All rights reserved.
 ```
 Note, that you can specify and put `diktat-analysis.yml` that contains configuration of diktat in the parent directory of your project on the same level where `build.gradle/pom.xml` is stored. \
