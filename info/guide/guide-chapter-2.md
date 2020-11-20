@@ -32,7 +32,38 @@ When the entire KDoc block can be stored in one line (and there is no KDoc mark 
 
 ### <a name="r2.1.1"></a> Rule 2.1.1: KDoc is used for each public, protected or internal code element
 
-At a minimum, KDoc should be used for every public, protected, or internal decorated class, interface, enumeration, method, and member field (property). Other code blocks can also have KDocs if needed.
+At a minimum, KDoc should be used for every public, protected, or internal decorated class, interface, enumeration, method, and member field (property).
+Other code blocks can also have KDocs if needed.
+Instead of using comments or KDocs before properties in the primary constructor of a class - use `@property` tag in a KDoc of a class.
+All properties of the primary constructor should be also documented in a KDoc with a `@property` tag.
+
+Incorrect example:
+```kotlin
+/**
+ * Class description
+ */
+class Example(
+ /**
+  * property description
+  */
+  val foo: Foo,
+  // another property description
+  val bar: Bar
+)
+```
+
+Correct example:
+```kotlin
+/**
+ * Class description
+ * @property foo property description
+ * @property bar another property description
+ */
+class Example(
+  val foo: Foo,
+  val bar: Bar
+)
+```
 
 Exceptions:
 
@@ -52,32 +83,6 @@ fun isEmptyList(list: List<String>) = list.size == 0
 ```
 
 3. You can skip KDocs for a method's override if the method is almost like the super class method.
-
-4. Class properties declared in the primary constructor should be documented using `@property` tag in the class KDoc.
-
-Incorrect example:
-```kotlin
-/**
- * Class description
- */
-class Example(
- /**
-  * property description
-  */
-  val foo: Bar
-)
-```
-
-Correct example:
-```kotlin
-/**
- * Class description
- * @property foo property description
- */
-class Example(
-  val foo: Bar
-)
-```
 
 ###  <a name="r2.1.2"></a>Rule 2.1.2: When the method has arguments, return value, can throw exceptions, etc., it must be described in the KDoc block: with @param, @return, @throws, etc.
 
