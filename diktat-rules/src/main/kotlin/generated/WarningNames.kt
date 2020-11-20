@@ -81,6 +81,9 @@ public object WarningNames {
 
     public const val KDOC_NO_CONSTRUCTOR_PROPERTY: String = "KDOC_NO_CONSTRUCTOR_PROPERTY"
 
+    public const val KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT: String =
+            "KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT"
+
     public const val HEADER_WRONG_FORMAT: String = "HEADER_WRONG_FORMAT"
 
     public const val HEADER_MISSING_OR_WRONG_COPYRIGHT: String = "HEADER_MISSING_OR_WRONG_COPYRIGHT"
@@ -179,6 +182,8 @@ public object WarningNames {
 
     public const val FLOAT_IN_ACCURATE_CALCULATIONS: String = "FLOAT_IN_ACCURATE_CALCULATIONS"
 
+    public const val AVOID_NULL_CHECKS: String = "AVOID_NULL_CHECKS"
+
     public const val TOO_LONG_FUNCTION: String = "TOO_LONG_FUNCTION"
 
     public const val AVOID_NESTED_FUNCTIONS: String = "AVOID_NESTED_FUNCTIONS"
@@ -192,6 +197,9 @@ public object WarningNames {
     public const val WRONG_OVERLOADING_FUNCTION_ARGUMENTS: String =
             "WRONG_OVERLOADING_FUNCTION_ARGUMENTS"
 
+    public const val SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY: String =
+            "SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY"
+
     public const val USE_DATA_CLASS: String = "USE_DATA_CLASS"
 
     public const val WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR: String =
@@ -200,6 +208,17 @@ public object WarningNames {
     public const val MULTIPLE_INIT_BLOCKS: String = "MULTIPLE_INIT_BLOCKS"
 
     public const val CLASS_SHOULD_NOT_BE_ABSTRACT: String = "CLASS_SHOULD_NOT_BE_ABSTRACT"
+
+    public const val CUSTOM_GETTERS_SETTERS: String = "CUSTOM_GETTERS_SETTERS"
+
+    public const val COMPACT_OBJECT_INITIALIZATION: String = "COMPACT_OBJECT_INITIALIZATION"
+
+    public const val USELESS_SUPERTYPE: String = "USELESS_SUPERTYPE"
+
+    public const val TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED: String =
+            "TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED"
+
+    public const val EXTENSION_FUNCTION_SAME_SIGNATURE: String = "EXTENSION_FUNCTION_SAME_SIGNATURE"
 
     public const val NO_CORRESPONDING_PROPERTY: String = "NO_CORRESPONDING_PROPERTY"
 }

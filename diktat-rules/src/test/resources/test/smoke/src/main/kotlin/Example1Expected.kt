@@ -5,9 +5,6 @@ class Example {
     val isValid = true
     val foo: Int = 1
 
-    /**
-     * @return
-     */
     fun Foo.foo() { }
 
     /**
@@ -34,5 +31,16 @@ class Example {
                     .replace("\\", "/")
                     .replace("//", "/")
                     .split("/")
+
+    /**
+     * @param x
+     * @param y
+     * @return
+     */
+    fun foo(x: Int,
+            y: Int) = x +
+            (y +
+                    bar(x, y)
+            )
 }
 

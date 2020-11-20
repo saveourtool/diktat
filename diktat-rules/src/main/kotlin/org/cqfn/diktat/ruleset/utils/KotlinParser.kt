@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.mock.MockProject
 import org.jetbrains.kotlin.com.intellij.openapi.Disposable
+import org.jetbrains.kotlin.com.intellij.openapi.project.Project
 import org.jetbrains.kotlin.com.intellij.openapi.util.UserDataHolderBase
 import org.jetbrains.kotlin.com.intellij.pom.PomModel
 import org.jetbrains.kotlin.com.intellij.pom.PomModelAspect
@@ -25,6 +26,36 @@ import org.jetbrains.kotlin.resolve.ImportPath
 import sun.reflect.ReflectionFactory
 
 class KotlinParser {
+    private val project: Project by lazy {
+        val compilerConfiguration = CompilerConfiguration()
+        compilerConfiguration.put(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, MessageCollector.NONE) // mute the output logging to process it themselves
+        val pomModel: PomModel = object : UserDataHolderBase(), PomModel {
+            override fun runTransaction(transaction: PomTransaction) {
+                (transaction as PomTransactionBase).run()
+            }
+
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : PomModelAspect> getModelAspect(aspect: Class<T>): T? {
+                if (aspect == TreeAspect::class.java) {
+                    val constructor = ReflectionFactory.getReflectionFactory().newConstructorForSerialization(
+                        aspect,
+                        Any::class.java.getDeclaredConstructor(*arrayOfNulls<Class<*>>(0))
+                    )
+                    return constructor.newInstance() as T
+                }
+                return null
+            }
+        } // I don't really understand what's going on here, but thanks to this, you can use this node in the future
+        val project = KotlinCoreEnvironment.createForProduction(
+            Disposable {},
+            compilerConfiguration,
+            EnvironmentConfigFiles.JVM_CONFIG_FILES
+        ).project // create project
+        project as MockProject
+        project.registerService(PomModel::class.java, pomModel)
+        project
+    }
+    private val ktPsiFactory by lazy { KtPsiFactory(project, true) }
 
     /**
      * Set idea.io.use.nio2 in system property to true
@@ -38,6 +69,8 @@ class KotlinParser {
         return makeNode(text, isPackage) ?: throw KotlinParseException("Your text is not valid")
     }
 
+    fun createPrimaryConstructor(text: String) = ktPsiFactory.createPrimaryConstructor(text)
+
     /**
      * This method create a node based on text.
      * @param isPackage - flag to check if node will contains package.
@@ -47,35 +80,8 @@ class KotlinParser {
      */
     @Suppress("UnsafeCallOnNullableType")
     private fun makeNode(text: String, isPackage: Boolean = false): ASTNode? {
-        val compilerConfiguration = CompilerConfiguration()
-        compilerConfiguration.put(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, MessageCollector.NONE) // mute the output logging to process it themselves
-        val pomModel: PomModel = object : UserDataHolderBase(), PomModel {
-            override fun runTransaction(transaction: PomTransaction) {
-                (transaction as PomTransactionBase).run()
-            }
-
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : PomModelAspect> getModelAspect(aspect: Class<T>): T? {
-                if (aspect == TreeAspect::class.java) {
-                    val constructor = ReflectionFactory.getReflectionFactory().newConstructorForSerialization(
-                            aspect,
-                            Any::class.java.getDeclaredConstructor(*arrayOfNulls<Class<*>>(0))
-                    )
-                    return constructor.newInstance() as T
-                }
-                return null
-            }
-        } // I don't really understand what's going on here, but thanks to this, you can use this node in the future
-        val project = KotlinCoreEnvironment.createForProduction(
-                Disposable {},
-                compilerConfiguration,
-                EnvironmentConfigFiles.JVM_CONFIG_FILES
-        ).project // create project
-        project as MockProject
-        project.registerService(PomModel::class.java, pomModel)
         if (text.isEmpty())
             return null
-        val ktPsiFactory = KtPsiFactory(project, true)
         if (text.trim().isEmpty())
             return ktPsiFactory.createWhiteSpace(text).node
         var node: ASTNode = if (isPackage || isContainKDoc(text)) {

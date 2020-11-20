@@ -8,7 +8,9 @@ import org.cqfn.diktat.common.config.rules.RulesConfigReader
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.calculations.AccurateCalculationsRule
 import org.cqfn.diktat.ruleset.rules.classes.AbstractClassesRule
+import org.cqfn.diktat.ruleset.rules.classes.CompactInitialization
 import org.cqfn.diktat.ruleset.rules.classes.DataClassesRule
+import org.cqfn.diktat.ruleset.rules.classes.SingleConstructorRule
 import org.cqfn.diktat.ruleset.rules.classes.SingleInitRule
 import org.cqfn.diktat.ruleset.rules.comments.CommentsRule
 import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule
@@ -53,6 +55,7 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
         val rules = listOf(
                 // comments & documentation
                 ::CommentsRule,
+                ::SingleConstructorRule,  // this rule can add properties to a primary constructor, so should be before KdocComments
                 ::KdocComments,
                 ::KdocMethods,
                 ::KdocFormatting,
@@ -62,6 +65,7 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
                 ::PackageNaming,
                 ::IdentifierNaming,
                 // code structure
+                ::UselessSupertype,
                 ::LocalVariablesRule,
                 ::ClassLikeStructuresOrderRule,
                 ::WhenMustHaveElseRule,
@@ -71,10 +75,14 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
                 ::EnumsSeparated,
                 ::SingleLineStatementsRule,
                 ::MultipleModifiersSequence,
+                ::TrivialPropertyAccessors,
+                ::CustomGetterSetterRule,
+                ::CompactInitialization,
                 // other rules
                 ::ImplicitBackingPropertyRule,
                 ::StringTemplateFormatRule,
                 ::DataClassesRule,
+                ::LocalVariablesRule,
                 ::SmartCastRule,
                 ::PropertyAccessorFields,
                 ::AbstractClassesRule,
@@ -95,8 +103,10 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
                 ::BlankLinesRule,
                 ::FileSize,
                 ::NullableTypeRule,
+                ::NullChecksRule,
                 ::ImmutableValNoVarRule,
                 ::AvoidNestedFunctionsRule,
+                ::ExtensionFunctionsSameNameRule,
                 // formatting: moving blocks, adding line breaks, indentations etc.
                 ::ConsecutiveSpacesRule,
                 ::WhiteSpaceRule,  // this rule should be after other rules that can cause wrong spacing

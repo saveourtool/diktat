@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ master ]
 
+env:
+  GRADLE_OPTS: -Dorg.gradle.daemon=false
+
 jobs:
   diktat_snapshot_check:
     runs-on: ubuntu-latest
@@ -24,16 +27,17 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-build
       - name: Set version
-        # set project version which will then be used to run diktat from local maven repo
-        # base version is stored in env variable for later usage
+        # Set project version which will then be used to run diktat from local maven repo.
+        # Base version is stored in env variable for later usage.
+        # Note: maven-help-plugin requires non-interactive mode (do not add -B flag).
         run: |
-          snapshot_version=$(printf 'VERSION=${project.version}\n0\n' | mvn -B help:evaluate | grep '^VERSION' | cut -d= -f2)
+          snapshot_version=$(printf 'VERSION=${project.version}\n0\n' | mvn help:evaluate | grep '^VERSION' | cut -d= -f2)
           base_version=${snapshot_version%-SNAPSHOT}
-          echo ::set-env name=BASE_VERSION::$base_version
+          echo "BASE_VERSION=$base_version" >> $GITHUB_ENV
           mvn -B versions:set -DnewVersion=$base_version-pre
       - name: Build and install
         # install diktat with version 'base_version-pre' to local maven repo
-        run: mvn -B clean install -DskipTests=true
+        run: mvn -B clean install -DskipTests=true --projects diktat-maven-plugin --also-make
       - name: Revert project version and set proper version for diktat check
         # revert project version to avoid cycle dependency
         # set diktat version in plugin dependencies to the version which was built in the previous step

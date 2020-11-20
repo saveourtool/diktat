@@ -24,7 +24,7 @@ class NoVarRuleWarnTest : LintTestBase(::ImmutableValNoVarRule) {
                     |        x++
                     |     }
                     | }
-                """.trimMargin()
+                """.trimMargin(),
         )
     }
 
