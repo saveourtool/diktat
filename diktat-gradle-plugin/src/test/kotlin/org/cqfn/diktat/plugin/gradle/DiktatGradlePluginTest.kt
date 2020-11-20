@@ -10,7 +10,7 @@ class DiktatGradlePluginTest {
     private val projectBuilder = ProjectBuilder.builder()
     private lateinit var project: Project
 
-        @BeforeEach
+    @BeforeEach
     fun setUp() {
         project = projectBuilder.build()
         project.pluginManager.apply(DiktatGradlePlugin::class.java)
