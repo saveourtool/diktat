@@ -355,32 +355,6 @@ fun isEmptyList(list: List<String>) = list.size == 0
 
 3. You can skip KDocs for a method's override if the method is almost like the super class method.
 
-4. Class properties declared in the primary constructor should be documented using `@property` tag in the class KDoc.
-
-Incorrect example:
-```kotlin
-/**
- * Class description
- */
-class Example(
- /**
-  * property description
-  */
-  val foo: Bar
-)
-```
-
-Correct example:
-```kotlin
-/**
- * Class description
- * @property foo property description
- */
-class Example(
-  val foo: Bar
-)
-```
-
 ###  <a name="r2.1.2"></a>Rule 2.1.2: When the method has arguments, return value, can throw exceptions, etc., it must be described in the KDoc block: with @param, @return, @throws, etc.
 
 **Valid examples**:
@@ -448,7 +422,7 @@ This comment should contain @since tag. The good style is to write the version o
  */
 ```
 
-Other KDoc tags (such as @param type parameters and @see.) can be added as follows:
+Other KDoc tags (such as @param type parameters and @see.) can be added as follow:
 ```kotlin
 /**
  * Description of functionality
@@ -1927,36 +1901,34 @@ It is one of the exceptions from the [identifier names rule](#r1.2)
 Kotlin has a perfect mechanism of [properties](https://kotlinlang.org/docs/reference/properties.html#properties-and-fields).
 Kotlin compiler automatically generates `get` and `set` methods for properties and also lets the possibility to override it:
 ```kotlin 
+// Bad example ======
 class A {
     var size: Int = 0
         set(value) {
             println("Side effect")
             field = value
         }
-        // user of this class does not expect calling A.size receive size * 2 
-        get() = field * 2
+        get() = this.hashCode() * 2
 }
 ```
 
 From the callee code these methods look like an access to this property: `A().isEmpty = true` for setter and `A().isEmpty` for getter.
-But in all cases it is very confusing when `get` and `set` are overridden for a developer who uses this particular class. 
+But in all cases it is very confusing when `get` and `set` are overriden for a developer who uses this particular class. 
 Developer expects to get the value of the property, but receives some unknown value and some extra side effect hidden by the custom getter/setter. 
 Use extra functions for it instead.
 
 **Invalid example:**
 ```kotlin 
+// Bad example ======
 class A {
     var size: Int = 0
     fun initSize(value: Int) {
         // some custom logic
     }
     
-    // this will not confuse developer and he will get exactly what he expects    
-    fun goodNameThatDescribesThisGetter() = this.size * 2
+    fun goodNameThatDescribesThisGetter() = this.hashCode() * 2
 }
 ```
-
-**Exception:** `Private setters` are only exceptions that are not prohibited by this rule.
 
 ### <a name="r6.1.9"></a> Rule 6.1.9: never use the name of a variable in the custom getter or setter (possible_bug).
 Even if you have ignored [recommendation 6.1.8](#r6.1.8) you should be careful with using the name of the property in your custom getter/setter
@@ -2123,71 +2095,4 @@ interface I {
 object O: I {
     override fun foo() {}
 }
-```
-# <a name="c8"></a> 8. Things that will be moved to a main guide later
-<!-- =============================================================================== -->
-### <a name="c8.1"></a> Null-safety
-### <a name="r8.1.1"></a> 4.3.3 Explicit null checks
-
-Try to avoid explicit null checks (explicit comparison with `null`) 
-Kotlin is declared as [Null-safe](https://kotlinlang.org/docs/reference/null-safety.html) language.
-But Kotlin architects wanted Kotlin to be fully compatible with Java, that's why `null` keyword was also introduced in Kotlin. 
-
-There are several code-structures that can be used in Kotlin to avoid null-checks. For example: `?:`,  `.let {}`, `.also {}`, e.t.c
-
-**Invalid example:**
-```kotlin
-// example 1
-var myVar: Int? = null
-if (myVar == null) {
-    println("null")
-    return
-}
-
-// example 2
-if (myVar != null) {
-    println("not null")
-    return
-}
-
-// example 3
-val anotherVal = if (myVar != null) {
-                     println("not null")
-                     1
-                 } else {
-                     2
-                 }
-// example 4
-if (myVar == null) {
-    println("null")
-} else {
-    println("not null")
-}
-```
-
-**Valid example:**
-```kotlin
-// example 1
-var myVar: Int? = null
-myVar?: run {
-    println("null")
-    return
-}
-
-// example 2
-myVar?.let {
-    println("not null")
-    return
-}
-
-// example 3
-val anotherVal = myVar?.also {
-                     println("not null")
-                     1
-                 } ?: 2
-
-// example 4
-myVar?.let {
-    println("null")
-} ?: run { println("not null") }
 ```
