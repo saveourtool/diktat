@@ -308,7 +308,7 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
                                 ?.text
                                 ?.substringAfter('\n')
                                 ?.count { it == ' ' } ?: 0
-                        node.addChild(LeafPsiElement(WHITE_SPACE, "\n${" ".repeat(indent)}"), null)
+                        node.addChild(PsiWhiteSpaceImpl("\n${" ".repeat(indent)}"), null)
                         node.addChild(LeafPsiElement(KDOC_LEADING_ASTERISK, "*"), null)
                     }
                 }
