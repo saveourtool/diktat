@@ -85,6 +85,8 @@ tasks.withType<Test> {
 tasks.jacocoTestReport {
     dependsOn(tasks.test)
     reports {
-        html.destination = file("target/site/jacoco")
+        // xml report is used by codecov
+        xml.isEnabled = true
+        xml.destination = file("target/site/jacoco/jacoco.xml")
     }
 }
