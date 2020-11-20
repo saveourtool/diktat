@@ -14,8 +14,9 @@ repositories {
     jcenter()
 }
 
-val ktlintVersion: String by project
-val diktatVersion = project.version
+// default value is needed for correct gradle loading in IDEA; actual value from maven is used during build
+val ktlintVersion: String = project.properties.getOrDefault("ktlintVersion", "0.39.0") as String
+val diktatVersion = project.version.takeIf { it.toString() != Project.DEFAULT_VERSION } ?: "0.1.6-SNAPSHOT"
 dependencies {
     implementation(kotlin("gradle-plugin-api"))
 
@@ -23,11 +24,11 @@ dependencies {
         exclude("com.pinterest.ktlint", "ktlint-ruleset-standard")
     }
     implementation("com.pinterest.ktlint:ktlint-reporter-plain:$ktlintVersion")
-    implementation("org.cqfn.diktat:diktat-rules:$version")
+    implementation("org.cqfn.diktat:diktat-rules:$diktatVersion")
 }
 
 val generateVersionsFile by tasks.registering {
-    val versionsFile = File("$buildDir/generated/src/main/generated/Versions.kt")
+    val versionsFile = File("$buildDir/generated/src/generated/Versions.kt")
 
     outputs.file(versionsFile)
 
@@ -43,7 +44,7 @@ val generateVersionsFile by tasks.registering {
         )
     }
 }
-sourceSets.main.get().java.srcDir("$buildDir/generated/src/main")
+sourceSets.main.get().java.srcDir("$buildDir/generated/src")
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {

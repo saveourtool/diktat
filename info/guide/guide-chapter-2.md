@@ -53,6 +53,32 @@ fun isEmptyList(list: List<String>) = list.size == 0
 
 3. You can skip KDocs for a method's override if the method is almost like the super class method.
 
+4. Class properties declared in the primary constructor should be documented using `@property` tag in the class KDoc.
+
+Incorrect example:
+```kotlin
+/**
+ * Class description
+ */
+class Example(
+ /**
+  * property description
+  */
+  val foo: Bar
+)
+```
+
+Correct example:
+```kotlin
+/**
+ * Class description
+ * @property foo property description
+ */
+class Example(
+  val foo: Bar
+)
+```
+
 ###  <a name="r2.1.2"></a>Rule 2.1.2: When the method has arguments, return value, can throw exceptions, etc., it must be described in the KDoc block: with @param, @return, @throws, etc.
 
 **Valid examples**:
@@ -120,7 +146,7 @@ This comment should contain @since tag. The good style is to write the version o
  */
 ```
 
-Other KDoc tags (such as @param type parameters and @see.) can be added as follow:
+Other KDoc tags (such as @param type parameters and @see.) can be added as follows:
 ```kotlin
 /**
  * Description of functionality
