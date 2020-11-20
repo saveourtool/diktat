@@ -112,4 +112,21 @@ class ImplicitBackingPropertyWarnTest: LintTestBase(::ImplicitBackingPropertyRul
                 """.trimMargin()
         )
     }
+
+    @Test
+    @Tag(NO_CORRESPONDING_PROPERTY)
+    fun `should not trigger on property with chain call return`() {
+        lintMethod(
+                """
+                    |class Some(val a: Int = 5) {
+                    |   val table:Int
+                    |       get() {
+                    |           val some = listOf(1,2,3)
+                    |           return some.filter { it -> it == 3}.first()
+                    |       }
+                    |       set(value) { field = value }
+                    |}
+                """.trimMargin()
+        )
+    }
 }

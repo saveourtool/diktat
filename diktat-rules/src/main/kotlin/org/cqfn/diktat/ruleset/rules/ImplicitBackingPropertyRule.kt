@@ -3,6 +3,7 @@ package org.cqfn.diktat.ruleset.rules
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
+import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.GET_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
@@ -56,7 +57,7 @@ class ImplicitBackingPropertyRule(private val configRules: List<RulesConfig>) : 
     }
 
     private fun validateAccessors(node: ASTNode, propsWithBackSymbol: List<String>) {
-        val accessors = node.findAllNodesWithSpecificType(PROPERTY_ACCESSOR).filter { it.hasChildOfType(BLOCK) } // exclude inline get
+        val accessors = node.findAllNodesWithSpecificType(PROPERTY_ACCESSOR).filter { it.hasChildOfType(BLOCK) } // exclude get with expression body
 
         accessors.filter { it.hasChildOfType(GET_KEYWORD) }.forEach { handleGetAccessors(it, node, propsWithBackSymbol) }
         accessors.filter { it.hasChildOfType(SET_KEYWORD) }.forEach { handleSetAccessors(it, node, propsWithBackSymbol) }
@@ -65,7 +66,8 @@ class ImplicitBackingPropertyRule(private val configRules: List<RulesConfig>) : 
     private fun handleGetAccessors(accessor: ASTNode, node: ASTNode, propsWithBackSymbol: List<String>) {
         val refExprs = accessor
                 .findAllNodesWithSpecificType(RETURN)
-                .flatMap { _return -> _return.findAllNodesWithSpecificType(REFERENCE_EXPRESSION) }
+                .filterNot { it.hasChildOfType(DOT_QUALIFIED_EXPRESSION) }
+                .flatMap { it.findAllNodesWithSpecificType(REFERENCE_EXPRESSION) }
 
         // If refExprs is empty then we assume that it returns some constant
         if (refExprs.isNotEmpty()) {
