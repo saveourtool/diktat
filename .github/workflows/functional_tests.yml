@@ -7,7 +7,7 @@ on:
     branches: [ master ]
 
 env:
-  DIKTAT_VERSION: 0.1.2
+  DIKTAT_VERSION: 0.1.5
   KTLINT_VERSION: 0.39.0
   GRADLE_OPTS: -Dorg.gradle.daemon=false  # to speed up gradle run
 
@@ -21,7 +21,7 @@ jobs:
       - name: Setup environment
         run: |
           cat pom.xml | grep "<diktat-check.version>.*</diktat-check.version>" | head -1 |awk -F'[><]' '{ENVIRON[DIKTAT_VERSION]=$3 ; print ENVIRON[DIKTAT_VERSION]}'
-          cat pom.xml | grep "<ktlint.version>.*</ktlint.version>" | head -1 |awk -F'[><]' '{ENVIRON[KTLINE_VERSION]=$3 ; print ENVIRON[KTLINE_VERSION]}'
+          cat pom.xml | grep "<ktlint.version>.*</ktlint.version>" | head -1 |awk -F'[><]' '{ENVIRON[KTLINT_VERSION]=$3 ; print ENVIRON[KTLINT_VERSION]}'
           curl -sSLO https://github.com/pinterest/ktlint/releases/download/$KTLINT_VERSION/ktlint && chmod a+x ktlint
           curl -sSLO https://github.com/cqfn/diKTat/releases/download/v$DIKTAT_VERSION/diktat-$DIKTAT_VERSION.jar
 
@@ -36,7 +36,7 @@ jobs:
       - name: Run diKTat from cli
         continue-on-error: true
         run: |
-          ./ktlint -R diktat-$DIKTAT_VERSION.jar "diktat-rules/src/test/resources/test/funcTest/FunctionalTestFile.kt" &> out
+          ./ktlint -R diktat-$DIKTAT_VERSION.jar "examples/maven/src/main/kotlin/Test.kt" &> out
 
       - name: Check output
         id: cli-check
@@ -44,20 +44,37 @@ jobs:
           cat out
           grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out
 
-      - name: Run diKTat from gradle
+      - name: Run diKTat from gradle kotlin DSL
         continue-on-error: true
-        run: gradle diktatFunctionalTest &> out
+        working-directory: ./examples/gradle-kotlin-dsl
+        run: |
+          gradle diktatCheck &> out
 
-      - name: Check gradle
+      - name: Check gradle from kotlin DSL
+        working-directory: ./examples/gradle-kotlin-dsl
+        run: |
+          cat out
+          grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out
+
+      - name: Run diKTat from gradle groovy DSL
+        continue-on-error: true
+        working-directory: ./examples/gradle-groovy-dsl
+        run: |
+          gradle diktatCheck &> out
+
+      - name: Check gradle from groovy DSL
+        working-directory: ./examples/gradle-groovy-dsl
         run: |
           cat out
           grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out
 
       - name: Run diKTat from maven
+        working-directory: ./examples/maven
         continue-on-error: true
-        run: mvn -B diktat:check@functional-test &> out
+        run: mvn -B diktat:check &> out
 
       - name: Check maven
+        working-directory: ./examples/maven
         run: |
           cat out
           grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out
