@@ -13,7 +13,7 @@ typealias EmitType = ((offset: Int, errorMessage: String, canBeAutoCorrected: Bo
  * A [Warnings] entry contains rule name, warning message and is used in code check.
  */
 @Suppress("ForbiddenComment", "MagicNumber", "WRONG_DECLARATIONS_ORDER")
-enum class Warnings(private val canBeAutoCorrected: Boolean, val ruleId: String, private val warn: String) : Rule {
+enum class Warnings(val canBeAutoCorrected: Boolean, val ruleId: String, private val warn: String) : Rule {
     // ======== chapter 1 ========
     PACKAGE_NAME_MISSING(true, "1.2.1", "no package name declared in a file"),
     PACKAGE_NAME_INCORRECT_CASE(true, "1.2.1", "package name should be completely in a lower case"),

@@ -1,104 +1,104 @@
-| Diktat Rule | Code Style |
-| ----------------------------------------- | ------ |
-| VARIABLE_NAME_INCORRECT | [1.1.1](diktat-coding-convention.md#1.1.1) |
-| VARIABLE_HAS_PREFIX | [1.1.1](diktat-coding-convention.md#1.1.1) |
-| IDENTIFIER_LENGTH | [1.1.1](diktat-coding-convention.md#1.1.1) |
-| GENERIC_NAME | [1.1.1](diktat-coding-convention.md#1.1.1) |
-| BACKTICKS_PROHIBITED | [1.1.1](diktat-coding-convention.md#1.1.1) |
-| FILE_NAME_INCORRECT | [1.1.1](diktat-coding-convention.md#1.1.1) |
-| EXCEPTION_SUFFIX | [1.1.1](diktat-coding-convention.md#1.1.1) |
-| CONFUSING_IDENTIFIER_NAMING | [1.1.1](diktat-coding-convention.md#1.1.1) |
-| PACKAGE_NAME_MISSING | [1.2.1](diktat-coding-convention.md#1.2.1) |
-| PACKAGE_NAME_INCORRECT_CASE | [1.2.1](diktat-coding-convention.md#1.2.1) |
-| PACKAGE_NAME_INCORRECT_PREFIX | [1.2.1](diktat-coding-convention.md#1.2.1) |
-| PACKAGE_NAME_INCORRECT_SYMBOLS | [1.2.1](diktat-coding-convention.md#1.2.1) |
-| PACKAGE_NAME_INCORRECT_PATH | [1.2.1](diktat-coding-convention.md#1.2.1) |
-| INCORRECT_PACKAGE_SEPARATOR | [1.2.1](diktat-coding-convention.md#1.2.1) |
-| CLASS_NAME_INCORRECT | [1.3.1](diktat-coding-convention.md#1.3.1) |
-| OBJECT_NAME_INCORRECT | [1.3.1](diktat-coding-convention.md#1.3.1) |
-| ENUM_VALUE | [1.3.1](diktat-coding-convention.md#1.3.1) |
-| FUNCTION_NAME_INCORRECT_CASE | [1.4.1](diktat-coding-convention.md#1.4.1) |
-| CONSTANT_UPPERCASE | [1.5.1](diktat-coding-convention.md#1.5.1) |
-| VARIABLE_NAME_INCORRECT_FORMAT | [1.6.1](diktat-coding-convention.md#1.6.1) |
-| FUNCTION_BOOLEAN_PREFIX | [1.6.2](diktat-coding-convention.md#1.6.2) |
-| MISSING_KDOC_TOP_LEVEL | [2.1.1](diktat-coding-convention.md#2.1.1) |
-| MISSING_KDOC_CLASS_ELEMENTS | [2.1.1](diktat-coding-convention.md#2.1.1) |
-| MISSING_KDOC_ON_FUNCTION | [2.1.1](diktat-coding-convention.md#2.1.1) |
-| KDOC_WITHOUT_PARAM_TAG | [2.1.2](diktat-coding-convention.md#2.1.2) |
-| KDOC_WITHOUT_RETURN_TAG | [2.1.2](diktat-coding-convention.md#2.1.2) |
-| KDOC_WITHOUT_THROWS_TAG | [2.1.2](diktat-coding-convention.md#2.1.2) |
-| KDOC_EMPTY_KDOC | [2.1.3](diktat-coding-convention.md#2.1.3) |
-| KDOC_WRONG_SPACES_AFTER_TAG | [2.1.3](diktat-coding-convention.md#2.1.3) |
-| KDOC_WRONG_TAGS_ORDER | [2.1.3](diktat-coding-convention.md#2.1.3) |
-| KDOC_NEWLINES_BEFORE_BASIC_TAGS | [2.1.3](diktat-coding-convention.md#2.1.3) |
-| KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS | [2.1.3](diktat-coding-convention.md#2.1.3) |
-| KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS | [2.1.3](diktat-coding-convention.md#2.1.3) |
-| KDOC_NO_DEPRECATED_TAG | [2.1.3](diktat-coding-convention.md#2.1.3) |
-| KDOC_NO_EMPTY_TAGS | [2.2.1](diktat-coding-convention.md#2.2.1) |
-| HEADER_WRONG_FORMAT | [2.2.1](diktat-coding-convention.md#2.2.1) |
-| HEADER_MISSING_OR_WRONG_COPYRIGHT | [2.2.1](diktat-coding-convention.md#2.2.1) |
-| WRONG_COPYRIGHT_YEAR | [2.2.1](diktat-coding-convention.md#2.2.1) |
-| HEADER_CONTAINS_DATE_OR_AUTHOR | [2.2.1](diktat-coding-convention.md#2.2.1) |
-| HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE | [2.2.1](diktat-coding-convention.md#2.2.1) |
-| HEADER_NOT_BEFORE_PACKAGE | [2.2.1](diktat-coding-convention.md#2.2.1) |
-| WRONG_NEWLINES_AROUND_KDOC | [2.4.1](diktat-coding-convention.md#2.4.1) |
-| FIRST_COMMENT_NO_SPACES | [2.4.1](diktat-coding-convention.md#2.4.1) |
-| COMMENT_WHITE_SPACE | [2.4.1](diktat-coding-convention.md#2.4.1) |
-| IF_ELSE_COMMENTS | [2.4.1](diktat-coding-convention.md#2.4.1) |
-| COMMENTED_OUT_CODE | [2.4.2](diktat-coding-convention.md#2.4.2) |
-| FILE_IS_TOO_LONG | [3.1.1](diktat-coding-convention.md#3.1.1) |
-| FILE_CONTAINS_ONLY_COMMENTS | [3.1.2](diktat-coding-convention.md#3.1.2) |
-| FILE_INCORRECT_BLOCKS_ORDER | [3.1.2](diktat-coding-convention.md#3.1.2) |
-| FILE_NO_BLANK_LINE_BETWEEN_BLOCKS | [3.1.2](diktat-coding-convention.md#3.1.2) |
-| FILE_UNORDERED_IMPORTS | [3.1.2](diktat-coding-convention.md#3.1.2) |
-| FILE_WILDCARD_IMPORTS | [3.1.2](diktat-coding-convention.md#3.1.2) |
-| FILE_NAME_MATCH_CLASS | [3.1.2](diktat-coding-convention.md#3.1.2) |
-| WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES | [3.1.4](diktat-coding-convention.md#3.1.4) |
-| BLANK_LINE_BETWEEN_PROPERTIES | [3.1.4](diktat-coding-convention.md#3.1.4) |
-| WRONG_DECLARATIONS_ORDER | [3.1.4](diktat-coding-convention.md#3.1.4) |
-| LOCAL_VARIABLE_EARLY_DECLARATION | [3.10.2](diktat-coding-convention.md#3.10.2) |
-| WHEN_WITHOUT_ELSE | [3.11.1](diktat-coding-convention.md#3.11.1) |
-| ANNOTATION_NEW_LINE | [3.12.1](diktat-coding-convention.md#3.12.1) |
-| WRONG_MULTIPLE_MODIFIERS_ORDER | [3.14.1](diktat-coding-convention.md#3.14.1) |
-| LONG_NUMERICAL_VALUES_SEPARATED | [3.14.2](diktat-coding-convention.md#3.14.2) |
-| STRING_CONCATENATION | [3.15.1](diktat-coding-convention.md#3.15.1) |
-| STRING_TEMPLATE_CURLY_BRACES | [3.15.2](diktat-coding-convention.md#3.15.2) |
-| STRING_TEMPLATE_QUOTES | [3.15.2](diktat-coding-convention.md#3.15.2) |
-| NO_BRACES_IN_CONDITIONALS_AND_LOOPS | [3.2.1](diktat-coding-convention.md#3.2.1) |
-| BRACES_BLOCK_STRUCTURE_ERROR | [3.2.2](diktat-coding-convention.md#3.2.2) |
-| WRONG_INDENTATION | [3.3.1](diktat-coding-convention.md#3.3.1) |
-| EMPTY_BLOCK_STRUCTURE_ERROR | [3.4.1](diktat-coding-convention.md#3.4.1) |
-| LONG_LINE | [3.5.1](diktat-coding-convention.md#3.5.1) |
-| MORE_THAN_ONE_STATEMENT_PER_LINE | [3.6.1](diktat-coding-convention.md#3.6.1) |
-| REDUNDANT_SEMICOLON | [3.6.2](diktat-coding-convention.md#3.6.2) |
-| WRONG_NEWLINES | [3.6.2](diktat-coding-convention.md#3.6.2) |
-| TOO_MANY_BLANK_LINES | [3.7.1](diktat-coding-convention.md#3.7.1) |
-| WRONG_WHITESPACE | [3.8.1](diktat-coding-convention.md#3.8.1) |
-| TOO_MANY_CONSECUTIVE_SPACES | [3.8.1](diktat-coding-convention.md#3.8.1) |
-| ENUMS_SEPARATED | [3.9.1](diktat-coding-convention.md#3.9.1) |
-| FLOAT_IN_ACCURATE_CALCULATIONS | [4.1.1](diktat-coding-convention.md#4.1.1) |
-| SAY_NO_TO_VAR | [4.1.3](diktat-coding-convention.md#4.1.3) |
-| SMART_CAST_NEEDED | [4.2.1](diktat-coding-convention.md#4.2.1) |
-| TYPE_ALIAS | [4.2.2](diktat-coding-convention.md#4.2.2) |
-| NULLABLE_PROPERTY_TYPE | [4.3.1](diktat-coding-convention.md#4.3.1) |
-| GENERIC_VARIABLE_WRONG_DECLARATION | [4.3.2](diktat-coding-convention.md#4.3.2) |
-| AVOID_NULL_CHECKS | [4.3.3](diktat-coding-convention.md#4.3.3) |
-| TOO_LONG_FUNCTION | [5.1.1](diktat-coding-convention.md#5.1.1) |
-| NESTED_BLOCK | [5.1.2](diktat-coding-convention.md#5.1.2) |
-| AVOID_NESTED_FUNCTIONS | [5.1.3](diktat-coding-convention.md#5.1.3) |
-| LAMBDA_IS_NOT_LAST_PARAMETER | [5.2.1](diktat-coding-convention.md#5.2.1) |
-| TOO_MANY_PARAMETERS | [5.2.2](diktat-coding-convention.md#5.2.2) |
-| WRONG_OVERLOADING_FUNCTION_ARGUMENTS | [5.2.3](diktat-coding-convention.md#5.2.3) |
-| SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY | [6.1.1](diktat-coding-convention.md#6.1.1) |
-| TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED | [6.1.10](diktat-coding-convention.md#6.1.10) |
-| COMPACT_OBJECT_INITIALIZATION | [6.1.11](diktat-coding-convention.md#6.1.11) |
-| USE_DATA_CLASS | [6.1.2](diktat-coding-convention.md#6.1.2) |
-| MULTIPLE_INIT_BLOCKS | [6.1.4](diktat-coding-convention.md#6.1.4) |
-| USELESS_SUPERTYPE | [6.1.5](diktat-coding-convention.md#6.1.5) |
-| CLASS_SHOULD_NOT_BE_ABSTRACT | [6.1.6](diktat-coding-convention.md#6.1.6) |
-| CUSTOM_GETTERS_SETTERS | [6.1.8](diktat-coding-convention.md#6.1.8) |
-| WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR | [6.1.9](diktat-coding-convention.md#6.1.9) |
-| EXTENSION_FUNCTION_SAME_SIGNATURE | [6.2.2](diktat-coding-convention.md#6.2.2) |
-| KDOC_TRIVIAL_KDOC_ON_FUNCTION | [?.?.?](diktat-coding-convention.md#?.?.?) |
-| KDOC_NO_CONSTRUCTOR_PROPERTY | [?.?.?](diktat-coding-convention.md#?.?.?) |
-| KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT | [?.?.?](diktat-coding-convention.md#?.?.?) |
+| Diktat Rule | Code Style | Auto-fixed? |
+| ----------------------------------------- | ------ | --- |
+| VARIABLE_NAME_INCORRECT | [1.1.1](guide/diktat-coding-convention.md#r1.1.1) | no |
+| VARIABLE_HAS_PREFIX | [1.1.1](guide/diktat-coding-convention.md#r1.1.1) | yes |
+| IDENTIFIER_LENGTH | [1.1.1](guide/diktat-coding-convention.md#r1.1.1) | no |
+| GENERIC_NAME | [1.1.1](guide/diktat-coding-convention.md#r1.1.1) | yes |
+| BACKTICKS_PROHIBITED | [1.1.1](guide/diktat-coding-convention.md#r1.1.1) | no |
+| FILE_NAME_INCORRECT | [1.1.1](guide/diktat-coding-convention.md#r1.1.1) | yes |
+| EXCEPTION_SUFFIX | [1.1.1](guide/diktat-coding-convention.md#r1.1.1) | yes |
+| CONFUSING_IDENTIFIER_NAMING | [1.1.1](guide/diktat-coding-convention.md#r1.1.1) | no |
+| PACKAGE_NAME_MISSING | [1.2.1](guide/diktat-coding-convention.md#r1.2.1) | yes |
+| PACKAGE_NAME_INCORRECT_CASE | [1.2.1](guide/diktat-coding-convention.md#r1.2.1) | yes |
+| PACKAGE_NAME_INCORRECT_PREFIX | [1.2.1](guide/diktat-coding-convention.md#r1.2.1) | yes |
+| PACKAGE_NAME_INCORRECT_SYMBOLS | [1.2.1](guide/diktat-coding-convention.md#r1.2.1) | no |
+| PACKAGE_NAME_INCORRECT_PATH | [1.2.1](guide/diktat-coding-convention.md#r1.2.1) | yes |
+| INCORRECT_PACKAGE_SEPARATOR | [1.2.1](guide/diktat-coding-convention.md#r1.2.1) | yes |
+| CLASS_NAME_INCORRECT | [1.3.1](guide/diktat-coding-convention.md#r1.3.1) | yes |
+| OBJECT_NAME_INCORRECT | [1.3.1](guide/diktat-coding-convention.md#r1.3.1) | yes |
+| ENUM_VALUE | [1.3.1](guide/diktat-coding-convention.md#r1.3.1) | yes |
+| FUNCTION_NAME_INCORRECT_CASE | [1.4.1](guide/diktat-coding-convention.md#r1.4.1) | yes |
+| CONSTANT_UPPERCASE | [1.5.1](guide/diktat-coding-convention.md#r1.5.1) | yes |
+| VARIABLE_NAME_INCORRECT_FORMAT | [1.6.1](guide/diktat-coding-convention.md#r1.6.1) | yes |
+| FUNCTION_BOOLEAN_PREFIX | [1.6.2](guide/diktat-coding-convention.md#r1.6.2) | yes |
+| MISSING_KDOC_TOP_LEVEL | [2.1.1](guide/diktat-coding-convention.md#r2.1.1) | no |
+| MISSING_KDOC_CLASS_ELEMENTS | [2.1.1](guide/diktat-coding-convention.md#r2.1.1) | no |
+| MISSING_KDOC_ON_FUNCTION | [2.1.1](guide/diktat-coding-convention.md#r2.1.1) | yes |
+| KDOC_NO_CONSTRUCTOR_PROPERTY | [2.1.1](guide/diktat-coding-convention.md#r2.1.1) | yes |
+| KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT | [2.1.1](guide/diktat-coding-convention.md#r2.1.1) | yes |
+| KDOC_WITHOUT_PARAM_TAG | [2.1.2](guide/diktat-coding-convention.md#r2.1.2) | yes |
+| KDOC_WITHOUT_RETURN_TAG | [2.1.2](guide/diktat-coding-convention.md#r2.1.2) | yes |
+| KDOC_WITHOUT_THROWS_TAG | [2.1.2](guide/diktat-coding-convention.md#r2.1.2) | yes |
+| KDOC_EMPTY_KDOC | [2.1.3](guide/diktat-coding-convention.md#r2.1.3) | no |
+| KDOC_WRONG_SPACES_AFTER_TAG | [2.1.3](guide/diktat-coding-convention.md#r2.1.3) | yes |
+| KDOC_WRONG_TAGS_ORDER | [2.1.3](guide/diktat-coding-convention.md#r2.1.3) | yes |
+| KDOC_NEWLINES_BEFORE_BASIC_TAGS | [2.1.3](guide/diktat-coding-convention.md#r2.1.3) | yes |
+| KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS | [2.1.3](guide/diktat-coding-convention.md#r2.1.3) | yes |
+| KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS | [2.1.3](guide/diktat-coding-convention.md#r2.1.3) | yes |
+| KDOC_NO_DEPRECATED_TAG | [2.1.3](guide/diktat-coding-convention.md#r2.1.3) | yes |
+| KDOC_NO_EMPTY_TAGS | [2.2.1](guide/diktat-coding-convention.md#r2.2.1) | no |
+| HEADER_WRONG_FORMAT | [2.2.1](guide/diktat-coding-convention.md#r2.2.1) | yes |
+| HEADER_MISSING_OR_WRONG_COPYRIGHT | [2.2.1](guide/diktat-coding-convention.md#r2.2.1) | yes |
+| WRONG_COPYRIGHT_YEAR | [2.2.1](guide/diktat-coding-convention.md#r2.2.1) | yes |
+| HEADER_CONTAINS_DATE_OR_AUTHOR | [2.2.1](guide/diktat-coding-convention.md#r2.2.1) | no |
+| HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE | [2.2.1](guide/diktat-coding-convention.md#r2.2.1) | no |
+| HEADER_NOT_BEFORE_PACKAGE | [2.2.1](guide/diktat-coding-convention.md#r2.2.1) | yes |
+| KDOC_TRIVIAL_KDOC_ON_FUNCTION | [2.3.1](guide/diktat-coding-convention.md#r2.3.1) | no |
+| WRONG_NEWLINES_AROUND_KDOC | [2.4.1](guide/diktat-coding-convention.md#r2.4.1) | yes |
+| FIRST_COMMENT_NO_SPACES | [2.4.1](guide/diktat-coding-convention.md#r2.4.1) | yes |
+| COMMENT_WHITE_SPACE | [2.4.1](guide/diktat-coding-convention.md#r2.4.1) | yes |
+| IF_ELSE_COMMENTS | [2.4.1](guide/diktat-coding-convention.md#r2.4.1) | yes |
+| COMMENTED_OUT_CODE | [2.4.2](guide/diktat-coding-convention.md#r2.4.2) | no |
+| FILE_IS_TOO_LONG | [3.1.1](guide/diktat-coding-convention.md#r3.1.1) | no |
+| FILE_CONTAINS_ONLY_COMMENTS | [3.1.2](guide/diktat-coding-convention.md#r3.1.2) | no |
+| FILE_INCORRECT_BLOCKS_ORDER | [3.1.2](guide/diktat-coding-convention.md#r3.1.2) | yes |
+| FILE_NO_BLANK_LINE_BETWEEN_BLOCKS | [3.1.2](guide/diktat-coding-convention.md#r3.1.2) | yes |
+| FILE_UNORDERED_IMPORTS | [3.1.2](guide/diktat-coding-convention.md#r3.1.2) | yes |
+| FILE_WILDCARD_IMPORTS | [3.1.2](guide/diktat-coding-convention.md#r3.1.2) | no |
+| FILE_NAME_MATCH_CLASS | [3.1.2](guide/diktat-coding-convention.md#r3.1.2) | yes |
+| WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES | [3.1.4](guide/diktat-coding-convention.md#r3.1.4) | yes |
+| BLANK_LINE_BETWEEN_PROPERTIES | [3.1.4](guide/diktat-coding-convention.md#r3.1.4) | yes |
+| WRONG_DECLARATIONS_ORDER | [3.1.4](guide/diktat-coding-convention.md#r3.1.4) | yes |
+| NO_BRACES_IN_CONDITIONALS_AND_LOOPS | [3.2.1](guide/diktat-coding-convention.md#r3.2.1) | yes |
+| BRACES_BLOCK_STRUCTURE_ERROR | [3.2.2](guide/diktat-coding-convention.md#r3.2.2) | yes |
+| WRONG_INDENTATION | [3.3.1](guide/diktat-coding-convention.md#r3.3.1) | yes |
+| EMPTY_BLOCK_STRUCTURE_ERROR | [3.4.1](guide/diktat-coding-convention.md#r3.4.1) | yes |
+| LONG_LINE | [3.5.1](guide/diktat-coding-convention.md#r3.5.1) | yes |
+| MORE_THAN_ONE_STATEMENT_PER_LINE | [3.6.1](guide/diktat-coding-convention.md#r3.6.1) | yes |
+| REDUNDANT_SEMICOLON | [3.6.2](guide/diktat-coding-convention.md#r3.6.2) | yes |
+| WRONG_NEWLINES | [3.6.2](guide/diktat-coding-convention.md#r3.6.2) | yes |
+| TOO_MANY_BLANK_LINES | [3.7.1](guide/diktat-coding-convention.md#r3.7.1) | yes |
+| WRONG_WHITESPACE | [3.8.1](guide/diktat-coding-convention.md#r3.8.1) | yes |
+| TOO_MANY_CONSECUTIVE_SPACES | [3.8.1](guide/diktat-coding-convention.md#r3.8.1) | yes |
+| ENUMS_SEPARATED | [3.9.1](guide/diktat-coding-convention.md#r3.9.1) | yes |
+| LOCAL_VARIABLE_EARLY_DECLARATION | [3.10.2](guide/diktat-coding-convention.md#r3.10.2) | no |
+| WHEN_WITHOUT_ELSE | [3.11.1](guide/diktat-coding-convention.md#r3.11.1) | yes |
+| ANNOTATION_NEW_LINE | [3.12.1](guide/diktat-coding-convention.md#r3.12.1) | yes |
+| WRONG_MULTIPLE_MODIFIERS_ORDER | [3.14.1](guide/diktat-coding-convention.md#r3.14.1) | yes |
+| LONG_NUMERICAL_VALUES_SEPARATED | [3.14.2](guide/diktat-coding-convention.md#r3.14.2) | yes |
+| STRING_CONCATENATION | [3.15.1](guide/diktat-coding-convention.md#r3.15.1) | no |
+| STRING_TEMPLATE_CURLY_BRACES | [3.15.2](guide/diktat-coding-convention.md#r3.15.2) | yes |
+| STRING_TEMPLATE_QUOTES | [3.15.2](guide/diktat-coding-convention.md#r3.15.2) | yes |
+| FLOAT_IN_ACCURATE_CALCULATIONS | [4.1.1](guide/diktat-coding-convention.md#r4.1.1) | no |
+| SAY_NO_TO_VAR | [4.1.3](guide/diktat-coding-convention.md#r4.1.3) | no |
+| SMART_CAST_NEEDED | [4.2.1](guide/diktat-coding-convention.md#r4.2.1) | yes |
+| TYPE_ALIAS | [4.2.2](guide/diktat-coding-convention.md#r4.2.2) | no |
+| NULLABLE_PROPERTY_TYPE | [4.3.1](guide/diktat-coding-convention.md#r4.3.1) | yes |
+| GENERIC_VARIABLE_WRONG_DECLARATION | [4.3.2](guide/diktat-coding-convention.md#r4.3.2) | yes |
+| AVOID_NULL_CHECKS | [4.3.3](guide/diktat-coding-convention.md#r4.3.3) | no |
+| TOO_LONG_FUNCTION | [5.1.1](guide/diktat-coding-convention.md#r5.1.1) | no |
+| NESTED_BLOCK | [5.1.2](guide/diktat-coding-convention.md#r5.1.2) | no |
+| AVOID_NESTED_FUNCTIONS | [5.1.3](guide/diktat-coding-convention.md#r5.1.3) | yes |
+| LAMBDA_IS_NOT_LAST_PARAMETER | [5.2.1](guide/diktat-coding-convention.md#r5.2.1) | no |
+| TOO_MANY_PARAMETERS | [5.2.2](guide/diktat-coding-convention.md#r5.2.2) | no |
+| WRONG_OVERLOADING_FUNCTION_ARGUMENTS | [5.2.3](guide/diktat-coding-convention.md#r5.2.3) | no |
+| SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY | [6.1.1](guide/diktat-coding-convention.md#r6.1.1) | yes |
+| USE_DATA_CLASS | [6.1.2](guide/diktat-coding-convention.md#r6.1.2) | no |
+| MULTIPLE_INIT_BLOCKS | [6.1.4](guide/diktat-coding-convention.md#r6.1.4) | yes |
+| USELESS_SUPERTYPE | [6.1.5](guide/diktat-coding-convention.md#r6.1.5) | yes |
+| CLASS_SHOULD_NOT_BE_ABSTRACT | [6.1.6](guide/diktat-coding-convention.md#r6.1.6) | yes |
+| CUSTOM_GETTERS_SETTERS | [6.1.8](guide/diktat-coding-convention.md#r6.1.8) | no |
+| WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR | [6.1.9](guide/diktat-coding-convention.md#r6.1.9) | no |
+| TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED | [6.1.10](guide/diktat-coding-convention.md#r6.1.10) | yes |
+| COMPACT_OBJECT_INITIALIZATION | [6.1.11](guide/diktat-coding-convention.md#r6.1.11) | yes |
+| EXTENSION_FUNCTION_SAME_SIGNATURE | [6.2.2](guide/diktat-coding-convention.md#r6.2.2) | no |
