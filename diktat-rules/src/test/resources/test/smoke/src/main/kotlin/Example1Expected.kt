@@ -44,9 +44,3 @@ class Example {
             )
 }
 
-fun foo() {
-    foo(
-            0,
-            { obj -> obj.bar() }
-    )
-}

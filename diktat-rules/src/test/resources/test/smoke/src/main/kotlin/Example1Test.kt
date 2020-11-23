@@ -17,11 +17,14 @@ return   x+ y}
     fun String.splitPathToDirs(): List<String> =
             this.replace("\\", "/")        .replace("//", "/")
                     .split("/")
+
+    fun foo(x :  Int
+            ,
+            y: Int ): Int {
+        return x +
+                (y +
+                        bar(x,y)
+                        )
+    }
 }
 
-fun foo() {
-    foo(
-            0,
-            { obj -> obj.bar() }
-    )
-}
