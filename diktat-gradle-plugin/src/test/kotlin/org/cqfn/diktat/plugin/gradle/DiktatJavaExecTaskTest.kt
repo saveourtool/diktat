@@ -39,6 +39,20 @@ class DiktatJavaExecTaskTest {
         )
     }
 
+    @Test
+    fun `check command line with excludes`() {
+        val pwd = project.file(".")
+        assertCommandLineEquals(
+            listOf(null, "$pwd${listOf("src", "**", "*.kt").joinToString(File.separator, prefix = File.separator)}",
+                "!$pwd${listOf("src", "main", "kotlin", "generated").joinToString(File.separator, prefix = File.separator)}"
+            ),
+            DiktatExtension().apply {
+                inputs = project.files("src/**/*.kt")
+                excludes = project.files("src/main/kotlin/generated")
+            }
+        )
+    }
+
     private fun registerDiktatTask(extension: DiktatExtension) = project.tasks.register(
         "test", DiktatJavaExecTaskBase::class.java,
         "6.7", extension, project.configurations.create("diktat")

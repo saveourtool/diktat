@@ -46,6 +46,9 @@ open class DiktatJavaExecTaskBase @Inject constructor(
                 add("--debug")
             }
             add(diktatExtension.inputs.files.joinToString { it.path })
+            if (diktatExtension.excludes?.files?.isNotEmpty() == true) {
+                add(diktatExtension.excludes!!.files.joinToString { "!${it.path}" })
+            }
         }
     }
 
