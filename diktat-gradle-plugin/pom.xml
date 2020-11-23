@@ -63,17 +63,38 @@
                 <inherited>false</inherited>
                 <executions>
                     <execution>
+                        <id>gradle-test</id>
+                        <phase>test</phase>
+                        <configuration>
+                            <executable>${gradle.executable}</executable>
+                            <arguments>
+                                <argument>clean</argument>
+                                <argument>jacocoTestReport</argument>
+                                <argument>-Pgroup=${project.groupId}</argument>
+                                <argument>-Pversion=${project.version}</argument>
+                                <argument>-Pdescription=${project.description}</argument>
+                                <argument>-PktlintVersion=${ktlint.version}</argument>
+                                <argument>-PjunitVersion=${junit.version}</argument>
+                                <argument>-S</argument>
+                            </arguments>
+                            <skip>${skip.gradle.build}</skip>
+                        </configuration>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                    <execution>
                         <id>gradle</id>
                         <phase>prepare-package</phase>
                         <configuration>
                             <executable>${gradle.executable}</executable>
                             <arguments>
-                                <argument>clean</argument>
                                 <argument>${gradle.task}</argument>
                                 <argument>-Pgroup=${project.groupId}</argument>
                                 <argument>-Pversion=${project.version}</argument>
                                 <argument>-Pdescription=${project.description}</argument>
                                 <argument>-PktlintVersion=${ktlint.version}</argument>
+                                <argument>-PjunitVersion=${junit.version}</argument>
                                 <argument>-S</argument>
                             </arguments>
                             <skip>${skip.gradle.build}</skip>
