@@ -553,16 +553,16 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
     @Test
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `should not trigger on triple quoted strings`() {
-        val spacesForClassIndent = " ".repeat(18)
-        val spacesForFunIndent = " ".repeat(20)
-        val spacesForEndIndent = " ".repeat(16)
         lintMethod(
                 """
                     |class Example {
                     |    fun some() {
-                    |       val code = ${"\"\"\"  \n${spacesForClassIndent}class Some {" +
-                        "\n${spacesForFunIndent}fun for() : String {\n${spacesForFunIndent}} " +
-                        "\n ${spacesForClassIndent}}${spacesForEndIndent}\"\"\".trimIndent()"} 
+                    |       val code = ${"\"\"\""}
+                    |                 class Some {
+                    |                   fun for() : String {
+                    |                   }
+                    |                 }
+                    |               ${"\"\"\""}.trimIndent() 
                     |       bar(code)
                     |    }
                     |}
