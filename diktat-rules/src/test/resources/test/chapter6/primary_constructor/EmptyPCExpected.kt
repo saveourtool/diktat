@@ -5,7 +5,7 @@ class Test {
     var b: Int = 0
 }
 
-class Test() {
+class Test {
     var a  = "Property"
 
     init {
