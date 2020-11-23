@@ -65,3 +65,19 @@ myVar?.let {
     println("null")
 } ?: run { println("not null") }
 ```
+
+**Exceptions:** in case of complex expressions like multiple `else-if` structures, or a long conditional statement there is a common sense to use explicit comparison with `null`.
+
+**Valid examples:**
+
+```kotlin
+if (myVar != null) {
+    println("not null")
+} else if (anotherCondition) {
+    println("Other condition")
+}
+``` 
+
+```kotlin
+if (myVar == null || otherValue == 5 && isValid) {}
+```
