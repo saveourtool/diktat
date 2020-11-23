@@ -55,6 +55,6 @@ class AvoidUtilityClass(private val configRules: List<RulesConfig>) : Rule("avoi
                 ?.filter { it.elementType == FUN }
                 ?.ifEmpty { return }
                 ?: return
-        AVOID_USING_UTILITY_CLASS.warn(configRules, emitWarn, isFixMode, node.findChildByType(IDENTIFIER)!!.text, node.startOffset, node)
+        AVOID_USING_UTILITY_CLASS.warn(configRules, emitWarn, isFixMode, node.findChildByType(IDENTIFIER)?.text ?: node.text, node.startOffset, node)
     }
 }

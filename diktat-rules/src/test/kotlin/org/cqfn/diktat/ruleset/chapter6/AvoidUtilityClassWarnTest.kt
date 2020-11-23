@@ -79,4 +79,21 @@ class AvoidUtilityClassWarnTest: LintTestBase(::AvoidUtilityClass) {
                 LintError(2,1, ruleId, "${AVOID_USING_UTILITY_CLASS.warnText()} StringUtils")
         )
     }
+
+    @Test
+    @Tag(WarningNames.AVOID_USING_UTILITY_CLASS)
+    fun `test with class without identifier`() {
+        lintMethod(
+                """
+                    fun foo() {
+                    window.addMouseListener(object : MouseAdapter() {
+                        override fun mouseClicked(e: MouseEvent) { /*...*/ }
+                    
+                        override fun mouseEntered(e: MouseEvent) { /*...*/ }
+                    })
+                    }
+                """.trimMargin(),
+                LintError(2,45, ruleId, "${AVOID_USING_UTILITY_CLASS.warnText()} object : MouseAdapter() {...")
+        )
+    }
 }
