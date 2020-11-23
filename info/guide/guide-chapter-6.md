@@ -1,4 +1,4 @@
-# <a name="c6"></a> 6. Classes, interfaces and functions
+# <a name="c6"></a> 6. Classes, interfaces and extension functions
 <!-- =============================================================================== -->
 ### <a name="c6.1"></a> 6.1 Classes
 ### <a name="r6.1.1"></a> Rule 6.1.1:  When a class has a single constructor, it should be defined as a primary constructor in the declaration of the class.
@@ -69,6 +69,7 @@ data class Test1(var a: Int = 0, var b: Int = 0)
 ```
 
 **Exception #1**: Note, that data classes cannot be abstract, open, sealed or inner, that's why these types of classes cannot be changed to a data class.
+
 **Exception #2**: No need to convert a class to data class if this class extends some other class or implements an interface.
 
 ### <a name="r6.1.3"></a> Rule 6.1.3: Do not use the primary constructor if it is empty and (???)has no sense.
@@ -110,7 +111,7 @@ class Test {
 The primary constructor cannot contain any code. That's why Kotlin has introduced `init` blocks.
 These blocks are used to store the code that should be run during the initialization of the class.
 Kotlin allows writing multiple initialization blocks that are executed in the same order as they appear in the class body.
-Even when you follow (rule 3.2)[#s3.2], this makes your code less readable as the programmer needs to keep in mind all init blocks and trace the execution of the code.
+Even when you follow (rule 3.2)[#r3.2], this makes your code less readable as the programmer needs to keep in mind all init blocks and trace the execution of the code.
 So in your code, you should try to use a single `init` block to reduce the complexity. In case you need to do some logging or make some calculations before the assignment
 of some class property, you can use powerful functional programming. This will reduce the possibility of the error if your `init` blocks' order is accidentally changed and
 make the code logic more coupled. It is always enough to use one `init` block to implement your idea in Kotlin.
@@ -230,7 +231,9 @@ It is one of the exceptions from the [identifier names rule](#r1.2)
 
 ### <a name="r6.1.8"></a> Recommendation 6.1.8: avoid using custom getters and setters.
 Kotlin has a perfect mechanism of [properties](https://kotlinlang.org/docs/reference/properties.html#properties-and-fields).
-Kotlin compiler automatically generates `get` and `set` methods for properties and also provides the possibility to override it:
+Kotlin compiler automatically generates `get` and `set` methods for properties and also provides the possibility to override it.
+
+**Invalid example:**
 ```kotlin 
 class A {
     var size: Int = 0
@@ -324,7 +327,7 @@ class HttpClient(var name: String) {
 
 fun main() {
     val httpClient = HttpClient("myConnection")
-    httpClient.url = "http://pushkin.com"
+    httpClient.url = "http://example.com"
     httpClient.port = "8080"
     httpClient.timeout = 100
     
@@ -346,11 +349,11 @@ class HttpClient(var name: String) {
 fun main() {
     val httpClient = HttpClient("myConnection")
             .apply {
-                url = "http://pushkin.com"
+                url = "http://example.com"
                 port = "8080"
                 timeout = 100
             }
-            .doRequest()
+    httpClient.doRequest()
 }
 ```
 

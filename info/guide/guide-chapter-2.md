@@ -1,4 +1,4 @@
-## <a name="c2"></a> 2. Comments
+# <a name="c2"></a> 2. Comments
 
 The best practice is to begin your code with a summary, which can be one sentence.
 Try to balance between writing no comments at all and obvious commentary statements for each line of code.
@@ -33,8 +33,10 @@ Use a single-line form when you store the entire KDoc block in one line (and the
 ### <a name="r2.1.1"></a> Rule 2.1.1: KDoc is used for each public, protected or internal code element
 
 At a minimum, KDoc should be used for every public, protected, or internal decorated class, interface, enumeration, method, and member field (property). Other code blocks can also have KDocs if needed.
+Instead of using comments before properties in class - use `@property` tag in a KDoc of a class.
+All properties of the primary constructor should be also documented in a KDoc with a `@property` tag.
 
-Exceptions:
+**Exceptions:**
 
 1. For setters/getters of properties, obvious comments are optional (???). Note that Kotlin generates simple `get/set` methods under the hood). For example, getFoo can also be `return foo`.
    
@@ -54,6 +56,8 @@ Note: You can skip KDocs for a method's override if it is almost the same as the
 ###  <a name="r2.1.2"></a>Rule 2.1.2: Describing methods with arguments, return value or can throw exceptions
 When the method has arguments, return value, or can throw exceptions, it must be described in the KDoc block: with @param, @return, @throws
 
+### <a name="r2.1.2"></a>Rule 2.1.2: When the method has arguments, return value, can throw exceptions, etc., it must be described in the KDoc block: with @param, @return, @throws, etc.
+
 **Valid examples**:
 
  ```kotlin
@@ -71,7 +75,6 @@ When the method has arguments, return value, or can throw exceptions, it must be
      * @return battle between fox and dog 
      */
     protected abstract fun foo(Fox fox)
-                      /* 注释上面加1个空行 */ 
      /**
       * These possibilities include: Formatting of header comments
       *     / * Add a blank line between the comment text and each KDoc tag underneath * /

@@ -1,6 +1,6 @@
-## <a name="c0"></a> 0. Preface
+## <a name="c0"></a> Preface
  <!-- =============================================================================== -->
-### <a name="c0.1"></a> 0.1 Purpose of this document   
+### <a name="c0.1"></a> Purpose of this document   
 
 The purpose of this document is to provide a specification that software developers could reference to enhance their ability to write consistent, easy-to-read, and high-quality code.
 Such a specification will ultimately improve software development efficiency and product competitiveness.
@@ -15,7 +15,7 @@ For the code to be considered high-quality, it must entail the following charact
 
 
 <!-- =============================================================================== -->
-### <a name="c0.2"></a> 0.2 General principles
+### <a name="c0.2"></a> General principles
 
 Like other modern programming languages, Kotlin is an advanced programming language that complies with the following general principles:
 1.	Clarity — a necessary feature of programs that are easy to maintain and refactor.
@@ -41,7 +41,7 @@ Also, we need to consider the following factors when programming on Kotlin:
     Some Kotlin features can help you to write higher-performance code: including rich coroutine library, sequences, inline functions/classes, arrays of basic types, tailRec, and CallsInPlace of contract.
 
 <!-- =============================================================================== -->
-### <a name="c0.3"></a> 0.3 Terminology   
+### <a name="c0.3"></a> Terminology   
 
 **Rules** — conventions that should be followed when programming.
 
@@ -56,7 +56,7 @@ Also, we need to consider the following factors when programming on Kotlin:
 Unless otherwise stated, this specification applies to versions 1.3 and later of Kotlin.
 
 <!-- =============================================================================== -->
-### <a name="c0.4"></a> 0.4 Exceptions
+### <a name="c0.4"></a> Exceptions
 
 Even though exceptions may exist, it is essential to understand why rules and recommendations are needed.
 Depending on your project situation or personal habits, you can break some of the rules. However, remember that one exception may lead to many and eventually can destroy code consistency. As such, there should be very few exceptions.

@@ -1,4 +1,4 @@
-## <a name="c3"></a>3. General formatting (typesetting)
+# <a name="c3"></a>3. General formatting (typesetting)
 <!-- =============================================================================== -->
 ### <a name="c3.1"></a> 3.1 File-related rules
 ### <a name="r3.1.1"></a> Rule 3.1.1: Avoid files that are too long. Files should not exceed 2000 lines (non-empty and non-commented lines).
@@ -22,6 +22,8 @@ b) Each of the preceding code blocks should be separated by a blank line.
 c) Import statements are alphabetically arranged, without using line breaks and wildcards ( wildcard imports - `*`). 
 
 d) **Recommendation**: One `.kt` source file should contain only one class declaration, and its name should match the filename
+
+e) Avoid empty files that do not contain the code or contain only imports/comments/package name
 
 ### <a name="s3.1.3"></a> Recommendation 3.1.3: Import statements order.
 
@@ -261,7 +263,7 @@ override fun foo() {
 }
 ``` 
 
-**Valid examples** (but note once again, that generally they empty blocks are prohibited):
+**Valid examples** (but note once again, that generally empty blocks are prohibited):
 
 ```kotlin
 fun doNothing() {} 
@@ -469,7 +471,7 @@ fun baz() {
 ```
 
 <!-- =============================================================================== -->
-###<a name="c3.8"></a> 3.8 Horizontal space
+### <a name="c3.8"></a> 3.8 Horizontal space
 ### <a name="s3.8.1"></a> Rule 3.8.1: Usage of whitespace for code separation
 
 **Note:** This recommendation is for the cases where symbols are located on the same line. However, in some cases, a line break could be used instead of a space (described in another rule.)
@@ -492,7 +494,7 @@ fun baz() {
  - A colon in generic structures with the `where` keyword:  `where T : Type`
  - Arrow in lambdas: `(str: String) -> str.length()`
 
-**Exceptions：**
+**Exceptions:**
 
 - Two colons (`::`) are written without spaces:\
   `Object::toString`
@@ -561,7 +563,7 @@ enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean
 }
 ```
 
-**Valid example:**：
+**Valid example:**
  ```kotlin
  private val nr: Int // no alignment, but looks fine
  private var color: Color // no alignment
@@ -574,7 +576,7 @@ enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean
  ```
 
 <!-- =============================================================================== -->
-###<a name="c3.9"></a> 3.9 Enumerations
+### <a name="c3.9"></a> 3.9 Enumerations
 ### <a name="s3.9.1"></a>Recommendation 3.9.1: Enum values are separated by a comma and line break, with ';' placed on the new line.
 1) Enum values are separated by a comma and a line break. `;` is put on the new line:
 ```kotlin
@@ -632,7 +634,7 @@ val n1: Int; val n2: Int
 ### <a name="s3.10.2"></a>Recommendation 3.10.2: Variables should be declared near the line where they are first used.
 Declare local variables close to the point where they are first used to minimize their scope. This will also increase the readability of the code.
 Local variables are usually initialized during their declaration or immediately after.
-The member fields of the class should be declared collectively (see [Rule 3.1.2](#s3.1.2) for details on the class structure).
+The member fields of the class should be declared collectively (see [Rule 3.1.2](#r3.1.2) for details on the class structure).
 
 <!-- =============================================================================== -->
 ### <a name="c3.11"></a> 3.11 When expression

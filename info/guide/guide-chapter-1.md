@@ -1,4 +1,4 @@
-## <a name="c1"></a> 1. Naming
+# <a name="c1"></a> 1. Naming
 In programming, it is not always easy to meaningfully and appropriately name variables, functions, classes, etc. Using meaningful names helps you clearly express your code's main ideas and functionality and avoid misinterpretation, unnecessary coding and decoding, magic numbers (???), and inappropriate abbreviations.
 
 Note: The source file encoding format (including comments) must be UTF-8 only. The ASCII horizontal space character (0x20, that is, space) is the only permitted whitespace character. Tabs should not be used for indentation.
@@ -68,9 +68,10 @@ Note that prefixing can also negatively affect the style and the auto-generation
 ### <a name="c1.2"></a> 1.2 Packages names
 ### <a name="r1.2.1"></a> Rule 1.2.1: Package names dots
 Package names are in lower case and separated by dots. Code developed within your company should start with `your.company.domain.` Numbers are permitted in package names.
+Each file should have a `package` directive.
 Package names are all written in lowercase, and consecutive words are concatenated together (no underscores). Package names should contain both the product and module names, and the department (or team) name to prevent conflicts with other teams.  Numbers are not permitted. For example: `org.apache.commons.lang3`, `xxx.yyy.v2`.
 
-**Exceptions：** 
+**Exceptions:** 
 
 - In certain cases, such as open-source projects or commercial cooperation, package names should not start with `your.company.domain.`
 - If the package name starts with a number or other characters that cannot be used at the beginning of the Java/Kotlin package name or the package name contains reserved Java keywords, underscores are allowed. (???)
@@ -164,8 +165,9 @@ fun addKeyListener(Listener)
 Constant names should be in UPPER case, words separated by underscore. The jeneral constant naming conventions are listed below:
 1. Constants are attributes created with the `const` keyword, or top-level/`val` local variables of an object that holds immutable data. In most cases, constants can be identified as a `const val` property from the `object`/`companion object`/file top level. These variables contain a fixed constant values that typically should never be changed by programmers. This includes basic types, strings, immutable types, and immutable collections of immutable types. The value is not constant for the object, which state can be changed.
 
-2. Constant names should contain only uppercase letters separated by underscores. They should have a val or const val modifier to make them final explicitly. In most cases, if you need to specify a constant value, then you need to create it with the "const val" modifier. Note that not all `val` variables are constants.
+1. Constants are attributes created with the const keyword, or top-level/`val` local variables of an object that holds immutable data. In most cases, constants can be identified as a `const val` property from the `object`/`companion object`/file top level. These variables contain a fixed constant value that typically should never be changed by programmers. This includes basic types, strings, immutable types, and immutable collections of immutable types. If an object state can be changed, the value is not a constant.
 
+2. Constant names should contain only uppercase letters separated by underscores. They should have a val or const val modifier to explicitly make them final. In most cases, if you need to specify a constant value, then you need to create it with the "const val" modifier. Note that not all `val` variables are constants.
 3. Objects that have immutable content, such as `Logger` and `Lock`, can be in uppercase as constants or have camel case as regular variables.
 
 4. Use meaningful constants instead of `magic numbers` (???). SQL or logging strings should not be treated as magic numbers, nor should they be defined as string constants.

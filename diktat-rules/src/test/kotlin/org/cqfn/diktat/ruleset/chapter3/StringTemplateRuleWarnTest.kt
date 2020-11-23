@@ -108,4 +108,18 @@ class StringTemplateRuleWarnTest : LintTestBase(::StringTemplateFormatRule) {
                 """.trimMargin()
         )
     }
+
+    @Test
+    @Tag(STRING_TEMPLATE_CURLY_BRACES)
+    fun `should not trigger on array access`() {
+        lintMethod(
+                """
+                    |class Some {
+                    |   fun some() {
+                    |       val copyTestFile = "${'$'}{arr[0]}"
+                    |   }
+                    |}
+                """.trimMargin()
+        )
+    }
 }
