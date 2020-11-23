@@ -221,4 +221,6 @@ public object WarningNames {
     public const val EXTENSION_FUNCTION_SAME_SIGNATURE: String = "EXTENSION_FUNCTION_SAME_SIGNATURE"
 
     public const val EMPTY_PRIMARY_CONSTRUCTOR: String = "EMPTY_PRIMARY_CONSTRUCTOR"
+
+    public const val NO_CORRESPONDING_PROPERTY: String = "NO_CORRESPONDING_PROPERTY"
 }

@@ -299,3 +299,8 @@
 # Checks if there is empty primary constructor
 - name: EMPTY_PRIMARY_CONSTRUCTOR
   enabled: true
+# In case of not using field keyword in property accessors,
+# there should be explicit backing property with the name of real property
+# Example: val table get() {if (_table == null) ...} -> table should have _table
+- name: NO_CORRESPONDING_PROPERTY
+  enabled: true
