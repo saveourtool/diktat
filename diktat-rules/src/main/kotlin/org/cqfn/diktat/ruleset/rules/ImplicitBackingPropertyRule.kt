@@ -84,13 +84,9 @@ class ImplicitBackingPropertyRule(private val configRules: List<RulesConfig>) : 
     private fun handleSetAccessors(accessor: ASTNode, node: ASTNode, propsWithBackSymbol: List<String>) {
         val refExprs = accessor.findAllNodesWithSpecificType(REFERENCE_EXPRESSION)
 
-
-        val localProps = accessor
-                .findAllNodesWithSpecificType(PROPERTY)
-                .map { (it.psi as KtProperty).name!! }
-
+        // In set we don't check for local properties. At least one reference expression should contain field or _prop
         if (refExprs.isNotEmpty()) {
-            handleReferenceExpressions(node, refExprs, propsWithBackSymbol, localProps)
+            handleReferenceExpressions(node, refExprs, propsWithBackSymbol, null)
         }
     }
 
@@ -98,8 +94,11 @@ class ImplicitBackingPropertyRule(private val configRules: List<RulesConfig>) : 
     private fun handleReferenceExpressions(node: ASTNode,
                                            expressions: List<ASTNode>,
                                            backingPropertiesNames: List<String>,
-                                           localProperties: List<String>) {
-        if (expressions.none { backingPropertiesNames.contains(it.text) || it.text == "field" || localProperties.contains(it.text) }) {
+                                           localProperties: List<String>?) {
+        if (expressions.none {
+                    (backingPropertiesNames.contains(it.text) || it.text == "field") &&
+                            (localProperties == null || localProperties.contains(it.text))
+                }) {
             raiseWarning(node, node.getFirstChildWithType(IDENTIFIER)!!.text)
         }
     }

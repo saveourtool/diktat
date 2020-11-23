@@ -129,4 +129,20 @@ class ImplicitBackingPropertyWarnTest: LintTestBase(::ImplicitBackingPropertyRul
                 """.trimMargin()
         )
     }
+
+    @Test
+    @Tag(NO_CORRESPONDING_PROPERTY)
+    fun `should not trigger set accessor`() {
+        lintMethod(
+                """
+                    |class Some(val a: Int = 5) {
+                    |   val foo
+                    |       set(value) {
+                    |           if(isDelegate) log.debug(value)
+                    |           field = value
+                    |       }
+                    |}
+                """.trimMargin()
+        )
+    }
 }
