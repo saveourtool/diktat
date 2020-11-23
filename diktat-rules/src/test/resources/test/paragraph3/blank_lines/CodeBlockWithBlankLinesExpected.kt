@@ -4,4 +4,10 @@ class Example {
     fun foo() {
         bar()
     }
+
+    fun bar() {
+        println()
+        println()
+    }
 }
+

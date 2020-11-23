@@ -5,6 +5,9 @@ on:
     branches:
       - 'master'
 
+env:
+  GRADLE_OPTS: -Dorg.gradle.daemon=false
+
 jobs:
   master_flow:
     name: Master branch update
