@@ -26,7 +26,7 @@ class ImplicitBackingPropertyWarnTest: LintTestBase(::ImplicitBackingPropertyRul
                     |           }
                     |           return _table ?: throw AssertionError("Set to null by another thread")
                     |       }
-                    |       set(value) {field = value}
+                    |       set(value) { field = value }
                     |}
                 """.trimMargin()
         )
@@ -143,6 +143,23 @@ class ImplicitBackingPropertyWarnTest: LintTestBase(::ImplicitBackingPropertyRul
                     |       }
                     |}
                 """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(NO_CORRESPONDING_PROPERTY)
+    fun `should trigger set accessor`() {
+        lintMethod(
+                """
+                    |class Some(val a: Int = 5) {
+                    |   val foo
+                    |       set(value) {
+                    |           if(isDelegate) log.debug(value)
+                    |           a = value
+                    |       }
+                    |}
+                """.trimMargin(),
+                LintError(2,4 ,ruleId, "${Warnings.NO_CORRESPONDING_PROPERTY.warnText()} foo has no corresponding property with name _foo")
         )
     }
 }

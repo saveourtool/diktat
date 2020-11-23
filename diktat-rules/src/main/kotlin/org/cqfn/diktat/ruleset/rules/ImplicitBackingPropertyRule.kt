@@ -96,8 +96,7 @@ class ImplicitBackingPropertyRule(private val configRules: List<RulesConfig>) : 
                                            backingPropertiesNames: List<String>,
                                            localProperties: List<String>?) {
         if (expressions.none {
-                    (backingPropertiesNames.contains(it.text) || it.text == "field") &&
-                            (localProperties == null || localProperties.contains(it.text))
+                    backingPropertiesNames.contains(it.text) || it.text == "field" || localProperties?.contains(it.text) == true
                 }) {
             raiseWarning(node, node.getFirstChildWithType(IDENTIFIER)!!.text)
         }
