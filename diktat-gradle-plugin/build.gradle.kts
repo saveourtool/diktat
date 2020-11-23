@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     `java-gradle-plugin`
-    kotlin("jvm") version "1.4.10"
+    kotlin("jvm") version "1.4.20"
     jacoco
 }
 
@@ -16,7 +16,7 @@ repositories {
 }
 
 val ktlintVersion = project.properties.getOrDefault("ktlintVersion", "0.39.0") as String
-val diktatVersion = project.version.takeIf { it.toString() != Project.DEFAULT_VERSION } ?: "0.1.6-SNAPSHOT"
+val diktatVersion = project.version.takeIf { it.toString() != Project.DEFAULT_VERSION } ?: "0.1.5"
 val junitVersion = project.properties.getOrDefault("junitVersion", "5.7.0") as String
 dependencies {
     implementation(kotlin("gradle-plugin-api"))
