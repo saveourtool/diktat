@@ -22,6 +22,7 @@ import org.cqfn.diktat.ruleset.utils.hasAnyChildOfTypes
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.cqfn.diktat.ruleset.utils.prettyPrint
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.psi.KtProperty
 
 /**
  * This rule checks if there is a backing property for field with property accessors, in case they don't use field keyword
@@ -69,30 +70,39 @@ class ImplicitBackingPropertyRule(private val configRules: List<RulesConfig>) : 
                 .filterNot { it.hasChildOfType(DOT_QUALIFIED_EXPRESSION) }
                 .flatMap { it.findAllNodesWithSpecificType(REFERENCE_EXPRESSION) }
 
+        val localProps = accessor
+                .findAllNodesWithSpecificType(PROPERTY)
+                .map { (it.psi as KtProperty).name!! }
         // If refExprs is empty then we assume that it returns some constant
         if (refExprs.isNotEmpty()) {
-            handleReferenceExpressions(node, refExprs, propsWithBackSymbol)
+            handleReferenceExpressions(node, refExprs, propsWithBackSymbol, localProps)
         }
     }
 
     private fun handleSetAccessors(accessor: ASTNode, node: ASTNode, propsWithBackSymbol: List<String>) {
         val refExprs = accessor.findAllNodesWithSpecificType(REFERENCE_EXPRESSION)
 
+
+        val localProps = accessor
+                .findAllNodesWithSpecificType(PROPERTY)
+                .map { (it.psi as KtProperty).name!! }
+
         if (refExprs.isNotEmpty()) {
-            handleReferenceExpressions(node, refExprs, propsWithBackSymbol)
+            handleReferenceExpressions(node, refExprs, propsWithBackSymbol, localProps)
         }
     }
 
     @Suppress("UnsafeCallOnNullableType")
-    private fun handleReferenceExpressions(node:ASTNode,
+    private fun handleReferenceExpressions(node: ASTNode,
                                            expressions: List<ASTNode>,
-                                           backingPropertiesNames: List<String>) {
-        if (expressions.none { backingPropertiesNames.contains(it.text) || it.text == "field" }) {
+                                           backingPropertiesNames: List<String>,
+                                           localProperties: List<String>) {
+        if (expressions.none { backingPropertiesNames.contains(it.text) || it.text == "field" || localProperties.contains(it.text) }) {
             raiseWarning(node, node.getFirstChildWithType(IDENTIFIER)!!.text)
         }
     }
 
-    private fun raiseWarning(node:ASTNode, propName: String) {
+    private fun raiseWarning(node: ASTNode, propName: String) {
         NO_CORRESPONDING_PROPERTY.warn(configRules, emitWarn, isFixMode,
                 "$propName has no corresponding property with name _$propName", node.startOffset, node)
     }
