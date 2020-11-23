@@ -70,7 +70,6 @@ import org.cqfn.diktat.ruleset.utils.isFollowedByNewline
 import org.cqfn.diktat.ruleset.utils.isSingleLineIfElse
 import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
 import org.cqfn.diktat.ruleset.utils.log
-import org.jetbrains.kotlin.backend.common.onlyIf
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -298,7 +297,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
                         val colon = funNode.findChildByType(COLON)!!
                         val expression = node.findChildByType(RETURN_KEYWORD)!!.nextCodeSibling()!!
                         funNode.apply {
-                            removeRange(colon, null)
+                            removeRange(if (colon.treePrev.elementType == WHITE_SPACE) colon.treePrev else colon, null)
                             addChild(PsiWhiteSpaceImpl(" "), null)
                             addChild(LeafPsiElement(EQ, "="), null)
                             addChild(PsiWhiteSpaceImpl(" "), null)
@@ -340,7 +339,8 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
             .takeWhile { !it.textContains('\n') }
             .filter { it.elementType == VALUE_PARAMETER }
             .toList()
-            .onlyIf({ size > 1 }) {
+            .takeIf { it.size > 1 }
+            ?.let {
                 WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, "first parameter should be placed on a separate line " +
                         "or all other parameters should be aligned with it in declaration of <${node.getParentIdentifier()}>", node.startOffset, node) {
                     node.appendNewlineMergingWhiteSpace(it.first().treePrev.takeIf { it.elementType == WHITE_SPACE }, it.first())
@@ -354,7 +354,8 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
                         !it.treeNext.run { elementType == WHITE_SPACE && textContains('\n') }
             }
             .toList()
-            .onlyIf({ isNotEmpty() }) { invalidCommas ->
+            .takeIf { it.isNotEmpty() }
+            ?.let { invalidCommas ->
                 WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
                     "$entryType should be placed on different lines in declaration of <${node.getParentIdentifier()}>", node.startOffset, node) {
                     invalidCommas.forEach { comma ->
