@@ -31,7 +31,7 @@ class DiktatJavaExecTaskTest {
     fun `check command line in debug mode`() {
         val pwd = project.file(".")
         assertCommandLineEquals(
-            listOf(null, "--debug", "$pwd" + listOf("src", "**", "*.kt").joinToString(File.separator, prefix = File.separator)),
+            listOf(null, "--debug", "$pwd${listOf("src", "**", "*.kt").joinToString(File.separator, prefix = File.separator)}"),
             DiktatExtension().apply {
                 inputs = project.files("src/**/*.kt")
                 debug = true
