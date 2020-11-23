@@ -7,7 +7,8 @@ import org.junit.jupiter.api.Test
 class ConfigReaderTest {
     @Test
     fun `testing json reading`() {
-        val rulesConfigList: List<RulesConfig>? = RulesConfigReader(javaClass.classLoader).readResource("src/test/resources/test-rules-config.yml")
+        val rulesConfigList: List<RulesConfig>? = RulesConfigReader(javaClass.classLoader)
+                .readResource("src/test/resources/test-rules-config.yml")
         require(rulesConfigList != null)
         assert(rulesConfigList.any { it.name == "CLASS_NAME_INCORRECT" && it.enabled })
         assert(rulesConfigList.find { it.name == "CLASS_NAME_INCORRECT" }?.configuration == mapOf<String, String>())
