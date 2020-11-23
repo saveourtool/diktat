@@ -7,4 +7,12 @@ class Example {
         bar()
 
     }
+
+    fun bar() {
+
+
+        println()
+        println()
+    }
 }
+
