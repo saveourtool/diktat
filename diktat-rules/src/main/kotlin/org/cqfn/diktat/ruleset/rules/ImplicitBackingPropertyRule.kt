@@ -64,6 +64,7 @@ class ImplicitBackingPropertyRule(private val configRules: List<RulesConfig>) : 
         accessors.filter { it.hasChildOfType(SET_KEYWORD) }.forEach { handleSetAccessors(it, node, propsWithBackSymbol) }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun handleGetAccessors(accessor: ASTNode, node: ASTNode, propsWithBackSymbol: List<String>) {
         val refExprs = accessor
                 .findAllNodesWithSpecificType(RETURN)
@@ -79,6 +80,7 @@ class ImplicitBackingPropertyRule(private val configRules: List<RulesConfig>) : 
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun handleSetAccessors(accessor: ASTNode, node: ASTNode, propsWithBackSymbol: List<String>) {
         val refExprs = accessor.findAllNodesWithSpecificType(REFERENCE_EXPRESSION)
 
