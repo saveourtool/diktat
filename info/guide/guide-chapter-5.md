@@ -8,7 +8,7 @@ Functions are the smallest unit of combinable and reusable code.
 They should have clean logic, **high cohesion**, and **low coupling** to effectively organize the code.
 The code in functions should be simple and not conceal the author's original intentions.
 Additionally, it should have a clean abstraction, and control statements should be used in a straightforward manner.
-The side effects (code that does not affect a function's return value, but affects global/object instance variables) should not be used for state changes (???).
+The side effects (code that does not affect a function's return value, but affects global/object instance variables) should not be used for state changes of an object.
 The only exceptions to this are state machines.
 
 Kotlin is [designed](https://www.slideshare.net/abreslav/whos-more-functional-kotlin-groovy-scala-or-java) to support and encourage functional programming, featuring the corresponding built-in mechanisms.
@@ -46,7 +46,7 @@ This will help the reader switch between context.
 
 ### <a name="r5.1.3"></a> Rule 5.1.3: Avoid using nested functions.
 Nested functions create a more complex function context, thereby confusing readers.
-Also, the visibility context (???) may not be evident to the code reader.
+With nested functions the visibility context may not be evident to the code reader.
 
 **Invalid example**:
 ```kotlin

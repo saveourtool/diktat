@@ -29,7 +29,7 @@ Float values containing more than six or seven decimal numbers will be rounded.
     println(income.subtract(expense)) // you will obtain 0.9 here
  ```
 
-### <a name="r4.1.2"></a> Rule 4.1.2: Numeric float type values should not be directly compared with the equality operator (==) or other methods like compareTo and equals (???).
+### <a name="r4.1.2"></a> Rule 4.1.2: Numeric float type values should not be directly compared with the equality operator (==) or other methods like `compareTo()` and `equals()`.
 Since floating-point numbers involve precision problems in computer representation, it is better to use `BigDecimal` as recommended in [Rule 4.1.1](#r4.1.1) to make accurate computations and comparisons. The following code describes these problems.
 
 **Invalid example**:
@@ -151,7 +151,7 @@ typealias Predicate<T> = (T) -> Boolean
 Kotlin is declared as a null-safe programming language. However, to achieve compatibility with Java, it still supports nullable types.
 
 ### <a name="s4.3.1"></a> Recommendation 4.3.1: Avoid declaring variables with nullable types, especially from Kotlin stdlib.
-To avoid `NullPointerException` and help compiler checks prevent NPE (???) avoid using nullable types (with `?` symbol).
+To avoid `NullPointerException` and help compiler to prevent Null Poniter Exceptions, avoid using nullable types (with `?` symbol).
 
 **Invalid example**:
 ```kotlin 
@@ -184,7 +184,7 @@ Like in Java, classes in Kotlin may have type parameters. To create an instance 
 val myVariable: Map<Int, String> = emptyMap<Int, String>() 
 ```
 
-However, the compiler can inherit type parameters from the right value (???). Therefore, it will not force users to declare the type explicitly.
+However, the compiler can inherit type parameters from the r-value (value assigned to a variable). Therefore, it will not force users to declare the type explicitly.
 These declarations are not recommended because programmers would need to find the return value and understand the variable type by looking at the method.
 
 **Invalid example**:

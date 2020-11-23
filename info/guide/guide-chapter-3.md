@@ -4,8 +4,8 @@
 ### <a name="r3.1.1"></a> Rule 3.1.1: Avoid files that are too long. Files should not exceed 2000 lines (non-empty and non-commented lines).
 
 If the file is too long and complex, it should be split into smaller files, functions, or modules.
-It is recommended to horizontally or vertically split the file according to responsibilities or hierarchy, respectively (???). The only exception to this rule is code generation. (???)
-The auto-generated files that are not manually modified can be longer
+It is recommended to horizontally or vertically split the file according to responsibilities or hierarchy of its parts.
+The only exception to this rule is code generation - the auto-generated files that are not manually modified can be longer.
 
 ### <a name="r3.1.2"></a> Rule 3.1.2: Code blocks in the source file should be separated by one blank line.
 A source file contains code blocks in the following order: copyright, package name, imports, and top-level classes. They should be separated by one blank line.
@@ -80,7 +80,7 @@ All variants of a `(private) val` logger should be placed in the beginning of th
 ### <a name="c3.2"></a> 3.2 Braces
 ### <a name="r3.2.1"></a> Rule 3.2.1: Braces must be used in conditional statements and loop blocks.
 
-Braces should always be used in `if`, `else`, `for`, `do`, and `while` statements, even if the program body is empty or contains only one statement. In special Kotlin `when` statements, you do not need to use braces for statements with one line (???). 
+Braces should always be used in `if`, `else`, `for`, `do`, and `while` statements, even if the program body is empty or contains only one statement. In special Kotlin `when` statements, you do not need to use braces for single-line statements. 
 
 **Valid example:**
 
@@ -179,7 +179,7 @@ do {
 ### <a name="c3.3"></a> 3.3 Indentation
 ### <a name="r3.3.1"></a>Rule 3.3.1: Use spaces for indentation. Each indentation equals four spaces.
 
-Only spaces are permitted for indentation, and each indentation should equal `4 spaces` (tabs are not permitted) (???).
+Only spaces are permitted for indentation, and each indentation should equal `four spaces` (tabs are not permitted).
 If you prefer using tabs, simply configure them to automatically change to spaces in your IDE.
 These code blocks should be indented if they are placed on the new line, and the following conditions are met:
 -	The code block is placed immediately after an opening brace
@@ -220,7 +220,7 @@ if (condition)
 ```
 
 **Exceptions**: 
-- When breaking parameter list of a method/class constructor it can be aligned with `8 spaces` (???). A parameter that was moved to a new line can be on the same level as the previous argument:
+- When breaking parameter list of a method/class constructor it can be aligned with `8 spaces`. A parameter that was moved to a new line can be on the same level as the previous argument:
     
 ```kotlin
 fun visit(
@@ -295,7 +295,7 @@ The international code style prohibits `non-Latin` (`non-ASCII`) symbols.
 (See [Rule 1.1.1: Identifiers](#r1.1.1)) However, if you still intend on using them, follow the following convention:
 
 - One wide character occupies the width of two narrow characters.
-The "wide" and "narrow" parts of a character are defined by (???) its [east Asian width Unicode attribute](https://unicode.org/reports/tr11/).
+The "wide" and "narrow" parts of a character are defined by its [east Asian width Unicode attribute](https://unicode.org/reports/tr11/).
 Typically, narrow characters are also called "half-width" characters.
 All characters in the ASCII character set include letters (such as `a, A`), numbers (such as `0, 3`), and punctuation spaces (such as `,` , `{`), all of which are narrow characters.
 Wide characters are also called "full-width" characters. Chinese characters (such as `中, 文`), Chinese punctuation (`，` , `；` ), full-width letters and numbers (such as `Ａ、３`) are "full-width" characters.
@@ -330,7 +330,7 @@ val b = ""
 1) Unlike Java, Kotlin allows you not to put a semicolon (`;`) after each statement separated by a newline.
     There should be no redundant semicolon at the end of the lines.
  
-When a newline (???) is needed to split the line, it should be placed after operators like `&&`/`||`/`+`/etc. and all infix functions (for example, `xor`).
+When a newline is needed to split the line, it should be placed after operators like `&&`/`||`/`+`/etc. and all infix functions (for example, `xor`).
 However, the newline should be placed before operators such as `.`, `?.`, `?:`, and `::`.
 
 Note that all comparison operators, such as `==`, `>`, `<`, should not be split.
@@ -393,7 +393,7 @@ value.map { name ->
 val someValue = { node:String -> node }
 ```
 
-6) When the function contains only a single expression, it can be expressed (???) as [expression function](https://kotlinlang.org/docs/reference/functions.html#single-expression-functions). 
+6) When the function contains only a single expression, it can be written as [expression function](https://kotlinlang.org/docs/reference/functions.html#single-expression-functions). 
    The below example shows the style that should not be used.
    
 Instead of: 
@@ -476,10 +476,10 @@ fun baz() {
 
 **Note:** This recommendation is for the cases where symbols are located on the same line. However, in some cases, a line break could be used instead of a space (described in another rule.)
 
-1.  Separate all (???) keywords (such as `if`, `when`, and `for`) from the opening parenthesis with single whitespace.
-    The only exception is the `constructor` keyword, which should not be separated.
+1.  Separate keywords like `if`, `when`, `for`, e.t.c. from the opening parenthesis with single whitespace.
+    The only exception is the `constructor` keyword, which should not be separated from the opening parenthesis.
 
-2.  Separate all keywords (???) (such as `else` or `try`) from the opening brace (`{`) with a single whitespace.
+2.  Separate keywords like `else` or `try` from the opening brace (`{`) with a single whitespace.
     If `else` is used in a ternary-style statement without braces, there should be a single space between `else` and the statement after: `if (condition) foo() else bar()`
 
 3.  Use a **single** whitespace before all opening braces (`{`). The only exception is the passing of a lambda as a parameter inside parentheses:
@@ -588,7 +588,7 @@ enum class Warnings {
 }
 ```
 
-This will help resolve conflicts and reduce the value's number (???) during merging pull requests.
+This will help to resolve conflicts and reduce the number of conflicts during merging pull requests.
 Also use [trailing comma](https://kotlinlang.org/docs/reference/whatsnew14.html#trailing-comma).
 
 2) If the enum is simple (no properties, methods, and comments inside), you can declare it in a single line:
@@ -596,14 +596,15 @@ Also use [trailing comma](https://kotlinlang.org/docs/reference/whatsnew14.html#
 enum class Suit { CLUBS, HEARTS, SPADES, DIAMONDS }
 ```
 
-3) Enum classes take preference if possible (???), for example, instead of two Boolean properties, such as shown below:
+3) Enum classes take preference (if it is possible to use it). For example, instead of two boolean properties:
 
 ```kotlin
 val isCelsius = true
 val isFahrenheit = false
 ```
 
-Using enum class:
+use enum class:
+
 ```kotlin
 enum class TemperatureScale { CELSIUS, FAHRENHEIT }
 ```

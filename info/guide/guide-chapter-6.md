@@ -27,8 +27,8 @@ class Test private constructor(var a: Int) {
 ```
 
 ### <a name="r6.1.2"></a> Rule 6.1.2: Prefer data classes instead of classes without any functional logic.
-Some people say that the data class is a code smell. But if you need to use it, and as a result, your x1code is becoming more simple, you can use `.Kotlin data classes` (???). The main purpose of these classes is to hold data,
-but also `data classes` will automatically generate several useful methods:
+Some people say that the data class is a code smell. But if you need to use it, and as a result, your code is becoming more simple, you can use Kotlin `data class`. The main purpose of this class is to hold data,
+but also `data class` will automatically generate several useful methods:
 - equals()/hashCode() pair;
 - toString()
 - componentN() functions corresponding to the properties in their order of declaration;
@@ -63,7 +63,7 @@ class Test() {
 }
 ```
 
-**Prefer (???):**
+**prefer data classes:**
 ```kotlin
 data class Test1(var a: Int = 0, var b: Int = 0)
 ```
@@ -72,7 +72,7 @@ data class Test1(var a: Int = 0, var b: Int = 0)
 
 **Exception #2**: No need to convert a class to data class if this class extends some other class or implements an interface.
 
-### <a name="r6.1.3"></a> Rule 6.1.3: Do not use the primary constructor if it is empty and (???)has no sense.
+### <a name="r6.1.3"></a> Rule 6.1.3: Do not use the primary constructor if it is empty or useless.
 The primary constructor is a part of the class header; it goes after the class name and (optional) type parameters but can be omitted if it is useless.
 
 **Invalid example**:
@@ -249,8 +249,8 @@ class A {
 From the callee code these methods look like an access to this property: `A().isEmpty = true` for setter and `A().isEmpty` for getter.
 
 However, when `get` and `set` are overridden, it is very confusing for a developer who uses this particular class. 
-The developer expects to get the property value but receives some unknown value and some extra side effects (or effect??? ) hidden by the custom getter/setter. 
-Use extra functions for it instead (??? for what?).
+The developer expects to get the property value but receives some unknown value and some extra side-effect hidden by the custom getter/setter. 
+Use extra functions instead to avoid confusion.
 
 
 
@@ -270,7 +270,7 @@ class A {
 **Exception:** `Private setters` are only exceptions that are not prohibited by this rule.
 
 ### <a name="r6.1.9"></a> Rule 6.1.9: never use the name of a variable in the custom getter or setter (possible_bug).
-Even (???) if you have ignored [recommendation 6.1.8](#r6.1.8) you should be careful with using the name of the property in your custom getter/setter
+If you have ignored [recommendation 6.1.8](#r6.1.8) you should be careful with using the name of the property in your custom getter/setter
 as it can accidentally cause a recursive call and a `StackOverflow Error`. Use the `field` keyword instead.
 
 **Invalid example (very bad)**:
@@ -359,17 +359,17 @@ fun main() {
 
 <!-- =============================================================================== -->
 ### <a name="c6.2"></a>6.2 Extension functions
-[Extension functions](https://kotlinlang.org/docs/reference/extensions.html) is a killer-feature (???) in Kotlin. 
+[Extension functions](https://kotlinlang.org/docs/reference/extensions.html) is a killer-feature in Kotlin. 
 It gives you a chance to extend classes that were already implemented in external libraries and help you to make classes less heavy.
 Extension functions are resolved statically.
 
 ### <a name="s6.2.1"></a> Recommendation 6.2.1: use extension functions for making logic of classes less coupled.
 It is recommended that for classes, the non-tightly coupled functions, which are rarely used in the class, should be implemented as extension functions where possible.
-They should be implemented in the same class/file where they are used. This is a non-deterministic rule, so it cannot be checked or fixed (???) automatically by a static analyzer.
+They should be implemented in the same class/file where they are used. This is a non-deterministic rule, so the code cannot be checked or fixed automatically by a static analyzer.
 
 ### <a name="s6.2.2"></a> Rule 6.2.2: No extension functions with the same name and signature if they extend base and inheritor classes (possible_bug).
-As extension functions are resolved statically (If???). In this case, there could be a situation when a developer implements two extension functions: one is for the base class and another for the inheritor.
-                                                        This can lead to an issue when an incorrect method is used.
+As extension functions are resolved statically. In this case, there could be a situation when a developer implements two extension functions: one is for the base class and another for the inheritor.
+This can lead to an issue when an incorrect method is used.
 And that can lead to an issue when incorrect method is used. 
 
 **Invalid example**:

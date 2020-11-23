@@ -38,7 +38,7 @@ All properties of the primary constructor should be also documented in a KDoc wi
 
 **Exceptions:**
 
-1. For setters/getters of properties, obvious comments are optional (???). Note that Kotlin generates simple `get/set` methods under the hood). For example, getFoo can also be `return foo`.
+1. For setters/getters of properties, obvious comments (like `this getter returns field`) are optional. Note, that Kotlin generates simple `get/set` methods under the hood.
    
 2. It is optional to add comments for simple one-line methods, such as shown in the example below:
 ```kotlin
@@ -107,7 +107,7 @@ Kdoc should not contain:
 - There should be no empty lines between the method/class declaration and the end of Kdoc (`*/` symbols).
 Important note: KDoc does not support the `@deprecated` tag. Instead, use the `@Deprecated` annotation.
  
-If a tag block cannot be described in one line, you should indent the content of the new line by `4 spaces` (???) from the `@` position to achieve alignment (`@` counts as one + three spaces).
+If a tag block cannot be described in one line, you should indent the content of the new line by `four spaces` from the `@` position to achieve alignment (`@` counts as one + three spaces).
  
 **Exception:** When the descriptive text in a tag block is too long to wrap, you can indent the alignment with the descriptive text in the last line. The descriptive text of multiple tags does not need to be aligned.
 See [3.8 Horizontal space](#c3.8).
@@ -144,7 +144,7 @@ The following examples for Huawei describe the format of the **copyright license
 Chinese version: `版权所有 (c) 华为技术有限公司 2012-2020` \
 English version: `Copyright (c) Huawei Technologies Co., Ltd. 2012-2020. All rights reserved.`
 
-Regarding the **release notes**, see examples below (???):
+Regarding the **release notes**, see examples below:
 
 - `2012-2020` can be modified according to your actual situation. `2012` and `2020` are the years the file was first created and last modified, respectively.
 These two years can be the same (for example, `2020–2020`). When the file is substantially changed (for example, through feature extensions and major refactorings), the subsequent years must be updated.
@@ -164,7 +164,7 @@ The following example is a copyright statement for Huawei, without other functio
 
 The following factors should be considered when writing the file header or comments for top-level classes:
 - File header comments must start from the top of the file. If it is a top-level file comment, there should be a blank line after the last Kdoc `*/` symbol. If it is a comment for a top-level class, the class declaration should start immediately without using a newline.
-- Maintain a unified format. The specific format can be formulated (???) by the project (for example, in opensource), and you need to follow it.
+- Maintain a unified format. The specific format can be formulated by the project (for example, if you use existing opensource project), and you need to follow it.
 - A top-level file-Kdoc must include a copyright and functional description, especially if there is more than one top-level class.
 - Do not include empty comment blocks.If there is no content after the option `@apiNote`, the entire tag block should be deleted.
 - The industry practice is not to include historical information in comments. The corresponding history can be found in VCS (git, svn, etc.). Therefore, it is not recommended to include historical data in the comments of the Kotlin source code.
@@ -183,7 +183,7 @@ The function header comment's content is optional, but not limited to function d
 ### <a name="r2.4.1"></a> Rule 2.4.1: Add a blank line between the body of the comment and Kdoc tag-blocks.
 It is a good practice to add a blank line between the body of the comment and Kdoc tag-blocks. Also, consider the following rules:
 - There must be one space between the comment character and the content of the comment
-- There must be a newline (???) between a Kdoc and the pressiding code
+- There must be a newline between a Kdoc and the pressiding code
 - An empty line should not exist between a Kdoc and the code it is describing. You do not need to add a blank line before the first comment in a particular name space (code block) (for example, between the function declaration and first comment in a function body).
 
 **Valid Examples:**

@@ -1,18 +1,18 @@
 # <a name="c1"></a> 1. Naming
-In programming, it is not always easy to meaningfully and appropriately name variables, functions, classes, etc. Using meaningful names helps you clearly express your code's main ideas and functionality and avoid misinterpretation, unnecessary coding and decoding, magic numbers (???), and inappropriate abbreviations.
+In programming, it is not always easy to meaningfully and appropriately name variables, functions, classes, etc. Using meaningful names helps you clearly express your code's main ideas and functionality and avoid misinterpretation, unnecessary coding and decoding, "magic" numbers, and inappropriate abbreviations.
 
 Note: The source file encoding format (including comments) must be UTF-8 only. The ASCII horizontal space character (0x20, that is, space) is the only permitted whitespace character. Tabs should not be used for indentation.
 
 <!-- =============================================================================== -->
 ### <a name="c1.1"></a> 1.1 Identifier names
 ### <a name="r1.1.1"></a> 1.1.1: Identifiers naming conventions
-**Rule (???):** 
 
 For identifiers, use the following naming conventions:
 1.	All identifiers should use only ASCII letters or digits, and the names should match regular expressions `\w{2,64}`.
 Explanation: Each valid identifier name should match the regular expression `\w{2,64}`.
 `{2,64}` means that the name length is 2 to 64 characters, and the length of the variable name should be proportional to its life range, functionality, and responsibility.
-Name lengths of less than 31 characters are generally recommended. However, this depends on the project. Otherwise, a class declaration with generics or inheritance from a superclass can cause line breaking, for example (???). No special prefix or suffix should be used in the names. The following examples are inappropriate: name_, mName, s_name, and kName.
+Name lengths of less than 31 characters are generally recommended. However, this depends on the project. Otherwise, a class declaration with generics or inheritance from a superclass can cause line breaking.
+No special prefix or suffix should be used in the names. The following examples are inappropriate: name_, mName, s_name, and kName.
 
 2.	Choose file names that would describe the content. Use camel case (PascalCase) and `.kt` extension.
 
@@ -74,9 +74,8 @@ Package names are all written in lowercase, and consecutive words are concatenat
 **Exceptions:** 
 
 - In certain cases, such as open-source projects or commercial cooperation, package names should not start with `your.company.domain.`
-- If the package name starts with a number or other characters that cannot be used at the beginning of the Java/Kotlin package name or the package name contains reserved Java keywords, underscores are allowed. (???)
-- Underscores are sometimes permitted if the package name contains reserved Java keywords, such as org.example.hyphenated_name, int_.example, com.example._123name   
-Examples: `org.example.hyphenated_name`,` int_.example`, `com.example._123name`
+- If the package name starts with a number or other characters that cannot be used at the beginning of the Java/Kotlin package name, then underscores are allowed. For example: `com.example._123name`.
+- Underscores are sometimes permitted if the package name contains reserved Java/Kotlin keywords, such as `org.example.hyphenated_name`, `int_.example`.
 
 **Valid example**: 
 ```kotlin
@@ -86,7 +85,7 @@ package your.company.domain.mobilecontrol.views
 <!-- =============================================================================== -->
 ### <a name="c1.3"></a> 1.3 Classes, enumerations, interfaces
 ### <a name="r1.3.1"></a> Rule 1.3.1: Classes, enumerations, interface names use Camel case
-Classes, enumerations, and interface names use camel case nomenclature (???). Follow the naming rules described below:
+Classes, enumerations, and interface names use `UpperCamelCase` nomenclature. Follow the naming rules described below:
 1.	A class name is usually a noun (or a noun phrase) denoted using the camel case nomenclature, such as UpperCamelCase. For example: `Character` or `ImmutableList`.
 An interface name can also be a noun or noun phrase (such as `List`) or an adjective or adjective phrase (such as `Readable`).
 Note that verbs are not used to name classes. However, nouns (such as `Customer`, `WikiPage`, and `Account`) can be used. Try to avoid using vague words such as `Manager` and `Process`.
@@ -111,8 +110,8 @@ class Order {}
 
 <!-- =============================================================================== -->
 ### <a name="c1.4"></a> 1.4 Functions
-### <a name="r1.4.1"></a> Rule 1.4.1: Function names should be in camel case (???)
-Function names should be in camel (???) case. Follow the naming rules described below:
+### <a name="r1.4.1"></a> Rule 1.4.1: Function names should be in camel case
+Function names should use `lowerCamelCase` nomenclature. Follow the naming rules described below:
 1.	Function names are usually verbs or verb phrases denoted with the camel case nomenclature (`lowerCamelCase`).
 For example: `sendMessage`, `stopProcess`, or `calculateValue`.
 To name functions use the following formatting rules:
@@ -158,10 +157,10 @@ fun draw()
 fun addKeyListener(Listener)
 ```
 
-2.	An underscore can be included in the JUnit test function name and should be a logical component used to separate names (???). Each logical part denoted in lowerCamelCase (???), for example, a typical pattern of using underscore: pop_emptyStack.
+2.	An underscore (`_`) can be included in the JUnit test function name and should be used as a separator. Each logical part denoted in `lowerCamelCase`, for example, a typical pattern of using underscore: `pop_emptyStack`.
 <!-- =============================================================================== -->
 ### <a name="c1.5"></a> 1.5 Constants
-### <a name="r1.5.1"></a> Rule 1.5.1 Constant names should be in UPPER case, words separated by underscore (???)
+### <a name="r1.5.1"></a> Rule 1.5.1 Constant names should be in UPPER case, words in the name are separated by underscore
 Constant names should be in UPPER case, words separated by underscore. The jeneral constant naming conventions are listed below:
 1. Constants are attributes created with the `const` keyword, or top-level/`val` local variables of an object that holds immutable data. In most cases, constants can be identified as a `const val` property from the `object`/`companion object`/file top level. These variables contain a fixed constant values that typically should never be changed by programmers. This includes basic types, strings, immutable types, and immutable collections of immutable types. The value is not constant for the object, which state can be changed.
 
@@ -170,7 +169,7 @@ Constant names should be in UPPER case, words separated by underscore. The jener
 2. Constant names should contain only uppercase letters separated by underscores. They should have a val or const val modifier to explicitly make them final. In most cases, if you need to specify a constant value, then you need to create it with the "const val" modifier. Note that not all `val` variables are constants.
 3. Objects that have immutable content, such as `Logger` and `Lock`, can be in uppercase as constants or have camel case as regular variables.
 
-4. Use meaningful constants instead of `magic numbers` (???). SQL or logging strings should not be treated as magic numbers, nor should they be defined as string constants.
+4. Use meaningful constants instead of `magic numbers`. SQL or logging strings should not be treated as magic numbers, nor should they be defined as string constants.
 Magic constants like `NUM_FIVE = 5` or `NUM_5 = 5` should not be treated as constants. This is because mistakes will easily be made if they are changed to `NUM_5 = 50` or 55.
 These constants typically represent business logic values, such as measures, capacity, scope, location, tax rate, promotional discounts, and power base multiples in algorithms.
 You can avoid using magic numbers with the following method:
@@ -198,7 +197,7 @@ Non-constant field names should use camel case and start with a lowercase letter
 A local variable cannot be treated as a constant even if it is final and immutable. Therefore, it should not use the preceding rules. Names of collection type variables (sets, lists, etc.) should contain plural nouns.
 For example: `var namesList: List<String>`
 
-Names of non-constant variables should use lower camel case (???). The name of the final immutable field used to store the singleton object can use the same camel case notation.
+Names of non-constant variables should use `lowerCamelCase`. The name of the final immutable field used to store the singleton object can use the same camel case notation.
 
 **Invalid example**: 
 ```kotlin

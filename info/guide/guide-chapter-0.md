@@ -28,7 +28,7 @@ Also, we need to consider the following factors when programming on Kotlin:
 
     Kotlin combines two of the main programming paradigms: functional and object-oriented.
     Both of these paradigms are trusted and well-known software engineering practices.
-    As a young programming language, Kotlin builds (???) on well-established languages such as Java, C++, C#, and Scala.
+    As a young programming language, Kotlin is built on the top of well-established languages such as Java, C++, C#, and Scala.
     This enables Kotlin to introduce many features that help you write cleaner, more readable code, while also reducing the number of complex code structures. For example, type and null safety, extension functions, infix syntax, immutability, val/var differentiation, expression-oriented features, when statements, much easier work with collections, type auto conversion, and other syntactic sugar.
 
 2. Following Kotlin idioms
@@ -60,5 +60,5 @@ Unless otherwise stated, this specification applies to versions 1.3 and later of
 
 Even though exceptions may exist, it is essential to understand why rules and recommendations are needed.
 Depending on your project situation or personal habits, you can break some of the rules. However, remember that one exception may lead to many and eventually can destroy code consistency. As such, there should be very few exceptions.
-When modifying open-source code or third-party code, you can choose to implement the code's style (???) used by the code (instead of using the existing specifications) to maintain consistency.
+When modifying open-source code or third-party code, you can choose to use the code style from this open-source project (instead of using the existing specifications) to maintain consistency.
 Software that is directly based on the Android native operating system interface, such as the Android Framework, remains consistent with the Android style.
