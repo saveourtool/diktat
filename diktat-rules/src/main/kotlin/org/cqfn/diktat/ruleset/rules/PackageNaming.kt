@@ -16,7 +16,6 @@ import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_PREFIX
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_SYMBOLS
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_MISSING
 import org.cqfn.diktat.ruleset.utils.*
-import org.jetbrains.kotlin.backend.common.onlyIf
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -44,8 +43,10 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
         emitWarn = emit
 
         val configuration by configRules.getCommonConfiguration()
-        domainName = configuration.onlyIf({ isDefault }) {
-            log.error("Not able to find an external configuration for domain name in the common configuration (is it missing in yml config?)")
+        domainName = configuration.also {
+            if (it.isDefault) {
+                log.error("Not able to find an external configuration for domain name in the common configuration (is it missing in yml config?)")
+            }
         }
             .domainName
 
