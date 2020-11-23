@@ -1,4 +1,4 @@
-### <a name="c4"></a> 4. Variables and types
+# <a name="c4"></a> 4. Variables and types
 <!-- =============================================================================== -->
 ### <a name="c4.1"></a> 4.1 Variables
 ### <a name="r4.1.1"></a> Rule 4.1.1: Do not use Float and Double types when accurate calculations are needed.
@@ -166,7 +166,7 @@ val a: Int = 0
 
 Nevertheless, if you use Java libraries extensively, you will have to use nullable types and enrich your code with `!!` and `?` symbols.
 Avoid using nullable types for Kotlin stdlib (declared in [official documentation](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/)) avoid using nullable types. 
-Try to use initializers for empty collections. ), and try using initializers for empty collections. For example: If you want to initialize a list instead of using `null` use `emptyList()`.
+Try to use initializers for empty collections), and try using initializers for empty collections. For example: If you want to initialize a list instead of using `null` use `emptyList()`.
 
 **Invalid example**:
 ```kotlin 

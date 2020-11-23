@@ -1,4 +1,4 @@
-# <a name="c6"></a> 6. Classes, interfaces and functions
+# <a name="c6"></a> 6. Classes, interfaces and extension functions
 <!-- =============================================================================== -->
 ### <a name="c6.1"></a> 6.1 Classes
 ### <a name="r6.1.1"></a> Rule 6.1.1:  When a class has a single constructor, it should be defined as a primary constructor in the declaration of the class.
@@ -70,6 +70,7 @@ data class Test1(var a: Int = 0, var b: Int = 0)
 ```
 
 **Exception #1**: Note, that data classes cannot be abstract, open, sealed or inner, that's why these types of classes cannot be changed to data class.
+
 **Exception #2**: No need to convert a class to data class in case this class extends some other class or implements an interface.
 
 ### <a name="r6.1.3"></a> Rule 6.1.3: Do not use the primary constructor if it is empty and has no sense.
@@ -112,7 +113,7 @@ class Test {
 The primary constructor cannot contain any code. That's why Kotlin has introduced `init` blocks.
 These blocks are used to store the code that should be run during the initialization of the class.
 Kotlin allows to write multiple initialization blocks that are executed in the same order as they appear in the class body.
-Even when you have the (rule 3.2)[#s3.2] this makes code less readable as the programmer needs to keep in mind all init blocks and trace the execution of the code.
+Even when you have the [Rule 3.1.2](#r3.1.2) this makes code less readable as the programmer needs to keep in mind all init blocks and trace the execution of the code.
 So in your code you should try to use single `init` block to reduce the complexity. In case you need to do some logging or make some calculations before the assignment 
 of some class property - you can use powerful functional programming. This will reduce the possibility of the error, when occasionally someone will change the order of your `init` blocks. 
 And it will make the logic of the code more coupled. It is always enough to use one `init` block to implement your idea in Kotlin.
@@ -250,7 +251,7 @@ But in all cases it is very confusing when `get` and `set` are overridden for a 
 Developer expects to get the value of the property, but receives some unknown value and some extra side effect hidden by the custom getter/setter. 
 Use extra functions for it instead.
 
-**Valid example**:
+**Invalid example:**
 ```kotlin 
 class A {
     var size: Int = 0
@@ -309,7 +310,7 @@ class A {
 ### <a name="s6.1.11"></a> Rule 6.1.11: use apply for grouping object initialization.
 In the good old Java before functional programming became popular - lot of classes from commonly used libraries used configuration paradigm.
 To use these classes you had to create an object with the constructor that had 0-2 arguments and set the fields that were needed to run an object.
-In Kotlin to reduce the number of dummy code line and to group objects [`apply` extension](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/apply.html) was added:  
+In Kotlin to reduce the number of dummy code lines and to group objects [`apply` extension](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/apply.html) was added:
  
 **Invalid example**:
 ```kotlin
@@ -323,7 +324,7 @@ class HttpClient(var name: String) {
 
 fun main() {
     val httpClient = HttpClient("myConnection")
-    httpClient.url = "http://pushkin.com"
+    httpClient.url = "http://example.com"
     httpClient.port = "8080"
     httpClient.timeout = 100
     
@@ -345,11 +346,11 @@ class HttpClient(var name: String) {
 fun main() {
     val httpClient = HttpClient("myConnection")
             .apply {
-                url = "http://pushkin.com"
+                url = "http://example.com"
                 port = "8080"
                 timeout = 100
             }
-            .doRequest()
+    httpClient.doRequest()
 }
 ```
 

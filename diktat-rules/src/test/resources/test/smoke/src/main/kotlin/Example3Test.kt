@@ -1,4 +1,6 @@
-package test.smoke.src.main.kotlin
+/*
+ * Copyright (c) Your Company Name Here. 2010-2020
+ */
 
 class HttpClient {
     var name: String
@@ -16,9 +18,34 @@ class HttpClient {
 fun mains() {
     val httpClient = HttpClient("myConnection")
             .apply {
-                url = "http://pushkin.com"
+                url = "http://example.com"
                 port = "8080"
                 timeout = 100
             }
     httpClient.doRequest()
 }
+
+class Example {
+    fun foo() {
+        if (condition1)
+            if (condition2)
+                bar()
+
+        if (condition3)
+            if (condition4)
+                foo()
+            else
+                bar()
+        else
+            foo()
+    }
+}
+
+
+class Foo {
+    /**
+     * @implNote lorem ipsum
+     */
+    private fun foo() {}
+}
+

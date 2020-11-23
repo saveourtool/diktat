@@ -8,6 +8,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfigReader
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.calculations.AccurateCalculationsRule
 import org.cqfn.diktat.ruleset.rules.classes.AbstractClassesRule
+import org.cqfn.diktat.ruleset.rules.classes.CompactInitialization
 import org.cqfn.diktat.ruleset.rules.classes.DataClassesRule
 import org.cqfn.diktat.ruleset.rules.classes.SingleConstructorRule
 import org.cqfn.diktat.ruleset.rules.classes.SingleInitRule
@@ -64,6 +65,7 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
                 ::PackageNaming,
                 ::IdentifierNaming,
                 // code structure
+                ::UselessSupertype,
                 ::ClassLikeStructuresOrderRule,
                 ::WhenMustHaveElseRule,
                 ::BracesInConditionalsAndLoopsRule,
@@ -74,6 +76,7 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
                 ::MultipleModifiersSequence,
                 ::TrivialPropertyAccessors,
                 ::CustomGetterSetterRule,
+                ::CompactInitialization,
                 // other rules
                 ::StringTemplateFormatRule,
                 ::DataClassesRule,
@@ -99,8 +102,10 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
                 ::BlankLinesRule,
                 ::FileSize,
                 ::NullableTypeRule,
+                ::NullChecksRule,
                 ::ImmutableValNoVarRule,
                 ::AvoidNestedFunctionsRule,
+                ::ExtensionFunctionsSameNameRule,
                 // formatting: moving blocks, adding line breaks, indentations etc.
                 ::ConsecutiveSpacesRule,
                 ::WhiteSpaceRule,  // this rule should be after other rules that can cause wrong spacing

@@ -5,7 +5,7 @@
 
     <groupId>org.cqfn.diktat</groupId>
     <artifactId>diktat-parent</artifactId>
-    <version>0.1.4-SNAPSHOT</version>
+    <version>0.1.6-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>diktat</name>
@@ -42,7 +42,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <kotlin.version>1.4.10</kotlin.version>
+        <kotlin.version>1.4.20</kotlin.version>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
         <kotlinx.serialization.version>1.0.1</kotlinx.serialization.version>
         <ktlint.version>0.39.0</ktlint.version>
@@ -50,7 +50,7 @@
         <guava.version>30.0-jre</guava.version>
         <slf4j.version>1.7.30</slf4j.version>
         <commons-cli.version>1.4</commons-cli.version>
-        <diktat-check.version>0.1.3</diktat-check.version>
+        <diktat-check.version>0.1.5</diktat-check.version>
         <kotlinpoet.version>1.7.1</kotlinpoet.version>
         <detekt.version>1.14.2</detekt.version>
         <dokka.version>1.4.10</dokka.version>
@@ -63,6 +63,7 @@
         <module>diktat-test-framework</module>
         <module>diktat-ruleset</module>
         <module>diktat-maven-plugin</module>
+        <module>diktat-gradle-plugin</module>
     </modules>
 
     <distributionManagement>
@@ -164,6 +165,11 @@
     <build>
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>3.1.0</version>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
@@ -295,7 +301,7 @@
                         <configuration>
                             <config>detekt-config.yml</config>
                             <classPath>${maven.compile.classpath}</classPath>
-                            <languageVersion>1.3</languageVersion>
+                            <languageVersion>1.4</languageVersion>
                             <jvmTarget>1.8</jvmTarget>
                             <excludes>**/resources/**/*.kt</excludes>
                         </configuration>
@@ -320,19 +326,6 @@
                             <inputs>
                                 <input>${project.basedir}/src/main/kotlin</input>
                                 <input>${project.basedir}/src/test/kotlin</input>
-                            </inputs>
-                            <diktatConfigFile>diktat-analysis.yml</diktatConfigFile>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>functional-test</id>
-                        <phase>none</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                        <configuration>
-                            <inputs>
-                                <input>${project.basedir}/src/test/resources/test/funcTest</input>
                             </inputs>
                             <diktatConfigFile>diktat-analysis.yml</diktatConfigFile>
                         </configuration>
