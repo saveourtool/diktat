@@ -17,3 +17,10 @@ class Example {
      */
     fun test(a: Int): Int = 2 * a
 }
+
+class Foo {
+    /**
+     * @implNote lorem ipsum
+     */
+    private fun foo() {}
+}

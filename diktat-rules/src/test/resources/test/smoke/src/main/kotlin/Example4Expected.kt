@@ -1,7 +1,6 @@
-package test.paragraph2.kdoc
+package org.cqfn.diktat
 
 class SpecialTagsInKdoc {
-
     /**
      * Empty function to test KDocs
      * @apiNote foo
@@ -9,6 +8,9 @@ class SpecialTagsInKdoc {
      * @implSpec bar
      *
      * @implNote baz
+     *
+     * @return
      */
     fun test() = Unit
 }
+

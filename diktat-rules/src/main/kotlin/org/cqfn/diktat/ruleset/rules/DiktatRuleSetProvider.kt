@@ -71,6 +71,7 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
                 ::BracesInConditionalsAndLoopsRule,
                 ::BlockStructureBraces,
                 ::EmptyBlock,
+                ::AvoidEmptyPrimaryConstructor,
                 ::EnumsSeparated,
                 ::SingleLineStatementsRule,
                 ::MultipleModifiersSequence,
@@ -108,10 +109,10 @@ class DiktatRuleSetProvider(private val diktatConfigFile: String = "diktat-analy
                 ::ExtensionFunctionsSameNameRule,
                 // formatting: moving blocks, adding line breaks, indentations etc.
                 ::ConsecutiveSpacesRule,
-                ::WhiteSpaceRule,  // this rule should be after other rules that can cause wrong spacing
                 ::HeaderCommentRule,
                 ::FileStructureRule,  // this rule should be right before indentation because it should operate on already valid code
                 ::NewlinesRule,  // newlines need to be inserted right before fixing indentation
+                ::WhiteSpaceRule,  // this rule should be after other rules that can cause wrong spacing
                 ::IndentationRule  // indentation rule should be the last because it fixes formatting after all the changes done by previous rules
         )
                 .map {

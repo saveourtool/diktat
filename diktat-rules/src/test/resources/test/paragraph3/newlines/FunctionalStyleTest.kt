@@ -7,3 +7,6 @@ fun foo(list: List<Bar>?) {
             ?:
             foobar
 }
+
+fun bar(x :Int,y:Int) :Int {
+    return   x+ y }
