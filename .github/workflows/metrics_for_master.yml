@@ -5,6 +5,9 @@ on:
     branches:
       - 'master'
 
+env:
+  GRADLE_OPTS: -Dorg.gradle.daemon=false
+
 jobs:
   master_flow:
     name: Master branch update
@@ -25,7 +28,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-build-
       - name: Run tests
-        run: mvn -B test
+        run: mvn -B test -DskipPluginMarker
       - name: Generate code coverage report
         uses: codecov/codecov-action@v1
         with:

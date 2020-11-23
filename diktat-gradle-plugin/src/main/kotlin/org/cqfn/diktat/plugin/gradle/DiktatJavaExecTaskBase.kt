@@ -42,7 +42,9 @@ open class DiktatJavaExecTaskBase @Inject constructor(
             logger.lifecycle("Running diktat $DIKTAT_VERSION with ktlint $KTLINT_VERSION")
         }
         args = additionalFlags.toMutableList().apply {
-            add(if (diktatExtension.debug) "--debug" else "")
+            if (diktatExtension.debug) {
+                add("--debug")
+            }
             add(diktatExtension.inputs.files.joinToString { it.path })
         }
     }

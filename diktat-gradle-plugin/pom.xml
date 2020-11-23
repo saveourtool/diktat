@@ -5,7 +5,7 @@
     <parent>
         <artifactId>diktat-parent</artifactId>
         <groupId>org.cqfn.diktat</groupId>
-        <version>0.1.4-SNAPSHOT</version>
+        <version>0.1.6-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -48,6 +48,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
+                <inherited>false</inherited>
                 <configuration>
                     <filesets>
                         <fileset>
@@ -59,6 +60,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
+                <inherited>false</inherited>
                 <executions>
                     <execution>
                         <id>gradle</id>
@@ -85,6 +87,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
+                <inherited>false</inherited>
                 <executions>
                     <execution>
                         <id>attach-artifacts</id>
@@ -106,27 +109,6 @@
                                 </artifact>
                             </artifacts>
                             <skipAttach>${skip.gradle.build}</skipAttach>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>deploy-gradle-plugin-marker</id>
-                        <goals>
-                            <goal>deploy-file</goal>
-                        </goals>
-                        <phase>deploy</phase>
-                        <configuration>
-                            <file>${gradle.builddir}/publications/diktatPluginPluginMarkerMaven/pom-default.xml</file>
-                            <pomFile>${gradle.builddir}/publications/diktatPluginPluginMarkerMaven/pom-default.xml</pomFile>
-                            <generatePom>false</generatePom>
-                            <url>r</url>
-                            <groupId>org.cqfn.diktat.diktat-gradle-plugin</groupId>
-                            <artifactId>org.cqfn.diktat.diktat-gradle-plugin.gradle.plugin</artifactId>
                         </configuration>
                     </execution>
                 </executions>
@@ -179,7 +161,7 @@
                 </os>
             </activation>
             <properties>
-                <skip.gradle.build>true</skip.gradle.build>
+                <gradle.executable>${project.basedir}/gradlew.bat</gradle.executable>
             </properties>
         </profile>
     </profiles>

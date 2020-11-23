@@ -70,6 +70,12 @@ fun ASTNode.isCorrect(): Boolean = this.findAllNodesWithSpecificType(TokenType.E
 fun ASTNode.getAllChildrenWithType(elementType: IElementType): List<ASTNode> =
     this.getChildren(null).filter { it.elementType == elementType }
 
+fun ASTNode.replaceWhiteSpaceText(beforeNode: ASTNode, text: String) {
+    require(beforeNode.elementType == WHITE_SPACE)
+    this.addChild(PsiWhiteSpaceImpl(text), beforeNode)
+    this.removeChild(beforeNode)
+}
+
 /**
  * obviously returns first child that match particular element type
  */
