@@ -3,6 +3,9 @@ name: Build and test
 on:
   pull_request
 
+env:
+  GRADLE_OPTS: -Dorg.gradle.daemon=false
+
 jobs:
   test:
     name: Unit Test

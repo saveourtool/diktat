@@ -5,7 +5,7 @@
     <parent>
         <artifactId>diktat-parent</artifactId>
         <groupId>org.cqfn.diktat</groupId>
-        <version>0.1.5-SNAPSHOT</version>
+        <version>0.1.6-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -63,17 +63,38 @@
                 <inherited>false</inherited>
                 <executions>
                     <execution>
+                        <id>gradle-test</id>
+                        <phase>test</phase>
+                        <configuration>
+                            <executable>${gradle.executable}</executable>
+                            <arguments>
+                                <argument>clean</argument>
+                                <argument>jacocoTestReport</argument>
+                                <argument>-Pgroup=${project.groupId}</argument>
+                                <argument>-Pversion=${project.version}</argument>
+                                <argument>-Pdescription=${project.description}</argument>
+                                <argument>-PktlintVersion=${ktlint.version}</argument>
+                                <argument>-PjunitVersion=${junit.version}</argument>
+                                <argument>-S</argument>
+                            </arguments>
+                            <skip>${skip.gradle.build}</skip>
+                        </configuration>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                    <execution>
                         <id>gradle</id>
                         <phase>prepare-package</phase>
                         <configuration>
                             <executable>${gradle.executable}</executable>
                             <arguments>
-                                <argument>clean</argument>
                                 <argument>${gradle.task}</argument>
                                 <argument>-Pgroup=${project.groupId}</argument>
                                 <argument>-Pversion=${project.version}</argument>
                                 <argument>-Pdescription=${project.description}</argument>
                                 <argument>-PktlintVersion=${ktlint.version}</argument>
+                                <argument>-PjunitVersion=${junit.version}</argument>
                                 <argument>-S</argument>
                             </arguments>
                             <skip>${skip.gradle.build}</skip>
@@ -161,7 +182,7 @@
                 </os>
             </activation>
             <properties>
-                <skip.gradle.build>true</skip.gradle.build>
+                <gradle.executable>${project.basedir}/gradlew.bat</gradle.executable>
             </properties>
         </profile>
     </profiles>

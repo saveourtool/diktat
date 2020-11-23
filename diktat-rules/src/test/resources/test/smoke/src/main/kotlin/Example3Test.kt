@@ -40,3 +40,12 @@ class Example {
             foo()
     }
 }
+
+
+class Foo {
+    /**
+     * @implNote lorem ipsum
+     */
+    private fun foo() {}
+}
+
