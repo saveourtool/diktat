@@ -5,6 +5,7 @@ import java.io.File
 
 const val DIKTAT_GUIDE: String = "guide/diktat-coding-convention.md#"
 
+@Suppress("MagicNumber")
 fun main() {
     val allWarnings = Warnings.values()
     allWarnings.sortBy { warn ->

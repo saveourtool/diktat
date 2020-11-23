@@ -3,7 +3,7 @@ package org.cqfn.diktat.ruleset.utils
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.junit.jupiter.api.Test
 
-class WarningTest {
+class WarningsGenerationTest {
     @Test
     fun `checking that warnings has all proper fields filled`() {
         Warnings.values().forEach { warn ->

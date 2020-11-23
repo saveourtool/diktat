@@ -12,7 +12,7 @@ typealias EmitType = ((offset: Int, errorMessage: String, canBeAutoCorrected: Bo
  * This class represent individual inspections of diktat code style.
  * A [Warnings] entry contains rule name, warning message and is used in code check.
  */
-@Suppress("ForbiddenComment", "MagicNumber", "WRONG_DECLARATIONS_ORDER")
+@Suppress("ForbiddenComment", "MagicNumber", "WRONG_DECLARATIONS_ORDER", "MaxLineLength")
 enum class Warnings(val canBeAutoCorrected: Boolean, val ruleId: String, private val warn: String) : Rule {
     // ======== chapter 1 ========
     PACKAGE_NAME_MISSING(true, "1.2.1", "no package name declared in a file"),
