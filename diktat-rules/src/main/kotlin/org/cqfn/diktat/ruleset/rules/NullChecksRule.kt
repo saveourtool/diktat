@@ -6,6 +6,7 @@ import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CONDITION
 import com.pinterest.ktlint.core.ast.ElementType.IF
+import com.pinterest.ktlint.core.ast.ElementType.IF_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.NULL
 import com.pinterest.ktlint.core.ast.parent
 import org.cqfn.diktat.common.config.rules.RulesConfig
@@ -13,6 +14,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.AVOID_NULL_CHECKS
 import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtBinaryExpression
+import org.jetbrains.kotlin.psi.KtIfExpression
 
 /**
  * This rule check and fixes explicit null checks (explicit comparison with `null`)
@@ -30,8 +32,11 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
 
         if (node.elementType == CONDITION) {
             node.parent(IF)?.let {
-                // this can be autofixed as the condition stays in if-statement
-                conditionInIfStatement(node)
+                // excluding complex cases with else-if statements, because they look better with explicit null-check
+                if (!isComplexIfStatement(it)) {
+                        // this can be autofixed as the condition stays in simple if-statement
+                        conditionInIfStatement(node)
+                }
             }
         }
 
@@ -42,6 +47,16 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
                 nullCheckInOtherStatements(node)
             }
         }
+    }
+
+    /**
+     * checks that if-statement is a complex condition
+     * You can name a statement - "complex if-statement" if it has other if in the else branch (else-if structure)
+     */
+    private fun isComplexIfStatement(parentIf: ASTNode): Boolean {
+        val parentIfPsi = parentIf.psi
+        require(parentIfPsi is KtIfExpression)
+        return (parentIfPsi.`else`?.node?.firstChildNode?.elementType == IF_KEYWORD)
     }
 
     private fun conditionInIfStatement(node: ASTNode) {
@@ -69,11 +84,21 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
 
     @Suppress("UnsafeCallOnNullableType")
     private fun isNullCheckBinaryExpession(condition: KtBinaryExpression): Boolean =
-            // check that binary expession has `null` as right or left operand
-            setOf(condition.right, condition.left).map { it!!.node.elementType }.contains(NULL) &&
-                    // checks that it is the comparison condition
-                    setOf(ElementType.EQEQ, ElementType.EQEQEQ, ElementType.EXCLEQ, ElementType.EXCLEQEQEQ).contains(condition.operationToken)
+        // check that binary expession has `null` as right or left operand
+        setOf(condition.right, condition.left).map { it!!.node.elementType }.contains(NULL) &&
+        // checks that it is the comparison condition
+        setOf(ElementType.EQEQ, ElementType.EQEQEQ, ElementType.EXCLEQ, ElementType.EXCLEQEQEQ).contains(condition.operationToken) &&
+        // no need to raise warning or fix null checks in complex expressions
+        !condition.isComplexCondition()
 
+    /**
+    * checks if condition is a complex expression. For example:
+    * (a == 5) - is not a complex condition, but (a == 5 && b != 6) is a complex condition
+    */
+    private fun KtBinaryExpression.isComplexCondition(): Boolean {
+        // KtBinaryExpression is complex if it has a parent that is also a binary expression
+        return this.parent is KtBinaryExpression
+    }
 
     private fun warnAndFixOnNullCheck(condition: KtBinaryExpression, canBeAutoFixed: Boolean, autofix: () -> Unit) {
         AVOID_NULL_CHECKS.warnAndFix(
