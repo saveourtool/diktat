@@ -298,3 +298,6 @@
 # Checks if extension function with the same signature don't have related classes
 - name: EXTENSION_FUNCTION_SAME_SIGNATURE
   enabled: true
+# Checks if there is empty primary constructor
+- name: EMPTY_PRIMARY_CONSTRUCTOR
+  enabled: true
