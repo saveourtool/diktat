@@ -25,15 +25,15 @@ class AvoidEmptyPrimaryConstructor(private val configRules: List<RulesConfig>) :
     }
 
     @Suppress("UnsafeCallOnNullableType")
-    private fun checkCLass(node: KtClass) {
-        if(node.primaryConstructor?.valueParameters?.isNotEmpty() != false || node.primaryConstructorModifierList != null)
+    private fun checkCLass(ktClass: KtClass) {
+        if(ktClass.primaryConstructor?.valueParameters?.isNotEmpty() != false || ktClass.primaryConstructorModifierList != null)
             return
-        if (node.secondaryConstructors.isEmpty()) {
-            warnOrFixOnEmptyPrimaryConstructor(node.node, true) {
-                node.node.removeChild(node.primaryConstructor!!.node)
+        if (ktClass.secondaryConstructors.isEmpty()) {
+            warnOrFixOnEmptyPrimaryConstructor(ktClass.node, true) {
+                ktClass.node.removeChild(ktClass.primaryConstructor!!.node)
             }
         } else {
-            warnOrFixOnEmptyPrimaryConstructor(node.node, false) {}
+            warnOrFixOnEmptyPrimaryConstructor(ktClass.node, false) {}
         }
     }
 
