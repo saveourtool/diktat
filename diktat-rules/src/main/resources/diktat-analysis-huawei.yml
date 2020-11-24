@@ -296,21 +296,13 @@
 # Checks if extension function with the same signature don't have related classes
 - name: EXTENSION_FUNCTION_SAME_SIGNATURE
   enabled: true
-# Checks if null-check was used explicitly (for example: if (a == null))
-# Try to avoid explicit null checks (explicit comparison with `null`)
-# Kotlin is declared as [Null-safe](https://kotlinlang.org/docs/reference/null-safety.html) language.
-# But Kotlin architects wanted Kotlin to be fully compatible with Java, that's why `null` keyword was also introduced in Kotlin.
-# There are several code-structures that can be used in Kotlin to avoid null-checks. For example: `?:`,  `.let {}`, `.also {}`, e.t.c
-- name: AVOID_NULL_CHECKS
+# Checks if there is empty primary constructor
+- name: EMPTY_PRIMARY_CONSTRUCTOR
   enabled: true
-# Checks if class instantiation can be wrapped in `apply` for better readability
-- name: COMPACT_OBJECT_INITIALIZATION
-  enabled: true
-# Checks explicit supertype qualification
-- name: USELESS_SUPERTYPE
-  enabled: true
-# Checks if extension function with the same signature don't have related classes
-- name: EXTENSION_FUNCTION_SAME_SIGNATURE
+# In case of not using field keyword in property accessors,
+# there should be explicit backing property with the name of real property
+# Example: val table get() {if (_table == null) ...} -> table should have _table
+- name: NO_CORRESPONDING_PROPERTY
   enabled: true
 # Checks if there is class/object that can be replace with extension function
 - name: AVOID_USING_UTILITY_CLASS

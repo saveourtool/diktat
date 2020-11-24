@@ -130,6 +130,8 @@ enum class Warnings(val canBeAutoCorrected: Boolean, val ruleId: String, private
     USELESS_SUPERTYPE(true, "6.1.5", "unnecessary supertype specification"),
     TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED(true, "6.1.10", "trivial property accessors are not recommended"),
     EXTENSION_FUNCTION_SAME_SIGNATURE(false, "6.2.2", "extension functions should not have same signature if their receiver classes are related"),
+    EMPTY_PRIMARY_CONSTRUCTOR(true,"6.1.3", "avoid empty primary constructor"),
+    NO_CORRESPONDING_PROPERTY(false, "6.1.7", "backing property should have the same name, but there is no corresponding property"),
     AVOID_USING_UTILITY_CLASS(false, "6.4.1", "avoid using utility classes/objects, use extensions functions"),
     ;
 
