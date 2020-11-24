@@ -51,7 +51,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
      * Property that can be used to access various maven settings
      */
     @Parameter(defaultValue = "\${project}", readonly = true)
-    lateinit var mavenProject: MavenProject
+    private lateinit var mavenProject: MavenProject
 
     /**
      * @param params instance of [KtLint.Params] used in analysis
