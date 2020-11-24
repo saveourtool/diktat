@@ -27,6 +27,7 @@ private fun foo(node: ASTNode) {
     val qwe = a && b
     val qwe = a &&
             b
+
     // comment
     if (x) {
         foo()
