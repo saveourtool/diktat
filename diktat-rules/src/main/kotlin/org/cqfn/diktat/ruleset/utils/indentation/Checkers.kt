@@ -4,12 +4,14 @@ import com.pinterest.ktlint.core.ast.ElementType.ARROW
 import com.pinterest.ktlint.core.ast.ElementType.AS_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.AS_SAFE
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.BODY
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.COLON
 import com.pinterest.ktlint.core.ast.ElementType.DOT
 import com.pinterest.ktlint.core.ast.ElementType.ELSE
 import com.pinterest.ktlint.core.ast.ElementType.ELVIS
+import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.EQ
 import com.pinterest.ktlint.core.ast.ElementType.IS_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_END
@@ -180,7 +182,7 @@ internal class DotCallChecker(config: IndentationConfig) : CustomIndentationChec
                     nextNode.isDotBeforeCallOrReference() ||
                             nextNode.elementType == OPERATION_REFERENCE && nextNode.firstChildNode.elementType.let {
                                 it == ELVIS || it == IS_EXPRESSION || it == AS_KEYWORD || it == AS_SAFE
-                            }
+                            } || nextNode.elementType == EOL_COMMENT || nextNode.elementType == BLOCK_COMMENT
                 }
                 ?.let {
                     // we need to get indent before the first expression in calls chain
