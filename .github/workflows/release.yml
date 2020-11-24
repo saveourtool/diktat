@@ -28,9 +28,11 @@ jobs:
         env:
           DIKTAT_GPG_PUB: ${{ secrets.DIKTAT_PGP_PUB }}
           DIKTAT_GPG_SEC: ${{ secrets.DIKTAT_PGP_SEC }}
+        # Note: maven-help-plugin requires non-interactive mode (do not add -B flag).
         run: |
-          echo ::set-env name=PREVIOUS_VERSION::$(printf 'VERSION=${diktat-check.version}\n0\n' | mvn help:evaluate | grep '^VERSION' | cut -d= -f2)
-          echo ::set-env name=RELEASE_VERSION::${GITHUB_REF#'refs/tags/v'}
+          previous_version=$(printf 'VERSION=${diktat-check.version}\n0\n' | mvn help:evaluate | grep '^VERSION' | cut -d= -f2)
+          echo "PREVIOUS_VERSION=$previous_version" >> $GITHUB_ENV
+          echo "RELEASE_VERSION=${GITHUB_REF#'refs/tags/v'}" >> $GITHUB_ENV
           echo "$DIKTAT_GPG_PUB" > ~/diktat.pubring.gpg
           echo "$DIKTAT_GPG_SEC" > ~/diktat.secring.gpg
           gpg --import ~/diktat.pubring.gpg
@@ -38,7 +40,7 @@ jobs:
       - name: Set version
         run: mvn -B versions:set -DnewVersion=${{ env.RELEASE_VERSION }} versions:commit
       - name: Create settings.xml
-        uses: whelk-io/maven-settings-xml-action@v12
+        uses: whelk-io/maven-settings-xml-action@v14
         with:
           servers: '[{ "id": "ossrh", "username": "${{ secrets.SONATYPE_USER }}", "password": "${{ secrets.SONATYPE_PASSWORD }}" }, { "id": "gpg.passphrase", "passphrase": "${{ secrets.DIKTAT_GPG_PASS }}" }]'
       - name: Deploy artifacts
@@ -65,13 +67,19 @@ jobs:
           asset_path: ./diktat-ruleset/target/diktat-${{ env.RELEASE_VERSION }}.jar
           asset_name: diktat-${{ env.RELEASE_VERSION }}.jar
           asset_content_type: application/zip
-      - name: Update versions in pom.xml and documentation
+      - name: Update versions in pom.xml and documentation, update examples
         id: update-versions
         run: |
           mvn -B versions:set -DnextSnapshot=true -DprocessAllModules=true versions:commit
           mvn versions:set-property -Dproperty=diktat-check.version -DnewVersion=${{ env.RELEASE_VERSION }}
           sed -i "s/$PREVIOUS_VERSION/$RELEASE_VERSION/g" README.md
           sed -i "s/$PREVIOUS_VERSION/$RELEASE_VERSION/g" build.gradle.kts
+          sed -i "s/$PREVIOUS_VERSION/$RELEASE_VERSION/g" .github/workflows/functional_tests.yml
+          for file in examples/maven/pom.xml examples/gradle-groovy-dsl/build.gradle examples/gradle-kotlin-dsl/build.gradle.kts
+          do
+            sed -i "s/$PREVIOUS_VERSION/$RELEASE_VERSION/g" $file
+            cp diktat-rules/src/main/resources/diktat-analysis.yml $(dirname $file)
+          done
       - name: Create pull request
         uses: peter-evans/create-pull-request@v3
         with:

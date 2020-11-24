@@ -4,15 +4,18 @@
 
 package org.cqfn.diktat.common.config.rules
 
+import org.cqfn.diktat.common.config.reader.JsonResourceConfigReader
+
 import com.charleskorn.kaml.Yaml
 import com.charleskorn.kaml.YamlConfiguration
-import java.io.BufferedReader
-import java.io.File
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
-import org.cqfn.diktat.common.config.reader.JsonResourceConfigReader
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+
+import java.io.BufferedReader
+import java.io.File
+
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
 
 const val DIKTAT_COMMON = "DIKTAT_COMMON"
 
@@ -36,7 +39,7 @@ interface Rule {
 data class RulesConfig(
         val name: String,
         val enabled: Boolean = true,
-        val configuration: Map<String, String>
+        val configuration: Map<String, String> = emptyMap()
 )
 
 /**
@@ -98,7 +101,7 @@ fun List<RulesConfig>.getCommonConfiguration() = lazy {
  *
  * @param configuration map of common configuration
  */
-class CommonConfiguration(configuration: Map<String, String>?) {
+data class CommonConfiguration(private val configuration: Map<String, String>?) {
     /**
      * List of directory names which will be used to detect test sources
      */
@@ -112,6 +115,11 @@ class CommonConfiguration(configuration: Map<String, String>?) {
     val domainName: String by lazy {
         (configuration ?: mapOf()).getOrDefault("domainName", "")
     }
+
+    /**
+     * False if configuration has been read from config file, true if defaults are used
+     */
+    val isDefault = configuration == null
 }
 
 // ================== utils for List<RulesConfig> from yml config
@@ -127,7 +135,7 @@ fun List<RulesConfig>.getRuleConfig(rule: Rule): RulesConfig? = this.find { it.n
 /**
  * Get [RulesConfig] representing common configuration part that can be used in any rule
  */
-fun List<RulesConfig>.getCommonConfig() = find { it.name == DIKTAT_COMMON }
+private fun List<RulesConfig>.getCommonConfig() = find { it.name == DIKTAT_COMMON }
 
 /**
  * checking if in yml config particular rule is enabled or disabled

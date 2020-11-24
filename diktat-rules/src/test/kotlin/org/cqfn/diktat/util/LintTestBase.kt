@@ -1,17 +1,31 @@
 package org.cqfn.diktat.util
 
+import org.cqfn.diktat.common.config.rules.RulesConfig
+
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.Rule
-import org.cqfn.diktat.common.config.rules.RulesConfig
 
+/**
+ * Base class for testing rules without fixing code.
+ * @property ruleSupplier mapping of list of [RulesConfig] into a [Rule]
+ * @property rulesConfigList optional custom rules config
+ */
 open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesConfig>) -> Rule,
                         private val rulesConfigList: List<RulesConfig>? = null) {
+    /**
+     * Perform linting of [code], collect errors and compare with [lintErrors]
+     *
+     * @param code code to check
+     * @param lintErrors expected errors
+     * @param rulesConfigList optional override for `this.rulesConfigList`
+     * @param fileName optional override for file name
+     */
     fun lintMethod(code: String,
                    vararg lintErrors: LintError,
                    rulesConfigList: List<RulesConfig>? = null,
                    fileName: String? = null) {
-        val res = mutableListOf<LintError>()
+        val res: MutableList<LintError> = mutableListOf()
         val actualFileName = fileName ?: testFileName
         KtLint.lint(
                 KtLint.Params(
@@ -19,7 +33,7 @@ open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesCo
                         text = code,
                         ruleSets = listOf(DiktatRuleSetProvider4Test(ruleSupplier,
                                 rulesConfigList ?: this.rulesConfigList).get()),
-                        cb = { e, _ -> res.add(e) },
+                        cb = { lintError, _ -> res.add(lintError) },
                         userData = mapOf("file_path" to actualFileName)
                 )
         )

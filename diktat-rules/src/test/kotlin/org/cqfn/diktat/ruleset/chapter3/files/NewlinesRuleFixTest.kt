@@ -48,4 +48,16 @@ class NewlinesRuleFixTest : FixTestBase("test/paragraph3/newlines", ::NewlinesRu
     fun `should replace functions with only return with expression body`() {
         fixAndCompare("ExpressionBodyExpected.kt", "ExpressionBodyTest.kt")
     }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
+    fun `should insert newlines in a long parameter or supertype list`() {
+        fixAndCompare("ParameterListExpected.kt", "ParameterListTest.kt")
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
+    fun `should fix one line function with and without semicolon`() {
+        fixAndCompare("OneLineFunctionExpected.kt", "OneLineFunctionTest.kt")
+    }
 }

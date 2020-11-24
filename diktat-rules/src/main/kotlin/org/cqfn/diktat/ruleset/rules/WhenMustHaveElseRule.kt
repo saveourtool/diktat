@@ -7,17 +7,17 @@ import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.ELSE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.EQ
-import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_LITERAL
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
+import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.RETURN
 import com.pinterest.ktlint.core.ast.ElementType.WHEN_ENTRY
+import com.pinterest.ktlint.core.ast.prevSibling
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
-import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.cqfn.diktat.ruleset.utils.hasParent
 import org.cqfn.diktat.ruleset.utils.isBeginByNewline
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -51,14 +51,13 @@ class WhenMustHaveElseRule(private val configRules: List<RulesConfig>) : Rule("n
         }
     }
 
-
-    //FixMe: If a when statement of type enum or sealed contains all values of a enum - there is no need to have "else" branch.
-
     private fun checkEntries(node: ASTNode) {
         if (!hasElse(node)) {
             Warnings.WHEN_WITHOUT_ELSE.warnAndFix(configRules, emitWarn, isFixMode, "else was not found", node.startOffset, node) {
                 val whenEntryElse = CompositeElement(WHEN_ENTRY)
-                node.appendNewlineMergingWhiteSpace(node.lastChildNode.treePrev, node.lastChildNode.treePrev)
+                if (!node.lastChildNode.isBeginByNewline()) {
+                    node.appendNewlineMergingWhiteSpace(node.lastChildNode.treePrev, node.lastChildNode)
+                }
                 node.addChild(whenEntryElse, node.lastChildNode)
                 addChildren(whenEntryElse)
                 if(!whenEntryElse.isBeginByNewline()) {
@@ -69,26 +68,35 @@ class WhenMustHaveElseRule(private val configRules: List<RulesConfig>) : Rule("n
     }
 
     private fun isStatement(node: ASTNode) : Boolean {
-
         // Checks if there is return before when
         if (node.hasParent(RETURN)) {
             return false
         }
 
-        if (node.treeParent.elementType == BLOCK && node.treeParent.treeParent.elementType == FUNCTION_LITERAL) {
-            if (node.treeParent.lastChildNode == node) {
-                return false
-            }
+        // Checks if `when` is the last statement in lambda body
+        if (node.treeParent.elementType == BLOCK && node.treeParent.treeParent.elementType == FUNCTION_LITERAL &&
+            node.treeParent.lastChildNode == node) {
+            return false
         }
 
-        if (node.treeParent.elementType == FUN && node.treeParent.hasChildOfType(EQ))
+        if (node.treeParent.elementType == WHEN_ENTRY && node.prevSibling { it.elementType == ARROW } != null) {
+            // `when` is used as a branch in another `when`
             return false
-        else {
+        }
+
+        if (node.prevSibling { it.elementType == EQ || it.elementType == OPERATION_REFERENCE && it.firstChildNode.elementType == EQ } != null) {
+            // `when` is used in an assignment or in a function with expression body
+            return false
+        } else {
             return !node.hasParent(PROPERTY)
         }
     }
 
-    private fun hasElse(node: ASTNode): Boolean = (node.psi as KtWhenExpression).elseExpression != null
+    /**
+     * Check if this `when` has `else` branch. If `else` branch is empty, `(node.psi as KtWhenExpression).elseExpression` returns `null`,
+     * so we need to manually check if any entry contains `else` keyword.
+     */
+    private fun hasElse(node: ASTNode): Boolean = (node.psi as KtWhenExpression).entries.any { it.isElse }
 
     private fun addChildren(node: ASTNode) {
         val block = PsiBlockStatementImpl()
@@ -101,7 +109,6 @@ class WhenMustHaveElseRule(private val configRules: List<RulesConfig>) : Rule("n
             addChild(block, null)
         }
 
-
         block.apply{
             addChild(LeafPsiElement(LBRACE, "{"), null)
             addChild(PsiWhiteSpaceImpl("\n"),null)
@@ -109,6 +116,5 @@ class WhenMustHaveElseRule(private val configRules: List<RulesConfig>) : Rule("n
             addChild(PsiWhiteSpaceImpl("\n"),null)
             addChild(LeafPsiElement(RBRACE, "}"), null)
         }
-
     }
 }

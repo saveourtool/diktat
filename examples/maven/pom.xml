@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.cqfn.diktat</groupId>
+    <artifactId>diktat-examples-maven</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0.0-SNAPSHOT</version>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.cqfn.diktat</groupId>
+                <artifactId>diktat-maven-plugin</artifactId>
+                <version>0.1.5</version>
+                <configuration>
+                    <diktatConfigFile>diktat-analysis.yml</diktatConfigFile>
+                    <inputs>
+                        <input>${project.basedir}/src/main/kotlin</input>
+                    </inputs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>diktat-check</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

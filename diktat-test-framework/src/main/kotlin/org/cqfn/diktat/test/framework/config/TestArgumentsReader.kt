@@ -1,20 +1,23 @@
 package org.cqfn.diktat.test.framework.config
 
-import java.io.BufferedReader
-import java.io.IOException
-import java.util.stream.Collectors
-import kotlin.system.exitProcess
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
+import org.cqfn.diktat.common.cli.CliArgument
+import org.cqfn.diktat.common.config.reader.JsonResourceConfigReader
+
 import org.apache.commons.cli.CommandLine
 import org.apache.commons.cli.CommandLineParser
 import org.apache.commons.cli.DefaultParser
 import org.apache.commons.cli.HelpFormatter
 import org.apache.commons.cli.Options
 import org.apache.commons.cli.ParseException
-import org.cqfn.diktat.common.cli.CliArgument
-import org.cqfn.diktat.common.config.reader.JsonResourceConfigReader
 import org.slf4j.LoggerFactory
+
+import java.io.BufferedReader
+import java.io.IOException
+import java.util.stream.Collectors
+
+import kotlin.system.exitProcess
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 
 /**
  * Class that gives access to properties of a test
@@ -29,7 +32,7 @@ class TestArgumentsReader(
         override val classLoader: ClassLoader
 ) : JsonResourceConfigReader<List<CliArgument>?>() {
     private val cliArguments: List<CliArgument>? = readResource(properties.testFrameworkArgsRelativePath)
-    private val cmd: CommandLine
+    private val cmd: CommandLine by lazy { parseArguments() }
 
     /**
      * List of tests provided by user
@@ -59,10 +62,6 @@ class TestArgumentsReader(
             }
             return options
         }
-
-    init {
-        cmd = parseArguments()
-    }
 
     private fun parseArguments(): CommandLine {
         val parser: CommandLineParser = DefaultParser()

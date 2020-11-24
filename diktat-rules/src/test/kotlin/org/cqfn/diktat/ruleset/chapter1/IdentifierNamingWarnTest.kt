@@ -1,9 +1,6 @@
 package org.cqfn.diktat.ruleset.chapter1
 
-import com.pinterest.ktlint.core.LintError
-import generated.WarningNames
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.constants.Warnings.BACKTICKS_PROHIBITED
 import org.cqfn.diktat.ruleset.constants.Warnings.CLASS_NAME_INCORRECT
 import org.cqfn.diktat.ruleset.constants.Warnings.CONFUSING_IDENTIFIER_NAMING
@@ -20,12 +17,14 @@ import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_NAME_INCORRECT_FORMAT
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.IdentifierNaming
 import org.cqfn.diktat.util.LintTestBase
+
+import com.pinterest.ktlint.core.LintError
+import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Tags
 import org.junit.jupiter.api.Test
 
 class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
-
     private val ruleId: String = "$DIKTAT_RULE_SET_ID:identifier-naming"
 
     // ======== checks for generics ========
@@ -84,7 +83,6 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
                 3, 15, ruleId, "${GENERIC_NAME.warnText()} <TBBB>", true)
         )
     }
-
 
     @Test
     @Tag(WarningNames.GENERIC_NAME)
@@ -155,7 +153,7 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
     }
 
     @Test
-    @Tags(Tag(WarningNames.IDENTIFIER_LENGTH),Tag(WarningNames.VARIABLE_NAME_INCORRECT))
+    @Tags(Tag(WarningNames.IDENTIFIER_LENGTH), Tag(WarningNames.VARIABLE_NAME_INCORRECT))
     fun `check variable length (check - negative)`() {
         val code =
                 """
@@ -173,7 +171,6 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
                 LintError(5, 9, ruleId, "${IDENTIFIER_LENGTH.warnText()} veryLongveryLongveryLongveryLongveryLongveryLongveryLongveryLongveryLongName")
         )
     }
-
 
     @Test
     @Tag(WarningNames.VARIABLE_NAME_INCORRECT_FORMAT)
@@ -222,16 +219,16 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
     @Test
     @Tags(Tag(WarningNames.ENUM_VALUE), Tag(WarningNames.CLASS_NAME_INCORRECT))
     fun `check case for pascal case enum values (check - negative)`() {
+        val rulesConfigPascalCaseEnum: List<RulesConfig> = listOf(
+                RulesConfig(ENUM_VALUE.name, true,
+                        mapOf("enumStyle" to "pascalCase"))
+        )
         val code =
                 """
                   enum class TEST_ONE {
                     first_value, secondValue, thirdVALUE, FOURTH_VALUE
                   }
                 """.trimIndent()
-        val rulesConfigPascalCaseEnum: List<RulesConfig> = listOf(
-                RulesConfig(ENUM_VALUE.name, true,
-                        mapOf("enumStyle" to "pascalCase"))
-        )
         lintMethod(code,
                 LintError(1, 12, ruleId, "${CLASS_NAME_INCORRECT.warnText()} TEST_ONE", true),
                 LintError(2, 3, ruleId, "${ENUM_VALUE.warnText()} first_value", true),
@@ -532,7 +529,7 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
     @Tag(WarningNames.BACKTICKS_PROHIBITED)
     fun `regression - backticks should be forbidden only in declarations`() {
         lintMethod(
-            """
+                """
                 |fun foo() {
                 |    it.assertThat(actual.detail).`as`("Detailed message").isEqualTo(expected.detail)
                 |}
@@ -587,12 +584,35 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
 
         lintMethod(code,
                 LintError(2, 9, ruleId, "${CONFUSING_IDENTIFIER_NAMING.warnText()} better name is: obj, dgt", false),
-                LintError(2,9, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} D", true),
-                LintError(2,9, ruleId, "${IDENTIFIER_LENGTH.warnText()} D", false),
+                LintError(2, 9, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} D", true),
+                LintError(2, 9, ruleId, "${IDENTIFIER_LENGTH.warnText()} D", false),
                 LintError(3, 9, ruleId, "${CONFUSING_IDENTIFIER_NAMING.warnText()} better name is: n1, n2", false),
-                LintError(3,9, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} Z", true),
-                LintError(3,9, ruleId, "${IDENTIFIER_LENGTH.warnText()} Z", false),
+                LintError(3, 9, ruleId, "${VARIABLE_NAME_INCORRECT_FORMAT.warnText()} Z", true),
+                LintError(3, 9, ruleId, "${IDENTIFIER_LENGTH.warnText()} Z", false),
                 LintError(7, 5, ruleId, "${CONFUSING_IDENTIFIER_NAMING.warnText()} better name is: bt, nxt", false),
-                LintError(7,5, ruleId, "${IDENTIFIER_LENGTH.warnText()} B", false))
+                LintError(7, 5, ruleId, "${IDENTIFIER_LENGTH.warnText()} B", false))
+    }
+
+    @Test
+    @Tag(WarningNames.GENERIC_NAME)
+    fun `check generic types`() {
+        val code =
+                """
+                    interface Test<String>
+                    interface Test1<T: String>
+                    interface Test2<T : Collection<T>>
+                    interface Test3<out T>
+                    interface Test3<in T>
+                    interface Test4<in T, A, B>
+                    interface Test5<in T, A, Br>
+                    interface Test6<in Tr>
+                    interface Test6<Tr: String>
+                """.trimIndent()
+        lintMethod(code,
+                LintError(1,15, ruleId, "${GENERIC_NAME.warnText()} <String>", true),
+                LintError(7,16, ruleId, "${GENERIC_NAME.warnText()} <in T, A, Br>", true),
+                LintError(8,16, ruleId, "${GENERIC_NAME.warnText()} <in Tr>", true),
+                LintError(9,16, ruleId, "${GENERIC_NAME.warnText()} <Tr: String>", true),
+        )
     }
 }

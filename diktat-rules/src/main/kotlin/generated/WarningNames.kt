@@ -35,13 +35,13 @@ public object WarningNames {
 
     public const val GENERIC_NAME: String = "GENERIC_NAME"
 
+    public const val BACKTICKS_PROHIBITED: String = "BACKTICKS_PROHIBITED"
+
     public const val FUNCTION_NAME_INCORRECT_CASE: String = "FUNCTION_NAME_INCORRECT_CASE"
 
     public const val FUNCTION_BOOLEAN_PREFIX: String = "FUNCTION_BOOLEAN_PREFIX"
 
     public const val FILE_NAME_INCORRECT: String = "FILE_NAME_INCORRECT"
-
-    public const val FILE_NAME_MATCH_CLASS: String = "FILE_NAME_MATCH_CLASS"
 
     public const val EXCEPTION_SUFFIX: String = "EXCEPTION_SUFFIX"
 
@@ -80,6 +80,9 @@ public object WarningNames {
     public const val KDOC_NO_DEPRECATED_TAG: String = "KDOC_NO_DEPRECATED_TAG"
 
     public const val KDOC_NO_CONSTRUCTOR_PROPERTY: String = "KDOC_NO_CONSTRUCTOR_PROPERTY"
+
+    public const val KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT: String =
+            "KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT"
 
     public const val HEADER_WRONG_FORMAT: String = "HEADER_WRONG_FORMAT"
 
@@ -134,8 +137,6 @@ public object WarningNames {
 
     public const val LONG_LINE: String = "LONG_LINE"
 
-    public const val BACKTICKS_PROHIBITED: String = "BACKTICKS_PROHIBITED"
-
     public const val REDUNDANT_SEMICOLON: String = "REDUNDANT_SEMICOLON"
 
     public const val WRONG_NEWLINES: String = "WRONG_NEWLINES"
@@ -162,6 +163,12 @@ public object WarningNames {
 
     public const val LOCAL_VARIABLE_EARLY_DECLARATION: String = "LOCAL_VARIABLE_EARLY_DECLARATION"
 
+    public const val STRING_TEMPLATE_CURLY_BRACES: String = "STRING_TEMPLATE_CURLY_BRACES"
+
+    public const val STRING_TEMPLATE_QUOTES: String = "STRING_TEMPLATE_QUOTES"
+
+    public const val FILE_NAME_MATCH_CLASS: String = "FILE_NAME_MATCH_CLASS"
+
     public const val NULLABLE_PROPERTY_TYPE: String = "NULLABLE_PROPERTY_TYPE"
 
     public const val TYPE_ALIAS: String = "TYPE_ALIAS"
@@ -173,11 +180,9 @@ public object WarningNames {
     public const val GENERIC_VARIABLE_WRONG_DECLARATION: String =
             "GENERIC_VARIABLE_WRONG_DECLARATION"
 
-    public const val STRING_TEMPLATE_CURLY_BRACES: String = "STRING_TEMPLATE_CURLY_BRACES"
-
-    public const val STRING_TEMPLATE_QUOTES: String = "STRING_TEMPLATE_QUOTES"
-
     public const val FLOAT_IN_ACCURATE_CALCULATIONS: String = "FLOAT_IN_ACCURATE_CALCULATIONS"
+
+    public const val AVOID_NULL_CHECKS: String = "AVOID_NULL_CHECKS"
 
     public const val TOO_LONG_FUNCTION: String = "TOO_LONG_FUNCTION"
 
@@ -192,10 +197,30 @@ public object WarningNames {
     public const val WRONG_OVERLOADING_FUNCTION_ARGUMENTS: String =
             "WRONG_OVERLOADING_FUNCTION_ARGUMENTS"
 
+    public const val SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY: String =
+            "SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY"
+
     public const val USE_DATA_CLASS: String = "USE_DATA_CLASS"
 
     public const val WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR: String =
             "WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR"
 
+    public const val MULTIPLE_INIT_BLOCKS: String = "MULTIPLE_INIT_BLOCKS"
+
     public const val CLASS_SHOULD_NOT_BE_ABSTRACT: String = "CLASS_SHOULD_NOT_BE_ABSTRACT"
+
+    public const val CUSTOM_GETTERS_SETTERS: String = "CUSTOM_GETTERS_SETTERS"
+
+    public const val COMPACT_OBJECT_INITIALIZATION: String = "COMPACT_OBJECT_INITIALIZATION"
+
+    public const val USELESS_SUPERTYPE: String = "USELESS_SUPERTYPE"
+
+    public const val TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED: String =
+            "TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED"
+
+    public const val EXTENSION_FUNCTION_SAME_SIGNATURE: String = "EXTENSION_FUNCTION_SAME_SIGNATURE"
+
+    public const val EMPTY_PRIMARY_CONSTRUCTOR: String = "EMPTY_PRIMARY_CONSTRUCTOR"
+
+    public const val NO_CORRESPONDING_PROPERTY: String = "NO_CORRESPONDING_PROPERTY"
 }

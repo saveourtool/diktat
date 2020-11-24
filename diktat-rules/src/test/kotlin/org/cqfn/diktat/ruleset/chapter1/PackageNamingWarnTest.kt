@@ -1,20 +1,19 @@
 package org.cqfn.diktat.ruleset.chapter1
 
-import com.pinterest.ktlint.core.LintError
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import generated.WarningNames
-import org.junit.jupiter.api.Test
-import org.cqfn.diktat.ruleset.rules.PackageNaming
 import org.cqfn.diktat.ruleset.constants.Warnings.*
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
+import org.cqfn.diktat.ruleset.rules.PackageNaming
 import org.cqfn.diktat.util.LintTestBase
 import org.cqfn.diktat.util.testFileName
+
+import com.pinterest.ktlint.core.LintError
+import generated.WarningNames
 import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.Test
 
 class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
-
     private val ruleId: String = "$DIKTAT_RULE_SET_ID:package-naming"
-
     private val rulesConfigList: List<RulesConfig> = listOf(
             RulesConfig("DIKTAT_COMMON", true, mapOf("domainName" to "org.cqfn.diktat"))
     )
@@ -181,6 +180,48 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
                 rulesConfigList = listOf(
                         RulesConfig("DIKTAT_COMMON", true, mapOf("domainName" to "kotlin"))
                 )
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.PACKAGE_NAME_INCORRECT_PATH)
+    fun `should respect KMP project structure - positive example`() {
+        listOf("main", "test", "jvmMain", "jvmTest", "androidMain", "androidTest", "iosMain", "iosTest", "jsMain", "jsTest", "commonMain", "commonTest").forEach {
+            lintMethod(
+                """
+                    |package org.cqfn.diktat
+                """.trimMargin(),
+                fileName = "/home/testu/project/src/$it/kotlin/org/cqfn/diktat/Example.kt",
+                rulesConfigList = rulesConfigList
+            )
+        }
+    }
+
+    @Test
+    @Tag(WarningNames.PACKAGE_NAME_INCORRECT_PATH)
+    fun `should respect KMP project structure`() {
+        listOf("main", "test", "jvmMain", "jvmTest", "androidMain", "androidTest", "iosMain", "iosTest", "jsMain", "jsTest", "commonMain", "commonTest").forEach {
+            lintMethod(
+                """
+                    |package org.cqfn.diktat
+                """.trimMargin(),
+                LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} org.cqfn.diktat.example", true),
+                fileName = "/home/testu/project/src/$it/kotlin/org/cqfn/diktat/example/Example.kt",
+                rulesConfigList = rulesConfigList
+            )
+        }
+    }
+
+    @Test
+    @Tag(WarningNames.PACKAGE_NAME_INCORRECT_PATH)
+    fun `should respect KMP project structure - illegal source set name`() {
+        lintMethod(
+            """
+                |package org.cqfn.diktat
+            """.trimMargin(),
+            LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} org.cqfn.diktat.myProjectMain.kotlin.org.cqfn.diktat.example", true),
+            fileName = "/home/testu/project/src/myProjectMain/kotlin/org/cqfn/diktat/example/Example.kt",
+            rulesConfigList = rulesConfigList
         )
     }
 }
