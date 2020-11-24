@@ -44,9 +44,8 @@ class AvoidUtilityClass(private val configRules: List<RulesConfig>) : Rule("avoi
     @Suppress("UnsafeCallOnNullableType")
     private fun checkClass(node: ASTNode) {
         //checks that class/object doesn't contain primary constructor and its identifier doesn't has "utli"
-        if (node.hasChildOfType(PRIMARY_CONSTRUCTOR)
-                || ( node.hasChildOfType(IDENTIFIER) &&
-                        !node.findChildByType(IDENTIFIER)!!.text.toLowerCase().contains("util")))
+        if (!node.hasChildOfType(IDENTIFIER) || node.hasChildOfType(PRIMARY_CONSTRUCTOR)
+                || !node.findChildByType(IDENTIFIER)!!.text.toLowerCase().contains("util"))
             return
         node.findChildByType(CLASS_BODY)
                 ?.children()

@@ -86,14 +86,13 @@ class AvoidUtilityClassWarnTest: LintTestBase(::AvoidUtilityClass) {
         lintMethod(
                 """
                     fun foo() {
-                    window.addMouseListener(object : MouseAdapter() {
-                        override fun mouseClicked(e: MouseEvent) { /*...*/ }
-                    
-                        override fun mouseEntered(e: MouseEvent) { /*...*/ }
-                    })
+                        window.addMouseListener(object : MouseAdapter() {
+                            override fun mouseClicked(e: MouseEvent) { /*...*/ }
+                        
+                            override fun mouseEntered(e: MouseEvent) { /*...*/ }
+                        })
                     }
-                """.trimMargin(),
-                LintError(2,45, ruleId, "${AVOID_USING_UTILITY_CLASS.warnText()} object : MouseAdapter() {...")
+                """.trimMargin()
         )
     }
 }
