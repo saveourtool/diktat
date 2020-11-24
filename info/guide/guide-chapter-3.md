@@ -24,6 +24,8 @@ c) Import statements are alphabetically arranged, without using line breaks and 
 
 d) **Recommendation**: One `.kt` source file should contain only one class declaration, and its name should match the filename
 
+e) Avoid empty files that do not contain the code or contain only imports/comments/package name
+
 ### <a name="s3.1.3"></a> Recommendation 3.1.3: Import statements should appear in the following order: Android, internal company imports, external imports, java core dependencies, and Kotlin standard library. Each group should be separated by a blank line.
 
 From top to bottom, the order is the following:
@@ -636,7 +638,7 @@ val n1: Int; val n2: Int
 ### <a name="s3.10.2"></a>Recommendation 3.10.2: Variables should be declared close to the line where they are first used.
 To minimize their scope, local variables should be declared close to the point where they are first used. This will also increase readability of the code.
 Local variables are usually initialized during declaration or initialized immediately after.
-The member fields of the class should be declared collectively (see [Rule 3.1.2](#s3.1.2) for details on class structure).
+The member fields of the class should be declared collectively (see [Rule 3.1.2](#r3.1.2) for details on class structure).
 
 <!-- =============================================================================== -->
 ### <a name="c3.11"></a> 3.11 When expression
