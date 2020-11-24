@@ -20,7 +20,7 @@ class DiktatJavaExecTaskTest {
     fun `check command line for various inputs`() {
         val pwd = project.file(".")
         assertCommandLineEquals(
-            listOf(null, "$pwd" + listOf("src", "**", "*.kt").joinToString(File.separator, prefix = File.separator)),
+            listOf(null, "\"${listOf("src", "**", "*.kt").joinToString(File.separator)}\""),
             DiktatExtension().apply {
                 inputs = project.files("src/**/*.kt")
             }
@@ -31,7 +31,7 @@ class DiktatJavaExecTaskTest {
     fun `check command line in debug mode`() {
         val pwd = project.file(".")
         assertCommandLineEquals(
-            listOf(null, "--debug", "$pwd${listOf("src", "**", "*.kt").joinToString(File.separator, prefix = File.separator)}"),
+            listOf(null, "--debug", "\"${listOf("src", "**", "*.kt").joinToString(File.separator)}\""),
             DiktatExtension().apply {
                 inputs = project.files("src/**/*.kt")
                 debug = true
@@ -43,8 +43,8 @@ class DiktatJavaExecTaskTest {
     fun `check command line with excludes`() {
         val pwd = project.file(".")
         assertCommandLineEquals(
-            listOf(null, "$pwd${listOf("src", "**", "*.kt").joinToString(File.separator, prefix = File.separator)}",
-                "!$pwd${listOf("src", "main", "kotlin", "generated").joinToString(File.separator, prefix = File.separator)}"
+            listOf(null, "\"${listOf("src", "**", "*.kt").joinToString(File.separator)}\"",
+                "\"!${listOf("src", "main", "kotlin", "generated").joinToString(File.separator)}\""
             ),
             DiktatExtension().apply {
                 inputs = project.files("src/**/*.kt")
