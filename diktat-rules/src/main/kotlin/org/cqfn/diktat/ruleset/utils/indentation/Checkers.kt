@@ -176,6 +176,17 @@ internal class DotCallChecker(config: IndentationConfig) : CustomIndentationChec
     private fun ASTNode.isDotBeforeCallOrReference() = elementType.let { it == DOT || it == SAFE_ACCESS } &&
             treeNext.elementType.let { it == CALL_EXPRESSION || it == REFERENCE_EXPRESSION }
 
+    private fun ASTNode.isCommentBeforeDot() : Boolean {
+        if (elementType == EOL_COMMENT || elementType == BLOCK_COMMENT) {
+            var nextNode = treeNext
+            while (nextNode != null && (nextNode.elementType == WHITE_SPACE || nextNode.elementType == EOL_COMMENT)) {
+                nextNode = nextNode.treeNext
+            }
+            return nextNode.elementType == DOT
+        }
+        return false
+    }
+
     @Suppress("ComplexMethod")
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
         whiteSpace.nextSibling.node
@@ -183,7 +194,7 @@ internal class DotCallChecker(config: IndentationConfig) : CustomIndentationChec
                     nextNode.isDotBeforeCallOrReference() ||
                             nextNode.elementType == OPERATION_REFERENCE && nextNode.firstChildNode.elementType.let {
                                 it == ELVIS || it == IS_EXPRESSION || it == AS_KEYWORD || it == AS_SAFE
-                            } || nextNode.elementType == EOL_COMMENT || nextNode.elementType == BLOCK_COMMENT
+                            } || nextNode.isCommentBeforeDot()
                 }
                 ?.let {
                     // we need to get indent before the first expression in calls chain
