@@ -224,7 +224,7 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
                         mapOf("enumStyle" to "pascalCase"))
         )
         val code =
-            """
+                """
                   enum class TEST_ONE {
                     first_value, secondValue, thirdVALUE, FOURTH_VALUE
                   }
