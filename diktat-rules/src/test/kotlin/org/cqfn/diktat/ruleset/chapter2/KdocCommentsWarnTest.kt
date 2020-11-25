@@ -10,7 +10,7 @@ import org.cqfn.diktat.util.LintTestBase
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Tags
 
-class KdocWarnTest : LintTestBase(::KdocComments) {
+class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
     private val ruleId: String = "$DIKTAT_RULE_SET_ID:kdoc-comments"
 
     @Test
@@ -126,6 +126,40 @@ class KdocWarnTest : LintTestBase(::KdocComments) {
                 LintError(5, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} variable"),
                 LintError(7, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} perfectFunction"),
                 LintError(13, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} InternalClass")
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.MISSING_KDOC_CLASS_ELEMENTS)
+    fun `Kdoc shouldn't not be mandatory for overridden functions and props`() {
+        val code =
+                """
+                    /**
+                    * class that contains fields, functions and public subclasses
+                    **/
+                    class SomeGoodName : Another {
+                        val variable: String = ""
+                        private val privateVariable: String = ""
+                        override val someVal: String = ""
+                        fun perfectFunction() {
+                        }
+
+                        override fun overrideFunction() {
+                        }
+
+                        class InternalClass {
+                        }
+
+                        private class InternalClass {
+                        }
+                        
+                        public fun main() {}
+                    }
+                """.trimIndent()
+        lintMethod(code,
+                LintError(5, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} variable"),
+                LintError(8, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} perfectFunction"),
+                LintError(14, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} InternalClass")
         )
     }
 
