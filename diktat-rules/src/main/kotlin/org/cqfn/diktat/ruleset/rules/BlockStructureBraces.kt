@@ -185,7 +185,7 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
                             commentBefore.treeParent.removeChild(commentBefore.treePrev)
                         }
                         commentBefore.treeParent.removeChild(commentBefore)
-                        node.treeParent.addChild(commentBefore, node)
+                        node.treeParent.addChild(commentBefore.clone() as ASTNode, node)
                         node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node)
                     }
                     braceSpace.treeParent.replaceWhiteSpaceText(braceSpace, " ")
