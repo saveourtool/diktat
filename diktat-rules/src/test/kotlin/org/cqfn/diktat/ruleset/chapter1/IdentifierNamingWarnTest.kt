@@ -224,7 +224,7 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
                         mapOf("enumStyle" to "pascalCase"))
         )
         val code =
-                """
+            """
                   enum class TEST_ONE {
                     first_value, secondValue, thirdVALUE, FOURTH_VALUE
                   }
@@ -369,6 +369,8 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
                     fun hasEmptyLineAfter(): Boolean { }    
                     fun ASTNode.isEmpty(): Boolean { }    
                     fun isEmpty(): Boolean { }    
+                    override fun empty(): Boolean { }
+                    override fun ASTNode.empty(): Boolean { }
                 """.trimIndent()
         )
     }

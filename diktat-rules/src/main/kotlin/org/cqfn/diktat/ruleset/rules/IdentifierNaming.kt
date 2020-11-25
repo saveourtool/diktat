@@ -7,6 +7,7 @@ import com.pinterest.ktlint.core.ast.ElementType.CATCH_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.DESTRUCTURING_DECLARATION
 import com.pinterest.ktlint.core.ast.ElementType.DESTRUCTURING_DECLARATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_TYPE
+import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_PARAMETER
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
@@ -347,11 +348,14 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
         // check for methods that return Boolean
         val functionReturnType = node.findChildAfter(VALUE_PARAMETER_LIST, TYPE_REFERENCE)?.text
 
-        // if function has Boolean return type in 99% of cases it is much better to name it with isXXX or hasXXX prefix
-        if (functionReturnType != null && functionReturnType == PrimitiveType.BOOLEAN.typeName.asString()) {
-            if (BOOLEAN_METHOD_PREFIXES.none { functionName.text.startsWith(it) }) {
-                FUNCTION_BOOLEAN_PREFIX.warnAndFix(configRules, emitWarn, isFixMode, functionName.text, functionName.startOffset, functionName) {
-                    // FixMe: add agressive autofix for this
+        // We don't need to ask subclasses to rename superclass methods
+        if (node.treeParent.findChildByType(MODIFIER_LIST)?.findChildByType(OVERRIDE_KEYWORD) == null) {
+            // if function has Boolean return type in 99% of cases it is much better to name it with isXXX or hasXXX prefix
+            if (functionReturnType != null && functionReturnType == PrimitiveType.BOOLEAN.typeName.asString()) {
+                if (BOOLEAN_METHOD_PREFIXES.none { functionName.text.startsWith(it) }) {
+                    FUNCTION_BOOLEAN_PREFIX.warnAndFix(configRules, emitWarn, isFixMode, functionName.text, functionName.startOffset, functionName) {
+                        // FixMe: add agressive autofix for this
+                    }
                 }
             }
         }
