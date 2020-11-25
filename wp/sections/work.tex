@@ -1,0 +1,194 @@
+Diktat does AST-analysis. This means that for internal representation (IR) it uses Abstract Syntax Tree that was created from the parsed code by the kotlin-compiler.  This chapter describes how diktat works
+
+\subsection{ktlint}
+\par
+To quickly and efficiently analyze the program code, you first need to transform it into a convenient data structure. This is exactly what ktlint does - it parses plain text code into an abstract syntax tree. In ktlint, this happens in the \textsl{prepareCodeForLinting}\footnote{\url{https://github.com/pinterest/ktlint/blob/master/ktlint-core/src/main/kotlin/com/pinterest/ktlint/core/KtLint.kt}} method. This method uses kotlin-compiler-embeddable library to create a root node of type FILE.
+For example, this simple code:
+\begin{lstlisting}[caption={Simple function.}, label={lst:example1}, language=Kotlin]
+	fun main() {
+		println("Hello World")
+	}
+\end{lstlisting}
+will be converted into this AST:\\
+
+\tikzstyle{every node}=[draw=black,thick,anchor=west, scale = 0.5]
+  
+\begin{tikzpicture}[%
+  grow via three points={one child at (0.3,-0.8) and
+  two children at (0.3,-0.8) and (0.3,-1.5)},
+  scale=0.5,
+  edge from parent path={(\tikzparentnode.south) |- (\tikzchildnode.west)}]
+    
+  \node {FILE}
+    child { node {PACKAGE\underline{ }DIRECTIVE}}
+    child { node {IMPORT\underline{ }LIST}}
+    child { node {FUN}
+        child {node {fun}}
+        child {node {WHITE\underline{ }SPACE}}
+        child {node {IDENTIFIER}}
+        child {node {VALUE\underline{ }PARAMETER\underline{ }LIST}
+            child {node {LPAR}}
+            child {node {RPAR}}
+        }
+        child [missing] {}				
+        child [missing] {}
+        child {node {WHITE\underline{ }SPACE}}
+        child {node {BLOCK}
+            child {node {LBRACE}}
+            child {node {WHITE\underline{ }SPACE}}
+            child {node {CALL\underline{ }EXPRESSION}
+                child {node {REFERENCE\underline{ }EXPRESSION}
+                    child {node {IDENTIFIER}}
+                }
+                child [missing] {}
+                child {node {VALUE\underline{ }ARGUMENT\underline{}LIST}
+                    child {node {LPAR}}
+                    child {node {VALUE\underline{ }ARGUMENT}
+                        child {node {STRING\underline{ }TEMPLATE}
+                            child {node {OPEN\underline{ }QUOTE}}
+                            child {node {LITERAL\underline{ }STRING\underline{ }TEMPLATE\underline{ }ENTRY}
+                                child {node {REGULAR\underline{ }STRING\underline{ }PART}}
+                            }
+                            child [missing] {}
+                            child {node {CLOSING\underline{ }QUOTE}}
+                        }
+                    }
+                    child [missing] {}
+                    child [missing] {}
+                    child [missing] {}
+                    child [missing] {}
+                    child [missing] {}
+                    child [missing] {}
+                    child {node {RPAR}}
+                }
+            }
+            child [missing] {}
+            child [missing] {}
+            child [missing] {}
+            child [missing] {}
+            child [missing] {}
+            child [missing] {}
+            child [missing] {}
+            child [missing] {}
+            child [missing] {}
+            child [missing] {}
+            child [missing] {}
+            child [missing] {}
+            child [missing] {}
+            child {node {WHITE\underline{ }SPACE}}
+            child {node {RBRACE}}
+        }
+    };
+\end{tikzpicture}
+
+If there are error elements inside the constructed tree, then the corresponding error is displayed. If the code is valid and parsed without errors, for each rule in the ruleset, the \textsl{visit} method is called to which the root node itself and its “children” are sequentially passed.
+When you run program, you can pass flags to ktlint - one of them is "-F". This flag means that the rule will not only report an error, but try to fix it.
+
+\subsection{diKTat}
+\par
+Another feature of ktlint is that at startup you can provide a JAR file with additional ruleset(s), which will be discovered by the ServiceLoader and then all nodes will be passed to these rules. This is diKTat! DiKTat is a set of easily configurable rules for static code analysis. The set of all rules is described in the \textsl{DiktatRuleSetProvider}\footnote{\url{https://github.com/cqfn/diKTat/blob/v0.1.3/diktat-rules/src/main/kotlin/org/cqfn/diktat/ruleset/rules/DiktatRuleSetProvider.kt}} class. This class overrides the \textsl{get()} method of the \textsl{RuleSetProvider}\footnote{\url{https://github.com/pinterest/ktlint/blob/master/ktlint-core/src/main/kotlin/com/pinterest/ktlint/core/RuleSetProvider.kt}} interface, which returns a set of rules to be "traversed". But before returning this set, the configuration file, in which the user has independently configured all the rules, is read. If there is no configuration file, then a warning will be displayed and the rules will be triggered in according with the default configuration file. 
+Each rule must implement the \textsl{visit} method of the abstract Rule class, which describes the logic of the rule.
+
+//TODO: add comments
+\begin{lstlisting}[caption={Example of rule.}, label={lst:example1}, language=Kotlin]
+class SingleLineStatementsRule(private val configRules: List<RulesConfig>) : Rule("statement") {
+
+    companion object {
+        private val semicolonToken = TokenSet.create(SEMICOLON)
+    }
+
+    private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
+    private var isFixMode: Boolean = false
+
+    override fun visit(node: ASTNode,
+                       autoCorrect: Boolean,
+                       emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
+        emitWarn = emit
+        isFixMode = autoCorrect
+
+        checkSemicolon(node)
+    }
+
+    private fun checkSemicolon(node: ASTNode) {
+        node.getChildren(semicolonToken).forEach {
+            if (!it.isFollowedByNewline()) {
+                MORE_THAN_ONE_STATEMENT_PER_LINE.warnAndFix(configRules, emitWarn, isFixMode, it.extractLineOfText(),
+                        it.startOffset, it) {
+                    if (it.treeParent.elementType == ENUM_ENTRY) {
+                        node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node.treeNext)
+                    } else {
+                        if (!it.isBeginByNewline()) {
+                            val nextNode = it.parent({ parent -> parent.treeNext != null }, strict = false)?.treeNext
+                            node.appendNewlineMergingWhiteSpace(nextNode, it)
+                        }
+                        node.removeChild(it)
+                    }
+                }
+            }
+        }
+    }
+}
+\end{lstlisting}
+
+The example above describes the rule in which you cannot write more than two statements on one line. The list of configurations is passed to the parameter of this rule so that the error is displayed only when the rule is enabled (further it will be described how to enable and disable the rule). The class fields and the \textsl{visit} method are described below. The first parameter in method is ASTNode - the node that we got in the parsing in ktlint. Then a check occurs: if the code contains a line in which more than one statement per line and this rule is enabled, then the rule will be executed and, depending on the mode in which the user started ktlint, the rule will either simply report an error or fix it. In our case, when an error is found, the method is called to report and fix the error - \textsl{warnAndFix()}. Warnings that contain similar logic (e.g. regarding formatting of function KDocs) are checked in the same Rule. This way we can parse similar parts of AST only once. Whether the warning is enabled or disabled is checked at the very last moment, inside \textsl{warn()} or \textsl{warnAndFix()} methods. Same is true for suppressions: right before emitting the warning we check whether any of current node's parents has a Suppress annotation.
+
+\subsection{Examples of unique inspections}
+\par
+As already described above, diKTat has more rules than existing analogues, therefore, it will find and fix more errors and shortcomings and, thereby, make the code cleaner and better. To better understand how much more detailed the diKTat finds errors, consider a few examples:
+
+\begin{enumerate}
+    \item \textbf{Package}
+In diKTat, there are about 6 rules only for package (examples). For comparison: detekt has only one rule, where the package name is simply checked by a pattern, in ktlint there is no.
+    \item \textbf{KDoc}
+KDoc is an important part of good code to make it easier to understand and navigate the program. In diKTat there are 15 rules on KDoc, in detekt there are only 7. Therefore, diKTat will make and correct KDoc in more detail and correctly. Examples of rules that have no analogues: examples
+    \item \textbf{Header} 
+Like KDoc, header is an essential part of quality code. DiKTat has as many as 6 rules for this, while detekt and ktlint do not. (Examples) 
+\end{enumerate}
+
+There are also many unique rules that no analogues have, here are some of them:
+
+\begin{enumerate}
+    \item \textbf{COMMENTED\underline{ }OUT\underline{ }CODE} – This rule performs checks if there is any commented code.
+    \item \textbf{FILE\underline{ }CONTAINS\underline{ }ONLY\underline{ }COMMENTS} – This rule checks file contains not only comments.
+    \item \textbf{LOCAL\underline{ }VARIABLE\underline{ }EARLY\underline{ }DECLARATION} – This rule checks that local variables are declared close to the point where they are first used.
+    \item \textbf{AVOID\underline{ }NESTED\underline{ }FUNCTIONS} - This rule checks for nested functions and warns and fixes if it finds any. An example of changing the tree when this rule is triggered and diKTat is run with fix mode:\\
+    \begin{tikzpicture}[%
+  grow via three points={one child at (0.3,-0.8) and
+  two children at (0.3,-0.8) and (0.3,-1.5)},
+  scale=0.5,
+  edge from parent path={(\tikzparentnode.south) |- (\tikzchildnode.west)}]
+    
+  \node(a) {...}
+    child { node {FUN}
+        child {node {...}}
+        child {node {BLOCK}            
+            child {node {FUN}
+            	child{node{...}}
+		child{node{BLOCK}
+			child{node{...}}
+		}
+            }
+        }
+    };
+    
+    \node(b) [right of=a, xshift=17cm]{...}
+    	child { node {FUN}
+        		child {node {...}}
+        		child {node {BLOCK}          
+          		child{node{...}}
+		}	
+        }
+        child [missing] {}
+	child [missing] {}
+         child { node {FUN}
+        		child {node {...}}
+        		child {node {BLOCK}          
+          		child{node{...}}
+		}	
+        };
+     
+    \draw[-latex,very thick,shorten <=5mm,shorten >=5mm,] ([xshift=5cm,yshift=-3cm]a.north) to ([xshift=-2cm, yshift=-3cm]b.north);
+    
+\end{tikzpicture}
+    \item \textbf{FLOAT\underline{ }IN\underline{ }ACCURATE\underline{ }CALCULATIONS} - Rule that checks that floating-point numbers are not used for accurate calculations.
+\end{enumerate}
