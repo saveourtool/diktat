@@ -65,6 +65,7 @@ private fun generateWarningNames() {
     kotlinFile.writeTo(File("diktat-rules/src/main/kotlin"))  // fixme: need to add it to pom
 }
 
+@Suppress("MagicNumber")
 private fun generateAvailableRules() {
     val ruleMap = File("info/rules-mapping.md").readLines().drop(2)
             .map { it.drop(1).dropLast(1).split("|") }
@@ -86,6 +87,7 @@ private fun generateAvailableRules() {
     File("wp/sections/appendix.tex").writeText(newText.joinToString(separator = "\n"))
 }
 
+@Suppress("UnsafeCallOnNullableType")
 data class RuleDescription(val ruleName: String, val codeStyle: String, val autoFix: String, var config: String?) {
     val correctCodeStyle = codeStyle.substring(codeStyle.indexOf("[") + 1, codeStyle.indexOf("]"))
     val correctRuleName = ruleName.replace("_", "\\underline{ }")
