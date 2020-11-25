@@ -51,6 +51,7 @@ import org.jetbrains.kotlin.psi.KtTryExpression
  * - braces around `else`/`catch`/`finally`/`while` (in `do-while` loop)
  */
 class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("block-structure") {
+
     private var isFixMode: Boolean = false
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
 
@@ -178,6 +179,15 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
                 if (braceSpace == null || braceSpace.elementType != WHITE_SPACE) {
                     node.addChild(PsiWhiteSpaceImpl(" "), nodeBefore)
                 } else {
+                    if (braceSpace.treePrev.elementType in COMMENT_TYPE) {
+                        val commentBefore = braceSpace.treePrev
+                        if (commentBefore.treePrev.elementType == WHITE_SPACE) {
+                            commentBefore.treeParent.removeChild(commentBefore.treePrev)
+                        }
+                        commentBefore.treeParent.removeChild(commentBefore)
+                        node.treeParent.addChild(commentBefore.clone() as ASTNode, node)
+                        node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node)
+                    }
                     braceSpace.treeParent.replaceWhiteSpaceText(braceSpace, " ")
                 }
             }
