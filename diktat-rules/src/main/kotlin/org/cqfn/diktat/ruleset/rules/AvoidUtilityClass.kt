@@ -14,9 +14,10 @@ import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.common.config.rules.getCommonConfiguration
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.AVOID_USING_UTILITY_CLASS
-import org.cqfn.diktat.ruleset.utils.hasChildOfType
+import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.psiUtil.children
 
@@ -36,8 +37,12 @@ class AvoidUtilityClass(private val configRules: List<RulesConfig>) : Rule("avoi
     override fun visit(node: ASTNode, autoCorrect: Boolean, emit: EmitType) {
         emitWarn = emit
         isFixMode = autoCorrect
-        if (node.elementType == OBJECT_DECLARATION || node.elementType == CLASS ) {
-            checkClass(node)
+        val config = configRules.getCommonConfiguration().value
+        val fileName = node.getRootNode().getFileName()
+        if (!(node.hasTestAnnotation() || isLocatedInTest(fileName.splitPathToDirs(), config.testAnchors))) {
+            if (node.elementType == OBJECT_DECLARATION || node.elementType == CLASS) {
+                checkClass(node)
+            }
         }
     }
 
