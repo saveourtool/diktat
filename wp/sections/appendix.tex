@@ -17,110 +17,108 @@
 \hline
 \textbf{diKTat rule} & \textbf{code style} & \textbf{autofix} &  \textbf{config} \\
 \hline
-VARIABLE\underline{ }NAME\underline{ }INCORRECT & 1.1.1 &  no  &  no \\
-VARIABLE\underline{ }HAS\underline{ }PREFIX & 1.1.1 &  yes  &  no \\
-IDENTIFIER\underline{ }LENGTH & 1.1.1 &  no  &  no \\
-GENERIC\underline{ }NAME & 1.1.1 &  yes  &  no \\
-BACKTICKS\underline{ }PROHIBITED & 1.1.1 &  no  &  no \\
-FILE\underline{ }NAME\underline{ }INCORRECT & 1.1.1 &  yes  &  no \\
-EXCEPTION\underline{ }SUFFIX & 1.1.1 &  yes  &  no \\
-CONFUSING\underline{ }IDENTIFIER\underline{ }NAMING & 1.1.1 &  no  &  no \\
-PACKAGE\underline{ }NAME\underline{ }MISSING & 1.2.1 &  yes  &  no \\
-PACKAGE\underline{ }NAME\underline{ }INCORRECT\underline{ }CASE & 1.2.1 &  yes  &  no \\
-PACKAGE\underline{ }NAME\underline{ }INCORRECT\underline{ }PREFIX & 1.2.1 &  yes  &  no \\
-PACKAGE\underline{ }NAME\underline{ }INCORRECT\underline{ }SYMBOLS & 1.2.1 &  no  &  no \\
-PACKAGE\underline{ }NAME\underline{ }INCORRECT\underline{ }PATH & 1.2.1 &  yes  &  no \\
-INCORRECT\underline{ }PACKAGE\underline{ }SEPARATOR & 1.2.1 &  yes  &  no \\
-CLASS\underline{ }NAME\underline{ }INCORRECT & 1.3.1 &  yes  &  no \\
-OBJECT\underline{ }NAME\underline{ }INCORRECT & 1.3.1 &  yes  &  no \\
-ENUM\underline{ }VALUE & 1.3.1 &  yes  &  enumStyle: snakeCase, pascalCase \\
-FUNCTION\underline{ }NAME\underline{ }INCORRECT\underline{ }CASE & 1.4.1 &  yes  &  no \\
-CONSTANT\underline{ }UPPERCASE & 1.5.1 &  yes  &  no \\
-VARIABLE\underline{ }NAME\underline{ }INCORRECT\underline{ }FORMAT & 1.6.1 &  yes  &  no \\
-FUNCTION\underline{ }BOOLEAN\underline{ }PREFIX & 1.6.2 &  yes  &  no \\
-MISSING\underline{ }KDOC\underline{ }TOP\underline{ }LEVEL & 2.1.1 &  no  &  no \\
-MISSING\underline{ }KDOC\underline{ }CLASS\underline{ }ELEMENTS & 2.1.1 &  no  &  no \\
-MISSING\underline{ }KDOC\underline{ }ON\underline{ }FUNCTION & 2.1.1 &  yes  &  - \\
-KDOC\underline{ }NO\underline{ }CONSTRUCTOR\underline{ }PROPERTY & 2.1.1 &  yes  &  -\\
-KDOC\underline{ }NO\underline{ }CONSTRUCTOR\underline{ }PROPERTY\underline{ }WITH\underline{ }COMMENT & 2.1.1 &  yes  &  -\\
-KDOC\underline{ }WITHOUT\underline{ }PARAM\underline{ }TAG & 2.1.2 &  yes  &  no \\
-KDOC\underline{ }WITHOUT\underline{ }RETURN\underline{ }TAG & 2.1.2 &  yes  &   \\
-KDOC\underline{ }WITHOUT\underline{ }THROWS\underline{ }TAG & 2.1.2 &  yes  &   \\
-KDOC\underline{ }EMPTY\underline{ }KDOC & 2.1.3 &  no  &  - \\
-KDOC\underline{ }WRONG\underline{ }SPACES\underline{ }AFTER\underline{ }TAG & 2.1.3 &  yes  &   \\
-KDOC\underline{ }WRONG\underline{ }TAGS\underline{ }ORDER & 2.1.3 &  yes  &   \\
-KDOC\underline{ }NEWLINES\underline{ }BEFORE\underline{ }BASIC\underline{ }TAGS & 2.1.3 &  yes  &  - \\
-KDOC\underline{ }NO\underline{ }NEWLINES\underline{ }BETWEEN\underline{ }BASIC\underline{ }TAGS & 2.1.3 &  yes  &   \\
-KDOC\underline{ }NO\underline{ }NEWLINE\underline{ }AFTER\underline{ }SPECIAL\underline{ }TAGS & 2.1.3 &  yes  &   \\
-KDOC\underline{ }NO\underline{ }DEPRECATED\underline{ }TAG & 2.1.3 &  yes  &   \\
-KDOC\underline{ }NO\underline{ }EMPTY\underline{ }TAGS & 2.2.1 &  no  &   \\
-HEADER\underline{ }WRONG\underline{ }FORMAT & 2.2.1 &  yes  &   \\
-HEADER\underline{ }MISSING\underline{ }OR\underline{ }WRONG\underline{ }COPYRIGHT & 2.2.1 &  yes  & mandatoryCopyright\\
-WRONG\underline{ }COPYRIGHT\underline{ }YEAR & 2.2.1 &  yes  &  - \\
-HEADER\underline{ }CONTAINS\underline{ }DATE\underline{ }OR\underline{ }AUTHOR & 2.2.1 &  no  &   \\
-HEADER\underline{ }MISSING\underline{ }IN\underline{ }NON\underline{ }SINGLE\underline{ }CLASS\underline{ }FILE & 2.2.1 &  no  &   \\
-HEADER\underline{ }NOT\underline{ }BEFORE\underline{ }PACKAGE & 2.2.1 &  yes  &   \\
-KDOC\underline{ }TRIVIAL\underline{ }KDOC\underline{ }ON\underline{ }FUNCTION & 2.3.1 &  no  &   - \\
-WRONG\underline{ }NEWLINES\underline{ }AROUND\underline{ }KDOC & 2.4.1 &  yes  &  - \\
-FIRST\underline{ }COMMENT\underline{ }NO\underline{ }SPACES & 2.4.1 &  yes  &  - \\
-COMMENT\underline{ }WHITE\underline{ }SPACE & 2.4.1 &  yes  &  maxSpaces \\
-IF\underline{ }ELSE\underline{ }COMMENTS & 2.4.1 &  yes  &  - \\
-COMMENTED\underline{ }OUT\underline{ }CODE & 2.4.2 &  no  &   \\
-FILE\underline{ }IS\underline{ }TOO\underline{ }LONG & 3.1.1 &  no  &  maxSize  ignoreFolders \\
-FILE\underline{ }CONTAINS\underline{ }ONLY\underline{ }COMMENTS & 3.1.2 &  no  &                          - \\
-FILE\underline{ }INCORRECT\underline{ }BLOCKS\underline{ }ORDER & 3.1.2 &  yes  &                          - \\
-FILE\underline{ }NO\underline{ }BLANK\underline{ }LINE\underline{ }BETWEEN\underline{ }BLOCKS & 3.1.2 &  yes  &                          - \\
-FILE\underline{ }UNORDERED\underline{ }IMPORTS & 3.1.2 &  yes  &                          - \\
-FILE\underline{ }WILDCARD\underline{ }IMPORTS & 3.1.2 &  no  &  allowedWildcards          \\
-FILE\underline{ }NAME\underline{ }MATCH\underline{ }CLASS & 3.1.2 &  yes  &  no \\
-WRONG\underline{ }ORDER\underline{ }IN\underline{ }CLASS\underline{ }LIKE\underline{ }STRUCTURES & 3.1.4 &  yes  &                          - \\
-BLANK\underline{ }LINE\underline{ }BETWEEN\underline{ }PROPERTIES & 3.1.4 &  yes  &                          - \\
-WRONG\underline{ }DECLARATIONS\underline{ }ORDER & 3.1.4 &  yes  &  -                         \\
-NO\underline{ }BRACES\underline{ }IN\underline{ }CONDITIONALS\underline{ }AND\underline{ }LOOPS & 3.2.1 &  yes  &                          - \\
-BRACES\underline{ }BLOCK\underline{ }STRUCTURE\underline{ }ERROR & 3.2.2 &  yes  &  openBraceNewline closeBraceNewline \\
-WRONG\underline{ }INDENTATION & 3.3.1 &  yes  & extendedIndentOfParameters alignedParameters extendedIndentAfterOperators extendedIndentBeforeDot indentationSize  \\
-EMPTY\underline{ }BLOCK\underline{ }STRUCTURE\underline{ }ERROR & 3.4.1 &  yes  &  allowEmptyBlocks styleEmptyBlockWithNewline \\
-LONG\underline{ }LINE & 3.5.1 &  yes  &  lineLength                \\
-MORE\underline{ }THAN\underline{ }ONE\underline{ }STATEMENT\underline{ }PER\underline{ }LINE & 3.6.1 &  yes  &                          - \\
-REDUNDANT\underline{ }SEMICOLON & 3.6.2 &  yes  &                          - \\
-WRONG\underline{ }NEWLINES & 3.6.2 &  yes  &                          - \\
-TOO\underline{ }MANY\underline{ }BLANK\underline{ }LINES & 3.7.1 &  yes  &                                                                                     - \\
-WRONG\underline{ }WHITESPACE & 3.8.1 &  yes  &                          - \\
-TOO\underline{ }MANY\underline{ }CONSECUTIVE\underline{ }SPACES & 3.8.1 &  yes  &  maxSpaces saveInitialFormattingForEnums \\
-ENUMS\underline{ }SEPARATED & 3.9.1 &  yes  & -                          \\
-LOCAL\underline{ }VARIABLE\underline{ }EARLY\underline{ }DECLARATION & 3.10.2 &  no  &                           -  \\
-WHEN\underline{ }WITHOUT\underline{ }ELSE & 3.11.1 &  yes  &  \\
-ANNOTATION\underline{ }NEW\underline{ }LINE & 3.12.1 &  yes  &  - \\
-WRONG\underline{ }MULTIPLE\underline{ }MODIFIERS\underline{ }ORDER & 3.14.1 &  yes  &  -                         \\
-LONG\underline{ }NUMERICAL\underline{ }VALUES\underline{ }SEPARATED & 3.14.2 &  yes  &  maxLength                 \\
-STRING\underline{ }CONCATENATION & 3.15.1 &  no  & - \\
-STRING\underline{ }TEMPLATE\underline{ }CURLY\underline{ }BRACES & 3.15.2 &  yes  &  - \\
-STRING\underline{ }TEMPLATE\underline{ }QUOTES & 3.15.2 &  yes  &  - \\
-FLOAT\underline{ }IN\underline{ }ACCURATE\underline{ }CALCULATIONS & 4.1.1 &  no  &                          - \\
-SAY\underline{ }NO\underline{ }TO\underline{ }VAR & 4.1.3 &  no  &  - \\
-SMART\underline{ }CAST\underline{ }NEEDED & 4.2.1 &  yes  &  - \\
-TYPE\underline{ }ALIAS & 4.2.2 &  no  &  typeReferenceLength       \\
-NULLABLE\underline{ }PROPERTY\underline{ }TYPE & 4.3.1 &  yes  &  -                         \\
-GENERIC\underline{ }VARIABLE\underline{ }WRONG\underline{ }DECLARATION & 4.3.2 &  yes  &  - \\
-AVOID\underline{ }NULL\underline{ }CHECKS & 4.3.3 &  no  &  - \\
-TOO\underline{ }LONG\underline{ }FUNCTION & 5.1.1 &  no  &  maxFunctionLength isIncludeHeader\\
-NESTED\underline{ }BLOCK & 5.1.2 &  no  &  maxNestedBlockQuantit\\
-AVOID\underline{ }NESTED\underline{ }FUNCTIONS & 5.1.3 &  yes  &  - \\
-LAMBDA\underline{ }IS\underline{ }NOT\underline{ }LAST\underline{ }PARAMETER & 5.2.1 &  no  &  - \\
-TOO\underline{ }MANY\underline{ }PARAMETERS & 5.2.2 &  no  &  maxParameterListSize \\
-WRONG\underline{ }OVERLOADING\underline{ }FUNCTION\underline{ }ARGUMENTS & 5.2.3 &  no  &   -\\
-SINGLE\underline{ }CONSTRUCTOR\underline{ }SHOULD\underline{ }BE\underline{ }PRIMARY & 6.1.1 &  yes  &  no \\
-USE\underline{ }DATA\underline{ }CLASS & 6.1.2 &  no  &  - \\
-MULTIPLE\underline{ }INIT\underline{ }BLOCKS & 6.1.4 &  yes  &  no \\
-USELESS\underline{ }SUPERTYPE & 6.1.5 &  yes  &  - \\
-CLASS\underline{ }SHOULD\underline{ }NOT\underline{ }BE\underline{ }ABSTRACT & 6.1.6 &  yes  &  - \\
-CUSTOM\underline{ }GETTERS\underline{ }SETTERS & 6.1.8 &  no  &  - \\
-WRONG\underline{ }NAME\underline{ }OF\underline{ }VARIABLE\underline{ }INSIDE\underline{ }ACCESSOR & 6.1.9 &  no  &  - \\
-TRIVIAL\underline{ }ACCESSORS\underline{ }ARE\underline{ }NOT\underline{ }RECOMMENDED & 6.1.10 &  yes  &  - \\
-COMPACT\underline{ }OBJECT\underline{ }INITIALIZATION & 6.1.11 &  yes  &   \\
-EXTENSION\underline{ }FUNCTION\underline{ }SAME\underline{ }SIGNATURE & 6.2.2 &  no  &  - \\
-\hline
-
+VARIABLE\underline{ }NAME\underline{ }INCORRECT & 1.1.1 &  no  &   no  \\
+VARIABLE\underline{ }HAS\underline{ }PREFIX & 1.1.1 &  yes  &   no  \\
+IDENTIFIER\underline{ }LENGTH & 1.1.1 &  no  &   no  \\
+GENERIC\underline{ }NAME & 1.1.1 &  yes  &   no  \\
+BACKTICKS\underline{ }PROHIBITED & 1.1.1 &  no  &   no  \\
+FILE\underline{ }NAME\underline{ }INCORRECT & 1.1.1 &  yes  &   no  \\
+EXCEPTION\underline{ }SUFFIX & 1.1.1 &  yes  &   no  \\
+CONFUSING\underline{ }IDENTIFIER\underline{ }NAMING & 1.1.1 &  no  &   no  \\
+PACKAGE\underline{ }NAME\underline{ }MISSING & 1.2.1 &  yes  &   no  \\
+PACKAGE\underline{ }NAME\underline{ }INCORRECT\underline{ }CASE & 1.2.1 &  yes  &   no  \\
+PACKAGE\underline{ }NAME\underline{ }INCORRECT\underline{ }PREFIX & 1.2.1 &  yes  &   no  \\
+PACKAGE\underline{ }NAME\underline{ }INCORRECT\underline{ }SYMBOLS & 1.2.1 &  no  &   no  \\
+PACKAGE\underline{ }NAME\underline{ }INCORRECT\underline{ }PATH & 1.2.1 &  yes  &   no  \\
+INCORRECT\underline{ }PACKAGE\underline{ }SEPARATOR & 1.2.1 &  yes  &   no  \\
+CLASS\underline{ }NAME\underline{ }INCORRECT & 1.3.1 &  yes  &   no  \\
+OBJECT\underline{ }NAME\underline{ }INCORRECT & 1.3.1 &  yes  &   no  \\
+ENUM\underline{ }VALUE & 1.3.1 &  yes  &   enumStyle: snakeCase, pascalCase  \\
+FUNCTION\underline{ }NAME\underline{ }INCORRECT\underline{ }CASE & 1.4.1 &  yes  &   no  \\
+CONSTANT\underline{ }UPPERCASE & 1.5.1 &  yes  &   no  \\
+VARIABLE\underline{ }NAME\underline{ }INCORRECT\underline{ }FORMAT & 1.6.1 &  yes  &   no  \\
+FUNCTION\underline{ }BOOLEAN\underline{ }PREFIX & 1.6.2 &  yes  &   no  \\
+MISSING\underline{ }KDOC\underline{ }TOP\underline{ }LEVEL & 2.1.1 &  no  &   no  \\
+MISSING\underline{ }KDOC\underline{ }CLASS\underline{ }ELEMENTS & 2.1.1 &  no  &   no  \\
+MISSING\underline{ }KDOC\underline{ }ON\underline{ }FUNCTION & 2.1.1 &  yes  &   no  \\
+KDOC\underline{ }NO\underline{ }CONSTRUCTOR\underline{ }PROPERTY & 2.1.1 &  yes  &   no \\
+KDOC\underline{ }NO\underline{ }CONSTRUCTOR\underline{ }PROPERTY\underline{ }WITH\underline{ }COMMENT & 2.1.1 &  yes  &   no \\
+KDOC\underline{ }WITHOUT\underline{ }PARAM\underline{ }TAG & 2.1.2 &  yes  &   no  \\
+KDOC\underline{ }WITHOUT\underline{ }RETURN\underline{ }TAG & 2.1.2 &  yes  &   no  \\
+KDOC\underline{ }WITHOUT\underline{ }THROWS\underline{ }TAG & 2.1.2 &  yes  &   no  \\
+KDOC\underline{ }EMPTY\underline{ }KDOC & 2.1.3 &  no  &   no  \\
+KDOC\underline{ }WRONG\underline{ }SPACES\underline{ }AFTER\underline{ }TAG & 2.1.3 &  yes  &   no  \\
+KDOC\underline{ }WRONG\underline{ }TAGS\underline{ }ORDER & 2.1.3 &  yes  &   no  \\
+KDOC\underline{ }NEWLINES\underline{ }BEFORE\underline{ }BASIC\underline{ }TAGS & 2.1.3 &  yes  &   no  \\
+KDOC\underline{ }NO\underline{ }NEWLINES\underline{ }BETWEEN\underline{ }BASIC\underline{ }TAGS & 2.1.3 &  yes  &   no  \\
+KDOC\underline{ }NO\underline{ }NEWLINE\underline{ }AFTER\underline{ }SPECIAL\underline{ }TAGS & 2.1.3 &  yes  &   no  \\
+KDOC\underline{ }NO\underline{ }DEPRECATED\underline{ }TAG & 2.1.3 &  yes  &   no  \\
+KDOC\underline{ }NO\underline{ }EMPTY\underline{ }TAGS & 2.2.1 &  no  &   no  \\
+HEADER\underline{ }WRONG\underline{ }FORMAT & 2.2.1 &  yes  &   no  \\
+HEADER\underline{ }MISSING\underline{ }OR\underline{ }WRONG\underline{ }COPYRIGHT & 2.2.1 &  yes  &  mandatoryCopyright \\
+WRONG\underline{ }COPYRIGHT\underline{ }YEAR & 2.2.1 &  yes  &   no  \\
+HEADER\underline{ }CONTAINS\underline{ }DATE\underline{ }OR\underline{ }AUTHOR & 2.2.1 &  no  &   no  \\
+HEADER\underline{ }MISSING\underline{ }IN\underline{ }NON\underline{ }SINGLE\underline{ }CLASS\underline{ }FILE & 2.2.1 &  no  &   no  \\
+HEADER\underline{ }NOT\underline{ }BEFORE\underline{ }PACKAGE & 2.2.1 &  yes  &   no  \\
+KDOC\underline{ }TRIVIAL\underline{ }KDOC\underline{ }ON\underline{ }FUNCTION & 2.3.1 &  no  &   no  \\
+WRONG\underline{ }NEWLINES\underline{ }AROUND\underline{ }KDOC & 2.4.1 &  yes  &   no  \\
+FIRST\underline{ }COMMENT\underline{ }NO\underline{ }SPACES & 2.4.1 &  yes  &   no  \\
+COMMENT\underline{ }WHITE\underline{ }SPACE & 2.4.1 &  yes  &   maxSpaces  \\
+IF\underline{ }ELSE\underline{ }COMMENTS & 2.4.1 &  yes  &   no  \\
+COMMENTED\underline{ }OUT\underline{ }CODE & 2.4.2 &  no  &   no  \\
+FILE\underline{ }IS\underline{ }TOO\underline{ }LONG & 3.1.1 &  no  &   maxSize  ignoreFolders  \\
+FILE\underline{ }CONTAINS\underline{ }ONLY\underline{ }COMMENTS & 3.1.2 &  no  &   no  \\
+FILE\underline{ }INCORRECT\underline{ }BLOCKS\underline{ }ORDER & 3.1.2 &  yes  &   no  \\
+FILE\underline{ }NO\underline{ }BLANK\underline{ }LINE\underline{ }BETWEEN\underline{ }BLOCKS & 3.1.2 &  yes  &   no  \\
+FILE\underline{ }UNORDERED\underline{ }IMPORTS & 3.1.2 &  yes  &   no  \\
+FILE\underline{ }WILDCARD\underline{ }IMPORTS & 3.1.2 &  no  &   allowedWildcards           \\
+FILE\underline{ }NAME\underline{ }MATCH\underline{ }CLASS & 3.1.2 &  yes  &   no  \\
+WRONG\underline{ }ORDER\underline{ }IN\underline{ }CLASS\underline{ }LIKE\underline{ }STRUCTURES & 3.1.4 &  yes  &   no  \\
+BLANK\underline{ }LINE\underline{ }BETWEEN\underline{ }PROPERTIES & 3.1.4 &  yes  &   no  \\
+WRONG\underline{ }DECLARATIONS\underline{ }ORDER & 3.1.4 &  yes  &   no  \\
+NO\underline{ }BRACES\underline{ }IN\underline{ }CONDITIONALS\underline{ }AND\underline{ }LOOPS & 3.2.1 &  yes  &   no  \\
+BRACES\underline{ }BLOCK\underline{ }STRUCTURE\underline{ }ERROR & 3.2.2 &  yes  &   openBraceNewline closeBraceNewline  \\
+WRONG\underline{ }INDENTATION & 3.3.1 &  yes  &  extendedIndentOfParameters alignedParameters extendedIndentAfterOperators extendedIndentBeforeDot indentationSize   \\
+EMPTY\underline{ }BLOCK\underline{ }STRUCTURE\underline{ }ERROR & 3.4.1 &  yes  &   allowEmptyBlocks styleEmptyBlockWithNewline  \\
+LONG\underline{ }LINE & 3.5.1 &  yes  &   lineLength                 \\
+MORE\underline{ }THAN\underline{ }ONE\underline{ }STATEMENT\underline{ }PER\underline{ }LINE & 3.6.1 &  yes  &   no  \\
+REDUNDANT\underline{ }SEMICOLON & 3.6.2 &  yes  &   no  \\
+WRONG\underline{ }NEWLINES & 3.6.2 &  yes  &   no  \\
+TOO\underline{ }MANY\underline{ }BLANK\underline{ }LINES & 3.7.1 &  yes  &   no  \\
+WRONG\underline{ }WHITESPACE & 3.8.1 &  yes  &   no  \\
+TOO\underline{ }MANY\underline{ }CONSECUTIVE\underline{ }SPACES & 3.8.1 &  yes  &   maxSpaces saveInitialFormattingForEnums  \\
+ENUMS\underline{ }SEPARATED & 3.9.1 &  yes  &   no  \\
+LOCAL\underline{ }VARIABLE\underline{ }EARLY\underline{ }DECLARATION & 3.10.2 &  no  &   no  \\
+WHEN\underline{ }WITHOUT\underline{ }ELSE & 3.11.1 &  yes  &   no  \\
+ANNOTATION\underline{ }NEW\underline{ }LINE & 3.12.1 &  yes  &   no  \\
+WRONG\underline{ }MULTIPLE\underline{ }MODIFIERS\underline{ }ORDER & 3.14.1 &  yes  &   no  \\
+LONG\underline{ }NUMERICAL\underline{ }VALUES\underline{ }SEPARATED & 3.14.2 &  yes  &   maxLength                  \\
+STRING\underline{ }CONCATENATION & 3.15.1 &  no  &   no  \\
+STRING\underline{ }TEMPLATE\underline{ }CURLY\underline{ }BRACES & 3.15.2 &  yes  &   no  \\
+STRING\underline{ }TEMPLATE\underline{ }QUOTES & 3.15.2 &  yes  &   no  \\
+FLOAT\underline{ }IN\underline{ }ACCURATE\underline{ }CALCULATIONS & 4.1.1 &  no  &   no  \\
+SAY\underline{ }NO\underline{ }TO\underline{ }VAR & 4.1.3 &  no  &   no  \\
+SMART\underline{ }CAST\underline{ }NEEDED & 4.2.1 &  yes  &   no  \\
+TYPE\underline{ }ALIAS & 4.2.2 &  no  &   typeReferenceLength        \\
+NULLABLE\underline{ }PROPERTY\underline{ }TYPE & 4.3.1 &  yes  &   no  \\
+GENERIC\underline{ }VARIABLE\underline{ }WRONG\underline{ }DECLARATION & 4.3.2 &  yes  &   no  \\
+AVOID\underline{ }NULL\underline{ }CHECKS & 4.3.3 &  no  &   no  \\
+TOO\underline{ }LONG\underline{ }FUNCTION & 5.1.1 &  no  &   maxFunctionLength isIncludeHeader\\
+NESTED\underline{ }BLOCK & 5.1.2 &  no  &   maxNestedBlockQuantit\\
+AVOID\underline{ }NESTED\underline{ }FUNCTIONS & 5.1.3 &  yes  &   no  \\
+LAMBDA\underline{ }IS\underline{ }NOT\underline{ }LAST\underline{ }PARAMETER & 5.2.1 &  no  &   no \\
+TOO\underline{ }MANY\underline{ }PARAMETERS & 5.2.2 &  no  &   maxParameterListSize \\
+WRONG\underline{ }OVERLOADING\underline{ }FUNCTION\underline{ }ARGUMENTS & 5.2.3 &  no  &   no \\
+SINGLE\underline{ }CONSTRUCTOR\underline{ }SHOULD\underline{ }BE\underline{ }PRIMARY & 6.1.1 &  yes  &   no  \\
+USE\underline{ }DATA\underline{ }CLASS & 6.1.2 &  no  &   no  \\
+MULTIPLE\underline{ }INIT\underline{ }BLOCKS & 6.1.4 &  yes  &   no  \\
+USELESS\underline{ }SUPERTYPE & 6.1.5 &  yes  &   no  \\
+CLASS\underline{ }SHOULD\underline{ }NOT\underline{ }BE\underline{ }ABSTRACT & 6.1.6 &  yes  &   no  \\
+CUSTOM\underline{ }GETTERS\underline{ }SETTERS & 6.1.8 &  no  &   no  \\
+WRONG\underline{ }NAME\underline{ }OF\underline{ }VARIABLE\underline{ }INSIDE\underline{ }ACCESSOR & 6.1.9 &  no  &   no \\
+TRIVIAL\underline{ }ACCESSORS\underline{ }ARE\underline{ }NOT\underline{ }RECOMMENDED & 6.1.10 &  yes  &   no  \\
+COMPACT\underline{ }OBJECT\underline{ }INITIALIZATION & 6.1.11 &  yes  &   no  \\
+EXTENSION\underline{ }FUNCTION\underline{ }SAME\underline{ }SIGNATURE & 6.2.2 &  no  &   no  \\
 \hline
 \end{longtable}
 \end{center}
