@@ -235,6 +235,11 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
         private val log = LoggerFactory.getLogger(PackageNaming::class.java)
 
         /**
+         * Directory which is considered the start of sources file tree
+         */
+        const val PACKAGE_PATH_ANCHOR = "src"
+
+        /**
          * Symbol that is used to separate parts in package name
          */
         const val PACKAGE_SEPARATOR = "."
@@ -247,16 +252,9 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
             "mingwX64", "mingwX86", "wasm32")
 
         /**
-         * Directory which is considered the start of sources file tree
-         */
-        const val PACKAGE_PATH_ANCHOR = "src"
-
-        /**
          * Directories that are supposed to be first in sources file paths, relative to [PACKAGE_PATH_ANCHOR].
          * For kotlin multiplatform projects directories for targets from [kmmTargets] are supported.
          */
         val languageDirNames = listOf("src", "main", "test", "java", "kotlin") + kmmTargets.flatMap { listOf("${it}Main", "${it}Test") }
-        
-
     }
 }

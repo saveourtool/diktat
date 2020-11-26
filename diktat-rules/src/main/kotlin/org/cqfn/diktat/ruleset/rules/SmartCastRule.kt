@@ -1,5 +1,17 @@
 package org.cqfn.diktat.ruleset.rules
 
+import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ruleset.constants.EmitType
+import org.cqfn.diktat.ruleset.constants.Warnings.SMART_CAST_NEEDED
+import org.cqfn.diktat.ruleset.utils.KotlinParser
+import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
+import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
+import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
+import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
+import org.cqfn.diktat.ruleset.utils.hasChildOfType
+import org.cqfn.diktat.ruleset.utils.hasParent
+import org.cqfn.diktat.ruleset.utils.search.findAllVariablesWithUsages
+
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_WITH_TYPE
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
@@ -18,17 +30,6 @@ import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.WHEN
 import com.pinterest.ktlint.core.ast.ElementType.WHEN_CONDITION_IS_PATTERN
 import com.pinterest.ktlint.core.ast.ElementType.WHEN_ENTRY
-import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
-import org.cqfn.diktat.ruleset.constants.Warnings.SMART_CAST_NEEDED
-import org.cqfn.diktat.ruleset.utils.KotlinParser
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
-import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
-import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
-import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
-import org.cqfn.diktat.ruleset.utils.hasChildOfType
-import org.cqfn.diktat.ruleset.utils.hasParent
-import org.cqfn.diktat.ruleset.utils.search.findAllVariablesWithUsages
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.KtBlockExpression
@@ -40,9 +41,8 @@ import org.jetbrains.kotlin.psi.psiUtil.isAncestor
 import org.jetbrains.kotlin.psi.psiUtil.parents
 
 class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-cast-rule") {
-
-    private lateinit var emitWarn: EmitType
     private var isFixMode: Boolean = false
+    private lateinit var emitWarn: EmitType
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
@@ -67,15 +67,16 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
             val isExpr = mutableListOf<KtNameReferenceExpression>()
             val asExpr = mutableListOf<KtNameReferenceExpression>()
             references.forEach {
-                if (it.node.hasParent(IS_EXPRESSION))
+                if (it.node.hasParent(IS_EXPRESSION)) {
                     isExpr.add(it)
-                else if (it.node.hasParent(BINARY_WITH_TYPE)
-                        && it.node.treeParent.text.contains(KtTokens.AS_KEYWORD.value))
+                } else if (it.node.hasParent(BINARY_WITH_TYPE) && it.node.treeParent.text.contains(KtTokens.AS_KEYWORD.value)) {
                     asExpr.add(it)
+                }
             }
             val groups = groupIsAndAsExpr(isExpr, asExpr, property)
-            if (groups.isNotEmpty())
+            if (groups.isNotEmpty()) {
                 handleGroups(groups)
+            }
         }
     }
 
@@ -105,7 +106,7 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
     @Suppress("UnsafeCallOnNullableType")
     private fun raiseWarning(asCall: ASTNode) {
         SMART_CAST_NEEDED.warnAndFix(configRules, emitWarn, isFixMode, asCall.treeParent.text, asCall.startOffset,
-                asCall) {
+            asCall) {
             val dotExpr = asCall.findParentNodeWithSpecificType(DOT_QUALIFIED_EXPRESSION)
             val afterDotPart = dotExpr?.text?.split(".")?.get(1)
             val text = if (afterDotPart != null) "${asCall.text}.$afterDotPart" else asCall.text
@@ -120,7 +121,7 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
     private fun groupIsAndAsExpr(isExpr: List<KtNameReferenceExpression>,
                                  asExpr: List<KtNameReferenceExpression>,
                                  prop: KtProperty)
-            : Map<KtNameReferenceExpression, List<KtNameReferenceExpression>> {
+    : Map<KtNameReferenceExpression, List<KtNameReferenceExpression>> {
         val groupedExprs = mutableMapOf<KtNameReferenceExpression, List<KtNameReferenceExpression>>()
 
         if (isExpr.isEmpty() && asExpr.isNotEmpty()) {
@@ -132,8 +133,9 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
             val list = mutableListOf<KtNameReferenceExpression>()
             asExpr.forEach { asCall ->
                 if (asCall.node.findParentNodeWithSpecificType(IF)
-                        == it.node.findParentNodeWithSpecificType(IF))
+                    == it.node.findParentNodeWithSpecificType(IF)) {
                     list.add(asCall)
+                }
             }
             groupedExprs[it] = list
         }
@@ -145,10 +147,13 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
         when (prop.initializer?.node?.elementType) {
             STRING_TEMPLATE -> return "String"
             INTEGER_CONSTANT -> return "Int"
+            else -> {
+            }
         }
         if (prop.initializer?.node?.elementType == FLOAT_CONSTANT) {
-            if (prop.initializer?.text!!.endsWith("f"))
+            if (prop.initializer?.text!!.endsWith("f")) {
                 return "Float"
+            }
             return "Double"
         }
         return null
@@ -158,25 +163,25 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
     private fun handleZeroIsCase(asExpr: List<KtNameReferenceExpression>, prop: KtProperty) {
         val propType = getPropertyType(prop) ?: return
         asExpr
-                .map { it.node }
-                .forEach {
-                    if (it.treeParent.text.endsWith(propType)) {
-                        raiseWarning(it)
-                    }
+            .map { it.node }
+            .forEach {
+                if (it.treeParent.text.endsWith(propType)) {
+                    raiseWarning(it)
                 }
+            }
     }
-
 
     private fun handleThenBlock(then: ASTNode, blocks: List<IsExpressions>) {
         val thenBlock = then.findChildByType(BLOCK)
 
         if (thenBlock != null) {
             // Find all as expressions that are inside this current block
-            val asList = thenBlock.findAllNodesWithSpecificType(BINARY_WITH_TYPE).filter {
-                it.text.contains(" as ")
-                        && it.findParentNodeWithSpecificType(BLOCK) == thenBlock
-            }
-                    .filterNot { (it.getFirstChildWithType(REFERENCE_EXPRESSION)?.psi as KtNameReferenceExpression).getLocalDeclaration() != null }
+            val asList = thenBlock
+                .findAllNodesWithSpecificType(BINARY_WITH_TYPE)
+                .filter {
+                    it.text.contains(" as ") && it.findParentNodeWithSpecificType(BLOCK) == thenBlock
+                }
+                .filterNot { (it.getFirstChildWithType(REFERENCE_EXPRESSION)?.psi as KtNameReferenceExpression).getLocalDeclaration() != null }
             checkAsExpressions(asList, blocks)
         } else {
             val asList = then.findAllNodesWithSpecificType(BINARY_WITH_TYPE).filter { it.text.contains(KtTokens.AS_KEYWORD.value) }
@@ -195,15 +200,15 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
 
         val exprToChange = asExpr.filter {
             blocks.any { isExpr ->
-                isExpr.identifier == it.identifier
-                        && isExpr.type == it.type
+                isExpr.identifier == it.identifier &&
+                        isExpr.type == it.type
             }
         }
 
         if (exprToChange.isNotEmpty()) {
             exprToChange.forEach {
                 SMART_CAST_NEEDED.warnAndFix(configRules, emitWarn, isFixMode, "${it.identifier} as ${it.type}", it.node.startOffset,
-                        it.node) {
+                    it.node) {
                     val dotExpr = it.node.findParentNodeWithSpecificType(DOT_QUALIFIED_EXPRESSION)!!
                     val afterDotPart = dotExpr.text.split(".")[1]
                     val text = "${it.identifier}.$afterDotPart"
@@ -226,53 +231,65 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
         node.getAllChildrenWithType(WHEN_ENTRY).forEach {
             if (it.hasChildOfType(WHEN_CONDITION_IS_PATTERN) && identifier != null) {
                 val type = it.getFirstChildWithType(WHEN_CONDITION_IS_PATTERN)!!
-                        .getFirstChildWithType(TYPE_REFERENCE)?.text
+                    .getFirstChildWithType(TYPE_REFERENCE)?.text
 
                 val callExpr = it.findAllNodesWithSpecificType(BINARY_WITH_TYPE).firstOrNull()
                 val blocks = listOf(IsExpressions(identifier, type ?: ""))
 
-                if (callExpr != null)
+                if (callExpr != null) {
                     handleThenBlock(callExpr, blocks)
+                }
             }
         }
     }
 
     private fun KtNameReferenceExpression.getLocalDeclaration(): KtProperty? = parents
-            .mapNotNull { it as? KtBlockExpression }
-            .first()
-            .let { blockExpression ->
-                blockExpression
-                        .statements
-                        .takeWhile { !it.isAncestor(this, true) }
-                        .mapNotNull { it as? KtProperty }
-                        .find {
-                            it.isLocal &&
-                                    it.hasInitializer() &&
-                                    it.name?.equals(getReferencedName())
-                                    ?: false
-                        }
-            }
+        .mapNotNull { it as? KtBlockExpression }
+        .first()
+        .let { blockExpression ->
+            blockExpression
+                .statements
+                .takeWhile { !it.isAncestor(this, true) }
+                .mapNotNull { it as? KtProperty }
+                .find {
+                    it.isLocal &&
+                            it.hasInitializer() &&
+                            it.name?.equals(getReferencedName())
+                                ?: false
+                }
+        }
 
     private fun collectLocalPropertiesWithUsages(node: ASTNode) = node
-            .findAllVariablesWithUsages { propertyNode ->
-                propertyNode.name != null
-            }
+        .findAllVariablesWithUsages { propertyNode ->
+            propertyNode.name != null
+        }
 
     /**
      * Gets references, which contains is or as keywords
+     *
      * @return Map of property and list of expressions
      */
     private fun collectReferenceList(propertiesToUsages: Map<KtProperty, List<KtNameReferenceExpression>>)
-            : Map<KtProperty, List<KtNameReferenceExpression>> =
+    : Map<KtProperty, List<KtNameReferenceExpression>> =
             propertiesToUsages.mapValues { (_, value) ->
                 value.filter { entry ->
-                    entry.parent.node.elementType == IS_EXPRESSION
-                            || entry.parent.node.elementType == BINARY_WITH_TYPE
+                    entry.parent.node.elementType == IS_EXPRESSION || entry.parent.node.elementType == BINARY_WITH_TYPE
                 }
             }
 
+    /**
+     * @property identifier a reference that is cast
+     * @property type a type to which the reference is being cast
+     * @property node a node that holds the entire expression
+     */
+    class AsExpressions(
+        val identifier: String,
+        val type: String,
+        val node: ASTNode)
 
-    class AsExpressions(val identifier: String, val type: String, val node: ASTNode)
-
+    /**
+     * @property identifier a reference that is checked
+     * @property type a type with which the reference is being compared
+     */
     class IsExpressions(val identifier: String, val type: String)
 }

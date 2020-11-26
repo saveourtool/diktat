@@ -1,25 +1,22 @@
 package org.cqfn.diktat.ruleset.rules
 
-import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.ast.ElementType.FLOAT_LITERAL
-import com.pinterest.ktlint.core.ast.ElementType.INTEGER_LITERAL
-import java.lang.StringBuilder
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings
+
+import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.ast.ElementType.FLOAT_LITERAL
+import com.pinterest.ktlint.core.ast.ElementType.INTEGER_LITERAL
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 
-class LongNumericalValuesSeparatedRule(private val configRules: List<RulesConfig>) : Rule("long-numerical-values") {
-    private lateinit var emitWarn: EmitType
-    private var isFixMode: Boolean = false
+import java.lang.StringBuilder
 
-    companion object {
-        private const val DELIMITER_LENGTH: Int = 3
-        private const val MAX_NUMBER_LENGTH: Int = 3
-    }
+class LongNumericalValuesSeparatedRule(private val configRules: List<RulesConfig>) : Rule("long-numerical-values") {
+    private var isFixMode: Boolean = false
+    private lateinit var emitWarn: EmitType
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
@@ -28,10 +25,10 @@ class LongNumericalValuesSeparatedRule(private val configRules: List<RulesConfig
         isFixMode = autoCorrect
 
         val configuration = LongNumericalValuesConfiguration(
-                configRules.getRuleConfig(Warnings.LONG_NUMERICAL_VALUES_SEPARATED)?.configuration ?: mapOf())
+            configRules.getRuleConfig(Warnings.LONG_NUMERICAL_VALUES_SEPARATED)?.configuration ?: mapOf())
 
         if (node.elementType == INTEGER_LITERAL) {
-            if(!isValidConstant(node.text, configuration, node)) {
+            if (!isValidConstant(node.text, configuration, node)) {
                 Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
                     fixIntegerConstant(node, configuration.maxBlockLength)
                 }
@@ -45,30 +42,37 @@ class LongNumericalValuesSeparatedRule(private val configRules: List<RulesConfig
                 Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
                     fixFloatConstantPart(parts[0], parts[1], configuration, node)
                 }
-
             }
         }
-
     }
-
 
     private fun fixIntegerConstant(node: ASTNode, maxBlockLength: Int) {
         val resultRealPart = StringBuilder(nodePrefix(node.text))
 
-        val chunks = removePrefixSuffix(node.text).reversed().chunked(maxBlockLength).reversed()
+        val chunks = removePrefixSuffix(node.text)
+            .reversed()
+            .chunked(maxBlockLength)
+            .reversed()
         resultRealPart.append(chunks.joinToString(separator = "_") { it.reversed() })
 
         resultRealPart.append(nodeSuffix(node.text))
         (node as LeafPsiElement).replaceWithText(resultRealPart.toString())
     }
 
-    private fun fixFloatConstantPart(realPart: String, fractionalPart: String, configuration: LongNumericalValuesConfiguration, node: ASTNode) {
+    private fun fixFloatConstantPart(
+        realPart: String,
+        fractionalPart: String,
+        configuration: LongNumericalValuesConfiguration,
+        node: ASTNode) {
         val resultRealPart = StringBuilder(nodePrefix(realPart))
         val resultFractionalPart = StringBuilder()
 
         val realNumber = removePrefixSuffix(realPart)
         if (realNumber.length > configuration.maxLength) {
-            val chunks = realNumber.reversed().chunked(configuration.maxBlockLength).reversed()
+            val chunks = realNumber
+                .reversed()
+                .chunked(configuration.maxBlockLength)
+                .reversed()
             resultRealPart.append(chunks.joinToString(separator = "_") { it.reversed() })
 
             resultRealPart.append(nodeSuffix(realPart)).append(".")
@@ -101,17 +105,25 @@ class LongNumericalValuesSeparatedRule(private val configRules: List<RulesConfig
         else -> ""
     }
 
-
-    private fun isValidConstant (text: String, configuration: LongNumericalValuesConfiguration, node: ASTNode) : Boolean {
+    private fun isValidConstant(
+        text: String,
+        configuration: LongNumericalValuesConfiguration,
+        node: ASTNode): Boolean {
         if (text.contains("_")) {
             checkBlocks(removePrefixSuffix(text), configuration, node)
             return true
         }
 
-        return text.split(".").map { removePrefixSuffix(it) }.all { it.length < configuration.maxLength }
+        return text
+            .split(".")
+            .map { removePrefixSuffix(it) }
+            .all { it.length < configuration.maxLength }
     }
 
-    private fun checkBlocks(text: String, configuration: LongNumericalValuesConfiguration, node: ASTNode) {
+    private fun checkBlocks(
+        text: String,
+        configuration: LongNumericalValuesConfiguration,
+        node: ASTNode) {
         val blocks = text.split("_", ".")
 
         blocks.forEach {
@@ -121,19 +133,24 @@ class LongNumericalValuesSeparatedRule(private val configRules: List<RulesConfig
         }
     }
 
-    private fun removePrefixSuffix (text : String) : String {
+    private fun removePrefixSuffix(text: String): String {
         if (text.startsWith("0x")) {
             return text.removePrefix("0x")
         }
 
         return text.removePrefix("0b")
-                .removeSuffix("L")
-                .removeSuffix("f")
-                .removeSuffix("F")
+            .removeSuffix("L")
+            .removeSuffix("f")
+            .removeSuffix("F")
     }
 
     class LongNumericalValuesConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
         val maxLength = config["maxNumberLength"]?.toIntOrNull() ?: MAX_NUMBER_LENGTH
         val maxBlockLength = config["maxBlockLength"]?.toIntOrNull() ?: DELIMITER_LENGTH
+    }
+
+    companion object {
+        private const val DELIMITER_LENGTH: Int = 3
+        private const val MAX_NUMBER_LENGTH: Int = 3
     }
 }

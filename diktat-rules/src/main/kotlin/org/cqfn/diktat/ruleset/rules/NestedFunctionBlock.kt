@@ -21,21 +21,11 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  * Rule 5.1.2 Nested blokcs
  */
 class NestedFunctionBlock(private val configRules: List<RulesConfig>) : Rule("nested-block") {
-
-    companion object {
-        private const val MAX_NESTED_BLOCK_COUNT = 4L
-        /**
-         * Nodes of these types reset counter of nested blocks
-         */
-        private val NULLIFICATION_TYPE = listOf(CLASS, FUN, OBJECT_DECLARATION, FUNCTION_LITERAL)
-    }
-
     val configuration: NestedBlockConfiguration by lazy {
         NestedBlockConfiguration(configRules.getRuleConfig(NESTED_BLOCK)?.configuration ?: mapOf())
     }
-
-    private lateinit var emitWarn: EmitType
     private var isFixMode: Boolean = false
+    private lateinit var emitWarn: EmitType
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
@@ -65,5 +55,13 @@ class NestedFunctionBlock(private val configRules: List<RulesConfig>) : Rule("ne
 
     class NestedBlockConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
         val maxNestedBlockQuantity = config["maxNestedBlockQuantity"]?.toLong() ?: MAX_NESTED_BLOCK_COUNT
+    }
+
+    companion object {
+        private const val MAX_NESTED_BLOCK_COUNT = 4L
+        /**
+         * Nodes of these types reset counter of nested blocks
+         */
+        private val NULLIFICATION_TYPE = listOf(CLASS, FUN, OBJECT_DECLARATION, FUNCTION_LITERAL)
     }
 }

@@ -19,7 +19,6 @@ import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_HAS_PREFIX
 import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_NAME_INCORRECT
 import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_NAME_INCORRECT_FORMAT
 import org.cqfn.diktat.ruleset.utils.Style
-import org.cqfn.diktat.ruleset.utils.isTextLengthInRange
 import org.cqfn.diktat.ruleset.utils.containsOneLetterOrZero
 import org.cqfn.diktat.ruleset.utils.findChildAfter
 import org.cqfn.diktat.ruleset.utils.findLeafWithSpecificType
@@ -34,6 +33,7 @@ import org.cqfn.diktat.ruleset.utils.isConstant
 import org.cqfn.diktat.ruleset.utils.isDigits
 import org.cqfn.diktat.ruleset.utils.isLowerCamelCase
 import org.cqfn.diktat.ruleset.utils.isPascalCase
+import org.cqfn.diktat.ruleset.utils.isTextLengthInRange
 import org.cqfn.diktat.ruleset.utils.isUpperSnakeCase
 import org.cqfn.diktat.ruleset.utils.removePrefix
 import org.cqfn.diktat.ruleset.utils.toLowerCamelCase

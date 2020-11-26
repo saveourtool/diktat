@@ -1,5 +1,12 @@
 package org.cqfn.diktat.ruleset.rules
 
+import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ruleset.constants.EmitType
+import org.cqfn.diktat.ruleset.constants.Warnings.NULLABLE_PROPERTY_TYPE
+import org.cqfn.diktat.ruleset.utils.KotlinParser
+import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
+import org.cqfn.diktat.ruleset.utils.hasChildOfType
+
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BOOLEAN_CONSTANT
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
@@ -23,27 +30,14 @@ import com.pinterest.ktlint.core.ast.ElementType.TRUE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.USER_TYPE
 import com.pinterest.ktlint.core.ast.ElementType.VAL_KEYWORD
-import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
-import org.cqfn.diktat.ruleset.constants.Warnings.NULLABLE_PROPERTY_TYPE
-import org.cqfn.diktat.ruleset.utils.KotlinParser
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
-import org.cqfn.diktat.ruleset.utils.hasChildOfType
-import org.cqfn.diktat.ruleset.utils.prettyPrint
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 
 class NullableTypeRule(private val configRules: List<RulesConfig>) : Rule("nullable-type") {
-
-    companion object {
-        private val allowExpression = listOf("emptyList", "emptySequence", "emptyArray", "emptyMap", "emptySet",
-                "listOf", "mapOf", "arrayOf", "sequenceOf", "setOf")
-    }
-
-    private lateinit var emitWarn: EmitType
     private var isFixMode: Boolean = false
+    private lateinit var emitWarn: EmitType
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
@@ -51,9 +45,9 @@ class NullableTypeRule(private val configRules: List<RulesConfig>) : Rule("nulla
         isFixMode = autoCorrect
         emitWarn = emit
 
-        if (node.elementType == PROPERTY)
+        if (node.elementType == PROPERTY) {
             checkProperty(node)
-
+        }
     }
 
     @Suppress("UnsafeCallOnNullableType")
@@ -67,13 +61,15 @@ class NullableTypeRule(private val configRules: List<RulesConfig>) : Rule("nulla
                     typeReferenceNode.findChildByType(NULLABLE_TYPE)!!.hasChildOfType(QUEST) &&
                     (node.findChildByType(CALL_EXPRESSION)?.findChildByType(REFERENCE_EXPRESSION) == null ||
                             node.findChildByType(CALL_EXPRESSION)!!.findChildByType(REFERENCE_EXPRESSION)!!.text in allowExpression)) {
-                    NULLABLE_PROPERTY_TYPE.warn(configRules, emitWarn, isFixMode, "don't use nullable type",
-                            node.findChildByType(TYPE_REFERENCE)!!.startOffset, node)
+                NULLABLE_PROPERTY_TYPE.warn(configRules, emitWarn, isFixMode, "don't use nullable type",
+                    node.findChildByType(TYPE_REFERENCE)!!.startOffset, node)
             } else if (node.hasChildOfType(NULL)) {
                 val fixedParam = findFixableParam(node)
                 NULLABLE_PROPERTY_TYPE.warnAndFix(configRules, emitWarn, isFixMode, "initialize explicitly",
-                        node.findChildByType(NULL)!!.startOffset, node, fixedParam != null) {
-                    if (fixedParam != null) findSubstitution(node, fixedParam)
+                    node.findChildByType(NULL)!!.startOffset, node, fixedParam != null) {
+                    if (fixedParam != null) {
+                        findSubstitution(node, fixedParam)
+                    }
                 }
             }
         }
@@ -82,7 +78,7 @@ class NullableTypeRule(private val configRules: List<RulesConfig>) : Rule("nulla
     @Suppress("UnsafeCallOnNullableType")
     private fun findFixableParam(node: ASTNode): FixedParam? {
         val reference = node.findChildByType(TYPE_REFERENCE)!!.findChildByType(NULLABLE_TYPE)!!.findChildByType(USER_TYPE)?.findChildByType(REFERENCE_EXPRESSION)
-                ?: return null
+            ?: return null
         return when (reference.text) {
             "Boolean" -> FixedParam(BOOLEAN_CONSTANT, TRUE_KEYWORD, "true")
             "Int", "Short", "Byte" -> FixedParam(INTEGER_CONSTANT, INTEGER_LITERAL, "0")
@@ -96,7 +92,7 @@ class NullableTypeRule(private val configRules: List<RulesConfig>) : Rule("nulla
     }
 
     private fun findFixableForCollectionParam(referenceText: String): FixedParam? =
-            when(referenceText) {
+            when (referenceText) {
                 "List", "Iterable" -> FixedParam(null, null, "emptyList()")
                 "Map" -> FixedParam(null, null, "emptyMap()")
                 "Array" -> FixedParam(null, null, "emptyArray()")
@@ -114,12 +110,13 @@ class NullableTypeRule(private val configRules: List<RulesConfig>) : Rule("nulla
 
     @Suppress("UnsafeCallOnNullableType")
     private fun findSubstitution(node: ASTNode, fixedParam: FixedParam) {
-        if (fixedParam.isString)
+        if (fixedParam.isString) {
             replaceValueForString(node)
-        else if (fixedParam.insertConstantType != null && fixedParam.insertType != null)
+        } else if (fixedParam.insertConstantType != null && fixedParam.insertType != null) {
             replaceValue(node, fixedParam.insertConstantType, fixedParam.insertType, fixedParam.textNode)
-        else
+        } else {
             replaceValueByText(node, fixedParam.textNode)
+        }
         val nullableNode = node.findChildByType(TYPE_REFERENCE)!!.findChildByType(NULLABLE_TYPE)!!
         val userTypeNode = nullableNode.firstChildNode
         node.findChildByType(TYPE_REFERENCE)!!.replaceChild(nullableNode, userTypeNode)
@@ -134,7 +131,11 @@ class NullableTypeRule(private val configRules: List<RulesConfig>) : Rule("nulla
     }
 
     @Suppress("UnsafeCallOnNullableType")
-    private fun replaceValue(node: ASTNode, insertConstantType: IElementType, insertType: IElementType, textNode: String) {
+    private fun replaceValue(
+        node: ASTNode,
+        insertConstantType: IElementType,
+        insertType: IElementType,
+        textNode: String) {
         val value = CompositeElement(insertConstantType)
         node.addChild(value, node.findChildByType(NULL)!!)
         node.removeChild(node.findChildByType(NULL)!!)
@@ -150,5 +151,15 @@ class NullableTypeRule(private val configRules: List<RulesConfig>) : Rule("nulla
         value.addChild(LeafPsiElement(CLOSING_QUOTE, ""))
     }
 
-    private data class FixedParam(val insertConstantType: IElementType?, val insertType: IElementType?, val textNode: String, val isString: Boolean = false)
+    @Suppress("KDOC_NO_CONSTRUCTOR_PROPERTY")  // todo add proper docs
+    private data class FixedParam(
+        val insertConstantType: IElementType?,
+        val insertType: IElementType?,
+        val textNode: String,
+        val isString: Boolean = false)
+
+    companion object {
+        private val allowExpression = listOf("emptyList", "emptySequence", "emptyArray", "emptyMap", "emptySet",
+            "listOf", "mapOf", "arrayOf", "sequenceOf", "setOf")
+    }
 }
