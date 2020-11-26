@@ -297,7 +297,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
                         val colon = funNode.findChildByType(COLON)!!
                         val expression = node.findChildByType(RETURN_KEYWORD)!!.nextCodeSibling()!!
                         funNode.apply {
-                            removeRange(colon, null)
+                            removeRange(if (colon.treePrev.elementType == WHITE_SPACE) colon.treePrev else colon, null)
                             addChild(PsiWhiteSpaceImpl(" "), null)
                             addChild(LeafPsiElement(EQ, "="), null)
                             addChild(PsiWhiteSpaceImpl(" "), null)
