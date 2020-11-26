@@ -99,7 +99,7 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
         val catchBlocks = tryBlock.catchClauses.map { it.node }
         val finallyBlock = tryBlock.finallyBlock?.node
         checkOpenBraceOnSameLine(tryBlock.node, BLOCK, configuration)
-        var allMiddleSpaceNodes = node.findAllNodesWithSpecificType(CATCH).map { it.treePrev }
+        val allMiddleSpaceNodes = node.findAllNodesWithSpecificType(CATCH).map { it.treePrev }
         checkMidBrace(allMiddleSpaceNodes, node, CATCH_KEYWORD)
         catchBlocks.forEach {
             checkOpenBraceOnSameLine(it, BLOCK, configuration)
@@ -108,8 +108,8 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
         if (finallyBlock != null) {
             checkOpenBraceOnSameLine(finallyBlock, BLOCK, configuration)
             checkCloseBrace(finallyBlock.findChildByType(BLOCK)!!, configuration)
-            allMiddleSpaceNodes = node.findAllNodesWithSpecificType(FINALLY).map { it.treePrev }
-            checkMidBrace(allMiddleSpaceNodes, node, FINALLY_KEYWORD)
+            val newAllMiddleSpaceNodes = node.findAllNodesWithSpecificType(FINALLY).map { it.treePrev }
+            checkMidBrace(newAllMiddleSpaceNodes, node, FINALLY_KEYWORD)
         }
     }
 

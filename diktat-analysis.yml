@@ -110,7 +110,7 @@
 - name: FILE_WILDCARD_IMPORTS
   enabled: true
   configuration:
-    allowedWildcards: "kotlinx.serialization.*"
+    allowedWildcards: "kotlinx.serialization.*,org.cqfn.diktat.ruleset.utils.*"
 - name: NO_BRACES_IN_CONDITIONALS_AND_LOOPS
   enabled: true
 - name: WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES

@@ -81,7 +81,7 @@ class AvoidNestedFunctionsRule(private val configRules: List<RulesConfig>) : Rul
     /**
      * Checks if local function has no usage of outside properties
      */
-    @Suppress("UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType", "FUNCTION_BOOLEAN_PREFIX")
     private fun checkFunctionReferences(func: ASTNode): Boolean {
         val localProperties: MutableList<ASTNode> = mutableListOf()
         localProperties.addAll(func.findAllNodesWithSpecificType(PROPERTY))

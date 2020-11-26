@@ -5,6 +5,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.EMPTY_PRIMARY_CONSTRUCTOR
 
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
+import org.cqfn.diktat.ruleset.constants.EmitType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtClass
 
@@ -13,11 +14,11 @@ import org.jetbrains.kotlin.psi.KtClass
  */
 class AvoidEmptyPrimaryConstructor(private val configRules: List<RulesConfig>) : Rule("avoid-empty-primary-constructor") {
     private var isFixMode: Boolean = false
-    private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
+    private lateinit var emitWarn: EmitType
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
-                       emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
+                       emit: EmitType) {
         emitWarn = emit
         isFixMode = autoCorrect
 
