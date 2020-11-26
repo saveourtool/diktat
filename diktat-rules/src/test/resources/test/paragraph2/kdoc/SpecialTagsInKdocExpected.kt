@@ -9,7 +9,6 @@ class SpecialTagsInKdoc {
      * @implSpec bar
      *
      * @implNote baz
-     *
      */
     fun test() = Unit
 }

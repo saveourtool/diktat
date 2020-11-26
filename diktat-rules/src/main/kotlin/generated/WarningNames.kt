@@ -35,13 +35,13 @@ public object WarningNames {
 
     public const val GENERIC_NAME: String = "GENERIC_NAME"
 
+    public const val BACKTICKS_PROHIBITED: String = "BACKTICKS_PROHIBITED"
+
     public const val FUNCTION_NAME_INCORRECT_CASE: String = "FUNCTION_NAME_INCORRECT_CASE"
 
     public const val FUNCTION_BOOLEAN_PREFIX: String = "FUNCTION_BOOLEAN_PREFIX"
 
     public const val FILE_NAME_INCORRECT: String = "FILE_NAME_INCORRECT"
-
-    public const val FILE_NAME_MATCH_CLASS: String = "FILE_NAME_MATCH_CLASS"
 
     public const val EXCEPTION_SUFFIX: String = "EXCEPTION_SUFFIX"
 
@@ -137,8 +137,6 @@ public object WarningNames {
 
     public const val LONG_LINE: String = "LONG_LINE"
 
-    public const val BACKTICKS_PROHIBITED: String = "BACKTICKS_PROHIBITED"
-
     public const val REDUNDANT_SEMICOLON: String = "REDUNDANT_SEMICOLON"
 
     public const val WRONG_NEWLINES: String = "WRONG_NEWLINES"
@@ -165,6 +163,12 @@ public object WarningNames {
 
     public const val LOCAL_VARIABLE_EARLY_DECLARATION: String = "LOCAL_VARIABLE_EARLY_DECLARATION"
 
+    public const val STRING_TEMPLATE_CURLY_BRACES: String = "STRING_TEMPLATE_CURLY_BRACES"
+
+    public const val STRING_TEMPLATE_QUOTES: String = "STRING_TEMPLATE_QUOTES"
+
+    public const val FILE_NAME_MATCH_CLASS: String = "FILE_NAME_MATCH_CLASS"
+
     public const val NULLABLE_PROPERTY_TYPE: String = "NULLABLE_PROPERTY_TYPE"
 
     public const val TYPE_ALIAS: String = "TYPE_ALIAS"
@@ -175,10 +179,6 @@ public object WarningNames {
 
     public const val GENERIC_VARIABLE_WRONG_DECLARATION: String =
             "GENERIC_VARIABLE_WRONG_DECLARATION"
-
-    public const val STRING_TEMPLATE_CURLY_BRACES: String = "STRING_TEMPLATE_CURLY_BRACES"
-
-    public const val STRING_TEMPLATE_QUOTES: String = "STRING_TEMPLATE_QUOTES"
 
     public const val FLOAT_IN_ACCURATE_CALCULATIONS: String = "FLOAT_IN_ACCURATE_CALCULATIONS"
 
@@ -219,4 +219,8 @@ public object WarningNames {
             "TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED"
 
     public const val EXTENSION_FUNCTION_SAME_SIGNATURE: String = "EXTENSION_FUNCTION_SAME_SIGNATURE"
+
+    public const val EMPTY_PRIMARY_CONSTRUCTOR: String = "EMPTY_PRIMARY_CONSTRUCTOR"
+
+    public const val NO_CORRESPONDING_PROPERTY: String = "NO_CORRESPONDING_PROPERTY"
 }
