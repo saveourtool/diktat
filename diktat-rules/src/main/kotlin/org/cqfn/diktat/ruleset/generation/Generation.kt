@@ -55,6 +55,7 @@ private fun generateCodeStyle() {
     file.forEachLine { lines.add(it) }
     tempFile.printWriter().use { writer ->
         val iterator = lines.iterator()
+        writer.writeln("\\lstMakeShortInline`")
         while (iterator.hasNext()) {
             var line = iterator.next()
             if (line.contains("<!--"))
@@ -105,13 +106,9 @@ private fun generateCodeStyle() {
                 writer.writeln("\\end{tabular}")
                 writer.writeln("\\end{center}")
             } else {
-                val list = line.split(Regex("""\*\*([A-Za-z ]*)\*\*""")).map { it.trim() }.toMutableList()
-                list.forEachIndexed { index, value ->
-                    if (value.contains(Regex("""\*\*([A-Za-z ]*)\*\*"""))) {
-                        list[index] = "\\textbf{${value.replace("**", "")}}"
-                    }
-                }
-                var correctedString = list.joinToString(separator = " ")
+                var correctedString = findBoldOrItalicText(line, Regex("""\*\*([^*]+)\*\*"""), FindType.BOLD)
+                correctedString = findBoldOrItalicText(correctedString, Regex("""\*([A-Za-z ]+)\*"""), FindType.ITALIC)
+                correctedString = findBoldOrItalicText(correctedString, Regex("""`([^`]*)`"""), FindType.BACKTICKS)
                 correctedString = correctedString.replace("#", "\\#")
                 correctedString = correctedString.replace("&", "\\&")
                 correctedString = correctedString.replace("_", "\\_")
@@ -119,6 +116,28 @@ private fun generateCodeStyle() {
             }
         }
     }
+}
+
+enum class FindType {
+    BOLD,
+    ITALIC,
+    BACKTICKS
+}
+
+private fun findBoldOrItalicText(line: String, regex: Regex, type: FindType) : String {
+    val allRegex = regex.findAll(line).map { it.value }.toMutableList()
+    var correctedLine = line.replace(regex, "R_EP_LA_CE_ME")
+    allRegex.forEachIndexed {index, value ->
+        when (type) {
+            FindType.BOLD -> allRegex[index] = "\\textbf{${value.replace("**", "")}}"
+            FindType.ITALIC -> allRegex[index] = "\\textit{${value.replace("*", "")}}"
+            FindType.BACKTICKS -> allRegex[index] = value
+        }
+    }
+    allRegex.forEach {
+        correctedLine = correctedLine.replaceFirst("R_EP_LA_CE_ME", it)
+    }
+    return correctedLine
 }
 
 private fun PrintWriter.writeln(text: String) {
