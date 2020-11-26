@@ -22,6 +22,8 @@ class DiktatGradlePlugin : Plugin<Project> {
             }
             reporter = PlainReporter(System.out)
         }
+        diktatExtension.excludes = project.files()
+        diktatExtension.reporter = PlainReporter(System.out)
 
         // only gradle 7+ (or maybe 6.8) will embed kotlin 1.4+, kx.serialization is incompatible with kotlin 1.3, so until then we have to use JavaExec wrapper
         // FixMe: when gradle with kotlin 1.4 is out, proper configurable tasks should be added

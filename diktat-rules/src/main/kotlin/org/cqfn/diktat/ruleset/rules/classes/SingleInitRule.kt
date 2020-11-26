@@ -14,7 +14,10 @@ import com.pinterest.ktlint.core.ast.ElementType.EQ
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.parent
-import org.jetbrains.kotlin.backend.common.onlyIf
+import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ruleset.constants.Warnings
+import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
+import org.cqfn.diktat.ruleset.utils.getIdentifierName
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -48,7 +51,8 @@ class SingleInitRule(private val configRule: List<RulesConfig>) : Rule("multiple
             .children()
             .filter { it.elementType == CLASS_INITIALIZER }
             .toList()
-            .onlyIf({ size > 1 }) { initBlocks ->
+            .takeIf { it.size > 1 }
+            ?.let { initBlocks ->
                 val className = node.treeParent.getIdentifierName()?.text
                 Warnings.MULTIPLE_INIT_BLOCKS.warnAndFix(configRule, emitWarn, isFixMode,
                         "in class <$className> found ${initBlocks.size} `init` blocks", node.startOffset, node) {
@@ -102,7 +106,8 @@ class SingleInitRule(private val configRule: List<RulesConfig>) : Rule("multiple
                     .filter { (property, assignments) ->
                         !(property.psi as KtProperty).hasBody() && assignments.size == 1
                     }
-                    .onlyIf({ isNotEmpty() }) {
+                    .takeIf { it.isNotEmpty() }
+                    ?.let {
                         Warnings.MULTIPLE_INIT_BLOCKS.warnAndFix(configRule, emitWarn, isFixMode,
                                 "`init` block has assignments that can be moved to declarations", initBlock.startOffset, initBlock
                         ) {

@@ -45,3 +45,10 @@ class Example {
     }
 }
 
+class Foo {
+    /**
+     * @implNote lorem ipsum
+     */
+    private fun foo() {}
+}
+
