@@ -1,4 +1,4 @@
-// todo: fix inspections on KDocs
+// todo fix inspections on KDocs
 @file:Suppress("FILE_NAME_MATCH_CLASS", "KDOC_WITHOUT_RETURN_TAG", "KDOC_WITHOUT_PARAM_TAG")
 
 package org.cqfn.diktat.ruleset.utils
@@ -612,10 +612,12 @@ fun List<ASTNode>.handleIncorrectOrder(
     forEach { astNode ->
         val (afterThisNode, beforeThisNode) = astNode.getSiblingBlocks()
         val isPositionIncorrect =
-            (afterThisNode != null && !astNode.treeParent.isChildAfterAnother(astNode, afterThisNode)) ||
-                    !astNode.treeParent.isChildBeforeAnother(astNode, beforeThisNode)
+                (afterThisNode != null && !astNode.treeParent.isChildAfterAnother(astNode, afterThisNode)) ||
+                        !astNode.treeParent.isChildBeforeAnother(astNode, beforeThisNode)
 
-        if (isPositionIncorrect) incorrectPositionHandler(astNode, beforeThisNode)
+        if (isPositionIncorrect) {
+            incorrectPositionHandler(astNode, beforeThisNode)
+        }
     }
 }
 
@@ -642,29 +644,25 @@ fun ASTNode.extractLineOfText(): String {
 /**
  * Checks node has `@Test` annotation
  */
-fun ASTNode.hasTestAnnotation(): Boolean {
-    return findChildByType(MODIFIER_LIST)
-        ?.getAllChildrenWithType(ElementType.ANNOTATION_ENTRY)
-        ?.flatMap { it.findAllNodesWithSpecificType(ElementType.CONSTRUCTOR_CALLEE) }
-        ?.any { it.findLeafWithSpecificType(ElementType.IDENTIFIER)?.text == "Test" }
-        ?: false
-}
+fun ASTNode.hasTestAnnotation() = findChildByType(MODIFIER_LIST)
+    ?.getAllChildrenWithType(ElementType.ANNOTATION_ENTRY)
+    ?.flatMap { it.findAllNodesWithSpecificType(ElementType.CONSTRUCTOR_CALLEE) }
+    ?.any { it.findLeafWithSpecificType(ElementType.IDENTIFIER)?.text == "Test" }
+    ?: false
 
 /**
  * Checks node is located in file src/test/**/*Test.kt
  *
  * @param testAnchors names of test directories, e.g. "test", "jvmTest"
  */
-fun isLocatedInTest(filePathParts: List<String>, testAnchors: List<String>): Boolean {
-    return filePathParts
-        .takeIf { it.contains(PackageNaming.PACKAGE_PATH_ANCHOR) }
-        ?.run { subList(lastIndexOf(PackageNaming.PACKAGE_PATH_ANCHOR), size) }
-        ?.run {
-            // e.g. src/test/ClassTest.kt, other files like src/test/Utils.kt are still checked
-            testAnchors.any { contains(it) } && last().substringBeforeLast('.').endsWith("Test")
-        }
-        ?: false
-}
+fun isLocatedInTest(filePathParts: List<String>, testAnchors: List<String>) = filePathParts
+    .takeIf { it.contains(PackageNaming.PACKAGE_PATH_ANCHOR) }
+    ?.run { subList(lastIndexOf(PackageNaming.PACKAGE_PATH_ANCHOR), size) }
+    ?.run {
+        // e.g. src/test/ClassTest.kt, other files like src/test/Utils.kt are still checked
+        testAnchors.any { contains(it) } && last().substringBeforeLast('.').endsWith("Test")
+    }
+    ?: false
 
 /**
  * Returns the first line of this node's text if it is single, or the first line followed by [suffix] if there are more than one.
@@ -683,6 +681,7 @@ fun ASTNode.lastLineNumber(isFixMode: Boolean) = getLineNumber(isFixMode)?.plus(
 /**
  * copy-pasted method from ktlint to determine line and column number by offset
  */
+@Suppress("WRONG_NEWLINES")  // to keep this function with explicit return type
 fun ASTNode.calculateLineColByOffset(): (offset: Int) -> Pair<Int, Int> {
     return buildPositionInTextLocator(text)
 }
@@ -729,11 +728,11 @@ fun ASTNode.isGoingAfter(otherNode: ASTNode): Boolean {
  * @return line number or null if it cannot be calculated
  */
 fun ASTNode.getLineNumber(isFixMode: Boolean): Int? =
-    if (!isFixMode) {
-        lineNumber()
-    } else {
-        calculateLineNumber()
-    }
+        if (!isFixMode) {
+            lineNumber()
+        } else {
+            calculateLineNumber()
+        }
 
 /**
  * This function calculates line number instead of using cached values.

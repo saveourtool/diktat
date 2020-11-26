@@ -1,39 +1,36 @@
 package org.cqfn.diktat.ruleset.chapter3
 
-import com.pinterest.ktlint.core.LintError
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import generated.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings.BRACES_BLOCK_STRUCTURE_ERROR
 import org.cqfn.diktat.ruleset.rules.BlockStructureBraces
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.util.LintTestBase
+
+import com.pinterest.ktlint.core.LintError
+import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
-
     private val ruleId = "$DIKTAT_RULE_SET_ID:block-structure"
-
     private val rulesConfigList: List<RulesConfig> = listOf(
-            RulesConfig(BRACES_BLOCK_STRUCTURE_ERROR.name, true,
-                    mapOf("openBraceNewline" to "False", "closeBraceNewline" to "False"))
+        RulesConfig(BRACES_BLOCK_STRUCTURE_ERROR.name, true,
+            mapOf("openBraceNewline" to "False", "closeBraceNewline" to "False"))
     )
-
     private val rulesConfigListIgnoreOpen: List<RulesConfig> = listOf(
-            RulesConfig(BRACES_BLOCK_STRUCTURE_ERROR.name, true,
-                    mapOf("openBraceNewline" to "False"))
+        RulesConfig(BRACES_BLOCK_STRUCTURE_ERROR.name, true,
+            mapOf("openBraceNewline" to "False"))
     )
-
     private val rulesConfigListIgnoreClose: List<RulesConfig> = listOf(
-            RulesConfig(BRACES_BLOCK_STRUCTURE_ERROR.name, true,
-                    mapOf("closeBraceNewline" to "False"))
+        RulesConfig(BRACES_BLOCK_STRUCTURE_ERROR.name, true,
+            mapOf("closeBraceNewline" to "False"))
     )
 
     @Test
     @Tag(WarningNames.BRACES_BLOCK_STRUCTURE_ERROR)
     fun `check if expression with new line else`() {
         lintMethod(
-                """
+            """
                     |fun foo() {
                     |    if (x < -5) {
                     |       goo()
@@ -42,8 +39,8 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
                     |       koo()}
                     |}
                 """.trimMargin(),
-                LintError(4, 6, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect new line after closing brace", true),
-                LintError(6, 13, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} no newline before closing brace", true)
+            LintError(4, 6, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect new line after closing brace", true),
+            LintError(6, 13, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} no newline before closing brace", true)
         )
     }
 
@@ -65,15 +62,15 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
                     |       x--
                     |}
                 """.trimMargin()
-        lintMethod( withBrace)
-        lintMethod( withoutBrace)
+        lintMethod(withBrace)
+        lintMethod(withoutBrace)
     }
 
     @Test
     @Tag(WarningNames.BRACES_BLOCK_STRUCTURE_ERROR)
     fun `check correct if with else-if expression`() {
         lintMethod(
-                """
+            """
                     |fun foo() {
                     |    if (x < -5) {
                     |       goo()
@@ -91,7 +88,7 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
     @Tag(WarningNames.BRACES_BLOCK_STRUCTURE_ERROR)
     fun `check empty block in else expression`() {
         lintMethod(
-                """
+            """
                     |fun foo() {
                     |    if (x < -5) {
                     |       goo()
@@ -108,15 +105,15 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
     @Tag(WarningNames.BRACES_BLOCK_STRUCTURE_ERROR)
     fun `check wrong empty block in if expression`() {
         lintMethod(
-                """
+            """
                     |fun foo() {
                     |    if (x < -5) {
                     |       goo()
                     |    } else {}
                     |}
                 """.trimMargin(),
-                LintError(4, 13, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect same line after opening brace", true),
-                LintError(4, 13, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} no newline before closing brace", true)
+            LintError(4, 13, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect same line after opening brace", true),
+            LintError(4, 13, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} no newline before closing brace", true)
         )
     }
 
@@ -124,7 +121,7 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
     @Tag(WarningNames.BRACES_BLOCK_STRUCTURE_ERROR)
     fun `check if expression with wrong opening brace position`() {
         lintMethod(
-                """
+            """
                     |fun foo() {
                     |    if (x < -5)
                     |    {
@@ -133,8 +130,8 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
                     |    }
                     |}
                 """.trimMargin(),
-                LintError(2, 16, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect newline before opening brace", true),
-                LintError(5, 13, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect same line after opening brace", true)
+            LintError(2, 16, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect newline before opening brace", true),
+            LintError(5, 13, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect same line after opening brace", true)
         )
     }
 
@@ -142,7 +139,7 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
     @Tag(WarningNames.BRACES_BLOCK_STRUCTURE_ERROR)
     fun `check if expression with wrong closing brace position`() {
         lintMethod(
-                """
+            """
                     |fun foo() {
                     |    if (x < -5) {
                     |       bf() }
@@ -150,9 +147,9 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
                     |       f() }
                     |}
                 """.trimMargin(),
-                LintError(3, 13, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} no newline before closing brace", true),
-                LintError(3, 14, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect new line after closing brace", true),
-                LintError(5, 12, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} no newline before closing brace", true)
+            LintError(3, 13, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} no newline before closing brace", true),
+            LintError(3, 14, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect new line after closing brace", true),
+            LintError(5, 12, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} no newline before closing brace", true)
         )
     }
 
@@ -160,7 +157,7 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
     @Tag(WarningNames.BRACES_BLOCK_STRUCTURE_ERROR)
     fun `check wrong brace in if expression but with off configuration`() {
         lintMethod(
-                """
+            """
                     |fun foo() {
                     |    if (x < -5) 
                     |    {
@@ -170,8 +167,8 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
                     |       hoo() }
                     |}
                 """.trimMargin(),
-                LintError(4, 15, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect new line after closing brace", true),
-                rulesConfigList = rulesConfigList
+            LintError(4, 15, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect new line after closing brace", true),
+            rulesConfigList = rulesConfigList
         )
     }
 
@@ -179,7 +176,7 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
     @Tag(WarningNames.BRACES_BLOCK_STRUCTURE_ERROR)
     fun `check function expression with wrong open brace with configuration`() {
         lintMethod(
-                """
+            """
                     |fun foo() 
                     |{
                     |   pyu()
@@ -192,7 +189,7 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
     @Tag(WarningNames.BRACES_BLOCK_STRUCTURE_ERROR)
     fun `check empty fun expression with override annotation`() {
         lintMethod(
-                """
+            """
                     |override fun foo() {
                     |}
                 """.trimMargin()
@@ -203,7 +200,7 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
     @Tag(WarningNames.BRACES_BLOCK_STRUCTURE_ERROR)
     fun `check one line fun`() {
         lintMethod(
-                """
+            """
                     |fun foo() = 0
                 """.trimMargin()
         )
@@ -213,7 +210,7 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
     @Tag(WarningNames.BRACES_BLOCK_STRUCTURE_ERROR)
     fun `check fun with empty block won't be processed`() {
         lintMethod(
-                """
+            """
                     |fun foo() {}
                 """.trimMargin()
 
@@ -224,11 +221,11 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
     @Tag(WarningNames.BRACES_BLOCK_STRUCTURE_ERROR)
     fun `check function expression with wrong close brace`() {
         lintMethod(
-                """
+            """
                     |fun foo() {
                     |   pyu() }
                 """.trimMargin(),
-                LintError(2, 10, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} no newline before closing brace", true)
+            LintError(2, 10, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} no newline before closing brace", true)
         )
     }
 
@@ -236,7 +233,7 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
     @Tag(WarningNames.BRACES_BLOCK_STRUCTURE_ERROR)
     fun `check simple wrong open brace when expression`() {
         lintMethod(
-                """
+            """
                     |fun a(x: Int) {
                     |   when (x)
                     |   {
@@ -245,7 +242,7 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
                     |   }
                     |}
                 """.trimMargin(),
-                LintError(2, 12, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect newline before opening brace", true)
+            LintError(2, 12, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect newline before opening brace", true)
         )
     }
 
@@ -253,7 +250,7 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
     @Tag(WarningNames.BRACES_BLOCK_STRUCTURE_ERROR)
     fun `check correct simple for without brace `() {
         lintMethod(
-                """
+            """
                     |fun a(x: Int) {
                     |   for (i in 1..3)
                     |       println(i)
@@ -266,7 +263,7 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
     @Tag(WarningNames.BRACES_BLOCK_STRUCTURE_ERROR)
     fun `check wrong for expression with empty block but with config`() {
         lintMethod(
-                """
+            """
                     |fun a(x: Int) {
                     |   for (i in 1..3) {}
                     |}
@@ -278,7 +275,7 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
     @Tag(WarningNames.BRACES_BLOCK_STRUCTURE_ERROR)
     fun `check correct while without brace`() {
         lintMethod(
-                """
+            """
                     |fun sdf() {
                     |   while (x > 0)
                     |       x--
@@ -291,7 +288,7 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
     @Tag(WarningNames.BRACES_BLOCK_STRUCTURE_ERROR)
     fun `check wrong do-while with open brace`() {
         lintMethod(
-                """
+            """
                     |fun sdf() {
                     |   do
                     |   {
@@ -299,7 +296,7 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
                     |   } while (x != 0)
                     |}
                 """.trimMargin(),
-                LintError(2, 6, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect newline before opening brace", true)
+            LintError(2, 6, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect newline before opening brace", true)
         )
     }
 
@@ -307,7 +304,7 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
     @Tag(WarningNames.BRACES_BLOCK_STRUCTURE_ERROR)
     fun `check try-catch-finally with wrong position catch and finally words `() {
         lintMethod(
-                """
+            """
                     |fun divideOrZero(numerator: Int, denominator: Int): Int {
                     |   try { 
                     |       return numerator / denominator
@@ -322,8 +319,8 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
                     |   }
                     |}
                 """.trimMargin(),
-                LintError(6, 5, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect new line after closing brace", true),
-                LintError(9, 5, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect new line after closing brace", true)
+            LintError(6, 5, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect new line after closing brace", true),
+            LintError(9, 5, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect new line after closing brace", true)
         )
     }
 
@@ -331,7 +328,7 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
     @Tag(WarningNames.BRACES_BLOCK_STRUCTURE_ERROR)
     fun `check wrong try-catch with open and close braces`() {
         lintMethod(
-                """
+            """
                     |fun divideOrZero(numerator: Int, denominator: Int): Int {
                     |   try { return numerator / denominator
                     |   } catch (e: ArithmeticException) {
@@ -340,8 +337,8 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
                     |       return 1 }
                     |}
                 """.trimMargin(),
-                LintError(2, 9, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect same line after opening brace", true),
-                LintError(6, 17, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} no newline before closing brace", true)
+            LintError(2, 9, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect same line after opening brace", true),
+            LintError(6, 17, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} no newline before closing brace", true)
         )
     }
 
@@ -349,7 +346,7 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
     @Tag(WarningNames.BRACES_BLOCK_STRUCTURE_ERROR)
     fun `check correct simple class expression`() {
         lintMethod(
-                """
+            """
                     |class A {
                     |   fun foo() {
                     |       println("Hello")
@@ -363,7 +360,7 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
     @Tag(WarningNames.BRACES_BLOCK_STRUCTURE_ERROR)
     fun `check wrong simple class expression but with config`() {
         lintMethod(
-                """
+            """
                     |class A 
                     |{
                     |   fun foo() {
@@ -377,7 +374,7 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
     @Tag(WarningNames.BRACES_BLOCK_STRUCTURE_ERROR)
     fun `check wrong close brace in object expression but with ignore config`() {
         lintMethod(
-                """
+            """
                     |object A {
                     |   fun foo() {
                     |       println("Hello")
@@ -392,7 +389,7 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
     @Tag(WarningNames.BRACES_BLOCK_STRUCTURE_ERROR)
     fun `check wrong open brace in object expression`() {
         lintMethod(
-                """
+            """
                     |object A
                     |{
                     |   fun foo() {
@@ -402,15 +399,15 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
                     |   val x: Int = 10
                     |}
                 """.trimMargin(),
-                LintError(1, 9, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect newline before opening brace", true)
+            LintError(1, 9, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect newline before opening brace", true)
         )
     }
 
     @Test
     @Tag(WarningNames.BRACES_BLOCK_STRUCTURE_ERROR)
-    fun `check init expression with wrong opening and closing brace position `(){
+    fun `check init expression with wrong opening and closing brace position `() {
         lintMethod(
-                """
+            """
                     |class A {
                     |   init
                     |   {
@@ -421,8 +418,8 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
                     |   }
                     |}
                 """.trimMargin(),
-                LintError(2, 8, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect newline before opening brace", true),
-                LintError(4, 14, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} no newline before closing brace", true)
+            LintError(2, 8, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} incorrect newline before opening brace", true),
+            LintError(4, 14, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} no newline before closing brace", true)
         )
     }
 
@@ -430,7 +427,7 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
     @Tag(WarningNames.BRACES_BLOCK_STRUCTURE_ERROR)
     fun `check correct simple constructor expression`() {
         lintMethod(
-                """
+            """
                     |class Person() {
                     |   constructor(id: Int) {
                     |       println(id)
@@ -444,7 +441,7 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
     @Tag(WarningNames.BRACES_BLOCK_STRUCTURE_ERROR)
     fun `check wrong constructor expression but with ignore opening brace config`() {
         lintMethod(
-                """
+            """
                     |class Person()
                     |{
                     |   constructor(id: Int) {
@@ -459,7 +456,7 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
     @Tag(WarningNames.BRACES_BLOCK_STRUCTURE_ERROR)
     fun `check lambda with incorrect close brace position`() {
         lintMethod(
-                """
+            """
                     |class Person() {
                     |   val list = listOf("Hello", "World")
                     |   
@@ -476,7 +473,7 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
     @Tag(WarningNames.BRACES_BLOCK_STRUCTURE_ERROR)
     fun `check lambdas`() {
         lintMethod(
-                """
+            """
                     |fun foo() {
                     |   val x = t.map {it -> it.size}
                     |   val y = q
@@ -488,7 +485,7 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
                     |               it.text == "sdc" }
                     |}
                 """.trimMargin(),
-                LintError(9, 33, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} no newline before closing brace", true)
+            LintError(9, 33, ruleId, "${BRACES_BLOCK_STRUCTURE_ERROR.warnText()} no newline before closing brace", true)
         )
     }
 }

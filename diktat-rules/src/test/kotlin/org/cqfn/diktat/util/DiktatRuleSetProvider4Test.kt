@@ -21,8 +21,8 @@ class DiktatRuleSetProvider4Test(private val ruleSupplier: (rulesConfigList: Lis
     private val rulesConfigList: List<RulesConfig>? = rulesConfigList ?: RulesConfigReader(javaClass.classLoader).readResource("diktat-analysis.yml")
 
     override fun get() = RuleSet(
-            DIKTAT_RULE_SET_ID,
-            ruleSupplier.invoke(rulesConfigList ?: emptyList())
+        DIKTAT_RULE_SET_ID,
+        ruleSupplier.invoke(rulesConfigList ?: emptyList())
     )
 }
 
@@ -32,10 +32,10 @@ class DiktatRuleSetProviderTest {
     fun `check DiktatRuleSetProviderTest contain all rules`() {
         val path = "${System.getProperty("user.dir")}/src/main/kotlin/org/cqfn/diktat/ruleset/rules"
         val filesName = File(path)
-                .walk()
-                .filter { it.isFile }
-                .map { it.nameWithoutExtension }
-                .filterNot { it in ignoreFile }
+            .walk()
+            .filter { it.isFile }
+            .map { it.nameWithoutExtension }
+            .filterNot { it in ignoreFile }
         val rulesName = DiktatRuleSetProvider().get().map { it::class.simpleName!! }
         Assertions.assertEquals(filesName.sorted().toList(), rulesName.sorted())
     }

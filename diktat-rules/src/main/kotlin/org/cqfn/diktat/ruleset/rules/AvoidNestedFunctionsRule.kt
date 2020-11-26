@@ -83,9 +83,9 @@ class AvoidNestedFunctionsRule(private val configRules: List<RulesConfig>) : Rul
      */
     @Suppress("UnsafeCallOnNullableType")
     private fun checkFunctionReferences(func: ASTNode): Boolean {
-        val localProperties = mutableListOf<ASTNode>()
+        val localProperties: MutableList<ASTNode> = mutableListOf()
         localProperties.addAll(func.findAllNodesWithSpecificType(PROPERTY))
-        val propertiesNames = mutableListOf<String>()
+        val propertiesNames: MutableList<String> = mutableListOf()
         propertiesNames.addAll(localProperties.map { it.getFirstChildWithType(IDENTIFIER)!!.text })
         propertiesNames.addAll(getParameterNames(func))
 

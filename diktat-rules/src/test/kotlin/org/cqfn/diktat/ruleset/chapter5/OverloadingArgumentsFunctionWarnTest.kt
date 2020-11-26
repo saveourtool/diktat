@@ -1,23 +1,23 @@
 package org.cqfn.diktat.ruleset.chapter5
 
-import com.pinterest.ktlint.core.LintError
-import generated.WarningNames
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_OVERLOADING_FUNCTION_ARGUMENTS
+import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.OverloadingArgumentsFunction
 import org.cqfn.diktat.util.LintTestBase
+
+import com.pinterest.ktlint.core.LintError
+import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class OverloadingArgumentsFunctionWarnTest : LintTestBase(::OverloadingArgumentsFunction) {
-
     private val ruleId = "$DIKTAT_RULE_SET_ID:overloading-default-values"
 
     @Test
     @Tag(WarningNames.WRONG_OVERLOADING_FUNCTION_ARGUMENTS)
     fun `check simple example`() {
         lintMethod(
-                """
+            """
                     |fun foo() {}
                     |
                     |fun foo(a: Int) {}
@@ -45,9 +45,9 @@ class OverloadingArgumentsFunctionWarnTest : LintTestBase(::OverloadingArguments
                     |   fun foo(){}
                     |}
                 """.trimMargin(),
-                LintError(1,1, ruleId, "${WRONG_OVERLOADING_FUNCTION_ARGUMENTS.warnText()} foo", false),
-                LintError(16,1, ruleId, "${WRONG_OVERLOADING_FUNCTION_ARGUMENTS.warnText()} goo", false),
-                LintError(25,4, ruleId, "${WRONG_OVERLOADING_FUNCTION_ARGUMENTS.warnText()} foo", false)
+            LintError(1, 1, ruleId, "${WRONG_OVERLOADING_FUNCTION_ARGUMENTS.warnText()} foo", false),
+            LintError(16, 1, ruleId, "${WRONG_OVERLOADING_FUNCTION_ARGUMENTS.warnText()} goo", false),
+            LintError(25, 4, ruleId, "${WRONG_OVERLOADING_FUNCTION_ARGUMENTS.warnText()} foo", false)
         )
     }
 
@@ -55,7 +55,7 @@ class OverloadingArgumentsFunctionWarnTest : LintTestBase(::OverloadingArguments
     @Tag(WarningNames.WRONG_OVERLOADING_FUNCTION_ARGUMENTS)
     fun `check simple`() {
         lintMethod(
-                """
+            """
                     private fun isComparisonWithAbs(psiElement: PsiElement) =
                         when (psiElement) {
                             is KtBinaryExpression -> psiElement.isComparisonWithAbs()
@@ -88,7 +88,7 @@ class OverloadingArgumentsFunctionWarnTest : LintTestBase(::OverloadingArguments
                             ?: false 
                     }
                 """.trimMargin(),
-                LintError(8,21, ruleId, "${WRONG_OVERLOADING_FUNCTION_ARGUMENTS.warnText()} isComparisonWithAbs", false)
+            LintError(8, 21, ruleId, "${WRONG_OVERLOADING_FUNCTION_ARGUMENTS.warnText()} isComparisonWithAbs", false)
         )
     }
 
@@ -96,7 +96,7 @@ class OverloadingArgumentsFunctionWarnTest : LintTestBase(::OverloadingArguments
     @Tag(WarningNames.WRONG_OVERLOADING_FUNCTION_ARGUMENTS)
     fun `check methods with different return types`() {
         lintMethod(
-                """
+            """
                     private fun KtBinaryExpression.isComparisonWithAbs(a: Int): Boolean {
                             return takeIf { it.operationToken in comparisonOperators }
                             ?.run { left as? KtCallExpression ?: right as? KtCallExpression }
