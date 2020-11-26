@@ -256,8 +256,18 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
     private fun checkBraceNode(node: ASTNode, shouldContainNewline: Boolean = false) =
             shouldContainNewline == node.isWhiteSpaceWithNewline()
 
+    /**
+     * Configuration for style of braces in block
+     */
     class BlockStructureBracesConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
+        /**
+         * Whether the opening brace should be placed on a new line
+         */
         val openBrace = config["openBraceNewline"]?.toBoolean() ?: true
+
+        /**
+         * Whether a closing brace should be placed on a new line
+         */
         val closeBrace = config["closeBraceNewline"]?.toBoolean() ?: true
     }
 }

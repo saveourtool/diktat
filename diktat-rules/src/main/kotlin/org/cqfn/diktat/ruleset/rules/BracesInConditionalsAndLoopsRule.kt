@@ -32,6 +32,9 @@ import org.jetbrains.kotlin.psi.KtLoopExpression
 import org.jetbrains.kotlin.psi.KtWhenExpression
 import org.jetbrains.kotlin.psi.psiUtil.astReplace
 
+/**
+ * Rule that checks that all conditionals and loops have braces.
+ */
 class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig>) : Rule("braces-rule") {
     private var isFixMode: Boolean = false
     private lateinit var emitWarn: EmitType
@@ -53,7 +56,7 @@ class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig
     /**
      * Check braces in if-else statements. Check for both IF and ELSE needs to be done in one method to discover single-line if-else statements correctly.
      */
-    @Suppress("ForbiddenComment", "UnsafeCallOnNullableType")
+    @Suppress("ForbiddenComment", "UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
     private fun checkIfNode(node: ASTNode) {
         val ifPsi = node.psi as KtIfExpression
         val thenNode = ifPsi.then?.node
@@ -153,7 +156,7 @@ class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig
         addChild(emptyBlock, firstChild)
         addChild(PsiWhiteSpaceImpl(" "), emptyBlock)
         emptyBlock.addChild(LeafPsiElement(LBRACE, "{"))
-        emptyBlock.addChild(PsiWhiteSpaceImpl("\n" + " ".repeat(indent)))
+        emptyBlock.addChild(PsiWhiteSpaceImpl("\n${" ".repeat(indent)}"))
         emptyBlock.addChild(LeafPsiElement(RBRACE, "}"))
         if (secondChild != null) {
             replaceChild(secondChild, PsiWhiteSpaceImpl(" "))

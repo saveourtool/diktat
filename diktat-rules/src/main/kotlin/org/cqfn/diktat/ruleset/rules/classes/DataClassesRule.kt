@@ -59,7 +59,7 @@ class DataClassesRule(private val configRule: List<RulesConfig>) : Rule("data-cl
         USE_DATA_CLASS.warn(configRule, emitWarn, isFixMode, "${(node.psi as KtClass).name}", node.startOffset, node)
     }
 
-    @Suppress("UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType", "FUNCTION_BOOLEAN_PREFIX")
     private fun ASTNode.canBeDataClass(): Boolean {
         val classBody = getFirstChildWithType(CLASS_BODY)
         if (hasChildOfType(MODIFIER_LIST)) {
@@ -80,6 +80,7 @@ class DataClassesRule(private val configRule: List<RulesConfig>) : Rule("data-cl
     /**
      * Checks if any property with accessor contains logic in accessor
      */
+    @Suppress("FUNCTION_BOOLEAN_PREFIX")
     private fun areGoodProps(node: ASTNode): Boolean {
         val propertiesWithAccessors = node.getAllChildrenWithType(PROPERTY).filter { it.hasChildOfType(PROPERTY_ACCESSOR) }
 
@@ -94,7 +95,7 @@ class DataClassesRule(private val configRule: List<RulesConfig>) : Rule("data-cl
         return true
     }
 
-    @Suppress("UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType", "FUNCTION_BOOLEAN_PREFIX")
     private fun areGoodAccessors(accessors: List<ASTNode>): Boolean {
         accessors.forEach {
             if (it.hasChildOfType(BLOCK)) {

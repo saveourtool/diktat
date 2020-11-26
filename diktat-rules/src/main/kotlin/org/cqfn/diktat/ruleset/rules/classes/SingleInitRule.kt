@@ -23,6 +23,9 @@ import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.psiUtil.asAssignment
 import org.jetbrains.kotlin.psi.psiUtil.children
 
+/**
+ * The rule that checks whether a class has a single `init` block or multiple. Having multiple `init` blocks is a bad practice.
+ */
 class SingleInitRule(private val configRule: List<RulesConfig>) : Rule("multiple-init-block") {
     private var isFixMode: Boolean = false
     private lateinit var emitWarn: EmitType
@@ -84,7 +87,7 @@ class SingleInitRule(private val configRule: List<RulesConfig>) : Rule("multiple
         firstInitBlock.parent(CLASS_BODY)?.let(::removeEmptyBlocks)
     }
 
-    @Suppress("UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
     private fun moveAssignmentsToProperties(properties: List<ASTNode>, initBlock: ASTNode) {
         initBlock
             .findChildByType(BLOCK)

@@ -166,11 +166,10 @@ class SingleConstructorRule(private val config: List<RulesConfig>) : Rule("singl
         if (otherStatements.isNotEmpty() || nonTrivialAssignments.isNotEmpty()) {
             findChildByType(CLASS_BODY)?.run {
                 val classInitializer = kotlinParser.createNode(
-                    """
-                            |init {
-                            |    ${(otherStatements + nonTrivialAssignments.keys).joinToString("\n") { it.text }}
-                            |}
-                        """.trimMargin()
+                    """|init {
+                       |    ${(otherStatements + nonTrivialAssignments.keys).joinToString("\n") { it.text }}
+                       |}
+                    """.trimMargin()
                 )
                 addChild(classInitializer, secondaryCtor)
                 addChild(PsiWhiteSpaceImpl("\n"), secondaryCtor)

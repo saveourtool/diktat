@@ -16,6 +16,9 @@ import com.squareup.kotlinpoet.TypeSpec
 
 import java.io.File
 
+/**
+ * The comment that will be added to the generated sources file.
+ */
 private val autoGenerationComment =
         """
             | This document was auto generated, please don't modify it.
