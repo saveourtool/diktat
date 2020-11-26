@@ -55,7 +55,7 @@ open class DiktatJavaExecTaskBase @Inject constructor(
                 add("\"!$pattern\"")
             }
         }
-        logger.lifecycle("Setting args to $args")
+        logger.debug("Setting JavaExec args to $args")
     }
 
     /**
