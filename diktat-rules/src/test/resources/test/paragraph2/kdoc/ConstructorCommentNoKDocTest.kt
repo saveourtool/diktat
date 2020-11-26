@@ -30,3 +30,5 @@ class A constructor(
          */
         val name: String
 ){}
+
+class Example(private val foo: Int)

@@ -22,9 +22,8 @@ class A constructor(
 ){}
 
 /**
- * @property name
-  * @property lastName
-*/
+ * @property lastName
+ */
 class A constructor(
         private var name: String,
         val lastName: String
@@ -37,3 +36,5 @@ class A constructor(
 class A constructor(
         val name: String
 ){}
+
+class Example(private val foo: Int)
