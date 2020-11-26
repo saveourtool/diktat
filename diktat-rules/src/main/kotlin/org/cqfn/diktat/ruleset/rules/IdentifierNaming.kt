@@ -19,7 +19,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_HAS_PREFIX
 import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_NAME_INCORRECT
 import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_NAME_INCORRECT_FORMAT
 import org.cqfn.diktat.ruleset.utils.Style
-import org.cqfn.diktat.ruleset.utils.checkLength
+import org.cqfn.diktat.ruleset.utils.isTextLengthInRange
 import org.cqfn.diktat.ruleset.utils.containsOneLetterOrZero
 import org.cqfn.diktat.ruleset.utils.findChildAfter
 import org.cqfn.diktat.ruleset.utils.findLeafWithSpecificType
@@ -365,7 +365,7 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
     private fun checkIdentifierLength(nodes: List<ASTNode>,
                                       isVariable: Boolean) {
         nodes.forEach {
-            if (it.text != "_" && !(it.checkLength(MIN_IDENTIFIER_LENGTH..MAX_IDENTIFIER_LENGTH) ||
+            if (it.text != "_" && !(it.isTextLengthInRange(MIN_IDENTIFIER_LENGTH..MAX_IDENTIFIER_LENGTH) ||
                     oneCharIdentifiers.contains(it.text) && isVariable || validCatchIdentifier(it)
 
             )) {

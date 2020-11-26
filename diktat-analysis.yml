@@ -42,8 +42,9 @@
   enabled: true
 - name: VARIABLE_NAME_INCORRECT_FORMAT
   enabled: true
+# todo: disabled until https://github.com/cqfn/diKTat/issues/551
 - name: MISSING_KDOC_ON_FUNCTION
-  enabled: true
+  enabled: false
 - name: MISSING_KDOC_TOP_LEVEL
   enabled: true
 - name: MISSING_KDOC_CLASS_ELEMENTS

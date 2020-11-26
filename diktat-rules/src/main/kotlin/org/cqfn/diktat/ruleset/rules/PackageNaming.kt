@@ -1,11 +1,5 @@
 package org.cqfn.diktat.ruleset.rules
 
-import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
-import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
-import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
-import com.pinterest.ktlint.core.ast.isLeaf
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getCommonConfiguration
 import org.cqfn.diktat.ruleset.constants.EmitType
@@ -16,6 +10,13 @@ import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_PREFIX
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_SYMBOLS
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_MISSING
 import org.cqfn.diktat.ruleset.utils.*
+
+import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
+import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
+import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
+import com.pinterest.ktlint.core.ast.isLeaf
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -74,9 +75,12 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
     /**
      * checking and fixing the case when package directive is missing in the file
      */
-    private fun warnAndFixMissingPackageName(initialPackageDirectiveNode: ASTNode, realPackageName: List<String>, fileName: String) {
+    private fun warnAndFixMissingPackageName(
+        initialPackageDirectiveNode: ASTNode,
+        realPackageName: List<String>,
+        fileName: String) {
         PACKAGE_NAME_MISSING.warnAndFix(configRules, emitWarn, isFixMode, fileName,
-                initialPackageDirectiveNode.startOffset, initialPackageDirectiveNode) {
+            initialPackageDirectiveNode.startOffset, initialPackageDirectiveNode) {
             if (realPackageName.isNotEmpty()) {
                 // creating node for package directive using Kotlin parser
                 val newPackageDirectiveName = realPackageName.joinToString(PACKAGE_SEPARATOR)
@@ -87,6 +91,7 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
 
     /**
      * calculating real package name based on the directory path where the file is stored
+     *
      * @return list with words that are parts of package name like [org, diktat, name]
      */
     private fun calculateRealPackageName(fileName: String): List<String> {
@@ -102,7 +107,7 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
             // 2) removing src/main/kotlin/java/e.t.c dirs and removing file name
             // 3) adding company's domain name at the beginning
             val fileSubDir = filePathParts.subList(filePathParts.lastIndexOf(PACKAGE_PATH_ANCHOR), filePathParts.size - 1)
-                    .dropWhile { LANGUAGE_DIR_NAMES.contains(it) }
+                .dropWhile { languageDirNames.contains(it) }
             // no need to add DOMAIN_NAME to the package name if it is already in path
             val domainPrefix = if (!fileSubDir.joinToString(PACKAGE_SEPARATOR).startsWith(domainName)) domainName.split(PACKAGE_SEPARATOR) else listOf()
             domainPrefix + fileSubDir
@@ -112,17 +117,17 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
     private fun checkPackageName(wordsInPackageName: List<ASTNode>, packageDirectiveNode: ASTNode) {
         // all words should be in a lower case (lower case letters/digits/underscore)
         wordsInPackageName
-                .filter { word -> word.text.hasUppercaseLetter() }
-                .forEach {
-                    PACKAGE_NAME_INCORRECT_CASE.warnAndFix(configRules, emitWarn, isFixMode, it.text, it.startOffset, it) {
-                        it.toLower()
-                    }
+            .filter { word -> word.text.hasUppercaseLetter() }
+            .forEach {
+                PACKAGE_NAME_INCORRECT_CASE.warnAndFix(configRules, emitWarn, isFixMode, it.text, it.startOffset, it) {
+                    it.toLower()
                 }
+            }
 
         // package name should start from a company's domain name
         if (!isDomainMatches(wordsInPackageName)) {
             PACKAGE_NAME_INCORRECT_PREFIX.warnAndFix(configRules, emitWarn, isFixMode, domainName,
-                    wordsInPackageName[0].startOffset, wordsInPackageName[0]) {
+                wordsInPackageName[0].startOffset, wordsInPackageName[0]) {
                 val oldPackageName = wordsInPackageName.joinToString(PACKAGE_SEPARATOR) { it.text }
                 val newPackageName = "$domainName$PACKAGE_SEPARATOR$oldPackageName"
                 insertNewPackageName(packageDirectiveNode, newPackageName)
@@ -131,8 +136,8 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
 
         // all words should contain only ASCII letters or digits
         wordsInPackageName
-                .filter { word -> !correctSymbolsAreUsed(word.text) }
-                .forEach { PACKAGE_NAME_INCORRECT_SYMBOLS.warn(configRules, emitWarn, isFixMode, it.text, it.startOffset, it) }
+            .filter { word -> !correctSymbolsAreUsed(word.text) }
+            .forEach { PACKAGE_NAME_INCORRECT_SYMBOLS.warn(configRules, emitWarn, isFixMode, it.text, it.startOffset, it) }
 
         // all words should contain only ASCII letters or digits
         wordsInPackageName.forEach { correctPackageWordSeparatorsUsed(it) }
@@ -177,7 +182,9 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
      */
     private fun isDomainMatches(packageNameParts: List<ASTNode>): Boolean {
         val packageNamePrefix = domainName.split(PACKAGE_SEPARATOR)
-        if (packageNameParts.size < packageNamePrefix.size) return false
+        if (packageNameParts.size < packageNamePrefix.size) {
+            return false
+        }
 
         for (i in packageNamePrefix.indices) {
             if (packageNameParts[i].text != packageNamePrefix[i]) {
@@ -187,55 +194,50 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
         return true
     }
 
-
     @Suppress("UnsafeCallOnNullableType")
     private fun insertNewPackageName(packageDirectiveNode: ASTNode, packageName: String) {
         // package name can be dot qualified expression or a reference expression in case it contains only one word
         val packageNameNode = packageDirectiveNode.findChildByType(DOT_QUALIFIED_EXPRESSION)
-                ?: packageDirectiveNode.findChildByType(REFERENCE_EXPRESSION)
+            ?: packageDirectiveNode.findChildByType(REFERENCE_EXPRESSION)
 
         val generatedPackageDirective = KotlinParser()
-                .createNode("$PACKAGE_KEYWORD $packageName", true)
+            .createNode("$PACKAGE_KEYWORD $packageName", true)
 
         if (packageNameNode == null) {
             // there is missing package statement in a file, so it will be created and inserted
             val newPackageDirective = generatedPackageDirective.findLeafWithSpecificType(PACKAGE_DIRECTIVE)!!
             packageDirectiveNode.treeParent.replaceChild(packageDirectiveNode, newPackageDirective)
             newPackageDirective.treeParent.addChild(PsiWhiteSpaceImpl("\n\n"), newPackageDirective.treeNext)
-
         } else {
             // simply replacing only node connected with the package name, all other nodes remain unchanged
             packageDirectiveNode.replaceChild(packageNameNode,
-                    generatedPackageDirective.findLeafWithSpecificType(DOT_QUALIFIED_EXPRESSION)!!)
+                generatedPackageDirective.findLeafWithSpecificType(DOT_QUALIFIED_EXPRESSION)!!)
         }
-
     }
 
     /**
      * checking and fixing package directive if it does not match with the directory where the file is stored
      */
     private fun checkFilePathMatchesWithPackageName(packageNameParts: List<ASTNode>,
-                                                    realNameParts: List<String>, packageDirective: ASTNode) {
+                                                    realNameParts: List<String>,
+                                                    packageDirective: ASTNode) {
         if (realNameParts.isNotEmpty() && packageNameParts.map { node -> node.text } != realNameParts) {
             val realPackageNameStr = realNameParts.joinToString(PACKAGE_SEPARATOR)
             val offset = packageNameParts[0].startOffset
             PACKAGE_NAME_INCORRECT_PATH.warnAndFix(configRules, emitWarn, isFixMode,
-                    realPackageNameStr, offset, packageNameParts[0]) {
+                realPackageNameStr, offset, packageNameParts[0]) {
                 insertNewPackageName(packageDirective, realPackageNameStr)
             }
         }
     }
 
     companion object {
+        private val log = LoggerFactory.getLogger(PackageNaming::class.java)
+
         /**
          * Symbol that is used to separate parts in package name
          */
         const val PACKAGE_SEPARATOR = "."
-
-        /**
-         * Directory which is considered the start of sources file tree
-         */
-        const val PACKAGE_PATH_ANCHOR = "src"
 
         /**
          * Targets described in [KMM documentation](https://kotlinlang.org/docs/reference/mpp-supported-platforms.html)
@@ -245,11 +247,16 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
             "mingwX64", "mingwX86", "wasm32")
 
         /**
+         * Directory which is considered the start of sources file tree
+         */
+        const val PACKAGE_PATH_ANCHOR = "src"
+
+        /**
          * Directories that are supposed to be first in sources file paths, relative to [PACKAGE_PATH_ANCHOR].
          * For kotlin multiplatform projects directories for targets from [kmmTargets] are supported.
          */
-        val LANGUAGE_DIR_NAMES = listOf("src", "main", "test", "java", "kotlin") + kmmTargets.flatMap { listOf("${it}Main", "${it}Test") }
+        val languageDirNames = listOf("src", "main", "test", "java", "kotlin") + kmmTargets.flatMap { listOf("${it}Main", "${it}Test") }
+        
 
-        private val log = LoggerFactory.getLogger(PackageNaming::class.java)
     }
 }

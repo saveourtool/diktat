@@ -87,7 +87,7 @@ class AstNodeUtilsTest {
         """.trimIndent()
         applyToCode(code, 1) { node, counter ->
             if (node.elementType == CLASS) {
-                Assertions.assertTrue(node.checkLength(IntRange(code.length, code.length)))
+                Assertions.assertTrue(node.isTextLengthInRange(IntRange(code.length, code.length)))
                 counter.incrementAndGet()
             }
         }

@@ -126,6 +126,12 @@ class ExtensionFunctionsSameNameRule(private val configRules: List<RulesConfig>)
         EXTENSION_FUNCTION_SAME_SIGNATURE.warn(configRules, emitWarn, isFixMode, "$firstFunc and $secondFunc", node.startOffset, node)
     }
 
+    /**
+     * Class that represents a function's signature
+     * @property name function name
+     * @property parameters function parameters as strings
+     * @property returnType return type of a function if it is explicitly set
+     */
     internal data class FunctionSignature(
         val name: String,
         val parameters: List<String>,
@@ -133,6 +139,12 @@ class ExtensionFunctionsSameNameRule(private val configRules: List<RulesConfig>)
         override fun toString() = "$name$parameters${if (returnType != null) ": $returnType" else ""}"
     }
 
+    /**
+     * Class that represents an extension function
+     * @property className name of receiver class
+     * @property signature a [FunctionSignature] of a function
+     * @property node a [ASTNode] that represents this function
+     */
     internal data class ExtensionFunction(
         val className: String,
         val signature: FunctionSignature,
