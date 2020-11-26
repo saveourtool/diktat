@@ -96,8 +96,8 @@ class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) :
         val companion = node.getChildren(TokenSet.create(OBJECT_DECLARATION))
             .find { it.findChildByType(MODIFIER_LIST)?.findLeafWithSpecificType(COMPANION_KEYWORD) != null }
         val blocks = Blocks(AllProperties(loggers, constProperties, properties, lateInitProperties),
-                initBlocks, constructors, methods, usedClasses, listOfNotNull(companion).toMutableList(),
-                unusedClasses)
+            initBlocks, constructors, methods, usedClasses, listOfNotNull(companion).toMutableList(),
+            unusedClasses)
 
         blocks
             .allBlockFlattened()
@@ -190,7 +190,7 @@ class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) :
          */
         fun allBlocks() = with(allProperties) {
             listOf(loggers, constProperties, properties, lateInitProperties,
-                    initBlocks, constructors, methods, usedClasses, companion, unusedClasses)
+                initBlocks, constructors, methods, usedClasses, companion, unusedClasses)
         }
 
         fun allBlockFlattened() = allBlocks().flatten()

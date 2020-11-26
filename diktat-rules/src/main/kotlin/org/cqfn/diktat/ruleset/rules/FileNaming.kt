@@ -1,9 +1,5 @@
 package org.cqfn.diktat.ruleset.rules
 
-import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.ast.ElementType.CLASS
-import com.pinterest.ktlint.core.ast.ElementType.FILE
-import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NAME_INCORRECT
@@ -12,7 +8,13 @@ import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getFileName
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.isPascalCase
+
+import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.ast.ElementType.CLASS
+import com.pinterest.ktlint.core.ast.ElementType.FILE
+import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+
 import java.io.File
 
 /**
@@ -25,15 +27,9 @@ import java.io.File
  */
 @Suppress("ForbiddenComment")
 class FileNaming(private val configRules: List<RulesConfig>) : Rule("file-naming") {
-
-    companion object {
-        // FixMe: should be moved to properties
-        val VALID_EXTENSIONS = listOf(".kt", ".kts")
-    }
-
+    private var isFixMode: Boolean = false
     private lateinit var emitWarn: EmitType
     private lateinit var fileName: String
-    private var isFixMode: Boolean = false
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
@@ -50,7 +46,7 @@ class FileNaming(private val configRules: List<RulesConfig>) : Rule("file-naming
 
     private fun checkFileNaming(node: ASTNode) {
         val (name, extension) = getFileParts(fileName)
-        if (!name.isPascalCase() || !VALID_EXTENSIONS.contains(extension)) {
+        if (!name.isPascalCase() || !validExtensions.contains(extension)) {
             FILE_NAME_INCORRECT.warnAndFix(configRules, emitWarn, isFixMode, "$name$extension", 0, node) {
                 // FixMe: we can add an autocorrect here in future, but is there any purpose to change file or class name?
             }
@@ -78,5 +74,10 @@ class FileNaming(private val configRules: List<RulesConfig>) : Rule("file-naming
         val fileNameWithoutSuffix = file.name.replace(Regex("\\..*"), "")
         val fileNameSuffix = file.name.replace(fileNameWithoutSuffix, "")
         return Pair(fileNameWithoutSuffix, fileNameSuffix)
+    }
+
+    companion object {
+        // FixMe: should be moved to properties
+        val validExtensions = listOf(".kt", ".kts")
     }
 }

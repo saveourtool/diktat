@@ -11,13 +11,19 @@ typealias EmitType = ((offset: Int, errorMessage: String, canBeAutoCorrected: Bo
 /**
  * This class represent individual inspections of diktat code style.
  * A [Warnings] entry contains rule name, warning message and is used in code check.
+ * @property canBeAutoCorrected whether this inspection can automatically fix the code
+ * @property ruleId number of the inspection according to []diktat code style](https://www.cqfn.org/diKTat/info/guide/diktat-coding-convention.html)
  */
 @Suppress("ForbiddenComment", "MagicNumber", "WRONG_DECLARATIONS_ORDER", "MaxLineLength")
-enum class Warnings(val canBeAutoCorrected: Boolean, val ruleId: String, private val warn: String) : Rule {
+enum class Warnings(
+    val canBeAutoCorrected: Boolean,
+    val ruleId: String,
+    private val warn: String) : Rule {
     // ======== chapter 1 ========
     PACKAGE_NAME_MISSING(true, "1.2.1", "no package name declared in a file"),
     PACKAGE_NAME_INCORRECT_CASE(true, "1.2.1", "package name should be completely in a lower case"),
     PACKAGE_NAME_INCORRECT_PREFIX(true, "1.2.1", "package name should start from company's domain"),
+
     // FixMe: should add autofix
     PACKAGE_NAME_INCORRECT_SYMBOLS(false, "1.2.1", "package name should contain only latin (ASCII) letters or numbers. For separation of words use dot"),
     PACKAGE_NAME_INCORRECT_PATH(true, "1.2.1", "package name does not match the directory hierarchy for this file, the real package name should be"),
@@ -132,8 +138,8 @@ enum class Warnings(val canBeAutoCorrected: Boolean, val ruleId: String, private
     USELESS_SUPERTYPE(true, "6.1.5", "unnecessary supertype specification"),
     TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED(true, "6.1.10", "trivial property accessors are not recommended"),
     EXTENSION_FUNCTION_SAME_SIGNATURE(false, "6.2.2", "extension functions should not have same signature if their receiver classes are related"),
-    EMPTY_PRIMARY_CONSTRUCTOR(true,"6.1.3", "avoid empty primary constructor"),
-    NO_CORRESPONDING_PROPERTY(false, "6.1.7", "backing property should have the same name, but there is no corresponding property")
+    EMPTY_PRIMARY_CONSTRUCTOR(true, "6.1.3", "avoid empty primary constructor"),
+    NO_CORRESPONDING_PROPERTY(false, "6.1.7", "backing property should have the same name, but there is no corresponding property"),
     ;
 
     /**
@@ -146,6 +152,16 @@ enum class Warnings(val canBeAutoCorrected: Boolean, val ruleId: String, private
      */
     fun warnText() = "[${ruleName()}] ${this.warn}:"
 
+    /**
+     * @param configRules list of [RulesConfig]
+     * @param emit function that will be called on warning
+     * @param isFixMode whether autocorrect mode is on
+     * @param freeText text that will be added to the warning message
+     * @param offset offset from the beginning of the file
+     * @param node the [ASTNode] on which the warning was triggered
+     * @param canBeAutoCorrected whether this warning can be autocorrected
+     * @param autoFix function that will be called to autocorrect the warning
+     */
     @Suppress("LongParameterList")
     fun warnAndFix(configRules: List<RulesConfig>,
                    emit: EmitType,
@@ -159,6 +175,14 @@ enum class Warnings(val canBeAutoCorrected: Boolean, val ruleId: String, private
         fix(configRules, autoFix, isFixMode, node)
     }
 
+    /**
+     * @param configs list of [RulesConfig]
+     * @param emit function that will be called on warning
+     * @param autoCorrected whether this warning can be autocorrected
+     * @param freeText text that will be added to the warning message
+     * @param offset offset from the beginning of the file
+     * @param node the [ASTNode] on which the warning was triggered
+     */
     @Suppress("LongParameterList")
     fun warn(configs: List<RulesConfig>,
              emit: EmitType,
@@ -171,17 +195,17 @@ enum class Warnings(val canBeAutoCorrected: Boolean, val ruleId: String, private
                 .lines()
                 .run { if (size > 1) "${first()}..." else first() }
             emit(offset,
-                    "${this.warnText()} $trimmedFreeText",
-                    autoCorrected
+                "${this.warnText()} $trimmedFreeText",
+                autoCorrected
             )
         }
     }
 
     private inline fun fix(
-            configs: List<RulesConfig>,
-            autoFix: () -> Unit,
-            isFix: Boolean,
-            node: ASTNode) {
+        configs: List<RulesConfig>,
+        autoFix: () -> Unit,
+        isFix: Boolean,
+        node: ASTNode) {
         if (configs.isRuleEnabled(this) && isFix && !node.hasSuppress(name)) {
             autoFix()
         }

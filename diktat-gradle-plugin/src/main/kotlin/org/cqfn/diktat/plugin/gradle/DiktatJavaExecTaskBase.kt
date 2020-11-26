@@ -13,17 +13,17 @@ import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.VerificationTask
 
-import javax.inject.Inject
 import java.io.File
+import javax.inject.Inject
 
 /**
  * A base diktat task for gradle <6.8, which wraps [JavaExec]
  */
 open class DiktatJavaExecTaskBase @Inject constructor(
-        gradleVersionString: String,
-        diktatExtension: DiktatExtension,
-        diktatConfiguration: Configuration,
-        additionalFlags: Iterable<String> = emptyList()
+    gradleVersionString: String,
+    diktatExtension: DiktatExtension,
+    diktatConfiguration: Configuration,
+    additionalFlags: Iterable<String> = emptyList()
 ) : JavaExec(), VerificationTask {
     /**
      * A backing [Property] for [getIgnoreFailures] and [setIgnoreFailures]
@@ -85,8 +85,8 @@ open class DiktatJavaExecTaskBase @Inject constructor(
  */
 fun Project.registerDiktatCheckTask(diktatExtension: DiktatExtension, diktatConfiguration: Configuration): TaskProvider<DiktatJavaExecTaskBase> =
         tasks.register(
-                DIKTAT_CHECK_TASK, DiktatJavaExecTaskBase::class.java, gradle.gradleVersion,
-                diktatExtension, diktatConfiguration
+            DIKTAT_CHECK_TASK, DiktatJavaExecTaskBase::class.java, gradle.gradleVersion,
+            diktatExtension, diktatConfiguration
         )
 
 /**
@@ -96,13 +96,13 @@ fun Project.registerDiktatCheckTask(diktatExtension: DiktatExtension, diktatConf
  */
 fun Project.registerDiktatFixTask(diktatExtension: DiktatExtension, diktatConfiguration: Configuration): TaskProvider<DiktatJavaExecTaskBase> =
         tasks.register(
-                DIKTAT_FIX_TASK, DiktatJavaExecTaskBase::class.java, gradle.gradleVersion,
-                diktatExtension, diktatConfiguration, listOf("-F ")
+            DIKTAT_FIX_TASK, DiktatJavaExecTaskBase::class.java, gradle.gradleVersion,
+            diktatExtension, diktatConfiguration, listOf("-F ")
         )
 
 private fun Project.trimRootDir(path: String) = if (path.startsWith(rootDir.absolutePath)) {
-        path.drop(rootDir.absolutePath.length)
-    } else {
-        path
-    }
+    path.drop(rootDir.absolutePath.length)
+} else {
+    path
+}
     .trim(File.separatorChar)

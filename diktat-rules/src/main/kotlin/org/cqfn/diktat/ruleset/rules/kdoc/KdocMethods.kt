@@ -11,6 +11,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_ON_FUNCTION
 import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
+import org.cqfn.diktat.ruleset.utils.findChildAfter
 import org.cqfn.diktat.ruleset.utils.getBodyLines
 import org.cqfn.diktat.ruleset.utils.getFileName
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
@@ -35,7 +36,6 @@ import com.pinterest.ktlint.core.ast.ElementType.CALLABLE_REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.COLLECTION_LITERAL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.COLON
-import com.pinterest.ktlint.core.ast.ElementType.DOT
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_SECTION
@@ -48,9 +48,6 @@ import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.THROW
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.WHEN_CONDITION_WITH_EXPRESSION
-import org.cqfn.diktat.ruleset.utils.findChildAfter
-import org.cqfn.diktat.ruleset.utils.findChildBefore
-import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -105,11 +102,11 @@ class KdocMethods(private val configRules: List<RulesConfig>) : Rule("kdoc-metho
 
         val explicitlyThrownExceptions = getExplicitlyThrownExceptions(node)
         val missingExceptions = explicitlyThrownExceptions
-                .minus(kdocTags
-                        ?.filter { it.knownTag == KDocKnownTag.THROWS }
-                        ?.mapNotNull { it.getSubjectName() }
-                        ?.toSet() ?: setOf()
-                )
+            .minus(kdocTags
+                ?.filter { it.knownTag == KDocKnownTag.THROWS }
+                ?.mapNotNull { it.getSubjectName() }
+                ?.toSet() ?: setOf()
+            )
 
         val paramCheckFailed = (missingParameters.isNotEmpty() && !node.isSingleLineGetterOrSetter()) || kDocMissingParameters.isNotEmpty()
         val returnCheckFailed = hasReturnCheckFailed(node, kdocTags)
@@ -164,10 +161,10 @@ class KdocMethods(private val configRules: List<RulesConfig>) : Rule("kdoc-metho
         val codeBlock = node.getFirstChildWithType(BLOCK)
         val throwKeywords = codeBlock?.findAllNodesWithSpecificType(THROW)
         return throwKeywords
-                ?.map { it.psi as KtThrowExpression }
-                ?.mapNotNull { it.thrownExpression?.referenceExpression()?.text }
-                ?.toSet()
-                ?: setOf()
+            ?.map { it.psi as KtThrowExpression }
+            ?.mapNotNull { it.thrownExpression?.referenceExpression()?.text }
+            ?.toSet()
+            ?: setOf()
     }
 
     @Suppress("UnsafeCallOnNullableType")
@@ -178,14 +175,14 @@ class KdocMethods(private val configRules: List<RulesConfig>) : Rule("kdoc-metho
                                  kdocTags: Collection<KDocTag>?) {
         kdocMissingParameters.forEach {
             KDOC_WITHOUT_PARAM_TAG.warn(configRules, emitWarn, false,
-                    "${it.getSubjectName()} param isn't present in argument list", it.node.startOffset,
-                    it.node)
+                "${it.getSubjectName()} param isn't present in argument list", it.node.startOffset,
+                it.node)
         }
         if (missingParameters.isNotEmpty()) {
             KDOC_WITHOUT_PARAM_TAG.warnAndFix(configRules, emitWarn, isFixMode,
-                    "${node.getIdentifierName()!!.text} (${missingParameters.joinToString()})", node.startOffset, node) {
+                "${node.getIdentifierName()!!.text} (${missingParameters.joinToString()})", node.startOffset, node) {
                 val beforeTag = kdocTags?.find { it.knownTag == KDocKnownTag.RETURN }
-                        ?: kdocTags?.find { it.knownTag == KDocKnownTag.THROWS }
+                    ?: kdocTags?.find { it.knownTag == KDocKnownTag.THROWS }
                 missingParameters.forEach {
                     kdoc?.insertTagBefore(beforeTag?.node) {
                         addChild(LeafPsiElement(KDOC_TAG_NAME, "@param"))
@@ -203,7 +200,7 @@ class KdocMethods(private val configRules: List<RulesConfig>) : Rule("kdoc-metho
                                   kdocTags: Collection<KDocTag>?
     ) {
         KDOC_WITHOUT_RETURN_TAG.warnAndFix(configRules, emitWarn, isFixMode, node.getIdentifierName()!!.text,
-                node.startOffset, node) {
+            node.startOffset, node) {
             val beforeTag = kdocTags?.find { it.knownTag == KDocKnownTag.THROWS }
             kdoc?.insertTagBefore(beforeTag?.node) {
                 addChild(LeafPsiElement(KDOC_TAG_NAME, "@return"))
@@ -217,7 +214,7 @@ class KdocMethods(private val configRules: List<RulesConfig>) : Rule("kdoc-metho
                                   missingExceptions: Collection<String>
     ) {
         KDOC_WITHOUT_THROWS_TAG.warnAndFix(configRules, emitWarn, isFixMode,
-                "${node.getIdentifierName()!!.text} (${missingExceptions.joinToString()})", node.startOffset, node) {
+            "${node.getIdentifierName()!!.text} (${missingExceptions.joinToString()})", node.startOffset, node) {
             missingExceptions.forEach {
                 kdoc?.insertTagBefore(null) {
                     addChild(LeafPsiElement(KDOC_TAG_NAME, "@throws"))
@@ -252,9 +249,9 @@ class KdocMethods(private val configRules: List<RulesConfig>) : Rule("kdoc-metho
         val kdocTextNodes = node.getChildren(TokenSet.create(KDOC_TEXT))
         if (kdocTextNodes.size == 1) {
             val kdocText = kdocTextNodes
-                    .first()
-                    .text
-                    .trim()
+                .first()
+                .text
+                .trim()
             if (kdocText.matches(uselessKdocRegex)) {
                 KDOC_TRIVIAL_KDOC_ON_FUNCTION.warn(configRules, emitWarn, isFixMode, kdocText, kdocTextNodes.first().startOffset, node)
             }
@@ -266,7 +263,7 @@ class KdocMethods(private val configRules: List<RulesConfig>) : Rule("kdoc-metho
     companion object {
         // expression body of function can have a lot of 'ElementType's, this list might be not full
         private val expressionBodyTypes = setOf(BINARY_EXPRESSION, CALL_EXPRESSION, LAMBDA_EXPRESSION, REFERENCE_EXPRESSION,
-                CALLABLE_REFERENCE_EXPRESSION, SAFE_ACCESS_EXPRESSION, WHEN_CONDITION_WITH_EXPRESSION, COLLECTION_LITERAL_EXPRESSION)
+            CALLABLE_REFERENCE_EXPRESSION, SAFE_ACCESS_EXPRESSION, WHEN_CONDITION_WITH_EXPRESSION, COLLECTION_LITERAL_EXPRESSION)
         private val uselessKdocRegex = """^([rR]eturn|[gGsS]et)[s]?\s+\w+(\s+\w+)?$""".toRegex()
     }
 }

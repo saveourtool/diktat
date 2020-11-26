@@ -64,8 +64,11 @@ class DataClassesRule(private val configRule: List<RulesConfig>) : Rule("data-cl
         val classBody = getFirstChildWithType(CLASS_BODY)
         if (hasChildOfType(MODIFIER_LIST)) {
             val list = getFirstChildWithType(MODIFIER_LIST)!!
-            return list.getChildren(null).none { it.elementType in badModifiers }&&
-                    classBody?.getAllChildrenWithType(FUN)?.isEmpty() ?: false&&
+            return list.getChildren(null)
+                .none { it.elementType in badModifiers } &&
+                    classBody?.getAllChildrenWithType(FUN)
+                        ?.isEmpty()
+                        ?: false &&
                     getFirstChildWithType(SUPER_TYPE_LIST) == null
         }
         return classBody?.getAllChildrenWithType(FUN)?.isEmpty() ?: false &&

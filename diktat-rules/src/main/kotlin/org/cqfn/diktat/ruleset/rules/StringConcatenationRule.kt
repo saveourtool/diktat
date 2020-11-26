@@ -1,16 +1,17 @@
 package org.cqfn.diktat.ruleset.rules
 
-import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
-import com.pinterest.ktlint.core.ast.ElementType.PLUS
-import com.pinterest.ktlint.core.ast.ElementType.STRING_TEMPLATE
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.STRING_CONCATENATION
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
+
+import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
+import com.pinterest.ktlint.core.ast.ElementType.PLUS
+import com.pinterest.ktlint.core.ast.ElementType.STRING_TEMPLATE
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 /**
@@ -20,8 +21,8 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
  * // FixMe: .toString() method and functions that return strings are not supported
  */
 class StringConcatenationRule(private val configRules: List<RulesConfig>) : Rule("string-concatenation") {
-    private lateinit var emitWarn: EmitType
     private var isFixMode: Boolean = false
+    private lateinit var emitWarn: EmitType
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
@@ -56,6 +57,7 @@ class StringConcatenationRule(private val configRules: List<RulesConfig>) : Rule
         }
     }
 
+    @Suppress("COMMENT_WHITE_SPACE")
     private fun isPlusBinaryExpression(node: ASTNode): Boolean {
         assert(node.elementType == BINARY_EXPRESSION)
         //     binary expression
@@ -64,6 +66,6 @@ class StringConcatenationRule(private val configRules: List<RulesConfig>) : Rule
 
         val operationReference = node.getFirstChildWithType(OPERATION_REFERENCE)
         return operationReference
-                ?.getFirstChildWithType(PLUS) != null
+            ?.getFirstChildWithType(PLUS) != null
     }
 }

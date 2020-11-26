@@ -21,9 +21,9 @@ class DiktatGradlePlugin : Plugin<Project> {
                 include("**/*.kt")
             }
             reporter = PlainReporter(System.out)
+            excludes = project.files()
+            reporter = PlainReporter(System.out)
         }
-        diktatExtension.excludes = project.files()
-        diktatExtension.reporter = PlainReporter(System.out)
 
         // only gradle 7+ (or maybe 6.8) will embed kotlin 1.4+, kx.serialization is incompatible with kotlin 1.3, so until then we have to use JavaExec wrapper
         // FixMe: when gradle with kotlin 1.4 is out, proper configurable tasks should be added
@@ -32,10 +32,10 @@ class DiktatGradlePlugin : Plugin<Project> {
             configuration.isVisible = false
             configuration.dependencies.add(project.dependencies.create("com.pinterest:ktlint:$KTLINT_VERSION", closureOf<ExternalModuleDependency> {
                 exclude(
-                        mutableMapOf(
-                                "group" to "com.pinterest.ktlint",
-                                "module" to "ktlint-ruleset-standard"
-                        )
+                    mutableMapOf(
+                        "group" to "com.pinterest.ktlint",
+                        "module" to "ktlint-ruleset-standard"
+                    )
                 )
             }))
             configuration.dependencies.add(project.dependencies.create("org.cqfn.diktat:diktat-rules:$DIKTAT_VERSION"))

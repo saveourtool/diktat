@@ -53,7 +53,6 @@ import org.jetbrains.kotlin.psi.KtTryExpression
  * - braces around `else`/`catch`/`finally`/`while` (in `do-while` loop)
  */
 class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("block-structure") {
-
     private var isFixMode: Boolean = false
     private lateinit var emitWarn: EmitType
 
@@ -64,7 +63,7 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
         isFixMode = autoCorrect
 
         val configuration = BlockStructureBracesConfiguration(
-                configRules.getRuleConfig(BRACES_BLOCK_STRUCTURE_ERROR)?.configuration ?: mapOf()
+            configRules.getRuleConfig(BRACES_BLOCK_STRUCTURE_ERROR)?.configuration ?: mapOf()
         )
 
         when (node.elementType) {
@@ -171,9 +170,9 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
     }
 
     private fun checkOpenBraceOnSameLine(
-            node: ASTNode,
-            beforeType: IElementType,
-            configuration: BlockStructureBracesConfiguration) {
+        node: ASTNode,
+        beforeType: IElementType,
+        configuration: BlockStructureBracesConfiguration) {
         if (!configuration.openBrace) {
             return
         }
@@ -181,11 +180,11 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
         val braceSpace = nodeBefore?.treePrev
         if (braceSpace == null || checkBraceNode(braceSpace, true)) {
             BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "incorrect newline before opening brace",
-                    (braceSpace ?: node).startOffset, node) {
+                (braceSpace ?: node).startOffset, node) {
                 if (braceSpace == null || braceSpace.elementType != WHITE_SPACE) {
                     node.addChild(PsiWhiteSpaceImpl(" "), nodeBefore)
                 } else {
-                    if (braceSpace.treePrev.elementType in COMMENT_TYPE) {
+                    if (braceSpace.treePrev.elementType in commentType) {
                         val commentBefore = braceSpace.treePrev
                         if (commentBefore.treePrev.elementType == WHITE_SPACE) {
                             commentBefore.treeParent.removeChild(commentBefore.treePrev)
@@ -208,7 +207,7 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
             ?: return
         if (checkBraceNode(newNode)) {
             BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "incorrect same line after opening brace",
-                    newNode.startOffset, newNode) {
+                newNode.startOffset, newNode) {
                 if (newNode.elementType != WHITE_SPACE) {
                     newNode.treeParent.addChild(PsiWhiteSpaceImpl("\n"), newNode)
                 } else {
@@ -219,13 +218,13 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
     }
 
     private fun checkMidBrace(
-            allMiddleSpace: List<ASTNode>,
-            node: ASTNode,
-            keyword: IElementType) {
+        allMiddleSpace: List<ASTNode>,
+        node: ASTNode,
+        keyword: IElementType) {
         allMiddleSpace.forEach {
             if (checkBraceNode(it, true)) {
                 BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "incorrect new line after closing brace",
-                        it.startOffset, it) {
+                    it.startOffset, it) {
                     if (it.elementType != WHITE_SPACE) {
                         node.addChild(PsiWhiteSpaceImpl(" "), node.findChildByType(keyword))
                     } else {
@@ -244,7 +243,7 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
         val space = node.findChildByType(RBRACE)!!.treePrev
         if (checkBraceNode(space)) {
             BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "no newline before closing brace",
-                    (space.treeNext ?: node.findChildByType(RBRACE))!!.startOffset, node) {
+                (space.treeNext ?: node.findChildByType(RBRACE))!!.startOffset, node) {
                 if (space.elementType != WHITE_SPACE) {
                     node.addChild(PsiWhiteSpaceImpl("\n"), node.findChildByType(RBRACE))
                 } else {

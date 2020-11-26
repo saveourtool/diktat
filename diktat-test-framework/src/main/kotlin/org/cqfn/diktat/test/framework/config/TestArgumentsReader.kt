@@ -27,9 +27,9 @@ import kotlinx.serialization.json.Json
  * @property classLoader [ClassLoader] which is used to load properties file
  */
 class TestArgumentsReader(
-        private val args: Array<String>,
-        val properties: TestFrameworkProperties,
-        override val classLoader: ClassLoader
+    private val args: Array<String>,
+    val properties: TestFrameworkProperties,
+    override val classLoader: ClassLoader
 ) : JsonResourceConfigReader<List<CliArgument>?>() {
     private val cliArguments: List<CliArgument>? = readResource(properties.testFrameworkArgsRelativePath)
     private val cmd: CommandLine by lazy { parseArguments() }

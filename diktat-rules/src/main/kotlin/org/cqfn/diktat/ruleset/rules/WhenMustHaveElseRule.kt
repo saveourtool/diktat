@@ -1,5 +1,12 @@
 package org.cqfn.diktat.ruleset.rules
 
+import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ruleset.constants.EmitType
+import org.cqfn.diktat.ruleset.constants.Warnings
+import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
+import org.cqfn.diktat.ruleset.utils.hasParent
+import org.cqfn.diktat.ruleset.utils.isBeginByNewline
+
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.ARROW
@@ -15,12 +22,6 @@ import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.RETURN
 import com.pinterest.ktlint.core.ast.ElementType.WHEN_ENTRY
 import com.pinterest.ktlint.core.ast.prevSibling
-import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
-import org.cqfn.diktat.ruleset.constants.Warnings
-import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
-import org.cqfn.diktat.ruleset.utils.hasParent
-import org.cqfn.diktat.ruleset.utils.isBeginByNewline
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -37,9 +38,8 @@ import org.jetbrains.kotlin.psi.KtWhenExpression
  */
 @Suppress("ForbiddenComment")
 class WhenMustHaveElseRule(private val configRules: List<RulesConfig>) : Rule("no-else-in-when") {
-
-    private lateinit var emitWarn: EmitType
     private var isFixMode: Boolean = false
+    private lateinit var emitWarn: EmitType
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
@@ -61,14 +61,14 @@ class WhenMustHaveElseRule(private val configRules: List<RulesConfig>) : Rule("n
                 }
                 node.addChild(whenEntryElse, node.lastChildNode)
                 addChildren(whenEntryElse)
-                if(!whenEntryElse.isBeginByNewline()) {
+                if (!whenEntryElse.isBeginByNewline()) {
                     node.addChild(PsiWhiteSpaceImpl("\n"), whenEntryElse)
                 }
             }
         }
     }
 
-    private fun isStatement(node: ASTNode) : Boolean {
+    private fun isStatement(node: ASTNode): Boolean {
         // Checks if there is return before when
         if (node.hasParent(RETURN)) {
             return false
@@ -76,7 +76,7 @@ class WhenMustHaveElseRule(private val configRules: List<RulesConfig>) : Rule("n
 
         // Checks if `when` is the last statement in lambda body
         if (node.treeParent.elementType == BLOCK && node.treeParent.treeParent.elementType == FUNCTION_LITERAL &&
-            node.treeParent.lastChildNode == node) {
+                node.treeParent.lastChildNode == node) {
             return false
         }
 
@@ -110,11 +110,11 @@ class WhenMustHaveElseRule(private val configRules: List<RulesConfig>) : Rule("n
             addChild(block, null)
         }
 
-        block.apply{
+        block.apply {
             addChild(LeafPsiElement(LBRACE, "{"), null)
-            addChild(PsiWhiteSpaceImpl("\n"),null)
-            addChild(LeafPsiElement(EOL_COMMENT, "// this is a generated else block"),null)
-            addChild(PsiWhiteSpaceImpl("\n"),null)
+            addChild(PsiWhiteSpaceImpl("\n"), null)
+            addChild(LeafPsiElement(EOL_COMMENT, "// this is a generated else block"), null)
+            addChild(PsiWhiteSpaceImpl("\n"), null)
             addChild(LeafPsiElement(RBRACE, "}"), null)
         }
     }

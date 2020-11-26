@@ -72,7 +72,7 @@ class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig
 
         if (thenNode?.elementType != BLOCK) {
             NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnAndFix(configRules, emitWarn, isFixMode, "IF",
-                    (thenNode?.prevSibling { it.elementType == IF_KEYWORD } ?: node).startOffset, node) {
+                (thenNode?.prevSibling { it.elementType == IF_KEYWORD } ?: node).startOffset, node) {
                 if (thenNode != null) {
                     (thenNode.psi as KtElement).replaceWithBlock(indent)
                     if (elseNode != null && elseKeyword != null) {
@@ -87,7 +87,7 @@ class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig
 
         if (elseKeyword != null && elseNode?.elementType != IF && elseNode?.elementType != BLOCK) {
             NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnAndFix(configRules, emitWarn, isFixMode, "ELSE",
-                    (elseNode?.treeParent?.prevSibling { it.elementType == ELSE_KEYWORD } ?: node).startOffset, node) {
+                (elseNode?.treeParent?.prevSibling { it.elementType == ELSE_KEYWORD } ?: node).startOffset, node) {
                 if (elseNode != null) {
                     (elseNode.psi as KtElement).replaceWithBlock(indent)
                 } else {
@@ -115,9 +115,9 @@ class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig
                 } else {
                     // this corresponds to do-while with empty body
                     node.insertEmptyBlockBetweenChildren(
-                            node.findChildByType(DO_KEYWORD)!!.treeNext,
-                            node.findChildByType(WHILE_KEYWORD)!!.treePrev,
-                            indent
+                        node.findChildByType(DO_KEYWORD)!!.treeNext,
+                        node.findChildByType(WHILE_KEYWORD)!!.treePrev,
+                        indent
                     )
                 }
             }
@@ -141,14 +141,14 @@ class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig
 
     private fun KtElement.replaceWithBlock(indent: Int) {
         this.astReplace(KtBlockExpression(
-                "{\n${" ".repeat(indent + INDENT_STEP)}$text\n${" ".repeat(indent)}}"
+            "{\n${" ".repeat(indent + INDENT_STEP)}$text\n${" ".repeat(indent)}}"
         ))
     }
 
     private fun ASTNode.insertEmptyBlockBetweenChildren(
-            firstChild: ASTNode,
-            secondChild: ASTNode?,
-            indent: Int) {
+        firstChild: ASTNode,
+        secondChild: ASTNode?,
+        indent: Int) {
         val emptyBlock = CompositeElement(ElementType.BLOCK_CODE_FRAGMENT)
         addChild(emptyBlock, firstChild)
         addChild(PsiWhiteSpaceImpl(" "), emptyBlock)

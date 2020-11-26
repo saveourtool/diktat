@@ -1,15 +1,16 @@
 package org.cqfn.diktat.ruleset.rules.comments
 
+import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ruleset.constants.EmitType
+import org.cqfn.diktat.ruleset.constants.Warnings.COMMENTED_OUT_CODE
+import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
+
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.prevSibling
-import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
-import org.cqfn.diktat.ruleset.constants.Warnings.COMMENTED_OUT_CODE
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.TokenType
 import org.jetbrains.kotlin.lexer.KtTokens
@@ -23,15 +24,8 @@ import org.jetbrains.kotlin.resolve.ImportPath
  */
 @Suppress("ForbiddenComment")
 class CommentsRule(private val configRules: List<RulesConfig>) : Rule("comments") {
-    companion object {
-        private val IMPORT_KEYWORD = KtTokens.IMPORT_KEYWORD.value
-        private val PACKAGE_KEYWORD = KtTokens.PACKAGE_KEYWORD.value
-        private val IMPORT_OR_PACKAGE = """($IMPORT_KEYWORD|$PACKAGE_KEYWORD) """.toRegex()
-        private val EOL_COMMENT_START = """// \S""".toRegex()
-    }
-
-    private lateinit var emitWarn: EmitType
     private var isFixMode: Boolean = false
+    private lateinit var emitWarn: EmitType
     private lateinit var ktPsiFactory: KtPsiFactory
 
     override fun visit(node: ASTNode,
@@ -60,32 +54,33 @@ class CommentsRule(private val configRules: List<RulesConfig>) : Rule("comments"
     private fun checkCommentedCode(node: ASTNode) {
         val eolCommentsOffsetToText = getOffsetsToTextBlocksFromEolComments(node)
         val blockCommentsOffsetToText = node
-                .findAllNodesWithSpecificType(BLOCK_COMMENT)
-                .map { it.startOffset to it.text.removeSurrounding("/*", "*/") }
+            .findAllNodesWithSpecificType(BLOCK_COMMENT)
+            .map { it.startOffset to it.text.removeSurrounding("/*", "*/") }
 
         (eolCommentsOffsetToText + blockCommentsOffsetToText)
-                .flatMap { (offset, text) ->
-                    val (singleLines, blockLines) = text.lines().partition { it.contains(IMPORT_OR_PACKAGE) }
-                    val block = if (blockLines.isNotEmpty()) listOf(blockLines.joinToString("\n")) else listOf()
-                    (singleLines + block).map { offset to it }
+            .flatMap { (offset, text) ->
+                val (singleLines, blockLines) = text.lines().partition { it.contains(importOrPackage) }
+                val block = if (blockLines.isNotEmpty()) listOf(blockLines.joinToString("\n")) else listOf()
+                (singleLines + block).map { offset to it }
+            }
+            .map { (offset, text) ->
+                when {
+                    text.contains(importKeyword) ->
+                        offset to ktPsiFactory.createImportDirective(ImportPath.fromString(text.substringAfter("$importKeyword "))).node
+                    text.contains(packageKeyword) ->
+                        offset to ktPsiFactory.createPackageDirective(FqName(text.substringAfter("$packageKeyword "))).node
+                    else ->
+                        offset to ktPsiFactory.createBlockCodeFragment(text, null).node
                 }
-                .map { (offset, text) ->
-                    when {
-                        text.contains(IMPORT_KEYWORD) ->
-                            offset to ktPsiFactory.createImportDirective(ImportPath.fromString(text.substringAfter("$IMPORT_KEYWORD "))).node
-                        text.contains(PACKAGE_KEYWORD) ->
-                            offset to ktPsiFactory.createPackageDirective(FqName(text.substringAfter("$PACKAGE_KEYWORD "))).node
-                        else ->
-                            offset to ktPsiFactory.createBlockCodeFragment(text, null).node
-                    }
-                }
-                .filter { (_, parsedNode) ->
-                    parsedNode
-                            .findAllNodesWithSpecificType(TokenType.ERROR_ELEMENT)
-                            .isEmpty()
-                }.forEach { (offset, parsedNode) ->
-                    COMMENTED_OUT_CODE.warn(configRules, emitWarn, isFixMode, parsedNode.text.substringBefore("\n").trim(), offset, parsedNode)
-                }
+            }
+            .filter { (_, parsedNode) ->
+                parsedNode
+                    .findAllNodesWithSpecificType(TokenType.ERROR_ELEMENT)
+                    .isEmpty()
+            }
+            .forEach { (offset, parsedNode) ->
+                COMMENTED_OUT_CODE.warn(configRules, emitWarn, isFixMode, parsedNode.text.substringBefore("\n").trim(), offset, parsedNode)
+            }
     }
 
     /**
@@ -96,27 +91,34 @@ class CommentsRule(private val configRules: List<RulesConfig>) : Rule("comments"
      */
     private fun getOffsetsToTextBlocksFromEolComments(node: ASTNode): List<Pair<Int, String>> {
         val comments = node
-                .findAllNodesWithSpecificType(EOL_COMMENT)
-                .filter { !it.text.contains(EOL_COMMENT_START) }
+            .findAllNodesWithSpecificType(EOL_COMMENT)
+            .filter { !it.text.contains(eolCommentStart) }
         return if (comments.isNotEmpty()) {
             val result = mutableListOf(mutableListOf(comments.first()))
             comments
-                    .drop(1)
-                    .fold(result) { acc, astNode ->
-                        val isImportOrPackage = astNode.text.contains(IMPORT_OR_PACKAGE)
-                        val previousNonWhiteSpaceNode = astNode.prevSibling { it.elementType != WHITE_SPACE }
-                        if (!isImportOrPackage && previousNonWhiteSpaceNode in acc.last()) {
-                            acc.last().add(astNode)
-                        } else {
-                            acc.add(mutableListOf(astNode))
-                        }
-                        acc
+                .drop(1)
+                .fold(result) { acc, astNode ->
+                    val isImportOrPackage = astNode.text.contains(importOrPackage)
+                    val previousNonWhiteSpaceNode = astNode.prevSibling { it.elementType != WHITE_SPACE }
+                    if (!isImportOrPackage && previousNonWhiteSpaceNode in acc.last()) {
+                        acc.last().add(astNode)
+                    } else {
+                        acc.add(mutableListOf(astNode))
                     }
-                    .map { list ->
-                        list.first().startOffset to list.joinToString("\n") { it.text.removePrefix("//") }
-                    }
+                    acc
+                }
+                .map { list ->
+                    list.first().startOffset to list.joinToString("\n") { it.text.removePrefix("//") }
+                }
         } else {
             listOf()
         }
+    }
+
+    companion object {
+        private val importKeyword = KtTokens.IMPORT_KEYWORD.value
+        private val packageKeyword = KtTokens.PACKAGE_KEYWORD.value
+        private val importOrPackage = """($importKeyword|$packageKeyword) """.toRegex()
+        private val eolCommentStart = """// \S""".toRegex()
     }
 }

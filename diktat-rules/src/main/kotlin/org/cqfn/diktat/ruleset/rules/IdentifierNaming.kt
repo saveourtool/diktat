@@ -1,23 +1,12 @@
 package org.cqfn.diktat.ruleset.rules
 
-import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.ast.ElementType
-import com.pinterest.ktlint.core.ast.ElementType.CATCH
-import com.pinterest.ktlint.core.ast.ElementType.CATCH_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.DESTRUCTURING_DECLARATION
-import com.pinterest.ktlint.core.ast.ElementType.DESTRUCTURING_DECLARATION_ENTRY
-import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_TYPE
-import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.TYPE_PARAMETER
-import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
-import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
-import com.pinterest.ktlint.core.ast.prevCodeSibling
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.BACKTICKS_PROHIBITED
 import org.cqfn.diktat.ruleset.constants.Warnings.CLASS_NAME_INCORRECT
+import org.cqfn.diktat.ruleset.constants.Warnings.CONFUSING_IDENTIFIER_NAMING
 import org.cqfn.diktat.ruleset.constants.Warnings.CONSTANT_UPPERCASE
 import org.cqfn.diktat.ruleset.constants.Warnings.ENUM_VALUE
 import org.cqfn.diktat.ruleset.constants.Warnings.EXCEPTION_SUFFIX
@@ -25,11 +14,11 @@ import org.cqfn.diktat.ruleset.constants.Warnings.FUNCTION_BOOLEAN_PREFIX
 import org.cqfn.diktat.ruleset.constants.Warnings.FUNCTION_NAME_INCORRECT_CASE
 import org.cqfn.diktat.ruleset.constants.Warnings.GENERIC_NAME
 import org.cqfn.diktat.ruleset.constants.Warnings.IDENTIFIER_LENGTH
-import org.cqfn.diktat.ruleset.constants.Warnings.CONFUSING_IDENTIFIER_NAMING
 import org.cqfn.diktat.ruleset.constants.Warnings.OBJECT_NAME_INCORRECT
 import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_HAS_PREFIX
 import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_NAME_INCORRECT
 import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_NAME_INCORRECT_FORMAT
+import org.cqfn.diktat.ruleset.utils.Style
 import org.cqfn.diktat.ruleset.utils.checkLength
 import org.cqfn.diktat.ruleset.utils.containsOneLetterOrZero
 import org.cqfn.diktat.ruleset.utils.findChildAfter
@@ -50,7 +39,19 @@ import org.cqfn.diktat.ruleset.utils.removePrefix
 import org.cqfn.diktat.ruleset.utils.toLowerCamelCase
 import org.cqfn.diktat.ruleset.utils.toPascalCase
 import org.cqfn.diktat.ruleset.utils.toUpperSnakeCase
-import org.cqfn.diktat.ruleset.utils.Style
+
+import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.ast.ElementType
+import com.pinterest.ktlint.core.ast.ElementType.CATCH
+import com.pinterest.ktlint.core.ast.ElementType.CATCH_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.DESTRUCTURING_DECLARATION
+import com.pinterest.ktlint.core.ast.ElementType.DESTRUCTURING_DECLARATION_ENTRY
+import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_TYPE
+import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.TYPE_PARAMETER
+import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
+import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
+import com.pinterest.ktlint.core.ast.prevCodeSibling
 import org.jetbrains.kotlin.builtins.PrimitiveType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -73,24 +74,13 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  */
 @Suppress("ForbiddenComment")
 class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("identifier-naming") {
-
-    companion object {
-        // FixMe: this should be moved to properties
-        val ONE_CHAR_IDENTIFIERS = setOf("i", "j", "k", "x", "y", "z")
-        val BOOLEAN_METHOD_PREFIXES = setOf("has", "is")
-        val CONFUSING_IDENTIFIER_NAMES = setOf("O", "D", "I", "l", "Z", "S", "e", "B", "h", "n", "m", "rn")
-        const val MAX_IDENTIFIER_LENGTH = 64
-        const val MIN_IDENTIFIER_LENGTH = 2
-
-    }
-
-    private lateinit var emitWarn: EmitType
     private var isFixMode: Boolean = false
+    private lateinit var emitWarn: EmitType
 
     override fun visit(
-            node: ASTNode,
-            autoCorrect: Boolean,
-            emit: EmitType
+        node: ASTNode,
+        autoCorrect: Boolean,
+        emit: EmitType
     ) {
         isFixMode = autoCorrect
         emitWarn = emit
@@ -103,7 +93,7 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
         // isVariable is used as a workaround to check corner case with variables that have length == 1
         val (identifierNodes, isVariable) = when (node.elementType) {
             // covers interface, class, enum class and annotation class names
-            ElementType.CLASS -> Pair(checkCLassNamings(node), false)
+            ElementType.CLASS -> Pair(checkClassNamings(node), false)
             // covers "object" code blocks
             ElementType.OBJECT_DECLARATION -> Pair(checkObjectNaming(node), false)
             // covers variables (val/var), constants (const val) and parameters for lambdas
@@ -147,46 +137,46 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
         // special case for Destructuring declarations that can be treated as parameters in lambda:
         var namesOfVariables = extractVariableIdentifiers(node)
         namesOfVariables
-                .forEach { variableName ->
-                    // variable should not contain only one letter in it's name. This is a bad example: b512
-                    // but no need to raise a warning here if length of a variable. In this case we will raise IDENTIFIER_LENGTH
-                    if (variableName.text.containsOneLetterOrZero() && variableName.text.length > 1) {
-                        VARIABLE_NAME_INCORRECT.warn(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset, node)
-                    }
-                    // check if identifier of a property has a confusing name
-                    if (CONFUSING_IDENTIFIER_NAMES.contains(variableName.text) && !validCatchIdentifier(variableName) &&
-                            node.elementType == ElementType.PROPERTY) {
-                        warnConfusingName(variableName)
-                    }
-                    // check for constant variables - check for val from companion object or on global file level
-                    // it should be in UPPER_CASE, no need to raise this warning if it is one-letter variable
-                    if (node.isConstant()) {
-                        if (!variableName.text.isUpperSnakeCase() && variableName.text.length > 1) {
-                            CONSTANT_UPPERCASE.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset,node) {
-                                (variableName as LeafPsiElement).replaceWithText(variableName.text.toUpperSnakeCase())
-                            }
+            .forEach { variableName ->
+                // variable should not contain only one letter in it's name. This is a bad example: b512
+                // but no need to raise a warning here if length of a variable. In this case we will raise IDENTIFIER_LENGTH
+                if (variableName.text.containsOneLetterOrZero() && variableName.text.length > 1) {
+                    VARIABLE_NAME_INCORRECT.warn(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset, node)
+                }
+                // check if identifier of a property has a confusing name
+                if (confusingIdentifierNames.contains(variableName.text) && !validCatchIdentifier(variableName) &&
+                        node.elementType == ElementType.PROPERTY) {
+                    warnConfusingName(variableName)
+                }
+                // check for constant variables - check for val from companion object or on global file level
+                // it should be in UPPER_CASE, no need to raise this warning if it is one-letter variable
+                if (node.isConstant()) {
+                    if (!variableName.text.isUpperSnakeCase() && variableName.text.length > 1) {
+                        CONSTANT_UPPERCASE.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset, node) {
+                            (variableName as LeafPsiElement).replaceWithText(variableName.text.toUpperSnakeCase())
                         }
-                    } else if (variableName.text != "_" && !variableName.text.isLowerCamelCase()) {
-                        // variable name should be in camel case. The only exception is a list of industry standard variables like i, j, k.
-                        VARIABLE_NAME_INCORRECT_FORMAT.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset, node) {
-                            // FixMe: cover fixes with tests
-                            (variableName as LeafPsiElement).replaceWithText(variableName.text.toLowerCamelCase())
-                        }
+                    }
+                } else if (variableName.text != "_" && !variableName.text.isLowerCamelCase()) {
+                    // variable name should be in camel case. The only exception is a list of industry standard variables like i, j, k.
+                    VARIABLE_NAME_INCORRECT_FORMAT.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset, node) {
+                        // FixMe: cover fixes with tests
+                        (variableName as LeafPsiElement).replaceWithText(variableName.text.toLowerCamelCase())
                     }
                 }
+            }
 
         // need to get new node in case we have already converted the case before (and replaced the child node)
         // we need to recalculate it twice, because nodes could have been changed by "replaceWithText" function
         namesOfVariables = extractVariableIdentifiers(node)
         namesOfVariables
-                .forEach { variableName ->
-                    // generally, variables with prefixes are not allowed (like mVariable, xCode, iValue)
-                    if (variableName.text.hasPrefix()) {
-                        VARIABLE_HAS_PREFIX.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset, node) {
-                            (variableName as LeafPsiElement).replaceWithText(variableName.text.removePrefix())
-                        }
+            .forEach { variableName ->
+                // generally, variables with prefixes are not allowed (like mVariable, xCode, iValue)
+                if (variableName.text.hasPrefix()) {
+                    VARIABLE_HAS_PREFIX.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset, node) {
+                        (variableName as LeafPsiElement).replaceWithText(variableName.text.removePrefix())
                     }
                 }
+            }
         return namesOfVariables
     }
 
@@ -220,7 +210,7 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
         val destructingDeclaration = node.getFirstChildWithType(DESTRUCTURING_DECLARATION)
         val result = if (destructingDeclaration != null) {
             destructingDeclaration.getAllChildrenWithType(DESTRUCTURING_DECLARATION_ENTRY)
-                    .map { it.getIdentifierName()!! }
+                .map { it.getIdentifierName()!! }
         } else if (node.parents().count() > 1 && node.treeParent.elementType == VALUE_PARAMETER_LIST &&
                 node.treeParent.treeParent.elementType == FUNCTION_TYPE) {
             listOfNotNull(node.getIdentifierName())
@@ -229,14 +219,14 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
         }
 
         // no need to do checks if variables are in a special list with exceptions
-        return result.filterNot { ONE_CHAR_IDENTIFIERS.contains(it.text) }
+        return result.filterNot { oneCharIdentifiers.contains(it.text) }
     }
 
     /**
      * basic check for class naming (PascalCase)
      * and checks for generic type declared for this class
      */
-    private fun checkCLassNamings(node: ASTNode): List<ASTNode> {
+    private fun checkClassNamings(node: ASTNode): List<ASTNode> {
         val genericType: ASTNode? = node.getTypeParameterList()
         if (genericType != null && !validGenericTypeName(genericType)) {
             GENERIC_NAME.warnAndFix(configRules, emitWarn, isFixMode, genericType.text, genericType.startOffset, genericType) {
@@ -260,15 +250,12 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
      *
      */
     private fun checkExceptionSuffix(node: ASTNode) {
-
-        fun hasExceptionSuffix(text: String) = text.toLowerCase().endsWith("exception")
-
         val classNameNode = node.getIdentifierName() ?: return
         // getting super class name
         val superClassName: String? = node
-                .getFirstChildWithType(ElementType.SUPER_TYPE_LIST)
-                ?.findLeafWithSpecificType(TYPE_REFERENCE)
-                ?.text
+            .getFirstChildWithType(ElementType.SUPER_TYPE_LIST)
+            ?.findLeafWithSpecificType(TYPE_REFERENCE)
+            ?.text
 
         if (superClassName != null && hasExceptionSuffix(superClassName) && !hasExceptionSuffix(classNameNode.text)) {
             EXCEPTION_SUFFIX.warnAndFix(configRules, emitWarn, isFixMode, classNameNode.text, classNameNode.startOffset, classNameNode) {
@@ -277,6 +264,8 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
             }
         }
     }
+
+    private fun hasExceptionSuffix(text: String) = text.toLowerCase().endsWith("exception")
 
     /**
      * basic check for object naming of code blocks (PascalCase)
@@ -302,7 +291,7 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
         val enumValues: List<ASTNode> = node.getChildren(null).filter { it.elementType == ElementType.IDENTIFIER }
         enumValues.forEach { value ->
             val configuration = IdentifierNamingConfiguration(configRules.getRuleConfig(ENUM_VALUE)?.configuration
-                    ?: mapOf())
+                ?: mapOf())
             val validator = when (configuration.enumStyle) {
                 Style.PASCAL_CASE -> String::isPascalCase
                 Style.SNAKE_CASE -> String::isUpperSnakeCase
@@ -318,7 +307,7 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
                 }
             }
 
-            if (CONFUSING_IDENTIFIER_NAMES.contains(value.text)) {
+            if (confusingIdentifierNames.contains(value.text)) {
                 warnConfusingName(value)
             }
         }
@@ -350,7 +339,7 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
 
         // if function has Boolean return type in 99% of cases it is much better to name it with isXXX or hasXXX prefix
         if (functionReturnType != null && functionReturnType == PrimitiveType.BOOLEAN.typeName.asString()) {
-            if (BOOLEAN_METHOD_PREFIXES.none { functionName.text.startsWith(it) }) {
+            if (booleanMethodPrefixes.none { functionName.text.startsWith(it) }) {
                 FUNCTION_BOOLEAN_PREFIX.warnAndFix(configRules, emitWarn, isFixMode, functionName.text, functionName.startOffset, functionName) {
                     // FixMe: add agressive autofix for this
                 }
@@ -360,17 +349,14 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
         return listOf(functionName)
     }
 
-
     /**
      * check that generic name has single capital letter, can be followed by a number
      * this method will check it for both generic classes and generic methods
      */
-    private fun validGenericTypeName(generic: ASTNode): Boolean {
-        return generic.getChildren(TokenSet.create(TYPE_PARAMETER)).all{
-            val typeText = it.getIdentifierName()?.text ?: return false
-            // first letter should always be a capital and other letters - are digits
-            typeText[0] in 'A'..'Z' &&  (typeText.length == 1 || typeText.substring(1).isDigits())
-        }
+    private fun validGenericTypeName(generic: ASTNode) = generic.getChildren(TokenSet.create(TYPE_PARAMETER)).all {
+        val typeText = it.getIdentifierName()?.text ?: return false
+        // first letter should always be a capital and other letters - are digits
+        typeText[0] in 'A'..'Z' && (typeText.length == 1 || typeText.substring(1).isDigits())
     }
 
     /**
@@ -380,9 +366,9 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
                                       isVariable: Boolean) {
         nodes.forEach {
             if (it.text != "_" && !(it.checkLength(MIN_IDENTIFIER_LENGTH..MAX_IDENTIFIER_LENGTH) ||
-                            ONE_CHAR_IDENTIFIERS.contains(it.text) && isVariable || validCatchIdentifier(it)
+                    oneCharIdentifiers.contains(it.text) && isVariable || validCatchIdentifier(it)
 
-                            )) {
+            )) {
                 IDENTIFIER_LENGTH.warn(configRules, emitWarn, isFixMode, it.text, it.startOffset, it)
             }
         }
@@ -411,5 +397,15 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
             }
             style
         } ?: Style.SNAKE_CASE
+    }
+
+    companion object {
+        const val MAX_IDENTIFIER_LENGTH = 64
+        const val MIN_IDENTIFIER_LENGTH = 2
+
+        // FixMe: this should be moved to properties
+        val oneCharIdentifiers = setOf("i", "j", "k", "x", "y", "z")
+        val booleanMethodPrefixes = setOf("has", "is")
+        val confusingIdentifierNames = setOf("O", "D", "I", "l", "Z", "S", "e", "B", "h", "n", "m", "rn")
     }
 }

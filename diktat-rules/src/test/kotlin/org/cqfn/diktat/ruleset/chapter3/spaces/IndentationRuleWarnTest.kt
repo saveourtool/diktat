@@ -576,7 +576,6 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
 
     @Test
     @Tag(WarningNames.WRONG_INDENTATION)
-    @Disabled("https://github.com/cqfn/diKTat/issues/377")
     fun `closing parenthesis bug`() {
         lintMethod(
                 """

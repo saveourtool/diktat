@@ -55,7 +55,7 @@ fun ASTNode.isGetterOrSetter(): Boolean {
  */
 fun ASTNode.isStandardMethod() = also(::checkNodeIsFun)
         .getIdentifierName()
-        ?.let { it.text in STANDARD_METHODS }
+        ?.let { it.text in standardMethods }
         ?: false
 
 

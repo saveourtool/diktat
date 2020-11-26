@@ -21,18 +21,6 @@ import java.io.File
  */
 abstract class DiktatBaseMojo : AbstractMojo() {
     /**
-     * Paths that will be scanned for .kt(s) files
-     */
-    @Parameter(property = "diktat.inputs", defaultValue = "\${project.basedir}/src")
-    lateinit var inputs: List<String>
-
-    /**
-     * Paths that will be excluded if encountered during diktat run
-     */
-    @Parameter(property = "diktat.excludes", defaultValue = "")
-    lateinit var excludes: List<String>
-
-    /**
      * Flag that indicates whether to turn debug logging on
      */
     @Parameter(property = "debug")
@@ -52,6 +40,18 @@ abstract class DiktatBaseMojo : AbstractMojo() {
      */
     @Parameter(defaultValue = "\${project}", readonly = true)
     private lateinit var mavenProject: MavenProject
+
+    /**
+     * Paths that will be scanned for .kt(s) files
+     */
+    @Parameter(property = "diktat.inputs", defaultValue = "\${project.basedir}/src")
+    lateinit var inputs: List<String>
+
+    /**
+     * Paths that will be excluded if encountered during diktat run
+     */
+    @Parameter(property = "diktat.excludes", defaultValue = "")
+    lateinit var excludes: List<String>
 
     /**
      * @param params instance of [KtLint.Params] used in analysis
@@ -104,26 +104,29 @@ abstract class DiktatBaseMojo : AbstractMojo() {
     /**
      * @throws MojoExecutionException if [RuleExecutionException] has been thrown by ktlint
      */
-    private fun checkDirectory(directory: File, lintErrors: MutableList<LintError>, ruleSets: Iterable<RuleSet>) {
+    private fun checkDirectory(
+        directory: File,
+        lintErrors: MutableList<LintError>,
+        ruleSets: Iterable<RuleSet>) {
         val (excludedDirs, excludedFiles) = excludes.map(::File).partition { it.isDirectory }
         directory
-                .walk()
-                .filter { file ->
-                    file.isDirectory || file.extension.let { it == "kt" || it == "kts" }
+            .walk()
+            .filter { file ->
+                file.isDirectory || file.extension.let { it == "kt" || it == "kts" }
+            }
+            .filter { it.isFile }
+            .filterNot { file -> file in excludedFiles || excludedDirs.any { file.startsWith(it) } }
+            .forEach { file ->
+                log.debug("Checking file $file")
+                try {
+                    reporter.before(file.path)
+                    checkFile(file, lintErrors, ruleSets)
+                    reporter.after(file.path)
+                } catch (e: RuleExecutionException) {
+                    log.error("Unhandled exception during rule execution: ", e)
+                    throw MojoExecutionException("Unhandled exception during rule execution", e)
                 }
-                .filter { it.isFile }
-                .filterNot { file -> file in excludedFiles || excludedDirs.any { file.startsWith(it) } }
-                .forEach { file ->
-                    log.debug("Checking file $file")
-                    try {
-                        reporter.before(file.path)
-                        checkFile(file, lintErrors, ruleSets)
-                        reporter.after(file.path)
-                    } catch (e: RuleExecutionException) {
-                        log.error("Unhandled exception during rule execution: ", e)
-                        throw MojoExecutionException("Unhandled exception during rule execution", e)
-                    }
-                }
+            }
     }
 
     private fun checkFile(file: File,
@@ -132,16 +135,16 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         val text = file.readText()
         val params =
                 KtLint.Params(
-                        fileName = file.name,
-                        text = text,
-                        ruleSets = ruleSets,
-                        userData = mapOf("file_path" to file.path),
-                        script = file.extension.equals("kts", ignoreCase = true),
-                        cb = { lintError, isCorrected ->
-                            reporter.onLintError(file.path, lintError, isCorrected)
-                            lintErrors.add(lintError)
-                        },
-                        debug = debug
+                    fileName = file.name,
+                    text = text,
+                    ruleSets = ruleSets,
+                    userData = mapOf("file_path" to file.path),
+                    script = file.extension.equals("kts", ignoreCase = true),
+                    cb = { lintError, isCorrected ->
+                        reporter.onLintError(file.path, lintError, isCorrected)
+                        lintErrors.add(lintError)
+                    },
+                    debug = debug
                 )
         runAction(params)
     }

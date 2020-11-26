@@ -32,9 +32,9 @@ class CompactInitialization(private val configRules: List<RulesConfig>) : Rule("
     private lateinit var emitWarn: EmitType
 
     override fun visit(
-            node: ASTNode,
-            autoCorrect: Boolean,
-            emit: EmitType
+        node: ASTNode,
+        autoCorrect: Boolean,
+        emit: EmitType
     ) {
         emitWarn = emit
         isFixMode = autoCorrect
@@ -71,8 +71,8 @@ class CompactInitialization(private val configRules: List<RulesConfig>) : Rule("
             .toList()
             .forEach { (assignment, field) ->
                 Warnings.COMPACT_OBJECT_INITIALIZATION.warnAndFix(
-                        configRules, emitWarn, isFixMode,
-                        field.text, assignment.startOffset, assignment.node
+                    configRules, emitWarn, isFixMode,
+                    field.text, assignment.startOffset, assignment.node
                 ) {
                     moveAssignmentIntoApply(property, assignment)
                 }
@@ -91,8 +91,8 @@ class CompactInitialization(private val configRules: List<RulesConfig>) : Rule("
                 .getLambdaExpression()!!
                 .run {
                     val bodyExpression = functionLiteral
-                        // note: we are dealing with function literal: braces belong to KtFunctionLiteral,
-                        // but it's body is a KtBlockExpression, which therefore doesn't have braces
+                    // note: we are dealing with function literal: braces belong to KtFunctionLiteral,
+                    // but it's body is a KtBlockExpression, which therefore doesn't have braces
                         .bodyExpression!!
                         .node
                     // move comments and empty lines before `assignment` into `apply`
@@ -144,14 +144,14 @@ class CompactInitialization(private val configRules: List<RulesConfig>) : Rule("
             } else {
                 applyExpression.node.run {
                     treeParent.replaceChild(
-                            this,
-                            kotlinParser.createNode(
-                                    """
+                        this,
+                        kotlinParser.createNode(
+                            """
                                     |apply {
                                     |    ${referenceExpression.getReferencedName()}(this)
                                     |}
                                     """.trimMargin()
-                            )
+                        )
                     )
                 }
             }

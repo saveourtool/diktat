@@ -39,9 +39,9 @@ class SingleConstructorRule(private val config: List<RulesConfig>) : Rule("singl
     private lateinit var emitWarn: EmitType
 
     override fun visit(
-            node: ASTNode,
-            autoCorrect: Boolean,
-            emit: EmitType
+        node: ASTNode,
+        autoCorrect: Boolean,
+        emit: EmitType
     ) {
         emitWarn = emit
         isFixMode = autoCorrect
@@ -60,8 +60,8 @@ class SingleConstructorRule(private val config: List<RulesConfig>) : Rule("singl
                 ?.singleOrNull()
                 ?.let { secondaryCtor ->
                     SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY.warnAndFix(
-                            config, emitWarn, isFixMode, "in class <${node.getIdentifierName()?.text}>",
-                            node.startOffset, node
+                        config, emitWarn, isFixMode, "in class <${node.getIdentifierName()?.text}>",
+                        node.startOffset, node
                     ) {
                         convertConstructorToPrimary(node, secondaryCtor)
                     }
@@ -143,10 +143,10 @@ class SingleConstructorRule(private val config: List<RulesConfig>) : Rule("singl
 
     @Suppress("NestedBlockDepth", "GENERIC_VARIABLE_WRONG_DECLARATION")
     private fun ASTNode.convertSecondaryConstructorToPrimary(
-            secondaryCtor: ASTNode,
-            declarationsAssignedInCtor: List<KtProperty>,
-            nonTrivialAssignments: Map<KtBinaryExpression, KtNameReferenceExpression>,
-            otherStatements: List<KtExpression>
+        secondaryCtor: ASTNode,
+        declarationsAssignedInCtor: List<KtProperty>,
+        nonTrivialAssignments: Map<KtBinaryExpression, KtNameReferenceExpression>,
+        otherStatements: List<KtExpression>
     ) {
         require(elementType == CLASS)
 
@@ -166,7 +166,7 @@ class SingleConstructorRule(private val config: List<RulesConfig>) : Rule("singl
         if (otherStatements.isNotEmpty() || nonTrivialAssignments.isNotEmpty()) {
             findChildByType(CLASS_BODY)?.run {
                 val classInitializer = kotlinParser.createNode(
-                        """
+                    """
                             |init {
                             |    ${(otherStatements + nonTrivialAssignments.keys).joinToString("\n") { it.text }}
                             |}
@@ -203,20 +203,20 @@ class SingleConstructorRule(private val config: List<RulesConfig>) : Rule("singl
     private fun createPrimaryCtor(secondaryCtor: ASTNode,
                                   declarationsAssignedInCtor: List<KtProperty>,
                                   valueParameters: List<KtParameter>) = kotlinParser.createPrimaryConstructor(
-            (secondaryCtor
-                .findChildByType(MODIFIER_LIST)
-                ?.text
-                ?.plus(" constructor ")
-                ?: "") +
-                    "(" +
-                    declarationsAssignedInCtor.run {
-                        joinToString(
-                                ", ",
-                                postfix = if (isNotEmpty() && valueParameters.isNotEmpty()) ", " else ""
-                        ) { it.text }
-                    } +
-                    valueParameters.joinToString(", ") { it.text } +
-                    ")"
+        (secondaryCtor
+            .findChildByType(MODIFIER_LIST)
+            ?.text
+            ?.plus(" constructor ")
+            ?: "") +
+                "(" +
+                declarationsAssignedInCtor.run {
+                    joinToString(
+                        ", ",
+                        postfix = if (isNotEmpty() && valueParameters.isNotEmpty()) ", " else ""
+                    ) { it.text }
+                } +
+                valueParameters.joinToString(", ") { it.text } +
+                ")"
     )
         .node
 }

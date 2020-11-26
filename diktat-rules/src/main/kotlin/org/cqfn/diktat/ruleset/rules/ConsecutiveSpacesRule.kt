@@ -1,16 +1,17 @@
 package org.cqfn.diktat.ruleset.rules
 
+import org.cqfn.diktat.common.config.rules.RuleConfiguration
+import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.common.config.rules.getRuleConfig
+import org.cqfn.diktat.ruleset.constants.EmitType
+import org.cqfn.diktat.ruleset.constants.Warnings.TOO_MANY_CONSECUTIVE_SPACES
+
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.ENUM_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.parent
-import org.cqfn.diktat.common.config.rules.RuleConfiguration
-import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.common.config.rules.getRuleConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
-import org.cqfn.diktat.ruleset.constants.Warnings.TOO_MANY_CONSECUTIVE_SPACES
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
 
@@ -21,12 +22,8 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
  *
  */
 class ConsecutiveSpacesRule(private val configRules: List<RulesConfig>) : Rule("too-many-spaces") {
-    companion object {
-        private const val MAX_SPACES = 1
-    }
-
-    private lateinit var emitWarn: EmitType
     private var isFixMode: Boolean = false
+    private lateinit var emitWarn: EmitType
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
@@ -35,7 +32,7 @@ class ConsecutiveSpacesRule(private val configRules: List<RulesConfig>) : Rule("
         isFixMode = autoCorrect
 
         val configuration = TooManySpacesRuleConfiguration(
-                configRules.getRuleConfig(TOO_MANY_CONSECUTIVE_SPACES)?.configuration ?: mapOf())
+            configRules.getRuleConfig(TOO_MANY_CONSECUTIVE_SPACES)?.configuration ?: mapOf())
 
         if (node.elementType == WHITE_SPACE) {
             checkWhiteSpace(node, configuration)
@@ -48,7 +45,6 @@ class ConsecutiveSpacesRule(private val configRules: List<RulesConfig>) : Rule("
         } else {
             squeezeSpacesToOne(node, configuration)
         }
-
     }
 
     private fun checkWhiteSpaceEnum(node: ASTNode, configuration: TooManySpacesRuleConfiguration) {
@@ -66,7 +62,7 @@ class ConsecutiveSpacesRule(private val configRules: List<RulesConfig>) : Rule("
         if (spaces > configuration.numberOfSpaces && !node.isWhiteSpaceWithNewline() &&
                 !node.hasEolComment()) {
             TOO_MANY_CONSECUTIVE_SPACES.warnAndFix(configRules, emitWarn, isFixMode,
-                    "found: $spaces. need to be: ${configuration.numberOfSpaces}", node.startOffset, node) {
+                "found: $spaces. need to be: ${configuration.numberOfSpaces}", node.startOffset, node) {
                 node.squeezeSpaces()
             }
         }
@@ -79,5 +75,9 @@ class ConsecutiveSpacesRule(private val configRules: List<RulesConfig>) : Rule("
     class TooManySpacesRuleConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
         val numberOfSpaces = config["max_spaces"]?.toIntOrNull() ?: MAX_SPACES
         val enumInitialFormatting = config["saveInitialFormattingForEnums"]?.toBoolean() ?: false
+    }
+
+    companion object {
+        private const val MAX_SPACES = 1
     }
 }

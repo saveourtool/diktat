@@ -28,9 +28,9 @@ class SingleInitRule(private val configRule: List<RulesConfig>) : Rule("multiple
     private lateinit var emitWarn: EmitType
 
     override fun visit(
-            node: ASTNode,
-            autoCorrect: Boolean,
-            emit: EmitType
+        node: ASTNode,
+        autoCorrect: Boolean,
+        emit: EmitType
     ) {
         emitWarn = emit
         isFixMode = autoCorrect
@@ -51,7 +51,7 @@ class SingleInitRule(private val configRule: List<RulesConfig>) : Rule("multiple
             ?.let { initBlocks ->
                 val className = node.treeParent.getIdentifierName()?.text
                 Warnings.MULTIPLE_INIT_BLOCKS.warnAndFix(configRule, emitWarn, isFixMode,
-                        "in class <$className> found ${initBlocks.size} `init` blocks", node.startOffset, node) {
+                    "in class <$className> found ${initBlocks.size} `init` blocks", node.startOffset, node) {
                     mergeInitBlocks(initBlocks)
                 }
             }
@@ -105,7 +105,7 @@ class SingleInitRule(private val configRule: List<RulesConfig>) : Rule("multiple
                     .takeIf { it.isNotEmpty() }
                     ?.let {
                         Warnings.MULTIPLE_INIT_BLOCKS.warnAndFix(configRule, emitWarn, isFixMode,
-                                "`init` block has assignments that can be moved to declarations", initBlock.startOffset, initBlock
+                            "`init` block has assignments that can be moved to declarations", initBlock.startOffset, initBlock
                         ) {
                             it.forEach { (property, assignments) ->
                                 val assignment = assignments.single()

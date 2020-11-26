@@ -61,7 +61,7 @@ class AnnotationNewLineRule(private val configRules: List<RulesConfig>) : Rule("
                              rightSide: Boolean,
                              leftSide: Boolean) {
         Warnings.ANNOTATION_NEW_LINE.warnAndFix(configRules, emitWarn, isFixMode, "${node.text} not on a single line",
-                node.startOffset, node) {
+            node.startOffset, node) {
             if (rightSide) {
                 if (node.treeNext?.isWhiteSpace() == true) {
                     node.removeChild(node.treeNext)

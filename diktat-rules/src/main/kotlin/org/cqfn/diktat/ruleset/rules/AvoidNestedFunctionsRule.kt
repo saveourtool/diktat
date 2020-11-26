@@ -47,7 +47,7 @@ class AvoidNestedFunctionsRule(private val configRules: List<RulesConfig>) : Rul
             val funcName = node.getFirstChildWithType(IDENTIFIER)!!.text
 
             AVOID_NESTED_FUNCTIONS.warnAndFix(configRules, emitWarn, isFixMode, "fun $funcName", node.startOffset, node,
-                    canBeAutoCorrected = checkFunctionReferences(node)) {
+                canBeAutoCorrected = checkFunctionReferences(node)) {
                 // We take last nested function, then add and remove child from bottom to top
                 val lastFunc = node.findAllNodesWithSpecificType(FUN).last()
                 val funcSeq = lastFunc

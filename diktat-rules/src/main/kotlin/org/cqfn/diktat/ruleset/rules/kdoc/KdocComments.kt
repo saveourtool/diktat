@@ -3,6 +3,11 @@ package org.cqfn.diktat.ruleset.rules.kdoc
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getCommonConfiguration
 import org.cqfn.diktat.ruleset.constants.EmitType
+import org.cqfn.diktat.ruleset.constants.Warnings
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CONSTRUCTOR_PROPERTY
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT
+import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_CLASS_ELEMENTS
+import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_TOP_LEVEL
 import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getFileName
@@ -13,6 +18,7 @@ import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.cqfn.diktat.ruleset.utils.hasTestAnnotation
 import org.cqfn.diktat.ruleset.utils.isAccessibleOutside
 import org.cqfn.diktat.ruleset.utils.isLocatedInTest
+import org.cqfn.diktat.ruleset.utils.isOverridden
 import org.cqfn.diktat.ruleset.utils.isStandardMethod
 import org.cqfn.diktat.ruleset.utils.kDocTags
 import org.cqfn.diktat.ruleset.utils.splitPathToDirs
@@ -36,12 +42,6 @@ import com.pinterest.ktlint.core.ast.ElementType.VAL_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.VAR_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.parent
-import org.cqfn.diktat.ruleset.constants.Warnings
-import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CONSTRUCTOR_PROPERTY
-import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT
-import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_TOP_LEVEL
-import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_CLASS_ELEMENTS
-import org.cqfn.diktat.ruleset.utils.isOverridden
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -66,9 +66,9 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
      * @param emit
      */
     override fun visit(
-            node: ASTNode,
-            autoCorrect: Boolean,
-            emit: EmitType
+        node: ASTNode,
+        autoCorrect: Boolean,
+        emit: EmitType
     ) {
         emitWarn = emit
         isFixMode = autoCorrect
@@ -123,11 +123,11 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
     @Suppress("UnsafeCallOnNullableType")
     private fun checkBasicKdocBeforeClass(node: ASTNode, kdocBeforeClass: ASTNode) {
         val propertyInClassKdoc = kdocBeforeClass
-                .kDocTags()
-                ?.firstOrNull { it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == node.findChildByType(IDENTIFIER)!!.text }
+            .kDocTags()
+            ?.firstOrNull { it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == node.findChildByType(IDENTIFIER)!!.text }
         if (propertyInClassKdoc == null && node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside()) {
             KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixMode,
-                    "add <${node.findChildByType(IDENTIFIER)!!.text}> to KDoc", node.startOffset, node) {
+                "add <${node.findChildByType(IDENTIFIER)!!.text}> to KDoc", node.startOffset, node) {
                 insertTextInKdoc(kdocBeforeClass, " * @property ${node.findChildByType(IDENTIFIER)!!.text}\n")
             }
         }
@@ -135,18 +135,18 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
 
     @Suppress("UnsafeCallOnNullableType")
     private fun checkKdocBeforeClass(
-            node: ASTNode,
-            kdocBeforeClass: ASTNode,
-            prevComment: ASTNode) {
+        node: ASTNode,
+        kdocBeforeClass: ASTNode,
+        prevComment: ASTNode) {
         val propertyInClassKdoc = kdocBeforeClass
+            .kDocTags()
+            ?.firstOrNull { it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == node.findChildByType(IDENTIFIER)!!.text }
+            ?.node
+        val propertyInLocalKdoc = if (prevComment.elementType == KDOC) {
+            prevComment
                 .kDocTags()
                 ?.firstOrNull { it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == node.findChildByType(IDENTIFIER)!!.text }
                 ?.node
-        val propertyInLocalKdoc = if (prevComment.elementType == KDOC) {
-            prevComment
-                    .kDocTags()
-                    ?.firstOrNull { it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == node.findChildByType(IDENTIFIER)!!.text }
-                    ?.node
         } else {
             null
         }
@@ -162,7 +162,7 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
     @Suppress("UnsafeCallOnNullableType")
     private fun createKdocBasicKdoc(node: ASTNode) {
         KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixMode,
-                "add <${node.findChildByType(IDENTIFIER)!!.text}> to KDoc", node.startOffset, node) {
+            "add <${node.findChildByType(IDENTIFIER)!!.text}> to KDoc", node.startOffset, node) {
             val newKdoc = KotlinParser().createNode("/**\n * @property ${node.findChildByType(IDENTIFIER)!!.text}\n */")
             val classNode = node.parent({ it.elementType == CLASS })!!
             classNode.addChild(PsiWhiteSpaceImpl("\n"), classNode.firstChildNode)
@@ -197,11 +197,11 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
 
     @Suppress("UnsafeCallOnNullableType")
     private fun handleKdocAndBlock(
-            node: ASTNode,
-            prevComment: ASTNode,
-            kdocBeforeClass: ASTNode,
-            propertyInClassKdoc: ASTNode?,
-            propertyInLocalKdoc: ASTNode?) {
+        node: ASTNode,
+        prevComment: ASTNode,
+        kdocBeforeClass: ASTNode,
+        propertyInClassKdoc: ASTNode?,
+        propertyInLocalKdoc: ASTNode?) {
         val kdocText = if (prevComment.elementType == KDOC) {
             prevComment.text.removePrefix("/**").removeSuffix("*/")
         } else {
@@ -209,9 +209,9 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
         }
         val isFixable = (propertyInClassKdoc != null && propertyInLocalKdoc != null) ||
                 (propertyInClassKdoc == null && propertyInLocalKdoc == null && kdocText
-                        .replace("\n+".toRegex(), "")
-                        .lines()
-                        .size != 1)
+                    .replace("\n+".toRegex(), "")
+                    .lines()
+                    .size != 1)
         KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, !isFixable, prevComment.text, prevComment.startOffset, node, !isFixable) {
             if (propertyInClassKdoc == null && propertyInLocalKdoc == null) {
                 insertTextInKdoc(kdocBeforeClass, " * @property ${node.findChildByType(IDENTIFIER)!!.text} ${kdocText.replace("\n+".toRegex(), "").removePrefix("*")}")
@@ -228,10 +228,10 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
 
     @Suppress("UnsafeCallOnNullableType")
     private fun handleCommentBefore(
-            node: ASTNode,
-            kdocBeforeClass: ASTNode,
-            prevComment: ASTNode,
-            propertyInClassKdoc: ASTNode?) {
+        node: ASTNode,
+        kdocBeforeClass: ASTNode,
+        prevComment: ASTNode,
+        propertyInClassKdoc: ASTNode?) {
         if (propertyInClassKdoc != null) {
             if (propertyInClassKdoc.hasChildOfType(KDOC_TEXT)) {
                 val kdocText = propertyInClassKdoc.findChildByType(KDOC_TEXT)!!
@@ -260,19 +260,18 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
         // if parent class is public or internal than we can check it's internal code elements
         if (classBody != null && modifier.isAccessibleOutside()) {
             classBody
-                    .getChildren(statementsToDocument)
-                    .filterNot { (it.elementType == FUN && it.isStandardMethod())
-                            || (it.elementType == FUN && it.isOverridden())
-                            || (it.elementType == PROPERTY && it.isOverridden())
-                    }
-                    .forEach { checkDoc(it, MISSING_KDOC_CLASS_ELEMENTS) }
+                .getChildren(statementsToDocument)
+                .filterNot {
+                    (it.elementType == FUN && it.isStandardMethod()) || (it.elementType == FUN && it.isOverridden()) || (it.elementType == PROPERTY && it.isOverridden())
+                }
+                .forEach { checkDoc(it, MISSING_KDOC_CLASS_ELEMENTS) }
         }
     }
 
     private fun checkTopLevelDoc(node: ASTNode) =
             // checking that all top level class declarations and functions have kDoc
             (node.getAllChildrenWithType(CLASS) + node.getAllChildrenWithType(FUN))
-                    .forEach { checkDoc(it, MISSING_KDOC_TOP_LEVEL) }
+                .forEach { checkDoc(it, MISSING_KDOC_TOP_LEVEL) }
 
     /**
      * raises warning if protected, public or internal code element does not have a Kdoc
@@ -288,7 +287,7 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
         }
     }
 
-    private fun isTopLevelFunctionStandard(node: ASTNode) : Boolean = node.elementType == FUN && node.isStandardMethod()
+    private fun isTopLevelFunctionStandard(node: ASTNode): Boolean = node.elementType == FUN && node.isStandardMethod()
 
     companion object {
         private val statementsToDocument = TokenSet.create(CLASS, FUN, PROPERTY)

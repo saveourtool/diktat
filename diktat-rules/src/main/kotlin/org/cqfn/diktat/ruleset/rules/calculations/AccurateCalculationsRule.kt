@@ -35,11 +35,11 @@ class AccurateCalculationsRule(private val configRules: List<RulesConfig>) : Rul
                 ?.getReferencedName()
                 ?.equals("abs")
                 ?.and(
-                        valueArguments
-                            .singleOrNull()
-                            ?.getArgumentExpression()
-                            ?.isFloatingPoint()
-                            ?: false)
+                    valueArguments
+                        .singleOrNull()
+                        ?.getArgumentExpression()
+                        ?.isFloatingPoint()
+                        ?: false)
                 ?: false
         }
         ?: false
@@ -79,7 +79,7 @@ class AccurateCalculationsRule(private val configRules: List<RulesConfig>) : Rul
         if (floatValue != null) {
             // float value is used in comparison
             FLOAT_IN_ACCURATE_CALCULATIONS.warn(configRules, emitWarn, isFixMode,
-                    "float value of <${floatValue.text}> used in arithmetic expression in ${expression.text}", expression.startOffset, expression.node)
+                "float value of <${floatValue.text}> used in arithmetic expression in ${expression.text}", expression.startOffset, expression.node)
         }
     }
 
@@ -129,11 +129,11 @@ class AccurateCalculationsRule(private val configRules: List<RulesConfig>) : Rul
 
     companion object {
         private val arithmeticOperationTokens = listOf(KtTokens.PLUS, KtTokens.PLUSEQ, KtTokens.PLUSPLUS,
-                KtTokens.MINUS, KtTokens.MINUSEQ, KtTokens.MINUSMINUS,
-                KtTokens.MUL, KtTokens.MULTEQ, KtTokens.DIV, KtTokens.DIVEQ,
-                KtTokens.PERC, KtTokens.PERCEQ,
-                KtTokens.GT, KtTokens.LT, KtTokens.LTEQ, KtTokens.GTEQ,
-                KtTokens.EQEQ
+            KtTokens.MINUS, KtTokens.MINUSEQ, KtTokens.MINUSMINUS,
+            KtTokens.MUL, KtTokens.MULTEQ, KtTokens.DIV, KtTokens.DIVEQ,
+            KtTokens.PERC, KtTokens.PERCEQ,
+            KtTokens.GT, KtTokens.LT, KtTokens.LTEQ, KtTokens.GTEQ,
+            KtTokens.EQEQ
         )
         private val comparisonOperators = listOf(KtTokens.LT, KtTokens.LTEQ, KtTokens.GT, KtTokens.GTEQ)
         private val arithmeticOperationsFunctions = listOf("equals", "compareTo")

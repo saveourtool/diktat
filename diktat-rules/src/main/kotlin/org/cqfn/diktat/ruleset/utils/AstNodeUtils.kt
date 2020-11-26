@@ -35,10 +35,20 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
+/**
+ * A [Logger] that can be used throughout diktat
+ */
 val log: Logger = LoggerFactory.getLogger(ASTNode::class.java)
 
+/**
+ * Returns the highest parent node of the tree
+ */
 fun ASTNode.getRootNode() = if (isRoot()) this else parents().last()
 
+/**
+ * Checks whether [this] node's text has length in range [range]
+ * @param range an [IntRange] for text
+ */
 fun ASTNode.checkLength(range: IntRange): Boolean = this.textLength in range
 
 /**
@@ -70,6 +80,11 @@ fun ASTNode.isCorrect(): Boolean = this.findAllNodesWithSpecificType(TokenType.E
 fun ASTNode.getAllChildrenWithType(elementType: IElementType): List<ASTNode> =
     this.getChildren(null).filter { it.elementType == elementType }
 
+/**
+ * Repalces the [beforeNode] of type [WHITE_SPACE] with the node with specified [text]
+ * @param beforeNode a node to replace
+ * @param text a text (white space characters only) for the new node
+ */
 fun ASTNode.replaceWhiteSpaceText(beforeNode: ASTNode, text: String) {
     require(beforeNode.elementType == WHITE_SPACE)
     this.addChild(PsiWhiteSpaceImpl(text), beforeNode)
