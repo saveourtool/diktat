@@ -30,7 +30,8 @@ enum class Warnings(
     INCORRECT_PACKAGE_SEPARATOR(true, "1.2.1", "package name parts should be separated only by dots - there should be no other symbols like underscores (_)"),
     CLASS_NAME_INCORRECT(true, "1.3.1", "class/enum/interface name should be in PascalCase and should contain only latin (ASCII) letters or numbers"),
     OBJECT_NAME_INCORRECT(true, "1.3.1", "object structure name should be in PascalCase and should contain only latin (ASCII) letters or numbers"),
-    VARIABLE_NAME_INCORRECT_FORMAT(true, "1.6.1", "variable name should be in lowerCamelCase and should contain only latin (ASCII) letters or numbers and should start from lower letter"),
+    VARIABLE_NAME_INCORRECT_FORMAT(true, "1.6.1",
+        "variable name should be in lowerCamelCase and should contain only latin (ASCII) letters or numbers and should start from lower letter"),
     VARIABLE_NAME_INCORRECT(false, "1.1.1", "variable name should contain more than one letter"),
     CONSTANT_UPPERCASE(true, "1.5.1", "<val> properties from companion object or on file level mostly in all cases are constants - please use upper snake case for them"),
     VARIABLE_HAS_PREFIX(true, "1.1.1", "variable has prefix (like mVariable or M_VARIABLE), generally it is a bad code style (Android - is the only exception)"),
@@ -55,7 +56,8 @@ enum class Warnings(
     KDOC_EMPTY_KDOC(false, "2.1.3", "KDoc should never be empty"),
     KDOC_WRONG_SPACES_AFTER_TAG(true, "2.1.3", "there should be exactly one white space after tag name in KDoc"),
     KDOC_WRONG_TAGS_ORDER(true, "2.1.3", "in KDoc standard tags are arranged in order @param, @return, @throws, but are"),
-    KDOC_NEWLINES_BEFORE_BASIC_TAGS(true, "2.1.3", "in KDoc block of standard tags @param, @return, @throws should contain newline before only if there is other content before it"),
+    KDOC_NEWLINES_BEFORE_BASIC_TAGS(true, "2.1.3",
+        "in KDoc block of standard tags @param, @return, @throws should contain newline before only if there is other content before it"),
     KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS(true, "2.1.3", "in KDoc standard tags @param, @return, @throws should not containt newline between them, but these tags do"),
     KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS(true, "2.1.3", "in KDoc there should be exactly one empty line after special tags"),
     KDOC_NO_EMPTY_TAGS(false, "2.2.1", "no empty descriptions in tag blocks are allowed"),
@@ -162,7 +164,7 @@ enum class Warnings(
      * @param canBeAutoCorrected whether this warning can be autocorrected
      * @param autoFix function that will be called to autocorrect the warning
      */
-    @Suppress("LongParameterList")
+    @Suppress("LongParameterList", "TOO_MANY_PARAMETERS")
     fun warnAndFix(configRules: List<RulesConfig>,
                    emit: EmitType,
                    isFixMode: Boolean,
@@ -172,7 +174,7 @@ enum class Warnings(
                    canBeAutoCorrected: Boolean = this.canBeAutoCorrected,
                    autoFix: () -> Unit) {
         warn(configRules, emit, canBeAutoCorrected, freeText, offset, node)
-        fix(configRules, autoFix, isFixMode, node)
+        fix(configRules, isFixMode, node, autoFix)
     }
 
     /**
@@ -183,7 +185,7 @@ enum class Warnings(
      * @param offset offset from the beginning of the file
      * @param node the [ASTNode] on which the warning was triggered
      */
-    @Suppress("LongParameterList")
+    @Suppress("LongParameterList", "TOO_MANY_PARAMETERS")
     fun warn(configs: List<RulesConfig>,
              emit: EmitType,
              autoCorrected: Boolean,
@@ -203,9 +205,9 @@ enum class Warnings(
 
     private inline fun fix(
         configs: List<RulesConfig>,
-        autoFix: () -> Unit,
         isFix: Boolean,
-        node: ASTNode) {
+        node: ASTNode,
+        autoFix: () -> Unit) {
         if (configs.isRuleEnabled(this) && isFix && !node.hasSuppress(name)) {
             autoFix()
         }

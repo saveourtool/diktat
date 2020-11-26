@@ -1,7 +1,14 @@
+/**
+ * This file generates a table, which maps warning names to chapters in code style
+ */
+
 package org.cqfn.diktat.ruleset.constants
 
 import java.io.File
 
+/**
+ * Path to diktat code style guide, which has links to code style chapters
+ */
 const val DIKTAT_GUIDE: String = "guide/diktat-coding-convention.md#"
 
 @Suppress("MagicNumber")
@@ -27,13 +34,12 @@ fun main() {
         ?.name
         ?.length
         ?: 0
-    val separator = "| ${"-".repeat(maxRuleNameLength)} | ${"-".repeat(maxRuleIdLength)} | --- |\n"
+
+    val tableWithWarnings = allWarnings.joinToString("\n") { warn ->
+        "| ${warn.name} | [${warn.ruleId}](${DIKTAT_GUIDE}r${warn.ruleId}) | ${if (warn.canBeAutoCorrected) "yes" else "no"} |"
+    }
 
     val header = "| Diktat Rule | Code Style | Auto-fixed? |\n"
-
-    val tableWithWarnings = allWarnings.map { warn ->
-        "| ${warn.name} | [${warn.ruleId}](${DIKTAT_GUIDE}r${warn.ruleId}) | ${if (warn.canBeAutoCorrected) "yes" else "no"} |"
-    }.joinToString("\n")
-
+    val separator = "| ${"-".repeat(maxRuleNameLength)} | ${"-".repeat(maxRuleIdLength)} | --- |\n"
     File("info/rules-mapping.md").writeText("$header$separator$tableWithWarnings")
 }

@@ -1,3 +1,7 @@
+/**
+ * This file contains code for codegen: generating a list of WarningNames and adjusting current year for copyright inspection tests.
+ */
+
 package org.cqfn.diktat.ruleset.generation
 
 import org.cqfn.diktat.ruleset.constants.Warnings

@@ -8,6 +8,9 @@ import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtClass
 
+/**
+ * This rule checks if a class has an empty primary constructor.
+ */
 class AvoidEmptyPrimaryConstructor(private val configRules: List<RulesConfig>) : Rule("avoid-empty-primary-constructor") {
     private var isFixMode: Boolean = false
     private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
