@@ -1,13 +1,15 @@
 package org.cqfn.diktat.ruleset.smoke
 
-import com.charleskorn.kaml.InvalidPropertyValueException
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
+
+import com.charleskorn.kaml.InvalidPropertyValueException
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+
 import java.io.File
 import java.lang.IllegalArgumentException
 

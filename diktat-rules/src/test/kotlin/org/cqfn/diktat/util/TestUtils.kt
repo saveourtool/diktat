@@ -67,13 +67,13 @@ internal fun format(ruleSetProviderRef: (rulesConfigList: List<RulesConfig>?) ->
                     rulesConfigList: List<RulesConfig>? = null,
                     cb: LintErrorCallback = defaultCallback) =
         KtLint.format(
-                KtLint.Params(
-                        text = text,
-                        ruleSets = listOf(ruleSetProviderRef.invoke(rulesConfigList).get()),
-                        fileName = fileName,
-                        cb = cb,
-                        userData = mapOf("file_path" to fileName)
-                )
+            KtLint.Params(
+                text = text,
+                ruleSets = listOf(ruleSetProviderRef.invoke(rulesConfigList).get()),
+                fileName = fileName,
+                cb = cb,
+                userData = mapOf("file_path" to fileName)
+            )
         )
 
 internal val defaultCallback: (lintError: LintError, corrected: Boolean) -> Unit = { lintError, _ ->
@@ -94,22 +94,21 @@ internal fun applyToCode(code: String,
                          applyToNode: (node: ASTNode, counter: AtomicInteger) -> Unit) {
     val counter = AtomicInteger(0)
     KtLint.lint(
-            KtLint.Params(
-                    text = code,
-                    ruleSets = listOf(
-                            RuleSet("test", object : Rule("astnode-utils-test") {
-                                override fun visit(node: ASTNode,
-                                                   autoCorrect: Boolean,
-                                                   emit: EmitType) {
-                                    applyToNode(node, counter)
-                                }
-                            })
-                    ),
-                    cb = { _, _ -> Unit }
-            )
+        KtLint.Params(
+            text = code,
+            ruleSets = listOf(
+                RuleSet("test", object : Rule("astnode-utils-test") {
+                    override fun visit(node: ASTNode,
+                                       autoCorrect: Boolean,
+                                       emit: EmitType) {
+                        applyToNode(node, counter)
+                    }
+                })
+            ),
+            cb = { _, _ -> Unit }
+        )
     )
-    Assertions
-            .assertThat(counter.get())
-            .`as`("Number of expected asserts")
-            .isEqualTo(expectedAsserts)
+    Assertions.assertThat(counter.get())
+        .`as`("Number of expected asserts")
+        .isEqualTo(expectedAsserts)
 }

@@ -28,14 +28,14 @@ open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesCo
         val res: MutableList<LintError> = mutableListOf()
         val actualFileName = fileName ?: testFileName
         KtLint.lint(
-                KtLint.Params(
-                        fileName = actualFileName,
-                        text = code,
-                        ruleSets = listOf(DiktatRuleSetProvider4Test(ruleSupplier,
-                                rulesConfigList ?: this.rulesConfigList).get()),
-                        cb = { lintError, _ -> res.add(lintError) },
-                        userData = mapOf("file_path" to actualFileName)
-                )
+            KtLint.Params(
+                fileName = actualFileName,
+                text = code,
+                ruleSets = listOf(DiktatRuleSetProvider4Test(ruleSupplier,
+                    rulesConfigList ?: this.rulesConfigList).get()),
+                cb = { lintError, _ -> res.add(lintError) },
+                userData = mapOf("file_path" to actualFileName)
+            )
         )
         res.assertEquals(*lintErrors)
     }

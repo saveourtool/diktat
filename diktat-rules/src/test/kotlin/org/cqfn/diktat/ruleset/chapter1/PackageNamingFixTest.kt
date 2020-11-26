@@ -10,9 +10,9 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class PackageNamingFixTest : FixTestBase(
-        "test/paragraph1/naming/package",
-        ::PackageNaming,
-        listOf(RulesConfig("DIKTAT_COMMON", true, mapOf("domainName" to "org.cqfn.diktat")))
+    "test/paragraph1/naming/package",
+    ::PackageNaming,
+    listOf(RulesConfig("DIKTAT_COMMON", true, mapOf("domainName" to "org.cqfn.diktat")))
 ) {
     @Test
     @Tag(WarningNames.PACKAGE_NAME_INCORRECT_CASE)

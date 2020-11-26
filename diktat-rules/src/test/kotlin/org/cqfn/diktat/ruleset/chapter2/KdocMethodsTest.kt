@@ -1,9 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter2
 
-import com.pinterest.ktlint.core.LintError
-import org.cqfn.diktat.common.config.rules.RulesConfig
-import generated.WarningNames
 import org.cqfn.diktat.common.config.rules.DIKTAT_COMMON
+import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_TRIVIAL_KDOC_ON_FUNCTION
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_PARAM_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_RETURN_TAG
@@ -12,13 +10,15 @@ import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_ON_FUNCTION
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocMethods
 import org.cqfn.diktat.util.LintTestBase
+
+import com.pinterest.ktlint.core.LintError
+import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Tags
 import org.junit.jupiter.api.Test
 
 class KdocMethodsTest : LintTestBase(::KdocMethods) {
     private val ruleId: String = "$DIKTAT_RULE_SET_ID:kdoc-methods"
-
     private val funCode = """
         fun doubleInt(a: Int): Int {
             if (Config.condition) throw IllegalStateException()
@@ -52,7 +52,7 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
 
     @Test
     @Tags(Tag(WarningNames.KDOC_WITHOUT_PARAM_TAG), Tag(WarningNames.KDOC_WITHOUT_RETURN_TAG), Tag(WarningNames.KDOC_WITHOUT_THROWS_TAG),
-            Tag(WarningNames.MISSING_KDOC_ON_FUNCTION))
+        Tag(WarningNames.MISSING_KDOC_ON_FUNCTION))
     fun `Warning should not be triggered for functions in tests`() {
         val validCode = "@Test $funCode"
         val complexAnnotationCode = "@Anno(test = [\"args\"]) $funCode"
@@ -61,23 +61,23 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
         lintMethod(validCode, fileName = "src/main/kotlin/org/cqfn/diktat/Example.kt")
         // no false positive triggers on annotations
         lintMethod(complexAnnotationCode,
-                LintError(1, 1, ruleId, "${KDOC_WITHOUT_PARAM_TAG.warnText()} doubleInt (a)", true),
-                LintError(1, 1, ruleId, "${KDOC_WITHOUT_RETURN_TAG.warnText()} doubleInt", true),
-                LintError(1, 1, ruleId, "${KDOC_WITHOUT_THROWS_TAG.warnText()} doubleInt (IllegalStateException)", true),
-                LintError(1, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} doubleInt", true),
-                fileName = "src/main/kotlin/org/cqfn/diktat/Example.kt"
+            LintError(1, 1, ruleId, "${KDOC_WITHOUT_PARAM_TAG.warnText()} doubleInt (a)", true),
+            LintError(1, 1, ruleId, "${KDOC_WITHOUT_RETURN_TAG.warnText()} doubleInt", true),
+            LintError(1, 1, ruleId, "${KDOC_WITHOUT_THROWS_TAG.warnText()} doubleInt (IllegalStateException)", true),
+            LintError(1, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} doubleInt", true),
+            fileName = "src/main/kotlin/org/cqfn/diktat/Example.kt"
         )
         // should check all .kt files unless both conditions on location and name are true
         lintMethod(funCode,
-                LintError(1, 1, ruleId, "${KDOC_WITHOUT_PARAM_TAG.warnText()} doubleInt (a)", true),
-                LintError(1, 1, ruleId, "${KDOC_WITHOUT_RETURN_TAG.warnText()} doubleInt", true),
-                LintError(1, 1, ruleId, "${KDOC_WITHOUT_THROWS_TAG.warnText()} doubleInt (IllegalStateException)", true),
-                LintError(1, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} doubleInt", true),
-                fileName = "src/test/kotlin/org/cqfn/diktat/Example.kt"
+            LintError(1, 1, ruleId, "${KDOC_WITHOUT_PARAM_TAG.warnText()} doubleInt (a)", true),
+            LintError(1, 1, ruleId, "${KDOC_WITHOUT_RETURN_TAG.warnText()} doubleInt", true),
+            LintError(1, 1, ruleId, "${KDOC_WITHOUT_THROWS_TAG.warnText()} doubleInt (IllegalStateException)", true),
+            LintError(1, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} doubleInt", true),
+            fileName = "src/test/kotlin/org/cqfn/diktat/Example.kt"
         )
         // should allow to set custom test dirs
         lintMethod(funCode, fileName = "src/jvmTest/kotlin/org/cqfn/diktat/ExampleTest.kt",
-                rulesConfigList = listOf(RulesConfig(DIKTAT_COMMON, true, mapOf("testDirs" to "test,jvmTest")))
+            rulesConfigList = listOf(RulesConfig(DIKTAT_COMMON, true, mapOf("testDirs" to "test,jvmTest")))
         )
     }
 
@@ -101,7 +101,7 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
     @Test
     @Tag(WarningNames.KDOC_WITHOUT_PARAM_TAG)
     fun `All methods with parameters should have @param KDoc`() {
-        val invalidKDoc = """
+        val invalidKdoc = """
             /**
              * Test method
              * @return doubled value
@@ -109,19 +109,19 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
              */
         """.trimIndent()
         val invalidCode = """
-            $invalidKDoc
+            $invalidKdoc
             $funCode
         """.trimIndent()
 
         lintMethod(invalidCode,
-                LintError(1, 13, ruleId, "${KDOC_WITHOUT_PARAM_TAG.warnText()} doubleInt (a)", true)
+            LintError(1, 13, ruleId, "${KDOC_WITHOUT_PARAM_TAG.warnText()} doubleInt (a)", true)
         )
     }
 
     @Test
     @Tag(WarningNames.KDOC_WITHOUT_PARAM_TAG)
     fun `All methods with parameters should have @param KDoc for each parameter`() {
-        val invalidKDoc = """
+        val invalidKdoc = """
             /**
              * Test method
              * @param a - dummy integer
@@ -130,19 +130,19 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
              */
         """.trimIndent()
         val invalidCode = """
-            $invalidKDoc
+            $invalidKdoc
             fun addInts(a: Int, b: Int): Int = a + b
         """.trimIndent()
 
         lintMethod(invalidCode,
-                LintError(1, 12, ruleId, "${KDOC_WITHOUT_PARAM_TAG.warnText()} addInts (b)", true)
+            LintError(1, 12, ruleId, "${KDOC_WITHOUT_PARAM_TAG.warnText()} addInts (b)", true)
         )
     }
 
     @Test
     @Tag(WarningNames.KDOC_WITHOUT_RETURN_TAG)
     fun `All methods with explicit return type excluding Unit should have @return KDoc`() {
-        val invalidKDoc = """
+        val invalidKdoc = """
             /**
              * Test method
              * @param a - dummy integer
@@ -150,12 +150,12 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
              */
         """.trimIndent()
         val invalidCode = """
-            $invalidKDoc
+            $invalidKdoc
             $funCode
         """.trimIndent()
 
         lintMethod(invalidCode,
-                LintError(1, 13, ruleId, "${KDOC_WITHOUT_RETURN_TAG.warnText()} doubleInt", true)
+            LintError(1, 13, ruleId, "${KDOC_WITHOUT_RETURN_TAG.warnText()} doubleInt", true)
         )
     }
 
@@ -181,14 +181,14 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
         """.trimIndent()
 
         lintMethod(invalidCode,
-                LintError(1, 12, ruleId, "${KDOC_WITHOUT_RETURN_TAG.warnText()} foo", true)
+            LintError(1, 12, ruleId, "${KDOC_WITHOUT_RETURN_TAG.warnText()} foo", true)
         )
     }
 
     @Test
     @Tag(WarningNames.KDOC_WITHOUT_THROWS_TAG)
     fun `All methods with throw in method body should have @throws KDoc`() {
-        val invalidKDoc = """
+        val invalidKdoc = """
             /**
              * Test method
              * @param a - dummy integer
@@ -196,19 +196,19 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
              */
         """.trimIndent()
         val invalidCode = """
-            $invalidKDoc
+            $invalidKdoc
             $funCode
         """.trimIndent()
 
         lintMethod(invalidCode,
-                LintError(1, 13, ruleId, "${KDOC_WITHOUT_THROWS_TAG.warnText()} doubleInt (IllegalStateException)", true)
+            LintError(1, 13, ruleId, "${KDOC_WITHOUT_THROWS_TAG.warnText()} doubleInt (IllegalStateException)", true)
         )
     }
 
     @Test
     @Tag(WarningNames.KDOC_WITHOUT_THROWS_TAG)
     fun `Linter shouldn't detect throws inside comments`() {
-        val invalidKDoc = """
+        val invalidKdoc = """
             /**
              * Test method
              * @param a - dummy integer
@@ -216,7 +216,7 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
              */
         """.trimIndent()
         val invalidCode = """
-            $invalidKDoc
+            $invalidKdoc
             fun foo(a: Int) {
                 // throw Exception()
                 return bar
@@ -244,7 +244,7 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
         """.trimIndent()
 
         lintMethod(invalidCode,
-                LintError(1, 1, ruleId, "${KDOC_WITHOUT_THROWS_TAG.warnText()} doubleInt (IllegalAccessException)", true)
+            LintError(1, 1, ruleId, "${KDOC_WITHOUT_THROWS_TAG.warnText()} doubleInt (IllegalAccessException)", true)
         )
     }
 
@@ -252,7 +252,7 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
     @Tag(WarningNames.MISSING_KDOC_TOP_LEVEL)
     fun `do not force documentation on standard methods`() {
         lintMethod(
-                """
+            """
                     |class Example {
                     |    override fun toString() = "example"
                     |    
@@ -266,7 +266,7 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
         )
 
         lintMethod(
-                """
+            """
                     |class Example {
                     |    override fun toString(): String { return "example" }
                     |    
@@ -284,7 +284,7 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
     @Tag(WarningNames.MISSING_KDOC_ON_FUNCTION)
     fun `should not force documentation on single line getters and setters`() {
         lintMethod(
-                """
+            """
                     |class Example {
                     |    fun setX(x: Type) {
                     |        this.x = x
@@ -307,11 +307,11 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
                     |    }
                     |}
                 """.trimMargin(),
-                LintError(10, 5, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} getY", false),
-                LintError(12, 5, ruleId, "${KDOC_WITHOUT_PARAM_TAG.warnText()} setY (y)", true),
-                LintError(12, 5, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} setY", true),
-                LintError(17, 5, ruleId, "${KDOC_WITHOUT_RETURN_TAG.warnText()} getZ", true),
-                LintError(17, 5, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} getZ", true)
+            LintError(10, 5, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} getY", false),
+            LintError(12, 5, ruleId, "${KDOC_WITHOUT_PARAM_TAG.warnText()} setY (y)", true),
+            LintError(12, 5, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} setY", true),
+            LintError(17, 5, ruleId, "${KDOC_WITHOUT_RETURN_TAG.warnText()} getZ", true),
+            LintError(17, 5, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} getZ", true)
         )
     }
 
@@ -319,10 +319,10 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
     @Tag(WarningNames.MISSING_KDOC_ON_FUNCTION)
     fun `regression - warn about missing KDoc even if it cannot be autocorrected`() {
         lintMethod(
-                """
+            """
                     |fun foo() { }
                 """.trimMargin(),
-                LintError(1, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} foo", false)
+            LintError(1, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} foo", false)
         )
     }
 
@@ -330,13 +330,13 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
     @Tag(WarningNames.KDOC_TRIVIAL_KDOC_ON_FUNCTION)
     fun `should check if KDoc is not trivial`() {
         lintMethod(
-                """
+            """
                     |/**
                     | * Returns X
                     | */
                     |fun getX(): TypeX { return x }
                 """.trimMargin(),
-                LintError(2, 3, ruleId, "${KDOC_TRIVIAL_KDOC_ON_FUNCTION.warnText()} Returns X", false)
+            LintError(2, 3, ruleId, "${KDOC_TRIVIAL_KDOC_ON_FUNCTION.warnText()} Returns X", false)
         )
     }
 }

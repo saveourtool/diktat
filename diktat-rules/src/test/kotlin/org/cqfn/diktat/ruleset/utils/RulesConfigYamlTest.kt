@@ -19,8 +19,8 @@ import kotlinx.serialization.encodeToString
  */
 class RulesConfigYamlTest {
     private val pathMap = mapOf("diktat-analysis.yml" to "diKTat/diktat-rules/src/main/resources/diktat-analysis.yml",
-            "diktat-analysis-huawei.yml" to "diKTat/diktat-rules/src/main/resources/diktat-analysis-huawei.yml",
-            "parent/diktat-analysis.yml" to "diKTat/diktat-analysis.yml")
+        "diktat-analysis-huawei.yml" to "diKTat/diktat-rules/src/main/resources/diktat-analysis-huawei.yml",
+        "parent/diktat-analysis.yml" to "diKTat/diktat-analysis.yml")
 
     @Test
     fun `read rules config yml`() {
@@ -62,7 +62,7 @@ class RulesConfigYamlTest {
 
     private fun readAllRulesFromConfig(nameConfig: String) =
             RulesConfigReader(javaClass.classLoader)
-                    .readResource(nameConfig) ?: listOf()
+                .readResource(nameConfig) ?: listOf()
 
     private fun readAllRulesFromCode() =
             Warnings.values()
