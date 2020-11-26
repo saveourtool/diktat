@@ -123,7 +123,7 @@ Note that prefixing can also negatively affect the style, as well as the auto ge
 | Type | Naming style |
 | ---- | ---- |
 | Interfaces, classes, annotations, enumerated types, and object type names | Camel case starting with a capital letter. Test classes have a Test suffix. The filename is 'TopClassName'.kt.  |
-| Class fields, local variables, methods, and method parameters | Camel case starting with a small letter. Test methods may be underlined with '_'., the only exception is [backing properties](#r6.1.7)
+| Class fields, local variables, methods, and method parameters | Camel case starting with a small letter. Test methods may be underlined with '_'., the only exception is [backing properties](#r6.1.7) |
 | Static constants and enumerated values | Only uppercase underlined with '_' |
 | Generic type variable | Single capital letter, which can be followed by a number, for example: `E, T, U, X, T2` |
 | Exceptions | Same as class names, but with a suffix Exception, for example: `AccessException` and `NullPointerException`|

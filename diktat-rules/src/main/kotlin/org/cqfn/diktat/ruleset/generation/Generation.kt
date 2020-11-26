@@ -92,14 +92,21 @@ private fun generateCodeStyle() {
                 val columnNames = Regex("""[A-Za-z ]*""")
                         .findAll(line)
                         .filter { it.value.isNotEmpty() }
-                        .map { it.value.trim() }.toList()
+                        .map { it.value.trim() }
+                        .toList()
                 writer.write(columnNames.joinToString(separator = "&"))
                 writer.writeln("""\\""")
                 writer.writeln("\\hline")
                 iterator.next()
                 line = iterator.next()
                 while(iterator.hasNext() && line.trim().startsWith("|")) {
-                    writer.writeln(line.replace('|', '&').drop(1).dropLast(1).plus("""\\""").replace("_", "\\_"))
+                    writer.writeln(line
+                            .replace('|', '&')
+                            .drop(1)
+                            .dropLast(1)
+                            .plus("""\\""")
+                            .replace("_", "\\_")
+                            .replace(Regex("""\(#(.*)\)"""), ""))
                     line = iterator.next()
                 }
                 writer.writeln("""\hline""")
@@ -109,6 +116,7 @@ private fun generateCodeStyle() {
                 var correctedString = findBoldOrItalicText(line, Regex("""\*\*([^*]+)\*\*"""), FindType.BOLD)
                 correctedString = findBoldOrItalicText(correctedString, Regex("""\*([A-Za-z ]+)\*"""), FindType.ITALIC)
                 correctedString = findBoldOrItalicText(correctedString, Regex("""`([^`]*)`"""), FindType.BACKTICKS)
+                correctedString = correctedString.replace(Regex("""\(#(.*)\)"""), "")
                 correctedString = correctedString.replace("#", "\\#")
                 correctedString = correctedString.replace("&", "\\&")
                 correctedString = correctedString.replace("_", "\\_")
