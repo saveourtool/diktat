@@ -1,28 +1,27 @@
 package org.cqfn.diktat.ruleset.chapter5
 
-import com.pinterest.ktlint.core.LintError
-import generated.WarningNames
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.constants.Warnings.NESTED_BLOCK
+import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.NestedFunctionBlock
 import org.cqfn.diktat.util.LintTestBase
+
+import com.pinterest.ktlint.core.LintError
+import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
-
     private val ruleId = "$DIKTAT_RULE_SET_ID:nested-block"
-
     private val rulesConfigList = listOf(
-            RulesConfig(NESTED_BLOCK.name, true, mapOf("maxNestedBlockQuantity" to "2"))
+        RulesConfig(NESTED_BLOCK.name, true, mapOf("maxNestedBlockQuantity" to "2"))
     )
 
     @Test
     @Tag(WarningNames.NESTED_BLOCK)
     fun `should ignore lambda expression`() {
         lintMethod(
-                """
+            """
                     |fun foo() {
                     |   while(true) {
                     |       println()
@@ -59,7 +58,7 @@ class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
     @Tag(WarningNames.NESTED_BLOCK)
     fun `check simple nested block`() {
         lintMethod(
-                """
+            """
                     |fun foo() {
                     |
                     |   if (true) {
@@ -75,7 +74,7 @@ class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
                     |   }
                     |}
                 """.trimMargin(),
-                LintError(1,1, ruleId, "${NESTED_BLOCK.warnText()} foo", false)
+            LintError(1, 1, ruleId, "${NESTED_BLOCK.warnText()} foo", false)
         )
     }
 
@@ -83,7 +82,7 @@ class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
     @Tag(WarningNames.NESTED_BLOCK)
     fun `check simple nested block with try`() {
         lintMethod(
-                """
+            """
                     |fun foo() {
                     |
                     |   if (true) {
@@ -105,7 +104,7 @@ class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
                     |   }
                     |}
                 """.trimMargin(),
-                LintError(1,1, ruleId, "${NESTED_BLOCK.warnText()} foo", false)
+            LintError(1, 1, ruleId, "${NESTED_BLOCK.warnText()} foo", false)
         )
     }
 
@@ -113,7 +112,7 @@ class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
     @Tag(WarningNames.NESTED_BLOCK)
     fun `check simple nested block of function`() {
         lintMethod(
-                """
+            """
                     |fun foo() {
                     |
                     |   if (true) {
@@ -136,7 +135,7 @@ class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
     @Tag(WarningNames.NESTED_BLOCK)
     fun `check simple nested block of local class`() {
         lintMethod(
-                """
+            """
                     |fun foo() {
                     |   class A() {
                     |       fun goo() {
@@ -161,7 +160,7 @@ class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
                     |   }
                     |}
                 """.trimMargin(),
-                LintError(3,8, ruleId, "${NESTED_BLOCK.warnText()} goo", false)
+            LintError(3, 8, ruleId, "${NESTED_BLOCK.warnText()} goo", false)
         )
     }
 
@@ -169,7 +168,7 @@ class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
     @Tag(WarningNames.NESTED_BLOCK)
     fun `check with lambda`() {
         lintMethod(
-                """
+            """
                     private fun findBlocks(node: ASTNode): List<ASTNode> {
                         val result = mutableListOf<ASTNode>()
                         node.getChildren(null).forEach {
@@ -196,7 +195,7 @@ class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
     @Tag(WarningNames.NESTED_BLOCK)
     fun `check with anonymous class`() {
         lintMethod(
-                """
+            """
                     
                     val q = list.filter {it == 0}
                     
@@ -216,8 +215,8 @@ class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
                         }
                     } 
                 """.trimMargin(),
-                LintError(4,50, ruleId, "${NESTED_BLOCK.warnText()} { keyEvent ->...", false),
-                rulesConfigList = rulesConfigList
+            LintError(4, 50, ruleId, "${NESTED_BLOCK.warnText()} { keyEvent ->...", false),
+            rulesConfigList = rulesConfigList
         )
     }
 
@@ -225,7 +224,7 @@ class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
     @Tag(WarningNames.NESTED_BLOCK)
     fun `check simple nested block inside class`() {
         lintMethod(
-                """
+            """
                     |class A {
                     |   fun foo() {
                     |       if(true) {
@@ -248,7 +247,7 @@ class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
                     |   }
                     |}
                 """.trimMargin(),
-                LintError(2,4, ruleId, "${NESTED_BLOCK.warnText()} foo", false)
+            LintError(2, 4, ruleId, "${NESTED_BLOCK.warnText()} foo", false)
         )
     }
 }

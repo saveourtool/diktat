@@ -42,9 +42,9 @@
   enabled: true
 - name: VARIABLE_NAME_INCORRECT_FORMAT
   enabled: true
-# todo: disabled until https://github.com/cqfn/diKTat/issues/551
+# todo: https://github.com/cqfn/diKTat/issues/551
 - name: MISSING_KDOC_ON_FUNCTION
-  enabled: false
+  enabled: true
 - name: MISSING_KDOC_TOP_LEVEL
   enabled: true
 - name: MISSING_KDOC_CLASS_ELEMENTS
@@ -290,7 +290,7 @@
 # But Kotlin architects wanted Kotlin to be fully compatible with Java, that's why `null` keyword was also introduced in Kotlin.
 # There are several code-structures that can be used in Kotlin to avoid null-checks. For example: `?:`,  `.let {}`, `.also {}`, e.t.c
 - name: AVOID_NULL_CHECKS
-  # todo: disabled until #550
+  # todo: disabled until https://github.com/cqfn/diKTat/issues/550
   enabled: false
 - name: COMPACT_OBJECT_INITIALIZATION
   enabled: true

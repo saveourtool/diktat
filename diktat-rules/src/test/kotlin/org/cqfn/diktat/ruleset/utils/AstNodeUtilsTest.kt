@@ -631,9 +631,9 @@ class AstNodeUtilsTest {
                 val firstText = node.text
                 node.leaveOnlyOneNewLine()
                 val secondText = parent
-                        .getChildren(null)
-                        .last()
-                        .text
+                    .getChildren(null)
+                    .last()
+                    .text
                 Assertions.assertEquals("\n", secondText)
                 Assertions.assertEquals("\n\n", firstText)
                 counter.incrementAndGet()
@@ -734,24 +734,24 @@ private class PrettyPrintingVisitor(private val elementType: IElementType,
                        emit: EmitType) {
         if (node.elementType == elementType) {
             Assertions.assertEquals(
-                    expected.replace("\n", System.lineSeparator()),
-                    node.prettyPrint(level, maxLevel)
+                expected.replace("\n", System.lineSeparator()),
+                node.prettyPrint(level, maxLevel)
             )
         }
     }
     companion object {
         fun assertStringRepr(
-                elementType: IElementType,
-                code: String,
-                level: Int = 0,
-                maxLevel: Int = -1,
-                expected: String) {
+            elementType: IElementType,
+            code: String,
+            level: Int = 0,
+            maxLevel: Int = -1,
+            expected: String) {
             KtLint.lint(
-                    KtLint.Params(
-                            text = code,
-                            ruleSets = listOf(RuleSet("test", PrettyPrintingVisitor(elementType, level, maxLevel, expected))),
-                            cb = { _, _ -> Unit }
-                    )
+                KtLint.Params(
+                    text = code,
+                    ruleSets = listOf(RuleSet("test", PrettyPrintingVisitor(elementType, level, maxLevel, expected))),
+                    cb = { _, _ -> Unit }
+                )
             )
         }
     }
