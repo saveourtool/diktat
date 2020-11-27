@@ -19,7 +19,9 @@ private val autoGenerationComment =
         """.trimMargin()
 
 fun main() {
+    generateWarningNames()
     generateCodeStyle()
+    validateYear()
 }
 
 private fun generateWarningNames() {
@@ -50,14 +52,14 @@ private fun generateWarningNames() {
 
 private fun generateCodeStyle() {
     val file = File("info/guide/diktat-coding-convention.md")
-    val tempFile = File("info/guide/coding-convention.tex")
-    tempFile.createNewFile()
+    val appendixFile = File("wp/sections/appendix.tex").readLines().toMutableList()
+    val tempFile = File("info/guide/convention.tex")
     val lines = mutableListOf<String>()
     file.forEachLine { lines.add(it) }
     tempFile.printWriter().use { writer ->
         val iterator = lines.iterator()
-        writer.writeln("\\lstMakeShortInline[basicstyle=\\ttfamily\\bfseries]`")
         writer.writeln("\\section*{guide}")
+        writer.writeln("\\lstMakeShortInline[basicstyle=\\ttfamily\\bfseries]`")
         while (iterator.hasNext()) {
             var line = iterator.next()
             if (line.contains("<!--"))
@@ -127,6 +129,10 @@ private fun generateCodeStyle() {
             }
         }
     }
+
+    appendixFile.removeAll(appendixFile.subList(appendixFile.indexOf("\\section*{guide}"), appendixFile.lastIndex + 1))
+    appendixFile.addAll(tempFile.readLines())
+    File("wp/sections/appendix.tex").writeText(appendixFile.joinToString(separator = "\n"))
 }
 
 enum class FindType {
