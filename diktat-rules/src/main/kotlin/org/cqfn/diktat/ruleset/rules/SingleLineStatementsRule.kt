@@ -16,6 +16,9 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 
+/**
+ * Rule that looks for multiple statements on a single line separated with a `;` and splits them in multiple lines.
+ */
 class SingleLineStatementsRule(private val configRules: List<RulesConfig>) : Rule("statement") {
     private var isFixMode: Boolean = false
     private lateinit var emitWarn: EmitType

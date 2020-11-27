@@ -99,6 +99,7 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
      *
      * @return true if position check is not needed or if header KDoc is positioned correctly or it was moved by fix mode
      */
+    @Suppress("FUNCTION_BOOLEAN_PREFIX")
     private fun checkHeaderKdocPosition(node: ASTNode): Boolean {
         val firstKdoc = node.findChildAfter(IMPORT_LIST, KDOC)
         // if `firstKdoc.treeParent` is File then it's a KDoc not bound to any other structures
@@ -146,6 +147,7 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
         return ""
     }
 
+    @Suppress("TOO_LONG_FUNCTION")
     private fun checkCopyright(node: ASTNode) {
         val configuration = CopyrightConfiguration(configRules.getRuleConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT)?.configuration
             ?: mapOf())
@@ -190,10 +192,20 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
         }
     }
 
+    /**
+     * Configuration for copyright
+     */
     class CopyrightConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
+        /**
+         * @return Whether the copyright is mandatory in all files
+         */
         fun isCopyrightMandatory() = config["isCopyrightMandatory"]?.toBoolean() ?: false
 
-        fun hasCopyrightText() = config.keys.contains("copyrightText")
+        internal fun hasCopyrightText() = config.keys.contains("copyrightText")
+
+        /**
+         * @return text of copyright as configured in the configuration file
+         */
         fun getCopyrightText() = config["copyrightText"] ?: error("Copyright is not set in configuration")
     }
 

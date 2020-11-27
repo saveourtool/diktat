@@ -72,8 +72,18 @@ class ConsecutiveSpacesRule(private val configRules: List<RulesConfig>) : Rule("
 
     private fun ASTNode.squeezeSpaces() = (this as LeafElement).replaceWithText(" ")
 
+    /**
+     * [RuleConfiguration] for consecutive spaces
+     */
     class TooManySpacesRuleConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
+        /**
+         * Maximum allowed number of consecutive spaces (not counting indentation)
+         */
         val numberOfSpaces = config["max_spaces"]?.toIntOrNull() ?: MAX_SPACES
+
+        /**
+         * Whether formatting for enums should be kept without checking
+         */
         val enumInitialFormatting = config["saveInitialFormattingForEnums"]?.toBoolean() ?: false
     }
 

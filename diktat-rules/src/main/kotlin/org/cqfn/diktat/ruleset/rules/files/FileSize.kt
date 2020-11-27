@@ -13,6 +13,9 @@ import com.pinterest.ktlint.core.ast.ElementType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.slf4j.LoggerFactory
 
+/**
+ * Rule that checks number of lines in a file
+ */
 class FileSize(private val configRules: List<RulesConfig>) : Rule("file-size") {
     private var isFixMode: Boolean = false
     private var fileName: String? = null
@@ -63,8 +66,18 @@ class FileSize(private val configRules: List<RulesConfig>) : Rule("file-size") {
         }
     }
 
+    /**
+     * [RuleConfiguration] for maximun number of lines in a file
+     */
     class FileSizeConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
+        /**
+         * Maximum allowed number of lines in a file
+         */
         val maxSize = config["maxSize"]?.toLongOrNull() ?: MAX_SIZE
+
+        /**
+         * List of folders, files from which are ignored during the check. For example, for tests.
+         */
         val ignoreFolders = config["ignoreFolders"]?.replace("\\s+".toRegex(), "")?.split(IGNORE_FOLDERS_SEPARATOR) ?: ignoreFolder
     }
 
@@ -73,6 +86,6 @@ class FileSize(private val configRules: List<RulesConfig>) : Rule("file-size") {
         const val IGNORE_FOLDERS_SEPARATOR = ","
         const val MAX_SIZE = 2000L
         const val SRC_PATH = "src"
-        private val ignoreFolder = emptyList<String>()
+        private val ignoreFolder: List<String> = emptyList()
     }
 }

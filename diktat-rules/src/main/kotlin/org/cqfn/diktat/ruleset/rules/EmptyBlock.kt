@@ -17,6 +17,9 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 
+/**
+ * Rule that checks if empty code blocks (`{  }`) are used and checks their formatting.
+ */
 class EmptyBlock(private val configRules: List<RulesConfig>) : Rule("empty-block-structure") {
     private var isFixMode: Boolean = false
     private lateinit var emitWarn: EmitType
@@ -68,8 +71,18 @@ class EmptyBlock(private val configRules: List<RulesConfig>) : Rule("empty-block
         }
     }
 
+    /**
+     * [RuleConfiguration] for empty blocks formatting
+     */
     class EmptyBlockStyleConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
+        /**
+         * Whether empty code blocks should be allowed
+         */
         val emptyBlockExist = config["allowEmptyBlocks"]?.toBoolean() ?: false
+
+        /**
+         * Whether a newline after `{` is required in an empty block
+         */
         val emptyBlockNewline = config["styleEmptyBlockWithNewline"]?.toBoolean() ?: true
     }
 }

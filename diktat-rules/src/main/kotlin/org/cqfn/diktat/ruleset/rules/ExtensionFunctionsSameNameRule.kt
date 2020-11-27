@@ -56,14 +56,14 @@ class ExtensionFunctionsSameNameRule(private val configRules: List<RulesConfig>)
     }
 
     // Fixme: should find all related classes in project, not only in file
-    @Suppress("UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType", "TYPE_ALIAS")
     private fun collectAllRelatedClasses(node: ASTNode): List<Pair<String, String>> {
         val classListWithInheritance = node
             .findAllNodesWithSpecificType(CLASS)
             .filterNot { (it.psi as KtClass).isInterface() }
             .filter { it.hasChildOfType(SUPER_TYPE_LIST) }
 
-        val pairs = mutableListOf<Pair<String, String>>()
+        val pairs: MutableList<Pair<String, String>> = mutableListOf()
         classListWithInheritance.forEach { classNode ->
             val callEntries = classNode.findChildByType(SUPER_TYPE_LIST)!!.getAllChildrenWithType(SUPER_TYPE_CALL_ENTRY)
 
@@ -76,11 +76,14 @@ class ExtensionFunctionsSameNameRule(private val configRules: List<RulesConfig>)
         return pairs
     }
 
-    @Suppress("UnsafeCallOnNullableType")
+    /**
+     * FixMe: warning suppressed until https://github.com/cqfn/diKTat/issues/581
+     */
+    @Suppress("UnsafeCallOnNullableType", "LOCAL_VARIABLE_EARLY_DECLARATION")
     private fun collectAllExtensionFunctions(node: ASTNode): SimilarSignatures {
         val extensionFunctionList = node.findAllNodesWithSpecificType(FUN).filter { it.hasChildOfType(TYPE_REFERENCE) && it.hasChildOfType(DOT) }
-        val distinctFunctionSignatures = mutableMapOf<FunctionSignature, ASTNode>()  // maps function signatures on node it is used by
-        val extensionFunctionsPairs = mutableListOf<Pair<ExtensionFunction, ExtensionFunction>>()  // pairs extension functions with same signature
+        val distinctFunctionSignatures: MutableMap<FunctionSignature, ASTNode> = mutableMapOf()  // maps function signatures on node it is used by
+        val extensionFunctionsPairs: MutableList<Pair<ExtensionFunction, ExtensionFunction>> = mutableListOf()  // pairs extension functions with same signature
 
         extensionFunctionList.forEach { func ->
             val functionName = (func.psi as KtNamedFunction).name!!
