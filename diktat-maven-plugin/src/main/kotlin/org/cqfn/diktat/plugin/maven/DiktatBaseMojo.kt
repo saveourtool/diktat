@@ -23,8 +23,14 @@ abstract class DiktatBaseMojo : AbstractMojo() {
     /**
      * Paths that will be scanned for .kt(s) files
      */
-    @Parameter(property = "diktat.inputs")
-    var inputs = listOf("\${project.basedir}/src")
+    @Parameter(property = "diktat.inputs", defaultValue = "\${project.basedir}/src")
+    lateinit var inputs: List<String>
+
+    /**
+     * Paths that will be excluded if encountered during diktat run
+     */
+    @Parameter(property = "diktat.excludes", defaultValue = "")
+    lateinit var excludes: List<String>
 
     /**
      * Flag that indicates whether to turn debug logging on
@@ -45,7 +51,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
      * Property that can be used to access various maven settings
      */
     @Parameter(defaultValue = "\${project}", readonly = true)
-    lateinit var mavenProject: MavenProject
+    private lateinit var mavenProject: MavenProject
 
     /**
      * @param params instance of [KtLint.Params] used in analysis
@@ -63,7 +69,9 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         if (!File(configFile).exists()) {
             throw MojoExecutionException("Configuration file $configFile doesn't exist")
         }
-        log.info("Running diKTat plugin with configuration file $configFile and inputs $inputs")
+        log.info("Running diKTat plugin with configuration file $configFile and inputs $inputs" +
+                if (excludes.isNotEmpty()) " and excluding $excludes" else ""
+        )
 
         val ruleSets by lazy {
             listOf(DiktatRuleSetProvider(configFile).get())
@@ -97,12 +105,14 @@ abstract class DiktatBaseMojo : AbstractMojo() {
      * @throws MojoExecutionException if [RuleExecutionException] has been thrown by ktlint
      */
     private fun checkDirectory(directory: File, lintErrors: MutableList<LintError>, ruleSets: Iterable<RuleSet>) {
+        val (excludedDirs, excludedFiles) = excludes.map(::File).partition { it.isDirectory }
         directory
                 .walk()
                 .filter { file ->
                     file.isDirectory || file.extension.let { it == "kt" || it == "kts" }
                 }
                 .filter { it.isFile }
+                .filterNot { file -> file in excludedFiles || excludedDirs.any { file.startsWith(it) } }
                 .forEach { file ->
                     log.debug("Checking file $file")
                     try {

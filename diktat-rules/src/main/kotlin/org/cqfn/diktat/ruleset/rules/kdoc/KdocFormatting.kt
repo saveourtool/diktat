@@ -76,8 +76,6 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
         emitWarn = emit
         fileName = node.getRootNode().getFileName()
 
-        val declarationTypes = setOf(CLASS, FUN, PROPERTY)
-
         if (node.elementType == KDOC && isKdocNotEmpty(node)) {
             checkNoDeprecatedTag(node)
             checkEmptyTags(node.kDocTags())
@@ -278,7 +276,7 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
         }
     }
 
-    @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
+    @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION", "ComplexMethod")
     private fun checkNewLineAfterSpecialTags(node: ASTNode) {
         val presentSpecialTagNodes = node
                 .getFirstChildWithType(KDOC_SECTION)
@@ -304,13 +302,13 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
                         node.removeChild(node.lastChildNode)  // KDOC_LEADING_ASTERISK
                         node.removeChild(node.lastChildNode)  // WHITE_SPACE
                     }
-                    if (node.lastChildNode.elementType != KDOC_LEADING_ASTERISK) {
+                    if (node.treeParent.lastChildNode != node && node.lastChildNode.elementType != KDOC_LEADING_ASTERISK) {
                         val indent = node
                                 .prevSibling { it.elementType == WHITE_SPACE }
                                 ?.text
                                 ?.substringAfter('\n')
                                 ?.count { it == ' ' } ?: 0
-                        node.addChild(LeafPsiElement(WHITE_SPACE, "\n${" ".repeat(indent)}"), null)
+                        node.addChild(PsiWhiteSpaceImpl("\n${" ".repeat(indent)}"), null)
                         node.addChild(LeafPsiElement(KDOC_LEADING_ASTERISK, "*"), null)
                     }
                 }
