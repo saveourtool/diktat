@@ -38,3 +38,16 @@ class A constructor(
 ){}
 
 class Example(private val foo: Int)
+
+/**
+ * @property g
+  * @property e
+ * @property s
+*/
+class Example constructor(
+        val g: String,
+        private var q: String,
+        @param:JsonProperty("shortName") private val shortName: String,
+        val e: String,
+        protected val s: String
+){}
