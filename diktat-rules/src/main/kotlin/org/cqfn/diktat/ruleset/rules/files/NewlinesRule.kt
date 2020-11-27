@@ -39,6 +39,7 @@ import com.pinterest.ktlint.core.ast.ElementType.OROR
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.PLUS
 import com.pinterest.ktlint.core.ast.ElementType.PLUSEQ
+import com.pinterest.ktlint.core.ast.ElementType.POSTFIX_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.RETURN
 import com.pinterest.ktlint.core.ast.ElementType.RETURN_KEYWORD
@@ -51,6 +52,7 @@ import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.nextCodeSibling
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevCodeSibling
@@ -98,13 +100,15 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
     companion object {
         // fixme: these token sets can be not full, need to add new once as corresponding cases are discovered.
         // error is raised if these operators are prepended by newline
-        private val lineBreakAfterOperators = TokenSet.create(ANDAND, OROR, PLUS, PLUSEQ, MINUS, MINUSEQ, MUL, MULTEQ, DIV, DIVEQ)
+        private val lineBreakAfterOperators = TokenSet.create(ANDAND, OROR, PLUS, PLUSEQ, MINUS, MINUSEQ, MUL, MULTEQ, DIV, DIVEQ, ELVIS)
+
+        private val operatorsSameLine = TokenSet.create(ELVIS)
 
         // error is raised if these operators are followed by newline
-        private val lineBreakBeforeOperators = TokenSet.create(DOT, SAFE_ACCESS, ELVIS, COLONCOLON)
+        private val lineBreakBeforeOperators = TokenSet.create(DOT, SAFE_ACCESS, COLONCOLON, POSTFIX_EXPRESSION)
 
-        private val expressionTypes = TokenSet.create(DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION, CALLABLE_REFERENCE_EXPRESSION, BINARY_EXPRESSION)
-        private val chainExpressionTypes = TokenSet.create(DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION)
+        private val expressionTypes = TokenSet.create(DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION, CALLABLE_REFERENCE_EXPRESSION, BINARY_EXPRESSION, POSTFIX_EXPRESSION)
+        private val chainExpressionTypes = TokenSet.create(DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION, POSTFIX_EXPRESSION)
         private val dropChainValues = TokenSet.create(EOL_COMMENT, WHITE_SPACE, BLOCK_COMMENT, KDOC)
     }
 
@@ -149,16 +153,26 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         if (!(node.elementType == EQ || node.firstChildNode.elementType in lineBreakAfterOperators || node.isInfixCall())) {
             return
         }
-
         // We need to check newline only if prevCodeSibling exists. It can be not the case for unary operators, which are placed
         // at the beginning of the line.
-        if (node.prevCodeSibling()?.isFollowedByNewline() == true) {
-            WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
-                    "should break a line after and not before ${node.text}", node.startOffset, node) {
-                node.run {
-                    treeParent.removeChild(treePrev)
-                    if (!isFollowedByNewline()) {
-                        treeParent.appendNewlineMergingWhiteSpace(treeNext.takeIf { it.elementType == WHITE_SPACE }, treeNext)
+        if (node.getChildren(null).isNotEmpty() && node.firstChildNode.elementType in operatorsSameLine) {
+            if (node.isFollowedByNewline()){
+                WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
+                        "shouldn't be a new line after ${node.text}", node.startOffset, node) {
+                    val spaceAfter = node.parent({it.treeNext != null}, strict = false)?.treeNext
+                    val parentSpace = spaceAfter?.treeParent
+                    parentSpace?.removeChild(spaceAfter)
+                }
+            }
+        } else  {
+            if (node.prevCodeSibling()?.isFollowedByNewline() == true) {
+                WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
+                        "should break a line after and not before ${node.text}", node.startOffset, node) {
+                    node.run {
+                        treeParent.removeChild(treePrev)
+                        if (!isFollowedByNewline()) {
+                            treeParent.appendNewlineMergingWhiteSpace(treeNext.takeIf { it.elementType == WHITE_SPACE }, treeNext)
+                        }
                     }
                 }
             }
@@ -357,7 +371,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
             .takeIf { it.isNotEmpty() }
             ?.let { invalidCommas ->
                 WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
-                    "$entryType should be placed on different lines in declaration of <${node.getParentIdentifier()}>", node.startOffset, node) {
+                        "$entryType should be placed on different lines in declaration of <${node.getParentIdentifier()}>", node.startOffset, node) {
                     invalidCommas.forEach { comma ->
                         val nextWhiteSpace = comma.treeNext.takeIf { it.elementType == WHITE_SPACE }
                         comma.appendNewlineMergingWhiteSpace(nextWhiteSpace, nextWhiteSpace?.treeNext ?: comma.treeNext)
@@ -371,13 +385,15 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         SECONDARY_CONSTRUCTOR -> parent(CLASS)!!
         else -> treeParent
     }
-        .getIdentifierName()?.text
+            .getIdentifierName()?.text
 
     private fun ASTNode.getOrderedCallExpressions(psi: PsiElement, result: MutableList<ASTNode>) {
         // if statements here have the only right order - don't change it
 
         if (psi.children.isNotEmpty() && (psi.children[0].node.elementType != DOT_QUALIFIED_EXPRESSION
-                        && psi.children[0].node.elementType != SAFE_ACCESS_EXPRESSION )) {
+                        && psi.children[0].node.elementType != SAFE_ACCESS_EXPRESSION)) {
+                            if (psi.children[0].node.elementType == POSTFIX_EXPRESSION)
+                                result.add(psi.children[0].node)
             result.add(psi.children[0].node.siblings(true)
                     .dropWhile { it.elementType in dropChainValues }
                     .first()) // node treeNext is ".", "?.", "!!", "::"
@@ -400,7 +416,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
             .takeWhile { it.elementType in expressionTypes }
             .singleOrNull()
             ?.let { it.text.lines().count() == 1 }
-            ?: false
+            ?: true
 
     // fixme: there could be other cases when dot means something else
     private fun ASTNode.isDotFromPackageOrImport() = elementType == DOT &&
@@ -413,11 +429,11 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
                     getOrderedCallExpressions(psi, it)
                 }
             }
+            ?.takeIf { it.first() != this }
             ?.dropWhile { !it.treeParent.textContains('(') && !it.treeParent.textContains('{') }
-            // fixme: we can't distinguish fully qualified names (like java.lang) from chain of property accesses (like list.size) for now
-            ?.filter { it.getParentExpressions().count() > 1 }
-            ?.count()
-            ?.let { it > 1 }
+            ?.drop(1)
+            ?.any { !it.treePrev.isWhiteSpaceWithNewline() }
+    // fixme: we can't distinguish fully qualified names (like java.lang) from chain of property accesses (like list.size) for now
             ?: false
 
     /**

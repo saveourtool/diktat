@@ -15,8 +15,7 @@ fun foo() {
             .foo()
     obj
 ?.foo()
-    obj
- ?:OBJ
+    obj ?:OBJ
     obj
 ::foo
 }

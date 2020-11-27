@@ -90,6 +90,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |        y
                     |        
                     |    obj!!
+                    |    
                     |    obj
                     |        .foo()
                     |    obj
@@ -128,7 +129,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 LintError(3, 9, ruleId, "$shouldBreakAfter &&", true),
                 LintError(8, 8, ruleId, "$shouldBreakBefore .", true),
                 LintError(10, 8, ruleId, "$shouldBreakBefore ?.", true),
-                LintError(12, 9, ruleId, "$shouldBreakBefore ?:", true),
+                LintError(12,9, ruleId, "${WRONG_NEWLINES.warnText()} shouldn't be a new line after ?:", true),
                 LintError(14, 8, ruleId, "$shouldBreakBefore ::", true)
         )
     }
@@ -224,7 +225,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
 
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
-    fun `chained calls should follow functional style - should not trigger on single dot calls`() {
+    fun `chained calls should follow functional style - should not trigger on single dot calls but not with prefix`() {
         lintMethod(
                 """
                     |fun foo(bar: Bar?) {
@@ -232,7 +233,8 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |    bar?.baz()
                     |    bar!!.baz()
                     |}
-                """.trimMargin()
+                """.trimMargin(),
+                LintError(4,10,ruleId, "$functionalStyleWarn .", true)
         )
     }
 
@@ -243,14 +245,14 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 """
                     |fun foo(list: List<Bar>?) {
                     |    list!!.filterNotNull()
-                    |        .map { it.baz() }.firstOrNull {
+                    |        .map { it.baz() }
+                    |        .firstOrNull {
                     |            it.condition()
                     |        }?.qux()
                     |}
                 """.trimMargin(),
                 LintError(2, 11, ruleId, "$functionalStyleWarn .", true),
-                LintError(3, 26, ruleId, "$functionalStyleWarn .", true),
-                LintError(5, 10, ruleId, "$functionalStyleWarn ?.", true)
+                LintError(6, 10, ruleId, "$functionalStyleWarn ?.", true)
         )
     }
 
@@ -437,7 +439,8 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |fun qux(list: List<Int>): Int {
                     |    list.filter {
                     |        return@filter condition(it)
-                    |    }.forEach {
+                    |    }
+                    |    .forEach {
                     |        return 0
                     |    }
                     |    return list.first()
@@ -548,7 +551,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
 
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
-    fun `should trigger on non-multiline lambdas`() {
+    fun `shouldn't trigger on non-multiline lambdas`() {
         lintMethod(
                 """
                     |fun foo(): String {
@@ -569,15 +572,12 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |        list.filter {
                     |           
                     |        }
-                    |        .map(::foo).filter {
+                    |        .map(::foo)
+                    |        .filter {
                     |           bar()
                     |         }
                     |}
-                """.trimMargin(),
-                LintError(2, 22, ruleId,"${WRONG_NEWLINES.warnText()} should follow functional style at .", true),
-                LintError(6, 22, ruleId,"${WRONG_NEWLINES.warnText()} should follow functional style at ?.", true),
-                LintError(10, 13, ruleId,"${WRONG_NEWLINES.warnText()} should follow functional style at .", true),
-                LintError(19, 20, ruleId,"${WRONG_NEWLINES.warnText()} should follow functional style at .", true)
+                """.trimMargin()
         )
     }
 
@@ -585,7 +585,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `should suggest newlines in a long argument list of a constructor`() {
         lintMethod(
-            """
+                """
                 |class Foo(val arg1: Int, arg2: Int) { }
                 |
                 |class Foo(val arg1: Int, arg2: Int, arg3: Int) { 
@@ -596,12 +596,12 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |          var arg2: Int,
                 |          arg3: Int) { }
             """.trimMargin(),
-            LintError(3, 10, ruleId, "${WRONG_NEWLINES.warnText()} first parameter should be placed on a separate line or all other parameters " +
-                    "should be aligned with it in declaration of <Foo>", true),
-            LintError(3, 10, ruleId, "${WRONG_NEWLINES.warnText()} value parameters should be placed on different lines in declaration of <Foo>", true),
-            LintError(4, 16, ruleId, "${WRONG_NEWLINES.warnText()} first parameter should be placed on a separate line or all other parameters " +
-                    "should be aligned with it in declaration of <Foo>", true),
-            LintError(4, 16, ruleId, "${WRONG_NEWLINES.warnText()} value parameters should be placed on different lines in declaration of <Foo>", true)
+                LintError(3, 10, ruleId, "${WRONG_NEWLINES.warnText()} first parameter should be placed on a separate line or all other parameters " +
+                        "should be aligned with it in declaration of <Foo>", true),
+                LintError(3, 10, ruleId, "${WRONG_NEWLINES.warnText()} value parameters should be placed on different lines in declaration of <Foo>", true),
+                LintError(4, 16, ruleId, "${WRONG_NEWLINES.warnText()} first parameter should be placed on a separate line or all other parameters " +
+                        "should be aligned with it in declaration of <Foo>", true),
+                LintError(4, 16, ruleId, "${WRONG_NEWLINES.warnText()} value parameters should be placed on different lines in declaration of <Foo>", true)
         )
     }
 
@@ -609,7 +609,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `should suggest newlines in a long argument list`() {
         lintMethod(
-            """
+                """
                 |fun foo(arg1: Int, arg2: Int) { }
                 |
                 |fun bar(arg1: Int, arg2: Int, arg3: Int) { }
@@ -624,9 +624,9 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |        arg2: Int,
                 |        arg3: Int) { }
             """.trimMargin(),
-            LintError(3, 8, ruleId, "${WRONG_NEWLINES.warnText()} first parameter should be placed on a separate line or all other parameters " +
-                    "should be aligned with it in declaration of <bar>", true),
-            LintError(3, 8, ruleId, "${WRONG_NEWLINES.warnText()} value parameters should be placed on different lines in declaration of <bar>", true)
+                LintError(3, 8, ruleId, "${WRONG_NEWLINES.warnText()} first parameter should be placed on a separate line or all other parameters " +
+                        "should be aligned with it in declaration of <bar>", true),
+                LintError(3, 8, ruleId, "${WRONG_NEWLINES.warnText()} value parameters should be placed on different lines in declaration of <bar>", true)
         )
     }
 
@@ -634,7 +634,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `should suggest newlines in a long supertype list`() {
         lintMethod(
-            """
+                """
                 |class Foo :
                 |    FooBase<Bar>(),
                 |    BazInterface,
@@ -647,8 +647,154 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |
                 |class Foo : FooBase<Bar>() { }
             """.trimMargin(),
-            LintError(6, 13, ruleId, "${WRONG_NEWLINES.warnText()} supertype list entries should be placed on different lines in declaration of <Foo>", true),
-            LintError(9, 13, ruleId, "${WRONG_NEWLINES.warnText()} supertype list entries should be placed on different lines in declaration of <Foo>", true)
+                LintError(6, 13, ruleId, "${WRONG_NEWLINES.warnText()} supertype list entries should be placed on different lines in declaration of <Foo>", true),
+                LintError(9, 13, ruleId, "${WRONG_NEWLINES.warnText()} supertype list entries should be placed on different lines in declaration of <Foo>", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
+    fun `should warn dot qualified with first on same line`() {
+        lintMethod(
+                """
+                |fun foo() {
+                |   x.map()
+                |   .gre().few()
+                |}
+                |
+                |fun foo() {
+                |   x.map()
+                |   .gre()
+                |   .few()
+                |}
+                |
+                |fun foo() {
+                |   x.map().gre().few()
+                |}
+            """.trimMargin(),
+                LintError(3, 10, ruleId, "${WRONG_NEWLINES.warnText()} should follow functional style at .", true),
+                LintError(13, 11, ruleId, "${WRONG_NEWLINES.warnText()} should follow functional style at .", true),
+                LintError(13, 17, ruleId, "${WRONG_NEWLINES.warnText()} should follow functional style at .", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
+    fun `should warn dot qualified with first on diff line`() {
+        lintMethod(
+                """
+                |fun foo() {
+                |   x
+                |   .map()
+                |   .gre().few()
+                |}
+                |
+                |fun foo() {
+                |   x
+                |   .map().gre().few()
+                |}
+                |
+                |fun foo() {
+                |   x
+                |   .map()
+                |   .gre()
+                |   .few()
+                |}
+            """.trimMargin(),
+                LintError(4, 10, ruleId, "$functionalStyleWarn .", true),
+                LintError(9, 10, ruleId, "$functionalStyleWarn .", true),
+                LintError(9, 16, ruleId, "$functionalStyleWarn .", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
+    fun `should warn dot qualified with save access`() {
+        lintMethod(
+                """
+                |fun foo() {
+                |   x
+                |   ?.map()
+                |   .gre().few()
+                |}
+                |
+                |fun foo() {
+                |   x
+                |   ?.map().gre().few()
+                |}
+                |fun foo() {
+                |   x
+                |   ?.map()
+                |   .gre()
+                |   .few()
+                |}
+                |
+                |fun foo() {
+                |   x?.map()
+                |   .gre()
+                |   .few()
+                |}
+            """.trimMargin(),
+                LintError(4, 10, ruleId, "$functionalStyleWarn .", true),
+                LintError(9, 11, ruleId, "$functionalStyleWarn .", true),
+                LintError(9, 17, ruleId, "$functionalStyleWarn .", true),
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
+    fun `should warn dot qualified with exclexcl`() {
+        lintMethod(
+                """
+                |fun foo() {
+                |   x!!.map()
+                |   .gre()
+                |   .few()
+                |}
+                |
+                |fun foo() {
+                |   x!!
+                |   .map()
+                |   .gre()
+                |   .few()
+                |}
+                |
+                |fun foo() {
+                |   x!!
+                |   .map().gre()
+                |   .few()
+                |}
+                |
+                |fun foo() {
+                |   x!!.map()
+                |   .gre().few()
+                |}
+            """.trimMargin(),
+                LintError(2, 7, ruleId, "$functionalStyleWarn .", true),
+                LintError(16, 10, ruleId, "$functionalStyleWarn .", true),
+                LintError(21, 7, ruleId, "$functionalStyleWarn .", true),
+                LintError(22, 10, ruleId, "$functionalStyleWarn .", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
+    fun `should warn dot qualifided with exclexcl`() {
+        lintMethod(
+                """
+                |fun foo() {
+                |
+                |   z.goo()
+                |       ?:
+                |        goo()
+                |      
+                |   x.goo()
+                |       ?:goo()
+                |       
+                |   y.ds()?:gh()
+                |}
+            """.trimMargin(),
+                LintError(4,8, ruleId, "${WRONG_NEWLINES.warnText()} shouldn't be a new line after ?:", true)
         )
     }
 }
