@@ -115,22 +115,21 @@ class KdocMethods(private val configRules: List<RulesConfig>) : Rule("kdoc-metho
         val returnCheckFailed = hasReturnCheckFailed(node, kdocTags)
         val throwsCheckFailed = missingExceptions.isNotEmpty()
 
-        if (paramCheckFailed) {
-            handleParamCheck(node, kdoc, missingParameters, kDocMissingParameters, kdocTags)
-        }
-        if (returnCheckFailed) {
-            handleReturnCheck(node, kdoc, kdocTags)
-        }
-        if (throwsCheckFailed) {
-            handleThrowsCheck(node, kdoc, missingExceptions)
-        }
-
-        // if no tag failed, we have too little information to suggest KDoc - it would just be empty
         val anyTagFailed = paramCheckFailed || returnCheckFailed || throwsCheckFailed
         if (kdoc == null && anyTagFailed) {
             addKdocTemplate(node, name, missingParameters, explicitlyThrownExceptions, returnCheckFailed)
         } else if (kdoc == null) {
             MISSING_KDOC_ON_FUNCTION.warn(configRules, emitWarn, false, name, node.startOffset, node)
+        } else {
+            if (paramCheckFailed) {
+                handleParamCheck(node, kdoc, missingParameters, kDocMissingParameters, kdocTags)
+            }
+            if (returnCheckFailed) {
+                handleReturnCheck(node, kdoc, kdocTags)
+            }
+            if (throwsCheckFailed) {
+                handleThrowsCheck(node, kdoc, missingExceptions)
+            }
         }
     }
 
