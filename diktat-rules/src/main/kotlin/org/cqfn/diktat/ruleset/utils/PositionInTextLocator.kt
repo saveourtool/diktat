@@ -1,10 +1,13 @@
 package org.cqfn.diktat.ruleset.utils
 
-//fixme this code is copy-pasted from ktlint. Change it
+// fixme this code is copy-pasted from ktlint. Change it
 internal typealias LineAndColumn = Pair<Int, Int>
 
 /**
  * Calculate position in text - line and column based on offset from the text start.
+ *
+ * @param text a piece of text
+ * @return mapping function from offset to line and column number
  */
 internal fun buildPositionInTextLocator(text: String): (offset: Int) -> LineAndColumn {
     val textLength = text.length
@@ -32,6 +35,11 @@ internal fun buildPositionInTextLocator(text: String): (offset: Int) -> LineAndC
 }
 
 private class SegmentTree(sortedArray: IntArray) {
+    private val segments: List<Segment> = sortedArray
+        .dropLast(1)
+        .mapIndexed { index: Int, element: Int ->
+            Segment(element, sortedArray[index + 1] - 1)
+        }
 
     init {
         require(sortedArray.size > 1) { "At least two data points are required" }
@@ -41,17 +49,14 @@ private class SegmentTree(sortedArray: IntArray) {
         }
     }
 
-    private val segments: List<Segment> = sortedArray
-            .dropLast(1)
-            .mapIndexed { index: Int, element: Int ->
-                Segment(element, sortedArray[index + 1] - 1)
-            }
-
     fun get(index: Int): Segment = segments[index]
 
     fun indexOf(index: Int): Int = binarySearch(index, 0, segments.size - 1)
 
-    private fun binarySearch(compareElement: Int, left: Int, right: Int): Int = when {
+    private fun binarySearch(
+        compareElement: Int,
+        left: Int,
+        right: Int): Int = when {
         left > right -> -1
         else -> {
             val index = left + (right - left) / 2
@@ -66,6 +71,6 @@ private class SegmentTree(sortedArray: IntArray) {
 }
 
 private data class Segment(
-        val left: Int,
-        val right: Int
+    val left: Int,
+    val right: Int
 )

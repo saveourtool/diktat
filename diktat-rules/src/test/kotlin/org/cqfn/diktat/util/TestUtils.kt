@@ -28,26 +28,26 @@ typealias LintErrorCallback = (LintError, Boolean) -> Unit
 internal fun List<LintError>.assertEquals(vararg expectedLintErrors: LintError) {
     if (size == expectedLintErrors.size) {
         Assertions.assertThat(this)
-                .allSatisfy { actual ->
-                    val expected = expectedLintErrors[this.indexOf(actual)]
-                    SoftAssertions.assertSoftly {
-                        it.assertThat(actual.line)
-                            .`as`("Line")
-                            .isEqualTo(expected.line)
-                        it.assertThat(actual.col)
-                            .`as`("Column")
-                            .isEqualTo(expected.col)
-                        it.assertThat(actual.ruleId)
-                            .`as`("Rule id")
-                            .isEqualTo(expected.ruleId)
-                        it.assertThat(actual.detail)
-                            .`as`("Detailed message")
-                            .isEqualTo(expected.detail)
-                        it.assertThat(actual.canBeAutoCorrected)
-                            .`as`("Can be autocorrected")
-                            .isEqualTo(expected.canBeAutoCorrected)
-                    }
+            .allSatisfy { actual ->
+                val expected = expectedLintErrors[this.indexOf(actual)]
+                SoftAssertions.assertSoftly {
+                    it.assertThat(actual.line)
+                        .`as`("Line")
+                        .isEqualTo(expected.line)
+                    it.assertThat(actual.col)
+                        .`as`("Column")
+                        .isEqualTo(expected.col)
+                    it.assertThat(actual.ruleId)
+                        .`as`("Rule id")
+                        .isEqualTo(expected.ruleId)
+                    it.assertThat(actual.detail)
+                        .`as`("Detailed message")
+                        .isEqualTo(expected.detail)
+                    it.assertThat(actual.canBeAutoCorrected)
+                        .`as`("Can be autocorrected")
+                        .isEqualTo(expected.canBeAutoCorrected)
                 }
+            }
     } else {
         Assertions.assertThat(this).containsExactly(*expectedLintErrors)
     }

@@ -163,7 +163,7 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
     private fun createKdocBasicKdoc(node: ASTNode) {
         if (node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside()) {
             KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixMode,
-                    "add <${node.findChildByType(IDENTIFIER)!!.text}> to KDoc", node.startOffset, node) {
+                "add <${node.findChildByType(IDENTIFIER)!!.text}> to KDoc", node.startOffset, node) {
                 val newKdoc = KotlinParser().createNode("/**\n * @property ${node.findChildByType(IDENTIFIER)!!.text}\n */")
                 val classNode = node.parent({ it.elementType == CLASS })!!
                 classNode.addChild(PsiWhiteSpaceImpl("\n"), classNode.firstChildNode)

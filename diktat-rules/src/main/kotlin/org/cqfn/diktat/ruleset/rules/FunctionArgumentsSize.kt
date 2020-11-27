@@ -12,6 +12,9 @@ import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtFunction
 
+/**
+ * Rule that checks that function doesn't contains too many parameters
+ */
 class FunctionArgumentsSize(private val configRules: List<RulesConfig>) : Rule("argument-size") {
     private var isFixMode: Boolean = false
     private val configuration: FunctionArgumentsSizeConfiguration by lazy {
@@ -39,7 +42,13 @@ class FunctionArgumentsSize(private val configRules: List<RulesConfig>) : Rule("
         }
     }
 
+    /**
+     * [RuleConfiguration] for maximum number of parameters
+     */
     class FunctionArgumentsSizeConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
+        /**
+         * Maximum allowed number of function parameters
+         */
         val maxParameterSize = config["maxParameterListSize"]?.toLongOrNull() ?: MAX_DEFAULT_PARAMETER_SIZE
     }
 

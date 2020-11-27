@@ -130,7 +130,7 @@ class LineLength(private val configRules: List<RulesConfig>) : Rule("line-length
 
     private fun checkCondition(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
         val leftOffset = positionByOffset(wrongNode.firstChildNode.startOffset).second
-        val binList = mutableListOf<ASTNode>()
+        val binList: MutableList<ASTNode> = mutableListOf()
         searchBinaryExpression(wrongNode, binList)
         if (binList.size == 1) {
             return LongLineFixableCases.None
@@ -147,7 +147,7 @@ class LineLength(private val configRules: List<RulesConfig>) : Rule("line-length
         if (!newParent.hasChildOfType(STRING_TEMPLATE)) {
             if (newParent.hasChildOfType(BINARY_EXPRESSION)) {
                 val leftOffset = positionByOffset(newParent.findChildByType(BINARY_EXPRESSION)!!.startOffset).second
-                val binList = mutableListOf<ASTNode>()
+                val binList: MutableList<ASTNode> = mutableListOf()
                 dfsForProperty(wrongNode, binList)
                 if (binList.size == 1) {
                     return LongLineFixableCases.None
@@ -239,7 +239,7 @@ class LineLength(private val configRules: List<RulesConfig>) : Rule("line-length
         }
     }
 
-    @Suppress("UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType", "LOCAL_VARIABLE_EARLY_DECLARATION")
     private fun findAllText(astNode: ASTNode): String {
         var text = ""
         var node = astNode
@@ -277,7 +277,7 @@ class LineLength(private val configRules: List<RulesConfig>) : Rule("line-length
         return text
     }
 
-    @Suppress("UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType", "LOCAL_VARIABLE_EARLY_DECLARATION")
     private fun getBraceAndBeforeText(node: ASTNode, prevNode: ASTNode): String {
         var text = ""
         val par = if (prevNode.prevSibling { it.elementType == OPERATION_REFERENCE } == null) LPAR else RPAR
@@ -380,7 +380,7 @@ class LineLength(private val configRules: List<RulesConfig>) : Rule("line-length
         node: ASTNode,
         text: String,
         index: Int) {
-        val resultText = "\"" + text.substring(0, index) + "\" +\n\"" + text.substring(index) + "\""
+        val resultText = "\"${text.substring(0, index)}\" +\n\"${text.substring(index)}\""
         val newNode = KotlinParser().createNode(resultText)
         node.removeChild(node.findChildByType(STRING_TEMPLATE)!!)
         val prevExp = CompositeElement(BINARY_EXPRESSION)
@@ -388,11 +388,17 @@ class LineLength(private val configRules: List<RulesConfig>) : Rule("line-length
         prevExp.addChild(newNode, null)
     }
 
+    /**
+     * [RuleConfiguration] for maximum line length
+     */
     class LineLengthConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
+        /**
+         * Maximum allowed line length
+         */
         val lineLength = config["lineLength"]?.toLongOrNull() ?: MAX_LENGTH
     }
 
-    @Suppress("KDOC_NO_CONSTRUCTOR_PROPERTY")  // todo add proper docs
+    @Suppress("KDOC_NO_CONSTRUCTOR_PROPERTY", "MISSING_KDOC_CLASS_ELEMENTS")  // todo add proper docs
     sealed class LongLineFixableCases {
         object None : LongLineFixableCases()
 

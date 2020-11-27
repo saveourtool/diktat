@@ -18,7 +18,7 @@ import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.getIdentifierName
 import org.cqfn.diktat.ruleset.utils.getRootNode
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
-import org.cqfn.diktat.ruleset.utils.hasKnownKDocTag
+import org.cqfn.diktat.ruleset.utils.hasKnownKdocTag
 import org.cqfn.diktat.ruleset.utils.hasTestAnnotation
 import org.cqfn.diktat.ruleset.utils.insertTagBefore
 import org.cqfn.diktat.ruleset.utils.isAccessibleOutside
@@ -153,7 +153,7 @@ class KdocMethods(private val configRules: List<RulesConfig>) : Rule("kdoc-metho
         val hasExplicitNotUnitReturnType = explicitReturnType != null && explicitReturnType.text != "Unit"
         val hasExplicitUnitReturnType = explicitReturnType != null && explicitReturnType.text == "Unit"
         val isFunWithExpressionBody = expressionBodyTypes.any { node.hasChildOfType(it) }
-        val hasReturnKdoc = kdocTags != null && kdocTags.hasKnownKDocTag(KDocKnownTag.RETURN)
+        val hasReturnKdoc = kdocTags != null && kdocTags.hasKnownKdocTag(KDocKnownTag.RETURN)
         return (hasExplicitNotUnitReturnType || isFunWithExpressionBody && !hasExplicitUnitReturnType) && !hasReturnKdoc
     }
 

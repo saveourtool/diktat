@@ -52,8 +52,18 @@ class FunctionLength(private val configRules: List<RulesConfig>) : Rule("functio
         }
     }
 
+    /**
+     * [RuleConfiguration] for function length
+     */
     class FunctionLengthConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
+        /**
+         * Maximum allowed function length
+         */
         val maxFunctionLength = config["maxFunctionLength"]?.toLong() ?: MAX_FUNCTION_LENGTH
+
+        /**
+         * Whether function header (start of a declaration with parameter list and return type) is counted too
+         */
         val isIncludeHeader = config["isIncludeHeader"]?.toBoolean() ?: true
     }
 

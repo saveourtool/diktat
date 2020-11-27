@@ -14,6 +14,9 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 
 import java.lang.StringBuilder
 
+/**
+ * Rule that checks if numerical separators (`_`) are used for long numerical literals
+ */
 class LongNumericalValuesSeparatedRule(private val configRules: List<RulesConfig>) : Rule("long-numerical-values") {
     private var isFixMode: Boolean = false
     private lateinit var emitWarn: EmitType
@@ -144,8 +147,18 @@ class LongNumericalValuesSeparatedRule(private val configRules: List<RulesConfig
             .removeSuffix("F")
     }
 
+    /**
+     * [RuleConfiguration] for numerical literals separation
+     */
     class LongNumericalValuesConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
+        /**
+         * Maximum number of digits which are not split
+         */
         val maxLength = config["maxNumberLength"]?.toIntOrNull() ?: MAX_NUMBER_LENGTH
+
+        /**
+         * Maximum number of digits between separators
+         */
         val maxBlockLength = config["maxBlockLength"]?.toIntOrNull() ?: DELIMITER_LENGTH
     }
 

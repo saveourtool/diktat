@@ -28,7 +28,7 @@ import sun.reflect.ReflectionFactory
 class KotlinParser {
     private val project: Project by lazy {
         val compilerConfiguration = CompilerConfiguration()
-        compilerConfiguration.put(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, MessageCollector.NONE) // mute the output logging to process it themselves
+        compilerConfiguration.put(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, MessageCollector.NONE)  // mute the output logging to process it themselves
         val pomModel: PomModel = object : UserDataHolderBase(), PomModel {
             override fun runTransaction(transaction: PomTransaction) {
                 (transaction as PomTransactionBase).run()
@@ -45,12 +45,12 @@ class KotlinParser {
                 }
                 return null
             }
-        } // I don't really understand what's going on here, but thanks to this, you can use this node in the future
+        }  // I don't really understand what's going on here, but thanks to this, you can use this node in the future
         val project = KotlinCoreEnvironment.createForProduction(
             Disposable {},
             compilerConfiguration,
             EnvironmentConfigFiles.JVM_CONFIG_FILES
-        ).project // create project
+        ).project  // create project
         project as MockProject
         project.registerService(PomModel::class.java, pomModel)
         project
@@ -65,14 +65,22 @@ class KotlinParser {
         setIdeaIoUseFallback()
     }
 
-    fun createNode(text: String, isPackage: Boolean = false): ASTNode {
-        return makeNode(text, isPackage) ?: throw KotlinParseException("Your text is not valid")
-    }
+    /**
+     * @param text kotlin code
+     * @param isPackage whether resulting node should be a package directive
+     * @return [ASTNode]
+     * @throws KotlinParseException if code is incorrect
+     */
+    fun createNode(text: String, isPackage: Boolean = false) = makeNode(text, isPackage) ?: throw KotlinParseException("Your text is not valid")
 
+    /**
+     * @param text kotlin code
+     */
     fun createPrimaryConstructor(text: String) = ktPsiFactory.createPrimaryConstructor(text)
 
     /**
      * This method create a node based on text.
+     *
      * @param isPackage - flag to check if node will contains package.
      * If this flag is true, node's element type will be FILE.
      * Else, try to create node based on text.
@@ -80,11 +88,13 @@ class KotlinParser {
      */
     @Suppress("UnsafeCallOnNullableType")
     private fun makeNode(text: String, isPackage: Boolean = false): ASTNode? {
-        if (text.isEmpty())
+        if (text.isEmpty()) {
             return null
-        if (text.trim().isEmpty())
+        }
+        if (text.trim().isEmpty()) {
             return ktPsiFactory.createWhiteSpace(text).node
-        var node: ASTNode = if (isPackage || isContainKDoc(text)) {
+        }
+        var node: ASTNode = if (isPackage || isContainKdoc(text)) {
             ktPsiFactory.createFile(text).node
         } else if (text.contains(KtTokens.IMPORT_KEYWORD.value)) {
             val (imports, blockCode) = text.lines().partition { it.contains(KtTokens.IMPORT_KEYWORD.value) }
@@ -94,22 +104,30 @@ class KotlinParser {
                     val importText = ImportPath.fromString(text.substringAfter("$IMPORT_KEYWORD "))
                     ktPsiFactory.createImportDirective(importText).node
                 }
-                else -> ktPsiFactory.createBlockCodeFragment(text, null).node.findChildByType(BLOCK)!!
-                        .findChildByType(ERROR_ELEMENT)!!.findChildByType(IMPORT_LIST)!!
+                else -> ktPsiFactory
+                    .createBlockCodeFragment(text, null)
+                    .node
+                    .findChildByType(BLOCK)!!
+                    .findChildByType(ERROR_ELEMENT)!!.findChildByType(IMPORT_LIST)!!
             }
         } else {
-            ktPsiFactory.createBlockCodeFragment(text, null).node.findChildByType(BLOCK)!!
+            ktPsiFactory
+                .createBlockCodeFragment(text, null)
+                .node
+                .findChildByType(BLOCK)!!
         }
-        if (node.getChildren(null).size == 1)
+        if (node.getChildren(null).size == 1) {
             node = node.firstChildNode
+        }
         if (!node.isCorrect()) {
             node = ktPsiFactory.createFile(text).node
-            if (!node.isCorrect())
+            if (!node.isCorrect()) {
                 return null
+            }
         }
         return node
     }
 
-    private fun isContainKDoc(text: String) =
+    private fun isContainKdoc(text: String) =
             text.lines().any { it.trim().startsWith("/**") }
 }

@@ -133,6 +133,7 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
     /**
      * all checks for case and naming for vals/vars/constants
      */
+    @Suppress("SAY_NO_TO_VAR")
     private fun checkVariableName(node: ASTNode): List<ASTNode> {
         // special case for Destructuring declarations that can be treated as parameters in lambda:
         var namesOfVariables = extractVariableIdentifiers(node)
@@ -144,7 +145,7 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
                     VARIABLE_NAME_INCORRECT.warn(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset, node)
                 }
                 // check if identifier of a property has a confusing name
-                if (confusingIdentifierNames.contains(variableName.text) && !validCatchIdentifier(variableName) &&
+                if (confusingIdentifierNames.contains(variableName.text) && !isValidCatchIdentifier(variableName) &&
                         node.elementType == ElementType.PROPERTY) {
                     warnConfusingName(variableName)
                 }
@@ -366,7 +367,7 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
                                       isVariable: Boolean) {
         nodes.forEach {
             if (it.text != "_" && !(it.isTextLengthInRange(MIN_IDENTIFIER_LENGTH..MAX_IDENTIFIER_LENGTH) ||
-                    oneCharIdentifiers.contains(it.text) && isVariable || validCatchIdentifier(it)
+                    oneCharIdentifiers.contains(it.text) && isVariable || isValidCatchIdentifier(it)
 
             )) {
                 IDENTIFIER_LENGTH.warn(configRules, emitWarn, isFixMode, it.text, it.startOffset, it)
@@ -378,16 +379,23 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
      * exception case for identifiers used in catch block:
      * catch (e: Exception) {}
      */
-    private fun validCatchIdentifier(node: ASTNode): Boolean {
+    private fun isValidCatchIdentifier(node: ASTNode): Boolean {
         val parentValueParamList = node.findParentNodeWithSpecificType(VALUE_PARAMETER_LIST)
         val prevCatchKeyWord = parentValueParamList?.prevCodeSibling()?.elementType == CATCH_KEYWORD
         return node.text == "e" && node.findParentNodeWithSpecificType(CATCH) != null && prevCatchKeyWord
     }
 
+    /**
+     * [RuleConfiguration] for identifier naming
+     */
     class IdentifierNamingConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
+        @Suppress("CUSTOM_GETTERS_SETTERS")
         private val Style.isEnumStyle: Boolean
             get() = listOf(Style.PASCAL_CASE, Style.SNAKE_CASE).contains(this)
 
+        /**
+         * In which style enum members should be named
+         */
         val enumStyle = config["enumStyle"]?.let { styleString ->
             val style = Style.values().firstOrNull {
                 it.name == styleString.toUpperSnakeCase()

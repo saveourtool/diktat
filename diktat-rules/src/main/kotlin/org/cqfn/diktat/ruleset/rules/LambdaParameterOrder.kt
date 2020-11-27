@@ -13,6 +13,9 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.kotlin.utils.addToStdlib.ifNotEmpty
 
+/**
+ * Rule that checks if parameter with function type is the last in parameter list
+ */
 class LambdaParameterOrder(private val configRules: List<RulesConfig>) : Rule("lambda-parameter-order") {
     private var isFixMode: Boolean = false
     private lateinit var emitWarn: EmitType

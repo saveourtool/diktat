@@ -19,7 +19,7 @@ import org.cqfn.diktat.ruleset.utils.indentation.CustomIndentationChecker
 import org.cqfn.diktat.ruleset.utils.indentation.DotCallChecker
 import org.cqfn.diktat.ruleset.utils.indentation.ExpressionIndentationChecker
 import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig
-import org.cqfn.diktat.ruleset.utils.indentation.KDocIndentationChecker
+import org.cqfn.diktat.ruleset.utils.indentation.KdocIndentationChecker
 import org.cqfn.diktat.ruleset.utils.indentation.SuperTypeListChecker
 import org.cqfn.diktat.ruleset.utils.indentation.ValueParameterListChecker
 import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
@@ -85,7 +85,7 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
                 ::ValueParameterListChecker,
                 ::ExpressionIndentationChecker,
                 ::DotCallChecker,
-                ::KDocIndentationChecker,
+                ::KdocIndentationChecker,
                 ::CustomGettersAndSettersChecker,
                 ::ArrowInWhenChecker
             ).map { it.invoke(configuration) }

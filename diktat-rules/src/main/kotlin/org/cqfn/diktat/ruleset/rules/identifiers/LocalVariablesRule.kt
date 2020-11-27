@@ -74,6 +74,7 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
 
         .filterNot { it.value.isEmpty() }
 
+    @Suppress("TYPE_ALIAS")
     private fun groupPropertiesByUsages(propertiesToUsages: Map<KtProperty, List<KtNameReferenceExpression>>) = propertiesToUsages
         .mapValues { (property, usages) ->
             getFirstUsageStatementOrBlock(usages, property.getDeclarationScope())
@@ -134,7 +135,7 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
      *
      * @return either the line on which the property is used if it is first used in the same scope, or the block in the same scope as declaration
      */
-    @Suppress("UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType", "GENERIC_VARIABLE_WRONG_DECLARATION")
     private fun getFirstUsageStatementOrBlock(usages: List<KtNameReferenceExpression>, declarationScope: KtBlockExpression?): PsiElement {
         val firstUsage = usages.minBy { it.node.getLineNumber(isFixMode)!! }!!
         val firstUsageScope = firstUsage.getParentOfType<KtBlockExpression>(true)

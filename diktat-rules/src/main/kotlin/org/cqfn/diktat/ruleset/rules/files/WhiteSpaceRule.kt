@@ -288,7 +288,7 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
         }
     }
 
-    @Suppress("UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType", "NO_BRACES_IN_CONDITIONALS_AND_LOOPS")  // https://github.com/cqfn/diKTat/issues/585
     private fun handleLpar(node: ASTNode) {
         when {
             node.treeParent.treeParent.elementType == SECONDARY_CONSTRUCTOR -> {

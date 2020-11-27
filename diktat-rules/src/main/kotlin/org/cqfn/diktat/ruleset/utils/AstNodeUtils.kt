@@ -1,3 +1,7 @@
+/**
+ * Various utility methods to work with kotlin AST
+ */
+
 // todo fix inspections on KDocs
 @file:Suppress("FILE_NAME_MATCH_CLASS", "KDOC_WITHOUT_RETURN_TAG", "KDOC_WITHOUT_PARAM_TAG")
 
@@ -45,7 +49,7 @@ import org.slf4j.LoggerFactory
 val log: Logger = LoggerFactory.getLogger(ASTNode::class.java)
 
 /**
- * Returns the highest parent node of the tree
+ * @return the highest parent node of the tree
  */
 fun ASTNode.getRootNode() = if (isRoot()) this else parents().last()
 
@@ -82,7 +86,7 @@ fun ASTNode.getAllIdentifierChildren(): List<ASTNode> =
         this.getChildren(null).filter { it.elementType == ElementType.IDENTIFIER }
 
 /**
- * check is node doesn't contain error elements
+ * @return true if this node contains no error elements, false otherwise
  */
 fun ASTNode.isCorrect() = this.findAllNodesWithSpecificType(TokenType.ERROR_ELEMENT).isEmpty()
 
@@ -395,7 +399,9 @@ fun ASTNode.hasChildMatching(elementType: IElementType? = null, predicate: (ASTN
  */
 @Suppress("AVOID_NESTED_FUNCTIONS")
 fun ASTNode.prettyPrint(level: Int = 0, maxLevel: Int = -1): String {
-    // AST operates with \n only, so we need to build the whole string representation and then change line separator
+    /**
+     * AST operates with \n only, so we need to build the whole string representation and then change line separator
+     */
     fun ASTNode.doPrettyPrint(level: Int, maxLevel: Int): String {
         val result = StringBuilder("${this.elementType}: \"${this.text}\"").append('\n')
         if (maxLevel != 0) {
@@ -626,14 +632,14 @@ fun List<ASTNode>.handleIncorrectOrder(
  * I.e., if this node occupies no more than a single line, this whole line or it's part will be returned.
  */
 fun ASTNode.extractLineOfText(): String {
-    var text = mutableListOf<String>()
-    val nextNode = parent({ it.treeNext != null }, false) ?: this
+    var text: MutableList<String> = mutableListOf()
     siblings(false)
         .map { it.text.split("\n") }
         .takeWhileInclusive { it.size <= 1 }
         .forEach { text.add(it.last()) }
     text = text.asReversed()
     text.add(this.text)
+    val nextNode = parent({ it.treeNext != null }, false) ?: this
     nextNode.siblings(true)
         .map { it.text.split("\n") }
         .takeWhileInclusive { it.size <= 1 }
