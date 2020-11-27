@@ -32,9 +32,38 @@ Use a single-line form when you store the entire KDoc block in one line (and the
 
 ### <a name="r2.1.1"></a> Rule 2.1.1: KDoc is used for each public, protected or internal code element
 
-At a minimum, KDoc should be used for every public, protected, or internal decorated class, interface, enumeration, method, and member field (property). Other code blocks can also have KDocs if needed.
-Instead of using comments before properties in class - use `@property` tag in a KDoc of a class.
+At a minimum, KDoc should be used for every public, protected, or internal decorated class, interface, enumeration, method, and member field (property).
+Other code blocks can also have KDocs if needed.
+Instead of using comments or KDocs before properties in the primary constructor of a class - use `@property` tag in a KDoc of a class.
 All properties of the primary constructor should be also documented in a KDoc with a `@property` tag.
+
+Incorrect example:
+```kotlin
+/**
+ * Class description
+ */
+class Example(
+ /**
+  * property description
+  */
+  val foo: Foo,
+  // another property description
+  val bar: Bar
+)
+```
+
+Correct example:
+```kotlin
+/**
+ * Class description
+ * @property foo property description
+ * @property bar another property description
+ */
+class Example(
+  val foo: Foo,
+  val bar: Bar
+)
+```
 
 **Exceptions:**
 
@@ -125,7 +154,7 @@ This comment should contain @since tag. The right style is to write the applicat
  */
 ```
 
-Other KDoc tags (such as @param type parameters and @see.) can be added as follow:
+Other KDoc tags (such as @param type parameters and @see.) can be added as follows:
 ```kotlin
 /**
  * Description of functionality
