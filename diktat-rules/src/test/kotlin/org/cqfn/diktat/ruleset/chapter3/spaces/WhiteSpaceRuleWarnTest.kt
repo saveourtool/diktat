@@ -225,6 +225,7 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
 
     @Test
     @Tag(WarningNames.WRONG_WHITESPACE)
+    @Suppress("TOO_LONG_FUNCTION")
     fun `binary operators should be surrounded by spaces`() {
         lintMethod(
             """

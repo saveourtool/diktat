@@ -188,6 +188,9 @@ class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) :
                 initBlocks, constructors, methods, usedClasses, companion, unusedClasses)
         }
 
+        /**
+         * @return all blocks as a flattened list of [ASTNode]s
+         */
         fun allBlockFlattened() = allBlocks().flatten()
 
         /**

@@ -507,6 +507,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
 
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
+    @Suppress("TOO_LONG_FUNCTION")
     fun `should not trigger`() {
         lintMethod(
             """

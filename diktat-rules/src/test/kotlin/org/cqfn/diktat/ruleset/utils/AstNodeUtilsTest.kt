@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test
 @Suppress("LargeClass", "UnsafeCallOnNullableType")
 class AstNodeUtilsTest {
     @Test
+    @Suppress("TOO_LONG_FUNCTION")
     fun `String representation of ASTNode`() {
         val code = """
             class Test {

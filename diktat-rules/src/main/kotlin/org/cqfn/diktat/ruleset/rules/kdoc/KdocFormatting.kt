@@ -163,7 +163,7 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
         }
     )
 
-    @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkBasicTagsOrder(node: ASTNode) {
         val kdocTags = node.kDocTags()
         // distinct basic tags which are present in current KDoc, in proper order
@@ -276,7 +276,7 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
         }
     }
 
-    @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION", "ComplexMethod")
+    @Suppress("UnsafeCallOnNullableType", "ComplexMethod")
     private fun checkNewLineAfterSpecialTags(node: ASTNode) {
         val presentSpecialTagNodes = node
             .getFirstChildWithType(KDOC_SECTION)

@@ -15,6 +15,7 @@ class UselessSupertypeWarnTest : LintTestBase(::UselessSupertype) {
 
     @Test
     @Tag(WarningNames.USELESS_SUPERTYPE)
+    @Suppress("TOO_LONG_FUNCTION")
     fun `check simple wrong example`() {
         lintMethod(
             """

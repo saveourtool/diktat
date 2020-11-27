@@ -156,7 +156,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         }
     }
 
-    @Suppress("ComplexMethod", "TOO_LONG_FUNCTION")
+    @Suppress("ComplexMethod")
     private fun handleOperatorWithLineBreakBefore(node: ASTNode) {
         if (node.isDotFromPackageOrImport()) {
             return
@@ -229,7 +229,6 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         }
     }
 
-    @Suppress("TOO_LONG_FUNCTION")
     private fun handleLambdaBody(node: ASTNode) {
         if (node.treeParent.elementType == FUNCTION_LITERAL) {
             val isSingleLineLambda = node.treeParent.text.lines().size == 1

@@ -13,7 +13,7 @@ import kotlin.io.path.writeText
  * BACKTICKS_PROHIBITED is suppressed because junit 3 doesn't have @Test annotation
  */
 @OptIn(ExperimentalPathApi::class)
-@Suppress("TOO_LONG_FUNCTION", "BACKTICKS_PROHIBITED")
+@Suppress("BACKTICKS_PROHIBITED")
 class DiktatBaseMojoTest : AbstractMojoTestCase() {
     fun `test plugin configuration`() {
         val pom = createTempFile()

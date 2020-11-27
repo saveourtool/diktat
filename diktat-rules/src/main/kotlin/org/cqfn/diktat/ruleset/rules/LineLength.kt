@@ -138,7 +138,7 @@ class LineLength(private val configRules: List<RulesConfig>) : Rule("line-length
         return LongLineFixableCases.Condition(configuration.lineLength, leftOffset, binList)
     }
 
-    @Suppress("UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
     private fun checkProperty(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
         var newParent = wrongNode
         while (newParent.hasChildOfType(PARENTHESIZED)) {

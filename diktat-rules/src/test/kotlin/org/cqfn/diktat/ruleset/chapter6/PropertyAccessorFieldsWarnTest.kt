@@ -78,6 +78,7 @@ class PropertyAccessorFieldsWarnTest : LintTestBase(::PropertyAccessorFields) {
 
     @Test
     @Tag(WarningNames.WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR)
+    @Suppress("TOO_LONG_FUNCTION")
     fun `check examples with local var`() {
         lintMethod(
             """

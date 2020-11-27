@@ -231,8 +231,8 @@
 - name: TOO_LONG_FUNCTION
   enabled: true
   configuration:
-    maxFunctionLength: '30' # max length of function
-    isIncludeHeader: 'false' # count function's header
+    maxFunctionLength: 35 # max length of function
+    isIncludeHeader: false # count function's header
 # Warns if there are nested functions
 - name: AVOID_NESTED_FUNCTIONS
   enabled: true
