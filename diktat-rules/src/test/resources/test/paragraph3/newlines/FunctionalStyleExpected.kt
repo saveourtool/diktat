@@ -10,3 +10,5 @@ fun foo(list: List<Bar>?) {
 ?.qux()
             ?:foobar
 }
+
+fun bar(x :Int,y:Int) = x+ y

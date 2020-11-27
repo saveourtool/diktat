@@ -37,7 +37,7 @@ class NullChecksRuleWarnTest : LintTestBase(::NullChecksRule) {
                 """
                 | fun foo() {
                 |     var myVar: Int? = null
-                |     if ((myVar == null) && (true)) {
+                |     if ((myVar == null) && (true) || isValid) {
                 |         println("null")
                 |         return
                 |     }
@@ -114,6 +114,57 @@ class NullChecksRuleWarnTest : LintTestBase(::NullChecksRule) {
                 | }
                 """.trimMargin(),
                 LintError(5, 19, ruleId, "${Warnings.AVOID_NULL_CHECKS.warnText()} myVar == null", false),
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.AVOID_NULL_CHECKS)
+    fun `equals to null, but in complex else-if statement`() {
+        lintMethod(
+                """
+                | fun foo0() {
+                |     if (myVar != null) {
+                |        println("not null")
+                |      } else if (true) {
+                |        println()
+                |      }
+                | }
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.AVOID_NULL_CHECKS)
+    fun `equals to null, but in complex else-if statement with dummy comment`() {
+        lintMethod(
+                """
+                | fun foo0() {
+                |     if (myVar != null) {
+                |        println("not null")
+                |      } else /* test comment */ if (true) {
+                |        println()
+                |      }
+                | }
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.AVOID_NULL_CHECKS)
+    fun `equals to null, but the expression is not a else-if`() {
+        lintMethod(
+                """
+                | fun foo0() {
+                |     if (myVar != null) {
+                |        println("not null")
+                |      } else {
+                |           if (true) {
+                |                println()
+                |           }
+                |      }
+                | }
+                """.trimMargin(),
+                LintError(2, 10, ruleId, "${Warnings.AVOID_NULL_CHECKS.warnText()} myVar != null", true),
         )
     }
 }

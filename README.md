@@ -93,6 +93,9 @@ Add this plugin to your pom.xml:
                                 <input>${project.basedir}/src/test/kotlin</input>
                             </inputs>
                             <diktatConfigFile>diktat-analysis.yml</diktatConfigFile>
+                           <excludes>
+                              <exclude>${project.basedir}/src/test/kotlin/excluded</exclude>
+                           </excludes>
                         </configuration>
                     </execution>
                 </executions>
@@ -103,7 +106,7 @@ To run diktat in **only-check** mode use command `$ mvn diktat:check@diktat`.
 To run diktat in **autocorrect** mode use command `$ mvn diktat:fix@diktat`.
 
 ## Run with Gradle using diktat-gradle-plugin
-This plugin is available since version 0.1.5. You can see how the plugin is configured in our project for self-checks: [build.gradle.kts](build.gradle.kts).
+This plugin is available since version 0.1.5. You can see how the plugin is configured in our examples: [build.gradle.kts](examples/gradle-kotlin-dsl/build.gradle.kts).
 Add this plugin to your `build.gradle.kts`:
 ```kotlin
 plugins {
@@ -130,6 +133,7 @@ You can then configure diktat using `diktat` extension:
 diktat {
     inputs = files("src/**/*.kt")  // file collection that will be checked by diktat
     debug = true  // turn on debug logging
+    excludes = files("src/test/kotlin/excluded")  // these files will not be checked by diktat
 }
 ```
 
@@ -153,7 +157,7 @@ For example:
   # all rules are enabled by the default. To disable add 'enabled: false' to the config.
   enabled: true 
   configuration:
-    isCopyrightMandatory: true,
+    isCopyrightMandatory: true
     copyrightText: Copyright (c) Jeff Lebowski, 2012-2020. All rights reserved.
 ```
 Note, that you can specify and put `diktat-analysis.yml` that contains configuration of diktat in the parent directory of your project on the same level where `build.gradle/pom.xml` is stored. \

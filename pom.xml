@@ -42,7 +42,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <kotlin.version>1.4.10</kotlin.version>
+        <kotlin.version>1.4.20</kotlin.version>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
         <kotlinx.serialization.version>1.0.1</kotlinx.serialization.version>
         <ktlint.version>0.39.0</ktlint.version>
@@ -327,19 +327,9 @@
                                 <input>${project.basedir}/src/main/kotlin</input>
                                 <input>${project.basedir}/src/test/kotlin</input>
                             </inputs>
-                            <diktatConfigFile>diktat-analysis.yml</diktatConfigFile>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>functional-test</id>
-                        <phase>none</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                        <configuration>
-                            <inputs>
-                                <input>${project.basedir}/src/test/resources/test/funcTest</input>
-                            </inputs>
+                            <excludes>
+                                <exclude>${project.basedir}/src/main/kotlin/generated</exclude>
+                            </excludes>
                             <diktatConfigFile>diktat-analysis.yml</diktatConfigFile>
                         </configuration>
                     </execution>

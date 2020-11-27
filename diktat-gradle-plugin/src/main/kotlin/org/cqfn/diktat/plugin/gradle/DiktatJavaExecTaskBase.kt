@@ -12,6 +12,7 @@ import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.VerificationTask
 import javax.inject.Inject
+import java.io.File
 
 /**
  * A base diktat task for gradle <6.8, which wraps [JavaExec]
@@ -45,8 +46,16 @@ open class DiktatJavaExecTaskBase @Inject constructor(
             if (diktatExtension.debug) {
                 add("--debug")
             }
-            add(diktatExtension.inputs.files.joinToString { it.path })
+            diktatExtension.inputs.files.forEach {
+                val pattern = project.trimRootDir(it.path)
+                add("\"$pattern\"")
+            }
+            diktatExtension.excludes?.files?.forEach {
+                val pattern = project.trimRootDir(it.path)
+                add("\"!$pattern\"")
+            }
         }
+        logger.debug("Setting JavaExec args to $args")
     }
 
     /**
@@ -88,3 +97,10 @@ fun Project.registerDiktatFixTask(diktatExtension: DiktatExtension, diktatConfig
                 DIKTAT_FIX_TASK, DiktatJavaExecTaskBase::class.java, gradle.gradleVersion,
                 diktatExtension, diktatConfiguration, listOf("-F ")
         )
+
+private fun Project.trimRootDir(path: String) = if (path.startsWith(rootDir.absolutePath)) {
+        path.drop(rootDir.absolutePath.length)
+    } else {
+        path
+    }
+    .trim(File.separatorChar)
