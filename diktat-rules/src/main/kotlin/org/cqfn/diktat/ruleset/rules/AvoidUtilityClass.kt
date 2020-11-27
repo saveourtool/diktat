@@ -37,7 +37,7 @@ class AvoidUtilityClass(private val configRules: List<RulesConfig>) : Rule("avoi
     override fun visit(node: ASTNode, autoCorrect: Boolean, emit: EmitType) {
         emitWarn = emit
         isFixMode = autoCorrect
-        val config = configRules.getCommonConfiguration().value
+        val config by configRules.getCommonConfiguration()
         val fileName = node.getRootNode().getFileName()
         if (!(node.hasTestAnnotation() || isLocatedInTest(fileName.splitPathToDirs(), config.testAnchors))) {
             if (node.elementType == OBJECT_DECLARATION || node.elementType == CLASS) {

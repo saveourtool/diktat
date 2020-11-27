@@ -95,4 +95,39 @@ class AvoidUtilityClassWarnTest: LintTestBase(::AvoidUtilityClass) {
                 """.trimMargin()
         )
     }
+
+    @Test
+    @Tag(WarningNames.AVOID_USING_UTILITY_CLASS)
+    fun `check test-class`() {
+        lintMethod(
+                """
+                    |class StringUtils {
+                    |   fun goo(tex: String): Int {
+                    |       return myString.count{ "something".contains(it) }
+                    |   }
+                    |}
+                """.trimMargin(),
+                LintError(1,1, ruleId, "${AVOID_USING_UTILITY_CLASS.warnText()} StringUtils"),
+                fileName = "src/main/kotlin/org/cqfn/diktat/Example.kt",
+        )
+        lintMethod(
+                """
+                    |@Test
+                    |class StringUtils1 {
+                    |   fun goo(tex: String): Int {
+                    |       return myString.count{ "something".contains(it) }
+                    |   }
+                    |}
+                """.trimMargin(), fileName = "src/test/kotlin/org/cqfn/diktat/Example.kt"
+        )
+        lintMethod(
+                """
+                    |class StringUtils2 {
+                    |   fun goo(tex: String): Int {
+                    |       return myString.count{ "something".contains(it) }
+                    |   }
+                    |}
+                """.trimMargin(), fileName = "src/test/kotlin/org/cqfn/diktat/UtilTest.kt"
+        )
+    }
 }
