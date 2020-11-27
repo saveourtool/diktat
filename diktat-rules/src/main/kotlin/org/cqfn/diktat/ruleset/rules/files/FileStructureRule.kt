@@ -89,6 +89,7 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         }
     }
 
+    @Suppress("FUNCTION_BOOLEAN_PREFIX")
     private fun checkFileHasCode(node: ASTNode): Boolean {
         val codeTokens = TokenSet.andNot(
             TokenSet.ANY,
@@ -101,6 +102,7 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         return hasCode
     }
 
+    @Suppress("TOO_LONG_FUNCTION")
     private fun checkCodeBlocksOrderAndEmptyLines(node: ASTNode) {
         // PACKAGE_DIRECTIVE node is always present in regular kt files and might be absent in kts.
         // Kotlin compiler itself enforces it's position in the file if it is present.
@@ -245,6 +247,7 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         else -> error("Only BLOCK_COMMENT, KDOC and FILE_ANNOTATION_LIST are valid inputs.")
     }
 
+    @Suppress("TYPE_ALIAS")
     private fun regroupImports(imports: List<KtImportDirective>): List<List<KtImportDirective>> {
         val (android, notAndroid) = imports.partition {
             it.isStandard(StandardPlatforms.ANDROID)
@@ -274,10 +277,19 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
             .all { it.first == it.second }
     } ?: false
 
+    /**
+     * [RuleConfiguration] for wildcard imports
+     */
     class WildCardImportsConfig(config: Map<String, String>) : RuleConfiguration(config) {
+        /**
+         * A list of imports that are allowed to use wildcards. Input is in a form "foo.bar.*,foo.baz.*".
+         */
         val allowedWildcards = config["allowedWildcards"]?.split(",")?.map { it.trim() } ?: listOf()
     }
 
+    /**
+     * [RuleConfiguration] for imports grouping according to the recommendation from diktat code style
+     */
     class ImportsGroupingConfig(config: Map<String, String>) : RuleConfiguration(config) {
         /**
          * Use imports grouping according to recommendation 3.1

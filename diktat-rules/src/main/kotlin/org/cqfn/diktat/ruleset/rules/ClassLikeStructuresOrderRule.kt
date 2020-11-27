@@ -46,11 +46,6 @@ class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) :
     private var isFixMode: Boolean = false
     private lateinit var emitWarn: EmitType
 
-    /**
-     * @param node
-     * @param autoCorrect
-     * @param emit
-     */
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
                        emit: EmitType) {
@@ -64,7 +59,7 @@ class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) :
         }
     }
 
-    @Suppress("UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
     private fun checkDeclarationsOrderInClass(node: ASTNode) {
         val allProperties = node.getChildren(TokenSet.create(PROPERTY))
         val constProperties = allProperties.filter { it.findLeafWithSpecificType(CONST_KEYWORD) != null }.toMutableList()

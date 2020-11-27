@@ -50,6 +50,7 @@ class CommentsRule(private val configRules: List<RulesConfig>) : Rule("comments"
      * 2. Import usually go on top of the file, so if comment contains not only imports, it probably contains imports only on top. (this possibly needs fixme)
      * 3. Code can be surrounded by actual comments. One possible heuristic here is to assume actual comments start
      *    with '// ' with whitespace, while automatic commenting in, e.g., IDEA creates slashes in the beginning of the line
+     *
      */
     private fun checkCommentedCode(node: ASTNode) {
         val eolCommentsOffsetToText = getOffsetsToTextBlocksFromEolComments(node)

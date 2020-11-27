@@ -1,3 +1,7 @@
+/**
+ * Main logic of indentation including Rule and utility classes and methods.
+ */
+
 package org.cqfn.diktat.ruleset.rules.files
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
@@ -100,8 +104,9 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
      *
      * @return true if there are no tabs or all of them have been fixed, false otherwise
      */
+    @Suppress("FUNCTION_BOOLEAN_PREFIX")
     private fun checkIsIndentedWithSpaces(node: ASTNode): Boolean {
-        val whiteSpaceNodes = mutableListOf<ASTNode>()
+        val whiteSpaceNodes: MutableList<ASTNode> = mutableListOf()
         node.getAllLeafsWithSpecificType(WHITE_SPACE, whiteSpaceNodes)
         whiteSpaceNodes
             .filter { it.textContains('\t') }
@@ -206,8 +211,8 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
      */
     private class IndentContext(private val config: IndentationConfig) {
         private var regularIndent = 0
-        private val exceptionalIndents = mutableListOf<ExceptionalIndent>()
-        private val activeTokens = Stack<IElementType>()
+        private val exceptionalIndents: MutableList<ExceptionalIndent> = mutableListOf()
+        private val activeTokens: Stack<IElementType> = Stack()
 
         /**
          * @param token a token that caused indentation increment, for example an opening brace
@@ -216,6 +221,9 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
             .also { require(it in increasingTokens) { "Only tokens that increase indentation should be passed to this method" } }
             .let(activeTokens::push)
 
+        /**
+         * Checks whether indentation needs to be incremented and increments in this case.
+         */
         fun maybeIncrement() {
             if (activeTokens.isNotEmpty() && activeTokens.peek() != WHITE_SPACE) {
                 regularIndent += config.indentationSize
@@ -238,6 +246,9 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
             }
         }
 
+        /**
+         * @return full current indent
+         */
         fun indent() = regularIndent + exceptionalIndents.sumBy { it.indent }
 
         /**
@@ -291,4 +302,7 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
  */
 internal data class IndentationError(val expected: Int, val actual: Int)
 
+/**
+ * @return indentation of the last line of this string
+ */
 internal fun String.lastIndent() = substringAfterLast('\n').count { it == ' ' }

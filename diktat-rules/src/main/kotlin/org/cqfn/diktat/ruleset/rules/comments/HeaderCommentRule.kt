@@ -201,6 +201,9 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
          */
         fun isCopyrightMandatory() = config["isCopyrightMandatory"]?.toBoolean() ?: false
 
+        /**
+         * Whether copyright text is present in the configuration
+         */
         internal fun hasCopyrightText() = config.keys.contains("copyrightText")
 
         /**

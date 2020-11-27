@@ -1,5 +1,5 @@
 /**
- * This file contains code for codegen: generating a list of WarningNames and adjusting current year for copyright inspection tests.
+ * This file contains code for codegen: generating a list of WarningNames and adjusting current year for (c)opyright inspection tests.
  */
 
 package org.cqfn.diktat.ruleset.generation

@@ -79,7 +79,7 @@ class ExtensionFunctionsSameNameRule(private val configRules: List<RulesConfig>)
     /**
      * FixMe: warning suppressed until https://github.com/cqfn/diKTat/issues/581
      */
-    @Suppress("UnsafeCallOnNullableType", "LOCAL_VARIABLE_EARLY_DECLARATION")
+    @Suppress("UnsafeCallOnNullableType", "LOCAL_VARIABLE_EARLY_DECLARATION", "TYPE_ALIAS")
     private fun collectAllExtensionFunctions(node: ASTNode): SimilarSignatures {
         val extensionFunctionList = node.findAllNodesWithSpecificType(FUN).filter { it.hasChildOfType(TYPE_REFERENCE) && it.hasChildOfType(DOT) }
         val distinctFunctionSignatures: MutableMap<FunctionSignature, ASTNode> = mutableMapOf()  // maps function signatures on node it is used by

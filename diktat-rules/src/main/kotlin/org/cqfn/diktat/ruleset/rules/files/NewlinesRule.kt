@@ -156,7 +156,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         }
     }
 
-    @Suppress("ComplexMethod")
+    @Suppress("ComplexMethod", "TOO_LONG_FUNCTION")
     private fun handleOperatorWithLineBreakBefore(node: ASTNode) {
         if (node.isDotFromPackageOrImport()) {
             return
@@ -229,6 +229,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         }
     }
 
+    @Suppress("TOO_LONG_FUNCTION")
     private fun handleLambdaBody(node: ASTNode) {
         if (node.treeParent.elementType == FUNCTION_LITERAL) {
             val isSingleLineLambda = node.treeParent.text.lines().size == 1
@@ -339,7 +340,8 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
                 node.appendNewlineMergingWhiteSpace(
                     it.first()
                         .treePrev
-                        .takeIf { it.elementType == WHITE_SPACE }, it.first()
+                        .takeIf { it.elementType == WHITE_SPACE },
+                    it.first()
                 )
             }
         }
@@ -456,6 +458,16 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
             firstChildNode.elementType == IDENTIFIER &&
             treeParent.elementType == BINARY_EXPRESSION
 
+    /**
+     * [RuleConfiguration] for newlines placement
+     */
+    private class NewlinesRuleConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
+        /**
+         * If the number of parameters on one line is more than this threshold, all parameters should be placed on separate lines.
+         */
+        val maxParametersInOneLine = config["maxParametersInOneLine"]?.toInt() ?: 2
+    }
+
     companion object {
         // fixme: these token sets can be not full, need to add new once as corresponding cases are discovered.
         // error is raised if these operators are prepended by newline
@@ -467,11 +479,4 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         private val chainExpressionTypes = TokenSet.create(DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION)
         private val dropChainValues = TokenSet.create(EOL_COMMENT, WHITE_SPACE, BLOCK_COMMENT, KDOC)
     }
-}
-
-private class NewlinesRuleConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
-    /**
-     * If the number of parameters on one line is more than this threshold, all parameters should be placed on separate lines.
-     */
-    val maxParametersInOneLine = config["maxParametersInOneLine"]?.toInt() ?: 2
 }
