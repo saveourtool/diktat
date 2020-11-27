@@ -116,6 +116,7 @@ class KdocMethods(private val configRules: List<RulesConfig>) : Rule("kdoc-metho
         val throwsCheckFailed = missingExceptions.isNotEmpty()
 
         val anyTagFailed = paramCheckFailed || returnCheckFailed || throwsCheckFailed
+        // if no tag failed, we have too little information to suggest KDoc - it would just be empty
         if (kdoc == null && anyTagFailed) {
             addKdocTemplate(node, name, missingParameters, explicitlyThrownExceptions, returnCheckFailed)
         } else if (kdoc == null) {
