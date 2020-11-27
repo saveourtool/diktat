@@ -21,7 +21,7 @@ private val autoTable = """
 \scriptsize
 \begin{longtable}{ |l|p{0.8cm}|p{0.8cm}| p{3cm} | }
 \hline
-\multicolumn{4}{|c|}{Table header} \\ 
+\multicolumn{4}{|c|}{Available Rules} \\ 
 \hline
 \textbf{diKTat rule} & \textbf{code style} & \textbf{autofix} &  \textbf{config} \\
 \hline
