@@ -10,6 +10,7 @@ import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule.Companion.afterC
 import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule.Companion.curYear
 import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule.Companion.hyphenRegex
 import java.io.PrintWriter
+import kotlin.math.withSign
 
 private val autoGenerationComment =
         """
@@ -49,13 +50,14 @@ private fun generateWarningNames() {
 
 private fun generateCodeStyle() {
     val file = File("info/guide/diktat-coding-convention.md")
-    val tempFile = File("info/guide/test.tex")
+    val tempFile = File("info/guide/coding-convention.tex")
     tempFile.createNewFile()
     val lines = mutableListOf<String>()
     file.forEachLine { lines.add(it) }
     tempFile.printWriter().use { writer ->
         val iterator = lines.iterator()
-        writer.writeln("\\lstMakeShortInline`")
+        writer.writeln("\\lstMakeShortInline[basicstyle=\\ttfamily\\bfseries]`")
+        writer.writeln("\\section*{guide}")
         while (iterator.hasNext()) {
             var line = iterator.next()
             if (line.contains("<!--"))
@@ -73,19 +75,20 @@ private fun generateCodeStyle() {
                 continue
             }
             if (iterator.hasNext() && line.trim().startsWith("```")) {
-                writer.writeln("""\begin{lstlisting}[language=Kotlin]""")
+                writer.writeCode("""\begin{lstlisting}[language=Kotlin]""")
                 line = iterator.next()
                 while (!line.trim().startsWith("```")) {
-                    writer.writeln(line)
+                    writer.writeCode(line)
                     line = iterator.next()
                 }
-                writer.writeln("""\end{lstlisting}""")
+                writer.writeCode("""\end{lstlisting}""")
                 continue
             }
 
             if (line.trim().startsWith("|")) {
                 val columnNumber = line.filter { it =='|' }.count() - 1
-                val createTable = "|p{3cm}".repeat(columnNumber).plus("|") // May be we will need to calculate column width
+                val columnWidth: Float = (15f / columnNumber) // For now it makes all column width equal
+                val createTable = "|p{${columnWidth.format(1)}cm}".repeat(columnNumber).plus("|")
                 writer.writeln("""\begin{center}""")
                 writer.writeln("""\begin{tabular}{ $createTable }""")
                 writer.writeln("""\hline""")
@@ -139,7 +142,7 @@ private fun findBoldOrItalicText(line: String, regex: Regex, type: FindType) : S
         when (type) {
             FindType.BOLD -> allRegex[index] = "\\textbf{${value.replace("**", "")}}"
             FindType.ITALIC -> allRegex[index] = "\\textit{${value.replace("*", "")}}"
-            FindType.BACKTICKS -> allRegex[index] = value
+            FindType.BACKTICKS -> allRegex[index] = value // currently not in use
         }
     }
     allRegex.forEach {
@@ -149,8 +152,13 @@ private fun findBoldOrItalicText(line: String, regex: Regex, type: FindType) : S
 }
 
 private fun PrintWriter.writeln(text: String) {
+    write(text.plus("\n\n"))
+}
+private fun PrintWriter.writeCode(text: String) {
     write(text.plus("\n"))
 }
+
+private fun Float.format(digits: Int) = "%.${digits}f".format(this)
 
 private fun validateYear() {
     val file = File("diktat-rules/src/test/resources/test/paragraph2/header/CopyrightDifferentYearExpected.kt")
