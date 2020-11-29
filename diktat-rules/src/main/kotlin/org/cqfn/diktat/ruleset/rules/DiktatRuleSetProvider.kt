@@ -63,7 +63,9 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
             diktatConfigFile = "$configPath${File.separator}$DIKTAT_ANALYSIS_CONF"
 
             if (!File(diktatConfigFile).exists()) {
-                log.warn("Configuration file $diktatConfigFile not found in file system, the file included in jar will be used. " +
+                log.warn("Configuration file $DIKTAT_ANALYSIS_CONF not found in directory where diktat is run " +
+                        "or in the directory where diktat.jar is stored, " +
+                        "the default file included in jar will be used. " +
                         "Some configuration options will be disabled or substituted with defaults. " +
                         "Custom configuration file should be placed in diktat working directory if run from CLI " +
                         "or provided as configuration options in plugins."
