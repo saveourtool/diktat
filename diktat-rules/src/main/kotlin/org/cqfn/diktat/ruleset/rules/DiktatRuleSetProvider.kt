@@ -100,6 +100,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
                 ::BracesInConditionalsAndLoopsRule,
                 ::BlockStructureBraces,
                 ::EmptyBlock,
+                ::AvoidEmptyPrimaryConstructor,
                 ::EnumsSeparated,
                 ::SingleLineStatementsRule,
                 ::MultipleModifiersSequence,
@@ -107,6 +108,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
                 ::CustomGetterSetterRule,
                 ::CompactInitialization,
                 // other rules
+                ::ImplicitBackingPropertyRule,
                 ::StringTemplateFormatRule,
                 ::DataClassesRule,
                 ::LocalVariablesRule,
