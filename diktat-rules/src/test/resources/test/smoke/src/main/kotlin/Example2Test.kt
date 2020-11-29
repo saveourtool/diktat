@@ -19,4 +19,7 @@ private fun foo (node: ASTNode) {
             && b
     val qwe = a &&
             b
+
+    if (x) // comment
+        foo()
 }

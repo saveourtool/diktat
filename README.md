@@ -93,6 +93,9 @@ Add this plugin to your pom.xml:
                                 <input>${project.basedir}/src/test/kotlin</input>
                             </inputs>
                             <diktatConfigFile>diktat-analysis.yml</diktatConfigFile>
+                           <excludes>
+                              <exclude>${project.basedir}/src/test/kotlin/excluded</exclude>
+                           </excludes>
                         </configuration>
                     </execution>
                 </executions>
@@ -130,6 +133,7 @@ You can then configure diktat using `diktat` extension:
 diktat {
     inputs = files("src/**/*.kt")  // file collection that will be checked by diktat
     debug = true  // turn on debug logging
+    excludes = files("src/test/kotlin/excluded")  // these files will not be checked by diktat
 }
 ```
 

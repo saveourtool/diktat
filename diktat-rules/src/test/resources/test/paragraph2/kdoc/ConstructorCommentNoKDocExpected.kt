@@ -22,9 +22,8 @@ class A constructor(
 ){}
 
 /**
- * @property name
-  * @property lastName
-*/
+ * @property lastName
+ */
 class A constructor(
         private var name: String,
         val lastName: String
@@ -36,4 +35,19 @@ class A constructor(
           */
 class A constructor(
         val name: String
+){}
+
+class Example(private val foo: Int)
+
+/**
+ * @property g
+  * @property e
+ * @property s
+*/
+class Example constructor(
+        val g: String,
+        private var q: String,
+        @param:JsonProperty("shortName") private val shortName: String,
+        val e: String,
+        protected val s: String
 ){}
