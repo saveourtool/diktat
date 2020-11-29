@@ -1,3 +1,7 @@
+/**
+ * Stub for diktat ruleset provide to be used in tests and other related utilities
+ */
+
 package org.cqfn.diktat.util
 
 import org.cqfn.diktat.common.config.rules.RulesConfig

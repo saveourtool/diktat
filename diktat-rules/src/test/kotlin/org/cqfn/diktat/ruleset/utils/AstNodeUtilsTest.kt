@@ -1,3 +1,5 @@
+@file:Suppress("HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE", "LOCAL_VARIABLE_EARLY_DECLARATION")
+
 package org.cqfn.diktat.ruleset.utils
 
 import org.cqfn.diktat.ruleset.constants.EmitType
@@ -329,20 +331,20 @@ class AstNodeUtilsTest {
 
     @Test
     fun `test isNodeFromCompanionObject`() {
-        var code = """
+        val positiveExample = """
             class Something{
             	companion object {
                     val id = 1
             	}
             }
         """.trimIndent()
-        applyToCode(code, 1) { node, counter ->
+        applyToCode(positiveExample, 1) { node, counter ->
             if (node.elementType == PROPERTY) {
                 Assertions.assertTrue(node.isNodeFromCompanionObject())
                 counter.incrementAndGet()
             }
         }
-        code = """
+        val negativeExample = """
             class Test() {
                 /**
                 * test method
@@ -351,7 +353,7 @@ class AstNodeUtilsTest {
                 fun foo(a: Int): Int = 2 * a
             }
         """.trimIndent()
-        applyToCode(code, 1) { node, counter ->
+        applyToCode(negativeExample, 1) { node, counter ->
             if (node.elementType == FUN) {
                 Assertions.assertFalse(node.isNodeFromCompanionObject())
                 counter.incrementAndGet()
@@ -489,7 +491,7 @@ class AstNodeUtilsTest {
                 fun foo(a: Int): Int = 2 * a
             }
         """.trimIndent()
-        val list = mutableListOf<ASTNode>()
+        val list: MutableList<ASTNode> = mutableListOf()
         val leafWithTypeList: MutableList<ASTNode> = mutableListOf()
         var firstNode: ASTNode? = null
         applyToCode(code, 0) { node, _ ->
@@ -567,7 +569,7 @@ class AstNodeUtilsTest {
                 }
             }
         """.trimIndent()
-        val listResults = mutableListOf<ASTNode>()
+        val listResults: MutableList<ASTNode> = mutableListOf()
         applyToCode(code, 0) { node, _ ->
             if (node.elementType == IDENTIFIER) {
                 listResults.add(node)
@@ -587,7 +589,7 @@ class AstNodeUtilsTest {
 
     @Test
     fun `test isAccessibleOutside`() {
-        var code = """
+        val negativeExample = """
             class Test() {
                 /**
                 * test method
@@ -596,13 +598,13 @@ class AstNodeUtilsTest {
                 private fun foo(a: Int): Int = 2 * a
             }
         """.trimIndent()
-        applyToCode(code, 1) { node, counter ->
+        applyToCode(negativeExample, 1) { node, counter ->
             if (node.elementType == MODIFIER_LIST) {
                 Assertions.assertFalse(node.isAccessibleOutside())
                 counter.incrementAndGet()
             }
         }
-        code = """
+        val positiveExample = """
             class Test() {
                 /**
                 * test method
@@ -611,7 +613,7 @@ class AstNodeUtilsTest {
                 public fun foo(a: Int): Int = 2 * a
             }
         """.trimIndent()
-        applyToCode(code, 1) { node, counter ->
+        applyToCode(positiveExample, 1) { node, counter ->
             if (node.elementType == MODIFIER_LIST) {
                 Assertions.assertTrue(node.isAccessibleOutside())
                 counter.incrementAndGet()

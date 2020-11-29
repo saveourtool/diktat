@@ -36,9 +36,9 @@ import kotlinx.serialization.encodeToString
  * fixme: run as a separate maven goal/module?
  */
 class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
-        { DiktatRuleSetProvider(configFilePath) },
-        { lintError, _ -> unfixedLintErrors.add(lintError) },
-        null
+    { DiktatRuleSetProvider(configFilePath) },
+    { lintError, _ -> unfixedLintErrors.add(lintError) },
+    null
 ) {
     /**
      * Disable some of the rules.
@@ -64,12 +64,12 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     }
 
     @BeforeEach
-    fun `prepare accumulator for LintErrors`() {
+    fun setUp() {
         unfixedLintErrors.clear()
     }
 
     @AfterEach
-    fun `revert configuration file to default`() {
+    fun tearDown() {
         configFilePath = DEFAULT_CONFIG_PATH
     }
 

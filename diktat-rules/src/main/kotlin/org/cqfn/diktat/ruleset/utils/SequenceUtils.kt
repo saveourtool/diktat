@@ -1,3 +1,7 @@
+/**
+ * Utility methods to work with sequences
+ */
+
 package org.cqfn.diktat.ruleset.utils
 
 /**

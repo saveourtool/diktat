@@ -1,7 +1,12 @@
+/**
+ * Utility methods and constants to work with strings
+ */
+
 package org.cqfn.diktat.ruleset.utils
 
 import org.jetbrains.kotlin.lexer.KtTokens
 
+@Suppress("VARIABLE_NAME_INCORRECT_FORMAT")
 val JAVA = arrayOf("abstract", "assert", "boolean",
     "break", "byte", "case", "catch", "char", "class", "const",
     "continue", "default", "do", "double", "else", "extends", "false",
@@ -12,27 +17,58 @@ val JAVA = arrayOf("abstract", "assert", "boolean",
     "synchronized", "this", "throw", "throws", "transient", "true",
     "try", "void", "volatile", "while")
 
+@Suppress("VARIABLE_NAME_INCORRECT_FORMAT")
 val KOTLIN = KtTokens.KEYWORDS.types.map { line -> line.toString() }
     .plus(KtTokens.SOFT_KEYWORDS.types.map { line -> line.toString() })
 
 val loggerPropertyRegex = "(log|LOG|logger)".toRegex()
 
+/**
+ * @return whether [this] string represents a Java keyword
+ */
 fun String.isJavaKeyWord() = JAVA.contains(this)
+
+/**
+ * @return whether [this] string represents a Kotlin keyword
+ */
 fun String.isKotlinKeyWord() = KOTLIN.contains(this)
 
+/**
+ * @return whether [this] string contains only ASCII letters and/or digits
+ */
+@Suppress("FUNCTION_NAME_INCORRECT_CASE")
 fun String.isASCIILettersAndDigits(): Boolean = this.all { it.isDigit() || it in 'A'..'Z' || it in 'a'..'z' }
 
+/**
+ * @return whether [this] string contains only digits
+ */
 fun String.isDigits(): Boolean = this.all { it.isDigit() }
 
+/**
+ * @return whether [this] string contains any uppercase letters
+ */
 fun String.hasUppercaseLetter(): Boolean = this.any { it.isUpperCase() }
 
+/**
+ * @return whether [this] string contains exactly one or zero letters
+ */
+@Suppress("FUNCTION_BOOLEAN_PREFIX")
 fun String.containsOneLetterOrZero(): Boolean {
     val count = this.count { it.isLetter() }
     return count == 1 || count == 0
 }
 
+/**
+ * @param sub a substring to search
+ * @return count of ocurrences
+ */
 fun String.countSubStringOccurrences(sub: String) = this.split(sub).size - 1
 
+/**
+ * Splits [this] string by file path separator
+ *
+ * @return list of path parts
+ */
 fun String.splitPathToDirs(): List<String> =
         this.replace("\\", "/")
             .replace("//", "/")
@@ -41,6 +77,8 @@ fun String.splitPathToDirs(): List<String> =
 /**
  * method checks that string has prefix like:
  * mFunction, kLength or M_VAR
+ *
+ * @return true if string has prefix
  */
 @Suppress("ForbiddenComment")
 fun String.hasPrefix(): Boolean {
@@ -59,6 +97,8 @@ fun String.hasPrefix(): Boolean {
  * removing the prefix in the word
  * M_VAR -> VAR
  * mVariable -> variable
+ *
+ * @return a string without prefix
  */
 @Suppress("ForbiddenComment")
 fun String.removePrefix(): String {

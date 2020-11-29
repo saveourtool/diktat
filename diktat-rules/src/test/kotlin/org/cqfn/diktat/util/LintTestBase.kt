@@ -21,6 +21,7 @@ open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesCo
      * @param rulesConfigList optional override for `this.rulesConfigList`
      * @param fileName optional override for file name
      */
+    @Suppress("LOCAL_VARIABLE_EARLY_DECLARATION")
     fun lintMethod(code: String,
                    vararg lintErrors: LintError,
                    rulesConfigList: List<RulesConfig>? = null,

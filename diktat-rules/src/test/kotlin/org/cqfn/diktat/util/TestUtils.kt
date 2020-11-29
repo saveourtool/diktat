@@ -1,3 +1,7 @@
+/**
+ * Utility classes and methods for tests
+ */
+
 package org.cqfn.diktat.util
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
@@ -61,6 +65,7 @@ internal fun List<LintError>.assertEquals(vararg expectedLintErrors: LintError) 
  * @param cb callback to be called on unhandled [LintError]s
  * @return formatted code
  */
+@Suppress("LAMBDA_IS_NOT_LAST_PARAMETER")
 internal fun format(ruleSetProviderRef: (rulesConfigList: List<RulesConfig>?) -> RuleSetProvider,
                     text: String,
                     fileName: String,
@@ -76,6 +81,7 @@ internal fun format(ruleSetProviderRef: (rulesConfigList: List<RulesConfig>?) ->
             )
         )
 
+@Suppress("TYPE_ALIAS")
 internal val defaultCallback: (lintError: LintError, corrected: Boolean) -> Unit = { lintError, _ ->
     log.warn("Received linting error: $lintError")
 }
@@ -89,6 +95,7 @@ internal val defaultCallback: (lintError: LintError, corrected: Boolean) -> Unit
  * @param expectedAsserts Number of expected times of assert invocation
  * @param applyToNode Function to be called on each AST node, should increment counter if assert is called
  */
+@Suppress("TYPE_ALIAS")
 internal fun applyToCode(code: String,
                          expectedAsserts: Int,
                          applyToNode: (node: ASTNode, counter: AtomicInteger) -> Unit) {

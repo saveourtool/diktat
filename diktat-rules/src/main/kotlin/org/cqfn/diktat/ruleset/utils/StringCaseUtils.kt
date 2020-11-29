@@ -1,3 +1,5 @@
+@file:Suppress("FILE_NAME_MATCH_CLASS")
+
 package org.cqfn.diktat.ruleset.utils
 
 import com.google.common.base.CaseFormat
@@ -185,6 +187,9 @@ private fun convertUnknownCaseToUpperSnake(str: String): String {
     }.joinToString("")
 }
 
+/**
+ * @return index of first character which is a letter or a digit
+ */
 private fun String.getFirstLetterOrDigit() =
         indexOfFirst { it.isLetterOrDigit() }
 

@@ -108,6 +108,7 @@ class FileSizeWarnTest : LintTestBase(::FileSize) {
 
     @Test
     @Tag(WarningNames.FILE_IS_TOO_LONG)
+    @Suppress("SAY_NO_TO_VAR")
     fun `ignoring two out of three folders`() {
         var path = javaClass.classLoader.getResource("test/paragraph3/src/main/A/FileSizeA.kt")
         var file = File(path!!.file)

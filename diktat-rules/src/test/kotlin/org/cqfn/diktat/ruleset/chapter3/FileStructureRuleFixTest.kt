@@ -10,7 +10,7 @@ import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class FileStructureRuleTestFix : FixTestBase("test/paragraph3/file_structure", ::FileStructureRule) {
+class FileStructureRuleFixTest : FixTestBase("test/paragraph3/file_structure", ::FileStructureRule) {
     @Test
     @Tag(WarningNames.FILE_INCORRECT_BLOCKS_ORDER)
     fun `should move @file targeted annotations after header KDoc`() {

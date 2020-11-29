@@ -1,5 +1,5 @@
-@file:Suppress("KDOC_NO_CONSTRUCTOR_PROPERTY", "MISSING_KDOC_CLASS_ELEMENTS", "MISSING_KDOC_ON_FUNCTION", "KDOC_WITHOUT_PARAM_TAG",
-    "KDOC_WITHOUT_RETURN_TAG")
+@file:Suppress("MISSING_KDOC_TOP_LEVEL", "KDOC_NO_CONSTRUCTOR_PROPERTY", "MISSING_KDOC_CLASS_ELEMENTS", "MISSING_KDOC_ON_FUNCTION", "KDOC_WITHOUT_PARAM_TAG",
+    "KDOC_WITHOUT_RETURN_TAG", "KDOC_NO_EMPTY_TAGS")
 
 package org.cqfn.diktat.ruleset.utils.search
 
@@ -22,8 +22,8 @@ class VariablesWithAssignmentSearch(fileNode: ASTNode,
      * @return
      */
     override fun KtElement.getAllSearchResults(property: KtProperty) = this.node.findAllNodesWithSpecificType(ElementType.BINARY_EXPRESSION)
-    // filtering out all usages that are declared in the same context but are going before the variable declaration
-    // AND checking that there is an assignment
+        // filtering out all usages that are declared in the same context but are going before the variable declaration
+        // AND checking that there is an assignment
         .filter {
             // FixMe: bug is here with a search of postfix/prefix variables assignment (like ++).
             // FixMe: Currently we check only val a = 5, ++a is not checked here
@@ -44,6 +44,8 @@ class VariablesWithAssignmentSearch(fileNode: ASTNode,
         .toList()
 }
 
-// the default value for filtering condition is always true
+/**
+ * the default value for filtering condition is always true
+ */
 fun ASTNode.findAllVariablesWithAssignments(filterForVariables: (KtProperty) -> Boolean = ::default) =
         VariablesWithAssignmentSearch(this, filterForVariables).collectVariables()

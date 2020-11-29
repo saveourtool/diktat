@@ -55,14 +55,15 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
                     |   }
                     |}
                 """.trimMargin()
+        lintMethod(withBrace)
+
         val withoutBrace =
-                """
+            """
                     |fun foo() {
                     |   if (x > 5)
                     |       x--
                     |}
                 """.trimMargin()
-        lintMethod(withBrace)
         lintMethod(withoutBrace)
     }
 
