@@ -1,3 +1,6 @@
+@file:Suppress("KDOC_NO_CONSTRUCTOR_PROPERTY", "MISSING_KDOC_CLASS_ELEMENTS", "MISSING_KDOC_ON_FUNCTION", "KDOC_WITHOUT_PARAM_TAG",
+    "KDOC_WITHOUT_RETURN_TAG")
+
 package org.cqfn.diktat.ruleset.utils.search
 
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType

@@ -1,3 +1,7 @@
+/**
+ * Various utility methods to work with KDoc representation in AST
+ */
+
 package org.cqfn.diktat.ruleset.utils
 
 import com.pinterest.ktlint.core.ast.ElementType

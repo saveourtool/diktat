@@ -1,3 +1,6 @@
+@file:Suppress("KDOC_NO_CONSTRUCTOR_PROPERTY", "MISSING_KDOC_CLASS_ELEMENTS", "MISSING_KDOC_ON_FUNCTION", "KDOC_WITHOUT_PARAM_TAG",
+    "KDOC_WITHOUT_RETURN_TAG")
+
 package org.cqfn.diktat.ruleset.utils.search
 
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
@@ -36,6 +39,7 @@ abstract class VariablesSearch(val node: ASTNode, private val filterForVariables
      *
      * @return a map of a property to it's usages
      */
+    @Suppress("TYPE_ALIAS")
     fun collectVariables(): Map<KtProperty, List<KtNameReferenceExpression>> {
         require(node.elementType == ElementType.FILE) {
             "To collect all variables in a file you need to provide file root node"
@@ -80,8 +84,8 @@ abstract class VariablesSearch(val node: ASTNode, private val filterForVariables
     protected fun isReferenceToOtherVariableWithSameName(expression: KtNameReferenceExpression,
                                                          codeBlock: KtElement,
                                                          property: KtProperty) = expression.parents
-    // getting all block expressions/class bodies/file node from bottom to the top
-    // FixMe: Object companion is not resolved properly yet
+        // getting all block expressions/class bodies/file node from bottom to the top
+        // FixMe: Object companion is not resolved properly yet
         .filter { it is KtBlockExpression || it is KtClassBody || it is KtFile }
         // until we reached the block that contains the initial declaration
         .takeWhile { codeBlock != it }
@@ -90,7 +94,8 @@ abstract class VariablesSearch(val node: ASTNode, private val filterForVariables
             // 1) there is a new shadowed declaration for this expression (but the declaration should stay on the previous line!)
             // 2) or there one of top blocks is a function/lambda that has arguments with the same name
             // FixMe: in class or a file the declaration can easily go after the usage (by lines of code)
-            block.getChildrenOfType<KtProperty>().any { it.nameAsName == property.nameAsName && expression.node.isGoingAfter(it.node) } ||
+            block.getChildrenOfType<KtProperty>()
+                .any { it.nameAsName == property.nameAsName && expression.node.isGoingAfter(it.node) } ||
                     block.parent
                         .let { it as? KtFunctionLiteral }
                         ?.valueParameters
@@ -102,6 +107,8 @@ abstract class VariablesSearch(val node: ASTNode, private val filterForVariables
 
 /**
  * this is a small workaround in case we don't want to make any custom filter while searching variables
+ *
+ * @param node an [ASTNode]
  */
 @SuppressWarnings("FunctionOnlyReturningConstant")
 fun default(node: KtProperty) = true

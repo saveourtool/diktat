@@ -1,3 +1,7 @@
+/**
+ * Utility methods to work with PSI code representation
+ */
+
 package org.cqfn.diktat.ruleset.utils
 
 import com.pinterest.ktlint.core.ast.ElementType
@@ -24,7 +28,7 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  *
  * @return boolean result
  */
-@Suppress("UnsafeCallOnNullableType")
+@Suppress("UnsafeCallOnNullableType", "FUNCTION_BOOLEAN_PREFIX")
 fun KtExpression.containsOnlyConstants(): Boolean =
         when (this) {
             is KtConstantExpression -> true
@@ -50,7 +54,7 @@ fun KtExpression.containsOnlyConstants(): Boolean =
 @Suppress("UnsafeCallOnNullableType")
 fun KtProperty.getDeclarationScope() =
         // FixMe: class body is missing here
-        this .getParentOfType<KtBlockExpression>(true)
+        getParentOfType<KtBlockExpression>(true)
             .let { if (it is KtIfExpression) it.then!! else it }
             .let { if (it is KtTryExpression) it.tryBlock else it }
             as KtBlockExpression?
@@ -60,7 +64,7 @@ fun KtProperty.getDeclarationScope() =
  * Nodes like `IF`, `TRY` are parents of `ELSE`, `CATCH`, but their scopes are not intersecting, and false is returned in this case.
  *
  * @param block
- * @return
+ * @return boolean result
  */
 fun PsiElement.isContainingScope(block: KtBlockExpression): Boolean {
     when (block.parent.node.elementType) {
@@ -78,7 +82,7 @@ fun PsiElement.isContainingScope(block: KtBlockExpression): Boolean {
 /**
  * Method that tries to find a local property declaration with the same name as current [KtNameReferenceExpression] element
  *
- * @return
+ * @return [KtProperty] if it is found, null otherwise
  */
 fun KtNameReferenceExpression.findLocalDeclaration(): KtProperty? = parents
     .mapNotNull { it as? KtBlockExpression }
@@ -96,4 +100,7 @@ fun KtNameReferenceExpression.findLocalDeclaration(): KtProperty? = parents
     }
     .firstOrNull()
 
+/**
+ * @return name of a function which is called in a [KtCallExpression] or null if it can't be found
+ */
 fun KtCallExpression.getFunctionName() = (calleeExpression as? KtNameReferenceExpression)?.getReferencedName()

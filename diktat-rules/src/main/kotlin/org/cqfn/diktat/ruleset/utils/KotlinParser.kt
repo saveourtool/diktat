@@ -25,7 +25,11 @@ import org.jetbrains.kotlin.psi.KtPsiFactory
 import org.jetbrains.kotlin.resolve.ImportPath
 import sun.reflect.ReflectionFactory
 
+/**
+ * A class that wraps kotlin compiler's code parser and converts source code into AST
+ */
 class KotlinParser {
+    @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
     private val project: Project by lazy {
         val compilerConfiguration = CompilerConfiguration()
         compilerConfiguration.put(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, MessageCollector.NONE)  // mute the output logging to process it themselves
@@ -86,7 +90,7 @@ class KotlinParser {
      * Else, try to create node based on text.
      * If this node will contain ERROR_ELEMENT type children this mean that cannot create node based on this text
      */
-    @Suppress("UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION", "SAY_NO_TO_VAR")
     private fun makeNode(text: String, isPackage: Boolean = false): ASTNode? {
         if (text.isEmpty()) {
             return null

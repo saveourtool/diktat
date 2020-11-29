@@ -1,6 +1,10 @@
+/**
+ * Code to create fast mapping of text offset tol ine and column numbers
+ * fixme: this code is copy-pasted from ktlint. Change it
+ */
+
 package org.cqfn.diktat.ruleset.utils
 
-// fixme this code is copy-pasted from ktlint. Change it
 internal typealias LineAndColumn = Pair<Int, Int>
 
 /**
@@ -11,7 +15,7 @@ internal typealias LineAndColumn = Pair<Int, Int>
  */
 internal fun buildPositionInTextLocator(text: String): (offset: Int) -> LineAndColumn {
     val textLength = text.length
-    val identifierArray = ArrayList<Int>()
+    val identifierArray: ArrayList<Int> = ArrayList()
     var endOfLineIndex = -1
 
     do {
@@ -34,6 +38,7 @@ internal fun buildPositionInTextLocator(text: String): (offset: Int) -> LineAndC
     }
 }
 
+@Suppress("MISSING_KDOC_ON_FUNCTION", "KDOC_WITHOUT_PARAM_TAG", "KDOC_WITHOUT_RETURN_TAG")
 private class SegmentTree(sortedArray: IntArray) {
     private val segments: List<Segment> = sortedArray
         .dropLast(1)
@@ -70,6 +75,7 @@ private class SegmentTree(sortedArray: IntArray) {
     }
 }
 
+@Suppress("KDOC_NO_CONSTRUCTOR_PROPERTY")
 private data class Segment(
     val left: Int,
     val right: Int

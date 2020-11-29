@@ -1,3 +1,5 @@
+@file:Suppress("LONG_LINE")
+
 package org.cqfn.diktat.ruleset.chapter3
 
 import org.cqfn.diktat.common.config.rules.RulesConfig

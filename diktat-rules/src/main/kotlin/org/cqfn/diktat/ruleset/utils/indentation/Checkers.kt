@@ -1,3 +1,7 @@
+/**
+ * Implementations of [CustomIndentationChecker] for [IndentationRule]
+ */
+
 package org.cqfn.diktat.ruleset.utils.indentation
 
 import org.cqfn.diktat.ruleset.rules.files.IndentationError
@@ -102,7 +106,7 @@ internal class ValueParameterListChecker(configuration: IndentationConfig) : Cus
                 ktFile.text
                     .lineSequence()
                     // calculate offset for every line end, `+1` for `\n` which is trimmed in `lineSequence`
-                    .scan(0 to "") { (length, _), s -> length + s.length + 1 to s }
+                    .scan(0 to "") { (length, _), line -> length + line.length + 1 to line }
                     .run {
                         // find the line where `parameterAfterLpar` resides
                         find { it.first > parameterAfterLpar.startOffset } ?: last()

@@ -1,3 +1,7 @@
+/**
+ * Utility classes for [IndentationRule]
+ */
+
 package org.cqfn.diktat.ruleset.utils.indentation
 
 import org.cqfn.diktat.ruleset.rules.files.IndentationError
@@ -35,7 +39,7 @@ internal data class CheckResult(
          * @param expected expected indentation
          * @param adjustNext see [CheckResult.adjustNext]
          * @param includeLastChild see [CheckResult.includeLastChild]
-         * @return
+         * @return an instance of [CheckResult]
          */
         fun from(actual: Int,
                  expected: Int,
