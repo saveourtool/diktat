@@ -45,7 +45,8 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
     override fun get(): RuleSet {
         log.debug("Will run $DIKTAT_RULE_SET_ID with $diktatConfigFile" +
                 " (it can be placed to the run directory or the default file from resources will be used)")
-        if (!File(diktatConfigFile).exists()) {
+        val diktatExecutionPath = File(diktatConfigFile)
+        if (!diktatExecutionPath.exists()) {
             // for some aggregators of static analyzers we need to provide configuration for cli
             // in this case diktat would take the configuration from the direcory where jar file is stored
             val ruleSetProviderPath =
@@ -60,11 +61,11 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
 
             val indexOfName = configPathWithFileName.lastIndexOf(File.separator)
             val configPath = if (indexOfName > -1) configPathWithFileName.substring(0, indexOfName) else configPathWithFileName
-            diktatConfigFile = "$configPath${File.separator}$DIKTAT_ANALYSIS_CONF"
+            diktatConfigFile = "$configPath${File.separator}$diktatConfigFile"
 
             if (!File(diktatConfigFile).exists()) {
-                log.warn("Configuration file $DIKTAT_ANALYSIS_CONF not found in directory where diktat is run " +
-                        "or in the directory where diktat.jar is stored, " +
+                log.warn("Configuration file not found in directory where diktat is run (${diktatExecutionPath.absolutePath}) " +
+                        "or in the directory where diktat.jar is stored ($diktatConfigFile), " +
                         "the default file included in jar will be used. " +
                         "Some configuration options will be disabled or substituted with defaults. " +
                         "Custom configuration file should be placed in diktat working directory if run from CLI " +
