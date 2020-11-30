@@ -69,10 +69,12 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
                 when (condition.operationToken) {
                     // `==` and `===` comparison can be fixed with `?:` operator
                     ElementType.EQEQ, ElementType.EQEQEQ ->
-                        warnAndFixOnNullCheck(condition, true, "use '.let/.also/?:/e.t.c' instead of ") {}
+                        warnAndFixOnNullCheck(condition, true,
+                                "use '.let/.also/?:/e.t.c' instead of $condition.text") {}
                     // `!==` and `!==` comparison can be fixed with `.let/also` operators
                     ElementType.EXCLEQ, ElementType.EXCLEQEQEQ ->
-                        warnAndFixOnNullCheck(condition, true, "use '.let/.also/?:/e.t.c' instead of ") {}
+                        warnAndFixOnNullCheck(condition, true,
+                                "use '.let/.also/?:/e.t.c' instead of $condition.text") {}
                     else -> {
                     }
                 }
@@ -99,7 +101,7 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
                         warnAndFixOnNullCheck(
                                 condition,
                                 false,
-                                "use 'requireNotNull' instead of "
+                                "use 'requireNotNull' instead of require(${condition.text})"
                         ) {}
                     }
                 }
@@ -131,7 +133,7 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
                 configRules,
                 emitWarn,
                 isFixMode,
-                "${freeText}require(${condition.text})",
+                freeText,
                 condition.node.startOffset,
                 condition.node,
                 canBeAutoFixed,
