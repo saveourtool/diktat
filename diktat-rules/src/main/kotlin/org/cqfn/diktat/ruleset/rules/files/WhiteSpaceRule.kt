@@ -188,35 +188,27 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
                             it[1].elementType == LAMBDA_EXPRESSION &&
                             it[2].elementType == VALUE_ARGUMENT &&
                             // lambda is not passed as a named argument
-                            !it[2].hasChildOfType(EQ) &&
-                            // lambda is the first argument in the list
-                            it[2].prevSibling { prevNode -> prevNode.elementType == COMMA } == null
-                }
-                ?: false
-        val isLambda = node
-                .parents()
-                .take(numParentsForLambda)
-                .toList()
-                .takeIf { it.size == numParentsForLambda }
-                ?.let {
-                    it[0].elementType == FUNCTION_LITERAL &&
-                            it[1].elementType == LAMBDA_EXPRESSION &&
-                            it[2].elementType == VALUE_ARGUMENT &&
-                            // lambda is not passed as a named argument
                             !it[2].hasChildOfType(EQ)
                 }
                 ?: false
+
         val prevNode = whitespaceOrPrevNode.let { if (it.elementType == WHITE_SPACE) it.treePrev else it }
         val numWhiteSpace = whitespaceOrPrevNode.numWhiteSpaces()
         // note: the conditions in the following `if`s cannot be collapsed into simple conjunctions
         if (isFromLambdaAsArgument) {
-            if (numWhiteSpace != 0) {
+            val isFirstArgument = node
+                    .parents()
+                    .take(numParentsForLambda)
+                    .toList()
+                    .let { it[2].prevSibling { prevNode -> prevNode.elementType == COMMA } == null }
+
+            if (numWhiteSpace != 0 && isFirstArgument) {
                 WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "there should be no whitespace before '{' of lambda" +
                         " inside argument list", node.startOffset, node) {
                     whitespaceOrPrevNode.treeParent.removeChild(whitespaceOrPrevNode)
                 }
             }
-        } else if (prevNode.elementType !in keywordsWithSpaceAfter && !isLambda) {
+        } else if (prevNode.elementType !in keywordsWithSpaceAfter) {
             // If it is lambda, then we don't force it to be on newline or same line
             if (numWhiteSpace != 1) {
                 WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "there should be a whitespace before '{'", node.startOffset, node) {
