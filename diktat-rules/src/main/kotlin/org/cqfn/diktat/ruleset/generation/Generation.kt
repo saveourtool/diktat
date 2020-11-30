@@ -58,6 +58,7 @@ val ITALIC_TEXT = Regex("""\*([A-Za-z ]+)\*""") // finds italic text in regular 
 val BACKTICKS_TEXT = Regex("""`([^`]*)`""") // finds backtick in regular text (not used for now, may be we will need to use it in future)
 val ANCHORS = Regex("""\(#(.*)\)""") // finds anchors on rules and deletes them
 val TABLE_COLUMN_NAMES = Regex("""[A-Za-z ]*""")  // used to find column names in tables only
+const val REGEX_PLACEHOLDER = "RE_PL_AC_E_ME"
 
 private fun generateCodeStyle() {
     val file = File("info/guide/diktat-coding-convention.md")
@@ -151,7 +152,7 @@ enum class FindType {
 
 private fun findBoldOrItalicText(line: String, regex: Regex, type: FindType) : String {
     val allRegex = regex.findAll(line).map { it.value }.toMutableList()
-    var correctedLine = line.replace(regex, "RE_PL_AC_E_ME")
+    var correctedLine = line.replace(regex, REGEX_PLACEHOLDER)
     allRegex.forEachIndexed {index, value ->
         when (type) {
             FindType.BOLD -> allRegex[index] = "\\textbf{${value.replace("**", "")}}"
@@ -165,7 +166,7 @@ private fun findBoldOrItalicText(line: String, regex: Regex, type: FindType) : S
         }
     }
     allRegex.forEach {
-        correctedLine = correctedLine.replaceFirst("RE_PL_AC_E_ME", it)
+        correctedLine = correctedLine.replaceFirst(REGEX_PLACEHOLDER, it)
     }
     return correctedLine
 }
