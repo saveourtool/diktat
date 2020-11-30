@@ -327,6 +327,9 @@
                                 <input>${project.basedir}/src/main/kotlin</input>
                                 <input>${project.basedir}/src/test/kotlin</input>
                             </inputs>
+                            <excludes>
+                                <exclude>${project.basedir}/src/main/kotlin/generated</exclude>
+                            </excludes>
                             <diktatConfigFile>diktat-analysis.yml</diktatConfigFile>
                         </configuration>
                     </execution>

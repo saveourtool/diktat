@@ -141,6 +141,10 @@ class BracesRuleWarnTest : LintTestBase(::BracesInConditionalsAndLoopsRule) {
                     |        OPTION_3 -> {
                     |            baz()
                     |        }
+                    |        OPTION_4 -> {
+                    |            // description
+                    |            bzz()
+                    |        }
                     |    }
                     |}
                 """.trimMargin(),
