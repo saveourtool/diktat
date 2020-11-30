@@ -168,7 +168,8 @@ class NullChecksRuleWarnTest : LintTestBase(::NullChecksRule) {
                 |      }
                 | }
                 """.trimMargin(),
-                LintError(2, 10, ruleId, "${Warnings.AVOID_NULL_CHECKS.warnText()} use '.let/.also/?:/e.t.c' instead of myVar != null", true),
+                LintError(2, 10, ruleId, "${Warnings.AVOID_NULL_CHECKS.warnText()} use '.let/.also/?:/e.t.c'" +
+                        " instead of myVar != null", true),
         )
     }
 
@@ -182,7 +183,7 @@ class NullChecksRuleWarnTest : LintTestBase(::NullChecksRule) {
                 | }
                 """.trimMargin(),
                 LintError(2, 14, ruleId, Warnings.AVOID_NULL_CHECKS.warnText() +
-                        " use 'requireNotNull()' instead of myVar != null", false),
+                        " use 'requireNotNull()' instead of require(myVar != null)", false),
         )
     }
 }

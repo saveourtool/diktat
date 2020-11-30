@@ -96,7 +96,11 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
                 val grandParent = parent.treeParent
                 if (grandParent != null && grandParent.elementType == VALUE_ARGUMENT_LIST && isRequireFun(grandParent.treePrev)) {
                     if (listOf(ElementType.EXCLEQ, ElementType.EXCLEQEQEQ).contains(condition.operationToken)) {
-                        warnAndFixOnNullCheck(condition, false, "use 'requireNotNull()' instead of ") {}
+                        warnAndFixOnNullCheck(
+                                condition,
+                                false,
+                                "use 'requireNotNull' instead of "
+                        ) {}
                     }
                 }
             }
@@ -105,10 +109,11 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
 
     @Suppress("UnsafeCallOnNullableType")
     private fun isNullCheckBinaryExpession(condition: KtBinaryExpression): Boolean =
-            // check that binary expession has `null` as right or left operand
+            // check that binary expression has `null` as right or left operand
             setOf(condition.right, condition.left).map { it!!.node.elementType }.contains(NULL) &&
                     // checks that it is the comparison condition
-                    setOf(ElementType.EQEQ, ElementType.EQEQEQ, ElementType.EXCLEQ, ElementType.EXCLEQEQEQ).contains(condition.operationToken) &&
+                    setOf(ElementType.EQEQ, ElementType.EQEQEQ, ElementType.EXCLEQ, ElementType.EXCLEQEQEQ)
+                            .contains(condition.operationToken) &&
                     // no need to raise warning or fix null checks in complex expressions
                     !condition.isComplexCondition()
 
@@ -126,7 +131,7 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
                 configRules,
                 emitWarn,
                 isFixMode,
-                "$freeText${condition.text}",
+                "${freeText}require(${condition.text})",
                 condition.node.startOffset,
                 condition.node,
                 canBeAutoFixed,
