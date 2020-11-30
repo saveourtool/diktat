@@ -36,5 +36,9 @@ fun foo() {
             0,
             { obj -> obj.bar() }
     )
+
+    bar(
+            0, { obj -> obj.bar() }
+    )
 }
 
