@@ -339,4 +339,19 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
             LintError(2, 3, ruleId, "${KDOC_TRIVIAL_KDOC_ON_FUNCTION.warnText()} Returns X", false)
         )
     }
+
+
+    @Test
+    @Tag(WarningNames.MISSING_KDOC_ON_FUNCTION)
+    fun `should not trigger on override funcs`() {
+        lintMethod(
+                """
+                    |class Some : A {
+                    |   override fun foo() {}
+                    |   
+                    |   override fun bar(t: T): U { return U() }
+                    |}
+                """.trimMargin()
+        )
+    }
 }
