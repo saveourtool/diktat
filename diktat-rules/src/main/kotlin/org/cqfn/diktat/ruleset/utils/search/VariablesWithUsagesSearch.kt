@@ -14,7 +14,8 @@ import org.jetbrains.kotlin.psi.KtProperty
 
 class VariablesWithUsagesSearch(fileNode: ASTNode,
                                 filterForVariables: (KtProperty) -> Boolean) : VariablesSearch(fileNode, filterForVariables) {
-    override fun KtElement.getAllSearchResults(property: KtProperty) = this.node.findAllNodesWithSpecificType(ElementType.REFERENCE_EXPRESSION)
+    override fun KtElement.getAllSearchResults(property: KtProperty) = this.node
+        .findAllNodesWithSpecificType(ElementType.REFERENCE_EXPRESSION)
         // filtering out all usages that are declared in the same context but are going before the variable declaration
         .filter { it.isGoingAfter(property.node) }
         .map { it.psi as KtNameReferenceExpression }

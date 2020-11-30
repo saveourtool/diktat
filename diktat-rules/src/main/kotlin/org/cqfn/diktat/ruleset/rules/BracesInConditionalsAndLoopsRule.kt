@@ -132,19 +132,19 @@ class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig
     @Suppress("UnsafeCallOnNullableType")
     private fun checkWhenBranches(node: ASTNode) {
         (node.psi as KtWhenExpression)
-                .entries
-                .asSequence()
-                .filter { it.expression != null && it.expression!!.node.elementType == BLOCK }
-                .map { it.expression as KtBlockExpression }
-                .filter { block ->
-                    block.statements.size == 1 &&
-                            block.findChildrenMatching { it.isPartOfComment() }.isEmpty()
+            .entries
+            .asSequence()
+            .filter { it.expression != null && it.expression!!.node.elementType == BLOCK }
+            .map { it.expression as KtBlockExpression }
+            .filter { block ->
+                block.statements.size == 1 &&
+                        block.findChildrenMatching { it.isPartOfComment() }.isEmpty()
+            }
+            .forEach {
+                NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnAndFix(configRules, emitWarn, isFixMode, "WHEN", it.node.startOffset, it.node) {
+                    it.astReplace(it.firstStatement!!.node.psi)
                 }
-                .forEach {
-                    NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnAndFix(configRules, emitWarn, isFixMode, "WHEN", it.node.startOffset, it.node) {
-                        it.astReplace(it.firstStatement!!.node.psi)
-                    }
-                }
+            }
     }
 
     private fun KtElement.replaceWithBlock(indent: Int) {

@@ -85,9 +85,11 @@ class AvoidNestedFunctionsRule(private val configRules: List<RulesConfig>) : Rul
     private fun checkFunctionReferences(func: ASTNode): Boolean {
         val localProperties: MutableList<ASTNode> = mutableListOf()
         localProperties.addAll(func.findAllNodesWithSpecificType(PROPERTY))
-        val propertiesNames: MutableList<String> = mutableListOf()
-        propertiesNames.addAll(localProperties.map { it.getFirstChildWithType(IDENTIFIER)!!.text })
-        propertiesNames.addAll(getParameterNames(func))
+        val propertiesNames: List<String> = mutableListOf<String>().apply {
+            addAll(localProperties.map { it.getFirstChildWithType(IDENTIFIER)!!.text })
+            addAll(getParameterNames(func))
+        }
+            .toList()
 
         return func.findAllNodesWithSpecificType(REFERENCE_EXPRESSION).all { propertiesNames.contains(it.text) }
     }

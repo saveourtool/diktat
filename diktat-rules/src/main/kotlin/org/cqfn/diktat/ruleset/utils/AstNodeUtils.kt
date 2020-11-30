@@ -631,6 +631,7 @@ fun List<ASTNode>.handleIncorrectOrder(
  * This method returns text of this [ASTNode] plus text from it's siblings after last and until next newline, if present in siblings.
  * I.e., if this node occupies no more than a single line, this whole line or it's part will be returned.
  */
+@Suppress("LOCAL_VARIABLE_EARLY_DECLARATION")
 fun ASTNode.extractLineOfText(): String {
     var text: MutableList<String> = mutableListOf()
     siblings(false)
@@ -744,6 +745,7 @@ fun ASTNode.getLineNumber(isFixMode: Boolean): Int? =
  * This function calculates line number instead of using cached values.
  * It should be used when AST could be previously mutated by auto fixers.
  */
+@Suppress("LOCAL_VARIABLE_EARLY_DECLARATION")
 private fun ASTNode.calculateLineNumber(): Int? {
     var count = 0
     // todo use runningFold or something similar when we migrate to apiVersion 1.4

@@ -90,7 +90,7 @@ class StringTemplateFormatRule(private val configRules: List<RulesConfig>) : Rul
         }
     }
 
-    @Suppress("UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType", "FUNCTION_BOOLEAN_PREFIX")
     private fun bracesCanBeOmitted(node: ASTNode): Boolean {
         val onlyOneRefExpr = node
             .findAllNodesWithSpecificType(REFERENCE_EXPRESSION)

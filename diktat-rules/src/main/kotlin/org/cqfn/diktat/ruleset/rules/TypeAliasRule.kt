@@ -52,7 +52,13 @@ class TypeAliasRule(private val configRules: List<RulesConfig>) : Rule("type-ali
         }
     }
 
+    /**
+     * [RuleConfiguration] about using type aliases instead of complex types
+     */
     class TypeAliasConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
+        /**
+         * Maximum length of a type before suggesting to use typealias
+         */
         val typeReferenceLength = config["typeReferenceLength"]?.toIntOrNull() ?: TYPE_REFERENCE_MAX_LENGTH
     }
 

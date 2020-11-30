@@ -58,7 +58,7 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
         lintMethod(withBrace)
 
         val withoutBrace =
-            """
+                """
                     |fun foo() {
                     |   if (x > 5)
                     |       x--

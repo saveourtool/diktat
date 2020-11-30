@@ -15,6 +15,9 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
 
+/**
+ * Rule that suggests to use functions with default parameters instead of multiple overloads
+ */
 class OverloadingArgumentsFunction(private val configRules: List<RulesConfig>) : Rule("overloading-default-values") {
     private var isFixMode: Boolean = false
     private lateinit var emitWarn: EmitType

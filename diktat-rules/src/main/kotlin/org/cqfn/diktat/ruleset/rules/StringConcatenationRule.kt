@@ -46,6 +46,7 @@ class StringConcatenationRule(private val configRules: List<RulesConfig>) : Rule
         node.findAllNodesWithSpecificType(BINARY_EXPRESSION).find { detectStringConcatenationInExpression(it, node) }
     }
 
+    @Suppress("FUNCTION_BOOLEAN_PREFIX")
     private fun detectStringConcatenationInExpression(node: ASTNode, parentNode: ASTNode): Boolean {
         assert(node.elementType == BINARY_EXPRESSION)
         val firstChild = node.firstChildNode

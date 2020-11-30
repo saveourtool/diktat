@@ -91,8 +91,8 @@ class CompactInitialization(private val configRules: List<RulesConfig>) : Rule("
                 .getLambdaExpression()!!
                 .run {
                     val bodyExpression = functionLiteral
-                    // note: we are dealing with function literal: braces belong to KtFunctionLiteral,
-                    // but it's body is a KtBlockExpression, which therefore doesn't have braces
+                        // note: we are dealing with function literal: braces belong to KtFunctionLiteral,
+                        // but it's body is a KtBlockExpression, which therefore doesn't have braces
                         .bodyExpression!!
                         .node
                     // move comments and empty lines before `assignment` into `apply`

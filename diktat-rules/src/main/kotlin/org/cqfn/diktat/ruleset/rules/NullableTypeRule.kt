@@ -35,6 +35,9 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 
+/**
+ * Rule that checks if nullable types are used and suggest to substitute them with non-nullable
+ */
 class NullableTypeRule(private val configRules: List<RulesConfig>) : Rule("nullable-type") {
     private var isFixMode: Boolean = false
     private lateinit var emitWarn: EmitType

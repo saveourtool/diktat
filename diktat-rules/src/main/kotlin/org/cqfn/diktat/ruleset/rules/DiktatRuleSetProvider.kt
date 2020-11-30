@@ -55,11 +55,11 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
             // in this case diktat would take the configuration from the direcory where jar file is stored
             val ruleSetProviderPath =
                     DiktatRuleSetProvider::class
-                            .java
-                            .protectionDomain
-                            .codeSource
-                            .location
-                            .toURI()
+                        .java
+                        .protectionDomain
+                        .codeSource
+                        .location
+                        .toURI()
 
             val configPathWithFileName = File(ruleSetProviderPath).absolutePath
 

@@ -25,6 +25,7 @@ import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import com.pinterest.ktlint.core.ast.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.psiUtil.siblings
+import java.util.HashMap
 
 /**
  * rule 6.1.5
@@ -62,6 +63,7 @@ class UselessSupertype(private val configRules: List<RulesConfig>) : Rule("usele
         }
     }
 
+    @Suppress("TYPE_ALIAS")
     private fun handleManyImpl(superNodes: List<ASTNode>, overrideNodes: List<Pair<ASTNode, ASTNode>>) {
         val uselessSuperType = findAllSupers(superNodes, overrideNodes.map { it.second.text })
             ?.filter { it.value == 1 }  // filtering methods whose names occur only once
@@ -129,7 +131,7 @@ class UselessSupertype(private val configRules: List<RulesConfig>) : Rule("usele
         if (superNodes.size != superTypeList.size) {
             return null
         }
-        val functionNameMap = hashMapOf<String, Int>()
+        val functionNameMap: HashMap<String, Int> = hashMapOf()
         superNodes.forEach { classBody ->
             val overrideFunctions = classBody.findAllNodesWithSpecificType(FUN)
                 .filter {

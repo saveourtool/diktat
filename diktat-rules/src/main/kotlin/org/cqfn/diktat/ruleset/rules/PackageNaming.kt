@@ -138,7 +138,7 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
 
         // all words should contain only ASCII letters or digits
         wordsInPackageName
-            .filter { word -> !correctSymbolsAreUsed(word.text) }
+            .filter { word -> !areCorrectSymbolsUsed(word.text) }
             .forEach { PACKAGE_NAME_INCORRECT_SYMBOLS.warn(configRules, emitWarn, isFixMode, it.text, it.startOffset, it) }
 
         // all words should contain only ASCII letters or digits
@@ -148,7 +148,8 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
     /**
      * only letters, digits and underscore are allowed
      */
-    private fun correctSymbolsAreUsed(word: String): Boolean {
+    @Suppress("FUNCTION_BOOLEAN_PREFIX")
+    private fun areCorrectSymbolsUsed(word: String): Boolean {
         // underscores are allowed in some cases - see "exceptionForUnderscore"
         val wordFromPackage = word.replace("_", "")
         return wordFromPackage.isASCIILettersAndDigits()
@@ -159,7 +160,7 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
      * without any symbols or should use dot symbol - this is the only way
      */
     private fun correctPackageWordSeparatorsUsed(word: ASTNode) {
-        if (word.text.contains("_") && !exceptionForUnderscore(word.text)) {
+        if (word.text.contains("_") && !isExceptionForUnderscore(word.text)) {
             INCORRECT_PACKAGE_SEPARATOR.warnAndFix(configRules, emitWarn, isFixMode, word.text, word.startOffset, word) {
                 (word as LeafPsiElement).replaceWithText(word.text.replace("_", ""))
             }
@@ -171,7 +172,7 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
      * or the package name contains reserved Java keywords, underscores are allowed.
      * For example: org.example.hyphenated_name,int_.example, com.example._123name
      */
-    private fun exceptionForUnderscore(word: String): Boolean {
+    private fun isExceptionForUnderscore(word: String): Boolean {
         val wordFromPackage = word.replace("_", "")
 
         return wordFromPackage[0].isDigit() ||
@@ -242,14 +243,14 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
         const val PACKAGE_PATH_ANCHOR = "src"
 
         /**
-         * tricky hack (counter) that helps not to raise multiple warnings about the package name if config is missing
-         */
-        var visitorCounter = AtomicInteger(0)
-
-        /**
          * Symbol that is used to separate parts in package name
          */
         const val PACKAGE_SEPARATOR = "."
+
+        /**
+         * tricky hack (counter) that helps not to raise multiple warnings about the package name if config is missing
+         */
+        var visitorCounter = AtomicInteger(0)
 
         /**
          * Targets described in [KMM documentation](https://kotlinlang.org/docs/reference/mpp-supported-platforms.html)

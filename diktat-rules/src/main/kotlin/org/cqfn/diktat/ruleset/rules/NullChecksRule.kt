@@ -66,9 +66,11 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
             if (isNullCheckBinaryExpession(condition)) {
                 when (condition.operationToken) {
                     // `==` and `===` comparison can be fixed with `?:` operator
-                    ElementType.EQEQ, ElementType.EQEQEQ -> warnAndFixOnNullCheck(condition, true) {}
+                    ElementType.EQEQ, ElementType.EQEQEQ -> warnAndFixOnNullCheck(condition, true) {
+                    }
                     // `!==` and `!==` comparison can be fixed with `.let/also` operators
-                    ElementType.EXCLEQ, ElementType.EXCLEQEQEQ -> warnAndFixOnNullCheck(condition, true) {}
+                    ElementType.EXCLEQ, ElementType.EXCLEQEQEQ -> warnAndFixOnNullCheck(condition, true) {
+                    }
                     else -> {
                     }
                 }

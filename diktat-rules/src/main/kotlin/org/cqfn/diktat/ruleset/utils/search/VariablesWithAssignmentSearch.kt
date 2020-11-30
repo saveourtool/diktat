@@ -21,7 +21,8 @@ class VariablesWithAssignmentSearch(fileNode: ASTNode,
      * @param property
      * @return
      */
-    override fun KtElement.getAllSearchResults(property: KtProperty) = this.node.findAllNodesWithSpecificType(ElementType.BINARY_EXPRESSION)
+    override fun KtElement.getAllSearchResults(property: KtProperty) = this.node
+        .findAllNodesWithSpecificType(ElementType.BINARY_EXPRESSION)
         // filtering out all usages that are declared in the same context but are going before the variable declaration
         // AND checking that there is an assignment
         .filter {
@@ -30,7 +31,10 @@ class VariablesWithAssignmentSearch(fileNode: ASTNode,
             // FixMe: also there can be some tricky cases with setters, but I am not able to imagine them now
             it.isGoingAfter(property.node) &&
                     (it.psi as KtBinaryExpression).operationToken == ElementType.EQ &&
-                    (it.psi as KtBinaryExpression).left?.node?.elementType == ElementType.REFERENCE_EXPRESSION
+                    (it.psi as KtBinaryExpression)
+                        .left
+                        ?.node
+                        ?.elementType == ElementType.REFERENCE_EXPRESSION
         }
         .map { (it.psi as KtBinaryExpression).left as KtNameReferenceExpression }
         // checking that name of the property in usage matches with the name in the declaration

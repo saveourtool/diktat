@@ -386,6 +386,7 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
             } else {
                 ""
             }
+
     companion object {
         private const val NUM_PARENTS_FOR_LAMBDA = 3  // this is the number of parent nodes needed to check if this node is lambda from argument list
         private val keywordsWithSpaceAfter = TokenSet.create(

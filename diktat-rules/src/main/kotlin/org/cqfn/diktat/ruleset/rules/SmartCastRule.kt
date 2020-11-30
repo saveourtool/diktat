@@ -40,6 +40,9 @@ import org.jetbrains.kotlin.psi.psiUtil.hasExpectModifier
 import org.jetbrains.kotlin.psi.psiUtil.isAncestor
 import org.jetbrains.kotlin.psi.psiUtil.parents
 
+/**
+ * Rule that detects redundant explicit casts
+ */
 class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-cast-rule") {
     private var isFixMode: Boolean = false
     private lateinit var emitWarn: EmitType
@@ -62,10 +65,11 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
     }
 
     // Divide in is and as expr
+    @Suppress("TYPE_ALIAS", "LOCAL_VARIABLE_EARLY_DECLARATION")
     private fun handleProp(propMap: Map<KtProperty, List<KtNameReferenceExpression>>) {
         propMap.forEach { (property, references) ->
-            val isExpr = mutableListOf<KtNameReferenceExpression>()
-            val asExpr = mutableListOf<KtNameReferenceExpression>()
+            val isExpr: MutableList<KtNameReferenceExpression> = mutableListOf()
+            val asExpr: MutableList<KtNameReferenceExpression> = mutableListOf()
             references.forEach {
                 if (it.node.hasParent(IS_EXPRESSION)) {
                     isExpr.add(it)
@@ -84,7 +88,7 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
      * If condition == is then we are looking for then block
      * If condition == !is then we are looking for else block
      */
-    @Suppress("NestedBlockDepth")
+    @Suppress("NestedBlockDepth", "TYPE_ALIAS")
     private fun handleGroups(groups: Map<KtNameReferenceExpression, List<KtNameReferenceExpression>>) {
         groups.keys.forEach {
             if (it.node.treeParent.text.contains(" is ")) {
@@ -122,15 +126,14 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
                                  asExpr: List<KtNameReferenceExpression>,
                                  prop: KtProperty)
     : Map<KtNameReferenceExpression, List<KtNameReferenceExpression>> {
-        val groupedExprs = mutableMapOf<KtNameReferenceExpression, List<KtNameReferenceExpression>>()
-
         if (isExpr.isEmpty() && asExpr.isNotEmpty()) {
             handleZeroIsCase(asExpr, prop)
             return emptyMap()
         }
 
+        val groupedExprs: MutableMap<KtNameReferenceExpression, List<KtNameReferenceExpression>> = mutableMapOf()
         isExpr.forEach {
-            val list = mutableListOf<KtNameReferenceExpression>()
+            val list: MutableList<KtNameReferenceExpression> = mutableListOf()
             asExpr.forEach { asCall ->
                 if (asCall.node.findParentNodeWithSpecificType(IF)
                     == it.node.findParentNodeWithSpecificType(IF)) {
@@ -191,7 +194,7 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
 
     @Suppress("UnsafeCallOnNullableType")
     private fun checkAsExpressions(asList: List<ASTNode>, blocks: List<IsExpressions>) {
-        val asExpr = mutableListOf<AsExpressions>()
+        val asExpr: MutableList<AsExpressions> = mutableListOf()
 
         asList.forEach {
             val split = it.text.split("as").map { part -> part.trim() }
@@ -269,6 +272,7 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
      *
      * @return Map of property and list of expressions
      */
+    @Suppress("TYPE_ALIAS")
     private fun collectReferenceList(propertiesToUsages: Map<KtProperty, List<KtNameReferenceExpression>>)
     : Map<KtProperty, List<KtNameReferenceExpression>> =
             propertiesToUsages.mapValues { (_, value) ->

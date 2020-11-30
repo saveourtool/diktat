@@ -24,6 +24,9 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.psi.KtObjectDeclaration
 
+/**
+ * Rule that sorts class properties and enum members alphabetically
+ */
 class SortRule(private val configRules: List<RulesConfig>) : Rule("sort-rule") {
     private var isFixMode: Boolean = false
     private lateinit var emitWarn: EmitType
@@ -87,8 +90,9 @@ class SortRule(private val configRules: List<RulesConfig>) : Rule("sort-rule") {
         }
     }
 
+    @Suppress("LOCAL_VARIABLE_EARLY_DECLARATION")
     private fun createOrderListOfList(propertyList: List<ASTNode>): List<List<ASTNode>> {
-        val orderListOfList = mutableListOf<MutableList<ASTNode>>()
+        val orderListOfList: MutableList<MutableList<ASTNode>> = mutableListOf()
         var oneOrderList = mutableListOf(propertyList.first())
         propertyList.zipWithNext().forEach { (currentProperty, nextProperty) ->
             if (currentProperty.nextSibling { it.elementType == PROPERTY } == nextProperty) {
@@ -141,8 +145,18 @@ class SortRule(private val configRules: List<RulesConfig>) : Rule("sort-rule") {
         return Pair(isSemicolon, isSpace)
     }
 
+    /**
+     * [RuleConfiguration] for rule that sorts class members
+     */
     class SortRuleConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
+        /**
+         * Whether enum members should be sorted alphabetically
+         */
         val sortEnum = config["sortEnum"]?.toBoolean() ?: false
+
+        /**
+         * Whether class properties should be sorted alphabetically
+         */
         val sortProperty = config["sortProperty"]?.toBoolean() ?: false
     }
 }
