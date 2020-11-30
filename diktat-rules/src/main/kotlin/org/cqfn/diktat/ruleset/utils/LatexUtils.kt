@@ -10,3 +10,4 @@ fun PrintWriter.writeCode(text: String) {
 }
 
 fun Float.format(digits: Int) = "%.${digits}f".format(this)
+

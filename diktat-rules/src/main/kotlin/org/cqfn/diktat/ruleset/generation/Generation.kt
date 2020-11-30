@@ -18,6 +18,15 @@ private val autoGenerationComment =
             | This document was auto generated, please don't modify it.
             | This document contains all enum properties from Warnings.kt as Strings.
         """.trimMargin()
+private val NUMBER_IN_TAG = Regex("\"([a-z0-9.]*)\"") // finds "r1.0.2"
+private val RULE_NAME = Regex("(</a>[A-Za-z 0-9.-]*)") // get's rule name from ### <a>...</a> Rule name
+private val BOLD_TEXT = Regex("""\*\*([^*]+)\*\*""") // finds bold text in regular lines
+private val ITALIC_TEXT = Regex("""\*([A-Za-z ]+)\*""") // finds italic text in regular lines
+private val BACKTICKS_TEXT = Regex("""`([^`]*)`""") // finds backtick in regular text (not used for now, may be we will need to use it in future)
+private val ANCHORS = Regex("""\(#(.*)\)""") // finds anchors on rules and deletes them
+private val TABLE_COLUMN_NAMES = Regex("""[A-Za-z ]*""")  // used to find column names in tables only
+const val REGEX_PLACEHOLDER = "RE_PL_AC_E_ME"
+const val A4_PAPER_WIDTH = 15f
 
 fun main() {
     generateWarningNames()
@@ -51,15 +60,7 @@ private fun generateWarningNames() {
     kotlinFile.writeTo(File("diktat-rules/src/main/kotlin"))  // fixme: need to add it to pom
 }
 
-val NUMBER_IN_TAG = Regex("\"([a-z0-9.]*)\"") // finds "r1.0.2"
-val RULE_NAME = Regex("(</a>[A-Za-z 0-9.-]*)") // get's rule name from ### <a>...</a> Rule name
-val BOLD_TEXT = Regex("""\*\*([^*]+)\*\*""") // finds bold text in regular lines
-val ITALIC_TEXT = Regex("""\*([A-Za-z ]+)\*""") // finds italic text in regular lines
-val BACKTICKS_TEXT = Regex("""`([^`]*)`""") // finds backtick in regular text (not used for now, may be we will need to use it in future)
-val ANCHORS = Regex("""\(#(.*)\)""") // finds anchors on rules and deletes them
-val TABLE_COLUMN_NAMES = Regex("""[A-Za-z ]*""")  // used to find column names in tables only
-const val REGEX_PLACEHOLDER = "RE_PL_AC_E_ME"
-
+@Suppress("LoopWithTooManyJumpStatements", "LongMethod", "ComplexMethod", "NestedBlockDepth")
 private fun generateCodeStyle() {
     val file = File("info/guide/diktat-coding-convention.md")
     val tempFile = File("info/guide/convention.tex")
@@ -97,7 +98,7 @@ private fun generateCodeStyle() {
 
             if (line.trim().startsWith("|")) {
                 val columnNumber = line.count { it =='|' } - 1
-                val columnWidth: Float = (15f / columnNumber) // For now it makes all column width equal
+                val columnWidth: Float = (A4_PAPER_WIDTH / columnNumber) // For now it makes all column width equal
                 val createTable = "|p{${columnWidth.format(1)}cm}".repeat(columnNumber).plus("|")
                 writer.writeln("""\begin{center}""")
                 writer.writeln("""\begin{tabular}{ $createTable }""")
