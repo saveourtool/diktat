@@ -182,7 +182,7 @@ internal class DotCallChecker(config: IndentationConfig) : CustomIndentationChec
             while (nextNode != null && (nextNode.elementType == WHITE_SPACE || nextNode.elementType == EOL_COMMENT)) {
                 nextNode = nextNode.treeNext
             }
-            return nextNode.elementType == DOT
+            return nextNode.isDotBeforeCallOrReference()
         }
         return false
     }
