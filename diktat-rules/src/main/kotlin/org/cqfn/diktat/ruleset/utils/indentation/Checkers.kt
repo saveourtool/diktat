@@ -208,11 +208,9 @@ internal class DotCallChecker(config: IndentationConfig) : CustomIndentationChec
                     return CheckResult.from(indentError.actual, (whiteSpace.run {
                         parents.takeWhile { it is KtDotQualifiedExpression || it is KtSafeQualifiedExpression }.lastOrNull() ?: this
                     }
-                            .parentIndent()
-                            ?: indentError.expected) + (if (configuration.extendedIndentBeforeDot) 2 else 1) * configuration.indentationSize, true)
-                }
-                    .parentIndent()
-                    ?: indentError.expected) + (if (configuration.extendedIndentBeforeDot) 2 else 1) * configuration.indentationSize, true)
+                        .parentIndent()
+                        ?: indentError.expected) +
+                                (if (configuration.extendedIndentBeforeDot) 2 else 1) * configuration.indentationSize, true)
             }
         return null
     }

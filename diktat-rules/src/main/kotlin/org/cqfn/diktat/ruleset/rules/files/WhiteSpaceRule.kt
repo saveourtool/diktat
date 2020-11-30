@@ -288,7 +288,7 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
         }
     }
 
-    @Suppress("UnsafeCallOnNullableType", "NO_BRACES_IN_CONDITIONALS_AND_LOOPS")  // https://github.com/cqfn/diKTat/issues/585
+    @Suppress("UnsafeCallOnNullableType")
     private fun handleLpar(node: ASTNode) {
         when {
             node.treeParent.treeParent.elementType == SECONDARY_CONSTRUCTOR -> {
@@ -299,9 +299,8 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
                 // there is separate handler for lambda expression inside parenthesis
                 return
             }
-            node.treeParent.treeParent.elementType == ANNOTATION_ENTRY -> {
+            node.treeParent.treeParent.elementType == ANNOTATION_ENTRY ->
                 handleToken(node.treeParent, 0, null)
-            }
             else -> {
             }
         }
