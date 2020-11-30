@@ -6,6 +6,7 @@ import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.CONSTRUCTOR_CALLEE
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
+import com.pinterest.ktlint.core.ast.ElementType.OVERRIDE_KEYWORD
 import org.cqfn.diktat.ruleset.rules.PackageNaming.Companion.PACKAGE_PATH_ANCHOR
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtFunction
@@ -56,6 +57,12 @@ fun ASTNode.isStandardMethod() = also(::checkNodeIsFun)
         .getIdentifierName()
         ?.let { it.text in STANDARD_METHODS }
         ?: false
+
+
+fun ASTNode.isOverridden() : Boolean =
+        getFirstChildWithType(MODIFIER_LIST)
+        ?.hasChildOfType(OVERRIDE_KEYWORD) ?: false
+
 
 private fun ASTNode.argList(): ASTNode? {
     checkNodeIsFun(this)
