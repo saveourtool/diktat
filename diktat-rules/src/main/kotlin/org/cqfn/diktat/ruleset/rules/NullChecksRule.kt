@@ -70,11 +70,11 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
                     // `==` and `===` comparison can be fixed with `?:` operator
                     ElementType.EQEQ, ElementType.EQEQEQ ->
                         warnAndFixOnNullCheck(condition, true,
-                                "use '.let/.also/?:/e.t.c' instead of $condition.text") {}
+                                "use '.let/.also/?:/e.t.c' instead of ${condition.text}") {}
                     // `!==` and `!==` comparison can be fixed with `.let/also` operators
                     ElementType.EXCLEQ, ElementType.EXCLEQEQEQ ->
                         warnAndFixOnNullCheck(condition, true,
-                                "use '.let/.also/?:/e.t.c' instead of $condition.text") {}
+                                "use '.let/.also/?:/e.t.c' instead of ${condition.text}") {}
                     else -> return
                 }
             }
