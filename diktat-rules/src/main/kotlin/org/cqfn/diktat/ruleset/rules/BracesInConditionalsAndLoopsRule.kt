@@ -17,10 +17,13 @@ import com.pinterest.ktlint.core.ast.ElementType.WHILE
 import com.pinterest.ktlint.core.ast.ElementType.WHILE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.nextSibling
+import com.pinterest.ktlint.core.ast.isPartOfComment
 import com.pinterest.ktlint.core.ast.prevSibling
+import org.cqfn.diktat.ruleset.utils.findChildrenMatching
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.NO_BRACES_IN_CONDITIONALS_AND_LOOPS
 import org.cqfn.diktat.ruleset.utils.isSingleLineIfElse
+import org.cqfn.diktat.ruleset.utils.prettyPrint
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -130,7 +133,10 @@ class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig
                 .asSequence()
                 .filter { it.expression != null && it.expression!!.node.elementType == BLOCK }
                 .map { it.expression as KtBlockExpression }
-                .filter { it.statements.size == 1 }
+                .filter { block ->
+                    block.statements.size == 1 &&
+                            block.findChildrenMatching { it.isPartOfComment() }.isEmpty()
+                }
                 .forEach {
                     NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnAndFix(configRules, emitWarn, isFixMode, "WHEN", it.node.startOffset, it.node) {
                         it.astReplace(it.firstStatement!!.node.psi)
