@@ -131,6 +131,7 @@ private fun generateCodeStyle() {
                 correctedString = correctedString.replace("#", "\\#")
                 correctedString = correctedString.replace("&", "\\&")
                 correctedString = correctedString.replace("_", "\\_")
+                // find backticks should be the last to replace \_ with _
                 correctedString = findBoldOrItalicText(correctedString, BACKTICKS_TEXT, FindType.BACKTICKS)
                 writer.writeln(correctedString)
             }
