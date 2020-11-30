@@ -21,5 +21,13 @@ fun `method name incorrect, part 4`() {
                   }
                 """.trimIndent()
     lintMethod(code, LintError(2, 7, ruleId, "${FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREE", true))
+
+    foo
+                // we are calling bar
+            .bar()
+
+    bar
+                /* This is a block comment */
+            .foo()
 }
 
