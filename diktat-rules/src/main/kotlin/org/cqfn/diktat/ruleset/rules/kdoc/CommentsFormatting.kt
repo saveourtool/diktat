@@ -54,7 +54,6 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
     companion object {
         private const val APPROPRIATE_COMMENT_SPACES = 1
         private const val MAX_SPACES = 1
-        private val COMMENT_TYPE = listOf(EOL_COMMENT, KDOC, BLOCK_COMMENT)
     }
 
     private var isFixMode: Boolean = false

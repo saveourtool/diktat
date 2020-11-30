@@ -32,3 +32,12 @@ fun foo4(){
         println(5)
     }
 }
+
+fun foo() {
+    //comment1
+    if(x) // comment
+        {
+        //comment2
+        foo()
+    }
+}
