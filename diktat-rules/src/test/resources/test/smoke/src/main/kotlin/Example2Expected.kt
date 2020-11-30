@@ -24,5 +24,13 @@ private fun foo(node: ASTNode) {
             // this is a generated else block
         }
     }
+    val qwe = a && b
+    val qwe = a &&
+            b
+
+    // comment
+    if (x) {
+        foo()
+    }
 }
 

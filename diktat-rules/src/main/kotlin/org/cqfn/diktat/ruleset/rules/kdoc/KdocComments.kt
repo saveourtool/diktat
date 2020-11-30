@@ -41,11 +41,13 @@ import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CONSTRUCTOR_PROPERTY
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_TOP_LEVEL
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_CLASS_ELEMENTS
+import org.cqfn.diktat.ruleset.utils.isOverridden
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
+import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.psiUtil.parents
 
 /**
@@ -159,12 +161,14 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
 
     @Suppress("UnsafeCallOnNullableType")
     private fun createKdocBasicKdoc(node: ASTNode) {
-        KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixMode,
-                "add <${node.findChildByType(IDENTIFIER)!!.text}> to KDoc", node.startOffset, node) {
-            val newKdoc = KotlinParser().createNode("/**\n * @property ${node.findChildByType(IDENTIFIER)!!.text}\n */")
-            val classNode = node.parent({ it.elementType == CLASS })!!
-            classNode.addChild(PsiWhiteSpaceImpl("\n"), classNode.firstChildNode)
-            classNode.addChild(newKdoc.findChildByType(KDOC)!!, classNode.firstChildNode)
+        if (node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside()) {
+            KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixMode,
+                    "add <${node.findChildByType(IDENTIFIER)!!.text}> to KDoc", node.startOffset, node) {
+                val newKdoc = KotlinParser().createNode("/**\n * @property ${node.findChildByType(IDENTIFIER)!!.text}\n */")
+                val classNode = node.parent({ it.elementType == CLASS })!!
+                classNode.addChild(PsiWhiteSpaceImpl("\n"), classNode.firstChildNode)
+                classNode.addChild(newKdoc.findChildByType(KDOC)!!, classNode.firstChildNode)
+            }
         }
     }
 
@@ -259,7 +263,10 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
         if (classBody != null && modifier.isAccessibleOutside()) {
             classBody
                     .getChildren(statementsToDocument)
-                    .filterNot { it.elementType == FUN && it.isStandardMethod() }
+                    .filterNot { (it.elementType == FUN && it.isStandardMethod())
+                            || (it.elementType == FUN && it.isOverridden())
+                            || (it.elementType == PROPERTY && it.isOverridden())
+                    }
                     .forEach { checkDoc(it, MISSING_KDOC_CLASS_ELEMENTS) }
         }
     }

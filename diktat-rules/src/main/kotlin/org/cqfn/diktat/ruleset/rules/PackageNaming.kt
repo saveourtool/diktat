@@ -16,12 +16,12 @@ import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_PREFIX
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_SYMBOLS
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_MISSING
 import org.cqfn.diktat.ruleset.utils.*
-import org.jetbrains.kotlin.backend.common.onlyIf
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.lexer.KtTokens.PACKAGE_KEYWORD
 import org.slf4j.LoggerFactory
+import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * Rule 1.3: package name is in lower case and separated by dots, code developed internally in your company (in example Huawei) should start
@@ -44,8 +44,11 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
         emitWarn = emit
 
         val configuration by configRules.getCommonConfiguration()
-        domainName = configuration.onlyIf({ isDefault }) {
-            log.error("Not able to find an external configuration for domain name in the common configuration (is it missing in yml config?)")
+        domainName = configuration.also {
+            if (it.isDefault && visitorCounter.incrementAndGet() == 1) {
+                log.error("Not able to find an external configuration for domain name in the common" +
+                        " configuration (is it missing in yml config?)")
+            }
         }
             .domainName
 
@@ -226,6 +229,12 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
     }
 
     companion object {
+
+        /**
+         * tricky hack (counter) that helps not to raise multiple warnings about the package name if config is missing
+         */
+        var visitorCounter = AtomicInteger(0)
+
         /**
          * Symbol that is used to separate parts in package name
          */

@@ -4,12 +4,14 @@ import com.pinterest.ktlint.core.ast.ElementType.ARROW
 import com.pinterest.ktlint.core.ast.ElementType.AS_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.AS_SAFE
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.BODY
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.COLON
 import com.pinterest.ktlint.core.ast.ElementType.DOT
 import com.pinterest.ktlint.core.ast.ElementType.ELSE
 import com.pinterest.ktlint.core.ast.ElementType.ELVIS
+import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.EQ
 import com.pinterest.ktlint.core.ast.ElementType.IS_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_END
@@ -174,13 +176,25 @@ internal class DotCallChecker(config: IndentationConfig) : CustomIndentationChec
     private fun ASTNode.isDotBeforeCallOrReference() = elementType.let { it == DOT || it == SAFE_ACCESS } &&
             treeNext.elementType.let { it == CALL_EXPRESSION || it == REFERENCE_EXPRESSION }
 
+    private fun ASTNode.isCommentBeforeDot() : Boolean {
+        if (elementType == EOL_COMMENT || elementType == BLOCK_COMMENT) {
+            var nextNode = treeNext
+            while (nextNode != null && (nextNode.elementType == WHITE_SPACE || nextNode.elementType == EOL_COMMENT)) {
+                nextNode = nextNode.treeNext
+            }
+            return nextNode.isDotBeforeCallOrReference()
+        }
+        return false
+    }
+
+    @Suppress("ComplexMethod")
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
         whiteSpace.nextSibling.node
                 .takeIf { nextNode ->
                     nextNode.isDotBeforeCallOrReference() ||
                             nextNode.elementType == OPERATION_REFERENCE && nextNode.firstChildNode.elementType.let {
                                 it == ELVIS || it == IS_EXPRESSION || it == AS_KEYWORD || it == AS_SAFE
-                            }
+                            } || nextNode.isCommentBeforeDot()
                 }
                 ?.let {
                     // we need to get indent before the first expression in calls chain
