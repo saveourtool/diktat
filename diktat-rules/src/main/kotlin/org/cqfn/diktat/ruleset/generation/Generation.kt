@@ -9,8 +9,9 @@ import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule.Companion.afterCopyrightRegex
 import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule.Companion.curYear
 import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule.Companion.hyphenRegex
-import java.io.PrintWriter
-import kotlin.math.withSign
+import org.cqfn.diktat.ruleset.utils.format
+import org.cqfn.diktat.ruleset.utils.writeCode
+import org.cqfn.diktat.ruleset.utils.writeln
 
 private val autoGenerationComment =
         """
@@ -50,26 +51,32 @@ private fun generateWarningNames() {
     kotlinFile.writeTo(File("diktat-rules/src/main/kotlin"))  // fixme: need to add it to pom
 }
 
+val NUMBER_IN_TAG = Regex("\"([a-z0-9.]*)\"") // finds "r1.0.2"
+val RULE_NAME = Regex("(</a>[A-Za-z 0-9.-]*)") // get's rule name from ### <a>...</a> Rule name
+val BOLD_TEXT = Regex("""\*\*([^*]+)\*\*""") // finds bold text in regular lines
+val ITALIC_TEXT = Regex("""\*([A-Za-z ]+)\*""") // finds italic text in regular lines
+val BACKTICKS_TEXT = Regex("""`([^`]*)`""") // finds backtick in regular text (not used for now, may be we will need to use it in future)
+val ANCHORS = Regex("""\(#(.*)\)""") // finds anchors on rules and deletes them
+val TABLE_COLUMN_NAMES = Regex("""[A-Za-z ]*""")  // used to find column names in tables only
+
 private fun generateCodeStyle() {
     val file = File("info/guide/diktat-coding-convention.md")
-    val appendixFile = File("wp/sections/appendix.tex").readLines().toMutableList()
     val tempFile = File("info/guide/convention.tex")
-    val lines = mutableListOf<String>()
-    file.forEachLine { lines.add(it) }
+    val lines = file.readLines().toMutableList()
     tempFile.printWriter().use { writer ->
         val iterator = lines.iterator()
         writer.writeln("\\section*{guide}")
         writer.writeln("\\lstMakeShortInline[basicstyle=\\ttfamily\\bfseries]`")
         while (iterator.hasNext()) {
             var line = iterator.next()
-            if (line.contains("<!--"))
+            if (line.contains("<!--")) // for now there are no multiline comments in our doc
                 continue
             if (line.startsWith("#")) {
-                val number = Regex("\"([a-z0-9.]*)\"").find(line)?.value?.trim('"')?.substring(1)
-                val name = Regex("(</a>[A-Za-z 0-9.-]*)").find(line)?.value?.removePrefix("</a>")?.trim()
+                val number = NUMBER_IN_TAG.find(line)?.value?.trim('"')?.substring(1)
+                val name = RULE_NAME.find(line)?.value?.removePrefix("</a>")?.trim()
                 if (name.isNullOrEmpty() || number.isNullOrEmpty())
-                    throw NullPointerException("String starts with # but has no number or name - $line")
-                when(number.filter { it == '.' }.count()) {
+                    error("String starts with # but has no number or name - $line")
+                when(number.count { it == '.' }) {
                     0 -> writer.writeln("""\section*{\textbf{$name}}""")
                     1 -> writer.writeln("""\subsection*{\textbf{$name}}""")
                     2 -> writer.writeln("""\subsubsection*{\textbf{$name}}${"\n"}\leavevmode\newline""")
@@ -88,13 +95,13 @@ private fun generateCodeStyle() {
             }
 
             if (line.trim().startsWith("|")) {
-                val columnNumber = line.filter { it =='|' }.count() - 1
+                val columnNumber = line.count { it =='|' } - 1
                 val columnWidth: Float = (15f / columnNumber) // For now it makes all column width equal
                 val createTable = "|p{${columnWidth.format(1)}cm}".repeat(columnNumber).plus("|")
                 writer.writeln("""\begin{center}""")
                 writer.writeln("""\begin{tabular}{ $createTable }""")
                 writer.writeln("""\hline""")
-                val columnNames = Regex("""[A-Za-z ]*""")
+                val columnNames = TABLE_COLUMN_NAMES
                         .findAll(line)
                         .filter { it.value.isNotEmpty() }
                         .map { it.value.trim() }
@@ -111,28 +118,28 @@ private fun generateCodeStyle() {
                             .dropLast(1)
                             .plus("""\\""")
                             .replace("_", "\\_")
-                            .replace(Regex("""\(#(.*)\)"""), ""))
+                            .replace(ANCHORS, ""))
                     line = iterator.next()
                 }
                 writer.writeln("""\hline""")
                 writer.writeln("\\end{tabular}")
                 writer.writeln("\\end{center}")
             } else {
-                var correctedString = findBoldOrItalicText(line, Regex("""\*\*([^*]+)\*\*"""), FindType.BOLD)
-                correctedString = findBoldOrItalicText(correctedString, Regex("""\*([A-Za-z ]+)\*"""), FindType.ITALIC)
-                correctedString = findBoldOrItalicText(correctedString, Regex("""`([^`]*)`"""), FindType.BACKTICKS)
-                correctedString = correctedString.replace(Regex("""\(#(.*)\)"""), "")
+                var correctedString = findBoldOrItalicText(line, BOLD_TEXT, FindType.BOLD)
+                correctedString = findBoldOrItalicText(correctedString, ITALIC_TEXT, FindType.ITALIC)
+                correctedString = correctedString.replace(ANCHORS, "")
                 correctedString = correctedString.replace("#", "\\#")
                 correctedString = correctedString.replace("&", "\\&")
                 correctedString = correctedString.replace("_", "\\_")
+                correctedString = findBoldOrItalicText(correctedString, BACKTICKS_TEXT, FindType.BACKTICKS)
                 writer.writeln(correctedString)
             }
         }
     }
-
-    appendixFile.removeAll(appendixFile.subList(appendixFile.indexOf("\\section*{guide}"), appendixFile.lastIndex + 1))
-    appendixFile.addAll(tempFile.readLines())
-    File("wp/sections/appendix.tex").writeText(appendixFile.joinToString(separator = "\n"))
+    val appendixFileLines = File("wp/sections/appendix.tex").readLines().toMutableList()
+    appendixFileLines.removeAll(appendixFileLines.subList(appendixFileLines.indexOf("\\section*{guide}"), appendixFileLines.lastIndex + 1))
+    appendixFileLines.addAll(tempFile.readLines())
+    File("wp/sections/appendix.tex").writeText(appendixFileLines.joinToString(separator = "\n"))
 }
 
 enum class FindType {
@@ -143,28 +150,24 @@ enum class FindType {
 
 private fun findBoldOrItalicText(line: String, regex: Regex, type: FindType) : String {
     val allRegex = regex.findAll(line).map { it.value }.toMutableList()
-    var correctedLine = line.replace(regex, "R_EP_LA_CE_ME")
+    var correctedLine = line.replace(regex, "RE_PL_AC_E_ME")
     allRegex.forEachIndexed {index, value ->
         when (type) {
             FindType.BOLD -> allRegex[index] = "\\textbf{${value.replace("**", "")}}"
             FindType.ITALIC -> allRegex[index] = "\\textit{${value.replace("*", "")}}"
-            FindType.BACKTICKS -> allRegex[index] = value // currently not in use
+            /*
+                replaces \_ with _. In default latex we needed to place \ before _.
+                But because of lstMakeShortInline[basicstyle=\ttfamily\bfseries]`
+                it isn't needed.
+             */
+            FindType.BACKTICKS -> allRegex[index] = value.replace("\\_", "_")
         }
     }
     allRegex.forEach {
-        correctedLine = correctedLine.replaceFirst("R_EP_LA_CE_ME", it)
+        correctedLine = correctedLine.replaceFirst("RE_PL_AC_E_ME", it)
     }
     return correctedLine
 }
-
-private fun PrintWriter.writeln(text: String) {
-    write(text.plus("\n\n"))
-}
-private fun PrintWriter.writeCode(text: String) {
-    write(text.plus("\n"))
-}
-
-private fun Float.format(digits: Int) = "%.${digits}f".format(this)
 
 private fun validateYear() {
     val file = File("diktat-rules/src/test/resources/test/paragraph2/header/CopyrightDifferentYearExpected.kt")
