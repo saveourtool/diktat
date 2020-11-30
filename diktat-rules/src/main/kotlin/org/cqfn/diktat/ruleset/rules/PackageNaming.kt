@@ -22,6 +22,7 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.lexer.KtTokens.PACKAGE_KEYWORD
 import org.slf4j.LoggerFactory
+import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * Rule 1.3: package name is in lower case and separated by dots, code developed internally in your company (in example Huawei) should start
@@ -45,8 +46,9 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
 
         val configuration by configRules.getCommonConfiguration()
         domainName = configuration.also {
-            if (it.isDefault) {
-                log.error("Not able to find an external configuration for domain name in the common configuration (is it missing in yml config?)")
+            if (it.isDefault && visitorCounter.incrementAndGet() == 1) {
+                log.error("Not able to find an external configuration for domain name in the common" +
+                        " configuration (is it missing in yml config?)")
             }
         }
             .domainName
@@ -238,6 +240,11 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
          * Directory which is considered the start of sources file tree
          */
         const val PACKAGE_PATH_ANCHOR = "src"
+
+        /**
+         * tricky hack (counter) that helps not to raise multiple warnings about the package name if config is missing
+         */
+        var visitorCounter = AtomicInteger(0)
 
         /**
          * Symbol that is used to separate parts in package name
