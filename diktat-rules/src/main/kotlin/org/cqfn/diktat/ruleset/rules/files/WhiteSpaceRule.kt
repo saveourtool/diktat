@@ -174,7 +174,7 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
     /**
      * This method covers all other opening braces, not covered in [handleKeywordWithParOrBrace].
      */
-    @Suppress("UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType", "ComplexMethod")
     private fun handleLbrace(node: ASTNode) {
         // `{` can't be the very first symbol in the file, so `!!` should be safe
         val whitespaceOrPrevNode = node.selfOrParentsTreePrev()!!
