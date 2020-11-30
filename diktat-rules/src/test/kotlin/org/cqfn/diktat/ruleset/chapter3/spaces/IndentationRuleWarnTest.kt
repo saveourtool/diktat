@@ -576,6 +576,22 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
 
     @Test
     @Tag(WarningNames.WRONG_INDENTATION)
+    fun `regression - npe with comments`() {
+        lintMethod(
+            """
+                |fun foo() {
+                |    bar.let {
+                |        baz(it)
+                |        // lorem ipsum
+                |    }
+                |}
+                |
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
     @Disabled("https://github.com/cqfn/diKTat/issues/377")
     fun `closing parenthesis bug`() {
         lintMethod(

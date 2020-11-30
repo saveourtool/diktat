@@ -178,11 +178,11 @@ internal class DotCallChecker(config: IndentationConfig) : CustomIndentationChec
 
     private fun ASTNode.isCommentBeforeDot() : Boolean {
         if (elementType == EOL_COMMENT || elementType == BLOCK_COMMENT) {
-            var nextNode = treeNext
+            var nextNode: ASTNode? = treeNext
             while (nextNode != null && (nextNode.elementType == WHITE_SPACE || nextNode.elementType == EOL_COMMENT)) {
                 nextNode = nextNode.treeNext
             }
-            return nextNode.isDotBeforeCallOrReference()
+            return nextNode?.isDotBeforeCallOrReference() ?: false
         }
         return false
     }
