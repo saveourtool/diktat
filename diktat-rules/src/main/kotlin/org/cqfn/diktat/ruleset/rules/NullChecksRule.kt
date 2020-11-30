@@ -75,8 +75,7 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
                     ElementType.EXCLEQ, ElementType.EXCLEQEQEQ ->
                         warnAndFixOnNullCheck(condition, true,
                                 "use '.let/.also/?:/e.t.c' instead of $condition.text") {}
-                    else -> {
-                    }
+                    else -> return
                 }
             }
         }
