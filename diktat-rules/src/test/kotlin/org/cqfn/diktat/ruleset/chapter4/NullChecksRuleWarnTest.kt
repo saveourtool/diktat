@@ -183,7 +183,7 @@ class NullChecksRuleWarnTest : LintTestBase(::NullChecksRule) {
                 | }
                 """.trimMargin(),
                 LintError(2, 14, ruleId, Warnings.AVOID_NULL_CHECKS.warnText() +
-                        " use 'requireNotNull()' instead of require(myVar != null)", false),
+                        " use 'requireNotNull' instead of require(myVar != null)", false),
         )
     }
 }
