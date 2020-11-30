@@ -2,7 +2,7 @@
 <!-- =============================================================================== -->
 ### <a name="c6.1"></a> 6.1 Classes
 ### <a name="r6.1.1"></a> Rule 6.1.1:  When a class has a single constructor, it should be defined as a primary constructor in the declaration of the class.
-In case class contains only one explicit constructor - it should be converted to a primary constructor.
+In case the class contains only one explicit constructor - it should be converted to a primary constructor.
 
 **Invalid example**:
 ```kotlin
@@ -20,14 +20,14 @@ class Test(var a: Int) {
     // ...
 }
 
-// in case of any annotations or modifiers used on constructor:
+// in case of any annotations or modifiers used on a constructor:
 class Test private constructor(var a: Int) { 
     // ...
 }
 ```
 
 ### <a name="r6.1.2"></a> Rule 6.1.2: Prefer data classes instead of classes without any functional logic.
-Some people say that the data class is a code smell. But if you need to use it, and as a result, your code is becoming more simple, you can use Kotlin `data class`. The main purpose of this class is to hold data,
+Some people say that the data class is a code smell. However, if you need to use it (which makes your code more simple), you can utilize the Kotlin `data class`. The main purpose of this class is to hold data,
 but also `data class` will automatically generate several useful methods:
 - equals()/hashCode() pair;
 - toString()
@@ -68,12 +68,12 @@ class Test() {
 data class Test1(var a: Int = 0, var b: Int = 0)
 ```
 
-**Exception #1**: Note, that data classes cannot be abstract, open, sealed or inner, that's why these types of classes cannot be changed to a data class.
+**Exception 1**: Note that data classes cannot be abstract, open, sealed, or inner; that is why these types of classes cannot be changed to a data class.
 
-**Exception #2**: No need to convert a class to data class if this class extends some other class or implements an interface.
+**Exception 2**: No need to convert a class to a data class if this class extends some other class or implements an interface.
 
 ### <a name="r6.1.3"></a> Rule 6.1.3: Do not use the primary constructor if it is empty or useless.
-The primary constructor is a part of the class header; it goes after the class name and (optional) type parameters but can be omitted if it is useless.
+The primary constructor is a part of the class header; it is placed after the class name and type parameters (optional) but can be omitted if it is not used.
 
 **Invalid example**:
 ```kotlin
@@ -83,7 +83,7 @@ class Test() {
     var b: Int = 0
 }
 
-// empty primary constructor is not needed here also
+// empty primary constructor is not needed here
 // it can be replaced with a primary contructor with one argument or removed
 class Test() {
     var a  = "Property"
@@ -100,7 +100,7 @@ class Test() {
 
 **Valid example**:
 ```kotlin
-// the good example here is a data class, but this example shows that you should get rid of braces for primary constructor
+// the good example here is a data class; this example also shows that you should get rid of braces for the primary constructor
 class Test {
     var a: Int = 0
     var b: Int = 0
@@ -108,12 +108,11 @@ class Test {
 ```
 
 ### <a name="r6.1.4"></a> Rule 6.1.4: several init blocks are redundant and generally should not be used in your class.
-The primary constructor cannot contain any code. That's why Kotlin has introduced `init` blocks.
-These blocks are used to store the code that should be run during the initialization of the class.
-Kotlin allows writing multiple initialization blocks that are executed in the same order as they appear in the class body.
+The primary constructor cannot contain any code. That is why Kotlin has introduced `init` blocks.
+These blocks store the code to be run during the class initialization.
+Kotlin allows writing multiple initialization blocks executed in the same order as they appear in the class body.
 Even when you follow (rule 3.2)[#r3.2], this makes your code less readable as the programmer needs to keep in mind all init blocks and trace the execution of the code.
-So in your code, you should try to use a single `init` block to reduce the complexity. In case you need to do some logging or make some calculations before the assignment
-of some class property, you can use powerful functional programming. This will reduce the possibility of the error if your `init` blocks' order is accidentally changed and
+Therefore, you should try to use a single `init` block to reduce the code's complexity. . If you need to do some logging or make some calculations before the class property assignment, you can use powerful functional programming. This will reduce the possibility of the error if your `init` blocks' order is accidentally changed and
 make the code logic more coupled. It is always enough to use one `init` block to implement your idea in Kotlin.
 
 **Invalid example**:
@@ -146,7 +145,7 @@ class YourClass(var name: String) {
 ```
 
 The `init` block was not added to Kotlin to help you initialize your properties; it is needed for more complex tasks. 
-Therefore if the `init` block contains only assignments of variables - move it directly to properties, so that they will be correctly initialized near the declaration.
+Therefore if the `init` block contains only assignments of variables - move it directly to properties to be correctly initialized near the declaration.
 In some cases, this rule can be in clash with [6.1.1](#r6.1.1), but that should not stop you.
 
 **Invalid example**:
@@ -167,7 +166,7 @@ class A(baseUrl: String) {
 ```
 
 ### <a name="r6.1.5"></a> Rule 6.1.5: Explicit supertype qualification should not be used if there is not clash between called methods.
-This rule is applicable for both interfaces and classes.
+This rule is applicable to both interfaces and classes.
 
 **Invalid example**:
 ```kotlin
@@ -226,12 +225,12 @@ val table: Map<String, Int>
     }
 ```
 
-In this case the name of the backing property (`_table`) should be the same as the name of the real property (`table`) but should have an underscore (`_`) prefix.
+In this case, the name of the backing property (`_table`) should be the same as the name of the real property (`table`) but should have an underscore (`_`) prefix.
 It is one of the exceptions from the [identifier names rule](#r1.2)
 
 ### <a name="r6.1.8"></a> Recommendation 6.1.8: avoid using custom getters and setters.
 Kotlin has a perfect mechanism of [properties](https://kotlinlang.org/docs/reference/properties.html#properties-and-fields).
-Kotlin compiler automatically generates `get` and `set` methods for properties and also provides the possibility to override it.
+Kotlin compiler automatically generates `get` and `set` methods for properties and can override them.
 
 **Invalid example:**
 ```kotlin 
@@ -270,7 +269,7 @@ class A {
 **Exception:** `Private setters` are only exceptions that are not prohibited by this rule.
 
 ### <a name="r6.1.9"></a> Rule 6.1.9: never use the name of a variable in the custom getter or setter (possible_bug).
-If you have ignored [recommendation 6.1.8](#r6.1.8) you should be careful with using the name of the property in your custom getter/setter
+If you ignored [recommendation 6.1.8](#r6.1.8), be careful with using the name of the property in your custom getter/setter
 as it can accidentally cause a recursive call and a `StackOverflow Error`. Use the `field` keyword instead.
 
 **Invalid example (very bad)**:
@@ -286,7 +285,7 @@ var isEmpty: Boolean
 ### <a name="s6.1.10"></a> Recommendation 6.1.10 no trivial getters and setters are allowed in the code.
 In Java, trivial getters - are the getters that are just returning the field value.
 Trivial setters - are merely setting the field with a value without any transformation.
-However, in Kotlin, trivial getters/setters are generated by the default. There is no need to use it explicitly for all types of data structures in Kotlin.
+However, in Kotlin, trivial getters/setters are generated by default. There is no need to use it explicitly for all types of data structures in Kotlin.
 
 **Invalid example**:
 ```kotlin
@@ -311,7 +310,7 @@ class A {
 ```
 
 ### <a name="s6.1.11"></a> Rule 6.1.11: use apply for grouping object initialization.
-In Java, before functional programming became popular, many classes from common libraries used configuration paradigm.
+In Java, before functional programming became popular, many classes from common libraries used the configuration paradigm.
 To use these classes, you had to create an object with the constructor with 0-2 arguments and set the fields needed to run the object.
 In Kotlin, to reduce the number of dummy code line and to group objects [`apply` extension](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/apply.html) was added:  
  
@@ -400,7 +399,7 @@ In Kotlin and Java, the interface is the main presentation means of application 
 ### <a name="c6.4"></a> 6.4 Objects
 ### <a name="s6.4.1"></a> Rule 6.4.1: Avoid using utility classes/objects, use extensions instead.
 As described in [6.2 Extension functions](#c6.2), extension functions are a powerful. Instead of using utility classes/objects, use it extention functions.
-This allows you to avoid unnecessary complexity and class/object wrapping and use top-level functions instead.
+This enables you to avoid unnecessary complexity and class/object wrapping and use top-level functions instead.
 
 **Invalid example**:
 ```kotlin 
@@ -422,7 +421,7 @@ fun String.stringInfo(): Int {
 ```
 
 ### <a name="s6.4.2"></a> Recommendation 6.4.2: Objects should be used for Stateless Interfaces.
-Kotlin’s objects are extremely useful when you need to implement some interface from an external library that doesn’t have any state.
+Kotlin’s objects are extremely useful when you need to implement some interface from an external library that does not have any state.
 There is no need to use classes for such structures.
 
 **Valid example**:

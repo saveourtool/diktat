@@ -16,13 +16,13 @@ However, it will print the following value: `0.8999999999999999`
 Therefore, for precise calculations (for example, in finance or exact sciences), using such types as `Int`, `Long`, `BigDecimal`are recommended.
 The `BigDecimal` type should serve as a good choice.
 
-**Invalid example:** \
+**Invalid example**: \
 Float values containing more than six or seven decimal numbers will be rounded.
  ```kotlin
  val eFloat = 2.7182818284f // Float, will be rounded to 2.7182817
  ```
 
-**Valid example** (when precise calculations are needed): 
+**Valid example**: (when precise calculations are needed): 
  ```kotlin
     val income = BigDecimal("2.0")
     val expense = BigDecimal("1.1")
@@ -90,10 +90,9 @@ The Kotlin compiler has introduced [Smart Casts](https://kotlinlang.org/docs/ref
     }
 ```
 
-Also Kotlin 1.3 introduced [Contracts](https://kotlinlang.org/docs/reference/whatsnew13.html#contracts) that provide enhanced logic for smart-cast.
-Contracts are used and are very stable in `stdlib`.
+Also, Kotlin 1.3 introduced [Contracts](https://kotlinlang.org/docs/reference/whatsnew13.html#contracts) that provide enhanced logic for smart-cast.
+Contracts are used and are very stable in `stdlib`, for example:
  
-For example:
 
 ```kotlin
 fun bar(x: String?) {
@@ -151,7 +150,7 @@ typealias Predicate<T> = (T) -> Boolean
 Kotlin is declared as a null-safe programming language. However, to achieve compatibility with Java, it still supports nullable types.
 
 ### <a name="s4.3.1"></a> Recommendation 4.3.1: Avoid declaring variables with nullable types, especially from Kotlin stdlib.
-To avoid `NullPointerException` and help compiler to prevent Null Poniter Exceptions, avoid using nullable types (with `?` symbol).
+To avoid `NullPointerException` and help the compiler prevent Null Pointer Exceptions, avoid using nullable types (with `?` symbol).
 
 **Invalid example**:
 ```kotlin 
@@ -163,9 +162,9 @@ val a: Int? = 0
 val a: Int = 0
 ```
 
-Nevertheless, if you use Java libraries extensively, you will have to use nullable types and enrich your code with `!!` and `?` symbols.
+Nevertheless, when using Java libraries extensively, you have to use nullable types and enrich the code with `!!` and `?` symbols.
 Avoid using nullable types for Kotlin stdlib (declared in [official documentation](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/)). 
-Try to use initializers for empty collections. For example, if you want to initialize a list instead of `null` use `emptyList()`.
+Try to use initializers for empty collections. For example, if you want to initialize a list instead of `null`, use `emptyList()`.
 
 **Invalid example**:
 ```kotlin 

@@ -5,7 +5,7 @@
 
 Try to avoid explicit null checks (explicit comparison with `null`) 
 Kotlin is declared as [Null-safe](https://kotlinlang.org/docs/reference/null-safety.html) language.
-But Kotlin architects wanted Kotlin to be fully compatible with Java, that's why `null` keyword was also introduced in Kotlin. 
+However, Kotlin architects wanted Kotlin to be fully compatible with Java; that's why the `null` keyword was also introduced in Kotlin. 
 
 There are several code-structures that can be used in Kotlin to avoid null-checks. For example: `?:`,  `.let {}`, `.also {}`, e.t.c
 
@@ -66,7 +66,9 @@ myVar?.let {
 } ?: run { println("not null") }
 ```
 
-**Exceptions:** in case of complex expressions like multiple `else-if` structures, or a long conditional statement there is a common sense to use explicit comparison with `null`.
+**Exceptions:**
+
+In the case of complex expressions, such as multiple `else-if` structures or long conditional statements, there is common sense to use explicit comparison with `null`.
 
 **Valid examples:**
 

@@ -9,6 +9,7 @@ The only exception to this rule is code generation - the auto-generated files th
 
 ### <a name="r3.1.2"></a> Rule 3.1.2: Code blocks in the source file should be separated by one blank line.
 A source file contains code blocks in the following order: copyright, package name, imports, and top-level classes. They should be separated by one blank line.
+
 a) Code blocks should be in the following order:
 1.	Kdoc for licensed or copyrighted files
 2.	`@file` annotation
@@ -21,7 +22,7 @@ b) Each of the preceding code blocks should be separated by a blank line.
 
 c) Import statements are alphabetically arranged, without using line breaks and wildcards ( wildcard imports - `*`). 
 
-d) **Recommendation**: One `.kt` source file should contain only one class declaration, and its name should match the filename
+d) **Recommendation**. One `.kt` source file should contain only one class declaration, and its name should match the filename
 
 e) Avoid empty files that do not contain the code or contain only imports/comments/package name
 
@@ -58,8 +59,7 @@ import kotlinx.coroutines.*  // official kotlin extension library
 ### <a name="s3.1.4"></a> Recommendation 3.1.4: The declaration parts of class-like code structures (class, interface, etc.) should be placed in the order.
 The declaration parts of class-like code structures (class, interface, etc.) should be in the following order: compile-time constants (for objects), class properties, late-init class properties, init-blocks, constructors, public methods, internal methods, protected methods, private methods, and companion object. Blank lines should separate their declaration.
 Notes:
-1.	There should be no blank lines between properties. 
-**Exceptions**: When there is a comment before a property on a separate line or annotations on a separate line.
+1.	There should be no blank lines between properties with the following **exceptions**: when there is a comment before a property on a separate line or annotations on a separate line.
 2.	Properties with comments/Kdoc should be separated by a newline before the comment/Kdoc.
 3.	Enum entries and constant properties (`const val`) in companion objects should be alphabetically arranged.
 
@@ -123,12 +123,12 @@ if (condition) {
 Follow the K&R style (1TBS or OTBS) for *non-empty* code blocks with braces:
 - The opening brace and first line of the code block are on the same line.
 - The closing brace is on its own new line.
-- The closing brace can be followed by a newline. The only exceptions are `else`, `finally`, and `while` (from `do-while` statement), or `catch` keywords.
-These keywords should not be split from the closing brace by a newline.
+- The closing brace can be followed by a newline character. The only exceptions are `else`, `finally`, and `while` (from `do-while` statement), or `catch` keywords.
+These keywords should not be split from the closing brace by a newline character.
 
 **Exception cases**: 
 
-1) For lambdas, there is no need to put a newline after the first (function-related) opening brace. A newline should appear only after an arrow (`->`) (see [point 5 of Rule 3.6.2](#r3.6.2)).
+1) For lambdas, there is no need to put a newline character after the first (function-related) opening brace. A newline character should appear only after an arrow (`->`) (see [point 5 of Rule 3.6.2](#r3.6.2)).
 
 ```kotlin
 arg.map { value ->
@@ -180,7 +180,7 @@ do {
 ### <a name="r3.3.1"></a>Rule 3.3.1: Use spaces for indentation. Each indentation equals four spaces.
 
 Only spaces are permitted for indentation, and each indentation should equal `four spaces` (tabs are not permitted).
-If you prefer using tabs, simply configure them to automatically change to spaces in your IDE.
+If you prefer using tabs, simply configure them to change to spaces in your IDE automatically.
 These code blocks should be indented if they are placed on the new line, and the following conditions are met:
 -	The code block is placed immediately after an opening brace
 -	The code block is placed after each operator, including the assignment operator (`+`/`-`/`&&`/`=`/etc.)
@@ -220,7 +220,7 @@ if (condition)
 ```
 
 **Exceptions**: 
-- When breaking parameter list of a method/class constructor it can be aligned with `8 spaces`. A parameter that was moved to a new line can be on the same level as the previous argument:
+- When breaking the parameter list of a method/class constructor, it can be aligned with `8 spaces`. A parameter that was moved to a new line can be on the same level as the previous argument:
     
 ```kotlin
 fun visit(
@@ -239,7 +239,7 @@ val abcdef = "my splitted" +
                 " string"
 ```
     
-- A list of supertypes should be indented with `4 spaces` if they are on different lines, or with `8 spaces` if the leading colon is also on a separate line
+- A list of supertypes should be indented with `4 spaces` if they are on different lines or with `8 spaces` if the leading colon is also on a separate line
 
 ```kotlin
 class A :
@@ -263,7 +263,7 @@ override fun foo() {
 }
 ``` 
 
-**Valid examples** (but note once again, that generally empty blocks are prohibited):
+**Valid examples** (note once again that generally empty blocks are prohibited):
 
 ```kotlin
 fun doNothing() {} 
@@ -327,11 +327,11 @@ val b = ""
 
 ### <a name="r3.6.2"></a>Rule 3.6.2: Rules for line-breaking
 
-1) Unlike Java, Kotlin allows you not to put a semicolon (`;`) after each statement separated by a newline.
+1) Unlike Java, Kotlin allows you not to put a semicolon (`;`) after each statement separated by a newline character.
     There should be no redundant semicolon at the end of the lines.
  
-When a newline is needed to split the line, it should be placed after operators like `&&`/`||`/`+`/etc. and all infix functions (for example, `xor`).
-However, the newline should be placed before operators such as `.`, `?.`, `?:`, and `::`.
+When a newline character is needed to split the line, it should be placed after such operators as `&&`/`||`/`+`/etc. and all infix functions (for example, `xor`).
+However, the newline character should be placed before operators such as `.`, `?.`, `?:`, and `::`.
 
 Note that all comparison operators, such as `==`, `>`, `<`, should not be split.
 
@@ -372,7 +372,7 @@ if (condition) list.map { foo(it) }.filter { bar(it) } else list.drop(1)
     A brace should be placed immediately after the name without any spaces in declarations or at call sites.
 4)	Newlines should be placed right after the comma (`,`).
 5)	If a lambda statement contains more than one line in its body, a newline should be placed after an arrow if the lambda statement has explicit parameters.
-    If it uses an implicit parameter (`it`), the newline should be placed after the opening brace (`{`). 
+    If it uses an implicit parameter (`it`), the newline character should be placed after the opening brace (`{`). 
     The following examples illustrate this rule:
 
 
@@ -512,7 +512,7 @@ fun baz() {
     There should be no spaces before `,` , `:` and `;`. 
     **Exceptions** for spaces and colons are the following:
     
-    - when `:` is used to separate a type and a super type, including an anonymous object (after object keyword)
+    - when `:` is used to separate a type and a supertype, including an anonymous object (after object keyword)
     - when delegating to a superclass constructor or different constructor of the same class
 
 **Valid example:**
@@ -526,7 +526,7 @@ fun baz() {
   }
 ```
 
-6. There should be *only one space* between the identifier and it's type: `list: List<String>`
+6. There should be *only one space* between the identifier and its type: `list: List<String>`
 If the type is nullable, there should be no space before `?`.
 
 7. When using `[]` operator (`get/set`) there should be **no** spaces between identifier and `[` : `someList[0]`.
@@ -543,7 +543,7 @@ fun foo
 
 9. Never put a space after `(`, `[`, `<` (when used as a bracket in templates) or before `)`, `]`, `>` (when used as a bracket in templates).
 
-10. There should be no spaces between prefix/postfix operator (like `!!` or `++`), and it's an operand.
+10. There should be no spaces between a prefix/postfix operator (like `!!` or `++`) and its operand.
 
 ### <a name="s3.8.2"></a> Recommendation 3.8.2: No spaces should be inserted for horizontal alignment.
 
@@ -551,7 +551,7 @@ fun foo
 
 - When modifying code, it takes much time for new developers to format, support, and fix alignment issues.
 - Long identifier names will break the alignment and lead to less presentable code.
-- Alignment possesses more disadvantages than advantages. To reduce maintenance costs, misalignment is the best choice.
+- There are more disadvantages than advantages in alignment. To reduce maintenance costs, misalignment (???) is the best choice.
 
 Recommendation: Alignment only looks suitable for `enum class`, where it can be used in table format to improve code readability:
 ```kotlin
@@ -649,7 +649,7 @@ The compiler can issue a warning when it is missing.
 ### <a name="c3.12"></a> 3.12 Annotations
 ### <a name="s3.12.1"></a> Recommendation 3.12.1: Each annotation applied to a class, method, or constructor should be placed on its own line.
 
-1. Annotations applied to the class, method or constructor are placed on separate lines (one annotation per line). 
+1. Annotations applied to the class, method, or constructor are placed on separate lines (one annotation per line). 
 
 **Valid example**:
 ```kotlin
@@ -734,7 +734,7 @@ val bytes = 0b11010010_01101001_10010100_10010010
 ### <a name="r3.15.1"></a> Rule 3.15.1: Concatenation of Strings is prohibited if the string can fit on one line.
 String concatenation is prohibited if the string can fit on one line. Use raw strings and string templates instead. Kotlin has significantly improved the use of Strings: 
 [String templates](https://kotlinlang.org/docs/reference/basic-types.html#string-templates), [Raw strings](https://kotlinlang.org/docs/reference/basic-types.html#string-literals)
-As such, compared to using explicit concatenation, code looks much better when proper Kotlin strings are used for short lines and you do not need to split them with newlines.
+Therefore, compared to using explicit concatenation, code looks much better when proper Kotlin strings are used for short lines, and you do not need to split them with newline charcters.
 
 **Invalid example**:
 ```kotlin
@@ -764,7 +764,7 @@ val someString = "$myArgument ${myArgument.foo()}"
 
 **Redundant string template**
 
-In case string template contains only one variable - there is no need to use string template. Use this variable directly.
+In case a string template contains only one variable - there is no need to use the string template. Use this variable directly.
 
 **Invalid example**:
 ```kotlin
