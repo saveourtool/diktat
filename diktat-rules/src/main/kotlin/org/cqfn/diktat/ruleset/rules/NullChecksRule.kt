@@ -12,6 +12,9 @@ import com.pinterest.ktlint.core.ast.ElementType.CONDITION
 import com.pinterest.ktlint.core.ast.ElementType.IF
 import com.pinterest.ktlint.core.ast.ElementType.IF_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.NULL
+import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT
+import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
 import com.pinterest.ktlint.core.ast.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtBinaryExpression
@@ -66,13 +69,16 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
             if (isNullCheckBinaryExpession(condition)) {
                 when (condition.operationToken) {
                     // `==` and `===` comparison can be fixed with `?:` operator
-                    ElementType.EQEQ, ElementType.EQEQEQ -> warnAndFixOnNullCheck(condition, true) {
-                    }
+                    ElementType.EQEQ, ElementType.EQEQEQ ->
+                        warnAndFixOnNullCheck(condition, true,
+                                "use '.let/.also/?:/e.t.c' instead of ${condition.text}") {
+                        }
                     // `!==` and `!==` comparison can be fixed with `.let/also` operators
-                    ElementType.EXCLEQ, ElementType.EXCLEQEQEQ -> warnAndFixOnNullCheck(condition, true) {
-                    }
-                    else -> {
-                    }
+                    ElementType.EXCLEQ, ElementType.EXCLEQEQEQ ->
+                        warnAndFixOnNullCheck(condition, true,
+                                "use '.let/.also/?:/e.t.c' instead of ${condition.text}") {
+                        }
+                    else -> return
                 }
             }
         }
@@ -81,16 +87,37 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
     private fun nullCheckInOtherStatements(binaryExprNode: ASTNode) {
         val condition = (binaryExprNode.psi as KtBinaryExpression)
         if (isNullCheckBinaryExpession(condition)) {
-            warnAndFixOnNullCheck(condition, false) {}
+
+            // require(a != null) is incorrect, Kotlin has special method: `requireNotNull` - need to use it instead
+            // hierarchy is the following:
+            //              require(a != null)
+            //                 /            \
+            //      REFERENCE_EXPRESSION    VALUE_ARGUMENT_LIST
+            //                |                       |
+            //          IDENTIFIER(require)     VALUE_ARGUMENT
+            val parent = binaryExprNode.treeParent
+            if (parent != null && parent.elementType == VALUE_ARGUMENT) {
+                val grandParent = parent.treeParent
+                if (grandParent != null && grandParent.elementType == VALUE_ARGUMENT_LIST && isRequireFun(grandParent.treePrev)) {
+                    if (listOf(ElementType.EXCLEQ, ElementType.EXCLEQEQEQ).contains(condition.operationToken)) {
+                        warnAndFixOnNullCheck(
+                                condition,
+                                false,
+                                "use 'requireNotNull' instead of require(${condition.text})"
+                        ) {}
+                    }
+                }
+            }
         }
     }
 
     @Suppress("UnsafeCallOnNullableType")
     private fun isNullCheckBinaryExpession(condition: KtBinaryExpression): Boolean =
-            // check that binary expession has `null` as right or left operand
+            // check that binary expression has `null` as right or left operand
             setOf(condition.right, condition.left).map { it!!.node.elementType }.contains(NULL) &&
                     // checks that it is the comparison condition
-                    setOf(ElementType.EQEQ, ElementType.EQEQEQ, ElementType.EXCLEQ, ElementType.EXCLEQEQEQ).contains(condition.operationToken) &&
+                    setOf(ElementType.EQEQ, ElementType.EQEQEQ, ElementType.EXCLEQ, ElementType.EXCLEQEQEQ)
+                            .contains(condition.operationToken) &&
                     // no need to raise warning or fix null checks in complex expressions
                     !condition.isComplexCondition()
 
@@ -103,20 +130,21 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
         return this.parent is KtBinaryExpression
     }
 
-    private fun warnAndFixOnNullCheck(
-        condition: KtBinaryExpression,
-        canBeAutoFixed: Boolean,
-        autofix: () -> Unit) {
+    private fun warnAndFixOnNullCheck(condition: KtBinaryExpression, canBeAutoFixed: Boolean, freeText: String, autofix: () -> Unit) {
         AVOID_NULL_CHECKS.warnAndFix(
-            configRules,
-            emitWarn,
-            isFixMode,
-            condition.text,
-            condition.node.startOffset,
-            condition.node,
-            canBeAutoFixed,
+                configRules,
+                emitWarn,
+                isFixMode,
+                freeText,
+                condition.node.startOffset,
+                condition.node,
+                canBeAutoFixed,
         ) {
             autofix()
         }
     }
+
+    private fun isRequireFun(referenceExpression: ASTNode) =
+            referenceExpression.elementType == REFERENCE_EXPRESSION && referenceExpression.firstChildNode.text == "require"
+
 }
