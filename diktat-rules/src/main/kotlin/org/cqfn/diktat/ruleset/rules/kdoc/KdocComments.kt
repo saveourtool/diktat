@@ -86,7 +86,7 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
         }
     }
 
-    @Suppress("UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType", "ComplexMethod")
     private fun checkValueParameter(node: ASTNode) {
         if (node.parents().none { it.elementType == PRIMARY_CONSTRUCTOR } ||
                 !(node.hasChildOfType(VAL_KEYWORD) || node.hasChildOfType(VAR_KEYWORD))) {
