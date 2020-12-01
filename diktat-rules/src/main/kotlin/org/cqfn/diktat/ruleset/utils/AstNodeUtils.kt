@@ -355,9 +355,8 @@ fun ASTNode.hasSuppress(warningName: String): Boolean {
 /**
  * Checks node has `override` modifier
  */
-fun ASTNode.isOverriden(): Boolean {
+fun ASTNode.isOverriden(): Boolean =
     findChildByType(MODIFIER_LIST)?.findChildByType(OVERRIDE_KEYWORD) != null
-}
 /**
  * creation of operation reference in a node
  */
