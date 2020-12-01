@@ -222,9 +222,9 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
             ?.takeIf {
                 it.elementType == WHITE_SPACE && it.text.contains("\n")
             }
-        if (prevNewLine != null) {
+        prevNewLine?.let {
             WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, "newline should be placed only after comma", node.startOffset, node) {
-                prevNewLine.treeParent.removeChild(prevNewLine)
+                it.treeParent.removeChild(it)
             }
         }
     }

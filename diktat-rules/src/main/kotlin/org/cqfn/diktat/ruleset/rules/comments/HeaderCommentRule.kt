@@ -65,6 +65,7 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
 
     private fun checkHeaderKdoc(node: ASTNode) {
         val headerKdoc = node.findChildBefore(PACKAGE_DIRECTIVE, KDOC)
+        // todo: AVOID_NULL_CHECK
         if (headerKdoc == null) {
             val numDeclaredClassesAndObjects = node.getAllChildrenWithType(ElementType.CLASS).size +
                     node.getAllChildrenWithType(ElementType.OBJECT_DECLARATION).size
@@ -134,17 +135,13 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
         }
 
         val afterCopyrightYear = afterCopyrightRegex.find(copyrightText)
-
-        if (afterCopyrightYear != null) {
-            val copyrightYears = afterCopyrightYear.value.split("(c)", "(C)", "©")
-
-            if (copyrightYears[1].trim().toInt() != curYear) {
+        val copyrightYears = afterCopyrightYear?.value?.split("(c)", "(C)", "©")
+        return if (copyrightYears != null && copyrightYears[1].trim().toInt() != curYear) {
                 val validYears = "${copyrightYears[0]}-$curYear"
-                return copyrightText.replace(afterCopyrightRegex, validYears)
+                copyrightText.replace(afterCopyrightRegex, validYears)
+            } else {
+            ""
             }
-        }
-
-        return ""
     }
 
     @Suppress("TOO_LONG_FUNCTION")
@@ -166,11 +163,9 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
             }
         if (isWrongCopyright || isMissingCopyright || isCopyrightInsideKdoc) {
             HEADER_MISSING_OR_WRONG_COPYRIGHT.warnAndFix(configRules, emitWarn, isFixMode, fileName, node.startOffset, node) {
-                if (headerComment != null) {
-                    node.removeChild(headerComment)
-                }
+                headerComment?.let { node.removeChild(it) }
                 // do not insert empty line before header kdoc
-                val newLines = if (node.findChildBefore(PACKAGE_DIRECTIVE, KDOC) != null) "\n" else "\n\n"
+                val newLines = node.findChildBefore(PACKAGE_DIRECTIVE, KDOC)?.let { "\n" } ?: "\n\n"
                 node.addChild(PsiWhiteSpaceImpl(newLines), node.firstChildNode)
                 node.addChild(LeafPsiElement(BLOCK_COMMENT,
                     """

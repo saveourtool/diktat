@@ -138,23 +138,24 @@ class CompactInitialization(private val configRules: List<RulesConfig>) : Rule("
                 ?.getArgumentExpression()
                 ?.let { it as? KtCallableReferenceExpression }
                 ?.callableReference
-            if (referenceExpression == null) {
-                // valid code should always have apply with either lambdaArguments or valueArguments
-                log.warn("apply with unexpected parameters: ${applyExpression.text}")
-            } else {
+            referenceExpression?.let {
                 applyExpression.node.run {
                     treeParent.replaceChild(
                         this,
                         kotlinParser.createNode(
                             """
-                                    |apply {
-                                    |    ${referenceExpression.getReferencedName()}(this)
-                                    |}
-                                    """.trimMargin()
+                                |apply {
+                                |    ${referenceExpression.getReferencedName()}(this)
+                                |}
+                            """.trimMargin()
                         )
                     )
                 }
             }
+                ?: run {
+                    // valid code should always have apply with either lambdaArguments or valueArguments
+                    log.warn("apply with unexpected parameters: ${applyExpression.text}")
+                }
         }
     }
 }

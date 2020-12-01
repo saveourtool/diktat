@@ -15,6 +15,7 @@ import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.SECONDARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.psi.KtBinaryExpression
@@ -52,7 +53,7 @@ class SingleConstructorRule(private val config: List<RulesConfig>) : Rule("singl
     }
 
     private fun handleClassConstructors(node: ASTNode) {
-        if (node.findChildByType(PRIMARY_CONSTRUCTOR) == null) {
+        if (!node.hasChildOfType(PRIMARY_CONSTRUCTOR)) {
             // class has no primary constructor, need to count secondary constructors
             node
                 .findChildByType(CLASS_BODY)

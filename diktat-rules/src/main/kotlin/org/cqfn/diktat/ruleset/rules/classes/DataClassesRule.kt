@@ -74,7 +74,8 @@ class DataClassesRule(private val configRule: List<RulesConfig>) : Rule("data-cl
         return classBody?.getAllChildrenWithType(FUN)?.isEmpty() ?: false &&
                 getFirstChildWithType(SUPER_TYPE_LIST) == null &&
                 // if there is any prop with logic in accessor then don't recommend to convert class to data class
-                if (classBody != null) areGoodProps(classBody) else true
+                classBody?.let(::areGoodProps)
+                    ?: true
     }
 
     /**

@@ -119,30 +119,28 @@ class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) :
             return
         }
 
-        val previousProperty = node.prevSibling { it.elementType == PROPERTY }
+        val previousProperty = node.prevSibling { it.elementType == PROPERTY } ?: return
 
-        if (previousProperty != null) {
-            val hasCommentBefore = node
-                .findChildByType(TokenSet.create(KDOC, EOL_COMMENT, BLOCK_COMMENT))
-                ?.isFollowedByNewline()
-                ?: false
-            val hasAnnotationsBefore = (node.psi as KtProperty)
-                .annotationEntries
-                .any { it.node.isFollowedByNewline() }
-            val hasCustomAccessors = (node.psi as KtProperty).accessors.isNotEmpty() ||
-                    (previousProperty.psi as KtProperty).accessors.isNotEmpty()
+        val hasCommentBefore = node
+            .findChildByType(TokenSet.create(KDOC, EOL_COMMENT, BLOCK_COMMENT))
+            ?.isFollowedByNewline()
+            ?: false
+        val hasAnnotationsBefore = (node.psi as KtProperty)
+            .annotationEntries
+            .any { it.node.isFollowedByNewline() }
+        val hasCustomAccessors = (node.psi as KtProperty).accessors.isNotEmpty() ||
+                (previousProperty.psi as KtProperty).accessors.isNotEmpty()
 
-            val whiteSpaceBefore = previousProperty.nextSibling { it.elementType == WHITE_SPACE } ?: return
-            val isBlankLineRequired = hasCommentBefore || hasAnnotationsBefore || hasCustomAccessors
-            val numRequiredNewLines = 1 + (if (isBlankLineRequired) 1 else 0)
-            val actualNewLines = whiteSpaceBefore.text.count { it == '\n' }
-            // for some cases (now - if this or previous property has custom accessors), blank line is allowed before it
-            if (!hasCustomAccessors && actualNewLines != numRequiredNewLines ||
-                    hasCustomAccessors && actualNewLines > numRequiredNewLines
-            ) {
-                BLANK_LINE_BETWEEN_PROPERTIES.warnAndFix(configRules, emitWarn, isFixMode, node.getIdentifierName()!!.text, node.startOffset, node) {
-                    whiteSpaceBefore.leaveExactlyNumNewLines(numRequiredNewLines)
-                }
+        val whiteSpaceBefore = previousProperty.nextSibling { it.elementType == WHITE_SPACE } ?: return
+        val isBlankLineRequired = hasCommentBefore || hasAnnotationsBefore || hasCustomAccessors
+        val numRequiredNewLines = 1 + (if (isBlankLineRequired) 1 else 0)
+        val actualNewLines = whiteSpaceBefore.text.count { it == '\n' }
+        // for some cases (now - if this or previous property has custom accessors), blank line is allowed before it
+        if (!hasCustomAccessors && actualNewLines != numRequiredNewLines ||
+                hasCustomAccessors && actualNewLines > numRequiredNewLines
+        ) {
+            BLANK_LINE_BETWEEN_PROPERTIES.warnAndFix(configRules, emitWarn, isFixMode, node.getIdentifierName()!!.text, node.startOffset, node) {
+                whiteSpaceBefore.leaveExactlyNumNewLines(numRequiredNewLines)
             }
         }
     }

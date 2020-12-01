@@ -78,12 +78,13 @@ class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig
         if (thenNode?.elementType != BLOCK) {
             NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnAndFix(configRules, emitWarn, isFixMode, "IF",
                 (thenNode?.prevSibling { it.elementType == IF_KEYWORD } ?: node).startOffset, node) {
-                if (thenNode != null) {
-                    (thenNode.psi as KtElement).replaceWithBlock(indent)
+                thenNode?.run {
+                    (psi as KtElement).replaceWithBlock(indent)
                     if (elseNode != null && elseKeyword != null) {
                         node.replaceChild(elseKeyword.prevSibling.node, PsiWhiteSpaceImpl(" "))
                     }
-                } else {
+                }
+                    ?: run {
                     val nodeAfterCondition = ifPsi.rightParenthesis!!.node.treeNext
                     node.insertEmptyBlockBetweenChildren(nodeAfterCondition, nodeAfterCondition, indent)
                 }
@@ -93,9 +94,10 @@ class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig
         if (elseKeyword != null && elseNode?.elementType != IF && elseNode?.elementType != BLOCK) {
             NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnAndFix(configRules, emitWarn, isFixMode, "ELSE",
                 (elseNode?.treeParent?.prevSibling { it.elementType == ELSE_KEYWORD } ?: node).startOffset, node) {
-                if (elseNode != null) {
-                    (elseNode.psi as KtElement).replaceWithBlock(indent)
-                } else {
+                elseNode?.run {
+                    (psi as KtElement).replaceWithBlock(indent)
+                }
+                    ?: run {
                     // `else` can have empty body e.g. when there is a semicolon after: `else ;`
                     node.insertEmptyBlockBetweenChildren(elseKeyword.node.treeNext, null, indent)
                 }
@@ -115,16 +117,17 @@ class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig
                     .lines()
                     .last()
                     .count { it == ' ' }
-                if (loopBody != null) {
-                    loopBody.replaceWithBlock(indent)
-                } else {
-                    // this corresponds to do-while with empty body
-                    node.insertEmptyBlockBetweenChildren(
-                        node.findChildByType(DO_KEYWORD)!!.treeNext,
-                        node.findChildByType(WHILE_KEYWORD)!!.treePrev,
-                        indent
-                    )
+                loopBody?.run {
+                    replaceWithBlock(indent)
                 }
+                    ?: run {
+                        // this corresponds to do-while with empty body
+                        node.insertEmptyBlockBetweenChildren(
+                            node.findChildByType(DO_KEYWORD)!!.treeNext,
+                            node.findChildByType(WHILE_KEYWORD)!!.treePrev,
+                            indent
+                        )
+                    }
             }
         }
     }
@@ -163,8 +166,8 @@ class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig
         emptyBlock.addChild(LeafPsiElement(LBRACE, "{"))
         emptyBlock.addChild(PsiWhiteSpaceImpl("\n${" ".repeat(indent)}"))
         emptyBlock.addChild(LeafPsiElement(RBRACE, "}"))
-        if (secondChild != null) {
-            replaceChild(secondChild, PsiWhiteSpaceImpl(" "))
+        secondChild?.let {
+            replaceChild(it, PsiWhiteSpaceImpl(" "))
         }
     }
     companion object {

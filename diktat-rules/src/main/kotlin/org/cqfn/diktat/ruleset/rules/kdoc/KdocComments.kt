@@ -47,7 +47,6 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
-import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.psiUtil.parents
 
 /**
@@ -105,19 +104,23 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
             null
         }
         val kdocBeforeClass = node.parent({ it.elementType == CLASS })!!.findChildByType(KDOC)
-        if (prevComment != null) {
-            if (kdocBeforeClass != null) {
+
+        prevComment?.let {
+            kdocBeforeClass?.let {
                 checkKdocBeforeClass(node, kdocBeforeClass, prevComment)
-            } else {
-                createKdocWithProperty(node, prevComment)
             }
-        } else {
-            if (kdocBeforeClass != null) {
-                checkBasicKdocBeforeClass(node, kdocBeforeClass)
-            } else {
-                createKdocBasicKdoc(node)
-            }
+                ?: run {
+                    createKdocWithProperty(node, prevComment)
+                }
         }
+            ?: run {
+                kdocBeforeClass?.let {
+                    checkBasicKdocBeforeClass(node, kdocBeforeClass)
+                }
+                    ?: run {
+                        createKdocBasicKdoc(node)
+                    }
+            }
     }
 
     @Suppress("UnsafeCallOnNullableType")

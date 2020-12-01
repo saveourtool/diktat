@@ -139,7 +139,7 @@ class ExtensionFunctionsSameNameRule(private val configRules: List<RulesConfig>)
         val name: String,
         val parameters: List<String>,
         val returnType: String?) {
-        override fun toString() = "$name$parameters${if (returnType != null) ": $returnType" else ""}"
+        override fun toString() = "$name$parameters${returnType?.let { ": $it" } ?: ""}"
     }
 
     /**

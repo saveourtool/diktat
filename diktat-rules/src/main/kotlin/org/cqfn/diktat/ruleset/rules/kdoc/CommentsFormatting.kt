@@ -137,9 +137,9 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
                 else -> null
             }
             val copyComment = comment?.copyElement()
-            if (comment != null) {
-                IF_ELSE_COMMENTS.warnAndFix(configRules, emitWarn, isFixMode, comment.text, node.startOffset, node) {
-                    moveCommentToElse(node, elseBlock, elseKeyWord, comment, copyComment)
+            comment?.let {
+                IF_ELSE_COMMENTS.warnAndFix(configRules, emitWarn, isFixMode, it.text, node.startOffset, node) {
+                    moveCommentToElse(node, elseBlock, elseKeyWord, it, copyComment)
                 }
             }
         }
@@ -166,8 +166,8 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
 
         val whiteSpace = elseKeyWord.prevNodeUntilNode(THEN, WHITE_SPACE)
 
-        if (whiteSpace != null) {
-            node.removeChild(whiteSpace)
+        whiteSpace?.let {
+            node.removeChild(it)
         }
     }
 

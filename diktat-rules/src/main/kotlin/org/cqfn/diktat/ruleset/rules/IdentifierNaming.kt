@@ -105,8 +105,8 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
             else -> Pair(null, false)
         }
 
-        if (identifierNodes != null) {
-            checkIdentifierLength(identifierNodes, isVariable)
+        identifierNodes?.let {
+            checkIdentifierLength(it, isVariable)
         }
     }
 

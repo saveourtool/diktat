@@ -13,6 +13,7 @@ import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.OVERRIDE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import org.cqfn.diktat.ruleset.utils.isOverridden
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -43,7 +44,7 @@ class EmptyBlock(private val configRules: List<RulesConfig>) : Rule("empty-block
 
     @Suppress("UnsafeCallOnNullableType")
     private fun checkEmptyBlock(node: ASTNode, configuration: EmptyBlockStyleConfiguration) {
-        if (node.treeParent.findChildByType(MODIFIER_LIST)?.findChildByType(OVERRIDE_KEYWORD) != null) {
+        if (node.treeParent.isOverridden()) {
             return
         }
         if (node.isBlockEmpty()) {

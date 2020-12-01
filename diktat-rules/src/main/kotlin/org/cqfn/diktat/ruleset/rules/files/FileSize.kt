@@ -46,15 +46,11 @@ class FileSize(private val configRules: List<RulesConfig>) : Rule("file-size") {
         }
     }
 
-    private fun calculateFilePath(fileName: String?): List<String> {
-        val filePathParts = fileName?.splitPathToDirs()
-        return if (filePathParts == null) {
+    private fun calculateFilePath(fileName: String?): List<String> = fileName?.splitPathToDirs()
+        ?: run {
             log.error("Could not find absolute path to file")
             listOf()
-        } else {
-            filePathParts
         }
-    }
 
     private fun checkFileSize(node: ASTNode, maxSize: Long) {
         val size = node
