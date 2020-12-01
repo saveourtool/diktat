@@ -206,44 +206,42 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
 
     @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
     private fun checkEmptyLineBeforeBasicTags(basicTags: List<KDocTag>) {
-        val firstBasicTag = basicTags.firstOrNull()
-        if (firstBasicTag != null) {
-            val hasContentBefore = firstBasicTag
+        val firstBasicTag = basicTags.firstOrNull() ?: return
+
+        val hasContentBefore = firstBasicTag
+            .node
+            .allSiblings(true)
+            .let { it.subList(0, it.indexOf(firstBasicTag.node)) }
+            .any { it.elementType !in arrayOf(WHITE_SPACE, KDOC_LEADING_ASTERISK) && it.text.isNotBlank() }
+
+        val previousTag = firstBasicTag.node.prevSibling { it.elementType == KDOC_TAG }
+        val hasEmptyLineBefore = previousTag?.hasEmptyLineAfter()
+            ?: (firstBasicTag
                 .node
-                .allSiblings(true)
-                .let { it.subList(0, it.indexOf(firstBasicTag.node)) }
-                .any { it.elementType !in arrayOf(WHITE_SPACE, KDOC_LEADING_ASTERISK) && it.text.isNotBlank() }
+                .previousAsterisk()
+                ?.previousAsterisk()
+                ?.treeNext
+                ?.elementType == WHITE_SPACE)
 
-            val previousTag = firstBasicTag.node.prevSibling { it.elementType == KDOC_TAG }
-            val hasEmptyLineBefore = previousTag?.hasEmptyLineAfter()
-                ?: (firstBasicTag
-                    .node
-                    .previousAsterisk()
-                    ?.previousAsterisk()
-                    ?.treeNext
-                    ?.elementType == WHITE_SPACE)
-
-            if (hasContentBefore xor hasEmptyLineBefore) {
-                KDOC_NEWLINES_BEFORE_BASIC_TAGS.warnAndFix(configRules, emitWarn, isFixMode,
-                    "@${firstBasicTag.name!!}", firstBasicTag.node.startOffset, firstBasicTag.node) {
-                    if (hasContentBefore) {
-                        if (previousTag != null) {
-                            previousTag.applyToPrevSibling(KDOC_LEADING_ASTERISK) {
-                                previousTag.addChild(treePrev.clone() as ASTNode, null)
-                                previousTag.addChild(this.clone() as ASTNode, null)
-                            }
-                        } else {
+        if (hasContentBefore xor hasEmptyLineBefore) {
+            KDOC_NEWLINES_BEFORE_BASIC_TAGS.warnAndFix(configRules, emitWarn, isFixMode,
+                "@${firstBasicTag.name!!}", firstBasicTag.node.startOffset, firstBasicTag.node) {
+                if (hasContentBefore) {
+                    previousTag?.applyToPrevSibling(KDOC_LEADING_ASTERISK) {
+                        previousTag.addChild(treePrev.clone() as ASTNode, null)
+                        previousTag.addChild(this.clone() as ASTNode, null)
+                    }
+                        ?: run {
                             firstBasicTag.node.applyToPrevSibling(KDOC_LEADING_ASTERISK) {
                                 treeParent.addChild(treePrev.clone() as ASTNode, this)
                                 treeParent.addChild(this.clone() as ASTNode, treePrev)
                             }
                         }
-                    } else {
-                        firstBasicTag.node.apply {
-                            val asteriskNode = previousAsterisk()!!
-                            treeParent.removeChild(asteriskNode.treePrev)
-                            treeParent.removeChild(asteriskNode.treePrev)
-                        }
+                } else {
+                    firstBasicTag.node.apply {
+                        val asteriskNode = previousAsterisk()!!
+                        treeParent.removeChild(asteriskNode.treePrev)
+                        treeParent.removeChild(asteriskNode.treePrev)
                     }
                 }
             }

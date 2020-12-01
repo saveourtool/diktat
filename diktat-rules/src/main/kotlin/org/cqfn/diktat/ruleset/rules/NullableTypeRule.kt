@@ -70,7 +70,7 @@ class NullableTypeRule(private val configRules: List<RulesConfig>) : Rule("nulla
                 val fixedParam = findFixableParam(node)
                 NULLABLE_PROPERTY_TYPE.warnAndFix(configRules, emitWarn, isFixMode, "initialize explicitly",
                     node.findChildByType(NULL)!!.startOffset, node, fixedParam != null) {
-                    if (fixedParam != null) {
+                    fixedParam?.let {
                         findSubstitution(node, fixedParam)
                     }
                 }

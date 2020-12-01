@@ -93,13 +93,13 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
         groups.keys.forEach {
             if (it.node.treeParent.text.contains(" is ")) {
                 groups.getValue(it).forEach { asCall ->
-                    if (asCall.node.findParentNodeWithSpecificType(THEN) != null) {
+                    if (asCall.node.hasParent(THEN)) {
                         raiseWarning(asCall.node)
                     }
                 }
             } else if (it.node.treeParent.text.contains(" !is ")) {
                 groups.getValue(it).forEach { asCall ->
-                    if (asCall.node.findParentNodeWithSpecificType(ELSE) != null) {
+                    if (asCall.node.hasParent(ELSE)) {
                         raiseWarning(asCall.node)
                     }
                 }
@@ -113,7 +113,7 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
             asCall) {
             val dotExpr = asCall.findParentNodeWithSpecificType(DOT_QUALIFIED_EXPRESSION)
             val afterDotPart = dotExpr?.text?.split(".")?.get(1)
-            val text = if (afterDotPart != null) "${asCall.text}.$afterDotPart" else asCall.text
+            val text = afterDotPart?.let { "${asCall.text}.$afterDotPart" } ?: asCall.text
             (dotExpr ?: asCall.treeParent).treeParent.addChild(KotlinParser().createNode(text), (dotExpr ?: asCall.treeParent))
             (dotExpr ?: asCall.treeParent).treeParent.removeChild((dotExpr ?: asCall.treeParent))
         }
@@ -178,7 +178,7 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
     private fun handleThenBlock(then: ASTNode, blocks: List<IsExpressions>) {
         val thenBlock = then.findChildByType(BLOCK)
 
-        if (thenBlock != null) {
+        thenBlock?.let {
             // Find all as expressions that are inside this current block
             val asList = thenBlock
                 .findAllNodesWithSpecificType(BINARY_WITH_TYPE)
@@ -187,10 +187,11 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
                 }
                 .filterNot { (it.getFirstChildWithType(REFERENCE_EXPRESSION)?.psi as KtNameReferenceExpression).getLocalDeclaration() != null }
             checkAsExpressions(asList, blocks)
-        } else {
-            val asList = then.findAllNodesWithSpecificType(BINARY_WITH_TYPE).filter { it.text.contains(KtTokens.AS_KEYWORD.value) }
-            checkAsExpressions(asList, blocks)
         }
+            ?: run {
+                val asList = then.findAllNodesWithSpecificType(BINARY_WITH_TYPE).filter { it.text.contains(KtTokens.AS_KEYWORD.value) }
+                checkAsExpressions(asList, blocks)
+            }
     }
 
     @Suppress("UnsafeCallOnNullableType")
@@ -240,7 +241,7 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
                 val callExpr = it.findAllNodesWithSpecificType(BINARY_WITH_TYPE).firstOrNull()
                 val blocks = listOf(IsExpressions(identifier, type ?: ""))
 
-                if (callExpr != null) {
+                callExpr?.let {
                     handleThenBlock(callExpr, blocks)
                 }
             }

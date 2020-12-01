@@ -65,14 +65,7 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
 
     private fun checkHeaderKdoc(node: ASTNode) {
         val headerKdoc = node.findChildBefore(PACKAGE_DIRECTIVE, KDOC)
-        // todo: AVOID_NULL_CHECK
-        if (headerKdoc == null) {
-            val numDeclaredClassesAndObjects = node.getAllChildrenWithType(ElementType.CLASS).size +
-                    node.getAllChildrenWithType(ElementType.OBJECT_DECLARATION).size
-            if (numDeclaredClassesAndObjects == 0 || numDeclaredClassesAndObjects > 1) {
-                HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warn(configRules, emitWarn, isFixMode, fileName, node.startOffset, node)
-            }
-        } else {
+        headerKdoc?.let {
             // fixme we should also check date of creation, but it can be in different formats
             headerKdoc
                 .text
@@ -91,6 +84,13 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
                 }
             }
         }
+            ?: run {
+                val numDeclaredClassesAndObjects = node.getAllChildrenWithType(ElementType.CLASS).size +
+                        node.getAllChildrenWithType(ElementType.OBJECT_DECLARATION).size
+                if (numDeclaredClassesAndObjects == 0 || numDeclaredClassesAndObjects > 1) {
+                    HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warn(configRules, emitWarn, isFixMode, fileName, node.startOffset, node)
+                }
+            }
     }
 
     /**
@@ -126,7 +126,7 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
     private fun makeCopyrightCorrectYear(copyrightText: String): String {
         val hyphenYear = hyphenRegex.find(copyrightText)
 
-        if (hyphenYear != null) {
+        hyphenYear?.let {
             val copyrightYears = hyphenYear.value.split("-")
             if (copyrightYears[1].toInt() != curYear) {
                 val validYears = "${copyrightYears[0]}-$curYear"

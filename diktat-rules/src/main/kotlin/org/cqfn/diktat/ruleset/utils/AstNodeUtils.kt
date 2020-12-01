@@ -183,11 +183,10 @@ fun ASTNode.findChildBefore(beforeThisNodeType: IElementType, childNodeType: IEl
     getChildren(null)
         .toList()
         .let {
-            if (anchorNode != null) {
+            anchorNode?.run {
                 it.subList(0, it.indexOf(anchorNode))
-            } else {
-                it
             }
+                ?: it
         }
         .reversed()
         .find { it.elementType == childNodeType }
@@ -243,12 +242,13 @@ fun ASTNode.allSiblings(withSelf: Boolean = false): List<ASTNode> =
  */
 fun ASTNode.isNodeFromCompanionObject(): Boolean {
     val parent = this.treeParent
-    if (parent != null) {
+    parent?.let {
         val grandParent = parent.treeParent
         if (grandParent != null && grandParent.elementType == ElementType.OBJECT_DECLARATION) {
-            if (grandParent.findLeafWithSpecificType(ElementType.COMPANION_KEYWORD) != null) {
-                return true
-            }
+            grandParent.findLeafWithSpecificType(ElementType.COMPANION_KEYWORD)
+                ?.run {
+                    return true
+                }
         }
     }
     return false
@@ -339,13 +339,11 @@ fun ASTNode.findLeafWithSpecificType(elementType: IElementType): ASTNode? {
         return null
     }
 
-    this.getChildren(null).forEach {
-        val result = it.findLeafWithSpecificType(elementType)
-        if (result != null) {
-            return result
+    return getChildren(null)
+        .mapNotNull {
+            it.findLeafWithSpecificType(elementType)
         }
-    }
-    return null
+        .firstOrNull()
 }
 
 /**
@@ -422,13 +420,12 @@ fun ASTNode.prettyPrint(level: Int = 0, maxLevel: Int = -1): String {
  * The receiver should be an ASTNode with ElementType.MODIFIER_LIST, can be null if entity has no modifier list
  */
 fun ASTNode?.isAccessibleOutside(): Boolean =
-        if (this != null) {
-            assert(this.elementType == MODIFIER_LIST)
+        this?.run {
+            require(this.elementType == MODIFIER_LIST)
             this.hasAnyChildOfTypes(PUBLIC_KEYWORD, PROTECTED_KEYWORD, INTERNAL_KEYWORD) ||
                     !this.hasAnyChildOfTypes(PUBLIC_KEYWORD, INTERNAL_KEYWORD, PROTECTED_KEYWORD, PRIVATE_KEYWORD)
-        } else {
-            true
         }
+            ?: true
 
 /**
  * Checks whether [this] node has a parent annotated with `@Suppress` with [warningName]
@@ -699,7 +696,7 @@ fun ASTNode.calculateLineColByOffset(): (offset: Int) -> Pair<Int, Int> {
  * @return name of the file [this] node belongs to
  */
 fun ASTNode.getFileName(): String = getUserData(KtLint.FILE_PATH_USER_DATA_KEY).let {
-    require(it != null) { "File path is not present in user data" }
+    requireNotNull(it) { "File path is not present in user data" }
     it
 }
 
@@ -722,8 +719,8 @@ fun ASTNode.isGoingAfter(otherNode: ASTNode): Boolean {
     val thisLineNumber = this.calculateLineNumber()
     val otherLineNumber = otherNode.calculateLineNumber()
 
-    require(thisLineNumber != null) { "Node ${this.text} should have a line number" }
-    require(otherLineNumber != null) { "Node ${otherNode.text} should have a line number" }
+    requireNotNull(thisLineNumber) { "Node ${this.text} should have a line number" }
+    requireNotNull(otherLineNumber) { "Node ${otherNode.text} should have a line number" }
 
     return (thisLineNumber > otherLineNumber)
 }

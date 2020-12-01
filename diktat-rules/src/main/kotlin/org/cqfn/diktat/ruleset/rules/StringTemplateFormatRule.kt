@@ -57,7 +57,7 @@ class StringTemplateFormatRule(private val configRules: List<RulesConfig>) : Rul
         if (bracesCanBeOmitted(node)) {
             Warnings.STRING_TEMPLATE_CURLY_BRACES.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
                 val identifierName = node.findChildByType(REFERENCE_EXPRESSION)
-                if (identifierName != null) {
+                identifierName?.let {
                     val shortTemplate = CompositeElement(SHORT_STRING_TEMPLATE_ENTRY)
                     val reference = CompositeElement(REFERENCE_EXPRESSION)
 
@@ -66,12 +66,13 @@ class StringTemplateFormatRule(private val configRules: List<RulesConfig>) : Rul
                     shortTemplate.addChild(reference)
                     reference.addChild(LeafPsiElement(IDENTIFIER, identifierName.text))
                     node.treeParent.removeChild(node)
-                } else {
-                    val stringTemplate = node.treeParent
-                    val appropriateText = node.text.trim('$', '{', '}')
-                    stringTemplate.addChild(LeafPsiElement(LITERAL_STRING_TEMPLATE_ENTRY, appropriateText), node)
-                    stringTemplate.removeChild(node)
                 }
+                    ?: run {
+                        val stringTemplate = node.treeParent
+                        val appropriateText = node.text.trim('$', '{', '}')
+                        stringTemplate.addChild(LeafPsiElement(LITERAL_STRING_TEMPLATE_ENTRY, appropriateText), node)
+                        stringTemplate.removeChild(node)
+                    }
             }
         }
     }

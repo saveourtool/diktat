@@ -31,7 +31,7 @@ class RulesConfigYamlTest {
     }
 
     private fun compareRulesAndConfig(nameConfig: String, nameConfigToText: String? = null) {
-        val filePath = if (nameConfigToText != null) pathMap[nameConfigToText] else pathMap[nameConfig]
+        val filePath = nameConfigToText?.let { pathMap[it] } ?: pathMap[nameConfig]
         val allRulesFromConfig = readAllRulesFromConfig(nameConfig)
         val allRulesFromCode = readAllRulesFromCode()
 

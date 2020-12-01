@@ -237,16 +237,17 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
         kdocBeforeClass: ASTNode,
         prevComment: ASTNode,
         propertyInClassKdoc: ASTNode?) {
-        if (propertyInClassKdoc != null) {
+        propertyInClassKdoc?.let {
             if (propertyInClassKdoc.hasChildOfType(KDOC_TEXT)) {
                 val kdocText = propertyInClassKdoc.findChildByType(KDOC_TEXT)!!
                 (kdocText as LeafPsiElement).replaceWithText("${kdocText.text} ${prevComment.text}")
             } else {
                 propertyInClassKdoc.addChild(LeafPsiElement(KDOC_TEXT, prevComment.text), null)
             }
-        } else {
-            insertTextInKdoc(kdocBeforeClass, "* @property ${node.findChildByType(IDENTIFIER)!!.text} ${prevComment.text.removeRange(0, 2)}\n")
         }
+            ?: run {
+                insertTextInKdoc(kdocBeforeClass, "* @property ${node.findChildByType(IDENTIFIER)!!.text} ${prevComment.text.removeRange(0, 2)}\n")
+            }
         node.treeParent.removeRange(prevComment, node)
     }
 

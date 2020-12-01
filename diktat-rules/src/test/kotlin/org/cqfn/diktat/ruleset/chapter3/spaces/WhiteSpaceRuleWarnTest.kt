@@ -23,13 +23,13 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
                           reqBefore: Int?,
                           reqAfter: Int?) =
             "${WRONG_WHITESPACE.warnText()} $token should have" +
-                    (if (reqBefore != null) " $reqBefore space(s) before" else "") +
+                    (reqBefore?.let { " $it space(s) before" } ?: "") +
                     (if (reqBefore != null && reqAfter != null) " and" else "") +
-                    (if (reqAfter != null) " $reqAfter space(s) after" else "") +
+                    (reqAfter?.let { " $it space(s) after" } ?: "") +
                     ", but has" +
-                    (if (before != null) " $before space(s) before" else "") +
+                    (before?.let { " $it space(s) before" } ?: "") +
                     (if (before != null && after != null) " and" else "") +
-                    (if (after != null) " $after space(s) after" else "")
+                    (after?.let { " $it space(s) after" } ?: "")
 
     @Test
     @Tag(WarningNames.WRONG_WHITESPACE)

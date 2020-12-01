@@ -85,12 +85,12 @@ class WhenMustHaveElseRule(private val configRules: List<RulesConfig>) : Rule("n
             return false
         }
 
-        if (node.prevSibling { it.elementType == EQ || it.elementType == OPERATION_REFERENCE && it.firstChildNode.elementType == EQ } != null) {
-            // `when` is used in an assignment or in a function with expression body
-            return false
-        } else {
-            return !node.hasParent(PROPERTY)
-        }
+        return node.prevSibling { it.elementType == EQ || it.elementType == OPERATION_REFERENCE && it.firstChildNode.elementType == EQ }
+            ?.let {
+                // `when` is used in an assignment or in a function with expression body
+                false
+            }
+                ?: !node.hasParent(PROPERTY)
     }
 
     /**

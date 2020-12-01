@@ -93,7 +93,7 @@ class KdocMethods(private val configRules: List<RulesConfig>) : Rule("kdoc-metho
         }
     }
 
-    @Suppress("UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType", "AVOID_NULL_CHECKS")
     private fun checkSignatureDescription(node: ASTNode) {
         val kdoc = node.getFirstChildWithType(KDOC)
         val kdocTags = kdoc?.kDocTags()
