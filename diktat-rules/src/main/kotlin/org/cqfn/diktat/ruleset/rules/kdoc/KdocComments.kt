@@ -82,7 +82,7 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
                 FILE -> checkTopLevelDoc(node)
                 CLASS -> checkClassElements(node)
                 VALUE_PARAMETER -> checkValueParameter(node)
-                VALUE_PARAMETER_LIST -> checkParameterList(node)
+                PRIMARY_CONSTRUCTOR -> checkParameterList(node.findChildByType(VALUE_PARAMETER_LIST))
                 else -> {
                     // this is a generated else block
                 }
@@ -90,14 +90,13 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
         }
     }
 
-    private fun checkParameterList(node: ASTNode) {
-        val kdocBeforeClass = node.parent({ it.elementType == CLASS })?.findChildByType(KDOC) ?: return
+    private fun checkParameterList(node: ASTNode?) {
+        val kdocBeforeClass = node?.parent({ it.elementType == CLASS })?.findChildByType(KDOC) ?: return
         val propertiesInKdoc = kdocBeforeClass.kDocTags()?.filter { it.knownTag == KDocKnownTag.PROPERTY}?.mapNotNull {it.getSubjectName()}
-        val propertyNames = (node.psi as KtParameterList).parameters.filter {
-            it.node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside() }
-                .mapNotNull { it.nameIdentifier?.text }
+        val propertyNames = (node.psi as KtParameterList).parameters.mapNotNull { it.nameIdentifier?.text }
         propertiesInKdoc?.let { kdocProperties ->
-            (kdocProperties - propertyNames).forEach {
+            kdocProperties.filterNot { it in propertyNames }
+                    .forEach {
                 KDOC_EXTRA_PROPERTY.warn(configRules, emitWarn, isFixMode, it, kdocBeforeClass.startOffset, node)
             }
         }
