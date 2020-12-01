@@ -233,8 +233,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |    bar?.baz()
                     |    bar!!.baz()
                     |}
-                """.trimMargin(),
-                LintError(4,10,ruleId, "$functionalStyleWarn .", true)
+                """.trimMargin()
         )
     }
 
@@ -551,7 +550,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
 
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
-    fun `should trigger on non-multiline lambdas`() {
+    fun `should trigger for several lambdas on same line`() {
         lintMethod(
                 """
                     |fun foo(): String {

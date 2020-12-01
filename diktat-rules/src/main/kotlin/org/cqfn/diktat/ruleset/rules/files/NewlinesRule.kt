@@ -377,17 +377,18 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
     private fun ASTNode.getOrderedCallExpressions(psi: PsiElement, result: MutableList<ASTNode>) {
         // if statements here have the only right order - don't change it
 
-        if (psi.children.isNotEmpty() && (psi.children[0].node.elementType != DOT_QUALIFIED_EXPRESSION
-                        && psi.children[0].node.elementType != SAFE_ACCESS_EXPRESSION)) {
-                            if (psi.children[0].node.elementType == POSTFIX_EXPRESSION)
-                                result.add(psi.children[0].node)
-            result.add(psi.children[0].node.siblings(true)
+        if (psi.children.isNotEmpty() && (psi.firstChild.node.elementType != DOT_QUALIFIED_EXPRESSION
+                        && psi.firstChild.node.elementType != SAFE_ACCESS_EXPRESSION)) { 
+                            if (psi.firstChild.node.elementType == POSTFIX_EXPRESSION) {
+                                result.add(psi.firstChild.node)
+                            }
+            result.add(psi.firstChild.node.siblings(true)
                     .dropWhile { it.elementType in dropChainValues }
                     .first()) // node treeNext is ".", "?.", "!!", "::"
         } else if (psi.children.isNotEmpty()) {
-            getOrderedCallExpressions(psi.children[0], result)
+            getOrderedCallExpressions(psi.firstChild, result)
 
-            result.add(psi.children[0].node.siblings(true)
+            result.add(psi.firstChild.node.siblings(true)
                     .dropWhile { it.elementType in dropChainValues }
                     .first()) // node treeNext is ".", "?.", "!!", "::"
         }
@@ -417,10 +418,11 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
                 }
             }
             ?.takeIf { it.first() != this }
+            ?.takeIf { !(it.size == 2 && it.first().elementType == POSTFIX_EXPRESSION) }
+            // fixme: we can't distinguish fully qualified names (like java.lang) from chain of property accesses (like list.size) for now
             ?.dropWhile { !it.treeParent.textContains('(') && !it.treeParent.textContains('{') }
             ?.drop(1)
             ?.any { !it.treePrev.isWhiteSpaceWithNewline() }
-    // fixme: we can't distinguish fully qualified names (like java.lang) from chain of property accesses (like list.size) for now
             ?: false
 
     /**
