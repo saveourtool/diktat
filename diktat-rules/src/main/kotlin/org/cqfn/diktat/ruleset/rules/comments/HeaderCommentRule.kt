@@ -137,11 +137,11 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
         val afterCopyrightYear = afterCopyrightRegex.find(copyrightText)
         val copyrightYears = afterCopyrightYear?.value?.split("(c)", "(C)", "©")
         return if (copyrightYears != null && copyrightYears[1].trim().toInt() != curYear) {
-                val validYears = "${copyrightYears[0]}-$curYear"
-                copyrightText.replace(afterCopyrightRegex, validYears)
-            } else {
+            val validYears = "${copyrightYears[0]}-$curYear"
+            copyrightText.replace(afterCopyrightRegex, validYears)
+        } else {
             ""
-            }
+        }
     }
 
     @Suppress("TOO_LONG_FUNCTION")

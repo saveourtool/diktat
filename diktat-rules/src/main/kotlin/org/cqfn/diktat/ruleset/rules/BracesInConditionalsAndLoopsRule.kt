@@ -85,9 +85,9 @@ class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig
                     }
                 }
                     ?: run {
-                    val nodeAfterCondition = ifPsi.rightParenthesis!!.node.treeNext
-                    node.insertEmptyBlockBetweenChildren(nodeAfterCondition, nodeAfterCondition, indent)
-                }
+                        val nodeAfterCondition = ifPsi.rightParenthesis!!.node.treeNext
+                        node.insertEmptyBlockBetweenChildren(nodeAfterCondition, nodeAfterCondition, indent)
+                    }
             }
         }
 
@@ -98,9 +98,9 @@ class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig
                     (psi as KtElement).replaceWithBlock(indent)
                 }
                     ?: run {
-                    // `else` can have empty body e.g. when there is a semicolon after: `else ;`
-                    node.insertEmptyBlockBetweenChildren(elseKeyword.node.treeNext, null, indent)
-                }
+                        // `else` can have empty body e.g. when there is a semicolon after: `else ;`
+                        node.insertEmptyBlockBetweenChildren(elseKeyword.node.treeNext, null, indent)
+                    }
             }
         }
     }
