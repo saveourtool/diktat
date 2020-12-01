@@ -439,8 +439,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |fun qux(list: List<Int>): Int {
                     |    list.filter {
                     |        return@filter condition(it)
-                    |    }
-                    |    .forEach {
+                    |    }.forEach {
                     |        return 0
                     |    }
                     |    return list.first()
@@ -449,7 +448,8 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |fun quux() { return }
                     |
                     |fun quux2(): Unit { return }
-                """.trimMargin()
+                """.trimMargin(),
+                LintError(11,6,ruleId, "$functionalStyleWarn .", true)
         )
     }
 
@@ -551,7 +551,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
 
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
-    fun `shouldn't trigger on non-multiline lambdas`() {
+    fun `should trigger on non-multiline lambdas`() {
         lintMethod(
                 """
                     |fun foo(): String {
@@ -572,12 +572,12 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |        list.filter {
                     |           
                     |        }
-                    |        .map(::foo)
-                    |        .filter {
+                    |        .map(::foo).filter {
                     |           bar()
                     |         }
                     |}
-                """.trimMargin()
+                """.trimMargin(),
+                LintError(19,20, ruleId, "$functionalStyleWarn .", true)
         )
     }
 
