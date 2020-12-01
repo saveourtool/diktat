@@ -1,6 +1,8 @@
 package org.cqfn.diktat.ruleset.rules.classes
 
 import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_LITERAL
+import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isPartOfComment
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
@@ -16,6 +18,7 @@ import org.jetbrains.kotlin.psi.KtCallableReferenceExpression
 import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
 import org.jetbrains.kotlin.psi.KtNameReferenceExpression
 import org.jetbrains.kotlin.psi.KtProperty
+import org.jetbrains.kotlin.psi.psiUtil.isFunctionalExpression
 import org.jetbrains.kotlin.psi.psiUtil.siblings
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
 
@@ -103,6 +106,12 @@ class CompactInitialization(private val configRules: List<RulesConfig>) : Rule("
                             it.treeParent.removeChild(it)
                         }
                     // strip receiver name and move assignment itself into `apply`
+                    if (bodyExpression.treeParent.elementType == FUNCTION_LITERAL
+                            && bodyExpression.firstChildNode.elementType == WHITE_SPACE) {
+                        bodyExpression.treeParent.addChild(bodyExpression.firstChildNode.copyElement(),
+                                bodyExpression.treeParent.firstChildNode.treeNext)
+                        bodyExpression.removeChild(bodyExpression.firstChildNode)
+                    }
                     bodyExpression.addChild(kotlinParser.createNode(assignment.text.substringAfter('.')), null)
                     assignment.node.run { treeParent.removeChild(this) }
                 }
