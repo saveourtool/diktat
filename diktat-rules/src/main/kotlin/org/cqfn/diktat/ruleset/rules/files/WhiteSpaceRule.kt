@@ -197,11 +197,10 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
         // note: the conditions in the following `if`s cannot be collapsed into simple conjunctions
         if (isFromLambdaAsArgument) {
             val isFirstArgument = node
-                    .parents()
-                    .take(numParentsForLambda)
-                    .toList()
-                    .let { it[2].prevSibling { prevNode -> prevNode.elementType == COMMA } == null }
+                    .parent({ it.elementType == VALUE_ARGUMENT })
+                    .let { it?.prevSibling { prevNode -> prevNode.elementType == COMMA } == null }
 
+            // If it is lambda, then we don't force it to be on newline or same line
             if (numWhiteSpace != 0 && isFirstArgument) {
                 WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "there should be no whitespace before '{' of lambda" +
                         " inside argument list", node.startOffset, node) {
@@ -209,7 +208,6 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
                 }
             }
         } else if (prevNode.elementType !in keywordsWithSpaceAfter) {
-            // If it is lambda, then we don't force it to be on newline or same line
             if (numWhiteSpace != 1) {
                 WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "there should be a whitespace before '{'", node.startOffset, node) {
                     prevNode.leaveSingleWhiteSpace()
