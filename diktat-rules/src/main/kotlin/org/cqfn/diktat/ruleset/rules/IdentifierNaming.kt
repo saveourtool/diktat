@@ -349,7 +349,7 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
         val functionReturnType = node.findChildAfter(VALUE_PARAMETER_LIST, TYPE_REFERENCE)?.text
 
         // We don't need to ask subclasses to rename superclass methods
-        if (!node.treeParent.isOverriden()) {
+        if (!node.isOverriden()) {
             // if function has Boolean return type in 99% of cases it is much better to name it with isXXX or hasXXX prefix
             if (functionReturnType != null && functionReturnType == PrimitiveType.BOOLEAN.typeName.asString()) {
                 if (BOOLEAN_METHOD_PREFIXES.none { functionName.text.startsWith(it) }) {
