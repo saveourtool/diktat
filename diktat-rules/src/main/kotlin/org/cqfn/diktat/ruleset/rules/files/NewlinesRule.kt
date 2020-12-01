@@ -417,13 +417,16 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
                     getOrderedCallExpressions(psi, it)
                 }
             }
-            ?.takeIf { it.first() != this }
-            ?.takeIf { !(it.size == 2 && it.first().elementType == POSTFIX_EXPRESSION) }
+            ?.takeIf { it.first() != this && it.isNotValidCalls(this) }
             // fixme: we can't distinguish fully qualified names (like java.lang) from chain of property accesses (like list.size) for now
             ?.dropWhile { !it.treeParent.textContains('(') && !it.treeParent.textContains('{') }
             ?.drop(1)
             ?.any { !it.treePrev.isWhiteSpaceWithNewline() }
             ?: false
+
+    private fun MutableList<ASTNode>.isNotValidCalls(node: ASTNode) =
+            !(this.size == 2 && this.first().elementType == POSTFIX_EXPRESSION) && this.indexOf(node) >= configuration.maxCallsInOneLine
+
 
     /**
      *  taking all expressions inside complex expression until we reach lambda arguments
@@ -460,4 +463,5 @@ private class NewlinesRuleConfiguration(config: Map<String, String>) : RuleConfi
      * If the number of parameters on one line is more than this threshold, all parameters should be placed on separate lines.
      */
     val maxParametersInOneLine = config["maxParametersInOneLine"]?.toInt() ?: 2
+    val maxCallsInOneLine = config["maxCallsInOneLine"]?.toInt() ?: 1
 }

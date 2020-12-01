@@ -2,6 +2,7 @@ package org.cqfn.diktat.ruleset.chapter3.files
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
+import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.REDUNDANT_SEMICOLON
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_NEWLINES
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
@@ -13,6 +14,12 @@ import org.junit.jupiter.api.Test
 
 @Suppress("LargeClass")
 class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
+
+    private val rulesConfigList: List<RulesConfig> = listOf(
+            RulesConfig(WRONG_NEWLINES.name, true,
+                    mapOf("maxCallsInOneLine" to "3"))
+    )
+
     private val ruleId = "$DIKTAT_RULE_SET_ID:newlines"
     private val shouldBreakAfter = "${WRONG_NEWLINES.warnText()} should break a line after and not before"
     private val shouldBreakBefore = "${WRONG_NEWLINES.warnText()} should break a line before and not after"
@@ -243,15 +250,15 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
         lintMethod(
                 """
                     |fun foo(list: List<Bar>?) {
-                    |    list!!.filterNotNull()
-                    |        .map { it.baz() }
-                    |        .firstOrNull {
+                    |    list!!
+                    |       .filterNotNull()
+                    |       .map { it.baz() }
+                    |       .firstOrNull {
                     |            it.condition()
-                    |        }?.qux()
+                    |        }
+                    |        ?.qux()
                     |}
-                """.trimMargin(),
-                LintError(2, 11, ruleId, "$functionalStyleWarn .", true),
-                LintError(6, 10, ruleId, "$functionalStyleWarn ?.", true)
+                """.trimMargin()
         )
     }
 
@@ -810,6 +817,45 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
             """.trimMargin(),
                 LintError(3,8, ruleId, "$shouldBreakBefore ?:", true),
                 LintError(4,20, ruleId, "$functionalStyleWarn .", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
+    fun `test configuration for calls in one line`() {
+        lintMethod(
+                """
+                |fun foo() {
+                |   /*z.goo().foo().qwe()
+                |   z!!.htr().foo()
+                |   x.goo().foo().goo()
+                |   x.gf().gfh() ?: true*/
+                |   x.gf().fge().qwe().fd()
+                |}
+            """.trimMargin(),
+                LintError(6,22,ruleId, "$functionalStyleWarn .", true),
+                rulesConfigList = rulesConfigList
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
+    fun `more test for prefix`() {
+        lintMethod(
+                """
+                |fun foo() {
+                |   foo
+                |       .bar()
+                |       .goo()
+                |       .qwe()!!
+                |       
+                |   goo()!!.gre()
+                |   
+                |   bfr()!!.qwe().foo()
+                |}
+            """.trimMargin(),
+                LintError(9,11,ruleId, "$functionalStyleWarn .", true),
+                LintError(9,17,ruleId, "$functionalStyleWarn .", true)
         )
     }
 }
