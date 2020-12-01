@@ -163,30 +163,34 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
     /**
      * This method covers all other opening braces, not covered in [handleKeywordWithParOrBrace].
      */
-    @Suppress("UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType", "ComplexMethod")
     private fun handleLbrace(node: ASTNode) {
         // `{` can't be the very first symbol in the file, so `!!` should be safe
         val whitespaceOrPrevNode = node.selfOrParentsTreePrev()!!
         val isFromLambdaAsArgument = node
-            .parents()
-            .take(NUM_PARENTS_FOR_LAMBDA)
-            .toList()
-            .takeIf { it.size == NUM_PARENTS_FOR_LAMBDA }
-            ?.let {
-                it[0].elementType == FUNCTION_LITERAL &&
-                        it[1].elementType == LAMBDA_EXPRESSION &&
-                        it[2].elementType == VALUE_ARGUMENT &&
-                        // lambda is not passed as a named argument
-                        !it[2].hasChildOfType(EQ) &&
-                        // lambda is the first argument in the list
-                        it[2].prevSibling { prevNode -> prevNode.elementType == COMMA } == null
-            }
-            ?: false
+                .parents()
+                .take(NUM_PARENTS_FOR_LAMBDA)
+                .toList()
+                .takeIf { it.size == NUM_PARENTS_FOR_LAMBDA }
+                ?.let {
+                    it[0].elementType == FUNCTION_LITERAL &&
+                            it[1].elementType == LAMBDA_EXPRESSION &&
+                            it[2].elementType == VALUE_ARGUMENT &&
+                            // lambda is not passed as a named argument
+                            !it[2].hasChildOfType(EQ)
+                }
+                ?: false
+
         val prevNode = whitespaceOrPrevNode.let { if (it.elementType == WHITE_SPACE) it.treePrev else it }
         val numWhiteSpace = whitespaceOrPrevNode.numWhiteSpaces()
         // note: the conditions in the following `if`s cannot be collapsed into simple conjunctions
         if (isFromLambdaAsArgument) {
-            if (numWhiteSpace != 0) {
+            val isFirstArgument = node
+                    .parent({ it.elementType == VALUE_ARGUMENT })
+                    .let { it?.prevSibling { prevNode -> prevNode.elementType == COMMA } == null }
+
+            // If it is lambda, then we don't force it to be on newline or same line
+            if (numWhiteSpace != 0 && isFirstArgument) {
                 WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "there should be no whitespace before '{' of lambda" +
                         " inside argument list", node.startOffset, node) {
                     whitespaceOrPrevNode.treeParent.removeChild(whitespaceOrPrevNode)
