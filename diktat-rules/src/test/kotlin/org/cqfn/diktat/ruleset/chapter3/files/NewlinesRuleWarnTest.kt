@@ -826,10 +826,10 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
         lintMethod(
                 """
                 |fun foo() {
-                |   /*z.goo().foo().qwe()
+                |   z.goo().foo().qwe()
                 |   z!!.htr().foo()
                 |   x.goo().foo().goo()
-                |   x.gf().gfh() ?: true*/
+                |   x.gf().gfh() ?: true
                 |   x.gf().fge().qwe().fd()
                 |}
             """.trimMargin(),

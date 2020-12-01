@@ -425,7 +425,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
             ?: false
 
     private fun MutableList<ASTNode>.isNotValidCalls(node: ASTNode) =
-            !(this.size == 2 && this.first().elementType == POSTFIX_EXPRESSION) && this.indexOf(node) >= configuration.maxCallsInOneLine
+            !(this.size == 2 && this.first().elementType == POSTFIX_EXPRESSION) && this.indexOf(node) + 1 > configuration.maxCallsInOneLine
 
 
     /**
