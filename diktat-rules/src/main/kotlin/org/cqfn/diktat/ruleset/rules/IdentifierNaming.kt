@@ -7,7 +7,6 @@ import com.pinterest.ktlint.core.ast.ElementType.CATCH_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.DESTRUCTURING_DECLARATION
 import com.pinterest.ktlint.core.ast.ElementType.DESTRUCTURING_DECLARATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_TYPE
-import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_PARAMETER
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
@@ -44,6 +43,7 @@ import org.cqfn.diktat.ruleset.utils.hasTestAnnotation
 import org.cqfn.diktat.ruleset.utils.isConstant
 import org.cqfn.diktat.ruleset.utils.isDigits
 import org.cqfn.diktat.ruleset.utils.isLowerCamelCase
+import org.cqfn.diktat.ruleset.utils.isOverriden
 import org.cqfn.diktat.ruleset.utils.isPascalCase
 import org.cqfn.diktat.ruleset.utils.isUpperSnakeCase
 import org.cqfn.diktat.ruleset.utils.removePrefix
@@ -349,7 +349,7 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
         val functionReturnType = node.findChildAfter(VALUE_PARAMETER_LIST, TYPE_REFERENCE)?.text
 
         // We don't need to ask subclasses to rename superclass methods
-        if (node.treeParent.findChildByType(MODIFIER_LIST)?.findChildByType(OVERRIDE_KEYWORD) == null) {
+        if (!node.treeParent.isOverriden()) {
             // if function has Boolean return type in 99% of cases it is much better to name it with isXXX or hasXXX prefix
             if (functionReturnType != null && functionReturnType == PrimitiveType.BOOLEAN.typeName.asString()) {
                 if (BOOLEAN_METHOD_PREFIXES.none { functionName.text.startsWith(it) }) {
