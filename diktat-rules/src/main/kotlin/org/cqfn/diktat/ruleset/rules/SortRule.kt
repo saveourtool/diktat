@@ -90,7 +90,7 @@ class SortRule(private val configRules: List<RulesConfig>) : Rule("sort-rule") {
         }
     }
 
-    @Suppress("LOCAL_VARIABLE_EARLY_DECLARATION")
+    @Suppress("LOCAL_VARIABLE_EARLY_DECLARATION", "TYPE_ALIAS")
     private fun createOrderListOfList(propertyList: List<ASTNode>): List<List<ASTNode>> {
         val orderListOfList: MutableList<MutableList<ASTNode>> = mutableListOf()
         var oneOrderList = mutableListOf(propertyList.first())

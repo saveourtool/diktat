@@ -105,9 +105,9 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
             checkOpenBraceOnSameLine(it, BLOCK, configuration)
             checkCloseBrace(it.findChildByType(BLOCK)!!, configuration)
         }
-        if (finallyBlock != null) {
-            checkOpenBraceOnSameLine(finallyBlock, BLOCK, configuration)
-            checkCloseBrace(finallyBlock.findChildByType(BLOCK)!!, configuration)
+        finallyBlock?.let { block ->
+            checkOpenBraceOnSameLine(block, BLOCK, configuration)
+            checkCloseBrace(block.findChildByType(BLOCK)!!, configuration)
             val newAllMiddleSpaceNodes = node.findAllNodesWithSpecificType(FINALLY).map { it.treePrev }
             checkMidBrace(newAllMiddleSpaceNodes, node, FINALLY_KEYWORD)
         }

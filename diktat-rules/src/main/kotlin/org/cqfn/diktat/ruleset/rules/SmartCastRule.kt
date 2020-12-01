@@ -122,6 +122,7 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
     /**
      * Groups is and as expressions, so that they are used in same if block
      */
+    @Suppress("TYPE_ALIAS")
     private fun groupIsAndAsExpr(isExpr: List<KtNameReferenceExpression>,
                                  asExpr: List<KtNameReferenceExpression>,
                                  prop: KtProperty)

@@ -66,19 +66,19 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
     private fun conditionInIfStatement(node: ASTNode) {
         node.findAllNodesWithSpecificType(BINARY_EXPRESSION).forEach { binaryExprNode ->
             val condition = (binaryExprNode.psi as KtBinaryExpression)
-            if (isNullCheckBinaryExpession(condition)) {
+            if (isNullCheckBinaryExpression(condition)) {
                 when (condition.operationToken) {
                     // `==` and `===` comparison can be fixed with `?:` operator
                     ElementType.EQEQ, ElementType.EQEQEQ ->
                         warnAndFixOnNullCheck(condition, true,
                             "use '.let/.also/?:/e.t.c' instead of ${condition.text}") {
-                            
+                            // todo implement fixer
                         }
                     // `!==` and `!==` comparison can be fixed with `.let/also` operators
                     ElementType.EXCLEQ, ElementType.EXCLEQEQEQ ->
                         warnAndFixOnNullCheck(condition, true,
                             "use '.let/.also/?:/e.t.c' instead of ${condition.text}") {
-                            
+                            // todo implement fixer
                         }
                     else -> return
                 }
@@ -89,7 +89,7 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
     @Suppress("COMMENT_WHITE_SPACE")
     private fun nullCheckInOtherStatements(binaryExprNode: ASTNode) {
         val condition = (binaryExprNode.psi as KtBinaryExpression)
-        if (isNullCheckBinaryExpession(condition)) {
+        if (isNullCheckBinaryExpression(condition)) {
             // require(a != null) is incorrect, Kotlin has special method: `requireNotNull` - need to use it instead
             // hierarchy is the following:
             //              require(a != null)
@@ -106,7 +106,9 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
                             condition,
                             false,
                             "use 'requireNotNull' instead of require(${condition.text})"
-                        ) {}
+                        ) {
+                            // todo implement fixer
+                        }
                     }
                 }
             }
@@ -114,7 +116,7 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
     }
 
     @Suppress("UnsafeCallOnNullableType")
-    private fun isNullCheckBinaryExpession(condition: KtBinaryExpression): Boolean =
+    private fun isNullCheckBinaryExpression(condition: KtBinaryExpression): Boolean =
             // check that binary expression has `null` as right or left operand
             setOf(condition.right, condition.left).map { it!!.node.elementType }.contains(NULL) &&
                     // checks that it is the comparison condition
