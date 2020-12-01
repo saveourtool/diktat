@@ -34,12 +34,12 @@ fun `method name incorrect, part 4`() {
 
 fun foo() {
     foo(
-            0,
-            { obj -> obj.bar() }
+        0,
+        { obj -> obj.bar() }
     )
 
     bar(
-            0, { obj -> obj.bar() }
+        0, { obj -> obj.bar() }
     )
 }
 
