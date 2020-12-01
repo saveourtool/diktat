@@ -32,11 +32,13 @@ import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER
+import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.VAL_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.VAR_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.parent
 import org.cqfn.diktat.ruleset.constants.Warnings
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_EXTRA_PROPERTY
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CONSTRUCTOR_PROPERTY
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_TOP_LEVEL
@@ -47,7 +49,7 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
-import org.jetbrains.kotlin.psi.KtNamedFunction
+import org.jetbrains.kotlin.psi.KtParameterList
 import org.jetbrains.kotlin.psi.psiUtil.parents
 
 /**
@@ -80,9 +82,23 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
                 FILE -> checkTopLevelDoc(node)
                 CLASS -> checkClassElements(node)
                 VALUE_PARAMETER -> checkValueParameter(node)
+                VALUE_PARAMETER_LIST -> checkParameterList(node)
                 else -> {
                     // this is a generated else block
                 }
+            }
+        }
+    }
+
+    private fun checkParameterList(node: ASTNode) {
+        val kdocBeforeClass = node.parent({ it.elementType == CLASS })?.findChildByType(KDOC) ?: return
+        val propertiesInKdoc = kdocBeforeClass.kDocTags()?.filter { it.knownTag == KDocKnownTag.PROPERTY}?.mapNotNull {it.getSubjectName()}
+        val propertyNames = (node.psi as KtParameterList).parameters.filter {
+            it.node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside() }
+                .mapNotNull { it.nameIdentifier?.text }
+        propertiesInKdoc?.let { kdocProperties ->
+            (kdocProperties - propertyNames).forEach {
+                KDOC_EXTRA_PROPERTY.warn(configRules, emitWarn, isFixMode, it, kdocBeforeClass.startOffset, node)
             }
         }
     }
@@ -105,15 +121,15 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
             null
         }
         val kdocBeforeClass = node.parent({ it.elementType == CLASS })!!.findChildByType(KDOC)
-        if (prevComment != null) {
-            if (kdocBeforeClass != null) {
+        if (kdocBeforeClass != null) {
+            if (prevComment != null) {
                 checkKdocBeforeClass(node, kdocBeforeClass, prevComment)
             } else {
-                createKdocWithProperty(node, prevComment)
+                checkBasicKdocBeforeClass(node, kdocBeforeClass)
             }
         } else {
-            if (kdocBeforeClass != null) {
-                checkBasicKdocBeforeClass(node, kdocBeforeClass)
+            if (prevComment != null) {
+                createKdocWithProperty(node, prevComment)
             } else {
                 createKdocBasicKdoc(node)
             }

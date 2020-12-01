@@ -404,7 +404,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
     }
 
     @Test
-    @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY)
+    @Tags(Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY), Tag(WarningNames.KDOC_EXTRA_PROPERTY))
     fun `no property kdoc`() {
         lintMethod(
                 """
@@ -416,6 +416,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |   ) {
                     |}
                 """.trimMargin(),
+                LintError(1,1, ruleId, "${KDOC_EXTRA_PROPERTY.warnText()} Name", false),
                 LintError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} add <name> to KDoc", true)
         )
     }
@@ -433,6 +434,25 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                 """.trimMargin(),
                 LintError(1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} Example"),
                 LintError(2, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} add <name> to KDoc", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.KDOC_EXTRA_PROPERTY)
+    fun `extra property in kdoc`() {
+        lintMethod(
+                """
+                    |/**
+                    | * @property name bla
+                    | * @property kek
+                    | */
+                    |class Example (
+                    |   val name: String, 
+                    |   private val surname: String
+                    |   ) {
+                    |}
+                """.trimMargin(),
+                LintError(1,1, ruleId, "${KDOC_EXTRA_PROPERTY.warnText()} kek", false)
         )
     }
 }
