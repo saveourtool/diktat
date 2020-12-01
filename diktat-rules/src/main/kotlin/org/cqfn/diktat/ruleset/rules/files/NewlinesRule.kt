@@ -100,12 +100,10 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
     companion object {
         // fixme: these token sets can be not full, need to add new once as corresponding cases are discovered.
         // error is raised if these operators are prepended by newline
-        private val lineBreakAfterOperators = TokenSet.create(ANDAND, OROR, PLUS, PLUSEQ, MINUS, MINUSEQ, MUL, MULTEQ, DIV, DIVEQ, ELVIS)
-
-        private val operatorsSameLine = TokenSet.create(ELVIS)
+        private val lineBreakAfterOperators = TokenSet.create(ANDAND, OROR, PLUS, PLUSEQ, MINUS, MINUSEQ, MUL, MULTEQ, DIV, DIVEQ)
 
         // error is raised if these operators are followed by newline
-        private val lineBreakBeforeOperators = TokenSet.create(DOT, SAFE_ACCESS, COLONCOLON, POSTFIX_EXPRESSION)
+        private val lineBreakBeforeOperators = TokenSet.create(DOT, SAFE_ACCESS, COLONCOLON, POSTFIX_EXPRESSION, ELVIS)
 
         private val expressionTypes = TokenSet.create(DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION, CALLABLE_REFERENCE_EXPRESSION, BINARY_EXPRESSION, POSTFIX_EXPRESSION)
         private val chainExpressionTypes = TokenSet.create(DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION, POSTFIX_EXPRESSION)
@@ -155,24 +153,13 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         }
         // We need to check newline only if prevCodeSibling exists. It can be not the case for unary operators, which are placed
         // at the beginning of the line.
-        if (node.getChildren(null).isNotEmpty() && node.firstChildNode.elementType in operatorsSameLine) {
-            if (node.isFollowedByNewline()){
-                WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
-                        "shouldn't be a new line after ${node.text}", node.startOffset, node) {
-                    val spaceAfter = node.parent({it.treeNext != null}, strict = false)?.treeNext
-                    val parentSpace = spaceAfter?.treeParent
-                    parentSpace?.removeChild(spaceAfter)
-                }
-            }
-        } else  {
-            if (node.prevCodeSibling()?.isFollowedByNewline() == true) {
-                WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
-                        "should break a line after and not before ${node.text}", node.startOffset, node) {
-                    node.run {
-                        treeParent.removeChild(treePrev)
-                        if (!isFollowedByNewline()) {
-                            treeParent.appendNewlineMergingWhiteSpace(treeNext.takeIf { it.elementType == WHITE_SPACE }, treeNext)
-                        }
+        if (node.prevCodeSibling()?.isFollowedByNewline() == true) {
+            WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
+                    "should break a line after and not before ${node.text}", node.startOffset, node) {
+                node.run {
+                    treeParent.removeChild(treePrev)
+                    if (!isFollowedByNewline()) {
+                        treeParent.appendNewlineMergingWhiteSpace(treeNext.takeIf { it.elementType == WHITE_SPACE }, treeNext)
                     }
                 }
             }
@@ -184,7 +171,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         if (node.isDotFromPackageOrImport()) {
             return
         }
-        val isIncorrect = node.run {
+        val isIncorrect = (if (node.elementType == ELVIS) node.treeParent else node).run {
             if (isCallsChain()) {
                 val isSingleLineIfElse = parent({ it.elementType == IF }, true)?.isSingleLineIfElse() ?: false
                 // to follow functional style these operators should be started by newline

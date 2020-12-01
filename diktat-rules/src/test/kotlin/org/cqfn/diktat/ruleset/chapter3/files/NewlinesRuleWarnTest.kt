@@ -129,7 +129,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 LintError(3, 9, ruleId, "$shouldBreakAfter &&", true),
                 LintError(8, 8, ruleId, "$shouldBreakBefore .", true),
                 LintError(10, 8, ruleId, "$shouldBreakBefore ?.", true),
-                LintError(12,9, ruleId, "${WRONG_NEWLINES.warnText()} shouldn't be a new line after ?:", true),
+                LintError(12,9, ruleId, "$shouldBreakBefore ?:", true),
                 LintError(14, 8, ruleId, "$shouldBreakBefore ::", true)
         )
     }
@@ -779,7 +779,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
 
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
-    fun `should warn dot qualifided with exclexcl`() {
+    fun `should warn elvis`() {
         lintMethod(
                 """
                 |fun foo() {
@@ -794,7 +794,23 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |   y.ds()?:gh()
                 |}
             """.trimMargin(),
-                LintError(4,8, ruleId, "${WRONG_NEWLINES.warnText()} shouldn't be a new line after ?:", true)
+                LintError(4,8, ruleId, "$shouldBreakBefore ?:", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
+    fun `should warn elvis with several dot qualifided`() {
+        lintMethod(
+                """
+                |fun foo() {
+                |   z.goo()
+                |       ?:
+                |        goo().gor().goo()
+                |}
+            """.trimMargin(),
+                LintError(3,8, ruleId, "$shouldBreakBefore ?:", true),
+                LintError(4,20, ruleId, "$functionalStyleWarn .", true)
         )
     }
 }
