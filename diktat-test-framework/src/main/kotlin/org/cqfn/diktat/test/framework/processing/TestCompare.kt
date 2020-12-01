@@ -82,7 +82,7 @@ open class TestCompare : TestBase {
 
     private fun buildFullPathToResource(resourceFile: String, resourceAbsolutePath: String): File {
         val fileUrl = javaClass.classLoader.getResource("$resourceAbsolutePath/$resourceFile")
-        require(fileUrl != null) { "Cannot read resource file $$resourceAbsolutePath/$resourceFile - it cannot be found in resources" }
+        requireNotNull(fileUrl) { "Cannot read resource file $$resourceAbsolutePath/$resourceFile - it cannot be found in resources" }
         return File(fileUrl.file)
     }
 

@@ -38,25 +38,22 @@ class TestArgumentsReader(
      * List of tests provided by user
      */
     val tests: List<String> by lazy {
-        val tests = cmd.getOptionValue("t")
-        if (tests == null) {
-            log.error("""Missing option --test or -t. Not able to run tests, please provide test names or use --all
-                         option to run all available tests""")
-            exitProcess(2)
-        }
+        val tests: String? = cmd.getOptionValue("t")
         tests
-            .split(",")
-            .map { it.trim() }
+            ?.split(",")
+            ?.map { it.trim() }
+            ?: run {
+                log.error("""Missing option --test or -t. Not able to run tests, please provide test names or use --all
+                         option to run all available tests""")
+                exitProcess(2)
+            }
     }
     private val declaredOptions: Options by lazy {
         val options = Options()
-        if (cliArguments != null) {
-            cliArguments
-                .map { it.convertToOption() }
-                .forEach { opt -> options.addOption(opt) }
-        } else {
-            exitProcess(1)
-        }
+        cliArguments
+            ?.map { it.convertToOption() }
+            ?.forEach { opt -> options.addOption(opt) }
+            ?: exitProcess(1)
         options
     }
 

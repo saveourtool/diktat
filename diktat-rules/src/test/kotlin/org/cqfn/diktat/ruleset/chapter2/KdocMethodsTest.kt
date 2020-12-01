@@ -344,7 +344,7 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
     @Tag(WarningNames.MISSING_KDOC_ON_FUNCTION)
     fun `should not trigger on override funcs`() {
         lintMethod(
-                """
+            """
                     |class Some : A {
                     |   override fun foo() {}
                     |   

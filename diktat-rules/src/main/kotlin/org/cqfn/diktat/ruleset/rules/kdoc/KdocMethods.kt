@@ -24,6 +24,7 @@ import org.cqfn.diktat.ruleset.utils.insertTagBefore
 import org.cqfn.diktat.ruleset.utils.isAccessibleOutside
 import org.cqfn.diktat.ruleset.utils.isGetterOrSetter
 import org.cqfn.diktat.ruleset.utils.isLocatedInTest
+import org.cqfn.diktat.ruleset.utils.isOverridden
 import org.cqfn.diktat.ruleset.utils.isStandardMethod
 import org.cqfn.diktat.ruleset.utils.kDocTags
 import org.cqfn.diktat.ruleset.utils.parameterNames
@@ -48,10 +49,6 @@ import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.THROW
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.WHEN_CONDITION_WITH_EXPRESSION
-import org.cqfn.diktat.ruleset.utils.findChildAfter
-import org.cqfn.diktat.ruleset.utils.findChildBefore
-import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
-import org.cqfn.diktat.ruleset.utils.isOverridden
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl

@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory
 
 import java.io.File
 import java.io.IOException
+import java.net.URL
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.stream.Stream
 
@@ -21,13 +22,14 @@ import kotlin.system.exitProcess
 @Suppress("ForbiddenComment")
 class TestProcessingFactory(private val argReader: TestArgumentsReader) {
     private val allTestsFromResources: List<String> by lazy {
-        val fileUrl = javaClass.getResource("/${argReader.properties.testConfigsRelativePath}")
-        if (fileUrl == null) {
-            log.error("Not able to get directory with test configuration files: " +
-                    argReader.properties.testConfigsRelativePath)
-            exitProcess(5)
-        }
-        val resource = File(fileUrl.file)
+        val fileUrl: URL? = javaClass.getResource("/${argReader.properties.testConfigsRelativePath}")
+        val resource = fileUrl
+            ?.let { File(it.file) }
+            ?: run {
+                log.error("Not able to get directory with test configuration files: " +
+                        argReader.properties.testConfigsRelativePath)
+                exitProcess(5)
+            }
         try {
             resource
                 .walk()
