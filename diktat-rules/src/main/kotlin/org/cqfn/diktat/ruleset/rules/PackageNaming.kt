@@ -206,16 +206,17 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
         val generatedPackageDirective = KotlinParser()
             .createNode("$PACKAGE_KEYWORD $packageName", true)
 
-        if (packageNameNode == null) {
-            // there is missing package statement in a file, so it will be created and inserted
-            val newPackageDirective = generatedPackageDirective.findLeafWithSpecificType(PACKAGE_DIRECTIVE)!!
-            packageDirectiveNode.treeParent.replaceChild(packageDirectiveNode, newPackageDirective)
-            newPackageDirective.treeParent.addChild(PsiWhiteSpaceImpl("\n\n"), newPackageDirective.treeNext)
-        } else {
+        packageNameNode?.let {
             // simply replacing only node connected with the package name, all other nodes remain unchanged
             packageDirectiveNode.replaceChild(packageNameNode,
                 generatedPackageDirective.findLeafWithSpecificType(DOT_QUALIFIED_EXPRESSION)!!)
         }
+            ?: run {
+                // there is missing package statement in a file, so it will be created and inserted
+                val newPackageDirective = generatedPackageDirective.findLeafWithSpecificType(PACKAGE_DIRECTIVE)!!
+                packageDirectiveNode.treeParent.replaceChild(packageDirectiveNode, newPackageDirective)
+                newPackageDirective.treeParent.addChild(PsiWhiteSpaceImpl("\n\n"), newPackageDirective.treeNext)
+            }
     }
 
     /**

@@ -90,7 +90,7 @@ class WhenMustHaveElseRule(private val configRules: List<RulesConfig>) : Rule("n
                 // `when` is used in an assignment or in a function with expression body
                 false
             }
-                ?: !node.hasParent(PROPERTY)
+            ?: !node.hasParent(PROPERTY)
     }
 
     /**
