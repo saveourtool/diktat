@@ -18,8 +18,8 @@ import com.pinterest.ktlint.core.ast.ElementType.FILE_ANNOTATION_LIST
 import com.pinterest.ktlint.core.ast.ElementType.INTERNAL_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
-import com.pinterest.ktlint.core.ast.ElementType.OVERRIDE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
+import com.pinterest.ktlint.core.ast.ElementType.OVERRIDE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PRIVATE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PROTECTED_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PUBLIC_KEYWORD
@@ -454,7 +454,8 @@ fun ASTNode.hasSuppress(warningName: String) = parent({ node ->
  * Checks node has `override` modifier
  */
 fun ASTNode.isOverridden(): Boolean =
-    findChildByType(MODIFIER_LIST)?.findChildByType(OVERRIDE_KEYWORD) != null
+        findChildByType(MODIFIER_LIST)?.findChildByType(OVERRIDE_KEYWORD) != null
+
 /**
  * creation of operation reference in a node
  */

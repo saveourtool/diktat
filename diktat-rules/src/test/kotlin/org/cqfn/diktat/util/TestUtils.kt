@@ -35,19 +35,24 @@ internal fun List<LintError>.assertEquals(vararg expectedLintErrors: LintError) 
             .allSatisfy { actual ->
                 val expected = expectedLintErrors[this.indexOf(actual)]
                 SoftAssertions.assertSoftly {
-                    it.assertThat(actual.line)
+                    it
+                        .assertThat(actual.line)
                         .`as`("Line")
                         .isEqualTo(expected.line)
-                    it.assertThat(actual.col)
+                    it
+                        .assertThat(actual.col)
                         .`as`("Column")
                         .isEqualTo(expected.col)
-                    it.assertThat(actual.ruleId)
+                    it
+                        .assertThat(actual.ruleId)
                         .`as`("Rule id")
                         .isEqualTo(expected.ruleId)
-                    it.assertThat(actual.detail)
+                    it
+                        .assertThat(actual.detail)
                         .`as`("Detailed message")
                         .isEqualTo(expected.detail)
-                    it.assertThat(actual.canBeAutoCorrected)
+                    it
+                        .assertThat(actual.canBeAutoCorrected)
                         .`as`("Can be autocorrected")
                         .isEqualTo(expected.canBeAutoCorrected)
                 }
@@ -115,7 +120,8 @@ internal fun applyToCode(code: String,
             cb = { _, _ -> Unit }
         )
     )
-    Assertions.assertThat(counter.get())
+    Assertions
+        .assertThat(counter.get())
         .`as`("Number of expected asserts")
         .isEqualTo(expectedAsserts)
 }

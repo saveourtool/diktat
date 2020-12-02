@@ -14,6 +14,7 @@ import kotlin.io.path.writeText
  * FixMe: `@Parameter` properties are not initialized with default values
  */
 @OptIn(ExperimentalPathApi::class)
+@Suppress("TOO_LONG_FUNCTION")
 class DiktatBaseMojoTest {
     @get:Rule
     val mojoRule = MojoRule()
