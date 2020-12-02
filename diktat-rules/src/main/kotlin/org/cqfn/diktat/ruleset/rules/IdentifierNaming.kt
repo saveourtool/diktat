@@ -32,7 +32,7 @@ import org.cqfn.diktat.ruleset.utils.hasTestAnnotation
 import org.cqfn.diktat.ruleset.utils.isConstant
 import org.cqfn.diktat.ruleset.utils.isDigits
 import org.cqfn.diktat.ruleset.utils.isLowerCamelCase
-import org.cqfn.diktat.ruleset.utils.isOverriden
+import org.cqfn.diktat.ruleset.utils.isOverridden
 import org.cqfn.diktat.ruleset.utils.isPascalCase
 import org.cqfn.diktat.ruleset.utils.isTextLengthInRange
 import org.cqfn.diktat.ruleset.utils.isUpperSnakeCase

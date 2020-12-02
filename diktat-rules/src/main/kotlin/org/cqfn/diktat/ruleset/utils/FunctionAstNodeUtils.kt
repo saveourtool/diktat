@@ -65,13 +65,6 @@ fun ASTNode.isStandardMethod() = also(::checkNodeIsFun)
     ?.let { it.text in standardMethods }
     ?: false
 
-/**
- * @return whether this function has `override` modifier
- */
-fun ASTNode.isOverridden(): Boolean =
-        getFirstChildWithType(MODIFIER_LIST)
-            ?.hasChildOfType(OVERRIDE_KEYWORD) ?: false
-
 private fun ASTNode.argList(): ASTNode? {
     checkNodeIsFun(this)
     return this.getFirstChildWithType(ElementType.VALUE_PARAMETER_LIST)
