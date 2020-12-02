@@ -28,4 +28,9 @@ open class DiktatExtension {
      * Paths that will be scanned for .kt(s) files
      */
     lateinit var inputs: FileCollection
+
+    /**
+     * Paths that will be excluded from diktat run
+     */
+    var excludes: FileCollection? = null
 }
