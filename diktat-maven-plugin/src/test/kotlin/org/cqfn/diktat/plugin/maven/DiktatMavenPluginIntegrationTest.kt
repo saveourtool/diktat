@@ -11,6 +11,7 @@ import kotlin.io.path.readText
 /**
  * Integration tests for diktat-maven-plugin.
  * Run against the project from diktat-examples.
+ * Note: for maven itf test name should equal example project's directory name, which we have in pom.xml.
  */
 @OptIn(ExperimentalPathApi::class)
 @MavenJupiterExtension
@@ -29,5 +30,6 @@ class DiktatMavenPluginIntegrationTest {
         Assertions.assertTrue(
             mavenLog.contains("[HEADER_MISSING_OR_WRONG_COPYRIGHT]")
         )
+
     }
 }
