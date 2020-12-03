@@ -81,6 +81,7 @@ abstract class VariablesSearch(val node: ASTNode, private val filterForVariables
      *  all these scopes are on lower level of inheritance that's why if in one of these scopes we will find any
      *  variable declaration with the same name - we will understand that it is usage of another variable
      */
+    @Suppress("WRONG_NEWLINES")
     protected fun isReferenceToOtherVariableWithSameName(expression: KtNameReferenceExpression,
                                                          codeBlock: KtElement,
                                                          property: KtProperty) = expression.parents

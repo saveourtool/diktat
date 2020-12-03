@@ -434,6 +434,7 @@ fun ASTNode?.isAccessibleOutside(): Boolean =
  * @param warningName a name of the warning which is checked
  * @return boolean result
  */
+@Suppress("WRONG_NEWLINES")
 fun ASTNode.hasSuppress(warningName: String) = parent({ node ->
     val annotationNode = if (node.elementType != FILE) {
         node.findChildByType(MODIFIER_LIST)
@@ -530,7 +531,7 @@ fun ASTNode.moveChildBefore(
  *
  * @return a LBRACE node or `null` if it can't be found
  */
-@Suppress("UnsafeCallOnNullableType", "FUNCTION_NAME_INCORRECT_CASE")
+@Suppress("UnsafeCallOnNullableType", "FUNCTION_NAME_INCORRECT_CASE", "WRONG_NEWLINES")
 fun ASTNode.findLBrace(): ASTNode? = when (this.elementType) {
     ElementType.THEN, ElementType.ELSE, ElementType.FUN, ElementType.TRY, ElementType.CATCH, ElementType.FINALLY ->
         this.findChildByType(ElementType.BLOCK)?.findChildByType(LBRACE)
@@ -635,7 +636,7 @@ fun List<ASTNode>.handleIncorrectOrder(
  * This method returns text of this [ASTNode] plus text from it's siblings after last and until next newline, if present in siblings.
  * I.e., if this node occupies no more than a single line, this whole line or it's part will be returned.
  */
-@Suppress("LOCAL_VARIABLE_EARLY_DECLARATION")
+@Suppress("LOCAL_VARIABLE_EARLY_DECLARATION", "WRONG_NEWLINES")
 fun ASTNode.extractLineOfText(): String {
     var text: MutableList<String> = mutableListOf()
     siblings(false)

@@ -136,6 +136,7 @@ class LongNumericalValuesSeparatedRule(private val configRules: List<RulesConfig
         }
     }
 
+    @Suppress("WRONG_NEWLINES")
     private fun removePrefixSuffix(text: String): String {
         if (text.startsWith("0x")) {
             return text.removePrefix("0x")

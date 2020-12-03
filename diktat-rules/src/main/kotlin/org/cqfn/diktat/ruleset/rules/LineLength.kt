@@ -311,6 +311,7 @@ class LineLength(private val configRules: List<RulesConfig>) : Rule("line-length
      *@param node node in which to search
      *@param binList mutable list of ASTNode to store nodes
      */
+    @Suppress("WRONG_NEWLINES")
     private fun searchBinaryExpression(node: ASTNode, binList: MutableList<ASTNode>) {
         if (node.hasChildOfType(BINARY_EXPRESSION) || node.hasChildOfType(PARENTHESIZED) ||
                 node.hasChildOfType(POSTFIX_EXPRESSION)) {

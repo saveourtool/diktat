@@ -327,6 +327,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         }
     }
 
+    @Suppress("WRONG_NEWLINES")
     private fun handleFirstValueParameter(node: ASTNode) = node
         .children()
         .takeWhile { !it.textContains('\n') }
@@ -432,6 +433,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
     private fun ASTNode.getParentExpressions() =
             parents().takeWhile { it.elementType in chainExpressionTypes && it.elementType != LAMBDA_ARGUMENT }
 
+    @Suppress("WRONG_NEWLINES")
     private fun isMultilineLambda(node: ASTNode): Boolean =
             node.findAllNodesWithSpecificType(LAMBDA_ARGUMENT)
                 .firstOrNull()

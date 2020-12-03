@@ -95,7 +95,7 @@ class UselessSupertype(private val configRules: List<RulesConfig>) : Rule("usele
      * @param node - node of type DOT_QUALIFIED_EXPRESSION
      * @return pair of identifier
      */
-    @Suppress("UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType", "WRONG_NEWLINES")
     private fun findFunWithSuper(node: ASTNode) = Pair(
         node.findChildByType(SUPER_EXPRESSION)
             ?.findChildByType(TYPE_REFERENCE)
@@ -116,7 +116,7 @@ class UselessSupertype(private val configRules: List<RulesConfig>) : Rule("usele
      * @param methodsName - name of overrides methods
      * @return map name of method and the number of times it meets
      */
-    @Suppress("UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType", "WRONG_NEWLINES")
     private fun findAllSupers(superTypeList: List<ASTNode>, methodsName: List<String>): Map<String, Int>? {
         val fileNode = superTypeList.first().parent({ it.elementType == FILE })!!
         val superNodesIdentifier = superTypeList.map {
