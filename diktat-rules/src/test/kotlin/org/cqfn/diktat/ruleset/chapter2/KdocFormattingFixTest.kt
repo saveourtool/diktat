@@ -1,14 +1,14 @@
 package org.cqfn.diktat.ruleset.chapter2
 
-import generated.WarningNames
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocFormatting
 import org.cqfn.diktat.util.FixTestBase
+
+import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Tags
 import org.junit.jupiter.api.Test
 
-class KdocFormattingFixTest: FixTestBase("test/paragraph2/kdoc/", ::KdocFormatting) {
-
+class KdocFormattingFixTest : FixTestBase("test/paragraph2/kdoc/", ::KdocFormatting) {
     @Test
     @Tag(WarningNames.KDOC_WRONG_SPACES_AFTER_TAG)
     fun `there should be exactly one white space after tag name`() {

@@ -7,15 +7,13 @@ import org.cqfn.diktat.util.FixTestBase
 import org.junit.jupiter.api.Test
 
 class LineLengthFixTest : FixTestBase("test/paragraph3/long_line", ::LineLength) {
-
     private val rulesConfigListLineLength: List<RulesConfig> = listOf(
-            RulesConfig(LONG_LINE.name, true,
-                    mapOf("lineLength" to "50"))
+        RulesConfig(LONG_LINE.name, true,
+            mapOf("lineLength" to "50"))
     )
-
     private val rulesConfigListShortLineLength: List<RulesConfig> = listOf(
-            RulesConfig(LONG_LINE.name, true,
-                    mapOf("lineLength" to "20"))
+        RulesConfig(LONG_LINE.name, true,
+            mapOf("lineLength" to "20"))
     )
 
     @Test
@@ -42,7 +40,6 @@ class LineLengthFixTest : FixTestBase("test/paragraph3/long_line", ::LineLength)
     fun `should fix short long right value`() {
         fixAndCompare("LongShortRValueExpected.kt", "LongShortRValueTest.kt", rulesConfigListShortLineLength)
     }
-
 
     @Test
     fun `shouldn't fix`() {

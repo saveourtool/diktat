@@ -16,12 +16,12 @@ import kotlinx.serialization.Serializable
 @Serializable
 @Suppress("ForbiddenComment")
 class TestConfig internal constructor(
-        val executionCommand: String,
-        val expectedResultFile: String,
-        val testFile: String,
-        val executionType: ExecutionType,
-        @SerialName("profile") val testProfile: TestProfile,
-        val inPlace: Boolean = false
+    val executionCommand: String,
+    val expectedResultFile: String,
+    val testFile: String,
+    val executionType: ExecutionType,
+    @SerialName("profile") val testProfile: TestProfile,
+    val inPlace: Boolean = false
 ) {
     /**
      * test name - it is not included in config content, but is injected on runtime by setter

@@ -1,14 +1,13 @@
 package org.cqfn.diktat.ruleset.chapter2
 
-import generated.WarningNames
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocComments
 import org.cqfn.diktat.util.FixTestBase
+
+import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class KdocCommentsFixTest: FixTestBase("test/paragraph2/kdoc/", ::KdocComments) {
-
-
+class KdocCommentsFixTest : FixTestBase("test/paragraph2/kdoc/", ::KdocComments) {
     @Test
     @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY)
     fun `check fix with class kdoc`() {

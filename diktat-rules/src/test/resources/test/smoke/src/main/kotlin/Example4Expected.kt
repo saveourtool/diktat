@@ -24,11 +24,22 @@ fun `method name incorrect, part 4`() {
     lintMethod(code, LintError(2, 7, ruleId, "${FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREE", true))
 
     foo
-            // we are calling bar
-            .bar()
+        // we are calling bar
+        .bar()
 
     bar
-            /* This is a block comment */
-            .foo()
+        /* This is a block comment */
+        .foo()
+}
+
+fun foo() {
+    foo(
+        0,
+        { obj -> obj.bar() }
+    )
+
+    bar(
+        0, { obj -> obj.bar() }
+    )
 }
 

@@ -17,11 +17,11 @@ class HttpClient(var name: String) {
 
 fun mains() {
     val httpClient = HttpClient("myConnection")
-            .apply {
-                url = "http://example.com"
-                port = "8080"
-                timeout = 100
-            }
+        .apply {
+            url = "http://example.com"
+            port = "8080"
+            timeout = 100
+        }
     httpClient.doRequest()
 }
 

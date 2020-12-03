@@ -1,5 +1,14 @@
 package org.cqfn.diktat.ruleset.rules.files
 
+import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ruleset.constants.EmitType
+import org.cqfn.diktat.ruleset.constants.Warnings.TOO_MANY_BLANK_LINES
+import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
+import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
+import org.cqfn.diktat.ruleset.utils.leaveExactlyNumNewLines
+import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
+import org.cqfn.diktat.ruleset.utils.numNewLines
+
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
@@ -9,13 +18,6 @@ import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
-import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.Warnings.TOO_MANY_BLANK_LINES
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
-import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
-import org.cqfn.diktat.ruleset.utils.leaveExactlyNumNewLines
-import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
-import org.cqfn.diktat.ruleset.utils.numNewLines
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 /**
@@ -24,12 +26,12 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
  * 2. Checks that blank lines are not put in the beginning or at the end of code blocks with curly braces
  */
 class BlankLinesRule(private val configRules: List<RulesConfig>) : Rule("blank-lines") {
-    private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
+    private lateinit var emitWarn: EmitType
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
-                       emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
+                       emit: EmitType) {
         emitWarn = emit
         isFixMode = autoCorrect
 
@@ -58,10 +60,11 @@ class BlankLinesRule(private val configRules: List<RulesConfig>) : Rule("blank-l
 
     private fun handleTooManyBlankLines(node: ASTNode) {
         TOO_MANY_BLANK_LINES.warnAndFix(configRules, emitWarn, isFixMode, "do not use more than two consecutive blank lines", node.startOffset, node) {
-            if (node.treeParent.elementType != FILE && node.treeParent.getFirstChildWithType(WHITE_SPACE) == node)
+            if (node.treeParent.elementType != FILE && node.treeParent.getFirstChildWithType(WHITE_SPACE) == node) {
                 node.leaveExactlyNumNewLines(1)
-            else
+            } else {
                 node.leaveExactlyNumNewLines(2)
+            }
         }
     }
 }

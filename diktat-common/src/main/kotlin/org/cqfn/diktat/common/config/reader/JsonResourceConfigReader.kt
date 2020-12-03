@@ -28,15 +28,14 @@ abstract class JsonResourceConfigReader<T> {
      */
     fun readResource(resourceFileName: String): T? {
         val resourceStream = getConfigFile(resourceFileName)
-        if (resourceStream == null) {
-            log.error("Not able to open file $resourceFileName from the resources")
-        } else {
+        resourceStream?.let {
             try {
-                return parseResource(resourceStream)
+                return parseResource(it)
             } catch (e: IOException) {
                 log.error("Cannot read config file $resourceFileName due to: ", e)
             }
         }
+            ?: log.error("Not able to open file $resourceFileName from the resources")
         return null
     }
 
