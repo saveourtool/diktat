@@ -38,6 +38,7 @@ class StatelessClassesRule(private val configRule: List<RulesConfig>) : Rule("st
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun handleClass(node: ASTNode) {
         if (isStatelessClass(node) && isClassExtendsInterface(node)) {
             Warnings.OBJECT_IS_PREFERRED.warnAndFix(configRule, emitWarn, isFixMode,
