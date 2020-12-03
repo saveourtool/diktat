@@ -54,8 +54,8 @@ class MethodNamingWarnTest : LintTestBase(::IdentifierNaming) {
                     }
                 """.trimIndent()
         lintMethod(code,
-                LintError(1, 12, ruleId, "${FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREE", true),
-                LintError(2, 9, ruleId, "${FUNCTION_NAME_INCORRECT_CASE.warnText()} TEST", true)
+            LintError(1, 12, ruleId, "${FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREE", true),
+            LintError(2, 9, ruleId, "${FUNCTION_NAME_INCORRECT_CASE.warnText()} TEST", true)
         )
     }
 

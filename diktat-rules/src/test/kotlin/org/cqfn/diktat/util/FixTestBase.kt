@@ -22,10 +22,9 @@ open class FixTestBase(protected val resourceFilePath: String,
                 ruleSupplier: (rulesConfigList: List<RulesConfig>) -> Rule,
                 rulesConfigList: List<RulesConfig>? = null,
                 cb: LintErrorCallback = defaultCallback) : this(
-            resourceFilePath,
-            { overrideRulesConfigList -> DiktatRuleSetProvider4Test(ruleSupplier, overrideRulesConfigList) },
-            cb,
-            rulesConfigList
+        resourceFilePath, { overrideRulesConfigList -> DiktatRuleSetProvider4Test(ruleSupplier, overrideRulesConfigList) },
+        cb,
+        rulesConfigList
     )
 
     /**
@@ -34,8 +33,8 @@ open class FixTestBase(protected val resourceFilePath: String,
      */
     protected fun fixAndCompare(expectedPath: String, testPath: String) {
         Assertions.assertTrue(
-                testComparatorUnit
-                        .compareFilesFromResources(expectedPath, testPath)
+            testComparatorUnit
+                .compareFilesFromResources(expectedPath, testPath)
         )
     }
 
@@ -51,8 +50,8 @@ open class FixTestBase(protected val resourceFilePath: String,
             format(ruleSetProviderRef, text, fileName, overrideRulesConfigList)
         }
         Assertions.assertTrue(
-                testComparatorUnit
-                        .compareFilesFromResources(expectedPath, testPath)
+            testComparatorUnit
+                .compareFilesFromResources(expectedPath, testPath)
         )
     }
 }

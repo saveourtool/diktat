@@ -18,7 +18,6 @@ class DiktatJavaExecTaskTest {
 
     @Test
     fun `check command line for various inputs`() {
-        val pwd = project.file(".")
         assertCommandLineEquals(
             listOf(null, "\"${listOf("src", "**", "*.kt").joinToString(File.separator)}\""),
             DiktatExtension().apply {
@@ -29,7 +28,6 @@ class DiktatJavaExecTaskTest {
 
     @Test
     fun `check command line in debug mode`() {
-        val pwd = project.file(".")
         assertCommandLineEquals(
             listOf(null, "--debug", "\"${listOf("src", "**", "*.kt").joinToString(File.separator)}\""),
             DiktatExtension().apply {
@@ -41,7 +39,6 @@ class DiktatJavaExecTaskTest {
 
     @Test
     fun `check command line with excludes`() {
-        val pwd = project.file(".")
         assertCommandLineEquals(
             listOf(null, "\"${listOf("src", "**", "*.kt").joinToString(File.separator)}\"",
                 "\"!${listOf("src", "main", "kotlin", "generated").joinToString(File.separator)}\""

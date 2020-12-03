@@ -1,5 +1,13 @@
+/**
+ * Utility methods to work with sequences
+ */
+
 package org.cqfn.diktat.ruleset.utils
 
+/**
+ * @param pred a predicate
+ * @return filtered sequence
+ */
 fun <T> Sequence<T>.takeWhileInclusive(pred: (T) -> Boolean): Sequence<T> {
     var shouldContinue = true
     return takeWhile {
