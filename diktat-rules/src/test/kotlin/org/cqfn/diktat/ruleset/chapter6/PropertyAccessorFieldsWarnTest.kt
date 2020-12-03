@@ -1,23 +1,23 @@
 package org.cqfn.diktat.ruleset.chapter6
 
-import com.pinterest.ktlint.core.LintError
-import generated.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.PropertyAccessorFields
 import org.cqfn.diktat.util.LintTestBase
+
+import com.pinterest.ktlint.core.LintError
+import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class PropertyAccessorFieldsWarnTest : LintTestBase(::PropertyAccessorFields) {
-
     private val ruleId = "$DIKTAT_RULE_SET_ID:getter-setter-fields"
 
     @Test
     @Tag(WarningNames.WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR)
     fun `check simple correct examples`() {
         lintMethod(
-                """
+            """
                     |class A {
                     |
                     |   var isEmpty: Boolean = false
@@ -45,7 +45,7 @@ class PropertyAccessorFieldsWarnTest : LintTestBase(::PropertyAccessorFields) {
     @Tag(WarningNames.WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR)
     fun `check wrong setter and getter examples`() {
         lintMethod(
-                """
+            """
                     |class A {
                     |
                     |   var isEmpty: Boolean = false
@@ -70,17 +70,18 @@ class PropertyAccessorFieldsWarnTest : LintTestBase(::PropertyAccessorFields) {
                     |   }
                     |}
                 """.trimMargin(),
-                LintError(4, 4, ruleId, "${WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warnText()} set(values) {..."),
-                LintError(14, 4, ruleId, "${WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warnText()} get() {..."),
-                LintError(20, 4, ruleId, "${WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warnText()} set(values) {...")
+            LintError(4, 4, ruleId, "${WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warnText()} set(values) {..."),
+            LintError(14, 4, ruleId, "${WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warnText()} get() {..."),
+            LintError(20, 4, ruleId, "${WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warnText()} set(values) {...")
         )
     }
 
     @Test
     @Tag(WarningNames.WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR)
+    @Suppress("TOO_LONG_FUNCTION")
     fun `check examples with local var`() {
         lintMethod(
-                """
+            """
                     |class A {
                     |
                     |   var isEmpty: Boolean = false
@@ -111,9 +112,9 @@ class PropertyAccessorFieldsWarnTest : LintTestBase(::PropertyAccessorFields) {
                     |   get() = field
                     |}
                 """.trimMargin(),
-                LintError(4, 4, ruleId, "${WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warnText()} set(values) {..."),
-                LintError(18, 4, ruleId, "${WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warnText()} set(valuess) {..."),
-                LintError(24, 4, ruleId, "${WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warnText()} set(value) {...")
+            LintError(4, 4, ruleId, "${WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warnText()} set(values) {..."),
+            LintError(18, 4, ruleId, "${WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warnText()} set(valuess) {..."),
+            LintError(24, 4, ruleId, "${WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warnText()} set(value) {...")
         )
     }
 }

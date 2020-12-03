@@ -96,7 +96,7 @@ class KotlinParserTest {
     }
 
     @Test
-    @Suppress("UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION", "AVOID_NULL_CHECKS")
     fun `test multiline class code compare with applyToCode`() {
         val emptyClass = """
             |package org.cqfn.diktat.ruleset.utils
@@ -105,9 +105,6 @@ class KotlinParserTest {
             |
             |class A {
             |}
-            """.trimMargin()
-        val function = """
-            |fun foo() = "Hello"
             """.trimMargin()
         var nodeToApply: ASTNode? = null
         applyToCode(emptyClass, 0) { newNode, _ ->
@@ -132,6 +129,9 @@ class KotlinParserTest {
         }
         Assertions.assertTrue(nodeToApply!!.prettyPrint() == KotlinParser().createNode(emptyClass, true).prettyPrint())
         val classNode = nodeToApply!!.findChildByType(CLASS)!!.findChildByType(CLASS_BODY)!!
+        val function = """
+            |fun foo() = "Hello"
+            """.trimMargin()
         classNode.addChild(KotlinParser().createNode(function), classNode.findChildByType(RBRACE))
         classNode.addChild(PsiWhiteSpaceImpl("\n"), classNode.findChildByType(RBRACE))
         Assertions.assertTrue(nodeToApply!!.prettyPrint() == resultNode!!.prettyPrint())
@@ -195,13 +195,14 @@ class KotlinParserTest {
             |*/
             |fun foo()
             """.trimMargin()
+        val node = KotlinParser().createNode(code)
+        Assertions.assertEquals(KDOC, node.findChildByType(FUN)!!.firstChildNode.elementType)
+
         val kdocText = """
             /**
             * [link]haha
             */
         """.trimIndent()
-        val node = KotlinParser().createNode(code)
-        Assertions.assertEquals(KDOC, node.findChildByType(FUN)!!.firstChildNode.elementType)
         Assertions.assertEquals(kdocText, node.findChildByType(FUN)!!.firstChildNode.text)
     }
 }

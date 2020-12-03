@@ -1,5 +1,11 @@
 package org.cqfn.diktat.ruleset.rules.files
 
+import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ruleset.constants.EmitType
+import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_WHITESPACE
+import org.cqfn.diktat.ruleset.utils.hasChildOfType
+import org.cqfn.diktat.ruleset.utils.log
+
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.ARROW
@@ -60,10 +66,6 @@ import com.pinterest.ktlint.core.ast.isPartOfComment
 import com.pinterest.ktlint.core.ast.nextCodeLeaf
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevSibling
-import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_WHITESPACE
-import org.cqfn.diktat.ruleset.utils.hasChildOfType
-import org.cqfn.diktat.ruleset.utils.log
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -90,29 +92,12 @@ import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
  */
 @Suppress("ForbiddenComment")
 class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizontal-whitespace") {
-    companion object {
-        private val keywordsWithSpaceAfter = TokenSet.create(
-                // these keywords are followed by {
-                ELSE_KEYWORD, TRY_KEYWORD, DO_KEYWORD, FINALLY_KEYWORD, INIT_KEYWORD,
-                // these keywords are followed by (
-                FOR_KEYWORD, IF_KEYWORD, WHILE_KEYWORD, CATCH_KEYWORD,
-                // these keywords can be followed by either { or (
-                WHEN_KEYWORD
-        )
-
-        val operatorsWithNoWhitespace = TokenSet.create(DOT, RANGE, COLONCOLON, SAFE_ACCESS, EXCLEXCL)
-
-        // this is the number of parent nodes needed to check if this node is lambda from argument list
-        private const val numParentsForLambda = 3
-    }
-
-    private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
-
+    private lateinit var emitWarn: EmitType
     @Suppress("ComplexMethod")
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
-                       emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
+                       emit: EmitType) {
         emitWarn = emit
         isFixMode = autoCorrect
 
@@ -126,24 +111,28 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
             COLON -> handleColon(node)
             COLONCOLON -> handleColonColon(node)
             COMMA, SEMICOLON -> handleToken(node, 0, 1)
-            QUEST -> if (node.treeParent.elementType == NULLABLE_TYPE) handleToken(node, 0, null)
+            QUEST -> if (node.treeParent.elementType == NULLABLE_TYPE) {
+                handleToken(node, 0, null)
+            }
             // braces and other symbols
             LBRACE -> handleLbrace(node)
-            LBRACKET -> handleLBracket(node)
+            LBRACKET -> handleLbracket(node)
             LPAR -> handleLpar(node)
             RPAR, RBRACKET -> handleToken(node, 0, null)
             GT, LT -> handleGtOrLt(node)
             // white space
             WHITE_SPACE -> handleEolWhiteSpace(node)
+            else -> {
+            }
         }
     }
 
-    private fun handleLBracket(node: ASTNode) =
-            if (node.treeParent.elementType == COLLECTION_LITERAL_EXPRESSION)
+    private fun handleLbracket(node: ASTNode) =
+            if (node.treeParent.elementType == COLLECTION_LITERAL_EXPRESSION) {
                 handleToken(node, 1, 0)
-            else
+            } else {
                 handleToken(node, 0, 0)
-
+            }
 
     private fun handleConstructor(node: ASTNode) {
         if (node.treeNext.numWhiteSpaces()?.let { it > 0 } == true) {
@@ -179,26 +168,26 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
         // `{` can't be the very first symbol in the file, so `!!` should be safe
         val whitespaceOrPrevNode = node.selfOrParentsTreePrev()!!
         val isFromLambdaAsArgument = node
-                .parents()
-                .take(numParentsForLambda)
-                .toList()
-                .takeIf { it.size == numParentsForLambda }
-                ?.let {
-                    it[0].elementType == FUNCTION_LITERAL &&
-                            it[1].elementType == LAMBDA_EXPRESSION &&
-                            it[2].elementType == VALUE_ARGUMENT &&
-                            // lambda is not passed as a named argument
-                            !it[2].hasChildOfType(EQ)
-                }
-                ?: false
+            .parents()
+            .take(NUM_PARENTS_FOR_LAMBDA)
+            .toList()
+            .takeIf { it.size == NUM_PARENTS_FOR_LAMBDA }
+            ?.let {
+                it[0].elementType == FUNCTION_LITERAL &&
+                        it[1].elementType == LAMBDA_EXPRESSION &&
+                        it[2].elementType == VALUE_ARGUMENT &&
+                        // lambda is not passed as a named argument
+                        !it[2].hasChildOfType(EQ)
+            }
+            ?: false
 
         val prevNode = whitespaceOrPrevNode.let { if (it.elementType == WHITE_SPACE) it.treePrev else it }
         val numWhiteSpace = whitespaceOrPrevNode.numWhiteSpaces()
         // note: the conditions in the following `if`s cannot be collapsed into simple conjunctions
         if (isFromLambdaAsArgument) {
             val isFirstArgument = node
-                    .parent({ it.elementType == VALUE_ARGUMENT })
-                    .let { it?.prevSibling { prevNode -> prevNode.elementType == COMMA } == null }
+                .parent({ it.elementType == VALUE_ARGUMENT })
+                .let { it?.prevSibling { prevNode -> prevNode.elementType == COMMA } == null }
 
             // If it is lambda, then we don't force it to be on newline or same line
             if (numWhiteSpace != 0 && isFirstArgument) {
@@ -244,12 +233,16 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
             is KtPrefixExpression -> handleToken(node, null, 0)
             is KtPostfixExpression -> handleToken(node, 0, null)
             is KtBinaryExpression -> handleBinaryOperator(node)
+            else -> {
+            }
         }
     }
 
     private fun handleBinaryOperator(node: ASTNode) {
         val operatorNode = if (node.elementType == OPERATION_REFERENCE) node.firstChildNode else node
-        if (node.elementType == EQ && node.treeParent.elementType == OPERATION_REFERENCE) return
+        if (node.elementType == EQ && node.treeParent.elementType == OPERATION_REFERENCE) {
+            return
+        }
         if (node.elementType == OPERATION_REFERENCE && node.treeParent.elementType.let { it == BINARY_EXPRESSION || it == POSTFIX_EXPRESSION || it == PROPERTY } ||
                 node.elementType != OPERATION_REFERENCE) {
             val requiredNumSpaces = if (operatorNode.elementType in operatorsWithNoWhitespace) 0 else 1
@@ -259,7 +252,10 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
     }
 
     @Suppress("UnsafeCallOnNullableType")
-    private fun handleToken(node: ASTNode, requiredSpacesBefore: Int?, requiredSpacesAfter: Int?) {
+    private fun handleToken(
+        node: ASTNode,
+        requiredSpacesBefore: Int?,
+        requiredSpacesAfter: Int?) {
         require(requiredSpacesBefore != null || requiredSpacesAfter != null) {
             "requiredSpacesBefore=$requiredSpacesBefore and requiredSpacesAfter=$requiredSpacesAfter, but at least one should not be null"
         }
@@ -269,8 +265,8 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
             // for `!!` and possibly other postfix expressions treeNext and treeParent.treeNext can be null
             // upper levels are already outside of the expression this token belongs to, so we won't check them
             (node.treeNext
-                    ?: node.treeParent.treeNext)
-                    ?.numWhiteSpaces()
+                ?: node.treeParent.treeNext)
+                ?.numWhiteSpaces()
         }
         val isErrorBefore = requiredSpacesBefore != null && spacesBefore != null && spacesBefore != requiredSpacesBefore
         val isErrorAfter = requiredSpacesAfter != null && spacesAfter != null && spacesAfter != requiredSpacesAfter
@@ -307,8 +303,9 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
                 // there is separate handler for lambda expression inside parenthesis
                 return
             }
-            node.treeParent.treeParent.elementType == ANNOTATION_ENTRY -> {
+            node.treeParent.treeParent.elementType == ANNOTATION_ENTRY ->
                 handleToken(node.treeParent, 0, null)
+            else -> {
             }
         }
         val isDeclaration = node.treeParent.elementType == VALUE_PARAMETER_LIST && node.treeParent.treeParent.elementType.let {
@@ -325,11 +322,13 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
     }
 
     private fun handleGtOrLt(node: ASTNode) {
-        if (node.treeParent == TYPE_PARAMETER_LIST) handleToken(
+        if (node.treeParent == TYPE_PARAMETER_LIST) {
+            handleToken(
                 node,
                 if (node.elementType == GT) 0 else null,
                 if (node.elementType == GT) null else 0
-        )
+            )
+        }
     }
 
     private fun ASTNode.fixSpaceAround(requiredSpacesBefore: Int?, requiredSpacesAfter: Int?) {
@@ -376,7 +375,7 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
     }
 
     private fun ASTNode.removeIfWhiteSpace() = takeIf { it.elementType == WHITE_SPACE && !it.textContains('\n') }
-            ?.let { it.treeParent.removeChild(it) }
+        ?.let { it.treeParent.removeChild(it) }
 
     private fun getDescription(shouldBefore: Boolean,
                                shouldAfter: Boolean,
@@ -391,4 +390,17 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
             } else {
                 ""
             }
+
+    companion object {
+        private const val NUM_PARENTS_FOR_LAMBDA = 3  // this is the number of parent nodes needed to check if this node is lambda from argument list
+        private val keywordsWithSpaceAfter = TokenSet.create(
+            // these keywords are followed by {
+            ELSE_KEYWORD, TRY_KEYWORD, DO_KEYWORD, FINALLY_KEYWORD, INIT_KEYWORD,
+            // these keywords are followed by (
+            FOR_KEYWORD, IF_KEYWORD, WHILE_KEYWORD, CATCH_KEYWORD,
+            // these keywords can be followed by either { or (
+            WHEN_KEYWORD
+        )
+        val operatorsWithNoWhitespace = TokenSet.create(DOT, RANGE, COLONCOLON, SAFE_ACCESS, EXCLEXCL)
+    }
 }

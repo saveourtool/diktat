@@ -1,3 +1,5 @@
+@file:Suppress("HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE", "LOCAL_VARIABLE_EARLY_DECLARATION", "AVOID_NULL_CHECKS")
+
 package org.cqfn.diktat.ruleset.utils
 
 import org.cqfn.diktat.ruleset.constants.EmitType
@@ -32,6 +34,7 @@ import org.junit.jupiter.api.Test
 @Suppress("LargeClass", "UnsafeCallOnNullableType")
 class AstNodeUtilsTest {
     @Test
+    @Suppress("TOO_LONG_FUNCTION")
     fun `String representation of ASTNode`() {
         val code = """
             class Test {
@@ -87,7 +90,7 @@ class AstNodeUtilsTest {
         """.trimIndent()
         applyToCode(code, 1) { node, counter ->
             if (node.elementType == CLASS) {
-                Assertions.assertTrue(node.checkLength(IntRange(code.length, code.length)))
+                Assertions.assertTrue(node.isTextLengthInRange(IntRange(code.length, code.length)))
                 counter.incrementAndGet()
             }
         }
@@ -328,20 +331,20 @@ class AstNodeUtilsTest {
 
     @Test
     fun `test isNodeFromCompanionObject`() {
-        var code = """
+        val positiveExample = """
             class Something{
             	companion object {
                     val id = 1
             	}
             }
         """.trimIndent()
-        applyToCode(code, 1) { node, counter ->
+        applyToCode(positiveExample, 1) { node, counter ->
             if (node.elementType == PROPERTY) {
                 Assertions.assertTrue(node.isNodeFromCompanionObject())
                 counter.incrementAndGet()
             }
         }
-        code = """
+        val negativeExample = """
             class Test() {
                 /**
                 * test method
@@ -350,7 +353,7 @@ class AstNodeUtilsTest {
                 fun foo(a: Int): Int = 2 * a
             }
         """.trimIndent()
-        applyToCode(code, 1) { node, counter ->
+        applyToCode(negativeExample, 1) { node, counter ->
             if (node.elementType == FUN) {
                 Assertions.assertFalse(node.isNodeFromCompanionObject())
                 counter.incrementAndGet()
@@ -488,7 +491,7 @@ class AstNodeUtilsTest {
                 fun foo(a: Int): Int = 2 * a
             }
         """.trimIndent()
-        val list = mutableListOf<ASTNode>()
+        val list: MutableList<ASTNode> = mutableListOf()
         val leafWithTypeList: MutableList<ASTNode> = mutableListOf()
         var firstNode: ASTNode? = null
         applyToCode(code, 0) { node, _ ->
@@ -566,7 +569,7 @@ class AstNodeUtilsTest {
                 }
             }
         """.trimIndent()
-        val listResults = mutableListOf<ASTNode>()
+        val listResults: MutableList<ASTNode> = mutableListOf()
         applyToCode(code, 0) { node, _ ->
             if (node.elementType == IDENTIFIER) {
                 listResults.add(node)
@@ -586,7 +589,7 @@ class AstNodeUtilsTest {
 
     @Test
     fun `test isAccessibleOutside`() {
-        var code = """
+        val negativeExample = """
             class Test() {
                 /**
                 * test method
@@ -595,13 +598,13 @@ class AstNodeUtilsTest {
                 private fun foo(a: Int): Int = 2 * a
             }
         """.trimIndent()
-        applyToCode(code, 1) { node, counter ->
+        applyToCode(negativeExample, 1) { node, counter ->
             if (node.elementType == MODIFIER_LIST) {
                 Assertions.assertFalse(node.isAccessibleOutside())
                 counter.incrementAndGet()
             }
         }
-        code = """
+        val positiveExample = """
             class Test() {
                 /**
                 * test method
@@ -610,7 +613,7 @@ class AstNodeUtilsTest {
                 public fun foo(a: Int): Int = 2 * a
             }
         """.trimIndent()
-        applyToCode(code, 1) { node, counter ->
+        applyToCode(positiveExample, 1) { node, counter ->
             if (node.elementType == MODIFIER_LIST) {
                 Assertions.assertTrue(node.isAccessibleOutside())
                 counter.incrementAndGet()
@@ -631,9 +634,9 @@ class AstNodeUtilsTest {
                 val firstText = node.text
                 node.leaveOnlyOneNewLine()
                 val secondText = parent
-                        .getChildren(null)
-                        .last()
-                        .text
+                    .getChildren(null)
+                    .last()
+                    .text
                 Assertions.assertEquals("\n", secondText)
                 Assertions.assertEquals("\n\n", firstText)
                 counter.incrementAndGet()
@@ -734,24 +737,24 @@ private class PrettyPrintingVisitor(private val elementType: IElementType,
                        emit: EmitType) {
         if (node.elementType == elementType) {
             Assertions.assertEquals(
-                    expected.replace("\n", System.lineSeparator()),
-                    node.prettyPrint(level, maxLevel)
+                expected.replace("\n", System.lineSeparator()),
+                node.prettyPrint(level, maxLevel)
             )
         }
     }
     companion object {
         fun assertStringRepr(
-                elementType: IElementType,
-                code: String,
-                level: Int = 0,
-                maxLevel: Int = -1,
-                expected: String) {
+            elementType: IElementType,
+            code: String,
+            level: Int = 0,
+            maxLevel: Int = -1,
+            expected: String) {
             KtLint.lint(
-                    KtLint.Params(
-                            text = code,
-                            ruleSets = listOf(RuleSet("test", PrettyPrintingVisitor(elementType, level, maxLevel, expected))),
-                            cb = { _, _ -> Unit }
-                    )
+                KtLint.Params(
+                    text = code,
+                    ruleSets = listOf(RuleSet("test", PrettyPrintingVisitor(elementType, level, maxLevel, expected))),
+                    cb = { _, _ -> Unit }
+                )
             )
         }
     }

@@ -1,5 +1,21 @@
 package org.cqfn.diktat.ruleset.rules.files
 
+import org.cqfn.diktat.common.config.rules.RuleConfiguration
+import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.common.config.rules.getCommonConfiguration
+import org.cqfn.diktat.common.config.rules.getRuleConfig
+import org.cqfn.diktat.ruleset.constants.EmitType
+import org.cqfn.diktat.ruleset.constants.Warnings.FILE_CONTAINS_ONLY_COMMENTS
+import org.cqfn.diktat.ruleset.constants.Warnings.FILE_INCORRECT_BLOCKS_ORDER
+import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NO_BLANK_LINE_BETWEEN_BLOCKS
+import org.cqfn.diktat.ruleset.constants.Warnings.FILE_UNORDERED_IMPORTS
+import org.cqfn.diktat.ruleset.constants.Warnings.FILE_WILDCARD_IMPORTS
+import org.cqfn.diktat.ruleset.rules.PackageNaming.Companion.PACKAGE_SEPARATOR
+import org.cqfn.diktat.ruleset.utils.StandardPlatforms
+import org.cqfn.diktat.ruleset.utils.getFileName
+import org.cqfn.diktat.ruleset.utils.handleIncorrectOrder
+import org.cqfn.diktat.ruleset.utils.moveChildBefore
+
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
@@ -15,20 +31,6 @@ import com.pinterest.ktlint.core.ast.isPartOfComment
 import com.pinterest.ktlint.core.ast.isWhiteSpace
 import com.pinterest.ktlint.core.ast.nextSibling
 import com.pinterest.ktlint.core.ast.prevSibling
-import org.cqfn.diktat.common.config.rules.RuleConfiguration
-import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.common.config.rules.getCommonConfiguration
-import org.cqfn.diktat.common.config.rules.getRuleConfig
-import org.cqfn.diktat.ruleset.constants.Warnings.FILE_CONTAINS_ONLY_COMMENTS
-import org.cqfn.diktat.ruleset.constants.Warnings.FILE_INCORRECT_BLOCKS_ORDER
-import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NO_BLANK_LINE_BETWEEN_BLOCKS
-import org.cqfn.diktat.ruleset.constants.Warnings.FILE_UNORDERED_IMPORTS
-import org.cqfn.diktat.ruleset.constants.Warnings.FILE_WILDCARD_IMPORTS
-import org.cqfn.diktat.ruleset.rules.PackageNaming.Companion.PACKAGE_SEPARATOR
-import org.cqfn.diktat.ruleset.utils.StandardPlatforms
-import org.cqfn.diktat.ruleset.utils.getFileName
-import org.cqfn.diktat.ruleset.utils.handleIncorrectOrder
-import org.cqfn.diktat.ruleset.utils.moveChildBefore
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -47,16 +49,26 @@ import org.jetbrains.kotlin.psi.KtImportDirective
  * 5. Ensures there are no wildcard imports
  */
 class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file-structure") {
-    private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
     private var fileName: String = ""
     private val domainName by lazy {
-        configRules.getCommonConfiguration().value.domainName
+        configRules
+            .getCommonConfiguration()
+            .value
+            .domainName
     }
+    private val standardImportsAsName = StandardPlatforms
+        .values()
+        .map { it to it.packages }
+        .toMap()
+        .mapValues { (_, value) ->
+            value.map { it.split(PACKAGE_SEPARATOR).map(Name::identifier) }
+        }
+    private lateinit var emitWarn: EmitType
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
-                       emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
+                       emit: EmitType) {
         isFixMode = autoCorrect
         emitWarn = emit
 
@@ -77,6 +89,7 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         }
     }
 
+    @Suppress("FUNCTION_BOOLEAN_PREFIX")
     private fun checkFileHasCode(node: ASTNode): Boolean {
         val codeTokens = TokenSet.andNot(
             TokenSet.ANY,
@@ -89,14 +102,21 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         return hasCode
     }
 
+    @Suppress("TOO_LONG_FUNCTION")
     private fun checkCodeBlocksOrderAndEmptyLines(node: ASTNode) {
         // PACKAGE_DIRECTIVE node is always present in regular kt files and might be absent in kts.
         // Kotlin compiler itself enforces it's position in the file if it is present.
         // If package directive is missing in .kt file (default package), the node is still present in the AST.
         // fixme: find and handle cases when this node is not present (.kts files?)
-        val packageDirectiveNode = (node.psi as KtFile).packageDirective?.takeUnless { it.isRoot }?.node
+        val packageDirectiveNode = (node.psi as KtFile)
+            .packageDirective
+            ?.takeUnless { it.isRoot }
+            ?.node
         // fixme: find cases when node.psi.importLists.size > 1, handle cases when it's not present (null)
-        val importsList = (node.psi as KtFile).importList?.takeIf { it.imports.isNotEmpty() }?.node
+        val importsList = (node.psi as KtFile)
+            .importList
+            ?.takeIf { it.imports.isNotEmpty() }
+            ?.node
 
         // this node will be an anchor with respect to which we will look for all other nodes
         val firstCodeNode = packageDirectiveNode
@@ -105,7 +125,7 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
                 // taking nodes with actual code
                 !it.isWhiteSpace() && !it.isPartOfComment() &&
                         // but not the ones we are going to move
-                        it.elementType != FILE_ANNOTATION_LIST&& it.elementType != IMPORT_LIST &&
+                        it.elementType != FILE_ANNOTATION_LIST && it.elementType != IMPORT_LIST &&
                         // if we are here, then package is default and we don't need to select the empty PACKAGE_DIRECTIVE node
                         it.elementType != PACKAGE_DIRECTIVE
             }
@@ -147,12 +167,12 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
 
         // importPath can be null if import name cannot be parsed, which should be a very rare case, therefore !! should be safe here
         imports
-                .filter {
-                    (it.psi as KtImportDirective).importPath!!.run {
-                        isAllUnder && toString() !in wildCardImportsConfig.allowedWildcards
-                    }
+            .filter {
+                (it.psi as KtImportDirective).importPath!!.run {
+                    isAllUnder && toString() !in wildCardImportsConfig.allowedWildcards
                 }
-                .forEach { FILE_WILDCARD_IMPORTS.warn(configRules, emitWarn, isFixMode, it.text, it.startOffset, it) }
+            }
+            .forEach { FILE_WILDCARD_IMPORTS.warn(configRules, emitWarn, isFixMode, it.text, it.startOffset, it) }
 
         val sortedImportsGroups = if (importsGroupingConfig.useRecommendedImportsOrder) {
             regroupImports(imports.map { it.psi as KtImportDirective })
@@ -169,7 +189,10 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         }
     }
 
-    private fun rearrangeImports(node: ASTNode, imports: List<ASTNode>, sortedImportsGroups: List<List<ASTNode>>) {
+    private fun rearrangeImports(
+        node: ASTNode,
+        imports: List<ASTNode>,
+        sortedImportsGroups: List<List<ASTNode>>) {
         require(node.elementType == IMPORT_LIST)
         // move all commented lines among import before imports block
         node.getChildren(TokenSet.create(EOL_COMMENT))
@@ -224,13 +247,17 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         else -> error("Only BLOCK_COMMENT, KDOC and FILE_ANNOTATION_LIST are valid inputs.")
     }
 
+    @Suppress("TYPE_ALIAS")
     private fun regroupImports(imports: List<KtImportDirective>): List<List<KtImportDirective>> {
         val (android, notAndroid) = imports.partition {
             it.isStandard(StandardPlatforms.ANDROID)
         }
 
         val (ownDomain, tmp) = notAndroid.partition { import ->
-            import.importPath?.fqName?.pathSegments()
+            import
+                .importPath
+                ?.fqName
+                ?.pathSegments()
                 ?.zip(domainName.split(PACKAGE_SEPARATOR).map(Name::identifier))
                 ?.all { it.first == it.second }
                 ?: false
@@ -245,22 +272,24 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         return listOf(android, ownDomain, others, java, kotlin)
     }
 
-    private val standardImportsAsName = StandardPlatforms.values()
-        .map { it to it.packages }
-        .toMap()
-        .mapValues { (_, value) ->
-            value.map { it.split(PACKAGE_SEPARATOR).map(Name::identifier) }
-        }
-
     private fun KtImportDirective.isStandard(platformName: StandardPlatforms) = standardImportsAsName[platformName]?.any { names ->
         names.zip(importPath?.fqName?.pathSegments() ?: emptyList())
             .all { it.first == it.second }
     } ?: false
 
+    /**
+     * [RuleConfiguration] for wildcard imports
+     */
     class WildCardImportsConfig(config: Map<String, String>) : RuleConfiguration(config) {
+        /**
+         * A list of imports that are allowed to use wildcards. Input is in a form "foo.bar.*,foo.baz.*".
+         */
         val allowedWildcards = config["allowedWildcards"]?.split(",")?.map { it.trim() } ?: listOf()
     }
 
+    /**
+     * [RuleConfiguration] for imports grouping according to the recommendation from diktat code style
+     */
     class ImportsGroupingConfig(config: Map<String, String>) : RuleConfiguration(config) {
         /**
          * Use imports grouping according to recommendation 3.1

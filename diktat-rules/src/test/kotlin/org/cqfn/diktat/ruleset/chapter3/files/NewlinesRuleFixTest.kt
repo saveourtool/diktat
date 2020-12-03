@@ -1,8 +1,9 @@
 package org.cqfn.diktat.ruleset.chapter3.files
 
-import generated.WarningNames
 import org.cqfn.diktat.ruleset.rules.files.NewlinesRule
 import org.cqfn.diktat.util.FixTestBase
+
+import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
