@@ -1,29 +1,28 @@
 package org.cqfn.diktat.ruleset.chapter3
 
-import com.pinterest.ktlint.core.LintError
-import generated.WarningNames.LONG_NUMERICAL_VALUES_SEPARATED
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.LongNumericalValuesSeparatedRule
 import org.cqfn.diktat.util.LintTestBase
+
+import com.pinterest.ktlint.core.LintError
+import generated.WarningNames.LONG_NUMERICAL_VALUES_SEPARATED
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class LongNumericalValuesSeparatedWarnTest : LintTestBase(::LongNumericalValuesSeparatedRule) {
-
     private val ruleId = "$DIKTAT_RULE_SET_ID:long-numerical-values"
-
     private val rulesConfig: List<RulesConfig> = listOf(
-            RulesConfig(Warnings.LONG_NUMERICAL_VALUES_SEPARATED.name, true,
-                    mapOf("maxNumberLength" to "2"))
+        RulesConfig(Warnings.LONG_NUMERICAL_VALUES_SEPARATED.name, true,
+            mapOf("maxNumberLength" to "2"))
     )
 
     @Test
     @Tag(LONG_NUMERICAL_VALUES_SEPARATED)
     fun `check properties test bad`() {
         lintMethod(
-                """
+            """
                     |fun foo() {
                     |   val oneMillion = 100000000000
                     |   val creditCardNumber = 1234567890123456L
@@ -35,17 +34,17 @@ class LongNumericalValuesSeparatedWarnTest : LintTestBase(::LongNumericalValuesS
                     |   val flo2 = 192.31234134134435_5345
                     |}
                 """.trimMargin(),
-                LintError(2,21, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 100000000000", true),
-                LintError(3,27, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 1234567890123456L", true),
-                LintError(4,31, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 999999999L", true),
-                LintError(5,19, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 0xFFECDE5E", true),
-                LintError(7,16, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 110100110", false),
-                LintError(7,16, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 01101001", false),
-                LintError(7,16, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 10010100", false),
-                LintError(7,16, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 10010010", false),
-                LintError(8,14, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 192.312341341344355345", true),
-                LintError(9,15, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 31234134134435", false),
-                LintError(9,15, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 5345", false)
+            LintError(2, 21, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 100000000000", true),
+            LintError(3, 27, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 1234567890123456L", true),
+            LintError(4, 31, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 999999999L", true),
+            LintError(5, 19, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 0xFFECDE5E", true),
+            LintError(7, 16, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 110100110", false),
+            LintError(7, 16, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 01101001", false),
+            LintError(7, 16, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 10010100", false),
+            LintError(7, 16, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 10010010", false),
+            LintError(8, 14, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 192.312341341344355345", true),
+            LintError(9, 15, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 31234134134435", false),
+            LintError(9, 15, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 5345", false)
         )
     }
 
@@ -53,7 +52,7 @@ class LongNumericalValuesSeparatedWarnTest : LintTestBase(::LongNumericalValuesS
     @Tag(LONG_NUMERICAL_VALUES_SEPARATED)
     fun `check properties test good`() {
         lintMethod(
-                """
+            """
                     |fun foo() {
                     |   val oneMillion = 1_000_000_000_000
                     |   val creditCardNumber = 1_234_567_890_123_456L
@@ -70,7 +69,7 @@ class LongNumericalValuesSeparatedWarnTest : LintTestBase(::LongNumericalValuesS
     @Tag(LONG_NUMERICAL_VALUES_SEPARATED)
     fun `check properties test bad 2`() {
         lintMethod(
-                """
+            """
                     |fun foo() {
                     |   val oneMillion = 100
                     |   val creditCardNumber = 1234566L
@@ -80,13 +79,13 @@ class LongNumericalValuesSeparatedWarnTest : LintTestBase(::LongNumericalValuesS
                     |   val flo = 192.312
                     |}
                 """.trimMargin(),
-                LintError(2,21, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 100", true),
-                LintError(3,27, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 1234566L", true),
-                LintError(4,31, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 999L", true),
-                LintError(5,19, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 0xFFE", true),
-                LintError(6,16, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 0b110100", true),
-                LintError(7,14, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 192.312", true),
-                rulesConfigList = rulesConfig
+            LintError(2, 21, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 100", true),
+            LintError(3, 27, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 1234566L", true),
+            LintError(4, 31, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 999L", true),
+            LintError(5, 19, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 0xFFE", true),
+            LintError(6, 16, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 0b110100", true),
+            LintError(7, 14, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 192.312", true),
+            rulesConfigList = rulesConfig
         )
     }
 
@@ -94,7 +93,7 @@ class LongNumericalValuesSeparatedWarnTest : LintTestBase(::LongNumericalValuesS
     @Tag(LONG_NUMERICAL_VALUES_SEPARATED)
     fun `check func params test good`() {
         lintMethod(
-                """
+            """
                     |fun foo(val one = 100_000_000) {
                     |   
                     |}
@@ -106,12 +105,12 @@ class LongNumericalValuesSeparatedWarnTest : LintTestBase(::LongNumericalValuesS
     @Tag(LONG_NUMERICAL_VALUES_SEPARATED)
     fun `check func params test bad`() {
         lintMethod(
-                """
+            """
                     |fun foo(val one = 100000000) {
                     |   
                     |}
                 """.trimMargin(),
-                LintError(1,19, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 100000000", true)
+            LintError(1, 19, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 100000000", true)
         )
     }
 }

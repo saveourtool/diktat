@@ -37,9 +37,9 @@ interface Rule {
  */
 @Serializable
 data class RulesConfig(
-        val name: String,
-        val enabled: Boolean = true,
-        val configuration: Map<String, String> = emptyMap()
+    val name: String,
+    val enabled: Boolean = true,
+    val configuration: Map<String, String> = emptyMap()
 )
 
 /**

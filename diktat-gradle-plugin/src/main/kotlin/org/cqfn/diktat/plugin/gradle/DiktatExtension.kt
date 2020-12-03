@@ -19,6 +19,11 @@ open class DiktatExtension {
     internal var diktatConfigFile: String = "diktat-analysis.yml"
 
     /**
+     * Paths that will be excluded from diktat run
+     */
+    var excludes: FileCollection? = null
+
+    /**
      * Ktlint's [Reporter] which will be used during run.
      * Private until I find a way to configure it.
      */
@@ -28,9 +33,4 @@ open class DiktatExtension {
      * Paths that will be scanned for .kt(s) files
      */
     lateinit var inputs: FileCollection
-
-    /**
-     * Paths that will be excluded from diktat run
-     */
-    var excludes: FileCollection? = null
 }

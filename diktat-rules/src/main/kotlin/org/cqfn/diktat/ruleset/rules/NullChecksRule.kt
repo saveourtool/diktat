@@ -1,7 +1,11 @@
 package org.cqfn.diktat.ruleset.rules
 
-import com.pinterest.ktlint.core.Rule
+import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
+import org.cqfn.diktat.ruleset.constants.Warnings.AVOID_NULL_CHECKS
+import org.cqfn.diktat.ruleset.utils.*
+
+import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CONDITION
@@ -12,9 +16,6 @@ import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
 import com.pinterest.ktlint.core.ast.parent
-import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.Warnings.AVOID_NULL_CHECKS
-import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtIfExpression
@@ -29,7 +30,7 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
-                       emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
+                       emit: EmitType) {
         emitWarn = emit
         isFixMode = autoCorrect
 
@@ -65,26 +66,30 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
     private fun conditionInIfStatement(node: ASTNode) {
         node.findAllNodesWithSpecificType(BINARY_EXPRESSION).forEach { binaryExprNode ->
             val condition = (binaryExprNode.psi as KtBinaryExpression)
-            if (isNullCheckBinaryExpession(condition)) {
+            if (isNullCheckBinaryExpression(condition)) {
                 when (condition.operationToken) {
                     // `==` and `===` comparison can be fixed with `?:` operator
                     ElementType.EQEQ, ElementType.EQEQEQ ->
                         warnAndFixOnNullCheck(condition, true,
-                                "use '.let/.also/?:/e.t.c' instead of ${condition.text}") {}
+                            "use '.let/.also/?:/e.t.c' instead of ${condition.text}") {
+                            // todo implement fixer
+                        }
                     // `!==` and `!==` comparison can be fixed with `.let/also` operators
                     ElementType.EXCLEQ, ElementType.EXCLEQEQEQ ->
                         warnAndFixOnNullCheck(condition, true,
-                                "use '.let/.also/?:/e.t.c' instead of ${condition.text}") {}
+                            "use '.let/.also/?:/e.t.c' instead of ${condition.text}") {
+                            // todo implement fixer
+                        }
                     else -> return
                 }
             }
         }
     }
 
+    @Suppress("COMMENT_WHITE_SPACE")
     private fun nullCheckInOtherStatements(binaryExprNode: ASTNode) {
         val condition = (binaryExprNode.psi as KtBinaryExpression)
-        if (isNullCheckBinaryExpession(condition)) {
-
+        if (isNullCheckBinaryExpression(condition)) {
             // require(a != null) is incorrect, Kotlin has special method: `requireNotNull` - need to use it instead
             // hierarchy is the following:
             //              require(a != null)
@@ -98,10 +103,12 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
                 if (grandParent != null && grandParent.elementType == VALUE_ARGUMENT_LIST && isRequireFun(grandParent.treePrev)) {
                     if (listOf(ElementType.EXCLEQ, ElementType.EXCLEQEQEQ).contains(condition.operationToken)) {
                         warnAndFixOnNullCheck(
-                                condition,
-                                false,
-                                "use 'requireNotNull' instead of require(${condition.text})"
-                        ) {}
+                            condition,
+                            false,
+                            "use 'requireNotNull' instead of require(${condition.text})"
+                        ) {
+                            // todo implement fixer
+                        }
                     }
                 }
             }
@@ -109,12 +116,12 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
     }
 
     @Suppress("UnsafeCallOnNullableType")
-    private fun isNullCheckBinaryExpession(condition: KtBinaryExpression): Boolean =
+    private fun isNullCheckBinaryExpression(condition: KtBinaryExpression): Boolean =
             // check that binary expression has `null` as right or left operand
             setOf(condition.right, condition.left).map { it!!.node.elementType }.contains(NULL) &&
                     // checks that it is the comparison condition
                     setOf(ElementType.EQEQ, ElementType.EQEQEQ, ElementType.EXCLEQ, ElementType.EXCLEQEQEQ)
-                            .contains(condition.operationToken) &&
+                        .contains(condition.operationToken) &&
                     // no need to raise warning or fix null checks in complex expressions
                     !condition.isComplexCondition()
 
@@ -127,15 +134,19 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
         return this.parent is KtBinaryExpression
     }
 
-    private fun warnAndFixOnNullCheck(condition: KtBinaryExpression, canBeAutoFixed: Boolean, freeText: String, autofix: () -> Unit) {
+    private fun warnAndFixOnNullCheck(
+        condition: KtBinaryExpression,
+        canBeAutoFixed: Boolean,
+        freeText: String,
+        autofix: () -> Unit) {
         AVOID_NULL_CHECKS.warnAndFix(
-                configRules,
-                emitWarn,
-                isFixMode,
-                freeText,
-                condition.node.startOffset,
-                condition.node,
-                canBeAutoFixed,
+            configRules,
+            emitWarn,
+            isFixMode,
+            freeText,
+            condition.node.startOffset,
+            condition.node,
+            canBeAutoFixed,
         ) {
             autofix()
         }
@@ -143,5 +154,4 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
 
     private fun isRequireFun(referenceExpression: ASTNode) =
             referenceExpression.elementType == REFERENCE_EXPRESSION && referenceExpression.firstChildNode.text == "require"
-
 }
