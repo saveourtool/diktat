@@ -40,11 +40,39 @@ class StatelessClassesRuleWarnTest: LintTestBase(::StatelessClassesRule) {
 
     @Test
     @Tag(OBJECT_IS_PREFERRED)
-    fun `should not trigger on class with properties`() {
+    fun `should trigger on class with val properties`() {
         lintMethod(
                 """
                 |class Some : I {
                 |   val a = 5
+                |   
+                |   override fun some()
+                |}
+            """.trimMargin(),
+                LintError(1, 1, ruleId, "${Warnings.OBJECT_IS_PREFERRED.warnText()} class Some", true)
+        )
+    }
+
+    @Test
+    @Tag(OBJECT_IS_PREFERRED)
+    fun `should trigger on class with var properties`() {
+        lintMethod(
+                """
+                |class Some : I {
+                |   var a = 5
+                |   
+                |   override fun some()
+                |}
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(OBJECT_IS_PREFERRED)
+    fun `should not trigger on class with constructor`() {
+        lintMethod(
+                """
+                |class Some(b: Int) : I {
                 |   
                 |   override fun some()
                 |}
