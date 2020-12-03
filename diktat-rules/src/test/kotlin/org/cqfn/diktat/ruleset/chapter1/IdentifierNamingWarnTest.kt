@@ -369,6 +369,8 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
                     fun hasEmptyLineAfter(): Boolean { }    
                     fun ASTNode.isEmpty(): Boolean { }    
                     fun isEmpty(): Boolean { }    
+                    override fun empty(): Boolean { }
+                    override fun ASTNode.empty(): Boolean { }
                 """.trimIndent()
         )
     }
