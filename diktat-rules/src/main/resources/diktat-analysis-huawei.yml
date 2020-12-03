@@ -304,3 +304,6 @@
 # Example: val table get() {if (_table == null) ...} -> table should have _table
 - name: NO_CORRESPONDING_PROPERTY
   enabled: true
+# If there is stateless class it is preferred to use object
+- name: OBJECT_IS_PREFERRED
+  enabled: true

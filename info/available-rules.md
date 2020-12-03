@@ -105,3 +105,4 @@
 |    6 |    6.1.8  | CUSTOM_GETTERS_SETTERS                 | Check: Inspection that checks that no custom getters and setters are used for properties                                                                                     | no | - | - |
 |    6 |    6.1.11 | COMPACT_OBJECT_INITIALIZATION          | Checks if class instantiation can be wrapped in `apply` for better readability |  |  | |
 |    6 |     6.2.2 | EXTENSION_FUNCTION_SAME_SIGNATURE      | Checks if extension function has the same signature as another extension function and their classes are related                                                              | no | - | + |
+|    6 |     6.4.2 | OBJECT_IS_PREFERRED                    | Checks: if class is stateless it is preferred to use `object`                                                                                                                | yes | - | - |

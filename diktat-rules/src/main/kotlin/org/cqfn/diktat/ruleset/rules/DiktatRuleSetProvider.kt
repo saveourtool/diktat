@@ -12,6 +12,7 @@ import org.cqfn.diktat.ruleset.rules.classes.CompactInitialization
 import org.cqfn.diktat.ruleset.rules.classes.DataClassesRule
 import org.cqfn.diktat.ruleset.rules.classes.SingleConstructorRule
 import org.cqfn.diktat.ruleset.rules.classes.SingleInitRule
+import org.cqfn.diktat.ruleset.rules.classes.StatelessClassesRule
 import org.cqfn.diktat.ruleset.rules.comments.CommentsRule
 import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule
 import org.cqfn.diktat.ruleset.rules.files.BlankLinesRule
@@ -108,6 +109,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
                 ::CustomGetterSetterRule,
                 ::CompactInitialization,
                 // other rules
+                ::StatelessClassesRule,
                 ::ImplicitBackingPropertyRule,
                 ::StringTemplateFormatRule,
                 ::DataClassesRule,
