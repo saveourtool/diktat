@@ -59,8 +59,8 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
  */
 internal class AssignmentOperatorChecker(configuration: IndentationConfig) : CustomIndentationChecker(configuration) {
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
-        val prevNode = whiteSpace.prevSibling.node
-        if (prevNode.elementType == EQ && prevNode.treeNext.let { it.elementType == WHITE_SPACE && it.textContains('\n') }) {
+        val prevNode = whiteSpace.prevSibling?.node
+        if (prevNode?.elementType == EQ && prevNode.treeNext.let { it.elementType == WHITE_SPACE && it.textContains('\n') }) {
             return CheckResult.from(indentError.actual, (whiteSpace.parentIndent()
                 ?: indentError.expected) + (if (configuration.extendedIndentAfterOperators) 2 else 1) * configuration.indentationSize, true)
         }
@@ -256,8 +256,8 @@ internal class CustomGettersAndSettersChecker(config: IndentationConfig) : Custo
  */
 internal class ArrowInWhenChecker(configuration: IndentationConfig) : CustomIndentationChecker(configuration) {
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
-        val prevNode = whiteSpace.prevSibling.node
-        if (prevNode.elementType == ARROW && whiteSpace.parent is KtWhenEntry) {
+        val prevNode = whiteSpace.prevSibling?.node
+        if (prevNode?.elementType == ARROW && whiteSpace.parent is KtWhenEntry) {
             return CheckResult.from(indentError.actual, (whiteSpace.parentIndent()
                 ?: indentError.expected) + configuration.indentationSize, true)
         }
