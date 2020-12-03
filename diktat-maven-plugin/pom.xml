@@ -155,11 +155,31 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <!-- override jacoco config to include integration test results -->
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
         <testResources>
             <testResource>
                 <directory>../examples/maven</directory>
-                <filtering>true</filtering>
+                <!-- setting filtering to false keeps unresolved properties, which in diktat-examples do not depend on diktat properties -->
+                <filtering>false</filtering>
                 <targetPath>${project.build.testOutputDirectory}/org/cqfn/diktat/plugin/maven/DiktatMavenPluginIntegrationTest/maven</targetPath>
             </testResource>
         </testResources>

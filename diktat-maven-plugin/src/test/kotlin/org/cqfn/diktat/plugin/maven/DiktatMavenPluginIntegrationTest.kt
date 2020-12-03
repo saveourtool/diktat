@@ -11,9 +11,6 @@ import kotlin.io.path.readText
 /**
  * Integration tests for diktat-maven-plugin.
  * Run against the project from diktat-examples.
- *
- * FixMe: As for version 0.9.0 of maven-itf, default values for parameters seems to be resolved against the project
- *  that invokes tests, not the example project.
  */
 @OptIn(ExperimentalPathApi::class)
 @MavenJupiterExtension
