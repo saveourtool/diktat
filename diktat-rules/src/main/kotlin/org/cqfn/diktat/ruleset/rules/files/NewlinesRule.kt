@@ -105,7 +105,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         // error is raised if these operators are followed by newline
         private val lineBreakBeforeOperators = TokenSet.create(DOT, SAFE_ACCESS, COLONCOLON, POSTFIX_EXPRESSION, ELVIS)
 
-        private val expressionTypes = TokenSet.create(DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION, CALLABLE_REFERENCE_EXPRESSION, BINARY_EXPRESSION, POSTFIX_EXPRESSION)
+        private val expressionTypes = TokenSet.create(DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION, CALLABLE_REFERENCE_EXPRESSION, BINARY_EXPRESSION)
         private val chainExpressionTypes = TokenSet.create(DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION, POSTFIX_EXPRESSION)
         private val dropChainValues = TokenSet.create(EOL_COMMENT, WHITE_SPACE, BLOCK_COMMENT, KDOC)
     }
@@ -172,18 +172,24 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
             return
         }
         val isIncorrect = (if (node.elementType == ELVIS) node.treeParent else node).run {
-            if (isCallsChain()) {
-                val isSingleLineIfElse = parent({ it.elementType == IF }, true)?.isSingleLineIfElse() ?: false
-                // to follow functional style these operators should be started by newline
-                (isFollowedByNewline() || !isBeginByNewline()) && !isSingleLineIfElse
-                        && (!isFirstCall() || !isMultilineLambda(treeParent))
-            } else {
-                // unless statement is simple and on single line, these operators cannot have newline after
-                isFollowedByNewline() && !isSingleDotStatementOnSingleLine()
+            when (isCallsChain()) {
+                null -> {
+                    // unless statement is simple and on single line, these operators cannot have newline after
+                    isFollowedByNewline() && !isSingleDotStatementOnSingleLine()
+                }
+                true -> {
+                    val isSingleLineIfElse = parent({ it.elementType == IF }, true)?.isSingleLineIfElse() ?: false
+                    // to follow functional style these operators should be started by newline
+                    (isFollowedByNewline() || !isBeginByNewline()) && !isSingleLineIfElse
+                            && (!isFirstCall() || !isMultilineLambda(treeParent))
+                }
+                else -> {
+                    false
+                }
             }
         }
         if (isIncorrect) {
-            val freeText = if (node.isCallsChain()) {
+            val freeText = if (node.isCallsChain() == true) {
                 "should follow functional style at ${node.text}"
             } else {
                 "should break a line before and not after ${node.text}"
@@ -378,11 +384,15 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         // if statements here have the only right order - don't change it
 
         if (psi.children.isNotEmpty() && (psi.firstChild.node.elementType != DOT_QUALIFIED_EXPRESSION
-                        && psi.firstChild.node.elementType != SAFE_ACCESS_EXPRESSION)) { 
-                            if (psi.firstChild.node.elementType == POSTFIX_EXPRESSION) {
-                                result.add(psi.firstChild.node)
+                        && psi.firstChild.node.elementType != SAFE_ACCESS_EXPRESSION)) {
+                            val firstChild = psi.firstChild
+                            if (firstChild.node.elementType == POSTFIX_EXPRESSION) {
+                                if (firstChild.firstChild.node.elementType == DOT_QUALIFIED_EXPRESSION
+                                        || firstChild.firstChild.node.elementType == SAFE_ACCESS_EXPRESSION)
+                                    getOrderedCallExpressions(firstChild.firstChild, result)
+                                result.add(firstChild.node)
                             }
-            result.add(psi.firstChild.node.siblings(true)
+            result.add(firstChild.node.siblings(true)
                     .dropWhile { it.elementType in dropChainValues }
                     .first()) // node treeNext is ".", "?.", "!!", "::"
         } else if (psi.children.isNotEmpty()) {
@@ -421,8 +431,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
             // fixme: we can't distinguish fully qualified names (like java.lang) from chain of property accesses (like list.size) for now
             ?.dropWhile { !it.treeParent.textContains('(') && !it.treeParent.textContains('{') }
             ?.drop(1)
-            ?.any { !it.treePrev.isWhiteSpaceWithNewline() }
-            ?: false
+            ?.any { !(it.treePrev?.isWhiteSpaceWithNewline() ?: true )}
 
     private fun MutableList<ASTNode>.isNotValidCalls(node: ASTNode) =
             !(this.size == 2 && this.first().elementType == POSTFIX_EXPRESSION) && this.indexOf(node) + 1 > configuration.maxCallsInOneLine

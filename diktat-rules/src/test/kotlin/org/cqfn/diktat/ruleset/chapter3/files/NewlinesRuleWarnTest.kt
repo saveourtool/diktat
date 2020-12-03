@@ -853,6 +853,12 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |   
                 |   bfr()!!.qwe().foo()
                 |}
+                |fun foo() {
+                |   foo
+                |       .bar()
+                |       .goo()!!
+                |       .qwe()
+                |}
             """.trimMargin(),
                 LintError(9,11,ruleId, "$functionalStyleWarn .", true),
                 LintError(9,17,ruleId, "$functionalStyleWarn .", true)
