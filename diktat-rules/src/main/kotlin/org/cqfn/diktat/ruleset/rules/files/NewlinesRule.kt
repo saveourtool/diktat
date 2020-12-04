@@ -1,6 +1,7 @@
 package org.cqfn.diktat.ruleset.rules.files
 
 import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.ast.*
 import com.pinterest.ktlint.core.ast.ElementType.ANDAND
 import com.pinterest.ktlint.core.ast.ElementType.ARROW
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
@@ -52,10 +53,6 @@ import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
-import com.pinterest.ktlint.core.ast.nextCodeSibling
-import com.pinterest.ktlint.core.ast.parent
-import com.pinterest.ktlint.core.ast.prevCodeSibling
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
@@ -76,6 +73,7 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
+import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.psi.KtParameterList
 import org.jetbrains.kotlin.psi.KtSuperTypeList
@@ -103,9 +101,9 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         private val lineBreakAfterOperators = TokenSet.create(ANDAND, OROR, PLUS, PLUSEQ, MINUS, MINUSEQ, MUL, MULTEQ, DIV, DIVEQ)
 
         // error is raised if these operators are followed by newline
-        private val lineBreakBeforeOperators = TokenSet.create(DOT, SAFE_ACCESS, COLONCOLON, POSTFIX_EXPRESSION, ELVIS)
+        private val lineBreakBeforeOperators = TokenSet.create(DOT, SAFE_ACCESS, COLONCOLON, ELVIS)
 
-        private val expressionTypes = TokenSet.create(DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION, CALLABLE_REFERENCE_EXPRESSION, BINARY_EXPRESSION)
+        private val expressionTypes = TokenSet.create(DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION, CALLABLE_REFERENCE_EXPRESSION, BINARY_EXPRESSION, POSTFIX_EXPRESSION)
         private val chainExpressionTypes = TokenSet.create(DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION, POSTFIX_EXPRESSION)
         private val dropChainValues = TokenSet.create(EOL_COMMENT, WHITE_SPACE, BLOCK_COMMENT, KDOC)
     }
@@ -172,20 +170,14 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
             return
         }
         val isIncorrect = (if (node.elementType == ELVIS) node.treeParent else node).run {
-            when (isCallsChain()) {
-                null -> {
-                    // unless statement is simple and on single line, these operators cannot have newline after
-                    isFollowedByNewline() && !isSingleDotStatementOnSingleLine()
-                }
-                true -> {
-                    val isSingleLineIfElse = parent({ it.elementType == IF }, true)?.isSingleLineIfElse() ?: false
-                    // to follow functional style these operators should be started by newline
-                    (isFollowedByNewline() || !isBeginByNewline()) && !isSingleLineIfElse
-                            && (!isFirstCall() || !isMultilineLambda(treeParent))
-                }
-                else -> {
-                    false
-                }
+            if (isCallsChain()) {
+                val isSingleLineIfElse = parent({ it.elementType == IF }, true)?.isSingleLineIfElse() ?: false
+                // to follow functional style these operators should be started by newline
+                (isFollowedByNewline() || !isBeginByNewline()) && !isSingleLineIfElse
+                        && (!isFirstCall() || !isMultilineLambda(treeParent))
+            } else {
+                // unless statement is simple and on single line, these operators cannot have newline after
+                isFollowedByNewline() && !isSingleDotStatementOnSingleLine()
             }
         }
         if (isIncorrect) {
@@ -383,15 +375,15 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
     private fun ASTNode.getOrderedCallExpressions(psi: PsiElement, result: MutableList<ASTNode>) {
         // if statements here have the only right order - don't change it
 
-        if (psi.children.isNotEmpty() && (psi.firstChild.node.elementType != DOT_QUALIFIED_EXPRESSION
-                        && psi.firstChild.node.elementType != SAFE_ACCESS_EXPRESSION)) {
-                            val firstChild = psi.firstChild
-                            if (firstChild.node.elementType == POSTFIX_EXPRESSION) {
-                                if (firstChild.firstChild.node.elementType == DOT_QUALIFIED_EXPRESSION
-                                        || firstChild.firstChild.node.elementType == SAFE_ACCESS_EXPRESSION)
-                                    getOrderedCallExpressions(firstChild.firstChild, result)
-                                result.add(firstChild.node)
-                            }
+        if (psi.children.isNotEmpty() && (!psi.isFirstChildElementType(DOT_QUALIFIED_EXPRESSION)
+                        && !psi.isFirstChildElementType(SAFE_ACCESS_EXPRESSION))) {
+            val firstChild = psi.firstChild
+            if (firstChild.isFirstChildElementType(POSTFIX_EXPRESSION)) {
+                if (firstChild.isFirstChildElementType(DOT_QUALIFIED_EXPRESSION)
+                        || firstChild.isFirstChildElementType(SAFE_ACCESS_EXPRESSION))
+                    getOrderedCallExpressions(firstChild.firstChild, result)
+                result.add(firstChild.node)
+            }
             result.add(firstChild.node.siblings(true)
                     .dropWhile { it.elementType in dropChainValues }
                     .first()) // node treeNext is ".", "?.", "!!", "::"
@@ -420,21 +412,44 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
     private fun ASTNode.isDotFromPackageOrImport() = elementType == DOT &&
             parent({ it.elementType == IMPORT_DIRECTIVE || it.elementType == PACKAGE_DIRECTIVE }, true) != null
 
-    private fun ASTNode.isCallsChain() = getParentExpressions()
-            .lastOrNull()
-            ?.run {
-                mutableListOf<ASTNode>().also {
-                    getOrderedCallExpressions(psi, it)
-                }
-            }
-            ?.takeIf { it.first() != this && it.isNotValidCalls(this) }
-            // fixme: we can't distinguish fully qualified names (like java.lang) from chain of property accesses (like list.size) for now
-            ?.dropWhile { !it.treeParent.textContains('(') && !it.treeParent.textContains('{') }
-            ?.drop(1)
-            ?.any { !(it.treePrev?.isWhiteSpaceWithNewline() ?: true )}
+    private fun PsiElement.isFirstChildElementType(elementType: IElementType) =
+            this.firstChild.node.elementType == elementType
 
-    private fun MutableList<ASTNode>.isNotValidCalls(node: ASTNode) =
-            !(this.size == 2 && this.first().elementType == POSTFIX_EXPRESSION) && this.indexOf(node) + 1 > configuration.maxCallsInOneLine
+    /**
+     * This method collects chain calls and checks it
+     * @return true - if there is error, false, if there is no error and null if there is two calls in chain
+     */
+    private fun ASTNode. isCallsChain() = getParentExpressions()
+                .lastOrNull()
+                ?.run {
+                    mutableListOf<ASTNode>().also {
+                        getOrderedCallExpressions(psi, it)
+                    }
+                }
+                // fixme: we can't distinguish fully qualified names (like java.lang) from chain of property accesses (like list.size) for now?.dropWhile { !it.treeParent.textContains('(') && !it.treeParent.textContains('{') }
+                ?.dropWhile { !it.treeParent.textContains('(') && !it.treeParent.textContains('{') }
+                ?.isNotValidCalls(this) ?: false
+
+    private fun List<ASTNode>.isNotValidCalls(node: ASTNode): Boolean {
+        if (this.size == 1)
+            return false
+        val callsByNewLine = mutableListOf<MutableList<ASTNode>>()
+        val callsInOneNewLine = mutableListOf<ASTNode>()
+        this.forEach {
+            if (it.treePrev.isFollowedByNewline()) {
+                callsByNewLine.add(callsInOneNewLine)
+                callsInOneNewLine.clear()
+                callsInOneNewLine.add(it)
+            }
+            else {
+                callsInOneNewLine.add(it)
+            }
+            if (it.treePrev.elementType == POSTFIX_EXPRESSION && !it.treePrev.isFollowedByNewline() && configuration.maxCallsInOneLine == 1)
+                return true
+        }
+        callsByNewLine.add(callsInOneNewLine)
+        return (callsByNewLine.find { it.contains(node) } ?: return false).indexOf(node) + 1 > configuration.maxCallsInOneLine
+    }
 
 
     /**

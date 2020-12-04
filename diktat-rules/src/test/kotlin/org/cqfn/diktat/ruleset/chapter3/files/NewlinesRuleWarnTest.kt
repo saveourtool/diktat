@@ -853,6 +853,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |   
                 |   bfr()!!.qwe().foo()
                 |}
+                |
                 |fun foo() {
                 |   foo
                 |       .bar()
@@ -862,6 +863,25 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
             """.trimMargin(),
                 LintError(9,11,ruleId, "$functionalStyleWarn .", true),
                 LintError(9,17,ruleId, "$functionalStyleWarn .", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
+    fun `more test for unsafe calls`() {
+        lintMethod(
+                """
+                |fun foo() {
+                |   foo
+                |       .bar()
+                |       .goo()!!
+                |       .qwe()
+                |      
+                |   val x = foo
+                |       .bar!!
+                |       .baz
+                |}
+            """.trimMargin()
         )
     }
 }
