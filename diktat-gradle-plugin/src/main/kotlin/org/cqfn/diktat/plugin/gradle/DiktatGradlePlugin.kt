@@ -1,8 +1,8 @@
 package org.cqfn.diktat.plugin.gradle
 
-import generated.KTLINT_VERSION
-import generated.DIKTAT_VERSION
 import com.pinterest.ktlint.reporter.plain.PlainReporter
+import generated.DIKTAT_VERSION
+import generated.KTLINT_VERSION
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ExternalModuleDependency
@@ -16,11 +16,14 @@ class DiktatGradlePlugin : Plugin<Project> {
      * @param project a gradle [Project] that the plugin is applied to
      */
     override fun apply(project: Project) {
-        val diktatExtension = project.extensions.create(DIKTAT_EXTENSION, DiktatExtension::class.java)
-        diktatExtension.inputs = project.fileTree("src").apply {
-            include("**/*.kt")
+        val diktatExtension = project.extensions.create(DIKTAT_EXTENSION, DiktatExtension::class.java).apply {
+            inputs = project.fileTree("src").apply {
+                include("**/*.kt")
+            }
+            reporter = PlainReporter(System.out)
+            excludes = project.files()
+            reporter = PlainReporter(System.out)
         }
-        diktatExtension.reporter = PlainReporter(System.out)
 
         // only gradle 7+ (or maybe 6.8) will embed kotlin 1.4+, kx.serialization is incompatible with kotlin 1.3, so until then we have to use JavaExec wrapper
         // FixMe: when gradle with kotlin 1.4 is out, proper configurable tasks should be added
@@ -30,8 +33,8 @@ class DiktatGradlePlugin : Plugin<Project> {
             configuration.dependencies.add(project.dependencies.create("com.pinterest:ktlint:$KTLINT_VERSION", closureOf<ExternalModuleDependency> {
                 exclude(
                     mutableMapOf(
-                           "group" to "com.pinterest.ktlint",
-                          "module" to "ktlint-ruleset-standard"
+                        "group" to "com.pinterest.ktlint",
+                        "module" to "ktlint-ruleset-standard"
                     )
                 )
             }))

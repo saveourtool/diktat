@@ -13,16 +13,16 @@ import org.junit.jupiter.api.assertThrows
 
 class EnumValueCaseTest : FixTestBase("test/paragraph1/naming", ::IdentifierNaming) {
     private val rulesConfigSnakeCaseEnum: List<RulesConfig> = listOf(
-            RulesConfig(Warnings.ENUM_VALUE.name, true,
-                    mapOf("enumStyle" to "snakeCase"))
+        RulesConfig(Warnings.ENUM_VALUE.name, true,
+            mapOf("enumStyle" to "snakeCase"))
     )
     private val rulesConfigPascalCaseEnum: List<RulesConfig> = listOf(
-            RulesConfig(Warnings.ENUM_VALUE.name, true,
-                    mapOf("enumStyle" to "pascalCase"))
+        RulesConfig(Warnings.ENUM_VALUE.name, true,
+            mapOf("enumStyle" to "pascalCase"))
     )
     private val rulesConfigEnumUnknownStyle: List<RulesConfig> = listOf(
-            RulesConfig(Warnings.ENUM_VALUE.name, true,
-                    mapOf("enumStyle" to "otherCase"))
+        RulesConfig(Warnings.ENUM_VALUE.name, true,
+            mapOf("enumStyle" to "otherCase"))
     )
 
     @Test
@@ -42,8 +42,8 @@ class EnumValueCaseTest : FixTestBase("test/paragraph1/naming", ::IdentifierNami
     fun `incorrect enum unknown style`() {
         assertThrows<IllegalStateException> {
             IdentifierNaming.IdentifierNamingConfiguration(
-                    rulesConfigEnumUnknownStyle.getRuleConfig(Warnings.ENUM_VALUE)
-                            ?.configuration ?: mapOf()
+                rulesConfigEnumUnknownStyle.getRuleConfig(Warnings.ENUM_VALUE)
+                    ?.configuration ?: mapOf()
             )
         }
     }

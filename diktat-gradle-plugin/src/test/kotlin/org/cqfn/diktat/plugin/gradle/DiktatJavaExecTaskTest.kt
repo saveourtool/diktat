@@ -18,9 +18,8 @@ class DiktatJavaExecTaskTest {
 
     @Test
     fun `check command line for various inputs`() {
-        val pwd = project.file(".")
         assertCommandLineEquals(
-            listOf(null, "$pwd" + listOf("src", "**", "*.kt").joinToString(File.separator, prefix = File.separator)),
+            listOf(null, "\"${combinePathParts("src", "**", "*.kt")}\""),
             DiktatExtension().apply {
                 inputs = project.files("src/**/*.kt")
             }
@@ -29,9 +28,8 @@ class DiktatJavaExecTaskTest {
 
     @Test
     fun `check command line in debug mode`() {
-        val pwd = project.file(".")
         assertCommandLineEquals(
-            listOf(null, "--debug", "$pwd${listOf("src", "**", "*.kt").joinToString(File.separator, prefix = File.separator)}"),
+            listOf(null, "--debug", "\"${combinePathParts("src", "**", "*.kt")}\""),
             DiktatExtension().apply {
                 inputs = project.files("src/**/*.kt")
                 debug = true
@@ -39,8 +37,31 @@ class DiktatJavaExecTaskTest {
         )
     }
 
+    @Test
+    fun `check command line with excludes`() {
+        assertCommandLineEquals(
+            listOf(null, "\"${combinePathParts("src", "**", "*.kt")}\"",
+                "\"!${combinePathParts("src", "main", "kotlin", "generated")}\""
+            ),
+            DiktatExtension().apply {
+                inputs = project.files("src/**/*.kt")
+                excludes = project.files("src/main/kotlin/generated")
+            }
+        )
+    }
+
+    @Test
+    fun `check command line with non-existent inputs`() {
+        val task = registerDiktatTask(
+            DiktatExtension().apply {
+                inputs = project.files()
+            }
+        ).get()
+        Assertions.assertFalse(task.shouldRun)
+    }
+
     private fun registerDiktatTask(extension: DiktatExtension) = project.tasks.register(
-        "test", DiktatJavaExecTaskBase::class.java,
+        "diktatTask4Test", DiktatJavaExecTaskBase::class.java,
         "6.7", extension, project.configurations.create("diktat")
     )
 
@@ -48,4 +69,7 @@ class DiktatJavaExecTaskTest {
         val task = registerDiktatTask(extension).get()
         Assertions.assertIterableEquals(expected, task.commandLine)
     }
+
+    private fun combinePathParts(vararg parts: String) = project.projectDir.absolutePath +
+            parts.joinToString(File.separator, prefix = File.separator)
 }

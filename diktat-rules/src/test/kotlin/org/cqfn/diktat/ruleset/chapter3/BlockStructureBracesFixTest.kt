@@ -1,13 +1,13 @@
 package org.cqfn.diktat.ruleset.chapter3
 
-import generated.WarningNames
 import org.cqfn.diktat.ruleset.rules.BlockStructureBraces
 import org.cqfn.diktat.util.FixTestBase
+
+import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class BlockStructureBracesFixTest : FixTestBase ("test/paragraph3/block_brace", ::BlockStructureBraces) {
-
     @Test
     @Tag(WarningNames.BRACES_BLOCK_STRUCTURE_ERROR)
     fun `should fix open and close brace in if-else expression`() {

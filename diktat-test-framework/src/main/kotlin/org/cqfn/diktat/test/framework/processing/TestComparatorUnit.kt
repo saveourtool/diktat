@@ -39,8 +39,8 @@ class TestComparatorUnit(private val resourceFilePath: String,
         FileUtils.copyFile(testFile, copyTestFile)
 
         val actualResult = function(
-                readFile(copyTestFile.absolutePath).joinToString("\n"),
-                copyTestFile.absolutePath
+            readFile(copyTestFile.absolutePath).joinToString("\n"),
+            copyTestFile.absolutePath
         )
 
         // fixme: actualResult is separated by KtLint#determineLneSeparator, should be split by it here too

@@ -1,5 +1,11 @@
 package org.cqfn.diktat.ruleset.rules.classes
 
+import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ruleset.constants.EmitType
+import org.cqfn.diktat.ruleset.constants.Warnings
+import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
+import org.cqfn.diktat.ruleset.utils.getIdentifierName
+
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
@@ -8,10 +14,6 @@ import com.pinterest.ktlint.core.ast.ElementType.EQ
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.parent
-import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.Warnings
-import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
-import org.cqfn.diktat.ruleset.utils.getIdentifierName
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -21,26 +23,31 @@ import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.psiUtil.asAssignment
 import org.jetbrains.kotlin.psi.psiUtil.children
 
+/**
+ * The rule that checks whether a class has a single `init` block or multiple. Having multiple `init` blocks is a bad practice.
+ */
 class SingleInitRule(private val configRule: List<RulesConfig>) : Rule("multiple-init-block") {
-    private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
+    private lateinit var emitWarn: EmitType
 
     override fun visit(
         node: ASTNode,
         autoCorrect: Boolean,
-        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit
+        emit: EmitType
     ) {
         emitWarn = emit
         isFixMode = autoCorrect
 
         when (node.elementType) {
             CLASS_BODY -> handleInitBlocks(node)
+            else -> return
         }
     }
 
     private fun handleInitBlocks(node: ASTNode) {
         // merge init blocks if there are multiple
-        node.children()
+        node
+            .children()
             .filter { it.elementType == CLASS_INITIALIZER }
             .toList()
             .takeIf { it.size > 1 }
@@ -80,12 +87,13 @@ class SingleInitRule(private val configRule: List<RulesConfig>) : Rule("multiple
         firstInitBlock.parent(CLASS_BODY)?.let(::removeEmptyBlocks)
     }
 
-    @Suppress("UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
     private fun moveAssignmentsToProperties(properties: List<ASTNode>, initBlock: ASTNode) {
         initBlock
             .findChildByType(BLOCK)
             ?.run {
-                (psi as KtBlockExpression).statements
+                (psi as KtBlockExpression)
+                    .statements
                     .mapNotNull { it.asAssignment() }
                     .filter { it.left is KtNameReferenceExpression }
                     .groupBy { assignment ->
@@ -122,7 +130,8 @@ class SingleInitRule(private val configRule: List<RulesConfig>) : Rule("multiple
     }
 
     private fun removeEmptyBlocks(node: ASTNode) {
-        node.getAllChildrenWithType(CLASS_INITIALIZER)
+        node
+            .getAllChildrenWithType(CLASS_INITIALIZER)
             .filter {
                 (it.findChildByType(BLOCK)?.psi as KtBlockExpression?)?.statements?.isEmpty() ?: false
             }

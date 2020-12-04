@@ -1,9 +1,10 @@
 package org.cqfn.diktat.plugin.gradle
 
-import generated.KTLINT_VERSION
-import generated.DIKTAT_VERSION
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.DIKTAT_CHECK_TASK
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.DIKTAT_FIX_TASK
+
+import generated.DIKTAT_VERSION
+import generated.KTLINT_VERSION
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.provider.Property
@@ -11,22 +12,27 @@ import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.VerificationTask
+
+import java.io.File
 import javax.inject.Inject
 
 /**
  * A base diktat task for gradle <6.8, which wraps [JavaExec]
  */
 open class DiktatJavaExecTaskBase @Inject constructor(
-        gradleVersionString: String,
-        diktatExtension: DiktatExtension,
-        diktatConfiguration: Configuration,
-        additionalFlags: Iterable<String> = emptyList()
+    gradleVersionString: String,
+    diktatExtension: DiktatExtension,
+    diktatConfiguration: Configuration,
+    additionalFlags: Iterable<String> = emptyList()
 ) : JavaExec(), VerificationTask {
     /**
      * A backing [Property] for [getIgnoreFailures] and [setIgnoreFailures]
      */
     @get:Internal
     internal val ignoreFailuresProp: Property<Boolean> = project.objects.property(Boolean::class.javaObjectType)
+
+    @get:Internal
+    internal var shouldRun = true
 
     init {
         group = "verification"
@@ -45,7 +51,33 @@ open class DiktatJavaExecTaskBase @Inject constructor(
             if (diktatExtension.debug) {
                 add("--debug")
             }
-            add(diktatExtension.inputs.files.joinToString { it.path })
+            diktatExtension.inputs
+                .also {
+                    if (it.isEmpty) {
+                        /*
+                         If ktlint receives empty patterns, it implicitly uses &#42;&#42;/*.kt, **/*.kts instead.
+                         This can lead to diktat analyzing gradle buildscripts and so on. We want to prevent it.
+                        */
+                        logger.warn("Inputs for $name do not exist, will not run diktat")
+                        shouldRun = false
+                    }
+                }
+                .files
+                .forEach {
+                    add("\"${it.path}\"")
+                }
+            diktatExtension.excludes?.files?.forEach {
+                add("\"!${it.path}\"")
+            }
+        }
+        logger.debug("Setting JavaExec args to $args")
+    }
+
+    override fun exec() {
+        if (shouldRun) {
+            super.exec()
+        } else {
+            logger.info("Skipping diktat execution")
         }
     }
 
@@ -74,8 +106,8 @@ open class DiktatJavaExecTaskBase @Inject constructor(
  */
 fun Project.registerDiktatCheckTask(diktatExtension: DiktatExtension, diktatConfiguration: Configuration): TaskProvider<DiktatJavaExecTaskBase> =
         tasks.register(
-                DIKTAT_CHECK_TASK, DiktatJavaExecTaskBase::class.java, gradle.gradleVersion,
-                diktatExtension, diktatConfiguration
+            DIKTAT_CHECK_TASK, DiktatJavaExecTaskBase::class.java, gradle.gradleVersion,
+            diktatExtension, diktatConfiguration
         )
 
 /**
@@ -85,6 +117,6 @@ fun Project.registerDiktatCheckTask(diktatExtension: DiktatExtension, diktatConf
  */
 fun Project.registerDiktatFixTask(diktatExtension: DiktatExtension, diktatConfiguration: Configuration): TaskProvider<DiktatJavaExecTaskBase> =
         tasks.register(
-                DIKTAT_FIX_TASK, DiktatJavaExecTaskBase::class.java, gradle.gradleVersion,
-                diktatExtension, diktatConfiguration, listOf("-F ")
+            DIKTAT_FIX_TASK, DiktatJavaExecTaskBase::class.java, gradle.gradleVersion,
+            diktatExtension, diktatConfiguration, listOf("-F ")
         )

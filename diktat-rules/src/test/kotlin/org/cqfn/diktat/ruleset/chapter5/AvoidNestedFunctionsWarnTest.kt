@@ -1,11 +1,12 @@
 package org.cqfn.diktat.ruleset.chapter5
 
-import com.pinterest.ktlint.core.LintError
-import generated.WarningNames.AVOID_NESTED_FUNCTIONS
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.AvoidNestedFunctionsRule
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.util.LintTestBase
+
+import com.pinterest.ktlint.core.LintError
+import generated.WarningNames.AVOID_NESTED_FUNCTIONS
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
@@ -16,7 +17,7 @@ class AvoidNestedFunctionsWarnTest : LintTestBase(::AvoidNestedFunctionsRule) {
     @Tag(AVOID_NESTED_FUNCTIONS)
     fun `nested function`() {
         lintMethod(
-                """
+            """
                     |fun foo() {
                     |   someFunc()
                     |   fun bar(a:String, b:Int) {
@@ -30,7 +31,7 @@ class AvoidNestedFunctionsWarnTest : LintTestBase(::AvoidNestedFunctionsRule) {
                     |
                     |}
                 """.trimMargin(),
-                LintError(3,4, ruleId, "${Warnings.AVOID_NESTED_FUNCTIONS.warnText()} fun bar", false)
+            LintError(3, 4, ruleId, "${Warnings.AVOID_NESTED_FUNCTIONS.warnText()} fun bar", false)
         )
     }
 
@@ -38,7 +39,7 @@ class AvoidNestedFunctionsWarnTest : LintTestBase(::AvoidNestedFunctionsRule) {
     @Tag(AVOID_NESTED_FUNCTIONS)
     fun `several nested functions`() {
         lintMethod(
-                """
+            """
                     |fun foo() {
                     |
                     |   fun bar() {
@@ -48,8 +49,8 @@ class AvoidNestedFunctionsWarnTest : LintTestBase(::AvoidNestedFunctionsRule) {
                     |
                     |}
                 """.trimMargin(),
-                LintError(3,4, ruleId, "${Warnings.AVOID_NESTED_FUNCTIONS.warnText()} fun bar", true),
-                LintError(4,8, ruleId, "${Warnings.AVOID_NESTED_FUNCTIONS.warnText()} fun baz", true)
+            LintError(3, 4, ruleId, "${Warnings.AVOID_NESTED_FUNCTIONS.warnText()} fun bar", true),
+            LintError(4, 8, ruleId, "${Warnings.AVOID_NESTED_FUNCTIONS.warnText()} fun baz", true)
         )
     }
 
@@ -57,7 +58,7 @@ class AvoidNestedFunctionsWarnTest : LintTestBase(::AvoidNestedFunctionsRule) {
     @Tag(AVOID_NESTED_FUNCTIONS)
     fun `no nested functions`() {
         lintMethod(
-                """
+            """
                     |class SomeClass {
                     |   fun someFunc() {}
                     |   
@@ -73,7 +74,7 @@ class AvoidNestedFunctionsWarnTest : LintTestBase(::AvoidNestedFunctionsRule) {
     @Tag(AVOID_NESTED_FUNCTIONS)
     fun `nested functions in anonymous class`() {
         lintMethod(
-                """
+            """
                     |class SomeClass {
                     |fun some() {
                     |       listOf(

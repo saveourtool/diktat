@@ -1,39 +1,36 @@
 package org.cqfn.diktat.ruleset.chapter5
 
-import com.pinterest.ktlint.core.LintError
-import generated.WarningNames
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.TOO_LONG_FUNCTION
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.FunctionLength
 import org.cqfn.diktat.util.LintTestBase
+
+import com.pinterest.ktlint.core.LintError
+import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class FunctionLengthWarnTest : LintTestBase(::FunctionLength) {
-
     private val ruleId = "$DIKTAT_RULE_SET_ID:function-length"
-
     private val rulesConfigList: List<RulesConfig> = listOf(
-            RulesConfig(TOO_LONG_FUNCTION.name, true,
-                    mapOf("maxFunctionLength" to "5"))
+        RulesConfig(TOO_LONG_FUNCTION.name, true,
+            mapOf("maxFunctionLength" to "5"))
     )
-
     private val shortRulesConfigList: List<RulesConfig> = listOf(
-            RulesConfig(TOO_LONG_FUNCTION.name, true,
-                    mapOf("maxFunctionLength" to "2"))
+        RulesConfig(TOO_LONG_FUNCTION.name, true,
+            mapOf("maxFunctionLength" to "2"))
     )
-
     private val shortRulesWithoutHeaderConfigList: List<RulesConfig> = listOf(
-            RulesConfig(TOO_LONG_FUNCTION.name, true,
-                    mapOf("maxFunctionLength" to "3", "isIncludeHeader" to "false"))
+        RulesConfig(TOO_LONG_FUNCTION.name, true,
+            mapOf("maxFunctionLength" to "3", "isIncludeHeader" to "false"))
     )
 
     @Test
     @Tag(WarningNames.TOO_LONG_FUNCTION)
     fun `check with all comment`() {
         lintMethod(
-                """
+            """
                     |fun foo() {
                     |
                     |   //dkfgvdf
@@ -54,8 +51,8 @@ class FunctionLengthWarnTest : LintTestBase(::FunctionLength) {
                     |
                     |}
                 """.trimMargin(),
-                LintError(1, 1, ruleId, "${TOO_LONG_FUNCTION.warnText()} max length is 5, but you have 7", false),
-                rulesConfigList = rulesConfigList
+            LintError(1, 1, ruleId, "${TOO_LONG_FUNCTION.warnText()} max length is 5, but you have 7", false),
+            rulesConfigList = rulesConfigList
         )
     }
 
@@ -63,7 +60,7 @@ class FunctionLengthWarnTest : LintTestBase(::FunctionLength) {
     @Tag(WarningNames.TOO_LONG_FUNCTION)
     fun `less than max`() {
         lintMethod(
-                """
+            """
                     |fun foo() {
                     |
                     |
@@ -77,7 +74,7 @@ class FunctionLengthWarnTest : LintTestBase(::FunctionLength) {
                     |
                     |}
                 """.trimMargin(),
-                rulesConfigList = rulesConfigList
+            rulesConfigList = rulesConfigList
         )
     }
 
@@ -85,7 +82,7 @@ class FunctionLengthWarnTest : LintTestBase(::FunctionLength) {
     @Tag(WarningNames.TOO_LONG_FUNCTION)
     fun `one line function`() {
         lintMethod(
-                """
+            """
                     |fun foo(list: List<ASTNode>) = list.forEach {
                     |        if (it.element == "dfscv")
                     |           println()
@@ -94,8 +91,8 @@ class FunctionLengthWarnTest : LintTestBase(::FunctionLength) {
                     |fun goo() = 
                     |   10
                 """.trimMargin(),
-                LintError(1, 1, ruleId, "${TOO_LONG_FUNCTION.warnText()} max length is 2, but you have 4", false),
-                rulesConfigList = shortRulesConfigList
+            LintError(1, 1, ruleId, "${TOO_LONG_FUNCTION.warnText()} max length is 2, but you have 4", false),
+            rulesConfigList = shortRulesConfigList
         )
     }
 
@@ -103,7 +100,7 @@ class FunctionLengthWarnTest : LintTestBase(::FunctionLength) {
     @Tag(WarningNames.TOO_LONG_FUNCTION)
     fun `fun in class`() {
         lintMethod(
-                """
+            """
                     |class A() {
                     |   val x = 10
                     |   val y  = 11
@@ -119,8 +116,8 @@ class FunctionLengthWarnTest : LintTestBase(::FunctionLength) {
                     |
                     |}
                 """.trimMargin(),
-                LintError(5, 4, ruleId, "${TOO_LONG_FUNCTION.warnText()} max length is 2, but you have 8", false),
-                rulesConfigList = shortRulesConfigList
+            LintError(5, 4, ruleId, "${TOO_LONG_FUNCTION.warnText()} max length is 2, but you have 8", false),
+            rulesConfigList = shortRulesConfigList
         )
     }
 
@@ -128,7 +125,7 @@ class FunctionLengthWarnTest : LintTestBase(::FunctionLength) {
     @Tag(WarningNames.TOO_LONG_FUNCTION)
     fun `check suppress`() {
         lintMethod(
-                """
+            """
                     |@Suppress("TOO_LONG_FUNCTION")
                     |class A() {
                     |   val x = 10
@@ -146,7 +143,7 @@ class FunctionLengthWarnTest : LintTestBase(::FunctionLength) {
                     |
                     |}
                 """.trimMargin(),
-                rulesConfigList = shortRulesConfigList
+            rulesConfigList = shortRulesConfigList
         )
     }
 
@@ -154,7 +151,7 @@ class FunctionLengthWarnTest : LintTestBase(::FunctionLength) {
     @Tag(WarningNames.TOO_LONG_FUNCTION)
     fun `only empty lines`() {
         lintMethod(
-                """
+            """
                     |fun foo(list: List<ASTNode>) {
                     |               
                     |           
@@ -162,7 +159,7 @@ class FunctionLengthWarnTest : LintTestBase(::FunctionLength) {
                     |       
                     |}
                 """.trimMargin(),
-                rulesConfigList = shortRulesConfigList
+            rulesConfigList = shortRulesConfigList
         )
     }
 
@@ -170,7 +167,7 @@ class FunctionLengthWarnTest : LintTestBase(::FunctionLength) {
     @Tag(WarningNames.TOO_LONG_FUNCTION)
     fun `fun longer but without body`() {
         lintMethod(
-                """
+            """
                     |class A() {
                     |   val x = 10
                     |   val y  = 11
@@ -186,7 +183,7 @@ class FunctionLengthWarnTest : LintTestBase(::FunctionLength) {
                     |   abstract fun foo()
                     |}
                 """.trimMargin(),
-                rulesConfigList = shortRulesWithoutHeaderConfigList
+            rulesConfigList = shortRulesWithoutHeaderConfigList
         )
     }
 }
