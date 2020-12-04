@@ -74,6 +74,7 @@ import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.nextCodeSibling
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevCodeSibling
+import org.cqfn.diktat.ruleset.constants.ListOfList
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -429,21 +430,21 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
      * @return true - if there is error, false, if there is no error and null if there is two calls in chain
      */
     private fun ASTNode.isCallsChain() = getParentExpressions()
-            .lastOrNull()
-            ?.run {
-                mutableListOf<ASTNode>().also {
-                    getOrderedCallExpressions(psi, it)
-                }
+        .lastOrNull()
+        ?.run {
+            mutableListOf<ASTNode>().also {
+                getOrderedCallExpressions(psi, it)
             }
-            // fixme: we can't distinguish fully qualified names (like java.lang) from chain of property accesses (like list.size) for now
-            ?.dropWhile { !it.treeParent.textContains('(') && !it.treeParent.textContains('{') }
-            ?.isNotValidCalls(this) ?: false
+        }
+        // fixme: we can't distinguish fully qualified names (like java.lang) from chain of property accesses (like list.size) for now
+        ?.dropWhile { !it.treeParent.textContains('(') && !it.treeParent.textContains('{') }
+        ?.isNotValidCalls(this) ?: false
 
     private fun List<ASTNode>.isNotValidCalls(node: ASTNode): Boolean {
         if (this.size == 1) {
             return false
         }
-        val callsByNewLine: MutableList<MutableList<ASTNode>> = mutableListOf()
+        val callsByNewLine: ListOfList = mutableListOf()
         var callsInOneNewLine: MutableList<ASTNode> = mutableListOf()
         this.forEach {
             if (it.treePrev.isFollowedByNewline() || it.treePrev.isWhiteSpaceWithNewline()) {
@@ -500,7 +501,6 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
          * If the number of parameters on one line is more than this threshold, all parameters should be placed on separate lines.
          */
         val maxParametersInOneLine = config["maxParametersInOneLine"]?.toInt() ?: 2
-
         val maxCallsInOneLine = config["maxCallsInOneLine"]?.toInt() ?: MAX_CALLS_IN_ONE_LINE
     }
 

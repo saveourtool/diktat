@@ -1,8 +1,8 @@
 package org.cqfn.diktat.ruleset.chapter3.files
 
-import org.cqfn.diktat.ruleset.rules.files.NewlinesRule
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
+import org.cqfn.diktat.ruleset.rules.files.NewlinesRule
 import org.cqfn.diktat.util.FixTestBase
 
 import generated.WarningNames
@@ -11,8 +11,8 @@ import org.junit.jupiter.api.Test
 
 class NewlinesRuleFixTest : FixTestBase("test/paragraph3/newlines", ::NewlinesRule) {
     private val rulesConfigListShort: List<RulesConfig> = listOf(
-            RulesConfig(Warnings.WRONG_NEWLINES.name, true,
-                    mapOf("maxCallsInOneLine" to "1"))
+        RulesConfig(Warnings.WRONG_NEWLINES.name, true,
+            mapOf("maxCallsInOneLine" to "1"))
     )
 
     @Test
