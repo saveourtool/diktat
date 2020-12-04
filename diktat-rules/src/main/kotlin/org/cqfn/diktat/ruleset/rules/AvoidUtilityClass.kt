@@ -5,8 +5,6 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.AVOID_USING_UTILITY_CLASS
 import org.cqfn.diktat.ruleset.utils.*
-import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import org.jetbrains.kotlin.psi.psiUtil.children
 
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
@@ -21,7 +19,8 @@ import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.Rule
-
+import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.psi.psiUtil.children
 
 /**
  * Rule 6.4.1 checks that class/object, with a word "util" in its name, has only functions.
@@ -46,17 +45,16 @@ class AvoidUtilityClass(private val configRules: List<RulesConfig>) : Rule("avoi
 
     @Suppress("UnsafeCallOnNullableType", "WRONG_NEWLINES")
     private fun checkClass(node: ASTNode) {
-
         //checks that class/object doesn't contain primary constructor and its identifier doesn't has "utli"
 
         if (!node.hasChildOfType(IDENTIFIER) || node.hasChildOfType(PRIMARY_CONSTRUCTOR) ||
-            !node.findChildByType(IDENTIFIER)!!.text.toLowerCase().contains("util")) {
+                !node.findChildByType(IDENTIFIER)!!.text.toLowerCase().contains("util")) {
             return
         }
         node.findChildByType(CLASS_BODY)
             ?.children()
             ?.toList()
-            ?.takeIf { childList -> childList.all { it.elementType in UTILITY_CLASS_CHILDREN } }
+            ?.takeIf { childList -> childList.all { it.elementType in utilityClassChildren } }
             ?.filter { it.elementType == FUN }
             ?.ifEmpty { return }
             ?: return
@@ -64,7 +62,7 @@ class AvoidUtilityClass(private val configRules: List<RulesConfig>) : Rule("avoi
     }
 
     companion object {
-        private val UTILITY_CLASS_CHILDREN = listOf(LBRACE, WHITE_SPACE, FUN, RBRACE, KDOC,
-                EOL_COMMENT, BLOCK_COMMENT, OBJECT_DECLARATION)
+        private val utilityClassChildren = listOf(LBRACE, WHITE_SPACE, FUN, RBRACE, KDOC,
+            EOL_COMMENT, BLOCK_COMMENT, OBJECT_DECLARATION)
     }
 }
