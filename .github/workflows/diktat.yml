@@ -26,6 +26,7 @@ jobs:
       - name: Substitute diktat config with the one from the latest release
         run: |
           LATEST_TAG=$(git describe --tags --abbrev=0)
-          wget https://github.com/cqfn/diKTat/blob/$LATEST_TAG/diktat-analysis.yml
+          DIKTAT_CONFIG=diktat-analysis.yml
+          wget -O $DIKTAT_CONFIG https://github.com/cqfn/diKTat/blob/$LATEST_TAG/$DIKTAT_CONFIG
       - name: Run diktat via maven plugin
         run: mvn -B diktat:check@diktat -DskipPluginMarker
