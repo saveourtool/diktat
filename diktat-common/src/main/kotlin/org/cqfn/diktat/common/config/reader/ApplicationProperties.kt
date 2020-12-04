@@ -18,15 +18,14 @@ open class ApplicationProperties(propertiesFileName: String) {
 
     init {
         val propStream = javaClass.classLoader.getResourceAsStream(propertiesFileName)
-        if (propStream != null) {
+        propStream?.let {
             try {
-                properties.load(propStream)
+                properties.load(it)
             } catch (e: IOException) {
                 errorReadingConfig(propertiesFileName)
             }
-        } else {
-            errorReadingConfig(propertiesFileName)
         }
+            ?: errorReadingConfig(propertiesFileName)
     }
 
     private fun errorReadingConfig(propertiesFileName: String) {

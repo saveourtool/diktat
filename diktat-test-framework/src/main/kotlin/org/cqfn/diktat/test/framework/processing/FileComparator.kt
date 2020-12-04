@@ -45,9 +45,9 @@ class FileComparator {
             }
             val deltasJoiner = StringJoiner(System.lineSeparator())
             patch
-                    .deltas
-                    .map { it.toString() }
-                    .forEach { delta -> deltasJoiner.add(delta) }
+                .deltas
+                .map { it.toString() }
+                .forEach { delta -> deltasJoiner.add(delta) }
 
             log.error("""Expected result from <${expectedResultFile.name}> and actual formatted are different.
 |                        See difference below:

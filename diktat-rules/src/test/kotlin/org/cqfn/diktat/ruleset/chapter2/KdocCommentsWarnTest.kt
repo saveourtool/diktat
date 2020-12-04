@@ -1,14 +1,18 @@
 package org.cqfn.diktat.ruleset.chapter2
 
-import com.pinterest.ktlint.core.LintError
-import generated.WarningNames
-import org.junit.jupiter.api.Test
-import org.cqfn.diktat.ruleset.constants.Warnings.*
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CONSTRUCTOR_PROPERTY
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT
+import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_CLASS_ELEMENTS
+import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_TOP_LEVEL
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocComments
 import org.cqfn.diktat.util.LintTestBase
+
+import com.pinterest.ktlint.core.LintError
+import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Tags
+import org.junit.jupiter.api.Test
 
 class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
     private val ruleId: String = "$DIKTAT_RULE_SET_ID:kdoc-comments"
@@ -34,10 +38,10 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
 
                 """.trimIndent()
         lintMethod(code,
-                LintError(1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeGoodName"),
-                LintError(6, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeOtherGoodName"),
-                LintError(9, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeNewGoodName"),
-                LintError(12, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeOtherNewGoodName")
+            LintError(1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeGoodName"),
+            LintError(6, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeOtherGoodName"),
+            LintError(9, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeNewGoodName"),
+            LintError(12, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeOtherNewGoodName")
         )
     }
 
@@ -50,7 +54,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     }
                 """.trimIndent()
         lintMethod(code, LintError(
-                1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeGoodName")
+            1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} SomeGoodName")
         )
     }
 
@@ -69,8 +73,8 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     fun main() {}
                 """.trimIndent()
         lintMethod(code,
-                LintError(1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} someGoodName"),
-                LintError(4, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} someGoodNameNew")
+            LintError(1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} someGoodName"),
+            LintError(4, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} someGoodNameNew")
         )
     }
 
@@ -123,9 +127,9 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     }
                 """.trimIndent()
         lintMethod(code,
-                LintError(5, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} variable"),
-                LintError(7, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} perfectFunction"),
-                LintError(13, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} InternalClass")
+            LintError(5, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} variable"),
+            LintError(7, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} perfectFunction"),
+            LintError(13, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} InternalClass")
         )
     }
 
@@ -157,9 +161,9 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     }
                 """.trimIndent()
         lintMethod(code,
-                LintError(5, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} variable"),
-                LintError(8, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} perfectFunction"),
-                LintError(14, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} InternalClass")
+            LintError(5, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} variable"),
+            LintError(8, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} perfectFunction"),
+            LintError(14, 5, ruleId, "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} InternalClass")
         )
     }
 
@@ -167,7 +171,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
     @Tag(WarningNames.MISSING_KDOC_CLASS_ELEMENTS)
     fun `Kdoc shouldn't present for each class element because Test annotation`() {
         lintMethod(
-                """
+            """
                     /**
                     * class that contains fields, functions and public subclasses
                     **/
@@ -232,7 +236,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
     @Tag(WarningNames.MISSING_KDOC_CLASS_ELEMENTS)
     fun `regression - should not force documentation on standard methods`() {
         lintMethod(
-                """
+            """
                     |/**
                     | * This is an example class
                     | */
@@ -247,7 +251,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
     @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT)
     fun `check simple primary constructor with comment`() {
         lintMethod(
-                """
+            """
                     |/**
                     | * @property name d
                     | * @param adsf
@@ -259,7 +263,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |) {
                     |}
                 """.trimMargin(),
-                LintError(7, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnText()} name", true)
+            LintError(7, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnText()} name", true)
         )
     }
 
@@ -267,7 +271,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
     @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY)
     fun `shouldn't trigger because not primary constructor`() {
         lintMethod(
-                """
+            """
                     |/**
                     | * @property name d
                     | * @property anotherName text
@@ -288,7 +292,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
     @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT)
     fun `check constructor with comment`() {
         lintMethod(
-                """
+            """
                     |/**
                     | * @return some
                     | */
@@ -300,7 +304,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |   ) {
                     |}
                 """.trimMargin(),
-                LintError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnText()} name", true)
+            LintError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnText()} name", true)
         )
     }
 
@@ -308,7 +312,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
     @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY)
     fun `check constructor with block comment`() {
         lintMethod(
-                """
+            """
                     |/**
                     | * @return some
                     | */
@@ -319,7 +323,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |   ) {
                     |}
                 """.trimMargin(),
-                LintError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} /*some descriptions*/", true)
+            LintError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} /*some descriptions*/", true)
         )
     }
 
@@ -327,7 +331,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
     @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY)
     fun `check not property`() {
         lintMethod(
-                """
+            """
                     |/**
                     | * @return some
                     | */
@@ -346,7 +350,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
     @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY)
     fun `check constructor with kdoc`() {
         lintMethod(
-                """
+            """
                     |/**
                     | * @return some
                     | */
@@ -362,7 +366,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |   ) {
                     |}
                 """.trimMargin(),
-                LintError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} /**...", true)
+            LintError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} /**...", true)
         )
     }
 
@@ -370,7 +374,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
     @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY)
     fun `shouldn't fix`() {
         lintMethod(
-                """
+            """
                     |/**
                     | * @property name text
                     | */
@@ -383,7 +387,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |   ) {
                     |}
                 """.trimMargin(),
-                LintError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} /**...", false)
+            LintError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} /**...", false)
         )
     }
 
@@ -391,7 +395,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
     @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY)
     fun `shouldn't trigger`() {
         lintMethod(
-                """
+            """
                     |/**
                     | * text
                     | */
@@ -407,7 +411,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
     @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY)
     fun `no property kdoc`() {
         lintMethod(
-                """
+            """
                     |/**
                     | * @property Name text
                     | */
@@ -416,7 +420,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |   ) {
                     |}
                 """.trimMargin(),
-                LintError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} add <name> to KDoc", true)
+            LintError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} add <name> to KDoc", true)
         )
     }
 
@@ -424,16 +428,15 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
     @Tags(Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY), Tag(WarningNames.MISSING_KDOC_TOP_LEVEL))
     fun `no property kdoc and class`() {
         lintMethod(
-                """
+            """
                     |class Example (
                     |   val name: String, 
                     |   private val surname: String
                     |   ) {
                     |}
                 """.trimMargin(),
-                LintError(1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} Example"),
-                LintError(2, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} add <name> to KDoc", true),
-                LintError(3, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} add <surname> to KDoc", true)
+            LintError(1, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} Example"),
+            LintError(2, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} add <name> to KDoc", true)
         )
     }
 }

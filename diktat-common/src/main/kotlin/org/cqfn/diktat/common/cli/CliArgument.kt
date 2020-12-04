@@ -13,19 +13,17 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class CliArgument(
-        private val shortName: String,
-        private val helpDescr: String,
-        private val longName: String,
-        private val hasArgs: Boolean,
-        private val isRequired: Boolean) {
+    private val shortName: String,
+    private val helpDescr: String,
+    private val longName: String,
+    private val hasArgs: Boolean,
+    private val isRequired: Boolean) {
     /**
      * Converts parameters received from json to [Option]
      *
      * @return an [Option]
      */
-    fun convertToOption(): Option {
-        val resOption = Option(shortName, longName, hasArgs, helpDescr)
-        resOption.isRequired = isRequired
-        return resOption
+    fun convertToOption() = Option(shortName, longName, hasArgs, helpDescr).apply {
+        isRequired = this@CliArgument.isRequired
     }
 }

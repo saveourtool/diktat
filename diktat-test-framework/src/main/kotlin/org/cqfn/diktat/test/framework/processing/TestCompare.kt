@@ -53,16 +53,15 @@ open class TestCompare : TestBase {
     override fun initTestProcessor(testConfig: TestConfig, properties: TestFrameworkProperties): TestCompare {
         this.testConfig = testConfig
         this.expectedResult = buildFullPathToResource(
-                testConfig.expectedResultFile,
-                properties.testFilesRelativePath
+            testConfig.expectedResultFile,
+            properties.testFilesRelativePath
         )
         this.testFile = buildFullPathToResource(testConfig.testFile, properties.testFilesRelativePath)
 
         return this
     }
 
-    // STRING_TEMPLATE_CURLY_BRACES is disabled temporarily, until https://github.com/cqfn/diKTat/issues/401 is fixed
-    @Suppress("STRING_TEMPLATE_CURLY_BRACES", "FUNCTION_BOOLEAN_PREFIX")
+    @Suppress("FUNCTION_BOOLEAN_PREFIX")
     private fun processInPlace(): Boolean {
         val copyTestFile = File("${testFile}_copy")
         FileUtils.copyFile(testFile, copyTestFile)
@@ -83,7 +82,7 @@ open class TestCompare : TestBase {
 
     private fun buildFullPathToResource(resourceFile: String, resourceAbsolutePath: String): File {
         val fileUrl = javaClass.classLoader.getResource("$resourceAbsolutePath/$resourceFile")
-        require(fileUrl != null) { "Cannot read resource file $$resourceAbsolutePath/$resourceFile - it cannot be found in resources" }
+        requireNotNull(fileUrl) { "Cannot read resource file $$resourceAbsolutePath/$resourceFile - it cannot be found in resources" }
         return File(fileUrl.file)
     }
 

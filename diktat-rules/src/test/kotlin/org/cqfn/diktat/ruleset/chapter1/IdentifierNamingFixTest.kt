@@ -9,12 +9,12 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class IdentifierNamingFixTest : FixTestBase(
-        "test/paragraph1/naming",
-        ::IdentifierNaming,
-        listOf(
-                RulesConfig("PACKAGE_NAME_INCORRECT", false, mapOf()),
-                RulesConfig("PACKAGE_NAME_INCORRECT_PREFIX", false, mapOf())
-        )
+    "test/paragraph1/naming",
+    ::IdentifierNaming,
+    listOf(
+        RulesConfig("PACKAGE_NAME_INCORRECT", false, mapOf()),
+        RulesConfig("PACKAGE_NAME_INCORRECT_PREFIX", false, mapOf())
+    )
 ) {
     @Test
     @Tag(WarningNames.CLASS_NAME_INCORRECT)
