@@ -33,7 +33,6 @@ fun ASTNode.parameterNames(): Collection<String?> {
  *
  * @return function body text as a list of strings
  */
-@Suppress("WRONG_NEWLINES")
 fun ASTNode.getBodyLines(): List<String> {
     checkNodeIsFun(this)
     return this.getFirstChildWithType(BLOCK)?.let { blockNode ->

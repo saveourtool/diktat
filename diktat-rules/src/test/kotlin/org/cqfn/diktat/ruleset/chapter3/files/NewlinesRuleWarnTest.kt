@@ -9,8 +9,6 @@ import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.files.NewlinesRule
 import org.cqfn.diktat.util.LintTestBase
 
-import com.pinterest.ktlint.core.LintError
-import generated.WarningNames
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -563,7 +561,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `should trigger for several lambdas on same line`() {
         lintMethod(
-            """
+                """
                     |fun foo(): String {
                     |        allProperties.filter { predicate(it) }
                     |        .foo()
@@ -587,9 +585,6 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |         }
                     |}
                 """.trimMargin(),
-            LintError(2, 22, ruleId, "${WRONG_NEWLINES.warnText()} should follow functional style at .", true),
-            LintError(6, 22, ruleId, "${WRONG_NEWLINES.warnText()} should follow functional style at ?.", true),
-            LintError(10, 13, ruleId, "${WRONG_NEWLINES.warnText()} should follow functional style at .", true),
             LintError(19, 20, ruleId, "${WRONG_NEWLINES.warnText()} should follow functional style at .", true)
         )
     }

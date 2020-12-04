@@ -71,22 +71,6 @@ import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
-import org.cqfn.diktat.common.config.rules.RuleConfiguration
-import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.common.config.rules.getRuleConfig
-import org.cqfn.diktat.ruleset.constants.Warnings.REDUNDANT_SEMICOLON
-import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_NEWLINES
-import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
-import org.cqfn.diktat.ruleset.utils.emptyBlockList
-import org.cqfn.diktat.ruleset.utils.extractLineOfText
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
-import org.cqfn.diktat.ruleset.utils.getIdentifierName
-import org.cqfn.diktat.ruleset.utils.isBeginByNewline
-import org.cqfn.diktat.ruleset.utils.isEol
-import org.cqfn.diktat.ruleset.utils.isFollowedByNewline
-import org.cqfn.diktat.ruleset.utils.isSingleLineIfElse
-import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
-import org.cqfn.diktat.ruleset.utils.log
 import com.pinterest.ktlint.core.ast.nextCodeSibling
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevCodeSibling
@@ -346,7 +330,6 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         }
     }
 
-    @Suppress("WRONG_NEWLINES")
     private fun handleFirstValueParameter(node: ASTNode) = node
         .children()
         .takeWhile { !it.textContains('\n') }
@@ -482,7 +465,6 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
     private fun ASTNode.getParentExpressions() =
             parents().takeWhile { it.elementType in chainExpressionTypes && it.elementType != LAMBDA_ARGUMENT }
 
-    @Suppress("WRONG_NEWLINES")
     private fun isMultilineLambda(node: ASTNode): Boolean =
             node.findAllNodesWithSpecificType(LAMBDA_ARGUMENT)
                 .firstOrNull()
