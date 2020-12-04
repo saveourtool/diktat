@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.rules
 
-import org.cqfn.diktat.common.config.rules.getCommonConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.common.config.rules.getCommonConfiguration
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.AVOID_USING_UTILITY_CLASS
 import org.cqfn.diktat.ruleset.utils.*
@@ -46,7 +46,6 @@ class AvoidUtilityClass(private val configRules: List<RulesConfig>) : Rule("avoi
     @Suppress("UnsafeCallOnNullableType", "WRONG_NEWLINES")
     private fun checkClass(node: ASTNode) {
         //checks that class/object doesn't contain primary constructor and its identifier doesn't has "utli"
-
         if (!node.hasChildOfType(IDENTIFIER) || node.hasChildOfType(PRIMARY_CONSTRUCTOR) ||
                 !node.findChildByType(IDENTIFIER)!!.text.toLowerCase().contains("util")) {
             return
