@@ -441,11 +441,11 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         if (this.size == 1)
             return false
         val callsByNewLine = mutableListOf<MutableList<ASTNode>>()
-        val callsInOneNewLine = mutableListOf<ASTNode>()
+        var callsInOneNewLine = mutableListOf<ASTNode>()
         this.forEach {
-            if (it.treePrev.isFollowedByNewline()) {
+            if (it.treePrev.isFollowedByNewline() || it.treePrev.isWhiteSpaceWithNewline()) {
                 callsByNewLine.add(callsInOneNewLine)
-                callsInOneNewLine.clear()
+                callsInOneNewLine = mutableListOf()
                 callsInOneNewLine.add(it)
             }
             else {
@@ -499,7 +499,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
          */
         val maxParametersInOneLine = config["maxParametersInOneLine"]?.toInt() ?: 2
 
-        val maxCallsInOneLine = config["maxCallsInOneLine"]?.toInt() ?: 1
+        val maxCallsInOneLine = config["maxCallsInOneLine"]?.toInt() ?: 3
     }
 
     companion object {
