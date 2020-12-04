@@ -25,6 +25,7 @@ jobs:
             ${{ runner.os }}-maven-diktat-
       - name: Substitute diktat config with the one from the latest release
         run: |
+          git fetch --tags
           LATEST_TAG=$(git describe --tags --abbrev=0)
           DIKTAT_CONFIG=diktat-analysis.yml
           wget -O $DIKTAT_CONFIG https://github.com/cqfn/diKTat/blob/$LATEST_TAG/$DIKTAT_CONFIG
