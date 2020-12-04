@@ -20,16 +20,14 @@ class Example {
      */
     fun String.countSubStringOccurrences(sub: String): Int {
         // println("sub: $sub")
-        return this.split(sub)
-            .size - 1
+        return this.split(sub).size - 1
     }
 
     /**
      * @return
      */
     fun String.splitPathToDirs(): List<String> =
-            this.replace("\\", "/")
-                .replace("//", "/")
+            this.replace("\\", "/").replace("//", "/")
                 .split("/")
 
     /**
