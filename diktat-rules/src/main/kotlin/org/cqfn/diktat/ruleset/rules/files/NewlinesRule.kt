@@ -378,27 +378,28 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         // if statements here have the only right order - don't change it
 
         if (psi.children.isNotEmpty() && (!psi.isFirstChildElementType(DOT_QUALIFIED_EXPRESSION) &&
-                        !psi.isFirstChildElementType(SAFE_ACCESS_EXPRESSION))) {
+                !psi.isFirstChildElementType(SAFE_ACCESS_EXPRESSION))) {
             val firstChild = psi.firstChild
             if (firstChild.isFirstChildElementType(POSTFIX_EXPRESSION)) {
                 if (firstChild.isFirstChildElementType(DOT_QUALIFIED_EXPRESSION) ||
-                        firstChild.isFirstChildElementType(SAFE_ACCESS_EXPRESSION))
+                        firstChild.isFirstChildElementType(SAFE_ACCESS_EXPRESSION)) {
                     getOrderedCallExpressions(firstChild.firstChild, result)
+                }
                 result.add(firstChild.node)
             }
             result.add(firstChild.node
-                    .siblings(true)
-                    .dropWhile { it.elementType in dropChainValues }
-                    .first()  // node treeNext is ".", "?.", "!!", "::"
+                .siblings(true)
+                .dropWhile { it.elementType in dropChainValues }
+                .first()  // node treeNext is ".", "?.", "!!", "::"
             )
         } else if (psi.children.isNotEmpty()) {
             getOrderedCallExpressions(psi.firstChild, result)
 
             result.add(psi.firstChild
-                    .node
-                    .siblings(true)
-                    .dropWhile { it.elementType in dropChainValues }
-                    .first()  // node treeNext is ".", "?.", "!!", "::"
+                .node
+                .siblings(true)
+                .dropWhile { it.elementType in dropChainValues }
+                .first()  // node treeNext is ".", "?.", "!!", "::"
             )
         }
     }
@@ -424,40 +425,41 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
 
     /**
      * This method collects chain calls and checks it
+     *
      * @return true - if there is error, false, if there is no error and null if there is two calls in chain
      */
-    private fun ASTNode. isCallsChain() = getParentExpressions()
-                .lastOrNull()
-                ?.run {
-                    mutableListOf<ASTNode>().also {
-                        getOrderedCallExpressions(psi, it)
-                    }
+    private fun ASTNode.isCallsChain() = getParentExpressions()
+            .lastOrNull()
+            ?.run {
+                mutableListOf<ASTNode>().also {
+                    getOrderedCallExpressions(psi, it)
                 }
-                // fixme: we can't distinguish fully qualified names (like java.lang) from chain of property accesses (like list.size) for now
-                ?.dropWhile { !it.treeParent.textContains('(') && !it.treeParent.textContains('{') }
-                ?.isNotValidCalls(this) ?: false
+            }
+            // fixme: we can't distinguish fully qualified names (like java.lang) from chain of property accesses (like list.size) for now
+            ?.dropWhile { !it.treeParent.textContains('(') && !it.treeParent.textContains('{') }
+            ?.isNotValidCalls(this) ?: false
 
     private fun List<ASTNode>.isNotValidCalls(node: ASTNode): Boolean {
-        if (this.size == 1)
+        if (this.size == 1) {
             return false
-        val callsByNewLine = mutableListOf<MutableList<ASTNode>>()
-        var callsInOneNewLine = mutableListOf<ASTNode>()
+        }
+        val callsByNewLine: MutableList<MutableList<ASTNode>> = mutableListOf()
+        var callsInOneNewLine: MutableList<ASTNode> = mutableListOf()
         this.forEach {
             if (it.treePrev.isFollowedByNewline() || it.treePrev.isWhiteSpaceWithNewline()) {
                 callsByNewLine.add(callsInOneNewLine)
                 callsInOneNewLine = mutableListOf()
                 callsInOneNewLine.add(it)
-            }
-            else {
+            } else {
                 callsInOneNewLine.add(it)
             }
-            if (it.treePrev.elementType == POSTFIX_EXPRESSION && !it.treePrev.isFollowedByNewline() && configuration.maxCallsInOneLine == 1)
+            if (it.treePrev.elementType == POSTFIX_EXPRESSION && !it.treePrev.isFollowedByNewline() && configuration.maxCallsInOneLine == 1) {
                 return true
+            }
         }
         callsByNewLine.add(callsInOneNewLine)
         return (callsByNewLine.find { it.contains(node) } ?: return false).indexOf(node) + 1 > configuration.maxCallsInOneLine
     }
-
 
     /**
      *  taking all expressions inside complex expression until we reach lambda arguments
@@ -504,10 +506,10 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
 
     companion object {
         const val MAX_CALLS_IN_ONE_LINE = 3
+
         // fixme: these token sets can be not full, need to add new once as corresponding cases are discovered.
         // error is raised if these operators are prepended by newline
         private val lineBreakAfterOperators = TokenSet.create(ANDAND, OROR, PLUS, PLUSEQ, MINUS, MINUSEQ, MUL, MULTEQ, DIV, DIVEQ)
-
         // error is raised if these operators are followed by newline
         private val lineBreakBeforeOperators = TokenSet.create(DOT, SAFE_ACCESS, ELVIS, COLONCOLON)
         private val expressionTypes = TokenSet.create(DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION, CALLABLE_REFERENCE_EXPRESSION, BINARY_EXPRESSION)

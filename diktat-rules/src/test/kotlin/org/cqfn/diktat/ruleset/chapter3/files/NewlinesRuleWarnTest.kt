@@ -1,7 +1,5 @@
 package org.cqfn.diktat.ruleset.chapter3.files
 
-import com.pinterest.ktlint.core.LintError
-import generated.WarningNames
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.REDUNDANT_SEMICOLON
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_NEWLINES
@@ -9,6 +7,8 @@ import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.files.NewlinesRule
 import org.cqfn.diktat.util.LintTestBase
 
+import com.pinterest.ktlint.core.LintError
+import generated.WarningNames
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -19,12 +19,10 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
             RulesConfig(WRONG_NEWLINES.name, true,
                     mapOf("maxCallsInOneLine" to "3"))
     )
-
     private val rulesConfigListShort: List<RulesConfig> = listOf(
             RulesConfig(WRONG_NEWLINES.name, true,
                     mapOf("maxCallsInOneLine" to "1"))
     )
-
     private val ruleId = "$DIKTAT_RULE_SET_ID:newlines"
     private val shouldBreakAfter = "${WRONG_NEWLINES.warnText()} should break a line after and not before"
     private val shouldBreakBefore = "${WRONG_NEWLINES.warnText()} should break a line before and not after"
@@ -49,7 +47,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |    val a = 0;
                     |    val b = if (condition) { bar(); baz()} else qux
                     |};
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(6, 17, ruleId, "${REDUNDANT_SEMICOLON.warnText()} fun foo() {};", true),
             LintError(7, 14, ruleId, "${REDUNDANT_SEMICOLON.warnText()} val a = 0;", true),
             LintError(9, 2, ruleId, "${REDUNDANT_SEMICOLON.warnText()} };", true)
@@ -65,7 +63,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |
                     |import org.cqfn.diktat.Foo
                     |import org.cqfn.diktat.example.*
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -83,7 +81,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |    bar().let(::baz)
                     |    ::baz
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -112,7 +110,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |    obj
                     |        ::foo
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -137,7 +135,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |    obj::
                     |        foo
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(3, 9, ruleId, "$shouldBreakAfter &&", true),
             LintError(8, 8, ruleId, "$shouldBreakBefore .", true),
             LintError(10, 8, ruleId, "$shouldBreakBefore ?.", true),
@@ -163,7 +161,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |
                     |    true xor false or true
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -180,7 +178,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |        xor
                     |        false)
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(3, 9, ruleId, "$shouldBreakAfter xor", true),
             LintError(6, 9, ruleId, "$shouldBreakAfter xor", true)
         )
@@ -208,7 +206,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |        true
                     |    )
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(3, 9, ruleId, "$shouldBreakAfter or", true),
             LintError(7, 9, ruleId, "$shouldBreakAfter xor", true),
             LintError(8, 9, ruleId, "$shouldBreakAfter or", true),
@@ -231,7 +229,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |        }
                     |        ?.qux()
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -245,7 +243,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |    bar?.baz()
                     |    bar!!.baz()
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -260,7 +258,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |            it.condition()
                     |        }?.qux()
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
                 LintError(2, 11, ruleId, "$functionalStyleWarn .", true),
                 LintError(3, 26, ruleId, "$functionalStyleWarn .", true),
                 LintError(5, 10, ruleId, "$functionalStyleWarn ?.", true),
@@ -276,7 +274,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |fun foo(list: List<Bar>?) {
                     |    if (list.size > n) list.filterNotNull().map { it.baz() } else list.let { it.bar() }.firstOrNull()?.qux()
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -291,7 +289,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |    val b
                     |        = 43
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(5, 9, ruleId, "$shouldBreakAfter =", true)
         )
     }
@@ -307,7 +305,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |    bar(a
                     |        , b)
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 9, ruleId, commaWarn, true),
             LintError(5, 9, ruleId, commaWarn, true)
         )
@@ -326,7 +324,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |        a: Int
                     |    ) { }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -341,7 +339,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |    val (a, b) = f(0)
                     |}
                     |fun bar(f: (x: Int) -> Unit) { }
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -360,7 +358,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |        a: Int
                     |    ) { }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 16, ruleId, lparWarn, true),
             LintError(3, 5, ruleId, lparWarn, true),
             LintError(7, 5, ruleId, lparWarn, true)
@@ -376,7 +374,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |        b: Int) {
                     |    bar(a, b)
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -399,7 +397,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |    val e = list.map { elem: Type -> bar(elem) }
                     |    val f = list.map { bar(elem) }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -427,7 +425,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |        foo(elem)
                     |    }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(3, 14, ruleId, lambdaWithArrowWarn, true),
             LintError(7, 9, ruleId, lambdaWithArrowWarn, true),
             LintError(11, 9, ruleId, lambdaWithArrowWarn, true),
@@ -460,7 +458,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |fun quux() { return }
                     |
                     |fun quux2(): Unit { return }
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -480,7 +478,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |            b: Int
                     |    ) { }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -499,7 +497,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |            a: Int, b: Int
                     |    ) { }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(3, 14, ruleId, "${WRONG_NEWLINES.warnText()} argument list should be split into several lines", true),
             LintError(7, 12, ruleId, "${WRONG_NEWLINES.warnText()} argument list should be split into several lines", true)
         )
@@ -513,7 +511,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |fun foo(): String {
                     |    return "lorem ipsum"
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(2, 5, ruleId, singleReturnWarn, true)
         )
     }
@@ -557,7 +555,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |           }
                     |        }
                     |}
-                """.trimMargin()
+            """.trimMargin()
         )
     }
 
@@ -565,7 +563,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `should trigger for several lambdas on same line`() {
         lintMethod(
-                """
+            """
                     |fun foo(): String {
                     |        allProperties.filter { predicate(it) }
                     |        .foo()
@@ -588,7 +586,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |           bar()
                     |         }
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
                 LintError(19, 20, ruleId, "${WRONG_NEWLINES.warnText()} should follow functional style at .", true),
                 rulesConfigList = rulesConfigListShort
         )
@@ -598,7 +596,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `should suggest newlines in a long argument list of a constructor`() {
         lintMethod(
-                """
+            """
                 |class Foo(val arg1: Int, arg2: Int) { }
                 |
                 |class Foo(val arg1: Int, arg2: Int, arg3: Int) { 
@@ -622,7 +620,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `should suggest newlines in a long argument list`() {
         lintMethod(
-                """
+            """
                 |fun foo(arg1: Int, arg2: Int) { }
                 |
                 |fun bar(arg1: Int, arg2: Int, arg3: Int) { }
@@ -647,7 +645,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `should suggest newlines in a long supertype list`() {
         lintMethod(
-                """
+            """
                 |class Foo :
                 |    FooBase<Bar>(),
                 |    BazInterface,
@@ -669,7 +667,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `should warn dot qualified with first on same line`() {
         lintMethod(
-                """
+            """
                 |fun foo() {
                 |   x.map()
                 |   .gre().few().dfh().qwe()
@@ -694,7 +692,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `should warn dot qualified with first on diff line`() {
         lintMethod(
-                """
+            """
                 |fun foo() {
                 |   x
                 |   .map()
@@ -722,7 +720,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `should warn dot qualified with save access`() {
         lintMethod(
-                """
+            """
                 |fun foo() {
                 |   x
                 |   ?.map()
@@ -757,7 +755,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `should warn dot qualified with exclexcl`() {
         lintMethod(
-                """
+            """
                 |fun foo() {
                 |   x!!.map()
                 |   .gre()
@@ -794,7 +792,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `should warn elvis`() {
         lintMethod(
-                """
+            """
                 |fun foo() {
                 |
                 |   z.goo()
@@ -815,7 +813,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `should warn elvis with several dot qualifided`() {
         lintMethod(
-                """
+            """
                 |fun foo() {
                 |   z.goo()
                 |       ?:
@@ -830,7 +828,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `test configuration for calls in one line`() {
         lintMethod(
-                """
+            """
                 |fun foo() {
                 |   z.goo().foo().qwe()
                 |   z!!.htr().foo()
@@ -839,7 +837,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |   x.gf().fge().qwe().fd()
                 |}
             """.trimMargin(),
-                LintError(6,22,ruleId, "$functionalStyleWarn .", true),
+                LintError(6,22, ruleId, "$functionalStyleWarn .", true),
                 rulesConfigList = rulesConfigList
         )
     }
@@ -848,7 +846,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `more test for prefix`() {
         lintMethod(
-                """
+            """
                 |fun foo() {
                 |   foo
                 |       .bar()
@@ -867,7 +865,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |       .qwe()
                 |}
             """.trimMargin(),
-                LintError(9,29,ruleId, "$functionalStyleWarn .", true)
+                LintError(9,29, ruleId, "$functionalStyleWarn .", true)
         )
     }
 
@@ -875,7 +873,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `more test for unsafe calls`() {
         lintMethod(
-                """
+            """
                 |fun foo() {
                 |   foo
                 |       .bar()

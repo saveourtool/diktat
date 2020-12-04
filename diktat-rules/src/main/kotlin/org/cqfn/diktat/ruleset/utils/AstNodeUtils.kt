@@ -692,9 +692,7 @@ fun ASTNode.lastLineNumber(isFixMode: Boolean) = getLineNumber(isFixMode)?.plus(
 /**
  * copy-pasted method from ktlint to determine line and column number by offset
  */
-fun ASTNode.calculateLineColByOffset(): (offset: Int) -> Pair<Int, Int> {
-    return buildPositionInTextLocator(text)
-}
+fun ASTNode.calculateLineColByOffset() = buildPositionInTextLocator(text)
 
 /**
  * Retrieves file name from user data of this node
