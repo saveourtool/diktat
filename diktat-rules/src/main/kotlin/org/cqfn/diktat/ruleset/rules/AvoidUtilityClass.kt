@@ -6,6 +6,7 @@ import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.AVOID_USING_UTILITY_CLASS
 import org.cqfn.diktat.ruleset.utils.*
 
+import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
@@ -18,7 +19,6 @@ import com.pinterest.ktlint.core.ast.ElementType.OBJECT_DECLARATION
 import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
-import com.pinterest.ktlint.core.Rule
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.psiUtil.children
 
@@ -45,7 +45,7 @@ class AvoidUtilityClass(private val configRules: List<RulesConfig>) : Rule("avoi
 
     @Suppress("UnsafeCallOnNullableType", "WRONG_NEWLINES")
     private fun checkClass(node: ASTNode) {
-        //checks that class/object doesn't contain primary constructor and its identifier doesn't has "utli"
+        // checks that class/object doesn't contain primary constructor and its identifier doesn't has "utli"
         if (!node.hasChildOfType(IDENTIFIER) || node.hasChildOfType(PRIMARY_CONSTRUCTOR) ||
                 !node.findChildByType(IDENTIFIER)!!.text.toLowerCase().contains("util")) {
             return
