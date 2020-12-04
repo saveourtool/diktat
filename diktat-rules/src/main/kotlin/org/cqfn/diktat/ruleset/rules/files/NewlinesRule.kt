@@ -499,10 +499,11 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
          */
         val maxParametersInOneLine = config["maxParametersInOneLine"]?.toInt() ?: 2
 
-        val maxCallsInOneLine = config["maxCallsInOneLine"]?.toInt() ?: 3
+        val maxCallsInOneLine = config["maxCallsInOneLine"]?.toInt() ?: MAX_CALLS_IN_ONE_LINE
     }
 
     companion object {
+        const val MAX_CALLS_IN_ONE_LINE = 3
         // fixme: these token sets can be not full, need to add new once as corresponding cases are discovered.
         // error is raised if these operators are prepended by newline
         private val lineBreakAfterOperators = TokenSet.create(ANDAND, OROR, PLUS, PLUSEQ, MINUS, MINUSEQ, MUL, MULTEQ, DIV, DIVEQ)
