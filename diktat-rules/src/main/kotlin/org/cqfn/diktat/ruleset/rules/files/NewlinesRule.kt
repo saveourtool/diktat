@@ -19,7 +19,6 @@ import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
 import org.cqfn.diktat.ruleset.utils.log
 
 import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.ast.*
 import com.pinterest.ktlint.core.ast.ElementType.ANDAND
 import com.pinterest.ktlint.core.ast.ElementType.ARROW
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
@@ -71,6 +70,7 @@ import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.nextCodeSibling
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevCodeSibling
@@ -176,7 +176,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
             }
         }
         if (isIncorrect) {
-            val freeText = if (node.isCallsChain() == true) {
+            val freeText = if (node.isCallsChain()) {
                 "should follow functional style at ${node.text}"
             } else {
                 "should break a line before and not after ${node.text}"
@@ -433,7 +433,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
                         getOrderedCallExpressions(psi, it)
                     }
                 }
-                // fixme: we can't distinguish fully qualified names (like java.lang) from chain of property accesses (like list.size) for now?.dropWhile { !it.treeParent.textContains('(') && !it.treeParent.textContains('{') }
+                // fixme: we can't distinguish fully qualified names (like java.lang) from chain of property accesses (like list.size) for now
                 ?.dropWhile { !it.treeParent.textContains('(') && !it.treeParent.textContains('{') }
                 ?.isNotValidCalls(this) ?: false
 
