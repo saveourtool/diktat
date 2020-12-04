@@ -31,6 +31,9 @@ open class DiktatJavaExecTaskBase @Inject constructor(
     @get:Internal
     internal val ignoreFailuresProp: Property<Boolean> = project.objects.property(Boolean::class.javaObjectType)
 
+    @get:Internal
+    internal var shouldRun = true
+
     init {
         group = "verification"
         if (isMainClassPropertySupported(gradleVersionString)) {
@@ -48,16 +51,34 @@ open class DiktatJavaExecTaskBase @Inject constructor(
             if (diktatExtension.debug) {
                 add("--debug")
             }
-            diktatExtension.inputs.files.forEach {
-                val pattern = project.trimRootDir(it.path)
-                add("\"$pattern\"")
-            }
+            diktatExtension.inputs
+                .also {
+                    if (it.isEmpty) {
+                        /*
+                         If ktlint receives empty patterns, it implicitly uses &#42;&#42;/*.kt, **/*.kts instead.
+                         This can lead to diktat analyzing gradle buildscripts and so on. We want to prevent it.
+                        */
+                        logger.warn("Inputs for $name do not exist, will not run diktat")
+                        shouldRun = false
+                    }
+                }
+                .files
+                .forEach {
+                    add("\"${it.path}\"")
+                }
             diktatExtension.excludes?.files?.forEach {
-                val pattern = project.trimRootDir(it.path)
-                add("\"!$pattern\"")
+                add("\"!${it.path}\"")
             }
         }
         logger.debug("Setting JavaExec args to $args")
+    }
+
+    override fun exec() {
+        if (shouldRun) {
+            super.exec()
+        } else {
+            logger.info("Skipping diktat execution")
+        }
     }
 
     /**
@@ -99,10 +120,3 @@ fun Project.registerDiktatFixTask(diktatExtension: DiktatExtension, diktatConfig
             DIKTAT_FIX_TASK, DiktatJavaExecTaskBase::class.java, gradle.gradleVersion,
             diktatExtension, diktatConfiguration, listOf("-F ")
         )
-
-private fun Project.trimRootDir(path: String) = if (path.startsWith(rootDir.absolutePath)) {
-    path.drop(rootDir.absolutePath.length)
-} else {
-    path
-}
-    .trim(File.separatorChar)
