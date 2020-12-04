@@ -39,6 +39,7 @@ import org.jetbrains.kotlin.psi.KtAnnotationEntry
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.psiUtil.children
+import org.jetbrains.kotlin.psi.psiUtil.endOffset
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.siblings
 import org.slf4j.Logger
@@ -684,11 +685,11 @@ fun isLocatedInTest(filePathParts: List<String>, testAnchors: List<String>) = fi
 fun ASTNode.firstLineOfText(suffix: String = "") = text.lines().run { singleOrNull() ?: (first() + suffix) }
 
 /**
- * Return the number of the last line in the file
+ * Return the number in the file of the last line of this node's text
  *
  * @param isFixMode whether autofix mode is on
  */
-fun ASTNode.lastLineNumber(isFixMode: Boolean) = getLineNumber(isFixMode)?.plus(text.count { it == '\n' })
+fun ASTNode.lastLineNumber() = getLineNumber()?.plus(text.count { it == '\n' })
 
 /**
  * copy-pasted method from ktlint to determine line and column number by offset
@@ -724,8 +725,8 @@ data class ReplacementResult(val oldNodes: List<ASTNode>, val newNodes: List<AST
  * checks that this one node is placed after the other node in code (by comparing lines of code where nodes start)
  */
 fun ASTNode.isGoingAfter(otherNode: ASTNode): Boolean {
-    val thisLineNumber = this.calculateLineNumber()
-    val otherLineNumber = otherNode.calculateLineNumber()
+    val thisLineNumber = this.getLineNumber()
+    val otherLineNumber = otherNode.getLineNumber()
 
     requireNotNull(thisLineNumber) { "Node ${this.text} should have a line number" }
     requireNotNull(otherLineNumber) { "Node ${otherNode.text} should have a line number" }
@@ -734,17 +735,18 @@ fun ASTNode.isGoingAfter(otherNode: ASTNode): Boolean {
 }
 
 /**
- * Get line number, where this node's content starts
+ * Get line number, where this node's content starts. To avoid `ArrayIndexOutOfBoundsException`s we check whether node's maximum offset is less than
+ * Document's maximum offset, and calculate line number manually if needed.
  *
- * @param isFixMode if fix mode is off, then the text can't be altered and we can use cached values for line numbers
  * @return line number or null if it cannot be calculated
  */
-fun ASTNode.getLineNumber(isFixMode: Boolean): Int? =
-        if (!isFixMode) {
-            lineNumber()
-        } else {
-            calculateLineNumber()
-        }
+fun ASTNode.getLineNumber(): Int? =
+        psi.containingFile
+            .viewProvider
+            .document
+            ?.takeIf { it.getLineEndOffset(it.lineCount - 1) >= psi.endOffset }
+            ?.let { lineNumber() }
+            ?: calculateLineNumber()
 
 /**
  * This function calculates line number instead of using cached values.
