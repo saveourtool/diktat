@@ -421,7 +421,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |   ) {
                     |}
                 """.trimMargin(),
-            LintError(1,1, ruleId, "${KDOC_EXTRA_PROPERTY.warnText()} Name", false),
+            LintError(1, 1, ruleId, "${KDOC_EXTRA_PROPERTY.warnText()} Name", false),
             LintError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} add <name> to KDoc", true)
         )
     }
