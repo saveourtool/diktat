@@ -92,21 +92,19 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
 
     private fun checkParameterList(node: ASTNode?) {
         val kdocBeforeClass = node
-                ?.parent({ it.elementType == CLASS })
-                ?.findChildByType(KDOC) ?: return
+            ?.parent({ it.elementType == CLASS })
+            ?.findChildByType(KDOC) ?: return
         val propertiesInKdoc = kdocBeforeClass
-                .kDocTags()
-                ?.filter { it.knownTag == KDocKnownTag.PROPERTY}
-                ?.mapNotNull {it.getSubjectName()}
+            .kDocTags()
+            ?.filter { it.knownTag == KDocKnownTag.PROPERTY}
+            ?.mapNotNull {it.getSubjectName()}
         val propertyNames = (node.psi as KtParameterList)
-                .parameters
-                .mapNotNull { it.nameIdentifier?.text }
+            .parameters
+            .mapNotNull { it.nameIdentifier?.text }
         propertiesInKdoc?.let { kdocProperties ->
             kdocProperties
-                    .filterNot { it in propertyNames }
-                    .forEach {
-                        KDOC_EXTRA_PROPERTY.warn(configRules, emitWarn, isFixMode, it, kdocBeforeClass.startOffset, node)
-            }
+                .filterNot { it in propertyNames }
+                .forEach { KDOC_EXTRA_PROPERTY.warn(configRules, emitWarn, isFixMode, it, kdocBeforeClass.startOffset, node) }
         }
     }
 
