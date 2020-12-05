@@ -1,5 +1,6 @@
 package org.cqfn.diktat.ruleset.chapter2
 
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_EXTRA_PROPERTY
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CONSTRUCTOR_PROPERTY
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_CLASS_ELEMENTS
@@ -10,7 +11,6 @@ import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
-import org.cqfn.diktat.ruleset.constants.Warnings
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Tags
 import org.junit.jupiter.api.Test
@@ -421,7 +421,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |   ) {
                     |}
                 """.trimMargin(),
-            LintError(1,1, ruleId, "${Warnings.KDOC_EXTRA_PROPERTY.warnText()} Name", false),
+            LintError(1,1, ruleId, "${KDOC_EXTRA_PROPERTY.warnText()} Name", false),
             LintError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} add <name> to KDoc", true)
         )
     }
