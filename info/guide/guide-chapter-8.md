@@ -83,3 +83,6 @@ if (myVar != null) {
 ```kotlin
 if (myVar == null || otherValue == 5 && isValid) {}
 ```
+
+Please also note, that instead of using `require(a != null)` with a not null check - you should use a special Kotlin function called `requireNotNull(a)`.
+

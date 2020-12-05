@@ -16,10 +16,10 @@ import groovy.lang.Closure
  * @property suffix version suffix
  */
 internal data class GradleVersion(
-        val major: Int,
-        val minor: Int,
-        val patch: Int,
-        val suffix: String?) {
+    val major: Int,
+    val minor: Int,
+    val patch: Int,
+    val suffix: String?) {
     companion object {
         /**
          * @param version string representation of version, e.g. from [org.gradle.api.invocation.Gradle.getGradleVersion]
@@ -41,13 +41,12 @@ internal data class GradleVersion(
 fun <T> Any.closureOf(action: T.() -> Unit): Closure<Any?> =
         KotlinClosure1(action, this, this)
 
-// GENERIC_NAME is suppressed until https://github.com/cqfn/diKTat/issues/493
-@Suppress("MISSING_KDOC_TOP_LEVEL", "MISSING_KDOC_CLASS_ELEMENTS", "GENERIC_NAME", "KDOC_NO_CONSTRUCTOR_PROPERTY",
-        "MISSING_KDOC_ON_FUNCTION", "KDOC_WITHOUT_PARAM_TAG", "KDOC_WITHOUT_RETURN_TAG")
+@Suppress("MISSING_KDOC_TOP_LEVEL", "MISSING_KDOC_CLASS_ELEMENTS", "KDOC_NO_CONSTRUCTOR_PROPERTY",
+    "MISSING_KDOC_ON_FUNCTION", "KDOC_WITHOUT_PARAM_TAG", "KDOC_WITHOUT_RETURN_TAG")
 class KotlinClosure1<in T : Any?, V : Any>(
-        val function: T.() -> V?,
-        owner: Any? = null,
-        thisObject: Any? = null
+    val function: T.() -> V?,
+    owner: Any? = null,
+    thisObject: Any? = null
 ) : Closure<V?>(owner, thisObject) {
     @Suppress("unused")  // to be called dynamically by Groovy
     fun doCall(it: T): V? = it.function()

@@ -10,10 +10,11 @@ import kotlin.io.path.writeText
 
 /**
  * Tests for mojo configuration
- *
+ * FixMe: inject project version from outside
  * FixMe: `@Parameter` properties are not initialized with default values
  */
 @OptIn(ExperimentalPathApi::class)
+@Suppress("TOO_LONG_FUNCTION")
 class DiktatBaseMojoTest {
     @get:Rule
     val mojoRule = MojoRule()

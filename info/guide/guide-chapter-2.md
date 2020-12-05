@@ -82,8 +82,6 @@ fun isEmptyList(list: List<String>) = list.size == 0
 ```
 
 Note: You can skip KDocs for a method's override if it is almost the same as the superclass method.
-###  <a name="r2.1.2"></a>Rule 2.1.2: Describing methods with arguments, return value or can throw exceptions
-When the method has arguments, return value, or can throw exceptions, it must be described in the KDoc block: with @param, @return, @throws
 
 ### <a name="r2.1.2"></a>Rule 2.1.2: When the method has arguments, return value, can throw exceptions, etc., it must be described in the KDoc block: with @param, @return, @throws, etc.
 

@@ -13,6 +13,9 @@ class DiktatGradlePluginTest {
     @BeforeEach
     fun setUp() {
         project = projectBuilder.build()
+        // mock kotlin sources
+        project.mkdir("src/main/kotlin")
+        project.file("src/main/kotlin/Test.kt").createNewFile()
         project.pluginManager.apply(DiktatGradlePlugin::class.java)
     }
 
@@ -27,5 +30,6 @@ class DiktatGradlePluginTest {
         val diktatExtension = project.extensions.getByName("diktat") as DiktatExtension
         Assertions.assertFalse(diktatExtension.debug)
         Assertions.assertIterableEquals(project.fileTree("src").files, diktatExtension.inputs.files)
+        Assertions.assertTrue(diktatExtension.inputs.files.isNotEmpty())
     }
 }
