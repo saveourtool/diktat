@@ -1,8 +1,9 @@
 package org.cqfn.diktat.ruleset.chapter6
 
-import generated.WarningNames.CLASS_SHOULD_NOT_BE_ABSTRACT
-import org.cqfn.diktat.util.FixTestBase
 import org.cqfn.diktat.ruleset.rules.classes.AbstractClassesRule
+import org.cqfn.diktat.util.FixTestBase
+
+import generated.WarningNames.CLASS_SHOULD_NOT_BE_ABSTRACT
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 

@@ -30,7 +30,7 @@ class SuppressTest : LintTestBase(::IdentifierNaming) {
     @Test
     fun `check suppress on method`() {
         lintMethod(
-                """
+            """
                     |class SomeClass {
                     |
                     |   @Suppress("FUNCTION_NAME_INCORRECT_CASE")
@@ -47,15 +47,15 @@ class SuppressTest : LintTestBase(::IdentifierNaming) {
                     |   }
                     |}
                 """.trimMargin(),
-                LintError(12, 14, ruleId, "${Warnings.FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREEASA",
-                        true)
+            LintError(12, 14, ruleId, "${Warnings.FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREEASA",
+                true)
         )
     }
 
     @Test
     fun `check suppress on variable`() {
         lintMethod(
-                """
+            """
                     |class SomeClass {
                     |
                     |   @Suppress("FUNCTION_NAME_INCORRECT_CASE")
@@ -115,7 +115,7 @@ class SuppressTest : LintTestBase(::IdentifierNaming) {
     @Test
     fun `check simple wrong enum`() {
         lintMethod(
-                """
+            """
                     |@set:[Suppress("WRONG_DECLARATION_ORDER") Suppress("IDENTIFIER_LENGTH") Suppress("CONFUSING_IDENTIFIER_NAMING")]
                     |enum class Alph {
                     |   D,
@@ -140,7 +140,7 @@ class SuppressTest : LintTestBase(::IdentifierNaming) {
                   }
                 """.trimIndent()
         lintMethod(code,
-                LintError(3, 13, "$DIKTAT_RULE_SET_ID:identifier-naming",
-                    "${Warnings.FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREE", true))
+            LintError(3, 13, "$DIKTAT_RULE_SET_ID:identifier-naming",
+                "${Warnings.FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREE", true))
     }
 }

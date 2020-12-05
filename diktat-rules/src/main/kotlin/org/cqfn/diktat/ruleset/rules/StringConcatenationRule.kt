@@ -1,15 +1,17 @@
 package org.cqfn.diktat.ruleset.rules
 
+import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ruleset.constants.EmitType
+import org.cqfn.diktat.ruleset.constants.Warnings.STRING_CONCATENATION
+import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
+import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
+import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
+
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.PLUS
 import com.pinterest.ktlint.core.ast.ElementType.STRING_TEMPLATE
-import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.Warnings.STRING_CONCATENATION
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
-import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
-import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 /**
@@ -19,12 +21,12 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
  * // FixMe: .toString() method and functions that return strings are not supported
  */
 class StringConcatenationRule(private val configRules: List<RulesConfig>) : Rule("string-concatenation") {
-    private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
+    private lateinit var emitWarn: EmitType
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
-                       emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
+                       emit: EmitType) {
         emitWarn = emit
         isFixMode = autoCorrect
 
@@ -44,6 +46,7 @@ class StringConcatenationRule(private val configRules: List<RulesConfig>) : Rule
         node.findAllNodesWithSpecificType(BINARY_EXPRESSION).find { detectStringConcatenationInExpression(it, node) }
     }
 
+    @Suppress("FUNCTION_BOOLEAN_PREFIX")
     private fun detectStringConcatenationInExpression(node: ASTNode, parentNode: ASTNode): Boolean {
         assert(node.elementType == BINARY_EXPRESSION)
         val firstChild = node.firstChildNode
@@ -55,6 +58,7 @@ class StringConcatenationRule(private val configRules: List<RulesConfig>) : Rule
         }
     }
 
+    @Suppress("COMMENT_WHITE_SPACE")
     private fun isPlusBinaryExpression(node: ASTNode): Boolean {
         assert(node.elementType == BINARY_EXPRESSION)
         //     binary expression
@@ -63,6 +67,6 @@ class StringConcatenationRule(private val configRules: List<RulesConfig>) : Rule
 
         val operationReference = node.getFirstChildWithType(OPERATION_REFERENCE)
         return operationReference
-                ?.getFirstChildWithType(PLUS) != null
+            ?.getFirstChildWithType(PLUS) != null
     }
 }

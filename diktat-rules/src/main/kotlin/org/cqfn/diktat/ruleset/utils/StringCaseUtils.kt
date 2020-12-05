@@ -1,39 +1,59 @@
+@file:Suppress("FILE_NAME_MATCH_CLASS")
+
 package org.cqfn.diktat.ruleset.utils
 
 import com.google.common.base.CaseFormat
 
 /**
  * checking that string looks like: PascalCaseForClassName
+ *
+ * @return boolean result
  */
 fun String.isPascalCase(): Boolean = this.matches("([A-Z][a-z0-9]+)+".toRegex())
 
 /**
  * checking that string looks like: lowerCaseOfVariable
+ *
+ * @return boolean result
  */
 fun String.isLowerCamelCase(): Boolean = this.matches("[a-z]([a-z0-9])*([A-Z][a-z0-9]+)*".toRegex())
 
 /**
  * checking that string looks like: CORRECT_CASE_FOR_CONSTANTS
+ *
+ * @return boolean result
  */
 fun String.isUpperSnakeCase(): Boolean = this.matches("(([A-Z]+)_*)+[A-Z0-9]*".toRegex())
 
 /**
  * checking that string looks like: lower_case_for_script_names
+ *
+ * @return boolean result
  */
 fun String.isLowerSnakeCase(): Boolean = this.matches("(([a-z]+)_*)+[a-z0-9]*".toRegex())
 
 /**
  * detecting the case of _this_ String and converting it to the right UpperSnakeCase (UPPER_UNDERSCORE) case
+ *
+ * @return converted string
  */
 fun String.toUpperSnakeCase(): String {
     // PascalCase -> PASCAL_CASE
-    if (this.isPascalCase()) return CaseFormat.UPPER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, this)
+    if (this.isPascalCase()) {
+        return CaseFormat.UPPER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, this)
+    }
     // lower -> LOWER
-    if (this.all { it.isLowerCase() }) return this.toUpperCase()
+    if (this.all { it.isLowerCase() }) {
+        return this.toUpperCase()
+    }
     // lowerCamel -> LOWER_CAMEL
-    if (this.isLowerCamelCase()) return CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, this)
+    if (this.isLowerCamelCase()) {
+        return CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, this)
+    }
     // lower_snake -> LOWER_SNAKE
-    if (this.isLowerSnakeCase()) return CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_UNDERSCORE, this)
+    if (this.isLowerSnakeCase()) {
+        return CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_UNDERSCORE, this)
+    }
 
     val idx = getFirstLetterOrDigit()
     if (idx != -1) {
@@ -48,17 +68,27 @@ fun String.toUpperSnakeCase(): String {
 
 /**
  * detecting the case of _this_ String and converting it to the right UpperSnakeCase (UPPER_UNDERSCORE) case
+ *
+ * @return converted string
  */
 @Suppress("ForbiddenComment")
 fun String.toLowerCamelCase(): String {
     // PascalCase -> PASCAL_CASE
-    if (this.isPascalCase()) return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, this)
+    if (this.isPascalCase()) {
+        return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, this)
+    }
     // lower -> LOWER
-    if (this.all { it.isUpperCase() }) return this.toLowerCase()
+    if (this.all { it.isUpperCase() }) {
+        return this.toLowerCase()
+    }
     // lowerCamel -> LOWER_CAMEL
-    if (this.isUpperSnakeCase()) return CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, this)
+    if (this.isUpperSnakeCase()) {
+        return CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, this)
+    }
     // lower_snake -> LOWER_SNAKE
-    if (this.isLowerSnakeCase()) return CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, this)
+    if (this.isLowerSnakeCase()) {
+        return CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, this)
+    }
 
     val idx = getFirstLetterOrDigit()
     if (idx != -1) {
@@ -75,6 +105,8 @@ fun String.toLowerCamelCase(): String {
 
 /**
  * detecting the case of _this_ String and converting it to the right PascalCase (UpperCamel) case
+ *
+ * @return converted string
  */
 @Suppress("ForbiddenComment")
 fun String.toPascalCase(): String = when {
@@ -152,14 +184,20 @@ private fun convertUnknownCaseToUpperSnake(str: String): String {
             alreadyInsertedUnderscore = (it == '_')
             it.toUpperCase().toString()
         }
-
     }.joinToString("")
 }
 
+/**
+ * @return index of first character which is a letter or a digit
+ */
 private fun String.getFirstLetterOrDigit() =
         indexOfFirst { it.isLetterOrDigit() }
 
+/**
+ * Available cases to name enum members
+ */
 enum class Style {
     PASCAL_CASE,
     SNAKE_CASE,
+    ;
 }

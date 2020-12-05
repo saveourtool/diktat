@@ -1,22 +1,23 @@
 package org.cqfn.diktat.ruleset.chapter6
 
-import com.pinterest.ktlint.core.LintError
-import generated.WarningNames.NO_CORRESPONDING_PROPERTY
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.ImplicitBackingPropertyRule
 import org.cqfn.diktat.util.LintTestBase
+
+import com.pinterest.ktlint.core.LintError
+import generated.WarningNames.NO_CORRESPONDING_PROPERTY
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class ImplicitBackingPropertyWarnTest: LintTestBase(::ImplicitBackingPropertyRule) {
+class ImplicitBackingPropertyWarnTest : LintTestBase(::ImplicitBackingPropertyRule) {
     private val ruleId = "$DIKTAT_RULE_SET_ID:implicit-backing-property"
 
     @Test
     @Tag(NO_CORRESPONDING_PROPERTY)
     fun `not trigger on backing property`() {
         lintMethod(
-                """
+            """
                     |class Some(val a: Int = 5) {
                     |   private var _table: Map<String, Int>? = null
                     |   val table:Map<String, Int>
@@ -36,7 +37,7 @@ class ImplicitBackingPropertyWarnTest: LintTestBase(::ImplicitBackingPropertyRul
     @Tag(NO_CORRESPONDING_PROPERTY)
     fun `trigger on backing property`() {
         lintMethod(
-                """
+            """
                     |class Some(val a: Int = 5) {
                     |   private var a: Map<String, Int>? = null
                     |   val table:Map<String, Int>
@@ -49,7 +50,7 @@ class ImplicitBackingPropertyWarnTest: LintTestBase(::ImplicitBackingPropertyRul
                     |       set(value) { field = value }
                     |}
                 """.trimMargin(),
-                LintError(3,4,ruleId, "${Warnings.NO_CORRESPONDING_PROPERTY.warnText()} table has no corresponding property with name _table")
+            LintError(3, 4, ruleId, "${Warnings.NO_CORRESPONDING_PROPERTY.warnText()} table has no corresponding property with name _table")
         )
     }
 
@@ -57,7 +58,7 @@ class ImplicitBackingPropertyWarnTest: LintTestBase(::ImplicitBackingPropertyRul
     @Tag(NO_CORRESPONDING_PROPERTY)
     fun `don't trigger on regular backing property`() {
         lintMethod(
-                """
+            """
                     |class Some(val a: Int = 5) {
                     |   private var _a: Map<String, Int>? = null
                     |   private val _some:Int? = null
@@ -70,7 +71,7 @@ class ImplicitBackingPropertyWarnTest: LintTestBase(::ImplicitBackingPropertyRul
     @Tag(NO_CORRESPONDING_PROPERTY)
     fun `don't trigger on regular property`() {
         lintMethod(
-                """
+            """
                     |class Some(val a: Int = 5) {
                     |   private var a: Map<String, Int>? = null
                     |   private val some:Int? = null
@@ -84,7 +85,7 @@ class ImplicitBackingPropertyWarnTest: LintTestBase(::ImplicitBackingPropertyRul
     @Tag(NO_CORRESPONDING_PROPERTY)
     fun `should not trigger if property has field in accessor`() {
         lintMethod(
-                """
+            """
                     |class Some(val a: Int = 5) {
                     |   val table:Map<String, Int>
                     |       set(value) { field = value }
@@ -101,7 +102,7 @@ class ImplicitBackingPropertyWarnTest: LintTestBase(::ImplicitBackingPropertyRul
     @Tag(NO_CORRESPONDING_PROPERTY)
     fun `should not trigger on property with constant return`() {
         lintMethod(
-                """
+            """
                     |class Some(val a: Int = 5) {
                     |   val table:Int
                     |       get() {
@@ -117,7 +118,7 @@ class ImplicitBackingPropertyWarnTest: LintTestBase(::ImplicitBackingPropertyRul
     @Tag(NO_CORRESPONDING_PROPERTY)
     fun `should not trigger on property with chain call return`() {
         lintMethod(
-                """
+            """
                     |class Some(val a: Int = 5) {
                     |   val table:Int
                     |       get() {
@@ -134,7 +135,7 @@ class ImplicitBackingPropertyWarnTest: LintTestBase(::ImplicitBackingPropertyRul
     @Tag(NO_CORRESPONDING_PROPERTY)
     fun `should not trigger set accessor`() {
         lintMethod(
-                """
+            """
                     |class Some(val a: Int = 5) {
                     |   val foo
                     |       set(value) {
@@ -150,7 +151,7 @@ class ImplicitBackingPropertyWarnTest: LintTestBase(::ImplicitBackingPropertyRul
     @Tag(NO_CORRESPONDING_PROPERTY)
     fun `should trigger set accessor`() {
         lintMethod(
-                """
+            """
                     |class Some(val a: Int = 5) {
                     |   val foo
                     |       set(value) {
@@ -159,7 +160,7 @@ class ImplicitBackingPropertyWarnTest: LintTestBase(::ImplicitBackingPropertyRul
                     |       }
                     |}
                 """.trimMargin(),
-                LintError(2,4 ,ruleId, "${Warnings.NO_CORRESPONDING_PROPERTY.warnText()} foo has no corresponding property with name _foo")
+            LintError(2, 4, ruleId, "${Warnings.NO_CORRESPONDING_PROPERTY.warnText()} foo has no corresponding property with name _foo")
         )
     }
 }

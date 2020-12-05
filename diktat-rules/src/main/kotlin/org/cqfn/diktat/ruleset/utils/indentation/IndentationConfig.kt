@@ -3,7 +3,13 @@ package org.cqfn.diktat.ruleset.utils.indentation
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.ruleset.rules.files.IndentationRule
 
+/**
+ * [RuleConfiguration] for indentation logic
+ */
 internal class IndentationConfig(config: Map<String, String>) : RuleConfiguration(config) {
+    /**
+     * Is newline at the end of a file needed
+     */
     val newlineAtEnd = config["newlineAtEnd"]?.toBoolean() ?: true
 
     /**
