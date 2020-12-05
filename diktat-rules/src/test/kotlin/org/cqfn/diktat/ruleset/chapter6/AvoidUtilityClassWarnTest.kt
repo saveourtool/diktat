@@ -10,7 +10,7 @@ import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class AvoidUtilityClassWarnTest: LintTestBase(::AvoidUtilityClass) {
+class AvoidUtilityClassWarnTest : LintTestBase(::AvoidUtilityClass) {
     private val ruleId = "$DIKTAT_RULE_SET_ID:avoid-utility-class"
 
     @Test
@@ -41,8 +41,8 @@ class AvoidUtilityClassWarnTest: LintTestBase(::AvoidUtilityClass) {
                     |   }
                     |}
                 """.trimMargin(),
-            LintError(1,1, ruleId, "${AVOID_USING_UTILITY_CLASS.warnText()} StringUtil"),
-            LintError(11,1, ruleId, "${AVOID_USING_UTILITY_CLASS.warnText()} StringUtils")
+            LintError(1, 1, ruleId, "${AVOID_USING_UTILITY_CLASS.warnText()} StringUtil"),
+            LintError(11, 1, ruleId, "${AVOID_USING_UTILITY_CLASS.warnText()} StringUtils")
         )
     }
 
@@ -77,7 +77,7 @@ class AvoidUtilityClassWarnTest: LintTestBase(::AvoidUtilityClass) {
                     |   }
                     |}
                 """.trimMargin(),
-            LintError(2,1, ruleId, "${AVOID_USING_UTILITY_CLASS.warnText()} StringUtils")
+            LintError(2, 1, ruleId, "${AVOID_USING_UTILITY_CLASS.warnText()} StringUtils")
         )
     }
 
@@ -108,7 +108,7 @@ class AvoidUtilityClassWarnTest: LintTestBase(::AvoidUtilityClass) {
                     |   }
                     |}
                 """.trimMargin(),
-            LintError(1,1, ruleId, "${AVOID_USING_UTILITY_CLASS.warnText()} StringUtils"),
+            LintError(1, 1, ruleId, "${AVOID_USING_UTILITY_CLASS.warnText()} StringUtils"),
             fileName = "src/main/kotlin/org/cqfn/diktat/Example.kt",
         )
         lintMethod(
