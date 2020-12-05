@@ -864,7 +864,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |       .qwe()
                 |}
             """.trimMargin(),
-            LintError(9, 29, ruleId,"$functionalStyleWarn .", true)
+            LintError(9, 29, ruleId, "$functionalStyleWarn .", true)
         )
     }
 
