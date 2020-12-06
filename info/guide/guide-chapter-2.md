@@ -214,7 +214,7 @@ The function header comment's content is optional, but not limited to function d
 ### <a name="r2.4.1"></a> Rule 2.4.1: Add a blank line between the body of the comment and Kdoc tag-blocks.
 It is a good practice to add a blank line between the body of the comment and Kdoc tag-blocks. Also, consider the following rules:
 - There must be one space between the comment character and the content of the comment
-- There must be a newline between a Kdoc andpressiding code
+- There must be a newline between a Kdoc and presiding code
 - An empty line should not exist between a Kdoc and the code it is describing. You do not need to add a blank line before the first comment in a particular namespace (code block) (for example, between the function declaration and first comment in a function body).
 
 **Valid Examples:**
