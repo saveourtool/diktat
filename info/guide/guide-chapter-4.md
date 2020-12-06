@@ -72,7 +72,7 @@ However, in some scenarios with loops or accumulators, only `var`s are permitted
 
 <!-- =============================================================================== -->
 ### <a name="c4.2"></a> 4.2 Types
-### <a name="s4.2.1"></a> Recommendation 4.2.1: Use Contracts and smart cast as much as possible.
+### <a name="r4.2.1"></a> Recommendation 4.2.1: Use Contracts and smart cast as much as possible.
 
 The Kotlin compiler has introduced [Smart Casts](https://kotlinlang.org/docs/reference/typecasts.html#smart-casts) that help reduce the size of code.
 
@@ -120,7 +120,7 @@ fun foo(s: String?) {
 }
 ```
 
-### <a name="s4.2.2"></a>Recommendation 4.2.2: Try to use type alias to represent types making code more readable.
+### <a name="r4.2.2"></a>Recommendation 4.2.2: Try to use type alias to represent types making code more readable.
 
 Type aliases provide alternative names for existing types.
 If the type name is too long, you can replace it with a shorter name, which helps to shorten long generic types.
@@ -149,7 +149,7 @@ typealias Predicate<T> = (T) -> Boolean
 ### <a name="c4.3"></a> 4.3 Null safety and variable declarations
 Kotlin is declared as a null-safe programming language. However, to achieve compatibility with Java, it still supports nullable types.
 
-### <a name="s4.3.1"></a> Recommendation 4.3.1: Avoid declaring variables with nullable types, especially from Kotlin stdlib.
+### <a name="r4.3.1"></a> Recommendation 4.3.1: Avoid declaring variables with nullable types, especially from Kotlin stdlib.
 To avoid `NullPointerException` and help the compiler prevent Null Pointer Exceptions, avoid using nullable types (with `?` symbol).
 
 **Invalid example**:
@@ -176,7 +176,7 @@ val a: List<Int>? = null
 val a: List<Int> = emptyList()
 ```
 
-### <a name="s4.3.2"></a> Recommendation 4.3.2: Variables of generic types should have an explicit type declaration.
+### <a name="r4.3.2"></a> Recommendation 4.3.2: Variables of generic types should have an explicit type declaration.
 Like in Java, classes in Kotlin may have type parameters. To create an instance of such a class, we typically need to provide type arguments:
 
 ```kotlin
@@ -195,3 +195,90 @@ val myVariable = emptyMap<Int, String>()
 ```kotlin
 val myVariable: Map<Int, String> = emptyMap() 
 ```
+
+### <a name="c4.3.3"></a> Null-safety
+### <a name="r4.3.3"></a> 4.3.3 Explicit null checks
+
+Try to avoid explicit null checks (explicit comparison with `null`) 
+Kotlin is declared as [Null-safe](https://kotlinlang.org/docs/reference/null-safety.html) language.
+However, Kotlin architects wanted Kotlin to be fully compatible with Java; that's why the `null` keyword was also introduced in Kotlin. 
+
+There are several code-structures that can be used in Kotlin to avoid null-checks. For example: `?:`,  `.let {}`, `.also {}`, e.t.c
+
+**Invalid example:**
+```kotlin
+// example 1
+var myVar: Int? = null
+if (myVar == null) {
+    println("null")
+    return
+}
+
+// example 2
+if (myVar != null) {
+    println("not null")
+    return
+}
+
+// example 3
+val anotherVal = if (myVar != null) {
+                     println("not null")
+                     1
+                 } else {
+                     2
+                 }
+// example 4
+if (myVar == null) {
+    println("null")
+} else {
+    println("not null")
+}
+```
+
+**Valid example:**
+```kotlin
+// example 1
+var myVar: Int? = null
+myVar?: run {
+    println("null")
+    return
+}
+
+// example 2
+myVar?.let {
+    println("not null")
+    return
+}
+
+// example 3
+val anotherVal = myVar?.also {
+                     println("not null")
+                     1
+                 } ?: 2
+
+// example 4
+myVar?.let {
+    println("null")
+} ?: run { println("not null") }
+```
+
+**Exceptions:**
+
+In the case of complex expressions, such as multiple `else-if` structures or long conditional statements, there is common sense to use explicit comparison with `null`.
+
+**Valid examples:**
+
+```kotlin
+if (myVar != null) {
+    println("not null")
+} else if (anotherCondition) {
+    println("Other condition")
+}
+``` 
+
+```kotlin
+if (myVar == null || otherValue == 5 && isValid) {}
+```
+
+Please also note, that instead of using `require(a != null)` with a not null check - you should use a special Kotlin function called `requireNotNull(a)`.
+

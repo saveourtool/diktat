@@ -7,7 +7,7 @@ If the file is too long and complex, it should be split into smaller files, func
 It is recommended to horizontally or vertically split the file according to responsibilities or hierarchy of its parts.
 The only exception to this rule is code generation - the auto-generated files that are not manually modified can be longer.
 
-### <a name="r3.1.2"></a> Rule 3.1.2: Code blocks in the source file should be separated by one blank line.
+### <a name="r3.1.2"></a> Rule 3.1.2: Code blocks in the source file should be separated by one blank line and should be in the proper order.
 A source file contains code blocks in the following order: copyright, package name, imports, and top-level classes. They should be separated by one blank line.
 
 a) Code blocks should be in the following order:
@@ -26,7 +26,7 @@ d) **Recommendation**. One `.kt` source file should contain only one class decla
 
 e) Avoid empty files that do not contain the code or contain only imports/comments/package name
 
-### <a name="s3.1.3"></a> Recommendation 3.1.3: Import statements order.
+### <a name="r3.1.3"></a> Recommendation 3.1.3: Import statements order.
 
 From top to bottom, the order is the following:
 1. Android
@@ -56,8 +56,9 @@ import kotlin.system.exitProcess  // kotlin standard library
 import kotlinx.coroutines.*  // official kotlin extension library
 ```
 
-### <a name="s3.1.4"></a> Recommendation 3.1.4: The declaration parts of class-like code structures (class, interface, etc.) should be placed in the order.
+### <a name="r3.1.4"></a> Recommendation 3.1.4: The declaration parts of class-like code structures (class, interface, etc.) should be placed in the order.
 The declaration parts of class-like code structures (class, interface, etc.) should be in the following order: compile-time constants (for objects), class properties, late-init class properties, init-blocks, constructors, public methods, internal methods, protected methods, private methods, and companion object. Blank lines should separate their declaration.
+
 Notes:
 1.	There should be no blank lines between properties with the following **exceptions**: when there is a comment before a property on a separate line or annotations on a separate line.
 2.	Properties with comments/Kdoc should be separated by a newline before the comment/Kdoc.
@@ -252,7 +253,7 @@ class A
 
 <!-- =============================================================================== -->
 ### <a name="c3.4"></a> 3.4 Empty blocks
-### <a name="s3.4.1"></a> Recommendation 3.4.1: Avoid empty blocks, and ensure braces start on a new line.
+### <a name="r3.4.1"></a> Recommendation 3.4.1: Avoid empty blocks, and ensure braces start on a new line.
 
 An empty code block can be closed immediately on the same line and the next line. However, a newline is recommended between opening and closing braces `{}` (see the examples below.)
 
@@ -289,7 +290,7 @@ try {
 
 <!-- =============================================================================== -->
 ### <a name="c3.5"></a> 3.5 Line length
-### <a name="s3.5.1"></a> Recommendation 3.5.1: Line length should be less than 120 symbols.
+### <a name="r3.5.1"></a> Recommendation 3.5.1: Line length should be less than 120 symbols.
 
 The international code style prohibits `non-Latin` (`non-ASCII`) symbols.
 (See [Rule 1.1.1: Identifiers](#r1.1.1)) However, if you still intend on using them, follow the following convention:
@@ -311,7 +312,7 @@ Each one of these characters represents two narrow characters.
 
 <!-- =============================================================================== -->
 ### <a name="c3.6"></a> 3.6 Line breaks (newlines)
-### <a name="s3.6.1"></a> Recommendation 3.6.1: Each line can have a maximum of one statement.
+### <a name="r3.6.1"></a> Recommendation 3.6.1: Each line can have a maximum of one statement.
 Each line can have a maximum of one code statement. This recommendation prohibits the use of code with `;` because it decreases code visibility.
 
 **Invalid example:**
@@ -452,7 +453,7 @@ class MyFavouriteVeryLongClassHolder :
 
 <!-- =============================================================================== -->
 ### <a name="c3.7"></a> 3.7 Blank lines
-### <a name="s3.7.1"></a> Recommendation 3.7.1: Reduce unnecessary blank lines and maintain a compact code size
+### <a name="r3.7.1"></a> Recommendation 3.7.1: Reduce unnecessary blank lines and maintain a compact code size
 
 By reducing unnecessary blank lines, you can display more code on one screen, which improves code readability.
 - Blank lines should separate content based on relevance and should be placed between groups of fields, constructors, methods, nested classes, `init` blocks, and objects (see [Rule 3.1.2](#r3.1.2)).
@@ -472,7 +473,7 @@ fun baz() {
 
 <!-- =============================================================================== -->
 ### <a name="c3.8"></a> 3.8 Horizontal space
-### <a name="s3.8.1"></a> Rule 3.8.1: Usage of whitespace for code separation
+### <a name="r3.8.1"></a> Rule 3.8.1: Usage of whitespace for code separation
 
 **Note:** This recommendation is for the cases where symbols are located on the same line. However, in some cases, a line break could be used instead of a space (described in another rule.)
 
@@ -545,7 +546,7 @@ fun foo
 
 10. There should be no spaces between a prefix/postfix operator (like `!!` or `++`) and its operand.
 
-### <a name="s3.8.2"></a> Recommendation 3.8.2: No spaces should be inserted for horizontal alignment.
+### <a name="r3.8.2"></a> Recommendation 3.8.2: No spaces should be inserted for horizontal alignment.
 
 *Horizontal alignment* refers to aligning code blocks by adding space to the code. Horizontal alignment should not be used because:
 
@@ -577,7 +578,7 @@ enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean
 
 <!-- =============================================================================== -->
 ### <a name="c3.9"></a> 3.9 Enumerations
-### <a name="s3.9.1"></a>Recommendation 3.9.1: Enum values are separated by a comma and line break, with ';' placed on the new line.
+### <a name="r3.9.1"></a>Recommendation 3.9.1: Enum values are separated by a comma and line break, with ';' placed on the new line.
 1) Enum values are separated by a comma and a line break. `;` is put on the new line:
 ```kotlin
 enum class Warnings {
@@ -632,7 +633,7 @@ Each property or variable must be declared on a separate line.
 val n1: Int; val n2: Int
 ```
 
-### <a name="s3.10.2"></a>Recommendation 3.10.2: Variables should be declared near the line where they are first used.
+### <a name="r3.10.2"></a>Recommendation 3.10.2: Variables should be declared near the line where they are first used.
 Declare local variables close to the point where they are first used to minimize their scope. This will also increase the readability of the code.
 Local variables are usually initialized during their declaration or immediately after.
 The member fields of the class should be declared collectively (see [Rule 3.1.2](#r3.1.2) for details on the class structure).
@@ -647,7 +648,7 @@ The compiler can issue a warning when it is missing.
 
 <!-- =============================================================================== -->
 ### <a name="c3.12"></a> 3.12 Annotations
-### <a name="s3.12.1"></a> Recommendation 3.12.1: Each annotation applied to a class, method, or constructor should be placed on its own line.
+### <a name="r3.12.1"></a> Recommendation 3.12.1: Each annotation applied to a class, method, or constructor should be placed on its own line.
 
 1. Annotations applied to the class, method, or constructor are placed on separate lines (one annotation per line). 
 
@@ -674,7 +675,7 @@ fun getNameIfPresent() { /* ... */ }
 
 <!-- =============================================================================== -->
 ### <a name="c3.13"></a> 3.13 Layout of comments
-### <a name="s3.13.1"></a> Recommendation 3.13.1: Block comments location.
+### <a name="r3.13.1"></a> Recommendation 3.13.1: Block comments location.
 
 Block comments should be placed at the same indentation level as the surrounding code. See examples below.
 
@@ -694,7 +695,7 @@ class SomeClass {
 
 <!-- =============================================================================== -->
 ### <a name="c3.14"></a> 3.14 Modifiers and constant values
-### <a name="s3.14.1"></a> Recommendation 3.14.1: If a declaration has multiple modifiers, always follow the proper sequence.
+### <a name="r3.14.1"></a> Recommendation 3.14.1: If a declaration has multiple modifiers, always follow the proper sequence.
 **Valid sequence:**
 
 ```kotlin
@@ -719,7 +720,7 @@ operator
 data
 ```
 
-### <a name="s3.14.2"></a>Recommendation 3.14.2: An underscore should separate long numerical values.
+### <a name="r3.14.2"></a>Recommendation 3.14.2: An underscore should separate long numerical values.
 **Note:** Using underscores simplifies reading and helps to find errors in numeric constants.
 ```kotlin
 val oneMillion = 1_000_000
