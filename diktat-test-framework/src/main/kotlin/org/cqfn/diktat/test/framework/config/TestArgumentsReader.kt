@@ -27,9 +27,9 @@ import kotlinx.serialization.json.Json
  * @property classLoader [ClassLoader] which is used to load properties file
  */
 class TestArgumentsReader(
-        private val args: Array<String>,
-        val properties: TestFrameworkProperties,
-        override val classLoader: ClassLoader
+    private val args: Array<String>,
+    val properties: TestFrameworkProperties,
+    override val classLoader: ClassLoader
 ) : JsonResourceConfigReader<List<CliArgument>?>() {
     private val cliArguments: List<CliArgument>? = readResource(properties.testFrameworkArgsRelativePath)
     private val cmd: CommandLine by lazy { parseArguments() }
@@ -37,31 +37,25 @@ class TestArgumentsReader(
     /**
      * List of tests provided by user
      */
-    val tests: List<String>
-        get() {
-            val tests = cmd.getOptionValue("t")
-            if (tests == null) {
+    val tests: List<String> by lazy {
+        val tests: String? = cmd.getOptionValue("t")
+        tests
+            ?.split(",")
+            ?.map { it.trim() }
+            ?: run {
                 log.error("""Missing option --test or -t. Not able to run tests, please provide test names or use --all
                          option to run all available tests""")
                 exitProcess(2)
             }
-            return tests
-                    .split(",")
-                    .map { it.trim() }
-        }
-
-    private val declaredOptions: Options
-        get() {
-            val options = Options()
-            if (cliArguments != null) {
-                cliArguments
-                        .map { it.convertToOption() }
-                        .forEach { opt -> options.addOption(opt) }
-            } else {
-                exitProcess(1)
-            }
-            return options
-        }
+    }
+    private val declaredOptions: Options by lazy {
+        val options = Options()
+        cliArguments
+            ?.map { it.convertToOption() }
+            ?.forEach { opt -> options.addOption(opt) }
+            ?: exitProcess(1)
+        options
+    }
 
     private fun parseArguments(): CommandLine {
         val parser: CommandLineParser = DefaultParser()

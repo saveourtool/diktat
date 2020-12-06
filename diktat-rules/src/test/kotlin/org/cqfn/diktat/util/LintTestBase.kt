@@ -21,6 +21,7 @@ open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesCo
      * @param rulesConfigList optional override for `this.rulesConfigList`
      * @param fileName optional override for file name
      */
+    @Suppress("LOCAL_VARIABLE_EARLY_DECLARATION")
     fun lintMethod(code: String,
                    vararg lintErrors: LintError,
                    rulesConfigList: List<RulesConfig>? = null,
@@ -28,14 +29,14 @@ open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesCo
         val res: MutableList<LintError> = mutableListOf()
         val actualFileName = fileName ?: testFileName
         KtLint.lint(
-                KtLint.Params(
-                        fileName = actualFileName,
-                        text = code,
-                        ruleSets = listOf(DiktatRuleSetProvider4Test(ruleSupplier,
-                                rulesConfigList ?: this.rulesConfigList).get()),
-                        cb = { lintError, _ -> res.add(lintError) },
-                        userData = mapOf("file_path" to actualFileName)
-                )
+            KtLint.Params(
+                fileName = actualFileName,
+                text = code,
+                ruleSets = listOf(DiktatRuleSetProvider4Test(ruleSupplier,
+                    rulesConfigList ?: this.rulesConfigList).get()),
+                cb = { lintError, _ -> res.add(lintError) },
+                userData = mapOf("file_path" to actualFileName)
+            )
         )
         res.assertEquals(*lintErrors)
     }

@@ -1,15 +1,16 @@
 package org.cqfn.diktat.ruleset.chapter6
 
-import com.pinterest.ktlint.core.LintError
-import generated.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings.SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.classes.SingleConstructorRule
 import org.cqfn.diktat.util.LintTestBase
+
+import com.pinterest.ktlint.core.LintError
+import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class SingleConstructorRuleWarnTest: LintTestBase(::SingleConstructorRule) {
+class SingleConstructorRuleWarnTest : LintTestBase(::SingleConstructorRule) {
     private val ruleId = "$DIKTAT_RULE_SET_ID:single-constructor"
 
     @Test
