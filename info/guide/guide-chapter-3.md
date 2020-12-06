@@ -551,7 +551,7 @@ fun foo
 
 - When modifying code, it takes much time for new developers to format, support, and fix alignment issues.
 - Long identifier names will break the alignment and lead to less presentable code.
-- There are more disadvantages than advantages in alignment. To reduce maintenance costs, misalignment (???) is the best choice.
+- There are more disadvantages than advantages in alignment. To reduce maintenance costs, the best choice is not to use horizontal alignment.
 
 Recommendation: Alignment only looks suitable for `enum class`, where it can be used in table format to improve code readability:
 ```kotlin
