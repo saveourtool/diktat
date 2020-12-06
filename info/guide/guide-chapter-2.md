@@ -136,7 +136,7 @@ Kdoc should not contain:
 - There should be no empty lines between the method/class declaration and the end of Kdoc (`*/` symbols).
 Important note: KDoc does not support the `@deprecated` tag. Instead, use the `@Deprecated` annotation.
  
-If a tag block cannot be described in one line, indent the content of the new line by `four spaces` from the `@` position to achieve alignment (`@` counts as one + three spaces).
+If a tag block cannot be described in one line, indent the content of the new line by *four spaces* from the `@` position to achieve alignment (`@` counts as one + three spaces).
  
 **Exception:**
  
