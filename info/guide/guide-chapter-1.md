@@ -166,7 +166,7 @@ Constant names should be in UPPER case, words separated by underscore. The jener
 
 1. Constants are attributes created with the const keyword or top-level/`val` local variables of an object that holds immutable data. In most cases, constants can be identified as a `const val` property from the `object`/`companion object`/file top level. These variables contain a fixed constant value that typically should never be changed by programmers. This includes basic types, strings, immutable types, and immutable collections of immutable types. If an object state can be changed, the value is not a constant.
 
-2. Constant names should contain only uppercase letters separated by underscores. They should have a val or const val modifier to  to make them final explicitly. In most cases, if you need to specify a constant value, then you need to create it with the "const val" modifier. Note that not all `val` variables are constants.
+2. Constant names should contain only uppercase letters separated by underscores. They should have a `val` or `const val` modifier to make them final explicitly. In most cases, if you need to specify a constant value, then you need to create it with the `const val` modifier. Note that not all `val` variables are constants.
 3. Objects with immutable content, such as `Logger` and `Lock`, can be in uppercase as constants or have camel case as regular variables.
 
 4. Use meaningful constants instead of `magic numbers`. SQL or logging strings should not be treated as magic numbers, nor should they be defined as string constants.
