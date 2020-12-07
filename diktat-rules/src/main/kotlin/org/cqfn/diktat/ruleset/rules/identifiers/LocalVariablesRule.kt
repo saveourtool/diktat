@@ -88,19 +88,18 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
     private fun handleLocalProperty(property: KtProperty, usages: List<KtNameReferenceExpression>) {
         val declarationScope = property.getDeclarationScope()
 
-        val firstUsageStatementLine = getFirstUsageStatementOrBlock(usages, declarationScope).node.getLineNumber(isFixMode)!!
-        val firstUsage = usages.minBy { it.node.getLineNumber(isFixMode)!! }!!
-        checkLineNumbers(property, firstUsageStatementLine, firstUsageLine = firstUsage.node.getLineNumber(isFixMode)!!)
+        val firstUsageStatementLine = getFirstUsageStatementOrBlock(usages, declarationScope).node.getLineNumber()
+        val firstUsage = usages.minBy { it.node.getLineNumber() }!!
+        checkLineNumbers(property, firstUsageStatementLine, firstUsageLine = firstUsage.node.getLineNumber())
     }
 
-    @Suppress("UnsafeCallOnNullableType")
     private fun handleConsecutiveDeclarations(statement: PsiElement, properties: List<KtProperty>) {
         // need to check that properties are declared consecutively with only maybe empty lines
         properties
-            .sortedBy { it.node.getLineNumber(isFixMode)!! }
+            .sortedBy { it.node.getLineNumber() }
             .zip(properties.size - 1 downTo 0)
             .forEach { (property, offset) ->
-                checkLineNumbers(property, statement.node.getLineNumber(isFixMode)!!, offset)
+                checkLineNumbers(property, statement.node.getLineNumber(), offset)
             }
     }
 
@@ -117,15 +116,15 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
                 siblings
                     .last()
                     .node
-                    .lastLineNumber(isFixMode)!! - siblings
+                    .lastLineNumber() - siblings
                     .first()
                     .node
-                    .getLineNumber(isFixMode)!! - 1
+                    .getLineNumber() - 1
             }
 
-        if (firstUsageStatementLine - numLinesToSkip != property.node.lastLineNumber(isFixMode)!! + 1 + offset) {
+        if (firstUsageStatementLine - numLinesToSkip != property.node.lastLineNumber() + 1 + offset) {
             LOCAL_VARIABLE_EARLY_DECLARATION.warn(configRules, emitWarn, isFixMode,
-                warnMessage(property.name!!, property.node.getLineNumber(isFixMode)!!, firstUsageLine
+                warnMessage(property.name!!, property.node.getLineNumber(), firstUsageLine
                     ?: firstUsageStatementLine), property.startOffset, property.node)
         }
     }
@@ -137,7 +136,7 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
      */
     @Suppress("UnsafeCallOnNullableType", "GENERIC_VARIABLE_WRONG_DECLARATION")
     private fun getFirstUsageStatementOrBlock(usages: List<KtNameReferenceExpression>, declarationScope: KtBlockExpression?): PsiElement {
-        val firstUsage = usages.minBy { it.node.getLineNumber(isFixMode)!! }!!
+        val firstUsage = usages.minBy { it.node.getLineNumber() }!!
         val firstUsageScope = firstUsage.getParentOfType<KtBlockExpression>(true)
 
         return if (firstUsageScope == declarationScope) {
@@ -147,7 +146,7 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
                 .find { it.parent == declarationScope }!!
         } else {
             // first usage is in deeper block compared to declaration, need to check how close is declaration to the first line of the block
-            usages.minBy { it.node.getLineNumber(isFixMode)!! }!!
+            usages.minBy { it.node.getLineNumber() }!!
                 .parentsWithSelf
                 .find { it.parent == declarationScope }!!
         }

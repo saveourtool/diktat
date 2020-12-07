@@ -112,6 +112,8 @@
                             <sourceDirs>
                                 <source>src/main/kotlin</source>
                                 <source>src/test/kotlin</source>
+                                <source>${project.basedir}/src/main/kotlin</source>
+                                <source>${project.basedir}/src/test/kotlin</source>
                             </sourceDirs>
                         </configuration>
                     </execution>

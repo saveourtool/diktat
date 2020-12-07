@@ -39,7 +39,6 @@ class NestedFunctionBlock(private val configRules: List<RulesConfig>) : Rule("ne
         }
     }
 
-    @Suppress("WRONG_NEWLINES")
     private fun countNestedBlocks(node: ASTNode, maxNestedBlockCount: Long) {
         node.findAllNodesWithSpecificType(LBRACE)
             .reversed()

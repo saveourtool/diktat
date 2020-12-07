@@ -8,6 +8,8 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 typealias EmitType = ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
 
+typealias ListOfList = MutableList<MutableList<ASTNode>>
+
 /**
  * This class represent individual inspections of diktat code style.
  * A [Warnings] entry contains rule name, warning message and is used in code check.
@@ -63,6 +65,7 @@ enum class Warnings(
     KDOC_NO_EMPTY_TAGS(false, "2.2.1", "no empty descriptions in tag blocks are allowed"),
     KDOC_NO_DEPRECATED_TAG(true, "2.1.3", "KDoc doesn't support @deprecated tag, use @Deprecated annotation instead"),
     KDOC_NO_CONSTRUCTOR_PROPERTY(true, "2.1.1", "all properties from the primary constructor should be documented in a @property tag in KDoc"),
+    KDOC_EXTRA_PROPERTY(false, "2.1.1", "There is property in KDoc which is not present in the class"),
     KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT(true, "2.1.1", "replace comment before property with @property tag in class KDoc"),
     HEADER_WRONG_FORMAT(true, "2.2.1", "file header comments should be properly formatted"),
     HEADER_MISSING_OR_WRONG_COPYRIGHT(true, "2.2.1", "file header comment must include copyright information inside a block comment"),
@@ -142,6 +145,7 @@ enum class Warnings(
     EXTENSION_FUNCTION_SAME_SIGNATURE(false, "6.2.2", "extension functions should not have same signature if their receiver classes are related"),
     EMPTY_PRIMARY_CONSTRUCTOR(true, "6.1.3", "avoid empty primary constructor"),
     NO_CORRESPONDING_PROPERTY(false, "6.1.7", "backing property should have the same name, but there is no corresponding property"),
+    AVOID_USING_UTILITY_CLASS(false, "6.4.1", "avoid using utility classes/objects, use extensions functions"),
     ;
 
     /**
