@@ -15,6 +15,7 @@
     <properties>
         <maven.api.version>3.6.3</maven.api.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.itf.version>0.9.0</maven.itf.version>
     </properties>
 
     <dependencies>
@@ -48,9 +49,15 @@
             <version>${ktlint.version}</version>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.13.1</version>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.soebes.itf.jupiter.extension</groupId>
+            <artifactId>itf-jupiter-extension</artifactId>
+            <version>${maven.itf.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -66,6 +73,11 @@
             <version>${maven.api.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -78,7 +90,7 @@
                 <executions>
                     <execution>
                         <id>compile</id>
-                        <phase>compile</phase>
+                        <phase>process-sources</phase>
                         <goals>
                             <goal>compile</goal>
                         </goals>
@@ -91,6 +103,7 @@
                         </goals>
                         <configuration>
                             <sourceDirs>
+                                <!-- for some weird reason this is essential to compile kotlin test sources despite testSourceDirectory is set -->
                                 <source>src/test/kotlin</source>
                             </sourceDirs>
                         </configuration>
@@ -101,7 +114,80 @@
                     <languageVersion>1.4</languageVersion>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>*IntegrationTest*</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.soebes.itf.jupiter.extension</groupId>
+                <artifactId>itf-maven-plugin</artifactId>
+                <version>${maven.itf.version}</version>
+                <executions>
+                    <execution>
+                        <id>installing</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>install</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <systemProperties>
+                        <maven.version>${maven.version}</maven.version>
+                        <maven.home>${maven.home}</maven.home>
+                    </systemProperties>
+                    <includes>
+                        <include>**/*IntegrationTest*</include>
+                    </includes>
+                    <testSourceDirectory>${project.build.testSourceDirectory}</testSourceDirectory>
+                    <testClassesDirectory>${project.build.testOutputDirectory}</testClassesDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <!-- override jacoco config to include integration test results -->
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
+        <testResources>
+            <testResource>
+                <directory>../examples/maven</directory>
+                <!-- setting filtering to false keeps unresolved properties, which in diktat-examples do not depend on diktat properties -->
+                <filtering>false</filtering>
+                <targetPath>${project.build.testOutputDirectory}/org/cqfn/diktat/plugin/maven/DiktatMavenPluginIntegrationTest/maven</targetPath>
+            </testResource>
+        </testResources>
     </build>
 
     <profiles>
