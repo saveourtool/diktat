@@ -19,14 +19,12 @@ class DiktatMavenPluginIntegrationTest {
     @MavenTest
     @MavenGoal("diktat:check@diktat")
     fun maven(result: MavenExecutionResult) {
-        val mavenLog = result.mavenLog.stdout.readText()
-        println(mavenLog)
-
         Assertions.assertEquals(1, result.returnCode)
         Assertions.assertFalse(result.isError)
         Assertions.assertFalse(result.isSuccesful)
         Assertions.assertTrue(result.isFailure)
 
+        val mavenLog = result.mavenLog.stdout.readText()
         Assertions.assertTrue(
             mavenLog.contains("[HEADER_MISSING_OR_WRONG_COPYRIGHT]")
         )
