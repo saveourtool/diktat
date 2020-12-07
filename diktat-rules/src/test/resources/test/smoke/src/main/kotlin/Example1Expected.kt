@@ -27,9 +27,7 @@ class Example {
      * @return
      */
     fun String.splitPathToDirs(): List<String> =
-            this
-                .replace("\\", "/")
-                .replace("//", "/")
+            this.replace("\\", "/").replace("//", "/")
                 .split("/")
 
     /**

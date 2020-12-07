@@ -89,7 +89,7 @@ internal class ValueParameterListChecker(configuration: IndentationConfig) : Cus
                     }
 
     @ExperimentalStdlibApi  // to use `scan` on sequence
-    @Suppress("WRONG_NEWLINES", "ANNOTATION_NEW_LINE")  // https://github.com/cqfn/diKTat/issues/609
+    @Suppress("ANNOTATION_NEW_LINE")  // https://github.com/cqfn/diKTat/issues/609
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
         if (isCheckNeeded(whiteSpace)) {
             val parameterList = whiteSpace.parent.node
