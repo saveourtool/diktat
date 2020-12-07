@@ -1,7 +1,7 @@
-# <a name="c8"></a> 8. Things that will be moved to a main guide later
+# <a name="c8"></a> 8. Things that will be moved to the main guide later
 <!-- =============================================================================== -->
 ### <a name="c8.1"></a> Null-safety
-### <a name="r8.1.1"></a> 4.3.3 Explicit null checks
+#### <a name="r8.1.1"></a> 4.3.3 Explicit null checks
 
 Try to avoid explicit null checks (explicit comparison with `null`) 
 Kotlin is declared as [Null-safe](https://kotlinlang.org/docs/reference/null-safety.html) language.
