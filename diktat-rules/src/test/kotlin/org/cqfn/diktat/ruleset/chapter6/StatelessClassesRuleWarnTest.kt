@@ -33,37 +33,12 @@ class StatelessClassesRuleWarnTest: LintTestBase(::StatelessClassesRule) {
                 |class Some : I {
                 |   override fun some()
                 |}
-            """.trimMargin(),
-                LintError(1, 1, ruleId, "${Warnings.OBJECT_IS_PREFERRED.warnText()} class Some", true)
-        )
-    }
-
-    @Test
-    @Tag(OBJECT_IS_PREFERRED)
-    fun `should trigger on class with val properties`() {
-        lintMethod(
-                """
-                |class Some : I {
-                |   val a = 5
-                |   
-                |   override fun some()
+                |
+                |interface I {
+                |   fun some()
                 |}
             """.trimMargin(),
                 LintError(1, 1, ruleId, "${Warnings.OBJECT_IS_PREFERRED.warnText()} class Some", true)
-        )
-    }
-
-    @Test
-    @Tag(OBJECT_IS_PREFERRED)
-    fun `should trigger on class with var properties`() {
-        lintMethod(
-                """
-                |class Some : I {
-                |   var a = 5
-                |   
-                |   override fun some()
-                |}
-            """.trimMargin()
         )
     }
 
@@ -74,6 +49,32 @@ class StatelessClassesRuleWarnTest: LintTestBase(::StatelessClassesRule) {
                 """
                 |class Some(b: Int) : I {
                 |   
+                |   override fun some()
+                |}
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(OBJECT_IS_PREFERRED)
+    fun `should not trigger on class with no interface in this file`() {
+        lintMethod(
+                """
+                |class Some : I {
+                |   
+                |   override fun some()
+                |}
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(OBJECT_IS_PREFERRED)
+    fun `should not trigger on class with state`() {
+        lintMethod(
+                """
+                |class Some : I {
+                |   val a = 5
                 |   override fun some()
                 |}
             """.trimMargin()
