@@ -1,4 +1,5 @@
 @file:Suppress("FILE_NAME_MATCH_CLASS")
+
 package org.cqfn.diktat.ruleset.generation
 
 import org.cqfn.diktat.ruleset.utils.A4_PAPER_WIDTH
