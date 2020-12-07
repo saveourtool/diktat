@@ -88,7 +88,7 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
     private fun handleLocalProperty(property: KtProperty, usages: List<KtNameReferenceExpression>) {
         val declarationScope = property.getDeclarationScope()
 
-         val firstUsageStatementLine = getFirstUsageStatementOrBlock(usages, declarationScope).node.getLineNumber()
+        val firstUsageStatementLine = getFirstUsageStatementOrBlock(usages, declarationScope).node.getLineNumber()
         val firstUsage = usages.minBy { it.node.getLineNumber() }!!
         checkLineNumbers(property, firstUsageStatementLine, firstUsageLine = firstUsage.node.getLineNumber())
     }
