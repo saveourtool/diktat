@@ -3,7 +3,7 @@
 ### <a name="c6.1"></a> 6.1 Classes
 This section describes the rules of denoting classes in your code.
 #### <a name="r6.1.1"></a> 6.1.1  Denoting a class with a single constructor
-When a class has a single constructor, it should be defined as a primary constructor in the declaration of the class. In case the class contains only one explicit constructor - it should be converted to a primary constructor.
+When a class has a single constructor, it should be defined as a primary constructor in the declaration of the class. If the class contains only one explicit constructor, it should be converted to a primary constructor.
 
 **Invalid example**:
 ```kotlin
@@ -401,7 +401,7 @@ In Kotlin and Java, the interface is the main presentation means of application 
 ### <a name="c6.4"></a> 6.4 Objects
 This section describes the rules of using objects in code.
 #### <a name="s6.4.1"></a> 6.4.1 Instead of using utility classes/objects, use extensions.
-Avoid using utility classes/objects; use extensions instead. As described in [6.2 Extension functions](#c6.2), extension functions are a powerful. Instead of using utility classes/objects, use it extention functions.
+Avoid using utility classes/objects; use extensions instead. As described in [6.2 Extension functions](#c6.2), using extension functions is a powerful method.
 This enables you to avoid unnecessary complexity and class/object wrapping and use top-level functions instead.
 
 **Invalid example**:

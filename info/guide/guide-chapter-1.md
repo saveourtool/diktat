@@ -86,7 +86,7 @@ package your.company.domain.mobilecontrol.views
 
 <!-- =============================================================================== -->
 ### <a name="c1.3"></a> 1.3 Classes, enumerations, interfaces
-This section describes the general rules for naming classes, enumerations, and interfaces
+This section describes the general rules for naming classes, enumerations, and interfaces.
 ### <a name="r1.3.1"></a> 1.3.1 Classes, enumerations, interface names use Camel case
 Classes, enumerations, and interface names use `UpperCamelCase` nomenclature. Follow the naming rules described below:
 1.	A class name is usually a noun (or a noun phrase) denoted using the camel case nomenclature, such as UpperCamelCase. For example: `Character` or `ImmutableList`.
@@ -161,14 +161,14 @@ fun draw()
 fun addKeyListener(Listener)
 ```
 
-2.	An underscore (`_`) can be included in the JUnit test function name and should be used as a separator. Each logical part denoted in `lowerCamelCase`, for example, a typical pattern of using underscore: `pop_emptyStack`.
+2.	An underscore (`_`) can be included in the JUnit test function name and should be used as a separator. Each logical part is denoted in `lowerCamelCase`, for example, a typical pattern of using underscore: `pop_emptyStack`.
 <!-- =============================================================================== -->
 ### <a name="c1.5"></a> 1.5 Constants
 This section describes the general rules for naming constraints.
 ### <a name="r1.5.1"></a> 1.5.1 Using UPPER case and underscore characters in a constraint name
-Constant names should be in UPPER case, words separated by underscore. The jeneral constant naming conventions are listed below:
-1. Constants are attributes created with the `const` keyword, or top-level/`val` local variables of an object that holds immutable data. In most cases, constants can be identified as a `const val` property from the `object`/`companion object`/file top level. These variables contain a fixed constant values that typically should never be changed by programmers. This includes basic types, strings, immutable types, and immutable collections of immutable types. The value is not constant for the object, which state can be changed.
-2. Constant names should contain only uppercase letters separated by underscores. They should have a val or const val modifier to  to make them final explicitly. In most cases, if you need to specify a constant value, then you need to create it with the "const val" modifier. Note that not all `val` variables are constants.
+Constant names should be in UPPER case, words separated by underscore. The general constant naming conventions are listed below:
+1. Constants are attributes created with the `const` keyword or top-level/`val` local variables of an object that holds immutable data. In most cases, constants can be identified as a `const val` property from the `object`/`companion object`/file top level. These variables contain fixed constant values that typically should never be changed by programmers. This includes basic types, strings, immutable types, and immutable collections of immutable types. The value is not constant for the object, which state can be changed.
+2. Constant names should contain only uppercase letters separated by an underscores. They should have a val or const val modifier to make them final explicitly. In most cases, if you need to specify a constant value, then you need to create it with the "const val" modifier. Note that not all `val` variables are constants.
 3. Objects with immutable content, such as `Logger` and `Lock`, can be in uppercase as constants or have camel case as regular variables.
 4. Use meaningful constants instead of `magic numbers`. SQL or logging strings should not be treated as magic numbers, nor should they be defined as string constants.
 Magic constants, such as `NUM_FIVE = 5` or `NUM_5 = 5` should not be treated as constants. This is because mistakes will easily be made if they are changed to `NUM_5 = 50` or 55.
@@ -216,7 +216,7 @@ val mutableCollection: MutableSet<String> = HashSet()
 
 ### <a name="r1.6.2"></a> 1.6.2 Boolean variable names with negative meaning
 
-Avoid using Boolean variable names with a negative meaning. When using a logical operator and name with negative meaning, the code may be difficult to understand, which is referred to as the "double negative".
+Avoid using Boolean variable names with a negative meaning. When using a logical operator and name with a negative meaning, the code may be difficult to understand, which is referred to as the "double negative".
 For instance, it is not easy to understand the meaning of !isNotError.
 The JavaBeans specification automatically generates isXxx() getters for attributes of Boolean classes.
 However, not all methods returning Boolean type have this notation.

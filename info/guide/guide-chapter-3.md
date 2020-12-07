@@ -4,7 +4,7 @@
 This section describes the rules related to using files in your code.
 #### <a name="r3.1.1"></a> 3.1.1 Avoid files that are too long
 
-If the file is too long and complex, it should be split into smaller files, functions, or modules. Files should not exceed 2000 lines (non-empty and non-commented lines).
+If the file is too long and complicated, it should be split into smaller files, functions, or modules. Files should not exceed 2000 lines (non-empty and non-commented lines).
 It is recommended to horizontally or vertically split the file according to responsibilities or hierarchy of its parts.
 The only exception to this rule is code generation - the auto-generated files that are not manually modified can be longer.
 
@@ -71,11 +71,11 @@ The declaration part of a class or interface should be in the following order:
 - Init-blocks
 - Constructors
 - Methods or nested classes. Put nested classes next to the code they are used by.
-If the classes are meant to be used externally and are not referenced inside the class, put them after the companion object.
+If the classes are meant to be used externally, and are not referenced inside the class, put them after the companion object.
 - Companion object
 
 **Exception:**
-All variants of a `(private) val` logger should be placed in the beginning of the class (`(private) val log`, `LOG`, `logger`, etc.).
+All variants of a `(private) val` logger should be placed at the beginning of the class (`(private) val log`, `LOG`, `logger`, etc.).
 
 <!-- =============================================================================== -->
 ### <a name="c3.2"></a> 3.2 Braces
@@ -183,7 +183,7 @@ do {
 Only spaces are permitted for indentation, and each indentation should equal `four spaces` (tabs are not permitted).
 If you prefer using tabs, simply configure them to change to spaces in your IDE automatically.
 These code blocks should be indented if they are placed on the new line, and the following conditions are met:
--	The code block is placed immediately after an opening brace
+-	The code block is placed immediately after an opening brace.
 -	The code block is placed after each operator, including the assignment operator (`+`/`-`/`&&`/`=`/etc.)
 -	The code block is a call chain of methods:
 ```kotlin
@@ -209,7 +209,7 @@ b) Arguments in argument lists can be aligned if they are on different lines.
 
 3.	Eight spaces are used for functional-like styles when the newline is placed before the dot.
 
-4.	Super type lists: \
+4.	Supertype lists: \
 a) Four spaces are used if the colon before the supertype list is on a new line. \
 b) Four spaces are used before each supertype, and eight spaces are used if the colon is on a new line. 
 
@@ -440,7 +440,7 @@ fun foo(
 }
  ```
 
-8) If the supertype list has more than two elements, they should be separated by newlines
+8) If the supertype list has more than two elements, they should be separated by newlines.
 
 **Valid example:** 
 ```kotlin
@@ -454,7 +454,7 @@ class MyFavouriteVeryLongClassHolder :
 ### <a name="c3.7"></a> 3.7 Using blank lines
 
 Reduce unnecessary blank lines and maintain a compact code size. By reducing unnecessary blank lines, you can display more code on one screen, which improves code readability.
-- Blank lines should separate content based on relevance and should be placed between groups of fields, constructors, methods, nested classes, `init` blocks, and objects (see [Rule 3.1.2](#r3.1.2)).
+- Blank lines should separate content based on relevance and should be placed between groups of fields, constructors, methods, nested classes, `init` blocks, and objects (see [3.1.2](#r3.1.2)).
 - Do not use more than one line inside methods, type definitions, and initialization expressions.
 - Generally, do not use more than two consecutive blank lines in a row.
 - Do not put newlines in the beginning or end of code blocks with curly braces.
@@ -474,14 +474,14 @@ fun baz() {
 This section describes general rules and recommendations for using spaces in the code.
 #### <a name="s3.8.1"></a> 3.8.1: Usage of whitespace for code separation
 
-Follow the rules below for using space to separate keywords:
+Follow the recommendations below for using space to separate keywords:
 
-**Note:** This recommendations are for the cases where symbols are located on the same line. However, in some cases, a line break could be used instead of a space.
+**Note:** These recommendations are for cases where symbols are located on the same line. However, in some cases, a line break could be used instead of a space.
 
 1.  Separate keywords (such as `if`, `when`, `for`) from the opening parenthesis with single whitespace.
     The only exception is the `constructor` keyword, which should not be separated from the opening parenthesis.
 
-2.  Separate keywords like `else` or `try` from the opening brace (`{`) with a single whitespace.
+2.  Separate keywords like `else` or `try` from the opening brace (`{`) with single whitespace.
     If `else` is used in a ternary-style statement without braces, there should be a single space between `else` and the statement after: `if (condition) foo() else bar()`
 
 3.  Use a **single** whitespace before all opening braces (`{`). The only exception is the passing of a lambda as a parameter inside parentheses:
@@ -490,7 +490,7 @@ Follow the rules below for using space to separate keywords:
      foo({x: Int -> x}, 5) // no space before '{'
  ```
 
-4.  A single whitespace should be placed on both sides of binary operators. This also applies to operator-like symbols.
+4.  Single whitespace should be placed on both sides of binary operators. This also applies to operator-like symbols.
     For example: 
     
  - A colon in generic structures with the `where` keyword:  `where T : Type`
@@ -512,10 +512,11 @@ Follow the rules below for using space to separate keywords:
     There should be no whitespaces at the end of a line.
     The only scenario where there should be no space after a colon is when the colon is used in the annotation to specify a use-site target (for example, `@param:JsonProperty`).
     There should be no spaces before `,` , `:` and `;`. 
-    **Exceptions** for spaces and colons are the following:
     
-    - when `:` is used to separate a type and a supertype, including an anonymous object (after object keyword)
-    - when delegating to a superclass constructor or different constructor of the same class
+    **Exceptions** for spaces and colons:
+    
+    - When `:` is used to separate a type and a supertype, including an anonymous object (after object keyword)
+    - When delegating to a superclass constructor or different constructor of the same class
 
 **Valid example:**
 ```kotlin
@@ -560,7 +561,7 @@ Recommendation: Alignment only looks suitable for `enum class`, where it can be 
 enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean, private val warn: String) : Rule {
     PACKAGE_NAME_MISSING         (1, true,  "no package name declared in a file"),
     PACKAGE_NAME_INCORRECT_CASE  (2, true,  "package name should be completely in a lower case"),
-    PACKAGE_NAME_INCORRECT_PREFIX(3, false, "package name should start from company's domain")
+    PACKAGE_NAME_INCORRECT_PREFIX(3, false, "package name should start from the company's domain")
     ;
 }
 ```
@@ -592,7 +593,7 @@ enum class Warnings {
 ```
 
 This will help to resolve conflicts and reduce the number of conflicts during merging pull requests.
-Also use [trailing comma](https://kotlinlang.org/docs/reference/whatsnew14.html#trailing-comma).
+Also, use [trailing comma](https://kotlinlang.org/docs/reference/whatsnew14.html#trailing-comma).
 
 2) If the enum is simple (no properties, methods, and comments inside), you can declare it in a single line:
 ```kotlin
@@ -653,8 +654,8 @@ The compiler can issue a warning when it is missing.
 <!-- =============================================================================== -->
 ### <a name="c3.12"></a> 3.12 Annotations
 
-Each annotation applied to a class, method, or constructor should be placed on its own line. Consider the following examples:
-1. Annotations applied to the class, method, or constructor are placed on separate lines (one annotation per line). 
+Each annotation applied to a class, method or constructor should be placed on its own line. Consider the following examples:
+1. Annotations applied to the class, method or constructor are placed on separate lines (one annotation per line). 
 
 **Valid example**:
 ```kotlin
@@ -742,8 +743,8 @@ This section describes the general rules of using strings.
 
 #### <a name="r3.15.1"></a> 3.15.1 Concatenation of Strings
 String concatenation is prohibited if the string can fit on one line. Use raw strings and string templates instead. Kotlin has significantly improved the use of Strings: 
-[String templates](https://kotlinlang.org/docs/reference/basic-types.html#string-templates), [Raw strings](https://kotlinlang.org/docs/reference/basic-types.html#string-literals)
-Therefore, compared to using explicit concatenation, code looks much better when proper Kotlin strings are used for short lines, and you do not need to split them with newline charcters.
+[String templates](https://kotlinlang.org/docs/reference/basic-types.html#string-templates), [Raw strings](https://kotlinlang.org/docs/reference/basic-types.html#string-literals).
+Therefore, compared to using explicit concatenation, code looks much better when proper Kotlin strings are used for short lines, and you do not need to split them with newline characters.
 
 **Invalid example**:
 ```kotlin

@@ -68,7 +68,7 @@ class Example(
 
 **Exceptions:**
 
-* For setters/getters of properties, obvious comments (like `this getter returns field`) are optional. Note, that Kotlin generates simple `get/set` methods under the hood.
+* For setters/getters of properties, obvious comments (like `this getter returns field`) are optional. Note that Kotlin generates simple `get/set` methods under the hood.
    
 * It is optional to add comments for simple one-line methods, such as shown in the example below:
 ```kotlin
@@ -99,7 +99,7 @@ When the method has such details as arguments, return value, or can throw except
  protected abstract class Sample {
     /**
      * This is a long comment with whitespace that should be split in 
-     * comments on multiple lines in case the line comment formatting is enabled.
+     * comments on multiple lines if the line comment formatting is enabled.
      *     / * Add a blank line between the comment text and each KDoc tag underneath * /
      * @param fox A quick brown fox jumps over the lazy dog
      * @return battle between fox and dog 
@@ -202,7 +202,7 @@ The following example is a copyright statement for Huawei, without other functio
 
 The following factors should be considered when writing the file header or comments for top-level classes:
 - File header comments must start from the top of the file. If it is a top-level file comment, there should be a blank line after the last Kdoc `*/` symbol. If it is a comment for a top-level class, the class declaration should start immediately without using a newline.
-- Maintain a unified format. The specific format can be formulated by the project (for example, if you use existing opensource project), and you need to follow it.
+- Maintain a unified format. The specific format can be formulated by the project (for example, if you use an existing opensource project), and you need to follow it.
 - A top-level file-Kdoc must include a copyright and functional description, especially if there is more than one top-level class.
 - Do not include empty comment blocks. If there is no content after the option `@apiNote`, the entire tag block should be deleted.
 - The industry practice is not to include historical information in the comments. The corresponding history can be found in VCS (git, svn, etc.). Therefore, it is not recommended to include historical data in the comments of the Kotlin source code.
@@ -223,9 +223,9 @@ This section describes the general rules of adding code comments.
 #### <a name="r2.4.1"></a> 2.4.1 Add a blank line between the body of the comment and Kdoc tag-blocks.
 
 It is a good practice to add a blank line between the body of the comment and Kdoc tag-blocks. Also, consider the following rules:
-- There must be one space between the comment character and the content of the comment
-- There must be a newline between a Kdoc and the pressiding code
-- An empty line should not exist between a Kdoc and the code it is describing. You do not need to add a blank line before the first comment in a particular name space (code block) (for example, between the function declaration and first comment in a function body).
+- There must be one space between the comment character and the content of the comment.
+- There must be a newline between a Kdoc and the presiding code.
+- An empty line should not exist between a Kdoc and the code it is describing. You do not need to add a blank line before the first comment in a particular namespace (code block) (for example, between the function declaration and first comment in a function body).
 
 **Valid Examples:**
 

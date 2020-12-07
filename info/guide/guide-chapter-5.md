@@ -8,12 +8,13 @@ The concepts behind functional style are as follows:
 Functions are the smallest unit of combinable and reusable code.
 They should have clean logic, **high cohesion**, and **low coupling** to organize the code effectively.
 The code in functions should be simple and not conceal the author's original intentions.
+
 Additionally, it should have a clean abstraction, and control statements should be used straightforwardly.
 The side effects (code that does not affect a function's return value but affects global/object instance variables) should not be used for state changes of an object.
 The only exceptions to this are state machines.
 
 Kotlin is [designed](https://www.slideshare.net/abreslav/whos-more-functional-kotlin-groovy-scala-or-java) to support and encourage functional programming, featuring the corresponding built-in mechanisms.
-Also, it supports standard collections, and sequences feature methods that enable functional programming (for example, `apply`, `with`, `let`, and `run`), Kotlin Higher-Order functions, function types, lambdas, and default function arguments.
+Also, it supports standard collections and sequences feature methods that enable functional programming (for example, `apply`, `with`, `let`, and `run`), Kotlin Higher-Order functions, function types, lambdas, and default function arguments.
 As [previously discussed](#r4.1.3), Kotlin supports and encourages the use of immutable types, which in turn motivates programmers to write pure functions that avoid side effects and have a corresponding output for specific input. 
 The pipeline data flow for the pure function comprises a functional paradigm. It is easy to implement concurrent programming when you have chains of function calls, where each step features the following characteristics:
 1.	Simplicity
@@ -47,7 +48,7 @@ This will help the reader switch between contexts.
 
 #### <a name="r5.1.3"></a> Rule 5.1.3 Avoid using nested functions
 Nested functions create a more complex function context, thereby confusing readers.
-With nested functions the visibility context may not be evident to the code reader.
+With nested functions, the visibility context may not be evident to the code reader.
 
 **Invalid example**:
 ```kotlin
