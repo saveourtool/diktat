@@ -413,8 +413,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
 
     private fun ASTNode.isSingleDotStatementOnSingleLine() = parents()
         .takeWhile { it.elementType in expressionTypes }
-        .takeIf { it.toList().size == 1 }
-        ?.single()
+        .singleOrNull()
         ?.let { it.text.lines().count() == 1 }
         ?: false
 
