@@ -1,4 +1,13 @@
+/**
+ * Various utility methods to work with kotlin AST
+ */
+
+// todo fix inspections on KDocs
+@file:Suppress("FILE_NAME_MATCH_CLASS", "KDOC_WITHOUT_RETURN_TAG", "KDOC_WITHOUT_PARAM_TAG")
+
 package org.cqfn.diktat.ruleset.utils
+
+import org.cqfn.diktat.ruleset.rules.PackageNaming
 
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.ast.ElementType
@@ -9,8 +18,8 @@ import com.pinterest.ktlint.core.ast.ElementType.FILE_ANNOTATION_LIST
 import com.pinterest.ktlint.core.ast.ElementType.INTERNAL_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
-import com.pinterest.ktlint.core.ast.ElementType.OVERRIDE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
+import com.pinterest.ktlint.core.ast.ElementType.OVERRIDE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PRIVATE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PROTECTED_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PUBLIC_KEYWORD
@@ -19,7 +28,6 @@ import com.pinterest.ktlint.core.ast.isLeaf
 import com.pinterest.ktlint.core.ast.isRoot
 import com.pinterest.ktlint.core.ast.lineNumber
 import com.pinterest.ktlint.core.ast.parent
-import org.cqfn.diktat.ruleset.rules.PackageNaming
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.TokenType
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
@@ -36,41 +44,68 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
+/**
+ * A [Logger] that can be used throughout diktat
+ */
 val log: Logger = LoggerFactory.getLogger(ASTNode::class.java)
 
+/**
+ * @return the highest parent node of the tree
+ */
 fun ASTNode.getRootNode() = if (isRoot()) this else parents().last()
 
-fun ASTNode.checkLength(range: IntRange): Boolean = this.textLength in range
+/**
+ * Checks whether [this] node's text has length in range [range]
+ *
+ * @param range an [IntRange] for text
+ * @return boolean result
+ */
+fun ASTNode.isTextLengthInRange(range: IntRange): Boolean = this.textLength in range
 
 /**
  * getting first child name with IDENTIFIER type
+ *
+ * @return node with type [IDENTIFIER] or null if it is not present
  */
 fun ASTNode.getIdentifierName(): ASTNode? =
-    this.getChildren(null).find { it.elementType == ElementType.IDENTIFIER }
+        this.getChildren(null).find { it.elementType == ElementType.IDENTIFIER }
 
 /**
  * getting first child name with TYPE_PARAMETER_LIST type
+ *
+ * @return a node with type TYPE_PARAMETER_LIST or null if it is not present
  */
 fun ASTNode.getTypeParameterList(): ASTNode? =
-    this.getChildren(null).find { it.elementType == ElementType.TYPE_PARAMETER_LIST }
+        this.getChildren(null).find { it.elementType == ElementType.TYPE_PARAMETER_LIST }
 
 /**
  * getting all children that have IDENTIFIER type
+ *
+ * @return a list of nodes
  */
 fun ASTNode.getAllIdentifierChildren(): List<ASTNode> =
-    this.getChildren(null).filter { it.elementType == ElementType.IDENTIFIER }
+        this.getChildren(null).filter { it.elementType == ElementType.IDENTIFIER }
 
 /**
- * check is node doesn't contain error elements
+ * @return true if this node contains no error elements, false otherwise
  */
-fun ASTNode.isCorrect(): Boolean = this.findAllNodesWithSpecificType(TokenType.ERROR_ELEMENT).isEmpty()
+fun ASTNode.isCorrect() = this.findAllNodesWithSpecificType(TokenType.ERROR_ELEMENT).isEmpty()
 
 /**
  * obviously returns list with children that match particular element type
+ *
+ * @param elementType the [IElementType] to search
+ * @return list of nodes
  */
 fun ASTNode.getAllChildrenWithType(elementType: IElementType): List<ASTNode> =
-    this.getChildren(null).filter { it.elementType == elementType }
+        this.getChildren(null).filter { it.elementType == elementType }
 
+/**
+ * Replaces the [beforeNode] of type [WHITE_SPACE] with the node with specified [text]
+ *
+ * @param beforeNode a node to replace
+ * @param text a text (white space characters only) for the new node
+ */
 fun ASTNode.replaceWhiteSpaceText(beforeNode: ASTNode, text: String) {
     require(beforeNode.elementType == WHITE_SPACE)
     this.addChild(PsiWhiteSpaceImpl(text), beforeNode)
@@ -79,9 +114,12 @@ fun ASTNode.replaceWhiteSpaceText(beforeNode: ASTNode, text: String) {
 
 /**
  * obviously returns first child that match particular element type
+ *
+ * @param elementType an [IElementType
+ * @return a node or null if it was not found
  */
 fun ASTNode.getFirstChildWithType(elementType: IElementType): ASTNode? =
-    this.getChildren(null).find { it.elementType == elementType }
+        this.getChildren(null).find { it.elementType == elementType }
 
 /**
  * Checks if the symbols in this node are at the end of line
@@ -95,26 +133,31 @@ fun ASTNode.isEol() = parent({ it.treeNext != null }, false)?.isFollowedByNewlin
  * Therefore, to check if they are followed by newline we need to check their parents.
  */
 fun ASTNode.isFollowedByNewline() =
-    parent({ it.treeNext != null }, strict = false)?.let {
-        it.treeNext.elementType == WHITE_SPACE && it.treeNext.text.contains("\n")
-    } ?: false
+        parent({ it.treeNext != null }, strict = false)?.let {
+            it.treeNext.elementType == WHITE_SPACE && it.treeNext.text.contains("\n")
+        } ?: false
 
 /**
  * Checks if there is a newline before this element. See [isFollowedByNewline] for motivation on parents check.
  */
 fun ASTNode.isBeginByNewline() =
-    parent({ it.treePrev != null }, strict = false)?.let {
-        it.treePrev.elementType == WHITE_SPACE && it.treePrev.text.contains("\n")
-    } ?: false
+        parent({ it.treePrev != null }, strict = false)?.let {
+            it.treePrev.elementType == WHITE_SPACE && it.treePrev.text.contains("\n")
+        } ?: false
 
 /**
  * checks if the node has corresponding child with elementTyp
  */
-fun ASTNode.hasChildOfType(elementType: IElementType): Boolean =
-    this.getFirstChildWithType(elementType) != null
+fun ASTNode.hasChildOfType(elementType: IElementType) =
+        this.getFirstChildWithType(elementType) != null
 
-fun ASTNode.hasAnyChildOfTypes(vararg elementType: IElementType): Boolean =
-    elementType.any { this.hasChildOfType(it) }
+/**
+ * Checks whether the node has at least one child of at least one of [elementType]
+ *
+ * @param elementType vararg of [IElementType]
+ */
+fun ASTNode.hasAnyChildOfTypes(vararg elementType: IElementType) =
+        elementType.any { this.hasChildOfType(it) }
 
 /**
  * checks if node has parent of type
@@ -136,12 +179,17 @@ fun ASTNode?.isBlockEmpty() = this?.let {
  * 2) is closest to node with @beforeThisNodeType (i.e. is first in reversed list of children, starting at @beforeThisNodeType)
  */
 fun ASTNode.findChildBefore(beforeThisNodeType: IElementType, childNodeType: IElementType): ASTNode? {
-    val anchorNode = getChildren(null).find { it.elementType == beforeThisNodeType }
-    getChildren(null).toList().let {
-        if (anchorNode != null)
-            it.subList(0, it.indexOf(anchorNode))
-        else it
-    }.reversed()
+    val anchorNode = getChildren(null)
+        .find { it.elementType == beforeThisNodeType }
+    getChildren(null)
+        .toList()
+        .let {
+            anchorNode?.run {
+                it.subList(0, it.indexOf(anchorNode))
+            }
+                ?: it
+        }
+        .reversed()
         .find { it.elementType == childNodeType }
         ?.let { return it }
 
@@ -157,11 +205,13 @@ fun ASTNode.findChildBefore(beforeThisNodeType: IElementType, childNodeType: IEl
 fun ASTNode.findChildAfter(afterThisNodeType: IElementType, childNodeType: IElementType): ASTNode? {
     var foundAnchorNode = false
     getChildren(null).forEach {
-        // if we have already found previous node and type matches - then can return child
-        if (foundAnchorNode && it.elementType == childNodeType) return it
-        // found the node that is used as anchor and we are trying to find
-        // a node with IElementType that stands after this anchor node
+        if (foundAnchorNode && it.elementType == childNodeType) {
+            // if we have already found previous node and type matches - then can return child
+            return it
+        }
         if (it.elementType == afterThisNodeType) {
+            // found the node that is used as anchor and we are trying to find
+            // a node with IElementType that stands after this anchor node
             foundAnchorNode = true
         }
     }
@@ -171,32 +221,52 @@ fun ASTNode.findChildAfter(afterThisNodeType: IElementType, childNodeType: IElem
 
 /**
  * method that traverses previous nodes until it finds needed node or it finds stop node
+ *
  * @return ASTNode?
  */
 fun ASTNode.prevNodeUntilNode(stopNodeType: IElementType, checkNodeType: IElementType): ASTNode? =
-    siblings(false).takeWhile { it.elementType != stopNodeType }.find { it.elementType == checkNodeType }
+        siblings(false).takeWhile { it.elementType != stopNodeType }.find { it.elementType == checkNodeType }
 
-
+/**
+ * Returns all siblings of [this] node
+ *
+ * @param withSelf whether [this] node is included in the result
+ * @return list of siblings
+ */
 fun ASTNode.allSiblings(withSelf: Boolean = false): List<ASTNode> =
-    siblings(false).toList() + (if (withSelf) listOf(this) else listOf()) + siblings(true)
+        siblings(false).toList() + (if (withSelf) listOf(this) else listOf()) + siblings(true)
 
+/**
+ * Checks whether [this] node belongs to a companion object
+ *
+ * @return boolean result
+ */
 fun ASTNode.isNodeFromCompanionObject(): Boolean {
     val parent = this.treeParent
-    if (parent != null) {
+    parent?.let {
         val grandParent = parent.treeParent
         if (grandParent != null && grandParent.elementType == ElementType.OBJECT_DECLARATION) {
-            if (grandParent.findLeafWithSpecificType(ElementType.COMPANION_KEYWORD) != null) {
-                return true
-            }
+            grandParent.findLeafWithSpecificType(ElementType.COMPANION_KEYWORD)
+                ?.run {
+                    return true
+                }
         }
     }
     return false
 }
 
-fun ASTNode.isConstant(): Boolean {
-    return (this.isNodeFromFileLevel() || this.isNodeFromObject()) && this.isValProperty() && this.isConst()
-}
+/**
+ * Checks whether this node is a constant
+ *
+ * @return boolean result
+ */
+fun ASTNode.isConstant() = (this.isNodeFromFileLevel() || this.isNodeFromObject()) && this.isValProperty() && this.isConst()
 
+/**
+ * Checks whether this node is an object
+ *
+ * @return boolean result
+ */
 fun ASTNode.isNodeFromObject(): Boolean {
     val parent = this.treeParent
     if (parent != null && parent.elementType == ElementType.CLASS_BODY) {
@@ -208,18 +278,35 @@ fun ASTNode.isNodeFromObject(): Boolean {
     return false
 }
 
+/**
+ * Checks whether this node is declared on a file level
+ *
+ * @return boolean result
+ */
 fun ASTNode.isNodeFromFileLevel(): Boolean = this.treeParent.elementType == FILE
 
+/**
+ * Checks whether [this] node of type PROPERTY is `val`
+ */
 fun ASTNode.isValProperty() =
-    this.getChildren(null)
-        .any { it.elementType == ElementType.VAL_KEYWORD }
+        this.getChildren(null)
+            .any { it.elementType == ElementType.VAL_KEYWORD }
 
+/**
+ * Checks whether this node of type PROPERTY has `const` modifier
+ */
 fun ASTNode.isConst() = this.findLeafWithSpecificType(CONST_KEYWORD) != null
 
+/**
+ * Checks whether [this] node of type PROPERTY is `var`
+ */
 fun ASTNode.isVarProperty() =
-    this.getChildren(null)
-        .any { it.elementType == ElementType.VAR_KEYWORD }
+        this.getChildren(null)
+            .any { it.elementType == ElementType.VAR_KEYWORD }
 
+/**
+ * Replaces text of [this] node with lowercase text
+ */
 fun ASTNode.toLower() {
     (this as LeafPsiElement).replaceWithText(this.text.toLowerCase())
 }
@@ -246,14 +333,18 @@ fun ASTNode.getAllLeafsWithSpecificType(elementType: IElementType, result: Mutab
  * This node isn't necessarily a leaf though method name implies it
  */
 fun ASTNode.findLeafWithSpecificType(elementType: IElementType): ASTNode? {
-    if (this.elementType == elementType) return this
-    if (this.isLeaf()) return null
-
-    this.getChildren(null).forEach {
-        val result = it.findLeafWithSpecificType(elementType)
-        if (result != null) return result
+    if (this.elementType == elementType) {
+        return this
     }
-    return null
+    if (this.isLeaf()) {
+        return null
+    }
+
+    return getChildren(null)
+        .mapNotNull {
+            it.findLeafWithSpecificType(elementType)
+        }
+        .firstOrNull()
 }
 
 /**
@@ -265,11 +356,12 @@ fun ASTNode.numNewLines() = text.count { it == '\n' }
  * This method performs tree traversal and returns all nodes with specific element type
  */
 fun ASTNode.findAllNodesWithSpecificType(elementType: IElementType, withSelf: Boolean = true) =
-    findAllNodesWithCondition({ it.elementType == elementType }, withSelf)
+        findAllNodesWithCondition({ it.elementType == elementType }, withSelf)
 
 /**
  * This method performs tree traversal and returns all nodes which satisfy the condition
  */
+@Suppress("LAMBDA_IS_NOT_LAST_PARAMETER")
 fun ASTNode.findAllNodesWithCondition(condition: (ASTNode) -> Boolean, withSelf: Boolean = true): List<ASTNode> {
     val result = if (condition(this) && withSelf) mutableListOf(this) else mutableListOf()
     return result + this.getChildren(null).flatMap {
@@ -286,26 +378,29 @@ fun ASTNode.isClassEnum(): Boolean = (psi as? KtClass)?.isEnum() ?: false
  * This method finds first parent node from the sequence of parents that has specified elementType
  */
 fun ASTNode.findParentNodeWithSpecificType(elementType: IElementType) =
-    this.parents().find { it.elementType == elementType }
+        this.parents().find { it.elementType == elementType }
 
 /**
  * Finds all children of optional type which match the predicate
  */
 fun ASTNode.findChildrenMatching(elementType: IElementType? = null, predicate: (ASTNode) -> Boolean): List<ASTNode> =
-    getChildren(elementType?.let { TokenSet.create(it) })
-        .filter(predicate)
+        getChildren(elementType?.let { TokenSet.create(it) })
+            .filter(predicate)
 
 /**
  * Check if this node has any children of optional type matching the predicate
  */
 fun ASTNode.hasChildMatching(elementType: IElementType? = null, predicate: (ASTNode) -> Boolean): Boolean =
-    findChildrenMatching(elementType, predicate).isNotEmpty()
+        findChildrenMatching(elementType, predicate).isNotEmpty()
 
 /**
  * Converts this AST node and all its children to pretty string representation
  */
+@Suppress("AVOID_NESTED_FUNCTIONS")
 fun ASTNode.prettyPrint(level: Int = 0, maxLevel: Int = -1): String {
-    // AST operates with \n only, so we need to build the whole string representation and then change line separator
+    /**
+     * AST operates with \n only, so we need to build the whole string representation and then change line separator
+     */
     fun ASTNode.doPrettyPrint(level: Int, maxLevel: Int): String {
         val result = StringBuilder("${this.elementType}: \"${this.text}\"").append('\n')
         if (maxLevel != 0) {
@@ -326,37 +421,41 @@ fun ASTNode.prettyPrint(level: Int = 0, maxLevel: Int = -1): String {
  * The receiver should be an ASTNode with ElementType.MODIFIER_LIST, can be null if entity has no modifier list
  */
 fun ASTNode?.isAccessibleOutside(): Boolean =
-    if (this != null) {
-        assert(this.elementType == MODIFIER_LIST)
-        this.hasAnyChildOfTypes(PUBLIC_KEYWORD, PROTECTED_KEYWORD, INTERNAL_KEYWORD) ||
-                !this.hasAnyChildOfTypes(PUBLIC_KEYWORD, INTERNAL_KEYWORD, PROTECTED_KEYWORD, PRIVATE_KEYWORD)
-    } else {
-        true
-    }
-
-fun ASTNode.hasSuppress(warningName: String): Boolean {
-    return parent({ node ->
-        val annotationNode = if (node.elementType != FILE) {
-            node.findChildByType(MODIFIER_LIST)
-        } else {
-            node.findChildByType(FILE_ANNOTATION_LIST)
+        this?.run {
+            require(this.elementType == MODIFIER_LIST)
+            this.hasAnyChildOfTypes(PUBLIC_KEYWORD, PROTECTED_KEYWORD, INTERNAL_KEYWORD) ||
+                    !this.hasAnyChildOfTypes(PUBLIC_KEYWORD, INTERNAL_KEYWORD, PROTECTED_KEYWORD, PRIVATE_KEYWORD)
         }
-        annotationNode?.findAllNodesWithSpecificType(ANNOTATION_ENTRY)
-            ?.map { it.psi as KtAnnotationEntry }
-            ?.any {
-                it.shortName.toString() == Suppress::class.simpleName
-                        && it.valueArgumentList?.arguments
-                    ?.any { annotationName -> annotationName.text.trim('"', ' ') == warningName }
+            ?: true
+
+/**
+ * Checks whether [this] node has a parent annotated with `@Suppress` with [warningName]
+ *
+ * @param warningName a name of the warning which is checked
+ * @return boolean result
+ */
+fun ASTNode.hasSuppress(warningName: String) = parent({ node ->
+    val annotationNode = if (node.elementType != FILE) {
+        node.findChildByType(MODIFIER_LIST)
+    } else {
+        node.findChildByType(FILE_ANNOTATION_LIST)
+    }
+    annotationNode?.findAllNodesWithSpecificType(ANNOTATION_ENTRY)
+        ?.map { it.psi as KtAnnotationEntry }
+        ?.any {
+            it.shortName.toString() == Suppress::class.simpleName &&
+                    it.valueArgumentList?.arguments
+                        ?.any { annotationName -> annotationName.text.trim('"', ' ') == warningName }
                         ?: false
-            } ?: false
-    }, strict = false) != null
-}
+        } ?: false
+}, strict = false) != null
 
 /**
  * Checks node has `override` modifier
  */
-fun ASTNode.isOverriden(): Boolean =
-    findChildByType(MODIFIER_LIST)?.findChildByType(OVERRIDE_KEYWORD) != null
+fun ASTNode.isOverridden(): Boolean =
+        findChildByType(MODIFIER_LIST)?.findChildByType(OVERRIDE_KEYWORD) != null
+
 /**
  * creation of operation reference in a node
  */
@@ -379,6 +478,13 @@ fun ASTNode.leaveExactlyNumNewLines(num: Int) {
     (this as LeafPsiElement).replaceWithText("${"\n".repeat(num)}${this.text.replace("\n", "")}")
 }
 
+/**
+ * If [whiteSpaceNode] is not null and has type [WHITE_SPACE], prepend a line break to it's text.
+ * Otherwise, insert a new node with a line break before [beforeNode]
+ *
+ * @param whiteSpaceNode a node that can possibly be modified
+ * @param beforeNode a node before which a new WHITE_SPACE node will be inserted
+ */
 fun ASTNode.appendNewlineMergingWhiteSpace(whiteSpaceNode: ASTNode?, beforeNode: ASTNode?) {
     if (whiteSpaceNode != null && whiteSpaceNode.elementType == WHITE_SPACE) {
         (whiteSpaceNode as LeafPsiElement).replaceWithText("\n${whiteSpaceNode.text}")
@@ -419,44 +525,84 @@ fun ASTNode.moveChildBefore(
     return ReplacementResult(listOfNotNull(childToMove, nextOldChild), listOfNotNull(movedChild, nextMovedChild))
 }
 
-@Suppress("UnsafeCallOnNullableType")
-fun ASTNode.findLBrace(): ASTNode? {
-    return when (this.elementType) {
-        ElementType.THEN, ElementType.ELSE, ElementType.FUN, ElementType.TRY, ElementType.CATCH, ElementType.FINALLY ->
-            this.findChildByType(ElementType.BLOCK)?.findChildByType(ElementType.LBRACE)
-        ElementType.WHEN -> this.findChildByType(ElementType.LBRACE)!!
-        ElementType.FOR, ElementType.WHILE, ElementType.DO_WHILE ->
-            this.findChildByType(ElementType.BODY)?.findChildByType(ElementType.BLOCK)
-                ?.findChildByType(ElementType.LBRACE)
-        ElementType.CLASS, ElementType.OBJECT_DECLARATION -> this.findChildByType(ElementType.CLASS_BODY)
-            ?.findChildByType(ElementType.LBRACE)
-        ElementType.FUNCTION_LITERAL -> this.findChildByType(LBRACE)
-        else -> null
-    }
+/**
+ * Finds a first `{` node inside [this] node
+ *
+ * @return a LBRACE node or `null` if it can't be found
+ */
+@Suppress("UnsafeCallOnNullableType", "FUNCTION_NAME_INCORRECT_CASE", "WRONG_NEWLINES")
+fun ASTNode.findLBrace(): ASTNode? = when (this.elementType) {
+    ElementType.THEN, ElementType.ELSE, ElementType.FUN, ElementType.TRY, ElementType.CATCH, ElementType.FINALLY ->
+        this.findChildByType(ElementType.BLOCK)?.findChildByType(LBRACE)
+    ElementType.WHEN -> this.findChildByType(LBRACE)!!
+    ElementType.FOR, ElementType.WHILE, ElementType.DO_WHILE ->
+        this.findChildByType(ElementType.BODY)
+            ?.findChildByType(ElementType.BLOCK)
+            ?.findChildByType(LBRACE)
+    ElementType.CLASS, ElementType.OBJECT_DECLARATION -> this.findChildByType(ElementType.CLASS_BODY)
+        ?.findChildByType(LBRACE)
+    ElementType.FUNCTION_LITERAL -> this.findChildByType(LBRACE)
+    else -> null
 }
 
+/**
+ * Checks whether this node of type IF is a single line expression with single else, like `if (true) x else y`
+ *
+ * @return boolean result
+ */
 fun ASTNode.isSingleLineIfElse(): Boolean {
     val elseNode = (psi as KtIfExpression).`else`?.node
     val hasSingleElse = elseNode != null && elseNode.elementType != ElementType.IF
     return treeParent.elementType != ElementType.ELSE && hasSingleElse && text.lines().size == 1
 }
 
+/**
+ * Checks whether [child] is after [afterChild] among the children of [this] node
+ *
+ * @return boolean result
+ */
 fun ASTNode.isChildAfterAnother(child: ASTNode, afterChild: ASTNode): Boolean =
-    getChildren(null).indexOf(child) > getChildren(null).indexOf(afterChild)
+        getChildren(null).indexOf(child) > getChildren(null).indexOf(afterChild)
 
+/**
+ * Checks whether [child] is after all nodes from [group] among the children of [this] node
+ *
+ * @return boolean result
+ */
 fun ASTNode.isChildAfterGroup(child: ASTNode, group: List<ASTNode>): Boolean =
-    getChildren(null).indexOf(child) > (group.map { getChildren(null).indexOf(it) }.max() ?: 0)
+        getChildren(null).indexOf(child) > (group.map { getChildren(null).indexOf(it) }.max() ?: 0)
 
+/**
+ * Checks whether [child] is before [beforeChild] among the children of [this] node
+ *
+ * @return boolean result
+ */
 fun ASTNode.isChildBeforeAnother(child: ASTNode, beforeChild: ASTNode): Boolean =
-    areChildrenBeforeGroup(listOf(child), listOf(beforeChild))
+        areChildrenBeforeGroup(listOf(child), listOf(beforeChild))
 
+/**
+ * Checks whether [child] is before all nodes is [group] among the children of [this] node
+ *
+ * @return boolean result
+ */
 fun ASTNode.isChildBeforeGroup(child: ASTNode, group: List<ASTNode>): Boolean =
-    areChildrenBeforeGroup(listOf(child), group)
+        areChildrenBeforeGroup(listOf(child), group)
 
+/**
+ * Checks whether all nodes in [children] is before [beforeChild] among the children of [this] node
+ *
+ * @return boolean result
+ */
+@Suppress("FUNCTION_BOOLEAN_PREFIX")
 fun ASTNode.areChildrenBeforeChild(children: List<ASTNode>, beforeChild: ASTNode): Boolean =
-    areChildrenBeforeGroup(children, listOf(beforeChild))
+        areChildrenBeforeGroup(children, listOf(beforeChild))
 
-@Suppress("UnsafeCallOnNullableType")
+/**
+ * Checks whether all nodes in [children] is before all nodes in [group] among the children of [this] node
+ *
+ * @return boolean result
+ */
+@Suppress("UnsafeCallOnNullableType", "FUNCTION_BOOLEAN_PREFIX")
 fun ASTNode.areChildrenBeforeGroup(children: List<ASTNode>, group: List<ASTNode>): Boolean {
     require(children.isNotEmpty() && group.isNotEmpty()) { "no sense to operate on empty lists" }
     return children.map { getChildren(null).indexOf(it) }.max()!! < group.map { getChildren(null).indexOf(it) }.min()!!
@@ -464,9 +610,11 @@ fun ASTNode.areChildrenBeforeGroup(children: List<ASTNode>, group: List<ASTNode>
 
 /**
  * A function that rearranges nodes in a [this] list.
+ *
  * @param getSiblingBlocks a function which returns nodes that should be before and after the current node
  * @param incorrectPositionHandler function that moves the current node with respect to node before which in should be placed
  */
+@Suppress("TYPE_ALIAS")
 fun List<ASTNode>.handleIncorrectOrder(
     getSiblingBlocks: ASTNode.() -> Pair<ASTNode?, ASTNode>,
     incorrectPositionHandler: (nodeToMove: ASTNode, beforeThisNode: ASTNode) -> Unit
@@ -474,10 +622,12 @@ fun List<ASTNode>.handleIncorrectOrder(
     forEach { astNode ->
         val (afterThisNode, beforeThisNode) = astNode.getSiblingBlocks()
         val isPositionIncorrect =
-            (afterThisNode != null && !astNode.treeParent.isChildAfterAnother(astNode, afterThisNode))
-                    || !astNode.treeParent.isChildBeforeAnother(astNode, beforeThisNode)
+                (afterThisNode != null && !astNode.treeParent.isChildAfterAnother(astNode, afterThisNode)) ||
+                        !astNode.treeParent.isChildBeforeAnother(astNode, beforeThisNode)
 
-        if (isPositionIncorrect) incorrectPositionHandler(astNode, beforeThisNode)
+        if (isPositionIncorrect) {
+            incorrectPositionHandler(astNode, beforeThisNode)
+        }
     }
 }
 
@@ -485,15 +635,16 @@ fun List<ASTNode>.handleIncorrectOrder(
  * This method returns text of this [ASTNode] plus text from it's siblings after last and until next newline, if present in siblings.
  * I.e., if this node occupies no more than a single line, this whole line or it's part will be returned.
  */
+@Suppress("LOCAL_VARIABLE_EARLY_DECLARATION", "WRONG_NEWLINES")
 fun ASTNode.extractLineOfText(): String {
-    var text = mutableListOf<String>()
-    val nextNode = parent({ it.treeNext != null }, false) ?: this
+    var text: MutableList<String> = mutableListOf()
     siblings(false)
         .map { it.text.split("\n") }
         .takeWhileInclusive { it.size <= 1 }
         .forEach { text.add(it.last()) }
     text = text.asReversed()
     text.add(this.text)
+    val nextNode = parent({ it.treeNext != null }, false) ?: this
     nextNode.siblings(true)
         .map { it.text.split("\n") }
         .takeWhileInclusive { it.size <= 1 }
@@ -504,48 +655,66 @@ fun ASTNode.extractLineOfText(): String {
 /**
  * Checks node has `@Test` annotation
  */
-fun ASTNode.hasTestAnnotation(): Boolean {
-    return findChildByType(MODIFIER_LIST)
-        ?.getAllChildrenWithType(ElementType.ANNOTATION_ENTRY)
-        ?.flatMap { it.findAllNodesWithSpecificType(ElementType.CONSTRUCTOR_CALLEE) }
-        ?.any { it.findLeafWithSpecificType(ElementType.IDENTIFIER)?.text == "Test" }
-        ?: false
-}
+fun ASTNode.hasTestAnnotation() = findChildByType(MODIFIER_LIST)
+    ?.getAllChildrenWithType(ElementType.ANNOTATION_ENTRY)
+    ?.flatMap { it.findAllNodesWithSpecificType(ElementType.CONSTRUCTOR_CALLEE) }
+    ?.any { it.findLeafWithSpecificType(ElementType.IDENTIFIER)?.text == "Test" }
+    ?: false
 
 /**
  * Checks node is located in file src/test/**/*Test.kt
+ *
  * @param testAnchors names of test directories, e.g. "test", "jvmTest"
  */
-fun isLocatedInTest(filePathParts: List<String>, testAnchors: List<String>): Boolean {
-    return filePathParts
-        .takeIf { it.contains(PackageNaming.PACKAGE_PATH_ANCHOR) }
-        ?.run { subList(lastIndexOf(PackageNaming.PACKAGE_PATH_ANCHOR), size) }
-        ?.run {
-            // e.g. src/test/ClassTest.kt, other files like src/test/Utils.kt are still checked
-            testAnchors.any { contains(it) } && last().substringBeforeLast('.').endsWith("Test")
-        }
-        ?: false
-}
+fun isLocatedInTest(filePathParts: List<String>, testAnchors: List<String>) = filePathParts
+    .takeIf { it.contains(PackageNaming.PACKAGE_PATH_ANCHOR) }
+    ?.run { subList(lastIndexOf(PackageNaming.PACKAGE_PATH_ANCHOR), size) }
+    ?.run {
+        // e.g. src/test/ClassTest.kt, other files like src/test/Utils.kt are still checked
+        testAnchors.any { contains(it) } && last().substringBeforeLast('.').endsWith("Test")
+    }
+    ?: false
 
+/**
+ * Returns the first line of this node's text if it is single, or the first line followed by [suffix] if there are more than one.
+ *
+ * @param suffix a suffix to append if there are more than one lines of text
+ */
 fun ASTNode.firstLineOfText(suffix: String = "") = text.lines().run { singleOrNull() ?: (first() + suffix) }
 
+/**
+ * Return the number of the last line in the file
+ *
+ * @param isFixMode whether autofix mode is on
+ */
 fun ASTNode.lastLineNumber(isFixMode: Boolean) = getLineNumber(isFixMode)?.plus(text.count { it == '\n' })
 
-fun ASTNode.calculateLineColByOffset(): (offset: Int) -> Pair<Int, Int> {
-    return buildPositionInTextLocator(text)
-}
+/**
+ * copy-pasted method from ktlint to determine line and column number by offset
+ */
+fun ASTNode.calculateLineColByOffset() = buildPositionInTextLocator(text)
 
+/**
+ * Retrieves file name from user data of this node
+ *
+ * @return name of the file [this] node belongs to
+ */
 fun ASTNode.getFileName(): String = getUserData(KtLint.FILE_PATH_USER_DATA_KEY).let {
-    require(it != null) { "File path is not present in user data" }
+    requireNotNull(it) { "File path is not present in user data" }
     it
 }
 
+/**
+ * A class that represents result of nodes swapping. [oldNodes] should always have same size as [newNodes]
+ *
+ * @property oldNodes nodes that were to be moved
+ * @property newNodes nodes that have been moved
+ */
 data class ReplacementResult(val oldNodes: List<ASTNode>, val newNodes: List<ASTNode>) {
     init {
         require(oldNodes.size == newNodes.size)
     }
 }
-
 
 /**
  * checks that this one node is placed after the other node in code (by comparing lines of code where nodes start)
@@ -554,23 +723,30 @@ fun ASTNode.isGoingAfter(otherNode: ASTNode): Boolean {
     val thisLineNumber = this.calculateLineNumber()
     val otherLineNumber = otherNode.calculateLineNumber()
 
-    require(thisLineNumber != null) { "Node ${this.text} should have a line number" }
-    require(otherLineNumber != null) { "Node ${otherNode.text} should have a line number" }
+    requireNotNull(thisLineNumber) { "Node ${this.text} should have a line number" }
+    requireNotNull(otherLineNumber) { "Node ${otherNode.text} should have a line number" }
 
     return (thisLineNumber > otherLineNumber)
 }
 
+/**
+ * Get line number, where this node's content starts
+ *
+ * @param isFixMode if fix mode is off, then the text can't be altered and we can use cached values for line numbers
+ * @return line number or null if it cannot be calculated
+ */
 fun ASTNode.getLineNumber(isFixMode: Boolean): Int? =
-    if (!isFixMode) {
-        lineNumber()
-    } else {
-        calculateLineNumber()
-    }
+        if (!isFixMode) {
+            lineNumber()
+        } else {
+            calculateLineNumber()
+        }
 
 /**
  * This function calculates line number instead of using cached values.
  * It should be used when AST could be previously mutated by auto fixers.
  */
+@Suppress("LOCAL_VARIABLE_EARLY_DECLARATION")
 private fun ASTNode.calculateLineNumber(): Int? {
     var count = 0
     // todo use runningFold or something similar when we migrate to apiVersion 1.4

@@ -304,6 +304,9 @@
 # Example: val table get() {if (_table == null) ...} -> table should have _table
 - name: NO_CORRESPONDING_PROPERTY
   enabled: true
+# Checks if there is class/object that can be replace with extension function
+- name: AVOID_USING_UTILITY_CLASS
+  enabled: true
 # If there is stateless class it is preferred to use object
 - name: OBJECT_IS_PREFERRED
   enabled: true
