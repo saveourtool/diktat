@@ -658,7 +658,7 @@ fun ASTNode.extractLineOfText(): String {
  * Checks node has `@Test` annotation
  */
 fun ASTNode.hasTestAnnotation() = findChildByType(MODIFIER_LIST)
-    ?.getAllChildrenWithType(ElementType.ANNOTATION_ENTRY)
+    ?.getAllChildrenWithType(ANNOTATION_ENTRY)
     ?.flatMap { it.findAllNodesWithSpecificType(ElementType.CONSTRUCTOR_CALLEE) }
     ?.any { it.findLeafWithSpecificType(ElementType.IDENTIFIER)?.text == "Test" }
     ?: false
@@ -686,10 +686,8 @@ fun ASTNode.firstLineOfText(suffix: String = "") = text.lines().run { singleOrNu
 
 /**
  * Return the number in the file of the last line of this node's text
- *
- * @param isFixMode whether autofix mode is on
  */
-fun ASTNode.lastLineNumber() = getLineNumber()?.plus(text.count { it == '\n' })
+fun ASTNode.lastLineNumber() = getLineNumber() + text.count { it == '\n' }
 
 /**
  * copy-pasted method from ktlint to determine line and column number by offset
@@ -728,9 +726,6 @@ fun ASTNode.isGoingAfter(otherNode: ASTNode): Boolean {
     val thisLineNumber = this.getLineNumber()
     val otherLineNumber = otherNode.getLineNumber()
 
-    requireNotNull(thisLineNumber) { "Node ${this.text} should have a line number" }
-    requireNotNull(otherLineNumber) { "Node ${otherNode.text} should have a line number" }
-
     return (thisLineNumber > otherLineNumber)
 }
 
@@ -740,7 +735,7 @@ fun ASTNode.isGoingAfter(otherNode: ASTNode): Boolean {
  *
  * @return line number or null if it cannot be calculated
  */
-fun ASTNode.getLineNumber(): Int? =
+fun ASTNode.getLineNumber(): Int =
         psi.containingFile
             .viewProvider
             .document
@@ -753,11 +748,10 @@ fun ASTNode.getLineNumber(): Int? =
  * It should be used when AST could be previously mutated by auto fixers.
  */
 @Suppress("LOCAL_VARIABLE_EARLY_DECLARATION")
-private fun ASTNode.calculateLineNumber(): Int? {
+private fun ASTNode.calculateLineNumber(): Int {
     var count = 0
     // todo use runningFold or something similar when we migrate to apiVersion 1.4
-    return parents()
-        .last()
+    return getRootNode()
         .text
         .lineSequence()
         // calculate offset for every line end, `+1` for `\n` which is trimmed in `lineSequence`
@@ -765,5 +759,8 @@ private fun ASTNode.calculateLineNumber(): Int? {
             count += it.length + 1
             count > startOffset
         }
-        .let { if (it == -1) null else it + 1 }
+        .let {
+            require(it >= 0) { "Cannot calculate line number correctly, node's offset $startOffset is greater than file length ${getRootNode().textLength}" }
+            it + 1
+        }
 }
