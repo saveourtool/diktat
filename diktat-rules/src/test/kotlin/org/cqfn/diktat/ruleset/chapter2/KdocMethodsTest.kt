@@ -357,7 +357,7 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
                     |   return qwe 
                     |}
                 """.trimMargin(),
-            LintError(1,1,ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} foo", true)
+            LintError(1, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} foo", true)
         )
     }
 }
