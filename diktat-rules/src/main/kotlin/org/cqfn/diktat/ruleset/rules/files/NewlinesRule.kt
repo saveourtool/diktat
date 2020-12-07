@@ -413,9 +413,10 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
 
     private fun ASTNode.isSingleDotStatementOnSingleLine() = parents()
         .takeWhile { it.elementType in expressionTypes }
-        .singleOrNull()
+        .takeIf { it.toList().size == 1 }
+        ?.single()
         ?.let { it.text.lines().count() == 1 }
-        ?: true
+        ?: false
 
     // fixme: there could be other cases when dot means something else
     private fun ASTNode.isDotFromPackageOrImport() = elementType == DOT &&
