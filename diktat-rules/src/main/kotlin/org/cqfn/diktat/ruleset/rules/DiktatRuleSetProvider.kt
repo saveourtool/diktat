@@ -117,6 +117,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
             ::DataClassesRule,
             ::LocalVariablesRule,
             ::SmartCastRule,
+            ::AvoidUtilityClass,
             ::PropertyAccessorFields,
             ::AbstractClassesRule,
             ::SingleInitRule,

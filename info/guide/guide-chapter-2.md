@@ -35,9 +35,9 @@ Use a single-line form when you store the entire KDoc block in one line (and the
 At a minimum, KDoc should be used for every public, protected, or internal decorated class, interface, enumeration, method, and member field (property).
 Other code blocks can also have KDocs if needed.
 Instead of using comments or KDocs before properties in the primary constructor of a class - use `@property` tag in a KDoc of a class.
-All properties of the primary constructor should be also documented in a KDoc with a `@property` tag.
+All properties of the primary constructor should also be documented in a KDoc with a `@property` tag.
 
-Incorrect example:
+**Incorrect example:**
 ```kotlin
 /**
  * Class description
@@ -52,7 +52,7 @@ class Example(
 )
 ```
 
-Correct example:
+**Correct example:**
 ```kotlin
 /**
  * Class description
@@ -67,7 +67,7 @@ class Example(
 
 **Exceptions:**
 
-1. For setters/getters of properties, obvious comments (like `this getter returns field`) are optional. Note, that Kotlin generates simple `get/set` methods under the hood.
+1. For setters/getters of properties, obvious comments (like `this getter returns field`) are optional. Note that Kotlin generates simple `get/set` methods under the hood.
    
 2. It is optional to add comments for simple one-line methods, such as shown in the example below:
 ```kotlin
@@ -82,8 +82,6 @@ fun isEmptyList(list: List<String>) = list.size == 0
 ```
 
 Note: You can skip KDocs for a method's override if it is almost the same as the superclass method.
-###  <a name="r2.1.2"></a>Rule 2.1.2: Describing methods with arguments, return value or can throw exceptions
-When the method has arguments, return value, or can throw exceptions, it must be described in the KDoc block: with @param, @return, @throws
 
 ### <a name="r2.1.2"></a>Rule 2.1.2: When the method has arguments, return value, can throw exceptions, etc., it must be described in the KDoc block: with @param, @return, @throws, etc.
 
@@ -130,18 +128,20 @@ Therefore, Kdoc should contain the following:
 - `@apiNote`: Explain the API precautions, including whether to allow null and whether the method is thread-safe, as well as the algorithm complexity, input, and output range, exceptions, etc.
 - `@implNote`: A note related to API implementation, which implementers should keep in mind.
 - One empty line, followed by regular `@param`, `@return`, `@throws`, and other comments.
-- The conventional standard "block labels" arranged in the following order: `@param`, `@return`, `@throws`.
+- The conventional standard "block labels" are arranged in the following order: `@param`, `@return`, `@throws`.
 Kdoc should not contain:
 - Empty descriptions in tag blocks. It is better not to write Kdoc than waste code line space.
 - There should be no empty lines between the method/class declaration and the end of Kdoc (`*/` symbols).
 Important note: KDoc does not support the `@deprecated` tag. Instead, use the `@Deprecated` annotation.
  
-If a tag block cannot be described in one line, you should indent the content of the new line by `four spaces` from the `@` position to achieve alignment (`@` counts as one + three spaces).
+If a tag block cannot be described in one line, indent the content of the new line by *four spaces* from the `@` position to achieve alignment (`@` counts as one + three spaces).
  
-**Exception:** When the descriptive text in a tag block is too long to wrap, you can indent the alignment with the descriptive text in the last line. The descriptive text of multiple tags does not need to be aligned.
+**Exception:**
+ 
+When the descriptive text in a tag block is too long to wrap, you can indent the alignment with the descriptive text in the last line. The descriptive text of multiple tags does not need to be aligned.
 See [3.8 Horizontal space](#c3.8).
 
-In Kotlin, compared to Java, you are able to put several classes inside one file, so each class should have a Kdoc formatted comment (as stated in rule 2.1).
+In Kotlin, compared to Java, you can put several classes inside one file, so each class should have a Kdoc formatted comment (as stated in rule 2.1).
 This comment should contain @since tag. The right style is to write the application version when its functionality is released. It should be entered after the `@since` tag.
 
 **Examples:**
@@ -167,7 +167,7 @@ Other KDoc tags (such as @param type parameters and @see.) can be added as follo
 ### <a name="c2.2"></a> 2.2 Comments to the file header
 ### <a name="r2.2.1"></a> Rule 2.2.1: Comments on the file header must include copyright information, without the creation date and author's name (use VCS for history management instead). The content inside files that contain multiple or no classes should also be described.
 
-Comments on the file header should be placed before the package name and imports. If you need to add more content to the comment, you can subsequently add it in the same format.
+Comments on the file header should be placed before the package name and imports. If you need to add more content to the comment, subsequently add it in the same format.
 
 The following examples for Huawei describe the format of the **copyright license**: \
 Chinese version: `版权所有 (c) 华为技术有限公司 2012-2020` \
@@ -178,7 +178,7 @@ Regarding the **release notes**, see examples below:
 - `2012-2020` can be modified according to your actual situation. `2012` and `2020` are the years the file was first created and last modified, respectively.
 These two years can be the same (for example, `2020–2020`). When the file is substantially changed (for example, through feature extensions and major refactorings), the subsequent years must be updated.
 
-- The **copyright statement** can use your company's subsidiaries. For example: \
+- The **copyright statement** can use your company's subsidiaries, as shown in the below examples: \
 Chinese version: `版权所有 (c) 海思半导体 2012-2020` \
 English version: `Copyright (c) Hisilicon Technologies Co., Ltd. 2012-2020. All rights reserved.` 
 
@@ -193,9 +193,9 @@ The following example is a copyright statement for Huawei, without other functio
 
 The following factors should be considered when writing the file header or comments for top-level classes:
 - File header comments must start from the top of the file. If it is a top-level file comment, there should be a blank line after the last Kdoc `*/` symbol. If it is a comment for a top-level class, the class declaration should start immediately without using a newline.
-- Maintain a unified format. The specific format can be formulated by the project (for example, if you use existing opensource project), and you need to follow it.
+- Maintain a unified format. The specific format can be formulated by the project (for example, if you use an existing opensource project), and you need to follow it.
 - A top-level file-Kdoc must include a copyright and functional description, especially if there is more than one top-level class.
-- Do not include empty comment blocks.If there is no content after the option `@apiNote`, the entire tag block should be deleted.
+- Do not include empty comment blocks. If there is no content after the option `@apiNote`, the entire tag block should be deleted.
 - The industry practice is not to include historical information in comments. The corresponding history can be found in VCS (git, svn, etc.). Therefore, it is not recommended to include historical data in the comments of the Kotlin source code.
 
 
@@ -212,8 +212,8 @@ The function header comment's content is optional, but not limited to function d
 ### <a name="r2.4.1"></a> Rule 2.4.1: Add a blank line between the body of the comment and Kdoc tag-blocks.
 It is a good practice to add a blank line between the body of the comment and Kdoc tag-blocks. Also, consider the following rules:
 - There must be one space between the comment character and the content of the comment
-- There must be a newline between a Kdoc and the pressiding code
-- An empty line should not exist between a Kdoc and the code it is describing. You do not need to add a blank line before the first comment in a particular name space (code block) (for example, between the function declaration and first comment in a function body).
+- There must be a newline between a Kdoc and presiding code
+- An empty line should not exist between a Kdoc and the code it is describing. You do not need to add a blank line before the first comment in a particular namespace (code block) (for example, between the function declaration and first comment in a function body).
 
 **Valid Examples:**
 ```kotlin
@@ -255,7 +255,7 @@ It is a good practice to add a blank line between the body of the comment and Kd
 ```
 
 - Leave one single space between the comment on the right side of the code and the code. 
-If you use conditional comments in the `if-else-if` scenario, put the comments inside the `else-if` branch or in the conditional block, but not before the `else-if`. This makes your code more understandable.
+If you use conditional comments in the `if-else-if` scenario, put the comments inside the `else-if` branch or in the conditional block, but not before the `else-if`. This makes the code more understandable.
 When the if-block is used with curly braces, the comment should be placed on the next line after opening the curly braces.
 Compared to Java, the `if` statement in Kotlin statements returns a value. For this reason, a comment block can describe a whole `if-statement`.
 
@@ -283,7 +283,7 @@ val someVal = if (nr % 15 == 0) {
 }
 ```
 
-- Start all comments (including KDoc) with a space after the first symbol (`//`, `/*`, `/**` and `*`)
+- Start all comments (including KDoc) with space after the first symbol (`//`, `/*`, `/**` and `*`)
 
 **Valid example:**
 ```kotlin
@@ -293,17 +293,17 @@ val x = 0  // this is a comment
 ### <a name="r2.4.2"></a>Rule 2.4.2: Do not comment on unused code blocks
 Do not comment on unused code blocks, including imports. Delete these code blocks immediately.
 A code is not used to store history. Git, svn, or other VCS tools should be used for this purpose.
-Unused imports increase the coupling of the code and are not conducive to maintenance. The commented out code cannot be properly maintained.
-When you attempt to reuse the code, there is a high probability that you will introduce defects that are easily missed.
-The correct approach is to delete the unnecessary code directly and immediately when it is not used.
+Unused imports increase the coupling of the code and are not conducive to maintenance. The commented out code cannot be appropriately maintained.
+In an attempt to reuse the code, there is a high probability that you will introduce defects that are easily missed.
+The correct approach is to delete the unnecessary code directly and immediately when it is not used anymore.
 If you need the code again, consider porting or rewriting it as changes could have occurred since you first commented on the code. 
 
-### <a name="s2.4.3"></a>Recommendation 2.4.3: Code delivered to the client should not contain TODO/FIXME comments.
+### <a name="r2.4.3"></a>Recommendation 2.4.3: Code delivered to the client should not contain TODO/FIXME comments.
 The code officially delivered to the client typically should not contain TODO/FIXME comments.
 `TODO` comments are typically used to describe modification points that need to be improved and added. For example, refactoring FIXME comments are typically used to describe known defects and bugs that will be subsequently fixed and are not critical for an application.
 They should all have a unified style to facilitate the unified text search processing.
 
-**For example**:
+**Example**:
 ```kotlin
 // TODO(<author-name>): Jira-XXX - support new json format
 // FIXME: Jira-XXX - fix NPE in this code block
