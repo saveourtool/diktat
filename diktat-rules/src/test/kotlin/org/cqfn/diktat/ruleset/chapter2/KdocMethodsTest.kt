@@ -61,17 +61,11 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
         lintMethod(validCode, fileName = "src/main/kotlin/org/cqfn/diktat/Example.kt")
         // no false positive triggers on annotations
         lintMethod(complexAnnotationCode,
-            LintError(1, 1, ruleId, "${KDOC_WITHOUT_PARAM_TAG.warnText()} doubleInt (a)", true),
-            LintError(1, 1, ruleId, "${KDOC_WITHOUT_RETURN_TAG.warnText()} doubleInt", true),
-            LintError(1, 1, ruleId, "${KDOC_WITHOUT_THROWS_TAG.warnText()} doubleInt (IllegalStateException)", true),
             LintError(1, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} doubleInt", true),
             fileName = "src/main/kotlin/org/cqfn/diktat/Example.kt"
         )
         // should check all .kt files unless both conditions on location and name are true
         lintMethod(funCode,
-            LintError(1, 1, ruleId, "${KDOC_WITHOUT_PARAM_TAG.warnText()} doubleInt (a)", true),
-            LintError(1, 1, ruleId, "${KDOC_WITHOUT_RETURN_TAG.warnText()} doubleInt", true),
-            LintError(1, 1, ruleId, "${KDOC_WITHOUT_THROWS_TAG.warnText()} doubleInt (IllegalStateException)", true),
             LintError(1, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} doubleInt", true),
             fileName = "src/test/kotlin/org/cqfn/diktat/Example.kt"
         )
@@ -308,9 +302,7 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
                     |}
                 """.trimMargin(),
             LintError(10, 5, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} getY", false),
-            LintError(12, 5, ruleId, "${KDOC_WITHOUT_PARAM_TAG.warnText()} setY (y)", true),
             LintError(12, 5, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} setY", true),
-            LintError(17, 5, ruleId, "${KDOC_WITHOUT_RETURN_TAG.warnText()} getZ", true),
             LintError(17, 5, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} getZ", true)
         )
     }
@@ -351,6 +343,21 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
                     |   override fun bar(t: T): U { return U() }
                     |}
                 """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.MISSING_KDOC_ON_FUNCTION)
+    fun `should check if KfDoc is not trivial`() {
+        lintMethod(
+            """
+                    |fun foo(x: Int): TypeX { 
+                    |   val q = goo()
+                    |   throw UnsupportedOperationException()
+                    |   return qwe 
+                    |}
+                """.trimMargin(),
+            LintError(1, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} foo", true)
         )
     }
 }

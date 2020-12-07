@@ -13,5 +13,5 @@
 | [4. Variables and types](#c4) | [Variables](#c4.1), [Types](#c4.2), [Null safety and variable declarations](#4.3)|
 | [5. Functions](#c5) | [Function design](#c5.1), [Function arguments](#c5.2)|
 | [6. Classes](#c6) | [Classes](#c6.1), [Extension functions](#c6.2), [Interfaces](#c6.3), [Objects](#c6.4) |
-| [7. Kotlin & Java](#c7) | [Classes](#c6.1), [Extension functions](#c6.2), [Interfaces](#c6.3), [Objects](#c6.4) |
+| [7. Kotlin & Java](#c7) |  |
 
