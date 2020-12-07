@@ -223,4 +223,6 @@ public object WarningNames {
     public const val EMPTY_PRIMARY_CONSTRUCTOR: String = "EMPTY_PRIMARY_CONSTRUCTOR"
 
     public const val NO_CORRESPONDING_PROPERTY: String = "NO_CORRESPONDING_PROPERTY"
+
+    public const val AVOID_USING_UTILITY_CLASS: String = "AVOID_USING_UTILITY_CLASS"
 }

@@ -1,5 +1,12 @@
 package org.cqfn.diktat.ruleset.rules.classes
 
+import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ruleset.constants.EmitType
+import org.cqfn.diktat.ruleset.constants.Warnings.USE_DATA_CLASS
+import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
+import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
+import org.cqfn.diktat.ruleset.utils.hasChildOfType
+
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.ABSTRACT_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
@@ -15,11 +22,6 @@ import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY_ACCESSOR
 import com.pinterest.ktlint.core.ast.ElementType.SEALED_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_LIST
-import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.Warnings.USE_DATA_CLASS
-import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
-import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
-import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtExpression
@@ -28,15 +30,12 @@ import org.jetbrains.kotlin.psi.KtExpression
  * This rule checks if class can be made as data class
  */
 class DataClassesRule(private val configRule: List<RulesConfig>) : Rule("data-classes") {
-    private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
+    private lateinit var emitWarn: EmitType
 
-    companion object {
-        private val BAD_MODIFIERS = listOf(OPEN_KEYWORD, ABSTRACT_KEYWORD, INNER_KEYWORD, SEALED_KEYWORD, ENUM_KEYWORD)
-    }
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
-                       emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
+                       emit: EmitType) {
         emitWarn = emit
         isFixMode = autoCorrect
 
@@ -46,8 +45,9 @@ class DataClassesRule(private val configRule: List<RulesConfig>) : Rule("data-cl
     }
 
     private fun handleClass(node: ASTNode) {
-        if (node.isDataClass())
+        if (node.isDataClass()) {
             return
+        }
 
         if (node.canBeDataClass()) {
             raiseWarn(node)
@@ -59,24 +59,29 @@ class DataClassesRule(private val configRule: List<RulesConfig>) : Rule("data-cl
         USE_DATA_CLASS.warn(configRule, emitWarn, isFixMode, "${(node.psi as KtClass).name}", node.startOffset, node)
     }
 
-    @Suppress("UnsafeCallOnNullableType")
-    private fun ASTNode.canBeDataClass() : Boolean {
+    @Suppress("UnsafeCallOnNullableType", "FUNCTION_BOOLEAN_PREFIX")
+    private fun ASTNode.canBeDataClass(): Boolean {
         val classBody = getFirstChildWithType(CLASS_BODY)
         if (hasChildOfType(MODIFIER_LIST)) {
             val list = getFirstChildWithType(MODIFIER_LIST)!!
-            return list.getChildren(null).none { it.elementType in BAD_MODIFIERS }
-                    && classBody?.getAllChildrenWithType(FUN)?.isEmpty() ?: false
-                    && getFirstChildWithType(SUPER_TYPE_LIST) == null
+            return list.getChildren(null)
+                .none { it.elementType in badModifiers } &&
+                    classBody?.getAllChildrenWithType(FUN)
+                        ?.isEmpty()
+                        ?: false &&
+                    getFirstChildWithType(SUPER_TYPE_LIST) == null
         }
-        return classBody?.getAllChildrenWithType(FUN)?.isEmpty() ?: false
-                && getFirstChildWithType(SUPER_TYPE_LIST) == null
+        return classBody?.getAllChildrenWithType(FUN)?.isEmpty() ?: false &&
+                getFirstChildWithType(SUPER_TYPE_LIST) == null &&
                 // if there is any prop with logic in accessor then don't recommend to convert class to data class
-                && if (classBody != null) areGoodProps(classBody) else true
+                classBody?.let(::areGoodProps)
+                    ?: true
     }
 
     /**
      * Checks if any property with accessor contains logic in accessor
      */
+    @Suppress("FUNCTION_BOOLEAN_PREFIX")
     private fun areGoodProps(node: ASTNode): Boolean {
         val propertiesWithAccessors = node.getAllChildrenWithType(PROPERTY).filter { it.hasChildOfType(PROPERTY_ACCESSOR) }
 
@@ -91,22 +96,21 @@ class DataClassesRule(private val configRule: List<RulesConfig>) : Rule("data-cl
         return true
     }
 
-    @Suppress("UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType", "FUNCTION_BOOLEAN_PREFIX")
     private fun areGoodAccessors(accessors: List<ASTNode>): Boolean {
         accessors.forEach {
             if (it.hasChildOfType(BLOCK)) {
                 val block = it.getFirstChildWithType(BLOCK)!!
 
                 return block
-                        .getChildren(null)
-                        .filter { expr -> expr.psi is KtExpression }
-                        .count() <= 1
+                    .getChildren(null)
+                    .filter { expr -> expr.psi is KtExpression }
+                    .count() <= 1
             }
         }
 
         return true
     }
-
 
     @Suppress("UnsafeCallOnNullableType")
     private fun ASTNode.isDataClass(): Boolean {
@@ -115,5 +119,9 @@ class DataClassesRule(private val configRule: List<RulesConfig>) : Rule("data-cl
             return list.getChildren(null).any { it.elementType == DATA_KEYWORD }
         }
         return false
+    }
+
+    companion object {
+        private val badModifiers = listOf(OPEN_KEYWORD, ABSTRACT_KEYWORD, INNER_KEYWORD, SEALED_KEYWORD, ENUM_KEYWORD)
     }
 }

@@ -1,7 +1,9 @@
 package org.cqfn.diktat.plugin.maven
 
-import junit.framework.Assert
-import org.apache.maven.plugin.testing.AbstractMojoTestCase
+import org.apache.maven.plugin.testing.MojoRule
+import org.junit.Assert
+import org.junit.Rule
+import org.junit.Test
 import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.createTempFile
 import kotlin.io.path.writeText
@@ -9,10 +11,15 @@ import kotlin.io.path.writeText
 /**
  * Tests for mojo configuration
  * FixMe: inject project version from outside
- * FixMe: `@Parameter` properties are not set
+ * FixMe: `@Parameter` properties are not initialized with default values
  */
 @OptIn(ExperimentalPathApi::class)
-class DiktatBaseMojoTest : AbstractMojoTestCase() {
+@Suppress("TOO_LONG_FUNCTION")
+class DiktatBaseMojoTest {
+    @get:Rule
+    val mojoRule = MojoRule()
+
+    @Test
     fun `test plugin configuration`() {
         val pom = createTempFile()
         pom.writeText(
@@ -31,7 +38,6 @@ class DiktatBaseMojoTest : AbstractMojoTestCase() {
                             <plugin>
                                 <groupId>org.cqfn.diktat</groupId>
                                 <artifactId>diktat-maven-plugin</artifactId>
-                                <version>0.1.6-SNAPSHOT</version>
                                 <configuration>
                                     <diktatConfigFile>diktat-analysis.yml</diktatConfigFile>
                                 </configuration>
@@ -48,7 +54,7 @@ class DiktatBaseMojoTest : AbstractMojoTestCase() {
                 </project>
             """.trimIndent()
         )
-        val diktatCheckMojo = lookupMojo("check", pom.toFile()) as DiktatCheckMojo
+        val diktatCheckMojo = mojoRule.lookupMojo("check", pom.toFile()) as DiktatCheckMojo
         Assert.assertEquals(false, diktatCheckMojo.debug)
         Assert.assertEquals("diktat-analysis.yml", diktatCheckMojo.diktatConfigFile)
     }
