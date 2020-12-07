@@ -1,4 +1,4 @@
-#  <a name="c2"></a> 2. Comments
+# <a name="c2"></a> 2. Comments
 
 The best practice is to begin your code with a summary, which can be one sentence.
 Try to balance between writing no comments at all and obvious commentary statements for each line of code.
@@ -21,16 +21,13 @@ The basic format of KDoc is shown in the following example:
 fun method(arg: String) {
     // …
 }
-
 ```
 
 It is also shown in the following single-line form:
 
 ```kotlin
  /** Short form of KDoc. */
-
 ```
-
 Use a single-line form when you store the entire KDoc block in one line (and there is no KDoc mark @XXX). For detailed instructions on how to use KDoc, refer to [Official Document](https://docs.oracle.com/en/Kotlin/Kotlinse/11/tools/KDoc.html).
 
 #### <a name="r2.1.1"></a> 2.1.1 Using KDoc for the public, protected, or internal code elements
@@ -40,8 +37,8 @@ Other code blocks can also have KDocs if needed.
 Instead of using comments or KDocs before properties in the primary constructor of a class - use `@property` tag in a KDoc of a class.
 All properties of the primary constructor should also be documented in a KDoc with a `@property` tag.
 
-*Incorrect example:*
 
+**Incorrect example:**
 ```kotlin
 /**
  * Class description
@@ -56,8 +53,7 @@ class Example(
 )
 ```
 
-*Correct exam****ple:*
-
+**Correct example:**
 ```kotlin
 /**
  * Class description
@@ -72,9 +68,13 @@ class Example(
 
 **Exceptions:**
 
-* For setters/getters of properties, obvious comments (like `this getter returns field`) are optional. Note that Kotlin generates simple `get/set` methods under the hood.
-
+* For setters/getters of properties, obvious comments (like `this getter returns field`) are optional. Note, that Kotlin generates simple `get/set` methods under the hood.
+   
 * It is optional to add comments for simple one-line methods, such as shown in the example below:
+```kotlin
+val isEmpty: Boolean
+    get() = this.size == 0
+```
 
 or
 
@@ -90,35 +90,35 @@ When the method has such details as arguments, return value, or can throw except
 
 **Valid examples:**
 
-```kotlin
+ ```kotlin
 /** 
-* This is the short overview comment for the example interface.
-*     / * Add a blank line between the comment text and each KDoc tag underneath * /
-* @since 2019-01-01
-*/
-protected abstract class Sample {
-   /**
-    * This is a long comment with whitespace that should be split in 
-    * comments on multiple lines when the line comment formatting is enabled.
-    *     / * Add a blank line between the comment text and each KDoc tag underneath * /
-    * @param fox A quick brown fox jumps over the lazy dog
-    * @return battle between fox and dog 
-    */
-   protected abstract fun foo(Fox fox)
+ * This is the short overview comment for the example interface.
+ *     / * Add a blank line between the comment text and each KDoc tag underneath * /
+ * @since 2019-01-01
+ */
+ protected abstract class Sample {
     /**
-     * These possibilities include: Formatting of header comments
+     * This is a long comment with whitespace that should be split in 
+     * comments on multiple lines in case the line comment formatting is enabled.
      *     / * Add a blank line between the comment text and each KDoc tag underneath * /
-     * @return battle between fox and dog
-     * @throws ProblemException if lazy dog wins
+     * @param fox A quick brown fox jumps over the lazy dog
+     * @return battle between fox and dog 
      */
-   protected fun bar() throws ProblemException {
-       // Some comments / * No need to add a blank line here * /   
-       var aVar = ...
+    protected abstract fun foo(Fox fox)
+     /**
+      * These possibilities include: Formatting of header comments
+      *     / * Add a blank line between the comment text and each KDoc tag underneath * /
+      * @return battle between fox and dog
+      * @throws ProblemException if lazy dog wins
+      */
+    protected fun bar() throws ProblemException {
+        // Some comments / * No need to add a blank line here * /   
+        var aVar = ...
 
-       // Some comments  / * Add a blank line before the comment * /   
-       fun doSome()
-   }
-}
+        // Some comments  / * Add a blank line before the comment * /   
+        fun doSome()
+    }
+ }
  ```
 
 #### <a name="r2.1.3"></a>2.1.3 Only one space between the Kdoc tag and content. Tags are arranged in the order.
@@ -137,13 +137,13 @@ Kdoc should not contain:
 - Empty descriptions in tag blocks. It is better not to write Kdoc than waste code line space.
 - There should be no empty lines between the method/class declaration and the end of Kdoc (`*/` symbols).
 Important note: KDoc does not support the `@deprecated` tag. Instead, use the `@Deprecated` annotation.
-
-If a tag block cannot be described in one line, indent the content of the new line by `four spaces` from the `@` position to achieve alignment (`@` counts as one + three spaces).
-
+ 
+If a tag block cannot be described in one line, indent the content of the new line by *four spaces* from the `@` position to achieve alignment (`@` counts as one + three spaces).
+ 
 **Exception:**
-
+ 
 When the descriptive text in a tag block is too long to wrap, you can indent the alignment with the descriptive text in the last line. The descriptive text of multiple tags does not need to be aligned.
-See <<c3.8,3.8 Horizontal space>>.
+See [3.8 Horizontal space](#c3.8).
 
 In Kotlin, compared to Java, you can put several classes inside one file, so each class should have a Kdoc formatted comment (as stated in rule 2.1).
 This comment should contain @since tag. The right style is to write the application version when its functionality is released. It should be entered after the `@since` tag.
@@ -156,11 +156,9 @@ This comment should contain @since tag. The right style is to write the applicat
  *
  * @since 1.6
  */
-
 ```
 
 Other KDoc tags (such as @param type parameters and @see.) can be added as follows:
-
 ```kotlin
 /**
  * Description of functionality
@@ -174,6 +172,7 @@ Other KDoc tags (such as @param type parameters and @see.) can be added as follo
 ### <a name="c2.2"></a> 2.2 Adding comments on the file header
 
 This section describes the general rules of adding comments on the file header.
+Comments on the file header should be placed before the package name and imports. If you need to add more content to the comment, subsequently add it in the same format.
 
 Comments on the file header must include copyright information, without the creation date and author's name (use VCS for history management). Also, describe the content inside files that contain multiple or no classes.
 
@@ -183,16 +182,16 @@ The following examples for Huawei describe the format of the *copyright license*
 Chinese version: `版权所有 (c) 华为技术有限公司 2012-2020` \
 English version: `Copyright (c) Huawei Technologies Co., Ltd. 2012-2020. All rights reserved.`
 
-Regarding the *release notes*, see examples below:
+Regarding the **release notes**, see examples below:
 
-* `2012-2020` can be modified according to your actual situation. `2012` and `2020` are the years the file was first created and last modified, respectively.
+- `2012-2020` can be modified according to your actual situation. `2012` and `2020` are the years the file was first created and last modified, respectively.
 These two years can be the same (for example, `2020–2020`). When the file is substantially changed (for example, through feature extensions and major refactorings), the subsequent years must be updated.
 
-* The *copyright statement* can use your company's subsidiaries, as shown in the below examples: \
+- The **copyright statement** can use your company's subsidiaries, as shown in the below examples: \
 Chinese version: `版权所有 (c) 海思半导体 2012-2020` \
 English version: `Copyright (c) Hisilicon Technologies Co., Ltd. 2012-2020. All rights reserved.` 
 
-* The copyright information should not be written in KDoc style or use single-line comments. It must start from the beginning of the file.
+- The copyright information should not be written in KDoc style or use single-line comments. It must start from the beginning of the file.
 The following example is a copyright statement for Huawei, without other functional comments:
 
 ```kotlin
@@ -203,7 +202,7 @@ The following example is a copyright statement for Huawei, without other functio
 
 The following factors should be considered when writing the file header or comments for top-level classes:
 - File header comments must start from the top of the file. If it is a top-level file comment, there should be a blank line after the last Kdoc `*/` symbol. If it is a comment for a top-level class, the class declaration should start immediately without using a newline.
-- Maintain a unified format. The specific format can be formulated by the project (for example, if you use an existing opensource project), and you need to follow it.
+- Maintain a unified format. The specific format can be formulated by the project (for example, if you use existing opensource project), and you need to follow it.
 - A top-level file-Kdoc must include a copyright and functional description, especially if there is more than one top-level class.
 - Do not include empty comment blocks. If there is no content after the option `@apiNote`, the entire tag block should be deleted.
 - The industry practice is not to include historical information in the comments. The corresponding history can be found in VCS (git, svn, etc.). Therefore, it is not recommended to include historical data in the comments of the Kotlin source code.
@@ -224,10 +223,9 @@ This section describes the general rules of adding code comments.
 #### <a name="r2.4.1"></a> 2.4.1 Add a blank line between the body of the comment and Kdoc tag-blocks.
 
 It is a good practice to add a blank line between the body of the comment and Kdoc tag-blocks. Also, consider the following rules:
-
-1. There must be one space between the comment character and the content of the comment.
-2. There must be a newline between a Kdoc and presiding code.
-3. An empty line should not exist between a Kdoc and the code it is describing. You do not need to add a blank line before the first comment in a particular namespace (code block) (for example, between the function declaration and first comment in a function body).
+- There must be one space between the comment character and the content of the comment
+- There must be a newline between a Kdoc and the pressiding code
+- An empty line should not exist between a Kdoc and the code it is describing. You do not need to add a blank line before the first comment in a particular name space (code block) (for example, between the function declaration and first comment in a function body).
 
 **Valid Examples:**
 
@@ -269,7 +267,7 @@ It is a good practice to add a blank line between the body of the comment and Kd
  }
 ```
 
-4. Leave one single space between the comment on the right side of the code and the code.
+- Leave one single space between the comment on the right side of the code and the code. 
 If you use conditional comments in the `if-else-if` scenario, put the comments inside the `else-if` branch or in the conditional block, but not before the `else-if`. This makes the code more understandable.
 When the if-block is used with curly braces, the comment should be placed on the next line after opening the curly braces.
 Compared to Java, the `if` statement in Kotlin statements returns a value. For this reason, a comment block can describe a whole `if-statement`.
@@ -299,7 +297,7 @@ val someVal = if (nr % 15 == 0) {
 }
 ```
 
-5. Start all comments (including KDoc) with space after the first symbol (`//`, `/*`, `/**` and `*`)
+- Start all comments (including KDoc) with a space after the first symbol (`//`, `/*`, `/**` and `*`)
 
 **Valid example:**
 

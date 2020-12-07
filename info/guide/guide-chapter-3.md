@@ -23,7 +23,7 @@ b) Each of the preceding code blocks should be separated by a blank line.
 
 c) Import statements are alphabetically arranged, without using line breaks and wildcards ( wildcard imports - `*`). 
 
-d) **Recommendation**. One `.kt` source file should contain only one class declaration, and its name should match the filename
+d) **Recommendation**: One `.kt` source file should contain only one class declaration, and its name should match the filename
 
 e) Avoid empty files that do not contain the code or contain only imports/comments/package name
 
@@ -472,7 +472,7 @@ fun baz() {
 <!-- =============================================================================== -->
 ### <a name="c3.8"></a> 3.8 Horizontal space
 This section describes general rules and recommendations for using spaces in the code.
-#### <a name="s3.8.1"></a> Rule 3.8.1: Separate keywords like `if`, `when`, `for`, e.t.c. from the opening parenthesis with single whitespace.
+#### <a name="s3.8.1"></a> 3.8.1: Usage of whitespace for code separation
 
 Follow the rules below for using space to separate keywords:
 
@@ -651,7 +651,7 @@ Each `when` statement should contain an `else` statement group, even if it does 
 The compiler can issue a warning when it is missing.
 
 <!-- =============================================================================== -->
-### <a name="c3.12"></a> 3.12 Using annotations
+### <a name="c3.12"></a> 3.12 Annotations
 
 Each annotation applied to a class, method, or constructor should be placed on its own line. Consider the following examples:
 1. Annotations applied to the class, method, or constructor are placed on separate lines (one annotation per line). 

@@ -47,7 +47,7 @@ This will help the reader switch between contexts.
 
 #### <a name="r5.1.3"></a> Rule 5.1.3 Avoid using nested functions
 Nested functions create a more complex function context, thereby confusing readers.
-With nested functions, the visibility context may not be evident to the code reader.
+With nested functions the visibility context may not be evident to the code reader.
 
 **Invalid example**:
 ```kotlin
