@@ -28,6 +28,5 @@ class DiktatMavenPluginIntegrationTest {
         Assertions.assertTrue(
             mavenLog.contains("[HEADER_MISSING_OR_WRONG_COPYRIGHT]")
         )
-
     }
 }
