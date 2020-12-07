@@ -415,14 +415,15 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
             """
                     |/**
                     | * @property Name text
+                    | * @property
                     | */
                     |class Example (
                     |   val name: String, 
                     |   ) {
                     |}
                 """.trimMargin(),
-            LintError(1, 1, ruleId, "${KDOC_EXTRA_PROPERTY.warnText()} Name", false),
-            LintError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} add <name> to KDoc", true)
+            LintError(2, 4, ruleId, "${KDOC_EXTRA_PROPERTY.warnText()} @property Name text", false),
+            LintError(6, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} add <name> to KDoc", true)
         )
     }
 
@@ -457,7 +458,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |   ) {
                     |}
                 """.trimMargin(),
-            LintError(1, 1, ruleId, "${KDOC_EXTRA_PROPERTY.warnText()} kek", false)
+            LintError(3, 4, ruleId, "${KDOC_EXTRA_PROPERTY.warnText()} @property kek", false)
         )
     }
 }

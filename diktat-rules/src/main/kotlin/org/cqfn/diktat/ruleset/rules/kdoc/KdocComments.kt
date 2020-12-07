@@ -9,20 +9,6 @@ import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CONSTRUCTOR_PROPERTY
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_CLASS_ELEMENTS
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_TOP_LEVEL
-import org.cqfn.diktat.ruleset.utils.KotlinParser
-import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
-import org.cqfn.diktat.ruleset.utils.getFileName
-import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
-import org.cqfn.diktat.ruleset.utils.getIdentifierName
-import org.cqfn.diktat.ruleset.utils.getRootNode
-import org.cqfn.diktat.ruleset.utils.hasChildOfType
-import org.cqfn.diktat.ruleset.utils.hasTestAnnotation
-import org.cqfn.diktat.ruleset.utils.isAccessibleOutside
-import org.cqfn.diktat.ruleset.utils.isLocatedInTest
-import org.cqfn.diktat.ruleset.utils.isOverridden
-import org.cqfn.diktat.ruleset.utils.isStandardMethod
-import org.cqfn.diktat.ruleset.utils.kDocTags
-import org.cqfn.diktat.ruleset.utils.splitPathToDirs
 
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
@@ -44,6 +30,7 @@ import com.pinterest.ktlint.core.ast.ElementType.VAL_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.VAR_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.parent
+import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -97,14 +84,12 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
         val propertiesInKdoc = kdocBeforeClass
             .kDocTags()
             ?.filter { it.knownTag == KDocKnownTag.PROPERTY}
-            ?.mapNotNull {it.getSubjectName()}
         val propertyNames = (node.psi as KtParameterList)
             .parameters
             .mapNotNull { it.nameIdentifier?.text }
-        propertiesInKdoc?.let { kdocProperties ->
-            kdocProperties
-                .filterNot { it in propertyNames }
-                .forEach { KDOC_EXTRA_PROPERTY.warn(configRules, emitWarn, isFixMode, it, kdocBeforeClass.startOffset, node) }
+        propertiesInKdoc
+                ?.filterNot { it.getSubjectName() == null || it.getSubjectName() in propertyNames }
+                ?.forEach { KDOC_EXTRA_PROPERTY.warn(configRules, emitWarn, isFixMode, it.text, it.node.startOffset, node)
         }
     }
 
