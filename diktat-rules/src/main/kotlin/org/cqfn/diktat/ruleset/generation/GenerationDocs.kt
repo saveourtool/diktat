@@ -35,7 +35,8 @@ private fun generateCodeStyle() {
         writer.writeln("\\lstMakeShortInline[basicstyle=\\ttfamily\\bfseries]`")
         while (iterator.hasNext()) {
             var line = iterator.next()
-            if (line.contains("<!--")) { // for now there are no multiline comments in our doc
+            if (line.contains("<!--")) {
+                // for now there are no multiline comments in our doc
                 continue
             }
             if (line.startsWith("#")) {
@@ -120,10 +121,12 @@ private fun generateCodeStyle() {
     File("wp/sections/appendix.tex").writeText(appendixFileLines.joinToString(separator = "\n"))
 }
 
+@Suppress("FILE_NAME_MATCH_CLASS")
 enum class FindType {
     BACKTICKS,
     BOLD,
-    ITALIC;
+    ITALIC,
+    ;
 }
 
 @Suppress("WRONG_INDENTATION")
