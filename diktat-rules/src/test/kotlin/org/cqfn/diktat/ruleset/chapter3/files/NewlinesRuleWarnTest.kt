@@ -235,7 +235,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
 
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
-    fun `chained calls should follow functional style - should not trigger on single dot calls but not with prefix`() {
+    fun `chained calls should follow functional style - should not trigger on single dot calls`() {
         lintMethod(
             """
                     |fun foo(bar: Bar?) {
@@ -718,7 +718,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
 
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
-    fun `should warn dot qualified with save access`() {
+    fun `should warn dot qualified with safe access`() {
         lintMethod(
             """
                 |fun foo() {
