@@ -108,13 +108,15 @@ class CompactInitialization(private val configRules: List<RulesConfig>) : Rule("
                             bodyExpression.addChild(it.clone() as ASTNode, null)
                             it.treeParent.removeChild(it)
                         }
-                    // strip receiver name and move assignment itself into `apply`
+                    // Code above breaks a tree a little bit, so need this hack to recover it
+                    // Code above adds whiteSpace node to block, but it should be in functional literal after LBRACE
                     if (bodyExpression.treeParent.elementType == FUNCTION_LITERAL
                             && bodyExpression.firstChildNode.elementType == WHITE_SPACE) {
                         bodyExpression.treeParent.addChild(bodyExpression.firstChildNode.copyElement(),
                                 bodyExpression.treeParent.firstChildNode.treeNext)
                         bodyExpression.removeChild(bodyExpression.firstChildNode)
                     }
+                    // strip receiver name and move assignment itself into `apply`
                     bodyExpression.addChild(kotlinParser.createNode(assignment.text.substringAfter('.')), null)
                     assignment.node.run { treeParent.removeChild(this) }
                 }
