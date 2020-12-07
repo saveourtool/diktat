@@ -435,7 +435,6 @@ fun ASTNode?.isAccessibleOutside(): Boolean =
  * @param warningName a name of the warning which is checked
  * @return boolean result
  */
-@Suppress("WRONG_NEWLINES")
 fun ASTNode.hasSuppress(warningName: String) = parent({ node ->
     val annotationNode = if (node.elementType != FILE) {
         node.findChildByType(MODIFIER_LIST)
@@ -692,10 +691,7 @@ fun ASTNode.lastLineNumber() = getLineNumber() + text.count { it == '\n' }
 /**
  * copy-pasted method from ktlint to determine line and column number by offset
  */
-@Suppress("WRONG_NEWLINES")  // to keep this function with explicit return type
-fun ASTNode.calculateLineColByOffset(): (offset: Int) -> Pair<Int, Int> {
-    return buildPositionInTextLocator(text)
-}
+fun ASTNode.calculateLineColByOffset() = buildPositionInTextLocator(text)
 
 /**
  * Retrieves file name from user data of this node

@@ -21,7 +21,6 @@ class VariablesWithAssignmentSearch(fileNode: ASTNode,
      * @param property
      * @return
      */
-    @Suppress("WRONG_NEWLINES")
     override fun KtElement.getAllSearchResults(property: KtProperty) = this.node
         .findAllNodesWithSpecificType(ElementType.BINARY_EXPRESSION)
         // filtering out all usages that are declared in the same context but are going before the variable declaration
