@@ -36,7 +36,7 @@ jobs:
       - name: Run diKTat from cli
         continue-on-error: true
         run: |
-          ./ktlint --disabled_rules=standard -R diktat-$DIKTAT_VERSION.jar "examples/maven/src/main/kotlin/Test.kt" &> out
+          ./ktlint --debug --disabled_rules=standard -R diktat-$DIKTAT_VERSION.jar "examples/maven/src/main/kotlin/Test.kt" &> out
 
       - name: Check output
         id: cli-check
