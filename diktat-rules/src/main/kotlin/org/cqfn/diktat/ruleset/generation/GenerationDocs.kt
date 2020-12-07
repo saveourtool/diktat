@@ -1,3 +1,4 @@
+@file:Suppress("FILE_NAME_MATCH_CLASS")
 package org.cqfn.diktat.ruleset.generation
 
 import org.cqfn.diktat.ruleset.utils.A4_PAPER_WIDTH
@@ -121,7 +122,9 @@ private fun generateCodeStyle() {
     File("wp/sections/appendix.tex").writeText(appendixFileLines.joinToString(separator = "\n"))
 }
 
-@Suppress("FILE_NAME_MATCH_CLASS")
+/**
+ * Type of text in markdown to be written in latex
+ */
 enum class FindType {
     BACKTICKS,
     BOLD,
