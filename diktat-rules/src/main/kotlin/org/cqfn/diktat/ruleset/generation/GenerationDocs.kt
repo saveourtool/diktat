@@ -22,7 +22,9 @@ fun main() {
         "LoopWithTooManyJumpStatements",
         "LongMethod",
         "ComplexMethod",
-        "NestedBlockDepth")
+        "NestedBlockDepth",
+        "WRONG_INDENTATION",
+        "TOO_LONG_FUNCTION")
 private fun generateCodeStyle() {
     val file = File("info/guide/diktat-coding-convention.md")
     val tempFile = File("info/guide/convention.tex")
@@ -33,20 +35,23 @@ private fun generateCodeStyle() {
         writer.writeln("\\lstMakeShortInline[basicstyle=\\ttfamily\\bfseries]`")
         while (iterator.hasNext()) {
             var line = iterator.next()
-            if (line.contains("<!--")) //  for now there are no multiline comments in our doc
+            if (line.contains("<!--")) { // for now there are no multiline comments in our doc
                 continue
+            }
             if (line.startsWith("#")) {
                 val number = NUMBER_IN_TAG
                         .find(line)
                         ?.value
-                        ?.trim('"')?.substring(1)
+                        ?.trim('"')
+                        ?.substring(1)
                 val name = RULE_NAME
                         .find(line)
                         ?.value
                         ?.removePrefix("</a>")
                         ?.trim()
-                if (name.isNullOrEmpty() || number.isNullOrEmpty())
+                if (name.isNullOrEmpty() || number.isNullOrEmpty()) {
                     error("String starts with # but has no number or name - $line")
+                }
                 when (number.count { it == '.' }) {
                     0 -> writer.writeln("""\section*{\textbf{$name}}""")
                     1 -> writer.writeln("""\subsection*{\textbf{$name}}""")
@@ -118,10 +123,13 @@ private fun generateCodeStyle() {
 enum class FindType {
     BACKTICKS,
     BOLD,
-    ITALIC,
+    ITALIC;
 }
 
-private fun findBoldOrItalicText(regex: Regex, line: String, type: FindType): String {
+@Suppress("WRONG_INDENTATION")
+private fun findBoldOrItalicText(regex: Regex,
+                                 line: String,
+                                 type: FindType): String {
     val allRegex = regex
             .findAll(line)
             .map { it.value }
