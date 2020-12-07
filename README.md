@@ -51,7 +51,7 @@ Main features of diktat are the following:
 
    **OR** use curl:
     ```bash
-    curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.39.0/ktlint && chmod a+x ktlint
+    curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.40.0/ktlint && chmod a+x ktlint
     # another option is "brew install ktlint"
     ```
    
@@ -64,7 +64,7 @@ Main features of diktat are the following:
    
 3. Finally, run KTlint (with diKTat injected) to check your `*.kt` files in `dir/your/dir`:
    ```bash
-   $ ./ktlint -R diktat.jar "dir/your/dir/**/*.kt"
+   $ ./ktlint --disabled_rules=standard -R diktat.jar "dir/your/dir/**/*.kt"
    ```
 
 To **autofix** all code style violations use `-F` option.

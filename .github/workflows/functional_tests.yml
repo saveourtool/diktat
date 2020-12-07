@@ -8,7 +8,7 @@ on:
 
 env:
   DIKTAT_VERSION: 0.1.5
-  KTLINT_VERSION: 0.39.0
+  KTLINT_VERSION: 0.40.0
   GRADLE_OPTS: -Dorg.gradle.daemon=false  # to speed up gradle run
 
 jobs:
@@ -36,7 +36,7 @@ jobs:
       - name: Run diKTat from cli
         continue-on-error: true
         run: |
-          ./ktlint -R diktat-$DIKTAT_VERSION.jar "examples/maven/src/main/kotlin/Test.kt" &> out
+          ./ktlint --disabled_rules=standard -R diktat-$DIKTAT_VERSION.jar "examples/maven/src/main/kotlin/Test.kt" &> out
 
       - name: Check output
         id: cli-check
