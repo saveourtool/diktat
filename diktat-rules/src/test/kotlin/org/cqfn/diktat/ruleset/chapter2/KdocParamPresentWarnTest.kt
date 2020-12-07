@@ -103,7 +103,6 @@ class KdocParamPresentWarnTest : LintTestBase(::KdocMethods) {
                     |* @param a - qwe
                     |*/
                 """.trimMargin(),
-            LintError(1, 1, ruleId, "${KDOC_WITHOUT_PARAM_TAG.warnText()} foo (b, a)", true),
             LintError(1, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} foo", true)
         )
     }

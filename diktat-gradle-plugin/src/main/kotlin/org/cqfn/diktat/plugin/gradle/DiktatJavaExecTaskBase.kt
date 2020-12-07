@@ -31,6 +31,9 @@ open class DiktatJavaExecTaskBase @Inject constructor(
     @get:Internal
     internal val ignoreFailuresProp: Property<Boolean> = project.objects.property(Boolean::class.javaObjectType)
 
+    /**
+     * Whether diktat should be executed via JavaExec or not.
+     */
     @get:Internal
     internal var shouldRun = true
 
@@ -51,7 +54,8 @@ open class DiktatJavaExecTaskBase @Inject constructor(
             if (diktatExtension.debug) {
                 add("--debug")
             }
-            diktatExtension.inputs
+            diktatExtension
+                .inputs
                 .also {
                     if (it.isEmpty) {
                         /*
