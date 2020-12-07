@@ -1,7 +1,9 @@
 package org.cqfn.diktat.ruleset.rules.classes
 
 import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_LITERAL
+import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isPartOfComment
 import org.cqfn.diktat.common.config.rules.RulesConfig
@@ -18,7 +20,6 @@ import org.jetbrains.kotlin.psi.KtCallableReferenceExpression
 import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
 import org.jetbrains.kotlin.psi.KtNameReferenceExpression
 import org.jetbrains.kotlin.psi.KtProperty
-import org.jetbrains.kotlin.psi.psiUtil.isFunctionalExpression
 import org.jetbrains.kotlin.psi.psiUtil.siblings
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
 
@@ -104,18 +105,15 @@ class CompactInitialization(private val configRules: List<RulesConfig>) : Rule("
                         .takeWhile { it != property.node }
                         .toList()
                         .reversed()
-                        .forEach {
-                            bodyExpression.addChild(it.clone() as ASTNode, null)
+                        .forEachIndexed { index, it ->
+                            // adds whiteSpace to functional literal if previous of bodyExpression is LBRACE
+                            if (index == 0 && bodyExpression.treePrev.elementType == LBRACE && it.elementType == WHITE_SPACE) {
+                                bodyExpression.treeParent.addChild(it.clone() as ASTNode, bodyExpression)
+                            } else {
+                                bodyExpression.addChild(it.clone() as ASTNode, null)
+                            }
                             it.treeParent.removeChild(it)
                         }
-                    // Code above breaks a tree a little bit, so need this hack to recover it
-                    // Code above adds whiteSpace node to block, but it should be in functional literal after LBRACE
-                    if (bodyExpression.treeParent.elementType == FUNCTION_LITERAL
-                            && bodyExpression.firstChildNode.elementType == WHITE_SPACE) {
-                        bodyExpression.treeParent.addChild(bodyExpression.firstChildNode.copyElement(),
-                                bodyExpression.treeParent.firstChildNode.treeNext)
-                        bodyExpression.removeChild(bodyExpression.firstChildNode)
-                    }
                     // strip receiver name and move assignment itself into `apply`
                     bodyExpression.addChild(kotlinParser.createNode(assignment.text.substringAfter('.')), null)
                     assignment.node.run { treeParent.removeChild(this) }
