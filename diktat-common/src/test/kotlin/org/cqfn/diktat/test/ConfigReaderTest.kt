@@ -8,11 +8,11 @@ class ConfigReaderTest {
     @Test
     fun `testing json reading`() {
         val rulesConfigList: List<RulesConfig>? = RulesConfigReader(javaClass.classLoader)
-                .readResource("src/test/resources/test-rules-config.yml")
-        require(rulesConfigList != null)
+            .readResource("src/test/resources/test-rules-config.yml")
+        requireNotNull(rulesConfigList)
         assert(rulesConfigList.any { it.name == "CLASS_NAME_INCORRECT" && it.enabled })
         assert(rulesConfigList.find { it.name == "CLASS_NAME_INCORRECT" }?.configuration == mapOf<String, String>())
         assert(rulesConfigList.find { it.name == "DIKTAT_COMMON" }
-                ?.configuration == mapOf("domainName" to "org.cqfn.diktat"))
+            ?.configuration == mapOf("domainName" to "org.cqfn.diktat"))
     }
 }

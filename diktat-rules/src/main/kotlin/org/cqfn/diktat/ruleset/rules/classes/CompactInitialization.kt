@@ -41,7 +41,8 @@ class CompactInitialization(private val configRules: List<RulesConfig>) : Rule("
         emitWarn = emit
         isFixMode = autoCorrect
 
-        node.psi
+        node
+            .psi
             .let { it as? KtProperty }
             ?.takeIf { it.hasInitializer() }
             ?.let(::handleProperty)
@@ -62,7 +63,7 @@ class CompactInitialization(private val configRules: List<RulesConfig>) : Rule("
                     it is KtBinaryExpression && (it.left as? KtDotQualifiedExpression)?.run {
                         (receiverExpression as? KtNameReferenceExpression)?.getReferencedName() == propertyName
                     }
-                            ?: false
+                        ?: false
                 }
                 .map {
                     // collect as an assignment associated with assigned field name
@@ -97,7 +98,9 @@ class CompactInitialization(private val configRules: List<RulesConfig>) : Rule("
                         .bodyExpression!!
                         .node
                     // move comments and empty lines before `assignment` into `apply`
-                    assignment.node.siblings(forward = false)
+                    assignment
+                        .node
+                        .siblings(forward = false)
                         .takeWhile { it != property.node }
                         .toList()
                         .reversed()
@@ -119,15 +122,18 @@ class CompactInitialization(private val configRules: List<RulesConfig>) : Rule("
     }
 
     @Suppress("UnsafeCallOnNullableType")
-    private fun getOrCreateApplyBlock(property: KtProperty): KtCallExpression = (property.initializer as? KtDotQualifiedExpression)?.selectorExpression
-        ?.let { it as? KtCallExpression }?.takeIf { it.getFunctionName() == "apply" } ?: run {
-        // add apply block
-        property.node.run {
-            val newInitializerNode = kotlinParser.createNode("${property.initializer!!.text}.apply {}")
-            replaceChild(property.initializer!!.node, newInitializerNode)
+    private fun getOrCreateApplyBlock(property: KtProperty): KtCallExpression = (property.initializer as? KtDotQualifiedExpression)
+        ?.selectorExpression
+        ?.let { it as? KtCallExpression }
+        ?.takeIf { it.getFunctionName() == "apply" }
+        ?: run {
+            // add apply block
+            property.node.run {
+                val newInitializerNode = kotlinParser.createNode("${property.initializer!!.text}.apply {}")
+                replaceChild(property.initializer!!.node, newInitializerNode)
+            }
+            (property.initializer as KtDotQualifiedExpression).selectorExpression!! as KtCallExpression
         }
-        (property.initializer as KtDotQualifiedExpression).selectorExpression!! as KtCallExpression
-    }
 
     /**
      * convert `apply(::foo)` to `apply { foo(this) }` if necessary
@@ -140,22 +146,24 @@ class CompactInitialization(private val configRules: List<RulesConfig>) : Rule("
                 ?.getArgumentExpression()
                 ?.let { it as? KtCallableReferenceExpression }
                 ?.callableReference
-            if (referenceExpression == null) {
-                // valid code should always have apply with either lambdaArguments or valueArguments
-                log.warn("apply with unexpected parameters: ${applyExpression.text}")
-            } else {
+            referenceExpression?.let {
                 applyExpression.node.run {
                     treeParent.replaceChild(
                         this,
                         kotlinParser.createNode(
                             """
-                            |apply {
-                            |    ${referenceExpression.getReferencedName()}(this)
-                            |}""".trimMargin()
+                                |apply {
+                                |    ${referenceExpression.getReferencedName()}(this)
+                                |}
+                            """.trimMargin()
                         )
                     )
                 }
             }
+                ?: run {
+                    // valid code should always have apply with either lambdaArguments or valueArguments
+                    log.warn("apply with unexpected parameters: ${applyExpression.text}")
+                }
         }
     }
 }

@@ -19,9 +19,12 @@
 
     <dependencies>
         <dependency>
+            <!-- kotlinpoet is needed only during build, but maven doesn't have such scope. -->
+            <!-- If we ever move to gradle, it should be moved into a separate task. -->
+            <!-- Also, we can't move it to test scope now, because Generation.kt has to be compiled before tests are compiled -->
             <groupId>com.squareup</groupId>
             <artifactId>kotlinpoet</artifactId>
-            <scope>compile</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.cqfn.diktat</groupId>
@@ -107,7 +110,8 @@
                         </goals>
                         <configuration>
                             <sourceDirs>
-                                <source>src/test/kotlin</source>
+                                <source>${project.basedir}/src/main/kotlin</source>
+                                <source>${project.basedir}/src/test/kotlin</source>
                             </sourceDirs>
                         </configuration>
                     </execution>

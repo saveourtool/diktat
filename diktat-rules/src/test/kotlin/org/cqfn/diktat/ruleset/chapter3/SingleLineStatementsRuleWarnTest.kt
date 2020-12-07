@@ -1,24 +1,23 @@
 package org.cqfn.diktat.ruleset.chapter3
 
-import com.pinterest.ktlint.core.LintError
-import generated.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings.MORE_THAN_ONE_STATEMENT_PER_LINE
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.SingleLineStatementsRule
 import org.cqfn.diktat.util.LintTestBase
+
+import com.pinterest.ktlint.core.LintError
+import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class SingleLineStatementsRuleWarnTest : LintTestBase(::SingleLineStatementsRule) {
-
     private val ruleId = "$DIKTAT_RULE_SET_ID:statement"
-
 
     @Test
     @Tag(WarningNames.MORE_THAN_ONE_STATEMENT_PER_LINE)
     fun `check two statement per line`() {
         lintMethod(
-                """
+            """
                     |import com.pinterest.ktlint.core.KtLint; import com.pinterest.ktlint.core.LintError
                     |
                     |fun foo() {
@@ -36,10 +35,10 @@ class SingleLineStatementsRuleWarnTest : LintTestBase(::SingleLineStatementsRule
                     |    println(1); println(1)
                     |}
                 """.trimMargin(),
-                LintError(1,40,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} import com.pinterest.ktlint.core.KtLint; import com.pinterest.ktlint.core.LintError", true),
-                LintError(5,13,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} goo(); hoo()", true),
-                LintError(14,14,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} val a = 5; val b = 10", true),
-                LintError(15,15,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} println(1); println(1)", true)
+            LintError(1, 40, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} import com.pinterest.ktlint.core.KtLint; import com.pinterest.ktlint.core.LintError", true),
+            LintError(5, 13, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} goo(); hoo()", true),
+            LintError(14, 14, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} val a = 5; val b = 10", true),
+            LintError(15, 15, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} println(1); println(1)", true)
         )
     }
 
@@ -47,14 +46,14 @@ class SingleLineStatementsRuleWarnTest : LintTestBase(::SingleLineStatementsRule
     @Tag(WarningNames.MORE_THAN_ONE_STATEMENT_PER_LINE)
     fun `check two statement in one line without space`() {
         lintMethod(
-                """
+            """
                     |fun foo() {
                     |    val a = 5;val b = 10
                     |    println(1);println(1)
                     |}
                 """.trimMargin(),
-                LintError(2,14,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} val a = 5;val b = 10", true),
-                LintError(3,15,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} println(1);println(1)", true)
+            LintError(2, 14, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} val a = 5;val b = 10", true),
+            LintError(3, 15, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} println(1);println(1)", true)
         )
     }
 
@@ -62,14 +61,14 @@ class SingleLineStatementsRuleWarnTest : LintTestBase(::SingleLineStatementsRule
     @Tag(WarningNames.MORE_THAN_ONE_STATEMENT_PER_LINE)
     fun `check if expression with semicolon and else block in one line`() {
         lintMethod(
-                """
+            """
                     |fun foo() {
                     |   if (x > 0){
                     |       goo()
                     |   }; else { print(123) }
                     |}
                 """.trimMargin(),
-                LintError(4,5,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} }; else { print(123) }", true)
+            LintError(4, 5, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} }; else { print(123) }", true)
         )
     }
 
@@ -77,7 +76,7 @@ class SingleLineStatementsRuleWarnTest : LintTestBase(::SingleLineStatementsRule
     @Tag(WarningNames.MORE_THAN_ONE_STATEMENT_PER_LINE)
     fun `check correct test without more than one statement`() {
         lintMethod(
-                """
+            """
                     |import com.pinterest.ktlint.core.KtLint
                     |
                     |fun foo() {
@@ -102,7 +101,7 @@ class SingleLineStatementsRuleWarnTest : LintTestBase(::SingleLineStatementsRule
     @Tag(WarningNames.MORE_THAN_ONE_STATEMENT_PER_LINE)
     fun `check semicolon with enum class expression`() {
         lintMethod(
-                """
+            """
                     |enum class ProtocolState {
                     |   WAITING {
                     |       override fun signal() = TALKING
@@ -112,7 +111,7 @@ class SingleLineStatementsRuleWarnTest : LintTestBase(::SingleLineStatementsRule
                     |   }; abstract fun signal(): ProtocolState
                     |}
                 """.trimMargin(),
-                LintError(7,5,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} }; abstract fun signal(): ProtocolState", true)
+            LintError(7, 5, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} }; abstract fun signal(): ProtocolState", true)
         )
     }
 
@@ -120,7 +119,7 @@ class SingleLineStatementsRuleWarnTest : LintTestBase(::SingleLineStatementsRule
     @Tag(WarningNames.MORE_THAN_ONE_STATEMENT_PER_LINE)
     fun `check if expression with two wrong semincolon`() {
         lintMethod(
-                """
+            """
                     |fun foo() {
                     |   if(x > 0) {
                     |       if ( y> 0){
@@ -129,8 +128,8 @@ class SingleLineStatementsRuleWarnTest : LintTestBase(::SingleLineStatementsRule
                     |   }; gr()
                     |}
                 """.trimMargin(),
-                LintError(5,9,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} }; gt()", true),
-                LintError(6,5,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} }; gr()", true)
+            LintError(5, 9, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} }; gt()", true),
+            LintError(6, 5, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} }; gr()", true)
         )
     }
 
@@ -138,12 +137,12 @@ class SingleLineStatementsRuleWarnTest : LintTestBase(::SingleLineStatementsRule
     @Tag(WarningNames.MORE_THAN_ONE_STATEMENT_PER_LINE)
     fun `check semicolon in the beginning of the line`() {
         lintMethod(
-                """
+            """
                     |fun foo() {
                     |   ; grr()
                     |}
                 """.trimMargin(),
-                LintError(2,4,ruleId,"${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} ; grr()", true)
+            LintError(2, 4, ruleId, "${MORE_THAN_ONE_STATEMENT_PER_LINE.warnText()} ; grr()", true)
         )
     }
 }

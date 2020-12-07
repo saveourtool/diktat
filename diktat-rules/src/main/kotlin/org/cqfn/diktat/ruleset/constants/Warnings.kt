@@ -8,23 +8,32 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 typealias EmitType = ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
 
+typealias ListOfList = MutableList<MutableList<ASTNode>>
+
 /**
  * This class represent individual inspections of diktat code style.
  * A [Warnings] entry contains rule name, warning message and is used in code check.
+ * @property canBeAutoCorrected whether this inspection can automatically fix the code
+ * @property ruleId number of the inspection according to []diktat code style](https://www.cqfn.org/diKTat/info/guide/diktat-coding-convention.html)
  */
 @Suppress("ForbiddenComment", "MagicNumber", "WRONG_DECLARATIONS_ORDER", "MaxLineLength")
-enum class Warnings(val canBeAutoCorrected: Boolean, val ruleId: String, private val warn: String) : Rule {
+enum class Warnings(
+    val canBeAutoCorrected: Boolean,
+    val ruleId: String,
+    private val warn: String) : Rule {
     // ======== chapter 1 ========
     PACKAGE_NAME_MISSING(true, "1.2.1", "no package name declared in a file"),
     PACKAGE_NAME_INCORRECT_CASE(true, "1.2.1", "package name should be completely in a lower case"),
     PACKAGE_NAME_INCORRECT_PREFIX(true, "1.2.1", "package name should start from company's domain"),
+
     // FixMe: should add autofix
     PACKAGE_NAME_INCORRECT_SYMBOLS(false, "1.2.1", "package name should contain only latin (ASCII) letters or numbers. For separation of words use dot"),
     PACKAGE_NAME_INCORRECT_PATH(true, "1.2.1", "package name does not match the directory hierarchy for this file, the real package name should be"),
     INCORRECT_PACKAGE_SEPARATOR(true, "1.2.1", "package name parts should be separated only by dots - there should be no other symbols like underscores (_)"),
     CLASS_NAME_INCORRECT(true, "1.3.1", "class/enum/interface name should be in PascalCase and should contain only latin (ASCII) letters or numbers"),
     OBJECT_NAME_INCORRECT(true, "1.3.1", "object structure name should be in PascalCase and should contain only latin (ASCII) letters or numbers"),
-    VARIABLE_NAME_INCORRECT_FORMAT(true, "1.6.1", "variable name should be in lowerCamelCase and should contain only latin (ASCII) letters or numbers and should start from lower letter"),
+    VARIABLE_NAME_INCORRECT_FORMAT(true, "1.6.1",
+        "variable name should be in lowerCamelCase and should contain only latin (ASCII) letters or numbers and should start from lower letter"),
     VARIABLE_NAME_INCORRECT(false, "1.1.1", "variable name should contain more than one letter"),
     CONSTANT_UPPERCASE(true, "1.5.1", "<val> properties from companion object or on file level mostly in all cases are constants - please use upper snake case for them"),
     VARIABLE_HAS_PREFIX(true, "1.1.1", "variable has prefix (like mVariable or M_VARIABLE), generally it is a bad code style (Android - is the only exception)"),
@@ -49,12 +58,14 @@ enum class Warnings(val canBeAutoCorrected: Boolean, val ruleId: String, private
     KDOC_EMPTY_KDOC(false, "2.1.3", "KDoc should never be empty"),
     KDOC_WRONG_SPACES_AFTER_TAG(true, "2.1.3", "there should be exactly one white space after tag name in KDoc"),
     KDOC_WRONG_TAGS_ORDER(true, "2.1.3", "in KDoc standard tags are arranged in order @param, @return, @throws, but are"),
-    KDOC_NEWLINES_BEFORE_BASIC_TAGS(true, "2.1.3", "in KDoc block of standard tags @param, @return, @throws should contain newline before only if there is other content before it"),
+    KDOC_NEWLINES_BEFORE_BASIC_TAGS(true, "2.1.3",
+        "in KDoc block of standard tags @param, @return, @throws should contain newline before only if there is other content before it"),
     KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS(true, "2.1.3", "in KDoc standard tags @param, @return, @throws should not containt newline between them, but these tags do"),
     KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS(true, "2.1.3", "in KDoc there should be exactly one empty line after special tags"),
     KDOC_NO_EMPTY_TAGS(false, "2.2.1", "no empty descriptions in tag blocks are allowed"),
     KDOC_NO_DEPRECATED_TAG(true, "2.1.3", "KDoc doesn't support @deprecated tag, use @Deprecated annotation instead"),
     KDOC_NO_CONSTRUCTOR_PROPERTY(true, "2.1.1", "all properties from the primary constructor should be documented in a @property tag in KDoc"),
+    KDOC_EXTRA_PROPERTY(false, "2.1.1", "There is property in KDoc which is not present in the class"),
     KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT(true, "2.1.1", "replace comment before property with @property tag in class KDoc"),
     HEADER_WRONG_FORMAT(true, "2.2.1", "file header comments should be properly formatted"),
     HEADER_MISSING_OR_WRONG_COPYRIGHT(true, "2.2.1", "file header comment must include copyright information inside a block comment"),
@@ -85,6 +96,7 @@ enum class Warnings(val canBeAutoCorrected: Boolean, val ruleId: String, private
     LONG_LINE(true, "3.5.1", "this line is longer than allowed"),
     REDUNDANT_SEMICOLON(true, "3.6.2", "there should be no redundant semicolon at the end of lines"),
     WRONG_NEWLINES(true, "3.6.2", "incorrect line breaking"),
+
     // FixMe: autofixing will be added for this rule
     STRING_CONCATENATION(false, "3.15.1", "strings should not be concatenated using plus operator - use string templates instead if the statement fits one line"),
     TOO_MANY_BLANK_LINES(true, "3.7.1", "too many consecutive blank lines"),
@@ -107,6 +119,7 @@ enum class Warnings(val canBeAutoCorrected: Boolean, val ruleId: String, private
     SMART_CAST_NEEDED(true, "4.2.1", "you can omit explicit casting"),
     SAY_NO_TO_VAR(false, "4.1.3", "Usage of a mutable variables with [var] modifier - is a bad style, use [val] instead"),
     GENERIC_VARIABLE_WRONG_DECLARATION(true, "4.3.2", "variable should have explicit type declaration"),
+
     // FixMe: change float literal to BigDecimal? Or kotlin equivalent?
     FLOAT_IN_ACCURATE_CALCULATIONS(false, "4.1.1", "floating-point values shouldn't be used in accurate calculations"),
     AVOID_NULL_CHECKS(false, "4.3.3", "Try to avoid explicit null-checks"),
@@ -130,8 +143,9 @@ enum class Warnings(val canBeAutoCorrected: Boolean, val ruleId: String, private
     USELESS_SUPERTYPE(true, "6.1.5", "unnecessary supertype specification"),
     TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED(true, "6.1.10", "trivial property accessors are not recommended"),
     EXTENSION_FUNCTION_SAME_SIGNATURE(false, "6.2.2", "extension functions should not have same signature if their receiver classes are related"),
-    EMPTY_PRIMARY_CONSTRUCTOR(true,"6.1.3", "avoid empty primary constructor"),
-    NO_CORRESPONDING_PROPERTY(false, "6.1.7", "backing property should have the same name, but there is no corresponding property")
+    EMPTY_PRIMARY_CONSTRUCTOR(true, "6.1.3", "avoid empty primary constructor"),
+    NO_CORRESPONDING_PROPERTY(false, "6.1.7", "backing property should have the same name, but there is no corresponding property"),
+    AVOID_USING_UTILITY_CLASS(false, "6.4.1", "avoid using utility classes/objects, use extensions functions"),
     ;
 
     /**
@@ -144,7 +158,17 @@ enum class Warnings(val canBeAutoCorrected: Boolean, val ruleId: String, private
      */
     fun warnText() = "[${ruleName()}] ${this.warn}:"
 
-    @Suppress("LongParameterList")
+    /**
+     * @param configRules list of [RulesConfig]
+     * @param emit function that will be called on warning
+     * @param isFixMode whether autocorrect mode is on
+     * @param freeText text that will be added to the warning message
+     * @param offset offset from the beginning of the file
+     * @param node the [ASTNode] on which the warning was triggered
+     * @param canBeAutoCorrected whether this warning can be autocorrected
+     * @param autoFix function that will be called to autocorrect the warning
+     */
+    @Suppress("LongParameterList", "TOO_MANY_PARAMETERS")
     fun warnAndFix(configRules: List<RulesConfig>,
                    emit: EmitType,
                    isFixMode: Boolean,
@@ -154,10 +178,18 @@ enum class Warnings(val canBeAutoCorrected: Boolean, val ruleId: String, private
                    canBeAutoCorrected: Boolean = this.canBeAutoCorrected,
                    autoFix: () -> Unit) {
         warn(configRules, emit, canBeAutoCorrected, freeText, offset, node)
-        fix(configRules, autoFix, isFixMode, node)
+        fix(configRules, isFixMode, node, autoFix)
     }
 
-    @Suppress("LongParameterList")
+    /**
+     * @param configs list of [RulesConfig]
+     * @param emit function that will be called on warning
+     * @param autoCorrected whether this warning can be autocorrected
+     * @param freeText text that will be added to the warning message
+     * @param offset offset from the beginning of the file
+     * @param node the [ASTNode] on which the warning was triggered
+     */
+    @Suppress("LongParameterList", "TOO_MANY_PARAMETERS")
     fun warn(configs: List<RulesConfig>,
              emit: EmitType,
              autoCorrected: Boolean,
@@ -166,16 +198,20 @@ enum class Warnings(val canBeAutoCorrected: Boolean, val ruleId: String, private
              node: ASTNode) {
         if (configs.isRuleEnabled(this) && !node.hasSuppress(name)) {
             val trimmedFreeText = freeText
-                    .lines()
-                    .run { if (size > 1) "${first()}..." else first() }
+                .lines()
+                .run { if (size > 1) "${first()}..." else first() }
             emit(offset,
-                    "${this.warnText()} $trimmedFreeText",
-                    autoCorrected
+                "${this.warnText()} $trimmedFreeText",
+                autoCorrected
             )
         }
     }
 
-    private inline fun fix(configs: List<RulesConfig>, autoFix: () -> Unit, isFix: Boolean, node: ASTNode) {
+    private inline fun fix(
+        configs: List<RulesConfig>,
+        isFix: Boolean,
+        node: ASTNode,
+        autoFix: () -> Unit) {
         if (configs.isRuleEnabled(this) && isFix && !node.hasSuppress(name)) {
             autoFix()
         }

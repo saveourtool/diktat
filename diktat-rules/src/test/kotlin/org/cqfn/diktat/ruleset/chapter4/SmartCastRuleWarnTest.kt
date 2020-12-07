@@ -1,25 +1,23 @@
 package org.cqfn.diktat.ruleset.chapter4
 
-import com.pinterest.ktlint.core.LintError
-import generated.WarningNames.SMART_CAST_NEEDED
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.SmartCastRule
 import org.cqfn.diktat.util.LintTestBase
+
+import com.pinterest.ktlint.core.LintError
+import generated.WarningNames.SMART_CAST_NEEDED
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
-
-
     private val ruleId = "$DIKTAT_RULE_SET_ID:smart-cast-rule"
-
 
     @Test
     @Tag(SMART_CAST_NEEDED)
     fun `if with is smart cast good`() {
         lintMethod(
-                """
+            """
                     |class Test {
                     |   val x = ""
                     |   fun someFun() {
@@ -36,7 +34,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
     @Tag(SMART_CAST_NEEDED)
     fun `if with is smart cast bad`() {
         lintMethod(
-                """
+            """
                     |class Test {
                     |   val x = ""
                     |   fun someFun() {
@@ -46,7 +44,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |   }
                     |}
                 """.trimMargin(),
-                LintError(5, 21, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as String", true)
+            LintError(5, 21, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as String", true)
         )
     }
 
@@ -54,7 +52,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
     @Tag(SMART_CAST_NEEDED)
     fun `if with another if with is smart cast good`() {
         lintMethod(
-                """
+            """
                     |class Test {
                     |   val x = ""
                     |   fun someFun() {
@@ -74,7 +72,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
     @Tag(SMART_CAST_NEEDED)
     fun `if with another if with is smart cast bad`() {
         lintMethod(
-                """
+            """
                     |class Test {
                     |   val x = ""
                     |   fun someFun() {
@@ -87,7 +85,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |   }
                     |}
                 """.trimMargin(),
-                LintError(7, 25, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as Int", true)
+            LintError(7, 25, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as Int", true)
         )
     }
 
@@ -95,7 +93,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
     @Tag(SMART_CAST_NEEDED)
     fun `smart cast in else good`() {
         lintMethod(
-                """
+            """
                     |class Test {
                     |   val x = ""
                     |   fun someFun() {
@@ -107,7 +105,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |   }
                     |}
                 """.trimMargin(),
-                LintError(7, 21, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as String", true)
+            LintError(7, 21, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as String", true)
         )
     }
 
@@ -115,7 +113,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
     @Tag(SMART_CAST_NEEDED)
     fun `smart cast in if without braces bad`() {
         lintMethod(
-                """
+            """
                     |class Test {
                     |   val x = ""
                     |   fun someFun() {
@@ -124,7 +122,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |   }
                     |}
                 """.trimMargin(),
-                LintError(5, 19, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as String", true)
+            LintError(5, 19, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as String", true)
         )
     }
 
@@ -132,7 +130,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
     @Tag(SMART_CAST_NEEDED)
     fun `smart cast in if without braces good`() {
         lintMethod(
-                """
+            """
                     |class Test {
                     |   val x = ""
                     |   fun someFun() {
@@ -148,7 +146,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
     @Tag(SMART_CAST_NEEDED)
     fun `smart cast in else without braces good`() {
         lintMethod(
-                """
+            """
                     |class Test {
                     |   val x = ""
                     |   fun someFun() {
@@ -160,7 +158,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |   }
                     |}
                 """.trimMargin(),
-                LintError(8, 19, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as String", true)
+            LintError(8, 19, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as String", true)
         )
     }
 
@@ -168,7 +166,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
     @Tag(SMART_CAST_NEEDED)
     fun `smart cast in else nested bad`() {
         lintMethod(
-                """
+            """
                     |class Test {
                     |   val x = ""
                     |   fun someFun() {
@@ -187,17 +185,16 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |   }
                     |}
                 """.trimMargin(),
-                LintError(8, 19, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as String", true),
-                LintError(13, 23, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} a as String", true)
+            LintError(8, 19, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as String", true),
+            LintError(13, 23, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} a as String", true)
         )
     }
-
 
     @Test
     @Tag(SMART_CAST_NEEDED)
     fun `smart cast in when bad`() {
         lintMethod(
-                """
+            """
                     |class Test {
                     |   val x = ""
                     |   fun someFun() {
@@ -209,7 +206,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |   }
                     |}
                 """.trimMargin(),
-                LintError(5, 29, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as Int", true)
+            LintError(5, 29, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as Int", true)
         )
     }
 
@@ -217,7 +214,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
     @Tag(SMART_CAST_NEEDED)
     fun `smart cast in when good`() {
         lintMethod(
-                """
+            """
                     |class Test {
                     |   val x = ""
                     |   fun someFun() {
@@ -231,12 +228,11 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
         )
     }
 
-
     @Test
     @Tag(SMART_CAST_NEEDED)
     fun `if with multiple is good`() {
         lintMethod(
-                """
+            """
                     |class Test {
                     |   val x = ""
                     |   val y = 3
@@ -255,7 +251,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
     @Tag(SMART_CAST_NEEDED)
     fun `if with multiple is bad`() {
         lintMethod(
-                """
+            """
                     |class Test {
                     |   val x = ""
                     |   val y = 3
@@ -267,8 +263,8 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |   }
                     |}
                 """.trimMargin(),
-                LintError(6, 21, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as String",true),
-                LintError(7, 21, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} y as Int", true)
+            LintError(6, 21, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as String", true),
+            LintError(7, 21, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} y as Int", true)
         )
     }
 
@@ -276,7 +272,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
     @Tag(SMART_CAST_NEEDED)
     fun `if with function condition`() {
         lintMethod(
-                """
+            """
                     |class Test {
                     |   val x = ""
                     |   val list = listOf(1,2,3)
@@ -295,7 +291,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
     @Tag(SMART_CAST_NEEDED)
     fun `if with shadowed var good`() {
         lintMethod(
-                """
+            """
                     |class Test {
                     |   val x = ""
                     |   fun someFun() {
@@ -313,7 +309,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
     @Tag(SMART_CAST_NEEDED)
     fun `if with shadowed var bad`() {
         lintMethod(
-                """
+            """
                     |class Test {
                     |   val x = ""
                     |   fun someFun() {
@@ -327,7 +323,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |   }
                     |}
                 """.trimMargin(),
-                LintError(8, 25, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as Int", true)
+            LintError(8, 25, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as Int", true)
         )
     }
 
@@ -335,7 +331,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
     @Tag(SMART_CAST_NEEDED)
     fun `if with shadowed var bad 2`() {
         lintMethod(
-                """
+            """
                     |class Test {
                     |   val x = ""
                     |   fun someFun() {
@@ -346,7 +342,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |   }
                     |}
                 """.trimMargin(),
-                LintError(6, 21, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as Int", true)
+            LintError(6, 21, ruleId, "${Warnings.SMART_CAST_NEEDED.warnText()} x as Int", true)
         )
     }
 }

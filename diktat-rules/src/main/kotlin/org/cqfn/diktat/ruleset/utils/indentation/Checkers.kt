@@ -1,4 +1,11 @@
+/**
+ * Implementations of [CustomIndentationChecker] for [IndentationRule]
+ */
+
 package org.cqfn.diktat.ruleset.utils.indentation
+
+import org.cqfn.diktat.ruleset.rules.files.IndentationError
+import org.cqfn.diktat.ruleset.rules.files.lastIndent
 
 import com.pinterest.ktlint.core.ast.ElementType.ARROW
 import com.pinterest.ktlint.core.ast.ElementType.AS_KEYWORD
@@ -30,8 +37,6 @@ import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.nextCodeSibling
 import com.pinterest.ktlint.core.ast.prevSibling
-import org.cqfn.diktat.ruleset.rules.files.IndentationError
-import org.cqfn.diktat.ruleset.rules.files.lastIndent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
@@ -57,7 +62,7 @@ internal class AssignmentOperatorChecker(configuration: IndentationConfig) : Cus
         val prevNode = whiteSpace.prevSibling?.node
         if (prevNode?.elementType == EQ && prevNode.treeNext.let { it.elementType == WHITE_SPACE && it.textContains('\n') }) {
             return CheckResult.from(indentError.actual, (whiteSpace.parentIndent()
-                    ?: indentError.expected) + (if (configuration.extendedIndentAfterOperators) 2 else 1) * configuration.indentationSize, true)
+                ?: indentError.expected) + (if (configuration.extendedIndentAfterOperators) 2 else 1) * configuration.indentationSize, true)
         }
         return null
     }
@@ -84,31 +89,32 @@ internal class ValueParameterListChecker(configuration: IndentationConfig) : Cus
                     }
 
     @ExperimentalStdlibApi  // to use `scan` on sequence
+    @Suppress("ANNOTATION_NEW_LINE")  // https://github.com/cqfn/diKTat/issues/609
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
         if (isCheckNeeded(whiteSpace)) {
             val parameterList = whiteSpace.parent.node
             // parameters in lambdas are VALUE_PARAMETER_LIST and might have no LPAR: list { elem -> ... }
             val parameterAfterLpar = parameterList
-                    .findChildByType(LPAR)
-                    ?.treeNext
-                    ?.takeIf {
-                        it.elementType != WHITE_SPACE &&
-                                // there can be multiline arguments and in this case we don't align parameters with them
-                                !it.textContains('\n')
-                    }
+                .findChildByType(LPAR)
+                ?.treeNext
+                ?.takeIf {
+                    it.elementType != WHITE_SPACE &&
+                            // there can be multiline arguments and in this case we don't align parameters with them
+                            !it.textContains('\n')
+                }
 
             val expectedIndent = if (parameterAfterLpar != null && configuration.alignedParameters && parameterList.elementType == VALUE_PARAMETER_LIST) {
                 val ktFile = whiteSpace.parents.last() as KtFile
                 // count column number of the first parameter
                 ktFile.text
-                        .lineSequence()
-                        // calculate offset for every line end, `+1` for `\n` which is trimmed in `lineSequence`
-                        .scan(0 to "") { (length, _), s -> length + s.length + 1 to s }
-                        .run {
-                            // find the line where `parameterAfterLpar` resides
-                            find { it.first > parameterAfterLpar.startOffset } ?: last()
-                        }
-                        .let { (_, line) -> line.substringBefore(parameterAfterLpar.text).length }
+                    .lineSequence()
+                    // calculate offset for every line end, `+1` for `\n` which is trimmed in `lineSequence`
+                    .scan(0 to "") { (length, _), line -> length + line.length + 1 to line }
+                    .run {
+                        // find the line where `parameterAfterLpar` resides
+                        find { it.first > parameterAfterLpar.startOffset } ?: last()
+                    }
+                    .let { (_, line) -> line.substringBefore(parameterAfterLpar.text).length }
             } else if (configuration.extendedIndentOfParameters) {
                 indentError.expected + configuration.indentationSize
             } else {
@@ -138,7 +144,7 @@ internal class ExpressionIndentationChecker(configuration: IndentationConfig) : 
 /**
  * In KDoc leading asterisks should be indented with one additional space
  */
-internal class KDocIndentationChecker(config: IndentationConfig) : CustomIndentationChecker(config) {
+internal class KdocIndentationChecker(config: IndentationConfig) : CustomIndentationChecker(config) {
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
         if (whiteSpace.nextSibling.node.elementType in listOf(KDOC_LEADING_ASTERISK, KDOC_END, KDOC_SECTION)) {
             val expectedIndent = indentError.expected + 1
@@ -157,7 +163,9 @@ internal class SuperTypeListChecker(config: IndentationConfig) : CustomIndentati
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
         if (whiteSpace.nextSibling.node.elementType == SUPER_TYPE_LIST) {
             val hasNewlineBeforeColon = whiteSpace.node.prevSibling { it.elementType == COLON }!!
-                    .treePrev.takeIf { it.elementType == WHITE_SPACE }?.textContains('\n') ?: false
+                .treePrev
+                .takeIf { it.elementType == WHITE_SPACE }
+                ?.textContains('\n') ?: false
             val expectedIndent = indentError.expected + (if (hasNewlineBeforeColon) 2 else 1) * configuration.indentationSize
             return CheckResult.from(indentError.actual, expectedIndent)
         } else if (whiteSpace.parent.node.elementType == SUPER_TYPE_LIST) {
@@ -176,7 +184,7 @@ internal class DotCallChecker(config: IndentationConfig) : CustomIndentationChec
     private fun ASTNode.isDotBeforeCallOrReference() = elementType.let { it == DOT || it == SAFE_ACCESS } &&
             treeNext.elementType.let { it == CALL_EXPRESSION || it == REFERENCE_EXPRESSION }
 
-    private fun ASTNode.isCommentBeforeDot() : Boolean {
+    private fun ASTNode.isCommentBeforeDot(): Boolean {
         if (elementType == EOL_COMMENT || elementType == BLOCK_COMMENT) {
             var nextNode: ASTNode? = treeNext
             while (nextNode != null && (nextNode.elementType == WHITE_SPACE || nextNode.elementType == EOL_COMMENT)) {
@@ -190,20 +198,21 @@ internal class DotCallChecker(config: IndentationConfig) : CustomIndentationChec
     @Suppress("ComplexMethod")
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
         whiteSpace.nextSibling.node
-                .takeIf { nextNode ->
-                    nextNode.isDotBeforeCallOrReference() ||
-                            nextNode.elementType == OPERATION_REFERENCE && nextNode.firstChildNode.elementType.let {
-                                it == ELVIS || it == IS_EXPRESSION || it == AS_KEYWORD || it == AS_SAFE
-                            } || nextNode.isCommentBeforeDot()
+            .takeIf { nextNode ->
+                nextNode.isDotBeforeCallOrReference() ||
+                        nextNode.elementType == OPERATION_REFERENCE && nextNode.firstChildNode.elementType.let {
+                            it == ELVIS || it == IS_EXPRESSION || it == AS_KEYWORD || it == AS_SAFE
+                        } || nextNode.isCommentBeforeDot()
+            }
+            ?.let {
+                // we need to get indent before the first expression in calls chain
+                return CheckResult.from(indentError.actual, (whiteSpace.run {
+                    parents.takeWhile { it is KtDotQualifiedExpression || it is KtSafeQualifiedExpression }.lastOrNull() ?: this
                 }
-                ?.let {
-                    // we need to get indent before the first expression in calls chain
-                    return CheckResult.from(indentError.actual, (whiteSpace.run {
-                        parents.takeWhile { it is KtDotQualifiedExpression || it is KtSafeQualifiedExpression }.lastOrNull() ?: this
-                    }
-                            .parentIndent()
-                            ?: indentError.expected) + (if (configuration.extendedIndentBeforeDot) 2 else 1) * configuration.indentationSize, true)
-                }
+                    .parentIndent()
+                    ?: indentError.expected) +
+                        (if (configuration.extendedIndentBeforeDot) 2 else 1) * configuration.indentationSize, true)
+            }
         return null
     }
 }
@@ -221,10 +230,10 @@ internal class ConditionalsAndLoopsWithoutBracesChecker(config: IndentationConfi
                     nextNode?.elementType == ELSE && parent.`else`.let { it !is KtBlockExpression && it !is KtIfExpression }
             else -> false
         }
-                .takeIf { it }
-                ?.let {
-                    CheckResult.from(indentError.actual, indentError.expected + configuration.indentationSize, true)
-                }
+            .takeIf { it }
+            ?.let {
+                CheckResult.from(indentError.actual, indentError.expected + configuration.indentationSize, true)
+            }
     }
 }
 
@@ -236,7 +245,7 @@ internal class CustomGettersAndSettersChecker(config: IndentationConfig) : Custo
         val parent = whiteSpace.parent
         if (parent is KtProperty && whiteSpace.nextSibling is KtPropertyAccessor) {
             return CheckResult.from(indentError.actual, (parent.parentIndent()
-                    ?: indentError.expected) + configuration.indentationSize, true)
+                ?: indentError.expected) + configuration.indentationSize, true)
         }
         return null
     }
@@ -250,17 +259,20 @@ internal class ArrowInWhenChecker(configuration: IndentationConfig) : CustomInde
         val prevNode = whiteSpace.prevSibling?.node
         if (prevNode?.elementType == ARROW && whiteSpace.parent is KtWhenEntry) {
             return CheckResult.from(indentError.actual, (whiteSpace.parentIndent()
-                    ?: indentError.expected) + configuration.indentationSize, true)
+                ?: indentError.expected) + configuration.indentationSize, true)
         }
         return null
     }
 }
 
+/**
+ * @return indentation of parent node
+ */
 internal fun PsiElement.parentIndent(): Int? = parentsWithSelf
-        .map { parent ->
-            parent.node.prevSibling { it.elementType == WHITE_SPACE && it.textContains('\n') }
-        }
-        .filterNotNull()
-        .firstOrNull()
-        ?.text
-        ?.lastIndent()
+    .map { parent ->
+        parent.node.prevSibling { it.elementType == WHITE_SPACE && it.textContains('\n') }
+    }
+    .filterNotNull()
+    .firstOrNull()
+    ?.text
+    ?.lastIndent()

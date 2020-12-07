@@ -109,7 +109,7 @@
 - name: FILE_WILDCARD_IMPORTS
   enabled: true
   configuration:
-    allowedWildcards: "kotlinx.serialization.*"
+    allowedWildcards: "kotlinx.serialization.*,org.cqfn.diktat.ruleset.utils.*"
 - name: NO_BRACES_IN_CONDITIONALS_AND_LOOPS
   enabled: true
 - name: WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES
@@ -125,10 +125,10 @@
   enabled: true
   configuration:
     newlineAtEnd: true
-    extendedIndentOfParameters: true
+    extendedIndentOfParameters: false
     alignedParameters: true
     extendedIndentAfterOperators: true
-    extendedIndentBeforeDot: true
+    extendedIndentBeforeDot: false
     indentationSize: 4
 - name: EMPTY_BLOCK_STRUCTURE_ERROR
   enabled: true
@@ -230,8 +230,8 @@
 - name: TOO_LONG_FUNCTION
   enabled: true
   configuration:
-    maxFunctionLength: '30' # max length of function
-    isIncludeHeader: 'false' # count function's header
+    maxFunctionLength: 35 # max length of function
+    isIncludeHeader: false # count function's header
 # Warns if there are nested functions
 - name: AVOID_NESTED_FUNCTIONS
   enabled: true
@@ -253,6 +253,9 @@
   enabled: true
 # Checks that property in constructor doesn't contains comment
 - name: KDOC_NO_CONSTRUCTOR_PROPERTY
+  enabled: true
+# Checks that property in KDoc present in class
+- name: KDOC_EXTRA_PROPERTY
   enabled: true
 # Checks that KDoc in constructor has property tag but with comment inside constructor
 - name: KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT
@@ -282,7 +285,6 @@
 # Use extra functions for it instead.
 - name: CUSTOM_GETTERS_SETTERS
   enabled: true
-# Checks if class instantiation can be wrapped in `apply` for better readability
 # Checks if null-check was used explicitly (for example: if (a == null))
 # Try to avoid explicit null checks (explicit comparison with `null`)
 # Kotlin is declared as [Null-safe](https://kotlinlang.org/docs/reference/null-safety.html) language.
@@ -290,6 +292,7 @@
 # There are several code-structures that can be used in Kotlin to avoid null-checks. For example: `?:`,  `.let {}`, `.also {}`, e.t.c
 - name: AVOID_NULL_CHECKS
   enabled: true
+# Checks if class instantiation can be wrapped in `apply` for better readability
 - name: COMPACT_OBJECT_INITIALIZATION
   enabled: true
 # Checks explicit supertype qualification
@@ -305,4 +308,7 @@
 # there should be explicit backing property with the name of real property
 # Example: val table get() {if (_table == null) ...} -> table should have _table
 - name: NO_CORRESPONDING_PROPERTY
+  enabled: true
+# Checks if there is class/object that can be replace with extension function
+- name: AVOID_USING_UTILITY_CLASS
   enabled: true
