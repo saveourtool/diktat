@@ -68,7 +68,7 @@ Note that prefixing can also negatively affect the style and the auto-generation
 <!-- =============================================================================== -->
 ### <a name="c1.2"></a> 1.2 Packages names
 
-### <a name="r1.2.1"></a> Rule 1.2.1 Package names dots
+#### <a name="r1.2.1"></a> Rule 1.2.1 Package names dots
 Package names are in lower case and separated by dots. Code developed within your company should start with `your.company.domain.` Numbers are permitted in package names.
 Each file should have a `package` directive.
 Package names are all written in lowercase, and consecutive words are concatenated together (no underscores). Package names should contain both the product or module names and the department (or team) name to prevent conflicts with other teams.  Numbers are not permitted. For example: `org.apache.commons.lang3`, `xxx.yyy.v2`.
