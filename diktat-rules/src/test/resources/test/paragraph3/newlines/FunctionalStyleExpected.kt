@@ -12,3 +12,10 @@ fun foo(list: List<Bar>?) {
 }
 
 fun bar(x :Int,y:Int) = x+ y
+
+fun foo() {
+    foo
+            ?: bar
+                    .baz()
+                    .qux()
+}

@@ -10,3 +10,7 @@ fun foo(list: List<Bar>?) {
 
 fun bar(x :Int,y:Int) :Int {
     return   x+ y }
+
+fun foo() {
+    foo ?: bar.baz().qux()
+}
