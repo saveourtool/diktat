@@ -8,6 +8,8 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 typealias EmitType = ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
 
+typealias ListOfList = MutableList<MutableList<ASTNode>>
+
 /**
  * This class represent individual inspections of diktat code style.
  * A [Warnings] entry contains rule name, warning message and is used in code check.
