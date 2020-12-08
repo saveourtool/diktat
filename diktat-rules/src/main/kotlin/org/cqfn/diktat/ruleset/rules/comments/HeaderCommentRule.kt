@@ -83,7 +83,8 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
                 val numDeclaredClassesAndObjects = node.getAllChildrenWithType(ElementType.CLASS).size +
                         node.getAllChildrenWithType(ElementType.OBJECT_DECLARATION).size
                 if (numDeclaredClassesAndObjects == 0 || numDeclaredClassesAndObjects > 1) {
-                    HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warn(configRules, emitWarn, isFixMode, "there are $numDeclaredClassesAndObjects declared classes and/or objects", node.startOffset, node)
+                    HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warn(configRules, emitWarn, isFixMode,
+                        "there are $numDeclaredClassesAndObjects declared classes and/or objects", node.startOffset, node)
                 }
             }
     }
@@ -139,7 +140,7 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
         }
     }
 
-    @Suppress("TOO_LONG_FUNCTION")
+    @Suppress("TOO_LONG_FUNCTION", "ComplexMethod")
     private fun checkCopyright(node: ASTNode) {
         val configuration = CopyrightConfiguration(configRules.getRuleConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT)?.configuration
             ?: mapOf())
