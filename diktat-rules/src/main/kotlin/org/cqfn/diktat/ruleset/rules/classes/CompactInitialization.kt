@@ -1,9 +1,9 @@
 package org.cqfn.diktat.ruleset.rules.classes
 
 import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.ast.isPartOfComment
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.isPartOfComment
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings
@@ -21,6 +21,7 @@ import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.psiUtil.siblings
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
 
+
 /**
  * This rules checks if an object initialization can be wrapped into an `apply` function.
  * This is useful for classes that, e.g. have single constructor without parameters and setters for all the parameters.
@@ -33,9 +34,9 @@ class CompactInitialization(private val configRules: List<RulesConfig>) : Rule("
     private lateinit var emitWarn: EmitType
 
     override fun visit(
-        node: ASTNode,
-        autoCorrect: Boolean,
-        emit: EmitType
+            node: ASTNode,
+            autoCorrect: Boolean,
+            emit: EmitType
     ) {
         emitWarn = emit
         isFixMode = autoCorrect
