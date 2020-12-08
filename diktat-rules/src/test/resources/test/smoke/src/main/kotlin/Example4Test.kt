@@ -23,11 +23,11 @@ fun `method name incorrect, part 4`() {
     lintMethod(code, LintError(2, 7, ruleId, "${FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREE", true))
 
     foo
-                // we are calling bar
+            // we are calling bar
             .bar()
 
     bar
-                /* This is a block comment */
+            /* This is a block comment */
             .foo()
 }
 
@@ -42,3 +42,10 @@ fun foo() {
     )
 }
 
+fun bar() {
+    val diktatExtension = project.extensions.create(DIKTAT_EXTENSION, DiktatExtension::class.java)
+    diktatExtension.inputs = project.fileTree("src").apply {
+        include("**/*.kt")
+    }
+    diktatExtension.reporter = PlainReporter(System.out)
+}

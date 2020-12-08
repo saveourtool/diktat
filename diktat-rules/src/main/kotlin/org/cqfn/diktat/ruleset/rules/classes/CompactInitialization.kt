@@ -8,6 +8,8 @@ import org.cqfn.diktat.ruleset.utils.getFunctionName
 import org.cqfn.diktat.ruleset.utils.log
 
 import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.ast.ElementType.LBRACE
+import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isPartOfComment
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
@@ -102,8 +104,13 @@ class CompactInitialization(private val configRules: List<RulesConfig>) : Rule("
                         .takeWhile { it != property.node }
                         .toList()
                         .reversed()
-                        .forEach {
-                            bodyExpression.addChild(it.clone() as ASTNode, null)
+                        .forEachIndexed { index, it ->
+                            // adds whiteSpace to functional literal if previous of bodyExpression is LBRACE
+                            if (index == 0 && bodyExpression.treePrev.elementType == LBRACE && it.elementType == WHITE_SPACE) {
+                                bodyExpression.treeParent.addChild(it.clone() as ASTNode, bodyExpression)
+                            } else {
+                                bodyExpression.addChild(it.clone() as ASTNode, null)
+                            }
                             it.treeParent.removeChild(it)
                         }
                     // strip receiver name and move assignment itself into `apply`
