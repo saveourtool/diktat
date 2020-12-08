@@ -27,7 +27,7 @@ d) **Recommendation**: One `.kt` source file should contain only one class decla
 
 e) Avoid empty files that do not contain the code or contain only imports/comments/package name
 
-#### <a name="s3.1.3"></a> 3.1.3 Import statements order
+#### <a name="r3.1.3"></a> 3.1.3 Import statements order
 
 From top to bottom, the order is the following:
 1. Android
@@ -57,7 +57,7 @@ import kotlin.system.exitProcess  // kotlin standard library
 import kotlinx.coroutines.*  // official kotlin extension library
 ```
 
-#### <a name="s3.1.4"></a> 3.1.4 Order of declaration parts of class-like code structures
+#### <a name="r3.1.4"></a> 3.1.4 Order of declaration parts of class-like code structures
 The declaration parts of class-like code structures (class, interface, etc.) should be in the following order: compile-time constants (for objects), class properties, late-init class properties, init-blocks, constructors, public methods, internal methods, protected methods, private methods, and companion object. Blank lines should separate their declaration.
 Notes:
 1.	There should be no blank lines between properties with the following **exceptions**: when there is a comment before a property on a separate line or annotations on a separate line.
@@ -311,7 +311,7 @@ Each one of these characters represents two narrow characters.
 <!-- =============================================================================== -->
 ### <a name="c3.6"></a> 3.6 Line breaks (newlines)
 This section contains the rules and recommendations on using line breaks.
-#### <a name="s3.6.1"></a> 3.6.1 Each line can have a maximum of one statement.
+#### <a name="r3.6.1"></a> 3.6.1 Each line can have a maximum of one statement.
 Each line can have a maximum of one code statement. This recommendation prohibits the use of code with `;` because it decreases code visibility.
 
 **Invalid example:**
@@ -472,7 +472,7 @@ fun baz() {
 <!-- =============================================================================== -->
 ### <a name="c3.8"></a> 3.8 Horizontal space
 This section describes general rules and recommendations for using spaces in the code.
-#### <a name="s3.8.1"></a> 3.8.1: Usage of whitespace for code separation
+#### <a name="r3.8.1"></a> 3.8.1: Usage of whitespace for code separation
 
 Follow the recommendations below for using space to separate keywords:
 
@@ -548,7 +548,7 @@ fun foo
 
 10. There should be no spaces between a prefix/postfix operator (like `!!` or `++`) and its operand.
 
-#### <a name="s3.8.2"></a> 3.8.2: No spaces for horizontal alignment
+#### <a name="r3.8.2"></a> 3.8.2: No spaces for horizontal alignment
 
 *Horizontal alignment* refers to aligning code blocks by adding space to the code. Horizontal alignment should not be used because:
 
@@ -637,7 +637,7 @@ Each property or variable must be declared on a separate line.
 val n1: Int; val n2: Int
 ```
 
-#### <a name="s3.10.2"></a> 3.10.2 Variables should be declared near the line where they are first used.
+#### <a name="r3.10.2"></a> 3.10.2 Variables should be declared near the line where they are first used.
 Declare local variables close to the point where they are first used to minimize their scope. This will also increase the readability of the code.
 Local variables are usually initialized during their declaration or immediately after.
 The member fields of the class should be declared collectively (see [Rule 3.1.2](#r3.1.2) for details on the class structure).
@@ -700,7 +700,7 @@ class SomeClass {
 <!-- =============================================================================== -->
 ### <a name="c3.14"></a> 3.14 Modifiers and constant values
 This section contains recommendations regarding modifiers and constant values.
-#### <a name="s3.14.1"></a> 3.14.1 Declaration with multiple modifiers
+#### <a name="r3.14.1"></a> 3.14.1 Declaration with multiple modifiers
 If a declaration has multiple modifiers, always follow the proper sequence.
 **Valid sequence:**
 
@@ -726,7 +726,7 @@ operator
 data
 ```
 
-#### <a name="s3.14.2"></a> 3.14.2: Separate long numerical values with an underscore
+#### <a name="r3.14.2"></a> 3.14.2: Separate long numerical values with an underscore
 An underscore character should separate long numerical values.
 **Note:** Using underscores simplifies reading and helps to find errors in numeric constants.
 ```kotlin

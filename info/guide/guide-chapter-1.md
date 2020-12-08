@@ -6,7 +6,7 @@ Note: The source file encoding format (including comments) must be UTF-8 only. T
 <!-- =============================================================================== -->
 ### <a name="c1.1"></a> 1.1 Identifier names
 This section describes the general rules for naming identifiers.
-### <a name="r1.1.1"></a> 1.1.1 Identifiers naming conventions
+#### <a name="r1.1.1"></a> 1.1.1 Identifiers naming conventions
 
 For identifiers, use the following naming conventions:
 1.	All identifiers should use only ASCII letters or digits, and the names should match regular expressions `\w{2,64}`.

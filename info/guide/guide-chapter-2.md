@@ -314,7 +314,7 @@ In an attempt to reuse the code, there is a high probability that you will intro
 The correct approach is to delete the unnecessary code directly and immediately when it is not used anymore.
 If you need the code again, consider porting or rewriting it as changes could have occurred since you first commented on the code. 
 
-#### <a name="s2.4.3"></a>2.4.3 Code delivered to the client should not contain TODO/FIXME comments
+#### <a name="r2.4.3"></a>2.4.3 Code delivered to the client should not contain TODO/FIXME comments
 
 The code officially delivered to the client typically should not contain TODO/FIXME comments.
 `TODO` comments are typically used to describe modification points that need to be improved and added. For example, refactoring FIXME comments are typically used to describe known defects and bugs that will be subsequently fixed and are not critical for an application.
