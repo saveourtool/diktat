@@ -20,6 +20,7 @@ import com.pinterest.ktlint.core.ast.isLeaf
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
+import org.jetbrains.kotlin.konan.file.File
 import org.jetbrains.kotlin.lexer.KtTokens.PACKAGE_KEYWORD
 import org.slf4j.LoggerFactory
 import java.util.concurrent.atomic.AtomicInteger
@@ -54,13 +55,13 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
             .domainName
 
         if (node.elementType == PACKAGE_DIRECTIVE) {
-            val fileName = node.getRootNode().getFileName()
+            val filePath = node.getRootNode().getFilePath()
             // calculating package name based on the directory where the file is placed
-            val realPackageName = calculateRealPackageName(fileName)
+            val realPackageName = calculateRealPackageName(filePath)
 
             // if node isLeaf - this means that there is no package name declared
             if (node.isLeaf()) {
-                warnAndFixMissingPackageName(node, realPackageName, fileName)
+                warnAndFixMissingPackageName(node, realPackageName, filePath)
                 return
             }
 
@@ -80,7 +81,8 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
     private fun warnAndFixMissingPackageName(
         initialPackageDirectiveNode: ASTNode,
         realPackageName: List<String>,
-        fileName: String) {
+        filePath: String) {
+        val fileName = filePath.substringAfterLast(File.separator)
         PACKAGE_NAME_MISSING.warnAndFix(configRules, emitWarn, isFixMode, fileName,
             initialPackageDirectiveNode.startOffset, initialPackageDirectiveNode) {
             if (realPackageName.isNotEmpty()) {

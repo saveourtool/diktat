@@ -63,8 +63,8 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
         isFixMode = autoCorrect
 
         val config = configRules.getCommonConfiguration().value
-        val fileName = node.getRootNode().getFileName()
-        if (!(node.hasTestAnnotation() || isLocatedInTest(fileName.splitPathToDirs(), config.testAnchors))) {
+        val filePath = node.getRootNode().getFilePath()
+        if (!(node.hasTestAnnotation() || isLocatedInTest(filePath.splitPathToDirs(), config.testAnchors))) {
             when (node.elementType) {
                 FILE -> checkTopLevelDoc(node)
                 CLASS -> checkClassElements(node)

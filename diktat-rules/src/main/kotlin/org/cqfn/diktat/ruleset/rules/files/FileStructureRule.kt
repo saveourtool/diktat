@@ -12,7 +12,6 @@ import org.cqfn.diktat.ruleset.constants.Warnings.FILE_UNORDERED_IMPORTS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_WILDCARD_IMPORTS
 import org.cqfn.diktat.ruleset.rules.PackageNaming.Companion.PACKAGE_SEPARATOR
 import org.cqfn.diktat.ruleset.utils.StandardPlatforms
-import org.cqfn.diktat.ruleset.utils.getFileName
 import org.cqfn.diktat.ruleset.utils.handleIncorrectOrder
 import org.cqfn.diktat.ruleset.utils.moveChildBefore
 
@@ -50,7 +49,6 @@ import org.jetbrains.kotlin.psi.KtImportDirective
  */
 class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file-structure") {
     private var isFixMode: Boolean = false
-    private var fileName: String = ""
     private val domainName by lazy {
         configRules
             .getCommonConfiguration()
@@ -73,7 +71,6 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         emitWarn = emit
 
         if (node.elementType == ElementType.FILE) {
-            fileName = node.getFileName()
             val wildcardImportsConfig = WildCardImportsConfig(
                 this.configRules.getRuleConfig(FILE_WILDCARD_IMPORTS)?.configuration ?: emptyMap()
             )
@@ -97,7 +94,8 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         )
         val hasCode = node.getChildren(codeTokens).isNotEmpty()
         if (!hasCode) {
-            FILE_CONTAINS_ONLY_COMMENTS.warn(configRules, emitWarn, isFixMode, fileName, node.startOffset, node)
+            val freeText = if (node.text.isEmpty()) "file is empty" else "file contains no code"
+            FILE_CONTAINS_ONLY_COMMENTS.warn(configRules, emitWarn, isFixMode, freeText, node.startOffset, node)
         }
         return hasCode
     }
@@ -183,7 +181,7 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
             .map { group -> group.sortedBy { it.text } }
 
         if (sortedImportsGroups.flatten() != imports) {
-            FILE_UNORDERED_IMPORTS.warnAndFix(configRules, emitWarn, isFixMode, fileName, node.startOffset, node) {
+            FILE_UNORDERED_IMPORTS.warnAndFix(configRules, emitWarn, isFixMode, "${sortedImportsGroups.flatten().first().text}...", node.startOffset, node) {
                 rearrangeImports(node, imports, sortedImportsGroups)
             }
         }

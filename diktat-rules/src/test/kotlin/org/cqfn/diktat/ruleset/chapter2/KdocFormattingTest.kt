@@ -60,7 +60,7 @@ class KdocFormattingTest : LintTestBase(::KdocFormatting) {
                | *
                | */
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${KDOC_EMPTY_KDOC.warnText()} $testFileName", false)
+            LintError(1, 1, ruleId, "${KDOC_EMPTY_KDOC.warnText()} /**...", false)
         )
     }
 

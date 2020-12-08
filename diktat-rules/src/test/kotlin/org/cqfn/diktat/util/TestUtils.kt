@@ -20,7 +20,7 @@ import org.jetbrains.kotlin.konan.file.File
 
 import java.util.concurrent.atomic.AtomicInteger
 
-internal val testFileName = "${File.separator}TestFileName.kt"
+internal const val testFileName = "TestFileName.kt"
 
 typealias LintErrorCallback = (LintError, Boolean) -> Unit
 
