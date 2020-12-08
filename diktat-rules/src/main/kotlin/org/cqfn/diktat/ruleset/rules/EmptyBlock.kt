@@ -55,7 +55,7 @@ class EmptyBlock(private val configRules: List<RulesConfig>) : Rule("empty-block
 
     @Suppress("UnsafeCallOnNullableType")
     private fun checkEmptyBlock(node: ASTNode, configuration: EmptyBlockStyleConfiguration) {
-        if (node.treeParent.isOverridden() || isSAMClass(node)) {
+        if (node.treeParent.isOverridden() || isAnonymousSAMClass(node)) {
             return
         }
         if (node.isBlockEmpty()) {
@@ -84,7 +84,7 @@ class EmptyBlock(private val configRules: List<RulesConfig>) : Rule("empty-block
     }
 
     @Suppress("UnsafeCallOnNullableType")
-    private fun isSAMClass(node: ASTNode) : Boolean {
+    private fun isAnonymousSAMClass(node: ASTNode) : Boolean {
         return if (node.elementType == FUNCTION_LITERAL && node.hasParent(VALUE_ARGUMENT)) {
             val valueArgument = node.findParentNodeWithSpecificType(VALUE_ARGUMENT)!!
             valueArgument.findLeafWithSpecificType(IDENTIFIER)?.text?.isPascalCase() ?: false
