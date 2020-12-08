@@ -21,6 +21,7 @@ import org.jetbrains.kotlin.psi.KtNameReferenceExpression
 import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.psiUtil.siblings
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
+
 /**
  * This rules checks if an object initialization can be wrapped into an `apply` function.
  * This is useful for classes that, e.g. have single constructor without parameters and setters for all the parameters.
