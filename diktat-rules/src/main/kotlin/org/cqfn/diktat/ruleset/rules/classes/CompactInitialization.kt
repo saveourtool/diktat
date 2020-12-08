@@ -6,6 +6,11 @@ import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.ruleset.utils.getFunctionName
 import org.cqfn.diktat.ruleset.utils.log
+
+import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.ast.ElementType.LBRACE
+import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.isPartOfComment
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
 import org.jetbrains.kotlin.psi.KtBinaryExpression
@@ -16,12 +21,6 @@ import org.jetbrains.kotlin.psi.KtNameReferenceExpression
 import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.psiUtil.siblings
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
-
-import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.ast.ElementType.LBRACE
-import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.isPartOfComment
-
 /**
  * This rules checks if an object initialization can be wrapped into an `apply` function.
  * This is useful for classes that, e.g. have single constructor without parameters and setters for all the parameters.
