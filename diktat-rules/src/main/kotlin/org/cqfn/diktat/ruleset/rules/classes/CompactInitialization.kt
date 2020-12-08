@@ -1,4 +1,5 @@
 @file:Suppress("FILE_UNORDERED_IMPORTS")
+
 package org.cqfn.diktat.ruleset.rules.classes
 
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
