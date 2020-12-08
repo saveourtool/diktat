@@ -7,3 +7,10 @@ interface I {
 object O: I {
     override fun foo() {}
 }
+
+/**
+ * Some KDOC
+ */
+object A: I {
+    override fun foo() {}
+}

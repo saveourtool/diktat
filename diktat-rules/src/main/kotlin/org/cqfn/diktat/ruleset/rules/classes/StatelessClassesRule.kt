@@ -2,6 +2,7 @@ package org.cqfn.diktat.ruleset.rules.classes
 
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
+import com.pinterest.ktlint.core.ast.ElementType.CLASS_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
@@ -39,31 +40,31 @@ class StatelessClassesRule(private val configRule: List<RulesConfig>) : Rule("st
         emitWarn = emit
         isFixMode = autoCorrect
 
-        val interfaces: MutableList<ASTNode> = mutableListOf()
-
         // Fixme: We should find interfaces in all project and then check them
         if (node.elementType == FILE) {
             val interfacesNodes = node
                     .findAllNodesWithSpecificType(CLASS)
                     .filter { it.hasChildOfType(INTERFACE_KEYWORD) }
-            interfacesNodes.forEach { interfaces.add(it) }
-            (node.findAllNodesWithSpecificType(CLASS) subtract interfacesNodes)
-                    .forEach{handleClass(it, interfaces)}
+            node
+                    .findAllNodesWithSpecificType(CLASS)
+                    .filterNot { it.hasChildOfType(INTERFACE_KEYWORD) }
+                    .forEach{handleClass(it, interfacesNodes)}
         }
     }
 
     @Suppress("UnsafeCallOnNullableType")
-    private fun handleClass(node: ASTNode, interfaces: MutableList<ASTNode>) {
+    private fun handleClass(node: ASTNode, interfaces: List<ASTNode>) {
         if (isClassExtendsValidInterface(node, interfaces) && isStatelessClass(node)) {
             Warnings.OBJECT_IS_PREFERRED.warnAndFix(configRule, emitWarn, isFixMode,
                     "class ${(node.psi as KtClass).name!!}", node.startOffset, node) {
                 val newObjectNode = CompositeElement(OBJECT_DECLARATION)
                 node.treeParent.addChild(newObjectNode, null)
-                node.removeChild(node.firstChildNode)
-                newObjectNode.addChild(LeafPsiElement(OBJECT_KEYWORD, "object"), null)
                 node.children().forEach {
                     newObjectNode.addChild(it.copyElement(), null)
                 }
+                newObjectNode.addChild(LeafPsiElement(OBJECT_KEYWORD, "object"),
+                        newObjectNode.getFirstChildWithType(CLASS_KEYWORD))
+                newObjectNode.removeChild(newObjectNode.getFirstChildWithType(CLASS_KEYWORD)!!)
                 node.treeParent.removeChild(node)
             }
         }
@@ -77,15 +78,15 @@ class StatelessClassesRule(private val configRule: List<RulesConfig>) : Rule("st
                 && !(node.psi as KtClass).hasExplicitPrimaryConstructor()
     }
 
-    private fun isClassExtendsValidInterface(node: ASTNode, interfaces: MutableList<ASTNode>) : Boolean =
+    private fun isClassExtendsValidInterface(node: ASTNode, interfaces: List<ASTNode>) : Boolean =
             node.findChildByType(SUPER_TYPE_LIST)
                 ?.getAllChildrenWithType(SUPER_TYPE_ENTRY)
                 ?.isNotEmpty()
-                ?: false
-                    && isValidInterface(node, interfaces)
+                ?.and(classInheritsStatelessInterface(node, interfaces))
+                    ?: false
 
     @Suppress("UnsafeCallOnNullableType")
-    private fun isValidInterface(node: ASTNode, interfaces: MutableList<ASTNode>): Boolean {
+    private fun classInheritsStatelessInterface (node: ASTNode, interfaces: List<ASTNode>): Boolean {
         val classInterfaces = node
                 .findChildByType(SUPER_TYPE_LIST)
                 ?.getAllChildrenWithType(SUPER_TYPE_ENTRY)
