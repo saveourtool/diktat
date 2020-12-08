@@ -135,13 +135,29 @@ class EmptyBlockWarnTest : LintTestBase(::EmptyBlock) {
     @Test
     fun `check empty lambda with config`() {
         lintMethod(
-            """
+                """
                     |fun foo() {
                     |   val y = listOf<Int>().map {} 
                     |}
                 """.trimMargin(),
-            LintError(2, 30, ruleId, "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} different style for empty block", true),
-            rulesConfigList = rulesConfigListEmptyBlockExist
+                LintError(2, 30, ruleId, "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} different style for empty block", true),
+                rulesConfigList = rulesConfigListEmptyBlockExist
         )
     }
+
+    @Test
+    fun `should not trigger on anonymous SAM classes`() {
+        lintMethod(
+                """
+                    |fun foo() {
+                    |   val proj = some.create(
+                    |       Disposable {},
+                    |       config
+                    |   ).project
+                    |}
+                """.trimMargin(),
+                rulesConfigList = rulesConfigListEmptyBlockExist
+        )
+    }
+
 }

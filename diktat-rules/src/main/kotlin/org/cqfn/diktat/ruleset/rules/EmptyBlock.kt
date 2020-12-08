@@ -10,11 +10,24 @@ import org.cqfn.diktat.ruleset.utils.isBlockEmpty
 import org.cqfn.diktat.ruleset.utils.isOverridden
 
 import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_LITERAL
+import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
+import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
+import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import org.cqfn.diktat.ruleset.utils.findLeafWithSpecificType
+import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
+import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
+import org.cqfn.diktat.ruleset.utils.hasAnyChildOfTypes
+import org.cqfn.diktat.ruleset.utils.hasParent
+import org.cqfn.diktat.ruleset.utils.isPascalCase
+import org.cqfn.diktat.ruleset.utils.isUpperSnakeCase
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
+import org.jetbrains.kotlin.js.naming.isValidES5Identifier
+import org.jetbrains.kotlin.psi.psiUtil.isIdentifier
 
 /**
  * Rule that checks if empty code blocks (`{  }`) are used and checks their formatting.
@@ -42,7 +55,7 @@ class EmptyBlock(private val configRules: List<RulesConfig>) : Rule("empty-block
 
     @Suppress("UnsafeCallOnNullableType")
     private fun checkEmptyBlock(node: ASTNode, configuration: EmptyBlockStyleConfiguration) {
-        if (node.treeParent.isOverridden()) {
+        if (node.treeParent.isOverridden() || isSAMClass(node)) {
             return
         }
         if (node.isBlockEmpty()) {
@@ -68,6 +81,15 @@ class EmptyBlock(private val configRules: List<RulesConfig>) : Rule("empty-block
                 }
             }
         }
+    }
+
+    @Suppress("UnsafeCallOnNullableType")
+    private fun isSAMClass(node: ASTNode) : Boolean {
+        return if (node.elementType == FUNCTION_LITERAL && node.hasParent(VALUE_ARGUMENT)) {
+            val valueArgument = node.findParentNodeWithSpecificType(VALUE_ARGUMENT)!!
+            valueArgument.findLeafWithSpecificType(IDENTIFIER)?.text?.isPascalCase() ?: false
+        } else
+            false
     }
 
     /**
