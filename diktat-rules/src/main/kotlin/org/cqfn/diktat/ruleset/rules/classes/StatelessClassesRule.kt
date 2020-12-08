@@ -43,17 +43,12 @@ class StatelessClassesRule(private val configRule: List<RulesConfig>) : Rule("st
 
         // Fixme: We should find interfaces in all project and then check them
         if (node.elementType == FILE) {
-            node
+            val interfacesNodes = node
                     .findAllNodesWithSpecificType(CLASS)
                     .filter { it.hasChildOfType(INTERFACE_KEYWORD) }
-                    .forEach { interfaces.add(it) }
-
-            node
-                    .findAllNodesWithSpecificType(CLASS)
-                    .filter { !it.hasChildOfType(INTERFACE_KEYWORD) }
-                    .forEach {
-                        handleClass(it, interfaces)
-                    }
+            interfacesNodes.forEach { interfaces.add(it) }
+            (node.findAllNodesWithSpecificType(CLASS) subtract interfacesNodes)
+                    .forEach{handleClass(it, interfaces)}
         }
     }
 

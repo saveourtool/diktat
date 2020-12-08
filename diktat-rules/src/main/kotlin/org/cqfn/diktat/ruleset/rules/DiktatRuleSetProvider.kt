@@ -53,7 +53,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
         val diktatExecutionPath = File(diktatConfigFile)
         if (!diktatExecutionPath.exists()) {
             // for some aggregators of static analyzers we need to provide configuration for cli
-            // in this case diktat would take the configuration from the direcory where jar file is stored
+            // in this case diktat would take the configuration from the directory where jar file is stored
             val ruleSetProviderPath =
                     DiktatRuleSetProvider::class
                         .java
