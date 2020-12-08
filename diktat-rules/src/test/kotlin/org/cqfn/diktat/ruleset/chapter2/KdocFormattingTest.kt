@@ -11,7 +11,6 @@ import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WRONG_TAGS_ORDER
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.kdoc.KdocFormatting
 import org.cqfn.diktat.util.LintTestBase
-import org.cqfn.diktat.util.testFileName
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames

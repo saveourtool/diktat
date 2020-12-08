@@ -10,7 +10,6 @@ import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_WRONG_FORMAT
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule
 import org.cqfn.diktat.util.LintTestBase
-import org.cqfn.diktat.util.testFileName
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
