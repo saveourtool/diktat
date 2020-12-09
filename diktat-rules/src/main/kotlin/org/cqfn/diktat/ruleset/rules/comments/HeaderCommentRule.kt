@@ -82,7 +82,7 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
             ?: run {
                 val numDeclaredClassesAndObjects = node.getAllChildrenWithType(ElementType.CLASS).size +
                         node.getAllChildrenWithType(ElementType.OBJECT_DECLARATION).size
-                if (numDeclaredClassesAndObjects == 0 || numDeclaredClassesAndObjects > 1) {
+                if (numDeclaredClassesAndObjects != 1) {
                     HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warn(configRules, emitWarn, isFixMode,
                         "there are $numDeclaredClassesAndObjects declared classes and/or objects", node.startOffset, node)
                 }
@@ -101,7 +101,7 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
         val firstKdoc = node.findChildAfter(IMPORT_LIST, KDOC)
         // if `firstKdoc.treeParent` is File then it's a KDoc not bound to any other structures
         if (node.findChildBefore(PACKAGE_DIRECTIVE, KDOC) == null && firstKdoc != null && firstKdoc.treeParent.elementType == FILE) {
-            HEADER_NOT_BEFORE_PACKAGE.warnAndFix(configRules, emitWarn, isFixMode, "header KDoc is located after imports", firstKdoc.startOffset, firstKdoc) {
+            HEADER_NOT_BEFORE_PACKAGE.warnAndFix(configRules, emitWarn, isFixMode, "header KDoc is located after package or imports", firstKdoc.startOffset, firstKdoc) {
                 node.moveChildBefore(firstKdoc, node.getFirstChildWithType(PACKAGE_DIRECTIVE), true)
                 // ensure there is no empty line between copyright and header kdoc
                 node.findChildBefore(PACKAGE_DIRECTIVE, BLOCK_COMMENT)?.apply {
@@ -159,9 +159,10 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
             }
         if (isWrongCopyright || isMissingCopyright || isCopyrightInsideKdoc) {
             val freeText = when {
+                // If `isCopyrightInsideKdoc` then `isMissingCopyright` is true too, but warning text from `isCopyrightInsideKdoc` is preferable.
+                isCopyrightInsideKdoc -> "copyright is placed inside KDoc, but should be inside a block comment"
                 isWrongCopyright -> "copyright comment doesn't have correct copyright text"
                 isMissingCopyright -> "copyright is mandatory, but is missing"
-                isCopyrightInsideKdoc -> "copyright is placed inside KDoc, but should be inside a block comment"
                 else -> error("Should never get to this point")
             }
             HEADER_MISSING_OR_WRONG_COPYRIGHT.warnAndFix(configRules, emitWarn, isFixMode, freeText, node.startOffset, node) {
