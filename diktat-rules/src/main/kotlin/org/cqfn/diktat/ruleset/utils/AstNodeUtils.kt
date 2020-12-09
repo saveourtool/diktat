@@ -744,20 +744,18 @@ fun ASTNode.getLineNumber(): Int =
  * It should be used when AST could be previously mutated by auto fixers.
  */
 @Suppress("LOCAL_VARIABLE_EARLY_DECLARATION")
-private fun ASTNode.calculateLineNumber(): Int {
-    return getRootNode()
-        .text
-        .lineSequence()
-        // calculate offset for every line end, `+1` for `\n` which is trimmed in `lineSequence`
-        .runningFold(0) { acc, line ->
-            acc + line.length + 1
-        }
-        .drop(1)
-        .indexOfFirst {
-            it > startOffset
-        }
-        .let {
-            require(it >= 0) { "Cannot calculate line number correctly, node's offset $startOffset is greater than file length ${getRootNode().textLength}" }
-            it + 1
-        }
-}
+private fun ASTNode.calculateLineNumber() = getRootNode()
+    .text
+    .lineSequence()
+    // calculate offset for every line end, `+1` for `\n` which is trimmed in `lineSequence`
+    .runningFold(0) { acc, line ->
+        acc + line.length + 1
+    }
+    .drop(1)
+    .indexOfFirst {
+        it > startOffset
+    }
+    .let {
+        require(it >= 0) { "Cannot calculate line number correctly, node's offset $startOffset is greater than file length ${getRootNode().textLength}" }
+        it + 1
+    }
