@@ -468,8 +468,8 @@ fun ASTNode.hasSuppress(warningName: String) = parent({ node ->
         ?.any {
             it.shortName.toString() == Suppress::class.simpleName &&
                     it.valueArgumentList?.arguments
-                    ?.any { annotationName -> annotationName.text.trim('"', ' ') == warningName }
-                    ?: false
+                        ?.any { annotationName -> annotationName.text.trim('"', ' ') == warningName }
+                        ?: false
         } ?: false
 }, strict = false) != null
 
