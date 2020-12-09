@@ -72,12 +72,11 @@ jobs:
         run: |
           mvn -B versions:set -DnextSnapshot=true -DprocessAllModules=true versions:commit
           mvn versions:set-property -Dproperty=diktat-check.version -DnewVersion=${{ env.RELEASE_VERSION }}
-          sed -i "s/$PREVIOUS_VERSION/$RELEASE_VERSION/g" README.md
-          sed -i "s/$PREVIOUS_VERSION/$RELEASE_VERSION/g" build.gradle.kts
-          sed -i "s/$PREVIOUS_VERSION/$RELEASE_VERSION/g" .github/workflows/functional_tests.yml
+          sed -i "s/$PREVIOUS_VERSION/$RELEASE_VERSION/g" README.md || echo "File README.md hasn't been updated!"
+          sed -i "s/$PREVIOUS_VERSION/$RELEASE_VERSION/g" .github/workflows/functional_tests.yml || echo "File functional_tests.yml hasn't been updated!"
           for file in examples/maven/pom.xml examples/gradle-groovy-dsl/build.gradle examples/gradle-kotlin-dsl/build.gradle.kts
           do
-            sed -i "s/$PREVIOUS_VERSION/$RELEASE_VERSION/g" $file
+            sed -i "s/$PREVIOUS_VERSION/$RELEASE_VERSION/g" $file || echo "File $file hasn't been updated!"
             cp diktat-rules/src/main/resources/diktat-analysis.yml $(dirname $file)
           done
       - name: Create pull request
@@ -88,6 +87,6 @@ jobs:
           branch: infra/diktat-version-update-to-${{ env.RELEASE_VERSION }}
           title: Update versions in pom.xml and documentation after ${{ env.RELEASE_VERSION }} release
           body: |
-            * Versions are updated in pom.xml, README.md and build.gradle.kts
+            * Versions are updated in pom.xml, README.md and in examples
             * Current project version is incremented to the next snapshot
           base: master
