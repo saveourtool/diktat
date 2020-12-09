@@ -270,9 +270,9 @@ fun ASTNode.isNodeFromCompanionObject(): Boolean {
         val grandParent = parent.treeParent
         if (grandParent != null && grandParent.elementType == ElementType.OBJECT_DECLARATION) {
             grandParent.findLeafWithSpecificType(ElementType.COMPANION_KEYWORD)
-                    ?.run {
-                        return true
-                    }
+                ?.run {
+                    return true
+                }
         }
     }
     return false
@@ -313,7 +313,7 @@ fun ASTNode.isNodeFromFileLevel(): Boolean = this.treeParent.elementType == FILE
  */
 fun ASTNode.isValProperty() =
         this.getChildren(null)
-                .any { it.elementType == ElementType.VAL_KEYWORD }
+            .any { it.elementType == ElementType.VAL_KEYWORD }
 
 /**
  * Checks whether this node of type PROPERTY has `const` modifier
@@ -467,9 +467,9 @@ fun ASTNode.hasSuppress(warningName: String) = parent({ node ->
         ?.map { it.psi as KtAnnotationEntry }
         ?.any {
             it.shortName.toString() == Suppress::class.simpleName &&
-                    it.valueArgumentList?.arguments
-                            ?.any { annotationName -> annotationName.text.trim('"', ' ') == warningName }
-                    ?: false
+                it.valueArgumentList?.arguments
+                        ?.any { annotationName -> annotationName.text.trim('"', ' ') == warningName }
+                ?: false
         } ?: false
 }, strict = false) != null
 
@@ -754,7 +754,7 @@ fun ASTNode.isGoingAfter(otherNode: ASTNode): Boolean {
  * @return line number or null if it cannot be calculated
  */
 fun ASTNode.getLineNumber(): Int =
-    psi.containingFile
+        psi.containingFile
             .viewProvider
             .document
             ?.takeIf { it.getLineEndOffset(it.lineCount - 1) >= psi.endOffset }
