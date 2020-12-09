@@ -3,6 +3,7 @@ package org.cqfn.diktat.ruleset.rules
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings
+import org.cqfn.diktat.ruleset.utils.*
 
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
@@ -12,7 +13,6 @@ import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.SECONDARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.isWhiteSpace
-import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -59,8 +59,8 @@ class AnnotationNewLineRule(private val configRules: List<RulesConfig>) : Rule("
                              rightSide: Boolean,
                              leftSide: Boolean) {
         Warnings.ANNOTATION_NEW_LINE.warnAndFix(configRules, emitWarn, isFixMode, "${node.text} not on a single line",
-                node.startOffset, node) {
-        if (rightSide) {
+            node.startOffset, node) {
+            if (rightSide) {
                 if (node.treeNext?.isWhiteSpace() == true) {
                     node.removeChild(node.treeNext)
                 }
