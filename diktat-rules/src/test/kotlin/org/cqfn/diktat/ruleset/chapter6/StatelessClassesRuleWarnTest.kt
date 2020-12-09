@@ -1,18 +1,16 @@
 package org.cqfn.diktat.ruleset.chapter6
 
-
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.classes.StatelessClassesRule
 import org.cqfn.diktat.util.LintTestBase
 
-import generated.WarningNames.OBJECT_IS_PREFERRED
 import com.pinterest.ktlint.core.LintError
+import generated.WarningNames.OBJECT_IS_PREFERRED
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class StatelessClassesRuleWarnTest : LintTestBase(::StatelessClassesRule) {
-
     private val ruleId = "$DIKTAT_RULE_SET_ID:stateless-class"
 
     @Test
