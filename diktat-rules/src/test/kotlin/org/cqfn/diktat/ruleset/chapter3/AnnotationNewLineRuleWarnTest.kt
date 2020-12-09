@@ -134,8 +134,8 @@ class AnnotationNewLineRuleWarnTest : LintTestBase(::AnnotationNewLineRule) {
                     |  }
                     |}
                 """.trimMargin(),
-           LintError(4, 3, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @SomeAnnotation not on a single line", true),
-           LintError(4, 19, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @SecondAnnotation not on a single line", true)
+            LintError(4, 3, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @SomeAnnotation not on a single line", true),
+            LintError(4, 19, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @SecondAnnotation not on a single line", true)
         )
     }
 
