@@ -87,6 +87,6 @@ jobs:
           branch: infra/diktat-version-update-to-${{ env.RELEASE_VERSION }}
           title: Update versions in pom.xml and documentation after ${{ env.RELEASE_VERSION }} release
           body: |
-            * Versions are updated in pom.xml, README.md and build.gradle.kts
+            * Versions are updated in pom.xml, README.md and in examples
             * Current project version is incremented to the next snapshot
           base: master
