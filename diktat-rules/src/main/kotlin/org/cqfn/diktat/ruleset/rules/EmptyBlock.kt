@@ -10,6 +10,7 @@ import org.cqfn.diktat.ruleset.utils.isBlockEmpty
 import org.cqfn.diktat.ruleset.utils.isOverridden
 
 import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_LITERAL
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
@@ -49,7 +50,7 @@ class EmptyBlock(private val configRules: List<RulesConfig>) : Rule("empty-block
 
     @Suppress("UnsafeCallOnNullableType")
     private fun checkEmptyBlock(node: ASTNode, configuration: EmptyBlockStyleConfiguration) {
-        if (node.treeParent.isOverridden() || isAnonymousSAMClass(node)) {
+        if (node.treeParent.isOverridden() || isAnonymousSamClass(node)) {
             return
         }
         if (node.isBlockEmpty()) {
@@ -78,9 +79,11 @@ class EmptyBlock(private val configRules: List<RulesConfig>) : Rule("empty-block
     }
 
     @Suppress("UnsafeCallOnNullableType")
-    private fun isAnonymousSAMClass(node: ASTNode) : Boolean {
-        return if (node.elementType == FUNCTION_LITERAL && node.hasParent(VALUE_ARGUMENT)) {
-            val valueArgument = node.findParentNodeWithSpecificType(VALUE_ARGUMENT)!!
+    private fun isAnonymousSamClass(node: ASTNode) : Boolean {
+        return if (node.elementType == FUNCTION_LITERAL && node.hasParent(CALL_EXPRESSION)) {
+            // We are checking identifier because it is not class in AST
+            // So we just verify that identifier is in PascalCase
+            val valueArgument = node.findParentNodeWithSpecificType(CALL_EXPRESSION)!!
             valueArgument.findLeafWithSpecificType(IDENTIFIER)?.text?.isPascalCase() ?: false
         } else
             false
