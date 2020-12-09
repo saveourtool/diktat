@@ -10,6 +10,7 @@ import org.cqfn.diktat.ruleset.rules.classes.CompactInitialization
 import org.cqfn.diktat.ruleset.rules.classes.DataClassesRule
 import org.cqfn.diktat.ruleset.rules.classes.SingleConstructorRule
 import org.cqfn.diktat.ruleset.rules.classes.SingleInitRule
+import org.cqfn.diktat.ruleset.rules.classes.StatelessClassesRule
 import org.cqfn.diktat.ruleset.rules.comments.CommentsRule
 import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule
 import org.cqfn.diktat.ruleset.rules.files.BlankLinesRule
@@ -26,7 +27,6 @@ import org.cqfn.diktat.ruleset.rules.kdoc.KdocMethods
 
 import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.RuleSetProvider
-import org.cqfn.diktat.ruleset.rules.classes.StatelessClassesRule
 import org.jetbrains.kotlin.org.jline.utils.Levenshtein
 import org.slf4j.LoggerFactory
 
