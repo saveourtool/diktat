@@ -7,5 +7,6 @@ repositories {
 }
 
 diktat {
+    debug = true
     inputs = files("src/**/*.kt")
 }
