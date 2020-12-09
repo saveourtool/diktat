@@ -58,7 +58,7 @@ class StatelessClassesRule(private val configRule: List<RulesConfig>) : Rule("st
             Warnings.OBJECT_IS_PREFERRED.warnAndFix(configRule, emitWarn, isFixMode,
                     "class ${(node.psi as KtClass).name!!}", node.startOffset, node) {
                 val newObjectNode = CompositeElement(OBJECT_DECLARATION)
-                node.treeParent.addChild(newObjectNode, null)
+                node.treeParent.addChild(newObjectNode, node)
                 node.children().forEach {
                     newObjectNode.addChild(it.copyElement(), null)
                 }
