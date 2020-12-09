@@ -55,11 +55,11 @@ Main features of diktat are the following:
     # another option is "brew install ktlint"
     ```
    
-2. Load diKTat manually: [here](https://github.com/cqfn/diKTat/releases/download/v0.1.5/diktat.jar)
+2. Load diKTat manually: [here](https://github.com/cqfn/diKTat/releases/download/v0.1.6/diktat.jar)
 
    **OR** use curl:
    ```bash
-   $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v0.1.5/diktat-0.1.5.jar
+   $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v0.1.6/diktat-0.1.6.jar
    ```
    
 3. Finally, run KTlint (with diKTat injected) to check your `*.kt` files in `dir/your/dir`:
@@ -110,7 +110,7 @@ This plugin is available since version 0.1.5. You can see how the plugin is conf
 Add this plugin to your `build.gradle.kts`:
 ```kotlin
 plugins {
-    id("org.cqfn.diktat.diktat-gradle-plugin") version "0.1.5"
+    id("org.cqfn.diktat.diktat-gradle-plugin") version "0.1.6"
 }
 ```
 
@@ -121,7 +121,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.cqfn.diktat:diktat-gradle-plugin:0.1.5")
+        classpath("org.cqfn.diktat:diktat-gradle-plugin:0.1.6")
     }
 }
 

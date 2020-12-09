@@ -13,7 +13,7 @@ import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.findChildAfter
 import org.cqfn.diktat.ruleset.utils.getBodyLines
-import org.cqfn.diktat.ruleset.utils.getFileName
+import org.cqfn.diktat.ruleset.utils.getFilePath
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.getIdentifierName
 import org.cqfn.diktat.ruleset.utils.getRootNode
@@ -83,8 +83,8 @@ class KdocMethods(private val configRules: List<RulesConfig>) : Rule("kdoc-metho
 
         if (node.elementType == FUN && node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside() && !node.isOverridden()) {
             val config = configRules.getCommonConfiguration().value
-            val fileName = node.getRootNode().getFileName()
-            val isTestMethod = node.hasTestAnnotation() || isLocatedInTest(fileName.splitPathToDirs(), config.testAnchors)
+            val filePath = node.getRootNode().getFilePath()
+            val isTestMethod = node.hasTestAnnotation() || isLocatedInTest(filePath.splitPathToDirs(), config.testAnchors)
             if (!isTestMethod && !node.isStandardMethod() && !node.isSingleLineGetterOrSetter()) {
                 checkSignatureDescription(node)
             }
@@ -113,22 +113,22 @@ class KdocMethods(private val configRules: List<RulesConfig>) : Rule("kdoc-metho
         val returnCheckFailed = hasReturnCheckFailed(node, kdocTags)
         val throwsCheckFailed = missingExceptions.isNotEmpty()
 
-        if (paramCheckFailed) {
-            handleParamCheck(node, kdoc, missingParameters, kDocMissingParameters, kdocTags)
-        }
-        if (returnCheckFailed) {
-            handleReturnCheck(node, kdoc, kdocTags)
-        }
-        if (throwsCheckFailed) {
-            handleThrowsCheck(node, kdoc, missingExceptions)
-        }
-
-        // if no tag failed, we have too little information to suggest KDoc - it would just be empty
         val anyTagFailed = paramCheckFailed || returnCheckFailed || throwsCheckFailed
+        // if no tag failed, we have too little information to suggest KDoc - it would just be empty
         if (kdoc == null && anyTagFailed) {
             addKdocTemplate(node, name, missingParameters, explicitlyThrownExceptions, returnCheckFailed)
         } else if (kdoc == null) {
             MISSING_KDOC_ON_FUNCTION.warn(configRules, emitWarn, false, name, node.startOffset, node)
+        } else {
+            if (paramCheckFailed) {
+                handleParamCheck(node, kdoc, missingParameters, kDocMissingParameters, kdocTags)
+            }
+            if (returnCheckFailed) {
+                handleReturnCheck(node, kdoc, kdocTags)
+            }
+            if (throwsCheckFailed) {
+                handleThrowsCheck(node, kdoc, missingExceptions)
+            }
         }
     }
 

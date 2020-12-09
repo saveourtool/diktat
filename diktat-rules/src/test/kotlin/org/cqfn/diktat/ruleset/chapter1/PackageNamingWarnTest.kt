@@ -10,7 +10,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_MISSING
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.PackageNaming
 import org.cqfn.diktat.util.LintTestBase
-import org.cqfn.diktat.util.testFileName
+import org.cqfn.diktat.util.TEST_FILE_NAME
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
@@ -36,7 +36,7 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
                 class TestPackageName {  }
 
             """.trimIndent(),
-            LintError(1, 1, ruleId, "${PACKAGE_NAME_MISSING.warnText()} $testFileName", true),
+            LintError(1, 1, ruleId, "${PACKAGE_NAME_MISSING.warnText()} $TEST_FILE_NAME", true),
             rulesConfigList = rulesConfigList
         )
     }

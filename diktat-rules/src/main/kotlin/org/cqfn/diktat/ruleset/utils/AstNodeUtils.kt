@@ -39,6 +39,7 @@ import org.jetbrains.kotlin.psi.KtAnnotationEntry
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.psiUtil.children
+import org.jetbrains.kotlin.psi.psiUtil.endOffset
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.siblings
 import org.slf4j.Logger
@@ -434,7 +435,6 @@ fun ASTNode?.isAccessibleOutside(): Boolean =
  * @param warningName a name of the warning which is checked
  * @return boolean result
  */
-@Suppress("WRONG_NEWLINES")
 fun ASTNode.hasSuppress(warningName: String) = parent({ node ->
     val annotationNode = if (node.elementType != FILE) {
         node.findChildByType(MODIFIER_LIST)
@@ -657,7 +657,7 @@ fun ASTNode.extractLineOfText(): String {
  * Checks node has `@Test` annotation
  */
 fun ASTNode.hasTestAnnotation() = findChildByType(MODIFIER_LIST)
-    ?.getAllChildrenWithType(ElementType.ANNOTATION_ENTRY)
+    ?.getAllChildrenWithType(ANNOTATION_ENTRY)
     ?.flatMap { it.findAllNodesWithSpecificType(ElementType.CONSTRUCTOR_CALLEE) }
     ?.any { it.findLeafWithSpecificType(ElementType.IDENTIFIER)?.text == "Test" }
     ?: false
@@ -684,26 +684,21 @@ fun isLocatedInTest(filePathParts: List<String>, testAnchors: List<String>) = fi
 fun ASTNode.firstLineOfText(suffix: String = "") = text.lines().run { singleOrNull() ?: (first() + suffix) }
 
 /**
- * Return the number of the last line in the file
- *
- * @param isFixMode whether autofix mode is on
+ * Return the number in the file of the last line of this node's text
  */
-fun ASTNode.lastLineNumber(isFixMode: Boolean) = getLineNumber(isFixMode)?.plus(text.count { it == '\n' })
+fun ASTNode.lastLineNumber() = getLineNumber() + text.count { it == '\n' }
 
 /**
  * copy-pasted method from ktlint to determine line and column number by offset
  */
-@Suppress("WRONG_NEWLINES")  // to keep this function with explicit return type
-fun ASTNode.calculateLineColByOffset(): (offset: Int) -> Pair<Int, Int> {
-    return buildPositionInTextLocator(text)
-}
+fun ASTNode.calculateLineColByOffset() = buildPositionInTextLocator(text)
 
 /**
  * Retrieves file name from user data of this node
  *
  * @return name of the file [this] node belongs to
  */
-fun ASTNode.getFileName(): String = getUserData(KtLint.FILE_PATH_USER_DATA_KEY).let {
+fun ASTNode.getFilePath(): String = getUserData(KtLint.FILE_PATH_USER_DATA_KEY).let {
     requireNotNull(it) { "File path is not present in user data" }
     it
 }
@@ -724,38 +719,35 @@ data class ReplacementResult(val oldNodes: List<ASTNode>, val newNodes: List<AST
  * checks that this one node is placed after the other node in code (by comparing lines of code where nodes start)
  */
 fun ASTNode.isGoingAfter(otherNode: ASTNode): Boolean {
-    val thisLineNumber = this.calculateLineNumber()
-    val otherLineNumber = otherNode.calculateLineNumber()
-
-    requireNotNull(thisLineNumber) { "Node ${this.text} should have a line number" }
-    requireNotNull(otherLineNumber) { "Node ${otherNode.text} should have a line number" }
+    val thisLineNumber = this.getLineNumber()
+    val otherLineNumber = otherNode.getLineNumber()
 
     return (thisLineNumber > otherLineNumber)
 }
 
 /**
- * Get line number, where this node's content starts
+ * Get line number, where this node's content starts. To avoid `ArrayIndexOutOfBoundsException`s we check whether node's maximum offset is less than
+ * Document's maximum offset, and calculate line number manually if needed.
  *
- * @param isFixMode if fix mode is off, then the text can't be altered and we can use cached values for line numbers
  * @return line number or null if it cannot be calculated
  */
-fun ASTNode.getLineNumber(isFixMode: Boolean): Int? =
-        if (!isFixMode) {
-            lineNumber()
-        } else {
-            calculateLineNumber()
-        }
+fun ASTNode.getLineNumber(): Int =
+        psi.containingFile
+            .viewProvider
+            .document
+            ?.takeIf { it.getLineEndOffset(it.lineCount - 1) >= psi.endOffset }
+            ?.let { lineNumber() }
+            ?: calculateLineNumber()
 
 /**
  * This function calculates line number instead of using cached values.
  * It should be used when AST could be previously mutated by auto fixers.
  */
 @Suppress("LOCAL_VARIABLE_EARLY_DECLARATION")
-private fun ASTNode.calculateLineNumber(): Int? {
+private fun ASTNode.calculateLineNumber(): Int {
     var count = 0
     // todo use runningFold or something similar when we migrate to apiVersion 1.4
-    return parents()
-        .last()
+    return getRootNode()
         .text
         .lineSequence()
         // calculate offset for every line end, `+1` for `\n` which is trimmed in `lineSequence`
@@ -763,5 +755,8 @@ private fun ASTNode.calculateLineNumber(): Int? {
             count += it.length + 1
             count > startOffset
         }
-        .let { if (it == -1) null else it + 1 }
+        .let {
+            require(it >= 0) { "Cannot calculate line number correctly, node's offset $startOffset is greater than file length ${getRootNode().textLength}" }
+            it + 1
+        }
 }

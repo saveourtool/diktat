@@ -9,7 +9,6 @@ import org.cqfn.diktat.ruleset.constants.Warnings.FILE_WILDCARD_IMPORTS
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.files.FileStructureRule
 import org.cqfn.diktat.util.LintTestBase
-import org.cqfn.diktat.util.testFileName
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
@@ -42,7 +41,7 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
                 |
                 |// lorem ipsum
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${FILE_CONTAINS_ONLY_COMMENTS.warnText()} $testFileName", false)
+            LintError(1, 1, ruleId, "${FILE_CONTAINS_ONLY_COMMENTS.warnText()} file contains no code", false)
         )
     }
 
@@ -78,7 +77,7 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
                 |
                 |class Example { }
             """.trimMargin(),
-            LintError(3, 1, ruleId, "${FILE_UNORDERED_IMPORTS.warnText()} $testFileName", true)
+            LintError(3, 1, ruleId, "${FILE_UNORDERED_IMPORTS.warnText()} import org.cqfn.diktat.example.Foo...", true)
         )
     }
 

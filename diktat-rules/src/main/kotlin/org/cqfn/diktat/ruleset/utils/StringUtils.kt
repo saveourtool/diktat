@@ -69,7 +69,6 @@ fun String.countSubStringOccurrences(sub: String) = this.split(sub).size - 1
  *
  * @return list of path parts
  */
-@Suppress("WRONG_NEWLINES")
 fun String.splitPathToDirs(): List<String> =
         this.replace("\\", "/")
             .replace("//", "/")
