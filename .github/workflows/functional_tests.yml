@@ -48,7 +48,7 @@ jobs:
         continue-on-error: true
         working-directory: ./examples/gradle-kotlin-dsl
         run: |
-          gradle --debug diktatCheck &> out
+          gradle --info diktatCheck &> out
 
       - name: Check gradle from kotlin DSL
         working-directory: ./examples/gradle-kotlin-dsl
