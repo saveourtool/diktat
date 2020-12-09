@@ -13,7 +13,6 @@ import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.SECONDARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.isWhiteSpace
 import org.cqfn.diktat.ruleset.utils.*
-
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -55,13 +54,13 @@ class AnnotationNewLineRule(private val configRules: List<RulesConfig>) : Rule("
         }
     }
 
-    //fixme added handle for left side!
+    // fixme added handle for left side!
     private fun deleteSpaces(node: ASTNode,
                              rightSide: Boolean,
                              leftSide: Boolean) {
         Warnings.ANNOTATION_NEW_LINE.warnAndFix(configRules, emitWarn, isFixMode, "${node.text} not on a single line",
                 node.startOffset, node) {
-            if (rightSide) {
+        if (rightSide) {
                 if (node.treeNext?.isWhiteSpace() == true) {
                     node.removeChild(node.treeNext)
                 }

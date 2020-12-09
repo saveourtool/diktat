@@ -203,18 +203,18 @@ fun ASTNode?.isBlockEmpty() = this?.let {
  */
 fun ASTNode.findChildBefore(beforeThisNodeType: IElementType, childNodeType: IElementType): ASTNode? {
     val anchorNode = getChildren(null)
-            .find { it.elementType == beforeThisNodeType }
+        .find { it.elementType == beforeThisNodeType }
     getChildren(null)
-            .toList()
-            .let {
-                anchorNode?.run {
-                    it.subList(0, it.indexOf(anchorNode))
-                }
-                        ?: it
+        .toList()
+        .let {
+            anchorNode?.run {
+                it.subList(0, it.indexOf(anchorNode))
             }
-            .reversed()
-            .find { it.elementType == childNodeType }
-            ?.let { return it }
+                ?: it
+        }
+        .reversed()
+        .find { it.elementType == childNodeType }
+        ?.let { return it }
 
     return null
 }
@@ -325,7 +325,7 @@ fun ASTNode.isConst() = this.findLeafWithSpecificType(CONST_KEYWORD) != null
  */
 fun ASTNode.isVarProperty() =
         this.getChildren(null)
-                .any { it.elementType == ElementType.VAR_KEYWORD }
+            .any { it.elementType == ElementType.VAR_KEYWORD }
 
 /**
  * Replaces text of [this] node with lowercase text
@@ -364,10 +364,10 @@ fun ASTNode.findLeafWithSpecificType(elementType: IElementType): ASTNode? {
     }
 
     return getChildren(null)
-            .mapNotNull {
-                it.findLeafWithSpecificType(elementType)
-            }
-            .firstOrNull()
+        .mapNotNull {
+            it.findLeafWithSpecificType(elementType)
+        }
+        .firstOrNull()
 }
 
 /**
@@ -408,7 +408,7 @@ fun ASTNode.findParentNodeWithSpecificType(elementType: IElementType) =
  */
 fun ASTNode.findChildrenMatching(elementType: IElementType? = null, predicate: (ASTNode) -> Boolean): List<ASTNode> =
         getChildren(elementType?.let { TokenSet.create(it) })
-                .filter(predicate)
+            .filter(predicate)
 
 /**
  * Check if this node has any children of optional type matching the predicate
@@ -429,8 +429,8 @@ fun ASTNode.prettyPrint(level: Int = 0, maxLevel: Int = -1): String {
         if (maxLevel != 0) {
             this.getChildren(null).forEach { child ->
                 result.append(
-                        "${"-".repeat(level + 1)} " +
-                                child.doPrettyPrint(level + 1, maxLevel - 1)
+                    "${"-".repeat(level + 1)} " +
+                            child.doPrettyPrint(level + 1, maxLevel - 1)
                 )
             }
         }
@@ -449,7 +449,7 @@ fun ASTNode?.isAccessibleOutside(): Boolean =
             this.hasAnyChildOfTypes(PUBLIC_KEYWORD, PROTECTED_KEYWORD, INTERNAL_KEYWORD) ||
                     !this.hasAnyChildOfTypes(PUBLIC_KEYWORD, INTERNAL_KEYWORD, PROTECTED_KEYWORD, PRIVATE_KEYWORD)
         }
-                ?: true
+            ?: true
 
 /**
  * Checks whether [this] node has a parent annotated with `@Suppress` with [warningName]
@@ -464,13 +464,13 @@ fun ASTNode.hasSuppress(warningName: String) = parent({ node ->
         node.findChildByType(FILE_ANNOTATION_LIST)
     }
     annotationNode?.findAllNodesWithSpecificType(ANNOTATION_ENTRY)
-            ?.map { it.psi as KtAnnotationEntry }
-            ?.any {
-                it.shortName.toString() == Suppress::class.simpleName &&
-                        it.valueArgumentList?.arguments
-                                ?.any { annotationName -> annotationName.text.trim('"', ' ') == warningName }
-                        ?: false
-            } ?: false
+        ?.map { it.psi as KtAnnotationEntry }
+        ?.any {
+            it.shortName.toString() == Suppress::class.simpleName &&
+                    it.valueArgumentList?.arguments
+                            ?.any { annotationName -> annotationName.text.trim('"', ' ') == warningName }
+                    ?: false
+        } ?: false
 }, strict = false) != null
 
 /**
@@ -530,9 +530,9 @@ fun ASTNode.indentBy(indent: Int) {
  *     the node with newline.
  */
 fun ASTNode.moveChildBefore(
-        childToMove: ASTNode,
-        beforeThisNode: ASTNode?,
-        withNextNode: Boolean = false
+    childToMove: ASTNode,
+    beforeThisNode: ASTNode?,
+    withNextNode: Boolean = false
 ): ReplacementResult {
     require(childToMove in children()) { "can only move child of this node" }
     require(beforeThisNode == null || beforeThisNode in children()) { "can only place node before another child of this node" }
@@ -560,10 +560,10 @@ fun ASTNode.findLBrace(): ASTNode? = when (this.elementType) {
     ElementType.WHEN -> this.findChildByType(LBRACE)!!
     ElementType.FOR, ElementType.WHILE, ElementType.DO_WHILE ->
         this.findChildByType(ElementType.BODY)
-                ?.findChildByType(ElementType.BLOCK)
-                ?.findChildByType(LBRACE)
-    ElementType.CLASS, ElementType.OBJECT_DECLARATION -> this.findChildByType(ElementType.CLASS_BODY)
+            ?.findChildByType(ElementType.BLOCK)
             ?.findChildByType(LBRACE)
+    ElementType.CLASS, ElementType.OBJECT_DECLARATION -> this.findChildByType(ElementType.CLASS_BODY)
+        ?.findChildByType(LBRACE)
     ElementType.FUNCTION_LITERAL -> this.findChildByType(LBRACE)
     else -> null
 }
@@ -639,8 +639,8 @@ fun ASTNode.areChildrenBeforeGroup(children: List<ASTNode>, group: List<ASTNode>
  */
 @Suppress("TYPE_ALIAS")
 fun List<ASTNode>.handleIncorrectOrder(
-        getSiblingBlocks: ASTNode.() -> Pair<ASTNode?, ASTNode>,
-        incorrectPositionHandler: (nodeToMove: ASTNode, beforeThisNode: ASTNode) -> Unit
+    getSiblingBlocks: ASTNode.() -> Pair<ASTNode?, ASTNode>,
+    incorrectPositionHandler: (nodeToMove: ASTNode, beforeThisNode: ASTNode) -> Unit
 ) {
     forEach { astNode ->
         val (afterThisNode, beforeThisNode) = astNode.getSiblingBlocks()
@@ -662,16 +662,16 @@ fun List<ASTNode>.handleIncorrectOrder(
 fun ASTNode.extractLineOfText(): String {
     var text: MutableList<String> = mutableListOf()
     siblings(false)
-            .map { it.text.split("\n") }
-            .takeWhileInclusive { it.size <= 1 }
-            .forEach { text.add(it.last()) }
+        .map { it.text.split("\n") }
+        .takeWhileInclusive { it.size <= 1 }
+        .forEach { text.add(it.last()) }
     text = text.asReversed()
     text.add(this.text)
     val nextNode = parent({ it.treeNext != null }, false) ?: this
     nextNode.siblings(true)
-            .map { it.text.split("\n") }
-            .takeWhileInclusive { it.size <= 1 }
-            .forEach { text.add(it.first()) }
+        .map { it.text.split("\n") }
+        .takeWhileInclusive { it.size <= 1 }
+        .forEach { text.add(it.first()) }
     return text.joinToString(separator = "").trim()
 }
 
@@ -679,10 +679,10 @@ fun ASTNode.extractLineOfText(): String {
  * Checks node has `@Test` annotation
  */
 fun ASTNode.hasTestAnnotation() = findChildByType(MODIFIER_LIST)
-        ?.getAllChildrenWithType(ANNOTATION_ENTRY)
-        ?.flatMap { it.findAllNodesWithSpecificType(ElementType.CONSTRUCTOR_CALLEE) }
-        ?.any { it.findLeafWithSpecificType(ElementType.IDENTIFIER)?.text == "Test" }
-        ?: false
+    ?.getAllChildrenWithType(ANNOTATION_ENTRY)
+    ?.flatMap { it.findAllNodesWithSpecificType(ElementType.CONSTRUCTOR_CALLEE) }
+    ?.any { it.findLeafWithSpecificType(ElementType.IDENTIFIER)?.text == "Test" }
+    ?: false
 
 /**
  * Checks node is located in file src/test/**/*Test.kt
@@ -690,13 +690,13 @@ fun ASTNode.hasTestAnnotation() = findChildByType(MODIFIER_LIST)
  * @param testAnchors names of test directories, e.g. "test", "jvmTest"
  */
 fun isLocatedInTest(filePathParts: List<String>, testAnchors: List<String>) = filePathParts
-        .takeIf { it.contains(PackageNaming.PACKAGE_PATH_ANCHOR) }
-        ?.run { subList(lastIndexOf(PackageNaming.PACKAGE_PATH_ANCHOR), size) }
-        ?.run {
-            // e.g. src/test/ClassTest.kt, other files like src/test/Utils.kt are still checked
-            testAnchors.any { contains(it) } && last().substringBeforeLast('.').endsWith("Test")
-        }
-        ?: false
+    .takeIf { it.contains(PackageNaming.PACKAGE_PATH_ANCHOR) }
+    ?.run { subList(lastIndexOf(PackageNaming.PACKAGE_PATH_ANCHOR), size) }
+    ?.run {
+        // e.g. src/test/ClassTest.kt, other files like src/test/Utils.kt are still checked
+        testAnchors.any { contains(it) } && last().substringBeforeLast('.').endsWith("Test")
+    }
+    ?: false
 
 /**
  * Returns the first line of this node's text if it is single, or the first line followed by [suffix] if there are more than one.
@@ -754,12 +754,12 @@ fun ASTNode.isGoingAfter(otherNode: ASTNode): Boolean {
  * @return line number or null if it cannot be calculated
  */
 fun ASTNode.getLineNumber(): Int =
-        psi.containingFile
-                .viewProvider
-                .document
-                ?.takeIf { it.getLineEndOffset(it.lineCount - 1) >= psi.endOffset }
-                ?.let { lineNumber() }
-                ?: calculateLineNumber()
+    psi.containingFile
+            .viewProvider
+            .document
+            ?.takeIf { it.getLineEndOffset(it.lineCount - 1) >= psi.endOffset }
+            ?.let { lineNumber() }
+            ?: calculateLineNumber()
 
 /**
  * This function calculates line number instead of using cached values.
@@ -770,15 +770,15 @@ private fun ASTNode.calculateLineNumber(): Int {
     var count = 0
     // todo use runningFold or something similar when we migrate to apiVersion 1.4
     return getRootNode()
-            .text
-            .lineSequence()
-            // calculate offset for every line end, `+1` for `\n` which is trimmed in `lineSequence`
-            .indexOfFirst {
-                count += it.length + 1
-                count > startOffset
-            }
-            .let {
-                require(it >= 0) { "Cannot calculate line number correctly, node's offset $startOffset is greater than file length ${getRootNode().textLength}" }
-                it + 1
-            }
+        .text
+        .lineSequence()
+        // calculate offset for every line end, `+1` for `\n` which is trimmed in `lineSequence`
+        .indexOfFirst {
+            count += it.length + 1
+            count > startOffset
+        }
+        .let {
+            require(it >= 0) { "Cannot calculate line number correctly, node's offset $startOffset is greater than file length ${getRootNode().textLength}" }
+            it + 1
+        }
 }
