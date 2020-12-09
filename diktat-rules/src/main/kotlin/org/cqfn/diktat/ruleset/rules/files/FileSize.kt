@@ -36,7 +36,7 @@ class FileSize(private val configRules: List<RulesConfig>) : Rule("file-size") {
                 log.error("$SRC_PATH directory is not found in file path")
             } else {
                 if (configuration.ignoreFolders.none {
-                        filePathParts.containsAll(it.splitPathToDirs())
+                    filePathParts.containsAll(it.splitPathToDirs())
                 }) {
                     checkFileSize(node, configuration.maxSize)
                 }
