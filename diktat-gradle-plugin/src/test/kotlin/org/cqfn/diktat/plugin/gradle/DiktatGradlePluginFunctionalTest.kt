@@ -17,6 +17,19 @@ class DiktatGradlePluginFunctionalTest {
     fun setUp() {
         testProjectDir.create()
         File("../examples/gradle-kotlin-dsl").copyRecursively(testProjectDir.root)
+        File(testProjectDir.root, "build.gradle.kts").delete()
+        testProjectDir.newFile("build.gradle.kts").writeText(
+            """
+                plugins {
+                    id("org.cqfn.diktat.diktat-gradle-plugin")
+                }
+                
+                repositories {
+                    mavenCentral()
+                }
+            """.trimIndent()
+        )
+
     }
 
     @AfterEach
@@ -26,15 +39,17 @@ class DiktatGradlePluginFunctionalTest {
 
     @Test
     fun `should execute diktatCheck on default values`() {
+        println(testProjectDir.root.listFiles().joinToString("\n"))
         val result = GradleRunner.create()
             .withProjectDir(testProjectDir.root)
             .withArguments(DIKTAT_CHECK_TASK)
+            .withPluginClasspath()
             .forwardOutput()
             .runCatching {
                 buildAndFail()
             }
 
-        Assertions.assertTrue(result.isSuccess) { "Running gradle returned exception ${result.exceptionOrNull()}" }
+        require(result.isSuccess) { "Running gradle returned exception ${result.exceptionOrNull()}" }
 
         val buildResult = result.getOrNull()!!
         val diktatCheckBuildResult = buildResult.task(":$DIKTAT_CHECK_TASK")
@@ -44,4 +59,19 @@ class DiktatGradlePluginFunctionalTest {
             buildResult.output.contains("[HEADER_MISSING_OR_WRONG_COPYRIGHT]")
         )
     }
+
+/*    @Test
+    fun `should execute diktatCheck with explicit inputs`() {
+        val result = GradleRunner.create()
+            .withProjectDir(testProjectDir.root)
+            .withArguments(DIKTAT_CHECK_TASK)
+            .buildAndFail()
+
+        val diktatCheckBuildResult = result.task(":$DIKTAT_CHECK_TASK")
+        requireNotNull(diktatCheckBuildResult)
+        Assertions.assertEquals(TaskOutcome.FAILED, diktatCheckBuildResult.outcome)
+        Assertions.assertTrue(
+            result.output.contains("[HEADER_MISSING_OR_WRONG_COPYRIGHT]")
+        )
+    }*/
 }
