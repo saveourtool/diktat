@@ -29,6 +29,7 @@ dependencies {
     implementation("org.cqfn.diktat:diktat-rules:$diktatVersion")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
+    testImplementation(gradleTestKit())
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
 }
 
