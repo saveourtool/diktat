@@ -28,14 +28,13 @@ import org.jetbrains.kotlin.psi.KtClass
  * This rule checks if class is stateless and if so changes it to object.
  */
 class StatelessClassesRule(private val configRule: List<RulesConfig>) : Rule("stateless-class") {
-    private lateinit var emitWarn: EmitType
     private var isFixMode: Boolean = false
+    private lateinit var emitWarn: EmitType
 
-    override fun visit(
-            node: ASTNode,
-            autoCorrect: Boolean,
-            emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit
-    ) {
+    override fun visit(node: ASTNode,
+                       autoCorrect: Boolean,
+                       emit: EmitType) {
+
         emitWarn = emit
         isFixMode = autoCorrect
 
@@ -72,23 +71,23 @@ class StatelessClassesRule(private val configRule: List<RulesConfig>) : Rule("st
     private fun isStatelessClass(node: ASTNode): Boolean {
         val properties = (node.psi as KtClass).getProperties()
         val functions = node.findAllNodesWithSpecificType(FUN)
-        return properties.isNullOrEmpty()
-            && functions.isNotEmpty()
-            && !(node.psi as KtClass).hasExplicitPrimaryConstructor()
+        return properties.isNullOrEmpty() &&
+                functions.isNotEmpty() &&
+                !(node.psi as KtClass).hasExplicitPrimaryConstructor()
     }
 
     private fun isClassExtendsValidInterface(node: ASTNode, interfaces: List<ASTNode>) : Boolean =
             node.findChildByType(SUPER_TYPE_LIST)
             ?.getAllChildrenWithType(SUPER_TYPE_ENTRY)
             ?.isNotEmpty()
-            ?.and(classInheritsStatelessInterface(node, interfaces))
+            ?.and(isClassInheritsStatelessInterface(node, interfaces))
                 ?: false
 
     @Suppress("UnsafeCallOnNullableType")
-    private fun classInheritsStatelessInterface (node: ASTNode, interfaces: List<ASTNode>): Boolean {
+    private fun isClassInheritsStatelessInterface (node: ASTNode, interfaces: List<ASTNode>) : Boolean {
         val classInterfaces = node
-                .findChildByType(SUPER_TYPE_LIST)
-                ?.getAllChildrenWithType(SUPER_TYPE_ENTRY)
+            .findChildByType(SUPER_TYPE_LIST)
+            ?.getAllChildrenWithType(SUPER_TYPE_ENTRY)
 
         val foundInterfaces = interfaces.filter { inter ->
             classInterfaces!!.any { it.text == inter.getFirstChildWithType(IDENTIFIER)!!.text }
