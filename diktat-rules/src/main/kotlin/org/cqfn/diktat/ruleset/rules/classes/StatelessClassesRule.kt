@@ -9,7 +9,6 @@ import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 
 import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.ast.children
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.FILE
@@ -20,6 +19,7 @@ import com.pinterest.ktlint.core.ast.ElementType.OBJECT_DECLARATION
 import com.pinterest.ktlint.core.ast.ElementType.OBJECT_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_LIST
+import com.pinterest.ktlint.core.ast.children
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -35,7 +35,6 @@ class StatelessClassesRule(private val configRule: List<RulesConfig>) : Rule("st
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
                        emit: EmitType) {
-
         emitWarn = emit
         isFixMode = autoCorrect
 
