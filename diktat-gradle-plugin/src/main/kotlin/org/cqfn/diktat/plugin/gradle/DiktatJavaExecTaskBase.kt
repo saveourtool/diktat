@@ -68,7 +68,8 @@ open class DiktatJavaExecTaskBase @Inject constructor(
                 }
                 .files
                 .forEach {
-                    add("\"${it.path}\"")
+                    val path = it.relativeTo(project.projectDir).path
+                    add("\"$path\"")
                 }
             diktatExtension.excludes?.files?.forEach {
                 add("\"!${it.path}\"")

@@ -29,13 +29,19 @@ class DiktatGradlePluginFunctionalTest {
         val result = GradleRunner.create()
             .withProjectDir(testProjectDir.root)
             .withArguments(DIKTAT_CHECK_TASK)
-            .buildAndFail()
+            .forwardOutput()
+            .runCatching {
+                buildAndFail()
+            }
 
-        val diktatCheckBuildResult = result.task(":$DIKTAT_CHECK_TASK")
+        Assertions.assertTrue(result.isSuccess) { "Running gradle returned exception ${result.exceptionOrNull()}" }
+
+        val buildResult = result.getOrNull()!!
+        val diktatCheckBuildResult = buildResult.task(":$DIKTAT_CHECK_TASK")
         requireNotNull(diktatCheckBuildResult)
         Assertions.assertEquals(TaskOutcome.FAILED, diktatCheckBuildResult.outcome)
         Assertions.assertTrue(
-            result.output.contains("[HEADER_MISSING_OR_WRONG_COPYRIGHT]")
+            buildResult.output.contains("[HEADER_MISSING_OR_WRONG_COPYRIGHT]")
         )
     }
 }
