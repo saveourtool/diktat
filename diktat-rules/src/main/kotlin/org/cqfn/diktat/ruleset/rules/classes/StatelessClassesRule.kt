@@ -17,7 +17,6 @@ import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
-import org.cqfn.diktat.ruleset.utils.getAllLeafsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -43,12 +42,12 @@ class StatelessClassesRule(private val configRule: List<RulesConfig>) : Rule("st
         // Fixme: We should find interfaces in all project and then check them
         if (node.elementType == FILE) {
             val interfacesNodes = node
-                    .findAllNodesWithSpecificType(CLASS)
-                    .filter { it.hasChildOfType(INTERFACE_KEYWORD) }
+                .findAllNodesWithSpecificType(CLASS)
+                .filter { it.hasChildOfType(INTERFACE_KEYWORD) }
             node
-                    .findAllNodesWithSpecificType(CLASS)
-                    .filterNot { it.hasChildOfType(INTERFACE_KEYWORD) }
-                    .forEach{handleClass(it, interfacesNodes)}
+                .findAllNodesWithSpecificType(CLASS)
+                .filterNot { it.hasChildOfType(INTERFACE_KEYWORD) }
+                .forEach{handleClass(it, interfacesNodes)}
         }
     }
 
@@ -74,16 +73,16 @@ class StatelessClassesRule(private val configRule: List<RulesConfig>) : Rule("st
         val properties = (node.psi as KtClass).getProperties()
         val functions = node.findAllNodesWithSpecificType(FUN)
         return properties.isNullOrEmpty()
-                && functions.isNotEmpty()
-                && !(node.psi as KtClass).hasExplicitPrimaryConstructor()
+            && functions.isNotEmpty()
+            && !(node.psi as KtClass).hasExplicitPrimaryConstructor()
     }
 
     private fun isClassExtendsValidInterface(node: ASTNode, interfaces: List<ASTNode>) : Boolean =
             node.findChildByType(SUPER_TYPE_LIST)
-                ?.getAllChildrenWithType(SUPER_TYPE_ENTRY)
-                ?.isNotEmpty()
-                ?.and(classInheritsStatelessInterface(node, interfaces))
-                    ?: false
+            ?.getAllChildrenWithType(SUPER_TYPE_ENTRY)
+            ?.isNotEmpty()
+            ?.and(classInheritsStatelessInterface(node, interfaces))
+                ?: false
 
     @Suppress("UnsafeCallOnNullableType")
     private fun classInheritsStatelessInterface (node: ASTNode, interfaces: List<ASTNode>): Boolean {
