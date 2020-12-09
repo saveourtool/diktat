@@ -118,6 +118,7 @@ enum class Warnings(
     SMART_CAST_NEEDED(true, "4.2.1", "you can omit explicit casting"),
     SAY_NO_TO_VAR(false, "4.1.3", "Usage of a mutable variables with [var] modifier - is a bad style, use [val] instead"),
     GENERIC_VARIABLE_WRONG_DECLARATION(true, "4.3.2", "variable should have explicit type declaration"),
+
     // FixMe: change float literal to BigDecimal? Or kotlin equivalent?
     FLOAT_IN_ACCURATE_CALCULATIONS(false, "4.1.1", "floating-point values shouldn't be used in accurate calculations"),
     AVOID_NULL_CHECKS(false, "4.3.3", "Try to avoid explicit null-checks"),
@@ -144,7 +145,7 @@ enum class Warnings(
     EMPTY_PRIMARY_CONSTRUCTOR(true, "6.1.3", "avoid empty primary constructor"),
     NO_CORRESPONDING_PROPERTY(false, "6.1.7", "backing property should have the same name, but there is no corresponding property"),
     AVOID_USING_UTILITY_CLASS(false, "6.4.1", "avoid using utility classes/objects, use extensions functions"),
-    OBJECT_IS_PREFERRED(true, "6.4.2", "it is better to use object for stateless classes")
+    OBJECT_IS_PREFERRED(true, "6.4.2", "it is better to use object for stateless classes"),
     ;
 
     /**
