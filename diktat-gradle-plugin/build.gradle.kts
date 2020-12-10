@@ -101,6 +101,7 @@ val functionalTest = sourceSets.create("functionalTest") {
         runtimeClasspath += output + compileClasspath
 }
 tasks.getByName<Test>("functionalTest") {
+    dependsOn("test")
     testClassesDirs = functionalTest.output.classesDirs
     classpath = functionalTest.runtimeClasspath
 }

@@ -68,11 +68,10 @@ open class DiktatJavaExecTaskBase @Inject constructor(
                 }
                 .files
                 .forEach {
-                    val path = it.relativeTo(project.projectDir).path
-                    add("\"$path\"")
+                    add("\"${project.trimRootDir(it.path)}\"")
                 }
             diktatExtension.excludes?.files?.forEach {
-                add("\"!${it.path}\"")
+                add("\"!${project.trimRootDir(it.path)}\"")
             }
         }
         logger.debug("Setting JavaExec args to $args")
@@ -125,3 +124,10 @@ fun Project.registerDiktatFixTask(diktatExtension: DiktatExtension, diktatConfig
             DIKTAT_FIX_TASK, DiktatJavaExecTaskBase::class.java, gradle.gradleVersion,
             diktatExtension, diktatConfiguration, listOf("-F ")
         )
+
+private fun Project.trimRootDir(path: String) = if (path.startsWith(rootDir.absolutePath)) {
+    path.drop(rootDir.absolutePath.length)
+} else {
+    path
+}
+    .trim(File.separatorChar)

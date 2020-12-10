@@ -70,6 +70,6 @@ class DiktatJavaExecTaskTest {
         Assertions.assertIterableEquals(expected, task.commandLine)
     }
 
-    private fun combinePathParts(vararg parts: String) = project.projectDir.absolutePath +
-            parts.joinToString(File.separator, prefix = File.separator)
+    private fun combinePathParts(vararg parts: String) =
+            parts.joinToString(File.separator)
 }
