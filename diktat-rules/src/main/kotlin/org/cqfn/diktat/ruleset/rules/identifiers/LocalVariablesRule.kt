@@ -7,13 +7,13 @@ import org.cqfn.diktat.ruleset.utils.containsOnlyConstants
 import org.cqfn.diktat.ruleset.utils.getDeclarationScope
 import org.cqfn.diktat.ruleset.utils.getLineNumber
 import org.cqfn.diktat.ruleset.utils.lastLineNumber
+import org.cqfn.diktat.ruleset.utils.numNewLines
 import org.cqfn.diktat.ruleset.utils.search.findAllVariablesWithUsages
 
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isPartOfComment
-import org.cqfn.diktat.ruleset.utils.numNewLines
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
@@ -96,9 +96,16 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
     }
 
     private fun handleConsecutiveDeclarations(statement: PsiElement, properties: List<KtProperty>) {
-        val numLinesAfterLastProp = if (properties.last().node.treeNext.elementType == WHITE_SPACE)
-            properties.last().node.treeNext.numNewLines() - 1 // minus one is needed to except \n after property
-        else 0
+        val numLinesAfterLastProp = if (properties.last().node.treeNext.elementType == WHITE_SPACE) {
+            // minus one is needed to except \n after property
+            properties
+                    .last()
+                    .node
+                    .treeNext
+                    .numNewLines() - 1
+        } else {
+            0
+        }
 
         // need to check that properties are declared consecutively with only maybe empty lines
         properties
