@@ -152,18 +152,18 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
             if ((leftDotCalls?.size ?: 0) + (rightDotCalls?.size ?: 0) > configuration.maxCallsInOneLine && !node.isBeginByNewline()) {
                 WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
                     "should follow functional style at ${node.text}", node.startOffset, node) {
-                                node.treeParent.appendNewlineMergingWhiteSpace(node.treePrev.takeIf { it.elementType == WHITE_SPACE }, node)
+                    node.treeParent.appendNewlineMergingWhiteSpace(node.treePrev.takeIf { it.elementType == WHITE_SPACE }, node)
                 }
             }
         } else if (node.prevCodeSibling()?.isFollowedByNewline() == true) {
             WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
                 "should break a line after and not before ${node.text}", node.startOffset, node) {
-                            node.run {
-                                treeParent.removeChild(treePrev)
-                                if (!isFollowedByNewline()) {
-                                    treeParent.appendNewlineMergingWhiteSpace(treeNext.takeIf { it.elementType == WHITE_SPACE }, treeNext)
-                                }
-                            }
+                node.run {
+                    treeParent.removeChild(treePrev)
+                    if (!isFollowedByNewline()) {
+                        treeParent.appendNewlineMergingWhiteSpace(treeNext.takeIf { it.elementType == WHITE_SPACE }, treeNext)
+                    }
+                }
             }
         }
     }
