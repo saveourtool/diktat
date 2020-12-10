@@ -80,6 +80,7 @@ java {
 
 // === testing & code coverage, jacoco is run independent from maven
 val functionalTestTask by tasks.register<Test>("functionalTest")
+val jacocoMergeTask by tasks.register<JacocoMerge>("jacocoMerge")
 tasks.withType<Test> {
     useJUnitPlatform()
 }
@@ -101,18 +102,18 @@ tasks.getByName<Test>("functionalTest") {
             Thread.sleep(5_000)
         }
     }
-    finalizedBy(tasks.jacocoTestReport)
+    finalizedBy(jacocoMergeTask)
 }
 tasks.check { dependsOn(functionalTestTask) }
 jacocoTestKit {
     applyTo("functionalTestRuntimeOnly", tasks.named("functionalTest"))
 }
-tasks.create("jacocoMerge", JacocoMerge::class) {
+tasks.getByName("jacocoMerge", JacocoMerge::class) {
     dependsOn(functionalTestTask)
     executionData(tasks.test, functionalTestTask)
 }
 tasks.jacocoTestReport {
-    dependsOn("jacocoMerge")
+    dependsOn(jacocoMergeTask)
     executionData("$buildDir/jacoco/jacocoMerge.exec")
     reports {
         // xml report is used by codecov
