@@ -7,6 +7,7 @@ import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.ListOfList
 import org.cqfn.diktat.ruleset.constants.Warnings.REDUNDANT_SEMICOLON
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_NEWLINES
+import org.cqfn.diktat.ruleset.utils.*
 
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.ANDAND
@@ -64,7 +65,6 @@ import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.nextCodeSibling
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevCodeSibling
-import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -151,19 +151,19 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
                 ?.getCallChain()
             if ((leftDotCalls?.size ?: 0) + (rightDotCalls?.size ?: 0) > configuration.maxCallsInOneLine && !node.isBeginByNewline()) {
                 WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
-            "should follow functional style at ${node.text}", node.startOffset, node) {
-                        node.treeParent.appendNewlineMergingWhiteSpace(node.treePrev.takeIf { it.elementType == WHITE_SPACE }, node)
+                    "should follow functional style at ${node.text}", node.startOffset, node) {
+                                node.treeParent.appendNewlineMergingWhiteSpace(node.treePrev.takeIf { it.elementType == WHITE_SPACE }, node)
                 }
             }
         } else if (node.prevCodeSibling()?.isFollowedByNewline() == true) {
             WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
-        "should break a line after and not before ${node.text}", node.startOffset, node) {
-                    node.run {
-                        treeParent.removeChild(treePrev)
-                        if (!isFollowedByNewline()) {
-                            treeParent.appendNewlineMergingWhiteSpace(treeNext.takeIf { it.elementType == WHITE_SPACE }, treeNext)
-                        }
-                    }
+                "should break a line after and not before ${node.text}", node.startOffset, node) {
+                            node.run {
+                                treeParent.removeChild(treePrev)
+                                if (!isFollowedByNewline()) {
+                                    treeParent.appendNewlineMergingWhiteSpace(treeNext.takeIf { it.elementType == WHITE_SPACE }, treeNext)
+                                }
+                            }
             }
         }
     }
@@ -439,7 +439,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
      */
     private fun ASTNode.isCallsChain() = getCallChain()?.isNotValidCalls(this) ?: false
 
-    private fun ASTNode.getCallChain() =  getParentExpressions()
+    private fun ASTNode.getCallChain() = getParentExpressions()
         .lastOrNull()
         ?.run {
             mutableListOf<ASTNode>().also {
