@@ -483,9 +483,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |        foo(a, b, c)
                     |    }
                     |}
-                """.trimMargin(),
-            LintError(2, 5, ruleId, "${LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("a", 2, 6)}", false),
-            LintError(3, 5, ruleId, "${LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("b", 3, 6)}", false)
+                """.trimMargin()
         )
     }
 
@@ -570,6 +568,38 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |       bar(code)
                     |    }
                     |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    fun `should not trigger on space after last val`() {
+        lintMethod(
+                """
+                    |    private fun collectAllExtensionFunctions(node: ASTNode): SimilarSignatures {
+                    |       val extensionFunctionList = node.findAllNodesWithSpecificType(FUN).filter { it.hasChildOfType(TYPE_REFERENCE) && it.hasChildOfType(DOT) }
+                    |       val distinctFunctionSignatures = mutableMapOf<FunctionSignature, ASTNode>()  // maps function signatures on node it is used by
+                    |       val extensionFunctionsPairs = mutableListOf<Pair<ExtensionFunction, ExtensionFunction>>()  // pairs extension functions with same signature
+                    |       
+                    |       extensionFunctionList.forEach { func ->
+                    |           val functionName = (func.psi as KtNamedFunction).name!!
+                    |           // List<String> is used to show param names in warning
+                    |           val params = (func.getFirstChildWithType(VALUE_PARAMETER_LIST)!!.psi as KtParameterList).parameters.map { it.name!! }
+                    |           val returnType = func.findChildAfter(COLON, TYPE_REFERENCE)?.text
+                    |           val className = func.findChildBefore(DOT, TYPE_REFERENCE)!!.text
+                    |           val signature = FunctionSignature(functionName, params, returnType)
+                    |           if (distinctFunctionSignatures.contains(signature)) {
+                    |               val secondFuncClassName = distinctFunctionSignatures[signature]!!.findChildBefore(DOT, TYPE_REFERENCE)!!.text
+                    |               extensionFunctionsPairs.add(Pair(
+                    |               ExtensionFunction(secondFuncClassName, signature, distinctFunctionSignatures[signature]!!),
+                    |               ExtensionFunction(className, signature, func)))
+                    |           } else {
+                    |               distinctFunctionSignatures[signature] = func
+                    |           }
+                    |       }
+                    |       return extensionFunctionsPairs
+                    |   }
                 """.trimMargin()
         )
     }
