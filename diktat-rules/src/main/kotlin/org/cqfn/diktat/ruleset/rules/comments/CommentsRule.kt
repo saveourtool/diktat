@@ -22,7 +22,6 @@ import org.jetbrains.kotlin.resolve.ImportPath
  * This rule performs checks if there is any commented code.
  * No commented out code is allowed, including imports.
  */
-
 @Suppress("ForbiddenComment")
 class CommentsRule(private val configRules: List<RulesConfig>) : Rule("comments") {
     private var isFixMode: Boolean = false
@@ -119,6 +118,7 @@ class CommentsRule(private val configRules: List<RulesConfig>) : Rule("comments"
 
     /**
      * This is a very rare case. We should check this cases for 4 things:
+     *
      * 1. If it is a class/object at the beginning of the line
      * 2. If it is a function
      * 3. If it is import/package implementation
