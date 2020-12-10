@@ -96,7 +96,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
 
     @Test
     @Tag(WarningNames.COMMENTED_OUT_CODE)
-    fun `Should warn if commented out function is detected (single line comments with surrounding text)`() {
+    fun `Should warn if commented out function is detected single line comments with surrounding text`() {
         lintMethod(
             """
            |import org.junit.Test
@@ -153,7 +153,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
 
     @Test
     @Tag(WarningNames.COMMENTED_OUT_CODE)
-    fun `Should warn if detects commented out code (example with IDEA style indents)`() {
+    fun `Should warn if detects commented out code example with IDEA style indents`() {
         lintMethod(
             """
                 |//import org.junit.Ignore
@@ -171,5 +171,47 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
             LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} import org.junit.Ignore", false),
             LintError(6, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} fun foo(a: Int): Int {", false)
         )
+    }
+
+    @Test
+    @Tag(WarningNames.COMMENTED_OUT_CODE)
+    fun `should trigger on class with one space after comment start token`() {
+        lintMethod(
+                """
+                |// class Test: Exception()
+            """.trimMargin(),
+                LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} class Test: Exception()", false))
+    }
+
+    @Test
+    @Tag(WarningNames.COMMENTED_OUT_CODE)
+    fun `should trigger on import with one space after comment start token`() {
+        lintMethod(
+                """
+                |// import some.org
+            """.trimMargin(),
+                LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} import some.org", false))
+    }
+
+    @Test
+    @Tag(WarningNames.COMMENTED_OUT_CODE)
+    fun `should trigger on package with one space after comment start token`() {
+        lintMethod(
+                """
+                |// package some.org
+            """.trimMargin(),
+                LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} package some.org", false))
+    }
+
+    @Test
+    @Tag(WarningNames.COMMENTED_OUT_CODE)
+    fun `should trigger on function with one space after comment start token`() {
+        lintMethod(
+                """
+                |// fun someFunc(name: String): Boolean {
+                |//     val a = 5
+                |// }
+            """.trimMargin(),
+                LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} fun someFunc(name: String): Boolean {", false))
     }
 }

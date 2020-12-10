@@ -22,6 +22,7 @@ import org.jetbrains.kotlin.resolve.ImportPath
  * This rule performs checks if there is any commented code.
  * No commented out code is allowed, including imports.
  */
+
 @Suppress("ForbiddenComment")
 class CommentsRule(private val configRules: List<RulesConfig>) : Rule("comments") {
     private var isFixMode: Boolean = false
@@ -93,7 +94,7 @@ class CommentsRule(private val configRules: List<RulesConfig>) : Rule("comments"
     private fun getOffsetsToTextBlocksFromEolComments(node: ASTNode): List<Pair<Int, String>> {
         val comments = node
             .findAllNodesWithSpecificType(EOL_COMMENT)
-            .filter { !it.text.contains(eolCommentStart) }
+            .filter { !it.text.contains(eolCommentStart) || isCodeAfterCommentStart(it.text) }
         return if (comments.isNotEmpty()) {
             val result = mutableListOf(mutableListOf(comments.first()))
             comments
@@ -116,10 +117,31 @@ class CommentsRule(private val configRules: List<RulesConfig>) : Rule("comments"
         }
     }
 
+    /**
+     * This is a very rare case. We should check this cases for 4 things:
+     *
+     * 1. If it is a class/object at the beginning of the line
+     * 2. If it is a function
+     * 3. If it is import/package implementation
+     * 4. If it is }. This case is used when } goes after one space and it is closing class or fun
+     */
+    private fun isCodeAfterCommentStart(text: String): Boolean {
+        val textWithoutCommentStartToken = text.removePrefix("//").trim()
+        return textWithoutCommentStartToken.contains(classRegex) ||
+                textWithoutCommentStartToken.contains(importOrPackageRegex) ||
+                textWithoutCommentStartToken.contains(functionRegex) ||
+                textWithoutCommentStartToken.contains(rightBraceRegex)
+    }
+
     companion object {
         private val importKeyword = KtTokens.IMPORT_KEYWORD.value
         private val packageKeyword = KtTokens.PACKAGE_KEYWORD.value
         private val importOrPackage = """($importKeyword|$packageKeyword) """.toRegex()
+        private val classRegex =
+                """^\s*(public|private|open|internal|protected)*\s*(class|object)\s+(\w+)(\(.*\))*(\s*:\s*\w+(\(.*\))*)?\s*\{*$""".toRegex()
+        private val importOrPackageRegex = """^(import|package)?\s+([a-zA-Z.])+$""".toRegex()
+        private val functionRegex = """^(override)*\s?fun\s+\w+(\(.*\))?(\s*:\s*\w+)?\s*\{$""".toRegex()
+        private val rightBraceRegex = """^\s*}$""".toRegex()
         private val eolCommentStart = """// \S""".toRegex()
     }
 }
