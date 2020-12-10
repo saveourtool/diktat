@@ -104,7 +104,7 @@ tasks.getByName<Test>("functionalTest") {
     }
     finalizedBy(jacocoMergeTask)
 }
-tasks.check { dependsOn(functionalTestTask) }
+tasks.check { dependsOn(tasks.jacocoTestReport) }
 jacocoTestKit {
     applyTo("functionalTestRuntimeOnly", tasks.named("functionalTest"))
 }
