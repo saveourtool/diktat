@@ -29,7 +29,6 @@ dependencies {
     implementation("org.cqfn.diktat:diktat-rules:$diktatVersion")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
-    testImplementation(gradleTestKit())
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
 }
 
@@ -40,7 +39,8 @@ val generateVersionsFile by tasks.registering {
 
     doFirst {
         versionsFile.parentFile.mkdirs()
-        versionsFile.writeText("""
+        versionsFile.writeText(
+            """
             package generated
 
             internal const val DIKTAT_VERSION = "$diktatVersion"
@@ -77,6 +77,7 @@ java {
 }
 
 // === testing & code coverage, consistent with maven
+val functionalTestTask by tasks.register<Test>("functionalTest")
 tasks.withType<Test> {
     useJUnitPlatform()
     extensions.configure(JacocoTaskExtension::class) {
@@ -92,3 +93,15 @@ tasks.jacocoTestReport {
         xml.destination = file("target/site/jacoco/jacoco.xml")
     }
 }
+
+// === integration testing
+// fixme: should probably use KotlinSourceSet instead
+val functionalTest = sourceSets.create("functionalTest") {
+        compileClasspath += sourceSets.main.get().output + configurations.testRuntimeClasspath
+        runtimeClasspath += output + compileClasspath
+}
+tasks.getByName<Test>("functionalTest") {
+    testClassesDirs = functionalTest.output.classesDirs
+    classpath = functionalTest.runtimeClasspath
+}
+tasks.check { dependsOn(functionalTestTask) }

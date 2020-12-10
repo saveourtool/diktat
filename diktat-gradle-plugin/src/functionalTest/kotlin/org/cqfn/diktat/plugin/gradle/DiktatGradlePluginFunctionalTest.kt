@@ -25,6 +25,7 @@ class DiktatGradlePluginFunctionalTest {
                 }
                 
                 repositories {
+                    mavenLocal()
                     mavenCentral()
                 }
             """.trimIndent()
