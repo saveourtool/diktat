@@ -12,8 +12,8 @@ env:
   GRADLE_OPTS: -Dorg.gradle.daemon=false  # to speed up gradle run
 
 jobs:
-  run-functional-tests:
-    runs-on: ubuntu-latest
+  run_diktat_from_CLI:
+    runs-on: ubuntu-20.04
 
     steps:
       - uses: actions/checkout@v2.3.3
@@ -29,9 +29,7 @@ jobs:
         run: |
           unzip -q -d tmp diktat-$DIKTAT_VERSION.jar
           DIKTAT_CONFIG=diktat-analysis.yml
-          md5sum $DIKTAT_CONFIG
           find tmp -name $DIKTAT_CONFIG -exec cp "{}" . \;
-          md5sum $DIKTAT_CONFIG
 
       - name: Run diKTat from cli
         continue-on-error: true
@@ -43,6 +41,19 @@ jobs:
         run: |
           cat out
           grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out
+
+  run_diktat_from_gradle:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2.3.3
+
+      - name: Setup environment
+        run: |
+          cat pom.xml | grep "<diktat-check.version>.*</diktat-check.version>" | head -1 |awk -F'[><]' '{ENVIRON[DIKTAT_VERSION]=$3 ; print ENVIRON[DIKTAT_VERSION]}'
+          curl -sSLO https://github.com/cqfn/diKTat/releases/download/v$DIKTAT_VERSION/diktat-$DIKTAT_VERSION.jar
+          unzip -q -d tmp diktat-$DIKTAT_VERSION.jar
+          DIKTAT_CONFIG=diktat-analysis.yml
+          find tmp -name $DIKTAT_CONFIG -exec cp "{}" . \;
 
       - name: Run diKTat from gradle kotlin DSL
         continue-on-error: true
@@ -67,6 +78,19 @@ jobs:
         run: |
           cat out
           grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out
+
+  run_diktat_from_maven:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2.3.3
+
+      - name: Setup environment
+        run: |
+          cat pom.xml | grep "<diktat-check.version>.*</diktat-check.version>" | head -1 |awk -F'[><]' '{ENVIRON[DIKTAT_VERSION]=$3 ; print ENVIRON[DIKTAT_VERSION]}'
+          curl -sSLO https://github.com/cqfn/diKTat/releases/download/v$DIKTAT_VERSION/diktat-$DIKTAT_VERSION.jar
+          unzip -q -d tmp diktat-$DIKTAT_VERSION.jar
+          DIKTAT_CONFIG=diktat-analysis.yml
+          find tmp -name $DIKTAT_CONFIG -exec cp "{}" . \;
 
       - name: Run diKTat from maven
         working-directory: ./examples/maven
