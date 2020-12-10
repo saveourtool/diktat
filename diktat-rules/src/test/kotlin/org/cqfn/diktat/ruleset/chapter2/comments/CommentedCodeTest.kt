@@ -177,41 +177,41 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
     @Tag(WarningNames.COMMENTED_OUT_CODE)
     fun `should trigger on class with one space after comment start token`() {
         lintMethod(
-                """
-                |// class Test: Exception()
+            """
+            |// class Test: Exception()
             """.trimMargin(),
-                LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} class Test: Exception()", false))
+            LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} class Test: Exception()", false))
     }
 
     @Test
     @Tag(WarningNames.COMMENTED_OUT_CODE)
     fun `should trigger on import with one space after comment start token`() {
         lintMethod(
-                """
-                |// import some.org
+            """
+            |// import some.org
             """.trimMargin(),
-                LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} import some.org", false))
+            LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} import some.org", false))
     }
 
     @Test
     @Tag(WarningNames.COMMENTED_OUT_CODE)
     fun `should trigger on package with one space after comment start token`() {
         lintMethod(
-                """
-                |// package some.org
+            """
+            |// package some.org
             """.trimMargin(),
-                LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} package some.org", false))
+            LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} package some.org", false))
     }
 
     @Test
     @Tag(WarningNames.COMMENTED_OUT_CODE)
     fun `should trigger on function with one space after comment start token`() {
         lintMethod(
-                """
-                |// fun someFunc(name: String): Boolean {
-                |//     val a = 5
-                |// }
+            """
+            |// fun someFunc(name: String): Boolean {
+            |//     val a = 5
+            |// }
             """.trimMargin(),
-                LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} fun someFunc(name: String): Boolean {", false))
+            LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} fun someFunc(name: String): Boolean {", false))
     }
 }
