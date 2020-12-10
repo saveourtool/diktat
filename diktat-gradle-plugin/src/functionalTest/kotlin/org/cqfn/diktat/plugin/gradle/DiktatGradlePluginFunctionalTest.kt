@@ -75,6 +75,7 @@ class DiktatGradlePluginFunctionalTest {
         .withProjectDir(testProjectDir.root)
         .withArguments(DIKTAT_CHECK_TASK)
         .withPluginClasspath()
+        .withJaCoCo()
         .forwardOutput()
         .runCatching {
             buildAndFail()
@@ -83,4 +84,18 @@ class DiktatGradlePluginFunctionalTest {
             require(it.isSuccess) { "Running gradle returned exception ${it.exceptionOrNull()}" }
         }
         .getOrNull()!!
+
+    /**
+     * This is support for jacoco reports in tests run with gradle TestKit
+     */
+    private fun GradleRunner.withJaCoCo() = apply {
+        javaClass.classLoader
+            .getResourceAsStream("testkit-gradle.properties")
+            .also { it ?: println("properties file for testkit is not available, check build configuration") }
+            ?.use { propertiesFileStream ->
+                File(projectDir, "gradle.properties").outputStream().use {
+                    propertiesFileStream.copyTo(it)
+                }
+            }
+    }
 }

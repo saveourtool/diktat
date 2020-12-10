@@ -1,9 +1,11 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurrentOperatingSystem
 
 plugins {
     `java-gradle-plugin`
     kotlin("jvm") version "1.4.20"
     jacoco
+    id("pl.droidsonroids.jacoco.testkit") version "1.0.7"
 }
 
 repositories {
@@ -76,17 +78,14 @@ java {
     withSourcesJar()
 }
 
-// === testing & code coverage, consistent with maven
+// === testing & code coverage, jacoco is run independent from maven
 val functionalTestTask by tasks.register<Test>("functionalTest")
 tasks.withType<Test> {
     useJUnitPlatform()
-    extensions.configure(JacocoTaskExtension::class) {
-        setDestinationFile(file("target/jacoco.exec"))
-    }
 }
 
 tasks.jacocoTestReport {
-    dependsOn(tasks.test)
+    dependsOn(functionalTestTask)
     reports {
         // xml report is used by codecov
         xml.isEnabled = true
@@ -104,5 +103,16 @@ tasks.getByName<Test>("functionalTest") {
     dependsOn("test")
     testClassesDirs = functionalTest.output.classesDirs
     classpath = functionalTest.runtimeClasspath
+    doLast {
+        if (getCurrentOperatingSystem().isWindows) {
+            // workaround for https://github.com/koral--/jacoco-gradle-testkit-plugin/issues/9
+            logger.lifecycle("Sleeping for 5 sec after functionalTest to avoid error with file locking")
+            Thread.sleep(5_000)
+        }
+    }
+    finalizedBy(tasks.jacocoTestReport)
 }
 tasks.check { dependsOn(functionalTestTask) }
+jacocoTestKit {
+    applyTo("functionalTestRuntimeOnly", tasks.named("functionalTest"))
+}
