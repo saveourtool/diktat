@@ -84,15 +84,6 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-tasks.jacocoTestReport {
-    dependsOn(functionalTestTask)
-    reports {
-        // xml report is used by codecov
-        xml.isEnabled = true
-        xml.destination = file("target/site/jacoco/jacoco.xml")
-    }
-}
-
 // === integration testing
 // fixme: should probably use KotlinSourceSet instead
 val functionalTest = sourceSets.create("functionalTest") {
@@ -115,4 +106,16 @@ tasks.getByName<Test>("functionalTest") {
 tasks.check { dependsOn(functionalTestTask) }
 jacocoTestKit {
     applyTo("functionalTestRuntimeOnly", tasks.named("functionalTest"))
+}
+tasks.create("jacocoMerge", JacocoMerge::class) {
+    dependsOn(functionalTestTask)
+    executionData(tasks.test, functionalTestTask)
+}
+tasks.jacocoTestReport {
+    dependsOn("jacocoMerge")
+    executionData("$buildDir/jacoco/jacocoMerge.exec")
+    reports {
+        // xml report is used by codecov
+        xml.isEnabled = true
+    }
 }
