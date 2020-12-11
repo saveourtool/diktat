@@ -259,10 +259,6 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         else -> (headerKdoc ?: copyrightComment) to firstCodeNode
     }
 
-    private fun handleIncorrectOrder() {
-
-    }
-
     @Suppress("TYPE_ALIAS")
     private fun regroupImports(imports: List<KtImportDirective>): List<List<KtImportDirective>> {
         val (android, notAndroid) = imports.partition {
