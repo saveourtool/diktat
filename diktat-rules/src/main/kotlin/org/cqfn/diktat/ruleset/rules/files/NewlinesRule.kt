@@ -397,13 +397,13 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
     }
 
     private fun KtBinaryExpression.dotCalls(right: Boolean = true) = (if (right) this.right else this.left)
-            ?.node
-            ?.takeIf { it.elementType == DOT_QUALIFIED_EXPRESSION }
-            ?.findChildByType(DOT)
-            ?.getCallChain()
+        ?.node
+        ?.takeIf { it.elementType == DOT_QUALIFIED_EXPRESSION }
+        ?.findChildByType(DOT)
+        ?.getCallChain()
 
     private fun ASTNode.isElvisCorrect(): Boolean {
-        if(this.elementType != ELVIS) return false
+        if (this.elementType != ELVIS) return false
         val binaryExpression = (this.treeParent.treeParent.psi as KtBinaryExpression)
         val leftDotCalls = binaryExpression.dotCalls(false)
         val rightDotCalls = binaryExpression.dotCalls()
