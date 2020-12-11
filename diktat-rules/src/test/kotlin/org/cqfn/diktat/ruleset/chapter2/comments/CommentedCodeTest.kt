@@ -219,10 +219,10 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
     @Tag(WarningNames.COMMENTED_OUT_CODE)
     fun `should trigger on function with one space after comment start token - = sign`() {
         lintMethod(
-                """
+            """
             |// fun someFunc(name: String): Boolean =
             |//     name.contains("a")
             """.trimMargin(),
-                LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} fun someFunc(name: String): Boolean =", false))
+            LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} fun someFunc(name: String): Boolean =", false))
     }
 }
