@@ -130,7 +130,6 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         }
     }
 
-    @Suppress("AVOID_NESTED_FUNCTION")
     private fun handleOperatorWithLineBreakAfter(node: ASTNode) {
         // [node] should be either EQ or OPERATION_REFERENCE which has single child
         if (!(node.elementType == EQ || node.firstChildNode.elementType in lineBreakAfterOperators || node.isInfixCall())) {
@@ -139,23 +138,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
 
         // We need to check newline only if prevCodeSibling exists. It can be not the case for unary operators, which are placed
         // at the beginning of the line.
-        if (node.firstChildNode != null && node.firstChildNode?.elementType == ELVIS) {
-            val binaryExpression = (node.treeParent.psi as KtBinaryExpression)
-            val leftDotCalls = binaryExpression.left?.node
-                ?.takeIf { it.elementType == DOT_QUALIFIED_EXPRESSION }
-                ?.findChildByType(DOT)
-                ?.getCallChain()
-            val rightDotCalls = binaryExpression.right?.node
-                ?.takeIf { it.elementType == DOT_QUALIFIED_EXPRESSION }
-                ?.findChildByType(DOT)
-                ?.getCallChain()
-            if ((leftDotCalls?.size ?: 0) + (rightDotCalls?.size ?: 0) > configuration.maxCallsInOneLine && !node.isBeginByNewline()) {
-                WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
-                    "should follow functional style at ${node.text}", node.startOffset, node) {
-                    node.treeParent.appendNewlineMergingWhiteSpace(node.treePrev.takeIf { it.elementType == WHITE_SPACE }, node)
-                }
-            }
-        } else if (node.prevCodeSibling()?.isFollowedByNewline() == true) {
+        if (node.prevCodeSibling()?.isFollowedByNewline() == true) {
             WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
                 "should break a line after and not before ${node.text}", node.startOffset, node) {
                 node.run {
@@ -184,8 +167,8 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
                 isFollowedByNewline() && !isSingleDotStatementOnSingleLine()
             }
         }
-        if (isIncorrect) {
-            val freeText = if (node.isCallsChain()) {
+        if (isIncorrect || node.isElvisCorrect()) {
+            val freeText = if (node.isCallsChain() || node.isElvisCorrect()) {
                 "should follow functional style at ${node.text}"
             } else {
                 "should break a line before and not after ${node.text}"
@@ -413,6 +396,20 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         }
     }
 
+    private fun KtBinaryExpression.dotCalls(right: Boolean = true) = (if (right) this.right else this.left)
+            ?.node
+            ?.takeIf { it.elementType == DOT_QUALIFIED_EXPRESSION }
+            ?.findChildByType(DOT)
+            ?.getCallChain()
+
+    private fun ASTNode.isElvisCorrect(): Boolean {
+        if(this.elementType != ELVIS) return false
+        val binaryExpression = (this.treeParent.treeParent.psi as KtBinaryExpression)
+        val leftDotCalls = binaryExpression.dotCalls(false)
+        val rightDotCalls = binaryExpression.dotCalls()
+        return (leftDotCalls?.size ?: 0) + (rightDotCalls?.size ?: 0) > configuration.maxCallsInOneLine && !this.isBeginByNewline()
+    }
+
     /**
      * This function is needed because many operators are represented as a single child of [OPERATION_REFERENCE] node
      * e.g. [ANDAND] is a single child of [OPERATION_REFERENCE]
@@ -435,7 +432,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
     /**
      * This method collects chain calls and checks it
      *
-     * @return true - if there is error, false, if there is no error and null if there is two calls in chain
+     * @return true - if there is error, and false if there is no error
      */
     private fun ASTNode.isCallsChain() = getCallChain()?.isNotValidCalls(this) ?: false
 
@@ -518,7 +515,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
 
         // fixme: these token sets can be not full, need to add new once as corresponding cases are discovered.
         // error is raised if these operators are prepended by newline
-        private val lineBreakAfterOperators = TokenSet.create(ANDAND, OROR, PLUS, PLUSEQ, MINUS, MINUSEQ, MUL, MULTEQ, DIV, DIVEQ, ELVIS)
+        private val lineBreakAfterOperators = TokenSet.create(ANDAND, OROR, PLUS, PLUSEQ, MINUS, MINUSEQ, MUL, MULTEQ, DIV, DIVEQ)
         // error is raised if these operators are followed by newline
 
         private val lineBreakBeforeOperators = TokenSet.create(DOT, SAFE_ACCESS, ELVIS, COLONCOLON)
