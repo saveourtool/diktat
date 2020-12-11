@@ -37,6 +37,7 @@ import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtImportDirective
+import org.jetbrains.kotlin.psi.psiUtil.siblings
 
 /**
  * Visitor for checking internal file structure.
@@ -102,15 +103,15 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
 
     @Suppress("TOO_LONG_FUNCTION")
     private fun checkCodeBlocksOrderAndEmptyLines(node: ASTNode) {
-        // PACKAGE_DIRECTIVE node is always present in regular kt files and might be absent in kts.
+        // From KtFile.kt: 'scripts have no package directive, all other files must have package directives'.
         // Kotlin compiler itself enforces it's position in the file if it is present.
         // If package directive is missing in .kt file (default package), the node is still present in the AST.
-        // fixme: find and handle cases when this node is not present (.kts files?)
         val packageDirectiveNode = (node.psi as KtFile)
             .packageDirective
             ?.takeUnless { it.isRoot }
             ?.node
-        // fixme: find cases when node.psi.importLists.size > 1, handle cases when it's not present (null)
+        // There is a private property node.psi.importLists, but it's size can't be > 1 in valid kotlin code. It exists to help in situations
+        // when, e.g. merge conflict marker breaks the imports list. We shouldn't handle this situation here.
         val importsList = (node.psi as KtFile)
             .importList
             ?.takeIf { it.imports.isNotEmpty() }
@@ -123,19 +124,31 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
                 // taking nodes with actual code
                 !it.isWhiteSpace() && !it.isPartOfComment() &&
                         // but not the ones we are going to move
-                        it.elementType != FILE_ANNOTATION_LIST && it.elementType != IMPORT_LIST &&
-                        // if we are here, then package is default and we don't need to select the empty PACKAGE_DIRECTIVE node
+                        it.elementType != FILE_ANNOTATION_LIST &&
+                        // if we are here, then IMPORT_LIST either is not present in the AST, or is empty. Either way, we don't need to select it.
+                        it.elementType != IMPORT_LIST &&
+                        // if we are here, then package is default and we don't need to select the empty PACKAGE_DIRECTIVE node.
                         it.elementType != PACKAGE_DIRECTIVE
             }
             ?: return  // at this point it means the file contains only comments
-        // fixme: handle other elements that could be present before package (other comments)
+        // We consider the first block comment of the file to be the one that possibly contains copyright information.
         var copyrightComment = firstCodeNode.prevSibling { it.elementType == BLOCK_COMMENT }
         var headerKdoc = firstCodeNode.prevSibling { it.elementType == KDOC }
+        // Annotations with target`file` can only be placed before `package` directive.
         var fileAnnotations = node.findChildByType(FILE_ANNOTATION_LIST)
+        // We also collect all other elements that are placed on top of the file.
+        // These may be other comments, so we just place them before the code starts.
+        val otherNodesBeforeCode = firstCodeNode.siblings(forward = false)
+            .filterNot {
+                it.isWhiteSpace() ||
+                it == copyrightComment || it == headerKdoc || it == fileAnnotations
+            }
+            .toList()
+            .reversed()
 
         // checking order
-        listOfNotNull(copyrightComment, headerKdoc, fileAnnotations).handleIncorrectOrder({
-            getSiblingBlocks(copyrightComment, headerKdoc, fileAnnotations, firstCodeNode)
+        listOfNotNull(copyrightComment, headerKdoc, fileAnnotations, *otherNodesBeforeCode.toTypedArray()).handleIncorrectOrder({
+            getSiblingBlocks(copyrightComment, headerKdoc, fileAnnotations, firstCodeNode, otherNodesBeforeCode)
         }) { astNode, beforeThisNode ->
             FILE_INCORRECT_BLOCKS_ORDER.warnAndFix(configRules, emitWarn, isFixMode, astNode.text.lines().first(), astNode.startOffset, astNode) {
                 val result = node.moveChildBefore(astNode, beforeThisNode, true)
@@ -237,12 +250,13 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         copyrightComment: ASTNode?,
         headerKdoc: ASTNode?,
         fileAnnotations: ASTNode?,
-        packageDirectiveNode: ASTNode
-    ): Pair<ASTNode?, ASTNode> = when (elementType) {
-        BLOCK_COMMENT -> null to listOfNotNull(headerKdoc, fileAnnotations, packageDirectiveNode).first()
-        KDOC -> copyrightComment to (fileAnnotations ?: packageDirectiveNode)
-        FILE_ANNOTATION_LIST -> (headerKdoc ?: copyrightComment) to packageDirectiveNode
-        else -> error("Only BLOCK_COMMENT, KDOC and FILE_ANNOTATION_LIST are valid inputs.")
+        firstCodeNode: ASTNode,
+        otherNodesBeforeFirst: List<ASTNode>
+    ): Pair<ASTNode?, ASTNode> = when (this) {
+        copyrightComment -> null to listOfNotNull(headerKdoc, fileAnnotations, otherNodesBeforeFirst.firstOrNull(), firstCodeNode).first()
+        headerKdoc -> copyrightComment to (fileAnnotations ?: otherNodesBeforeFirst.firstOrNull() ?: firstCodeNode)
+        fileAnnotations -> (headerKdoc ?: copyrightComment) to (otherNodesBeforeFirst.firstOrNull() ?: firstCodeNode)
+        else -> (headerKdoc ?: copyrightComment) to firstCodeNode
     }
 
     @Suppress("TYPE_ALIAS")
