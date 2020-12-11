@@ -40,9 +40,17 @@ jobs:
 
       - name: Run diKTat from cli
         continue-on-error: true
+        if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
         run: |
           ./ktlint -R diktat-${{ env.DIKTAT_VERSION }}.jar "examples/maven/src/main/kotlin/Test.kt" &> out
         shell: bash
+
+      - name: Run diKTat from cli on windows
+        continue-on-error: true
+        if: runner.os == 'Windows'
+        run: |
+          java.exe -jar ktlint -R diktat-${{ env.DIKTAT_VERSION }}.jar "examples/maven/src/main/kotlin/Test.kt" &> out
+        shell: cmd
 
       - name: Check output
         id: cli-check
