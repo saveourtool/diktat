@@ -96,26 +96,29 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
     }
 
     private fun handleConsecutiveDeclarations(statement: PsiElement, properties: List<KtProperty>) {
-        val numLinesAfterLastProp = if (properties.last().node.treeNext.elementType == WHITE_SPACE) {
-            // minus one is needed to except \n after property
-            properties
+        val numLinesAfterLastProp =
+                properties
                     .last()
                     .node
                     .treeNext
-                    .numNewLines() - 1
-        } else {
-            0
-        }
+                    .takeIf { it.elementType == WHITE_SPACE }
+                    ?.let {
+                        // minus one is needed to except \n after property
+                        it.numNewLines() - 1
+                    }
+                    ?: 0
 
         // need to check that properties are declared consecutively with only maybe empty lines
         properties
             .sortedBy { it.node.getLineNumber() }
-            .let { it as MutableList }
-            .zip(((properties.size - 1) downTo 0).map { it + numLinesAfterLastProp })
+            .zip(
+                    (properties.size - 1 downTo 0).map { it + numLinesAfterLastProp }
+            )
             .forEachIndexed { index, (property, offset) ->
                 if (index != properties.lastIndex) {
                     checkLineNumbers(property, statement.node.getLineNumber(), offset)
                 } else {
+                    // since offset after last property is calculated in this method, we pass offset = 0
                     checkLineNumbers(property, statement.node.getLineNumber(), 0)
                 }
             }

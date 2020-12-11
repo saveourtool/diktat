@@ -471,7 +471,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
 
     @Test
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
-    fun `should emit only one warning when same variables are used more than once`() {
+    fun `should not trigger on properties`() {
         lintMethod(
             """
                     |private fun checkDoc(node: ASTNode, warning: Warnings) {
@@ -583,12 +583,6 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |       val extensionFunctionsPairs = mutableListOf<Pair<ExtensionFunction, ExtensionFunction>>()  // pairs extension functions with same signature
                     |       
                     |       extensionFunctionList.forEach { func ->
-                    |           val functionName = (func.psi as KtNamedFunction).name!!
-                    |           // List<String> is used to show param names in warning
-                    |           val params = (func.getFirstChildWithType(VALUE_PARAMETER_LIST)!!.psi as KtParameterList).parameters.map { it.name!! }
-                    |           val returnType = func.findChildAfter(COLON, TYPE_REFERENCE)?.text
-                    |           val className = func.findChildBefore(DOT, TYPE_REFERENCE)!!.text
-                    |           val signature = FunctionSignature(functionName, params, returnType)
                     |           if (distinctFunctionSignatures.contains(signature)) {
                     |               val secondFuncClassName = distinctFunctionSignatures[signature]!!.findChildBefore(DOT, TYPE_REFERENCE)!!.text
                     |               extensionFunctionsPairs.add(Pair(
