@@ -7,7 +7,7 @@ on:
     branches: [ master ]
 
 env:
-  DIKTAT_VERSION: 0.1.7
+  DIKTAT_VERSION: 0.1.6
   KTLINT_VERSION: 0.39.0
   GRADLE_OPTS: -Dorg.gradle.daemon=false  # to speed up gradle run
 
@@ -43,7 +43,10 @@ jobs:
           grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out
 
   run_diktat_from_gradle:
-    runs-on: ubuntu-20.04
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
     steps:
       - uses: actions/checkout@v2.3.3
 
@@ -54,30 +57,35 @@ jobs:
           unzip -q -d tmp diktat-$DIKTAT_VERSION.jar
           DIKTAT_CONFIG=diktat-analysis.yml
           find tmp -name $DIKTAT_CONFIG -exec cp "{}" . \;
+        shell: bash
 
       - name: Run diKTat from gradle kotlin DSL
         continue-on-error: true
         working-directory: ./examples/gradle-kotlin-dsl
         run: |
           gradle diktatCheck &> out
+        shell: bash
 
       - name: Check gradle from kotlin DSL
         working-directory: ./examples/gradle-kotlin-dsl
         run: |
           cat out
           grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out
+        shell: bash
 
       - name: Run diKTat from gradle groovy DSL
         continue-on-error: true
         working-directory: ./examples/gradle-groovy-dsl
         run: |
           gradle diktatCheck &> out
+        shell: bash
 
       - name: Check gradle from groovy DSL
         working-directory: ./examples/gradle-groovy-dsl
         run: |
           cat out
           grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out
+        shell: bash
 
   run_diktat_from_maven:
     runs-on: ${{ matrix.os }}
