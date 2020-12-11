@@ -154,11 +154,11 @@ fun ASTNode.isFollowedByNewlineWithComment() =
                     EOL_COMMENT, BLOCK_COMMENT, KDOC -> isFollowedByNewline()
                     else -> false
                 } ||
-                    parent({ it.treeNext != null }, strict = false)?.let {
-                        it.treeNext.elementType == EOL_COMMENT && it.treeNext.isFollowedByNewline()
-                    } ?: false
+                        parent({ it.treeNext != null }, strict = false)?.let {
+                            it.treeNext.elementType == EOL_COMMENT && it.treeNext.isFollowedByNewline()
+                        } ?: false
             }
-        }?: false
+        } ?: false
 
 /**
  * Checks if there is a newline before this element. See [isFollowedByNewline] for motivation on parents check.
