@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.rules
 
-import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
+import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.EMPTY_BLOCK_STRUCTURE_ERROR
@@ -79,14 +79,14 @@ class EmptyBlock(private val configRules: List<RulesConfig>) : Rule("empty-block
 
     @Suppress("UnsafeCallOnNullableType")
     private fun isAnonymousSamClass(node: ASTNode) : Boolean = if (node.elementType == FUNCTION_LITERAL && node.hasParent(CALL_EXPRESSION)) {
-                // We are checking identifier because it is not class in AST
-                // , SAM conversions are indistinguishable from lambdas.
-                // So we just verify that identifier is in PascalCase
-                val valueArgument = node.findParentNodeWithSpecificType(CALL_EXPRESSION)!!
-                valueArgument.findLeafWithSpecificType(IDENTIFIER)?.text?.isPascalCase() ?: false
-            } else {
-                false
-            }
+        // We are checking identifier because it is not class in AST
+        // , SAM conversions are indistinguishable from lambdas.
+        // So we just verify that identifier is in PascalCase
+        val valueArgument = node.findParentNodeWithSpecificType(CALL_EXPRESSION)!!
+        valueArgument.findLeafWithSpecificType(IDENTIFIER)?.text?.isPascalCase() ?: false
+    } else {
+        false
+    }
 
     /**
      * [RuleConfiguration] for empty blocks formatting
