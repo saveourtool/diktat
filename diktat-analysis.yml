@@ -254,6 +254,9 @@
 # Checks that property in constructor doesn't contains comment
 - name: KDOC_NO_CONSTRUCTOR_PROPERTY
   enabled: true
+# Checks that property in KDoc present in class
+- name: KDOC_EXTRA_PROPERTY
+  enabled: true
 # Checks that KDoc in constructor has property tag but with comment inside constructor
 - name: KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT
   enabled: true

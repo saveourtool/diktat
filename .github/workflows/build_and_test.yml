@@ -3,9 +3,6 @@ name: Build and test
 on:
   pull_request
 
-env:
-  GRADLE_OPTS: -Dorg.gradle.daemon=false
-
 jobs:
   test:
     name: Unit Test
@@ -26,8 +23,8 @@ jobs:
             ${{ runner.os }}-maven-build-
       - name: Maven Package
         run: mvn -B clean package -DskipTests
-      - name: Maven Verify
-        run: mvn -B verify
+      - name: Maven Install
+        run: mvn -B install
       - name: Code coverage report
         uses: codecov/codecov-action@v1
         with:

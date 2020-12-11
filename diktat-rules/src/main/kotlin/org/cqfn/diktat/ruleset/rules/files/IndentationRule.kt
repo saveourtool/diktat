@@ -9,7 +9,7 @@ import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
 import org.cqfn.diktat.ruleset.utils.getAllLeafsWithSpecificType
-import org.cqfn.diktat.ruleset.utils.getFileName
+import org.cqfn.diktat.ruleset.utils.getFilePath
 import org.cqfn.diktat.ruleset.utils.indentBy
 import org.cqfn.diktat.ruleset.utils.indentation.ArrowInWhenChecker
 import org.cqfn.diktat.ruleset.utils.indentation.AssignmentOperatorChecker
@@ -45,6 +45,7 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.com.intellij.util.containers.Stack
+import org.jetbrains.kotlin.konan.file.File
 import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
 import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.KtLoopExpression
@@ -61,11 +62,11 @@ import org.jetbrains.kotlin.utils.addToStdlib.firstNotNullResult
  * @see CustomIndentationChecker
  */
 class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indentation") {
-    private var fileName: String = ""
     private var isFixMode: Boolean = false
     private val configuration: IndentationConfig by lazy {
         IndentationConfig(configRules.getRuleConfig(WRONG_INDENTATION)?.configuration ?: mapOf())
     }
+    private lateinit var filePath: String
     private lateinit var emitWarn: EmitType
     private lateinit var customIndentationCheckers: List<CustomIndentationChecker>
 
@@ -76,7 +77,7 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
         emitWarn = emit
 
         if (node.elementType == FILE) {
-            fileName = node.getFileName()
+            filePath = node.getFilePath()
 
             customIndentationCheckers = listOf(
                 ::AssignmentOperatorChecker,
@@ -132,6 +133,7 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
             val numBlankLinesAfter = lastChild.text.count { it == '\n' }
             if (lastChild.elementType != WHITE_SPACE || numBlankLinesAfter != 1) {
                 val warnText = if (lastChild.elementType != WHITE_SPACE || numBlankLinesAfter == 0) "no newline" else "too many blank lines"
+                val fileName = filePath.substringAfterLast(File.separator)
                 WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "$warnText at the end of file $fileName", node.startOffset + node.textLength, node) {
                     if (lastChild.elementType != WHITE_SPACE) {
                         node.addChild(PsiWhiteSpaceImpl("\n"), null)

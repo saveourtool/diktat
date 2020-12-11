@@ -4,24 +4,12 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getCommonConfiguration
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_EXTRA_PROPERTY
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CONSTRUCTOR_PROPERTY
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_CLASS_ELEMENTS
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_TOP_LEVEL
-import org.cqfn.diktat.ruleset.utils.KotlinParser
-import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
-import org.cqfn.diktat.ruleset.utils.getFileName
-import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
-import org.cqfn.diktat.ruleset.utils.getIdentifierName
-import org.cqfn.diktat.ruleset.utils.getRootNode
-import org.cqfn.diktat.ruleset.utils.hasChildOfType
-import org.cqfn.diktat.ruleset.utils.hasTestAnnotation
-import org.cqfn.diktat.ruleset.utils.isAccessibleOutside
-import org.cqfn.diktat.ruleset.utils.isLocatedInTest
-import org.cqfn.diktat.ruleset.utils.isOverridden
-import org.cqfn.diktat.ruleset.utils.isStandardMethod
-import org.cqfn.diktat.ruleset.utils.kDocTags
-import org.cqfn.diktat.ruleset.utils.splitPathToDirs
+import org.cqfn.diktat.ruleset.utils.*
 
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
@@ -38,6 +26,7 @@ import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER
+import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.VAL_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.VAR_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
@@ -47,6 +36,7 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
+import org.jetbrains.kotlin.psi.KtParameterList
 import org.jetbrains.kotlin.psi.psiUtil.parents
 
 /**
@@ -73,17 +63,33 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
         isFixMode = autoCorrect
 
         val config = configRules.getCommonConfiguration().value
-        val fileName = node.getRootNode().getFileName()
-        if (!(node.hasTestAnnotation() || isLocatedInTest(fileName.splitPathToDirs(), config.testAnchors))) {
+        val filePath = node.getRootNode().getFilePath()
+        if (!(node.hasTestAnnotation() || isLocatedInTest(filePath.splitPathToDirs(), config.testAnchors))) {
             when (node.elementType) {
                 FILE -> checkTopLevelDoc(node)
                 CLASS -> checkClassElements(node)
                 VALUE_PARAMETER -> checkValueParameter(node)
+                PRIMARY_CONSTRUCTOR -> checkParameterList(node.findChildByType(VALUE_PARAMETER_LIST))
                 else -> {
                     // this is a generated else block
                 }
             }
         }
+    }
+
+    private fun checkParameterList(node: ASTNode?) {
+        val kdocBeforeClass = node
+            ?.parent({ it.elementType == CLASS })
+            ?.findChildByType(KDOC) ?: return
+        val propertiesInKdoc = kdocBeforeClass
+            .kDocTags()
+            ?.filter { it.knownTag == KDocKnownTag.PROPERTY}
+        val propertyNames = (node.psi as KtParameterList)
+            .parameters
+            .mapNotNull { it.nameIdentifier?.text }
+        propertiesInKdoc
+            ?.filterNot { it.getSubjectName() == null || it.getSubjectName() in propertyNames }
+            ?.forEach { KDOC_EXTRA_PROPERTY.warn(configRules, emitWarn, isFixMode, it.text, it.node.startOffset, node) }
     }
 
     @Suppress("UnsafeCallOnNullableType", "ComplexMethod")

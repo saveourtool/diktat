@@ -10,7 +10,6 @@ import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_WRONG_FORMAT
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule
 import org.cqfn.diktat.util.LintTestBase
-import org.cqfn.diktat.util.testFileName
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
@@ -112,7 +111,7 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
 
                 class Example2 { }
             """.trimIndent(),
-            LintError(1, 1, ruleId, "${HEADER_MISSING_OR_WRONG_COPYRIGHT.warnText()} $testFileName", true),
+            LintError(1, 1, ruleId, "${HEADER_MISSING_OR_WRONG_COPYRIGHT.warnText()} copyright is placed inside KDoc, but should be inside a block comment", true),
             rulesConfigList = rulesConfigList
         )
     }
@@ -136,7 +135,7 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
 
                 class Example2 { }
             """.trimIndent(),
-            LintError(1, 1, ruleId, "${HEADER_MISSING_OR_WRONG_COPYRIGHT.warnText()} $testFileName", true),
+            LintError(1, 1, ruleId, "${HEADER_MISSING_OR_WRONG_COPYRIGHT.warnText()} copyright is placed inside KDoc, but should be inside a block comment", true),
             rulesConfigList = rulesConfigListCn
         )
     }
@@ -158,7 +157,7 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
 
                 class Example2 { }
             """.trimIndent(),
-            LintError(1, 1, ruleId, "${HEADER_MISSING_OR_WRONG_COPYRIGHT.warnText()} $testFileName", true),
+            LintError(1, 1, ruleId, "${HEADER_MISSING_OR_WRONG_COPYRIGHT.warnText()} copyright is placed inside KDoc, but should be inside a block comment", true),
             rulesConfigList = rulesConfigList
         )
     }
@@ -228,7 +227,7 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
 
                 class Example2 { }
             """.trimIndent(),
-            LintError(1, 1, ruleId, """${Warnings.WRONG_COPYRIGHT_YEAR.warnText()} $testFileName""", true),
+            LintError(1, 1, ruleId, """${Warnings.WRONG_COPYRIGHT_YEAR.warnText()} year should be ${LocalDate.now().year}""", true),
             rulesConfigList = rulesConfigListInvalidYear
         )
     }
@@ -252,7 +251,7 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
 
                 class Example2 { }
             """.trimIndent(),
-            LintError(1, 1, ruleId, """${Warnings.WRONG_COPYRIGHT_YEAR.warnText()} $testFileName""", true),
+            LintError(1, 1, ruleId, """${Warnings.WRONG_COPYRIGHT_YEAR.warnText()} year should be ${LocalDate.now().year}""", true),
             rulesConfigList = rulesConfigListInvalidYearBeforeCopyright
         )
     }
@@ -288,7 +287,7 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
 
                 fun foo(): Int = 42
             """.trimIndent(),
-            LintError(1, 1, ruleId, "${HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warnText()} $testFileName", false),
+            LintError(1, 1, ruleId, "${HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warnText()} there are 0 declared classes and/or objects", false),
             rulesConfigList = rulesConfigList
         )
     }
@@ -304,7 +303,7 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
 
                 class Example2 { }
             """.trimIndent(),
-            LintError(1, 1, ruleId, "${HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warnText()} $testFileName", false),
+            LintError(1, 1, ruleId, "${HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warnText()} there are 2 declared classes and/or objects", false),
             rulesConfigList = rulesConfigList
         )
     }
@@ -346,7 +345,7 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
                 | */
                 |class Example { }
             """.trimMargin(),
-            LintError(5, 1, ruleId, "${HEADER_NOT_BEFORE_PACKAGE.warnText()} $testFileName", true),
+            LintError(5, 1, ruleId, "${HEADER_NOT_BEFORE_PACKAGE.warnText()} header KDoc is located after package or imports", true),
             rulesConfigList = listOf()
         )
     }
@@ -391,7 +390,7 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
                 |
                 |class Some {}
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warnText()} $testFileName"),
+            LintError(1, 1, ruleId, "${HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warnText()} there are 2 declared classes and/or objects"),
             rulesConfigList = rulesConfigList
         )
     }
