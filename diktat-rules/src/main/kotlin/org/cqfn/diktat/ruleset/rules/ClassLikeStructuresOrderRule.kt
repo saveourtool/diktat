@@ -7,11 +7,6 @@ import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_ORDER_IN_CLASS_LIKE_STRU
 import org.cqfn.diktat.ruleset.utils.*
 
 import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.ast.children
-import com.pinterest.ktlint.core.ast.isPartOfComment
-import com.pinterest.ktlint.core.ast.nextSibling
-import com.pinterest.ktlint.core.ast.parent
-import com.pinterest.ktlint.core.ast.prevSibling
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
@@ -32,6 +27,11 @@ import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.SECONDARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.children
+import com.pinterest.ktlint.core.ast.isPartOfComment
+import com.pinterest.ktlint.core.ast.nextSibling
+import com.pinterest.ktlint.core.ast.parent
+import com.pinterest.ktlint.core.ast.prevSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
