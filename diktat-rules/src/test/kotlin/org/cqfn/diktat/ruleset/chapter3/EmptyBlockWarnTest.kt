@@ -190,5 +190,4 @@ class EmptyBlockWarnTest : LintTestBase(::EmptyBlock) {
             rulesConfigList = rulesConfigListEmptyBlockExist
         )
     }
-
 }
