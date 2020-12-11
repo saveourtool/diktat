@@ -5,7 +5,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_IS_TOO_LONG
-import org.cqfn.diktat.ruleset.utils.getFileName
+import org.cqfn.diktat.ruleset.utils.getFilePath
 import org.cqfn.diktat.ruleset.utils.splitPathToDirs
 
 import com.pinterest.ktlint.core.Rule
@@ -18,7 +18,11 @@ import org.slf4j.LoggerFactory
  */
 class FileSize(private val configRules: List<RulesConfig>) : Rule("file-size") {
     private var isFixMode: Boolean = false
-    private var fileName: String? = null
+    private val configuration by lazy {
+        FileSizeConfiguration(
+            this.configRules.getRuleConfig(FILE_IS_TOO_LONG)?.configuration ?: mapOf()
+        )
+    }
     private lateinit var emitWarn: EmitType
 
     override fun visit(node: ASTNode,
@@ -27,30 +31,18 @@ class FileSize(private val configRules: List<RulesConfig>) : Rule("file-size") {
         emitWarn = emit
         isFixMode = autoCorrect
         if (node.elementType == ElementType.FILE) {
-            fileName = node.getFileName()
-            val configuration = FileSizeConfiguration(
-                this.configRules.getRuleConfig(FILE_IS_TOO_LONG)?.configuration ?: mapOf()
-            )
-            val ignoreFolders = configuration.ignoreFolders
-
-            val realFilePath = calculateFilePath(fileName)
-
-            if (!realFilePath.contains(SRC_PATH)) {
+            val filePathParts = node.getFilePath().splitPathToDirs()
+            if (SRC_PATH !in filePathParts) {
                 log.error("$SRC_PATH directory is not found in file path")
             } else {
-                if (ignoreFolders.none { realFilePath.containsAll(it.splitPathToDirs()) }) {
+                if (configuration.ignoreFolders.none {
+                    filePathParts.containsAll(it.splitPathToDirs())
+                }) {
                     checkFileSize(node, configuration.maxSize)
                 }
             }
-            return
         }
     }
-
-    private fun calculateFilePath(fileName: String?): List<String> = fileName?.splitPathToDirs()
-        ?: run {
-            log.error("Could not find absolute path to file")
-            listOf()
-        }
 
     private fun checkFileSize(node: ASTNode, maxSize: Long) {
         val size = node

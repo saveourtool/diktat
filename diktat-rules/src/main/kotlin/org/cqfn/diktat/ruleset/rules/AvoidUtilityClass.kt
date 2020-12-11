@@ -35,8 +35,8 @@ class AvoidUtilityClass(private val configRules: List<RulesConfig>) : Rule("avoi
         emitWarn = emit
         isFixMode = autoCorrect
         val config by configRules.getCommonConfiguration()
-        val fileName = node.getRootNode().getFileName()
-        if (!(node.hasTestAnnotation() || isLocatedInTest(fileName.splitPathToDirs(), config.testAnchors))) {
+        val filePath = node.getRootNode().getFilePath()
+        if (!(node.hasTestAnnotation() || isLocatedInTest(filePath.splitPathToDirs(), config.testAnchors))) {
             if (node.elementType == OBJECT_DECLARATION || node.elementType == CLASS) {
                 checkClass(node)
             }
