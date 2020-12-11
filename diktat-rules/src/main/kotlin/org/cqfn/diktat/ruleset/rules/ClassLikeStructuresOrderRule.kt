@@ -9,9 +9,9 @@ import org.cqfn.diktat.ruleset.utils.*
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.children
 import com.pinterest.ktlint.core.ast.isPartOfComment
+import com.pinterest.ktlint.core.ast.nextSibling
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevSibling
-import com.pinterest.ktlint.core.ast.nextSibling
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
@@ -59,7 +59,7 @@ class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) :
         }
     }
 
-    @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
+    @Suppress("UnsafeCallOnNullableType", "LongMethod", "ComplexMethod", "TOO_LONG_FUNCTION")
     private fun checkDeclarationsOrderInClass(node: ASTNode) {
         val allProperties = node.getChildren(TokenSet.create(PROPERTY))
         val constProperties = allProperties.filter { it.findLeafWithSpecificType(CONST_KEYWORD) != null }.toMutableList()
@@ -79,12 +79,12 @@ class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) :
             .partition { classNode ->
                 classNode.getIdentifierName()?.let { identifierNode ->
                     node
-                            .parents()
-                            .last()
-                            .findAllNodesWithSpecificType(REFERENCE_EXPRESSION)
-                            .any { ref ->
-                                ref.parent({ it == classNode }) == null && ref.text.contains(identifierNode.text)
-                            }
+                        .parents()
+                        .last()
+                        .findAllNodesWithSpecificType(REFERENCE_EXPRESSION)
+                        .any { ref ->
+                            ref.parent({ it == classNode }) == null && ref.text.contains(identifierNode.text)
+                        }
                 } ?: false
             }
             .let { it.first.toMutableList() to it.second.toMutableList() }
@@ -159,10 +159,6 @@ class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) :
         }
     }
 
-    companion object {
-        private val classChildren = listOf(PROPERTY, CLASS, CLASS_INITIALIZER, SECONDARY_CONSTRUCTOR, FUN, OBJECT_DECLARATION)
-    }
-
     /**
      * Data class containing nodes along with its spaces and comments
      *
@@ -191,6 +187,7 @@ class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) :
 
     /**
      * @property allProperties an instance of [AllProperties]
+     * @property objects objects
      * @property initBlocks `init` blocks
      * @property constructors constructors
      * @property methods functions
@@ -222,5 +219,9 @@ class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) :
          * @return all blocks as a flattened list of [ASTNode]s
          */
         fun allBlockFlattened() = allBlocks().flatten()
+    }
+
+    companion object {
+        private val classChildren = listOf(PROPERTY, CLASS, CLASS_INITIALIZER, SECONDARY_CONSTRUCTOR, FUN, OBJECT_DECLARATION)
     }
 }
