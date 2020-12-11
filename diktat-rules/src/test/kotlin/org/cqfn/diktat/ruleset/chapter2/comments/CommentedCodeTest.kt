@@ -96,7 +96,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
 
     @Test
     @Tag(WarningNames.COMMENTED_OUT_CODE)
-    fun `Should warn if commented out function is detected single line comments with surrounding text`() {
+    fun `Should warn if commented out function is detected - single line comments with surrounding text`() {
         lintMethod(
             """
            |import org.junit.Test
@@ -205,7 +205,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
 
     @Test
     @Tag(WarningNames.COMMENTED_OUT_CODE)
-    fun `should trigger on function with one space after comment start token`() {
+    fun `should trigger on function with one space after comment start token - { sign`() {
         lintMethod(
             """
             |// fun someFunc(name: String): Boolean {
@@ -213,5 +213,16 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
             |// }
             """.trimMargin(),
             LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} fun someFunc(name: String): Boolean {", false))
+    }
+
+    @Test
+    @Tag(WarningNames.COMMENTED_OUT_CODE)
+    fun `should trigger on function with one space after comment start token - = sign`() {
+        lintMethod(
+                """
+            |// fun someFunc(name: String): Boolean =
+            |//     name.contains("a")
+            """.trimMargin(),
+                LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} fun someFunc(name: String): Boolean =", false))
     }
 }

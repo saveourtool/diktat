@@ -126,10 +126,7 @@ class CommentsRule(private val configRules: List<RulesConfig>) : Rule("comments"
      */
     private fun isCodeAfterCommentStart(text: String): Boolean {
         val textWithoutCommentStartToken = text.removePrefix("//").trim()
-        return textWithoutCommentStartToken.contains(classRegex) ||
-                textWithoutCommentStartToken.contains(importOrPackageRegex) ||
-                textWithoutCommentStartToken.contains(functionRegex) ||
-                textWithoutCommentStartToken.contains(rightBraceRegex)
+        return codeFileStartCases.any { textWithoutCommentStartToken.contains(it) }
     }
 
     companion object {
@@ -137,10 +134,11 @@ class CommentsRule(private val configRules: List<RulesConfig>) : Rule("comments"
         private val packageKeyword = KtTokens.PACKAGE_KEYWORD.value
         private val importOrPackage = """($importKeyword|$packageKeyword) """.toRegex()
         private val classRegex =
-                """^\s*(public|private|open|internal|protected)*\s*(class|object)\s+(\w+)(\(.*\))*(\s*:\s*\w+(\(.*\))*)?\s*\{*$""".toRegex()
-        private val importOrPackageRegex = """^(import|package)?\s+([a-zA-Z.])+$""".toRegex()
-        private val functionRegex = """^(override)*\s?fun\s+\w+(\(.*\))?(\s*:\s*\w+)?\s*\{$""".toRegex()
+                """^\s*(public|private|open|internal|protected|data|sealed)*\s*(class|object)\s+(\w+)(\(.*\))*(\s*:\s*\w+(\(.*\))*)?\s*\{*$""".toRegex()
+        private val importOrPackageRegex = """^(import|package)?\s+([a-zA-Z.])+;*$""".toRegex()
+        private val functionRegex = """^(override|abstract|actual|expected)*\s?fun\s+\w+(\(.*\))?(\s*:\s*\w+)?\s*[{=]$""".toRegex()
         private val rightBraceRegex = """^\s*}$""".toRegex()
+        private val codeFileStartCases = listOf(classRegex, importOrPackageRegex, functionRegex, rightBraceRegex)
         private val eolCommentStart = """// \S""".toRegex()
     }
 }
