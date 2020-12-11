@@ -141,7 +141,7 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         val otherNodesBeforeCode = firstCodeNode.siblings(forward = false)
             .filterNot {
                 it.isWhiteSpace() ||
-                      it == copyrightComment || it == headerKdoc || it == fileAnnotations
+                        it == copyrightComment || it == headerKdoc || it == fileAnnotations
             }
             .toList()
             .reversed()
