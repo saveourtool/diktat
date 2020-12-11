@@ -19,10 +19,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2.3.3
 
+      - name: Setup environment variables
+        run: |
+          cat pom.xml | grep "<diktat-check.version>.*</diktat-check.version>" | head -1 | awk -F'[><]' '{ printf "DIKTAT_VERSION=%s\n",$3 }' >> $GITHUB_ENV
+          cat pom.xml | grep "<ktlint.version>.*</ktlint.version>" | head -1 | awk -F'[><]' '{ printf "KTLINT_VERSION=%s\n",$3 }' >> $GITHUB_ENV
+
       - name: Setup environment
         run: |
-          cat pom.xml | grep "<diktat-check.version>.*</diktat-check.version>" | head -1 | awk -F'[><]' '{ print "DIKTAT_VERSION=%s\n",$3 }' >> $GITHUB_ENV
-          cat pom.xml | grep "<ktlint.version>.*</ktlint.version>" | head -1 | awk -F'[><]' '{ print "KTLINT_VERSION=%s\n",$3 }' >> $GITHUB_ENV
           curl -sSLO https://github.com/pinterest/ktlint/releases/download/${{ env.KTLINT_VERSION }}/ktlint && chmod a+x ktlint
           curl -sSLO https://github.com/cqfn/diKTat/releases/download/v${{ env.DIKTAT_VERSION }}/diktat-${{ env.DIKTAT_VERSION }}.jar
         shell: bash
@@ -55,9 +58,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2.3.3
 
+      - name: Setup environment variables
+        run: |
+          cat pom.xml | grep "<diktat-check.version>.*</diktat-check.version>" | head -1 | awk -F'[><]' '{ printf "DIKTAT_VERSION=%s\n",$3 }' >> $GITHUB_ENV
+
       - name: Setup environment
         run: |
-          cat pom.xml | grep "<diktat-check.version>.*</diktat-check.version>" | head -1 | awk -F'[><]' '{ print "DIKTAT_VERSION=%s\n",$3 }' >> $GITHUB_ENV
           curl -sSLO https://github.com/cqfn/diKTat/releases/download/v${{ env.DIKTAT_VERSION }}/diktat-${{ env.DIKTAT_VERSION }}.jar
           unzip -q -d tmp diktat-${{ env.DIKTAT_VERSION }}.jar
           DIKTAT_CONFIG=diktat-analysis.yml
@@ -100,9 +106,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2.3.3
 
-      - name: Setup environment
+      - name: Setup environment variables
         run: |
           cat pom.xml | grep "<diktat-check.version>.*</diktat-check.version>" | head -1 | awk -F'[><]' '{ printf "DIKTAT_VERSION=%s\n",$3 }' >> $GITHUB_ENV
+
+      - name: Setup environment
+        run: |
           curl -sSLO https://github.com/cqfn/diKTat/releases/download/v${{ env.DIKTAT_VERSION }}/diktat-${{ env.DIKTAT_VERSION }}.jar
           unzip -q -d tmp diktat-${{ env.DIKTAT_VERSION }}.jar
           DIKTAT_CONFIG=diktat-analysis.yml
