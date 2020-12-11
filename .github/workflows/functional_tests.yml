@@ -65,6 +65,7 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
+        dir: [ ./examples/gradle-kotlin-dsl, ./examples/gradle-groovy-dsl ]
     steps:
       - uses: actions/checkout@v2.3.3
 
@@ -81,30 +82,26 @@ jobs:
           find tmp -name $DIKTAT_CONFIG -exec cp "{}" . \;
         shell: bash
 
-      - name: Run diKTat from gradle kotlin DSL
+      - name: Run diKTat from gradle
         continue-on-error: true
-        working-directory: ./examples/gradle-kotlin-dsl
+        if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
+        working-directory: ${{ matrix.dir }}
         run: |
           gradle diktatCheck &> out
         shell: bash
+
+      - name: Run diKTat from gradle on windows
+        continue-on-error: true
+        if: runner.os == 'Windows'
+        working-directory: ${{ matrix.dir }}
+        run: |
+          gradle.exe diktatCheck > out.txt 2>&1
+        shell: cmd
 
       - name: Check gradle from kotlin DSL
         working-directory: ./examples/gradle-kotlin-dsl
         run: |
-          cat out
-          grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out
-        shell: bash
-
-      - name: Run diKTat from gradle groovy DSL
-        continue-on-error: true
-        working-directory: ./examples/gradle-groovy-dsl
-        run: |
-          gradle diktatCheck &> out
-        shell: bash
-
-      - name: Check gradle from groovy DSL
-        working-directory: ./examples/gradle-groovy-dsl
-        run: |
+          if [ -f out.txt ]; then mv out.txt out; fi
           cat out
           grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out
         shell: bash
