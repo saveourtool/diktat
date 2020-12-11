@@ -98,8 +98,8 @@ jobs:
           gradle.exe diktatCheck > out.txt 2>&1
         shell: cmd
 
-      - name: Check gradle from kotlin DSL
-        working-directory: ./examples/gradle-kotlin-dsl
+      - name: Check gradle
+        working-directory: ${{ matrix.dir }}
         run: |
           if [ -f out.txt ]; then mv out.txt out; fi
           cat out
