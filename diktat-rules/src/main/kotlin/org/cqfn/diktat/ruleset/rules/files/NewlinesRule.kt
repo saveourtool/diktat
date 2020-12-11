@@ -403,7 +403,9 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         ?.getCallChain()
 
     private fun ASTNode.isElvisCorrect(): Boolean {
-        if (this.elementType != ELVIS) { return false }
+        if (this.elementType != ELVIS) {
+            return false
+        }
         val binaryExpression = (this.treeParent.treeParent.psi as KtBinaryExpression)
         val leftDotCalls = binaryExpression.dotCalls(false)
         val rightDotCalls = binaryExpression.dotCalls()
