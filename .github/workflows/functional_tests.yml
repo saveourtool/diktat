@@ -7,8 +7,6 @@ on:
     branches: [ master ]
 
 env:
-  DIKTAT_VERSION: 0.1.6
-  KTLINT_VERSION: 0.39.0
   GRADLE_OPTS: -Dorg.gradle.daemon=false  # to speed up gradle run
 
 jobs:
@@ -23,15 +21,15 @@ jobs:
 
       - name: Setup environment
         run: |
-          cat pom.xml | grep "<diktat-check.version>.*</diktat-check.version>" | head -1 |awk -F'[><]' '{ENVIRON[DIKTAT_VERSION]=$3 ; print ENVIRON[DIKTAT_VERSION]}'
-          cat pom.xml | grep "<ktlint.version>.*</ktlint.version>" | head -1 |awk -F'[><]' '{ENVIRON[KTLINT_VERSION]=$3 ; print ENVIRON[KTLINT_VERSION]}'
-          curl -sSLO https://github.com/pinterest/ktlint/releases/download/$KTLINT_VERSION/ktlint && chmod a+x ktlint
-          curl -sSLO https://github.com/cqfn/diKTat/releases/download/v$DIKTAT_VERSION/diktat-$DIKTAT_VERSION.jar
+          cat pom.xml | grep "<diktat-check.version>.*</diktat-check.version>" | head -1 | awk -F'[><]' '{echo $3 >> $GITHUB_ENV ; print $3}'
+          cat pom.xml | grep "<ktlint.version>.*</ktlint.version>" | head -1 |awk -F'[><]' '{echo $3 >> $GITHUB_ENV ; print $3}'
+          curl -sSLO https://github.com/pinterest/ktlint/releases/download/${{ env.KTLINT_VERSION }}/ktlint && chmod a+x ktlint
+          curl -sSLO https://github.com/cqfn/diKTat/releases/download/v${{ env.DIKTAT_VERSION }}/diktat-${{ env.DIKTAT_VERSION }}.jar
         shell: bash
         
       - name: Copy diktat-analysis.yml from release
         run: |
-          unzip -q -d tmp diktat-$DIKTAT_VERSION.jar
+          unzip -q -d tmp diktat-${{ env.DIKTAT_VERSION }}.jar
           DIKTAT_CONFIG=diktat-analysis.yml
           find tmp -name $DIKTAT_CONFIG -exec cp "{}" . \;
         shell: bash
@@ -39,7 +37,7 @@ jobs:
       - name: Run diKTat from cli
         continue-on-error: true
         run: |
-          ./ktlint -R diktat-$DIKTAT_VERSION.jar "examples/maven/src/main/kotlin/Test.kt" &> out
+          ./ktlint -R diktat-${{ env.DIKTAT_VERSION }}.jar "examples/maven/src/main/kotlin/Test.kt" &> out
         shell: bash
 
       - name: Check output
@@ -59,9 +57,9 @@ jobs:
 
       - name: Setup environment
         run: |
-          cat pom.xml | grep "<diktat-check.version>.*</diktat-check.version>" | head -1 |awk -F'[><]' '{ENVIRON[DIKTAT_VERSION]=$3 ; print ENVIRON[DIKTAT_VERSION]}'
-          curl -sSLO https://github.com/cqfn/diKTat/releases/download/v$DIKTAT_VERSION/diktat-$DIKTAT_VERSION.jar
-          unzip -q -d tmp diktat-$DIKTAT_VERSION.jar
+          cat pom.xml | grep "<diktat-check.version>.*</diktat-check.version>" | head -1 | awk -F'[><]' '{echo $3 >> $GITHUB_ENV ; print $3}'
+          curl -sSLO https://github.com/cqfn/diKTat/releases/download/v${{ env.DIKTAT_VERSION }}/diktat-${{ env.DIKTAT_VERSION }}.jar
+          unzip -q -d tmp diktat-${{ env.DIKTAT_VERSION }}.jar
           DIKTAT_CONFIG=diktat-analysis.yml
           find tmp -name $DIKTAT_CONFIG -exec cp "{}" . \;
         shell: bash
@@ -104,9 +102,9 @@ jobs:
 
       - name: Setup environment
         run: |
-          cat pom.xml | grep "<diktat-check.version>.*</diktat-check.version>" | head -1 |awk -F'[><]' '{ENVIRON[DIKTAT_VERSION]=$3 ; print ENVIRON[DIKTAT_VERSION]}'
-          curl -sSLO https://github.com/cqfn/diKTat/releases/download/v$DIKTAT_VERSION/diktat-$DIKTAT_VERSION.jar
-          unzip -q -d tmp diktat-$DIKTAT_VERSION.jar
+          cat pom.xml | grep "<diktat-check.version>.*</diktat-check.version>" | head -1 | awk -F'[><]' '{echo $3 >> $GITHUB_ENV ; print $3}'
+          curl -sSLO https://github.com/cqfn/diKTat/releases/download/v${{ env.DIKTAT_VERSION }}/diktat-${{ env.DIKTAT_VERSION }}.jar
+          unzip -q -d tmp diktat-${{ env.DIKTAT_VERSION }}.jar
           DIKTAT_CONFIG=diktat-analysis.yml
           find tmp -name $DIKTAT_CONFIG -exec cp "{}" . \;
         shell: bash
