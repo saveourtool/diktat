@@ -30,6 +30,7 @@ import com.pinterest.ktlint.core.ast.isPartOfComment
 import com.pinterest.ktlint.core.ast.isWhiteSpace
 import com.pinterest.ktlint.core.ast.nextSibling
 import com.pinterest.ktlint.core.ast.prevSibling
+import org.cqfn.diktat.ruleset.utils.copyrightWords
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -133,6 +134,9 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
             ?: return  // at this point it means the file contains only comments
         // We consider the first block comment of the file to be the one that possibly contains copyright information.
         var copyrightComment = firstCodeNode.prevSibling { it.elementType == BLOCK_COMMENT }
+            ?.takeIf { blockCommentNode ->
+                copyrightWords.any { blockCommentNode.text.contains(it, ignoreCase = true) }
+            }
         var headerKdoc = firstCodeNode.prevSibling { it.elementType == KDOC }
         // Annotations with target`file` can only be placed before `package` directive.
         var fileAnnotations = node.findChildByType(FILE_ANNOTATION_LIST)

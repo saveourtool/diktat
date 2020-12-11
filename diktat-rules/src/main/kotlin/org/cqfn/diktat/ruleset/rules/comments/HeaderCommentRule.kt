@@ -24,6 +24,7 @@ import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import org.cqfn.diktat.ruleset.utils.copyrightWords
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -40,7 +41,6 @@ import java.time.LocalDate
  */
 @Suppress("ForbiddenComment")
 class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("header-comment") {
-    private val copyrightWords = setOf("copyright", "版权")
     private var isFixMode: Boolean = false
     private lateinit var emitWarn: EmitType
 
