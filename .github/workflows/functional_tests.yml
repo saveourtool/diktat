@@ -49,12 +49,13 @@ jobs:
         continue-on-error: true
         if: runner.os == 'Windows'
         run: |
-          java.exe -jar ktlint -R diktat-${{ env.DIKTAT_VERSION }}.jar "examples/maven/src/main/kotlin/Test.kt" &> out
+          java.exe -jar ktlint -R diktat-${{ env.DIKTAT_VERSION }}.jar "examples/maven/src/main/kotlin/Test.kt" > out.txt 2>&1
         shell: cmd
 
       - name: Check output
         id: cli-check
         run: |
+          if [ -f out.txt ]; then mv out.txt out; fi
           cat out
           grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out
         shell: bash
