@@ -23,6 +23,7 @@ jobs:
         run: |
           cat pom.xml | grep "<diktat-check.version>.*</diktat-check.version>" | head -1 | awk -F'[><]' '{ printf "DIKTAT_VERSION=%s\n",$3 }' >> $GITHUB_ENV
           cat pom.xml | grep "<ktlint.version>.*</ktlint.version>" | head -1 | awk -F'[><]' '{ printf "KTLINT_VERSION=%s\n",$3 }' >> $GITHUB_ENV
+        shell: bash
 
       - name: Setup environment
         run: |
@@ -61,6 +62,7 @@ jobs:
       - name: Setup environment variables
         run: |
           cat pom.xml | grep "<diktat-check.version>.*</diktat-check.version>" | head -1 | awk -F'[><]' '{ printf "DIKTAT_VERSION=%s\n",$3 }' >> $GITHUB_ENV
+        shell: bash
 
       - name: Setup environment
         run: |
@@ -109,6 +111,7 @@ jobs:
       - name: Setup environment variables
         run: |
           cat pom.xml | grep "<diktat-check.version>.*</diktat-check.version>" | head -1 | awk -F'[><]' '{ printf "DIKTAT_VERSION=%s\n",$3 }' >> $GITHUB_ENV
+        shell: bash
 
       - name: Setup environment
         run: |
