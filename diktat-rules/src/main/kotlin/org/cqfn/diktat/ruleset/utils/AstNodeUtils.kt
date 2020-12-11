@@ -12,12 +12,14 @@ import org.cqfn.diktat.ruleset.rules.PackageNaming
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
+import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.CONST_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FILE_ANNOTATION_LIST
 import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.INTERNAL_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
@@ -145,22 +147,22 @@ fun ASTNode.isFollowedByNewline() =
  * This function is similar to isFollowedByNewline(), but there may be a comment after the node
  */
 fun ASTNode.isFollowedByNewlineWithComment() =
-        parent({ it.treeNext != null && it.treeNext.treeNext != null }, strict = false)?.let {
-            it.treeNext.treeNext.elementType == EOL_COMMENT && it.treeNext.treeNext.isFollowedByNewline()
-        } ?: false ||
-                parent({ it.treeNext != null }, strict = false)?.let {
-                    it.treeNext.run {
-                        when (elementType) {
-                            WHITE_SPACE -> text.contains("\n")
-                            EOL_COMMENT -> isFollowedByNewline()
-                            else -> false
-                        }
-                    }
-                } ?: false
+        parent({ it.treeNext != null }, strict = false)?.let { astNode ->
+            astNode.treeNext.run {
+                when (elementType) {
+                    WHITE_SPACE -> text.contains("\n")
+                    EOL_COMMENT, BLOCK_COMMENT, KDOC -> isFollowedByNewline()
+                    else -> false
+                } ||
+                    parent({ it.treeNext != null }, strict = false)?.let {
+                        it.treeNext.elementType == EOL_COMMENT && it.treeNext.isFollowedByNewline()
+                    } ?: false
+            }
+        }?: false
 
 /**
  * Checks if there is a newline before this element. See [isFollowedByNewline] for motivation on parents check.
- * Also there is
+ * Or if there is nothing before, it cheks, that there are empty imports and package before (Every FILE node has children of type IMPORT_LIST and PACKAGE)
  */
 fun ASTNode.isBeginByNewline() =
         parent({ it.treePrev != null }, strict = false)?.let {
