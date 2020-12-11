@@ -89,15 +89,11 @@ jobs:
 
       - name: Setup environment
         run: |
-          if [ "$RUNNER_OS" == "Windows" ]; then
-              Invoke-WebRequest -Uri https://github.com/cqfn/diKTat/releases/download/v$DIKTAT_VERSION/diktat-$DIKTAT_VERSION.jar -OutFile diktat-$DIKTAT_VERSION.jar
-          else
-              cat pom.xml | grep "<diktat-check.version>.*</diktat-check.version>" | head -1 |awk -F'[><]' '{ENVIRON[DIKTAT_VERSION]=$3 ; print ENVIRON[DIKTAT_VERSION]}'
-              curl -sSLO https://github.com/cqfn/diKTat/releases/download/v$DIKTAT_VERSION/diktat-$DIKTAT_VERSION.jar
-              unzip -q -d tmp diktat-$DIKTAT_VERSION.jar
-              DIKTAT_CONFIG=diktat-analysis.yml
-              find tmp -name $DIKTAT_CONFIG -exec cp "{}" . \;
-          fi
+          cat pom.xml | grep "<diktat-check.version>.*</diktat-check.version>" | head -1 |awk -F'[><]' '{ENVIRON[DIKTAT_VERSION]=$3 ; print ENVIRON[DIKTAT_VERSION]}'
+          curl -sSLO https://github.com/cqfn/diKTat/releases/download/v$DIKTAT_VERSION/diktat-$DIKTAT_VERSION.jar
+          unzip -q -d tmp diktat-$DIKTAT_VERSION.jar
+          DIKTAT_CONFIG=diktat-analysis.yml
+          find tmp -name $DIKTAT_CONFIG -exec cp "{}" . \;
         shell: bash
 
       - name: Run diKTat from maven
