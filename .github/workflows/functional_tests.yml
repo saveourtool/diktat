@@ -21,8 +21,8 @@ jobs:
 
       - name: Setup environment
         run: |
-          cat pom.xml | grep "<diktat-check.version>.*</diktat-check.version>" | head -1 | awk -F'[><]' '{echo $3 >> $GITHUB_ENV ; print $3}'
-          cat pom.xml | grep "<ktlint.version>.*</ktlint.version>" | head -1 |awk -F'[><]' '{echo $3 >> $GITHUB_ENV ; print $3}'
+          cat pom.xml | grep "<diktat-check.version>.*</diktat-check.version>" | head -1 | awk -F'[><]' '{ print $3 >> $GITHUB_ENV ; print $3 }'
+          cat pom.xml | grep "<ktlint.version>.*</ktlint.version>" | head -1 |awk -F'[><]' '{ print $3 >> $GITHUB_ENV ; print $3 }'
           curl -sSLO https://github.com/pinterest/ktlint/releases/download/${{ env.KTLINT_VERSION }}/ktlint && chmod a+x ktlint
           curl -sSLO https://github.com/cqfn/diKTat/releases/download/v${{ env.DIKTAT_VERSION }}/diktat-${{ env.DIKTAT_VERSION }}.jar
         shell: bash
@@ -57,7 +57,7 @@ jobs:
 
       - name: Setup environment
         run: |
-          cat pom.xml | grep "<diktat-check.version>.*</diktat-check.version>" | head -1 | awk -F'[><]' '{echo $3 >> $GITHUB_ENV ; print $3}'
+          cat pom.xml | grep "<diktat-check.version>.*</diktat-check.version>" | head -1 | awk -F'[><]' '{ print $3 >> $GITHUB_ENV ; print $3 }'
           curl -sSLO https://github.com/cqfn/diKTat/releases/download/v${{ env.DIKTAT_VERSION }}/diktat-${{ env.DIKTAT_VERSION }}.jar
           unzip -q -d tmp diktat-${{ env.DIKTAT_VERSION }}.jar
           DIKTAT_CONFIG=diktat-analysis.yml
@@ -102,7 +102,7 @@ jobs:
 
       - name: Setup environment
         run: |
-          cat pom.xml | grep "<diktat-check.version>.*</diktat-check.version>" | head -1 | awk -F'[><]' '{echo $3 >> $GITHUB_ENV ; print $3}'
+          cat pom.xml | grep "<diktat-check.version>.*</diktat-check.version>" | head -1 | awk -F'[><]' '{ print $3 >> $GITHUB_ENV ; print $3 }'
           curl -sSLO https://github.com/cqfn/diKTat/releases/download/v${{ env.DIKTAT_VERSION }}/diktat-${{ env.DIKTAT_VERSION }}.jar
           unzip -q -d tmp diktat-${{ env.DIKTAT_VERSION }}.jar
           DIKTAT_CONFIG=diktat-analysis.yml
