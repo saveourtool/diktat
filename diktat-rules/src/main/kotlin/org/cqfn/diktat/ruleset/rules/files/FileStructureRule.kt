@@ -101,7 +101,7 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         return hasCode
     }
 
-    @Suppress("TOO_LONG_FUNCTION")
+    @Suppress("ComplexMethod", "TOO_LONG_FUNCTION")
     private fun checkCodeBlocksOrderAndEmptyLines(node: ASTNode) {
         // From KtFile.kt: 'scripts have no package directive, all other files must have package directives'.
         // Kotlin compiler itself enforces it's position in the file if it is present.
@@ -141,7 +141,7 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         val otherNodesBeforeCode = firstCodeNode.siblings(forward = false)
             .filterNot {
                 it.isWhiteSpace() ||
-                it == copyrightComment || it == headerKdoc || it == fileAnnotations
+                      it == copyrightComment || it == headerKdoc || it == fileAnnotations
             }
             .toList()
             .reversed()
@@ -257,6 +257,10 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         headerKdoc -> copyrightComment to (fileAnnotations ?: otherNodesBeforeFirst.firstOrNull() ?: firstCodeNode)
         fileAnnotations -> (headerKdoc ?: copyrightComment) to (otherNodesBeforeFirst.firstOrNull() ?: firstCodeNode)
         else -> (headerKdoc ?: copyrightComment) to firstCodeNode
+    }
+
+    private fun handleIncorrectOrder() {
+
     }
 
     @Suppress("TYPE_ALIAS")
