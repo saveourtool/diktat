@@ -104,14 +104,14 @@ class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) :
                 .forEach { listOfChildren ->
                     val astNode = listOfChildren.first
                     WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnAndFix(configRules, emitWarn, isFixMode,
-                            "${astNode.elementType}: ${astNode.findChildByType(IDENTIFIER)?.text ?: astNode.text}", astNode.startOffset, astNode) {
+                        "${astNode.elementType}: ${astNode.findChildByType(IDENTIFIER)?.text ?: astNode.text}", astNode.startOffset, astNode) {
                         node.removeRange(node.findChildByType(LBRACE)!!.treeNext, node.findChildByType(RBRACE)!!)
                         blocks
-                                .reversed()
-                                .map { bodyChild ->
-                                    node.addChild(bodyChild.first, node.children().toList()[1])
-                                    bodyChild.second.map { node.addChild(it, node.children().toList()[1]) }
-                                }
+                            .reversed()
+                            .map { bodyChild ->
+                                node.addChild(bodyChild.first, node.children().toList()[1])
+                                bodyChild.second.map { node.addChild(it, node.children().toList()[1]) }
+                            }
                         node.addChild(PsiWhiteSpaceImpl("\n"), node.lastChildNode)
                         // fixme maybe wrong space between nodes
                     }
