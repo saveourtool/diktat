@@ -4,7 +4,7 @@ on:
   pull_request
 
 jobs:
-  test:
+  build_and_test:
     name: Unit Test
     runs-on: ubuntu-18.04
 
@@ -31,3 +31,56 @@ jobs:
           file: ./*/target/site/jacoco/jacoco.xml
           flags: unittests
           fail_ci_if_error: true # optional (default = false)
+      - name: Upload diktat jar
+        uses: actions/upload-artifact@v2
+        with:
+          name: diktat-ruleset
+          path: diktat-ruleset/target/diktat-*.jar
+
+  run_diktat_from_CLI:
+    runs-on: ${{ matrix.os }}
+    needs: build_and_test
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+
+    steps:
+      - uses: actions/checkout@v2.3.3
+
+      - name: Setup environment variables
+        run: |
+          cat pom.xml | grep "<version>.*</version>" | head -1 | awk -F'[><]' '{ printf "DIKTAT_VERSION=%s\n",$3 }' >> $GITHUB_ENV
+          cat pom.xml | grep "<ktlint.version>.*</ktlint.version>" | head -1 | awk -F'[><]' '{ printf "KTLINT_VERSION=%s\n",$3 }' >> $GITHUB_ENV
+        shell: bash
+
+      - name: Setup environment
+        run: |
+          curl -sSLO https://github.com/pinterest/ktlint/releases/download/${{ env.KTLINT_VERSION }}/ktlint && chmod a+x ktlint
+        shell: bash
+
+      - name: Download diktat jar
+        uses: actions/download-artifact@v2
+        with:
+          name: diktat-ruleset
+
+      - name: Run diKTat from cli
+        continue-on-error: true
+        if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
+        run: |
+          ./ktlint -R diktat-${{ env.DIKTAT_VERSION }}.jar "examples/maven/src/main/kotlin/Test.kt" &> out
+        shell: bash
+
+      - name: Run diKTat from cli on windows
+        continue-on-error: true
+        if: runner.os == 'Windows'
+        run: |
+          java.exe -jar ktlint -R diktat-${{ env.DIKTAT_VERSION }}.jar "examples/maven/src/main/kotlin/Test.kt" > out.txt 2>&1
+        shell: cmd
+
+      - name: Check output
+        id: cli-check
+        run: |
+          if [ -f out.txt ]; then mv out.txt out; fi
+          cat out
+          grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out
+        shell: bash
