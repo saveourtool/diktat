@@ -14,25 +14,20 @@ import org.cqfn.diktat.ruleset.utils.allSiblings
 import org.cqfn.diktat.ruleset.utils.findChildAfter
 import org.cqfn.diktat.ruleset.utils.findChildBefore
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
-import org.cqfn.diktat.ruleset.utils.getFileName
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.getIdentifierName
-import org.cqfn.diktat.ruleset.utils.getRootNode
 import org.cqfn.diktat.ruleset.utils.hasChildMatching
 import org.cqfn.diktat.ruleset.utils.kDocTags
 import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
 
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
-import com.pinterest.ktlint.core.ast.ElementType.CLASS
-import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_LEADING_ASTERISK
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_SECTION
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_TAG
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_TAG_NAME
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_TEXT
-import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.nextSibling
@@ -60,7 +55,6 @@ import org.jetbrains.kotlin.psi.psiUtil.startOffset
 class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-formatting") {
     private val basicTagsList = listOf(KDocKnownTag.PARAM, KDocKnownTag.RETURN, KDocKnownTag.THROWS)
     private val specialTagNames = setOf("implSpec", "implNote", "apiNote")
-    private var fileName: String = ""
     private var isFixMode: Boolean = false
     private lateinit var emitWarn: EmitType
 
@@ -74,7 +68,6 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
                        emit: EmitType) {
         isFixMode = autoCorrect
         emitWarn = emit
-        fileName = node.getRootNode().getFileName()
 
         if (node.elementType == KDOC && isKdocNotEmpty(node)) {
             checkNoDeprecatedTag(node)
@@ -96,7 +89,7 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
             KDOC_EMPTY_KDOC.warn(configRules, emitWarn, isFixMode,
                 node.treeParent.getIdentifierName()?.text
                     ?: node.nextSibling { it.elementType in KtTokens.KEYWORDS }?.text
-                    ?: fileName, node.startOffset, node)
+                    ?: node.text, node.startOffset, node)
         }
         return isKdocNotEmpty
     }

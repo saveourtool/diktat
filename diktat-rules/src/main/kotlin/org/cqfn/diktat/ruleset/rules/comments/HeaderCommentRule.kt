@@ -3,19 +3,17 @@ package org.cqfn.diktat.ruleset.rules.comments
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
-import org.cqfn.diktat.common.config.rules.isRuleEnabled
 import org.cqfn.diktat.ruleset.constants.EmitType
-import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_CONTAINS_DATE_OR_AUTHOR
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_MISSING_OR_WRONG_COPYRIGHT
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_NOT_BEFORE_PACKAGE
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_WRONG_FORMAT
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_COPYRIGHT_YEAR
+import org.cqfn.diktat.ruleset.utils.copyrightWords
 import org.cqfn.diktat.ruleset.utils.findChildAfter
 import org.cqfn.diktat.ruleset.utils.findChildBefore
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
-import org.cqfn.diktat.ruleset.utils.getFileName
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.moveChildBefore
 
@@ -43,8 +41,6 @@ import java.time.LocalDate
  */
 @Suppress("ForbiddenComment")
 class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("header-comment") {
-    private val copyrightWords = setOf("copyright", "版权")
-    private var fileName: String = ""
     private var isFixMode: Boolean = false
     private lateinit var emitWarn: EmitType
 
@@ -55,7 +51,6 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
         emitWarn = emit
 
         if (node.elementType == FILE) {
-            fileName = node.getFileName()
             checkCopyright(node)
             if (checkHeaderKdocPosition(node)) {
                 checkHeaderKdoc(node)
@@ -87,8 +82,9 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
             ?: run {
                 val numDeclaredClassesAndObjects = node.getAllChildrenWithType(ElementType.CLASS).size +
                         node.getAllChildrenWithType(ElementType.OBJECT_DECLARATION).size
-                if (numDeclaredClassesAndObjects == 0 || numDeclaredClassesAndObjects > 1) {
-                    HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warn(configRules, emitWarn, isFixMode, fileName, node.startOffset, node)
+                if (numDeclaredClassesAndObjects != 1) {
+                    HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warn(configRules, emitWarn, isFixMode,
+                        "there are $numDeclaredClassesAndObjects declared classes and/or objects", node.startOffset, node)
                 }
             }
     }
@@ -105,7 +101,7 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
         val firstKdoc = node.findChildAfter(IMPORT_LIST, KDOC)
         // if `firstKdoc.treeParent` is File then it's a KDoc not bound to any other structures
         if (node.findChildBefore(PACKAGE_DIRECTIVE, KDOC) == null && firstKdoc != null && firstKdoc.treeParent.elementType == FILE) {
-            HEADER_NOT_BEFORE_PACKAGE.warnAndFix(configRules, emitWarn, isFixMode, fileName, firstKdoc.startOffset, firstKdoc) {
+            HEADER_NOT_BEFORE_PACKAGE.warnAndFix(configRules, emitWarn, isFixMode, "header KDoc is located after package or imports", firstKdoc.startOffset, firstKdoc) {
                 node.moveChildBefore(firstKdoc, node.getFirstChildWithType(PACKAGE_DIRECTIVE), true)
                 // ensure there is no empty line between copyright and header kdoc
                 node.findChildBefore(PACKAGE_DIRECTIVE, BLOCK_COMMENT)?.apply {
@@ -144,7 +140,7 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
         }
     }
 
-    @Suppress("TOO_LONG_FUNCTION")
+    @Suppress("TOO_LONG_FUNCTION", "ComplexMethod")
     private fun checkCopyright(node: ASTNode) {
         val configuration = CopyrightConfiguration(configRules.getRuleConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT)?.configuration
             ?: mapOf())
@@ -162,7 +158,14 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
                 copyrightWords.any { commentNode.text.contains(it, ignoreCase = true) }
             }
         if (isWrongCopyright || isMissingCopyright || isCopyrightInsideKdoc) {
-            HEADER_MISSING_OR_WRONG_COPYRIGHT.warnAndFix(configRules, emitWarn, isFixMode, fileName, node.startOffset, node) {
+            val freeText = when {
+                // If `isCopyrightInsideKdoc` then `isMissingCopyright` is true too, but warning text from `isCopyrightInsideKdoc` is preferable.
+                isCopyrightInsideKdoc -> "copyright is placed inside KDoc, but should be inside a block comment"
+                isWrongCopyright -> "copyright comment doesn't have correct copyright text"
+                isMissingCopyright -> "copyright is mandatory, but is missing"
+                else -> error("Should never get to this point")
+            }
+            HEADER_MISSING_OR_WRONG_COPYRIGHT.warnAndFix(configRules, emitWarn, isFixMode, freeText, node.startOffset, node) {
                 headerComment?.let { node.removeChild(it) }
                 // do not insert empty line before header kdoc
                 val newLines = node.findChildBefore(PACKAGE_DIRECTIVE, KDOC)?.let { "\n" } ?: "\n\n"
@@ -181,7 +184,7 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
         val copyrightWithCorrectYear = makeCopyrightCorrectYear(copyrightText)
 
         if (copyrightWithCorrectYear.isNotEmpty()) {
-            WRONG_COPYRIGHT_YEAR.warnAndFix(configRules, emitWarn, isFixMode, fileName, node.startOffset, node) {
+            WRONG_COPYRIGHT_YEAR.warnAndFix(configRules, emitWarn, isFixMode, "year should be $curYear", node.startOffset, node) {
                 (headerComment as LeafElement).replaceWithText(headerComment.text.replace(copyrightText, copyrightWithCorrectYear))
             }
         }

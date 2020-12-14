@@ -65,7 +65,7 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
     }
 
     // Divide in is and as expr
-    @Suppress("TYPE_ALIAS", "LOCAL_VARIABLE_EARLY_DECLARATION")
+    @Suppress("TYPE_ALIAS")
     private fun handleProp(propMap: Map<KtProperty, List<KtNameReferenceExpression>>) {
         propMap.forEach { (property, references) ->
             val isExpr: MutableList<KtNameReferenceExpression> = mutableListOf()

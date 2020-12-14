@@ -78,4 +78,10 @@ class FileStructureRuleFixTest : FixTestBase("test/paragraph3/file_structure", :
     fun `should still work with default package and no imports`() {
         fixAndCompare("NoImportNoPackageExpected.kt", "NoImportNoPackageTest.kt")
     }
+
+    @Test
+    @Tag(WarningNames.FILE_UNORDERED_IMPORTS)
+    fun `should move other comments before package node`() {
+        fixAndCompare("OtherCommentsExpected.kt", "OtherCommentsTest.kt")
+    }
 }
