@@ -147,18 +147,17 @@ fun ASTNode.isFollowedByNewline() =
  * This function is similar to isFollowedByNewline(), but there may be a comment after the node
  */
 fun ASTNode.isFollowedByNewlineWithComment() =
-        parent({ it.treeNext != null }, strict = false)?.let { astNode ->
-            astNode.treeNext.run {
-                when (elementType) {
-                    WHITE_SPACE -> text.contains("\n")
-                    EOL_COMMENT, BLOCK_COMMENT, KDOC -> isFollowedByNewline()
-                    else -> false
-                } ||
-                        parent({ it.treeNext != null }, strict = false)?.let {
-                            it.treeNext.elementType == EOL_COMMENT && it.treeNext.isFollowedByNewline()
-                        } ?: false
+        parent({ it.treeNext != null }, strict = false)
+            ?.treeNext.run {
+            when (elementType) {
+                WHITE_SPACE -> text.contains("\n")
+                EOL_COMMENT, BLOCK_COMMENT, KDOC -> isFollowedByNewline()
+                else -> false
+            } ||
+                    parent({ it.treeNext != null }, strict = false)?.let {
+                        it.treeNext.elementType == EOL_COMMENT && it.treeNext.isFollowedByNewline()
+                    } ?: false
             }
-        } ?: false
 
 /**
  * Checks if there is a newline before this element. See [isFollowedByNewline] for motivation on parents check.
