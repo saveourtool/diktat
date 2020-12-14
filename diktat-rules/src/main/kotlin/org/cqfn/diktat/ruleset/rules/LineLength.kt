@@ -81,7 +81,7 @@ class LineLength(private val configRules: List<RulesConfig>) : Rule("line-length
         }
     }
 
-    @Suppress("UnsafeCallOnNullableType", "LOCAL_VARIABLE_EARLY_DECLARATION")
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkLength(node: ASTNode, configuration: LineLengthConfiguration) {
         var offset = 0
         node.text.lines().forEach {
