@@ -6,7 +6,9 @@ import org.cqfn.diktat.ruleset.rules.identifiers.LocalVariablesRule
 import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
+import com.pinterest.ktlint.core.ast.ElementType
 import generated.WarningNames
+import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -593,6 +595,27 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |           }
                     |       }
                     |       return extensionFunctionsPairs
+                    |   }
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    fun `qqqq`() {
+        lintMethod(
+                """
+                    |    private fun collectAllExtensionFunctions(astNode: ASTNode): SimilarSignatures {
+                    |       var text = ""
+                    |       var node = astNode
+                    |       var prevNode: ASTNode
+                    |       do {
+                    |           prevNode = node
+                    |           node = node.treeParent 
+                    |           if (node.elementType == ElementType.PARENTHESIZED) { 
+                    |               text += getTextFromParenthesized(node)
+                    |           }
+                    |       } while (node.elementType != BINARY_EXPRESSION)
                     |   }
                 """.trimMargin()
         )

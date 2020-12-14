@@ -69,7 +69,7 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
     private fun collectLocalPropertiesWithUsages(node: ASTNode) = node
         .findAllVariablesWithUsages { propertyNode ->
             propertyNode.isLocal && propertyNode.name != null && propertyNode.parent is KtBlockExpression &&
-                    (propertyNode.isVar && propertyNode.initializer == null ||
+                    (propertyNode.isVar ||
                             (propertyNode.initializer?.containsOnlyConstants() ?: false) ||
                             (propertyNode.initializer as? KtCallExpression).isWhitelistedMethod())
         }
