@@ -576,7 +576,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `should not trigger on space after last val`() {
         lintMethod(
-                """
+            """
                     |    private fun collectAllExtensionFunctions(node: ASTNode): SimilarSignatures {
                     |       val extensionFunctionList = node.findAllNodesWithSpecificType(FUN).filter { it.hasChildOfType(TYPE_REFERENCE) && it.hasChildOfType(DOT) }
                     |       val distinctFunctionSignatures = mutableMapOf<FunctionSignature, ASTNode>()  // maps function signatures on node it is used by
