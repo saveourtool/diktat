@@ -88,36 +88,28 @@ class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) :
                 } ?: false
             }
             .let { it.first.toMutableList() to it.second.toMutableList() }
-        val companion = node.getChildren(TokenSet.create(OBJECT_DECLARATION))
+        val (companionObject, objects) = node.getChildren(TokenSet.create(OBJECT_DECLARATION))
             .partition { it.findChildByType(MODIFIER_LIST)?.findLeafWithSpecificType(COMPANION_KEYWORD) != null }
-        val blocks = Blocks(AllProperties(loggers, constProperties, properties, lateInitProperties), companion.second.toMutableList(),
-            initBlocks, constructors, methods, usedClasses, companion.first.toMutableList(),
+        val blocks = Blocks(AllProperties(loggers, constProperties, properties, lateInitProperties), objects.toMutableList(),
+            initBlocks, constructors, methods, usedClasses, companionObject.toMutableList(),
             unusedClasses)
             .allBlockFlattened()
             .map { astNode ->
-                val prevNodes = astNode.siblings(false).takeWhile { it.elementType == WHITE_SPACE || it.isPartOfComment()}.toList()
-                when (prevNodes.size) {
-                    0 -> BodyChild(astNode, null, null, null)
-                    1 -> BodyChild(astNode, prevNodes[0], null, null)
-                    2 -> BodyChild(astNode, prevNodes[0], prevNodes[1], null)
-                    else -> BodyChild(astNode, prevNodes[2], prevNodes[1], prevNodes[0])
-                }
+                listOf(astNode) + astNode.siblings(false).takeWhile { it.elementType == WHITE_SPACE || it.isPartOfComment()}.toList()
             }
 
-        val classChild = node.children().filter { it.elementType in classChildren }.toList()
-        if (classChild != blocks.map { it.node }) {
-            blocks.forEachIndexed { index, child ->
-                if (child.node != classChild[index]) {
+        val classChildren = node.children().filter { it.elementType in childrenTypes }.toList()
+        if (classChildren != blocks.map { it.first() }) {
+            blocks.forEachIndexed { index, listOfChildren ->
+                val astNode = listOfChildren.first()
+                if (astNode != classChildren[index]) {
                     WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnAndFix(configRules, emitWarn, isFixMode,
-                        "${child.node.elementType}: ${child.node.findChildByType(IDENTIFIER)?.text ?: child.node.text}", child.node.startOffset, child.node) {
+                        "${astNode.elementType}: ${astNode.findChildByType(IDENTIFIER)?.text ?: astNode.text}", astNode.startOffset, astNode) {
                         node.removeRange(node.findChildByType(LBRACE)!!.treeNext, node.findChildByType(RBRACE)!!)
                         blocks
                             .reversed()
-                            .forEach { bodyChild ->
-                                node.addChild(bodyChild.node, node.children().toList()[1])
-                                bodyChild.spaceBeforeComment?.let { node.addChild(it, node.children().toList()[1])}
-                                bodyChild.commentBefore?.let { node.addChild(it, node.children().toList()[1])}
-                                bodyChild.spaceBefore?.let { node.addChild(it, node.children().toList()[1]) }
+                            .map { bodyChild ->
+                                bodyChild.map { node.addChild(it, node.children().toList()[1]) }
                             }
                         node.addChild(PsiWhiteSpaceImpl("\n"), node.lastChildNode)
                         // fixme maybe wrong space between nodes
@@ -158,19 +150,6 @@ class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) :
             }
         }
     }
-
-    /**
-     * Data class containing nodes along with its spaces and comments
-     *
-     * @property node directly node
-     * @property spaceBefore space before this node
-     * @property commentBefore comment before this node
-     * @property spaceBeforeComment between node and their comment
-     */
-    private data class BodyChild(val node: ASTNode,
-                                 val spaceBefore: ASTNode?,
-                                 val commentBefore: ASTNode?,
-                                 val spaceBeforeComment: ASTNode?)
 
     /**
      * Data class containing different groups of properties in file
@@ -222,6 +201,6 @@ class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) :
     }
 
     companion object {
-        private val classChildren = listOf(PROPERTY, CLASS, CLASS_INITIALIZER, SECONDARY_CONSTRUCTOR, FUN, OBJECT_DECLARATION)
+        private val childrenTypes = listOf(PROPERTY, CLASS, CLASS_INITIALIZER, SECONDARY_CONSTRUCTOR, FUN, OBJECT_DECLARATION)
     }
 }
