@@ -1,15 +1,19 @@
 package org.cqfn.diktat.ruleset.rules.identifiers
 
-import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.ast.ElementType.FILE
-import com.pinterest.ktlint.core.ast.isPartOfComment
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.LOCAL_VARIABLE_EARLY_DECLARATION
 import org.cqfn.diktat.ruleset.utils.containsOnlyConstants
 import org.cqfn.diktat.ruleset.utils.getDeclarationScope
 import org.cqfn.diktat.ruleset.utils.getLineNumber
 import org.cqfn.diktat.ruleset.utils.lastLineNumber
+import org.cqfn.diktat.ruleset.utils.numNewLines
 import org.cqfn.diktat.ruleset.utils.search.findAllVariablesWithUsages
+
+import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.ast.ElementType.FILE
+import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.isPartOfComment
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
@@ -35,21 +39,12 @@ import org.jetbrains.kotlin.psi.psiUtil.startOffset
  * * Properties initialized with constructor calls cannot be distinguished from method call and are no supported.
  */
 class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("local-variables") {
-    companion object {
-        private var functionInitializers = listOf(
-                "emptyList", "emptySet", "emptyMap", "emptyArray", "emptySequence",
-                "listOf", "setOf", "mapOf", "arrayOf", "arrayListOf",
-                "mutableListOf", "mutableSetOf", "mutableMapOf",
-                "linkedMapOf", "linkedSetOf"
-        )
-    }
-
-    private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
+    private lateinit var emitWarn: EmitType
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
-                       emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
+                       emit: EmitType) {
         emitWarn = emit
         isFixMode = autoCorrect
 
@@ -61,88 +56,120 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
             val multiPropertyUsages = groupPropertiesByUsages(propertiesToUsages)
 
             multiPropertyUsages
-                    .forEach { (statement, properties) ->
-                        handleConsecutiveDeclarations(statement, properties)
-                    }
+                .forEach { (statement, properties) ->
+                    handleConsecutiveDeclarations(statement, properties)
+                }
 
             propertiesToUsages
-                    .filterNot { it.key in multiPropertyUsages.values.flatten() }
-                    .forEach { handleLocalProperty(it.key, it.value) }
+                .filterNot { it.key in multiPropertyUsages.values.flatten() }
+                .forEach { handleLocalProperty(it.key, it.value) }
         }
     }
 
     private fun collectLocalPropertiesWithUsages(node: ASTNode) = node
-            .findAllVariablesWithUsages { propertyNode ->
-                propertyNode.isLocal && propertyNode.name != null && propertyNode.parent is KtBlockExpression &&
-                        (propertyNode.isVar && propertyNode.initializer == null ||
-                        (propertyNode.initializer?.containsOnlyConstants() ?: false) ||
-                        (propertyNode.initializer as? KtCallExpression).isWhitelistedMethod())
-            }
+        .findAllVariablesWithUsages { propertyNode ->
+            propertyNode.isLocal && propertyNode.name != null && propertyNode.parent is KtBlockExpression &&
+                    (propertyNode.isVar && propertyNode.initializer == null ||
+                            (propertyNode.initializer?.containsOnlyConstants() ?: false) ||
+                            (propertyNode.initializer as? KtCallExpression).isWhitelistedMethod())
+        }
 
-            .filterNot { it.value.isEmpty() }
+        .filterNot { it.value.isEmpty() }
 
+    @Suppress("TYPE_ALIAS")
     private fun groupPropertiesByUsages(propertiesToUsages: Map<KtProperty, List<KtNameReferenceExpression>>) = propertiesToUsages
-            .mapValues { (property, usages) ->
-                getFirstUsageStatementOrBlock(usages, property.getDeclarationScope())
-            }
-            .map { it.value to it.key }
-            .groupByTo(mutableMapOf(), { it.first }) { it.second }
-            .filter { it.value.size > 1 }
-            .toMap<PsiElement, List<KtProperty>>()
+        .mapValues { (property, usages) ->
+            getFirstUsageStatementOrBlock(usages, property.getDeclarationScope())
+        }
+        .map { it.value to it.key }
+        .groupByTo(mutableMapOf(), { it.first }) { it.second }
+        .filter { it.value.size > 1 }
+        .toMap<PsiElement, List<KtProperty>>()
 
     @Suppress("UnsafeCallOnNullableType")
     private fun handleLocalProperty(property: KtProperty, usages: List<KtNameReferenceExpression>) {
         val declarationScope = property.getDeclarationScope()
 
-        val firstUsageStatementLine = getFirstUsageStatementOrBlock(usages, declarationScope).node.getLineNumber(isFixMode)!!
-        val firstUsage = usages.minBy { it.node.getLineNumber(isFixMode)!! }!!
-        checkLineNumbers(property, firstUsageStatementLine, firstUsageLine = firstUsage.node.getLineNumber(isFixMode)!!)
+        val firstUsageStatementLine = getFirstUsageStatementOrBlock(usages, declarationScope).node.getLineNumber()
+        val firstUsage = usages.minBy { it.node.getLineNumber() }!!
+        checkLineNumbers(property, firstUsageStatementLine, firstUsageLine = firstUsage.node.getLineNumber())
     }
 
-    @Suppress("UnsafeCallOnNullableType")
     private fun handleConsecutiveDeclarations(statement: PsiElement, properties: List<KtProperty>) {
+        val numLinesAfterLastProp =
+                properties
+                    .last()
+                    .node
+                    .treeNext
+                    .takeIf { it.elementType == WHITE_SPACE }
+                    ?.let {
+                        // minus one is needed to except \n after property
+                        it.numNewLines() - 1
+                    }
+                    ?: 0
+
         // need to check that properties are declared consecutively with only maybe empty lines
         properties
-                .sortedBy { it.node.getLineNumber(isFixMode)!! }
-                .zip(properties.size - 1 downTo 0)
-                .forEach { (property, offset) ->
-                    checkLineNumbers(property, statement.node.getLineNumber(isFixMode)!!, offset)
+            .sortedBy { it.node.getLineNumber() }
+            .zip(
+                (properties.size - 1 downTo 0).map { it + numLinesAfterLastProp }
+            )
+            .forEachIndexed { index, (property, offset) ->
+                if (index != properties.lastIndex) {
+                    checkLineNumbers(property, statement.node.getLineNumber(), offset)
+                } else {
+                    // since offset after last property is calculated in this method, we pass offset = 0
+                    checkLineNumbers(property, statement.node.getLineNumber(), 0)
                 }
+            }
     }
 
     @Suppress("UnsafeCallOnNullableType")
-    private fun checkLineNumbers(property: KtProperty, firstUsageStatementLine: Int, offset: Int = 0, firstUsageLine: Int? = null) {
+    private fun checkLineNumbers(
+        property: KtProperty,
+        firstUsageStatementLine: Int,
+        offset: Int = 0,
+        firstUsageLine: Int? = null) {
         val numLinesToSkip = property
-                .siblings(forward = true, withItself = false)
-                .takeWhile { it is PsiWhiteSpace || it.node.isPartOfComment() }
-                .let { siblings -> siblings.last().node.lastLineNumber(isFixMode)!! - siblings.first().node.getLineNumber(isFixMode)!! - 1 }
+            .siblings(forward = true, withItself = false)
+            .takeWhile { it is PsiWhiteSpace || it.node.isPartOfComment() }
+            .let { siblings ->
+                siblings
+                    .last()
+                    .node
+                    .lastLineNumber() - siblings
+                    .first()
+                    .node
+                    .getLineNumber() - 1
+            }
 
-        if (firstUsageStatementLine - numLinesToSkip != property.node.lastLineNumber(isFixMode)!! + 1 + offset) {
+        if (firstUsageStatementLine - numLinesToSkip != property.node.lastLineNumber() + 1 + offset) {
             LOCAL_VARIABLE_EARLY_DECLARATION.warn(configRules, emitWarn, isFixMode,
-                    warnMessage(property.name!!, property.node.getLineNumber(isFixMode)!!, firstUsageLine
-                            ?: firstUsageStatementLine), property.startOffset, property.node)
+                warnMessage(property.name!!, property.node.getLineNumber(), firstUsageLine
+                    ?: firstUsageStatementLine), property.startOffset, property.node)
         }
     }
 
     /**
      * Returns the [KtBlockExpression] with which a property should be compared.
+     *
      * @return either the line on which the property is used if it is first used in the same scope, or the block in the same scope as declaration
      */
-    @Suppress("UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType", "GENERIC_VARIABLE_WRONG_DECLARATION")
     private fun getFirstUsageStatementOrBlock(usages: List<KtNameReferenceExpression>, declarationScope: KtBlockExpression?): PsiElement {
-        val firstUsage = usages.minBy { it.node.getLineNumber(isFixMode)!! }!!
+        val firstUsage = usages.minBy { it.node.getLineNumber() }!!
         val firstUsageScope = firstUsage.getParentOfType<KtBlockExpression>(true)
 
         return if (firstUsageScope == declarationScope) {
             // property is first used in the same scope where it is declared, we check line of statement where it is first used
             firstUsage
-                    .parents
-                    .find { it.parent == declarationScope }!!
+                .parents
+                .find { it.parent == declarationScope }!!
         } else {
             // first usage is in deeper block compared to declaration, need to check how close is declaration to the first line of the block
-            usages.minBy { it.node.getLineNumber(isFixMode)!! }!!
-                    .parentsWithSelf
-                    .find { it.parent == declarationScope }!!
+            usages.minBy { it.node.getLineNumber() }!!
+                .parentsWithSelf
+                .find { it.parent == declarationScope }!!
         }
     }
 
@@ -152,5 +179,17 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
                         valueArguments.isEmpty()
             } ?: false
 
-    private fun warnMessage(name: String, declared: Int, used: Int) = "<$name> is declared on line <$declared> and is used for the first time on line <$used>"
+    private fun warnMessage(
+        name: String,
+        declared: Int,
+        used: Int) = "<$name> is declared on line <$declared> and is used for the first time on line <$used>"
+
+    companion object {
+        private var functionInitializers = listOf(
+            "emptyList", "emptySet", "emptyMap", "emptyArray", "emptySequence",
+            "listOf", "setOf", "mapOf", "arrayOf", "arrayListOf",
+            "mutableListOf", "mutableSetOf", "mutableMapOf",
+            "linkedMapOf", "linkedSetOf"
+        )
+    }
 }

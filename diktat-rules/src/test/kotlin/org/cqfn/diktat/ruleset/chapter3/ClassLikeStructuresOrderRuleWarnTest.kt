@@ -1,12 +1,13 @@
 package org.cqfn.diktat.ruleset.chapter3
 
-import com.pinterest.ktlint.core.LintError
-import generated.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings.BLANK_LINE_BETWEEN_PROPERTIES
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES
 import org.cqfn.diktat.ruleset.rules.ClassLikeStructuresOrderRule
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.util.LintTestBase
+
+import com.pinterest.ktlint.core.LintError
+import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
@@ -15,10 +16,7 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
 
     // ===== order of declarations =====
 
-    @Test
-    @Tag(WarningNames.WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES)
-    fun `should check order of declarations in classes - positive example`() {
-        fun codeTemplate(keyword: String) = """
+    private fun codeTemplate(keyword: String) = """
                     |$keyword Example {
                     |    private val log = LoggerFactory.getLogger(Example.javaClass)
                     |    private val FOO = 42
@@ -40,6 +38,10 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
                     |    class UnusedNested { }
                     |}
                 """.trimMargin()
+
+    @Test
+    @Tag(WarningNames.WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES)
+    fun `should check order of declarations in classes - positive example`() {
         listOf("class", "interface", "object").forEach { keyword ->
             lintMethod(codeTemplate(keyword))
         }
@@ -50,14 +52,14 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
     fun `should warn if loggers are not on top`() {
         listOf("private ", "").forEach { modifier ->
             lintMethod(
-                    """
+                """
                     |class Example {
                     |    private val FOO = 42
                     |    ${modifier}val log = LoggerFactory.getLogger(Example.javaClass)
                     |}
                 """.trimMargin(),
-                    LintError(2, 5, ruleId, "${WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnText()} PROPERTY: private val FOO = 42", true),
-                    LintError(3, 5, ruleId, "${WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnText()} PROPERTY: ${modifier}val log = LoggerFactory.getLogger(Example.javaClass)", true)
+                LintError(2, 5, ruleId, "${WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnText()} PROPERTY: FOO", true),
+                LintError(3, 5, ruleId, "${WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnText()} PROPERTY: log", true)
             )
         }
     }
@@ -68,7 +70,7 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
     @Tag(WarningNames.BLANK_LINE_BETWEEN_PROPERTIES)
     fun `comments and KDocs on properties should be prepended by newline - positive example`() {
         lintMethod(
-                """
+            """
                     |class Example {
                     |    // logger property
                     |    private val log = LoggerFactory.getLogger(Example.javaClass)
@@ -97,7 +99,7 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
     @Tag(WarningNames.BLANK_LINE_BETWEEN_PROPERTIES)
     fun `should warn if comments and KDocs on properties are not prepended by newline`() {
         lintMethod(
-                """
+            """
                     |class Example {
                     |    private val log = LoggerFactory.getLogger(Example.javaClass)
                     |    private val FOO = 42
@@ -115,10 +117,10 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
                     |    private lateinit var lateFoo: Int
                     |}
                 """.trimMargin(),
-                LintError(4, 5, ruleId, "${BLANK_LINE_BETWEEN_PROPERTIES.warnText()} BAR", true),
-                LintError(6, 5, ruleId, "${BLANK_LINE_BETWEEN_PROPERTIES.warnText()} qux", true),
-                LintError(8, 5, ruleId, "${BLANK_LINE_BETWEEN_PROPERTIES.warnText()} quux", true),
-                LintError(11, 5, ruleId, "${BLANK_LINE_BETWEEN_PROPERTIES.warnText()} BAZ", true)
+            LintError(4, 5, ruleId, "${BLANK_LINE_BETWEEN_PROPERTIES.warnText()} BAR", true),
+            LintError(6, 5, ruleId, "${BLANK_LINE_BETWEEN_PROPERTIES.warnText()} qux", true),
+            LintError(8, 5, ruleId, "${BLANK_LINE_BETWEEN_PROPERTIES.warnText()} quux", true),
+            LintError(11, 5, ruleId, "${BLANK_LINE_BETWEEN_PROPERTIES.warnText()} BAZ", true)
         )
     }
 
@@ -126,7 +128,7 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
     @Tag(WarningNames.BLANK_LINE_BETWEEN_PROPERTIES)
     fun `regression - should check only class-level and top-level properties`() {
         lintMethod(
-                """class Example {
+            """class Example {
                     |    fun foo() {
                     |        val bar = 0
                     |        
@@ -139,7 +141,6 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
                     |    }
                     |}
                 """.trimMargin()
-//                LintError(10, )
         )
     }
 
@@ -147,7 +148,7 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
     @Tag(WarningNames.BLANK_LINE_BETWEEN_PROPERTIES)
     fun `should allow blank lines around properties with custom getters and setters - positive example`() {
         lintMethod(
-                """
+            """
                     |class Example {
                     |    private val foo
                     |        get() = 0
@@ -166,7 +167,7 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
     @Tag(WarningNames.BLANK_LINE_BETWEEN_PROPERTIES)
     fun `should allow blank lines around properties with custom getters and setters - positive example without blank lines`() {
         lintMethod(
-                """
+            """
                     |class Example {
                     |    private val foo
                     |        get() = 0
@@ -176,6 +177,25 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
                     |        set(value) { backing = value }
                     |}
                 """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES)
+    fun `should warn if order is incorrect and property with comment`() {
+        lintMethod(
+            """
+                    class Example {
+                        companion object {
+                            val b = "q"
+                            
+                            // this
+                            private const val a = 3                                                   
+                        }
+                    }
+            """.trimMargin(),
+            LintError(3, 29, ruleId, "${WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnText()} PROPERTY: b", true),
+            LintError(5, 29, ruleId, "${WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnText()} PROPERTY: a", true)
         )
     }
 }

@@ -55,11 +55,11 @@ Main features of diktat are the following:
     # another option is "brew install ktlint"
     ```
    
-2. Load diKTat manually: [here](https://github.com/cqfn/diKTat/releases/download/v0.1.5/diktat.jar)
+2. Load diKTat manually: [here](https://github.com/cqfn/diKTat/releases/download/v0.1.7/diktat.jar)
 
    **OR** use curl:
    ```bash
-   $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v0.1.5/diktat-0.1.5.jar
+   $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v0.1.7/diktat-0.1.7.jar
    ```
    
 3. Finally, run KTlint (with diKTat injected) to check your `*.kt` files in `dir/your/dir`:
@@ -93,6 +93,9 @@ Add this plugin to your pom.xml:
                                 <input>${project.basedir}/src/test/kotlin</input>
                             </inputs>
                             <diktatConfigFile>diktat-analysis.yml</diktatConfigFile>
+                           <excludes>
+                              <exclude>${project.basedir}/src/test/kotlin/excluded</exclude>
+                           </excludes>
                         </configuration>
                     </execution>
                 </executions>
@@ -107,7 +110,7 @@ This plugin is available since version 0.1.5. You can see how the plugin is conf
 Add this plugin to your `build.gradle.kts`:
 ```kotlin
 plugins {
-    id("org.cqfn.diktat.diktat-gradle-plugin") version "0.1.5"
+    id("org.cqfn.diktat.diktat-gradle-plugin") version "0.1.7"
 }
 ```
 
@@ -118,7 +121,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.cqfn.diktat:diktat-gradle-plugin:0.1.5")
+        classpath("org.cqfn.diktat:diktat-gradle-plugin:0.1.7")
     }
 }
 
@@ -130,6 +133,7 @@ You can then configure diktat using `diktat` extension:
 diktat {
     inputs = files("src/**/*.kt")  // file collection that will be checked by diktat
     debug = true  // turn on debug logging
+    excludes = files("src/test/kotlin/excluded")  // these files will not be checked by diktat
 }
 ```
 

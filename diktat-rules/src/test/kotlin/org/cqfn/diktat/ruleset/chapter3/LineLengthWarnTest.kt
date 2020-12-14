@@ -1,29 +1,28 @@
+@file:Suppress("LONG_LINE")
+
 package org.cqfn.diktat.ruleset.chapter3
 
-import com.pinterest.ktlint.core.LintError
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import generated.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings.LONG_LINE
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.LineLength
 import org.cqfn.diktat.util.LintTestBase
+
+import com.pinterest.ktlint.core.LintError
+import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class LineLengthWarnTest : LintTestBase(::LineLength) {
-
     private val ruleId = "$DIKTAT_RULE_SET_ID:line-length"
-
     private val rulesConfigListLineLength: List<RulesConfig> = listOf(
-            RulesConfig(LONG_LINE.name, true,
-                    mapOf("lineLength" to "163"))
+        RulesConfig(LONG_LINE.name, true,
+            mapOf("lineLength" to "163"))
     )
-
-    private val wrongURL = "dhttps://www.google.com/search?q=djfhvkdfhvkdh+gthtdj%" +
+    private val wrongUrl = "dhttps://www.google.com/search?q=djfhvkdfhvkdh+gthtdj%" +
             "3Bb&rlz=1C1GCEU_enRU909RU909&oq=posible+gthtdj%3Bb&aqs=chrome.." +
             "69i57j0l3.2680j1j7&sourceid=chrome&ie=UTF-8"
-
-    private val correctURL = "https://www.google.com/search?q=djfhvkdfhvkdh+gthtdj%" +
+    private val correctUrl = "https://www.google.com/search?q=djfhvkdfhvkdh+gthtdj%" +
             "3Bb&rlz=1C1GCEU_enRU909RU909&oq=posible+gthtdj%3Bb&aqs=chrome.." +
             "69i57j0l3.2680j1j7&sourceid=chrome&ie=UTF-8"
 
@@ -31,7 +30,7 @@ class LineLengthWarnTest : LintTestBase(::LineLength) {
     @Tag(WarningNames.LONG_LINE)
     fun `check correct example with long URL in KDOC and long import`() {
         lintMethod(
-                """
+            """
                     |package org.cqfn.diktat.ruleset.chapter3
                     |
                     |import org.cqfn.diktat.ruleset.rules.LineLength.sdfsdfsf.sdfsdfsdfsdfdghdf.gfhdf.hdstst.dh.dsgfdfgdgs.rhftheryryj.cgh
@@ -58,7 +57,7 @@ class LineLengthWarnTest : LintTestBase(::LineLength) {
     @Tag(WarningNames.LONG_LINE)
     fun `check wrong example with wrong URL in KDOC`() {
         lintMethod(
-                """
+            """
                     |package org.cqfn.diktat.ruleset.chapter3
                     |
                     |import org.cqfn.diktat.ruleset.rules.LineLength
@@ -66,7 +65,7 @@ class LineLengthWarnTest : LintTestBase(::LineLength) {
                     |
                     |/**
                     | * https://github.com/pinterest/ktlint/blob/master/ktlint-ruleset-standard/src/main/kotlin/com/pinterest/ktlint/ruleset/standard/MaxLineLengthRule.kt
-                    | * $wrongURL
+                    | * $wrongUrl
                     | * https://www.google.com/search?q=djfhvkdfhvkdh+gthtdj%3Bb&rlz=1C1GCEU_enRU909RU909&oq=posible+gthtdj%3Bb&aqs=chrome..69i57j0l3.2680j1j7&sourceid=chrome&ie=UTF-8
                     | * @param a
                     |*/
@@ -79,7 +78,7 @@ class LineLengthWarnTest : LintTestBase(::LineLength) {
                     |   }
                     |}
                 """.trimMargin(),
-                LintError(8,1,ruleId,"${LONG_LINE.warnText()} max line length 120, but was 163", false)
+            LintError(8, 1, ruleId, "${LONG_LINE.warnText()} max line length 120, but was 163", false)
         )
     }
 
@@ -87,14 +86,14 @@ class LineLengthWarnTest : LintTestBase(::LineLength) {
     @Tag(WarningNames.LONG_LINE)
     fun `check wrong example with wrong URL in KDOC with configuration`() {
         lintMethod(
-                """
+            """
                     |package org.cqfn.diktat.ruleset.chapter3
                     |
                     |import org.cqfn.diktat.ruleset.rules.LineLength
                     |import org.cqfn.diktat.util.lintMethod
                     |
                     |/**
-                    | * $wrongURL
+                    | * $wrongUrl
                     | * https://www.google.com/search?q=djfhvkdfhvkdh+gthtdj%3Bb&rlz=1C1GCEU_enRU909RU909&oq=posible+gthtdj%3Bb&aqs=chrome..69i57j0l3.2680j1j7&sourceid=chrome&ie=UTF-8
                     | * @param a
                     |*/
@@ -107,7 +106,7 @@ class LineLengthWarnTest : LintTestBase(::LineLength) {
                     |   }
                     |}
                 """.trimMargin(),
-                rulesConfigList = rulesConfigListLineLength
+            rulesConfigList = rulesConfigListLineLength
         )
     }
 
@@ -115,7 +114,7 @@ class LineLengthWarnTest : LintTestBase(::LineLength) {
     @Tag(WarningNames.LONG_LINE)
     fun `check wrong example with long line`() {
         lintMethod(
-                """
+            """
                     |package org.cqfn.diktat.ruleset.chapter3
                     |
                     |import org.cqfn.diktat.ruleset.rules.LineLength
@@ -137,8 +136,8 @@ class LineLengthWarnTest : LintTestBase(::LineLength) {
                     |   }
                     |}
                 """.trimMargin(),
-                LintError(14,1,ruleId,"${LONG_LINE.warnText()} max line length 120, but was 143", false),
-                LintError(18,1,ruleId,"${LONG_LINE.warnText()} max line length 120, but was 142", false)
+            LintError(14, 1, ruleId, "${LONG_LINE.warnText()} max line length 120, but was 143", false),
+            LintError(18, 1, ruleId, "${LONG_LINE.warnText()} max line length 120, but was 142", false)
         )
     }
 
@@ -146,7 +145,7 @@ class LineLengthWarnTest : LintTestBase(::LineLength) {
     @Tag(WarningNames.LONG_LINE)
     fun `check wrong example with long line but with configuration`() {
         lintMethod(
-                """
+            """
                     |package org.cqfn.diktat.ruleset.chapter3
                     |
                     |import org.cqfn.diktat.ruleset.rules.LineLength
@@ -155,7 +154,7 @@ class LineLengthWarnTest : LintTestBase(::LineLength) {
                     |/**
                     | * This is very important URL https://www.google.com/search?q=djfhvkdfhvkdh+gthtdj%3Bb&rlz=1C1GCEU_enRU909RU909&oq=posible+gthtdj%3Bb&aqs=chrome..69i57j0l3.2680j1j7&sourceid=chrome&ie=UTF-8    
                     | * https://www.google.com/search?q=djfhvkdfhvkdh+gthtdj%3Bb&rlz=1C1GCEU_enRU909RU909&oq=posible+gthtdj%3Bb&aqs=chrome..69i57j0l3.2680j1j7&sourceid=chrome&ie=UTF-8
-                    | * $correctURL this text can be on another line
+                    | * $correctUrl this text can be on another line
                     | * @param a
                     |*/
                     |
@@ -168,8 +167,8 @@ class LineLengthWarnTest : LintTestBase(::LineLength) {
                     |   }
                     |}
                 """.trimMargin(),
-                LintError(9,1,ruleId,"${LONG_LINE.warnText()} max line length 163, but was 195", false),
-                rulesConfigList = rulesConfigListLineLength
+            LintError(9, 1, ruleId, "${LONG_LINE.warnText()} max line length 163, but was 195", false),
+            rulesConfigList = rulesConfigListLineLength
         )
     }
 
@@ -177,7 +176,7 @@ class LineLengthWarnTest : LintTestBase(::LineLength) {
     @Tag(WarningNames.LONG_LINE)
     fun `check correct example with long URL in KDOC in class`() {
         lintMethod(
-                """
+            """
                     |package org.cqfn.diktat.ruleset.chapter3
                     |
                     |import org.cqfn.diktat.ruleset.rules.LineLength
@@ -187,8 +186,8 @@ class LineLengthWarnTest : LintTestBase(::LineLength) {
                     |class A {
                     |   fun test() {
                     |       /**
-                    |       * [link]($correctURL)
-                    |       * [link]$correctURL
+                    |       * [link]($correctUrl)
+                    |       * [link]$correctUrl
                     |       * https://www.google.com/search?q=djfhvkdfhvkdh+gthtdj%3Bb&rlz=1C1GCEU_enRU909RU909&oq=posible+gthtdj%3Bb&aqs=chrome..69i57j0l3.2680j1j7&sourceid=chrome&ie=UTF-8
                     |       * https://www.google.com/search?q=djfhvkdfhvkdh+gthtdj%3Bb&rlz=1C1GCEU_enRU909RU909&oq=posible+gthtdj%3Bb&aqs=chrome..69i57j0l3.2680j1j7&sourceid=chrome&ie=UTF-8
                     |       * @param a
@@ -204,7 +203,7 @@ class LineLengthWarnTest : LintTestBase(::LineLength) {
     @Tag(WarningNames.LONG_LINE)
     fun `check wrong examples with long function name and properties`() {
         lintMethod(
-                """
+            """
                     |package org.cqfn.diktat.ruleset.chapter3
                     |
                     |import org.cqfn.diktat.ruleset.rules.LineLength
@@ -218,8 +217,8 @@ class LineLengthWarnTest : LintTestBase(::LineLength) {
                     |   }
                     |}
                 """.trimMargin(),
-                LintError(8,1,ruleId,"${LONG_LINE.warnText()} max line length 120, but was 130", false),
-                LintError(9,1,ruleId,"${LONG_LINE.warnText()} max line length 120, but was 123", false)
+            LintError(8, 1, ruleId, "${LONG_LINE.warnText()} max line length 120, but was 130", false),
+            LintError(9, 1, ruleId, "${LONG_LINE.warnText()} max line length 120, but was 123", false)
         )
     }
 }

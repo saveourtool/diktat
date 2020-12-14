@@ -14,7 +14,7 @@ class AvailableRulesDocTest {
         val listWithRulesFromDoc: MutableList<String> = mutableListOf()
         File(AVAILABLE_RULES_FILE).forEachLine { line ->
             val splitMarkDown = line
-                    .split("|")
+                .split("|")
 
             val ruleName = splitMarkDown.get(3).trim()
 

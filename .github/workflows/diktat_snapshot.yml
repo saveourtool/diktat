@@ -11,7 +11,7 @@ env:
 
 jobs:
   diktat_snapshot_check:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
       - uses: actions/checkout@v2.3.3
@@ -46,7 +46,4 @@ jobs:
           mvn -B versions:set-property -Dproperty=diktat-check.version -DnewVersion=${{ env.BASE_VERSION }}-pre
       - name: Run diktat snapshot via ktlint
         run: |
-          mvn -B diktat:check@diktat --pl diktat-common || echo "LintErrors encountered"
-          mvn -B diktat:check@diktat --pl diktat-maven-plugin || echo "LintErrors encountered"
-          mvn -B diktat:check@diktat --pl diktat-test-framework || echo "LintErrors encountered"
-          mvn -B diktat:check@diktat --pl diktat-rules
+          mvn -B diktat:check@diktat

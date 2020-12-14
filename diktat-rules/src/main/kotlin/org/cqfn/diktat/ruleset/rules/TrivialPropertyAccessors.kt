@@ -1,5 +1,13 @@
 package org.cqfn.diktat.ruleset.rules
 
+import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ruleset.constants.EmitType
+import org.cqfn.diktat.ruleset.constants.Warnings
+import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
+import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
+import org.cqfn.diktat.ruleset.utils.getIdentifierName
+import org.cqfn.diktat.ruleset.utils.hasChildOfType
+
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
@@ -12,13 +20,6 @@ import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isWhiteSpace
-import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.Warnings
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
-import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
-import org.cqfn.diktat.ruleset.utils.getIdentifierName
-import org.cqfn.diktat.ruleset.utils.hasChildOfType
-import org.cqfn.diktat.ruleset.utils.prettyPrint
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtPropertyAccessor
@@ -27,17 +28,12 @@ import org.jetbrains.kotlin.psi.KtPropertyAccessor
  * This rule checks if there are any trivial getters and setters and, if so, deletes them
  */
 class TrivialPropertyAccessors(private val configRules: List<RulesConfig>) : Rule("trivial-property-accessors") {
-    private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
-
-    companion object {
-        private val EXCESS_CHILDREN_TYPES = listOf(LBRACE, RBRACE, WHITE_SPACE, EOL_COMMENT, BLOCK_COMMENT)
-        private const val ONE_CHILD_IN_ARRAY = 1
-    }
+    private lateinit var emitWarn: EmitType
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
-                       emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
+                       emit: EmitType) {
         emitWarn = emit
         isFixMode = autoCorrect
 
@@ -57,20 +53,20 @@ class TrivialPropertyAccessors(private val configRules: List<RulesConfig>) : Rul
     @Suppress("UnsafeCallOnNullableType")
     private fun handleSetAccessor(node: ASTNode) {
         val valueParamName = node
-                .getFirstChildWithType(VALUE_PARAMETER_LIST)
-                ?.firstChildNode
-                ?.getIdentifierName()
-                ?.text
+            .getFirstChildWithType(VALUE_PARAMETER_LIST)
+            ?.firstChildNode
+            ?.getIdentifierName()
+            ?.text
 
         if (node.hasChildOfType(BLOCK) && !valueParamName.isNullOrEmpty()) {
             val block = node.getFirstChildWithType(BLOCK)!!
 
-            val blockChildren = block.getChildren(null).filter { it.elementType !in EXCESS_CHILDREN_TYPES }
+            val blockChildren = block.getChildren(null).filter { it.elementType !in excessChildrenTypes }
 
-            if (blockChildren.size == 1
-                    && blockChildren.first().elementType == BINARY_EXPRESSION
-                    && (blockChildren.first().psi as KtBinaryExpression).left?.text == "field"
-                    && (blockChildren.first().psi as KtBinaryExpression).right?.text == valueParamName
+            if (blockChildren.size == 1 &&
+                    blockChildren.first().elementType == BINARY_EXPRESSION &&
+                    (blockChildren.first().psi as KtBinaryExpression).left?.text == "field" &&
+                    (blockChildren.first().psi as KtBinaryExpression).right?.text == valueParamName
             ) {
                 raiseWarning(node)
             }
@@ -96,5 +92,10 @@ class TrivialPropertyAccessors(private val configRules: List<RulesConfig>) : Rul
             }
             property.removeChild(node)
         }
+    }
+
+    companion object {
+        private const val ONE_CHILD_IN_ARRAY = 1
+        private val excessChildrenTypes = listOf(LBRACE, RBRACE, WHITE_SPACE, EOL_COMMENT, BLOCK_COMMENT)
     }
 }

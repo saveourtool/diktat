@@ -1,31 +1,31 @@
 package org.cqfn.diktat.ruleset.rules
 
-import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.ast.ElementType.ENUM_ENTRY
-import com.pinterest.ktlint.core.ast.ElementType.SEMICOLON
-import com.pinterest.ktlint.core.ast.parent
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.MORE_THAN_ONE_STATEMENT_PER_LINE
 import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
 import org.cqfn.diktat.ruleset.utils.extractLineOfText
 import org.cqfn.diktat.ruleset.utils.isBeginByNewline
 import org.cqfn.diktat.ruleset.utils.isFollowedByNewline
+
+import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.ast.ElementType.ENUM_ENTRY
+import com.pinterest.ktlint.core.ast.ElementType.SEMICOLON
+import com.pinterest.ktlint.core.ast.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 
+/**
+ * Rule that looks for multiple statements on a single line separated with a `;` and splits them in multiple lines.
+ */
 class SingleLineStatementsRule(private val configRules: List<RulesConfig>) : Rule("statement") {
-
-    companion object {
-        private val semicolonToken = TokenSet.create(SEMICOLON)
-    }
-
-    private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
     private var isFixMode: Boolean = false
+    private lateinit var emitWarn: EmitType
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
-                       emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
+                       emit: EmitType) {
         emitWarn = emit
         isFixMode = autoCorrect
 
@@ -36,7 +36,7 @@ class SingleLineStatementsRule(private val configRules: List<RulesConfig>) : Rul
         node.getChildren(semicolonToken).forEach {
             if (!it.isFollowedByNewline()) {
                 MORE_THAN_ONE_STATEMENT_PER_LINE.warnAndFix(configRules, emitWarn, isFixMode, it.extractLineOfText(),
-                        it.startOffset, it) {
+                    it.startOffset, it) {
                     if (it.treeParent.elementType == ENUM_ENTRY) {
                         node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node.treeNext)
                     } else {
@@ -49,5 +49,9 @@ class SingleLineStatementsRule(private val configRules: List<RulesConfig>) : Rul
                 }
             }
         }
+    }
+
+    companion object {
+        private val semicolonToken = TokenSet.create(SEMICOLON)
     }
 }

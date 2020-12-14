@@ -1,5 +1,5 @@
 plugins {
-    id("org.cqfn.diktat.diktat-gradle-plugin") version "0.1.5"
+    id("org.cqfn.diktat.diktat-gradle-plugin") version "0.1.7"
 }
 
 repositories {

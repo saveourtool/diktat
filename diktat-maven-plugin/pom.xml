@@ -5,7 +5,7 @@
     <parent>
         <artifactId>diktat-parent</artifactId>
         <groupId>org.cqfn.diktat</groupId>
-        <version>0.1.6-SNAPSHOT</version>
+        <version>0.1.8-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -15,6 +15,7 @@
     <properties>
         <maven.api.version>3.6.3</maven.api.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.itf.version>0.9.0</maven.itf.version>
     </properties>
 
     <dependencies>
@@ -47,6 +48,36 @@
             <artifactId>ktlint-reporter-plain</artifactId>
             <version>${ktlint.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.soebes.itf.jupiter.extension</groupId>
+            <artifactId>itf-jupiter-extension</artifactId>
+            <version>${maven.itf.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.plugin-testing</groupId>
+            <artifactId>maven-plugin-testing-harness</artifactId>
+            <version>3.3.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <!-- to use org.apache.maven.repository.RepositorySystem in newer maven versions and maybe other classes -->
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-compat</artifactId>
+            <version>${maven.api.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -59,7 +90,7 @@
                 <executions>
                     <execution>
                         <id>compile</id>
-                        <phase>compile</phase>
+                        <phase>process-sources</phase>
                         <goals>
                             <goal>compile</goal>
                         </goals>
@@ -72,13 +103,91 @@
                         </goals>
                         <configuration>
                             <sourceDirs>
+                                <!-- for some weird reason this is essential to compile kotlin test sources despite testSourceDirectory is set -->
                                 <source>src/test/kotlin</source>
                             </sourceDirs>
                         </configuration>
                     </execution>
                 </executions>
+                <configuration>
+                    <apiVersion>1.4</apiVersion>
+                    <languageVersion>1.4</languageVersion>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>*IntegrationTest*</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.soebes.itf.jupiter.extension</groupId>
+                <artifactId>itf-maven-plugin</artifactId>
+                <version>${maven.itf.version}</version>
+                <executions>
+                    <execution>
+                        <id>installing</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>install</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <systemProperties>
+                        <maven.version>${maven.version}</maven.version>
+                        <maven.home>${maven.home}</maven.home>
+                    </systemProperties>
+                    <includes>
+                        <include>**/*IntegrationTest*</include>
+                    </includes>
+                    <testSourceDirectory>${project.build.testSourceDirectory}</testSourceDirectory>
+                    <testClassesDirectory>${project.build.testOutputDirectory}</testClassesDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <!-- override jacoco config to include integration test results -->
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
+        <testResources>
+            <testResource>
+                <directory>../examples/maven</directory>
+                <!-- setting filtering to false keeps unresolved properties, which in diktat-examples do not depend on diktat properties -->
+                <filtering>false</filtering>
+                <targetPath>${project.build.testOutputDirectory}/org/cqfn/diktat/plugin/maven/DiktatMavenPluginIntegrationTest/maven</targetPath>
+            </testResource>
+        </testResources>
     </build>
 
     <profiles>

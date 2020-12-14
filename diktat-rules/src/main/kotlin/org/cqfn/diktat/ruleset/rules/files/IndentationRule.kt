@@ -1,4 +1,29 @@
+/**
+ * Main logic of indentation including Rule and utility classes and methods.
+ */
+
 package org.cqfn.diktat.ruleset.rules.files
+
+import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.common.config.rules.getRuleConfig
+import org.cqfn.diktat.ruleset.constants.EmitType
+import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
+import org.cqfn.diktat.ruleset.utils.getAllLeafsWithSpecificType
+import org.cqfn.diktat.ruleset.utils.getFilePath
+import org.cqfn.diktat.ruleset.utils.indentBy
+import org.cqfn.diktat.ruleset.utils.indentation.ArrowInWhenChecker
+import org.cqfn.diktat.ruleset.utils.indentation.AssignmentOperatorChecker
+import org.cqfn.diktat.ruleset.utils.indentation.ConditionalsAndLoopsWithoutBracesChecker
+import org.cqfn.diktat.ruleset.utils.indentation.CustomGettersAndSettersChecker
+import org.cqfn.diktat.ruleset.utils.indentation.CustomIndentationChecker
+import org.cqfn.diktat.ruleset.utils.indentation.DotCallChecker
+import org.cqfn.diktat.ruleset.utils.indentation.ExpressionIndentationChecker
+import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig
+import org.cqfn.diktat.ruleset.utils.indentation.KdocIndentationChecker
+import org.cqfn.diktat.ruleset.utils.indentation.SuperTypeListChecker
+import org.cqfn.diktat.ruleset.utils.indentation.ValueParameterListChecker
+import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
+import org.cqfn.diktat.ruleset.utils.log
 
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
@@ -14,31 +39,13 @@ import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.THEN
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.visit
-import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.common.config.rules.getRuleConfig
-import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
-import org.cqfn.diktat.ruleset.utils.getAllLeafsWithSpecificType
-import org.cqfn.diktat.ruleset.utils.getFileName
-import org.cqfn.diktat.ruleset.utils.indentBy
-import org.cqfn.diktat.ruleset.utils.indentation.ArrowInWhenChecker
-import org.cqfn.diktat.ruleset.utils.indentation.AssignmentOperatorChecker
-import org.cqfn.diktat.ruleset.utils.indentation.ConditionalsAndLoopsWithoutBracesChecker
-import org.cqfn.diktat.ruleset.utils.indentation.CustomGettersAndSettersChecker
-import org.cqfn.diktat.ruleset.utils.indentation.CustomIndentationChecker
-import org.cqfn.diktat.ruleset.utils.indentation.DotCallChecker
-import org.cqfn.diktat.ruleset.utils.indentation.ExpressionIndentationChecker
-import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig
-import org.cqfn.diktat.ruleset.utils.indentation.KDocIndentationChecker
-import org.cqfn.diktat.ruleset.utils.indentation.SuperTypeListChecker
-import org.cqfn.diktat.ruleset.utils.indentation.ValueParameterListChecker
-import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
-import org.cqfn.diktat.ruleset.utils.log
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.com.intellij.util.containers.Stack
+import org.jetbrains.kotlin.konan.file.File
 import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
 import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.KtLoopExpression
@@ -55,41 +62,33 @@ import org.jetbrains.kotlin.utils.addToStdlib.firstNotNullResult
  * @see CustomIndentationChecker
  */
 class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indentation") {
-    companion object {
-        const val INDENT_SIZE = 4
-        private val increasingTokens = listOf(LPAR, LBRACE, LBRACKET)
-        private val decreasingTokens = listOf(RPAR, RBRACE, RBRACKET)
-        private val matchingTokens = increasingTokens.zip(decreasingTokens)
-    }
-
+    private var isFixMode: Boolean = false
     private val configuration: IndentationConfig by lazy {
         IndentationConfig(configRules.getRuleConfig(WRONG_INDENTATION)?.configuration ?: mapOf())
     }
+    private lateinit var filePath: String
+    private lateinit var emitWarn: EmitType
     private lateinit var customIndentationCheckers: List<CustomIndentationChecker>
-
-    private lateinit var emitWarn: ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
-    private var isFixMode: Boolean = false
-    private var fileName: String = ""
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
-                       emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit) {
+                       emit: EmitType) {
         isFixMode = autoCorrect
         emitWarn = emit
 
         if (node.elementType == FILE) {
-            fileName = node.getFileName()
+            filePath = node.getFilePath()
 
             customIndentationCheckers = listOf(
-                    ::AssignmentOperatorChecker,
-                    ::ConditionalsAndLoopsWithoutBracesChecker,
-                    ::SuperTypeListChecker,
-                    ::ValueParameterListChecker,
-                    ::ExpressionIndentationChecker,
-                    ::DotCallChecker,
-                    ::KDocIndentationChecker,
-                    ::CustomGettersAndSettersChecker,
-                    ::ArrowInWhenChecker
+                ::AssignmentOperatorChecker,
+                ::ConditionalsAndLoopsWithoutBracesChecker,
+                ::SuperTypeListChecker,
+                ::ValueParameterListChecker,
+                ::ExpressionIndentationChecker,
+                ::DotCallChecker,
+                ::KdocIndentationChecker,
+                ::CustomGettersAndSettersChecker,
+                ::ArrowInWhenChecker
             ).map { it.invoke(configuration) }
 
             if (checkIsIndentedWithSpaces(node)) {
@@ -103,19 +102,25 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
 
     /**
      * This method warns if tabs are used in WHITE_SPACE nodes and substitutes them with spaces in fix mode
+     *
      * @return true if there are no tabs or all of them have been fixed, false otherwise
      */
+    @Suppress("FUNCTION_BOOLEAN_PREFIX")
     private fun checkIsIndentedWithSpaces(node: ASTNode): Boolean {
-        val whiteSpaceNodes = mutableListOf<ASTNode>()
+        val whiteSpaceNodes: MutableList<ASTNode> = mutableListOf()
         node.getAllLeafsWithSpecificType(WHITE_SPACE, whiteSpaceNodes)
         whiteSpaceNodes
-                .filter { it.textContains('\t') }
-                .apply { if (isEmpty()) return true }
-                .forEach {
-                    WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "tabs are not allowed for indentation", it.startOffset + it.text.indexOf('\t'), it) {
-                        (it as LeafPsiElement).replaceWithText(it.text.replace("\t", " ".repeat(configuration.indentationSize)))
-                    }
+            .filter { it.textContains('\t') }
+            .apply {
+                if (isEmpty()) {
+                    return true
                 }
+            }
+            .forEach {
+                WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "tabs are not allowed for indentation", it.startOffset + it.text.indexOf('\t'), it) {
+                    (it as LeafPsiElement).replaceWithText(it.text.replace("\t", " ".repeat(configuration.indentationSize)))
+                }
+            }
         return isFixMode  // true if we changed all tabs to spaces
     }
 
@@ -128,6 +133,7 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
             val numBlankLinesAfter = lastChild.text.count { it == '\n' }
             if (lastChild.elementType != WHITE_SPACE || numBlankLinesAfter != 1) {
                 val warnText = if (lastChild.elementType != WHITE_SPACE || numBlankLinesAfter == 0) "no newline" else "too many blank lines"
+                val fileName = filePath.substringAfterLast(File.separator)
                 WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "$warnText at the end of file $fileName", node.startOffset + node.textLength, node) {
                     if (lastChild.elementType != WHITE_SPACE) {
                         node.addChild(PsiWhiteSpaceImpl("\n"), null)
@@ -181,7 +187,7 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
         }
         if (checkResult?.isCorrect != true && expectedIndent != indentError.actual) {
             WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "expected $expectedIndent but was ${indentError.actual}",
-                    whiteSpace.startOffset + whiteSpace.text.lastIndexOf('\n') + 1, whiteSpace.node) {
+                whiteSpace.startOffset + whiteSpace.text.lastIndexOf('\n') + 1, whiteSpace.node) {
                 whiteSpace.node.indentBy(expectedIndent)
             }
         }
@@ -207,13 +213,19 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
      */
     private class IndentContext(private val config: IndentationConfig) {
         private var regularIndent = 0
-        private val exceptionalIndents = mutableListOf<ExceptionalIndent>()
-        private val activeTokens = Stack<IElementType>()
+        private val exceptionalIndents: MutableList<ExceptionalIndent> = mutableListOf()
+        private val activeTokens: Stack<IElementType> = Stack()
 
+        /**
+         * @param token a token that caused indentation increment, for example an opening brace
+         */
         fun storeIncrementingToken(token: IElementType) = token
-                .also { require(it in increasingTokens) { "Only tokens that increase indentation should be passed to this method" } }
-                .let(activeTokens::push)
+            .also { require(it in increasingTokens) { "Only tokens that increase indentation should be passed to this method" } }
+            .let(activeTokens::push)
 
+        /**
+         * Checks whether indentation needs to be incremented and increments in this case.
+         */
         fun maybeIncrement() {
             if (activeTokens.isNotEmpty() && activeTokens.peek() != WHITE_SPACE) {
                 regularIndent += config.indentationSize
@@ -221,9 +233,14 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
             }
         }
 
+        /**
+         * @param token a token that caused indentation decrement, for example a closing brace
+         */
         fun dec(token: IElementType) {
             if (activeTokens.peek() == WHITE_SPACE) {
-                while (activeTokens.peek() == WHITE_SPACE) activeTokens.pop()
+                while (activeTokens.peek() == WHITE_SPACE) {
+                    activeTokens.pop()
+                }
                 regularIndent -= config.indentationSize
             }
             if (activeTokens.isNotEmpty() && activeTokens.peek() == matchingTokens.find { it.second == token }?.first) {
@@ -231,24 +248,63 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
             }
         }
 
+        /**
+         * @return full current indent
+         */
         fun indent() = regularIndent + exceptionalIndents.sumBy { it.indent }
 
-        fun addException(initiator: ASTNode, indent: Int, includeLastChild: Boolean) =
+        /**
+         * @param initiator a node that caused exceptional indentation
+         * @param indent an additional indent
+         * @param includeLastChild whether the last child node should be included in the range affected by exceptional indentation
+         */
+        fun addException(
+            initiator: ASTNode,
+            indent: Int,
+            includeLastChild: Boolean) =
                 exceptionalIndents.add(ExceptionalIndent(initiator, indent, includeLastChild))
 
+        /**
+         * @param astNode the node which is used to determine whether exceptinoal indents are still active
+         */
         fun checkAndReset(astNode: ASTNode) = exceptionalIndents.retainAll { it.isActive(astNode) }
 
-        private data class ExceptionalIndent(val initiator: ASTNode, val indent: Int, val includeLastChild: Boolean = true) {
+        /**
+         * @property initiator a node that caused exceptional indentation
+         * @property indent an additional indent
+         * @property includeLastChild whether the last child node should be included in the range affected by exceptional indentation
+         */
+        private data class ExceptionalIndent(
+            val initiator: ASTNode,
+            val indent: Int,
+            val includeLastChild: Boolean = true) {
             /**
              * Checks whether this exceptional indent is still active. This is a hypotheses that exceptional indentation will end
              * outside of node where it appeared, e.g. when an expression after assignment operator is over.
+             *
+             * @param currentNode the current node during AST traversal
+             * @return boolean result
              */
             fun isActive(currentNode: ASTNode): Boolean = currentNode.psi.parentsWithSelf.any { it.node == initiator } &&
                     (includeLastChild || currentNode.treeNext != initiator.lastChildNode)
         }
     }
+
+    companion object {
+        const val INDENT_SIZE = 4
+        private val increasingTokens = listOf(LPAR, LBRACE, LBRACKET)
+        private val decreasingTokens = listOf(RPAR, RBRACE, RBRACKET)
+        private val matchingTokens = increasingTokens.zip(decreasingTokens)
+    }
 }
 
+/**
+ * @property expected expected indentation as a number of spaces
+ * @property actual actial indentation as a number of spaces
+ */
 internal data class IndentationError(val expected: Int, val actual: Int)
 
+/**
+ * @return indentation of the last line of this string
+ */
 internal fun String.lastIndent() = substringAfterLast('\n').count { it == ' ' }

@@ -1,15 +1,16 @@
 package org.cqfn.diktat.ruleset.chapter3
 
-import generated.WarningNames
 import org.cqfn.diktat.common.config.rules.DIKTAT_COMMON
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.files.FileStructureRule
 import org.cqfn.diktat.util.FixTestBase
+
+import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class FileStructureRuleTestFix : FixTestBase("test/paragraph3/file_structure", ::FileStructureRule) {
+class FileStructureRuleFixTest : FixTestBase("test/paragraph3/file_structure", ::FileStructureRule) {
     @Test
     @Tag(WarningNames.FILE_INCORRECT_BLOCKS_ORDER)
     fun `should move @file targeted annotations after header KDoc`() {
@@ -76,5 +77,11 @@ class FileStructureRuleTestFix : FixTestBase("test/paragraph3/file_structure", :
     @Tag(WarningNames.FILE_UNORDERED_IMPORTS)
     fun `should still work with default package and no imports`() {
         fixAndCompare("NoImportNoPackageExpected.kt", "NoImportNoPackageTest.kt")
+    }
+
+    @Test
+    @Tag(WarningNames.FILE_UNORDERED_IMPORTS)
+    fun `should move other comments before package node`() {
+        fixAndCompare("OtherCommentsExpected.kt", "OtherCommentsTest.kt")
     }
 }

@@ -254,6 +254,9 @@
 # Checks that KDoc in constructor has property tag
 - name: KDOC_NO_CONSTRUCTOR_PROPERTY
   enabled: true
+# Checks that property in KDoc present in class
+- name: KDOC_EXTRA_PROPERTY
+  enabled: true
 # Checks that KDoc in constructor has property tag but with comment inside constructor
 - name: KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT
   enabled: true
@@ -305,4 +308,10 @@
 # there should be explicit backing property with the name of real property
 # Example: val table get() {if (_table == null) ...} -> table should have _table
 - name: NO_CORRESPONDING_PROPERTY
+  enabled: true
+# Checks if there is class/object that can be replace with extension function
+- name: AVOID_USING_UTILITY_CLASS
+  enabled: true
+# If there is stateless class it is preferred to use object
+- name: OBJECT_IS_PREFERRED
   enabled: true

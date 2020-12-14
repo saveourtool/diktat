@@ -81,6 +81,8 @@ public object WarningNames {
 
     public const val KDOC_NO_CONSTRUCTOR_PROPERTY: String = "KDOC_NO_CONSTRUCTOR_PROPERTY"
 
+    public const val KDOC_EXTRA_PROPERTY: String = "KDOC_EXTRA_PROPERTY"
+
     public const val KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT: String =
             "KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT"
 
@@ -223,4 +225,8 @@ public object WarningNames {
     public const val EMPTY_PRIMARY_CONSTRUCTOR: String = "EMPTY_PRIMARY_CONSTRUCTOR"
 
     public const val NO_CORRESPONDING_PROPERTY: String = "NO_CORRESPONDING_PROPERTY"
+
+    public const val AVOID_USING_UTILITY_CLASS: String = "AVOID_USING_UTILITY_CLASS"
+
+    public const val OBJECT_IS_PREFERRED: String = "OBJECT_IS_PREFERRED"
 }

@@ -12,7 +12,7 @@
             <plugin>
                 <groupId>org.cqfn.diktat</groupId>
                 <artifactId>diktat-maven-plugin</artifactId>
-                <version>0.1.5</version>
+                <version>0.1.7</version>
                 <configuration>
                     <diktatConfigFile>diktat-analysis.yml</diktatConfigFile>
                     <inputs>
