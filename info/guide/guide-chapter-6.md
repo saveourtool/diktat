@@ -1,8 +1,9 @@
-# <a name="c6"></a> 6. Classes, interfaces and extension functions
+# <a name="c6"></a> 6. Classes, interfaces, and extension functions
 <!-- =============================================================================== -->
 ### <a name="c6.1"></a> 6.1 Classes
-### <a name="r6.1.1"></a> Rule 6.1.1:  When a class has a single constructor, it should be defined as a primary constructor in the declaration of the class.
-In case the class contains only one explicit constructor - it should be converted to a primary constructor.
+This section describes the rules of denoting classes in your code.
+#### <a name="r6.1.1"></a> 6.1.1  Denoting a class with a single constructor
+When a class has a single constructor, it should be defined as a primary constructor in the declaration of the class. If the class contains only one explicit constructor, it should be converted to a primary constructor.
 
 **Invalid example**:
 ```kotlin
@@ -26,7 +27,7 @@ class Test private constructor(var a: Int) {
 }
 ```
 
-### <a name="r6.1.2"></a> Rule 6.1.2: Prefer data classes instead of classes without any functional logic.
+#### <a name="r6.1.2"></a> 6.1.2 Prefer data classes instead of classes without any functional logic
 Some people say that the data class is a code smell. However, if you need to use it (which makes your code more simple), you can utilize the Kotlin `data class`. The main purpose of this class is to hold data,
 but also `data class` will automatically generate several useful methods:
 - equals()/hashCode() pair;
@@ -72,7 +73,7 @@ data class Test1(var a: Int = 0, var b: Int = 0)
 
 **Exception 2**: No need to convert a class to a data class if this class extends some other class or implements an interface.
 
-### <a name="r6.1.3"></a> Rule 6.1.3: Do not use the primary constructor if it is empty or useless.
+#### <a name="r6.1.3"></a> 6.1.3 Do not use the primary constructor if it is empty or useless
 The primary constructor is a part of the class header; it is placed after the class name and type parameters (optional) but can be omitted if it is not used.
 
 **Invalid example**:
@@ -107,12 +108,12 @@ class Test {
 }
 ```
 
-### <a name="r6.1.4"></a> Rule 6.1.4: several init blocks are redundant and generally should not be used in your class.
-The primary constructor cannot contain any code. That is why Kotlin has introduced `init` blocks.
+#### <a name="r6.1.4"></a> 6.1.4 Do not use redundant init blocks in your class
+Several init blocks are redundant and generally should not be used in your class. The primary constructor cannot contain any code. That is why Kotlin has introduced `init` blocks.
 These blocks store the code to be run during the class initialization.
 Kotlin allows writing multiple initialization blocks executed in the same order as they appear in the class body.
 Even when you follow (rule 3.2)[#r3.2], this makes your code less readable as the programmer needs to keep in mind all init blocks and trace the execution of the code.
-Therefore, you should try to use a single `init` block to reduce the code's complexity. . If you need to do some logging or make some calculations before the class property assignment, you can use powerful functional programming. This will reduce the possibility of the error if your `init` blocks' order is accidentally changed and
+Therefore, you should try to use a single `init` block to reduce the code's complexity. If you need to do some logging or make some calculations before the class property assignment, you can use powerful functional programming. This will reduce the possibility of the error if your `init` blocks' order is accidentally changed and
 make the code logic more coupled. It is always enough to use one `init` block to implement your idea in Kotlin.
 
 **Invalid example**:
@@ -165,8 +166,8 @@ class A(baseUrl: String) {
 }
 ```
 
-### <a name="r6.1.5"></a> Rule 6.1.5: Explicit supertype qualification should not be used if there is not clash between called methods.
-This rule is applicable to both interfaces and classes.
+#### <a name="r6.1.5"></a> 6.1.5 Explicit supertype qualification
+The explicit supertype qualification should not be used if there is no clash between called methods. This rule is applicable to both interfaces and classes.
 
 **Invalid example**:
 ```kotlin
@@ -181,7 +182,7 @@ class Square() : Rectangle() {
 }
 ```
 
-### <a name="r6.1.6"></a> Rule 6.1.6: Abstract class should have at least one abstract method.
+#### <a name="r6.1.6"></a> 6.1.6 Abstract class should have at least one abstract method
 Abstract classes are used to force a developer to implement some of its parts in their inheritors.
 When the abstract class has no abstract methods, it was set `abstract` incorrectly and can be converted to a regular class.
 
@@ -211,7 +212,7 @@ class NotAbstract {
 ```
 
 
-### <a name="r6.1.7"></a> Rule 6.1.7: in case of using "implicit backing property" scheme, the name of real and back property should be the same.
+#### <a name="r6.1.7"></a> 6.1.7 When using the "implicit backing property" scheme, the name of real and back property should be the same
 Kotlin has a mechanism of [backing properties](https://kotlinlang.org/docs/reference/properties.html#backing-properties).
 In some cases, implicit backing is not enough and it should be done explicitly:
 ```kotlin
@@ -228,7 +229,7 @@ val table: Map<String, Int>
 In this case, the name of the backing property (`_table`) should be the same as the name of the real property (`table`) but should have an underscore (`_`) prefix.
 It is one of the exceptions from the [identifier names rule](#r1.2)
 
-### <a name="r6.1.8"></a> Recommendation 6.1.8: avoid using custom getters and setters.
+#### <a name="r6.1.8"></a> 6.1.8 Avoid using custom getters and setters
 Kotlin has a perfect mechanism of [properties](https://kotlinlang.org/docs/reference/properties.html#properties-and-fields).
 Kotlin compiler automatically generates `get` and `set` methods for properties and can override them.
 
@@ -245,9 +246,9 @@ class A {
 }
 ```
 
-From the callee code these methods look like an access to this property: `A().isEmpty = true` for setter and `A().isEmpty` for getter.
+From the callee code, these methods look like access to this property: `A().isEmpty = true` for setter and `A().isEmpty` for getter.
 
-However, when `get` and `set` are overridden, it is very confusing for a developer who uses this particular class. 
+However, when `get` and `set` are overridden, it  isn't very clear for a developer who uses this particular class. 
 The developer expects to get the property value but receives some unknown value and some extra side-effect hidden by the custom getter/setter. 
 Use extra functions instead to avoid confusion.
 
@@ -268,7 +269,7 @@ class A {
 
 **Exception:** `Private setters` are only exceptions that are not prohibited by this rule.
 
-### <a name="r6.1.9"></a> Rule 6.1.9: never use the name of a variable in the custom getter or setter (possible_bug).
+#### <a name="r6.1.9"></a> 6.1.9 Never use the name of a variable in the custom getter or setter (possible_bug)
 If you ignored [recommendation 6.1.8](#r6.1.8), be careful with using the name of the property in your custom getter/setter
 as it can accidentally cause a recursive call and a `StackOverflow Error`. Use the `field` keyword instead.
 
@@ -282,7 +283,7 @@ var isEmpty: Boolean
     get() = isEmpty
 ```
 
-### <a name="r6.1.10"></a> Recommendation 6.1.10 no trivial getters and setters are allowed in the code.
+#### <a name="r6.1.10"></a> 6.1.10 No trivial getters and setters are allowed in the code
 In Java, trivial getters - are the getters that are just returning the field value.
 Trivial setters - are merely setting the field with a value without any transformation.
 However, in Kotlin, trivial getters/setters are generated by default. There is no need to use it explicitly for all types of data structures in Kotlin.
@@ -309,7 +310,7 @@ class A {
 }
 ```
 
-### <a name="r6.1.11"></a> Rule 6.1.11: use apply for grouping object initialization.
+#### <a name="r6.1.11"></a> Use 'apply' for grouping object initialization
 In Java, before functional programming became popular, many classes from common libraries used the configuration paradigm.
 To use these classes, you had to create an object with the constructor with 0-2 arguments and set the fields needed to run the object.
 In Kotlin, to reduce the number of dummy code line and to group objects [`apply` extension](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/apply.html) was added:  
@@ -358,18 +359,19 @@ fun main() {
 
 <!-- =============================================================================== -->
 ### <a name="c6.2"></a>6.2 Extension functions
+This section describes the rules of using extension functions in your code.
+
 [Extension functions](https://kotlinlang.org/docs/reference/extensions.html) is a killer-feature in Kotlin. 
-It gives you a chance to extend classes that were already implemented in external libraries and help you to make classes less heavy.
+It gives you a chance to extend classes that were already implemented in external libraries and helps you to make classes less heavy.
 Extension functions are resolved statically.
 
-### <a name="r6.2.1"></a> Recommendation 6.2.1: use extension functions for making logic of classes less coupled.
+#### <a name="r6.2.1"></a> 6.2.1 Use extension functions for making logic of classes less coupled
 It is recommended that for classes, the non-tightly coupled functions, which are rarely used in the class, should be implemented as extension functions where possible.
 They should be implemented in the same class/file where they are used. This is a non-deterministic rule, so the code cannot be checked or fixed automatically by a static analyzer.
 
-### <a name="r6.2.2"></a> Rule 6.2.2: No extension functions with the same name and signature if they extend base and inheritor classes (possible_bug).
-As extension functions are resolved statically. In this case, there could be a situation when a developer implements two extension functions: one is for the base class and another for the inheritor.
+#### <a name="r6.2.2"></a> 6.2.2 No extension functions with the same name and signature if they extend base and inheritor classes (possible_bug)
+You should have ho extension functions with the same name and signature if they extend base and inheritor classes (possible_bug).esolved statically. There could be a situation when a developer implements two extension functions: one is for the base class and another for the inheritor.
 This can lead to an issue when an incorrect method is used.
-And that can lead to an issue when incorrect method is used. 
 
 **Invalid example**:
 ```kotlin
@@ -397,8 +399,9 @@ In Kotlin and Java, the interface is the main presentation means of application 
 
 <!-- =============================================================================== -->
 ### <a name="c6.4"></a> 6.4 Objects
-### <a name="r6.4.1"></a> Rule 6.4.1: Avoid using utility classes/objects, use extensions instead.
-As described in [6.2 Extension functions](#c6.2), extension functions are a powerful. Instead of using utility classes/objects, use it extention functions.
+This section describes the rules of using objects in code.
+#### <a name="r6.4.1"></a> 6.4.1 Instead of using utility classes/objects, use extensions.
+Avoid using utility classes/objects; use extensions instead. As described in [6.2 Extension functions](#c6.2), using extension functions is a powerful method.
 This enables you to avoid unnecessary complexity and class/object wrapping and use top-level functions instead.
 
 **Invalid example**:
@@ -420,7 +423,7 @@ fun String.stringInfo(): Int {
 "myStr".stringInfo()
 ```
 
-### <a name="r6.4.2"></a> Recommendation 6.4.2: Objects should be used for Stateless Interfaces.
+#### <a name="r6.4.2"></a> 6.4.2 Objects should be used for Stateless Interfaces.
 Kotlin’s objects are extremely useful when you need to implement some interface from an external library that does not have any state.
 There is no need to use classes for such structures.
 

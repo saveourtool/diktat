@@ -7,10 +7,12 @@ import org.cqfn.diktat.ruleset.utils.containsOnlyConstants
 import org.cqfn.diktat.ruleset.utils.getDeclarationScope
 import org.cqfn.diktat.ruleset.utils.getLineNumber
 import org.cqfn.diktat.ruleset.utils.lastLineNumber
+import org.cqfn.diktat.ruleset.utils.numNewLines
 import org.cqfn.diktat.ruleset.utils.search.findAllVariablesWithUsages
 
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.FILE
+import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isPartOfComment
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
@@ -94,12 +96,31 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
     }
 
     private fun handleConsecutiveDeclarations(statement: PsiElement, properties: List<KtProperty>) {
+        val numLinesAfterLastProp =
+                properties
+                    .last()
+                    .node
+                    .treeNext
+                    .takeIf { it.elementType == WHITE_SPACE }
+                    ?.let {
+                        // minus one is needed to except \n after property
+                        it.numNewLines() - 1
+                    }
+                    ?: 0
+
         // need to check that properties are declared consecutively with only maybe empty lines
         properties
             .sortedBy { it.node.getLineNumber() }
-            .zip(properties.size - 1 downTo 0)
-            .forEach { (property, offset) ->
-                checkLineNumbers(property, statement.node.getLineNumber(), offset)
+            .zip(
+                (properties.size - 1 downTo 0).map { it + numLinesAfterLastProp }
+            )
+            .forEachIndexed { index, (property, offset) ->
+                if (index != properties.lastIndex) {
+                    checkLineNumbers(property, statement.node.getLineNumber(), offset)
+                } else {
+                    // since offset after last property is calculated in this method, we pass offset = 0
+                    checkLineNumbers(property, statement.node.getLineNumber(), 0)
+                }
             }
     }
 

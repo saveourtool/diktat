@@ -886,4 +886,73 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
             """.trimMargin()
         )
     }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
+    fun `test for null safety one line`() {
+        lintMethod(
+            """
+                |fun foo() {
+                |   foo.qwe() ?: bar.baz()
+                |   foo ?: bar().qwe()
+                |   foo ?: bar().qwe().qwe()
+                |}
+            """.trimMargin(),
+            LintError(2, 14, ruleId, "$functionalStyleWarn ?:", true),
+            LintError(4, 8, ruleId, "$functionalStyleWarn ?:", true),
+            LintError(4, 22, ruleId, "$functionalStyleWarn .", true),
+            rulesConfigList = rulesConfigListShort
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
+    fun `test for null safety several lines`() {
+        lintMethod(
+            """
+                |fun foo() {
+                |   foo.qwe() 
+                |       ?: bar.baz()
+                |   foo 
+                |       ?: bar().qwe()
+                |   foo 
+                |       ?: bar().qwe().qwe()
+                |   foo
+                |       .qwe() ?: qwe().qwe()
+                |   foo().qwe() ?: qwe().
+                |                           qwe()
+                |   foo().qwe() ?: qwe()
+                |                       .qwe()
+                |}
+            """.trimMargin(),
+            LintError(7, 22, ruleId, "$functionalStyleWarn .", true),
+            LintError(9, 15, ruleId, "$functionalStyleWarn ?:", true),
+            LintError(10, 16, ruleId, "$functionalStyleWarn ?:", true),
+            LintError(10, 24, ruleId, "$shouldBreakBefore .", true),
+            LintError(12, 16, ruleId, "$functionalStyleWarn ?:", true),
+            rulesConfigList = rulesConfigListShort
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
+    fun `test for null safety correct examples`() {
+        lintMethod(
+            """
+                |fun foo() {
+                |   foo
+                |       ?: bar
+                |           .bar()
+                |           .qux()
+                |   
+                |   
+                |   foo.bar()
+                |       .baz()
+                |       .qux()
+                |       ?: boo
+                |}
+            """.trimMargin(),
+            rulesConfigList = rulesConfigListShort
+        )
+    }
 }

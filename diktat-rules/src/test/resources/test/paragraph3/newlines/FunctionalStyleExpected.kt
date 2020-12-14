@@ -29,3 +29,13 @@ fun goo() {
             .filter()
 .hre()
 }
+
+fun foo() {
+    foo
+ ?: bar.baz()
+.qux()
+
+    foo
+ ?: bar.baz()
+            .qux()
+}
