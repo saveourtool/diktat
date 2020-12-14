@@ -53,6 +53,15 @@ private fun generateCodeStyle() {
                         ?.removePrefix("</a>")
                         ?.trim()
                 if (name.isNullOrEmpty() || number.isNullOrEmpty()) {
+                    if (number.isNullOrEmpty() && name.isNullOrEmpty()) {
+                        when (line.takeWhile { it == '#' }.count()) {
+                            1 -> writer.writeln("""\section*{\textbf{${line.removePrefix("#").trim()}}}""")
+                            2 -> writer.writeln("""\subsection*{\textbf{${line.removePrefix("##").trim()}}}""")
+                            3 -> writer.writeln("""\subsubsection*{\textbf{${line.removePrefix("###").trim()}}}${"\n"}\leavevmode\newline""")
+                            else -> {}
+                        }
+                        continue
+                    }
                     error("String starts with # but has no number or name - $line")
                 }
                 when (number.count { it == '.' }) {
@@ -93,6 +102,7 @@ private fun generateCodeStyle() {
                 line = iterator.next()
                 while (iterator.hasNext() && line.trim().startsWith("|")) {
                     writer.writeln(line
+                            .replace("&", "\\&")
                             .replace('|', '&')
                             .drop(1)
                             .dropLast(1)
