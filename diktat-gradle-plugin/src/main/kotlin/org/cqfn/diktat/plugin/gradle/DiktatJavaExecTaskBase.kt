@@ -68,10 +68,10 @@ open class DiktatJavaExecTaskBase @Inject constructor(
                 }
                 .files
                 .forEach {
-                    add("\"${it.path}\"")
+                    add(it.path)
                 }
             diktatExtension.excludes?.files?.forEach {
-                add("\"!${it.path}\"")
+                add(it.path)
             }
         }
         logger.debug("Setting JavaExec args to $args")
