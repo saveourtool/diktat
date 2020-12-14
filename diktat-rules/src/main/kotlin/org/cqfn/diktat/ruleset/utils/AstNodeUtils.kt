@@ -1,8 +1,8 @@
 /**
  * Various utility methods to work with kotlin AST
+ * FixMe: fix suppressed inspections on KDocs
  */
 
-// todo fix inspections on KDocs
 @file:Suppress("FILE_NAME_MATCH_CLASS", "KDOC_WITHOUT_RETURN_TAG", "KDOC_WITHOUT_PARAM_TAG")
 
 package org.cqfn.diktat.ruleset.utils
@@ -636,7 +636,7 @@ fun List<ASTNode>.handleIncorrectOrder(
  * This method returns text of this [ASTNode] plus text from it's siblings after last and until next newline, if present in siblings.
  * I.e., if this node occupies no more than a single line, this whole line or it's part will be returned.
  */
-@Suppress("LOCAL_VARIABLE_EARLY_DECLARATION", "WRONG_NEWLINES")
+@Suppress("WRONG_NEWLINES")
 fun ASTNode.extractLineOfText(): String {
     var text: MutableList<String> = mutableListOf()
     siblings(false)
@@ -743,7 +743,6 @@ fun ASTNode.getLineNumber(): Int =
  * This function calculates line number instead of using cached values.
  * It should be used when AST could be previously mutated by auto fixers.
  */
-@Suppress("LOCAL_VARIABLE_EARLY_DECLARATION")
 private fun ASTNode.calculateLineNumber() = getRootNode()
     .text
     .lineSequence()
