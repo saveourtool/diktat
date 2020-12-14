@@ -1,7 +1,9 @@
 # <a name="c4"></a> 4. Variables and types
+This section is dedicated to the rules and recommendations for using variables and types in your code.
 <!-- =============================================================================== -->
 ### <a name="c4.1"></a> 4.1 Variables
-### <a name="r4.1.1"></a> Rule 4.1.1: Do not use Float and Double types when accurate calculations are needed.
+The rules of using variables are explained in the below topics.
+#### <a name="r4.1.1"></a> 4.1.1 Do not use Float and Double types when accurate calculations are needed
 Floating-point numbers provide a good approximation over a wide range of values, but they cannot produce accurate results in some cases.
 Binary floating-point numbers are unsuitable for precise calculations because it is impossible to represent 0.1 or any other negative power of 10 in a `binary representation` with a finite length.
 
@@ -16,7 +18,7 @@ However, it will print the following value: `0.8999999999999999`
 Therefore, for precise calculations (for example, in finance or exact sciences), using such types as `Int`, `Long`, `BigDecimal`are recommended.
 The `BigDecimal` type should serve as a good choice.
 
-**Invalid example**: \
+**Invalid example**:
 Float values containing more than six or seven decimal numbers will be rounded.
  ```kotlin
  val eFloat = 2.7182818284f // Float, will be rounded to 2.7182817
@@ -29,8 +31,8 @@ Float values containing more than six or seven decimal numbers will be rounded.
     println(income.subtract(expense)) // you will obtain 0.9 here
  ```
 
-### <a name="r4.1.2"></a> Rule 4.1.2: Numeric float type values should not be directly compared with the equality operator (==) or other methods like `compareTo()` and `equals()`.
-Since floating-point numbers involve precision problems in computer representation, it is better to use `BigDecimal` as recommended in [Rule 4.1.1](#r4.1.1) to make accurate computations and comparisons. The following code describes these problems.
+#### <a name="r4.1.2"></a> 4.1.2: Comparing numeric float type values
+Numeric float type values should not be directly compared with the equality operator (==) or other methods, such as `compareTo()` and `equals()`. Since floating-point numbers involve precision problems in computer representation, it is better to use `BigDecimal` as recommended in [Rule 4.1.1](#r4.1.1) to make accurate computations and comparisons. The following code describes these problems.
 
 **Invalid example**:
  ```kotlin
@@ -63,16 +65,17 @@ if (abs(foo - bar) > 1e-6f) {
 }
 ```
 
-### <a name="r4.1.3"></a> Rule 4.1.3 Try to use 'val' instead of 'var' for variable declaration [SAY_NO_TO_VAR].
+#### <a name="r4.1.3"></a> 4.1.3 Try to use 'val' instead of 'var' for variable declaration [SAY_NO_TO_VAR].
 
 Variables with the `val` modifier are immutable (read-only).
-Code robustness and readability increase when using `val` variables instead of `var` variables.
+Using `val` variables instead of `var` variables increases code robustness and readability.
 This is because `var` variables can be reassigned several times in the business logic.
 However, in some scenarios with loops or accumulators, only `var`s are permitted.
 
 <!-- =============================================================================== -->
 ### <a name="c4.2"></a> 4.2 Types
-### <a name="r4.2.1"></a> Recommendation 4.2.1: Use Contracts and smart cast as much as possible.
+This section provides recommendations for using types.
+#### <a name="r4.2.1"></a> 4.2.1: Use Contracts and smart cast as much as possible.
 
 The Kotlin compiler has introduced [Smart Casts](https://kotlinlang.org/docs/reference/typecasts.html#smart-casts) that help reduce the size of code.
 
@@ -120,7 +123,7 @@ fun foo(s: String?) {
 }
 ```
 
-### <a name="r4.2.2"></a>Recommendation 4.2.2: Try to use type alias to represent types making code more readable.
+#### <a name="r4.2.2"></a> 4.2.2: Try to use type alias to represent types making code more readable.
 
 Type aliases provide alternative names for existing types.
 If the type name is too long, you can replace it with a shorter name, which helps to shorten long generic types.
@@ -149,7 +152,7 @@ typealias Predicate<T> = (T) -> Boolean
 ### <a name="c4.3"></a> 4.3 Null safety and variable declarations
 Kotlin is declared as a null-safe programming language. However, to achieve compatibility with Java, it still supports nullable types.
 
-### <a name="r4.3.1"></a> Recommendation 4.3.1: Avoid declaring variables with nullable types, especially from Kotlin stdlib.
+#### <a name="r4.3.1"></a> Recommendation 4.3.1: Avoid declaring variables with nullable types, especially from Kotlin stdlib.
 To avoid `NullPointerException` and help the compiler prevent Null Pointer Exceptions, avoid using nullable types (with `?` symbol).
 
 **Invalid example**:
@@ -176,7 +179,7 @@ val a: List<Int>? = null
 val a: List<Int> = emptyList()
 ```
 
-### <a name="r4.3.2"></a> Recommendation 4.3.2: Variables of generic types should have an explicit type declaration.
+#### <a name="r4.3.2"></a> 4.3.2: Variables of generic types should have an explicit type declaration
 Like in Java, classes in Kotlin may have type parameters. To create an instance of such a class, we typically need to provide type arguments:
 
 ```kotlin
@@ -196,8 +199,7 @@ val myVariable = emptyMap<Int, String>()
 val myVariable: Map<Int, String> = emptyMap() 
 ```
 
-### <a name="c4.3.3"></a> Null-safety
-### <a name="r4.3.3"></a> 4.3.3 Explicit null checks
+#### <a name="r4.3.3"></a> Null-safety
 
 Try to avoid explicit null checks (explicit comparison with `null`) 
 Kotlin is declared as [Null-safe](https://kotlinlang.org/docs/reference/null-safety.html) language.

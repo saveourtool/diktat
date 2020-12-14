@@ -90,10 +90,10 @@ class SortRule(private val configRules: List<RulesConfig>) : Rule("sort-rule") {
         }
     }
 
-    @Suppress("LOCAL_VARIABLE_EARLY_DECLARATION", "TYPE_ALIAS")
+    @Suppress("TYPE_ALIAS")
     private fun createOrderListOfList(propertyList: List<ASTNode>): List<List<ASTNode>> {
-        val orderListOfList: MutableList<MutableList<ASTNode>> = mutableListOf()
         var oneOrderList = mutableListOf(propertyList.first())
+        val orderListOfList: MutableList<MutableList<ASTNode>> = mutableListOf()
         propertyList.zipWithNext().forEach { (currentProperty, nextProperty) ->
             if (currentProperty.nextSibling { it.elementType == PROPERTY } == nextProperty) {
                 oneOrderList.add(nextProperty)

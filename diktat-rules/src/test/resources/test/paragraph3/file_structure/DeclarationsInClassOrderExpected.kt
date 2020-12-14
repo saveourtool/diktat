@@ -3,14 +3,14 @@ package test.paragraph3.file_structure
 class Example {
     private val log = LoggerFactory.getLogger(Example.javaClass)
 
+    // lorem ipsum
+    private val FOO = 42
+    private val BAR = 43
+
     /**
      * Dolor sit amet
      */
     private val BAZ = 44
-private val BAR = 43
-
-    // lorem ipsum
-    private val FOO = 42
     private lateinit var lateFoo: Int
     init {
         bar()
@@ -32,5 +32,4 @@ private val BAR = 43
     }
 
     class UnusedNested { }
-
-    }
+}

@@ -7,17 +7,7 @@ import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.ListOfList
 import org.cqfn.diktat.ruleset.constants.Warnings.REDUNDANT_SEMICOLON
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_NEWLINES
-import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
-import org.cqfn.diktat.ruleset.utils.emptyBlockList
-import org.cqfn.diktat.ruleset.utils.extractLineOfText
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
-import org.cqfn.diktat.ruleset.utils.getIdentifierName
-import org.cqfn.diktat.ruleset.utils.isBeginByNewline
-import org.cqfn.diktat.ruleset.utils.isEol
-import org.cqfn.diktat.ruleset.utils.isFollowedByNewline
-import org.cqfn.diktat.ruleset.utils.isSingleLineIfElse
-import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
-import org.cqfn.diktat.ruleset.utils.log
+import org.cqfn.diktat.ruleset.utils.*
 
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.ANDAND
@@ -81,6 +71,7 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtParameterList
 import org.jetbrains.kotlin.psi.KtSuperTypeList
 import org.jetbrains.kotlin.psi.psiUtil.children
@@ -176,8 +167,8 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
                 isFollowedByNewline() && !isSingleDotStatementOnSingleLine()
             }
         }
-        if (isIncorrect) {
-            val freeText = if (node.isCallsChain()) {
+        if (isIncorrect || node.isElvisCorrect()) {
+            val freeText = if (node.isCallsChain() || node.isElvisCorrect()) {
                 "should follow functional style at ${node.text}"
             } else {
                 "should break a line before and not after ${node.text}"
@@ -405,6 +396,22 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         }
     }
 
+    private fun KtBinaryExpression.dotCalls(right: Boolean = true) = (if (right) this.right else this.left)
+        ?.node
+        ?.takeIf { it.elementType == DOT_QUALIFIED_EXPRESSION }
+        ?.findChildByType(DOT)
+        ?.getCallChain()
+
+    private fun ASTNode.isElvisCorrect(): Boolean {
+        if (this.elementType != ELVIS) {
+            return false
+        }
+        val binaryExpression = (this.treeParent.treeParent.psi as KtBinaryExpression)
+        val leftDotCalls = binaryExpression.dotCalls(false)
+        val rightDotCalls = binaryExpression.dotCalls()
+        return (leftDotCalls?.size ?: 0) + (rightDotCalls?.size ?: 0) > configuration.maxCallsInOneLine && !this.isBeginByNewline()
+    }
+
     /**
      * This function is needed because many operators are represented as a single child of [OPERATION_REFERENCE] node
      * e.g. [ANDAND] is a single child of [OPERATION_REFERENCE]
@@ -427,9 +434,11 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
     /**
      * This method collects chain calls and checks it
      *
-     * @return true - if there is error, false, if there is no error and null if there is two calls in chain
+     * @return true - if there is error, and false if there is no error
      */
-    private fun ASTNode.isCallsChain() = getParentExpressions()
+    private fun ASTNode.isCallsChain() = getCallChain()?.isNotValidCalls(this) ?: false
+
+    private fun ASTNode.getCallChain() = getParentExpressions()
         .lastOrNull()
         ?.run {
             mutableListOf<ASTNode>().also {
@@ -438,7 +447,6 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         }
         // fixme: we can't distinguish fully qualified names (like java.lang) from chain of property accesses (like list.size) for now
         ?.dropWhile { !it.treeParent.textContains('(') && !it.treeParent.textContains('{') }
-        ?.isNotValidCalls(this) ?: false
 
     private fun List<ASTNode>.isNotValidCalls(node: ASTNode): Boolean {
         if (this.size == 1) {

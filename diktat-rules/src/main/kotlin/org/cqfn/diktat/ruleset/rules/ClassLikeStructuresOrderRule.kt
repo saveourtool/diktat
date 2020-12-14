@@ -4,14 +4,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.BLANK_LINE_BETWEEN_PROPERTIES
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
-import org.cqfn.diktat.ruleset.utils.findLeafWithSpecificType
-import org.cqfn.diktat.ruleset.utils.getIdentifierName
-import org.cqfn.diktat.ruleset.utils.handleIncorrectOrder
-import org.cqfn.diktat.ruleset.utils.isFollowedByNewline
-import org.cqfn.diktat.ruleset.utils.leaveExactlyNumNewLines
-import org.cqfn.diktat.ruleset.utils.loggerPropertyRegex
-import org.cqfn.diktat.ruleset.utils.moveChildBefore
+import org.cqfn.diktat.ruleset.utils.*
 
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
@@ -22,22 +15,29 @@ import com.pinterest.ktlint.core.ast.ElementType.COMPANION_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.CONST_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.FUN
+import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.LATEINIT_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.OBJECT_DECLARATION
 import com.pinterest.ktlint.core.ast.ElementType.PRIVATE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
+import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.SECONDARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.children
+import com.pinterest.ktlint.core.ast.isPartOfComment
 import com.pinterest.ktlint.core.ast.nextSibling
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.psiUtil.parents
+import org.jetbrains.kotlin.psi.psiUtil.siblings
 
 /**
  * Rule that checks order of declarations inside classes, interfaces and objects.
@@ -59,7 +59,7 @@ class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) :
         }
     }
 
-    @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
+    @Suppress("UnsafeCallOnNullableType", "LongMethod", "ComplexMethod", "TOO_LONG_FUNCTION")
     private fun checkDeclarationsOrderInClass(node: ASTNode) {
         val allProperties = node.getChildren(TokenSet.create(PROPERTY))
         val constProperties = allProperties.filter { it.findLeafWithSpecificType(CONST_KEYWORD) != null }.toMutableList()
@@ -88,28 +88,35 @@ class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) :
                 } ?: false
             }
             .let { it.first.toMutableList() to it.second.toMutableList() }
-        val companion = node.getChildren(TokenSet.create(OBJECT_DECLARATION))
-            .find { it.findChildByType(MODIFIER_LIST)?.findLeafWithSpecificType(COMPANION_KEYWORD) != null }
-        val blocks = Blocks(AllProperties(loggers, constProperties, properties, lateInitProperties),
-            initBlocks, constructors, methods, usedClasses, listOfNotNull(companion).toMutableList(),
+        val (companionObject, objects) = node.getChildren(TokenSet.create(OBJECT_DECLARATION))
+            .partition { it.findChildByType(MODIFIER_LIST)?.findLeafWithSpecificType(COMPANION_KEYWORD) != null }
+        val blocks = Blocks(AllProperties(loggers, constProperties, properties, lateInitProperties), objects.toMutableList(),
+            initBlocks, constructors, methods, usedClasses, companionObject.toMutableList(),
             unusedClasses)
-
-        blocks
             .allBlockFlattened()
-            .reversed()
-            .handleIncorrectOrder(blocks::getSiblingBlocks) { astNode, beforeThisNode ->
-                WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnAndFix(configRules, emitWarn, isFixMode, "${astNode.elementType}: ${astNode.text}", astNode.startOffset, astNode) {
-                    val replacement = node.moveChildBefore(astNode, beforeThisNode, true)
-                    replacement.oldNodes.forEachIndexed { idx, oldNode ->
+            .map { astNode ->
+                Pair(astNode, astNode.siblings(false).takeWhile { it.elementType == WHITE_SPACE || it.isPartOfComment()}.toList())
+            }
+
+        val classChildren = node.children().filter { it.elementType in childrenTypes }.toList()
+        if (classChildren != blocks.map { it.first }) {
+            blocks.filterIndexed { index, pair -> classChildren[index] != pair.first }
+                .forEach { listOfChildren ->
+                    val astNode = listOfChildren.first
+                    WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnAndFix(configRules, emitWarn, isFixMode,
+                        "${astNode.elementType}: ${astNode.findChildByType(IDENTIFIER)?.text ?: astNode.text}", astNode.startOffset, astNode) {
+                        node.removeRange(node.findChildByType(LBRACE)!!.treeNext, node.findChildByType(RBRACE)!!)
                         blocks
-                            .allBlocks()
-                            .find { oldNode in it }
-                            ?.apply {
-                                this[indexOf(oldNode)] = replacement.newNodes[idx]
+                            .reversed()
+                            .map { bodyChild ->
+                                node.addChild(bodyChild.first, node.children().toList()[1])
+                                bodyChild.second.map { node.addChild(it, node.children().toList()[1]) }
                             }
+                        node.addChild(PsiWhiteSpaceImpl("\n"), node.lastChildNode)
+                        // fixme maybe wrong space between nodes
                     }
                 }
-            }
+        }
     }
 
     @Suppress("UnsafeCallOnNullableType")
@@ -137,9 +144,8 @@ class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) :
         val actualNewLines = whiteSpaceBefore.text.count { it == '\n' }
         // for some cases (now - if this or previous property has custom accessors), blank line is allowed before it
         if (!hasCustomAccessors && actualNewLines != numRequiredNewLines ||
-                hasCustomAccessors && actualNewLines > numRequiredNewLines
-        ) {
-            BLANK_LINE_BETWEEN_PROPERTIES.warnAndFix(configRules, emitWarn, isFixMode, node.getIdentifierName()!!.text, node.startOffset, node) {
+                hasCustomAccessors && actualNewLines > numRequiredNewLines) {
+            BLANK_LINE_BETWEEN_PROPERTIES.warnAndFix(configRules, emitWarn, isFixMode, node.getIdentifierName()?.text ?: node.text, node.startOffset, node) {
                 whiteSpaceBefore.leaveExactlyNumNewLines(numRequiredNewLines)
             }
         }
@@ -160,6 +166,7 @@ class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) :
 
     /**
      * @property allProperties an instance of [AllProperties]
+     * @property objects objects
      * @property initBlocks `init` blocks
      * @property constructors constructors
      * @property methods functions
@@ -168,6 +175,7 @@ class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) :
      * @property unusedClasses nested classes that are *not* used in the enclosing class
      */
     private data class Blocks(val allProperties: AllProperties,
+                              val objects: MutableList<ASTNode>,
                               val initBlocks: MutableList<ASTNode>,
                               val constructors: MutableList<ASTNode>,
                               val methods: MutableList<ASTNode>,
@@ -182,7 +190,7 @@ class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) :
          * @return all groups of structures in the class
          */
         fun allBlocks() = with(allProperties) {
-            listOf(loggers, constProperties, properties, lateInitProperties,
+            listOf(loggers, constProperties, properties, lateInitProperties, objects,
                 initBlocks, constructors, methods, usedClasses, companion, unusedClasses)
         }
 
@@ -190,18 +198,9 @@ class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) :
          * @return all blocks as a flattened list of [ASTNode]s
          */
         fun allBlockFlattened() = allBlocks().flatten()
+    }
 
-        /**
-         * @param node
-         * @return nodes between which the [node] should be placed
-         */
-        fun getSiblingBlocks(node: ASTNode): Pair<ASTNode?, ASTNode> {
-            require(node in allBlockFlattened())
-            val lastElement = allBlockFlattened().last()
-            val idx = allBlocks().indexOfFirst { node in it }
-            return (allBlocks().subList(0, idx) to allBlocks().subList(idx + 1, allBlocks().size))
-                .let { it.first.flatten() to it.second.flatten() }
-                .let { it.first.firstOrNull() to (it.second.firstOrNull() ?: lastElement.treeNext) }
-        }
+    companion object {
+        private val childrenTypes = listOf(PROPERTY, CLASS, CLASS_INITIALIZER, SECONDARY_CONSTRUCTOR, FUN, OBJECT_DECLARATION)
     }
 }

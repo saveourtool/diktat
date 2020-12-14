@@ -1,13 +1,14 @@
 # <a name="c3"></a>3. General formatting (typesetting)
 <!-- =============================================================================== -->
 ### <a name="c3.1"></a> 3.1 File-related rules
-### <a name="r3.1.1"></a> Rule 3.1.1: Avoid files that are too long. Files should not exceed 2000 lines (non-empty and non-commented lines).
+This section describes the rules related to using files in your code.
+#### <a name="r3.1.1"></a> 3.1.1 Avoid files that are too long
 
-If the file is too long and complex, it should be split into smaller files, functions, or modules.
+If the file is too long and complicated, it should be split into smaller files, functions, or modules. Files should not exceed 2000 lines (non-empty and non-commented lines).
 It is recommended to horizontally or vertically split the file according to responsibilities or hierarchy of its parts.
 The only exception to this rule is code generation - the auto-generated files that are not manually modified can be longer.
 
-### <a name="r3.1.2"></a> Rule 3.1.2: Code blocks in the source file should be separated by one blank line and should be in the proper order.
+#### <a name="r3.1.2"></a> 3.1.2 Code blocks in the source file should be separated by one blank line
 A source file contains code blocks in the following order: copyright, package name, imports, and top-level classes. They should be separated by one blank line.
 
 a) Code blocks should be in the following order:
@@ -22,11 +23,11 @@ b) Each of the preceding code blocks should be separated by a blank line.
 
 c) Import statements are alphabetically arranged, without using line breaks and wildcards ( wildcard imports - `*`). 
 
-d) **Recommendation**. One `.kt` source file should contain only one class declaration, and its name should match the filename
+d) **Recommendation**: One `.kt` source file should contain only one class declaration, and its name should match the filename
 
 e) Avoid empty files that do not contain the code or contain only imports/comments/package name
 
-### <a name="r3.1.3"></a> Recommendation 3.1.3: Import statements order.
+#### <a name="r3.1.3"></a> 3.1.3 Import statements order
 
 From top to bottom, the order is the following:
 1. Android
@@ -56,9 +57,8 @@ import kotlin.system.exitProcess  // kotlin standard library
 import kotlinx.coroutines.*  // official kotlin extension library
 ```
 
-### <a name="r3.1.4"></a> Recommendation 3.1.4: The declaration parts of class-like code structures (class, interface, etc.) should be placed in the order.
+#### <a name="r3.1.4"></a> 3.1.4 Order of declaration parts of class-like code structures
 The declaration parts of class-like code structures (class, interface, etc.) should be in the following order: compile-time constants (for objects), class properties, late-init class properties, init-blocks, constructors, public methods, internal methods, protected methods, private methods, and companion object. Blank lines should separate their declaration.
-
 Notes:
 1.	There should be no blank lines between properties with the following **exceptions**: when there is a comment before a property on a separate line or annotations on a separate line.
 2.	Properties with comments/Kdoc should be separated by a newline before the comment/Kdoc.
@@ -71,15 +71,16 @@ The declaration part of a class or interface should be in the following order:
 - Init-blocks
 - Constructors
 - Methods or nested classes. Put nested classes next to the code they are used by.
-If the classes are meant to be used externally and are not referenced inside the class, put them after the companion object.
+If the classes are meant to be used externally, and are not referenced inside the class, put them after the companion object.
 - Companion object
 
 **Exception:**
-All variants of a `(private) val` logger should be placed in the beginning of the class (`(private) val log`, `LOG`, `logger`, etc.).
+All variants of a `(private) val` logger should be placed at the beginning of the class (`(private) val log`, `LOG`, `logger`, etc.).
 
 <!-- =============================================================================== -->
 ### <a name="c3.2"></a> 3.2 Braces
-### <a name="r3.2.1"></a> Rule 3.2.1: Braces must be used in conditional statements and loop blocks.
+This section describes the general rules of using braces in your code.
+#### <a name="r3.2.1"></a> 3.2.1 Using braces in conditional statements and loop blocks
 
 Braces should always be used in `if`, `else`, `for`, `do`, and `while` statements, even if the program body is empty or contains only one statement. In special Kotlin `when` statements, you do not need to use braces for single-line statements. 
 
@@ -119,8 +120,8 @@ if (condition) {
 }
 ```
 
-### <a name="r3.2.2"></a> Rule 3.2.2 For *non-empty* blocks and block structures, the opening brace is placed at the end of the line
-
+#### <a name="r3.2.2"></a> 3.2.2  Opening braces are placed at the end of the line in *non-empty* blocks and block structures
+For *non-empty* blocks and block structures, the opening brace is placed at the end of the line.
 Follow the K&R style (1TBS or OTBS) for *non-empty* code blocks with braces:
 - The opening brace and first line of the code block are on the same line.
 - The closing brace is on its own new line.
@@ -178,12 +179,11 @@ do {
 
 <!-- =============================================================================== -->
 ### <a name="c3.3"></a> 3.3 Indentation
-### <a name="r3.3.1"></a>Rule 3.3.1: Use spaces for indentation. Each indentation equals four spaces.
 
 Only spaces are permitted for indentation, and each indentation should equal `four spaces` (tabs are not permitted).
 If you prefer using tabs, simply configure them to change to spaces in your IDE automatically.
 These code blocks should be indented if they are placed on the new line, and the following conditions are met:
--	The code block is placed immediately after an opening brace
+-	The code block is placed immediately after an opening brace.
 -	The code block is placed after each operator, including the assignment operator (`+`/`-`/`&&`/`=`/etc.)
 -	The code block is a call chain of methods:
 ```kotlin
@@ -209,7 +209,7 @@ b) Arguments in argument lists can be aligned if they are on different lines.
 
 3.	Eight spaces are used for functional-like styles when the newline is placed before the dot.
 
-4.	Super type lists: \
+4.	Supertype lists: \
 a) Four spaces are used if the colon before the supertype list is on a new line. \
 b) Four spaces are used before each supertype, and eight spaces are used if the colon is on a new line. 
 
@@ -253,9 +253,8 @@ class A
 
 <!-- =============================================================================== -->
 ### <a name="c3.4"></a> 3.4 Empty blocks
-### <a name="r3.4.1"></a> Recommendation 3.4.1: Avoid empty blocks, and ensure braces start on a new line.
 
-An empty code block can be closed immediately on the same line and the next line. However, a newline is recommended between opening and closing braces `{}` (see the examples below.)
+Avoid empty blocks, and ensure braces start on a new line. An empty code block can be closed immediately on the same line and the next line. However, a newline is recommended between opening and closing braces `{}` (see the examples below.)
 
 Generally, empty code blocks are prohibited; using them is considered a bad practice (especially for catch block).
 They are only appropriate for overridden functions when the base class's functionality is not needed in the class-inheritor.
@@ -290,10 +289,9 @@ try {
 
 <!-- =============================================================================== -->
 ### <a name="c3.5"></a> 3.5 Line length
-### <a name="r3.5.1"></a> Recommendation 3.5.1: Line length should be less than 120 symbols.
 
-The international code style prohibits `non-Latin` (`non-ASCII`) symbols.
-(See [Rule 1.1.1: Identifiers](#r1.1.1)) However, if you still intend on using them, follow the following convention:
+Line length should be less than 120 symbols. The international code style prohibits `non-Latin` (`non-ASCII`) symbols.
+(See [Identifiers](#r1.1.1)) However, if you still intend on using them, follow the following convention:
 
 - One wide character occupies the width of two narrow characters.
 The "wide" and "narrow" parts of a character are defined by its [east Asian width Unicode attribute](https://unicode.org/reports/tr11/).
@@ -312,7 +310,8 @@ Each one of these characters represents two narrow characters.
 
 <!-- =============================================================================== -->
 ### <a name="c3.6"></a> 3.6 Line breaks (newlines)
-### <a name="r3.6.1"></a> Recommendation 3.6.1: Each line can have a maximum of one statement.
+This section contains the rules and recommendations on using line breaks.
+#### <a name="r3.6.1"></a> 3.6.1 Each line can have a maximum of one statement.
 Each line can have a maximum of one code statement. This recommendation prohibits the use of code with `;` because it decreases code visibility.
 
 **Invalid example:**
@@ -326,7 +325,7 @@ val a = ""
 val b = ""
 ```
 
-### <a name="r3.6.2"></a>Rule 3.6.2: Rules for line-breaking
+#### <a name="r3.6.2"></a> 3.6.2 Rules for line-breaking
 
 1) Unlike Java, Kotlin allows you not to put a semicolon (`;`) after each statement separated by a newline character.
     There should be no redundant semicolon at the end of the lines.
@@ -441,7 +440,7 @@ fun foo(
 }
  ```
 
-8) If the supertype list has more than two elements, they should be separated by newlines
+8) If the supertype list has more than two elements, they should be separated by newlines.
 
 **Valid example:** 
 ```kotlin
@@ -452,11 +451,10 @@ class MyFavouriteVeryLongClassHolder :
 ```
 
 <!-- =============================================================================== -->
-### <a name="c3.7"></a> 3.7 Blank lines
-### <a name="r3.7.1"></a> Recommendation 3.7.1: Reduce unnecessary blank lines and maintain a compact code size
+### <a name="c3.7"></a> 3.7 Using blank lines
 
-By reducing unnecessary blank lines, you can display more code on one screen, which improves code readability.
-- Blank lines should separate content based on relevance and should be placed between groups of fields, constructors, methods, nested classes, `init` blocks, and objects (see [Rule 3.1.2](#r3.1.2)).
+Reduce unnecessary blank lines and maintain a compact code size. By reducing unnecessary blank lines, you can display more code on one screen, which improves code readability.
+- Blank lines should separate content based on relevance and should be placed between groups of fields, constructors, methods, nested classes, `init` blocks, and objects (see [3.1.2](#r3.1.2)).
 - Do not use more than one line inside methods, type definitions, and initialization expressions.
 - Generally, do not use more than two consecutive blank lines in a row.
 - Do not put newlines in the beginning or end of code blocks with curly braces.
@@ -473,14 +471,17 @@ fun baz() {
 
 <!-- =============================================================================== -->
 ### <a name="c3.8"></a> 3.8 Horizontal space
-### <a name="r3.8.1"></a> Rule 3.8.1: Usage of whitespace for code separation
+This section describes general rules and recommendations for using spaces in the code.
+#### <a name="r3.8.1"></a> 3.8.1: Usage of whitespace for code separation
 
-**Note:** This recommendation is for the cases where symbols are located on the same line. However, in some cases, a line break could be used instead of a space (described in another rule.)
+Follow the recommendations below for using space to separate keywords:
 
-1.  Separate keywords like `if`, `when`, `for`, e.t.c. from the opening parenthesis with single whitespace.
+**Note:** These recommendations are for cases where symbols are located on the same line. However, in some cases, a line break could be used instead of a space.
+
+1.  Separate keywords (such as `if`, `when`, `for`) from the opening parenthesis with single whitespace.
     The only exception is the `constructor` keyword, which should not be separated from the opening parenthesis.
 
-2.  Separate keywords like `else` or `try` from the opening brace (`{`) with a single whitespace.
+2.  Separate keywords like `else` or `try` from the opening brace (`{`) with single whitespace.
     If `else` is used in a ternary-style statement without braces, there should be a single space between `else` and the statement after: `if (condition) foo() else bar()`
 
 3.  Use a **single** whitespace before all opening braces (`{`). The only exception is the passing of a lambda as a parameter inside parentheses:
@@ -489,7 +490,7 @@ fun baz() {
      foo({x: Int -> x}, 5) // no space before '{'
  ```
 
-4.  A single whitespace should be placed on both sides of binary operators. This also applies to operator-like symbols.
+4.  Single whitespace should be placed on both sides of binary operators. This also applies to operator-like symbols.
     For example: 
     
  - A colon in generic structures with the `where` keyword:  `where T : Type`
@@ -507,14 +508,15 @@ fun baz() {
   `1..100`
 
 5.  Use spaces after (`,`), (`:`), and (`;`), except when the symbol is at the end of the line.
-    However, note that this code style prohibits the use of (`;`) in the middle of a line ([Rule 3.2.2](#r3.2.2)).
+    However, note that this code style prohibits the use of (`;`) in the middle of a line ([see 3.3.2](#r3.2.2)).
     There should be no whitespaces at the end of a line.
     The only scenario where there should be no space after a colon is when the colon is used in the annotation to specify a use-site target (for example, `@param:JsonProperty`).
     There should be no spaces before `,` , `:` and `;`. 
-    **Exceptions** for spaces and colons are the following:
     
-    - when `:` is used to separate a type and a supertype, including an anonymous object (after object keyword)
-    - when delegating to a superclass constructor or different constructor of the same class
+    **Exceptions** for spaces and colons:
+    
+    - When `:` is used to separate a type and a supertype, including an anonymous object (after object keyword)
+    - When delegating to a superclass constructor or different constructor of the same class
 
 **Valid example:**
 ```kotlin
@@ -533,7 +535,7 @@ If the type is nullable, there should be no space before `?`.
 7. When using `[]` operator (`get/set`) there should be **no** spaces between identifier and `[` : `someList[0]`.
 
 8. There should be no space between a method or constructor name (both at declaration and at call site) and a parenthesis:
-   `foo() {}`. Note that this sub-rule is related only to spaces; the rules for whitespaces are described in [Rule 3.6.2](#r3.6.2).
+   `foo() {}`. Note that this sub-rule is related only to spaces; the rules for whitespaces are described in [see 3.6.2](#r3.6.2).
     This rule does not prohibit, for example, the following code:
 ```kotlin
 fun foo
@@ -546,20 +548,20 @@ fun foo
 
 10. There should be no spaces between a prefix/postfix operator (like `!!` or `++`) and its operand.
 
-### <a name="r3.8.2"></a> Recommendation 3.8.2: No spaces should be inserted for horizontal alignment.
+#### <a name="r3.8.2"></a> 3.8.2: No spaces for horizontal alignment
 
 *Horizontal alignment* refers to aligning code blocks by adding space to the code. Horizontal alignment should not be used because:
 
 - When modifying code, it takes much time for new developers to format, support, and fix alignment issues.
 - Long identifier names will break the alignment and lead to less presentable code.
-- There are more disadvantages than advantages in alignment. To reduce maintenance costs, the best choice is not to use horizontal alignment.
+- There are more disadvantages than advantages in alignment. To reduce maintenance costs, misalignment (???) is the best choice.
 
 Recommendation: Alignment only looks suitable for `enum class`, where it can be used in table format to improve code readability:
 ```kotlin
 enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean, private val warn: String) : Rule {
     PACKAGE_NAME_MISSING         (1, true,  "no package name declared in a file"),
     PACKAGE_NAME_INCORRECT_CASE  (2, true,  "package name should be completely in a lower case"),
-    PACKAGE_NAME_INCORRECT_PREFIX(3, false, "package name should start from company's domain")
+    PACKAGE_NAME_INCORRECT_PREFIX(3, false, "package name should start from the company's domain")
     ;
 }
 ```
@@ -578,8 +580,9 @@ enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean
 
 <!-- =============================================================================== -->
 ### <a name="c3.9"></a> 3.9 Enumerations
-### <a name="r3.9.1"></a>Recommendation 3.9.1: Enum values are separated by a comma and line break, with ';' placed on the new line.
-1) Enum values are separated by a comma and a line break. `;` is put on the new line:
+Enum values are separated by a comma and line break, with ';' placed on the new line.
+
+1) The comma and line break characters separate enum values. Put `;` on the new line:
 ```kotlin
 enum class Warnings {
     A,
@@ -590,7 +593,7 @@ enum class Warnings {
 ```
 
 This will help to resolve conflicts and reduce the number of conflicts during merging pull requests.
-Also use [trailing comma](https://kotlinlang.org/docs/reference/whatsnew14.html#trailing-comma).
+Also, use [trailing comma](https://kotlinlang.org/docs/reference/whatsnew14.html#trailing-comma).
 
 2) If the enum is simple (no properties, methods, and comments inside), you can declare it in a single line:
 ```kotlin
@@ -624,7 +627,8 @@ enum class ComparisonResult {
 
 <!-- =============================================================================== -->
 ### <a name="c3.10"></a> 3.10 Variable declaration
-### <a name="r3.10.1"></a> Rule 3.10.1: Declare one variable per line.
+This section describes rules for the declaration of variables.
+#### <a name="r3.10.1"></a> 3.10.1 Declare one variable per line.
 
 Each property or variable must be declared on a separate line. 
 
@@ -633,14 +637,15 @@ Each property or variable must be declared on a separate line.
 val n1: Int; val n2: Int
 ```
 
-### <a name="r3.10.2"></a>Recommendation 3.10.2: Variables should be declared near the line where they are first used.
+#### <a name="r3.10.2"></a> 3.10.2 Variables should be declared near the line where they are first used.
 Declare local variables close to the point where they are first used to minimize their scope. This will also increase the readability of the code.
 Local variables are usually initialized during their declaration or immediately after.
 The member fields of the class should be declared collectively (see [Rule 3.1.2](#r3.1.2) for details on the class structure).
 
 <!-- =============================================================================== -->
-### <a name="c3.11"></a> 3.11 When expression
-### <a name="r3.11.1"></a>Rule 3.11.1: The 'when' statement must have an 'else' branch unless the condition variable is enumerated or a sealed type.
+### <a name="c3.11"></a> 3.11 'When' expression
+
+The `when` statement must have an 'else' branch unless the condition variable is enumerated or a sealed type.
 Each `when` statement should contain an `else` statement group, even if it does not contain any code.
 
 **Exception:** If 'when' statement of the `enum or sealed` type contains all enum values, there is no need to have an "else" branch.
@@ -648,9 +653,9 @@ The compiler can issue a warning when it is missing.
 
 <!-- =============================================================================== -->
 ### <a name="c3.12"></a> 3.12 Annotations
-### <a name="r3.12.1"></a> Recommendation 3.12.1: Each annotation applied to a class, method, or constructor should be placed on its own line.
 
-1. Annotations applied to the class, method, or constructor are placed on separate lines (one annotation per line). 
+Each annotation applied to a class, method or constructor should be placed on its own line. Consider the following examples:
+1. Annotations applied to the class, method or constructor are placed on separate lines (one annotation per line). 
 
 **Valid example**:
 ```kotlin
@@ -674,8 +679,7 @@ fun getNameIfPresent() { /* ... */ }
 ```
 
 <!-- =============================================================================== -->
-### <a name="c3.13"></a> 3.13 Layout of comments
-### <a name="r3.13.1"></a> Recommendation 3.13.1: Block comments location.
+### <a name="c3.13"></a> 3.13 Block comments
 
 Block comments should be placed at the same indentation level as the surrounding code. See examples below.
 
@@ -691,11 +695,13 @@ class SomeClass {
 }
  ```
 
-**Suggestion**: Use `/*...*/` block comments to enable automatic formatting by IDEs.
+**Note**: Use `/*...*/` block comments to enable automatic formatting by IDEs.
 
 <!-- =============================================================================== -->
 ### <a name="c3.14"></a> 3.14 Modifiers and constant values
-### <a name="r3.14.1"></a> Recommendation 3.14.1: If a declaration has multiple modifiers, always follow the proper sequence.
+This section contains recommendations regarding modifiers and constant values.
+#### <a name="r3.14.1"></a> 3.14.1 Declaration with multiple modifiers
+If a declaration has multiple modifiers, always follow the proper sequence.
 **Valid sequence:**
 
 ```kotlin
@@ -720,7 +726,8 @@ operator
 data
 ```
 
-### <a name="r3.14.2"></a>Recommendation 3.14.2: An underscore should separate long numerical values.
+#### <a name="r3.14.2"></a> 3.14.2: Separate long numerical values with an underscore
+An underscore character should separate long numerical values.
 **Note:** Using underscores simplifies reading and helps to find errors in numeric constants.
 ```kotlin
 val oneMillion = 1_000_000
@@ -732,9 +739,11 @@ val bytes = 0b11010010_01101001_10010100_10010010
 
 <!-- =============================================================================== -->
 ### <a name="c3.15"></a> 3.15 Strings
-### <a name="r3.15.1"></a> Rule 3.15.1: Concatenation of Strings is prohibited if the string can fit on one line.
+This section describes the general rules of using strings.
+
+#### <a name="r3.15.1"></a> 3.15.1 Concatenation of Strings
 String concatenation is prohibited if the string can fit on one line. Use raw strings and string templates instead. Kotlin has significantly improved the use of Strings: 
-[String templates](https://kotlinlang.org/docs/reference/basic-types.html#string-templates), [Raw strings](https://kotlinlang.org/docs/reference/basic-types.html#string-literals)
+[String templates](https://kotlinlang.org/docs/reference/basic-types.html#string-templates), [Raw strings](https://kotlinlang.org/docs/reference/basic-types.html#string-literals).
 Therefore, compared to using explicit concatenation, code looks much better when proper Kotlin strings are used for short lines, and you do not need to split them with newline characters.
 
 **Invalid example**:
@@ -749,7 +758,7 @@ val myStr = "Super string"
 val value = "$myStr concatenated"
 ```
 
-### <a name="r3.15.2"></a>Rule 3.15.2: String template format
+#### <a name="r3.15.2"></a> 3.15.2 String template format
 **Redundant curly braces in string templates**
 
 If there is only one variable in a string template, there is no need to use such a template. Use this variable directly.
