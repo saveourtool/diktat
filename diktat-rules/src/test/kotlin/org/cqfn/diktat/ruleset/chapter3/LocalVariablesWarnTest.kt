@@ -8,6 +8,7 @@ import org.cqfn.diktat.util.LintTestBase
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.ast.ElementType
 import generated.WarningNames
+import org.cqfn.diktat.util.TEST_FILE_NAME
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
@@ -602,9 +603,9 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
 
     @Test
     @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
-    fun `qqqq`() {
+    fun `should not trigger on var nodes which have initializer`() {
         lintMethod(
-                """
+            """
                     |    private fun collectAllExtensionFunctions(astNode: ASTNode): SimilarSignatures {
                     |       var text = ""
                     |       var node = astNode
@@ -616,6 +617,33 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |               text += getTextFromParenthesized(node)
                     |           }
                     |       } while (node.elementType != BINARY_EXPRESSION)
+                    |   }
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    fun `should skip comments`() {
+        lintMethod(
+                """
+                    |    private fun collectAllExtensionFunctions(astNode: ASTNode): SimilarSignatures {
+                    |       var copyrightComment = firstCodeNode.prevSibling { it.elementType == BLOCK_COMMENT }
+                    |           ?.takeIf { blockCommentNode ->
+                    |           copyrightWords.any { blockCommentNode.text.contains(it, ignoreCase = true) }
+                    |       }
+                    |       var headerKdoc = firstCodeNode.prevSibling { it.elementType == KDOC }
+                    |       // Annotations with target`file` can only be placed before `package` directive.
+                    |       var fileAnnotations = node.findChildByType(FILE_ANNOTATION_LIST)
+                    |       // We also collect all other elements that are placed on top of the file.
+                    |       // These may be other comments, so we just place them before the code starts.
+                    |       val otherNodesBeforeCode = firstCodeNode.siblings(forward = false)
+                    |           .filterNot {
+                    |               it.isWhiteSpace() ||
+                    |                   it == copyrightComment || it == headerKdoc || it == fileAnnotations
+                    |           }
+                    |           .toList()
+                    |           .reversed()
                     |   }
                 """.trimMargin()
         )

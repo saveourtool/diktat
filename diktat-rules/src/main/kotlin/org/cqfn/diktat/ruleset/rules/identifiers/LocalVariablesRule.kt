@@ -112,7 +112,16 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
         properties
             .sortedBy { it.node.getLineNumber() }
             .zip(
-                (properties.size - 1 downTo 0).map { it + numLinesAfterLastProp }
+                (properties.size - 1 downTo 0).map {
+                    // Also we need to count number of comments to skip. See `should skip comments` test
+                    // For the last property we don't need to count, because they will be counted in checkLineNumbers
+                    val numberOfComments = properties[if(it != 0) properties.size - it else 0]
+                            .siblings(forward = true, withItself = false)
+                            .takeWhile { it != statement }
+                            .filter { it.node.isPartOfComment() }
+                            .count()
+                    it + numLinesAfterLastProp + numberOfComments
+                }
             )
             .forEachIndexed { index, (property, offset) ->
                 if (index != properties.lastIndex) {

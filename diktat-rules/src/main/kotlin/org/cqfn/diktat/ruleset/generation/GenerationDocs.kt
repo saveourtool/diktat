@@ -141,7 +141,6 @@ private fun findBoldOrItalicText(regex: Regex,
             .findAll(line)
             .map { it.value }
             .toMutableList()
-    var correctedLine = line.replace(regex, REGEX_PLACEHOLDER)
     allRegex.forEachIndexed { index, value ->
         when (type) {
             FindType.BOLD -> allRegex[index] = "\\textbf{${value.replace("**", "")}}"
@@ -154,6 +153,7 @@ private fun findBoldOrItalicText(regex: Regex,
             FindType.BACKTICKS -> allRegex[index] = value.replace("\\_", "_")
         }
     }
+    var correctedLine = line.replace(regex, REGEX_PLACEHOLDER)
     allRegex.forEach {
         correctedLine = correctedLine.replaceFirst(REGEX_PLACEHOLDER, it)
     }
