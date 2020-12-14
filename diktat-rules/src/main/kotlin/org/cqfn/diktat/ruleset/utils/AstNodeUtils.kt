@@ -1,8 +1,8 @@
 /**
  * Various utility methods to work with kotlin AST
+ * FixMe: fix suppressed inspections on KDocs
  */
 
-// todo fix inspections on KDocs
 @file:Suppress("FILE_NAME_MATCH_CLASS", "KDOC_WITHOUT_RETURN_TAG", "KDOC_WITHOUT_PARAM_TAG")
 
 package org.cqfn.diktat.ruleset.utils

@@ -227,4 +227,6 @@ public object WarningNames {
     public const val NO_CORRESPONDING_PROPERTY: String = "NO_CORRESPONDING_PROPERTY"
 
     public const val AVOID_USING_UTILITY_CLASS: String = "AVOID_USING_UTILITY_CLASS"
+
+    public const val OBJECT_IS_PREFERRED: String = "OBJECT_IS_PREFERRED"
 }

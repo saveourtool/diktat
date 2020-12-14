@@ -146,4 +146,84 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
             """.trimMargin(), rulesConfigList = rulesConfigListWildCardImports
         )
     }
+
+    @Test
+    @Tag(WarningNames.FILE_INCORRECT_BLOCKS_ORDER)
+    fun `should warn if there are other misplaced comments before package - positive example`() {
+        lintMethod(
+            """
+                |/**
+                | * This is an example
+                | */
+                |
+                |// some notes on this file
+                |package org.cqfn.diktat.example
+                |
+                |import org.cqfn.diktat.example.Foo
+                |
+                |class Example
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.FILE_INCORRECT_BLOCKS_ORDER)
+    fun `should warn if there are other misplaced comments before package`() {
+        lintMethod(
+            """
+                |// some notes on this file
+                |/**
+                | * This is an example
+                | */
+                |
+                |package org.cqfn.diktat.example
+                |
+                |import org.cqfn.diktat.example.Foo
+                |
+                |class Example
+            """.trimMargin(),
+            LintError(1, 1, ruleId, "${FILE_INCORRECT_BLOCKS_ORDER.warnText()} // some notes on this file", true),
+            LintError(2, 1, ruleId, "${FILE_INCORRECT_BLOCKS_ORDER.warnText()} /**", true),
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.FILE_INCORRECT_BLOCKS_ORDER)
+    fun `block comment should be detected as copyright - positive example`() {
+        lintMethod(
+            """
+                |/*
+                | * Copyright Example Inc. (c)
+                | */
+                |
+                |@file:Annotation
+                |
+                |package org.cqfn.diktat.example
+                |
+                |import org.cqfn.diktat.example.Foo
+                |
+                |class Example
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.FILE_INCORRECT_BLOCKS_ORDER)
+    fun `block comment shouldn't be detected as copyright without keywords`() {
+        lintMethod(
+            """
+                |/*
+                | * Just a regular block comment
+                | */
+                |@file:Annotation
+                |
+                |package org.cqfn.diktat.example
+                |
+                |import org.cqfn.diktat.example.Foo
+                |
+                |class Example
+            """.trimMargin(),
+            LintError(4, 1, ruleId, "${FILE_INCORRECT_BLOCKS_ORDER.warnText()} @file:Annotation", true)
+        )
+    }
 }
