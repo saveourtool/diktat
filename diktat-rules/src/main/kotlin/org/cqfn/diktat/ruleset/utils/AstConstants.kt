@@ -24,6 +24,7 @@ internal const val SET_PREFIX = "set"
 val emptyBlockList = listOf(LBRACE, WHITE_SPACE, SEMICOLON, RBRACE)
 
 val commentType = listOf(BLOCK_COMMENT, EOL_COMMENT, KDOC)
+val copyrightWords = setOf("copyright", "版权")
 
 internal const val EMPTY_BLOCK_TEXT = "{}"
 
