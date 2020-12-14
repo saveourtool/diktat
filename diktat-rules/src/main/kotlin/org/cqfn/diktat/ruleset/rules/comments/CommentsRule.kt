@@ -93,7 +93,7 @@ class CommentsRule(private val configRules: List<RulesConfig>) : Rule("comments"
     private fun getOffsetsToTextBlocksFromEolComments(node: ASTNode): List<Pair<Int, String>> {
         val comments = node
             .findAllNodesWithSpecificType(EOL_COMMENT)
-            .filter { !it.text.contains(eolCommentStart) }
+            .filter { !it.text.contains(eolCommentStart) || isCodeAfterCommentStart(it.text) }
         return if (comments.isNotEmpty()) {
             val result = mutableListOf(mutableListOf(comments.first()))
             comments
@@ -116,10 +116,30 @@ class CommentsRule(private val configRules: List<RulesConfig>) : Rule("comments"
         }
     }
 
+    /**
+     * This is a very rare case. We should check this cases for 4 things:
+     *
+     * 1. If it is a class/object at the beginning of the line
+     * 2. If it is a function
+     * 3. If it is import/package implementation
+     * 4. If it is }. This case is used when } goes after one space and it is closing class or fun
+     */
+    private fun isCodeAfterCommentStart(text: String): Boolean {
+        val textWithoutCommentStartToken = text.removePrefix("//").trim()
+        return codeFileStartCases.any { textWithoutCommentStartToken.contains(it) }
+    }
+
+    @Suppress("MaxLineLength")
     companion object {
         private val importKeyword = KtTokens.IMPORT_KEYWORD.value
         private val packageKeyword = KtTokens.PACKAGE_KEYWORD.value
         private val importOrPackage = """($importKeyword|$packageKeyword) """.toRegex()
+        private val classRegex =
+                """^\s*(public|private|protected)*\s*(internal)*\s*(open|data|sealed)*\s*(internal)*\s*(class|object)\s+(\w+)(\(.*\))*(\s*:\s*\w+(\(.*\))*)?\s*\{*$""".toRegex()
+        private val importOrPackageRegex = """^(import|package)?\s+([a-zA-Z.])+;*$""".toRegex()
+        private val functionRegex = """^(public|private|protected)*\s*(override|abstract|actual|expect)*\s?fun\s+\w+(\(.*\))?(\s*:\s*\w+)?\s*[{=]${'$'}""".toRegex()
+        private val rightBraceRegex = """^\s*}$""".toRegex()
+        private val codeFileStartCases = listOf(classRegex, importOrPackageRegex, functionRegex, rightBraceRegex)
         private val eolCommentStart = """// \S""".toRegex()
     }
 }
