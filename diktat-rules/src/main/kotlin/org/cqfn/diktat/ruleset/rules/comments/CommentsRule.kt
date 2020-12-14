@@ -129,13 +129,13 @@ class CommentsRule(private val configRules: List<RulesConfig>) : Rule("comments"
         return codeFileStartCases.any { textWithoutCommentStartToken.contains(it) }
     }
 
-    @Suppress("MaxLineLength", "LONG_LINE")
+    @Suppress("MaxLineLength")
     companion object {
         private val importKeyword = KtTokens.IMPORT_KEYWORD.value
         private val packageKeyword = KtTokens.PACKAGE_KEYWORD.value
         private val importOrPackage = """($importKeyword|$packageKeyword) """.toRegex()
         private val classRegex =
-                """^\s*(public|private|protected)*\s*(internal)*\s*(open|data|sealed)*\s*(internal)*\s*(class|object)\s+(\w+)(\(.*\))*(\s*:\s*\w+(\(.*\))*)?\s*\{*${'$'}""".toRegex()
+                """^\s*(public|private|protected)*\s*(internal)*\s*(open|data|sealed)*\s*(internal)*\s*(class|object)\s+(\w+)(\(.*\))*(\s*:\s*\w+(\(.*\))*)?\s*\{*$""".toRegex()
         private val importOrPackageRegex = """^(import|package)?\s+([a-zA-Z.])+;*$""".toRegex()
         private val functionRegex = """^(public|private|protected)*\s*(override|abstract|actual|expect)*\s?fun\s+\w+(\(.*\))?(\s*:\s*\w+)?\s*[{=]${'$'}""".toRegex()
         private val rightBraceRegex = """^\s*}$""".toRegex()
