@@ -239,7 +239,7 @@ class LineLength(private val configRules: List<RulesConfig>) : Rule("line-length
         }
     }
 
-    @Suppress("UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType", "LOCAL_VARIABLE_EARLY_DECLARATION")
     private fun findAllText(astNode: ASTNode): String {
         var text = ""
         var node = astNode

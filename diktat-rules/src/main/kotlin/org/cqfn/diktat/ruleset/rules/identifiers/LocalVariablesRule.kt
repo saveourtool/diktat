@@ -112,7 +112,7 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
         properties
             .sortedBy { it.node.getLineNumber() }
             .zip(
-                    (properties.size - 1 downTo 0).map { it + numLinesAfterLastProp }
+                (properties.size - 1 downTo 0).map { it + numLinesAfterLastProp }
             )
             .forEachIndexed { index, (property, offset) ->
                 if (index != properties.lastIndex) {
