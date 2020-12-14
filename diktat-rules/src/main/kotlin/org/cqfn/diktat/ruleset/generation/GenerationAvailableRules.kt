@@ -1,3 +1,7 @@
+/**
+ * This script paste available.rules.md and rules-mapping.md files to automatically generate table for White paper
+ */
+
 package org.cqfn.diktat.ruleset.generation
 
 import org.cqfn.diktat.ruleset.utils.AUTO_END
@@ -45,8 +49,19 @@ data class RuleDescription(val ruleName: String,
                            val codeStyle: String,
                            val autoFix: String,
                            var config: String?) {
+    /**
+     * Remove square brackets from code style
+     */
     val correctCodeStyle = codeStyle.substring(codeStyle.indexOf("[") + 1, codeStyle.indexOf("]"))
+
+    /**
+     * Replace space between words with underline for Latex
+     */
     val correctRuleName = ruleName.replace("_", "\\underline{ }")
+
+    /**
+     * Parse correctly configuration for Latex
+     */
     val correctConfig: String by lazy {
         config!!.replace("<br>", " ")
     }
