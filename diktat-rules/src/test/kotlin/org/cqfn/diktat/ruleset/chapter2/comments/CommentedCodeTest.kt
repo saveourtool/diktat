@@ -187,20 +187,20 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
     @Tag(WarningNames.COMMENTED_OUT_CODE)
     fun `should trigger on class with one space after comment start token and 2 modifiers #1`() {
         lintMethod(
-                """
+            """
             |// public data class Test(val some: Int): Exception()
             """.trimMargin(),
-                LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} public data class Test(val some: Int): Exception()", false))
+            LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} public data class Test(val some: Int): Exception()", false))
     }
 
     @Test
     @Tag(WarningNames.COMMENTED_OUT_CODE)
     fun `should trigger on class with one space after comment start token and 2 modifiers #2`() {
         lintMethod(
-                """
+            """
             |// internal sealed class Test: Exception()
             """.trimMargin(),
-                LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} internal sealed class Test: Exception()", false))
+            LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} internal sealed class Test: Exception()", false))
     }
 
     @Test
@@ -250,10 +250,10 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
     @Tag(WarningNames.COMMENTED_OUT_CODE)
     fun `should trigger on function with one space after comment start token pulbic modifier`() {
         lintMethod(
-                """
+            """
             |// public fun someFunc(name: String): Boolean =
             |//     name.contains("a")
             """.trimMargin(),
-                LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} public fun someFunc(name: String): Boolean =", false))
+            LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} public fun someFunc(name: String): Boolean =", false))
     }
 }

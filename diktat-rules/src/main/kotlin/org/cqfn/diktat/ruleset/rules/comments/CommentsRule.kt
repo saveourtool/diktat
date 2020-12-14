@@ -129,6 +129,7 @@ class CommentsRule(private val configRules: List<RulesConfig>) : Rule("comments"
         return codeFileStartCases.any { textWithoutCommentStartToken.contains(it) }
     }
 
+    @Suppress("MaxLineLength", "LONG_LINE")
     companion object {
         private val importKeyword = KtTokens.IMPORT_KEYWORD.value
         private val packageKeyword = KtTokens.PACKAGE_KEYWORD.value
