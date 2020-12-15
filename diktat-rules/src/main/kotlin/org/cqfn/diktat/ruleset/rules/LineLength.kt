@@ -279,8 +279,8 @@ class LineLength(private val configRules: List<RulesConfig>) : Rule("line-length
 
     @Suppress("UnsafeCallOnNullableType")
     private fun getBraceAndBeforeText(node: ASTNode, prevNode: ASTNode): String {
-        var text = ""
         val par = prevNode.prevSibling { it.elementType == OPERATION_REFERENCE }?.let { LPAR } ?: RPAR
+        var text = ""
         if (node.findChildByType(par)!!.treePrev != null &&
                 node.findChildByType(par)!!.treePrev.elementType == WHITE_SPACE) {
             text += node.findChildByType(par)!!.treePrev.text

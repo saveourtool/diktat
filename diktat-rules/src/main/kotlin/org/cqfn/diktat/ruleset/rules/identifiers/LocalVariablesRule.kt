@@ -95,6 +95,7 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
         checkLineNumbers(property, firstUsageStatementLine, firstUsageLine = firstUsage.node.getLineNumber())
     }
 
+    @Suppress("TOO_LONG_FUNCTION")
     private fun handleConsecutiveDeclarations(statement: PsiElement, properties: List<KtProperty>) {
         val numLinesAfterLastProp =
                 properties
@@ -114,28 +115,29 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
             .zip(
                 (properties.size - 1 downTo 0).map { index ->
                     val siblings = properties
-                            .sortedBy { it.node.getLineNumber() }[properties.lastIndex - index]
-                            .siblings(forward = true, withItself = false)
+                        .sortedBy { it.node.getLineNumber() }[properties.lastIndex - index]
+                        .siblings(forward = true, withItself = false)
 
                     // Also we need to count number of comments to skip. See `should skip comments` test
                     // For the last property we don't need to count, because they will be counted in checkLineNumbers
                     // We count number of comments beginning from next property
                     val numberOfComments = siblings
-                            .takeWhile { it != statement }
-                            .dropWhile { it !is KtProperty }
-                            .filter { it.node.isPartOfComment() }
-                            .count()
+                        .takeWhile { it != statement }
+                        .dropWhile { it !is KtProperty }
+                        .filter { it.node.isPartOfComment() }
+                        .count()
 
                     // We should also skip all vars that were not included in properties list, but they are between statement and current property
                     val numberOfVarWithInitializer = siblings
-                            .takeWhile { it != statement }
-                            .filter { it is KtProperty && it.isVar && it.initializer != null && it !in properties }
-                            .count()
+                        .takeWhile { it != statement }
+                        .filter { it is KtProperty && it.isVar && it.initializer != null && it !in properties }
+                        .count()
 
                     // If it is not last property we should consider number on new lines after last property in list
                     if (index != 0) {
                         index + numLinesAfterLastProp + numberOfComments + numberOfVarWithInitializer
-                    } else {
+                    }
+                    else {
                         index + numberOfComments + numberOfVarWithInitializer
                     }
                 }
