@@ -94,7 +94,7 @@ jobs:
 
   run_diktat_from_maven:
     runs-on: ${{ matrix.os }}
-#    needs: build_and_test
+    needs: build_and_test
     strategy:
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
@@ -109,8 +109,6 @@ jobs:
         run: |
           DIKTAT_VERSION=$(printf 'VERSION=${project.version}\n0\n' | mvn help:evaluate | grep '^VERSION' | cut -d= -f2)
           echo DIKTAT_VERSION=$DIKTAT_VERSION >> $GITHUB_ENV
-#          mvn -B dependency:get -Dartifact=org.cqfn.diktat:diktat-maven-plugin:$DIKTAT_VERSION -Pgithub
-#          mvn -B dependency:get -Dartifact=org.cqfn.diktat:diktat-maven-plugin:$DIKTAT_VERSION:pom -Pgithub
         shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
