@@ -41,7 +41,7 @@ jobs:
       - name: Deploy diktat snapshot to github packages
         run: mvn -B deploy -DaltDeploymentRepository=github::default::https://maven.pkg.github.com/cqfn/diktat
         env:
-          GITHUB_TOKEN: ${{ github.token }} # GITHUB_TOKEN is the default env for the password in settings.xml created by actions/setup-java
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GITHUB_TOKEN is the default env for the password in settings.xml created by actions/setup-java
 
   run_diktat_from_CLI:
     runs-on: ${{ matrix.os }}
