@@ -460,14 +460,24 @@
                     <id>github</id>
                     <name>Github Packages</name>
                     <url>https://maven.pkg.github.com/cqfn/diktat</url>
-                    <snapshots/>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                    <releases>
+                        <enabled>false</enabled>
+                    </releases>
                 </repository>
             </repositories>
             <pluginRepositories>
                 <pluginRepository>
                     <id>github</id>
                     <url>https://maven.pkg.github.com/cqfn/diktat</url>
-                    <snapshots/>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                    <releases>
+                        <updatePolicy>never</updatePolicy>
+                    </releases>
                 </pluginRepository>
             </pluginRepositories>
         </profile>

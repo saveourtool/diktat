@@ -122,6 +122,8 @@ jobs:
           mvn -B versions:set-property -Dproperty=diktat.version -DnewVersion=${{ env.DIKTAT_VERSION }}
           mvn -B diktat:check &> out
         shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Check maven
         working-directory: ./examples/maven
