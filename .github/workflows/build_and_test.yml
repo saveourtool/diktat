@@ -36,6 +36,10 @@ jobs:
         with:
           name: diktat-ruleset
           path: diktat-ruleset/target/diktat-*.jar
+          # no need to store artifact longer, it is used only by dependant jobs
+          retention-days: 1
+      - name: Deploy diktat snapshot to github packages
+        run: mvn -B deploy
 
   run_diktat_from_CLI:
     runs-on: ${{ matrix.os }}
