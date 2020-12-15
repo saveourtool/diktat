@@ -119,7 +119,7 @@ jobs:
         continue-on-error: true
         run: |
           mvn versions:set-property -Dproperty=diktat.version -DnewVersion=${{ env.DIKTAT_VERSION }}
-          mvn -B diktat:check &> out
+          mvn -B -nsu diktat:check &> out
         shell: bash
 
       - name: Check maven
