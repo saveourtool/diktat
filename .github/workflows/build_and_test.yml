@@ -108,7 +108,7 @@ jobs:
       - name: Download artifacts for diktat snapshot
         run: |
           DIKTAT_VERSION=$(printf 'VERSION=${project.version}\n0\n' | mvn help:evaluate | grep '^VERSION' | cut -d= -f2)
-          echo $DIKTAT_VERSION >> $GITHUB_ENV
+          echo DIKTAT_VERSION=$DIKTAT_VERSION >> $GITHUB_ENV
           mvn -B dependency:get -Dartifact=org.cqfn.diktat:diktat-maven-plugin:$DIKTAT_VERSION:jar -Dtransitive=true -Pgithub
         shell: bash
         env:
