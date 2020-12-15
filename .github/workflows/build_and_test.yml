@@ -39,7 +39,7 @@ jobs:
           # no need to store artifact longer, it is used only by dependant jobs
           retention-days: 1
       - name: Deploy diktat snapshot to github packages
-        run: mvn -B deploy
+        run: mvn -B deploy -DaltDeploymentRepository=github::default::https://maven.pkg.github.com/cqfn/diktat
 
   run_diktat_from_CLI:
     runs-on: ${{ matrix.os }}
