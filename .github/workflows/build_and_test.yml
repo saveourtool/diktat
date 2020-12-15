@@ -39,7 +39,7 @@ jobs:
           # no need to store artifact longer, it is used only by dependant jobs
           retention-days: 1
       - name: Deploy diktat snapshot to github packages
-        run: mvn -B deploy -DaltDeploymentRepository=github::default::https://maven.pkg.github.com/cqfn/diktat
+        run: mvn -B deploy -DaltDeploymentRepository=github::https://maven.pkg.github.com/cqfn/diktat
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GITHUB_TOKEN is the default env for the password in settings.xml created by actions/setup-java
 
