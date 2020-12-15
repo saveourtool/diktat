@@ -1,15 +1,12 @@
 package org.cqfn.diktat.ruleset.chapter3
 
-import org.cqfn.diktat.ruleset.constants.Warnings.LOCAL_VARIABLE_EARLY_DECLARATION
+import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.identifiers.LocalVariablesRule
 import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
-import com.pinterest.ktlint.core.ast.ElementType
-import generated.WarningNames
-import org.cqfn.diktat.util.TEST_FILE_NAME
-import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import generated.WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -23,7 +20,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
             "<$name> is declared on line <$declared> and is used for the first time on line <$used>"
 
     @Test
-    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `should not check top-level and member properties`() {
         lintMethod(
             """
@@ -37,7 +34,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
     }
 
     @Test
-    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `local variables used only in this scope - positive example`() {
         lintMethod(
             """
@@ -54,7 +51,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
     }
 
     @Test
-    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `local variables used only in this scope - positive example with blank lines`() {
         lintMethod(
             """
@@ -71,7 +68,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
     }
 
     @Test
-    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `local variables used only in this scope - positive example with comments`() {
         lintMethod(
             """
@@ -88,7 +85,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
     }
 
     @Test
-    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `local var used only in this scope - positive example`() {
         lintMethod(
             """
@@ -102,7 +99,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
     }
 
     @Test
-    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `local var used only in this scope with multiline usage - positive example`() {
         lintMethod(
             """
@@ -117,7 +114,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
     }
 
     @Test
-    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `local variables used only in this scope`() {
         lintMethod(
             """
@@ -127,12 +124,12 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |    baz(bar)
                     |}
                 """.trimMargin(),
-            LintError(2, 5, ruleId, "${LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("bar", 2, 4)}", false)
+            LintError(2, 5, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("bar", 2, 4)}", false)
         )
     }
 
     @Test
-    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `local variables used only in this scope - multiline declaration, positive example`() {
         lintMethod(
             """
@@ -146,7 +143,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
     }
 
     @Test
-    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `local variables used only in this scope - multiline declaration with binary expression`() {
         lintMethod(
             """
@@ -157,12 +154,12 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |    baz(bar)
                     |}
                 """.trimMargin(),
-            LintError(2, 5, ruleId, "${LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("bar", 2, 5)}", false)
+            LintError(2, 5, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("bar", 2, 5)}", false)
         )
     }
 
     @Test
-    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `local variables used only in this scope - multiline declaration with dot qualified property access`() {
         lintMethod(
             """
@@ -173,12 +170,12 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |    baz(bar)
                     |}
                 """.trimMargin(),
-            LintError(2, 5, ruleId, "${LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("bar", 2, 5)}", false)
+            LintError(2, 5, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("bar", 2, 5)}", false)
         )
     }
 
     @Test
-    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `local variables used only in this scope - multiline declaration with dot qualified method call`() {
         lintMethod(
             """
@@ -189,12 +186,12 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |    baz(bar)
                     |}
                 """.trimMargin(),
-            LintError(2, 5, ruleId, "${LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("bar", 2, 5)}", false)
+            LintError(2, 5, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("bar", 2, 5)}", false)
         )
     }
 
     @Test
-    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
     @Disabled("Checking of variable from outer scope is not supported yet")
     fun `local variables defined in outer scope and used only in nested scope`() {
         lintMethod(
@@ -208,12 +205,12 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |    }
                     |}
                 """.trimMargin(),
-            LintError(2, 5, ruleId, "${LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} val bar = 0", false)
+            LintError(2, 5, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} val bar = 0", false)
         )
     }
 
     @Test
-    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `local variables defined in outer scope and used in several scopes - positive example`() {
         lintMethod(
             """
@@ -231,7 +228,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
     }
 
     @Test
-    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
     @Disabled("Checking of variable from outer scope is not supported yet")
     fun `local variables defined in outer scope and used in several scopes`() {
         lintMethod(
@@ -250,12 +247,12 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |    }
                     |}
                 """.trimMargin(),
-            LintError(2, 5, ruleId, "${LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} val bar = 0", false)
+            LintError(2, 5, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} val bar = 0", false)
         )
     }
 
     @Test
-    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `should not trigger on other objects fields with same name`() {
         lintMethod(
             """
@@ -270,7 +267,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
     }
 
     @Test
-    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
     @Disabled("Checking of variable from outer scope is not supported yet")
     fun `need to allow declaring vars outside of loops`() {
         lintMethod(
@@ -289,7 +286,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
     }
 
     @Test
-    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `discovered during testing`() {
         lintMethod(
             """
@@ -305,7 +302,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
     }
 
     @Test
-    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
     @Disabled("Checking of variable from outer scope is not supported yet")
     fun `need to allow declaring vars outside collection methods`() {
         lintMethod(
@@ -324,7 +321,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
     }
 
     @Test
-    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `should not trigger on properties with same name in different scopes`() {
         lintMethod(
             """
@@ -342,7 +339,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
     }
 
     @Test
-    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `should not trigger on properties with same name in different scopes - 2`() {
         lintMethod(
             """
@@ -359,7 +356,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
     }
 
     @Test
-    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `should not trigger when variables from outer scope are shadowed by lambda parameters`() {
         lintMethod(
             """
@@ -375,7 +372,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
     }
 
     @Test
-    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `should check usage inside lambdas - positive example`() {
         lintMethod(
             """
@@ -390,7 +387,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
     }
 
     @Test
-    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `should check usage inside lambdas`() {
         lintMethod(
             """
@@ -402,12 +399,12 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |    }
                     |}
                 """.trimMargin(),
-            LintError(2, 5, ruleId, "${LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("x", 2, 5)}", false)
+            LintError(2, 5, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("x", 2, 5)}", false)
         )
     }
 
     @Test
-    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `should check usage inside lambdas with line break`() {
         lintMethod(
             """
@@ -420,12 +417,12 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |    }
                     |}
                 """.trimMargin(),
-            LintError(2, 5, ruleId, "${LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("x", 2, 6)}", false)
+            LintError(2, 5, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("x", 2, 6)}", false)
         )
     }
 
     @Test
-    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `should check properties declared inside lambda`() {
         lintMethod(
             """
@@ -437,12 +434,12 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |    }
                     |}
                 """.trimMargin(),
-            LintError(3, 9, ruleId, "${LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("foo", 3, 5)}", false)
+            LintError(3, 9, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("foo", 3, 5)}", false)
         )
     }
 
     @Test
-    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `should not trigger when more than one variables need to be declared`() {
         lintMethod(
             """
@@ -456,7 +453,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
     }
 
     @Test
-    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `should check when more than one variables need to be declared`() {
         lintMethod(
             """
@@ -468,12 +465,12 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |    foo(x, y, z)
                     |}
                 """.trimMargin(),
-            LintError(2, 5, ruleId, "${LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("x", 2, 6)}", false)
+            LintError(2, 5, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("x", 2, 6)}", false)
         )
     }
 
     @Test
-    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `should not trigger on properties`() {
         lintMethod(
             """
@@ -491,7 +488,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
     }
 
     @Test
-    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
     @Disabled("Constructors are not handled separately yet")
     fun `should check variables initialized with constructor with no parameters`() {
         lintMethod(
@@ -507,7 +504,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
     }
 
     @Test
-    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `check properties initialized with some selected methods`() {
         lintMethod(
             """
@@ -517,12 +514,12 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |    bar(list)
                     |}
                 """.trimMargin(),
-            LintError(2, 5, ruleId, "${LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("list", 2, 4)}", false)
+            LintError(2, 5, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("list", 2, 4)}", false)
         )
     }
 
     @Test
-    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `should properly detect containing scope of lambdas`() {
         lintMethod(
             """
@@ -540,7 +537,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
     }
 
     @Test
-    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `should not trigger when there is a property in a class and same variable name in function and lambda`() {
         lintMethod(
             """
@@ -556,7 +553,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
     }
 
     @Test
-    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `should not trigger on triple quoted strings`() {
         lintMethod(
             """
@@ -576,7 +573,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
     }
 
     @Test
-    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `should not trigger on space after last val`() {
         lintMethod(
             """
@@ -602,7 +599,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
     }
 
     @Test
-    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `should not trigger on var nodes which have initializer`() {
         lintMethod(
             """
@@ -623,10 +620,10 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
     }
 
     @Test
-    @Tag(WarningNames.LOCAL_VARIABLE_EARLY_DECLARATION)
+    @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `should skip comments`() {
         lintMethod(
-                """
+            """
                     |    private fun collectAllExtensionFunctions(astNode: ASTNode): SimilarSignatures {
                     |       var copyrightComment = ""
                     |       var headerKdoc = listOf()

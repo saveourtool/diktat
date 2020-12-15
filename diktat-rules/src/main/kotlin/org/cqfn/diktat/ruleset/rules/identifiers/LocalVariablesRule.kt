@@ -136,13 +136,12 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
                     // If it is not last property we should consider number on new lines after last property in list
                     if (index != 0) {
                         index + numLinesAfterLastProp + numberOfComments + numberOfVarWithInitializer
-                    }
-                    else {
+                    } else {
                         index + numberOfComments + numberOfVarWithInitializer
                     }
                 }
             )
-            .forEach{ (property, offset) ->
+            .forEach { (property, offset) ->
                 checkLineNumbers(property, statement.node.getLineNumber(), offset)
             }
     }
