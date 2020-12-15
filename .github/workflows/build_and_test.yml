@@ -39,7 +39,7 @@ jobs:
           # no need to store artifact longer, it is used only by dependant jobs
           retention-days: 1
       - name: Deploy diktat snapshot to github packages
-        run: mvn -B deploy -DaltDeploymentRepository=github::https://maven.pkg.github.com/cqfn/diktat
+        run: mvn -B deploy -DskipTests=true -DaltDeploymentRepository=github::https://maven.pkg.github.com/cqfn/diktat
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GITHUB_TOKEN is the default env for the password in settings.xml created by actions/setup-java
 
@@ -87,6 +87,36 @@ jobs:
         id: cli-check
         run: |
           if [ -f out.txt ]; then mv out.txt out; fi
+          cat out
+          grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out
+        shell: bash
+
+  run_diktat_from_maven:
+    runs-on: ${{ matrix.os }}
+    needs: build_and_test
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+    steps:
+      - uses: actions/checkout@v2.3.3
+
+      - name: Download artifacts for diktat snapshot
+        run: |
+          DIKTAT_VERSION=$(printf 'VERSION=${project.version}\n0\n' | mvn help:evaluate | grep '^VERSION' | cut -d= -f2)
+          echo $DIKTAT_VERSION >> $GITHUB_ENV
+          mvn dependency:get -Dartifact=org.cqfn.diktat:diktat-maven-plugin:$DIKTAT_VERSION:jar -Dtransitive=true -Pgithub
+
+      - name: Run diKTat from maven
+        working-directory: ./examples/maven
+        continue-on-error: true
+        run: |
+          mvn versions:set-property -Dproperty=diktat.version -DnewVersion=${{ env.DIKTAT_VERSION }}
+          mvn -B diktat:check &> out
+        shell: bash
+
+      - name: Check maven
+        working-directory: ./examples/maven
+        run: |
           cat out
           grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out
         shell: bash
