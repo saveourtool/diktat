@@ -69,7 +69,7 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
     private fun collectLocalPropertiesWithUsages(node: ASTNode) = node
         .findAllVariablesWithUsages { propertyNode ->
             propertyNode.isLocal && propertyNode.name != null && propertyNode.parent is KtBlockExpression &&
-                    (propertyNode.isVar ||
+                    (propertyNode.isVar && propertyNode.initializer == null ||
                             (propertyNode.initializer?.containsOnlyConstants() ?: false) ||
                             (propertyNode.initializer as? KtCallExpression).isWhitelistedMethod())
         }
@@ -112,24 +112,36 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
         properties
             .sortedBy { it.node.getLineNumber() }
             .zip(
-                (properties.size - 1 downTo 0).map {
+                (properties.size - 1 downTo 0).map { index ->
+                    val siblings = properties
+                            .sortedBy { it.node.getLineNumber() }[properties.lastIndex - index]
+                            .siblings(forward = true, withItself = false)
+
                     // Also we need to count number of comments to skip. See `should skip comments` test
                     // For the last property we don't need to count, because they will be counted in checkLineNumbers
-                    val numberOfComments = properties[if(it != 0) properties.size - it else 0]
-                            .siblings(forward = true, withItself = false)
+                    // We count number of comments beginning from next property
+                    val numberOfComments = siblings
                             .takeWhile { it != statement }
+                            .dropWhile { it !is KtProperty }
                             .filter { it.node.isPartOfComment() }
                             .count()
-                    it + numLinesAfterLastProp + numberOfComments
+
+                    // We should also skip all vars that were not included in properties list, but they are between statement and current property
+                    val numberOfVarWithInitializer = siblings
+                            .takeWhile { it != statement }
+                            .filter { it is KtProperty && it.isVar && it.initializer != null && it !in properties }
+                            .count()
+
+                    // If it is not last property we should consider number on new lines after last property in list
+                    if (index != 0) {
+                        index + numLinesAfterLastProp + numberOfComments + numberOfVarWithInitializer
+                    } else {
+                        index + numberOfComments + numberOfVarWithInitializer
+                    }
                 }
             )
-            .forEachIndexed { index, (property, offset) ->
-                if (index != properties.lastIndex) {
-                    checkLineNumbers(property, statement.node.getLineNumber(), offset)
-                } else {
-                    // since offset after last property is calculated in this method, we pass offset = 0
-                    checkLineNumbers(property, statement.node.getLineNumber(), 0)
-                }
+            .forEach{ (property, offset) ->
+                checkLineNumbers(property, statement.node.getLineNumber(), offset)
             }
     }
 

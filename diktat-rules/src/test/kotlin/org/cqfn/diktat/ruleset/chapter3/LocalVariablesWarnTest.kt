@@ -628,11 +628,8 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
         lintMethod(
                 """
                     |    private fun collectAllExtensionFunctions(astNode: ASTNode): SimilarSignatures {
-                    |       var copyrightComment = firstCodeNode.prevSibling { it.elementType == BLOCK_COMMENT }
-                    |           ?.takeIf { blockCommentNode ->
-                    |           copyrightWords.any { blockCommentNode.text.contains(it, ignoreCase = true) }
-                    |       }
-                    |       var headerKdoc = firstCodeNode.prevSibling { it.elementType == KDOC }
+                    |       var copyrightComment = ""
+                    |       var headerKdoc = listOf()
                     |       // Annotations with target`file` can only be placed before `package` directive.
                     |       var fileAnnotations = node.findChildByType(FILE_ANNOTATION_LIST)
                     |       // We also collect all other elements that are placed on top of the file.
