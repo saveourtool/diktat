@@ -161,23 +161,10 @@
                 </executions>
             </plugin>
             <plugin>
-                <!-- override jacoco config to include integration test results -->
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>report</id>
-                        <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <!-- TODO: calculate coverage in integration test. Currently it's hard to pass additinoal CLI arguments
+                     to maven forked by ITF framework. -->
             </plugin>
         </plugins>
         <testResources>
