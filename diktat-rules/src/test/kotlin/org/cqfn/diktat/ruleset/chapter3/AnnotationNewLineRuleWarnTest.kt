@@ -18,7 +18,6 @@ class AnnotationNewLineRuleWarnTest : LintTestBase(::AnnotationNewLineRule) {
     fun `annotation class test good`() {
         lintMethod(
             """
-                    |
                     |@SomeAnnotation
                     |@SecondAnnotation
                     |class A {
@@ -265,6 +264,44 @@ class AnnotationNewLineRuleWarnTest : LintTestBase(::AnnotationNewLineRule) {
                     |   }
                     |}
                 """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.ANNOTATION_NEW_LINE)
+    fun `no warn in correct annotation with comment`() {
+        lintMethod(
+            """
+                    |@ExperimentalStdlibApi  // to use `scan` on sequence
+                    |   @Suppress("WRONG_NEWLINES")
+                    |   override fun checkNode() {}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.ANNOTATION_NEW_LINE)
+    fun `should fix annotation on same line with import`() {
+        lintMethod(
+            """
+                    |import qwe.qwe;@ExperimentalStdlibApi
+                    |   @Hello
+                    |   override fun checkNode() {}
+                """.trimMargin(),
+            LintError(1, 16, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @ExperimentalStdlibApi not on a single line", true),
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.ANNOTATION_NEW_LINE)
+    fun `should fix annotation on same line with package`() {
+        lintMethod(
+            """
+                    |package dfgh.dfgh;@ExperimentalStdlibApi
+                    |   @Hello
+                    |   override fun checkNode() {}
+                """.trimMargin(),
+            LintError(1, 19, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @ExperimentalStdlibApi not on a single line", true),
         )
     }
 }
