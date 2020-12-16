@@ -130,6 +130,7 @@ private fun generateCodeStyle() {
     appendixFileLines.removeAll(appendixFileLines.subList(appendixFileLines.indexOf("\\lstMakeShortInline[basicstyle=\\ttfamily\\bfseries]`"), appendixFileLines.lastIndex + 1))
     appendixFileLines.addAll(tempFile.readLines())
     File("wp/sections/appendix.tex").writeText(appendixFileLines.joinToString(separator = "\n"))
+    tempFile.delete()
 }
 
 /**
