@@ -99,6 +99,13 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.11
+      - name: Cache local Maven repository
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-build-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-build-
 
       - name: Maven Install
         if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
