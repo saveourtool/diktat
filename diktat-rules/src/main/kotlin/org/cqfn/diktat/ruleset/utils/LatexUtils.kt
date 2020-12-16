@@ -23,6 +23,19 @@ val TABLE_COLUMN_NAMES = Regex("""[A-Za-z ]*""")  // used to find column names i
 const val REGEX_PLACEHOLDER = "RE_PL_AC_E_ME"
 @Suppress("CONSTANT_UPPERCASE")
 const val A4_PAPER_WIDTH = 15f
+const val AUTO_TABLE = """
+\scriptsize
+\begin{longtable}{ |l|p{0.8cm}|p{0.8cm}| p{3cm} | }
+\hline
+\multicolumn{4}{|c|}{Available Rules} \\ 
+\hline
+\textbf{diKTat rule} & \textbf{code style} & \textbf{autofix} &  \textbf{config} \\
+\hline
+"""
+const val AUTO_END = """
+\hline
+\end{longtable}
+"""
 
 /**
  * Writes text on a new line and adds one blank line
