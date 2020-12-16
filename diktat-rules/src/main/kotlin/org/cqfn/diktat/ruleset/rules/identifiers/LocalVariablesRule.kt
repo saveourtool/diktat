@@ -92,7 +92,14 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
 
         val firstUsageStatementLine = getFirstUsageStatementOrBlock(usages, declarationScope).node.getLineNumber()
         val firstUsage = usages.minBy { it.node.getLineNumber() }!!
-        checkLineNumbers(property, firstUsageStatementLine, firstUsageLine = firstUsage.node.getLineNumber())
+
+        // should skip val and var before it's statement
+        val offset = property
+            .siblings(forward = true, withItself = false)
+            .takeWhile { it != getFirstUsageStatementOrBlock(usages, declarationScope) }
+            .filter { it is KtProperty }
+            .count()
+        checkLineNumbers(property, firstUsageStatementLine, firstUsageLine = firstUsage.node.getLineNumber(), offset = offset)
     }
 
     @Suppress("TOO_LONG_FUNCTION")
@@ -109,14 +116,12 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
                     }
                     ?: 0
 
+        val sortedProperties = properties.sortedBy { it.node.getLineNumber() }
         // need to check that properties are declared consecutively with only maybe empty lines
-        properties
-            .sortedBy { it.node.getLineNumber() }
+        sortedProperties
             .zip(
                 (properties.size - 1 downTo 0).map { index ->
-                    val siblings = properties
-                        .sortedBy { it.node.getLineNumber() }[properties.lastIndex - index]
-                        .siblings(forward = true, withItself = false)
+                    val siblings = sortedProperties[properties.lastIndex - index].siblings(forward = true, withItself = false)
 
                     // Also we need to count number of comments to skip. See `should skip comments` test
                     // For the last property we don't need to count, because they will be counted in checkLineNumbers
@@ -130,7 +135,7 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
                     // We should also skip all vars that were not included in properties list, but they are between statement and current property
                     val numberOfVarWithInitializer = siblings
                         .takeWhile { it != statement }
-                        .filter { it is KtProperty && it.isVar && it.initializer != null && it !in properties }
+                        .filter { it is KtProperty && it !in properties }
                         .count()
 
                     // If it is not last property we should consider number on new lines after last property in list

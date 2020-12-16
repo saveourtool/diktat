@@ -454,7 +454,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
 
     @Test
     @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
-    fun `should check when more than one variables need to be declared`() {
+    fun `should not raise warning if there is property not in propertyToUsages between other properties declaration`() {
         lintMethod(
             """
                     |fun foo() {
@@ -464,8 +464,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |    val z = 2
                     |    foo(x, y, z)
                     |}
-                """.trimMargin(),
-            LintError(2, 5, ruleId, "${Warnings.LOCAL_VARIABLE_EARLY_DECLARATION.warnText()} ${warnMessage("x", 2, 6)}", false)
+                """.trimMargin()
         )
     }
 
@@ -638,6 +637,37 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                     |           }
                     |           .toList()
                     |           .reversed()
+                    |   }
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
+    fun `should skip val nodes between considered nodes`() {
+        lintMethod(
+                """
+                    |    private fun collectAllExtensionFunctions(astNode: ASTNode): SimilarSignatures {
+                    |       val text = ""
+                    |       val node = astNode
+                    |       var prevNode: ASTNode
+                    |       some(text, node, prevNode)
+                    |   }
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
+    fun `should skip val and var nodes between considered nodes`() {
+        // Only text goes to propertyToUsages here
+        lintMethod(
+                """
+                    |    private fun collectAllExtensionFunctions(astNode: ASTNode): SimilarSignatures {
+                    |       val text = ""
+                    |       val node = astNode
+                    |       val prevNode: ASTNode = astNode
+                    |       some(text, node, prevNode)
                     |   }
                 """.trimMargin()
         )
