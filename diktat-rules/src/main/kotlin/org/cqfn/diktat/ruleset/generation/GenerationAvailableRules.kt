@@ -1,3 +1,4 @@
+@file:Suppress("FILE_NAME_MATCH_CLASS")
 /**
  * This script paste available.rules.md and rules-mapping.md files to automatically generate table for White paper
  */
@@ -18,7 +19,7 @@ private fun generateAvailableRules() {
     val ruleMap = File("info/rules-mapping.md").readLines()
         .drop(2)
         .map { it.drop(1).dropLast(1).split("|") }
-        .map { RuleDescription(it[0].replace("\\s+".toRegex(), ""), it[1], it[2], null) }
+        .map { RuleDescription(it[0].replace("\\s+".toRegex(), ""), it[1], it[2]) }
         .associateBy { it.ruleName }
     File("info/available-rules.md").readLines()
         .drop(2)
@@ -28,9 +29,9 @@ private fun generateAvailableRules() {
     val newText = File("wp/sections/appendix.tex").readLines().toMutableList()
     newText.removeAll(newText.subList(newText.indexOf("\\section*{available-rules}") + 1, newText.indexOf("\\section*{\\textbf{Diktat Coding Convention}}")))
     var index = newText.indexOf("\\section*{available-rules}") + 1
-    AUTO_TABLE.trimIndent().split("\n").forEach { newText.add(index++, it) }
+    AUTO_TABLE.trimIndent().lines().forEach { newText.add(index++, it) }
     ruleMap.map { it.value }
-        .map { "${it.correctRuleName} & ${it.correctCodeStyle} & ${it.autoFix} & ${it.correctConfig}\\\\" }
+        .map { "${it.correctRuleName} & ${it.correctCodeStyle} & ${it.autoFix} & ${it.config.replace("<br>", " ")}\\\\" }
         .forEach { newText.add(index++, it) }
     AUTO_END.trimIndent().split("\n").forEach { newText.add(index++, it) }
     File("wp/sections/appendix.tex").writeText(newText.joinToString(separator = "\n"))
@@ -47,8 +48,7 @@ private fun generateAvailableRules() {
 @Suppress("UnsafeCallOnNullableType")
 data class RuleDescription(val ruleName: String,
                            val codeStyle: String,
-                           val autoFix: String,
-                           var config: String?) {
+                           val autoFix: String) {
     /**
      * Remove square brackets from code style
      */
@@ -62,7 +62,5 @@ data class RuleDescription(val ruleName: String,
     /**
      * Parse correctly configuration for Latex
      */
-    val correctConfig: String by lazy {
-        config!!.replace("<br>", " ")
-    }
+    lateinit var config: String
 }
