@@ -109,5 +109,5 @@ jobs:
       - name: Maven Install on windows
         if: runner.os == 'Windows'
         run: |
-          mvn.exe install
+          mvn clean install
         shell: cmd
