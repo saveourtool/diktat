@@ -23,6 +23,7 @@ fun main() {
 @Suppress(
         "LoopWithTooManyJumpStatements",
         "LongMethod",
+        "MagicNumber",
         "ComplexMethod",
         "NestedBlockDepth",
         "WRONG_INDENTATION",
