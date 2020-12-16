@@ -25,6 +25,7 @@
 | MISSING_KDOC_CLASS_ELEMENTS | [2.1.1](guide/diktat-coding-convention.md#r2.1.1) | no |
 | MISSING_KDOC_ON_FUNCTION | [2.1.1](guide/diktat-coding-convention.md#r2.1.1) | yes |
 | KDOC_NO_CONSTRUCTOR_PROPERTY | [2.1.1](guide/diktat-coding-convention.md#r2.1.1) | yes |
+| KDOC_EXTRA_PROPERTY | [2.1.1](guide/diktat-coding-convention.md#r2.1.1) | no |
 | KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT | [2.1.1](guide/diktat-coding-convention.md#r2.1.1) | yes |
 | KDOC_WITHOUT_PARAM_TAG | [2.1.2](guide/diktat-coding-convention.md#r2.1.2) | yes |
 | KDOC_WITHOUT_RETURN_TAG | [2.1.2](guide/diktat-coding-convention.md#r2.1.2) | yes |
@@ -105,3 +106,4 @@
 | COMPACT_OBJECT_INITIALIZATION | [6.1.11](guide/diktat-coding-convention.md#r6.1.11) | yes |
 | EXTENSION_FUNCTION_SAME_SIGNATURE | [6.2.2](guide/diktat-coding-convention.md#r6.2.2) | no |
 | AVOID_USING_UTILITY_CLASS | [6.4.1](guide/diktat-coding-convention.md#r6.4.1) | no |
+| OBJECT_IS_PREFERRED | [6.4.2](guide/diktat-coding-convention.md#r6.4.2) | yes |
