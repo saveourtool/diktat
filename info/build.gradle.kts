@@ -1,3 +1,4 @@
+import org.cqfn.diktat.generation.docs.generateAvailableRules
 import org.cqfn.diktat.generation.docs.generateCodeStyle
 import org.cqfn.diktat.generation.docs.generateFullDoc
 import org.cqfn.diktat.generation.docs.generateRulesMapping
@@ -14,6 +15,13 @@ tasks.register("generateFullDoc") {
     }
 }
 
+tasks.register("generateAvailableRules") {
+    dependsOn("generateRulesMapping")
+    doFirst {
+        generateAvailableRules(rootDir, file("$rootDir/../wp"))
+    }
+}
+
 tasks.register("generateCodeStyle") {
     dependsOn("generateFullDoc")
     doFirst {
@@ -24,6 +32,7 @@ tasks.register("generateCodeStyle") {
 tasks.register("updateDocumentation") {
     dependsOn(
         "generateRulesMapping",
+        "generateAvailableRules",
         "generateFullDoc",
         "generateCodeStyle"
     )

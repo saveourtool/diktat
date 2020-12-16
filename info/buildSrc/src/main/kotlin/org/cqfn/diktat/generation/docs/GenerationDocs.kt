@@ -2,18 +2,6 @@
 
 package org.cqfn.diktat.generation.docs
 
-import org.cqfn.diktat.generation.docs.A4_PAPER_WIDTH
-import org.cqfn.diktat.generation.docs.ANCHORS
-import org.cqfn.diktat.generation.docs.BACKTICKS_TEXT
-import org.cqfn.diktat.generation.docs.BOLD_TEXT
-import org.cqfn.diktat.generation.docs.ITALIC_TEXT
-import org.cqfn.diktat.generation.docs.NUMBER_IN_TAG
-import org.cqfn.diktat.generation.docs.REGEX_PLACEHOLDER
-import org.cqfn.diktat.generation.docs.RULE_NAME
-import org.cqfn.diktat.generation.docs.TABLE_COLUMN_NAMES
-import org.cqfn.diktat.generation.docs.format
-import org.cqfn.diktat.generation.docs.writeCode
-import org.cqfn.diktat.generation.docs.writeln
 import java.io.File
 
 /**
