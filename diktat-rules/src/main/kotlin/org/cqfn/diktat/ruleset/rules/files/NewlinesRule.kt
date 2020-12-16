@@ -18,6 +18,7 @@ import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.CALLABLE_REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
+import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.COLON
 import com.pinterest.ktlint.core.ast.ElementType.COLONCOLON
 import com.pinterest.ktlint.core.ast.ElementType.COMMA
@@ -50,6 +51,7 @@ import com.pinterest.ktlint.core.ast.ElementType.PLUS
 import com.pinterest.ktlint.core.ast.ElementType.PLUSEQ
 import com.pinterest.ktlint.core.ast.ElementType.POSTFIX_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
+import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.RETURN
 import com.pinterest.ktlint.core.ast.ElementType.RETURN_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS
@@ -113,9 +115,51 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
             BLOCK -> handleLambdaBody(node)
             RETURN -> handleReturnStatement(node)
             SUPER_TYPE_LIST, VALUE_PARAMETER_LIST -> handleList(node)
+            RBRACE -> handleRightBrace(node)
             else -> {
             }
         }
+    }
+
+    /**
+     * Check that Rbrace of fun or class is on new line
+     */
+    private fun handleRightBrace(node: ASTNode) {
+        if (shouldRBraceStartOnNewLine(node)) {
+            WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
+                    "right brace of this code block should start from new line", node.startOffset, node) {
+                if (node.treePrev.elementType == WHITE_SPACE) {
+                    node.treeParent.removeChild(node.treePrev)
+                }
+                node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node)
+            }
+        }
+    }
+
+    private fun shouldRBraceStartOnNewLine(node: ASTNode): Boolean {
+        val whiteSpacesWithNewlines = node
+                .treeParent
+                .getAllChildrenWithType(WHITE_SPACE)
+                .filter { it.isWhiteSpaceWithNewline() }
+                .count() // checks that it is not this structure: `fun some() {}`
+
+        if ((node.treeParent.elementType == BLOCK
+                        || node.treeParent.elementType == CLASS_BODY)
+                && !node.treePrev.isWhiteSpaceWithNewline()) {
+            return node == node.treeParent.lastChildNode && whiteSpacesWithNewlines > 0
+        }
+
+        if (node.treeParent.elementType == FUNCTION_LITERAL
+                && whiteSpacesWithNewlines > 0
+                && node == node.treeParent.lastChildNode) {
+            if (node.treePrev.isWhiteSpaceWithNewline())
+                return false
+            else if (node.treePrev.elementType == BLOCK && node.treePrev.children().count() == 0) {
+                return !node.treePrev.treePrev.isWhiteSpaceWithNewline()
+            }
+        }
+
+        return false
     }
 
     /**

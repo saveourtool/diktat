@@ -32,6 +32,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
     private val lambdaWithArrowWarn = "${WRONG_NEWLINES.warnText()} in lambda with several lines in body newline should be placed after an arrow"
     private val lambdaWithoutArrowWarn = "${WRONG_NEWLINES.warnText()} in lambda with several lines in body newline should be placed after an opening brace"
     private val singleReturnWarn = "${WRONG_NEWLINES.warnText()} functions with single return statement should be simplified to expression body"
+    private val rbraceNewLine = "${WRONG_NEWLINES.warnText()} right brace of this code block should start from new line"
 
     @Test
     @Tag(WarningNames.REDUNDANT_SEMICOLON)
@@ -459,6 +460,21 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |
                     |fun quux2(): Unit { return }
             """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
+    fun `qqq`() {
+        lintMethod(
+                """
+                    |fun some() {
+                    |   baz()
+                    |   foo() }
+                    |   
+                    |fun zzz() {}
+            """.trimMargin(),
+                LintError(3, 10, ruleId, rbraceNewLine, true)
         )
     }
 

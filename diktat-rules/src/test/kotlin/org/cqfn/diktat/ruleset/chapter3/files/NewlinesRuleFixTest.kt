@@ -68,4 +68,10 @@ class NewlinesRuleFixTest : FixTestBase("test/paragraph3/newlines", ::NewlinesRu
     fun `should fix one line function with and without semicolon`() {
         fixAndCompare("OneLineFunctionExpected.kt", "OneLineFunctionTest.kt")
     }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
+    fun `should fix rbrace of fun and class`() {
+        fixAndCompare("RBraceExpected.kt", "RBraceTest.kt")
+    }
 }
