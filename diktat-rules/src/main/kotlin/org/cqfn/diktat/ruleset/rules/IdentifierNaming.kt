@@ -37,6 +37,7 @@ import org.cqfn.diktat.ruleset.utils.isPascalCase
 import org.cqfn.diktat.ruleset.utils.isTextLengthInRange
 import org.cqfn.diktat.ruleset.utils.isUpperSnakeCase
 import org.cqfn.diktat.ruleset.utils.removePrefix
+import org.cqfn.diktat.ruleset.utils.search.findAllVariablesWithUsages
 import org.cqfn.diktat.ruleset.utils.toLowerCamelCase
 import org.cqfn.diktat.ruleset.utils.toPascalCase
 import org.cqfn.diktat.ruleset.utils.toUpperSnakeCase
@@ -55,7 +56,6 @@ import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevCodeSibling
-import org.cqfn.diktat.ruleset.utils.search.findAllVariablesWithUsages
 import org.jetbrains.kotlin.builtins.PrimitiveType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -138,7 +138,7 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
     /**
      * all checks for case and naming for vals/vars/constants
      */
-    @Suppress("SAY_NO_TO_VAR")
+    @Suppress("SAY_NO_TO_VAR", "TOO_LONG_FUNCTION", "ComplexMethod")
     private fun checkVariableName(node: ASTNode): List<ASTNode> {
         // special case for Destructuring declarations that can be treated as parameters in lambda:
         var namesOfVariables = extractVariableIdentifiers(node)
@@ -170,7 +170,7 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
                             .parent({it.elementType == FILE})
                             ?.findAllVariablesWithUsages { it.name == variableName.text && (it.isLocal || it.isPrivate()) }
                             ?.flatMap { it.value.toList() }
-                            ?.forEach {  (it.node.firstChildNode as LeafPsiElement).replaceWithText(variableName.text.toLowerCamelCase())}
+                            ?.forEach { (it.node.firstChildNode as LeafPsiElement).replaceWithText(variableName.text.toLowerCamelCase())}
                         (variableName as LeafPsiElement).replaceWithText(variableName.text.toLowerCamelCase())
                     }
                 }
