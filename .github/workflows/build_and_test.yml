@@ -103,11 +103,11 @@ jobs:
       - name: Maven Install
         if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
         run: |
-          mvn clean install
+          mvn -B clean install
         shell: bash
 
       - name: Maven Install on windows
         if: runner.os == 'Windows'
         run: |
-          mvn clean install
+          mvn -B clean install
         shell: cmd
