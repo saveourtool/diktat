@@ -28,7 +28,7 @@ import java.io.File
         "TOO_LONG_FUNCTION")
 fun generateCodeStyle(guideDir: File, wpDir: File) {
     val file = File(guideDir, "diktat-coding-convention.md")
-    val tempFile = File(guideDir, "convention.tex")
+    val tempFile = File(wpDir, "convention.tex")
     val lines = file.readLines().toMutableList()
     tempFile.printWriter().use { writer ->
         val iterator = lines.iterator()
