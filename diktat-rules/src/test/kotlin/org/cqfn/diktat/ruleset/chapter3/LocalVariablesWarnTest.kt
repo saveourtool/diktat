@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
+@Suppress("LargeClass")
 class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
     private val ruleId = "$DIKTAT_RULE_SET_ID:local-variables"
 
@@ -646,7 +647,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
     @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
     fun `should skip val nodes between considered nodes`() {
         lintMethod(
-                """
+            """
                     |    private fun collectAllExtensionFunctions(astNode: ASTNode): SimilarSignatures {
                     |       val text = ""
                     |       val node = astNode
@@ -662,7 +663,7 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
     fun `should skip val and var nodes between considered nodes`() {
         // Only text goes to propertyToUsages here
         lintMethod(
-                """
+            """
                     |    private fun collectAllExtensionFunctions(astNode: ASTNode): SimilarSignatures {
                     |       val text = ""
                     |       val node = astNode
