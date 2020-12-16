@@ -10,3 +10,18 @@ private val loWerValue = ""
 private val lower = ""
 private val valNX256 = ""
 private val voiceIpPort = ""
+
+class A {
+    private val voiceIpPort = ""
+    public val valNX2567 = ""
+
+    fun foo() {
+        val voiceIpPorts = ""
+        val upperSnakers = voiceIpPort
+    }
+
+    fun goo() {
+        val qwe = lowerSnake
+        val pre = valNX256
+    }
+}

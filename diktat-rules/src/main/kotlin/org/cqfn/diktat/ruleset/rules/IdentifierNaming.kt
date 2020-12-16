@@ -47,16 +47,20 @@ import com.pinterest.ktlint.core.ast.ElementType.CATCH
 import com.pinterest.ktlint.core.ast.ElementType.CATCH_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.DESTRUCTURING_DECLARATION
 import com.pinterest.ktlint.core.ast.ElementType.DESTRUCTURING_DECLARATION_ENTRY
+import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_TYPE
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_PARAMETER
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
+import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevCodeSibling
+import org.cqfn.diktat.ruleset.utils.search.findAllVariablesWithUsages
 import org.jetbrains.kotlin.builtins.PrimitiveType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.psi.psiUtil.isPrivate
 import org.jetbrains.kotlin.psi.psiUtil.parents
 
 /**
@@ -162,6 +166,11 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
                     // variable name should be in camel case. The only exception is a list of industry standard variables like i, j, k.
                     VARIABLE_NAME_INCORRECT_FORMAT.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset, node) {
                         // FixMe: cover fixes with tests
+                        variableName
+                            .parent({it.elementType == FILE})
+                            ?.findAllVariablesWithUsages { it.name == variableName.text && (it.isLocal || it.isPrivate()) }
+                            ?.flatMap { it.value.toList() }
+                            ?.forEach {  (it.node.firstChildNode as LeafPsiElement).replaceWithText(variableName.text.toLowerCamelCase())}
                         (variableName as LeafPsiElement).replaceWithText(variableName.text.toLowerCamelCase())
                     }
                 }
