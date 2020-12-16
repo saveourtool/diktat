@@ -33,7 +33,6 @@ private fun generateCodeStyle() {
     val lines = file.readLines().toMutableList()
     tempFile.printWriter().use { writer ->
         val iterator = lines.iterator()
-        writer.writeln("\\section*{guide}")
         writer.writeln("\\lstMakeShortInline[basicstyle=\\ttfamily\\bfseries]`")
         while (iterator.hasNext()) {
             var line = iterator.next()
@@ -128,7 +127,7 @@ private fun generateCodeStyle() {
         }
     }
     val appendixFileLines = File("wp/sections/appendix.tex").readLines().toMutableList()
-    appendixFileLines.removeAll(appendixFileLines.subList(appendixFileLines.indexOf("\\section*{guide}"), appendixFileLines.lastIndex + 1))
+    appendixFileLines.removeAll(appendixFileLines.subList(appendixFileLines.indexOf("\\lstMakeShortInline[basicstyle=\\ttfamily\\bfseries]`"), appendixFileLines.lastIndex + 1))
     appendixFileLines.addAll(tempFile.readLines())
     File("wp/sections/appendix.tex").writeText(appendixFileLines.joinToString(separator = "\n"))
 }
