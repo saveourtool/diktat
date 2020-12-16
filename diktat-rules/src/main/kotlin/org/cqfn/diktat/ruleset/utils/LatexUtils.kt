@@ -17,7 +17,7 @@ val ITALIC_TEXT = Regex("""\*([A-Za-z ]+)\*""")  // finds italic text in regular
 @Suppress("VARIABLE_NAME_INCORRECT_FORMAT")
 val BACKTICKS_TEXT = Regex("""`([^`]*)`""")  // finds backtick in regular text (not used for now, may be we will need to use it in future)
 @Suppress("VARIABLE_NAME_INCORRECT_FORMAT")
-val ANCHORS = Regex("""\(#(.*)\)""")  // finds anchors on rules and deletes them
+val ANCHORS = Regex("""\(#([a-zA-Z0-9-.]*)\)""")  // finds anchors on rules and deletes them
 @Suppress("VARIABLE_NAME_INCORRECT_FORMAT")
 val TABLE_COLUMN_NAMES = Regex("""[A-Za-z ]*""")  // used to find column names in tables only
 const val REGEX_PLACEHOLDER = "RE_PL_AC_E_ME"

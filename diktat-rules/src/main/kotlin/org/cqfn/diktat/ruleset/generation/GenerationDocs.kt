@@ -23,6 +23,7 @@ fun main() {
 @Suppress(
         "LoopWithTooManyJumpStatements",
         "LongMethod",
+        "MagicNumber",
         "ComplexMethod",
         "NestedBlockDepth",
         "WRONG_INDENTATION",
@@ -33,7 +34,6 @@ private fun generateCodeStyle() {
     val lines = file.readLines().toMutableList()
     tempFile.printWriter().use { writer ->
         val iterator = lines.iterator()
-        writer.writeln("\\section*{guide}")
         writer.writeln("\\lstMakeShortInline[basicstyle=\\ttfamily\\bfseries]`")
         while (iterator.hasNext()) {
             var line = iterator.next()
@@ -53,6 +53,15 @@ private fun generateCodeStyle() {
                         ?.removePrefix("</a>")
                         ?.trim()
                 if (name.isNullOrEmpty() || number.isNullOrEmpty()) {
+                    if (number.isNullOrEmpty() && name.isNullOrEmpty()) {
+                        when (line.takeWhile { it == '#' }.count()) {
+                            2 -> writer.writeln("""\section*{\textbf{${line.removePrefix("##").trim()}}}""")
+                            3 -> writer.writeln("""\subsection*{\textbf{${line.removePrefix("###").trim()}}}""")
+                            4 -> writer.writeln("""\subsubsection*{\textbf{${line.removePrefix("####").trim()}}}${"\n"}\leavevmode\newline""")
+                            else -> {}
+                        }
+                        continue
+                    }
                     error("String starts with # but has no number or name - $line")
                 }
                 when (number.count { it == '.' }) {
@@ -93,6 +102,7 @@ private fun generateCodeStyle() {
                 line = iterator.next()
                 while (iterator.hasNext() && line.trim().startsWith("|")) {
                     writer.writeln(line
+                            .replace("&", "\\&")
                             .replace('|', '&')
                             .drop(1)
                             .dropLast(1)
@@ -118,9 +128,10 @@ private fun generateCodeStyle() {
         }
     }
     val appendixFileLines = File("wp/sections/appendix.tex").readLines().toMutableList()
-    appendixFileLines.removeAll(appendixFileLines.subList(appendixFileLines.indexOf("\\section*{guide}"), appendixFileLines.lastIndex + 1))
+    appendixFileLines.removeAll(appendixFileLines.subList(appendixFileLines.indexOf("\\lstMakeShortInline[basicstyle=\\ttfamily\\bfseries]`"), appendixFileLines.lastIndex + 1))
     appendixFileLines.addAll(tempFile.readLines())
     File("wp/sections/appendix.tex").writeText(appendixFileLines.joinToString(separator = "\n"))
+    tempFile.delete()
 }
 
 /**
