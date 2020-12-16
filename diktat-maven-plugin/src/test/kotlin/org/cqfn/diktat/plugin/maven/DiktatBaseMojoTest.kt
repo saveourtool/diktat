@@ -19,11 +19,9 @@ import kotlin.io.path.div
  * Tests for mojo configuration. NB: this tests are using Junit4, because maven-plugin-testing-harness doesn't support 5.
  */
 @OptIn(ExperimentalPathApi::class)
-@Suppress("TOO_LONG_FUNCTION")
+@Suppress("LongMethod", "TOO_LONG_FUNCTION")
 class DiktatBaseMojoTest {
-    @get:Rule
-    val mojoRule = MojoRule()
-
+    @get:Rule val mojoRule = MojoRule()
     private lateinit var buildingRequest: ProjectBuildingRequest
     private lateinit var projectBuilder: ProjectBuilder
 
