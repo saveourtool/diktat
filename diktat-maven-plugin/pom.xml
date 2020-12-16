@@ -165,6 +165,12 @@
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <!-- TODO: calculate coverage in integration test. Currently it's hard to pass additinoal CLI arguments
                      to maven forked by ITF framework. -->
+                <configuration>
+                    <excludes>
+                        <!-- HelpMojo is generated automatically -->
+                        <exclude>**/HelpMojo*</exclude>
+                    </excludes>
+                </configuration>
             </plugin>
         </plugins>
         <testResources>

@@ -66,8 +66,8 @@ abstract class DiktatBaseMojo : AbstractMojo() {
      */
     override fun execute() {
         val configFile = resolveConfig()
-        if (!File(configFile).exists()) {
-            throw MojoExecutionException("Configuration file $configFile doesn't exist")
+        if (configFile == null || !File(configFile).exists()) {
+            throw MojoExecutionException("Configuration file $diktatConfigFile doesn't exist")
         }
         log.info("Running diKTat plugin with configuration file $configFile and inputs $inputs" +
                 if (excludes.isNotEmpty()) " and excluding $excludes" else ""
@@ -90,15 +90,15 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         }
     }
 
-    private fun resolveConfig(): String {
+    private fun resolveConfig(): String? {
         if (File(diktatConfigFile).isAbsolute) {
             return diktatConfigFile
         }
 
         return generateSequence(mavenProject) { it.parent }
             .map { File(it.basedir, diktatConfigFile) }
-            .first { it.exists() }
-            .absolutePath
+            .firstOrNull { it.exists() }
+            ?.absolutePath
     }
 
     /**
