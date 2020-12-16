@@ -1,7 +1,8 @@
-@file:Suppress("FILE_NAME_MATCH_CLASS")
 /**
  * This script paste available.rules.md and rules-mapping.md files to automatically generate table for White paper
  */
+
+@file:Suppress("FILE_NAME_MATCH_CLASS")
 
 package org.cqfn.diktat.ruleset.generation
 
@@ -43,7 +44,6 @@ private fun generateAvailableRules() {
  * @property ruleName rule's name
  * @property codeStyle rule's description
  * @property autoFix is rule can fix
- * @property config rule's configuration
  */
 @Suppress("UnsafeCallOnNullableType")
 data class RuleDescription(val ruleName: String,
