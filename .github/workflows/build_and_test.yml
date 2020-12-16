@@ -4,7 +4,7 @@ on:
   pull_request
 
 jobs:
-  build_and_test:
+  build_and_test_with_code_coverage:
     name: Unit Test
     runs-on: ubuntu-18.04
 
@@ -39,10 +39,6 @@ jobs:
           path: diktat-ruleset/target/diktat-*.jar
           # no need to store artifact longer, it is used only by dependant jobs
           retention-days: 1
-      - name: Deploy diktat snapshot to github packages
-        run: mvn -B deploy -DskipTests=true -DaltDeploymentRepository=github::https://maven.pkg.github.com/cqfn/diktat
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GITHUB_TOKEN is the default env for the password in settings.xml created by actions/setup-java
 
   run_diktat_from_CLI:
     runs-on: ${{ matrix.os }}
@@ -92,7 +88,7 @@ jobs:
           grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out
         shell: bash
 
-  run_diktat_from_maven:
+  build_and_test:
     runs-on: ${{ matrix.os }}
     needs: build_and_test
     strategy:
@@ -105,27 +101,14 @@ jobs:
         with:
           java-version: 1.11
 
-      - name: Download artifacts for diktat snapshot
+      - name: Maven Install
+        if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
         run: |
-          DIKTAT_VERSION=$(printf 'VERSION=${project.version}\n0\n' | mvn help:evaluate | grep '^VERSION' | cut -d= -f2)
-          echo DIKTAT_VERSION=$DIKTAT_VERSION >> $GITHUB_ENV
+          mvn clean install
         shell: bash
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Run diKTat from maven
-        working-directory: ./examples/maven
-        continue-on-error: true
+      - name: Maven Install on windows
+        if: runner.os == 'Windows'
         run: |
-          mvn -B versions:set-property -Dproperty=diktat.version -DnewVersion=${{ env.DIKTAT_VERSION }}
-          mvn -B -Pgithub diktat:check &> out
-        shell: bash
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Check maven
-        working-directory: ./examples/maven
-        run: |
-          cat out
-          grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out
-        shell: bash
+          mvn.exe install
+        shell: cmd

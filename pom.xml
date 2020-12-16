@@ -452,34 +452,5 @@
                 </plugins>
             </build>
         </profile>
-        <profile>
-            <!-- Profile that activates github packages maven repo -->
-            <id>github</id>
-            <repositories>
-                <repository>
-                    <id>github</id>
-                    <name>Github Packages</name>
-                    <url>https://maven.pkg.github.com/cqfn/diktat</url>
-                    <snapshots>
-                        <enabled>true</enabled>
-                    </snapshots>
-                    <releases>
-                        <enabled>false</enabled>
-                    </releases>
-                </repository>
-            </repositories>
-            <pluginRepositories>
-                <pluginRepository>
-                    <id>github</id>
-                    <url>https://maven.pkg.github.com/cqfn/diktat</url>
-                    <snapshots>
-                        <enabled>true</enabled>
-                    </snapshots>
-                    <releases>
-                        <updatePolicy>never</updatePolicy>
-                    </releases>
-                </pluginRepository>
-            </pluginRepositories>
-        </profile>
     </profiles>
 </project>
