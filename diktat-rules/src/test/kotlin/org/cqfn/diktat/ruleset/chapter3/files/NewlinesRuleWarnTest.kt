@@ -467,14 +467,14 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `qqq`() {
         lintMethod(
-                """
+            """
                     |fun some() {
                     |   baz()
                     |   foo() }
                     |   
                     |fun zzz() {}
             """.trimMargin(),
-                LintError(3, 10, ruleId, rbraceNewLine, true)
+            LintError(3, 10, ruleId, rbraceNewLine, true)
         )
     }
 
