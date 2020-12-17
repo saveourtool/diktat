@@ -126,9 +126,9 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
      * Check that Rbrace of fun or class is on new line
      */
     private fun handleRightBrace(node: ASTNode) {
-        if (shouldRBraceStartOnNewLine(node)) {
+        if (isRightBraceStartOnNewLine(node)) {
             WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
-                    "right brace of this code block should start from new line", node.startOffset, node) {
+                "right brace of this code block should start from new line", node.startOffset, node) {
                 if (node.treePrev.elementType == WHITE_SPACE) {
                     node.treeParent.removeChild(node.treePrev)
                 }
@@ -140,26 +140,27 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
     /**
      * Checks that rbrace should start on a new line
      */
-    private fun shouldRBraceStartOnNewLine(node: ASTNode): Boolean {
+    private fun isRightBraceStartOnNewLine(node: ASTNode): Boolean {
+        // If this number is greater than 0, than block is not empty. Example: `fun some() {}`
         val whiteSpacesWithNewlines = node
-                .treeParent
-                .getAllChildrenWithType(WHITE_SPACE)
-                .filter { it.isWhiteSpaceWithNewline() }
-                .count() // checks that it is not empty. Example: `fun some() {}`
+            .treeParent
+            .getAllChildrenWithType(WHITE_SPACE)
+            .filter { it.isWhiteSpaceWithNewline() }
+            .count()
 
-        if ((node.treeParent.elementType == BLOCK
-                        || node.treeParent.elementType == CLASS_BODY)
-                && !node.treePrev.isWhiteSpaceWithNewline()) {
+        if ((node.treeParent.elementType == BLOCK ||
+                node.treeParent.elementType == CLASS_BODY) &&
+                !node.treePrev.isWhiteSpaceWithNewline()) {
             return node == node.treeParent.lastChildNode && whiteSpacesWithNewlines > 0
         }
 
         // Special case because in FUNCTION_LITERAL white space node is not before RBRACE.
-        if (node.treeParent.elementType == FUNCTION_LITERAL
-                && whiteSpacesWithNewlines > 0
-                && node == node.treeParent.lastChildNode) {
-            if (node.treePrev.isWhiteSpaceWithNewline())
+        if (node.treeParent.elementType == FUNCTION_LITERAL &&
+                whiteSpacesWithNewlines > 0 &&
+                node == node.treeParent.lastChildNode) {
+            if (node.treePrev.isWhiteSpaceWithNewline()) {
                 return false
-            else if (node.treePrev.elementType == BLOCK && node.treePrev.treePrev != null) {
+            } else if (node.treePrev.elementType == BLOCK && node.treePrev.treePrev != null) {
                 return node.treePrev.treePrev.isWhiteSpace() && node.treePrev.treePrev.text.count { it == '\n'} <= 1
             }
         }
