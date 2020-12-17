@@ -18,7 +18,7 @@ fun generateAvailableRules(rootDir: File, wpDir: File) {
         .map { it[2].replace("\\s+".toRegex(), "") to it[5] }
         .forEach { ruleMap[it.first]!!.config = it.second}
     val newText = File(wpDir, "sections/appendix.tex").readLines().toMutableList()
-    newText.removeAll(newText.subList(newText.indexOf("\\section*{available-rules}") + 1, newText.indexOf("\\section*{\\textbf{Diktat Coding Convention}}")))
+    newText.removeAll(newText.subList(newText.indexOf("\\section*{available-rules}") + 1, newText.indexOf("\\lstMakeShortInline[basicstyle=\\ttfamily\\bfseries]`")))
     var index = newText.indexOf("\\section*{available-rules}") + 1
     AUTO_TABLE.trimIndent().lines().forEach { newText.add(index++, it) }
     ruleMap.map { it.value }
