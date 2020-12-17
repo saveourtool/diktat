@@ -766,19 +766,18 @@ fun ASTNode.getLineNumber(): Int =
  * This function calculates line number instead of using cached values.
  * It should be used when AST could be previously mutated by auto fixers.
  */
-private fun ASTNode.calculateLineNumber(): Int {
-    var count = 0
-    // todo use runningFold or something similar when we migrate to apiVersion 1.4
-    return getRootNode()
-        .text
-        .lineSequence()
-        // calculate offset for every line end, `+1` for `\n` which is trimmed in `lineSequence`
-        .indexOfFirst {
-            count += it.length + 1
-            count > startOffset
-        }
-        .let {
-            require(it >= 0) { "Cannot calculate line number correctly, node's offset $startOffset is greater than file length ${getRootNode().textLength}" }
-            it + 1
-        }
-}
+private fun ASTNode.calculateLineNumber() = getRootNode()
+    .text
+    .lineSequence()
+    // calculate offset for every line end, `+1` for `\n` which is trimmed in `lineSequence`
+    .runningFold(0) { acc, line ->
+        acc + line.length + 1
+    }
+    .drop(1)
+    .indexOfFirst {
+        it > startOffset
+    }
+    .let {
+        require(it >= 0) { "Cannot calculate line number correctly, node's offset $startOffset is greater than file length ${getRootNode().textLength}" }
+        it + 1
+    }
