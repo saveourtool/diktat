@@ -19,7 +19,7 @@ import kotlin.io.path.readText
 class DiktatMavenPluginIntegrationTest {
     @MavenTest
     @MavenGoal("diktat:check@diktat")
-    fun maven(result: MavenExecutionResult) {
+    fun diktatCheck(result: MavenExecutionResult) {
         Assertions.assertEquals(1, result.returnCode)
         Assertions.assertFalse(result.isError)
         Assertions.assertFalse(result.isSuccesful)
@@ -31,7 +31,31 @@ class DiktatMavenPluginIntegrationTest {
         )
 
         File(result.mavenProjectResult.baseDir, "target/jacoco-it.exec").copyTo(
-            File("target/jacoco-it.exec")
+            File("target/jacoco-it-1.exec")
+        )
+    }
+
+    @MavenTest
+    @MavenGoal("diktat:fix@diktat")
+    fun diktatFix(result: MavenExecutionResult) {
+        Assertions.assertEquals(1, result.returnCode)
+        Assertions.assertFalse(result.isError)
+        Assertions.assertFalse(result.isSuccesful)
+        Assertions.assertTrue(result.isFailure)
+
+        val mavenLog = result.mavenLog.stdout.readText()
+        Assertions.assertTrue(
+            mavenLog.contains("Original and formatted content differ, writing to Test.kt...")
+        )
+        Assertions.assertTrue(
+            mavenLog.contains(Regex("There are \\d+ lint errors"))
+        )
+        Assertions.assertTrue(
+            mavenLog.contains("[MISSING_KDOC_TOP_LEVEL]")
+        )
+
+        File(result.mavenProjectResult.baseDir, "target/jacoco-it.exec").copyTo(
+            File("target/jacoco-it-2.exec")
         )
     }
 }

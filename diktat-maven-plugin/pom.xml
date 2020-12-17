@@ -173,8 +173,21 @@
                     <execution>
                         <id>report-integration</id>
                         <goals>
+                            <goal>merge</goal>
                             <goal>report-integration</goal>
                         </goals>
+                        <phase>post-integration-test</phase>
+                        <configuration>
+                            <fileSets>
+                                <fileSet>
+                                    <directory>${project.build.directory}</directory>
+                                    <includes>
+                                        <inlcude>jacoco-it*.exec</inlcude>
+                                    </includes>
+                                </fileSet>
+                            </fileSets>
+                            <destFile>${project.build.directory}/jacoco-it.exec</destFile>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -184,13 +197,23 @@
                 <directory>../examples/maven</directory>
                 <!-- setting filtering to false keeps unresolved properties, which in diktat-examples do not depend on diktat properties -->
                 <filtering>false</filtering>
-                <targetPath>${project.build.testOutputDirectory}/org/cqfn/diktat/plugin/maven/DiktatMavenPluginIntegrationTest/maven</targetPath>
+                <targetPath>${project.build.testOutputDirectory}/org/cqfn/diktat/plugin/maven/DiktatMavenPluginIntegrationTest/diktatCheck</targetPath>
             </testResource>
             <testResource>
                 <directory>${project.basedir}/src/test/resources/.mvn</directory>
                 <!-- Here we need to resolve actual maven properties -->
                 <filtering>true</filtering>
-                <targetPath>${project.build.testOutputDirectory}/org/cqfn/diktat/plugin/maven/DiktatMavenPluginIntegrationTest/maven/.mvn</targetPath>
+                <targetPath>${project.build.testOutputDirectory}/org/cqfn/diktat/plugin/maven/DiktatMavenPluginIntegrationTest/diktatCheck/.mvn</targetPath>
+            </testResource>
+            <testResource>
+                <directory>../examples/maven</directory>
+                <filtering>false</filtering>
+                <targetPath>${project.build.testOutputDirectory}/org/cqfn/diktat/plugin/maven/DiktatMavenPluginIntegrationTest/diktatFix</targetPath>
+            </testResource>
+            <testResource>
+                <directory>${project.basedir}/src/test/resources/.mvn</directory>
+                <filtering>true</filtering>
+                <targetPath>${project.build.testOutputDirectory}/org/cqfn/diktat/plugin/maven/DiktatMavenPluginIntegrationTest/diktatFix/.mvn</targetPath>
             </testResource>
         </testResources>
     </build>
