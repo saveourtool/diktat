@@ -5,7 +5,7 @@ on:
 
 jobs:
   build_and_test_with_code_coverage:
-    name: Unit Test
+    name: Build, test and upload code coverage
     runs-on: ubuntu-18.04
 
     steps:
@@ -41,6 +41,7 @@ jobs:
           retention-days: 1
 
   run_diktat_from_CLI:
+    name: Run diktat via CLI
     runs-on: ${{ matrix.os }}
     needs: build_and_test_with_code_coverage
     strategy:
@@ -89,6 +90,7 @@ jobs:
         shell: bash
 
   build_and_test:
+    name: Build and test
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:

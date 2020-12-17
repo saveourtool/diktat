@@ -66,6 +66,14 @@
         <module>diktat-gradle-plugin</module>
     </modules>
 
+    <!-- Even though deployment is handled by nexus plugin, this section is required for it's operation -->
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
