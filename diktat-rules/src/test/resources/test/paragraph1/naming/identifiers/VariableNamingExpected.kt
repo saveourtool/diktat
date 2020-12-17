@@ -13,7 +13,7 @@ private val voiceIpPort = ""
 
 class A {
     private val voiceIpPort = ""
-    public val valNX2567 = ""
+    public val valN_x2567 = ""
 
     fun foo() {
         val voiceIpPorts = ""
@@ -23,5 +23,25 @@ class A {
     fun goo() {
         val qwe = lowerSnake
         val pre = valNX256
+    }
+}
+
+class B {
+    companion object {
+        val QQ = 1
+        private val qwe = 11
+    }
+
+    fun foo() {
+        var qq = 20
+        while (qq < 20) {
+            qq = 10
+        }
+    }
+
+    class Ba {
+        fun goo() {
+            val qwe = QQ
+        }
     }
 }
