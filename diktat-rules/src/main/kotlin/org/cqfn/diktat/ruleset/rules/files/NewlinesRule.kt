@@ -63,6 +63,7 @@ import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.isWhiteSpace
 import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.nextCodeSibling
 import com.pinterest.ktlint.core.ast.parent
@@ -136,12 +137,15 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         }
     }
 
+    /**
+     * Checks that rbrace should start on a new line
+     */
     private fun shouldRBraceStartOnNewLine(node: ASTNode): Boolean {
         val whiteSpacesWithNewlines = node
                 .treeParent
                 .getAllChildrenWithType(WHITE_SPACE)
                 .filter { it.isWhiteSpaceWithNewline() }
-                .count() // checks that it is not this structure: `fun some() {}`
+                .count() // checks that it is not empty. Example: `fun some() {}`
 
         if ((node.treeParent.elementType == BLOCK
                         || node.treeParent.elementType == CLASS_BODY)
@@ -149,13 +153,14 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
             return node == node.treeParent.lastChildNode && whiteSpacesWithNewlines > 0
         }
 
+        // Special case because in FUNCTION_LITERAL white space node is not before RBRACE.
         if (node.treeParent.elementType == FUNCTION_LITERAL
                 && whiteSpacesWithNewlines > 0
                 && node == node.treeParent.lastChildNode) {
             if (node.treePrev.isWhiteSpaceWithNewline())
                 return false
-            else if (node.treePrev.elementType == BLOCK && node.treePrev.children().count() == 0) {
-                return !node.treePrev.treePrev.isWhiteSpaceWithNewline()
+            else if (node.treePrev.elementType == BLOCK && node.treePrev.treePrev != null) {
+                return node.treePrev.treePrev.isWhiteSpace() && node.treePrev.treePrev.text.count { it == '\n'} <= 1
             }
         }
 
