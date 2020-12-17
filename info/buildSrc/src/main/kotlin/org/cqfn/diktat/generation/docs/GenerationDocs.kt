@@ -18,7 +18,7 @@ import java.io.File
 fun generateCodeStyle(guideDir: File, wpDir: File) {
     val file = File(guideDir, "diktat-coding-convention.md")
     val tempFile = File(wpDir, "convention.tex")
-    val lines = file.readLines().toMutableList()
+    val lines = file.readLines().toMutableList().drop(1)
     tempFile.printWriter().use { writer ->
         val iterator = lines.iterator()
         writer.writeln("\\lstMakeShortInline[basicstyle=\\ttfamily\\bfseries]`")
@@ -115,7 +115,7 @@ fun generateCodeStyle(guideDir: File, wpDir: File) {
         }
     }
     val appendixFileLines = File(wpDir, "sections/appendix.tex").readLines().toMutableList()
-    appendixFileLines.removeAll(appendixFileLines.subList(appendixFileLines.indexOf("\\section*{guide}"), appendixFileLines.lastIndex + 1))
+    appendixFileLines.removeAll(appendixFileLines.subList(appendixFileLines.indexOf("\\lstMakeShortInline[basicstyle=\\ttfamily\\bfseries]`"), appendixFileLines.lastIndex + 1))
     appendixFileLines.addAll(tempFile.readLines())
     File(wpDir, "sections/appendix.tex").writeText(appendixFileLines.joinToString(separator = "\n"))
     tempFile.delete()
