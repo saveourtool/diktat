@@ -2,7 +2,7 @@
  * This is a file, that contains utility methods for latex generation
  */
 
-package org.cqfn.diktat.ruleset.utils
+package org.cqfn.diktat.generation.docs
 
 import java.io.PrintWriter
 
