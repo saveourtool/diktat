@@ -9,6 +9,10 @@ plugins {
 }
 
 repositories {
+    flatDir {
+        // to use snapshot diktat without necessary installing
+        dirs("../diktat-rules/target")
+    }
     mavenLocal()  // to use snapshot diktat
     mavenCentral()
     jcenter()
