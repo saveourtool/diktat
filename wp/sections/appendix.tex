@@ -8,8 +8,6 @@
 \includegraphics[scale=0.8]{pictures/useCase.png}
 \subsection{Package diagram}
 \includegraphics[scale=0.65]{pictures/package.png}
-\section*{guide}
-
 \lstMakeShortInline[basicstyle=\ttfamily\bfseries]`
 
 \section*{\textbf{Preface}}
@@ -52,7 +50,7 @@ Like other modern programming languages, Kotlin is an advanced programming langu
 
 2.	Simplicity — a code is easy to understand and implement.
 
-3.	Consistency — enables a code to be easily modified, reviewed and understood by the team members. Unification is particularly important when the same team works on the same project, utilizing similar styles.enables code to be easily modified, reviewed and understood by the team members.
+3.	Consistency — enables a code to be easily modified, reviewed, and understood by the team members. Unification is particularly important when the same team works on the same project, utilizing similar styles enabling a code to be easily modified, reviewed, and understood by the team members.
 
 
 
@@ -68,9 +66,9 @@ Also, we need to consider the following factors when programming on Kotlin:
 
     Both of these paradigms are trusted and well-known software engineering practices.
 
-    As a young programming language, Kotlin is built on the top of well-established languages such as Java, C++, C\#, and Scala.
+    As a young programming language, Kotlin is built on top of well-established languages such as Java, C++, C\#, and Scala.
 
-    This enables Kotlin to introduce many features that help you write cleaner, more readable code, while also reducing the number of complex code structures. For example, type and null safety, extension functions, infix syntax, immutability, val/var differentiation, expression-oriented features, when statements, much easier work with collections, type auto conversion, and other syntactic sugar.
+    This enables Kotlin to introduce many features that help a developer write cleaner, more readable code while also reducing the number of complex code structures. For example, type and null safety, extension functions, infix syntax, immutability, val/var differentiation, expression-oriented features, "when" statements, much easier work with collections, type auto conversion, and other syntactic sugar.
 
 
 
@@ -126,7 +124,7 @@ Unless otherwise stated, this specification applies to versions 1.3 and later of
 
 Even though exceptions may exist, it is essential to understand why rules and recommendations are needed.
 
-Depending on your project situation or personal habits, you can break some of the rules. However, remember that one exception may lead to many and eventually can destroy code consistency. As such, there should be very few exceptions.
+Depending on a project situation or personal habits, you can break some of the rules. However, remember that one exception may lead to many and eventually can destroy code consistency. As such, there should be very few exceptions.
 
 When modifying open-source code or third-party code, you can choose to use the code style from this open-source project (instead of using the existing specifications) to maintain consistency.
 
@@ -134,7 +132,7 @@ Software that is directly based on the Android native operating system interface
 
 \section*{\textbf{1. Naming}}
 
-In programming, it is not always easy to meaningfully and appropriately name variables, functions, classes, etc. Using meaningful names helps you clearly express your code's main ideas and functionality and avoid misinterpretation, unnecessary coding and decoding, "magic" numbers, and inappropriate abbreviations.
+In programming, it is not always easy to meaningfully and appropriately name variables, functions, classes, etc. Using meaningful names helps to clearly express your code's main ideas and functionality and avoid misinterpretation, unnecessary coding and decoding, "magic" numbers, and inappropriate abbreviations.
 
 
 
@@ -144,7 +142,9 @@ Note: The source file encoding format (including comments) must be UTF-8 only. T
 
 \subsection*{\textbf{1.1 Identifier names}}
 
-\subsubsection*{\textbf{1.1.1}}
+This section describes the general rules for naming identifiers.
+
+\subsubsection*{\textbf{1.1.1 Identifiers naming conventions}}
 \leavevmode\newline
 
 
@@ -159,7 +159,7 @@ Explanation: Each valid identifier name should match the regular expression `\w{
 
 Name lengths of less than 31 characters are generally recommended. However, this depends on the project. Otherwise, a class declaration with generics or inheritance from a superclass can cause line breaking.
 
-No special prefix or suffix should be used in the names. The following examples are inappropriate: name\_, mName, s\_name, and kName.
+No special prefix or suffix should be used in names. The following examples are inappropriate names: name\_, mName, s\_name, and kName.
 
 
 
@@ -173,7 +173,7 @@ No special prefix or suffix should be used in the names. The following examples 
 
 \begin{center}
 
-\begin{tabular}{ |p{5,0cm}|p{5,0cm}|p{5,0cm}| }
+\begin{tabular}{ |p{5.0cm}|p{5.0cm}|p{5.0cm}| }
 
 \hline
 
@@ -219,7 +219,7 @@ The only exception is function names in `Unit tests.`
 
 \begin{center}
 
-\begin{tabular}{ |p{5,0cm}|p{5,0cm}|p{5,0cm}| }
+\begin{tabular}{ |p{5.0cm}|p{5.0cm}|p{5.0cm}| }
 
 \hline
 
@@ -249,7 +249,7 @@ Expected&Confusing name&Suggested name\\
 
 \end{center}
 
-\textbf{Exceptions}
+\textbf{Exceptions:}
 
 - The i,j,k variables used in loops are part of the industry standard. One symbol can be used for such variables.
 
@@ -263,7 +263,7 @@ Note that prefixing can also negatively affect the style and the auto-generation
 
 \begin{center}
 
-\begin{tabular}{ |p{7,5cm}|p{7,5cm}| }
+\begin{tabular}{ |p{7.5cm}|p{7.5cm}| }
 
 \hline
 
@@ -289,14 +289,16 @@ Type&Naming style\\
 
 \subsection*{\textbf{1.2 Packages names}}
 
-\subsubsection*{\textbf{Rule 1.2.1}}
+
+
+\subsubsection*{\textbf{Rule 1.2.1 Package names dots}}
 \leavevmode\newline
 
 Package names are in lower case and separated by dots. Code developed within your company should start with `your.company.domain.` Numbers are permitted in package names.
 
 Each file should have a `package` directive.
 
-Package names are all written in lowercase, and consecutive words are concatenated together (no underscores). Package names should contain both the product and module names, and the department (or team) name to prevent conflicts with other teams.  Numbers are not permitted. For example: `org.apache.commons.lang3`, `xxx.yyy.v2`.
+Package names are all written in lowercase, and consecutive words are concatenated together (no underscores). Package names should contain both the product or module names and the department (or team) name to prevent conflicts with other teams.  Numbers are not permitted. For example: `org.apache.commons.lang3`, `xxx.yyy.v2`.
 
 
 
@@ -306,7 +308,7 @@ Package names are all written in lowercase, and consecutive words are concatenat
 
 - In certain cases, such as open-source projects or commercial cooperation, package names should not start with `your.company.domain.`
 
-- If the package name starts with a number or other characters that cannot be used at the beginning of the Java/Kotlin package name, then underscores are allowed. For example: `com.example._123name`.
+- If the package name starts with a number or other character that cannot be used at the beginning of the Java/Kotlin package name, then underscores are allowed. For example: `com.example._123name`.
 
 - Underscores are sometimes permitted if the package name contains reserved Java/Kotlin keywords, such as `org.example.hyphenated_name`, `int_.example`.
 
@@ -321,7 +323,9 @@ package your.company.domain.mobilecontrol.views
 
 \subsection*{\textbf{1.3 Classes}}
 
-\subsubsection*{\textbf{Rule 1.3.1}}
+This section describes the general rules for naming classes, enumerations, and interfaces.
+
+\subsubsection*{\textbf{1.3.1 Classes}}
 \leavevmode\newline
 
 Classes, enumerations, and interface names use `UpperCamelCase` nomenclature. Follow the naming rules described below:
@@ -360,7 +364,9 @@ class Order {}
 
 \subsection*{\textbf{1.4 Functions}}
 
-\subsubsection*{\textbf{Rule 1.4.1}}
+This section describes the general rules for naming functions.
+
+\subsubsection*{\textbf{1.4.1 Function names should be in camel case}}
 \leavevmode\newline
 
 Function names should use `lowerCamelCase` nomenclature. Follow the naming rules described below:
@@ -369,7 +375,7 @@ Function names should use `lowerCamelCase` nomenclature. Follow the naming rules
 
 For example: `sendMessage`, `stopProcess`, or `calculateValue`.
 
-To name functions use the following formatting rules:
+To name functions, use the following formatting rules:
 
 
 
@@ -436,32 +442,26 @@ fun addKeyListener(Listener)
 \end{lstlisting}
 
 
-2.	An underscore (`_`) can be included in the JUnit test function name and should be used as a separator. Each logical part denoted in `lowerCamelCase`, for example, a typical pattern of using underscore: `pop_emptyStack`.
+2.	An underscore (`_`) can be included in the JUnit test function name and should be used as a separator. Each logical part is denoted in `lowerCamelCase`, for example, a typical pattern of using underscore: `pop_emptyStack`.
 
 \subsection*{\textbf{1.5 Constants}}
 
-\subsubsection*{\textbf{Rule 1.5.1 Constant names should be in UPPER case}}
+This section describes the general rules for naming constraints.
+
+\subsubsection*{\textbf{1.5.1 Using UPPER case and underscore characters in a constraint name}}
 \leavevmode\newline
 
-Constant names should be in UPPER case, words separated by underscore. The jeneral constant naming conventions are listed below:
+Constant names should be in UPPER case, words separated by underscore. The general constant naming conventions are listed below:
 
-1. Constants are attributes created with the `const` keyword, or top-level/`val` local variables of an object that holds immutable data. In most cases, constants can be identified as a `const val` property from the `object`/`companion object`/file top level. These variables contain a fixed constant values that typically should never be changed by programmers. This includes basic types, strings, immutable types, and immutable collections of immutable types. The value is not constant for the object, which state can be changed.
+1. Constants are attributes created with the `const` keyword or top-level/`val` local variables of an object that holds immutable data. In most cases, constants can be identified as a `const val` property from the `object`/`companion object`/file top level. These variables contain fixed constant values that typically should never be changed by programmers. This includes basic types, strings, immutable types, and immutable collections of immutable types. The value is not constant for the object, which state can be changed.
 
+2. Constant names should contain only uppercase letters separated by an underscores. They should have a val or const val modifier to make them final explicitly. In most cases, if you need to specify a constant value, then you need to create it with the "const val" modifier. Note that not all `val` variables are constants.
 
-
-1. Constants are attributes created with the const keyword, or top-level/`val` local variables of an object that holds immutable data. In most cases, constants can be identified as a `const val` property from the `object`/`companion object`/file top level. These variables contain a fixed constant value that typically should never be changed by programmers. This includes basic types, strings, immutable types, and immutable collections of immutable types. If an object state can be changed, the value is not a constant.
-
-
-
-2. Constant names should contain only uppercase letters separated by underscores. They should have a val or const val modifier to explicitly make them final. In most cases, if you need to specify a constant value, then you need to create it with the "const val" modifier. Note that not all `val` variables are constants.
-
-3. Objects that have immutable content, such as `Logger` and `Lock`, can be in uppercase as constants or have camel case as regular variables.
-
-
+3. Objects with immutable content, such as `Logger` and `Lock`, can be in uppercase as constants or have camel case as regular variables.
 
 4. Use meaningful constants instead of `magic numbers`. SQL or logging strings should not be treated as magic numbers, nor should they be defined as string constants.
 
-Magic constants like `NUM_FIVE = 5` or `NUM_5 = 5` should not be treated as constants. This is because mistakes will easily be made if they are changed to `NUM_5 = 50` or 55.
+Magic constants, such as `NUM_FIVE = 5` or `NUM_5 = 5` should not be treated as constants. This is because mistakes will easily be made if they are changed to `NUM_5 = 50` or 55.
 
 These constants typically represent business logic values, such as measures, capacity, scope, location, tax rate, promotional discounts, and power base multiples in algorithms.
 
@@ -469,7 +469,7 @@ You can avoid using magic numbers with the following method:
 
 - Using library functions and APIs. For example, instead of checking that `size == 0`, use `isEmpty()` function. To work with `time`, use built-ins from `java.time API`.
 
-- Enumerations can be used to name patterns. Refer to [Recommended usage scenario for enumeration in 3.9]
+- Enumerations can be used to name patterns. Refer to [Recommended usage scenario for enumeration in 3.9].
 
 
 
@@ -495,12 +495,14 @@ const val String APPLICATION_NAME = "Launcher";
 
 \subsection*{\textbf{1.6 Non-constant fields}}
 
-\subsubsection*{\textbf{Rule 1.6.1}}
+This section describes the general rules for naming variables.
+
+\subsubsection*{\textbf{1.6.1 Non-constant field name}}
 \leavevmode\newline
 
 Non-constant field names should use camel case and start with a lowercase letter.
 
-A local variable cannot be treated as a constant even if it is final and immutable. Therefore, it should not use the preceding rules. Names of collection type variables (sets, lists, etc.) should contain plural nouns.
+A local variable cannot be treated as constant even if it is final and immutable. Therefore, it should not use the preceding rules. Names of collection type variables (sets, lists, etc.) should contain plural nouns.
 
 For example: `var namesList: List<String>`
 
@@ -527,12 +529,12 @@ val mutableCollection: MutableSet<String> = HashSet()
 \end{lstlisting}
 
 
-\subsubsection*{\textbf{Rule 1.6.2}}
+\subsubsection*{\textbf{1.6.2 Boolean variable names with negative meaning}}
 \leavevmode\newline
 
 
 
-Avoid using Boolean variable names with negative meaning. When using a logical operator and name with negative meaning, the code may be difficult to understand, which is referred to as the "double negative".
+Avoid using Boolean variable names with a negative meaning. When using a logical operator and name with a negative meaning, the code may be difficult to understand, which is referred to as the "double negative".
 
 For instance, it is not easy to understand the meaning of !isNotError.
 
@@ -587,7 +589,7 @@ Imagine that you are writing the comments to help yourself to understand the ori
 
 \subsection*{\textbf{2.1 General form of Kdoc}}
 
- 
+
 
 KDoc is a combination of JavaDoc's block tags syntax (extended to support specific constructions of Kotlin) and Markdown's inline markup.
 
@@ -617,28 +619,64 @@ Use a single-line form when you store the entire KDoc block in one line (and the
 
 
 
-\subsubsection*{\textbf{Rule 2.1.1}}
+\subsubsection*{\textbf{2.1.1 Using KDoc for the public}}
 \leavevmode\newline
 
 
 
-At a minimum, KDoc should be used for every public, protected, or internal decorated class, interface, enumeration, method, and member field (property). Other code blocks can also have KDocs if needed.
+At a minimum, KDoc should be used for every public, protected, or internal decorated class, interface, enumeration, method, and member field (property).
 
-Instead of using comments before properties in class - use `@property` tag in a KDoc of a class.
+Other code blocks can also have KDocs if needed.
 
-All properties of the primary constructor should be also documented in a KDoc with a `@property` tag.
+Instead of using comments or KDocs before properties in the primary constructor of a class - use `@property` tag in a KDoc of a class.
 
+All properties of the primary constructor should also be documented in a KDoc with a `@property` tag.
+
+
+
+
+
+\textbf{Incorrect example:}
+
+\begin{lstlisting}[language=Kotlin]
+/**
+ * Class description
+ */
+class Example(
+ /**
+  * property description
+  */
+  val foo: Foo,
+  // another property description
+  val bar: Bar
+)
+\end{lstlisting}
+
+
+\textbf{Correct example:}
+
+\begin{lstlisting}[language=Kotlin]
+/**
+ * Class description
+ * @property foo property description
+ * @property bar another property description
+ */
+class Example(
+  val foo: Foo,
+  val bar: Bar
+)
+\end{lstlisting}
 
 
 \textbf{Exceptions:}
 
 
 
-1. For setters/getters of properties, obvious comments (like `this getter returns field`) are optional. Note, that Kotlin generates simple `get/set` methods under the hood.
+* For setters/getters of properties, obvious comments (like `this getter returns field`) are optional. Note that Kotlin generates simple `get/set` methods under the hood.
 
    
 
-2. It is optional to add comments for simple one-line methods, such as shown in the example below:
+* It is optional to add comments for simple one-line methods, such as shown in the example below:
 
 \begin{lstlisting}[language=Kotlin]
 val isEmpty: Boolean
@@ -655,21 +693,20 @@ fun isEmptyList(list: List<String>) = list.size == 0
 \end{lstlisting}
 
 
-Note: You can skip KDocs for a method's override if it is almost the same as the superclass method.
-
-\subsubsection*{\textbf{Rule 2.1.2}}
-\leavevmode\newline
-
-When the method has arguments, return value, or can throw exceptions, it must be described in the KDoc block: with @param, @return, @throws
+\textbf{Note:} You can skip KDocs for a method's override if it is almost the same as the superclass method.
 
 
 
-\subsubsection*{\textbf{Rule 2.1.2}}
+\subsubsection*{\textbf{2.1.2 Describing methods that have arguments}}
 \leavevmode\newline
 
 
 
-\textbf{Valid examples}:
+When the method has such details as arguments, return value, or can throw exceptions, it must be described in the KDoc block (with @param, @return, @throws, etc.).
+
+
+
+\textbf{Valid examples:}
 
 
 
@@ -682,7 +719,7 @@ When the method has arguments, return value, or can throw exceptions, it must be
  protected abstract class Sample {
     /**
      * This is a long comment with whitespace that should be split in 
-     * comments on multiple lines in case the line comment formatting is enabled.
+     * comments on multiple lines if the line comment formatting is enabled.
      *     / * Add a blank line between the comment text and each KDoc tag underneath * /
      * @param fox A quick brown fox jumps over the lazy dog
      * @return battle between fox and dog 
@@ -705,8 +742,10 @@ When the method has arguments, return value, or can throw exceptions, it must be
 \end{lstlisting}
 
 
-\subsubsection*{\textbf{Rule 2.1.3}}
+\subsubsection*{\textbf{2.1.3 Only one space between the Kdoc tag and content. Tags are arranged in the order.}}
 \leavevmode\newline
+
+
 
 There should be only one space between the Kdoc tag and content. Tags are arranged in the following order: @param, @return, and @throws.
 
@@ -726,7 +765,7 @@ Therefore, Kdoc should contain the following:
 
 - One empty line, followed by regular `@param`, `@return`, `@throws`, and other comments.
 
-- The conventional standard "block labels" arranged in the following order: `@param`, `@return`, `@throws`.
+- The conventional standard "block labels" are arranged in the following order: `@param`, `@return`, `@throws`.
 
 Kdoc should not contain:
 
@@ -738,17 +777,21 @@ Important note: KDoc does not support the `@deprecated` tag. Instead, use the `@
 
  
 
-If a tag block cannot be described in one line, you should indent the content of the new line by `four spaces` from the `@` position to achieve alignment (`@` counts as one + three spaces).
+If a tag block cannot be described in one line, indent the content of the new line by \textit{four spaces} from the `@` position to achieve alignment (`@` counts as one + three spaces).
 
  
 
-\textbf{Exception:} When the descriptive text in a tag block is too long to wrap, you can indent the alignment with the descriptive text in the last line. The descriptive text of multiple tags does not need to be aligned.
+\textbf{Exception:}
+
+ 
+
+When the descriptive text in a tag block is too long to wrap, you can indent the alignment with the descriptive text in the last line. The descriptive text of multiple tags does not need to be aligned.
 
 See [3.8 Horizontal space].
 
 
 
-In Kotlin, compared to Java, you are able to put several classes inside one file, so each class should have a Kdoc formatted comment (as stated in rule 2.1).
+In Kotlin, compared to Java, you can put several classes inside one file, so each class should have a Kdoc formatted comment (as stated in rule 2.1).
 
 This comment should contain @since tag. The right style is to write the application version when its functionality is released. It should be entered after the `@since` tag.
 
@@ -767,7 +810,7 @@ This comment should contain @since tag. The right style is to write the applicat
 \end{lstlisting}
 
 
-Other KDoc tags (such as @param type parameters and @see.) can be added as follow:
+Other KDoc tags (such as @param type parameters and @see.) can be added as follows:
 
 \begin{lstlisting}[language=Kotlin]
 /**
@@ -778,18 +821,27 @@ Other KDoc tags (such as @param type parameters and @see.) can be added as follo
  * @since 1.6
  */
 \end{lstlisting}
-\subsection*{\textbf{2.2 Comments to the file header}}
-
-\subsubsection*{\textbf{Rule 2.2.1}}
-\leavevmode\newline
 
 
-
-Comments on the file header should be placed before the package name and imports. If you need to add more content to the comment, you can subsequently add it in the same format.
+\subsection*{\textbf{2.2 Adding comments on the file header}}
 
 
 
-The following examples for Huawei describe the format of the \textbf{copyright license}: \
+This section describes the general rules of adding comments on the file header.
+
+Comments on the file header should be placed before the package name and imports. If you need to add more content to the comment, subsequently add it in the same format.
+
+
+
+Comments on the file header must include copyright information, without the creation date and author's name (use VCS for history management). Also, describe the content inside files that contain multiple or no classes.
+
+
+
+Place comments on the file header before the package name and imports. If you need to add more content to the comment, subsequently add it in the same format.
+
+
+
+The following examples for Huawei describe the format of the \textit{copyright license}: \
 
 Chinese version: `版权所有 (c) 华为技术有限公司 2012-2020` \
 
@@ -807,7 +859,7 @@ These two years can be the same (for example, `2020–2020`). When the file is s
 
 
 
-- The \textbf{copyright statement} can use your company's subsidiaries. For example: \
+- The \textbf{copyright statement} can use your company's subsidiaries, as shown in the below examples: \
 
 Chinese version: `版权所有 (c) 海思半导体 2012-2020` \
 
@@ -832,24 +884,21 @@ The following factors should be considered when writing the file header or comme
 
 - File header comments must start from the top of the file. If it is a top-level file comment, there should be a blank line after the last Kdoc `*/` symbol. If it is a comment for a top-level class, the class declaration should start immediately without using a newline.
 
-- Maintain a unified format. The specific format can be formulated by the project (for example, if you use existing opensource project), and you need to follow it.
+- Maintain a unified format. The specific format can be formulated by the project (for example, if you use an existing opensource project), and you need to follow it.
 
 - A top-level file-Kdoc must include a copyright and functional description, especially if there is more than one top-level class.
 
-- Do not include empty comment blocks.If there is no content after the option `@apiNote`, the entire tag block should be deleted.
+- Do not include empty comment blocks. If there is no content after the option `@apiNote`, the entire tag block should be deleted.
 
-- The industry practice is not to include historical information in comments. The corresponding history can be found in VCS (git, svn, etc.). Therefore, it is not recommended to include historical data in the comments of the Kotlin source code.
-
-
+- The industry practice is not to include historical information in the comments. The corresponding history can be found in VCS (git, svn, etc.). Therefore, it is not recommended to include historical data in the comments of the Kotlin source code.
 
 
 
 \subsection*{\textbf{2.3 Comments on the function header}}
 
-\subsubsection*{\textbf{Rule 2.3.1}}
-\leavevmode\newline
 
-Comments on the function header are placed above function declarations or definitions. A newline should not exist between a function declaration and its Kdoc. Use the preceding [KDoc] style rules.
+
+Comments on the function header are placed above function declarations or definitions. A newline should not exist between a function declaration and its Kdoc. Use the preceding <<c2.1,KDoc>> style rules.
 
 
 
@@ -865,20 +914,30 @@ The function header comment's content is optional, but not limited to function d
 
 \subsection*{\textbf{2.4 Code comments}}
 
-\subsubsection*{\textbf{Rule 2.4.1}}
+
+
+This section describes the general rules of adding code comments.
+
+
+
+\subsubsection*{\textbf{2.4.1 Add a blank line between the body of the comment and Kdoc tag-blocks.}}
 \leavevmode\newline
+
+
 
 It is a good practice to add a blank line between the body of the comment and Kdoc tag-blocks. Also, consider the following rules:
 
-- There must be one space between the comment character and the content of the comment
+- There must be one space between the comment character and the content of the comment.
 
-- There must be a newline between a Kdoc and the pressiding code
+- There must be a newline between a Kdoc and the presiding code.
 
-- An empty line should not exist between a Kdoc and the code it is describing. You do not need to add a blank line before the first comment in a particular name space (code block) (for example, between the function declaration and first comment in a function body).
+- An empty line should not exist between a Kdoc and the code it is describing. You do not need to add a blank line before the first comment in a particular namespace (code block) (for example, between the function declaration and first comment in a function body).
 
 
 
 \textbf{Valid Examples:}
+
+
 
 \begin{lstlisting}[language=Kotlin]
 /** 
@@ -921,7 +980,7 @@ It is a good practice to add a blank line between the body of the comment and Kd
 
 - Leave one single space between the comment on the right side of the code and the code. 
 
-If you use conditional comments in the `if-else-if` scenario, put the comments inside the `else-if` branch or in the conditional block, but not before the `else-if`. This makes your code more understandable.
+If you use conditional comments in the `if-else-if` scenario, put the comments inside the `else-if` branch or in the conditional block, but not before the `else-if`. This makes the code more understandable.
 
 When the if-block is used with curly braces, the comment should be placed on the next line after opening the curly braces.
 
@@ -934,6 +993,7 @@ Compared to Java, the `if` statement in Kotlin statements returns a value. For t
 
 
 \begin{lstlisting}[language=Kotlin]
+
 val foo = 100  // right-side comment
 val bar = 200  /* right-side comment */
 
@@ -962,40 +1022,48 @@ val someVal = if (nr % 15 == 0) {
 
 \textbf{Valid example:}
 
+
+
 \begin{lstlisting}[language=Kotlin]
 val x = 0  // this is a comment
 \end{lstlisting}
 
 
-\subsubsection*{\textbf{Rule 2.4.2}}
+\subsubsection*{\textbf{2.4.2 Do not comment on unused code blocks}}
 \leavevmode\newline
+
+
 
 Do not comment on unused code blocks, including imports. Delete these code blocks immediately.
 
 A code is not used to store history. Git, svn, or other VCS tools should be used for this purpose.
 
-Unused imports increase the coupling of the code and are not conducive to maintenance. The commented out code cannot be properly maintained.
+Unused imports increase the coupling of the code and are not conducive to maintenance. The commented out code cannot be appropriately maintained.
 
-When you attempt to reuse the code, there is a high probability that you will introduce defects that are easily missed.
+In an attempt to reuse the code, there is a high probability that you will introduce defects that are easily missed.
 
-The correct approach is to delete the unnecessary code directly and immediately when it is not used.
+The correct approach is to delete the unnecessary code directly and immediately when it is not used anymore.
 
 If you need the code again, consider porting or rewriting it as changes could have occurred since you first commented on the code. 
 
 
 
-\subsubsection*{\textbf{Recommendation 2.4.3}}
+\subsubsection*{\textbf{2.4.3 Code delivered to the client should not contain TODO}}
 \leavevmode\newline
+
+
 
 The code officially delivered to the client typically should not contain TODO/FIXME comments.
 
 `TODO` comments are typically used to describe modification points that need to be improved and added. For example, refactoring FIXME comments are typically used to describe known defects and bugs that will be subsequently fixed and are not critical for an application.
 
-They should all have a unified style to facilitate the unified text search processing.
+They should all have a unified style to facilitate unified text search processing.
 
 
 
-\textbf{For example}:
+\textbf{Example:}
+
+
 
 \begin{lstlisting}[language=Kotlin]
 // TODO(<author-name>): Jira-XXX - support new json format
@@ -1009,12 +1077,14 @@ At a version development stage, these annotations can be used to highlight the i
 
 \subsection*{\textbf{3.1 File-related rules}}
 
-\subsubsection*{\textbf{Rule 3.1.1}}
+This section describes the rules related to using files in your code.
+
+\subsubsection*{\textbf{3.1.1 Avoid files that are too long}}
 \leavevmode\newline
 
 
 
-If the file is too long and complex, it should be split into smaller files, functions, or modules.
+If the file is too long and complicated, it should be split into smaller files, functions, or modules. Files should not exceed 2000 lines (non-empty and non-commented lines).
 
 It is recommended to horizontally or vertically split the file according to responsibilities or hierarchy of its parts.
 
@@ -1022,10 +1092,12 @@ The only exception to this rule is code generation - the auto-generated files th
 
 
 
-\subsubsection*{\textbf{Rule 3.1.2}}
+\subsubsection*{\textbf{3.1.2 Code blocks in the source file should be separated by one blank line}}
 \leavevmode\newline
 
 A source file contains code blocks in the following order: copyright, package name, imports, and top-level classes. They should be separated by one blank line.
+
+
 
 a) Code blocks should be in the following order:
 
@@ -1059,7 +1131,7 @@ e) Avoid empty files that do not contain the code or contain only imports/commen
 
 
 
-\subsubsection*{\textbf{Recommendation 3.1.3}}
+\subsubsection*{\textbf{3.1.3 Import statements order}}
 \leavevmode\newline
 
 
@@ -1103,16 +1175,14 @@ import kotlinx.coroutines.*  // official kotlin extension library
 \end{lstlisting}
 
 
-\subsubsection*{\textbf{Recommendation 3.1.4}}
+\subsubsection*{\textbf{3.1.4 Order of declaration parts of class-like code structures}}
 \leavevmode\newline
 
 The declaration parts of class-like code structures (class, interface, etc.) should be in the following order: compile-time constants (for objects), class properties, late-init class properties, init-blocks, constructors, public methods, internal methods, protected methods, private methods, and companion object. Blank lines should separate their declaration.
 
 Notes:
 
-1.	There should be no blank lines between properties. 
-
-\textbf{Exceptions}: When there is a comment before a property on a separate line or annotations on a separate line.
+1.	There should be no blank lines between properties with the following \textbf{exceptions}: when there is a comment before a property on a separate line or annotations on a separate line.
 
 2.	Properties with comments/Kdoc should be separated by a newline before the comment/Kdoc.
 
@@ -1134,7 +1204,7 @@ The declaration part of a class or interface should be in the following order:
 
 - Methods or nested classes. Put nested classes next to the code they are used by.
 
-If the classes are meant to be used externally and are not referenced inside the class, put them after the companion object.
+If the classes are meant to be used externally, and are not referenced inside the class, put them after the companion object.
 
 - Companion object
 
@@ -1142,13 +1212,15 @@ If the classes are meant to be used externally and are not referenced inside the
 
 \textbf{Exception:}
 
-All variants of a `(private) val` logger should be placed in the beginning of the class (`(private) val log`, `LOG`, `logger`, etc.).
+All variants of a `(private) val` logger should be placed at the beginning of the class (`(private) val log`, `LOG`, `logger`, etc.).
 
 
 
 \subsection*{\textbf{3.2 Braces}}
 
-\subsubsection*{\textbf{Rule 3.2.1}}
+This section describes the general rules of using braces in your code.
+
+\subsubsection*{\textbf{3.2.1 Using braces in conditional statements and loop blocks}}
 \leavevmode\newline
 
 
@@ -1204,10 +1276,10 @@ if (condition) {
 \end{lstlisting}
 
 
-\subsubsection*{\textbf{Rule 3.2.2 For}}
+\subsubsection*{\textbf{3.2.2  Opening braces are placed at the end of the line in}}
 \leavevmode\newline
 
-
+For *non-empty* blocks and block structures, the opening brace is placed at the end of the line.
 
 Follow the K\&R style (1TBS or OTBS) for *non-empty* code blocks with braces:
 
@@ -1215,9 +1287,9 @@ Follow the K\&R style (1TBS or OTBS) for *non-empty* code blocks with braces:
 
 - The closing brace is on its own new line.
 
-- The closing brace can be followed by a newline. The only exceptions are `else`, `finally`, and `while` (from `do-while` statement), or `catch` keywords.
+- The closing brace can be followed by a newline character. The only exceptions are `else`, `finally`, and `while` (from `do-while` statement), or `catch` keywords.
 
-These keywords should not be split from the closing brace by a newline.
+These keywords should not be split from the closing brace by a newline character.
 
 
 
@@ -1225,7 +1297,7 @@ These keywords should not be split from the closing brace by a newline.
 
 
 
-1) For lambdas, there is no need to put a newline after the first (function-related) opening brace. A newline should appear only after an arrow (`->`) (see [point 5 of Rule 3.6.2].
+1) For lambdas, there is no need to put a newline character after the first (function-related) opening brace. A newline character should appear only after an arrow (`->`) (see [point 5 of Rule 3.6.2]).
 
 
 
@@ -1282,18 +1354,15 @@ do {
 
 \subsection*{\textbf{3.3 Indentation}}
 
-\subsubsection*{\textbf{Rule 3.3.1}}
-\leavevmode\newline
-
 
 
 Only spaces are permitted for indentation, and each indentation should equal `four spaces` (tabs are not permitted).
 
-If you prefer using tabs, simply configure them to automatically change to spaces in your IDE.
+If you prefer using tabs, simply configure them to change to spaces in your IDE automatically.
 
 These code blocks should be indented if they are placed on the new line, and the following conditions are met:
 
--	The code block is placed immediately after an opening brace
+-	The code block is placed immediately after an opening brace.
 
 -	The code block is placed after each operator, including the assignment operator (`+`/`-`/`\&\&`/`=`/etc.)
 
@@ -1335,7 +1404,7 @@ b) Arguments in argument lists can be aligned if they are on different lines.
 
 
 
-4.	Super type lists: \
+4.	Supertype lists: \
 
 a) Four spaces are used if the colon before the supertype list is on a new line. \
 
@@ -1355,7 +1424,7 @@ if (condition)
 
 \textbf{Exceptions}: 
 
-- When breaking parameter list of a method/class constructor it can be aligned with `8 spaces`. A parameter that was moved to a new line can be on the same level as the previous argument:
+- When breaking the parameter list of a method/class constructor, it can be aligned with `8 spaces`. A parameter that was moved to a new line can be on the same level as the previous argument:
 
     
 
@@ -1380,7 +1449,7 @@ val abcdef = "my splitted" +
 \end{lstlisting}
     
 
-- A list of supertypes should be indented with `4 spaces` if they are on different lines, or with `8 spaces` if the leading colon is also on a separate line
+- A list of supertypes should be indented with `4 spaces` if they are on different lines or with `8 spaces` if the leading colon is also on a separate line
 
 
 
@@ -1396,12 +1465,9 @@ class A
 
 \subsection*{\textbf{3.4 Empty blocks}}
 
-\subsubsection*{\textbf{Recommendation 3.4.1}}
-\leavevmode\newline
 
 
-
-An empty code block can be closed immediately on the same line and the next line. However, a newline is recommended between opening and closing braces `{}` (see the examples below.)
+Avoid empty blocks, and ensure braces start on a new line. An empty code block can be closed immediately on the same line and the next line. However, a newline is recommended between opening and closing braces `{}` (see the examples below.)
 
 
 
@@ -1415,7 +1481,7 @@ override fun foo() {
 \end{lstlisting}
 
 
-\textbf{Valid examples} (but note once again, that generally empty blocks are prohibited):
+\textbf{Valid examples} (note once again that generally empty blocks are prohibited):
 
 
 
@@ -1448,14 +1514,11 @@ try {
 
 \subsection*{\textbf{3.5 Line length}}
 
-\subsubsection*{\textbf{Recommendation 3.5.1}}
-\leavevmode\newline
 
 
+Line length should be less than 120 symbols. The international code style prohibits `non-Latin` (`non-ASCII`) symbols.
 
-The international code style prohibits `non-Latin` (`non-ASCII`) symbols.
-
-(See [Rule 1.1.1: Identifiers] However, if you still intend on using them, follow the following convention:
+(See [Identifiers]) However, if you still intend on using them, follow the following convention:
 
 
 
@@ -1491,7 +1554,9 @@ Each one of these characters represents two narrow characters.
 
 \subsection*{\textbf{3.6 Line breaks}}
 
-\subsubsection*{\textbf{Recommendation 3.6.1}}
+This section contains the rules and recommendations on using line breaks.
+
+\subsubsection*{\textbf{3.6.1 Each line can have a maximum of one statement.}}
 \leavevmode\newline
 
 Each line can have a maximum of one code statement. This recommendation prohibits the use of code with `;` because it decreases code visibility.
@@ -1513,20 +1578,20 @@ val b = ""
 \end{lstlisting}
 
 
-\subsubsection*{\textbf{Rule 3.6.2}}
+\subsubsection*{\textbf{3.6.2 Rules for line-breaking}}
 \leavevmode\newline
 
 
 
-1) Unlike Java, Kotlin allows you not to put a semicolon (`;`) after each statement separated by a newline.
+1) Unlike Java, Kotlin allows you not to put a semicolon (`;`) after each statement separated by a newline character.
 
     There should be no redundant semicolon at the end of the lines.
 
  
 
-When a newline is needed to split the line, it should be placed after operators like `\&\&`/`||`/`+`/etc. and all infix functions (for example, `xor`).
+When a newline character is needed to split the line, it should be placed after such operators as `\&\&`/`||`/`+`/etc. and all infix functions (for example, `xor`).
 
-However, the newline should be placed before operators such as `.`, `?.`, `?:`, and `::`.
+However, the newline character should be placed before operators such as `.`, `?.`, `?:`, and `::`.
 
 
 
@@ -1587,7 +1652,7 @@ if (condition) list.map { foo(it) }.filter { bar(it) } else list.drop(1)
 
 5)	If a lambda statement contains more than one line in its body, a newline should be placed after an arrow if the lambda statement has explicit parameters.
 
-    If it uses an implicit parameter (`it`), the newline should be placed after the opening brace (`{`). 
+    If it uses an implicit parameter (`it`), the newline character should be placed after the opening brace (`{`). 
 
     The following examples illustrate this rule:
 
@@ -1682,7 +1747,7 @@ fun foo(
 \end{lstlisting}
 
 
-8) If the supertype list has more than two elements, they should be separated by newlines
+8) If the supertype list has more than two elements, they should be separated by newlines.
 
 
 
@@ -1696,16 +1761,13 @@ class MyFavouriteVeryLongClassHolder :
 \end{lstlisting}
 
 
-\subsection*{\textbf{3.7 Blank lines}}
-
-\subsubsection*{\textbf{Recommendation 3.7.1}}
-\leavevmode\newline
+\subsection*{\textbf{3.7 Using blank lines}}
 
 
 
-By reducing unnecessary blank lines, you can display more code on one screen, which improves code readability.
+Reduce unnecessary blank lines and maintain a compact code size. By reducing unnecessary blank lines, you can display more code on one screen, which improves code readability.
 
-- Blank lines should separate content based on relevance and should be placed between groups of fields, constructors, methods, nested classes, `init` blocks, and objects (see [Rule 3.1.2].
+- Blank lines should separate content based on relevance and should be placed between groups of fields, constructors, methods, nested classes, `init` blocks, and objects (see [3.1.2]).
 
 - Do not use more than one line inside methods, type definitions, and initialization expressions.
 
@@ -1729,22 +1791,28 @@ fun baz() {
 
 \subsection*{\textbf{3.8 Horizontal space}}
 
-\subsubsection*{\textbf{Rule 3.8.1}}
+This section describes general rules and recommendations for using spaces in the code.
+
+\subsubsection*{\textbf{3.8.1}}
 \leavevmode\newline
 
 
 
-\textbf{Note:} This recommendation is for the cases where symbols are located on the same line. However, in some cases, a line break could be used instead of a space (described in another rule.)
+Follow the recommendations below for using space to separate keywords:
 
 
 
-1.  Separate keywords like `if`, `when`, `for`, e.t.c. from the opening parenthesis with single whitespace.
+\textbf{Note:} These recommendations are for cases where symbols are located on the same line. However, in some cases, a line break could be used instead of a space.
+
+
+
+1.  Separate keywords (such as `if`, `when`, `for`) from the opening parenthesis with single whitespace.
 
     The only exception is the `constructor` keyword, which should not be separated from the opening parenthesis.
 
 
 
-2.  Separate keywords like `else` or `try` from the opening brace (`{`) with a single whitespace.
+2.  Separate keywords like `else` or `try` from the opening brace (`{`) with single whitespace.
 
     If `else` is used in a ternary-style statement without braces, there should be a single space between `else` and the statement after: `if (condition) foo() else bar()`
 
@@ -1758,7 +1826,7 @@ fun baz() {
 \end{lstlisting}
 
 
-4.  A single whitespace should be placed on both sides of binary operators. This also applies to operator-like symbols.
+4.  Single whitespace should be placed on both sides of binary operators. This also applies to operator-like symbols.
 
     For example: 
 
@@ -1794,7 +1862,7 @@ fun baz() {
 
 5.  Use spaces after (`,`), (`:`), and (`;`), except when the symbol is at the end of the line.
 
-    However, note that this code style prohibits the use of (`;`) in the middle of a line ([Rule 3.2.2].
+    However, note that this code style prohibits the use of (`;`) in the middle of a line ([see 3.3.2]).
 
     There should be no whitespaces at the end of a line.
 
@@ -1802,13 +1870,15 @@ fun baz() {
 
     There should be no spaces before `,` , `:` and `;`. 
 
-    \textbf{Exceptions} for spaces and colons are the following:
+    
+
+    \textbf{Exceptions} for spaces and colons:
 
     
 
-    - when `:` is used to separate a type and a super type, including an anonymous object (after object keyword)
+    - When `:` is used to separate a type and a supertype, including an anonymous object (after object keyword)
 
-    - when delegating to a superclass constructor or different constructor of the same class
+    - When delegating to a superclass constructor or different constructor of the same class
 
 
 
@@ -1825,7 +1895,7 @@ fun baz() {
 \end{lstlisting}
 
 
-6. There should be \textit{only one space} between the identifier and it's type: `list: List<String>`
+6. There should be \textit{only one space} between the identifier and its type: `list: List<String>`
 
 If the type is nullable, there should be no space before `?`.
 
@@ -1837,7 +1907,7 @@ If the type is nullable, there should be no space before `?`.
 
 8. There should be no space between a method or constructor name (both at declaration and at call site) and a parenthesis:
 
-   `foo() {}`. Note that this sub-rule is related only to spaces; the rules for whitespaces are described in [Rule 3.6.2].
+   `foo() {}`. Note that this sub-rule is related only to spaces; the rules for whitespaces are described in [see 3.6.2].
 
     This rule does not prohibit, for example, the following code:
 
@@ -1853,11 +1923,11 @@ fun foo
 
 
 
-10. There should be no spaces between prefix/postfix operator (like `!!` or `++`), and it's an operand.
+10. There should be no spaces between a prefix/postfix operator (like `!!` or `++`) and its operand.
 
 
 
-\subsubsection*{\textbf{Recommendation 3.8.2}}
+\subsubsection*{\textbf{3.8.2}}
 \leavevmode\newline
 
 
@@ -1870,7 +1940,7 @@ fun foo
 
 - Long identifier names will break the alignment and lead to less presentable code.
 
-- Alignment possesses more disadvantages than advantages. To reduce maintenance costs, misalignment is the best choice.
+- There are more disadvantages than advantages in alignment. To reduce maintenance costs, misalignment (???) is the best choice.
 
 
 
@@ -1880,7 +1950,7 @@ Recommendation: Alignment only looks suitable for `enum class`, where it can be 
 enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean, private val warn: String) : Rule {
     PACKAGE_NAME_MISSING         (1, true,  "no package name declared in a file"),
     PACKAGE_NAME_INCORRECT_CASE  (2, true,  "package name should be completely in a lower case"),
-    PACKAGE_NAME_INCORRECT_PREFIX(3, false, "package name should start from company's domain")
+    PACKAGE_NAME_INCORRECT_PREFIX(3, false, "package name should start from the company's domain")
     ;
 }
 \end{lstlisting}
@@ -1904,10 +1974,11 @@ enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean
 
 \subsection*{\textbf{3.9 Enumerations}}
 
-\subsubsection*{\textbf{Recommendation 3.9.1}}
-\leavevmode\newline
+Enum values are separated by a comma and line break, with ';' placed on the new line.
 
-1) Enum values are separated by a comma and a line break. `;` is put on the new line:
+
+
+1) The comma and line break characters separate enum values. Put `;` on the new line:
 
 \begin{lstlisting}[language=Kotlin]
 enum class Warnings {
@@ -1921,7 +1992,7 @@ enum class Warnings {
 
 This will help to resolve conflicts and reduce the number of conflicts during merging pull requests.
 
-Also use [trailing comma](https://kotlinlang.org/docs/reference/whatsnew14.html\#trailing-comma).
+Also, use [trailing comma](https://kotlinlang.org/docs/reference/whatsnew14.html\#trailing-comma).
 
 
 
@@ -1969,7 +2040,9 @@ enum class ComparisonResult {
 
 \subsection*{\textbf{3.10 Variable declaration}}
 
-\subsubsection*{\textbf{Rule 3.10.1}}
+This section describes rules for the declaration of variables.
+
+\subsubsection*{\textbf{3.10.1 Declare one variable per line.}}
 \leavevmode\newline
 
 
@@ -1985,21 +2058,22 @@ val n1: Int; val n2: Int
 \end{lstlisting}
 
 
-\subsubsection*{\textbf{Recommendation 3.10.2}}
+\subsubsection*{\textbf{3.10.2 Variables should be declared near the line where they are first used.}}
 \leavevmode\newline
 
 Declare local variables close to the point where they are first used to minimize their scope. This will also increase the readability of the code.
 
 Local variables are usually initialized during their declaration or immediately after.
 
-The member fields of the class should be declared collectively (see [Rule 3.1.2].
+The member fields of the class should be declared collectively (see [Rule 3.1.2] for details on the class structure).
 
 
 
-\subsection*{\textbf{3.11 When expression}}
+\subsection*{\textbf{3.11}}
 
-\subsubsection*{\textbf{Rule 3.11.1}}
-\leavevmode\newline
+
+
+The `when` statement must have an 'else' branch unless the condition variable is enumerated or a sealed type.
 
 Each `when` statement should contain an `else` statement group, even if it does not contain any code.
 
@@ -2013,10 +2087,9 @@ The compiler can issue a warning when it is missing.
 
 \subsection*{\textbf{3.12 Annotations}}
 
-\subsubsection*{\textbf{Recommendation 3.12.1}}
-\leavevmode\newline
 
 
+Each annotation applied to a class, method or constructor should be placed on its own line. Consider the following examples:
 
 1. Annotations applied to the class, method or constructor are placed on separate lines (one annotation per line). 
 
@@ -2053,10 +2126,7 @@ fun getNameIfPresent() { /* ... */ }
 \end{lstlisting}
 
 
-\subsection*{\textbf{3.13 Layout of comments}}
-
-\subsubsection*{\textbf{Recommendation 3.13.1}}
-\leavevmode\newline
+\subsection*{\textbf{3.13 Block comments}}
 
 
 
@@ -2079,14 +2149,18 @@ class SomeClass {
 \end{lstlisting}
 
 
-\textbf{Suggestion}: Use `/*...*/` block comments to enable automatic formatting by IDEs.
+\textbf{Note}: Use `/*...*/` block comments to enable automatic formatting by IDEs.
 
 
 
 \subsection*{\textbf{3.14 Modifiers and constant values}}
 
-\subsubsection*{\textbf{Recommendation 3.14.1}}
+This section contains recommendations regarding modifiers and constant values.
+
+\subsubsection*{\textbf{3.14.1 Declaration with multiple modifiers}}
 \leavevmode\newline
+
+If a declaration has multiple modifiers, always follow the proper sequence.
 
 \textbf{Valid sequence:}
 
@@ -2115,8 +2189,10 @@ data
 \end{lstlisting}
 
 
-\subsubsection*{\textbf{Recommendation 3.14.2}}
+\subsubsection*{\textbf{3.14.2}}
 \leavevmode\newline
+
+An underscore character should separate long numerical values.
 
 \textbf{Note:} Using underscores simplifies reading and helps to find errors in numeric constants.
 
@@ -2131,14 +2207,18 @@ val bytes = 0b11010010_01101001_10010100_10010010
 
 \subsection*{\textbf{3.15 Strings}}
 
-\subsubsection*{\textbf{Rule 3.15.1}}
+This section describes the general rules of using strings.
+
+
+
+\subsubsection*{\textbf{3.15.1 Concatenation of Strings}}
 \leavevmode\newline
 
 String concatenation is prohibited if the string can fit on one line. Use raw strings and string templates instead. Kotlin has significantly improved the use of Strings: 
 
-[String templates](https://kotlinlang.org/docs/reference/basic-types.html\#string-templates), [Raw strings](https://kotlinlang.org/docs/reference/basic-types.html\#string-literals)
+[String templates](https://kotlinlang.org/docs/reference/basic-types.html\#string-templates), [Raw strings](https://kotlinlang.org/docs/reference/basic-types.html\#string-literals).
 
-As such, compared to using explicit concatenation, code looks much better when proper Kotlin strings are used for short lines and you do not need to split them with newlines.
+Therefore, compared to using explicit concatenation, code looks much better when proper Kotlin strings are used for short lines, and you do not need to split them with newline characters.
 
 
 
@@ -2158,7 +2238,7 @@ val value = "$myStr concatenated"
 \end{lstlisting}
 
 
-\subsubsection*{\textbf{Rule 3.15.2}}
+\subsubsection*{\textbf{3.15.2 String template format}}
 \leavevmode\newline
 
 \textbf{Redundant curly braces in string templates}
@@ -2185,7 +2265,7 @@ val someString = "$myArgument ${myArgument.foo()}"
 
 
 
-In case string template contains only one variable - there is no need to use string template. Use this variable directly.
+In case a string template contains only one variable - there is no need to use the string template. Use this variable directly.
 
 
 
@@ -2203,9 +2283,13 @@ val someString = myArgument
 \end{lstlisting}
 \section*{\textbf{4. Variables and types}}
 
+This section is dedicated to the rules and recommendations for using variables and types in your code.
+
 \subsection*{\textbf{4.1 Variables}}
 
-\subsubsection*{\textbf{Rule 4.1.1}}
+The rules of using variables are explained in the below topics.
+
+\subsubsection*{\textbf{4.1.1 Do not use Float and Double types when accurate calculations are needed}}
 \leavevmode\newline
 
 Floating-point numbers provide a good approximation over a wide range of values, but they cannot produce accurate results in some cases.
@@ -2232,7 +2316,7 @@ The `BigDecimal` type should serve as a good choice.
 
 
 
-\textbf{Invalid example:} \
+\textbf{Invalid example}:
 
 Float values containing more than six or seven decimal numbers will be rounded.
 
@@ -2241,7 +2325,7 @@ Float values containing more than six or seven decimal numbers will be rounded.
 \end{lstlisting}
 
 
-\textbf{Valid example} (when precise calculations are needed): 
+\textbf{Valid example}: (when precise calculations are needed): 
 
 \begin{lstlisting}[language=Kotlin]
     val income = BigDecimal("2.0")
@@ -2250,10 +2334,10 @@ Float values containing more than six or seven decimal numbers will be rounded.
 \end{lstlisting}
 
 
-\subsubsection*{\textbf{Rule 4.1.2}}
+\subsubsection*{\textbf{4.1.2}}
 \leavevmode\newline
 
-Since floating-point numbers involve precision problems in computer representation, it is better to use `BigDecimal` as recommended in [Rule 4.1.1] to make accurate computations and comparisons. The following code describes these problems.
+Numeric float type values should not be directly compared with the equality operator (==) or other methods, such as `compareTo()` and `equals()`. Since floating-point numbers involve precision problems in computer representation, it is better to use `BigDecimal` as recommended in [Rule 4.1.1] to make accurate computations and comparisons. The following code describes these problems.
 
 
 
@@ -2293,14 +2377,14 @@ if (abs(foo - bar) > 1e-6f) {
 \end{lstlisting}
 
 
-\subsubsection*{\textbf{Rule 4.1.3 Try to use}}
+\subsubsection*{\textbf{4.1.3 Try to use}}
 \leavevmode\newline
 
 
 
 Variables with the `val` modifier are immutable (read-only).
 
-Code robustness and readability increase when using `val` variables instead of `var` variables.
+Using `val` variables instead of `var` variables increases code robustness and readability.
 
 This is because `var` variables can be reassigned several times in the business logic.
 
@@ -2310,7 +2394,9 @@ However, in some scenarios with loops or accumulators, only `var`s are permitted
 
 \subsection*{\textbf{4.2 Types}}
 
-\subsubsection*{\textbf{Recommendation 4.2.1}}
+This section provides recommendations for using types.
+
+\subsubsection*{\textbf{4.2.1}}
 \leavevmode\newline
 
 
@@ -2337,13 +2423,11 @@ The Kotlin compiler has introduced [Smart Casts](https://kotlinlang.org/docs/ref
 \end{lstlisting}
 
 
-Also Kotlin 1.3 introduced [Contracts](https://kotlinlang.org/docs/reference/whatsnew13.html\#contracts) that provide enhanced logic for smart-cast.
+Also, Kotlin 1.3 introduced [Contracts](https://kotlinlang.org/docs/reference/whatsnew13.html\#contracts) that provide enhanced logic for smart-cast.
 
-Contracts are used and are very stable in `stdlib`.
+Contracts are used and are very stable in `stdlib`, for example:
 
  
-
-For example:
 
 
 
@@ -2380,7 +2464,7 @@ fun foo(s: String?) {
 \end{lstlisting}
 
 
-\subsubsection*{\textbf{Recommendation 4.2.2}}
+\subsubsection*{\textbf{4.2.2}}
 \leavevmode\newline
 
 
@@ -2428,7 +2512,7 @@ Kotlin is declared as a null-safe programming language. However, to achieve comp
 \subsubsection*{\textbf{Recommendation 4.3.1}}
 \leavevmode\newline
 
-To avoid `NullPointerException` and help compiler to prevent Null Poniter Exceptions, avoid using nullable types (with `?` symbol).
+To avoid `NullPointerException` and help the compiler prevent Null Pointer Exceptions, avoid using nullable types (with `?` symbol).
 
 
 
@@ -2446,11 +2530,11 @@ val a: Int = 0
 \end{lstlisting}
 
 
-Nevertheless, if you use Java libraries extensively, you will have to use nullable types and enrich your code with `!!` and `?` symbols.
+Nevertheless, when using Java libraries extensively, you have to use nullable types and enrich the code with `!!` and `?` symbols.
 
 Avoid using nullable types for Kotlin stdlib (declared in [official documentation](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/)). 
 
-Try to use initializers for empty collections. For example, if you want to initialize a list instead of `null` use `emptyList()`.
+Try to use initializers for empty collections. For example, if you want to initialize a list instead of `null`, use `emptyList()`.
 
 
 
@@ -2468,7 +2552,7 @@ val a: List<Int> = emptyList()
 \end{lstlisting}
 
 
-\subsubsection*{\textbf{Recommendation 4.3.2}}
+\subsubsection*{\textbf{4.3.2}}
 \leavevmode\newline
 
 Like in Java, classes in Kotlin may have type parameters. To create an instance of such a class, we typically need to provide type arguments:
@@ -2498,25 +2582,139 @@ val myVariable = emptyMap<Int, String>()
 \begin{lstlisting}[language=Kotlin]
 val myVariable: Map<Int, String> = emptyMap() 
 \end{lstlisting}
+
+
+\subsubsection*{\textbf{Null-safety}}
+\leavevmode\newline
+
+
+
+Try to avoid explicit null checks (explicit comparison with `null`) 
+
+Kotlin is declared as [Null-safe](https://kotlinlang.org/docs/reference/null-safety.html) language.
+
+However, Kotlin architects wanted Kotlin to be fully compatible with Java; that's why the `null` keyword was also introduced in Kotlin. 
+
+
+
+There are several code-structures that can be used in Kotlin to avoid null-checks. For example: `?:`,  `.let {}`, `.also {}`, e.t.c
+
+
+
+\textbf{Invalid example:}
+
+\begin{lstlisting}[language=Kotlin]
+// example 1
+var myVar: Int? = null
+if (myVar == null) {
+    println("null")
+    return
+}
+
+// example 2
+if (myVar != null) {
+    println("not null")
+    return
+}
+
+// example 3
+val anotherVal = if (myVar != null) {
+                     println("not null")
+                     1
+                 } else {
+                     2
+                 }
+// example 4
+if (myVar == null) {
+    println("null")
+} else {
+    println("not null")
+}
+\end{lstlisting}
+
+
+\textbf{Valid example:}
+
+\begin{lstlisting}[language=Kotlin]
+// example 1
+var myVar: Int? = null
+myVar?: run {
+    println("null")
+    return
+}
+
+// example 2
+myVar?.let {
+    println("not null")
+    return
+}
+
+// example 3
+val anotherVal = myVar?.also {
+                     println("not null")
+                     1
+                 } ?: 2
+
+// example 4
+myVar?.let {
+    println("null")
+} ?: run { println("not null") }
+\end{lstlisting}
+
+
+\textbf{Exceptions:}
+
+
+
+In the case of complex expressions, such as multiple `else-if` structures or long conditional statements, there is common sense to use explicit comparison with `null`.
+
+
+
+\textbf{Valid examples:}
+
+
+
+\begin{lstlisting}[language=Kotlin]
+if (myVar != null) {
+    println("not null")
+} else if (anotherCondition) {
+    println("Other condition")
+}
+\end{lstlisting}
+
+
+\begin{lstlisting}[language=Kotlin]
+if (myVar == null || otherValue == 5 && isValid) {}
+\end{lstlisting}
+
+
+Please also note, that instead of using `require(a != null)` with a not null check - you should use a special Kotlin function called `requireNotNull(a)`.
+
+
+
 \section*{\textbf{5. Functions}}
+
+This section describes the rules of using functions in your code.
 
 \subsection*{\textbf{5.1 Function design}}
 
-You can write clean code by gaining knowledge of how to build design patterns and avoid code smells.
+Developers can write clean code by gaining knowledge of how to build design patterns and avoid code smells.
 
-You should utilize this approach, along with functional style, when you write Kotlin code. 
+You should utilize this approach, along with functional style, when writing Kotlin code. 
 
 The concepts behind functional style are as follows: 
 
 Functions are the smallest unit of combinable and reusable code.
 
-They should have clean logic, \textbf{high cohesion}, and \textbf{low coupling} to effectively organize the code.
+They should have clean logic, \textbf{high cohesion}, and \textbf{low coupling} to organize the code effectively.
 
 The code in functions should be simple and not conceal the author's original intentions.
 
-Additionally, it should have a clean abstraction, and control statements should be used in a straightforward manner.
 
-The side effects (code that does not affect a function's return value, but affects global/object instance variables) should not be used for state changes of an object.
+
+Additionally, it should have a clean abstraction, and control statements should be used straightforwardly.
+
+The side effects (code that does not affect a function's return value but affects global/object instance variables) should not be used for state changes of an object.
 
 The only exceptions to this are state machines.
 
@@ -2524,11 +2722,11 @@ The only exceptions to this are state machines.
 
 Kotlin is [designed](https://www.slideshare.net/abreslav/whos-more-functional-kotlin-groovy-scala-or-java) to support and encourage functional programming, featuring the corresponding built-in mechanisms.
 
-In addition, standard collections and sequences feature methods that enable functional programming (for example, `apply`, `with`, `let`, and `run`), Kotlin Higher-Order functions, function types, lambdas, and default function arguments.
+Also, it supports standard collections and sequences feature methods that enable functional programming (for example, `apply`, `with`, `let`, and `run`), Kotlin Higher-Order functions, function types, lambdas, and default function arguments.
 
 As [previously discussed], Kotlin supports and encourages the use of immutable types, which in turn motivates programmers to write pure functions that avoid side effects and have a corresponding output for specific input. 
 
-The pipeline data flow for the pure function comprises a functional paradigm. It is easy to implement concurrent programming when you have chains of function calls, and each step features the following characteristics:
+The pipeline data flow for the pure function comprises a functional paradigm. It is easy to implement concurrent programming when you have chains of function calls, where each step features the following characteristics:
 
 1.	Simplicity
 
@@ -2550,14 +2748,14 @@ There can be only one side effect in this data stream, which can be placed only 
 
 
 
-\subsubsection*{\textbf{Rule 5.1.1}}
+\subsubsection*{\textbf{5.1.1 Avoid functions that are too long}}
 \leavevmode\newline
 
 
 
 The function should be displayable on one screen and only implement one certain logic.
 
-If a function is too long, it often means that it is complex and be split or made more primitive. Functions should consist of 30 lines (non-empty and non-comment) in total.
+If a function is too long, it often means complex and could be split or simplified. Functions should consist of 30 lines (non-empty and non-comment) in total.
 
 
 
@@ -2569,11 +2767,11 @@ Linter warnings for such functions \textbf{can be suppressed}.
 
 Even if a long function works well, new problems or bugs may appear due to the function's complex logic once it is modified by someone else.
 
-Therefore, it is recommended that you split such functions into several separate and shorter functions that are easier to manage.
+Therefore, it is recommended to split such functions into several separate and shorter functions that are easier to manage.
 
 This approach will enable other programmers to read and modify the code properly.
 
-\subsubsection*{\textbf{Rule 5.1.2}}
+\subsubsection*{\textbf{5.1.2 Avoid deep nesting of function code blocks}}
 \leavevmode\newline
 
 
@@ -2582,20 +2780,20 @@ The nesting depth of a function's code block is the depth of mutual inclusion be
 
 Each nesting level will increase the amount of effort needed to read the code because you need to remember the current "stack" (for example, entering conditional statements and loops). 
 
-\textbf{Exception:} The nesting levels of the lambda expressions, local classes, and anonymous classes in functions are calculated based on the innermost function wheres the nesting levels of enclosing methods are not accumulated.
+\textbf{Exception:} The nesting levels of the lambda expressions, local classes, and anonymous classes in functions are calculated based on the innermost function. The nesting levels of enclosing methods are not accumulated.
 
 Functional decomposition should be implemented to avoid confusion for the developer who reads the code.
 
-This will help the reader switch between context.
+This will help the reader switch between contexts.
 
 
 
-\subsubsection*{\textbf{Rule 5.1.3}}
+\subsubsection*{\textbf{Rule 5.1.3 Avoid using nested functions}}
 \leavevmode\newline
 
 Nested functions create a more complex function context, thereby confusing readers.
 
-With nested functions the visibility context may not be evident to the code reader.
+With nested functions, the visibility context may not be evident to the code reader.
 
 
 
@@ -2613,12 +2811,14 @@ fun foo() {
 
 \subsection*{\textbf{5.2 Function arguments}}
 
-\subsubsection*{\textbf{Rule 5.2.1}}
+The rules for using function arguments are described in the below topics.
+
+\subsubsection*{\textbf{5.2.1 The lambda parameter of the function should be placed at the end of the argument list}}
 \leavevmode\newline
 
 
 
-With such notation, it is easier to use curly brackets, which in turn leads to better code readability.
+With such notation, it is easier to use curly brackets, leading to better code readability.
 
 
 
@@ -2637,14 +2837,14 @@ println("hey")
 \end{lstlisting}
 
 
-\subsubsection*{\textbf{Rule 5.2.2}}
+\subsubsection*{\textbf{5.2.2 Number of function parameters should be limited to five}}
 \leavevmode\newline
 
 
 
 A long argument list is a [code smell](https://en.wikipedia.org/wiki/Code\_smell) that leads to less reliable code.
 
-It is recommended that you reduce the number of parameters. Having \textbf{more than five} parameters leads to difficulties in maintenance and conflicts merging.
+It is recommended to reduce the number of parameters. Having \textbf{more than five} parameters leads to difficulties in maintenance and conflicts merging.
 
 If parameter groups appear in different functions multiple times, these parameters are closely related and can be encapsulated into a single Data Class.
 
@@ -2652,10 +2852,10 @@ It is recommended that you use Data Classes and Maps to unify these function arg
 
 
 
-\subsubsection*{\textbf{Rule 5.2.3 Use default values for function arguments instead of overloading them}}
+\subsubsection*{\textbf{5.2.3 Use default values for function arguments instead of overloading them}}
 \leavevmode\newline
 
-In Java, default values for function arguments are prohibited. That is why when you need to create a function with fewer arguments, the function should be overloaded.
+In Java, default values for function arguments are prohibited. That is why the function should be overloaded when you need to create a function with fewer arguments.
 
 In Kotlin, you can use default arguments instead.
 
@@ -2685,10 +2885,12 @@ private fun foo() {
 
 \subsection*{\textbf{6.1 Classes}}
 
-\subsubsection*{\textbf{Rule 6.1.1}}
+This section describes the rules of denoting classes in your code.
+
+\subsubsection*{\textbf{6.1.1  Denoting a class with a single constructor}}
 \leavevmode\newline
 
-In case class contains only one explicit constructor - it should be converted to a primary constructor.
+When a class has a single constructor, it should be defined as a primary constructor in the declaration of the class. If the class contains only one explicit constructor, it should be converted to a primary constructor.
 
 
 
@@ -2711,17 +2913,17 @@ class Test(var a: Int) {
     // ...
 }
 
-// in case of any annotations or modifiers used on constructor:
+// in case of any annotations or modifiers used on a constructor:
 class Test private constructor(var a: Int) { 
     // ...
 }
 \end{lstlisting}
 
 
-\subsubsection*{\textbf{Rule 6.1.2}}
+\subsubsection*{\textbf{6.1.2 Prefer data classes instead of classes without any functional logic}}
 \leavevmode\newline
 
-Some people say that the data class is a code smell. But if you need to use it, and as a result, your code is becoming more simple, you can use Kotlin `data class`. The main purpose of this class is to hold data,
+Some people say that the data class is a code smell. However, if you need to use it (which makes your code more simple), you can utilize the Kotlin `data class`. The main purpose of this class is to hold data,
 
 but also `data class` will automatically generate several useful methods:
 
@@ -2774,18 +2976,18 @@ data class Test1(var a: Int = 0, var b: Int = 0)
 \end{lstlisting}
 
 
-\textbf{Exception \#1}: Note, that data classes cannot be abstract, open, sealed or inner, that's why these types of classes cannot be changed to a data class.
+\textbf{Exception 1}: Note that data classes cannot be abstract, open, sealed, or inner; that is why these types of classes cannot be changed to a data class.
 
 
 
-\textbf{Exception \#2}: No need to convert a class to data class if this class extends some other class or implements an interface.
+\textbf{Exception 2}: No need to convert a class to a data class if this class extends some other class or implements an interface.
 
 
 
-\subsubsection*{\textbf{Rule 6.1.3}}
+\subsubsection*{\textbf{6.1.3 Do not use the primary constructor if it is empty or useless}}
 \leavevmode\newline
 
-The primary constructor is a part of the class header; it goes after the class name and (optional) type parameters but can be omitted if it is useless.
+The primary constructor is a part of the class header; it is placed after the class name and type parameters (optional) but can be omitted if it is not used.
 
 
 
@@ -2798,7 +3000,7 @@ class Test() {
     var b: Int = 0
 }
 
-// empty primary constructor is not needed here also
+// empty primary constructor is not needed here
 // it can be replaced with a primary contructor with one argument or removed
 class Test() {
     var a  = "Property"
@@ -2817,7 +3019,7 @@ class Test() {
 \textbf{Valid example}:
 
 \begin{lstlisting}[language=Kotlin]
-// the good example here is a data class, but this example shows that you should get rid of braces for primary constructor
+// the good example here is a data class; this example also shows that you should get rid of braces for the primary constructor
 class Test {
     var a: Int = 0
     var b: Int = 0
@@ -2825,20 +3027,18 @@ class Test {
 \end{lstlisting}
 
 
-\subsubsection*{\textbf{Rule 6.1.4}}
+\subsubsection*{\textbf{6.1.4 Do not use redundant init blocks in your class}}
 \leavevmode\newline
 
-The primary constructor cannot contain any code. That's why Kotlin has introduced `init` blocks.
+Several init blocks are redundant and generally should not be used in your class. The primary constructor cannot contain any code. That is why Kotlin has introduced `init` blocks.
 
-These blocks are used to store the code that should be run during the initialization of the class.
+These blocks store the code to be run during the class initialization.
 
-Kotlin allows writing multiple initialization blocks that are executed in the same order as they appear in the class body.
+Kotlin allows writing multiple initialization blocks executed in the same order as they appear in the class body.
 
 Even when you follow (rule 3.2)[\#r3.2], this makes your code less readable as the programmer needs to keep in mind all init blocks and trace the execution of the code.
 
-So in your code, you should try to use a single `init` block to reduce the complexity. In case you need to do some logging or make some calculations before the assignment
-
-of some class property, you can use powerful functional programming. This will reduce the possibility of the error if your `init` blocks' order is accidentally changed and
+Therefore, you should try to use a single `init` block to reduce the code's complexity. If you need to do some logging or make some calculations before the class property assignment, you can use powerful functional programming. This will reduce the possibility of the error if your `init` blocks' order is accidentally changed and
 
 make the code logic more coupled. It is always enough to use one `init` block to implement your idea in Kotlin.
 
@@ -2879,7 +3079,7 @@ class YourClass(var name: String) {
 
 The `init` block was not added to Kotlin to help you initialize your properties; it is needed for more complex tasks. 
 
-Therefore if the `init` block contains only assignments of variables - move it directly to properties, so that they will be correctly initialized near the declaration.
+Therefore if the `init` block contains only assignments of variables - move it directly to properties to be correctly initialized near the declaration.
 
 In some cases, this rule can be in clash with [6.1.1], but that should not stop you.
 
@@ -2906,10 +3106,10 @@ class A(baseUrl: String) {
 \end{lstlisting}
 
 
-\subsubsection*{\textbf{Rule 6.1.5}}
+\subsubsection*{\textbf{6.1.5 Explicit supertype qualification}}
 \leavevmode\newline
 
-This rule is applicable for both interfaces and classes.
+The explicit supertype qualification should not be used if there is no clash between called methods. This rule is applicable to both interfaces and classes.
 
 
 
@@ -2928,7 +3128,7 @@ class Square() : Rectangle() {
 \end{lstlisting}
 
 
-\subsubsection*{\textbf{Rule 6.1.6}}
+\subsubsection*{\textbf{6.1.6 Abstract class should have at least one abstract method}}
 \leavevmode\newline
 
 Abstract classes are used to force a developer to implement some of its parts in their inheritors.
@@ -2968,7 +3168,7 @@ class NotAbstract {
 
 
 
-\subsubsection*{\textbf{Rule 6.1.7}}
+\subsubsection*{\textbf{6.1.7 When using the}}
 \leavevmode\newline
 
 Kotlin has a mechanism of [backing properties](https://kotlinlang.org/docs/reference/properties.html\#backing-properties).
@@ -2987,18 +3187,18 @@ val table: Map<String, Int>
 \end{lstlisting}
 
 
-In this case the name of the backing property (`_table`) should be the same as the name of the real property (`table`) but should have an underscore (`_`) prefix.
+In this case, the name of the backing property (`_table`) should be the same as the name of the real property (`table`) but should have an underscore (`_`) prefix.
 
 It is one of the exceptions from the [identifier names rule]
 
 
 
-\subsubsection*{\textbf{Recommendation 6.1.8}}
+\subsubsection*{\textbf{6.1.8 Avoid using custom getters and setters}}
 \leavevmode\newline
 
 Kotlin has a perfect mechanism of [properties](https://kotlinlang.org/docs/reference/properties.html\#properties-and-fields).
 
-Kotlin compiler automatically generates `get` and `set` methods for properties and also provides the possibility to override it.
+Kotlin compiler automatically generates `get` and `set` methods for properties and can override them.
 
 
 
@@ -3017,11 +3217,11 @@ class A {
 \end{lstlisting}
 
 
-From the callee code these methods look like an access to this property: `A().isEmpty = true` for setter and `A().isEmpty` for getter.
+From the callee code, these methods look like access to this property: `A().isEmpty = true` for setter and `A().isEmpty` for getter.
 
 
 
-However, when `get` and `set` are overridden, it is very confusing for a developer who uses this particular class. 
+However, when `get` and `set` are overridden, it  isn't very clear for a developer who uses this particular class. 
 
 The developer expects to get the property value but receives some unknown value and some extra side-effect hidden by the custom getter/setter. 
 
@@ -3052,10 +3252,10 @@ class A {
 
 
 
-\subsubsection*{\textbf{Rule 6.1.9}}
+\subsubsection*{\textbf{6.1.9 Never use the name of a variable in the custom getter or setter}}
 \leavevmode\newline
 
-If you have ignored [recommendation 6.1.8] you should be careful with using the name of the property in your custom getter/setter
+If you ignored [recommendation 6.1.8], be careful with using the name of the property in your custom getter/setter
 
 as it can accidentally cause a recursive call and a `StackOverflow Error`. Use the `field` keyword instead.
 
@@ -3073,14 +3273,14 @@ var isEmpty: Boolean
 \end{lstlisting}
 
 
-\subsubsection*{\textbf{Recommendation 6.1.10 no trivial getters and setters are allowed in the code.}}
+\subsubsection*{\textbf{6.1.10 No trivial getters and setters are allowed in the code}}
 \leavevmode\newline
 
 In Java, trivial getters - are the getters that are just returning the field value.
 
 Trivial setters - are merely setting the field with a value without any transformation.
 
-However, in Kotlin, trivial getters/setters are generated by the default. There is no need to use it explicitly for all types of data structures in Kotlin.
+However, in Kotlin, trivial getters/setters are generated by default. There is no need to use it explicitly for all types of data structures in Kotlin.
 
 
 
@@ -3110,10 +3310,10 @@ class A {
 \end{lstlisting}
 
 
-\subsubsection*{\textbf{Rule 6.1.11}}
+\subsubsection*{\textbf{Use}}
 \leavevmode\newline
 
-In Java, before functional programming became popular, many classes from common libraries used configuration paradigm.
+In Java, before functional programming became popular, many classes from common libraries used the configuration paradigm.
 
 To use these classes, you had to create an object with the constructor with 0-2 arguments and set the fields needed to run the object.
 
@@ -3169,15 +3369,19 @@ fun main() {
 
 \subsection*{\textbf{6.2 Extension functions}}
 
+This section describes the rules of using extension functions in your code.
+
+
+
 [Extension functions](https://kotlinlang.org/docs/reference/extensions.html) is a killer-feature in Kotlin. 
 
-It gives you a chance to extend classes that were already implemented in external libraries and help you to make classes less heavy.
+It gives you a chance to extend classes that were already implemented in external libraries and helps you to make classes less heavy.
 
 Extension functions are resolved statically.
 
 
 
-\subsubsection*{\textbf{Recommendation 6.2.1}}
+\subsubsection*{\textbf{6.2.1 Use extension functions for making logic of classes less coupled}}
 \leavevmode\newline
 
 It is recommended that for classes, the non-tightly coupled functions, which are rarely used in the class, should be implemented as extension functions where possible.
@@ -3186,14 +3390,12 @@ They should be implemented in the same class/file where they are used. This is a
 
 
 
-\subsubsection*{\textbf{Rule 6.2.2}}
+\subsubsection*{\textbf{6.2.2 No extension functions with the same name and signature if they extend base and inheritor classes}}
 \leavevmode\newline
 
-As extension functions are resolved statically. In this case, there could be a situation when a developer implements two extension functions: one is for the base class and another for the inheritor.
+You should have ho extension functions with the same name and signature if they extend base and inheritor classes (possible\_bug).esolved statically. There could be a situation when a developer implements two extension functions: one is for the base class and another for the inheritor.
 
 This can lead to an issue when an incorrect method is used.
-
-And that can lead to an issue when incorrect method is used. 
 
 
 
@@ -3231,12 +3433,14 @@ In Kotlin and Java, the interface is the main presentation means of application 
 
 \subsection*{\textbf{6.4 Objects}}
 
-\subsubsection*{\textbf{Rule 6.4.1}}
+This section describes the rules of using objects in code.
+
+\subsubsection*{\textbf{6.4.1 Instead of using utility classes}}
 \leavevmode\newline
 
-As described in [6.2 Extension functions], extension functions are a powerful. Instead of using utility classes/objects, use it extention functions.
+Avoid using utility classes/objects; use extensions instead. As described in [6.2 Extension functions], using extension functions is a powerful method.
 
-This allows you to avoid unnecessary complexity and class/object wrapping and use top-level functions instead.
+This enables you to avoid unnecessary complexity and class/object wrapping and use top-level functions instead.
 
 
 
@@ -3263,10 +3467,10 @@ fun String.stringInfo(): Int {
 \end{lstlisting}
 
 
-\subsubsection*{\textbf{Recommendation 6.4.2}}
+\subsubsection*{\textbf{6.4.2 Objects should be used for Stateless Interfaces.}}
 \leavevmode\newline
 
-Kotlin’s objects are extremely useful when you need to implement some interface from an external library that doesn’t have any state.
+Kotlin’s objects are extremely useful when you need to implement some interface from an external library that does not have any state.
 
 There is no need to use classes for such structures.
 

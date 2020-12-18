@@ -5,7 +5,7 @@ import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NAME_INCORRECT
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NAME_MATCH_CLASS
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
-import org.cqfn.diktat.ruleset.utils.getFileName
+import org.cqfn.diktat.ruleset.utils.getFilePath
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.isPascalCase
 
@@ -29,7 +29,7 @@ import java.io.File
 class FileNaming(private val configRules: List<RulesConfig>) : Rule("file-naming") {
     private var isFixMode: Boolean = false
     private lateinit var emitWarn: EmitType
-    private lateinit var fileName: String
+    private lateinit var filePath: String
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
@@ -38,14 +38,14 @@ class FileNaming(private val configRules: List<RulesConfig>) : Rule("file-naming
         isFixMode = autoCorrect
 
         if (node.elementType == FILE) {
-            fileName = node.getFileName()
+            filePath = node.getFilePath()
             checkFileNaming(node)
             checkClassNameMatchesWithFile(node)
         }
     }
 
     private fun checkFileNaming(node: ASTNode) {
-        val (name, extension) = getFileParts(fileName)
+        val (name, extension) = getFileParts(filePath)
         if (!name.isPascalCase() || !validExtensions.contains(extension)) {
             FILE_NAME_INCORRECT.warnAndFix(configRules, emitWarn, isFixMode, "$name$extension", 0, node) {
                 // FixMe: we can add an autocorrect here in future, but is there any purpose to change file or class name?
@@ -53,9 +53,9 @@ class FileNaming(private val configRules: List<RulesConfig>) : Rule("file-naming
         }
     }
 
-    @Suppress("UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType", "ControlFlowWithEmptyBody")
     private fun checkClassNameMatchesWithFile(fileLevelNode: ASTNode) {
-        val (fileNameWithoutSuffix, fileNameSuffix) = getFileParts(fileName)
+        val (fileNameWithoutSuffix, fileNameSuffix) = getFileParts(filePath)
         val classes = fileLevelNode.getAllChildrenWithType(CLASS)
         if (classes.size == 1) {
             val className = classes[0].getFirstChildWithType(IDENTIFIER)!!.text

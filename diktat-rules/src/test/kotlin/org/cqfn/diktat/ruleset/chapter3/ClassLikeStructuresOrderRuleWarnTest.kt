@@ -58,8 +58,8 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
                     |    ${modifier}val log = LoggerFactory.getLogger(Example.javaClass)
                     |}
                 """.trimMargin(),
-                LintError(2, 5, ruleId, "${WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnText()} PROPERTY: private val FOO = 42", true),
-                LintError(3, 5, ruleId, "${WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnText()} PROPERTY: ${modifier}val log = LoggerFactory.getLogger(Example.javaClass)", true)
+                LintError(2, 5, ruleId, "${WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnText()} PROPERTY: FOO", true),
+                LintError(3, 5, ruleId, "${WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnText()} PROPERTY: log", true)
             )
         }
     }
@@ -177,6 +177,25 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
                     |        set(value) { backing = value }
                     |}
                 """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES)
+    fun `should warn if order is incorrect and property with comment`() {
+        lintMethod(
+            """
+                    class Example {
+                        companion object {
+                            val b = "q"
+                            
+                            // this
+                            private const val a = 3                                                   
+                        }
+                    }
+            """.trimMargin(),
+            LintError(3, 29, ruleId, "${WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnText()} PROPERTY: b", true),
+            LintError(5, 29, ruleId, "${WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnText()} PROPERTY: a", true)
         )
     }
 }

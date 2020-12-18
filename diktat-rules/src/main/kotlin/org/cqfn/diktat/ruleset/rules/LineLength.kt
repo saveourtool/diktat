@@ -81,7 +81,7 @@ class LineLength(private val configRules: List<RulesConfig>) : Rule("line-length
         }
     }
 
-    @Suppress("UnsafeCallOnNullableType", "LOCAL_VARIABLE_EARLY_DECLARATION")
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkLength(node: ASTNode, configuration: LineLengthConfiguration) {
         var offset = 0
         node.text.lines().forEach {
@@ -239,7 +239,7 @@ class LineLength(private val configRules: List<RulesConfig>) : Rule("line-length
         }
     }
 
-    @Suppress("UnsafeCallOnNullableType", "LOCAL_VARIABLE_EARLY_DECLARATION")
+    @Suppress("UnsafeCallOnNullableType")
     private fun findAllText(astNode: ASTNode): String {
         var text = ""
         var node = astNode
@@ -277,10 +277,10 @@ class LineLength(private val configRules: List<RulesConfig>) : Rule("line-length
         return text
     }
 
-    @Suppress("UnsafeCallOnNullableType", "LOCAL_VARIABLE_EARLY_DECLARATION")
+    @Suppress("UnsafeCallOnNullableType")
     private fun getBraceAndBeforeText(node: ASTNode, prevNode: ASTNode): String {
-        var text = ""
         val par = prevNode.prevSibling { it.elementType == OPERATION_REFERENCE }?.let { LPAR } ?: RPAR
+        var text = ""
         if (node.findChildByType(par)!!.treePrev != null &&
                 node.findChildByType(par)!!.treePrev.elementType == WHITE_SPACE) {
             text += node.findChildByType(par)!!.treePrev.text

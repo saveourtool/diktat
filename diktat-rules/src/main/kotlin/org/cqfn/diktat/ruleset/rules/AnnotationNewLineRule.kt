@@ -3,10 +3,7 @@ package org.cqfn.diktat.ruleset.rules
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings
-import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
-import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
-import org.cqfn.diktat.ruleset.utils.isBeginByNewline
-import org.cqfn.diktat.ruleset.utils.isFollowedByNewline
+import org.cqfn.diktat.ruleset.utils.*
 
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
@@ -51,12 +48,13 @@ class AnnotationNewLineRule(private val configRules: List<RulesConfig>) : Rule("
         }
 
         node.getAllChildrenWithType(ANNOTATION_ENTRY).forEach {
-            if (!it.isFollowedByNewline() || !it.isBeginByNewline()) {
-                deleteSpaces(it, !it.isFollowedByNewline(), !it.isBeginByNewline())
+            if (!it.isFollowedByNewlineWithComment() || !it.isBeginByNewline()) {
+                deleteSpaces(it, !it.isFollowedByNewlineWithComment(), !it.isBeginByNewline())
             }
         }
     }
 
+    // fixme added handle for left side!
     private fun deleteSpaces(node: ASTNode,
                              rightSide: Boolean,
                              leftSide: Boolean) {

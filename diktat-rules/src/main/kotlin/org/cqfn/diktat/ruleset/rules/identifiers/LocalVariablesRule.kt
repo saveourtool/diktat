@@ -7,10 +7,12 @@ import org.cqfn.diktat.ruleset.utils.containsOnlyConstants
 import org.cqfn.diktat.ruleset.utils.getDeclarationScope
 import org.cqfn.diktat.ruleset.utils.getLineNumber
 import org.cqfn.diktat.ruleset.utils.lastLineNumber
+import org.cqfn.diktat.ruleset.utils.numNewLines
 import org.cqfn.diktat.ruleset.utils.search.findAllVariablesWithUsages
 
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.FILE
+import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isPartOfComment
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
@@ -90,14 +92,60 @@ class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("loc
 
         val firstUsageStatementLine = getFirstUsageStatementOrBlock(usages, declarationScope).node.getLineNumber()
         val firstUsage = usages.minBy { it.node.getLineNumber() }!!
-        checkLineNumbers(property, firstUsageStatementLine, firstUsageLine = firstUsage.node.getLineNumber())
+
+        // should skip val and var before it's statement
+        val offset = property
+            .siblings(forward = true, withItself = false)
+            .takeWhile { it != getFirstUsageStatementOrBlock(usages, declarationScope) }
+            .filter { it is KtProperty }
+            .count()
+        checkLineNumbers(property, firstUsageStatementLine, firstUsageLine = firstUsage.node.getLineNumber(), offset = offset)
     }
 
+    @Suppress("TOO_LONG_FUNCTION")
     private fun handleConsecutiveDeclarations(statement: PsiElement, properties: List<KtProperty>) {
+        val numLinesAfterLastProp =
+                properties
+                    .last()
+                    .node
+                    .treeNext
+                    .takeIf { it.elementType == WHITE_SPACE }
+                    ?.let {
+                        // minus one is needed to except \n after property
+                        it.numNewLines() - 1
+                    }
+                    ?: 0
+
+        val sortedProperties = properties.sortedBy { it.node.getLineNumber() }
         // need to check that properties are declared consecutively with only maybe empty lines
-        properties
-            .sortedBy { it.node.getLineNumber() }
-            .zip(properties.size - 1 downTo 0)
+        sortedProperties
+            .zip(
+                (properties.size - 1 downTo 0).map { index ->
+                    val siblings = sortedProperties[properties.lastIndex - index].siblings(forward = true, withItself = false)
+
+                    // Also we need to count number of comments to skip. See `should skip comments` test
+                    // For the last property we don't need to count, because they will be counted in checkLineNumbers
+                    // We count number of comments beginning from next property
+                    val numberOfComments = siblings
+                        .takeWhile { it != statement }
+                        .dropWhile { it !is KtProperty }
+                        .filter { it.node.isPartOfComment() }
+                        .count()
+
+                    // We should also skip all vars that were not included in properties list, but they are between statement and current property
+                    val numberOfVarWithInitializer = siblings
+                        .takeWhile { it != statement }
+                        .filter { it is KtProperty && it !in properties }
+                        .count()
+
+                    // If it is not last property we should consider number on new lines after last property in list
+                    if (index != 0) {
+                        index + numLinesAfterLastProp + numberOfComments + numberOfVarWithInitializer
+                    } else {
+                        index + numberOfComments + numberOfVarWithInitializer
+                    }
+                }
+            )
             .forEach { (property, offset) ->
                 checkLineNumbers(property, statement.node.getLineNumber(), offset)
             }

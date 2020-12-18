@@ -1,8 +1,8 @@
 /**
  * Various utility methods to work with kotlin AST
+ * FixMe: fix suppressed inspections on KDocs
  */
 
-// todo fix inspections on KDocs
 @file:Suppress("FILE_NAME_MATCH_CLASS", "KDOC_WITHOUT_RETURN_TAG", "KDOC_WITHOUT_PARAM_TAG")
 
 package org.cqfn.diktat.ruleset.utils
@@ -12,14 +12,19 @@ import org.cqfn.diktat.ruleset.rules.PackageNaming
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
+import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.CONST_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FILE_ANNOTATION_LIST
+import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.INTERNAL_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.OVERRIDE_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.PRIVATE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PROTECTED_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PUBLIC_KEYWORD
@@ -139,11 +144,29 @@ fun ASTNode.isFollowedByNewline() =
         } ?: false
 
 /**
+ * This function is similar to isFollowedByNewline(), but there may be a comment after the node
+ */
+fun ASTNode.isFollowedByNewlineWithComment() =
+        parent({ it.treeNext != null }, strict = false)
+            ?.treeNext?.run {
+            when (elementType) {
+                WHITE_SPACE -> text.contains("\n")
+                EOL_COMMENT, BLOCK_COMMENT, KDOC -> isFollowedByNewline()
+                else -> false
+            } ||
+                    parent({ it.treeNext != null }, strict = false)?.let {
+                        it.treeNext.elementType == EOL_COMMENT && it.treeNext.isFollowedByNewline()
+                    } ?: false
+        } ?: false
+
+/**
  * Checks if there is a newline before this element. See [isFollowedByNewline] for motivation on parents check.
+ * Or if there is nothing before, it cheks, that there are empty imports and package before (Every FILE node has children of type IMPORT_LIST and PACKAGE)
  */
 fun ASTNode.isBeginByNewline() =
         parent({ it.treePrev != null }, strict = false)?.let {
-            it.treePrev.elementType == WHITE_SPACE && it.treePrev.text.contains("\n")
+            it.treePrev.elementType == WHITE_SPACE && it.treePrev.text.contains("\n") ||
+                    (it.treePrev.elementType == IMPORT_LIST && it.treePrev.isLeaf() && it.treePrev.treePrev.isLeaf())
         } ?: false
 
 /**
@@ -636,7 +659,7 @@ fun List<ASTNode>.handleIncorrectOrder(
  * This method returns text of this [ASTNode] plus text from it's siblings after last and until next newline, if present in siblings.
  * I.e., if this node occupies no more than a single line, this whole line or it's part will be returned.
  */
-@Suppress("LOCAL_VARIABLE_EARLY_DECLARATION", "WRONG_NEWLINES")
+@Suppress("WRONG_NEWLINES")
 fun ASTNode.extractLineOfText(): String {
     var text: MutableList<String> = mutableListOf()
     siblings(false)
@@ -698,7 +721,7 @@ fun ASTNode.calculateLineColByOffset() = buildPositionInTextLocator(text)
  *
  * @return name of the file [this] node belongs to
  */
-fun ASTNode.getFileName(): String = getUserData(KtLint.FILE_PATH_USER_DATA_KEY).let {
+fun ASTNode.getFilePath(): String = getUserData(KtLint.FILE_PATH_USER_DATA_KEY).let {
     requireNotNull(it) { "File path is not present in user data" }
     it
 }
@@ -743,20 +766,18 @@ fun ASTNode.getLineNumber(): Int =
  * This function calculates line number instead of using cached values.
  * It should be used when AST could be previously mutated by auto fixers.
  */
-@Suppress("LOCAL_VARIABLE_EARLY_DECLARATION")
-private fun ASTNode.calculateLineNumber(): Int {
-    var count = 0
-    // todo use runningFold or something similar when we migrate to apiVersion 1.4
-    return getRootNode()
-        .text
-        .lineSequence()
-        // calculate offset for every line end, `+1` for `\n` which is trimmed in `lineSequence`
-        .indexOfFirst {
-            count += it.length + 1
-            count > startOffset
-        }
-        .let {
-            require(it >= 0) { "Cannot calculate line number correctly, node's offset $startOffset is greater than file length ${getRootNode().textLength}" }
-            it + 1
-        }
-}
+private fun ASTNode.calculateLineNumber() = getRootNode()
+    .text
+    .lineSequence()
+    // calculate offset for every line end, `+1` for `\n` which is trimmed in `lineSequence`
+    .runningFold(0) { acc, line ->
+        acc + line.length + 1
+    }
+    .drop(1)
+    .indexOfFirst {
+        it > startOffset
+    }
+    .let {
+        require(it >= 0) { "Cannot calculate line number correctly, node's offset $startOffset is greater than file length ${getRootNode().textLength}" }
+        it + 1
+    }

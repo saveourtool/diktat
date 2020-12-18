@@ -19,7 +19,7 @@ class DiktatJavaExecTaskTest {
     @Test
     fun `check command line for various inputs`() {
         assertCommandLineEquals(
-            listOf(null, "\"${combinePathParts("src", "**", "*.kt")}\""),
+            listOf(null, combinePathParts("src", "**", "*.kt")),
             DiktatExtension().apply {
                 inputs = project.files("src/**/*.kt")
             }
@@ -29,7 +29,7 @@ class DiktatJavaExecTaskTest {
     @Test
     fun `check command line in debug mode`() {
         assertCommandLineEquals(
-            listOf(null, "--debug", "\"${combinePathParts("src", "**", "*.kt")}\""),
+            listOf(null, "--debug", combinePathParts("src", "**", "*.kt")),
             DiktatExtension().apply {
                 inputs = project.files("src/**/*.kt")
                 debug = true
@@ -40,8 +40,8 @@ class DiktatJavaExecTaskTest {
     @Test
     fun `check command line with excludes`() {
         assertCommandLineEquals(
-            listOf(null, "\"${combinePathParts("src", "**", "*.kt")}\"",
-                "\"!${combinePathParts("src", "main", "kotlin", "generated")}\""
+            listOf(null, combinePathParts("src", "**", "*.kt"),
+                combinePathParts("src", "main", "kotlin", "generated")
             ),
             DiktatExtension().apply {
                 inputs = project.files("src/**/*.kt")
@@ -70,6 +70,6 @@ class DiktatJavaExecTaskTest {
         Assertions.assertIterableEquals(expected, task.commandLine)
     }
 
-    private fun combinePathParts(vararg parts: String) = project.projectDir.absolutePath +
+    private fun combinePathParts(vararg parts: String) = project.rootDir.absolutePath +
             parts.joinToString(File.separator, prefix = File.separator)
 }
