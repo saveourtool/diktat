@@ -7,12 +7,16 @@
     <packaging>pom</packaging>
     <version>1.0.0-SNAPSHOT</version>
 
+    <properties>
+        <diktat.version>0.1.7</diktat.version>
+    </properties>
+
     <build>
         <plugins>
             <plugin>
                 <groupId>org.cqfn.diktat</groupId>
                 <artifactId>diktat-maven-plugin</artifactId>
-                <version>0.1.7</version>
+                <version>${diktat.version}</version>
                 <configuration>
                     <diktatConfigFile>diktat-analysis.yml</diktatConfigFile>
                     <inputs>
