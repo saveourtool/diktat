@@ -6,7 +6,7 @@
 
 | Chapter             | Content                                                      |
 | ------------------- | ------------------------------------------------------------ |
-| [0. Preface](#c0.1) | [Purpose](#c0.1), [General principles](#c0.2), [Terminology](#c0.3), [Exceptions](#c0.4) |
+| [0. Preface](c0.1) | [Purpose](#c0.1), [General principles](#c0.2), [Terminology](#c0.3), [Exceptions](#c0.4) |
 | [1. Naming](#c1)    | [Identifiers](#c1.1), [Package names](#c1.2), [Classes, enumeration and interfaces](#c1.3), [Functions](#c1.4), [Constants](#c1.5), [Variables](#c1.6) |
 | [2. Docs](#c2)  | [Kdoc](#c2.1), [File header](#c2.2), [Comments on function header ](#c2.3), [Code comments](#c2.4) |
 | [3. General formatting](#c3)   | [File-related rules](#c3.1), [Braces](#c3.2), [Indentation](#c3.3), [Empty blocks](#c3.4), [Line length](#c3.5), [Line breaks (newlines)](#c3.6), [Blank lines](#c3.7), [Horizontal space](#c3.8), [Enumerations](#c3.9), [Variable declaration](#c3.10), [When expression](#c3.11), [Annotations](#c3.12), [Layout of comments](#c3.13), [Modifiers and constant values](#c3.14), [Strings](#c3.15)|
@@ -15,6 +15,8 @@
 | [6. Classes](#c6) | [Classes](#c6.1), [Extension functions](#c6.2), [Interfaces](#c6.3), [Objects](#c6.4) |
 | [7. Kotlin & Java](#c7) |  |
 
+
+Here's a useful method. Should produce clickable references in any MarkDown editor.
 
 
 ## <a name="c0"></a> Preface
@@ -88,7 +90,7 @@ Note: The source file encoding format (including comments) must be UTF-8 only. T
 
 <!-- =============================================================================== -->
 ### <a name="c1.1"></a> 1.1 Identifier names
-### <a name="r1.1.1"></a> Rule 1.1.1: Identifiers naming conventions
+### <a name="r1.1.1"></a> 1.1.1: Identifiers naming conventions
 
 For identifiers, use the following naming conventions:
 1.	All identifiers should use only ASCII letters or digits, and the names should match regular expressions `\w{2,64}`.
@@ -353,7 +355,7 @@ It is also shown in the following single-line form:
 ```
 Use a single-line form when you store the entire KDoc block in one line (and there is no KDoc mark @XXX). For detailed instructions on how to use KDoc, refer to [Official Document](https://docs.oracle.com/en/Kotlin/Kotlinse/11/tools/KDoc.html).
 
-### <a name="r2.1.1"></a> Rule 2.1.1: KDoc is used for each public, protected or internal code element
+### <a name="r2.1.1"></a> 2.1.1: KDoc is used for each public, protected or internal code element
 
 At a minimum, KDoc should be used for every public, protected, or internal decorated class, interface, enumeration, method, and member field (property).
 Other code blocks can also have KDocs if needed.
@@ -406,7 +408,7 @@ fun isEmptyList(list: List<String>) = list.size == 0
 
 Note: You can skip KDocs for a method's override if it is almost the same as the superclass method.
 
-### <a name="r2.1.2"></a>Rule 2.1.2: When the method has arguments, return value, can throw exceptions, etc., it must be described in the KDoc block: with @param, @return, @throws, etc.
+### <a name="r2.1.2"></a> 2.1.2 When the method has arguments, return value, can throw exceptions, etc., it must be described in the KDoc block: with @param, @return, @throws, etc.
 
 **Valid examples**:
 
@@ -441,7 +443,7 @@ Note: You can skip KDocs for a method's override if it is almost the same as the
  }
  ```
 
-### <a name="r2.1.3"></a>Rule 2.1.3: Only one space between the Kdoc tag and content. Tags are arranged in the order.
+### <a name="r2.1.3"></a> 2.1.3 Only one space between the Kdoc tag and content. Tags are arranged in the order.
 There should be only one space between the Kdoc tag and content. Tags are arranged in the following order: @param, @return, and @throws.
 
 Therefore, Kdoc should contain the following:
@@ -488,7 +490,7 @@ Other KDoc tags (such as @param type parameters and @see.) can be added as follo
  */
 ```
 ### <a name="c2.2"></a> 2.2 Comments to the file header
-### <a name="r2.2.1"></a> Rule 2.2.1: Comments on the file header must include copyright information, without the creation date and author's name (use VCS for history management instead). The content inside files that contain multiple or no classes should also be described.
+### <a name="r2.2.1"></a> 2.2.1: Comments on the file header must include copyright information, without the creation date and author's name (use VCS for history management instead). The content inside files that contain multiple or no classes should also be described.
 
 Comments on the file header should be placed before the package name and imports. If you need to add more content to the comment, subsequently add it in the same format.
 
@@ -523,7 +525,7 @@ The following factors should be considered when writing the file header or comme
 
 
 ### <a name="c2.3"></a> 2.3 Comments on the function header
-### <a name="r2.3.1"></a> Rule 2.3.1: Do not make unnecessary and useless comments.
+### <a name="r2.3.1"></a> 2.3.1 Do not make unnecessary and useless comments.
 Comments on the function header are placed above function declarations or definitions. A newline should not exist between a function declaration and its Kdoc. Use the preceding [KDoc](#c2.1) style rules.
 
 As stated in Chapter 1, the function name should reflect its functionality as much as possible. Therefore, in the Kdoc, try to describe the functionality that is not mentioned in the function name.
@@ -532,7 +534,7 @@ Avoid unnecessary comments on dummy coding.
 The function header comment's content is optional, but not limited to function description, return value, performance constraints, usage, memory conventions, algorithm implementation, reentrant requirements, etc.
 
 ### <a name="c2.4"></a> 2.4 Code comments
-### <a name="r2.4.1"></a> Rule 2.4.1: Add a blank line between the body of the comment and Kdoc tag-blocks.
+### <a name="r2.4.1"></a> 2.4.1 Add a blank line between the body of the comment and Kdoc tag-blocks.
 It is a good practice to add a blank line between the body of the comment and Kdoc tag-blocks. Also, consider the following rules:
 - There must be one space between the comment character and the content of the comment
 - There must be a newline between a Kdoc and presiding code
@@ -613,7 +615,7 @@ val someVal = if (nr % 15 == 0) {
 val x = 0  // this is a comment
 ```
 
-### <a name="r2.4.2"></a>Rule 2.4.2: Do not comment on unused code blocks
+### <a name="r2.4.2"></a> 2.4.2 Do not comment on unused code blocks
 Do not comment on unused code blocks, including imports. Delete these code blocks immediately.
 A code is not used to store history. Git, svn, or other VCS tools should be used for this purpose.
 Unused imports increase the coupling of the code and are not conducive to maintenance. The commented out code cannot be appropriately maintained.
@@ -621,7 +623,7 @@ In an attempt to reuse the code, there is a high probability that you will intro
 The correct approach is to delete the unnecessary code directly and immediately when it is not used anymore.
 If you need the code again, consider porting or rewriting it as changes could have occurred since you first commented on the code. 
 
-### <a name="r2.4.3"></a>Recommendation 2.4.3: Code delivered to the client should not contain TODO/FIXME comments.
+### <a name="r2.4.3"></a> 2.4.3 Code delivered to the client should not contain TODO/FIXME comments.
 The code officially delivered to the client typically should not contain TODO/FIXME comments.
 `TODO` comments are typically used to describe modification points that need to be improved and added. For example, refactoring FIXME comments are typically used to describe known defects and bugs that will be subsequently fixed and are not critical for an application.
 They should all have a unified style to facilitate the unified text search processing.
@@ -636,13 +638,13 @@ At a version development stage, these annotations can be used to highlight the i
 # <a name="c3"></a>3. General formatting (typesetting)
 <!-- =============================================================================== -->
 ### <a name="c3.1"></a> 3.1 File-related rules
-### <a name="r3.1.1"></a> Rule 3.1.1: Avoid files that are too long. Files should not exceed 2000 lines (non-empty and non-commented lines).
+### <a name="r3.1.1"></a> 3.1.1 Avoid files that are too long. Files should not exceed 2000 lines (non-empty and non-commented lines).
 
 If the file is too long and complex, it should be split into smaller files, functions, or modules.
 It is recommended to horizontally or vertically split the file according to responsibilities or hierarchy of its parts.
 The only exception to this rule is code generation - the auto-generated files that are not manually modified can be longer.
 
-### <a name="r3.1.2"></a> Rule 3.1.2: Code blocks in the source file should be separated by one blank line and should be in the proper order.
+### <a name="r3.1.2"></a> 3.1.2 Code blocks in the source file should be separated by one blank line and should be in the proper order.
 A source file contains code blocks in the following order: copyright, package name, imports, and top-level classes. They should be separated by one blank line.
 
 a) Code blocks should be in the following order:
@@ -661,7 +663,7 @@ d) **Recommendation**. One `.kt` source file should contain only one class decla
 
 e) Avoid empty files that do not contain the code or contain only imports/comments/package name
 
-### <a name="r3.1.3"></a> Recommendation 3.1.3: Import statements order.
+### <a name="r3.1.3"></a> 3.1.3 Import statements order.
 
 From top to bottom, the order is the following:
 1. Android
@@ -691,7 +693,7 @@ import kotlin.system.exitProcess  // kotlin standard library
 import kotlinx.coroutines.*  // official kotlin extension library
 ```
 
-### <a name="r3.1.4"></a> Recommendation 3.1.4: The declaration parts of class-like code structures (class, interface, etc.) should be placed in the order.
+### <a name="r3.1.4"></a> 3.1.4 The declaration parts of class-like code structures (class, interface, etc.) should be placed in the order.
 The declaration parts of class-like code structures (class, interface, etc.) should be in the following order: compile-time constants (for objects), class properties, late-init class properties, init-blocks, constructors, public methods, internal methods, protected methods, private methods, and companion object. Blank lines should separate their declaration.
 
 Notes:
@@ -714,7 +716,7 @@ All variants of a `(private) val` logger should be placed in the beginning of th
 
 <!-- =============================================================================== -->
 ### <a name="c3.2"></a> 3.2 Braces
-### <a name="r3.2.1"></a> Rule 3.2.1: Braces must be used in conditional statements and loop blocks.
+### <a name="r3.2.1"></a> 3.2.1: Braces must be used in conditional statements and loop blocks.
 
 Braces should always be used in `if`, `else`, `for`, `do`, and `while` statements, even if the program body is empty or contains only one statement. In special Kotlin `when` statements, you do not need to use braces for single-line statements. 
 
