@@ -10,6 +10,7 @@ import org.gradle.api.artifacts.Configuration
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.JavaExec
+import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.VerificationTask
 
@@ -68,15 +69,16 @@ open class DiktatJavaExecTaskBase @Inject constructor(
                 }
                 .files
                 .forEach {
-                    add(it.path)
+                    addPattern(it)
                 }
             diktatExtension.excludes?.files?.forEach {
-                add(it.path)
+                addPattern(it, negate = true)
             }
         }
         logger.debug("Setting JavaExec args to $args")
     }
 
+    @TaskAction
     override fun exec() {
         if (shouldRun) {
             super.exec()
@@ -101,6 +103,15 @@ open class DiktatJavaExecTaskBase @Inject constructor(
             GradleVersion.fromString(gradleVersionString).run {
                 major >= 6 && minor >= 4
             }
+
+    private fun MutableList<String>.addPattern(pattern: File, negate: Boolean = false) {
+        val path = if (pattern.isAbsolute) {
+            pattern.relativeTo(project.rootDir)
+        } else {
+            pattern
+        }.path
+        add((if (negate) "!" else "") + path)
+    }
 }
 
 /**

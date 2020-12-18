@@ -9,10 +9,7 @@ plugins {
 }
 
 repositories {
-    flatDir {
-        // to use snapshot diktat without necessary installing
-        dirs("../diktat-rules/target")
-    }
+    mavenLocal()  // to use snapshot diktat
     mavenCentral()
     jcenter()
 }
@@ -88,8 +85,8 @@ tasks.withType<Test> {
 // === integration testing
 // fixme: should probably use KotlinSourceSet instead
 val functionalTest = sourceSets.create("functionalTest") {
-        compileClasspath += sourceSets.main.get().output + configurations.testRuntimeClasspath
-        runtimeClasspath += output + compileClasspath
+    compileClasspath += sourceSets.main.get().output + configurations.testRuntimeClasspath
+    runtimeClasspath += output + compileClasspath
 }
 tasks.getByName<Test>("functionalTest") {
     dependsOn("test")
@@ -110,7 +107,11 @@ jacocoTestKit {
 }
 tasks.getByName("jacocoMerge", JacocoMerge::class) {
     dependsOn(functionalTestTask)
-    executionData(tasks.test, functionalTestTask)
+    executionData(
+        fileTree("$buildDir/jacoco").apply {
+            include("*.exec")
+        }
+    )
 }
 tasks.jacocoTestReport {
     dependsOn(jacocoMergeTask)

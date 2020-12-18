@@ -42,7 +42,7 @@ class DiktatGradlePluginFunctionalTest {
 
     @Test
     fun `should execute diktatCheck on default values`() {
-        val result = runDiktat()
+        val result = runDiktat(1, shouldSucceed = false)
 
         val diktatCheckBuildResult = result.task(":$DIKTAT_CHECK_TASK")
         requireNotNull(diktatCheckBuildResult)
@@ -61,7 +61,7 @@ class DiktatGradlePluginFunctionalTest {
                 }
             """.trimIndent()
         )
-        val result = runDiktat()
+        val result = runDiktat(2, shouldSucceed = false)
 
         val diktatCheckBuildResult = result.task(":$DIKTAT_CHECK_TASK")
         requireNotNull(diktatCheckBuildResult)
@@ -71,14 +71,38 @@ class DiktatGradlePluginFunctionalTest {
         )
     }
 
-    private fun runDiktat() = GradleRunner.create()
+    @Test
+    fun `should execute diktatCheck with excludes`() {
+        buildFile.appendText(
+            """${System.lineSeparator()}
+                diktat {
+                    inputs = files("src/**/*.kt")
+                    excludes = files("src/**/Test.kt")
+                }
+            """.trimIndent()
+        )
+        val result = runDiktat(3)
+
+        val diktatCheckBuildResult = result.task(":$DIKTAT_CHECK_TASK")
+        requireNotNull(diktatCheckBuildResult)
+        Assertions.assertEquals(TaskOutcome.SUCCESS, diktatCheckBuildResult.outcome)
+    }
+
+    /**
+     * @param testNumber a counter used to name jacoco execution data files.
+     * fixme: shouldn't be set manually
+     */
+    private fun runDiktat(testNumber: Int,
+                          shouldSucceed: Boolean = true,
+                          arguments: List<String> = emptyList()
+    ) = GradleRunner.create()
         .withProjectDir(testProjectDir.root)
-        .withArguments(DIKTAT_CHECK_TASK)
+        .withArguments(*arguments.toTypedArray(), DIKTAT_CHECK_TASK)
         .withPluginClasspath()
-        .withJaCoCo()
+        .withJaCoCo(testNumber)
         .forwardOutput()
         .runCatching {
-            buildAndFail()
+            if (shouldSucceed) build() else buildAndFail()
         }
         .also {
             require(it.isSuccess) { "Running gradle returned exception ${it.exceptionOrNull()}" }
@@ -88,13 +112,15 @@ class DiktatGradlePluginFunctionalTest {
     /**
      * This is support for jacoco reports in tests run with gradle TestKit
      */
-    private fun GradleRunner.withJaCoCo() = apply {
+    private fun GradleRunner.withJaCoCo(number: Int) = apply {
         javaClass.classLoader
             .getResourceAsStream("testkit-gradle.properties")
-            .also { it ?: println("properties file for testkit is not available, check build configuration") }
+            .also { it ?: error("properties file for testkit is not available, check build configuration") }
             ?.use { propertiesFileStream ->
-                File(projectDir, "gradle.properties").outputStream().use {
-                    propertiesFileStream.copyTo(it)
+                val text = propertiesFileStream.reader().readText()
+                File(projectDir, "gradle.properties").createNewFile()
+                File(projectDir, "gradle.properties").writer().use {
+                    it.write(text.replace("functionalTest.exec", "functionalTest-$number.exec"))
                 }
             }
     }

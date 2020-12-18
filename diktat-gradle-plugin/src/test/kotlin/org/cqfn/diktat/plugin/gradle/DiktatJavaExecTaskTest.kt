@@ -41,7 +41,7 @@ class DiktatJavaExecTaskTest {
     fun `check command line with excludes`() {
         assertCommandLineEquals(
             listOf(null, combinePathParts("src", "**", "*.kt"),
-                combinePathParts("src", "main", "kotlin", "generated")
+                "!${combinePathParts("src", "main", "kotlin", "generated")}"
             ),
             DiktatExtension().apply {
                 inputs = project.files("src/**/*.kt")
@@ -70,6 +70,5 @@ class DiktatJavaExecTaskTest {
         Assertions.assertIterableEquals(expected, task.commandLine)
     }
 
-    private fun combinePathParts(vararg parts: String) = project.rootDir.absolutePath +
-            parts.joinToString(File.separator, prefix = File.separator)
+    private fun combinePathParts(vararg parts: String) = parts.joinToString(File.separator)
 }
