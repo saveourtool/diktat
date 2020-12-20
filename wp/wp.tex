@@ -1,15 +1,14 @@
 \documentclass[acmlarge, screen, nonacm]{acmart}
 \usepackage[utf8]{inputenc}
+\usepackage{xeCJK}
 \usepackage{graphicx}
 \usepackage{pgf}
 \usepackage{multicol}
 \usepackage{setspace}
-\usepackage{charter}
 \usepackage{listings}
 \usepackage{hyperref}
 \usepackage{float}
 \usepackage{placeins}
-\usepackage{graphicx}
 \graphicspath{ {./images/} }
 \usepackage{tikz}
 \usepackage{verbatim}
@@ -29,6 +28,7 @@
 \definecolor{ForestGreen}{rgb}{0.1334,0.545,0.1334}
 \definecolor{NavyBlue}{rgb}{0,0.502,0}
 \definecolor{BurntOrange}{rgb}{0.8,0.3334,0.1334}
+\definecolor{selectColor}{rgb}{0.686,1,0.592}
 
 \lstdefinestyle{mystyle}{
 	backgroundcolor=\color{backcolour},
@@ -55,12 +55,12 @@
   emph={delegate, filter, first, firstOrNull, forEach, lazy, map, mapNotNull, println, return@},
   emphstyle={\color{OrangeRed}},
   identifierstyle=\color{black},
-  keywords={abstract, actual, as, as?, break, by, class, companion, continue, data, do, dynamic, else, enum, expect, false, final, for, fun, get, if, import, in, interface, internal, is, null, object, override, package, private, public, return, set, super, suspend, this, throw, true, try, typealias, val, var, vararg, when, where, while},
+  keywords={abstract, actual, as, as?, break, by, class, companion, continue, data, do, dynamic, else, enum, expect, false, final, for, fun, get, if, import, in, interface, internal, is, object, override, package, private, public, return, set, super, suspend, throw, true, try, typealias, val, var, vararg, when, where, while},
   keywordstyle={\color{NavyBlue}\bfseries},
   morecomment=[s]{/*}{*/},
   morestring=[b]",
   morestring=[s]{"""*}{*"""},
-  ndkeywords={@Deprecated, @JvmField, @JvmName, @JvmOverloads, @JvmStatic, @JvmSynthetic, Array, Byte, Double, Float, Int, Integer, Iterable, Long, Runnable, Short, String},
+  ndkeywords={@Deprecated, @JvmField, @JvmName, @JvmOverloads, @JvmStatic, @JvmSynthetic, Array, Byte, Double, Float, this, null, Int, Integer, Iterable, Long, Runnable, Short, String, Boolean},
   ndkeywordstyle={\color{BurntOrange}\bfseries},
   sensitive=true,
   stringstyle={\color{ForestGreen}\ttfamily},
@@ -68,6 +68,7 @@
 
 \lstset{style=mystyle}
 \settopmatter{printacmref=false}
+\settopmatter{printfolios=true}
 \setcopyright{none}
 \makeatletter
 \let\@authorsaddresses\@empty
@@ -83,7 +84,7 @@
 \begin{document}
 
 \title[]{
-  \includegraphics[width = 230pt, height = 200pt]{wp/pictures/logo.png}\\
+  \includegraphics[width = 150pt, height = 150]{wp/pictures/logo.png}\\
   DiKTat - Kotlin linter
 }
 
@@ -136,21 +137,17 @@
 \label{sec:compare}
 \input{sections/compare}
 
-\section{How does it work}
+\section{How does diktat work}
 \label{sec:work}
 \input{sections/work}
 
-\section{Killer-Feature}
+\section{Killer-Features}
 \label{sec:feature}
 \input{sections/feature}
 
 \section{How to use diKTat}
 \label{sec:download}
 \input{sections/download}
-
-\section{Examples}
-\label{sec:examples}
-\input{sections/examples}
 
 \section{Conclusion \& Future Work}
 \label{sec:conclusion}
