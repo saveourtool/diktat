@@ -66,7 +66,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
      */
     override fun execute() {
         val configFile = resolveConfig()
-        if (configFile == null || !File(configFile).exists()) {
+        if (!File(configFile).exists()) {
             throw MojoExecutionException("Configuration file $diktatConfigFile doesn't exist")
         }
         log.info("Running diKTat plugin with configuration file $configFile and inputs $inputs" +
@@ -90,15 +90,23 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         }
     }
 
-    private fun resolveConfig(): String? {
+    /**
+     * Function that searches diktat config file in maven project hierarchy.
+     * If [diktatConfigFile] is absolute, it's path is used. If [diktatConfigFile] is relative, this method looks for it in all maven parent projects.
+     * This way config file can be placed in parent module directory and used in all child modules too.
+     * @return path to configuration file as a string. File by this path might not exist.
+     */
+    private fun resolveConfig(): String {
         if (File(diktatConfigFile).isAbsolute) {
             return diktatConfigFile
         }
 
         return generateSequence(mavenProject) { it.parent }
             .map { File(it.basedir, diktatConfigFile) }
-            .firstOrNull { it.exists() }
-            ?.absolutePath
+            .run {
+                firstOrNull { it.exists() } ?: first()
+            }
+            .absolutePath
     }
 
     /**
