@@ -32,6 +32,7 @@ class LongNumericalValuesSeparatedWarnTest : LintTestBase(::LongNumericalValuesS
                     |   val bytes = 0b110100110_01101001_10010100_10010010
                     |   val flo = 192.312341341344355345
                     |   val flo2 = 192.31234134134435_5345
+                    |   val hundred = 100
                     |}
                 """.trimMargin(),
             LintError(2, 21, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 100000000000", true),
@@ -45,6 +46,8 @@ class LongNumericalValuesSeparatedWarnTest : LintTestBase(::LongNumericalValuesS
             LintError(8, 14, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 192.312341341344355345", true),
             LintError(9, 15, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 31234134134435", false),
             LintError(9, 15, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} this block is too long 5345", false)
+            LintError(10, 18, ruleId, "${Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnText()} 100", false)
+
         )
     }
 
@@ -60,6 +63,7 @@ class LongNumericalValuesSeparatedWarnTest : LintTestBase(::LongNumericalValuesS
                     |   val hexBytes = 0xFF_EC_DE_5E
                     |   val bytes = 0b11_010_010_011_010_011_001_010_010_010_010
                     |   val flo = 192.312_341_341_345
+                    |   val ten = 10
                     |}
                 """.trimMargin()
         )

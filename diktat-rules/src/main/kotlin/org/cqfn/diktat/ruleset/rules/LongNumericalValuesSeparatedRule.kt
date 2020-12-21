@@ -120,7 +120,7 @@ class LongNumericalValuesSeparatedRule(private val configRules: List<RulesConfig
         return text
             .split(".")
             .map { removePrefixSuffix(it) }
-            .all { it.length < configuration.maxLength }
+            .all { it.length <= configuration.maxLength }
     }
 
     private fun checkBlocks(
