@@ -15,11 +15,14 @@ val BOLD_TEXT = Regex("""\*\*([^*]+)\*\*""")  // finds bold text in regular line
 @Suppress("VARIABLE_NAME_INCORRECT_FORMAT")
 val ITALIC_TEXT = Regex("""\*([A-Za-z ]+)\*""")  // finds italic text in regular lines
 @Suppress("VARIABLE_NAME_INCORRECT_FORMAT")
+val HYPERLINKS = Regex("""\[[a-zA-Z 0-9-_`]*]\(http[a-z/.#:A-Z-0-9\\_]*\)""")  // used to find column names in tables only
+@Suppress("VARIABLE_NAME_INCORRECT_FORMAT")
 val BACKTICKS_TEXT = Regex("""`([^`]*)`""")  // finds backtick in regular text (not used for now, may be we will need to use it in future)
 @Suppress("VARIABLE_NAME_INCORRECT_FORMAT")
 val ANCHORS = Regex("""\(#([a-zA-Z0-9-.]*)\)""")  // finds anchors on rules and deletes them
 @Suppress("VARIABLE_NAME_INCORRECT_FORMAT")
 val TABLE_COLUMN_NAMES = Regex("""[A-Za-z ]*""")  // used to find column names in tables only
+
 const val REGEX_PLACEHOLDER = "RE_PL_AC_E_ME"
 @Suppress("CONSTANT_UPPERCASE")
 const val A4_PAPER_WIDTH = 15f

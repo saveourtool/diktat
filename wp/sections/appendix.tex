@@ -1,3 +1,14 @@
+\subsection{Class diagram}
+\includegraphics[scale=0.5]{pictures/class.PNG}
+\subsection{Data Flow diagram}
+\includegraphics[scale=0.6]{pictures/data_flow.PNG}
+\subsection{Sequence diagram}
+\includegraphics[scale=0.7]{pictures/sequence.PNG}
+\subsection{Use-case diagram}
+\includegraphics[scale=0.8]{pictures/useCase.png}
+\subsection{Package diagram}
+\includegraphics[scale=0.65]{pictures/package.png}
+\section*{Available Rules}
 \scriptsize
 \begin{longtable}{ |l|p{0.8cm}|p{0.8cm}| p{3cm} | }
 \hline
@@ -765,7 +776,7 @@ It is also shown in the following single-line form:
 \begin{lstlisting}[language=Kotlin]
  /** Short form of KDoc. */
 \end{lstlisting}
-Use a single-line form when you store the entire KDoc block in one line (and there is no KDoc mark @XXX). For detailed instructions on how to use KDoc, refer to [Official Document](https://docs.oracle.com/en/Kotlin/Kotlinse/11/tools/KDoc.html).
+Use a single-line form when you store the entire KDoc block in one line (and there is no KDoc mark @XXX). For detailed instructions on how to use KDoc, refer to \href{https://docs.oracle.com/en/Kotlin/Kotlinse/11/tools/KDoc.html}{[Official Document]}.
 
 
 
@@ -1300,7 +1311,7 @@ From top to bottom, the order is the following:
 
 
 
-Each category should be alphabetically arranged. Each group should be separated by a blank line. This style is compatible with  [Android import order](https://source.android.com/setup/contribute/code-style\#order-import-statements).
+Each category should be alphabetically arranged. Each group should be separated by a blank line. This style is compatible with  \href{https://source.android.com/setup/contribute/code-style#order-import-statements}{[Android import order]}.
 
 
 
@@ -1674,7 +1685,7 @@ Line length should be less than 120 symbols. The international code style prohib
 
 - One wide character occupies the width of two narrow characters.
 
-The "wide" and "narrow" parts of a character are defined by its [east Asian width Unicode attribute](https://unicode.org/reports/tr11/).
+The "wide" and "narrow" parts of a character are defined by its \href{https://unicode.org/reports/tr11/}{[east Asian width Unicode attribute]}.
 
 Typically, narrow characters are also called "half-width" characters.
 
@@ -1831,7 +1842,7 @@ val someValue = { node:String -> node }
 \end{lstlisting}
 
 
-6) When the function contains only a single expression, it can be written as [expression function](https://kotlinlang.org/docs/reference/functions.html\#single-expression-functions). 
+6) When the function contains only a single expression, it can be written as \href{https://kotlinlang.org/docs/reference/functions.html#single-expression-functions}{[expression function]}. 
 
    The below example shows the style that should not be used.
 
@@ -1879,7 +1890,7 @@ Otherwise, there should be a line break after an opening parenthesis.
 
 Kotlin 1.4 introduced a trailing comma as an optional feature, so it is generally recommended to place all parameters on a separate line
 
-and append [trailing comma](https://kotlinlang.org/docs/reference/whatsnew14.html\#trailing-comma).
+and append \href{https://kotlinlang.org/docs/reference/whatsnew14.html#trailing-comma}{[trailing comma]}.
 
 It makes the resolving of merge conflicts easier.
 
@@ -2142,7 +2153,7 @@ enum class Warnings {
 
 This will help to resolve conflicts and reduce the number of conflicts during merging pull requests.
 
-Also, use [trailing comma](https://kotlinlang.org/docs/reference/whatsnew14.html\#trailing-comma).
+Also, use \href{https://kotlinlang.org/docs/reference/whatsnew14.html#trailing-comma}{[trailing comma]}.
 
 
 
@@ -2366,7 +2377,7 @@ This section describes the general rules of using strings.
 
 String concatenation is prohibited if the string can fit on one line. Use raw strings and string templates instead. Kotlin has significantly improved the use of Strings: 
 
-[String templates](https://kotlinlang.org/docs/reference/basic-types.html\#string-templates), [Raw strings](https://kotlinlang.org/docs/reference/basic-types.html\#string-literals).
+\href{https://kotlinlang.org/docs/reference/basic-types.html#string-templates}{[String templates]}, \href{https://kotlinlang.org/docs/reference/basic-types.html#string-templates}{[String templates]}.
 
 Therefore, compared to using explicit concatenation, code looks much better when proper Kotlin strings are used for short lines, and you do not need to split them with newline characters.
 
@@ -2551,7 +2562,7 @@ This section provides recommendations for using types.
 
 
 
-The Kotlin compiler has introduced [Smart Casts](https://kotlinlang.org/docs/reference/typecasts.html\#smart-casts) that help reduce the size of code.
+The Kotlin compiler has introduced \href{https://kotlinlang.org/docs/reference/typecasts.html#smart-casts}{[Smart Casts]} that help reduce the size of code.
 
 
 
@@ -2573,7 +2584,7 @@ The Kotlin compiler has introduced [Smart Casts](https://kotlinlang.org/docs/ref
 \end{lstlisting}
 
 
-Also, Kotlin 1.3 introduced [Contracts](https://kotlinlang.org/docs/reference/whatsnew13.html\#contracts) that provide enhanced logic for smart-cast.
+Also, Kotlin 1.3 introduced \href{https://kotlinlang.org/docs/reference/whatsnew13.html#contracts}{[Contracts]} that provide enhanced logic for smart-cast.
 
 Contracts are used and are very stable in `stdlib`, for example:
 
@@ -2682,7 +2693,7 @@ val a: Int = 0
 
 Nevertheless, when using Java libraries extensively, you have to use nullable types and enrich the code with `!!` and `?` symbols.
 
-Avoid using nullable types for Kotlin stdlib (declared in [official documentation](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/)). 
+Avoid using nullable types for Kotlin stdlib (declared in \href{https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/}{[official documentation]}). 
 
 Try to use initializers for empty collections. For example, if you want to initialize a list instead of `null`, use `emptyList()`.
 
@@ -2741,7 +2752,7 @@ val myVariable: Map<Int, String> = emptyMap()
 
 Try to avoid explicit null checks (explicit comparison with `null`) 
 
-Kotlin is declared as [Null-safe](https://kotlinlang.org/docs/reference/null-safety.html) language.
+Kotlin is declared as \href{https://kotlinlang.org/docs/reference/null-safety.html}{[Null-safe]} language.
 
 However, Kotlin architects wanted Kotlin to be fully compatible with Java; that's why the `null` keyword was also introduced in Kotlin. 
 
@@ -2870,7 +2881,7 @@ The only exceptions to this are state machines.
 
 
 
-Kotlin is [designed](https://www.slideshare.net/abreslav/whos-more-functional-kotlin-groovy-scala-or-java) to support and encourage functional programming, featuring the corresponding built-in mechanisms.
+Kotlin is \href{https://www.slideshare.net/abreslav/whos-more-functional-kotlin-groovy-scala-or-java}{[designed]} to support and encourage functional programming, featuring the corresponding built-in mechanisms.
 
 Also, it supports standard collections and sequences feature methods that enable functional programming (for example, `apply`, `with`, `let`, and `run`), Kotlin Higher-Order functions, function types, lambdas, and default function arguments.
 
@@ -2992,7 +3003,7 @@ println("hey")
 
 
 
-A long argument list is a [code smell](https://en.wikipedia.org/wiki/Code\_smell) that leads to less reliable code.
+A long argument list is a \href{https://en.wikipedia.org/wiki/Code_smell}{[code smell]} that leads to less reliable code.
 
 It is recommended to reduce the number of parameters. Having \textbf{more than five} parameters leads to difficulties in maintenance and conflicts merging.
 
@@ -3321,7 +3332,7 @@ class NotAbstract {
 \subsubsection*{\textbf{6.1.7 When using the}}
 \leavevmode\newline
 
-Kotlin has a mechanism of [backing properties](https://kotlinlang.org/docs/reference/properties.html\#backing-properties).
+Kotlin has a mechanism of \href{https://kotlinlang.org/docs/reference/properties.html#backing-properties}{[backing properties]}.
 
 In some cases, implicit backing is not enough and it should be done explicitly:
 
@@ -3346,7 +3357,7 @@ It is one of the exceptions from the [identifier names rule]
 \subsubsection*{\textbf{6.1.8 Avoid using custom getters and setters}}
 \leavevmode\newline
 
-Kotlin has a perfect mechanism of [properties](https://kotlinlang.org/docs/reference/properties.html\#properties-and-fields).
+Kotlin has a perfect mechanism of \href{https://kotlinlang.org/docs/reference/properties.html#properties-and-fields}{[properties]}.
 
 Kotlin compiler automatically generates `get` and `set` methods for properties and can override them.
 
@@ -3467,7 +3478,7 @@ In Java, before functional programming became popular, many classes from common 
 
 To use these classes, you had to create an object with the constructor with 0-2 arguments and set the fields needed to run the object.
 
-In Kotlin, to reduce the number of dummy code line and to group objects [`apply` extension](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/apply.html) was added:  
+In Kotlin, to reduce the number of dummy code line and to group objects \href{https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/apply.html}{[apply extension]} was added:  
 
  
 
@@ -3523,7 +3534,7 @@ This section describes the rules of using extension functions in your code.
 
 
 
-[Extension functions](https://kotlinlang.org/docs/reference/extensions.html) is a killer-feature in Kotlin. 
+\href{https://kotlinlang.org/docs/reference/extensions.html}{[Extension functions]} is a killer-feature in Kotlin. 
 
 It gives you a chance to extend classes that were already implemented in external libraries and helps you to make classes less heavy.
 

@@ -109,7 +109,9 @@ fun generateCodeStyle(guideDir: File, wpDir: File) {
                 correctedString = correctedString.replace("&", "\\&")
                 correctedString = correctedString.replace("_", "\\_")
                 // find backticks should be the last to replace \_ with _
+                correctedString = handleHyperlinks(correctedString)
                 correctedString = findBoldOrItalicText(BACKTICKS_TEXT, correctedString, FindType.BACKTICKS)
+
                 writer.writeln(correctedString)
             }
         }
@@ -129,6 +131,27 @@ enum class FindType {
     BOLD,
     ITALIC,
     ;
+}
+
+private fun handleHyperlinks(line: String): String {
+    var correctedString = line
+    if (correctedString.contains(HYPERLINKS)) {
+        val hyperlinkSubString = HYPERLINKS.find(correctedString)!!.groupValues
+        hyperlinkSubString.forEach {
+            var link = Regex("""\(http.*\)""").find(it)!!.groupValues.first().drop(1).dropLast(1) // drop ( and )
+            // need to replace back, because it is a hyperlink
+            link = link.replace("\\#", "#")
+            link = link.replace("\\&", "&")
+            link = link.replace("\\_", "_")
+            var text = Regex("""\[.*]""").find(it)!!.groupValues.first()
+            // need to replace ` in hyperlink, because it breaks latex compilation
+            text = text.replace("`", "")
+            val hyperlink = """\\href{${link}}{${text}}"""
+            correctedString = correctedString.replace(HYPERLINKS, hyperlink)
+        }
+    }
+
+    return correctedString
 }
 
 @Suppress("WRONG_INDENTATION")
