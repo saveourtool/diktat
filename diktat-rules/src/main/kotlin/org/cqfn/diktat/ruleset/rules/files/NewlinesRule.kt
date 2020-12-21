@@ -18,6 +18,7 @@ import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.CALLABLE_REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
+import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.COLON
 import com.pinterest.ktlint.core.ast.ElementType.COLONCOLON
 import com.pinterest.ktlint.core.ast.ElementType.COMMA
@@ -50,6 +51,7 @@ import com.pinterest.ktlint.core.ast.ElementType.PLUS
 import com.pinterest.ktlint.core.ast.ElementType.PLUSEQ
 import com.pinterest.ktlint.core.ast.ElementType.POSTFIX_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
+import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.RETURN
 import com.pinterest.ktlint.core.ast.ElementType.RETURN_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS
@@ -61,6 +63,7 @@ import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.isWhiteSpace
 import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.nextCodeSibling
 import com.pinterest.ktlint.core.ast.parent
