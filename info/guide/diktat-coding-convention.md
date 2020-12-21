@@ -1,20 +1,110 @@
-<img src="/logo.svg" width="64px"/>
 
-# Diktat Coding Convention
+# Table of contents
+I [Preface](#c0)
+* [I.I Purpose of this document](#c0.1)
+* [I.II General principles](#c0.2)
+* [I.III Terminology](#c0.3)
+* [I.IV Exceptions](#c0.4)
 
-### Content
+[1. Naming](#c1)
 
-| Chapter             | Content                                                      |
-| ------------------- | ------------------------------------------------------------ |
-| [0. Preface](#c0.1) | [Purpose](#c0.1), [General principles](#c0.2), [Terminology](#c0.3), [Exceptions](#c0.4) |
-| [1. Naming](#c1)    | [Identifiers](#c1.1), [Package names](#c1.2), [Classes, enumeration and interfaces](#c1.3), [Functions](#c1.4), [Constants](#c1.5), [Variables](#c1.6) |
-| [2. Docs](#c2)  | [Kdoc](#c2.1), [File header](#c2.2), [Comments on function header ](#c2.3), [Code comments](#c2.4) |
-| [3. General formatting](#c3)   | [File-related rules](#c3.1), [Braces](#c3.2), [Indentation](#c3.3), [Empty blocks](#c3.4), [Line length](#c3.5), [Line breaks (newlines)](#c3.6), [Blank lines](#c3.7), [Horizontal space](#c3.8), [Enumerations](#c3.9), [Variable declaration](#c3.10), [When expression](#c3.11), [Annotations](#c3.12), [Layout of comments](#c3.13), [Modifiers and constant values](#c3.14), [Strings](#c3.15)|
-| [4. Variables and types](#c4) | [Variables](#c4.1), [Types](#c4.2), [Null safety and variable declarations](#4.3)|
-| [5. Functions](#c5) | [Function design](#c5.1), [Function arguments](#c5.2)|
-| [6. Classes](#c6) | [Classes](#c6.1), [Extension functions](#c6.2), [Interfaces](#c6.3), [Objects](#c6.4) |
-| [7. Kotlin & Java](#c7) |  |
+* [1.1 Identifiers](#c1.1)
+* [1.2 Packages](#c1.2)
+* [1.3 Classes, enumerations, interfaces](#c1.3)
+* [1.4 Functions](#c1.4)
+* [1.5 Constants](#c1.5)
+* [1.6 Non-constant fields (variables)](#c1.6)
+    * [1.6.1 Non-constant field name](#r1.6.1)
+    * [1.6.2 Boolean variable names with negative meaning](#r1.6.2)
 
+[2. Comments](#c2)
+* [2.1 General form of Kdoc](#c2.1)
+    * [2.1.1 Using KDoc for the public, protected, or internal code elements](#r2.1.1)
+    * [2.1.2 Describing methods that have arguments, a return value, or can throw an exception in the KDoc block](#r2.1.2)
+    * [2.1.3 Only one space between the Kdoc tag and content. Tags are arranged in the order.](#r2.1.3)
+* [2.2 Adding comments on the file header](#c2.2)
+* [2.3 Comments on the function header](#c2.3)
+* [2.4 Code comments](#c2.4)
+    * [2.4.1 Add a blank line between the body of the comment and Kdoc tag-blocks](#r2.4.1)
+    * [2.4.2 Do not comment on unused code blocks](#r2.4.2)
+    * [2.4.3 Do not comment on unused code blocks](#r2.4.3)
+    
+[3. General formatting (typesetting)](#c3)
+* [3.1 File-related rules](#c3.1)
+    * [3.1.1 Avoid files that are too long](#r3.1.1)
+    * [3.1.2 Code blocks in the source file should be separated by one blank line](#r3.1.2)
+    * [3.1.3 Import statements order](#r3.1.3)  
+    * [3.1.4 Order of declaration parts of class-like code structures](#r3.1.4)      
+* [3.2 Braces](#c3.2)    
+    * [3.2.1 Using braces in conditional statements and loop blocks](#r3.2.1)           
+    * [3.2.2 Opening braces are placed at the end of the line in *non-empty* blocks and block structures](#r3.2.2)               
+* [3.3 Indentation](#c3.3)            
+* [3.4 Empty blocks](#c3.4) 
+* [3.5 Line length](#c3.5) 
+* [3.6 Line breaks (newlines)](#c3.6) 
+    * [3.6.1 Each line can have a maximum of one statement](#r3.6.1) 
+    * [3.6.2 Rules for line-breaking](#r3.6.2) 
+* [3.7 Using blank lines](#c3.7)
+* [3.8 Horizontal space](#c3.8)
+    * [3.8.1 Usage of whitespace for code separation](#r3.8.1) 
+    * [3.8.2 No spaces for horizontal alignment](#r3.8.2) 
+* [3.9 Enumerations](#c3.9)
+* [3.10 Variable declaration](#c3.10)
+    * [3.10.1 Declare one variable per line](#r3.10.1)
+    * [3.10.2 Variables should be declared near the line where they are first used](#r3.10.2)
+* [3.11 'When' expression](#c3.11)  
+* [3.12 Annotations](#c3.12)  
+* [3.13 Block comments](#c3.13)  
+* [3.14 Modifiers and constant values](#c3.14) 
+    * [3.14.1 Declaration with multiple modifiers](#r3.14.1)
+    * [3.14.2 Separate long numerical values with an underscore](#r3.14.2)
+ * [3.15 Strings](#c3.15)
+     * [3.15.1 Concatenation of Strings](#r3.15.1)
+     * [3.15.2 String template format](#r3.15.2)
+
+[4. Variables and types](#c4)
+* [4.1 Variables](#c4.1)
+    * [4.1.1 Do not use Float and Double types when accurate calculations are needed](#r4.1.1)
+    * [4.1.2 Comparing numeric float type values](#r4.1.2) 
+    * [4.1.3 Try to use 'val' instead of 'var' for variable declaration [SAY_NO_TO_VAR]](#r4.1.3)         
+* [4.2 Types](#c4.2)       
+    * [4.2.1 Use Contracts and smart cast as much as possible](#r4.2.1)
+    * [4.2.2 Try to use type alias to represent types making code more readable](#r4.2.2)         
+* [4.3 Null safety and variable declarations](#c4.3)            
+    * [4.3.1 Avoid declaring variables with nullable types, especially from Kotlin stdlib](#r4.3.1)
+    * [4.3.2 Variables of generic types should have an explicit type declaration](#r4.3.2)           
+    * [4.3.3 Null-safety](#r4.3.3)             
+
+[5. Functions](#c5)        
+* [5.1 Function design](#c5.1)       
+    * [5.1.1 Avoid functions that are too long ](#r5.1.1)
+    * [5.1.2 Avoid deep nesting of function code blocks, limiting to four levels](#r5.1.2) 
+    * [5.1.3 Avoid using nested functions](#r5.1.3)        
+* [5.2 Function arguments](#c5.2)              
+    * [5.2.1 The lambda parameter of the function should be placed at the end of the argument list](#r5.2.1)
+    * [5.2.2 Number of function parameters should be limited to five](#r5.2.2) 
+    * [5.2.3 Use default values for function arguments instead of overloading them](#r5.2.3)           
+
+[6. Classes, interfaces, and extension functions](#c6)                 
+* [6.1 Classes](#c6.1)      
+    * [6.1.1 Denoting a class with a single constructor](#r6.1.1)
+    * [6.1.2 Prefer data classes instead of classes without any functional logic](#r6.1.2) 
+    * [6.1.3 Do not use the primary constructor if it is empty or useless](#r6.1.3) 
+    * [6.1.4 Do not use redundant init blocks in your class](#r6.1.4)
+    * [6.1.5 Explicit supertype qualification](#r6.1.5) 
+    * [6.1.6 Abstract class should have at least one abstract method](#r6.1.6) 
+    * [6.1.7 When using the "implicit backing property" scheme, the name of real and back property should be the same](#r6.1.7)
+    * [6.1.8 Avoid using custom getters and setters](#r6.1.8) 
+    * [6.1.9 Never use the name of a variable in the custom getter or setter (possible_bug)](#r6.1.9) 
+    * [6.1.10 No trivial getters and setters are allowed in the code](#r6.1.10)
+    * [6.1.11 Use 'apply' for grouping object initialization](#r6.1.11) 
+* [6.2 Classes](#c6.2)   
+    * [6.2.1 Use extension functions for making logic of classes less coupled](#r6.2.1)
+    * [6.2.2 No extension functions with the same name and signature if they extend base and inheritor classes (possible_bug)](#r6.2.2) 
+* [6.3 Interfaces](#c6.3)            
+* [6.4 Objects](#c6.4)      
+    * [6.4.1 Instead of using utility classes/objects, use extensions](#r6.4.1)
+    * [6.4.2 Objects should be used for Stateless Interfaces](#r6.4.2) 
 
 
 ## <a name="c0"></a> Preface
@@ -87,7 +177,7 @@ In programming, it is not always easy to meaningfully and appropriately name var
 Note: The source file encoding format (including comments) must be UTF-8 only. The ASCII horizontal space character (0x20, that is, space) is the only permitted whitespace character. Tabs should not be used for indentation.
 
 <!-- =============================================================================== -->
-### <a name="c1.1"></a> 1.1 Identifier names
+### <a name="c1.1"></a> 1.1 Identifiers
 This section describes the general rules for naming identifiers.
 #### <a name="r1.1.1"></a> 1.1.1 Identifiers naming conventions
 
@@ -149,7 +239,7 @@ Note that prefixing can also negatively affect the style and the auto-generation
 | Exceptions | Same as class names, but with a suffix Exception, for example: `AccessException` and `NullPointerException`|
 
 <!-- =============================================================================== -->
-### <a name="c1.2"></a> 1.2 Packages names
+### <a name="c1.2"></a> 1.2 Packages
 
 #### <a name="r1.2.1"></a> Rule 1.2.1 Package names dots
 Package names are in lower case and separated by dots. Code developed within your company should start with `your.company.domain.` Numbers are permitted in package names.
@@ -361,6 +451,7 @@ At a minimum, KDoc should be used for every public, protected, or internal decor
 Other code blocks can also have KDocs if needed.
 Instead of using comments or KDocs before properties in the primary constructor of a class - use `@property` tag in a KDoc of a class.
 All properties of the primary constructor should also be documented in a KDoc with a `@property` tag.
+
 
 **Incorrect example:**
 ```kotlin
@@ -599,6 +690,7 @@ Compared to Java, the `if` statement in Kotlin statements returns a value. For t
 **Valid examples:**
 
 ```kotlin
+
 val foo = 100  // right-side comment
 val bar = 200  /* right-side comment */
 
@@ -964,7 +1056,7 @@ Each one of these characters represents two narrow characters.
 <!-- =============================================================================== -->
 ### <a name="c3.6"></a> 3.6 Line breaks (newlines)
 This section contains the rules and recommendations on using line breaks.
-#### <a name="r3.6.1"></a> 3.6.1 Each line can have a maximum of one statement.
+#### <a name="r3.6.1"></a> 3.6.1 Each line can have a maximum of one statement
 Each line can have a maximum of one code statement. This recommendation prohibits the use of code with `;` because it decreases code visibility.
 
 **Invalid example:**
@@ -1281,7 +1373,7 @@ enum class ComparisonResult {
 <!-- =============================================================================== -->
 ### <a name="c3.10"></a> 3.10 Variable declaration
 This section describes rules for the declaration of variables.
-#### <a name="r3.10.1"></a> 3.10.1 Declare one variable per line.
+#### <a name="r3.10.1"></a> 3.10.1 Declare one variable per line
 
 Each property or variable must be declared on a separate line. 
 
@@ -1290,7 +1382,7 @@ Each property or variable must be declared on a separate line.
 val n1: Int; val n2: Int
 ```
 
-#### <a name="r3.10.2"></a> 3.10.2 Variables should be declared near the line where they are first used.
+#### <a name="r3.10.2"></a> 3.10.2 Variables should be declared near the line where they are first used
 Declare local variables close to the point where they are first used to minimize their scope. This will also increase the readability of the code.
 Local variables are usually initialized during their declaration or immediately after.
 The member fields of the class should be declared collectively (see [Rule 3.1.2](#r3.1.2) for details on the class structure).
@@ -1505,7 +1597,7 @@ if (abs(foo - bar) > 1e-6f) {
 }
 ```
 
-#### <a name="r4.1.3"></a> 4.1.3 Try to use 'val' instead of 'var' for variable declaration [SAY_NO_TO_VAR].
+#### <a name="r4.1.3"></a> 4.1.3 Try to use 'val' instead of 'var' for variable declaration [SAY_NO_TO_VAR]
 
 Variables with the `val` modifier are immutable (read-only).
 Using `val` variables instead of `var` variables increases code robustness and readability.
@@ -1515,7 +1607,7 @@ However, in some scenarios with loops or accumulators, only `var`s are permitted
 <!-- =============================================================================== -->
 ### <a name="c4.2"></a> 4.2 Types
 This section provides recommendations for using types.
-#### <a name="r4.2.1"></a> 4.2.1: Use Contracts and smart cast as much as possible.
+#### <a name="r4.2.1"></a> 4.2.1: Use Contracts and smart cast as much as possible
 
 The Kotlin compiler has introduced [Smart Casts](https://kotlinlang.org/docs/reference/typecasts.html#smart-casts) that help reduce the size of code.
 
@@ -1563,7 +1655,7 @@ fun foo(s: String?) {
 }
 ```
 
-#### <a name="r4.2.2"></a> 4.2.2: Try to use type alias to represent types making code more readable.
+#### <a name="r4.2.2"></a> 4.2.2: Try to use type alias to represent types making code more readable
 
 Type aliases provide alternative names for existing types.
 If the type name is too long, you can replace it with a shorter name, which helps to shorten long generic types.
@@ -1592,7 +1684,7 @@ typealias Predicate<T> = (T) -> Boolean
 ### <a name="c4.3"></a> 4.3 Null safety and variable declarations
 Kotlin is declared as a null-safe programming language. However, to achieve compatibility with Java, it still supports nullable types.
 
-#### <a name="r4.3.1"></a> Recommendation 4.3.1: Avoid declaring variables with nullable types, especially from Kotlin stdlib.
+#### <a name="r4.3.1"></a> 4.3.1: Avoid declaring variables with nullable types, especially from Kotlin stdlib
 To avoid `NullPointerException` and help the compiler prevent Null Pointer Exceptions, avoid using nullable types (with `?` symbol).
 
 **Invalid example**:
@@ -2146,7 +2238,7 @@ class A {
 }
 ```
 
-#### <a name="r6.1.11"></a> Use 'apply' for grouping object initialization
+#### <a name="r6.1.11"></a> 6.1.11 Use 'apply' for grouping object initialization
 In Java, before functional programming became popular, many classes from common libraries used the configuration paradigm.
 To use these classes, you had to create an object with the constructor with 0-2 arguments and set the fields needed to run the object.
 In Kotlin, to reduce the number of dummy code line and to group objects [`apply` extension](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/apply.html) was added:  
@@ -2226,7 +2318,7 @@ fun main() { printClassName(B()) }
 ```
 
 <!-- =============================================================================== -->
-### <a name="c6.2"></a> 6.3 Interfaces
+### <a name="c6.3"></a> 6.3 Interfaces
 An `Interface` in Kotlin can contain declarations of abstract methods, as well as method implementations. What makes them different from abstract classes is that interfaces cannot store state.
 They can have properties, but these need to be abstract or to provide accessor implementations.
 
@@ -2236,7 +2328,7 @@ In Kotlin and Java, the interface is the main presentation means of application 
 <!-- =============================================================================== -->
 ### <a name="c6.4"></a> 6.4 Objects
 This section describes the rules of using objects in code.
-#### <a name="r6.4.1"></a> 6.4.1 Instead of using utility classes/objects, use extensions.
+#### <a name="r6.4.1"></a> 6.4.1 Instead of using utility classes/objects, use extensions
 Avoid using utility classes/objects; use extensions instead. As described in [6.2 Extension functions](#c6.2), using extension functions is a powerful method.
 This enables you to avoid unnecessary complexity and class/object wrapping and use top-level functions instead.
 
@@ -2259,7 +2351,7 @@ fun String.stringInfo(): Int {
 "myStr".stringInfo()
 ```
 
-#### <a name="r6.4.2"></a> 6.4.2 Objects should be used for Stateless Interfaces.
+#### <a name="r6.4.2"></a> 6.4.2 Objects should be used for Stateless Interfaces
 Kotlin’s objects are extremely useful when you need to implement some interface from an external library that does not have any state.
 There is no need to use classes for such structures.
 

@@ -42,6 +42,7 @@ fun generateCodeStyle(guideDir: File, wpDir: File) {
                 if (name.isNullOrEmpty() || number.isNullOrEmpty()) {
                     if (number.isNullOrEmpty() && name.isNullOrEmpty()) {
                         when (line.takeWhile { it == '#' }.count()) {
+                            1 -> writer.writeln("""\section*{\textbf{${line.removePrefix("#").trim()}}}""")
                             2 -> writer.writeln("""\section*{\textbf{${line.removePrefix("##").trim()}}}""")
                             3 -> writer.writeln("""\subsection*{\textbf{${line.removePrefix("###").trim()}}}""")
                             4 -> writer.writeln("""\subsubsection*{\textbf{${line.removePrefix("####").trim()}}}${"\n"}\leavevmode\newline""")
