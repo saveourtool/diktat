@@ -136,18 +136,18 @@ enum class FindType {
 private fun handleHyperlinks(line: String): String {
     var correctedString = line
     if (correctedString.contains(HYPERLINKS)) {
-        val hyperlinkSubString = HYPERLINKS.find(correctedString)!!.groupValues
+        val hyperlinkSubString = HYPERLINKS.findAll(correctedString)
         hyperlinkSubString.forEach {
-            var link = Regex("""\(http.*\)""").find(it)!!.groupValues.first().drop(1).dropLast(1) // drop ( and )
+            var (text, link) = HYPERLINKS.find(it.value)!!.destructured
             // need to replace back, because it is a hyperlink
+            link = link.trim().drop(1).dropLast(1) // drop ( and )
             link = link.replace("\\#", "#")
             link = link.replace("\\&", "&")
             link = link.replace("\\_", "_")
-            var text = Regex("""\[.*]""").find(it)!!.groupValues.first()
             // need to replace ` in hyperlink, because it breaks latex compilation
             text = text.replace("`", "")
-            val hyperlink = """\\href{${link}}{${text}}"""
-            correctedString = correctedString.replace(HYPERLINKS, hyperlink)
+            val hyperlink = """\href{$link}{$text}"""
+            correctedString = correctedString.replace(it.value, hyperlink)
         }
     }
 

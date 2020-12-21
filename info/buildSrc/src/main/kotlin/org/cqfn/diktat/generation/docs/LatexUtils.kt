@@ -15,7 +15,7 @@ val BOLD_TEXT = Regex("""\*\*([^*]+)\*\*""")  // finds bold text in regular line
 @Suppress("VARIABLE_NAME_INCORRECT_FORMAT")
 val ITALIC_TEXT = Regex("""\*([A-Za-z ]+)\*""")  // finds italic text in regular lines
 @Suppress("VARIABLE_NAME_INCORRECT_FORMAT")
-val HYPERLINKS = Regex("""\[[a-zA-Z 0-9-_`]*]\(http[a-z/.#:A-Z-0-9\\_]*\)""")  // used to find column names in tables only
+val HYPERLINKS = Regex("""(\[[a-zA-Z 0-9-_`]*])(\(http[a-z/.#:A-Z-0-9\\_]*\))""")  // used to find hyperlinks in line
 @Suppress("VARIABLE_NAME_INCORRECT_FORMAT")
 val BACKTICKS_TEXT = Regex("""`([^`]*)`""")  // finds backtick in regular text (not used for now, may be we will need to use it in future)
 @Suppress("VARIABLE_NAME_INCORRECT_FORMAT")
