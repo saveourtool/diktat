@@ -6,7 +6,7 @@ Note: The source file encoding format (including comments) must be UTF-8 only. T
 <!-- =============================================================================== -->
 ### <a name="c1.1"></a> 1.1 Identifiers
 This section describes the general rules for naming identifiers.
-// #### <a name="r1.1.1"></a> 1.1.1 Identifiers naming conventions
+#### <a name="r1.1.1"></a> 1.1.1 Identifiers naming conventions
 
 For identifiers, use the following naming conventions:
 1.	All identifiers should use only ASCII letters or digits, and the names should match regular expressions `\w{2,64}`.
@@ -68,7 +68,7 @@ Note that prefixing can also negatively affect the style and the auto-generation
 <!-- =============================================================================== -->
 ### <a name="c1.2"></a> 1.2 Packages
 
-// #### <a name="r1.2.1"></a> Rule 1.2.1 Package names dots
+#### <a name="r1.2.1"></a> Rule 1.2.1 Package names dots
 Package names are in lower case and separated by dots. Code developed within your company should start with `your.company.domain.` Numbers are permitted in package names.
 Each file should have a `package` directive.
 Package names are all written in lowercase, and consecutive words are concatenated together (no underscores). Package names should contain both the product or module names and the department (or team) name to prevent conflicts with other teams.  Numbers are not permitted. For example: `org.apache.commons.lang3`, `xxx.yyy.v2`.
@@ -86,8 +86,8 @@ package your.company.domain.mobilecontrol.views
 
 <!-- =============================================================================== -->
 ### <a name="c1.3"></a> 1.3 Classes, enumerations, interfaces
-//This section describes the general rules for naming classes, enumerations, and interfaces.
-//### <a name="r1.3.1"></a> 1.3.1 Classes, enumerations, interface names use Camel case
+This section describes the general rules for naming classes, enumerations, and interfaces.
+### <a name="r1.3.1"></a> 1.3.1 Classes, enumerations, interface names use Camel case
 Classes, enumerations, and interface names use `UpperCamelCase` nomenclature. Follow the naming rules described below:
 1.	A class name is usually a noun (or a noun phrase) denoted using the camel case nomenclature, such as UpperCamelCase. For example: `Character` or `ImmutableList`.
 An interface name can also be a noun or noun phrase (such as `List`) or an adjective or adjective phrase (such as `Readable`).
@@ -113,8 +113,8 @@ class Order {}
 
 <!-- =============================================================================== -->
 ### <a name="c1.4"></a> 1.4 Functions
-// This section describes the general rules for naming functions.
-// ### <a name="r1.4.1"></a> 1.4.1 Function names should be in camel case
+This section describes the general rules for naming functions.
+### <a name="r1.4.1"></a> 1.4.1 Function names should be in camel case
 Function names should use `lowerCamelCase` nomenclature. Follow the naming rules described below:
 1.	Function names are usually verbs or verb phrases denoted with the camel case nomenclature (`lowerCamelCase`).
 For example: `sendMessage`, `stopProcess`, or `calculateValue`.
@@ -164,8 +164,8 @@ fun addKeyListener(Listener)
 2.	An underscore (`_`) can be included in the JUnit test function name and should be used as a separator. Each logical part is denoted in `lowerCamelCase`, for example, a typical pattern of using underscore: `pop_emptyStack`.
 <!-- =============================================================================== -->
 ### <a name="c1.5"></a> 1.5 Constants
-//This section describes the general rules for naming constraints.
-// ### <a name="r1.5.1"></a> 1.5.1 Using UPPER case and underscore characters in a constraint name
+This section describes the general rules for naming constraints.
+### <a name="r1.5.1"></a> 1.5.1 Using UPPER case and underscore characters in a constraint name
 Constant names should be in UPPER case, words separated by underscore. The general constant naming conventions are listed below:
 1. Constants are attributes created with the `const` keyword or top-level/`val` local variables of an object that holds immutable data. In most cases, constants can be identified as a `const val` property from the `object`/`companion object`/file top level. These variables contain fixed constant values that typically should never be changed by programmers. This includes basic types, strings, immutable types, and immutable collections of immutable types. The value is not constant for the object, which state can be changed.
 2. Constant names should contain only uppercase letters separated by an underscores. They should have a val or const val modifier to make them final explicitly. In most cases, if you need to specify a constant value, then you need to create it with the "const val" modifier. Note that not all `val` variables are constants.
