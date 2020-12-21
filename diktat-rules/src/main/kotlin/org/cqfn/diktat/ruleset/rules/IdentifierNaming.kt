@@ -145,7 +145,8 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
         // special case for Destructuring declarations that can be treated as parameters in lambda:
         var namesOfVariables = extractVariableIdentifiers(node)
         // only local private properties will be autofix in order not to break code if there are usages in other files
-        val isFix = isFixMode && if (node.elementType == PROPERTY) (node.psi as KtProperty).run { isLocal || isPrivate() } else true
+        val isFix = isFixMode && if (node.elementType == PROPERTY)  (node.psi as KtProperty).run { isLocal || isPrivate() } else true
+        // Destructuring declarations are only allowed for local variables/values
         namesOfVariables
             .forEach { variableName ->
                 // variable should not contain only one letter in it's name. This is a bad example: b512
@@ -170,12 +171,13 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
                     // variable name should be in camel case. The only exception is a list of industry standard variables like i, j, k.
                     VARIABLE_NAME_INCORRECT_FORMAT.warnAndFix(configRules, emitWarn, isFix, variableName.text, variableName.startOffset, node) {
                         // FixMe: cover fixes with tests
+                        val correctVariableName = variableName.text.toLowerCamelCase()
                         variableName
                             .parent({it.elementType == FILE})
                             ?.findAllVariablesWithUsages { it.name == variableName.text }
                             ?.flatMap { it.value.toList() }
-                            ?.forEach { (it.node.firstChildNode as LeafPsiElement).replaceWithText(variableName.text.toLowerCamelCase())}
-                        (variableName as LeafPsiElement).replaceWithText(variableName.text.toLowerCamelCase())
+                            ?.forEach { (it.node.firstChildNode as LeafPsiElement).replaceWithText(correctVariableName)}
+                        (variableName as LeafPsiElement).replaceWithText(correctVariableName)
                     }
                 }
             }
