@@ -311,7 +311,7 @@ Each one of these characters represents two narrow characters.
 <!-- =============================================================================== -->
 ### <a name="c3.6"></a> 3.6 Line breaks (newlines)
 This section contains the rules and recommendations on using line breaks.
-#### <a name="r3.6.1"></a> 3.6.1 Each line can have a maximum of one statement.
+#### <a name="r3.6.1"></a> 3.6.1 Each line can have a maximum of one statement
 Each line can have a maximum of one code statement. This recommendation prohibits the use of code with `;` because it decreases code visibility.
 
 **Invalid example:**
@@ -628,7 +628,7 @@ enum class ComparisonResult {
 <!-- =============================================================================== -->
 ### <a name="c3.10"></a> 3.10 Variable declaration
 This section describes rules for the declaration of variables.
-#### <a name="r3.10.1"></a> 3.10.1 Declare one variable per line.
+#### <a name="r3.10.1"></a> 3.10.1 Declare one variable per line
 
 Each property or variable must be declared on a separate line. 
 
@@ -637,7 +637,7 @@ Each property or variable must be declared on a separate line.
 val n1: Int; val n2: Int
 ```
 
-#### <a name="r3.10.2"></a> 3.10.2 Variables should be declared near the line where they are first used.
+#### <a name="r3.10.2"></a> 3.10.2 Variables should be declared near the line where they are first used
 Declare local variables close to the point where they are first used to minimize their scope. This will also increase the readability of the code.
 Local variables are usually initialized during their declaration or immediately after.
 The member fields of the class should be declared collectively (see [Rule 3.1.2](#r3.1.2) for details on the class structure).
