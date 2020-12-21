@@ -146,6 +146,7 @@ private fun handleHyperlinks(line: String): String {
             link = link.replace("\\_", "_")
             // need to replace ` in hyperlink, because it breaks latex compilation
             text = text.replace("`", "")
+            text = text.trim().drop(1).dropLast(1) // dropping [ and ]
             val hyperlink = """\href{$link}{$text}"""
             correctedString = correctedString.replace(it.value, hyperlink)
         }
