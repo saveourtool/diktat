@@ -18,6 +18,7 @@ class A {
     fun foo() {
         val VoiceIP_ports = ""
         val UPPER_SNAKERS = VoiceIP_port
+        qww(VoiceIP_ports)
     }
 
     fun goo() {

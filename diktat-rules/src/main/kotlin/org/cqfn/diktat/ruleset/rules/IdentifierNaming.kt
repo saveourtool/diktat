@@ -144,6 +144,7 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
     private fun checkVariableName(node: ASTNode): List<ASTNode> {
         // special case for Destructuring declarations that can be treated as parameters in lambda:
         var namesOfVariables = extractVariableIdentifiers(node)
+        // only local private properties will be autofix in order not to break code if there are usages in other files
         val isFix = isFixMode && if (node.elementType == PROPERTY) (node.psi as KtProperty).run { isLocal || isPrivate() } else true
         namesOfVariables
             .forEach { variableName ->
@@ -171,7 +172,7 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
                         // FixMe: cover fixes with tests
                         variableName
                             .parent({it.elementType == FILE})
-                            ?.findAllVariablesWithUsages { it.name == variableName.text && (it.isLocal || it.isPrivate()) }
+                            ?.findAllVariablesWithUsages { it.name == variableName.text }
                             ?.flatMap { it.value.toList() }
                             ?.forEach { (it.node.firstChildNode as LeafPsiElement).replaceWithText(variableName.text.toLowerCamelCase())}
                         (variableName as LeafPsiElement).replaceWithText(variableName.text.toLowerCamelCase())
