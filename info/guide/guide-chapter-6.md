@@ -310,7 +310,7 @@ class A {
 }
 ```
 
-#### <a name="r6.1.11"></a> Use 'apply' for grouping object initialization
+#### <a name="r6.1.11"></a> 6.1.11 Use 'apply' for grouping object initialization
 In Java, before functional programming became popular, many classes from common libraries used the configuration paradigm.
 To use these classes, you had to create an object with the constructor with 0-2 arguments and set the fields needed to run the object.
 In Kotlin, to reduce the number of dummy code line and to group objects [`apply` extension](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/apply.html) was added:  
@@ -390,7 +390,7 @@ fun main() { printClassName(B()) }
 ```
 
 <!-- =============================================================================== -->
-### <a name="c6.2"></a> 6.3 Interfaces
+### <a name="c6.3"></a> 6.3 Interfaces
 An `Interface` in Kotlin can contain declarations of abstract methods, as well as method implementations. What makes them different from abstract classes is that interfaces cannot store state.
 They can have properties, but these need to be abstract or to provide accessor implementations.
 
@@ -400,7 +400,7 @@ In Kotlin and Java, the interface is the main presentation means of application 
 <!-- =============================================================================== -->
 ### <a name="c6.4"></a> 6.4 Objects
 This section describes the rules of using objects in code.
-#### <a name="r6.4.1"></a> 6.4.1 Instead of using utility classes/objects, use extensions.
+#### <a name="r6.4.1"></a> 6.4.1 Instead of using utility classes/objects, use extensions
 Avoid using utility classes/objects; use extensions instead. As described in [6.2 Extension functions](#c6.2), using extension functions is a powerful method.
 This enables you to avoid unnecessary complexity and class/object wrapping and use top-level functions instead.
 
@@ -423,7 +423,7 @@ fun String.stringInfo(): Int {
 "myStr".stringInfo()
 ```
 
-#### <a name="r6.4.2"></a> 6.4.2 Objects should be used for Stateless Interfaces.
+#### <a name="r6.4.2"></a> 6.4.2 Objects should be used for Stateless Interfaces
 Kotlin’s objects are extremely useful when you need to implement some interface from an external library that does not have any state.
 There is no need to use classes for such structures.
 
