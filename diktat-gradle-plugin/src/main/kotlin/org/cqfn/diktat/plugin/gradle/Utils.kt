@@ -2,6 +2,8 @@
  * Utilities for diktat gradle plugin
  */
 
+@file:Suppress("FILE_NAME_MATCH_CLASS")
+
 package org.cqfn.diktat.plugin.gradle
 
 import groovy.lang.Closure

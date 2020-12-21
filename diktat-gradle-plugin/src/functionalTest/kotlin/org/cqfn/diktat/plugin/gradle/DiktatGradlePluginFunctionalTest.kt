@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.File
 
+@Suppress("MagicNumber")
 class DiktatGradlePluginFunctionalTest {
     private val testProjectDir = TemporaryFolder()
     private lateinit var buildFile: File

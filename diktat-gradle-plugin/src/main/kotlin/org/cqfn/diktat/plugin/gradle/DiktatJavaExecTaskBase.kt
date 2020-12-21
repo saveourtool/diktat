@@ -101,7 +101,7 @@ open class DiktatJavaExecTaskBase @Inject constructor(
 
     @Suppress("MagicNumber")
     private fun isMainClassPropertySupported(gradleVersionString: String) =
-            GradleVersion.version(gradleVersionString) < GradleVersion.version("6.4")
+            GradleVersion.version(gradleVersionString) >= GradleVersion.version("6.4")
 
     private fun MutableList<String>.addPattern(pattern: File, negate: Boolean = false) {
         val path = if (pattern.isAbsolute) {
