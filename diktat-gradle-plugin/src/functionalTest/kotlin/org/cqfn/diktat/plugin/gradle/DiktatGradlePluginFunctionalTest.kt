@@ -134,14 +134,53 @@ class DiktatGradlePluginFunctionalTest {
         )
     }
 
+    @Test
+    fun `should execute diktatCheck with absolute paths`() {
+        val path = testProjectDir.root
+            .resolve("src/**/*.kt")
+            .absolutePath
+            .replace("\\", "\\\\")
+        buildFile.appendText(
+            """${System.lineSeparator()}
+                diktat {
+                    inputs = files("$path")
+                }
+            """.trimIndent()
+        )
+        val result = runDiktat(6, shouldSucceed = false)
+
+        val diktatCheckBuildResult = result.task(":$DIKTAT_CHECK_TASK")
+        requireNotNull(diktatCheckBuildResult)
+        Assertions.assertEquals(TaskOutcome.FAILED, diktatCheckBuildResult.outcome)
+        Assertions.assertTrue(
+            result.output.contains("[HEADER_MISSING_OR_WRONG_COPYRIGHT]")
+        )
+    }
+
+    @Test
+    fun `should execute diktatCheck with gradle older than 6_4`() {
+        val result = runDiktat(7, shouldSucceed = false, arguments = listOf("--info")) {
+            withGradleVersion("5.0")
+        }
+
+        val diktatCheckBuildResult = result.task(":$DIKTAT_CHECK_TASK")
+        requireNotNull(diktatCheckBuildResult)
+        Assertions.assertEquals(TaskOutcome.FAILED, diktatCheckBuildResult.outcome)
+        Assertions.assertTrue(
+            result.output.contains("[HEADER_MISSING_OR_WRONG_COPYRIGHT]")
+        )
+    }
+
     /**
      * @param testNumber a counter used to name jacoco execution data files.
      * fixme: shouldn't be set manually
      */
     private fun runDiktat(testNumber: Int,
                           shouldSucceed: Boolean = true,
-                          arguments: List<String> = emptyList()
+                          arguments: List<String> = emptyList(),
+                          configureRunner: GradleRunner.() -> GradleRunner = { this }
     ) = GradleRunner.create()
+        .run(configureRunner)
         .withProjectDir(testProjectDir.root)
         .withArguments(*arguments.toTypedArray(), DIKTAT_CHECK_TASK)
         .withPluginClasspath()
