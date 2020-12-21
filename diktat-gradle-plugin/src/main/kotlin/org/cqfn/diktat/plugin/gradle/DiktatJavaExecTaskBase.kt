@@ -72,7 +72,7 @@ open class DiktatJavaExecTaskBase @Inject constructor(
                 .forEach {
                     addPattern(it)
                 }
-            diktatExtension.excludes?.files?.forEach {
+            diktatExtension.excludes.files.forEach {
                 addPattern(it, negate = true)
             }
         }

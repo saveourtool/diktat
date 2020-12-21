@@ -21,7 +21,7 @@ open class DiktatExtension {
     /**
      * Paths that will be excluded from diktat run
      */
-    var excludes: FileCollection? = null
+    lateinit var excludes: FileCollection
 
     /**
      * Ktlint's [Reporter] which will be used during run.
