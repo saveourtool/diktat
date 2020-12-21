@@ -4,8 +4,8 @@
 \par
 It's worth starting with the configuration file. This is a file in which the user can manually turn rules on and off or configure the rules settings. Below is one of the rules in the configuration file.
 \\
-\begin{lstlisting}[caption={Part of configuration file.},
-label={lst:example1}, language=Kotlin]
+\begin{lstlisting}[ caption={Part of configuration file.},
+label={lst:example1}, language=yaml]
 - name: DIKTAT_COMMON
   configuration:
     # put your package name here - it will be autofixed and checked
@@ -76,21 +76,21 @@ What if the user wants one of the diKTat Inspections not to check a particular p
 \newpage
 
 \begin{lstlisting}[caption={Function with incorrect name.}, label={lst:example1}, language=Kotlin]
-	/**
-* This is example
-*/
+/**
+ * This is example
+ */
 
 package org.cqfn.diktat
 
 /**
-* Simple class
-*/
+ * Simple class
+ */
 class User(private val name: String, private val age: Int) {
 	/**
-	* Function with incorrect name
-	* 
-	* @return is username longer than age
-	*/
+	 * Function with incorrect name
+	 *
+	 * @return is username longer than age
+	 */
 	fun IsInCoRrEcTnAMe() = name.length > age
 }
 
@@ -103,22 +103,22 @@ $$
 
 But if there is a \texttt{@Suppress} before this method, then there will be no warnings during the run:
 \begin{lstlisting}[caption={Function with incorrect name, but with suppressed Inspection.}, label={lst:example1}, language=Kotlin]
-	/**
-* This is example
-*/
+/**
+ * This is example
+ */
 
 package org.cqfn.diktat
 
 /**
-* Simple class
-*/
+ * Simple class
+ */
 @Suppress("FUNCTION_NAME_INCORRECT_CASE")
 class User(private val name: String, private val age: Int) {
 	/**
-	* Function with incorrect name
-	* 
-	* @return is username longer than age
-	*/
+	 * Function with incorrect name
+	 *
+	 * @return is username longer than age
+	 */
 	fun IsInCoRrEcTnAMe() = name.length > age
 }
 

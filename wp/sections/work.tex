@@ -246,7 +246,7 @@ In order to collect  elements with a proper type, Inspection has to do a tree tr
 
 
 \begin{lstlisting}[caption={Method for AST traversal}, label={lst:example1}, language=Kotlin]      
-**
+/**
  * This method performs tree traversal and returns all nodes which satisfy the condition
  */
 fun ASTNode.findAllNodesWithCondition(condition: (ASTNode) -> Boolean, withSelf: Boolean = true): List<ASTNode> {

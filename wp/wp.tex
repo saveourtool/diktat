@@ -30,6 +30,31 @@
 \definecolor{BurntOrange}{rgb}{0.8,0.3334,0.1334}
 \definecolor{selectColor}{rgb}{0.686,1,0.592}
 
+\newcommand\YAMLcolonstyle{\color{black}\mdseries}
+\newcommand\YAMLkeystyle{\color{BurntOrange}\bfseries}
+\newcommand\YAMLvaluestyle{\color{black}\mdseries}
+
+\lstdefinelanguage{yaml}
+{
+  keywords={true,false,null,y,n},
+  keywordstyle=\color{darkgray}\bfseries,
+  basicstyle=\YAMLkeystyle,
+  sensitive=false,
+  comment=[l]{\#},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{ForestGreen}\ttfamily,
+  stringstyle=\YAMLvaluestyle\ttfamily,
+  moredelim=[l][\color{orange}]{\&},
+  moredelim=[l][\color{magenta}]{*},
+  moredelim=**[il][\YAMLcolonstyle{:}\YAMLvaluestyle]{:},
+  morestring=[b]',
+  morestring=[b]",
+  literate =    {---}{{\ProcessThreeDashes}}3
+                {>}{{\textcolor{red}\textgreater}}1
+                {|}{{\textcolor{red}\textbar}}1
+                {\ -\ }{{\mdseries\ -\ }}3,
+}
+
 \lstdefinestyle{mystyle}{
 	backgroundcolor=\color{backcolour},
 	commentstyle=\color{codegreen},
