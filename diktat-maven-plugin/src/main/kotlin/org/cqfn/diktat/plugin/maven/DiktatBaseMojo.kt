@@ -94,6 +94,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
      * Function that searches diktat config file in maven project hierarchy.
      * If [diktatConfigFile] is absolute, it's path is used. If [diktatConfigFile] is relative, this method looks for it in all maven parent projects.
      * This way config file can be placed in parent module directory and used in all child modules too.
+     *
      * @return path to configuration file as a string. File by this path might not exist.
      */
     private fun resolveConfig(): String {
