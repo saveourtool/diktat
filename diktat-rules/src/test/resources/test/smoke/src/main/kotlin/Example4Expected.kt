@@ -48,6 +48,7 @@ fun bar() {
         inputs = project.fileTree("src").apply {
             include("**/*.kt")
         }
-        reporter = PlainReporter(System.out)}
+        reporter = PlainReporter(System.out)
+    }
 }
 

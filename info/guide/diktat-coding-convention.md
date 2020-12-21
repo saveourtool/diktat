@@ -362,7 +362,6 @@ Other code blocks can also have KDocs if needed.
 Instead of using comments or KDocs before properties in the primary constructor of a class - use `@property` tag in a KDoc of a class.
 All properties of the primary constructor should also be documented in a KDoc with a `@property` tag.
 
-
 **Incorrect example:**
 ```kotlin
 /**
@@ -600,7 +599,6 @@ Compared to Java, the `if` statement in Kotlin statements returns a value. For t
 **Valid examples:**
 
 ```kotlin
-
 val foo = 100  // right-side comment
 val bar = 200  /* right-side comment */
 
