@@ -13,6 +13,7 @@ import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.VerificationTask
+import org.gradle.util.GradleVersion
 
 import java.io.File
 import javax.inject.Inject
@@ -100,9 +101,7 @@ open class DiktatJavaExecTaskBase @Inject constructor(
 
     @Suppress("MagicNumber")
     private fun isMainClassPropertySupported(gradleVersionString: String) =
-            GradleVersion.fromString(gradleVersionString).run {
-                major >= 6 && minor >= 4
-            }
+            GradleVersion.version(gradleVersionString) < GradleVersion.version("6.4")
 
     private fun MutableList<String>.addPattern(pattern: File, negate: Boolean = false) {
         val path = if (pattern.isAbsolute) {
