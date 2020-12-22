@@ -172,10 +172,10 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
                 node.addChild(PsiWhiteSpaceImpl(newLines), node.firstChildNode)
                 node.addChild(LeafPsiElement(BLOCK_COMMENT,
                     """
-                            /*
-                             * $copyrightText
-                             */
-                        """.trimIndent()),
+/*
+${handleMultilineCopyright(copyrightText)}
+*/
+                    """.trimIndent()),
                     node.firstChildNode
                 )
             }
@@ -187,6 +187,25 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
             WRONG_COPYRIGHT_YEAR.warnAndFix(configRules, emitWarn, isFixMode, "year should be $curYear", node.startOffset, node) {
                 (headerComment as LeafElement).replaceWithText(headerComment.text.replace(copyrightText, copyrightWithCorrectYear))
             }
+        }
+    }
+
+    private fun handleMultilineCopyright(copyrightText: String): String {
+        var properCopyright = ""
+        if (copyrightText.contains("\n")) {
+            copyrightText.split("\n").map { "    $it" }.forEach {
+                properCopyright += if (it == "    ") {
+                    "\n"
+                } else {
+                    "$it\n"
+                }
+            }
+        }
+
+        return if (properCopyright.isNotEmpty()) {
+            properCopyright.dropLast(1)
+        } else {
+            "    $copyrightText"
         }
     }
 
