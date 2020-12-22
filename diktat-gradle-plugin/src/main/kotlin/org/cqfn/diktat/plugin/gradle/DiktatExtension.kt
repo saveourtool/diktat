@@ -8,6 +8,11 @@ import org.gradle.api.file.FileCollection
  */
 open class DiktatExtension {
     /**
+     * Boolean flag to support `ignoreFailures` property of [VerificationTask].
+     */
+    var ignoreFailures: Boolean = false
+
+    /**
      * Flag that indicates whether to turn debug logging on
      */
     var debug = false

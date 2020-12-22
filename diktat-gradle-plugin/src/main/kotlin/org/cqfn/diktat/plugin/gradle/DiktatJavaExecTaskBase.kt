@@ -52,6 +52,8 @@ open class DiktatJavaExecTaskBase @Inject constructor(
         if (diktatExtension.debug) {
             logger.lifecycle("Running diktat $DIKTAT_VERSION with ktlint $KTLINT_VERSION")
         }
+        ignoreFailures = diktatExtension.ignoreFailures
+        isIgnoreExitValue = ignoreFailures  // ignore returned value of JavaExec started process if lint errors shouldn't fail the build
         args = additionalFlags.toMutableList().apply {
             if (diktatExtension.debug) {
                 add("--debug")
