@@ -21,13 +21,12 @@ open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesCo
      * @param rulesConfigList optional override for `this.rulesConfigList`
      * @param fileName optional override for file name
      */
-    @Suppress("LOCAL_VARIABLE_EARLY_DECLARATION")
     fun lintMethod(code: String,
                    vararg lintErrors: LintError,
                    rulesConfigList: List<RulesConfig>? = null,
                    fileName: String? = null) {
-        val res: MutableList<LintError> = mutableListOf()
         val actualFileName = fileName ?: TEST_FILE_NAME
+        val res: MutableList<LintError> = mutableListOf()
         KtLint.lint(
             KtLint.Params(
                 fileName = actualFileName,

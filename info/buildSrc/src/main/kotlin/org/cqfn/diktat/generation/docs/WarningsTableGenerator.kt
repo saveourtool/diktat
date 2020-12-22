@@ -1,8 +1,6 @@
-/**
- * This file generates a table, which maps warning names to chapters in code style
- */
+package org.cqfn.diktat.generation.docs
 
-package org.cqfn.diktat.ruleset.constants
+import org.cqfn.diktat.ruleset.constants.Warnings
 
 import java.io.File
 
@@ -11,8 +9,11 @@ import java.io.File
  */
 const val DIKTAT_GUIDE: String = "guide/diktat-coding-convention.md#"
 
+/**
+ * Generates a table, which maps warning names to chapters in code style
+ */
 @Suppress("MagicNumber")
-fun main() {
+fun generateRulesMapping() {
     val allWarnings = Warnings.values()
     allWarnings.sortBy { warn ->
         val numbers = warn.ruleId.split(".")
@@ -41,5 +42,5 @@ fun main() {
 
     val header = "| Diktat Rule | Code Style | Auto-fixed? |\n"
     val separator = "| ${"-".repeat(maxRuleNameLength)} | ${"-".repeat(maxRuleIdLength)} | --- |\n"
-    File("info/rules-mapping.md").writeText("$header$separator$tableWithWarnings")
+    File("rules-mapping.md").writeText("$header$separator$tableWithWarnings")
 }

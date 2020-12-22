@@ -1,22 +1,3 @@
-<img src="/logo.svg" width="64px"/>
-
-# Diktat Coding Convention
-
-### Content
-
-| Chapter             | Content                                                      |
-| ------------------- | ------------------------------------------------------------ |
-| [0. Preface](#c0.1) | [Purpose](#c0.1), [General principles](#c0.2), [Terminology](#c0.3), [Exceptions](#c0.4) |
-| [1. Naming](#c1)    | [Identifiers](#c1.1), [Package names](#c1.2), [Classes, enumeration and interfaces](#c1.3), [Functions](#c1.4), [Constants](#c1.5), [Variables](#c1.6) |
-| [2. Docs](#c2)  | [Kdoc](#c2.1), [File header](#c2.2), [Comments on function header ](#c2.3), [Code comments](#c2.4) |
-| [3. General formatting](#c3)   | [File-related rules](#c3.1), [Braces](#c3.2), [Indentation](#c3.3), [Empty blocks](#c3.4), [Line length](#c3.5), [Line breaks (newlines)](#c3.6), [Blank lines](#c3.7), [Horizontal space](#c3.8), [Enumerations](#c3.9), [Variable declaration](#c3.10), [When expression](#c3.11), [Annotations](#c3.12), [Layout of comments](#c3.13), [Modifiers and constant values](#c3.14), [Strings](#c3.15)|
-| [4. Variables and types](#c4) | [Variables](#c4.1), [Types](#c4.2), [Null safety and variable declarations](#4.3)|
-| [5. Functions](#c5) | [Function design](#c5.1), [Function arguments](#c5.2)|
-| [6. Classes](#c6) | [Classes](#c6.1), [Extension functions](#c6.2), [Interfaces](#c6.3), [Objects](#c6.4) |
-| [7. Kotlin & Java](#c7) |  |
-
-
-
 ## <a name="c0"></a> Preface
  <!-- =============================================================================== -->
 ### <a name="c0.1"></a> Purpose of this document   
@@ -88,7 +69,8 @@ Note: The source file encoding format (including comments) must be UTF-8 only. T
 
 <!-- =============================================================================== -->
 ### <a name="c1.1"></a> 1.1 Identifier names
-### <a name="r1.1.1"></a> Rule 1.1.1: Identifiers naming conventions
+This section describes the general rules for naming identifiers.
+#### <a name="r1.1.1"></a> 1.1.1 Identifiers naming conventions
 
 For identifiers, use the following naming conventions:
 1.	All identifiers should use only ASCII letters or digits, and the names should match regular expressions `\w{2,64}`.
@@ -149,7 +131,8 @@ Note that prefixing can also negatively affect the style and the auto-generation
 
 <!-- =============================================================================== -->
 ### <a name="c1.2"></a> 1.2 Packages names
-### <a name="r1.2.1"></a> Rule 1.2.1: Package names dots
+
+#### <a name="r1.2.1"></a> Rule 1.2.1 Package names dots
 Package names are in lower case and separated by dots. Code developed within your company should start with `your.company.domain.` Numbers are permitted in package names.
 Each file should have a `package` directive.
 Package names are all written in lowercase, and consecutive words are concatenated together (no underscores). Package names should contain both the product or module names and the department (or team) name to prevent conflicts with other teams.  Numbers are not permitted. For example: `org.apache.commons.lang3`, `xxx.yyy.v2`.
@@ -167,7 +150,8 @@ package your.company.domain.mobilecontrol.views
 
 <!-- =============================================================================== -->
 ### <a name="c1.3"></a> 1.3 Classes, enumerations, interfaces
-### <a name="r1.3.1"></a> Rule 1.3.1: Classes, enumerations, interface names use Camel case
+This section describes the general rules for naming classes, enumerations, and interfaces.
+### <a name="r1.3.1"></a> 1.3.1 Classes, enumerations, interface names use Camel case
 Classes, enumerations, and interface names use `UpperCamelCase` nomenclature. Follow the naming rules described below:
 1.	A class name is usually a noun (or a noun phrase) denoted using the camel case nomenclature, such as UpperCamelCase. For example: `Character` or `ImmutableList`.
 An interface name can also be a noun or noun phrase (such as `List`) or an adjective or adjective phrase (such as `Readable`).
@@ -193,7 +177,8 @@ class Order {}
 
 <!-- =============================================================================== -->
 ### <a name="c1.4"></a> 1.4 Functions
-### <a name="r1.4.1"></a> Rule 1.4.1: Function names should be in camel case
+This section describes the general rules for naming functions.
+### <a name="r1.4.1"></a> 1.4.1 Function names should be in camel case
 Function names should use `lowerCamelCase` nomenclature. Follow the naming rules described below:
 1.	Function names are usually verbs or verb phrases denoted with the camel case nomenclature (`lowerCamelCase`).
 For example: `sendMessage`, `stopProcess`, or `calculateValue`.
@@ -240,20 +225,17 @@ fun draw()
 fun addKeyListener(Listener)
 ```
 
-2.	An underscore (`_`) can be included in the JUnit test function name and should be used as a separator. Each logical part denoted in `lowerCamelCase`, for example, a typical pattern of using underscore: `pop_emptyStack`.
+2.	An underscore (`_`) can be included in the JUnit test function name and should be used as a separator. Each logical part is denoted in `lowerCamelCase`, for example, a typical pattern of using underscore: `pop_emptyStack`.
 <!-- =============================================================================== -->
 ### <a name="c1.5"></a> 1.5 Constants
-### <a name="r1.5.1"></a> Rule 1.5.1 Constant names should be in UPPER case, words in the name are separated by underscore
-Constant names should be in UPPER case, words separated by underscore. The jeneral constant naming conventions are listed below:
-1. Constants are attributes created with the `const` keyword, or top-level/`val` local variables of an object that holds immutable data. In most cases, constants can be identified as a `const val` property from the `object`/`companion object`/file top level. These variables contain a fixed constant values that typically should never be changed by programmers. This includes basic types, strings, immutable types, and immutable collections of immutable types. The value is not constant for the object, which state can be changed.
-
-2. Constant names should contain only uppercase letters separated by underscores. They should have a `val` or `const val` (`const` should be used only with primitive types) modifier to make them final (immutable) explicitly. In most cases, if you need to specify a constant value, then you need to create it with the `const val` modifier. Note that not all `val` variables are constants.
-
+This section describes the general rules for naming constraints.
+### <a name="r1.5.1"></a> 1.5.1 Using UPPER case and underscore characters in a constraint name
+Constant names should be in UPPER case, words separated by underscore. The general constant naming conventions are listed below:
+1. Constants are attributes created with the `const` keyword or top-level/`val` local variables of an object that holds immutable data. In most cases, constants can be identified as a `const val` property from the `object`/`companion object`/file top level. These variables contain fixed constant values that typically should never be changed by programmers. This includes basic types, strings, immutable types, and immutable collections of immutable types. The value is not constant for the object, which state can be changed.
+2. Constant names should contain only uppercase letters separated by an underscores. They should have a val or const val modifier to make them final explicitly. In most cases, if you need to specify a constant value, then you need to create it with the "const val" modifier. Note that not all `val` variables are constants.
 3. Objects with immutable content, such as `Logger` and `Lock`, can be in uppercase as constants or have camel case as regular variables.
-
 4. Use meaningful constants instead of `magic numbers`. SQL or logging strings should not be treated as magic numbers, nor should they be defined as string constants.
-
-Magic constants like `NUM_FIVE = 5` or `NUM_5 = 5` should not be treated as constants. This is because mistakes will easily be made if they are changed to `NUM_5 = 50` or 55.
+Magic constants, such as `NUM_FIVE = 5` or `NUM_5 = 5` should not be treated as constants. This is because mistakes will easily be made if they are changed to `NUM_5 = 50` or 55.
 These constants typically represent business logic values, such as measures, capacity, scope, location, tax rate, promotional discounts, and power base multiples in algorithms.
 You can avoid using magic numbers with the following method:
 - Using library functions and APIs. For example, instead of checking that `size == 0`, use `isEmpty()` function. To work with `time`, use built-ins from `java.time API`.
@@ -275,7 +257,8 @@ const val String APPLICATION_NAME = "Launcher";
 
 <!-- =============================================================================== -->
 ### <a name="c1.6"></a> 1.6 Non-constant fields (variables)
-### <a name="r1.6.1"></a> Rule 1.6.1: Non-constant field name
+This section describes the general rules for naming variables.
+### <a name="r1.6.1"></a> 1.6.1 Non-constant field name
 Non-constant field names should use camel case and start with a lowercase letter.
 A local variable cannot be treated as constant even if it is final and immutable. Therefore, it should not use the preceding rules. Names of collection type variables (sets, lists, etc.) should contain plural nouns.
 For example: `var namesList: List<String>`
@@ -295,9 +278,9 @@ val users: List<String> = listOf();
 val mutableCollection: MutableSet<String> = HashSet()
 ```
 
-### <a name="r1.6.2"></a> Rule 1.6.2: Boolean variable names with negative meaning
+### <a name="r1.6.2"></a> 1.6.2 Boolean variable names with negative meaning
 
-Avoid using Boolean variable names with a negative meaning. When using a logical operator and name with negative meaning, the code may be difficult to understand, which is referred to as the "double negative".
+Avoid using Boolean variable names with a negative meaning. When using a logical operator and name with a negative meaning, the code may be difficult to understand, which is referred to as the "double negative".
 For instance, it is not easy to understand the meaning of !isNotError.
 The JavaBeans specification automatically generates isXxx() getters for attributes of Boolean classes.
 However, not all methods returning Boolean type have this notation.
@@ -331,8 +314,8 @@ Comments should accurately reflect the code's design ideas and logic and further
 As a result, other programmers will be able to save time when trying to understand the code.
 Imagine that you are writing the comments to help yourself to understand the original ideas behind the code in the future. 
 
-### <a name="c2.1"></a> 2.1 General form of Kdoc 
- 
+### <a name="c2.1"></a> 2.1 General form of Kdoc
+
 KDoc is a combination of JavaDoc's block tags syntax (extended to support specific constructions of Kotlin) and Markdown's inline markup.
 The basic format of KDoc is shown in the following example:
 
@@ -353,7 +336,7 @@ It is also shown in the following single-line form:
 ```
 Use a single-line form when you store the entire KDoc block in one line (and there is no KDoc mark @XXX). For detailed instructions on how to use KDoc, refer to [Official Document](https://docs.oracle.com/en/Kotlin/Kotlinse/11/tools/KDoc.html).
 
-### <a name="r2.1.1"></a> Rule 2.1.1: KDoc is used for each public, protected or internal code element
+#### <a name="r2.1.1"></a> 2.1.1 Using KDoc for the public, protected, or internal code elements
 
 At a minimum, KDoc should be used for every public, protected, or internal decorated class, interface, enumeration, method, and member field (property).
 Other code blocks can also have KDocs if needed.
@@ -390,9 +373,9 @@ class Example(
 
 **Exceptions:**
 
-1. For setters/getters of properties, obvious comments (like `this getter returns field`) are optional. Note that Kotlin generates simple `get/set` methods under the hood.
+* For setters/getters of properties, obvious comments (like `this getter returns field`) are optional. Note that Kotlin generates simple `get/set` methods under the hood.
    
-2. It is optional to add comments for simple one-line methods, such as shown in the example below:
+* It is optional to add comments for simple one-line methods, such as shown in the example below:
 ```kotlin
 val isEmpty: Boolean
     get() = this.size == 0
@@ -404,11 +387,13 @@ or
 fun isEmptyList(list: List<String>) = list.size == 0
 ```
 
-Note: You can skip KDocs for a method's override if it is almost the same as the superclass method.
+**Note:** You can skip KDocs for a method's override if it is almost the same as the superclass method.
 
-### <a name="r2.1.2"></a>Rule 2.1.2: When the method has arguments, return value, can throw exceptions, etc., it must be described in the KDoc block: with @param, @return, @throws, etc.
+#### <a name="r2.1.2"></a> 2.1.2 Describing methods that have arguments, a return value, or can throw an exception in the KDoc block
 
-**Valid examples**:
+When the method has such details as arguments, return value, or can throw exceptions, it must be described in the KDoc block (with @param, @return, @throws, etc.).
+
+**Valid examples:**
 
  ```kotlin
 /** 
@@ -419,7 +404,7 @@ Note: You can skip KDocs for a method's override if it is almost the same as the
  protected abstract class Sample {
     /**
      * This is a long comment with whitespace that should be split in 
-     * comments on multiple lines in case the line comment formatting is enabled.
+     * comments on multiple lines if the line comment formatting is enabled.
      *     / * Add a blank line between the comment text and each KDoc tag underneath * /
      * @param fox A quick brown fox jumps over the lazy dog
      * @return battle between fox and dog 
@@ -441,7 +426,8 @@ Note: You can skip KDocs for a method's override if it is almost the same as the
  }
  ```
 
-### <a name="r2.1.3"></a>Rule 2.1.3: Only one space between the Kdoc tag and content. Tags are arranged in the order.
+#### <a name="r2.1.3"></a>2.1.3 Only one space between the Kdoc tag and content. Tags are arranged in the order.
+
 There should be only one space between the Kdoc tag and content. Tags are arranged in the following order: @param, @return, and @throws.
 
 Therefore, Kdoc should contain the following:
@@ -487,12 +473,17 @@ Other KDoc tags (such as @param type parameters and @see.) can be added as follo
  * @since 1.6
  */
 ```
-### <a name="c2.2"></a> 2.2 Comments to the file header
-### <a name="r2.2.1"></a> Rule 2.2.1: Comments on the file header must include copyright information, without the creation date and author's name (use VCS for history management instead). The content inside files that contain multiple or no classes should also be described.
 
+### <a name="c2.2"></a> 2.2 Adding comments on the file header
+
+This section describes the general rules of adding comments on the file header.
 Comments on the file header should be placed before the package name and imports. If you need to add more content to the comment, subsequently add it in the same format.
 
-The following examples for Huawei describe the format of the **copyright license**: \
+Comments on the file header must include copyright information, without the creation date and author's name (use VCS for history management). Also, describe the content inside files that contain multiple or no classes.
+
+Place comments on the file header before the package name and imports. If you need to add more content to the comment, subsequently add it in the same format.
+
+The following examples for Huawei describe the format of the *copyright license*: \
 Chinese version: `版权所有 (c) 华为技术有限公司 2012-2020` \
 English version: `Copyright (c) Huawei Technologies Co., Ltd. 2012-2020. All rights reserved.`
 
@@ -519,12 +510,11 @@ The following factors should be considered when writing the file header or comme
 - Maintain a unified format. The specific format can be formulated by the project (for example, if you use an existing opensource project), and you need to follow it.
 - A top-level file-Kdoc must include a copyright and functional description, especially if there is more than one top-level class.
 - Do not include empty comment blocks. If there is no content after the option `@apiNote`, the entire tag block should be deleted.
-- The industry practice is not to include historical information in comments. The corresponding history can be found in VCS (git, svn, etc.). Therefore, it is not recommended to include historical data in the comments of the Kotlin source code.
-
+- The industry practice is not to include historical information in the comments. The corresponding history can be found in VCS (git, svn, etc.). Therefore, it is not recommended to include historical data in the comments of the Kotlin source code.
 
 ### <a name="c2.3"></a> 2.3 Comments on the function header
-### <a name="r2.3.1"></a> Rule 2.3.1: Do not make unnecessary and useless comments.
-Comments on the function header are placed above function declarations or definitions. A newline should not exist between a function declaration and its Kdoc. Use the preceding [KDoc](#c2.1) style rules.
+
+Comments on the function header are placed above function declarations or definitions. A newline should not exist between a function declaration and its Kdoc. Use the preceding <<c2.1,KDoc>> style rules.
 
 As stated in Chapter 1, the function name should reflect its functionality as much as possible. Therefore, in the Kdoc, try to describe the functionality that is not mentioned in the function name.
 Avoid unnecessary comments on dummy coding.
@@ -532,13 +522,18 @@ Avoid unnecessary comments on dummy coding.
 The function header comment's content is optional, but not limited to function description, return value, performance constraints, usage, memory conventions, algorithm implementation, reentrant requirements, etc.
 
 ### <a name="c2.4"></a> 2.4 Code comments
-### <a name="r2.4.1"></a> Rule 2.4.1: Add a blank line between the body of the comment and Kdoc tag-blocks.
+
+This section describes the general rules of adding code comments.
+
+#### <a name="r2.4.1"></a> 2.4.1 Add a blank line between the body of the comment and Kdoc tag-blocks.
+
 It is a good practice to add a blank line between the body of the comment and Kdoc tag-blocks. Also, consider the following rules:
-- There must be one space between the comment character and the content of the comment
-- There must be a newline between a Kdoc and presiding code
+- There must be one space between the comment character and the content of the comment.
+- There must be a newline between a Kdoc and the presiding code.
 - An empty line should not exist between a Kdoc and the code it is describing. You do not need to add a blank line before the first comment in a particular namespace (code block) (for example, between the function declaration and first comment in a function body).
 
 **Valid Examples:**
+
 ```kotlin
 /** 
  * This is the short overview comment for the example interface.
@@ -606,14 +601,16 @@ val someVal = if (nr % 15 == 0) {
 }
 ```
 
-- Start all comments (including KDoc) with space after the first symbol (`//`, `/*`, `/**` and `*`)
+- Start all comments (including KDoc) with a space after the first symbol (`//`, `/*`, `/**` and `*`)
 
 **Valid example:**
+
 ```kotlin
 val x = 0  // this is a comment
 ```
 
-### <a name="r2.4.2"></a>Rule 2.4.2: Do not comment on unused code blocks
+#### <a name="r2.4.2"></a> 2.4.2 Do not comment on unused code blocks
+
 Do not comment on unused code blocks, including imports. Delete these code blocks immediately.
 A code is not used to store history. Git, svn, or other VCS tools should be used for this purpose.
 Unused imports increase the coupling of the code and are not conducive to maintenance. The commented out code cannot be appropriately maintained.
@@ -621,12 +618,14 @@ In an attempt to reuse the code, there is a high probability that you will intro
 The correct approach is to delete the unnecessary code directly and immediately when it is not used anymore.
 If you need the code again, consider porting or rewriting it as changes could have occurred since you first commented on the code. 
 
-### <a name="r2.4.3"></a>Recommendation 2.4.3: Code delivered to the client should not contain TODO/FIXME comments.
+#### <a name="r2.4.3"></a>2.4.3 Code delivered to the client should not contain TODO/FIXME comments
+
 The code officially delivered to the client typically should not contain TODO/FIXME comments.
 `TODO` comments are typically used to describe modification points that need to be improved and added. For example, refactoring FIXME comments are typically used to describe known defects and bugs that will be subsequently fixed and are not critical for an application.
-They should all have a unified style to facilitate the unified text search processing.
+They should all have a unified style to facilitate unified text search processing.
 
-**Example**:
+**Example:**
+
 ```kotlin
 // TODO(<author-name>): Jira-XXX - support new json format
 // FIXME: Jira-XXX - fix NPE in this code block
@@ -636,13 +635,14 @@ At a version development stage, these annotations can be used to highlight the i
 # <a name="c3"></a>3. General formatting (typesetting)
 <!-- =============================================================================== -->
 ### <a name="c3.1"></a> 3.1 File-related rules
-### <a name="r3.1.1"></a> Rule 3.1.1: Avoid files that are too long. Files should not exceed 2000 lines (non-empty and non-commented lines).
+This section describes the rules related to using files in your code.
+#### <a name="r3.1.1"></a> 3.1.1 Avoid files that are too long
 
-If the file is too long and complex, it should be split into smaller files, functions, or modules.
+If the file is too long and complicated, it should be split into smaller files, functions, or modules. Files should not exceed 2000 lines (non-empty and non-commented lines).
 It is recommended to horizontally or vertically split the file according to responsibilities or hierarchy of its parts.
 The only exception to this rule is code generation - the auto-generated files that are not manually modified can be longer.
 
-### <a name="r3.1.2"></a> Rule 3.1.2: Code blocks in the source file should be separated by one blank line and should be in the proper order.
+#### <a name="r3.1.2"></a> 3.1.2 Code blocks in the source file should be separated by one blank line
 A source file contains code blocks in the following order: copyright, package name, imports, and top-level classes. They should be separated by one blank line.
 
 a) Code blocks should be in the following order:
@@ -657,11 +657,11 @@ b) Each of the preceding code blocks should be separated by a blank line.
 
 c) Import statements are alphabetically arranged, without using line breaks and wildcards ( wildcard imports - `*`). 
 
-d) **Recommendation**. One `.kt` source file should contain only one class declaration, and its name should match the filename
+d) **Recommendation**: One `.kt` source file should contain only one class declaration, and its name should match the filename
 
 e) Avoid empty files that do not contain the code or contain only imports/comments/package name
 
-### <a name="r3.1.3"></a> Recommendation 3.1.3: Import statements order.
+#### <a name="r3.1.3"></a> 3.1.3 Import statements order
 
 From top to bottom, the order is the following:
 1. Android
@@ -691,9 +691,8 @@ import kotlin.system.exitProcess  // kotlin standard library
 import kotlinx.coroutines.*  // official kotlin extension library
 ```
 
-### <a name="r3.1.4"></a> Recommendation 3.1.4: The declaration parts of class-like code structures (class, interface, etc.) should be placed in the order.
+#### <a name="r3.1.4"></a> 3.1.4 Order of declaration parts of class-like code structures
 The declaration parts of class-like code structures (class, interface, etc.) should be in the following order: compile-time constants (for objects), class properties, late-init class properties, init-blocks, constructors, public methods, internal methods, protected methods, private methods, and companion object. Blank lines should separate their declaration.
-
 Notes:
 1.	There should be no blank lines between properties with the following **exceptions**: when there is a comment before a property on a separate line or annotations on a separate line.
 2.	Properties with comments/Kdoc should be separated by a newline before the comment/Kdoc.
@@ -706,15 +705,16 @@ The declaration part of a class or interface should be in the following order:
 - Init-blocks
 - Constructors
 - Methods or nested classes. Put nested classes next to the code they are used by.
-If the classes are meant to be used externally and are not referenced inside the class, put them after the companion object.
+If the classes are meant to be used externally, and are not referenced inside the class, put them after the companion object.
 - Companion object
 
 **Exception:**
-All variants of a `(private) val` logger should be placed in the beginning of the class (`(private) val log`, `LOG`, `logger`, etc.).
+All variants of a `(private) val` logger should be placed at the beginning of the class (`(private) val log`, `LOG`, `logger`, etc.).
 
 <!-- =============================================================================== -->
 ### <a name="c3.2"></a> 3.2 Braces
-### <a name="r3.2.1"></a> Rule 3.2.1: Braces must be used in conditional statements and loop blocks.
+This section describes the general rules of using braces in your code.
+#### <a name="r3.2.1"></a> 3.2.1 Using braces in conditional statements and loop blocks
 
 Braces should always be used in `if`, `else`, `for`, `do`, and `while` statements, even if the program body is empty or contains only one statement. In special Kotlin `when` statements, you do not need to use braces for single-line statements. 
 
@@ -754,8 +754,8 @@ if (condition) {
 }
 ```
 
-### <a name="r3.2.2"></a> Rule 3.2.2 For *non-empty* blocks and block structures, the opening brace is placed at the end of the line
-
+#### <a name="r3.2.2"></a> 3.2.2  Opening braces are placed at the end of the line in *non-empty* blocks and block structures
+For *non-empty* blocks and block structures, the opening brace is placed at the end of the line.
 Follow the K&R style (1TBS or OTBS) for *non-empty* code blocks with braces:
 - The opening brace and first line of the code block are on the same line.
 - The closing brace is on its own new line.
@@ -813,12 +813,11 @@ do {
 
 <!-- =============================================================================== -->
 ### <a name="c3.3"></a> 3.3 Indentation
-### <a name="r3.3.1"></a>Rule 3.3.1: Use spaces for indentation. Each indentation equals four spaces.
 
 Only spaces are permitted for indentation, and each indentation should equal `four spaces` (tabs are not permitted).
 If you prefer using tabs, simply configure them to change to spaces in your IDE automatically.
 These code blocks should be indented if they are placed on the new line, and the following conditions are met:
--	The code block is placed immediately after an opening brace
+-	The code block is placed immediately after an opening brace.
 -	The code block is placed after each operator, including the assignment operator (`+`/`-`/`&&`/`=`/etc.)
 -	The code block is a call chain of methods:
 ```kotlin
@@ -844,7 +843,7 @@ b) Arguments in argument lists can be aligned if they are on different lines.
 
 3.	Eight spaces are used for functional-like styles when the newline is placed before the dot.
 
-4.	Super type lists: \
+4.	Supertype lists: \
 a) Four spaces are used if the colon before the supertype list is on a new line. \
 b) Four spaces are used before each supertype, and eight spaces are used if the colon is on a new line. 
 
@@ -888,9 +887,8 @@ class A
 
 <!-- =============================================================================== -->
 ### <a name="c3.4"></a> 3.4 Empty blocks
-### <a name="r3.4.1"></a> Recommendation 3.4.1: Avoid empty blocks, and ensure braces start on a new line.
 
-An empty code block can be closed immediately on the same line and the next line. However, a newline is recommended between opening and closing braces `{}` (see the examples below.)
+Avoid empty blocks, and ensure braces start on a new line. An empty code block can be closed immediately on the same line and the next line. However, a newline is recommended between opening and closing braces `{}` (see the examples below.)
 
 Generally, empty code blocks are prohibited; using them is considered a bad practice (especially for catch block).
 They are only appropriate for overridden functions when the base class's functionality is not needed in the class-inheritor.
@@ -925,10 +923,9 @@ try {
 
 <!-- =============================================================================== -->
 ### <a name="c3.5"></a> 3.5 Line length
-### <a name="r3.5.1"></a> Recommendation 3.5.1: Line length should be less than 120 symbols.
 
-The international code style prohibits `non-Latin` (`non-ASCII`) symbols.
-(See [Rule 1.1.1: Identifiers](#r1.1.1)) However, if you still intend on using them, follow the following convention:
+Line length should be less than 120 symbols. The international code style prohibits `non-Latin` (`non-ASCII`) symbols.
+(See [Identifiers](#r1.1.1)) However, if you still intend on using them, follow the following convention:
 
 - One wide character occupies the width of two narrow characters.
 The "wide" and "narrow" parts of a character are defined by its [east Asian width Unicode attribute](https://unicode.org/reports/tr11/).
@@ -947,7 +944,8 @@ Each one of these characters represents two narrow characters.
 
 <!-- =============================================================================== -->
 ### <a name="c3.6"></a> 3.6 Line breaks (newlines)
-### <a name="r3.6.1"></a> Recommendation 3.6.1: Each line can have a maximum of one statement.
+This section contains the rules and recommendations on using line breaks.
+#### <a name="r3.6.1"></a> 3.6.1 Each line can have a maximum of one statement.
 Each line can have a maximum of one code statement. This recommendation prohibits the use of code with `;` because it decreases code visibility.
 
 **Invalid example:**
@@ -961,7 +959,7 @@ val a = ""
 val b = ""
 ```
 
-### <a name="r3.6.2"></a>Rule 3.6.2: Rules for line-breaking
+#### <a name="r3.6.2"></a> 3.6.2 Rules for line-breaking
 
 1) Unlike Java, Kotlin allows you not to put a semicolon (`;`) after each statement separated by a newline character.
     There should be no redundant semicolon at the end of the lines.
@@ -1076,7 +1074,7 @@ fun foo(
 }
  ```
 
-8) If the supertype list has more than two elements, they should be separated by newlines
+8) If the supertype list has more than two elements, they should be separated by newlines.
 
 **Valid example:** 
 ```kotlin
@@ -1087,11 +1085,10 @@ class MyFavouriteVeryLongClassHolder :
 ```
 
 <!-- =============================================================================== -->
-### <a name="c3.7"></a> 3.7 Blank lines
-### <a name="r3.7.1"></a> Recommendation 3.7.1: Reduce unnecessary blank lines and maintain a compact code size
+### <a name="c3.7"></a> 3.7 Using blank lines
 
-By reducing unnecessary blank lines, you can display more code on one screen, which improves code readability.
-- Blank lines should separate content based on relevance and should be placed between groups of fields, constructors, methods, nested classes, `init` blocks, and objects (see [Rule 3.1.2](#r3.1.2)).
+Reduce unnecessary blank lines and maintain a compact code size. By reducing unnecessary blank lines, you can display more code on one screen, which improves code readability.
+- Blank lines should separate content based on relevance and should be placed between groups of fields, constructors, methods, nested classes, `init` blocks, and objects (see [3.1.2](#r3.1.2)).
 - Do not use more than one line inside methods, type definitions, and initialization expressions.
 - Generally, do not use more than two consecutive blank lines in a row.
 - Do not put newlines in the beginning or end of code blocks with curly braces.
@@ -1108,14 +1105,17 @@ fun baz() {
 
 <!-- =============================================================================== -->
 ### <a name="c3.8"></a> 3.8 Horizontal space
-### <a name="r3.8.1"></a> Rule 3.8.1: Usage of whitespace for code separation
+This section describes general rules and recommendations for using spaces in the code.
+#### <a name="r3.8.1"></a> 3.8.1: Usage of whitespace for code separation
 
-**Note:** This recommendation is for the cases where symbols are located on the same line. However, in some cases, a line break could be used instead of a space (described in another rule.)
+Follow the recommendations below for using space to separate keywords:
 
-1.  Separate keywords like `if`, `when`, `for`, e.t.c. from the opening parenthesis with single whitespace.
+**Note:** These recommendations are for cases where symbols are located on the same line. However, in some cases, a line break could be used instead of a space.
+
+1.  Separate keywords (such as `if`, `when`, `for`) from the opening parenthesis with single whitespace.
     The only exception is the `constructor` keyword, which should not be separated from the opening parenthesis.
 
-2.  Separate keywords like `else` or `try` from the opening brace (`{`) with a single whitespace.
+2.  Separate keywords like `else` or `try` from the opening brace (`{`) with single whitespace.
     If `else` is used in a ternary-style statement without braces, there should be a single space between `else` and the statement after: `if (condition) foo() else bar()`
 
 3.  Use a **single** whitespace before all opening braces (`{`). The only exception is the passing of a lambda as a parameter inside parentheses:
@@ -1124,7 +1124,7 @@ fun baz() {
      foo({x: Int -> x}, 5) // no space before '{'
  ```
 
-4.  A single whitespace should be placed on both sides of binary operators. This also applies to operator-like symbols.
+4.  Single whitespace should be placed on both sides of binary operators. This also applies to operator-like symbols.
     For example: 
     
  - A colon in generic structures with the `where` keyword:  `where T : Type`
@@ -1142,14 +1142,15 @@ fun baz() {
   `1..100`
 
 5.  Use spaces after (`,`), (`:`), and (`;`), except when the symbol is at the end of the line.
-    However, note that this code style prohibits the use of (`;`) in the middle of a line ([Rule 3.2.2](#r3.2.2)).
+    However, note that this code style prohibits the use of (`;`) in the middle of a line ([see 3.3.2](#r3.2.2)).
     There should be no whitespaces at the end of a line.
     The only scenario where there should be no space after a colon is when the colon is used in the annotation to specify a use-site target (for example, `@param:JsonProperty`).
     There should be no spaces before `,` , `:` and `;`. 
-    **Exceptions** for spaces and colons are the following:
     
-    - when `:` is used to separate a type and a supertype, including an anonymous object (after object keyword)
-    - when delegating to a superclass constructor or different constructor of the same class
+    **Exceptions** for spaces and colons:
+    
+    - When `:` is used to separate a type and a supertype, including an anonymous object (after object keyword)
+    - When delegating to a superclass constructor or different constructor of the same class
 
 **Valid example:**
 ```kotlin
@@ -1168,7 +1169,7 @@ If the type is nullable, there should be no space before `?`.
 7. When using `[]` operator (`get/set`) there should be **no** spaces between identifier and `[` : `someList[0]`.
 
 8. There should be no space between a method or constructor name (both at declaration and at call site) and a parenthesis:
-   `foo() {}`. Note that this sub-rule is related only to spaces; the rules for whitespaces are described in [Rule 3.6.2](#r3.6.2).
+   `foo() {}`. Note that this sub-rule is related only to spaces; the rules for whitespaces are described in [see 3.6.2](#r3.6.2).
     This rule does not prohibit, for example, the following code:
 ```kotlin
 fun foo
@@ -1181,20 +1182,20 @@ fun foo
 
 10. There should be no spaces between a prefix/postfix operator (like `!!` or `++`) and its operand.
 
-### <a name="r3.8.2"></a> Recommendation 3.8.2: No spaces should be inserted for horizontal alignment.
+#### <a name="r3.8.2"></a> 3.8.2: No spaces for horizontal alignment
 
 *Horizontal alignment* refers to aligning code blocks by adding space to the code. Horizontal alignment should not be used because:
 
 - When modifying code, it takes much time for new developers to format, support, and fix alignment issues.
 - Long identifier names will break the alignment and lead to less presentable code.
-- There are more disadvantages than advantages in alignment. To reduce maintenance costs, the best choice is not to use horizontal alignment.
+- There are more disadvantages than advantages in alignment. To reduce maintenance costs, misalignment (???) is the best choice.
 
 Recommendation: Alignment only looks suitable for `enum class`, where it can be used in table format to improve code readability:
 ```kotlin
 enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean, private val warn: String) : Rule {
     PACKAGE_NAME_MISSING         (1, true,  "no package name declared in a file"),
     PACKAGE_NAME_INCORRECT_CASE  (2, true,  "package name should be completely in a lower case"),
-    PACKAGE_NAME_INCORRECT_PREFIX(3, false, "package name should start from company's domain")
+    PACKAGE_NAME_INCORRECT_PREFIX(3, false, "package name should start from the company's domain")
     ;
 }
 ```
@@ -1213,8 +1214,9 @@ enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean
 
 <!-- =============================================================================== -->
 ### <a name="c3.9"></a> 3.9 Enumerations
-### <a name="r3.9.1"></a>Recommendation 3.9.1: Enum values are separated by a comma and line break, with ';' placed on the new line.
-1) Enum values are separated by a comma and a line break. `;` is put on the new line:
+Enum values are separated by a comma and line break, with ';' placed on the new line.
+
+1) The comma and line break characters separate enum values. Put `;` on the new line:
 ```kotlin
 enum class Warnings {
     A,
@@ -1225,7 +1227,7 @@ enum class Warnings {
 ```
 
 This will help to resolve conflicts and reduce the number of conflicts during merging pull requests.
-Also use [trailing comma](https://kotlinlang.org/docs/reference/whatsnew14.html#trailing-comma).
+Also, use [trailing comma](https://kotlinlang.org/docs/reference/whatsnew14.html#trailing-comma).
 
 2) If the enum is simple (no properties, methods, and comments inside), you can declare it in a single line:
 ```kotlin
@@ -1259,7 +1261,8 @@ enum class ComparisonResult {
 
 <!-- =============================================================================== -->
 ### <a name="c3.10"></a> 3.10 Variable declaration
-### <a name="r3.10.1"></a> Rule 3.10.1: Declare one variable per line.
+This section describes rules for the declaration of variables.
+#### <a name="r3.10.1"></a> 3.10.1 Declare one variable per line.
 
 Each property or variable must be declared on a separate line. 
 
@@ -1268,14 +1271,15 @@ Each property or variable must be declared on a separate line.
 val n1: Int; val n2: Int
 ```
 
-### <a name="r3.10.2"></a>Recommendation 3.10.2: Variables should be declared near the line where they are first used.
+#### <a name="r3.10.2"></a> 3.10.2 Variables should be declared near the line where they are first used.
 Declare local variables close to the point where they are first used to minimize their scope. This will also increase the readability of the code.
 Local variables are usually initialized during their declaration or immediately after.
 The member fields of the class should be declared collectively (see [Rule 3.1.2](#r3.1.2) for details on the class structure).
 
 <!-- =============================================================================== -->
-### <a name="c3.11"></a> 3.11 When expression
-### <a name="r3.11.1"></a>Rule 3.11.1: The 'when' statement must have an 'else' branch unless the condition variable is enumerated or a sealed type.
+### <a name="c3.11"></a> 3.11 'When' expression
+
+The `when` statement must have an 'else' branch unless the condition variable is enumerated or a sealed type.
 Each `when` statement should contain an `else` statement group, even if it does not contain any code.
 
 **Exception:** If 'when' statement of the `enum or sealed` type contains all enum values, there is no need to have an "else" branch.
@@ -1283,9 +1287,9 @@ The compiler can issue a warning when it is missing.
 
 <!-- =============================================================================== -->
 ### <a name="c3.12"></a> 3.12 Annotations
-### <a name="r3.12.1"></a> Recommendation 3.12.1: Each annotation applied to a class, method, or constructor should be placed on its own line.
 
-1. Annotations applied to the class, method, or constructor are placed on separate lines (one annotation per line). 
+Each annotation applied to a class, method or constructor should be placed on its own line. Consider the following examples:
+1. Annotations applied to the class, method or constructor are placed on separate lines (one annotation per line). 
 
 **Valid example**:
 ```kotlin
@@ -1309,8 +1313,7 @@ fun getNameIfPresent() { /* ... */ }
 ```
 
 <!-- =============================================================================== -->
-### <a name="c3.13"></a> 3.13 Layout of comments
-### <a name="r3.13.1"></a> Recommendation 3.13.1: Block comments location.
+### <a name="c3.13"></a> 3.13 Block comments
 
 Block comments should be placed at the same indentation level as the surrounding code. See examples below.
 
@@ -1326,11 +1329,13 @@ class SomeClass {
 }
  ```
 
-**Suggestion**: Use `/*...*/` block comments to enable automatic formatting by IDEs.
+**Note**: Use `/*...*/` block comments to enable automatic formatting by IDEs.
 
 <!-- =============================================================================== -->
 ### <a name="c3.14"></a> 3.14 Modifiers and constant values
-### <a name="r3.14.1"></a> Recommendation 3.14.1: If a declaration has multiple modifiers, always follow the proper sequence.
+This section contains recommendations regarding modifiers and constant values.
+#### <a name="r3.14.1"></a> 3.14.1 Declaration with multiple modifiers
+If a declaration has multiple modifiers, always follow the proper sequence.
 **Valid sequence:**
 
 ```kotlin
@@ -1355,7 +1360,8 @@ operator
 data
 ```
 
-### <a name="r3.14.2"></a>Recommendation 3.14.2: An underscore should separate long numerical values.
+#### <a name="r3.14.2"></a> 3.14.2: Separate long numerical values with an underscore
+An underscore character should separate long numerical values.
 **Note:** Using underscores simplifies reading and helps to find errors in numeric constants.
 ```kotlin
 val oneMillion = 1_000_000
@@ -1367,9 +1373,11 @@ val bytes = 0b11010010_01101001_10010100_10010010
 
 <!-- =============================================================================== -->
 ### <a name="c3.15"></a> 3.15 Strings
-### <a name="r3.15.1"></a> Rule 3.15.1: Concatenation of Strings is prohibited if the string can fit on one line.
+This section describes the general rules of using strings.
+
+#### <a name="r3.15.1"></a> 3.15.1 Concatenation of Strings
 String concatenation is prohibited if the string can fit on one line. Use raw strings and string templates instead. Kotlin has significantly improved the use of Strings: 
-[String templates](https://kotlinlang.org/docs/reference/basic-types.html#string-templates), [Raw strings](https://kotlinlang.org/docs/reference/basic-types.html#string-literals)
+[String templates](https://kotlinlang.org/docs/reference/basic-types.html#string-templates), [Raw strings](https://kotlinlang.org/docs/reference/basic-types.html#string-literals).
 Therefore, compared to using explicit concatenation, code looks much better when proper Kotlin strings are used for short lines, and you do not need to split them with newline characters.
 
 **Invalid example**:
@@ -1384,7 +1392,7 @@ val myStr = "Super string"
 val value = "$myStr concatenated"
 ```
 
-### <a name="r3.15.2"></a>Rule 3.15.2: String template format
+#### <a name="r3.15.2"></a> 3.15.2 String template format
 **Redundant curly braces in string templates**
 
 If there is only one variable in a string template, there is no need to use such a template. Use this variable directly.
@@ -1412,9 +1420,11 @@ val someString = "$myArgument"
 val someString = myArgument
 ```
 # <a name="c4"></a> 4. Variables and types
+This section is dedicated to the rules and recommendations for using variables and types in your code.
 <!-- =============================================================================== -->
 ### <a name="c4.1"></a> 4.1 Variables
-### <a name="r4.1.1"></a> Rule 4.1.1: Do not use Float and Double types when accurate calculations are needed.
+The rules of using variables are explained in the below topics.
+#### <a name="r4.1.1"></a> 4.1.1 Do not use Float and Double types when accurate calculations are needed
 Floating-point numbers provide a good approximation over a wide range of values, but they cannot produce accurate results in some cases.
 Binary floating-point numbers are unsuitable for precise calculations because it is impossible to represent 0.1 or any other negative power of 10 in a `binary representation` with a finite length.
 
@@ -1429,7 +1439,7 @@ However, it will print the following value: `0.8999999999999999`
 Therefore, for precise calculations (for example, in finance or exact sciences), using such types as `Int`, `Long`, `BigDecimal`are recommended.
 The `BigDecimal` type should serve as a good choice.
 
-**Invalid example**: \
+**Invalid example**:
 Float values containing more than six or seven decimal numbers will be rounded.
  ```kotlin
  val eFloat = 2.7182818284f // Float, will be rounded to 2.7182817
@@ -1442,8 +1452,8 @@ Float values containing more than six or seven decimal numbers will be rounded.
     println(income.subtract(expense)) // you will obtain 0.9 here
  ```
 
-### <a name="r4.1.2"></a> Rule 4.1.2: Numeric float type values should not be directly compared with the equality operator (==) or other methods like `compareTo()` and `equals()`.
-Since floating-point numbers involve precision problems in computer representation, it is better to use `BigDecimal` as recommended in [Rule 4.1.1](#r4.1.1) to make accurate computations and comparisons. The following code describes these problems.
+#### <a name="r4.1.2"></a> 4.1.2: Comparing numeric float type values
+Numeric float type values should not be directly compared with the equality operator (==) or other methods, such as `compareTo()` and `equals()`. Since floating-point numbers involve precision problems in computer representation, it is better to use `BigDecimal` as recommended in [Rule 4.1.1](#r4.1.1) to make accurate computations and comparisons. The following code describes these problems.
 
 **Invalid example**:
  ```kotlin
@@ -1476,16 +1486,17 @@ if (abs(foo - bar) > 1e-6f) {
 }
 ```
 
-### <a name="r4.1.3"></a> Rule 4.1.3 Try to use 'val' instead of 'var' for variable declaration [SAY_NO_TO_VAR].
+#### <a name="r4.1.3"></a> 4.1.3 Try to use 'val' instead of 'var' for variable declaration [SAY_NO_TO_VAR].
 
 Variables with the `val` modifier are immutable (read-only).
-Code robustness and readability increase when using `val` variables instead of `var` variables.
+Using `val` variables instead of `var` variables increases code robustness and readability.
 This is because `var` variables can be reassigned several times in the business logic.
 However, in some scenarios with loops or accumulators, only `var`s are permitted.
 
 <!-- =============================================================================== -->
 ### <a name="c4.2"></a> 4.2 Types
-### <a name="r4.2.1"></a> Recommendation 4.2.1: Use Contracts and smart cast as much as possible.
+This section provides recommendations for using types.
+#### <a name="r4.2.1"></a> 4.2.1: Use Contracts and smart cast as much as possible.
 
 The Kotlin compiler has introduced [Smart Casts](https://kotlinlang.org/docs/reference/typecasts.html#smart-casts) that help reduce the size of code.
 
@@ -1533,7 +1544,7 @@ fun foo(s: String?) {
 }
 ```
 
-### <a name="r4.2.2"></a>Recommendation 4.2.2: Try to use type alias to represent types making code more readable.
+#### <a name="r4.2.2"></a> 4.2.2: Try to use type alias to represent types making code more readable.
 
 Type aliases provide alternative names for existing types.
 If the type name is too long, you can replace it with a shorter name, which helps to shorten long generic types.
@@ -1562,7 +1573,7 @@ typealias Predicate<T> = (T) -> Boolean
 ### <a name="c4.3"></a> 4.3 Null safety and variable declarations
 Kotlin is declared as a null-safe programming language. However, to achieve compatibility with Java, it still supports nullable types.
 
-### <a name="r4.3.1"></a> Recommendation 4.3.1: Avoid declaring variables with nullable types, especially from Kotlin stdlib.
+#### <a name="r4.3.1"></a> Recommendation 4.3.1: Avoid declaring variables with nullable types, especially from Kotlin stdlib.
 To avoid `NullPointerException` and help the compiler prevent Null Pointer Exceptions, avoid using nullable types (with `?` symbol).
 
 **Invalid example**:
@@ -1589,7 +1600,7 @@ val a: List<Int>? = null
 val a: List<Int> = emptyList()
 ```
 
-### <a name="r4.3.2"></a> Recommendation 4.3.2: Variables of generic types should have an explicit type declaration.
+#### <a name="r4.3.2"></a> 4.3.2: Variables of generic types should have an explicit type declaration
 Like in Java, classes in Kotlin may have type parameters. To create an instance of such a class, we typically need to provide type arguments:
 
 ```kotlin
@@ -1609,8 +1620,7 @@ val myVariable = emptyMap<Int, String>()
 val myVariable: Map<Int, String> = emptyMap() 
 ```
 
-### <a name="c4.3.3"></a> Null-safety
-### <a name="r4.3.3"></a> 4.3.3 Explicit null checks
+#### <a name="r4.3.3"></a> Null-safety
 
 Try to avoid explicit null checks (explicit comparison with `null`) 
 Kotlin is declared as [Null-safe](https://kotlinlang.org/docs/reference/null-safety.html) language.
@@ -1696,20 +1706,22 @@ if (myVar == null || otherValue == 5 && isValid) {}
 Please also note, that instead of using `require(a != null)` with a not null check - you should use a special Kotlin function called `requireNotNull(a)`.
 
 # <a name="c5"></a> 5. Functions
+This section describes the rules of using functions in your code.
 <!-- =============================================================================== -->
 ### <a name="c5.1"></a> 5.1 Function design
 Developers can write clean code by gaining knowledge of how to build design patterns and avoid code smells.
 You should utilize this approach, along with functional style, when writing Kotlin code. 
 The concepts behind functional style are as follows: 
 Functions are the smallest unit of combinable and reusable code.
-They should have clean logic, **high cohesion**, and **low coupling** to effectively organize the code.
+They should have clean logic, **high cohesion**, and **low coupling** to organize the code effectively.
 The code in functions should be simple and not conceal the author's original intentions.
+
 Additionally, it should have a clean abstraction, and control statements should be used straightforwardly.
 The side effects (code that does not affect a function's return value but affects global/object instance variables) should not be used for state changes of an object.
 The only exceptions to this are state machines.
 
 Kotlin is [designed](https://www.slideshare.net/abreslav/whos-more-functional-kotlin-groovy-scala-or-java) to support and encourage functional programming, featuring the corresponding built-in mechanisms.
-Also, it supports standard collections and sequences feature methods that enable functional programming (for example, `apply`, `with`, `let`, and `run`), Kotlin Higher-Order functions, function types, lambdas, and default function arguments (???).
+Also, it supports standard collections and sequences feature methods that enable functional programming (for example, `apply`, `with`, `let`, and `run`), Kotlin Higher-Order functions, function types, lambdas, and default function arguments.
 As [previously discussed](#r4.1.3), Kotlin supports and encourages the use of immutable types, which in turn motivates programmers to write pure functions that avoid side effects and have a corresponding output for specific input. 
 The pipeline data flow for the pure function comprises a functional paradigm. It is easy to implement concurrent programming when you have chains of function calls, where each step features the following characteristics:
 1.	Simplicity
@@ -1722,7 +1734,7 @@ The pipeline data flow for the pure function comprises a functional paradigm. It
 
 There can be only one side effect in this data stream, which can be placed only at the end of the execution queue.
 
-### <a name="r5.1.1"></a> Rule 5.1.1: Avoid functions that are too long. 
+#### <a name="r5.1.1"></a> 5.1.1 Avoid functions that are too long 
 
 The function should be displayable on one screen and only implement one certain logic.
 If a function is too long, it often means complex and could be split or simplified. Functions should consist of 30 lines (non-empty and non-comment) in total.
@@ -1733,7 +1745,7 @@ Linter warnings for such functions **can be suppressed**.
 Even if a long function works well, new problems or bugs may appear due to the function's complex logic once it is modified by someone else.
 Therefore, it is recommended to split such functions into several separate and shorter functions that are easier to manage.
 This approach will enable other programmers to read and modify the code properly.
-### <a name="r5.1.2"></a> Rule 5.1.2: Avoid deep nesting of function code blocks, limiting to four levels.
+#### <a name="r5.1.2"></a> 5.1.2 Avoid deep nesting of function code blocks, limiting to four levels
 
 The nesting depth of a function's code block is the depth of mutual inclusion between the code control blocks in the function (for example: if, for, while, and when).
 Each nesting level will increase the amount of effort needed to read the code because you need to remember the current "stack" (for example, entering conditional statements and loops). 
@@ -1741,7 +1753,7 @@ Each nesting level will increase the amount of effort needed to read the code be
 Functional decomposition should be implemented to avoid confusion for the developer who reads the code.
 This will help the reader switch between contexts.
 
-### <a name="r5.1.3"></a> Rule 5.1.3: Avoid using nested functions.
+#### <a name="r5.1.3"></a> Rule 5.1.3 Avoid using nested functions
 Nested functions create a more complex function context, thereby confusing readers.
 With nested functions, the visibility context may not be evident to the code reader.
 
@@ -1757,7 +1769,8 @@ fun foo() {
 
 <!-- =============================================================================== -->
 ### <a name="c5.2"></a> 5.2 Function arguments
-### <a name="r5.2.1"></a> Rule 5.2.1: The lambda parameter of the function should be placed at the end of the argument list.
+The rules for using function arguments are described in the below topics.
+#### <a name="r5.2.1"></a> 5.2.1 The lambda parameter of the function should be placed at the end of the argument list
 
 With such notation, it is easier to use curly brackets, leading to better code readability.
 
@@ -1774,14 +1787,14 @@ println("hey")
 }
 ```
 
-### <a name="r5.2.2"></a> Rule 5.2.2: Number of function parameters should be limited to 5
+#### <a name="r5.2.2"></a> 5.2.2 Number of function parameters should be limited to five
 
 A long argument list is a [code smell](https://en.wikipedia.org/wiki/Code_smell) that leads to less reliable code.
 It is recommended to reduce the number of parameters. Having **more than five** parameters leads to difficulties in maintenance and conflicts merging.
 If parameter groups appear in different functions multiple times, these parameters are closely related and can be encapsulated into a single Data Class.
 It is recommended that you use Data Classes and Maps to unify these function arguments.
 
-### <a name="r5.2.3"></a>Rule 5.2.3 Use default values for function arguments instead of overloading them
+#### <a name="r5.2.3"></a> 5.2.3 Use default values for function arguments instead of overloading them
 In Java, default values for function arguments are prohibited. That is why the function should be overloaded when you need to create a function with fewer arguments.
 In Kotlin, you can use default arguments instead.
 
@@ -1802,11 +1815,12 @@ private fun foo() {
      // ...
  }
 ``` 
-# <a name="c6"></a> 6. Classes, interfaces and extension functions
+# <a name="c6"></a> 6. Classes, interfaces, and extension functions
 <!-- =============================================================================== -->
 ### <a name="c6.1"></a> 6.1 Classes
-### <a name="r6.1.1"></a> Rule 6.1.1:  When a class has a single constructor, it should be defined as a primary constructor in the declaration of the class.
-In case the class contains only one explicit constructor - it should be converted to a primary constructor.
+This section describes the rules of denoting classes in your code.
+#### <a name="r6.1.1"></a> 6.1.1  Denoting a class with a single constructor
+When a class has a single constructor, it should be defined as a primary constructor in the declaration of the class. If the class contains only one explicit constructor, it should be converted to a primary constructor.
 
 **Invalid example**:
 ```kotlin
@@ -1830,7 +1844,7 @@ class Test private constructor(var a: Int) {
 }
 ```
 
-### <a name="r6.1.2"></a> Rule 6.1.2: Prefer data classes instead of classes without any functional logic.
+#### <a name="r6.1.2"></a> 6.1.2 Prefer data classes instead of classes without any functional logic
 Some people say that the data class is a code smell. However, if you need to use it (which makes your code more simple), you can utilize the Kotlin `data class`. The main purpose of this class is to hold data,
 but also `data class` will automatically generate several useful methods:
 - equals()/hashCode() pair;
@@ -1876,7 +1890,7 @@ data class Test1(var a: Int = 0, var b: Int = 0)
 
 **Exception 2**: No need to convert a class to a data class if this class extends some other class or implements an interface.
 
-### <a name="r6.1.3"></a> Rule 6.1.3: Do not use the primary constructor if it is empty or useless.
+#### <a name="r6.1.3"></a> 6.1.3 Do not use the primary constructor if it is empty or useless
 The primary constructor is a part of the class header; it is placed after the class name and type parameters (optional) but can be omitted if it is not used.
 
 **Invalid example**:
@@ -1911,12 +1925,12 @@ class Test {
 }
 ```
 
-### <a name="r6.1.4"></a> Rule 6.1.4: several init blocks are redundant and generally should not be used in your class.
-The primary constructor cannot contain any code. That is why Kotlin has introduced `init` blocks.
+#### <a name="r6.1.4"></a> 6.1.4 Do not use redundant init blocks in your class
+Several init blocks are redundant and generally should not be used in your class. The primary constructor cannot contain any code. That is why Kotlin has introduced `init` blocks.
 These blocks store the code to be run during the class initialization.
 Kotlin allows writing multiple initialization blocks executed in the same order as they appear in the class body.
 Even when you follow (rule 3.2)[#r3.2], this makes your code less readable as the programmer needs to keep in mind all init blocks and trace the execution of the code.
-Therefore, you should try to use a single `init` block to reduce the code's complexity. . If you need to do some logging or make some calculations before the class property assignment, you can use powerful functional programming. This will reduce the possibility of the error if your `init` blocks' order is accidentally changed and
+Therefore, you should try to use a single `init` block to reduce the code's complexity. If you need to do some logging or make some calculations before the class property assignment, you can use powerful functional programming. This will reduce the possibility of the error if your `init` blocks' order is accidentally changed and
 make the code logic more coupled. It is always enough to use one `init` block to implement your idea in Kotlin.
 
 **Invalid example**:
@@ -1969,8 +1983,8 @@ class A(baseUrl: String) {
 }
 ```
 
-### <a name="r6.1.5"></a> Rule 6.1.5: Explicit supertype qualification should not be used if there is not clash between called methods.
-This rule is applicable to both interfaces and classes.
+#### <a name="r6.1.5"></a> 6.1.5 Explicit supertype qualification
+The explicit supertype qualification should not be used if there is no clash between called methods. This rule is applicable to both interfaces and classes.
 
 **Invalid example**:
 ```kotlin
@@ -1985,7 +1999,7 @@ class Square() : Rectangle() {
 }
 ```
 
-### <a name="r6.1.6"></a> Rule 6.1.6: Abstract class should have at least one abstract method.
+#### <a name="r6.1.6"></a> 6.1.6 Abstract class should have at least one abstract method
 Abstract classes are used to force a developer to implement some of its parts in their inheritors.
 When the abstract class has no abstract methods, it was set `abstract` incorrectly and can be converted to a regular class.
 
@@ -2015,7 +2029,7 @@ class NotAbstract {
 ```
 
 
-### <a name="r6.1.7"></a> Rule 6.1.7: in case of using "implicit backing property" scheme, the name of real and back property should be the same.
+#### <a name="r6.1.7"></a> 6.1.7 When using the "implicit backing property" scheme, the name of real and back property should be the same
 Kotlin has a mechanism of [backing properties](https://kotlinlang.org/docs/reference/properties.html#backing-properties).
 In some cases, implicit backing is not enough and it should be done explicitly:
 ```kotlin
@@ -2032,7 +2046,7 @@ val table: Map<String, Int>
 In this case, the name of the backing property (`_table`) should be the same as the name of the real property (`table`) but should have an underscore (`_`) prefix.
 It is one of the exceptions from the [identifier names rule](#r1.2)
 
-### <a name="r6.1.8"></a> Recommendation 6.1.8: avoid using custom getters and setters.
+#### <a name="r6.1.8"></a> 6.1.8 Avoid using custom getters and setters
 Kotlin has a perfect mechanism of [properties](https://kotlinlang.org/docs/reference/properties.html#properties-and-fields).
 Kotlin compiler automatically generates `get` and `set` methods for properties and can override them.
 
@@ -2049,9 +2063,9 @@ class A {
 }
 ```
 
-From the callee code these methods look like an access to this property: `A().isEmpty = true` for setter and `A().isEmpty` for getter.
+From the callee code, these methods look like access to this property: `A().isEmpty = true` for setter and `A().isEmpty` for getter.
 
-However, when `get` and `set` are overridden, it is very confusing for a developer who uses this particular class. 
+However, when `get` and `set` are overridden, it  isn't very clear for a developer who uses this particular class. 
 The developer expects to get the property value but receives some unknown value and some extra side-effect hidden by the custom getter/setter. 
 Use extra functions instead to avoid confusion.
 
@@ -2072,7 +2086,7 @@ class A {
 
 **Exception:** `Private setters` are only exceptions that are not prohibited by this rule.
 
-### <a name="r6.1.9"></a> Rule 6.1.9: never use the name of a variable in the custom getter or setter (possible_bug).
+#### <a name="r6.1.9"></a> 6.1.9 Never use the name of a variable in the custom getter or setter (possible_bug)
 If you ignored [recommendation 6.1.8](#r6.1.8), be careful with using the name of the property in your custom getter/setter
 as it can accidentally cause a recursive call and a `StackOverflow Error`. Use the `field` keyword instead.
 
@@ -2086,7 +2100,7 @@ var isEmpty: Boolean
     get() = isEmpty
 ```
 
-### <a name="r6.1.10"></a> Recommendation 6.1.10 no trivial getters and setters are allowed in the code.
+#### <a name="r6.1.10"></a> 6.1.10 No trivial getters and setters are allowed in the code
 In Java, trivial getters - are the getters that are just returning the field value.
 Trivial setters - are merely setting the field with a value without any transformation.
 However, in Kotlin, trivial getters/setters are generated by default. There is no need to use it explicitly for all types of data structures in Kotlin.
@@ -2113,7 +2127,7 @@ class A {
 }
 ```
 
-### <a name="r6.1.11"></a> Rule 6.1.11: use apply for grouping object initialization.
+#### <a name="r6.1.11"></a> Use 'apply' for grouping object initialization
 In Java, before functional programming became popular, many classes from common libraries used the configuration paradigm.
 To use these classes, you had to create an object with the constructor with 0-2 arguments and set the fields needed to run the object.
 In Kotlin, to reduce the number of dummy code line and to group objects [`apply` extension](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/apply.html) was added:  
@@ -2162,18 +2176,19 @@ fun main() {
 
 <!-- =============================================================================== -->
 ### <a name="c6.2"></a>6.2 Extension functions
+This section describes the rules of using extension functions in your code.
+
 [Extension functions](https://kotlinlang.org/docs/reference/extensions.html) is a killer-feature in Kotlin. 
-It gives you a chance to extend classes that were already implemented in external libraries and help you to make classes less heavy.
+It gives you a chance to extend classes that were already implemented in external libraries and helps you to make classes less heavy.
 Extension functions are resolved statically.
 
-### <a name="r6.2.1"></a> Recommendation 6.2.1: use extension functions for making logic of classes less coupled.
+#### <a name="r6.2.1"></a> 6.2.1 Use extension functions for making logic of classes less coupled
 It is recommended that for classes, the non-tightly coupled functions, which are rarely used in the class, should be implemented as extension functions where possible.
 They should be implemented in the same class/file where they are used. This is a non-deterministic rule, so the code cannot be checked or fixed automatically by a static analyzer.
 
-### <a name="r6.2.2"></a> Rule 6.2.2: No extension functions with the same name and signature if they extend base and inheritor classes (possible_bug).
-As extension functions are resolved statically. In this case, there could be a situation when a developer implements two extension functions: one is for the base class and another for the inheritor.
+#### <a name="r6.2.2"></a> 6.2.2 No extension functions with the same name and signature if they extend base and inheritor classes (possible_bug)
+You should have ho extension functions with the same name and signature if they extend base and inheritor classes (possible_bug).esolved statically. There could be a situation when a developer implements two extension functions: one is for the base class and another for the inheritor.
 This can lead to an issue when an incorrect method is used.
-And that can lead to an issue when incorrect method is used. 
 
 **Invalid example**:
 ```kotlin
@@ -2201,8 +2216,9 @@ In Kotlin and Java, the interface is the main presentation means of application 
 
 <!-- =============================================================================== -->
 ### <a name="c6.4"></a> 6.4 Objects
-### <a name="r6.4.1"></a> Rule 6.4.1: Avoid using utility classes/objects, use extensions instead.
-As described in [6.2 Extension functions](#c6.2), extension functions are a powerful. Instead of using utility classes/objects, use it extention functions.
+This section describes the rules of using objects in code.
+#### <a name="r6.4.1"></a> 6.4.1 Instead of using utility classes/objects, use extensions.
+Avoid using utility classes/objects; use extensions instead. As described in [6.2 Extension functions](#c6.2), using extension functions is a powerful method.
 This enables you to avoid unnecessary complexity and class/object wrapping and use top-level functions instead.
 
 **Invalid example**:
@@ -2224,7 +2240,7 @@ fun String.stringInfo(): Int {
 "myStr".stringInfo()
 ```
 
-### <a name="r6.4.2"></a> Recommendation 6.4.2: Objects should be used for Stateless Interfaces.
+#### <a name="r6.4.2"></a> 6.4.2 Objects should be used for Stateless Interfaces.
 Kotlin’s objects are extremely useful when you need to implement some interface from an external library that does not have any state.
 There is no need to use classes for such structures.
 
