@@ -3,6 +3,7 @@
 package org.cqfn.diktat.generation.docs
 
 import java.io.File
+import java.io.PrintWriter
 
 /**
  * Adds/updates diktat code style in white paper document.
@@ -22,6 +23,27 @@ fun generateCodeStyle(guideDir: File, wpDir: File) {
     tempFile.printWriter().use { writer ->
         val iterator = lines.iterator()
         writer.writeln("\\lstMakeShortInline[basicstyle=\\ttfamily\\bfseries]`")
+        while (iterator.hasNext()) {
+            val line = iterator.next()
+            if (line.contains("## <a name=\"c0\"></a> Preface"))
+                break;
+
+            when {
+                line.startsWith("#") -> {
+                    writer.writeln("\\section*{${line.removePrefix("#").trim()}}")
+                }
+                line.startsWith("*") -> {
+                    writeTableContentLine(writer, line, 0.5)
+                }
+                line.startsWith(" ") -> {
+                    writeTableContentLine(writer, line, 1.0)
+                }
+                else -> {
+                    writeTableContentLine(writer, line, 0.0)
+                }
+            }
+        }
+
         while (iterator.hasNext()) {
             var line = iterator.next()
             if (line.contains("<!--")) {
@@ -117,11 +139,27 @@ fun generateCodeStyle(guideDir: File, wpDir: File) {
             }
         }
     }
-    val appendixFileLines = File(wpDir, "sections/appendix.tex").readLines().toMutableList()
-    appendixFileLines.removeAll(appendixFileLines.subList(appendixFileLines.indexOf("\\lstMakeShortInline[basicstyle=\\ttfamily\\bfseries]`"), appendixFileLines.lastIndex + 1))
+    val appendixFileLines = File(wpDir, "sections/appendix.tex")
+            .readLines()
+            .takeWhile { it != "\\lstMakeShortInline[basicstyle=\\ttfamily\\bfseries]`" }
+            .toMutableList()
     appendixFileLines.addAll(tempFile.readLines())
     File(wpDir, "sections/appendix.tex").writeText(appendixFileLines.joinToString(separator = "\n"))
     tempFile.delete()
+}
+
+private fun writeTableContentLine(writer: PrintWriter, line: String, numbOfSpaces: Double) {
+    writer.write("\\hspace{${numbOfSpaces}cm}")
+    writer.writeln(line
+            .trim()
+            .replace("[", "")
+            .replace("]", "")
+            .replace("*", "")
+            .replace(ANCHORS, "")
+            .replace("_", "\\_")
+            .replace("#", "\\#")
+            .replace("&", "\\&")
+    )
 }
 
 /**
