@@ -10,7 +10,7 @@ package org.cqfn.diktat.ruleset.utils
 import org.cqfn.diktat.ruleset.rules.PackageNaming
 
 import com.pinterest.ktlint.core.KtLint
-import com.pinterest.ktlint.core.ast.*
+import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.CONST_KEYWORD
@@ -29,6 +29,11 @@ import com.pinterest.ktlint.core.ast.ElementType.PRIVATE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PROTECTED_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PUBLIC_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.isLeaf
+import com.pinterest.ktlint.core.ast.isRoot
+import com.pinterest.ktlint.core.ast.lineNumber
+import com.pinterest.ktlint.core.ast.parent
+import com.pinterest.ktlint.core.ast.isPartOfComment
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.TokenType
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement

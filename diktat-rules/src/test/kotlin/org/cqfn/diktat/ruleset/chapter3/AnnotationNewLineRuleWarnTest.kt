@@ -283,7 +283,7 @@ class AnnotationNewLineRuleWarnTest : LintTestBase(::AnnotationNewLineRule) {
     @Tag(WarningNames.ANNOTATION_NEW_LINE)
     fun `should warn annotation for several annotations`() {
         lintMethod(
-                """
+            """
                     |@ExperimentalStdlibApi /*   */ @Hello
                     |override fun checkNode() {}
                     |
@@ -306,8 +306,8 @@ class AnnotationNewLineRuleWarnTest : LintTestBase(::AnnotationNewLineRule) {
                     |@Foo
                     |@goo val loader: DataLoader
                 """.trimMargin(),
-                LintError(1,1, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @ExperimentalStdlibApi not on a single line", true),
-                LintError(1,32, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @Hello not on a single line", true),
+            LintError(1, 1, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @ExperimentalStdlibApi not on a single line", true),
+            LintError(1, 32, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @Hello not on a single line", true),
         )
     }
 }
