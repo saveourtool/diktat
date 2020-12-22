@@ -170,15 +170,18 @@ fun ASTNode.isBeginByNewline() =
                     (it.treePrev.elementType == IMPORT_LIST && it.treePrev.isLeaf() && it.treePrev.treePrev.isLeaf())
         } ?: false
 
+/**
+ * Checks if there is a newline before this element or before comment before. See [isBeginByNewline] for motivation on parents check.
+ */
 fun ASTNode.isBeginNewLineWithComment() =
         isBeginByNewline() ||
-            if (this.treePrev?.treePrev?.isPartOfComment() ?: false) {
-                this.treePrev.treePrev.isBeginByNewline()
-            } else if (this.treePrev?.isPartOfComment() ?: false) {
-                this.treePrev.isBeginByNewline()
-            } else {
-                false
-            }
+                if (this.treePrev?.treePrev?.isPartOfComment() ?: false) {
+                    this.treePrev.treePrev.isBeginByNewline()
+                } else if (this.treePrev?.isPartOfComment() ?: false) {
+                    this.treePrev.isBeginByNewline()
+                } else {
+                    false
+                }
 
 /**
  * checks if the node has corresponding child with elementTyp
