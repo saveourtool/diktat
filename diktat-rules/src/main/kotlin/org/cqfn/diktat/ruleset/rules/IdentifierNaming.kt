@@ -145,7 +145,7 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
         // special case for Destructuring declarations that can be treated as parameters in lambda:
         var namesOfVariables = extractVariableIdentifiers(node)
         // only local private properties will be autofix in order not to break code if there are usages in other files
-        val isFix = isFixMode && if (node.elementType == PROPERTY)  (node.psi as KtProperty).run { isLocal || isPrivate() } else true
+        val isFix = isFixMode && if (node.elementType == PROPERTY) (node.psi as KtProperty).run { isLocal || isPrivate() } else true
         // Destructuring declarations are only allowed for local variables/values
         namesOfVariables
             .forEach { variableName ->
