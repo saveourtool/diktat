@@ -281,27 +281,33 @@ class AnnotationNewLineRuleWarnTest : LintTestBase(::AnnotationNewLineRule) {
 
     @Test
     @Tag(WarningNames.ANNOTATION_NEW_LINE)
-    fun `should fix annotation on same line with import`() {
+    fun `should warn annotation for several annotations`() {
         lintMethod(
-            """
-                    |import qwe.qwe;@ExperimentalStdlibApi
-                    |   @Hello
-                    |   override fun checkNode() {}
+                """
+                    |@ExperimentalStdlibApi /*   */ @Hello
+                    |override fun checkNode() {}
+                    |
+                    |/*    */ @Goo
+                    |class A {}
+                    |
+                    |@A1
+                    |/*   */ @A2
+                    |@A3
+                    |class A {}
+                    |
+                    |
+                    |@Foo class Foo {}
+                    |
+                    |@Foo
+                    |class Foo {}
+                    |
+                    |@Foo @Goo val loader: DataLoader
+                    |
+                    |@Foo
+                    |@goo val loader: DataLoader
                 """.trimMargin(),
-            LintError(1, 16, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @ExperimentalStdlibApi not on a single line", true),
-        )
-    }
-
-    @Test
-    @Tag(WarningNames.ANNOTATION_NEW_LINE)
-    fun `should fix annotation on same line with package`() {
-        lintMethod(
-            """
-                    |package dfgh.dfgh;@ExperimentalStdlibApi
-                    |   @Hello
-                    |   override fun checkNode() {}
-                """.trimMargin(),
-            LintError(1, 19, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @ExperimentalStdlibApi not on a single line", true),
+                LintError(1,1, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @ExperimentalStdlibApi not on a single line", true),
+                LintError(1,32, ruleId, "${Warnings.ANNOTATION_NEW_LINE.warnText()} @Hello not on a single line", true),
         )
     }
 }
