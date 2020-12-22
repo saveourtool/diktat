@@ -32,8 +32,7 @@ internal fun createExampleProject(testProjectDir: TemporaryFolder,
 }
 
 /**
- * @param testNumber a counter used to name jacoco execution data files.
- * fixme: shouldn't be set manually
+ * @param arguments additional arguments to pass to [GradleRunner]
  */
 internal fun runDiktat(testProjectDir: TemporaryFolder,
                       shouldSucceed: Boolean = true,
