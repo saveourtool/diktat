@@ -8,6 +8,11 @@ import org.gradle.api.file.FileCollection
  */
 open class DiktatExtension {
     /**
+     * Boolean flag to support `ignoreFailures` property of [VerificationTask].
+     */
+    var ignoreFailures: Boolean = false
+
+    /**
      * Flag that indicates whether to turn debug logging on
      */
     var debug = false
@@ -21,7 +26,7 @@ open class DiktatExtension {
     /**
      * Paths that will be excluded from diktat run
      */
-    var excludes: FileCollection? = null
+    lateinit var excludes: FileCollection
 
     /**
      * Ktlint's [Reporter] which will be used during run.

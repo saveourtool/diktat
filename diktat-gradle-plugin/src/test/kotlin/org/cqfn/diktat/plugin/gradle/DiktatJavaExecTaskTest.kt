@@ -19,57 +19,52 @@ class DiktatJavaExecTaskTest {
     @Test
     fun `check command line for various inputs`() {
         assertCommandLineEquals(
-            listOf(null, combinePathParts("src", "**", "*.kt")),
-            DiktatExtension().apply {
-                inputs = project.files("src/**/*.kt")
-            }
-        )
+            listOf(null, combinePathParts("src", "**", "*.kt"))
+        ) {
+            inputs = project.files("src/**/*.kt")
+        }
     }
 
     @Test
     fun `check command line in debug mode`() {
         assertCommandLineEquals(
-            listOf(null, "--debug", combinePathParts("src", "**", "*.kt")),
-            DiktatExtension().apply {
-                inputs = project.files("src/**/*.kt")
-                debug = true
-            }
-        )
+            listOf(null, "--debug", combinePathParts("src", "**", "*.kt"))
+        ) {
+            inputs = project.files("src/**/*.kt")
+            debug = true
+        }
     }
 
     @Test
     fun `check command line with excludes`() {
         assertCommandLineEquals(
             listOf(null, combinePathParts("src", "**", "*.kt"),
-                combinePathParts("src", "main", "kotlin", "generated")
-            ),
-            DiktatExtension().apply {
-                inputs = project.files("src/**/*.kt")
-                excludes = project.files("src/main/kotlin/generated")
-            }
-        )
+                "!${combinePathParts("src", "main", "kotlin", "generated")}"
+            )
+        ) {
+            inputs = project.files("src/**/*.kt")
+            excludes = project.files("src/main/kotlin/generated")
+        }
     }
 
     @Test
     fun `check command line with non-existent inputs`() {
-        val task = registerDiktatTask(
-            DiktatExtension().apply {
-                inputs = project.files()
-            }
-        ).get()
+        val task = registerDiktatTask {
+            inputs = project.files()
+        }
         Assertions.assertFalse(task.shouldRun)
     }
 
-    private fun registerDiktatTask(extension: DiktatExtension) = project.tasks.register(
-        "diktatTask4Test", DiktatJavaExecTaskBase::class.java,
-        "6.7", extension, project.configurations.create("diktat")
-    )
+    private fun registerDiktatTask(extensionConfiguration: DiktatExtension.() -> Unit): DiktatJavaExecTaskBase {
+        DiktatGradlePlugin().apply(project)
+        project.extensions.configure("diktat", extensionConfiguration)
+        return project.tasks.getByName("diktatCheck") as DiktatJavaExecTaskBase
+    }
 
-    private fun assertCommandLineEquals(expected: List<String?>, extension: DiktatExtension) {
-        val task = registerDiktatTask(extension).get()
+    private fun assertCommandLineEquals(expected: List<String?>, extensionConfiguration: DiktatExtension.() -> Unit) {
+        val task = registerDiktatTask(extensionConfiguration)
         Assertions.assertIterableEquals(expected, task.commandLine)
     }
 
-    private fun combinePathParts(vararg parts: String) = project.rootDir.absolutePath +
-            parts.joinToString(File.separator, prefix = File.separator)
+    private fun combinePathParts(vararg parts: String) = parts.joinToString(File.separator)
 }
