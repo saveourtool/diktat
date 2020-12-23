@@ -151,7 +151,7 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
         val copyrightText = configuration.getCopyrightText()
 
         val headerComment = node.findChildBefore(PACKAGE_DIRECTIVE, BLOCK_COMMENT)
-        val isWrongCopyright = headerComment != null && !headerComment.text.copyrightSense().contains(copyrightText.copyrightSense())
+        val isWrongCopyright = headerComment != null && !headerComment.text.flatten().contains(copyrightText.flatten())
         val isMissingCopyright = headerComment == null && configuration.isCopyrightMandatory()
         val isCopyrightInsideKdoc = (node.getAllChildrenWithType(KDOC) + node.getAllChildrenWithType(ElementType.EOL_COMMENT))
             .any { commentNode ->
@@ -194,7 +194,7 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
      * Deletes all spaces and newlines
      * Used to compare copyrights in yaml and file
      */
-    private fun String.copyrightSense(): String =
+    private fun String.flatten(): String =
         replace("\n","")
         .replace(" ","")
 
@@ -204,15 +204,13 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
      */
     private fun handleMultilineCopyright(copyrightText: String): String {
         val firstLineIndent = copyrightText
-                .split("\n")
+                .lines()
                 .let { list ->
-                    // points on the next not empty line
-                    val index = list.takeWhile { it.isEmpty() }.count()
-                    list[index].takeWhile { it == ' ' }
+                    list.first{ it.isNotEmpty() }.takeWhile { it == ' ' }
                 }
         if (copyrightText.contains("\n")) {
             return copyrightText
-                    .split("\n")
+                    .lines()
                     .reduce { acc, nextLine ->
                         when {
                             nextLine.removePrefix(firstLineIndent).isEmpty() -> {
