@@ -151,7 +151,7 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
         val copyrightText = configuration.getCopyrightText()
 
         val headerComment = node.findChildBefore(PACKAGE_DIRECTIVE, BLOCK_COMMENT)
-        val isWrongCopyright = headerComment != null && !headerComment.text.contains(copyrightText)
+        val isWrongCopyright = headerComment != null && !headerComment.text.copyrightSense().contains(copyrightText.copyrightSense())
         val isMissingCopyright = headerComment == null && configuration.isCopyrightMandatory()
         val isCopyrightInsideKdoc = (node.getAllChildrenWithType(KDOC) + node.getAllChildrenWithType(ElementType.EOL_COMMENT))
             .any { commentNode ->
@@ -173,7 +173,7 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
                 node.addChild(LeafPsiElement(BLOCK_COMMENT,
                     """
 /*
-${handleMultilineCopyright(copyrightText)}
+    ${handleMultilineCopyright(copyrightText)}
 */
                     """.trimIndent()),
                     node.firstChildNode
@@ -190,23 +190,46 @@ ${handleMultilineCopyright(copyrightText)}
         }
     }
 
+    /**
+     * Deletes all spaces and newlines
+     * Used to compare copyrights in yaml and file
+     */
+    private fun String.copyrightSense(): String =
+        replace("\n","")
+        .replace(" ","")
+
+    /**
+     * If it is multiline copyright, this method makes needed indents.
+     * Otherwise, if it is one line copyright, it returns it trimmed.
+     */
     private fun handleMultilineCopyright(copyrightText: String): String {
-        var properCopyright = ""
-        if (copyrightText.contains("\n")) {
-            copyrightText.split("\n").map { "    $it" }.forEach {
-                properCopyright += if (it == "    ") {
-                    "\n"
-                } else {
-                    "$it\n"
+        val firstLineIndent = copyrightText
+                .split("\n")
+                .let { list ->
+                    // points on the next not empty line
+                    val index = list.takeWhile { it.isEmpty() }.count()
+                    list[index].takeWhile { it == ' ' }
                 }
-            }
+        if (copyrightText.contains("\n")) {
+            return copyrightText
+                    .split("\n")
+                    .reduce { acc, nextLine ->
+                        when {
+                            nextLine.removePrefix(firstLineIndent).isEmpty() -> {
+                                "$acc\n"
+                            }
+                            // checks only first line
+                            acc.isEmpty() -> {
+                                nextLine.removePrefix(firstLineIndent)
+                            }
+                            else -> {
+                                "$acc\n    ${nextLine.removePrefix(firstLineIndent)}"
+                            }
+                        }
+                    }
         }
 
-        return if (properCopyright.isNotEmpty()) {
-            properCopyright.dropLast(1)
-        } else {
-            "    $copyrightText"
-        }
+        return copyrightText.trim()
     }
 
     /**
