@@ -80,6 +80,8 @@ fun generateCodeStyle(guideDir: File, wpDir: File) {
                     2 -> writer.writeln("""\subsubsection*{\textbf{$name}}${"\n"}\leavevmode\newline""")
                     else -> {}
                 }
+                writer.writeln("\\label{sec:${name.getFirstNumber()}}")
+
                 continue
             }
             if (iterator.hasNext() && line.trim().startsWith("```")) {
@@ -150,7 +152,7 @@ fun generateCodeStyle(guideDir: File, wpDir: File) {
 
 private fun writeTableContentLine(writer: PrintWriter, line: String, numbOfSpaces: Double) {
     writer.write("\\hspace{${numbOfSpaces}cm}")
-    writer.writeln(line
+    val correctLine = line
             .trim()
             .replace("[", "")
             .replace("]", "")
@@ -159,7 +161,7 @@ private fun writeTableContentLine(writer: PrintWriter, line: String, numbOfSpace
             .replace("_", "\\_")
             .replace("#", "\\#")
             .replace("&", "\\&")
-    )
+    writer.writeln("\\hyperref[sec:${correctLine.getFirstNumber()}]{$correctLine}")
 }
 
 /**
@@ -220,3 +222,5 @@ private fun findBoldOrItalicText(regex: Regex,
     }
     return correctedLine
 }
+
+private fun String.getFirstNumber() = String(this.replace("\\s+".toRegex(), "").toCharArray().takeWhile { it.isDigit() || it == '.' }.toCharArray())

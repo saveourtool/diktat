@@ -43,7 +43,7 @@ data class RuleDescription(val ruleName: String,
     /**
      * Remove square brackets from code style
      */
-    val correctCodeStyle = codeStyle.substring(codeStyle.indexOf("[") + 1, codeStyle.indexOf("]"))
+    val correctCodeStyle = "\\hyperref[sec:${codeStyle.substring(codeStyle.indexOf("[") + 1, codeStyle.indexOf("]"))}]{ ${codeStyle.substring(codeStyle.indexOf("[") + 1, codeStyle.indexOf("]"))}}"
 
     /**
      * Replace space between words with underline for Latex

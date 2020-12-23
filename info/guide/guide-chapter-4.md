@@ -199,7 +199,7 @@ val myVariable = emptyMap<Int, String>()
 val myVariable: Map<Int, String> = emptyMap() 
 ```
 
-#### <a name="r4.3.3"></a> Null-safety
+#### <a name="r4.3.3"></a> 4.3.3 Null-safety
 
 Try to avoid explicit null checks (explicit comparison with `null`) 
 Kotlin is declared as [Null-safe](https://kotlinlang.org/docs/reference/null-safety.html) language.

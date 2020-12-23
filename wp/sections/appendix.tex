@@ -16,334 +16,336 @@
 \hline
 \textbf{diKTat rule} & \textbf{code style} & \textbf{autofix} &  \textbf{config} \\
 \hline
-VARIABLE\underline{ }NAME\underline{ }INCORRECT & 1.1.1 &  no  &   no  \\
-VARIABLE\underline{ }HAS\underline{ }PREFIX & 1.1.1 &  yes  &   no  \\
-IDENTIFIER\underline{ }LENGTH & 1.1.1 &  no  &   no  \\
-GENERIC\underline{ }NAME & 1.1.1 &  yes  &   no  \\
-BACKTICKS\underline{ }PROHIBITED & 1.1.1 &  no  &   no  \\
-FILE\underline{ }NAME\underline{ }INCORRECT & 1.1.1 &  yes  &   no  \\
-EXCEPTION\underline{ }SUFFIX & 1.1.1 &  yes  &   no  \\
-CONFUSING\underline{ }IDENTIFIER\underline{ }NAMING & 1.1.1 &  no  &   no  \\
-PACKAGE\underline{ }NAME\underline{ }MISSING & 1.2.1 &  yes  &   no  \\
-PACKAGE\underline{ }NAME\underline{ }INCORRECT\underline{ }CASE & 1.2.1 &  yes  &   no  \\
-PACKAGE\underline{ }NAME\underline{ }INCORRECT\underline{ }PREFIX & 1.2.1 &  yes  &   no  \\
-PACKAGE\underline{ }NAME\underline{ }INCORRECT\underline{ }SYMBOLS & 1.2.1 &  no  &   no  \\
-PACKAGE\underline{ }NAME\underline{ }INCORRECT\underline{ }PATH & 1.2.1 &  yes  &   no  \\
-INCORRECT\underline{ }PACKAGE\underline{ }SEPARATOR & 1.2.1 &  yes  &   no  \\
-CLASS\underline{ }NAME\underline{ }INCORRECT & 1.3.1 &  yes  &   no  \\
-OBJECT\underline{ }NAME\underline{ }INCORRECT & 1.3.1 &  yes  &   no  \\
-ENUM\underline{ }VALUE & 1.3.1 &  yes  &   enumStyle: snakeCase, pascalCase  \\
-FUNCTION\underline{ }NAME\underline{ }INCORRECT\underline{ }CASE & 1.4.1 &  yes  &   no  \\
-CONSTANT\underline{ }UPPERCASE & 1.5.1 &  yes  &   no  \\
-VARIABLE\underline{ }NAME\underline{ }INCORRECT\underline{ }FORMAT & 1.6.1 &  yes  &   no  \\
-FUNCTION\underline{ }BOOLEAN\underline{ }PREFIX & 1.6.2 &  yes  &   no  \\
-MISSING\underline{ }KDOC\underline{ }TOP\underline{ }LEVEL & 2.1.1 &  no  &   no  \\
-MISSING\underline{ }KDOC\underline{ }CLASS\underline{ }ELEMENTS & 2.1.1 &  no  &   no  \\
-MISSING\underline{ }KDOC\underline{ }ON\underline{ }FUNCTION & 2.1.1 &  yes  &   no  \\
-KDOC\underline{ }NO\underline{ }CONSTRUCTOR\underline{ }PROPERTY & 2.1.1 &  yes  &   no \\
-KDOC\underline{ }EXTRA\underline{ }PROPERTY & 2.1.1 &  no  &  no   \\
-KDOC\underline{ }NO\underline{ }CONSTRUCTOR\underline{ }PROPERTY\underline{ }WITH\underline{ }COMMENT & 2.1.1 &  yes  &   no \\
-KDOC\underline{ }WITHOUT\underline{ }PARAM\underline{ }TAG & 2.1.2 &  yes  &   no  \\
-KDOC\underline{ }WITHOUT\underline{ }RETURN\underline{ }TAG & 2.1.2 &  yes  &   no  \\
-KDOC\underline{ }WITHOUT\underline{ }THROWS\underline{ }TAG & 2.1.2 &  yes  &   no  \\
-KDOC\underline{ }EMPTY\underline{ }KDOC & 2.1.3 &  no  &   no  \\
-KDOC\underline{ }WRONG\underline{ }SPACES\underline{ }AFTER\underline{ }TAG & 2.1.3 &  yes  &   no  \\
-KDOC\underline{ }WRONG\underline{ }TAGS\underline{ }ORDER & 2.1.3 &  yes  &   no  \\
-KDOC\underline{ }NEWLINES\underline{ }BEFORE\underline{ }BASIC\underline{ }TAGS & 2.1.3 &  yes  &   no  \\
-KDOC\underline{ }NO\underline{ }NEWLINES\underline{ }BETWEEN\underline{ }BASIC\underline{ }TAGS & 2.1.3 &  yes  &   no  \\
-KDOC\underline{ }NO\underline{ }NEWLINE\underline{ }AFTER\underline{ }SPECIAL\underline{ }TAGS & 2.1.3 &  yes  &   no  \\
-KDOC\underline{ }NO\underline{ }DEPRECATED\underline{ }TAG & 2.1.3 &  yes  &   no  \\
-KDOC\underline{ }NO\underline{ }EMPTY\underline{ }TAGS & 2.2.1 &  no  &   no  \\
-HEADER\underline{ }WRONG\underline{ }FORMAT & 2.2.1 &  yes  &   no  \\
-HEADER\underline{ }MISSING\underline{ }OR\underline{ }WRONG\underline{ }COPYRIGHT & 2.2.1 &  yes  &  mandatoryCopyright \\
-WRONG\underline{ }COPYRIGHT\underline{ }YEAR & 2.2.1 &  yes  &   no  \\
-HEADER\underline{ }CONTAINS\underline{ }DATE\underline{ }OR\underline{ }AUTHOR & 2.2.1 &  no  &   no  \\
-HEADER\underline{ }MISSING\underline{ }IN\underline{ }NON\underline{ }SINGLE\underline{ }CLASS\underline{ }FILE & 2.2.1 &  no  &   no  \\
-HEADER\underline{ }NOT\underline{ }BEFORE\underline{ }PACKAGE & 2.2.1 &  yes  &   no  \\
-KDOC\underline{ }TRIVIAL\underline{ }KDOC\underline{ }ON\underline{ }FUNCTION & 2.3.1 &  no  &   no  \\
-WRONG\underline{ }NEWLINES\underline{ }AROUND\underline{ }KDOC & 2.4.1 &  yes  &   no  \\
-FIRST\underline{ }COMMENT\underline{ }NO\underline{ }SPACES & 2.4.1 &  yes  &   no  \\
-COMMENT\underline{ }WHITE\underline{ }SPACE & 2.4.1 &  yes  &   maxSpaces  \\
-IF\underline{ }ELSE\underline{ }COMMENTS & 2.4.1 &  yes  &   no  \\
-COMMENTED\underline{ }OUT\underline{ }CODE & 2.4.2 &  no  &   no  \\
-FILE\underline{ }IS\underline{ }TOO\underline{ }LONG & 3.1.1 &  no  &   maxSize  ignoreFolders  \\
-FILE\underline{ }CONTAINS\underline{ }ONLY\underline{ }COMMENTS & 3.1.2 &  no  &   no  \\
-FILE\underline{ }INCORRECT\underline{ }BLOCKS\underline{ }ORDER & 3.1.2 &  yes  &   no  \\
-FILE\underline{ }NO\underline{ }BLANK\underline{ }LINE\underline{ }BETWEEN\underline{ }BLOCKS & 3.1.2 &  yes  &   no  \\
-FILE\underline{ }UNORDERED\underline{ }IMPORTS & 3.1.2 &  yes  &   no  \\
-FILE\underline{ }WILDCARD\underline{ }IMPORTS & 3.1.2 &  no  &   allowedWildcards           \\
-FILE\underline{ }NAME\underline{ }MATCH\underline{ }CLASS & 3.1.2 &  yes  &   no  \\
-WRONG\underline{ }ORDER\underline{ }IN\underline{ }CLASS\underline{ }LIKE\underline{ }STRUCTURES & 3.1.4 &  yes  &   no  \\
-BLANK\underline{ }LINE\underline{ }BETWEEN\underline{ }PROPERTIES & 3.1.4 &  yes  &   no  \\
-WRONG\underline{ }DECLARATIONS\underline{ }ORDER & 3.1.4 &  yes  &   no  \\
-NO\underline{ }BRACES\underline{ }IN\underline{ }CONDITIONALS\underline{ }AND\underline{ }LOOPS & 3.2.1 &  yes  &   no  \\
-BRACES\underline{ }BLOCK\underline{ }STRUCTURE\underline{ }ERROR & 3.2.2 &  yes  &   openBraceNewline closeBraceNewline  \\
-WRONG\underline{ }INDENTATION & 3.3.1 &  yes  &  extendedIndentOfParameters alignedParameters extendedIndentAfterOperators extendedIndentBeforeDot indentationSize   \\
-EMPTY\underline{ }BLOCK\underline{ }STRUCTURE\underline{ }ERROR & 3.4.1 &  yes  &   allowEmptyBlocks styleEmptyBlockWithNewline  \\
-LONG\underline{ }LINE & 3.5.1 &  yes  &   lineLength                 \\
-MORE\underline{ }THAN\underline{ }ONE\underline{ }STATEMENT\underline{ }PER\underline{ }LINE & 3.6.1 &  yes  &   no  \\
-REDUNDANT\underline{ }SEMICOLON & 3.6.2 &  yes  &   no  \\
-WRONG\underline{ }NEWLINES & 3.6.2 &  yes  &   no  \\
-TOO\underline{ }MANY\underline{ }BLANK\underline{ }LINES & 3.7.1 &  yes  &   no  \\
-WRONG\underline{ }WHITESPACE & 3.8.1 &  yes  &   no  \\
-TOO\underline{ }MANY\underline{ }CONSECUTIVE\underline{ }SPACES & 3.8.1 &  yes  &   maxSpaces saveInitialFormattingForEnums  \\
-ENUMS\underline{ }SEPARATED & 3.9.1 &  yes  &   no  \\
-LOCAL\underline{ }VARIABLE\underline{ }EARLY\underline{ }DECLARATION & 3.10.2 &  no  &   no  \\
-WHEN\underline{ }WITHOUT\underline{ }ELSE & 3.11.1 &  yes  &   no  \\
-ANNOTATION\underline{ }NEW\underline{ }LINE & 3.12.1 &  yes  &   no  \\
-WRONG\underline{ }MULTIPLE\underline{ }MODIFIERS\underline{ }ORDER & 3.14.1 &  yes  &   no  \\
-LONG\underline{ }NUMERICAL\underline{ }VALUES\underline{ }SEPARATED & 3.14.2 &  yes  &   maxLength                  \\
-STRING\underline{ }CONCATENATION & 3.15.1 &  no  &   no  \\
-STRING\underline{ }TEMPLATE\underline{ }CURLY\underline{ }BRACES & 3.15.2 &  yes  &   no  \\
-STRING\underline{ }TEMPLATE\underline{ }QUOTES & 3.15.2 &  yes  &   no  \\
-FLOAT\underline{ }IN\underline{ }ACCURATE\underline{ }CALCULATIONS & 4.1.1 &  no  &   no  \\
-SAY\underline{ }NO\underline{ }TO\underline{ }VAR & 4.1.3 &  no  &   no  \\
-SMART\underline{ }CAST\underline{ }NEEDED & 4.2.1 &  yes  &   no  \\
-TYPE\underline{ }ALIAS & 4.2.2 &  no  &   typeReferenceLength        \\
-NULLABLE\underline{ }PROPERTY\underline{ }TYPE & 4.3.1 &  yes  &   no  \\
-GENERIC\underline{ }VARIABLE\underline{ }WRONG\underline{ }DECLARATION & 4.3.2 &  yes  &   no  \\
-AVOID\underline{ }NULL\underline{ }CHECKS & 4.3.3 &  no  &   no  \\
-TOO\underline{ }LONG\underline{ }FUNCTION & 5.1.1 &  no  &   maxFunctionLength isIncludeHeader\\
-NESTED\underline{ }BLOCK & 5.1.2 &  no  &   maxNestedBlockQuantit\\
-AVOID\underline{ }NESTED\underline{ }FUNCTIONS & 5.1.3 &  yes  &   no  \\
-LAMBDA\underline{ }IS\underline{ }NOT\underline{ }LAST\underline{ }PARAMETER & 5.2.1 &  no  &   no \\
-TOO\underline{ }MANY\underline{ }PARAMETERS & 5.2.2 &  no  &   maxParameterListSize \\
-WRONG\underline{ }OVERLOADING\underline{ }FUNCTION\underline{ }ARGUMENTS & 5.2.3 &  no  &   no \\
-SINGLE\underline{ }CONSTRUCTOR\underline{ }SHOULD\underline{ }BE\underline{ }PRIMARY & 6.1.1 &  yes  &   no  \\
-USE\underline{ }DATA\underline{ }CLASS & 6.1.2 &  no  &   no  \\
-EMPTY\underline{ }PRIMARY\underline{ }CONSTRUCTOR & 6.1.3 &  yes  &   no  \\
-MULTIPLE\underline{ }INIT\underline{ }BLOCKS & 6.1.4 &  yes  &   no  \\
-USELESS\underline{ }SUPERTYPE & 6.1.5 &  yes  &   no  \\
-CLASS\underline{ }SHOULD\underline{ }NOT\underline{ }BE\underline{ }ABSTRACT & 6.1.6 &  yes  &   no  \\
-NO\underline{ }CORRESPONDING\underline{ }PROPERTY & 6.1.7 &  no  &   no  \\
-CUSTOM\underline{ }GETTERS\underline{ }SETTERS & 6.1.8 &  no  &   no  \\
-WRONG\underline{ }NAME\underline{ }OF\underline{ }VARIABLE\underline{ }INSIDE\underline{ }ACCESSOR & 6.1.9 &  no  &   no \\
-TRIVIAL\underline{ }ACCESSORS\underline{ }ARE\underline{ }NOT\underline{ }RECOMMENDED & 6.1.10 &  yes  &   no  \\
-COMPACT\underline{ }OBJECT\underline{ }INITIALIZATION & 6.1.11 &  yes  &   no  \\
-EXTENSION\underline{ }FUNCTION\underline{ }SAME\underline{ }SIGNATURE & 6.2.2 &  no  &   no  \\
-AVOID\underline{ }USING\underline{ }UTILITY\underline{ }CLASS & 6.4.1 &  no  &  no \\
-OBJECT\underline{ }IS\underline{ }PREFERRED & 6.4.2 &  yes  &  no \\
+VARIABLE\underline{ }NAME\underline{ }INCORRECT & \hyperref[sec:1.1.1]{ 1.1.1} &  no  &   no  \\
+VARIABLE\underline{ }HAS\underline{ }PREFIX & \hyperref[sec:1.1.1]{ 1.1.1} &  yes  &   no  \\
+IDENTIFIER\underline{ }LENGTH & \hyperref[sec:1.1.1]{ 1.1.1} &  no  &   no  \\
+GENERIC\underline{ }NAME & \hyperref[sec:1.1.1]{ 1.1.1} &  yes  &   no  \\
+BACKTICKS\underline{ }PROHIBITED & \hyperref[sec:1.1.1]{ 1.1.1} &  no  &   no  \\
+FILE\underline{ }NAME\underline{ }INCORRECT & \hyperref[sec:1.1.1]{ 1.1.1} &  yes  &   no  \\
+EXCEPTION\underline{ }SUFFIX & \hyperref[sec:1.1.1]{ 1.1.1} &  yes  &   no  \\
+CONFUSING\underline{ }IDENTIFIER\underline{ }NAMING & \hyperref[sec:1.1.1]{ 1.1.1} &  no  &   no  \\
+PACKAGE\underline{ }NAME\underline{ }MISSING & \hyperref[sec:1.2.1]{ 1.2.1} &  yes  &   no  \\
+PACKAGE\underline{ }NAME\underline{ }INCORRECT\underline{ }CASE & \hyperref[sec:1.2.1]{ 1.2.1} &  yes  &   no  \\
+PACKAGE\underline{ }NAME\underline{ }INCORRECT\underline{ }PREFIX & \hyperref[sec:1.2.1]{ 1.2.1} &  yes  &   no  \\
+PACKAGE\underline{ }NAME\underline{ }INCORRECT\underline{ }SYMBOLS & \hyperref[sec:1.2.1]{ 1.2.1} &  no  &   no  \\
+PACKAGE\underline{ }NAME\underline{ }INCORRECT\underline{ }PATH & \hyperref[sec:1.2.1]{ 1.2.1} &  yes  &   no  \\
+INCORRECT\underline{ }PACKAGE\underline{ }SEPARATOR & \hyperref[sec:1.2.1]{ 1.2.1} &  yes  &   no  \\
+CLASS\underline{ }NAME\underline{ }INCORRECT & \hyperref[sec:1.3.1]{ 1.3.1} &  yes  &   no  \\
+OBJECT\underline{ }NAME\underline{ }INCORRECT & \hyperref[sec:1.3.1]{ 1.3.1} &  yes  &   no  \\
+ENUM\underline{ }VALUE & \hyperref[sec:1.3.1]{ 1.3.1} &  yes  &   enumStyle: snakeCase, pascalCase  \\
+FUNCTION\underline{ }NAME\underline{ }INCORRECT\underline{ }CASE & \hyperref[sec:1.4.1]{ 1.4.1} &  yes  &   no  \\
+CONSTANT\underline{ }UPPERCASE & \hyperref[sec:1.5.1]{ 1.5.1} &  yes  &   no  \\
+VARIABLE\underline{ }NAME\underline{ }INCORRECT\underline{ }FORMAT & \hyperref[sec:1.6.1]{ 1.6.1} &  yes  &   no  \\
+FUNCTION\underline{ }BOOLEAN\underline{ }PREFIX & \hyperref[sec:1.6.2]{ 1.6.2} &  yes  &   no  \\
+MISSING\underline{ }KDOC\underline{ }TOP\underline{ }LEVEL & \hyperref[sec:2.1.1]{ 2.1.1} &  no  &   no  \\
+MISSING\underline{ }KDOC\underline{ }CLASS\underline{ }ELEMENTS & \hyperref[sec:2.1.1]{ 2.1.1} &  no  &   no  \\
+MISSING\underline{ }KDOC\underline{ }ON\underline{ }FUNCTION & \hyperref[sec:2.1.1]{ 2.1.1} &  yes  &   no  \\
+KDOC\underline{ }NO\underline{ }CONSTRUCTOR\underline{ }PROPERTY & \hyperref[sec:2.1.1]{ 2.1.1} &  yes  &   no \\
+KDOC\underline{ }EXTRA\underline{ }PROPERTY & \hyperref[sec:2.1.1]{ 2.1.1} &  no  &  no   \\
+KDOC\underline{ }NO\underline{ }CONSTRUCTOR\underline{ }PROPERTY\underline{ }WITH\underline{ }COMMENT & \hyperref[sec:2.1.1]{ 2.1.1} &  yes  &   no \\
+KDOC\underline{ }WITHOUT\underline{ }PARAM\underline{ }TAG & \hyperref[sec:2.1.2]{ 2.1.2} &  yes  &   no  \\
+KDOC\underline{ }WITHOUT\underline{ }RETURN\underline{ }TAG & \hyperref[sec:2.1.2]{ 2.1.2} &  yes  &   no  \\
+KDOC\underline{ }WITHOUT\underline{ }THROWS\underline{ }TAG & \hyperref[sec:2.1.2]{ 2.1.2} &  yes  &   no  \\
+KDOC\underline{ }EMPTY\underline{ }KDOC & \hyperref[sec:2.1.3]{ 2.1.3} &  no  &   no  \\
+KDOC\underline{ }WRONG\underline{ }SPACES\underline{ }AFTER\underline{ }TAG & \hyperref[sec:2.1.3]{ 2.1.3} &  yes  &   no  \\
+KDOC\underline{ }WRONG\underline{ }TAGS\underline{ }ORDER & \hyperref[sec:2.1.3]{ 2.1.3} &  yes  &   no  \\
+KDOC\underline{ }NEWLINES\underline{ }BEFORE\underline{ }BASIC\underline{ }TAGS & \hyperref[sec:2.1.3]{ 2.1.3} &  yes  &   no  \\
+KDOC\underline{ }NO\underline{ }NEWLINES\underline{ }BETWEEN\underline{ }BASIC\underline{ }TAGS & \hyperref[sec:2.1.3]{ 2.1.3} &  yes  &   no  \\
+KDOC\underline{ }NO\underline{ }NEWLINE\underline{ }AFTER\underline{ }SPECIAL\underline{ }TAGS & \hyperref[sec:2.1.3]{ 2.1.3} &  yes  &   no  \\
+KDOC\underline{ }NO\underline{ }DEPRECATED\underline{ }TAG & \hyperref[sec:2.1.3]{ 2.1.3} &  yes  &   no  \\
+KDOC\underline{ }NO\underline{ }EMPTY\underline{ }TAGS & \hyperref[sec:2.2.1]{ 2.2.1} &  no  &   no  \\
+HEADER\underline{ }WRONG\underline{ }FORMAT & \hyperref[sec:2.2.1]{ 2.2.1} &  yes  &   no  \\
+HEADER\underline{ }MISSING\underline{ }OR\underline{ }WRONG\underline{ }COPYRIGHT & \hyperref[sec:2.2.1]{ 2.2.1} &  yes  &  mandatoryCopyright \\
+WRONG\underline{ }COPYRIGHT\underline{ }YEAR & \hyperref[sec:2.2.1]{ 2.2.1} &  yes  &   no  \\
+HEADER\underline{ }CONTAINS\underline{ }DATE\underline{ }OR\underline{ }AUTHOR & \hyperref[sec:2.2.1]{ 2.2.1} &  no  &   no  \\
+HEADER\underline{ }MISSING\underline{ }IN\underline{ }NON\underline{ }SINGLE\underline{ }CLASS\underline{ }FILE & \hyperref[sec:2.2.1]{ 2.2.1} &  no  &   no  \\
+HEADER\underline{ }NOT\underline{ }BEFORE\underline{ }PACKAGE & \hyperref[sec:2.2.1]{ 2.2.1} &  yes  &   no  \\
+KDOC\underline{ }TRIVIAL\underline{ }KDOC\underline{ }ON\underline{ }FUNCTION & \hyperref[sec:2.3.1]{ 2.3.1} &  no  &   no  \\
+WRONG\underline{ }NEWLINES\underline{ }AROUND\underline{ }KDOC & \hyperref[sec:2.4.1]{ 2.4.1} &  yes  &   no  \\
+FIRST\underline{ }COMMENT\underline{ }NO\underline{ }SPACES & \hyperref[sec:2.4.1]{ 2.4.1} &  yes  &   no  \\
+COMMENT\underline{ }WHITE\underline{ }SPACE & \hyperref[sec:2.4.1]{ 2.4.1} &  yes  &   maxSpaces  \\
+IF\underline{ }ELSE\underline{ }COMMENTS & \hyperref[sec:2.4.1]{ 2.4.1} &  yes  &   no  \\
+COMMENTED\underline{ }OUT\underline{ }CODE & \hyperref[sec:2.4.2]{ 2.4.2} &  no  &   no  \\
+FILE\underline{ }IS\underline{ }TOO\underline{ }LONG & \hyperref[sec:3.1.1]{ 3.1.1} &  no  &   maxSize  ignoreFolders  \\
+FILE\underline{ }CONTAINS\underline{ }ONLY\underline{ }COMMENTS & \hyperref[sec:3.1.2]{ 3.1.2} &  no  &   no  \\
+FILE\underline{ }INCORRECT\underline{ }BLOCKS\underline{ }ORDER & \hyperref[sec:3.1.2]{ 3.1.2} &  yes  &   no  \\
+FILE\underline{ }NO\underline{ }BLANK\underline{ }LINE\underline{ }BETWEEN\underline{ }BLOCKS & \hyperref[sec:3.1.2]{ 3.1.2} &  yes  &   no  \\
+FILE\underline{ }UNORDERED\underline{ }IMPORTS & \hyperref[sec:3.1.2]{ 3.1.2} &  yes  &   no  \\
+FILE\underline{ }WILDCARD\underline{ }IMPORTS & \hyperref[sec:3.1.2]{ 3.1.2} &  no  &   allowedWildcards           \\
+FILE\underline{ }NAME\underline{ }MATCH\underline{ }CLASS & \hyperref[sec:3.1.2]{ 3.1.2} &  yes  &   no  \\
+WRONG\underline{ }ORDER\underline{ }IN\underline{ }CLASS\underline{ }LIKE\underline{ }STRUCTURES & \hyperref[sec:3.1.4]{ 3.1.4} &  yes  &   no  \\
+BLANK\underline{ }LINE\underline{ }BETWEEN\underline{ }PROPERTIES & \hyperref[sec:3.1.4]{ 3.1.4} &  yes  &   no  \\
+WRONG\underline{ }DECLARATIONS\underline{ }ORDER & \hyperref[sec:3.1.4]{ 3.1.4} &  yes  &   no  \\
+NO\underline{ }BRACES\underline{ }IN\underline{ }CONDITIONALS\underline{ }AND\underline{ }LOOPS & \hyperref[sec:3.2.1]{ 3.2.1} &  yes  &   no  \\
+BRACES\underline{ }BLOCK\underline{ }STRUCTURE\underline{ }ERROR & \hyperref[sec:3.2.2]{ 3.2.2} &  yes  &   openBraceNewline closeBraceNewline  \\
+WRONG\underline{ }INDENTATION & \hyperref[sec:3.3.1]{ 3.3.1} &  yes  &  extendedIndentOfParameters alignedParameters extendedIndentAfterOperators extendedIndentBeforeDot indentationSize   \\
+EMPTY\underline{ }BLOCK\underline{ }STRUCTURE\underline{ }ERROR & \hyperref[sec:3.4.1]{ 3.4.1} &  yes  &   allowEmptyBlocks styleEmptyBlockWithNewline  \\
+LONG\underline{ }LINE & \hyperref[sec:3.5.1]{ 3.5.1} &  yes  &   lineLength                 \\
+MORE\underline{ }THAN\underline{ }ONE\underline{ }STATEMENT\underline{ }PER\underline{ }LINE & \hyperref[sec:3.6.1]{ 3.6.1} &  yes  &   no  \\
+REDUNDANT\underline{ }SEMICOLON & \hyperref[sec:3.6.2]{ 3.6.2} &  yes  &   no  \\
+WRONG\underline{ }NEWLINES & \hyperref[sec:3.6.2]{ 3.6.2} &  yes  &   no  \\
+TOO\underline{ }MANY\underline{ }BLANK\underline{ }LINES & \hyperref[sec:3.7.1]{ 3.7.1} &  yes  &   no  \\
+WRONG\underline{ }WHITESPACE & \hyperref[sec:3.8.1]{ 3.8.1} &  yes  &   no  \\
+TOO\underline{ }MANY\underline{ }CONSECUTIVE\underline{ }SPACES & \hyperref[sec:3.8.1]{ 3.8.1} &  yes  &   maxSpaces saveInitialFormattingForEnums  \\
+ENUMS\underline{ }SEPARATED & \hyperref[sec:3.9.1]{ 3.9.1} &  yes  &   no  \\
+LOCAL\underline{ }VARIABLE\underline{ }EARLY\underline{ }DECLARATION & \hyperref[sec:3.10.2]{ 3.10.2} &  no  &   no  \\
+WHEN\underline{ }WITHOUT\underline{ }ELSE & \hyperref[sec:3.11.1]{ 3.11.1} &  yes  &   no  \\
+ANNOTATION\underline{ }NEW\underline{ }LINE & \hyperref[sec:3.12.1]{ 3.12.1} &  yes  &   no  \\
+WRONG\underline{ }MULTIPLE\underline{ }MODIFIERS\underline{ }ORDER & \hyperref[sec:3.14.1]{ 3.14.1} &  yes  &   no  \\
+LONG\underline{ }NUMERICAL\underline{ }VALUES\underline{ }SEPARATED & \hyperref[sec:3.14.2]{ 3.14.2} &  yes  &   maxLength                  \\
+STRING\underline{ }CONCATENATION & \hyperref[sec:3.15.1]{ 3.15.1} &  no  &   no  \\
+STRING\underline{ }TEMPLATE\underline{ }CURLY\underline{ }BRACES & \hyperref[sec:3.15.2]{ 3.15.2} &  yes  &   no  \\
+STRING\underline{ }TEMPLATE\underline{ }QUOTES & \hyperref[sec:3.15.2]{ 3.15.2} &  yes  &   no  \\
+FLOAT\underline{ }IN\underline{ }ACCURATE\underline{ }CALCULATIONS & \hyperref[sec:4.1.1]{ 4.1.1} &  no  &   no  \\
+SAY\underline{ }NO\underline{ }TO\underline{ }VAR & \hyperref[sec:4.1.3]{ 4.1.3} &  no  &   no  \\
+SMART\underline{ }CAST\underline{ }NEEDED & \hyperref[sec:4.2.1]{ 4.2.1} &  yes  &   no  \\
+TYPE\underline{ }ALIAS & \hyperref[sec:4.2.2]{ 4.2.2} &  no  &   typeReferenceLength        \\
+NULLABLE\underline{ }PROPERTY\underline{ }TYPE & \hyperref[sec:4.3.1]{ 4.3.1} &  yes  &   no  \\
+GENERIC\underline{ }VARIABLE\underline{ }WRONG\underline{ }DECLARATION & \hyperref[sec:4.3.2]{ 4.3.2} &  yes  &   no  \\
+AVOID\underline{ }NULL\underline{ }CHECKS & \hyperref[sec:4.3.3]{ 4.3.3} &  no  &   no  \\
+TOO\underline{ }LONG\underline{ }FUNCTION & \hyperref[sec:5.1.1]{ 5.1.1} &  no  &   maxFunctionLength isIncludeHeader\\
+NESTED\underline{ }BLOCK & \hyperref[sec:5.1.2]{ 5.1.2} &  no  &   maxNestedBlockQuantit\\
+AVOID\underline{ }NESTED\underline{ }FUNCTIONS & \hyperref[sec:5.1.3]{ 5.1.3} &  yes  &   no  \\
+LAMBDA\underline{ }IS\underline{ }NOT\underline{ }LAST\underline{ }PARAMETER & \hyperref[sec:5.2.1]{ 5.2.1} &  no  &   no \\
+TOO\underline{ }MANY\underline{ }PARAMETERS & \hyperref[sec:5.2.2]{ 5.2.2} &  no  &   maxParameterListSize \\
+WRONG\underline{ }OVERLOADING\underline{ }FUNCTION\underline{ }ARGUMENTS & \hyperref[sec:5.2.3]{ 5.2.3} &  no  &   no \\
+SINGLE\underline{ }CONSTRUCTOR\underline{ }SHOULD\underline{ }BE\underline{ }PRIMARY & \hyperref[sec:6.1.1]{ 6.1.1} &  yes  &   no  \\
+USE\underline{ }DATA\underline{ }CLASS & \hyperref[sec:6.1.2]{ 6.1.2} &  no  &   no  \\
+EMPTY\underline{ }PRIMARY\underline{ }CONSTRUCTOR & \hyperref[sec:6.1.3]{ 6.1.3} &  yes  &   no  \\
+MULTIPLE\underline{ }INIT\underline{ }BLOCKS & \hyperref[sec:6.1.4]{ 6.1.4} &  yes  &   no  \\
+USELESS\underline{ }SUPERTYPE & \hyperref[sec:6.1.5]{ 6.1.5} &  yes  &   no  \\
+CLASS\underline{ }SHOULD\underline{ }NOT\underline{ }BE\underline{ }ABSTRACT & \hyperref[sec:6.1.6]{ 6.1.6} &  yes  &   no  \\
+NO\underline{ }CORRESPONDING\underline{ }PROPERTY & \hyperref[sec:6.1.7]{ 6.1.7} &  no  &   no  \\
+CUSTOM\underline{ }GETTERS\underline{ }SETTERS & \hyperref[sec:6.1.8]{ 6.1.8} &  no  &   no  \\
+WRONG\underline{ }NAME\underline{ }OF\underline{ }VARIABLE\underline{ }INSIDE\underline{ }ACCESSOR & \hyperref[sec:6.1.9]{ 6.1.9} &  no  &   no \\
+TRIVIAL\underline{ }ACCESSORS\underline{ }ARE\underline{ }NOT\underline{ }RECOMMENDED & \hyperref[sec:6.1.10]{ 6.1.10} &  yes  &   no  \\
+COMPACT\underline{ }OBJECT\underline{ }INITIALIZATION & \hyperref[sec:6.1.11]{ 6.1.11} &  yes  &   no  \\
+EXTENSION\underline{ }FUNCTION\underline{ }SAME\underline{ }SIGNATURE & \hyperref[sec:6.2.2]{ 6.2.2} &  no  &   no  \\
+AVOID\underline{ }USING\underline{ }UTILITY\underline{ }CLASS & \hyperref[sec:6.4.1]{ 6.4.1} &  no  &  no \\
+OBJECT\underline{ }IS\underline{ }PREFERRED & \hyperref[sec:6.4.2]{ 6.4.2} &  yes  &  no \\
 \hline
 \end{longtable}
 \lstMakeShortInline[basicstyle=\ttfamily\bfseries]`
 
 \section*{Table of contents}
 
-\hspace{0.0cm}I Preface
+\hspace{0.0cm}\hyperref[sec:]{I Preface}
 
-\hspace{0.5cm} I.I Purpose of this document
+\hspace{0.5cm}\hyperref[sec:]{ I.I Purpose of this document}
 
-\hspace{0.5cm} I.II General principles
+\hspace{0.5cm}\hyperref[sec:]{ I.II General principles}
 
-\hspace{0.5cm} I.III Terminology
+\hspace{0.5cm}\hyperref[sec:]{ I.III Terminology}
 
-\hspace{0.5cm} I.IV Exceptions
+\hspace{0.5cm}\hyperref[sec:]{ I.IV Exceptions}
 
-\hspace{0.0cm}
+\hspace{0.0cm}\hyperref[sec:]{}
 
-\hspace{0.0cm}1. Naming
+\hspace{0.0cm}\hyperref[sec:1.]{1. Naming}
 
-\hspace{0.0cm}
+\hspace{0.0cm}\hyperref[sec:]{}
 
-\hspace{0.5cm} 1.1 Identifiers
+\hspace{0.5cm}\hyperref[sec:1.1]{ 1.1 Identifiers}
 
-\hspace{0.5cm} 1.2 Packages
+\hspace{0.5cm}\hyperref[sec:1.2]{ 1.2 Packages}
 
-\hspace{0.5cm} 1.3 Classes, enumerations, interfaces
+\hspace{0.5cm}\hyperref[sec:1.3]{ 1.3 Classes, enumerations, interfaces}
 
-\hspace{0.5cm} 1.4 Functions
+\hspace{0.5cm}\hyperref[sec:1.4]{ 1.4 Functions}
 
-\hspace{0.5cm} 1.5 Constants
+\hspace{0.5cm}\hyperref[sec:1.5]{ 1.5 Constants}
 
-\hspace{0.5cm} 1.6 Non-constant fields (variables)
+\hspace{0.5cm}\hyperref[sec:1.6]{ 1.6 Non-constant fields (variables)}
 
-\hspace{1.0cm} 1.6.1 Non-constant field name
+\hspace{1.0cm}\hyperref[sec:1.6.1]{ 1.6.1 Non-constant field name}
 
-\hspace{1.0cm} 1.6.2 Boolean variable names with negative meaning
+\hspace{1.0cm}\hyperref[sec:1.6.2]{ 1.6.2 Boolean variable names with negative meaning}
 
-\hspace{0.0cm}
+\hspace{0.0cm}\hyperref[sec:]{}
 
-\hspace{0.0cm}2. Comments
+\hspace{0.0cm}\hyperref[sec:2.]{2. Comments}
 
-\hspace{0.5cm} 2.1 General form of Kdoc
+\hspace{0.5cm}\hyperref[sec:2.1]{ 2.1 General form of Kdoc}
 
-\hspace{1.0cm} 2.1.1 Using KDoc for the public, protected, or internal code elements
+\hspace{1.0cm}\hyperref[sec:2.1.1]{ 2.1.1 Using KDoc for the public, protected, or internal code elements}
 
-\hspace{1.0cm} 2.1.2 Describing methods that have arguments, a return value, or can throw an exception in the KDoc block
+\hspace{1.0cm}\hyperref[sec:2.1.2]{ 2.1.2 Describing methods that have arguments, a return value, or can throw an exception in the KDoc block}
 
-\hspace{1.0cm} 2.1.3 Only one space between the Kdoc tag and content. Tags are arranged in the order.
+\hspace{1.0cm}\hyperref[sec:2.1.3]{ 2.1.3 Only one space between the Kdoc tag and content. Tags are arranged in the order.}
 
-\hspace{0.5cm} 2.2 Adding comments on the file header
+\hspace{0.5cm}\hyperref[sec:2.2]{ 2.2 Adding comments on the file header}
 
-\hspace{0.5cm} 2.3 Comments on the function header
+\hspace{0.5cm}\hyperref[sec:2.3]{ 2.3 Comments on the function header}
 
-\hspace{0.5cm} 2.4 Code comments
+\hspace{0.5cm}\hyperref[sec:2.4]{ 2.4 Code comments}
 
-\hspace{1.0cm} 2.4.1 Add a blank line between the body of the comment and Kdoc tag-blocks
+\hspace{1.0cm}\hyperref[sec:2.4.1]{ 2.4.1 Add a blank line between the body of the comment and Kdoc tag-blocks}
 
-\hspace{1.0cm} 2.4.2 Do not comment on unused code blocks
+\hspace{1.0cm}\hyperref[sec:2.4.2]{ 2.4.2 Do not comment on unused code blocks}
 
-\hspace{1.0cm} 2.4.3 Do not comment on unused code blocks
+\hspace{1.0cm}\hyperref[sec:2.4.3]{ 2.4.3 Do not comment on unused code blocks}
 
-\hspace{1.0cm}
+\hspace{1.0cm}\hyperref[sec:]{}
 
-\hspace{0.0cm}3. General formatting (typesetting)
+\hspace{0.0cm}\hyperref[sec:3.]{3. General formatting (typesetting)}
 
-\hspace{0.5cm} 3.1 File-related rules
+\hspace{0.5cm}\hyperref[sec:3.1]{ 3.1 File-related rules}
 
-\hspace{1.0cm} 3.1.1 Avoid files that are too long
+\hspace{1.0cm}\hyperref[sec:3.1.1]{ 3.1.1 Avoid files that are too long}
 
-\hspace{1.0cm} 3.1.2 Code blocks in the source file should be separated by one blank line
+\hspace{1.0cm}\hyperref[sec:3.1.2]{ 3.1.2 Code blocks in the source file should be separated by one blank line}
 
-\hspace{1.0cm} 3.1.3 Import statements order
+\hspace{1.0cm}\hyperref[sec:3.1.3]{ 3.1.3 Import statements order}
 
-\hspace{1.0cm} 3.1.4 Order of declaration parts of class-like code structures
+\hspace{1.0cm}\hyperref[sec:3.1.4]{ 3.1.4 Order of declaration parts of class-like code structures}
 
-\hspace{0.5cm} 3.2 Braces
+\hspace{0.5cm}\hyperref[sec:3.2]{ 3.2 Braces}
 
-\hspace{1.0cm} 3.2.1 Using braces in conditional statements and loop blocks
+\hspace{1.0cm}\hyperref[sec:3.2.1]{ 3.2.1 Using braces in conditional statements and loop blocks}
 
-\hspace{1.0cm} 3.2.2 Opening braces are placed at the end of the line in non-empty blocks and block structures
+\hspace{1.0cm}\hyperref[sec:3.2.2]{ 3.2.2 Opening braces are placed at the end of the line in non-empty blocks and block structures}
 
-\hspace{0.5cm} 3.3 Indentation
+\hspace{0.5cm}\hyperref[sec:3.3]{ 3.3 Indentation}
 
-\hspace{0.5cm} 3.4 Empty blocks
+\hspace{0.5cm}\hyperref[sec:3.4]{ 3.4 Empty blocks}
 
-\hspace{0.5cm} 3.5 Line length
+\hspace{0.5cm}\hyperref[sec:3.5]{ 3.5 Line length}
 
-\hspace{0.5cm} 3.6 Line breaks (newlines)
+\hspace{0.5cm}\hyperref[sec:3.6]{ 3.6 Line breaks (newlines)}
 
-\hspace{1.0cm} 3.6.1 Each line can have a maximum of one statement
+\hspace{1.0cm}\hyperref[sec:3.6.1]{ 3.6.1 Each line can have a maximum of one statement}
 
-\hspace{1.0cm} 3.6.2 Rules for line-breaking
+\hspace{1.0cm}\hyperref[sec:3.6.2]{ 3.6.2 Rules for line-breaking}
 
-\hspace{0.5cm} 3.7 Using blank lines
+\hspace{0.5cm}\hyperref[sec:3.7]{ 3.7 Using blank lines}
 
-\hspace{0.5cm} 3.8 Horizontal space
+\hspace{0.5cm}\hyperref[sec:3.8]{ 3.8 Horizontal space}
 
-\hspace{1.0cm} 3.8.1 Usage of whitespace for code separation
+\hspace{1.0cm}\hyperref[sec:3.8.1]{ 3.8.1 Usage of whitespace for code separation}
 
-\hspace{1.0cm} 3.8.2 No spaces for horizontal alignment
+\hspace{1.0cm}\hyperref[sec:3.8.2]{ 3.8.2 No spaces for horizontal alignment}
 
-\hspace{0.5cm} 3.9 Enumerations
+\hspace{0.5cm}\hyperref[sec:3.9]{ 3.9 Enumerations}
 
-\hspace{0.5cm} 3.10 Variable declaration
+\hspace{0.5cm}\hyperref[sec:3.10]{ 3.10 Variable declaration}
 
-\hspace{1.0cm} 3.10.1 Declare one variable per line
+\hspace{1.0cm}\hyperref[sec:3.10.1]{ 3.10.1 Declare one variable per line}
 
-\hspace{1.0cm} 3.10.2 Variables should be declared near the line where they are first used
+\hspace{1.0cm}\hyperref[sec:3.10.2]{ 3.10.2 Variables should be declared near the line where they are first used}
 
-\hspace{0.5cm} 3.11 'When' expression
+\hspace{0.5cm}\hyperref[sec:3.11]{ 3.11 'When' expression}
 
-\hspace{0.5cm} 3.12 Annotations
+\hspace{0.5cm}\hyperref[sec:3.12]{ 3.12 Annotations}
 
-\hspace{0.5cm} 3.13 Block comments
+\hspace{0.5cm}\hyperref[sec:3.13]{ 3.13 Block comments}
 
-\hspace{0.5cm} 3.14 Modifiers and constant values
+\hspace{0.5cm}\hyperref[sec:3.14]{ 3.14 Modifiers and constant values}
 
-\hspace{1.0cm} 3.14.1 Declaration with multiple modifiers
+\hspace{1.0cm}\hyperref[sec:3.14.1]{ 3.14.1 Declaration with multiple modifiers}
 
-\hspace{1.0cm} 3.14.2 Separate long numerical values with an underscore
+\hspace{1.0cm}\hyperref[sec:3.14.2]{ 3.14.2 Separate long numerical values with an underscore}
 
-\hspace{1.0cm} 3.15 Strings
+\hspace{1.0cm}\hyperref[sec:3.15]{ 3.15 Strings}
 
-\hspace{1.0cm} 3.15.1 Concatenation of Strings
+\hspace{1.0cm}\hyperref[sec:3.15.1]{ 3.15.1 Concatenation of Strings}
 
-\hspace{1.0cm} 3.15.2 String template format
+\hspace{1.0cm}\hyperref[sec:3.15.2]{ 3.15.2 String template format}
 
-\hspace{0.0cm}
+\hspace{0.0cm}\hyperref[sec:]{}
 
-\hspace{0.0cm}4. Variables and types
+\hspace{0.0cm}\hyperref[sec:4.]{4. Variables and types}
 
-\hspace{0.5cm} 4.1 Variables
+\hspace{0.5cm}\hyperref[sec:4.1]{ 4.1 Variables}
 
-\hspace{1.0cm} 4.1.1 Do not use Float and Double types when accurate calculations are needed
+\hspace{1.0cm}\hyperref[sec:4.1.1]{ 4.1.1 Do not use Float and Double types when accurate calculations are needed}
 
-\hspace{1.0cm} 4.1.2 Comparing numeric float type values
+\hspace{1.0cm}\hyperref[sec:4.1.2]{ 4.1.2 Comparing numeric float type values}
 
-\hspace{1.0cm} 4.1.3 Try to use 'val' instead of 'var' for variable declaration SAY\_NO\_TO\_VAR
+\hspace{1.0cm}\hyperref[sec:4.1.3]{ 4.1.3 Try to use 'val' instead of 'var' for variable declaration SAY\_NO\_TO\_VAR}
 
-\hspace{0.5cm} 4.2 Types
+\hspace{0.5cm}\hyperref[sec:4.2]{ 4.2 Types}
 
-\hspace{1.0cm} 4.2.1 Use Contracts and smart cast as much as possible
+\hspace{1.0cm}\hyperref[sec:4.2.1]{ 4.2.1 Use Contracts and smart cast as much as possible}
 
-\hspace{1.0cm} 4.2.2 Try to use type alias to represent types making code more readable
+\hspace{1.0cm}\hyperref[sec:4.2.2]{ 4.2.2 Try to use type alias to represent types making code more readable}
 
-\hspace{0.5cm} 4.3 Null safety and variable declarations
+\hspace{0.5cm}\hyperref[sec:4.3]{ 4.3 Null safety and variable declarations}
 
-\hspace{1.0cm} 4.3.1 Avoid declaring variables with nullable types, especially from Kotlin stdlib
+\hspace{1.0cm}\hyperref[sec:4.3.1]{ 4.3.1 Avoid declaring variables with nullable types, especially from Kotlin stdlib}
 
-\hspace{1.0cm} 4.3.2 Variables of generic types should have an explicit type declaration
+\hspace{1.0cm}\hyperref[sec:4.3.2]{ 4.3.2 Variables of generic types should have an explicit type declaration}
 
-\hspace{1.0cm} 4.3.3 Null-safety
+\hspace{1.0cm}\hyperref[sec:4.3.3]{ 4.3.3 Null-safety}
 
-\hspace{0.0cm}
+\hspace{0.0cm}\hyperref[sec:]{}
 
-\hspace{0.0cm}5. Functions
+\hspace{0.0cm}\hyperref[sec:5.]{5. Functions}
 
-\hspace{0.5cm} 5.1 Function design
+\hspace{0.5cm}\hyperref[sec:5.1]{ 5.1 Function design}
 
-\hspace{1.0cm} 5.1.1 Avoid functions that are too long 
+\hspace{1.0cm}\hyperref[sec:5.1.1]{ 5.1.1 Avoid functions that are too long }
 
-\hspace{1.0cm} 5.1.2 Avoid deep nesting of function code blocks, limiting to four levels
+\hspace{1.0cm}\hyperref[sec:5.1.2]{ 5.1.2 Avoid deep nesting of function code blocks, limiting to four levels}
 
-\hspace{1.0cm} 5.1.3 Avoid using nested functions
+\hspace{1.0cm}\hyperref[sec:5.1.3]{ 5.1.3 Avoid using nested functions}
 
-\hspace{0.5cm} 5.2 Function arguments
+\hspace{0.5cm}\hyperref[sec:5.2]{ 5.2 Function arguments}
 
-\hspace{1.0cm} 5.2.1 The lambda parameter of the function should be placed at the end of the argument list
+\hspace{1.0cm}\hyperref[sec:5.2.1]{ 5.2.1 The lambda parameter of the function should be placed at the end of the argument list}
 
-\hspace{1.0cm} 5.2.2 Number of function parameters should be limited to five
+\hspace{1.0cm}\hyperref[sec:5.2.2]{ 5.2.2 Number of function parameters should be limited to five}
 
-\hspace{1.0cm} 5.2.3 Use default values for function arguments instead of overloading them
+\hspace{1.0cm}\hyperref[sec:5.2.3]{ 5.2.3 Use default values for function arguments instead of overloading them}
 
-\hspace{0.0cm}
+\hspace{0.0cm}\hyperref[sec:]{}
 
-\hspace{0.0cm}6. Classes, interfaces, and extension functions
+\hspace{0.0cm}\hyperref[sec:6.]{6. Classes, interfaces, and extension functions}
 
-\hspace{0.5cm} 6.1 Classes
+\hspace{0.5cm}\hyperref[sec:6.1]{ 6.1 Classes}
 
-\hspace{1.0cm} 6.1.1 Denoting a class with a single constructor
+\hspace{1.0cm}\hyperref[sec:6.1.1]{ 6.1.1 Denoting a class with a single constructor}
 
-\hspace{1.0cm} 6.1.2 Prefer data classes instead of classes without any functional logic
+\hspace{1.0cm}\hyperref[sec:6.1.2]{ 6.1.2 Prefer data classes instead of classes without any functional logic}
 
-\hspace{1.0cm} 6.1.3 Do not use the primary constructor if it is empty or useless
+\hspace{1.0cm}\hyperref[sec:6.1.3]{ 6.1.3 Do not use the primary constructor if it is empty or useless}
 
-\hspace{1.0cm} 6.1.4 Do not use redundant init blocks in your class
+\hspace{1.0cm}\hyperref[sec:6.1.4]{ 6.1.4 Do not use redundant init blocks in your class}
 
-\hspace{1.0cm} 6.1.5 Explicit supertype qualification
+\hspace{1.0cm}\hyperref[sec:6.1.5]{ 6.1.5 Explicit supertype qualification}
 
-\hspace{1.0cm} 6.1.6 Abstract class should have at least one abstract method
+\hspace{1.0cm}\hyperref[sec:6.1.6]{ 6.1.6 Abstract class should have at least one abstract method}
 
-\hspace{1.0cm} 6.1.7 When using the "implicit backing property" scheme, the name of real and back property should be the same
+\hspace{1.0cm}\hyperref[sec:6.1.7]{ 6.1.7 When using the "implicit backing property" scheme, the name of real and back property should be the same}
 
-\hspace{1.0cm} 6.1.8 Avoid using custom getters and setters
+\hspace{1.0cm}\hyperref[sec:6.1.8]{ 6.1.8 Avoid using custom getters and setters}
 
-\hspace{1.0cm} 6.1.9 Never use the name of a variable in the custom getter or setter (possible\_bug)
+\hspace{1.0cm}\hyperref[sec:6.1.9]{ 6.1.9 Never use the name of a variable in the custom getter or setter (possible\_bug)}
 
-\hspace{1.0cm} 6.1.10 No trivial getters and setters are allowed in the code
+\hspace{1.0cm}\hyperref[sec:6.1.10]{ 6.1.10 No trivial getters and setters are allowed in the code}
 
-\hspace{1.0cm} 6.1.11 Use 'apply' for grouping object initialization
+\hspace{1.0cm}\hyperref[sec:6.1.11]{ 6.1.11 Use 'apply' for grouping object initialization}
 
-\hspace{0.5cm} 6.2 Classes
+\hspace{0.5cm}\hyperref[sec:6.2]{ 6.2 Classes}
 
-\hspace{1.0cm} 6.2.1 Use extension functions for making logic of classes less coupled
+\hspace{1.0cm}\hyperref[sec:6.2.1]{ 6.2.1 Use extension functions for making logic of classes less coupled}
 
-\hspace{1.0cm} 6.2.2 No extension functions with the same name and signature if they extend base and inheritor classes (possible\_bug)
+\hspace{1.0cm}\hyperref[sec:6.2.2]{ 6.2.2 No extension functions with the same name and signature if they extend base and inheritor classes (possible\_bug)}
 
-\hspace{0.5cm} 6.3 Interfaces
+\hspace{0.5cm}\hyperref[sec:6.3]{ 6.3 Interfaces}
 
-\hspace{0.5cm} 6.4 Objects
+\hspace{0.5cm}\hyperref[sec:6.4]{ 6.4 Objects}
 
-\hspace{1.0cm} 6.4.1 Instead of using utility classes/objects, use extensions
+\hspace{1.0cm}\hyperref[sec:6.4.1]{ 6.4.1 Instead of using utility classes/objects, use extensions}
 
-\hspace{1.0cm} 6.4.2 Objects should be used for Stateless Interfaces
+\hspace{1.0cm}\hyperref[sec:6.4.2]{ 6.4.2 Objects should be used for Stateless Interfaces}
 
-\hspace{0.0cm}
+\hspace{0.0cm}\hyperref[sec:]{}
 
-\hspace{0.0cm}
+\hspace{0.0cm}\hyperref[sec:]{}
 
 \subsection*{\textbf{Purpose of this document}}
+
+\label{sec:}
 
 
 
@@ -372,6 +374,8 @@ For the code to be considered high-quality, it must entail the following charact
 
 
 \subsection*{\textbf{General principles}}
+
+\label{sec:}
 
 
 
@@ -423,6 +427,8 @@ Also, we need to consider the following factors when programming on Kotlin:
 
 \subsection*{\textbf{Terminology}}
 
+\label{sec:}
+
 
 
 \textbf{Rules} — conventions that should be followed when programming.
@@ -451,6 +457,8 @@ Unless otherwise stated, this specification applies to versions 1.3 and later of
 
 \subsection*{\textbf{Exceptions}}
 
+\label{sec:}
+
 
 
 Even though exceptions may exist, it is essential to understand why rules and recommendations are needed.
@@ -463,6 +471,8 @@ Software that is directly based on the Android native operating system interface
 
 \section*{\textbf{1. Naming}}
 
+\label{sec:1.}
+
 In programming, it is not always easy to meaningfully and appropriately name variables, functions, classes, etc. Using meaningful names helps to clearly express your code's main ideas and functionality and avoid misinterpretation, unnecessary coding and decoding, "magic" numbers, and inappropriate abbreviations.
 
 
@@ -473,10 +483,14 @@ Note: The source file encoding format (including comments) must be UTF-8 only. T
 
 \subsection*{\textbf{1.1 Identifiers}}
 
+\label{sec:1.1}
+
 This section describes the general rules for naming identifiers.
 
 \subsubsection*{\textbf{1.1.1 Identifiers naming conventions}}
 \leavevmode\newline
+
+\label{sec:1.1.1}
 
 
 
@@ -504,7 +518,7 @@ No special prefix or suffix should be used in names. The following examples are 
 
 \begin{center}
 
-\begin{tabular}{ |p{5.0cm}|p{5.0cm}|p{5.0cm}| }
+\begin{tabular}{ |p{5,0cm}|p{5,0cm}|p{5,0cm}| }
 
 \hline
 
@@ -550,7 +564,7 @@ The only exception is function names in `Unit tests.`
 
 \begin{center}
 
-\begin{tabular}{ |p{5.0cm}|p{5.0cm}|p{5.0cm}| }
+\begin{tabular}{ |p{5,0cm}|p{5,0cm}|p{5,0cm}| }
 
 \hline
 
@@ -594,7 +608,7 @@ Note that prefixing can also negatively affect the style and the auto-generation
 
 \begin{center}
 
-\begin{tabular}{ |p{7.5cm}|p{7.5cm}| }
+\begin{tabular}{ |p{7,5cm}|p{7,5cm}| }
 
 \hline
 
@@ -620,10 +634,14 @@ Type&Naming style\\
 
 \subsection*{\textbf{1.2 Packages}}
 
+\label{sec:1.2}
+
 
 
 \subsubsection*{\textbf{Rule 1.2.1 Package names dots}}
 \leavevmode\newline
+
+\label{sec:}
 
 Package names are in lower case and separated by dots. Code developed within your company should start with `your.company.domain.` Numbers are permitted in package names.
 
@@ -654,10 +672,14 @@ package your.company.domain.mobilecontrol.views
 
 \subsection*{\textbf{1.3 Classes}}
 
+\label{sec:1.3}
+
 This section describes the general rules for naming classes, enumerations, and interfaces.
 
 \subsubsection*{\textbf{1.3.1 Classes}}
 \leavevmode\newline
+
+\label{sec:1.3.1}
 
 Classes, enumerations, and interface names use `UpperCamelCase` nomenclature. Follow the naming rules described below:
 
@@ -695,10 +717,14 @@ class Order {}
 
 \subsection*{\textbf{1.4 Functions}}
 
+\label{sec:1.4}
+
 This section describes the general rules for naming functions.
 
 \subsubsection*{\textbf{1.4.1 Function names should be in camel case}}
 \leavevmode\newline
+
+\label{sec:1.4.1}
 
 Function names should use `lowerCamelCase` nomenclature. Follow the naming rules described below:
 
@@ -777,10 +803,14 @@ fun addKeyListener(Listener)
 
 \subsection*{\textbf{1.5 Constants}}
 
+\label{sec:1.5}
+
 This section describes the general rules for naming constraints.
 
 \subsubsection*{\textbf{1.5.1 Using UPPER case and underscore characters in a constraint name}}
 \leavevmode\newline
+
+\label{sec:1.5.1}
 
 Constant names should be in UPPER case, words separated by underscore. The general constant naming conventions are listed below:
 
@@ -826,10 +856,14 @@ const val String APPLICATION_NAME = "Launcher";
 
 \subsection*{\textbf{1.6 Non-constant fields}}
 
+\label{sec:1.6}
+
 This section describes the general rules for naming variables.
 
 \subsubsection*{\textbf{1.6.1 Non-constant field name}}
 \leavevmode\newline
+
+\label{sec:1.6.1}
 
 Non-constant field names should use camel case and start with a lowercase letter.
 
@@ -862,6 +896,8 @@ val mutableCollection: MutableSet<String> = HashSet()
 
 \subsubsection*{\textbf{1.6.2 Boolean variable names with negative meaning}}
 \leavevmode\newline
+
+\label{sec:1.6.2}
 
 
 
@@ -900,6 +936,8 @@ fun hasNext()
 \end{lstlisting}
 \section*{\textbf{2. Comments}}
 
+\label{sec:2.}
+
 
 
 The best practice is to begin your code with a summary, which can be one sentence.
@@ -919,6 +957,8 @@ Imagine that you are writing the comments to help yourself to understand the ori
 
 
 \subsection*{\textbf{2.1 General form of Kdoc}}
+
+\label{sec:2.1}
 
 
 
@@ -952,6 +992,8 @@ Use a single-line form when you store the entire KDoc block in one line (and the
 
 \subsubsection*{\textbf{2.1.1 Using KDoc for the public}}
 \leavevmode\newline
+
+\label{sec:2.1.1}
 
 
 
@@ -1031,6 +1073,8 @@ fun isEmptyList(list: List<String>) = list.size == 0
 \subsubsection*{\textbf{2.1.2 Describing methods that have arguments}}
 \leavevmode\newline
 
+\label{sec:2.1.2}
+
 
 
 When the method has such details as arguments, return value, or can throw exceptions, it must be described in the KDoc block (with @param, @return, @throws, etc.).
@@ -1075,6 +1119,8 @@ When the method has such details as arguments, return value, or can throw except
 
 \subsubsection*{\textbf{2.1.3 Only one space between the Kdoc tag and content. Tags are arranged in the order.}}
 \leavevmode\newline
+
+\label{sec:2.1.3}
 
 
 
@@ -1156,6 +1202,8 @@ Other KDoc tags (such as @param type parameters and @see.) can be added as follo
 
 \subsection*{\textbf{2.2 Adding comments on the file header}}
 
+\label{sec:2.2}
+
 
 
 This section describes the general rules of adding comments on the file header.
@@ -1227,6 +1275,8 @@ The following factors should be considered when writing the file header or comme
 
 \subsection*{\textbf{2.3 Comments on the function header}}
 
+\label{sec:2.3}
+
 
 
 Comments on the function header are placed above function declarations or definitions. A newline should not exist between a function declaration and its Kdoc. Use the preceding <<c2.1,KDoc>> style rules.
@@ -1245,6 +1295,8 @@ The function header comment's content is optional, but not limited to function d
 
 \subsection*{\textbf{2.4 Code comments}}
 
+\label{sec:2.4}
+
 
 
 This section describes the general rules of adding code comments.
@@ -1253,6 +1305,8 @@ This section describes the general rules of adding code comments.
 
 \subsubsection*{\textbf{2.4.1 Add a blank line between the body of the comment and Kdoc tag-blocks.}}
 \leavevmode\newline
+
+\label{sec:2.4.1}
 
 
 
@@ -1363,6 +1417,8 @@ val x = 0  // this is a comment
 \subsubsection*{\textbf{2.4.2 Do not comment on unused code blocks}}
 \leavevmode\newline
 
+\label{sec:2.4.2}
+
 
 
 Do not comment on unused code blocks, including imports. Delete these code blocks immediately.
@@ -1381,6 +1437,8 @@ If you need the code again, consider porting or rewriting it as changes could ha
 
 \subsubsection*{\textbf{2.4.3 Code delivered to the client should not contain TODO}}
 \leavevmode\newline
+
+\label{sec:2.4.3}
 
 
 
@@ -1406,12 +1464,18 @@ At a version development stage, these annotations can be used to highlight the i
 
 \section*{\textbf{3. General formatting}}
 
+\label{sec:3.}
+
 \subsection*{\textbf{3.1 File-related rules}}
+
+\label{sec:3.1}
 
 This section describes the rules related to using files in your code.
 
 \subsubsection*{\textbf{3.1.1 Avoid files that are too long}}
 \leavevmode\newline
+
+\label{sec:3.1.1}
 
 
 
@@ -1425,6 +1489,8 @@ The only exception to this rule is code generation - the auto-generated files th
 
 \subsubsection*{\textbf{3.1.2 Code blocks in the source file should be separated by one blank line}}
 \leavevmode\newline
+
+\label{sec:3.1.2}
 
 A source file contains code blocks in the following order: copyright, package name, imports, and top-level classes. They should be separated by one blank line.
 
@@ -1464,6 +1530,8 @@ e) Avoid empty files that do not contain the code or contain only imports/commen
 
 \subsubsection*{\textbf{3.1.3 Import statements order}}
 \leavevmode\newline
+
+\label{sec:3.1.3}
 
 
 
@@ -1509,6 +1577,8 @@ import kotlinx.coroutines.*  // official kotlin extension library
 \subsubsection*{\textbf{3.1.4 Order of declaration parts of class-like code structures}}
 \leavevmode\newline
 
+\label{sec:3.1.4}
+
 The declaration parts of class-like code structures (class, interface, etc.) should be in the following order: compile-time constants (for objects), class properties, late-init class properties, init-blocks, constructors, public methods, internal methods, protected methods, private methods, and companion object. Blank lines should separate their declaration.
 
 Notes:
@@ -1549,10 +1619,14 @@ All variants of a `(private) val` logger should be placed at the beginning of th
 
 \subsection*{\textbf{3.2 Braces}}
 
+\label{sec:3.2}
+
 This section describes the general rules of using braces in your code.
 
 \subsubsection*{\textbf{3.2.1 Using braces in conditional statements and loop blocks}}
 \leavevmode\newline
+
+\label{sec:3.2.1}
 
 
 
@@ -1609,6 +1683,8 @@ if (condition) {
 
 \subsubsection*{\textbf{3.2.2  Opening braces are placed at the end of the line in}}
 \leavevmode\newline
+
+\label{sec:3.2.2}
 
 For *non-empty* blocks and block structures, the opening brace is placed at the end of the line.
 
@@ -1684,6 +1760,8 @@ do {
 
 
 \subsection*{\textbf{3.3 Indentation}}
+
+\label{sec:3.3}
 
 
 
@@ -1796,6 +1874,8 @@ class A
 
 \subsection*{\textbf{3.4 Empty blocks}}
 
+\label{sec:3.4}
+
 
 
 Avoid empty blocks, and ensure braces start on a new line. An empty code block can be closed immediately on the same line and the next line. However, a newline is recommended between opening and closing braces `{}` (see the examples below.)
@@ -1845,6 +1925,8 @@ try {
 
 \subsection*{\textbf{3.5 Line length}}
 
+\label{sec:3.5}
+
 
 
 Line length should be less than 120 symbols. The international code style prohibits `non-Latin` (`non-ASCII`) symbols.
@@ -1885,10 +1967,14 @@ Each one of these characters represents two narrow characters.
 
 \subsection*{\textbf{3.6 Line breaks}}
 
+\label{sec:3.6}
+
 This section contains the rules and recommendations on using line breaks.
 
 \subsubsection*{\textbf{3.6.1 Each line can have a maximum of one statement}}
 \leavevmode\newline
+
+\label{sec:3.6.1}
 
 Each line can have a maximum of one code statement. This recommendation prohibits the use of code with `;` because it decreases code visibility.
 
@@ -1911,6 +1997,8 @@ val b = ""
 
 \subsubsection*{\textbf{3.6.2 Rules for line-breaking}}
 \leavevmode\newline
+
+\label{sec:3.6.2}
 
 
 
@@ -2094,6 +2182,8 @@ class MyFavouriteVeryLongClassHolder :
 
 \subsection*{\textbf{3.7 Using blank lines}}
 
+\label{sec:3.7}
+
 
 
 Reduce unnecessary blank lines and maintain a compact code size. By reducing unnecessary blank lines, you can display more code on one screen, which improves code readability.
@@ -2122,10 +2212,14 @@ fun baz() {
 
 \subsection*{\textbf{3.8 Horizontal space}}
 
+\label{sec:3.8}
+
 This section describes general rules and recommendations for using spaces in the code.
 
 \subsubsection*{\textbf{3.8.1}}
 \leavevmode\newline
+
+\label{sec:3.8.1}
 
 
 
@@ -2261,6 +2355,8 @@ fun foo
 \subsubsection*{\textbf{3.8.2}}
 \leavevmode\newline
 
+\label{sec:3.8.2}
+
 
 
 \textit{Horizontal alignment} refers to aligning code blocks by adding space to the code. Horizontal alignment should not be used because:
@@ -2304,6 +2400,8 @@ enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean
 
 
 \subsection*{\textbf{3.9 Enumerations}}
+
+\label{sec:3.9}
 
 Enum values are separated by a comma and line break, with ';' placed on the new line.
 
@@ -2371,10 +2469,14 @@ enum class ComparisonResult {
 
 \subsection*{\textbf{3.10 Variable declaration}}
 
+\label{sec:3.10}
+
 This section describes rules for the declaration of variables.
 
 \subsubsection*{\textbf{3.10.1 Declare one variable per line}}
 \leavevmode\newline
+
+\label{sec:3.10.1}
 
 
 
@@ -2392,6 +2494,8 @@ val n1: Int; val n2: Int
 \subsubsection*{\textbf{3.10.2 Variables should be declared near the line where they are first used}}
 \leavevmode\newline
 
+\label{sec:3.10.2}
+
 Declare local variables close to the point where they are first used to minimize their scope. This will also increase the readability of the code.
 
 Local variables are usually initialized during their declaration or immediately after.
@@ -2400,7 +2504,9 @@ The member fields of the class should be declared collectively (see [Rule 3.1.2]
 
 
 
-\subsection*{\textbf{3.11}}
+\subsection*{\textbf{3.11 'When' expression}}
+
+\label{sec:3.11}
 
 
 
@@ -2417,6 +2523,8 @@ The compiler can issue a warning when it is missing.
 
 
 \subsection*{\textbf{3.12 Annotations}}
+
+\label{sec:3.12}
 
 
 
@@ -2459,6 +2567,8 @@ fun getNameIfPresent() { /* ... */ }
 
 \subsection*{\textbf{3.13 Block comments}}
 
+\label{sec:3.13}
+
 
 
 Block comments should be placed at the same indentation level as the surrounding code. See examples below.
@@ -2486,10 +2596,14 @@ class SomeClass {
 
 \subsection*{\textbf{3.14 Modifiers and constant values}}
 
+\label{sec:3.14}
+
 This section contains recommendations regarding modifiers and constant values.
 
 \subsubsection*{\textbf{3.14.1 Declaration with multiple modifiers}}
 \leavevmode\newline
+
+\label{sec:3.14.1}
 
 If a declaration has multiple modifiers, always follow the proper sequence.
 
@@ -2523,6 +2637,8 @@ data
 \subsubsection*{\textbf{3.14.2}}
 \leavevmode\newline
 
+\label{sec:3.14.2}
+
 An underscore character should separate long numerical values.
 
 \textbf{Note:} Using underscores simplifies reading and helps to find errors in numeric constants.
@@ -2538,12 +2654,16 @@ val bytes = 0b11010010_01101001_10010100_10010010
 
 \subsection*{\textbf{3.15 Strings}}
 
+\label{sec:3.15}
+
 This section describes the general rules of using strings.
 
 
 
 \subsubsection*{\textbf{3.15.1 Concatenation of Strings}}
 \leavevmode\newline
+
+\label{sec:3.15.1}
 
 String concatenation is prohibited if the string can fit on one line. Use raw strings and string templates instead. Kotlin has significantly improved the use of Strings: 
 
@@ -2571,6 +2691,8 @@ val value = "$myStr concatenated"
 
 \subsubsection*{\textbf{3.15.2 String template format}}
 \leavevmode\newline
+
+\label{sec:3.15.2}
 
 \textbf{Redundant curly braces in string templates}
 
@@ -2614,14 +2736,20 @@ val someString = myArgument
 \end{lstlisting}
 \section*{\textbf{4. Variables and types}}
 
+\label{sec:4.}
+
 This section is dedicated to the rules and recommendations for using variables and types in your code.
 
 \subsection*{\textbf{4.1 Variables}}
+
+\label{sec:4.1}
 
 The rules of using variables are explained in the below topics.
 
 \subsubsection*{\textbf{4.1.1 Do not use Float and Double types when accurate calculations are needed}}
 \leavevmode\newline
+
+\label{sec:4.1.1}
 
 Floating-point numbers provide a good approximation over a wide range of values, but they cannot produce accurate results in some cases.
 
@@ -2668,6 +2796,8 @@ Float values containing more than six or seven decimal numbers will be rounded.
 \subsubsection*{\textbf{4.1.2}}
 \leavevmode\newline
 
+\label{sec:4.1.2}
+
 Numeric float type values should not be directly compared with the equality operator (==) or other methods, such as `compareTo()` and `equals()`. Since floating-point numbers involve precision problems in computer representation, it is better to use `BigDecimal` as recommended in [Rule 4.1.1] to make accurate computations and comparisons. The following code describes these problems.
 
 
@@ -2708,8 +2838,10 @@ if (abs(foo - bar) > 1e-6f) {
 \end{lstlisting}
 
 
-\subsubsection*{\textbf{4.1.3 Try to use}}
+\subsubsection*{\textbf{4.1.3 Try to use 'val' instead of 'var' for variable declaration}}
 \leavevmode\newline
+
+\label{sec:4.1.3}
 
 
 
@@ -2725,10 +2857,14 @@ However, in some scenarios with loops or accumulators, only `var`s are permitted
 
 \subsection*{\textbf{4.2 Types}}
 
+\label{sec:4.2}
+
 This section provides recommendations for using types.
 
 \subsubsection*{\textbf{4.2.1}}
 \leavevmode\newline
+
+\label{sec:4.2.1}
 
 
 
@@ -2798,6 +2934,8 @@ fun foo(s: String?) {
 \subsubsection*{\textbf{4.2.2}}
 \leavevmode\newline
 
+\label{sec:4.2.2}
+
 
 
 Type aliases provide alternative names for existing types.
@@ -2836,12 +2974,16 @@ typealias Predicate<T> = (T) -> Boolean
 
 \subsection*{\textbf{4.3 Null safety and variable declarations}}
 
+\label{sec:4.3}
+
 Kotlin is declared as a null-safe programming language. However, to achieve compatibility with Java, it still supports nullable types.
 
 
 
 \subsubsection*{\textbf{4.3.1}}
 \leavevmode\newline
+
+\label{sec:4.3.1}
 
 To avoid `NullPointerException` and help the compiler prevent Null Pointer Exceptions, avoid using nullable types (with `?` symbol).
 
@@ -2886,6 +3028,8 @@ val a: List<Int> = emptyList()
 \subsubsection*{\textbf{4.3.2}}
 \leavevmode\newline
 
+\label{sec:4.3.2}
+
 Like in Java, classes in Kotlin may have type parameters. To create an instance of such a class, we typically need to provide type arguments:
 
 
@@ -2915,8 +3059,10 @@ val myVariable: Map<Int, String> = emptyMap()
 \end{lstlisting}
 
 
-\subsubsection*{\textbf{Null-safety}}
+\subsubsection*{\textbf{4.3.3 Null-safety}}
 \leavevmode\newline
+
+\label{sec:4.3.3}
 
 
 
@@ -3025,9 +3171,13 @@ Please also note, that instead of using `require(a != null)` with a not null che
 
 \section*{\textbf{5. Functions}}
 
+\label{sec:5.}
+
 This section describes the rules of using functions in your code.
 
 \subsection*{\textbf{5.1 Function design}}
+
+\label{sec:5.1}
 
 Developers can write clean code by gaining knowledge of how to build design patterns and avoid code smells.
 
@@ -3082,6 +3232,8 @@ There can be only one side effect in this data stream, which can be placed only 
 \subsubsection*{\textbf{5.1.1 Avoid functions that are too long}}
 \leavevmode\newline
 
+\label{sec:5.1.1}
+
 
 
 The function should be displayable on one screen and only implement one certain logic.
@@ -3105,6 +3257,8 @@ This approach will enable other programmers to read and modify the code properly
 \subsubsection*{\textbf{5.1.2 Avoid deep nesting of function code blocks}}
 \leavevmode\newline
 
+\label{sec:5.1.2}
+
 
 
 The nesting depth of a function's code block is the depth of mutual inclusion between the code control blocks in the function (for example: if, for, while, and when).
@@ -3119,8 +3273,10 @@ This will help the reader switch between contexts.
 
 
 
-\subsubsection*{\textbf{Rule 5.1.3 Avoid using nested functions}}
+\subsubsection*{\textbf{5.1.3 Avoid using nested functions}}
 \leavevmode\newline
+
+\label{sec:5.1.3}
 
 Nested functions create a more complex function context, thereby confusing readers.
 
@@ -3142,10 +3298,14 @@ fun foo() {
 
 \subsection*{\textbf{5.2 Function arguments}}
 
+\label{sec:5.2}
+
 The rules for using function arguments are described in the below topics.
 
 \subsubsection*{\textbf{5.2.1 The lambda parameter of the function should be placed at the end of the argument list}}
 \leavevmode\newline
+
+\label{sec:5.2.1}
 
 
 
@@ -3171,6 +3331,8 @@ println("hey")
 \subsubsection*{\textbf{5.2.2 Number of function parameters should be limited to five}}
 \leavevmode\newline
 
+\label{sec:5.2.2}
+
 
 
 A long argument list is a \href{https://en.wikipedia.org/wiki/Code_smell}{code smell} that leads to less reliable code.
@@ -3185,6 +3347,8 @@ It is recommended that you use Data Classes and Maps to unify these function arg
 
 \subsubsection*{\textbf{5.2.3 Use default values for function arguments instead of overloading them}}
 \leavevmode\newline
+
+\label{sec:5.2.3}
 
 In Java, default values for function arguments are prohibited. That is why the function should be overloaded when you need to create a function with fewer arguments.
 
@@ -3214,12 +3378,18 @@ private fun foo() {
 \end{lstlisting}
 \section*{\textbf{6. Classes}}
 
+\label{sec:6.}
+
 \subsection*{\textbf{6.1 Classes}}
+
+\label{sec:6.1}
 
 This section describes the rules of denoting classes in your code.
 
 \subsubsection*{\textbf{6.1.1  Denoting a class with a single constructor}}
 \leavevmode\newline
+
+\label{sec:6.1.1}
 
 When a class has a single constructor, it should be defined as a primary constructor in the declaration of the class. If the class contains only one explicit constructor, it should be converted to a primary constructor.
 
@@ -3253,6 +3423,8 @@ class Test private constructor(var a: Int) {
 
 \subsubsection*{\textbf{6.1.2 Prefer data classes instead of classes without any functional logic}}
 \leavevmode\newline
+
+\label{sec:6.1.2}
 
 Some people say that the data class is a code smell. However, if you need to use it (which makes your code more simple), you can utilize the Kotlin `data class`. The main purpose of this class is to hold data,
 
@@ -3318,6 +3490,8 @@ data class Test1(var a: Int = 0, var b: Int = 0)
 \subsubsection*{\textbf{6.1.3 Do not use the primary constructor if it is empty or useless}}
 \leavevmode\newline
 
+\label{sec:6.1.3}
+
 The primary constructor is a part of the class header; it is placed after the class name and type parameters (optional) but can be omitted if it is not used.
 
 
@@ -3360,6 +3534,8 @@ class Test {
 
 \subsubsection*{\textbf{6.1.4 Do not use redundant init blocks in your class}}
 \leavevmode\newline
+
+\label{sec:6.1.4}
 
 Several init blocks are redundant and generally should not be used in your class. The primary constructor cannot contain any code. That is why Kotlin has introduced `init` blocks.
 
@@ -3440,6 +3616,8 @@ class A(baseUrl: String) {
 \subsubsection*{\textbf{6.1.5 Explicit supertype qualification}}
 \leavevmode\newline
 
+\label{sec:6.1.5}
+
 The explicit supertype qualification should not be used if there is no clash between called methods. This rule is applicable to both interfaces and classes.
 
 
@@ -3461,6 +3639,8 @@ class Square() : Rectangle() {
 
 \subsubsection*{\textbf{6.1.6 Abstract class should have at least one abstract method}}
 \leavevmode\newline
+
+\label{sec:6.1.6}
 
 Abstract classes are used to force a developer to implement some of its parts in their inheritors.
 
@@ -3502,6 +3682,8 @@ class NotAbstract {
 \subsubsection*{\textbf{6.1.7 When using the}}
 \leavevmode\newline
 
+\label{sec:6.1.7}
+
 Kotlin has a mechanism of \href{https://kotlinlang.org/docs/reference/properties.html#backing-properties}{backing properties}.
 
 In some cases, implicit backing is not enough and it should be done explicitly:
@@ -3526,6 +3708,8 @@ It is one of the exceptions from the [identifier names rule]
 
 \subsubsection*{\textbf{6.1.8 Avoid using custom getters and setters}}
 \leavevmode\newline
+
+\label{sec:6.1.8}
 
 Kotlin has a perfect mechanism of \href{https://kotlinlang.org/docs/reference/properties.html#properties-and-fields}{properties}.
 
@@ -3586,6 +3770,8 @@ class A {
 \subsubsection*{\textbf{6.1.9 Never use the name of a variable in the custom getter or setter}}
 \leavevmode\newline
 
+\label{sec:6.1.9}
+
 If you ignored [recommendation 6.1.8], be careful with using the name of the property in your custom getter/setter
 
 as it can accidentally cause a recursive call and a `StackOverflow Error`. Use the `field` keyword instead.
@@ -3606,6 +3792,8 @@ var isEmpty: Boolean
 
 \subsubsection*{\textbf{6.1.10 No trivial getters and setters are allowed in the code}}
 \leavevmode\newline
+
+\label{sec:6.1.10}
 
 In Java, trivial getters - are the getters that are just returning the field value.
 
@@ -3641,8 +3829,10 @@ class A {
 \end{lstlisting}
 
 
-\subsubsection*{\textbf{6.1.11 Use}}
+\subsubsection*{\textbf{6.1.11 Use 'apply' for grouping object initialization}}
 \leavevmode\newline
+
+\label{sec:6.1.11}
 
 In Java, before functional programming became popular, many classes from common libraries used the configuration paradigm.
 
@@ -3700,6 +3890,8 @@ fun main() {
 
 \subsection*{\textbf{6.2 Extension functions}}
 
+\label{sec:6.2}
+
 This section describes the rules of using extension functions in your code.
 
 
@@ -3715,6 +3907,8 @@ Extension functions are resolved statically.
 \subsubsection*{\textbf{6.2.1 Use extension functions for making logic of classes less coupled}}
 \leavevmode\newline
 
+\label{sec:6.2.1}
+
 It is recommended that for classes, the non-tightly coupled functions, which are rarely used in the class, should be implemented as extension functions where possible.
 
 They should be implemented in the same class/file where they are used. This is a non-deterministic rule, so the code cannot be checked or fixed automatically by a static analyzer.
@@ -3723,6 +3917,8 @@ They should be implemented in the same class/file where they are used. This is a
 
 \subsubsection*{\textbf{6.2.2 No extension functions with the same name and signature if they extend base and inheritor classes}}
 \leavevmode\newline
+
+\label{sec:6.2.2}
 
 You should have ho extension functions with the same name and signature if they extend base and inheritor classes (possible\_bug).esolved statically. There could be a situation when a developer implements two extension functions: one is for the base class and another for the inheritor.
 
@@ -3750,6 +3946,8 @@ fun main() { printClassName(B()) }
 
 \subsection*{\textbf{6.3 Interfaces}}
 
+\label{sec:6.3}
+
 An `Interface` in Kotlin can contain declarations of abstract methods, as well as method implementations. What makes them different from abstract classes is that interfaces cannot store state.
 
 They can have properties, but these need to be abstract or to provide accessor implementations.
@@ -3764,10 +3962,14 @@ In Kotlin and Java, the interface is the main presentation means of application 
 
 \subsection*{\textbf{6.4 Objects}}
 
+\label{sec:6.4}
+
 This section describes the rules of using objects in code.
 
 \subsubsection*{\textbf{6.4.1 Instead of using utility classes}}
 \leavevmode\newline
+
+\label{sec:6.4.1}
 
 Avoid using utility classes/objects; use extensions instead. As described in [6.2 Extension functions], using extension functions is a powerful method.
 
@@ -3800,6 +4002,8 @@ fun String.stringInfo(): Int {
 
 \subsubsection*{\textbf{6.4.2 Objects should be used for Stateless Interfaces}}
 \leavevmode\newline
+
+\label{sec:6.4.2}
 
 Kotlin’s objects are extremely useful when you need to implement some interface from an external library that does not have any state.
 
