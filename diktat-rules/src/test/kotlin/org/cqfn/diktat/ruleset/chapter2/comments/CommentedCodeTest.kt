@@ -265,7 +265,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
                 """
             |/*
             |
-            |   Copyright 2018-2020 Charles Korn.
+            |   Copyright 2018-2020 John Doe.
             |   
             |   Licensed under the Apache License, Version 2.0 (the "License");
             |   you may not use this file except in compliance with the License.
@@ -288,10 +288,10 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
     fun `should not trigger on multiline comments #2`() {
         lintMethod(
                 """
-            |/*
+            |   /*
             |   * some text here
             |   maybe even with another line
-            |*/
+            |   */
             """.trimMargin())
     }
 }
