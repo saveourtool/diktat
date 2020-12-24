@@ -206,14 +206,11 @@ ${handleMultilineCopyright(copyrightText)}
         if (copyrightText.contains("\n")) {
             return copyrightText
                     .lines()
+                    .dropWhile { it.isBlank() }
                     .reduce { acc, nextLine ->
                         when {
                             nextLine.isBlank() -> {
                                 "$acc\n"
-                            }
-                            // checks only first line
-                            acc.isBlank() -> {
-                                nextLine
                             }
                             else -> {
                                 "$acc\n$nextLine"
