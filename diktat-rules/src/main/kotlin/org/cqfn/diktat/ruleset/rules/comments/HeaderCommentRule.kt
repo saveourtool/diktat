@@ -195,8 +195,8 @@ ${handleMultilineCopyright(copyrightText)}
      * Used to compare copyrights in yaml and file
      */
     private fun String.flatten(): String =
-            replace("\n","")
-            .replace(" ","")
+            replace("\n", "")
+                .replace(" ", "")
 
     /**
      * If it is multiline copyright, this method deletes spaces in empty lines.
@@ -209,12 +209,8 @@ ${handleMultilineCopyright(copyrightText)}
                 .dropWhile { it.isBlank() }
                 .reduce { acc, nextLine ->
                     when {
-                        nextLine.isBlank() -> {
-                            "$acc\n"
-                        }
-                        else -> {
-                            "$acc\n$nextLine"
-                        }
+                        nextLine.isBlank() -> "$acc\n"
+                        else -> "$acc\n$nextLine"
                     }
                 }
         }
