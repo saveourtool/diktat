@@ -172,10 +172,10 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
                 node.addChild(PsiWhiteSpaceImpl(newLines), node.firstChildNode)
                 node.addChild(LeafPsiElement(BLOCK_COMMENT,
                     """
-/*
-${handleMultilineCopyright(copyrightText)}
-*/
-                    """.trimIndent()),
+                        |/*
+                        |${handleMultilineCopyright(copyrightText)}
+                        |*/
+                    """.trimMargin()),
                     node.firstChildNode
                 )
             }
@@ -203,7 +203,7 @@ ${handleMultilineCopyright(copyrightText)}
      * Otherwise, if it is one line copyright, it returns it with 4 spaces at the beginning.
      */
     private fun handleMultilineCopyright(copyrightText: String): String {
-        if (copyrightText.contains("\n")) {
+        if (copyrightText.startsWith(" ")) {
             return copyrightText
                 .lines()
                 .dropWhile { it.isBlank() }
