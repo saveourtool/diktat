@@ -173,7 +173,7 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
                 node.addChild(LeafPsiElement(BLOCK_COMMENT,
                     """
 /*
-    ${handleMultilineCopyright(copyrightText)}
+${handleMultilineCopyright(copyrightText)}
 */
                     """.trimIndent()),
                     node.firstChildNode
@@ -222,7 +222,7 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
                     }
         }
 
-        return copyrightText
+        return "    $copyrightText"
     }
 
     /**

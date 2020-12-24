@@ -75,7 +75,7 @@ class HeaderCommentRuleFixTest : FixTestBase(
                 listOf(RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true, mapOf(
                         "isCopyrightMandatory" to "true",
                         "copyrightText" to """
-                        |Copyright 2018-2020 John Doe.
+                        |    Copyright 2018-2020 John Doe.
                         |
                         |    Licensed under the Apache License, Version 2.0 (the "License");
                         |    you may not use this file except in compliance with the License.
