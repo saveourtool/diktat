@@ -199,8 +199,8 @@ ${handleMultilineCopyright(copyrightText)}
         .replace(" ","")
 
     /**
-     * If it is multiline copyright, this method makes needed indents.
-     * Otherwise, if it is one line copyright, it returns it trimmed.
+     * If it is multiline copyright, this method deletes spaces in empty lines.
+     * Otherwise, if it is one line copyright, it returns it with 4 spaces at the beginning.
      */
     private fun handleMultilineCopyright(copyrightText: String): String {
         if (copyrightText.contains("\n")) {
@@ -208,11 +208,11 @@ ${handleMultilineCopyright(copyrightText)}
                     .lines()
                     .reduce { acc, nextLine ->
                         when {
-                            !nextLine.any { it in 'a'..'z' || it in 'A'.. 'Z' } -> {
+                            nextLine.isBlank() -> {
                                 "$acc\n"
                             }
                             // checks only first line
-                            acc.isEmpty() -> {
+                            acc.isBlank() -> {
                                 nextLine
                             }
                             else -> {
