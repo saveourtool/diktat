@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test
 import java.io.File
 
 import kotlinx.serialization.encodeToString
+import org.junit.jupiter.api.Assertions
 
 /**
  * Test for [DiktatRuleSetProvider] in autocorrect mode as a whole. All rules are applied to a file.
@@ -44,7 +45,7 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
      * Disable some of the rules.
      */
     @Suppress("UnsafeCallOnNullableType")
-    private fun overrideRulesConfig(rulesToDisable: List<Warnings>, rulesToOverride: Map<String, Map<String, String>>?) {
+    private fun overrideRulesConfig(rulesToDisable: List<Warnings>, rulesToOverride: Map<String, Map<String, String>> = emptyMap()) {
         val rulesConfig = RulesConfigReader(javaClass.classLoader).readResource(configFilePath)!!
             .toMutableList()
             .also { rulesConfig ->
@@ -52,9 +53,9 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
                     rulesConfig.removeIf { it.name == warning.name }
                     rulesConfig.add(RulesConfig(warning.name, enabled = false, configuration = emptyMap()))
                 }
-                rulesToOverride?.forEach { map ->
-                    rulesConfig.removeIf { it.name == map.key }
-                    rulesConfig.add(RulesConfig(map.key, enabled = true, configuration = map.value))
+                rulesToOverride.forEach { (name, configuration) ->
+                    rulesConfig.removeIf { it.name == name }
+                    rulesConfig.add(RulesConfig(name, enabled = true, configuration = configuration))
                 }
             }
         createTempFile()
@@ -88,7 +89,7 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     @Tag("DiktatRuleSetProvider")
     fun `regression - should not fail if package is not set`() {
         overrideRulesConfig(listOf(Warnings.PACKAGE_NAME_MISSING, Warnings.PACKAGE_NAME_INCORRECT_PATH,
-            Warnings.PACKAGE_NAME_INCORRECT_PREFIX), null)
+            Warnings.PACKAGE_NAME_INCORRECT_PREFIX))
         fixAndCompare("DefaultPackageExpected.kt", "DefaultPackageTest.kt")
     }
 
@@ -97,24 +98,23 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     fun `smoke test #5`() {
         overrideRulesConfig(emptyList(),
                 mapOf(
-                        Pair(Warnings.HEADER_MISSING_OR_WRONG_COPYRIGHT.name, mapOf(
-                                Pair("isCopyrightMandatory", "true"),
-                                Pair("copyrightText", """|Copyright 2018-2020 John Doe.
-                                    |   Licensed under the Apache License, Version 2.0 (the "License");
-                                    |   you may not use this file except in compliance with the License.
-                                    |   You may obtain a copy of the License at
-                                    |   
-                                    |       http://www.apache.org/licenses/LICENSE-2.0
-                                """.trimMargin())
-                        )
+                        Warnings.HEADER_MISSING_OR_WRONG_COPYRIGHT.name to mapOf(
+                                "isCopyrightMandatory" to "true",
+                                "copyrightText" to """|Copyright 2018-2020 John Doe.
+                                    |    Licensed under the Apache License, Version 2.0 (the "License");
+                                    |    you may not use this file except in compliance with the License.
+                                    |    You may obtain a copy of the License at
+                                    |
+                                    |        http://www.apache.org/licenses/LICENSE-2.0
+                                """.trimMargin()
                         )
                 )
         )
         fixAndCompare("Example5Expected.kt", "Example5Test.kt")
 
-        if (unfixedLintErrors.contains(LintError(line=1, col=1, ruleId="diktat-ruleset:comments", detail="${Warnings.COMMENTED_OUT_CODE.warnText()} /*"))) {
-            error("Should not contain this warning")
-        }
+        Assertions.assertFalse(
+                unfixedLintErrors.contains(LintError(line=1, col=1, ruleId="diktat-ruleset:comments", detail="${Warnings.COMMENTED_OUT_CODE.warnText()} /*"))
+        )
     }
 
     @Test
