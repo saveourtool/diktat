@@ -13,8 +13,8 @@ import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_ON_FUNCTION
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_TOP_LEVEL
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
-import org.cqfn.diktat.util.FixTestBase
 import org.cqfn.diktat.util.assertEquals
+import org.cqfn.diktat.util.FixTestBase
 
 import com.charleskorn.kaml.Yaml
 import com.charleskorn.kaml.YamlConfiguration
@@ -28,6 +28,8 @@ import java.io.File
 
 import kotlinx.serialization.encodeToString
 import org.junit.jupiter.api.Assertions
+
+typealias ruleToConfig = Map<String, Map<String, String>>
 
 /**
  * Test for [DiktatRuleSetProvider] in autocorrect mode as a whole. All rules are applied to a file.
@@ -45,7 +47,7 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
      * Disable some of the rules.
      */
     @Suppress("UnsafeCallOnNullableType")
-    private fun overrideRulesConfig(rulesToDisable: List<Warnings>, rulesToOverride: Map<String, Map<String, String>> = emptyMap()) {
+    private fun overrideRulesConfig(rulesToDisable: List<Warnings>, rulesToOverride: ruleToConfig = emptyMap()) {
         val rulesConfig = RulesConfigReader(javaClass.classLoader).readResource(configFilePath)!!
             .toMutableList()
             .also { rulesConfig ->
@@ -97,23 +99,23 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     @Tag("DiktatRuleSetProvider")
     fun `smoke test #5`() {
         overrideRulesConfig(emptyList(),
-                mapOf(
-                        Warnings.HEADER_MISSING_OR_WRONG_COPYRIGHT.name to mapOf(
-                                "isCopyrightMandatory" to "true",
-                                "copyrightText" to """|Copyright 2018-2020 John Doe.
+            mapOf(
+                Warnings.HEADER_MISSING_OR_WRONG_COPYRIGHT.name to mapOf(
+                    "isCopyrightMandatory" to "true",
+                    "copyrightText" to """|Copyright 2018-2020 John Doe.
                                     |    Licensed under the Apache License, Version 2.0 (the "License");
                                     |    you may not use this file except in compliance with the License.
                                     |    You may obtain a copy of the License at
                                     |
                                     |        http://www.apache.org/licenses/LICENSE-2.0
                                 """.trimMargin()
-                        )
                 )
+            )
         )
         fixAndCompare("Example5Expected.kt", "Example5Test.kt")
 
         Assertions.assertFalse(
-                unfixedLintErrors.contains(LintError(line=1, col=1, ruleId="diktat-ruleset:comments", detail="${Warnings.COMMENTED_OUT_CODE.warnText()} /*"))
+            unfixedLintErrors.contains(LintError(line = 1, col = 1, ruleId="diktat-ruleset:comments", detail = "${Warnings.COMMENTED_OUT_CODE.warnText()} /*"))
         )
     }
 
