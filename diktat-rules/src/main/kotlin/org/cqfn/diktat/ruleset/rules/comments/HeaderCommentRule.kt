@@ -203,25 +203,20 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
      * Otherwise, if it is one line copyright, it returns it trimmed.
      */
     private fun handleMultilineCopyright(copyrightText: String): String {
-        val firstLineIndent = copyrightText
-                .lines()
-                .let { list ->
-                    list.first{ it.isNotEmpty() }.takeWhile { it == ' ' }
-                }
         if (copyrightText.contains("\n")) {
             return copyrightText
                     .lines()
                     .reduce { acc, nextLine ->
                         when {
-                            nextLine.removePrefix(firstLineIndent).isEmpty() -> {
+                            !nextLine.any { it in 'a'..'z' || it in 'A'.. 'Z' } -> {
                                 "$acc\n"
                             }
                             // checks only first line
                             acc.isEmpty() -> {
-                                nextLine.removePrefix(firstLineIndent)
+                                nextLine
                             }
                             else -> {
-                                "$acc\n    ${nextLine.removePrefix(firstLineIndent)}"
+                                "$acc\n$nextLine"
                             }
                         }
                     }
