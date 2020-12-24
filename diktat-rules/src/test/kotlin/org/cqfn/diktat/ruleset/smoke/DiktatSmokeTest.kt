@@ -13,13 +13,14 @@ import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_ON_FUNCTION
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_TOP_LEVEL
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
-import org.cqfn.diktat.util.assertEquals
 import org.cqfn.diktat.util.FixTestBase
+import org.cqfn.diktat.util.assertEquals
 
 import com.charleskorn.kaml.Yaml
 import com.charleskorn.kaml.YamlConfiguration
 import com.pinterest.ktlint.core.LintError
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -27,7 +28,6 @@ import org.junit.jupiter.api.Test
 import java.io.File
 
 import kotlinx.serialization.encodeToString
-import org.junit.jupiter.api.Assertions
 
 typealias ruleToConfig = Map<String, Map<String, String>>
 
@@ -115,7 +115,7 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
         fixAndCompare("Example5Expected.kt", "Example5Test.kt")
 
         Assertions.assertFalse(
-            unfixedLintErrors.contains(LintError(line = 1, col = 1, ruleId="diktat-ruleset:comments", detail = "${Warnings.COMMENTED_OUT_CODE.warnText()} /*"))
+            unfixedLintErrors.contains(LintError(line = 1, col = 1, ruleId = "diktat-ruleset:comments", detail = "${Warnings.COMMENTED_OUT_CODE.warnText()} /*"))
         )
     }
 

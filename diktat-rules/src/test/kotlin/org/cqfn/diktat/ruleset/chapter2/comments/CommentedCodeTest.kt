@@ -257,12 +257,11 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
             LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} public fun someFunc(name: String): Boolean =", false))
     }
 
-
     @Test
     @Tag(WarningNames.COMMENTED_OUT_CODE)
     fun `should not trigger on multiline comments #1`() {
         lintMethod(
-                """
+            """
             |/*
             |
             |   Copyright 2018-2020 John Doe.
@@ -287,7 +286,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
     @Tag(WarningNames.COMMENTED_OUT_CODE)
     fun `should not trigger on multiline comments #2`() {
         lintMethod(
-                """
+            """
             |   /*
             |   * some text here
             |   maybe even with another line
