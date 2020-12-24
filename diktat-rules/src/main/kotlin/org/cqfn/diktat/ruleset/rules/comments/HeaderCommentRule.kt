@@ -222,7 +222,7 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
                     }
         }
 
-        return copyrightText.trim()
+        return copyrightText
     }
 
     /**
