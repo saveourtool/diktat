@@ -174,8 +174,8 @@ fun ASTNode.isBeginByNewline() =
  * Checks if there is a newline before this element or before comment before. See [isBeginByNewline] for motivation on parents check.
  */
 fun ASTNode.isBeginNewLineWithComment() =
-        isBeginByNewline() || siblings(forward = false).takeWhile { !it.textContains('\n') }.run {
-            all { it.isWhiteSpace() || it.isPartOfComment() } && !toList().isEmpty()
+        isBeginByNewline() || siblings(forward = false).takeWhile { !it.textContains('\n') }.toList().run {
+            all { it.isWhiteSpace() || it.isPartOfComment() } && isNotEmpty()
         }
 
 /**
