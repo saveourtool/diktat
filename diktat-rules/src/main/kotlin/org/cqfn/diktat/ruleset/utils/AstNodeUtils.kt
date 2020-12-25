@@ -24,13 +24,14 @@ import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.OVERRIDE_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.PRIVATE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PROTECTED_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PUBLIC_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isLeaf
+import com.pinterest.ktlint.core.ast.isPartOfComment
 import com.pinterest.ktlint.core.ast.isRoot
+import com.pinterest.ktlint.core.ast.isWhiteSpace
 import com.pinterest.ktlint.core.ast.lineNumber
 import com.pinterest.ktlint.core.ast.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -168,6 +169,14 @@ fun ASTNode.isBeginByNewline() =
             it.treePrev.elementType == WHITE_SPACE && it.treePrev.text.contains("\n") ||
                     (it.treePrev.elementType == IMPORT_LIST && it.treePrev.isLeaf() && it.treePrev.treePrev.isLeaf())
         } ?: false
+
+/**
+ * Checks if there is a newline before this element or before comment before. See [isBeginByNewline] for motivation on parents check.
+ */
+fun ASTNode.isBeginNewLineWithComment() =
+        isBeginByNewline() || siblings(forward = false).takeWhile { !it.textContains('\n') }.toList().run {
+            all { it.isWhiteSpace() || it.isPartOfComment() } && isNotEmpty()
+        }
 
 /**
  * checks if the node has corresponding child with elementTyp

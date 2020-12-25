@@ -48,16 +48,14 @@ class AnnotationNewLineRule(private val configRules: List<RulesConfig>) : Rule("
         }
 
         node.getAllChildrenWithType(ANNOTATION_ENTRY).forEach {
-            if (!it.isFollowedByNewlineWithComment() || !it.isBeginByNewline()) {
-                deleteSpaces(it, !it.isFollowedByNewlineWithComment(), !it.isBeginByNewline())
+            if (!it.isFollowedByNewlineWithComment() || !it.isBeginNewLineWithComment()) {
+                deleteSpaces(it, !it.isFollowedByNewlineWithComment())
             }
         }
     }
 
-    // fixme added handle for left side!
     private fun deleteSpaces(node: ASTNode,
-                             rightSide: Boolean,
-                             leftSide: Boolean) {
+                             rightSide: Boolean) {
         Warnings.ANNOTATION_NEW_LINE.warnAndFix(configRules, emitWarn, isFixMode, "${node.text} not on a single line",
             node.startOffset, node) {
             if (rightSide) {
