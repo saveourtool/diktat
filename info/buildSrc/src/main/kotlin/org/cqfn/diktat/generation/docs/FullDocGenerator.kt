@@ -18,7 +18,7 @@ fun generateFullDoc(guideDir: File, fullDocFileName: String) {
         .flatten()
         .joinToString("\n")
 
-    val tableOfContent = File(guideDir, "table-of-content.md")
+    val tableOfContent = File(guideDir, "guide-TOC.md")
         .readText()
 
     File(guideDir, fullDocFileName).writeText("$tableOfContent\n\n$allChapters")

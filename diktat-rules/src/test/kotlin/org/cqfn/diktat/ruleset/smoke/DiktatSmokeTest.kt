@@ -20,6 +20,7 @@ import com.charleskorn.kaml.Yaml
 import com.charleskorn.kaml.YamlConfiguration
 import com.pinterest.ktlint.core.LintError
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -27,6 +28,8 @@ import org.junit.jupiter.api.Test
 import java.io.File
 
 import kotlinx.serialization.encodeToString
+
+typealias ruleToConfig = Map<String, Map<String, String>>
 
 /**
  * Test for [DiktatRuleSetProvider] in autocorrect mode as a whole. All rules are applied to a file.
@@ -44,13 +47,17 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
      * Disable some of the rules.
      */
     @Suppress("UnsafeCallOnNullableType")
-    private fun overrideRulesConfig(rulesToDisable: List<Warnings>) {
+    private fun overrideRulesConfig(rulesToDisable: List<Warnings>, rulesToOverride: ruleToConfig = emptyMap()) {
         val rulesConfig = RulesConfigReader(javaClass.classLoader).readResource(configFilePath)!!
             .toMutableList()
             .also { rulesConfig ->
                 rulesToDisable.forEach { warning ->
                     rulesConfig.removeIf { it.name == warning.name }
                     rulesConfig.add(RulesConfig(warning.name, enabled = false, configuration = emptyMap()))
+                }
+                rulesToOverride.forEach { (name, configuration) ->
+                    rulesConfig.removeIf { it.name == name }
+                    rulesConfig.add(RulesConfig(name, enabled = true, configuration = configuration))
                 }
             }
         createTempFile()
@@ -86,6 +93,30 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
         overrideRulesConfig(listOf(Warnings.PACKAGE_NAME_MISSING, Warnings.PACKAGE_NAME_INCORRECT_PATH,
             Warnings.PACKAGE_NAME_INCORRECT_PREFIX))
         fixAndCompare("DefaultPackageExpected.kt", "DefaultPackageTest.kt")
+    }
+
+    @Test
+    @Tag("DiktatRuleSetProvider")
+    fun `smoke test #5`() {
+        overrideRulesConfig(emptyList(),
+            mapOf(
+                Warnings.HEADER_MISSING_OR_WRONG_COPYRIGHT.name to mapOf(
+                    "isCopyrightMandatory" to "true",
+                    "copyrightText" to """|Copyright 2018-2020 John Doe.
+                                    |    Licensed under the Apache License, Version 2.0 (the "License");
+                                    |    you may not use this file except in compliance with the License.
+                                    |    You may obtain a copy of the License at
+                                    |
+                                    |        http://www.apache.org/licenses/LICENSE-2.0
+                                """.trimMargin()
+                )
+            )
+        )
+        fixAndCompare("Example5Expected.kt", "Example5Test.kt")
+
+        Assertions.assertFalse(
+            unfixedLintErrors.contains(LintError(line = 1, col = 1, ruleId = "diktat-ruleset:comments", detail = "${Warnings.COMMENTED_OUT_CODE.warnText()} /*"))
+        )
     }
 
     @Test

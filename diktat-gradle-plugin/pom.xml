@@ -78,6 +78,7 @@
                                 <argument>-Pdescription=${project.description}</argument>
                                 <argument>-PktlintVersion=${ktlint.version}</argument>
                                 <argument>-PjunitVersion=${junit.version}</argument>
+                                <argument>-PjacocoVersion=${jacoco.version}</argument>
                                 <argument>-S</argument>
                             </arguments>
                             <skip>${skip.gradle.test}</skip>
@@ -98,6 +99,7 @@
                                 <argument>-Pdescription=${project.description}</argument>
                                 <argument>-PktlintVersion=${ktlint.version}</argument>
                                 <argument>-PjunitVersion=${junit.version}</argument>
+                                <argument>-PjacocoVersion=${jacoco.version}</argument>
                                 <argument>-S</argument>
                                 <argument>${gradle.exclude.check}</argument>
                             </arguments>
