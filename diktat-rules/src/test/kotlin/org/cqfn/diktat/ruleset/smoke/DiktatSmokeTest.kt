@@ -25,18 +25,14 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-import java.io.File
-
 import kotlinx.serialization.encodeToString
 
-typealias ruleToConfig = Map<String, Map<String, String>>
+typealias ruleToConfig = Map<Warnings, Map<String, String>>
 
 /**
  * Test for [DiktatRuleSetProvider] in autocorrect mode as a whole. All rules are applied to a file.
  * Note: ktlint uses initial text from a file to calculate line and column from offset. Because of that line/col of unfixed errors
  * may change after some changes to text or other rules.
- *
- * fixme: run as a separate maven goal/module?
  */
 class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     { DiktatRuleSetProvider(configFilePath) },
@@ -55,9 +51,9 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
                     rulesConfig.removeIf { it.name == warning.name }
                     rulesConfig.add(RulesConfig(warning.name, enabled = false, configuration = emptyMap()))
                 }
-                rulesToOverride.forEach { (name, configuration) ->
-                    rulesConfig.removeIf { it.name == name }
-                    rulesConfig.add(RulesConfig(name, enabled = true, configuration = configuration))
+                rulesToOverride.forEach { (warning, configuration) ->
+                    rulesConfig.removeIf { it.name == warning.name }
+                    rulesConfig.add(RulesConfig(warning.name, enabled = true, configuration = configuration))
                 }
             }
         createTempFile()
@@ -100,7 +96,7 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     fun `smoke test #5`() {
         overrideRulesConfig(emptyList(),
             mapOf(
-                Warnings.HEADER_MISSING_OR_WRONG_COPYRIGHT.name to mapOf(
+                Warnings.HEADER_MISSING_OR_WRONG_COPYRIGHT to mapOf(
                     "isCopyrightMandatory" to "true",
                     "copyrightText" to """|Copyright 2018-2020 John Doe.
                                     |    Licensed under the Apache License, Version 2.0 (the "License");
@@ -140,10 +136,6 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     @Test
     @Tag("DiktatRuleSetProvider")
     fun `smoke test #2`() {
-        // fixme: path shouldn't point to `target` directory
-        // val expectedFileAbsolutePath = Path.of(Path.of("target/test-classes/$resourceFilePath").toAbsolutePath().toString(), "Example2Test.kt_copy")
-
-        val expectedFileAbsolutePath = File("target/test-classes/$resourceFilePath/Example2Test.kt_copy").absolutePath
         fixAndCompare("Example2Expected.kt", "Example2Test.kt")
         unfixedLintErrors.assertEquals(
             LintError(1, 1, "$DIKTAT_RULE_SET_ID:file-naming", "${FILE_NAME_INCORRECT.warnText()} Example2Test.kt_copy", true),  // todo this is a false one
@@ -171,6 +163,25 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
             LintError(14, 3, "$DIKTAT_RULE_SET_ID:kdoc-formatting", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
             LintError(19, 15, "$DIKTAT_RULE_SET_ID:kdoc-formatting", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false)
         )
+    }
+
+    @Test
+    @Tag("DiktatRuleSetProvider")
+    fun `smoke test with kts files`() {
+        overrideRulesConfig(
+            listOf(
+                HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE  // because build.gradle.kts doesn't need extra comments, and this rule can be manually disabled if needed
+            ),
+            mapOf(
+                Warnings.WRONG_INDENTATION to mapOf(
+                    "newlineAtEnd" to "false",
+                    "extendedIndentOfParameters" to "false",
+                )
+            )
+        )  // so that trailing newline isn't checked
+        // file name is `gradle_` so that IDE doesn't suggest to import gradle project
+        fixAndCompare("../../../build.gradle_.kts", "../../../build.gradle_.kts")
+        Assertions.assertTrue(unfixedLintErrors.isEmpty())
     }
 
     companion object {

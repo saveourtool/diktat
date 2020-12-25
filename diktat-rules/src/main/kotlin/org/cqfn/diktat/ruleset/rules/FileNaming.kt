@@ -39,8 +39,10 @@ class FileNaming(private val configRules: List<RulesConfig>) : Rule("file-naming
 
         if (node.elementType == FILE) {
             filePath = node.getFilePath()
-            checkFileNaming(node)
-            checkClassNameMatchesWithFile(node)
+            if (!filePath.endsWith(".kts")) {
+                checkFileNaming(node)
+                checkClassNameMatchesWithFile(node)
+            }
         }
     }
 
