@@ -138,7 +138,6 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     fun `smoke test #2`() {
         fixAndCompare("Example2Expected.kt", "Example2Test.kt")
         unfixedLintErrors.assertEquals(
-            LintError(1, 1, "$DIKTAT_RULE_SET_ID:file-naming", "${FILE_NAME_INCORRECT.warnText()} Example2Test.kt_copy", true),  // todo this is a false one
             LintError(1, 1, "$DIKTAT_RULE_SET_ID:header-comment", "${HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warnText()} there are 2 declared classes and/or objects", false),
             LintError(14, 17, "$DIKTAT_RULE_SET_ID:comments", "${Warnings.COMMENTED_OUT_CODE.warnText()} private class Test : RuntimeException()", false)
         )
@@ -149,8 +148,7 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     fun `smoke test #1`() {
         fixAndCompare("Example1Expected.kt", "Example1Test.kt")
         unfixedLintErrors.assertEquals(
-            LintError(1, 1, "$DIKTAT_RULE_SET_ID:file-naming", "${FILE_NAME_INCORRECT.warnText()} Example1Test.kt_copy", true),  // todo this is a false one
-            LintError(1, 1, "$DIKTAT_RULE_SET_ID:file-naming", "${FILE_NAME_MATCH_CLASS.warnText()} Example1Test.kt_copy vs Example", true),  // todo this is a false one
+            LintError(1, 1, "$DIKTAT_RULE_SET_ID:file-naming", "${FILE_NAME_MATCH_CLASS.warnText()} Example1Test vs Example", true),
             LintError(1, 1, "$DIKTAT_RULE_SET_ID:kdoc-formatting", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
             LintError(3, 6, "$DIKTAT_RULE_SET_ID:kdoc-comments", "${MISSING_KDOC_TOP_LEVEL.warnText()} Example", false),
             LintError(3, 26, "$DIKTAT_RULE_SET_ID:kdoc-comments", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} isValid", false),
