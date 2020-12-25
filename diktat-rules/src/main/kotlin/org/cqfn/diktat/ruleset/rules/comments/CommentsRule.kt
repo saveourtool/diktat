@@ -56,7 +56,7 @@ class CommentsRule(private val configRules: List<RulesConfig>) : Rule("comments"
         val eolCommentsOffsetToText = getOffsetsToTextBlocksFromEolComments(node)
         val blockCommentsOffsetToText = node
             .findAllNodesWithSpecificType(BLOCK_COMMENT)
-            .map { it.startOffset to it.text.removeSurrounding("/*", "*/") }
+            .map { it.startOffset to it.text.trim().removeSurrounding("/*", "*/") }
 
         (eolCommentsOffsetToText + blockCommentsOffsetToText)
             .flatMap { (offset, text) ->
