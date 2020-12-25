@@ -1,6 +1,8 @@
 package org.cqfn.diktat.test.framework.processing
 
 import com.github.difflib.DiffUtils
+import com.github.difflib.patch.ChangeDelta
+import com.github.difflib.text.DiffRowGenerator
 import org.slf4j.LoggerFactory
 
 import java.io.File
@@ -8,7 +10,6 @@ import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.ArrayList
-import java.util.StringJoiner
 import java.util.stream.Collectors
 
 /**
@@ -17,6 +18,13 @@ import java.util.stream.Collectors
 class FileComparator {
     private val expectedResultFile: File
     private val actualResultList: List<String?>
+    private val diffGenerator = DiffRowGenerator.create()
+        .showInlineDiffs(true)
+        .mergeOriginalRevised(true)
+        .inlineDiffByWord(false)
+        .oldTag { b -> if (b) "[" else "]" }
+        .newTag { b -> if (b) "<" else ">" }
+        .build()
 
     constructor(expectedResultFile: File, actualResultList: List<String?>) {
         this.expectedResultFile = expectedResultFile
@@ -43,15 +51,22 @@ class FileComparator {
             if (patch.deltas.isEmpty()) {
                 return true
             }
-            val deltasJoiner = StringJoiner(System.lineSeparator())
-            patch
-                .deltas
-                .map { it.toString() }
-                .forEach { delta -> deltasJoiner.add(delta) }
+            val joinedDeltas = patch.deltas.joinToString(System.lineSeparator()) { delta ->
+                when (delta) {
+                    is ChangeDelta -> diffGenerator
+                        .generateDiffRows(delta.source.lines, delta.target.lines)
+                        .joinToString(System.lineSeparator()) { it.oldLine }
+                        .let { "[ChangeDelta, position ${delta.source.position}, lines: [$it]]" }
+                    else -> delta.toString()
+                }
+            }
 
-            log.error("""Expected result from <${expectedResultFile.name}> and actual formatted are different.
-|                        See difference below:
-|                           Expected  vs  Actual ${System.lineSeparator()}$deltasJoiner""".trimMargin())
+            log.error("""
+                |Expected result from <${expectedResultFile.name}> and actual formatted are different.
+                |See difference below (for ChangeDelta [text] indicates removed text, <text> - inserted):
+                |$joinedDeltas
+                """.trimMargin()
+            )
         } catch (e: RuntimeException) {
             log.error("Not able to prepare diffs between <${expectedResultFile.name}> and <$actualResultList>", e)
         }
