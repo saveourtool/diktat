@@ -223,4 +223,4 @@ private fun findBoldOrItalicText(regex: Regex,
     return correctedLine
 }
 
-private fun String.getFirstNumber() = replace("\\s+".toRegex(), "").takeWhile { it.isDigit() || it == '.' }
+private fun String.getFirstNumber() = trimStart().takeWhile { it.isDigit() || it == '.' }
