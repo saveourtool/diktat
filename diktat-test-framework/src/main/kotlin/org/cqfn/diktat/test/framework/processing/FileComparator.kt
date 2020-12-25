@@ -22,8 +22,8 @@ class FileComparator {
         .showInlineDiffs(true)
         .mergeOriginalRevised(true)
         .inlineDiffByWord(false)
-        .oldTag { b -> if (b) "[" else "]" }
-        .newTag { b -> if (b) "<" else ">" }
+        .oldTag { start -> if (start) "[" else "]" }
+        .newTag { start -> if (start) "<" else ">" }
         .build()
 
     constructor(expectedResultFile: File, actualResultList: List<String?>) {
