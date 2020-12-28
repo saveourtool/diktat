@@ -8,6 +8,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
+import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getAllLeafsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getFilePath
 import org.cqfn.diktat.ruleset.utils.indentBy
@@ -41,7 +42,6 @@ import com.pinterest.ktlint.core.ast.ElementType.STRING_TEMPLATE
 import com.pinterest.ktlint.core.ast.ElementType.THEN
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.visit
-import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -211,11 +211,11 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
             }
         }
         (templateEntries.last().firstChildNode as LeafPsiElement)
-                .rawReplaceWithText(" ".repeat(expectedIndent) + templateEntries
-                        .last()
-                        .firstChildNode
-                        .text
-                        .trim())
+            .rawReplaceWithText(" ".repeat(expectedIndent) + templateEntries
+                    .last()
+                    .firstChildNode
+                    .text
+                    .trim())
     }
 
     private fun ASTNode.getExceptionalIndentInitiator() = treeParent.let { parent ->
