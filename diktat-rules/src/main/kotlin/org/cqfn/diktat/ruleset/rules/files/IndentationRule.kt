@@ -31,14 +31,18 @@ import com.pinterest.ktlint.core.ast.ElementType.ELSE
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.LBRACKET
+import com.pinterest.ktlint.core.ast.ElementType.LITERAL_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.LPAR
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.RBRACKET
 import com.pinterest.ktlint.core.ast.ElementType.RPAR
 import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.STRING_TEMPLATE
 import com.pinterest.ktlint.core.ast.ElementType.THEN
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.visit
+import org.cqfn.diktat.ruleset.utils.findChildrenMatching
+import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -188,6 +192,23 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
         if (checkResult?.isCorrect != true && expectedIndent != indentError.actual) {
             WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "expected $expectedIndent but was ${indentError.actual}",
                 whiteSpace.startOffset + whiteSpace.text.lastIndexOf('\n') + 1, whiteSpace.node) {
+                // if it is triple-quoted string template we need to indent all its parts
+                if (whiteSpace.node.treeNext.elementType == STRING_TEMPLATE &&
+                        whiteSpace.node.treeNext.text.startsWith("\"\"\"")) {
+                    val textIndent = " ".repeat(expectedIndent + 4)
+                    val templateEntries = whiteSpace.node.treeNext.getAllChildrenWithType(LITERAL_STRING_TEMPLATE_ENTRY)
+                    templateEntries.forEach {
+                        if (!it.text.contains("\n") && it.text.isNotBlank()) {
+                            (it.firstChildNode as LeafPsiElement).rawReplaceWithText(textIndent + it.firstChildNode.text.trim())
+                        }
+                    }
+                    (templateEntries.last().firstChildNode as LeafPsiElement)
+                            .rawReplaceWithText(" ".repeat(expectedIndent) + templateEntries
+                                    .last()
+                                    .firstChildNode
+                                    .text
+                                    .trim())
+                }
                 whiteSpace.node.indentBy(expectedIndent)
             }
         }
