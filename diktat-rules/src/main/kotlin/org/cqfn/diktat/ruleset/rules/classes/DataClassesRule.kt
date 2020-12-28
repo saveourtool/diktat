@@ -63,23 +63,24 @@ class DataClassesRule(private val configRule: List<RulesConfig>) : Rule("data-cl
 
     @Suppress("UnsafeCallOnNullableType", "FUNCTION_BOOLEAN_PREFIX")
     private fun ASTNode.canBeDataClass(): Boolean {
-        if (findChildByType(PRIMARY_CONSTRUCTOR)?.let { constructor -> (constructor.psi as KtPrimaryConstructor).valueParameters.none { it.hasValOrVar() } } == true)
+        if (findChildByType(PRIMARY_CONSTRUCTOR)?.let { constructor -> (constructor.psi as KtPrimaryConstructor).valueParameters.none { it.hasValOrVar() } } == true) {
             return false
+        }
         val classBody = getFirstChildWithType(CLASS_BODY)
         if (hasChildOfType(MODIFIER_LIST)) {
             val list = getFirstChildWithType(MODIFIER_LIST)!!
             return list.getChildren(null)
-                    .none { it.elementType in badModifiers } &&
+                .none { it.elementType in badModifiers } &&
                     classBody?.getAllChildrenWithType(FUN)
-                            ?.isEmpty()
-                    ?: false &&
+                        ?.isEmpty()
+                ?: false &&
                     getFirstChildWithType(SUPER_TYPE_LIST) == null
         }
         return classBody?.getAllChildrenWithType(FUN)?.isEmpty() ?: false &&
                 getFirstChildWithType(SUPER_TYPE_LIST) == null &&
                 // if there is any prop with logic in accessor then don't recommend to convert class to data class
                 classBody?.let(::areGoodProps)
-                ?: true
+                    ?: true
     }
 
     /**
@@ -107,9 +108,9 @@ class DataClassesRule(private val configRule: List<RulesConfig>) : Rule("data-cl
                 val block = it.getFirstChildWithType(BLOCK)!!
 
                 return block
-                        .getChildren(null)
-                        .filter { expr -> expr.psi is KtExpression }
-                        .count() <= 1
+                    .getChildren(null)
+                    .filter { expr -> expr.psi is KtExpression }
+                    .count() <= 1
             }
         }
 
