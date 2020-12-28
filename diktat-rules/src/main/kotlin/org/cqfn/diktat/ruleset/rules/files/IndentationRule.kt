@@ -207,8 +207,9 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
                 nextNode.elementType == DOT_QUALIFIED_EXPRESSION &&
                 nextNode.firstChildNode.elementType == STRING_TEMPLATE &&
                 nextNode.firstChildNode.text.startsWith("\"\"\"") &&
-                (nextNode.findChildByType(CALL_EXPRESSION)?.text?.contentEquals("trimIndent()") == true ||
-                nextNode.findChildByType(CALL_EXPRESSION)?.text?.contentEquals("trimMargin()") == true)) {
+                nextNode.findChildByType(CALL_EXPRESSION)?.text?.let {
+                    it == "trimIndent()" ||
+                    it == "trimMargin()" } == true) {
             fixStringLiteral(whiteSpace, expectedIndent)
         }
     }
