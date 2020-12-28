@@ -101,48 +101,63 @@
 # Checks that there is no newline of empty KDoc line (with leading asterisk) between `@param`, `@return`, `@throws` tags
 - name: KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS
   enabled: true
+# Checks that block of tags @param, @return, @throws is separated from previous part of KDoc by exactly one empty line
 - name: KDOC_NEWLINES_BEFORE_BASIC_TAGS
   enabled: true
+# Checks that special tags `@apiNote`, `@implNote`, `@implSpec` have exactly one empty line after
 - name: KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS
   enabled: true
+# Checks that KDoc does not contain single line with words 'return', 'get' or 'set'
 - name: KDOC_TRIVIAL_KDOC_ON_FUNCTION
   enabled: true
+# Checks that there is newline after header KDoc
 - name: HEADER_WRONG_FORMAT
   enabled: true
+# Checks that file with zero or >1 classes has header KDoc
 - name: HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE
   enabled: true
+# Checks that copyright exists on top of file and is properly formatted (as a block comment)
 - name: HEADER_MISSING_OR_WRONG_COPYRIGHT
   enabled: true
   configuration:
     isCopyrightMandatory: false
     copyrightText: ''
+# Checks that header kdoc is located before package directive
 - name: HEADER_NOT_BEFORE_PACKAGE
   enabled: true
+# Checks that header kdoc does not contain @author tag ar date
 - name: HEADER_CONTAINS_DATE_OR_AUTHOR
   enabled: true
+# Checks that file does not contain lines > maxSize
 - name: FILE_IS_TOO_LONG
   enabled: true
   configuration:
     maxSize: '2000'
     ignoreFolders: ''
+# Checks that file does not contain commented out code
 - name: COMMENTED_OUT_CODE
   enabled: true
+# Checks that file does not contain only comments, imports and package directive
 - name: FILE_CONTAINS_ONLY_COMMENTS
   enabled: true
-  # order imports alphabetically
+# Orders imports alphabetically
 - name: FILE_UNORDERED_IMPORTS
   enabled: true
   configuration:
     # use logical imports grouping with sorting inside of a group
     useRecommendedImportsOrder: true
+# Checks that general order of code parts is right
 - name: FILE_INCORRECT_BLOCKS_ORDER
   enabled: true
+# Checks that there is exactly one line between code blocks
 - name: FILE_NO_BLANK_LINE_BETWEEN_BLOCKS
   enabled: true
+# Checks that there is no wildcard imports. Exception: allowedWildcards
 - name: FILE_WILDCARD_IMPORTS
   enabled: true
   configuration:
     allowedWildcards: "kotlinx.serialization.*,org.cqfn.diktat.ruleset.utils.*"
+# Checks that braces are used in if, else, when, for, do, and while statements. Exception: single line if statement
 - name: NO_BRACES_IN_CONDITIONALS_AND_LOOPS
   enabled: true
 - name: WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES
