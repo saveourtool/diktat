@@ -208,7 +208,7 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
                 nextNode.firstChildNode.elementType == STRING_TEMPLATE &&
                 nextNode.firstChildNode.text.startsWith("\"\"\"") &&
                 nextNode.findChildByType(CALL_EXPRESSION)?.text?.let {
-                            it == "trimIndent()" ||
+                    it == "trimIndent()" ||
                             it == "trimMargin()"
                 } == true) {
             fixStringLiteral(whiteSpace, expectedIndent)
