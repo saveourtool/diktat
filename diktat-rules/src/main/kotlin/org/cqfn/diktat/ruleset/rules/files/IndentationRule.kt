@@ -64,7 +64,7 @@ import org.jetbrains.kotlin.utils.addToStdlib.firstNotNullResult
 class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indentation") {
     private var isFixMode: Boolean = false
     private val configuration: IndentationConfig by lazy {
-        IndentationConfig(configRules.getRuleConfig(WRONG_INDENTATION)?.configuration ?: mapOf())
+        IndentationConfig(configRules.getRuleConfig(WRONG_INDENTATION)?.configuration ?: emptyMap())
     }
     private lateinit var filePath: String
     private lateinit var emitWarn: EmitType

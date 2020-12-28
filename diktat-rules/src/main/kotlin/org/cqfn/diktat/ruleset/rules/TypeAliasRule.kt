@@ -37,7 +37,7 @@ class TypeAliasRule(private val configRules: List<RulesConfig>) : Rule("type-ali
             .parents()
             .map { it.elementType }
             .none { it == SUPER_TYPE_LIST || it == TYPEALIAS}) {
-            checkTypeReference(node, TypeAliasConfiguration(configRules.getRuleConfig(TYPE_ALIAS)?.configuration ?: mapOf()))
+            checkTypeReference(node, TypeAliasConfiguration(configRules.getRuleConfig(TYPE_ALIAS)?.configuration ?: emptyMap()))
         }
     }
 

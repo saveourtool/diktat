@@ -37,7 +37,7 @@ class EmptyBlock(private val configRules: List<RulesConfig>) : Rule("empty-block
         isFixMode = autoCorrect
 
         val configuration = EmptyBlockStyleConfiguration(
-            configRules.getRuleConfig(EMPTY_BLOCK_STRUCTURE_ERROR)?.configuration ?: mapOf()
+            configRules.getRuleConfig(EMPTY_BLOCK_STRUCTURE_ERROR)?.configuration ?: emptyMap()
         )
         searchNode(node, configuration)
     }

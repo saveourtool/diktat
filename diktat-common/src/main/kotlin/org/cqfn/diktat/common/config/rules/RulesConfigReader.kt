@@ -47,7 +47,7 @@ data class RulesConfig(
  * @property config a map of strings with configuration options for a particular rule
  */
 open class RuleConfiguration(protected val config: Map<String, String>)
-object EmptyConfiguration : RuleConfiguration(mapOf())
+object EmptyConfiguration : RuleConfiguration(emptyMap())
 
 /**
  * class returns the list of configurations that we have read from a yml: diktat-analysis.yml
@@ -106,14 +106,14 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
      * List of directory names which will be used to detect test sources
      */
     val testAnchors: List<String> by lazy {
-        (configuration ?: mapOf()).getOrDefault("testDirs", "test").split(',')
+        (configuration ?: emptyMap()).getOrDefault("testDirs", "test").split(',')
     }
 
     /**
      * Start of package name, which shoould be common, e.g. org.example.myproject
      */
     val domainName: String by lazy {
-        (configuration ?: mapOf()).getOrDefault("domainName", "")
+        (configuration ?: emptyMap()).getOrDefault("domainName", "")
     }
 
     /**

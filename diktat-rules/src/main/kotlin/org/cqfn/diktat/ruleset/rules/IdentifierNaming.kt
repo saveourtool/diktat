@@ -251,7 +251,7 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
             }
         }
 
-        val className: ASTNode = node.getIdentifierName() ?: return listOf()
+        val className: ASTNode = node.getIdentifierName() ?: return emptyList()
         if (!(className.text.isPascalCase())) {
             CLASS_NAME_INCORRECT.warnAndFix(configRules, emitWarn, isFixMode, className.text, className.startOffset, className) {
                 (className as LeafPsiElement).replaceWithText(className.text.toPascalCase())
@@ -290,7 +290,7 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
      */
     private fun checkObjectNaming(node: ASTNode): List<ASTNode> {
         // if this object is companion object or anonymous object - it does not have any name
-        val objectName: ASTNode = node.getIdentifierName() ?: return listOf()
+        val objectName: ASTNode = node.getIdentifierName() ?: return emptyList()
         if (!objectName.text.isPascalCase()) {
             OBJECT_NAME_INCORRECT.warnAndFix(configRules, emitWarn, isFixMode, objectName.text, objectName.startOffset, objectName) {
                 (objectName as LeafPsiElement).replaceWithText(objectName.text.toPascalCase())
@@ -308,7 +308,7 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
         val enumValues: List<ASTNode> = node.getChildren(null).filter { it.elementType == ElementType.IDENTIFIER }
         enumValues.forEach { value ->
             val configuration = IdentifierNamingConfiguration(configRules.getRuleConfig(ENUM_VALUE)?.configuration
-                ?: mapOf())
+                ?: emptyMap())
             val validator = when (configuration.enumStyle) {
                 Style.PASCAL_CASE -> String::isPascalCase
                 Style.SNAKE_CASE -> String::isUpperSnakeCase

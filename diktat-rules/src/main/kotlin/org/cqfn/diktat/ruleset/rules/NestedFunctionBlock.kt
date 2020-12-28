@@ -23,7 +23,7 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  */
 class NestedFunctionBlock(private val configRules: List<RulesConfig>) : Rule("nested-block") {
     private val configuration: NestedBlockConfiguration by lazy {
-        NestedBlockConfiguration(configRules.getRuleConfig(NESTED_BLOCK)?.configuration ?: mapOf())
+        NestedBlockConfiguration(configRules.getRuleConfig(NESTED_BLOCK)?.configuration ?: emptyMap())
     }
     private var isFixMode: Boolean = false
     private lateinit var emitWarn: EmitType

@@ -155,6 +155,7 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     @Test
     @Tag("DiktatRuleSetProvider")
     fun `smoke test #1`() {
+        Assertions.assertEquals("first string", "second string")
         fixAndCompare("Example1Expected.kt", "Example1Test.kt")
         unfixedLintErrors.assertEquals(
             LintError(1, 1, "$DIKTAT_RULE_SET_ID:file-naming", "${FILE_NAME_INCORRECT.warnText()} Example1Test.kt_copy", true),  // todo this is a false one
