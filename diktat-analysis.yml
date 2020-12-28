@@ -74,22 +74,31 @@
 # Checks that accessible method parameters are documented in KDoc
 - name: KDOC_WITHOUT_PARAM_TAG
   enabled: true
+# Checks that accessible method explicit return type is documented in KDoc
 - name: KDOC_WITHOUT_RETURN_TAG
   enabled: true
+# Checks that accessible method throw keyword is documented in KDoc
 - name: KDOC_WITHOUT_THROWS_TAG
   enabled: true
+# Checks that KDoc is not empty
 - name: KDOC_EMPTY_KDOC
   enabled: true
+# Checks that underscore is correctly used to split package naming
 - name: INCORRECT_PACKAGE_SEPARATOR
   enabled: true
+# Checks that there is no @deprecated tag in kdoc
 - name: KDOC_NO_DEPRECATED_TAG
   enabled: true
+# Checks that there is no empty content in kdoc tags
 - name: KDOC_NO_EMPTY_TAGS
   enabled: true
+# Checks that there is only one space after kdoc tag
 - name: KDOC_WRONG_SPACES_AFTER_TAG
   enabled: true
+# Checks tags order in kDoc. `@param`, `@return`, `@throws`
 - name: KDOC_WRONG_TAGS_ORDER
   enabled: true
+# Checks that there is no newline of empty KDoc line (with leading asterisk) between `@param`, `@return`, `@throws` tags
 - name: KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS
   enabled: true
 - name: KDOC_NEWLINES_BEFORE_BASIC_TAGS
@@ -97,7 +106,7 @@
 - name: KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS
   enabled: true
 - name: KDOC_TRIVIAL_KDOC_ON_FUNCTION
-  enabled: 'true'
+  enabled: true
 - name: HEADER_WRONG_FORMAT
   enabled: true
 - name: HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE
