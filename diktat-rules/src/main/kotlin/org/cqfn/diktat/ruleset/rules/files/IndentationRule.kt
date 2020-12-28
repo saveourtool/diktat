@@ -41,7 +41,6 @@ import com.pinterest.ktlint.core.ast.ElementType.STRING_TEMPLATE
 import com.pinterest.ktlint.core.ast.ElementType.THEN
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.visit
-import org.cqfn.diktat.ruleset.utils.findChildrenMatching
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
@@ -195,23 +194,28 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
                 // if it is triple-quoted string template we need to indent all its parts
                 if (whiteSpace.node.treeNext.elementType == STRING_TEMPLATE &&
                         whiteSpace.node.treeNext.text.startsWith("\"\"\"")) {
-                    val textIndent = " ".repeat(expectedIndent + 4)
-                    val templateEntries = whiteSpace.node.treeNext.getAllChildrenWithType(LITERAL_STRING_TEMPLATE_ENTRY)
-                    templateEntries.forEach {
-                        if (!it.text.contains("\n") && it.text.isNotBlank()) {
-                            (it.firstChildNode as LeafPsiElement).rawReplaceWithText(textIndent + it.firstChildNode.text.trim())
-                        }
-                    }
-                    (templateEntries.last().firstChildNode as LeafPsiElement)
-                            .rawReplaceWithText(" ".repeat(expectedIndent) + templateEntries
-                                    .last()
-                                    .firstChildNode
-                                    .text
-                                    .trim())
+                    fixStringLiteral(whiteSpace, expectedIndent)
                 }
                 whiteSpace.node.indentBy(expectedIndent)
             }
         }
+    }
+
+    @Suppress("MagicNumber")
+    private fun fixStringLiteral(whiteSpace: PsiWhiteSpace, expectedIndent: Int) {
+        val textIndent = " ".repeat(expectedIndent + 4)
+        val templateEntries = whiteSpace.node.treeNext.getAllChildrenWithType(LITERAL_STRING_TEMPLATE_ENTRY)
+        templateEntries.forEach {
+            if (!it.text.contains("\n") && it.text.isNotBlank()) {
+                (it.firstChildNode as LeafPsiElement).rawReplaceWithText(textIndent + it.firstChildNode.text.trim())
+            }
+        }
+        (templateEntries.last().firstChildNode as LeafPsiElement)
+                .rawReplaceWithText(" ".repeat(expectedIndent) + templateEntries
+                        .last()
+                        .firstChildNode
+                        .text
+                        .trim())
     }
 
     private fun ASTNode.getExceptionalIndentInitiator() = treeParent.let { parent ->
