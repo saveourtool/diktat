@@ -73,7 +73,7 @@ class DataClassesRule(private val configRule: List<RulesConfig>) : Rule("data-cl
                 .none { it.elementType in badModifiers } &&
                     classBody?.getAllChildrenWithType(FUN)
                         ?.isEmpty()
-                ?: false &&
+                        ?: false &&
                     getFirstChildWithType(SUPER_TYPE_LIST) == null
         }
         return classBody?.getAllChildrenWithType(FUN)?.isEmpty() ?: false &&
