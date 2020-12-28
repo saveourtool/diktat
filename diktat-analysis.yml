@@ -2,52 +2,76 @@
   enabled: true
   configuration:
     domainName: org.cqfn.diktat
+# Checks that the Class/Enum/Interface name does not match Pascal case
 - name: CLASS_NAME_INCORRECT
   enabled: true
+# Checks that CONSTANT (treated as const val from companion object or class level) is in non UPPER_SNAKE_CASE
 - name: CONSTANT_UPPERCASE
   enabled: true
+# Checks that enum value is in non UPPER_SNAKE_CASE or non PascalCase depending on the config, UPPER_SNAKE_CASE by default
 - name: ENUM_VALUE
   enabled: true
   configuration:
+    # Two options: snakeCase(default), PascalCase
     enumStyle: snakeCase
+# Checks that class which extends any Exception class has Exception suffix
 - name: EXCEPTION_SUFFIX
   enabled: true
+# Checks that file name has extension
 - name: FILE_NAME_INCORRECT
   enabled: true
+# Checks that file name matches class name, if it is only one class in file
 - name: FILE_NAME_MATCH_CLASS
   enabled: true
+# Checks that functions/methods which return boolean have special prefix like "is/should/e.t.c"
 - name: FUNCTION_BOOLEAN_PREFIX
   enabled: true
+# Checks that function/method name is in lowerCamelCase
 - name: FUNCTION_NAME_INCORRECT_CASE
   enabled: true
+# Checks that generic name doesn't contain more than 1 letter (capital). It can be followed by numbers, example: T12, T
 - name: GENERIC_NAME
   enabled: true
+# Identifier length should be in range [2,64] except names that used in industry like {i, j} and 'e' for catching exceptions
 - name: IDENTIFIER_LENGTH
   enabled: true
+# Checks that the object matches PascalCase
 - name: OBJECT_NAME_INCORRECT
   enabled: true
+# Checks that package name is in correct (lower) case
 - name: PACKAGE_NAME_INCORRECT_CASE
   enabled: true
+# Checks that package name starts with the company's domain
 - name: PACKAGE_NAME_INCORRECT_PREFIX
   enabled: true
+# Checks that package name does not have incorrect symbols like underscore or non-ASCII letters/digits
 - name: PACKAGE_NAME_INCORRECT_SYMBOLS
   enabled: true
+# Checks that the path for a file matches with a package name
 - name: PACKAGE_NAME_INCORRECT_PATH
   enabled: true
+# Checks that package name is in the file
 - name: PACKAGE_NAME_MISSING
   enabled: true
+# Checks that variable does not have prefix (like mVariable or M_VARIABLE)
 - name: VARIABLE_HAS_PREFIX
   enabled: true
+# Checks that variable does not contain one single letter, only exceptions are fixed names that used in industry like {i, j}
 - name: VARIABLE_NAME_INCORRECT
   enabled: true
+# Checks that the name of variable is in lowerCamelCase and contains only ASCII letters
 - name: VARIABLE_NAME_INCORRECT_FORMAT
   enabled: true
+# Checks that functions have kdoc
 - name: MISSING_KDOC_ON_FUNCTION
   enabled: true
+# Checks that on file level internal or public class or function has missing KDoc
 - name: MISSING_KDOC_TOP_LEVEL
   enabled: true
+# Checks that accessible internal elements (protected, public, internal) in a class are documented
 - name: MISSING_KDOC_CLASS_ELEMENTS
   enabled: true
+# Checks that accessible method parameters are documented in KDoc
 - name: KDOC_WITHOUT_PARAM_TAG
   enabled: true
 - name: KDOC_WITHOUT_RETURN_TAG
