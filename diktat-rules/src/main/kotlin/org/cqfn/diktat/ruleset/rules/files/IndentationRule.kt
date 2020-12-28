@@ -27,6 +27,7 @@ import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
 import org.cqfn.diktat.ruleset.utils.log
 
 import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.ELSE
 import com.pinterest.ktlint.core.ast.ElementType.FILE
@@ -191,20 +192,33 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
         if (checkResult?.isCorrect != true && expectedIndent != indentError.actual) {
             WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "expected $expectedIndent but was ${indentError.actual}",
                 whiteSpace.startOffset + whiteSpace.text.lastIndexOf('\n') + 1, whiteSpace.node) {
-                // if it is triple-quoted string template we need to indent all its parts
-                if (whiteSpace.node.treeNext.elementType == STRING_TEMPLATE &&
-                        whiteSpace.node.treeNext.text.startsWith("\"\"\"")) {
-                    fixStringLiteral(whiteSpace, expectedIndent)
-                }
+                checkStringLiteral(whiteSpace, expectedIndent)
                 whiteSpace.node.indentBy(expectedIndent)
             }
         }
     }
 
-    @Suppress("MagicNumber")
+    /**
+     * Checks if it is triple-quoted string template with trimIndent() or trimMargin() function.
+     */
+    private fun checkStringLiteral(whiteSpace: PsiWhiteSpace, expectedIndent: Int) {
+        val nextNode = whiteSpace.node.treeNext
+        if (nextNode != null &&
+                nextNode.elementType == DOT_QUALIFIED_EXPRESSION &&
+                nextNode.firstChildNode.elementType == STRING_TEMPLATE &&
+                nextNode.firstChildNode.text.startsWith("\"\"\"") &&
+                (nextNode.findChildByType(CALL_EXPRESSION)?.text?.contentEquals("trimIndent()") == true ||
+                nextNode.findChildByType(CALL_EXPRESSION)?.text?.contentEquals("trimMargin()") == true)) {
+            fixStringLiteral(whiteSpace, expectedIndent)
+        }
+    }
+
+    /**
+     * If it is triple-quoted string template we need to indent all its parts
+     */
     private fun fixStringLiteral(whiteSpace: PsiWhiteSpace, expectedIndent: Int) {
-        val textIndent = " ".repeat(expectedIndent + 4)
-        val templateEntries = whiteSpace.node.treeNext.getAllChildrenWithType(LITERAL_STRING_TEMPLATE_ENTRY)
+        val textIndent = " ".repeat(expectedIndent + INDENT_SIZE)
+        val templateEntries = whiteSpace.node.treeNext.firstChildNode.getAllChildrenWithType(LITERAL_STRING_TEMPLATE_ENTRY)
         templateEntries.forEach {
             if (!it.text.contains("\n") && it.text.isNotBlank()) {
                 (it.firstChildNode as LeafPsiElement).rawReplaceWithText(textIndent + it.firstChildNode.text.trim())
