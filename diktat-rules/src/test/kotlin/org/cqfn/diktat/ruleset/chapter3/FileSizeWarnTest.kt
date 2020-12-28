@@ -28,7 +28,7 @@ class FileSizeWarnTest : LintTestBase(::FileSize) {
     )
     private val rulesConfigListEmpty: List<RulesConfig> = listOf(
         RulesConfig(Warnings.FILE_IS_TOO_LONG.name, true,
-            mapOf())
+            emptyMap())
     )
     private val rulesConfigListOnlyIgnore: List<RulesConfig> = listOf(
         RulesConfig(Warnings.FILE_IS_TOO_LONG.name, true,

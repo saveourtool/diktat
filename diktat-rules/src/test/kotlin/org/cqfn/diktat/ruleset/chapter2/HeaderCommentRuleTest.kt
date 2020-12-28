@@ -346,7 +346,7 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
                 |class Example { }
             """.trimMargin(),
             LintError(5, 1, ruleId, "${HEADER_NOT_BEFORE_PACKAGE.warnText()} header KDoc is located after package or imports", true),
-            rulesConfigList = listOf()
+            rulesConfigList = emptyList()
         )
     }
 

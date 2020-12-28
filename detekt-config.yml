@@ -111,6 +111,8 @@ complexity:
     excludes: ['**/resources/**'] 
     active: true
     threshold: 5
+  ReplaceSafeCallChainWithRun:
+    active: false
   StringLiteralDuplication:
     active: false
     excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/iosTest/**']
@@ -137,6 +139,8 @@ coroutines:
     active: false
   RedundantSuspendModifier:
     excludes: ['**/resources/**'] 
+    active: false
+  SuspendFunWithFlowReturnType:
     active: false
 
 empty-blocks:
@@ -266,6 +270,10 @@ formatting:
     excludes: ['**/resources/**'] 
     active: false
     autoCorrect: true
+  AnnotationSpacing:
+    active: true
+  ArgumentListWrapping:
+    active: true
   ChainWrapping:
     excludes: ['**/resources/**'] 
     active: true
@@ -468,6 +476,8 @@ naming:
     excludes: ['**/resources/**'] 
     active: true
     ignoreOverridden: true
+  NonBooleanPropertyPrefixedWithIs:
+    active: true
   ObjectPropertyNaming:
     active: true
     excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/iosTest/**']
@@ -567,6 +577,8 @@ potential-bugs:
   MissingWhenCase:
     excludes: ['**/resources/**'] 
     active: true
+  NullableToStringCall:
+    active: false
   RedundantElseInWhen:
     excludes: ['**/resources/**'] 
     active: true
@@ -597,6 +609,8 @@ potential-bugs:
 
 style:
   active: true
+  ClassOrdering:
+    active: true
   CollapsibleIfStatements:
     excludes: ['**/resources/**'] 
     active: false
@@ -654,6 +668,8 @@ style:
     excludeAnnotatedFunction: ['dagger.Provides']
   LibraryCodeMustSpecifyReturnType:
     excludes: ['**/resources/**'] 
+    active: false
+  LibraryEntitiesShouldNotBePublic:
     active: false
   LoopWithTooManyJumpStatements:
     excludes: ['**/resources/**'] 
@@ -718,6 +734,8 @@ style:
   RedundantExplicitType:
     excludes: ['**/resources/**'] 
     active: false
+  RedundantHigherOrderMapUsage:
+    active: true
   RedundantVisibilityModifierRule:
     excludes: ['**/resources/**'] 
     active: false
@@ -784,6 +802,8 @@ style:
   UseArrayLiteralsInAnnotations:
     excludes: ['**/resources/**'] 
     active: false
+  UseCheckNotNull:
+    active: true
   UseCheckOrError:
     excludes: ['**/resources/**'] 
     active: false
@@ -792,12 +812,18 @@ style:
     active: false
     excludeAnnotatedClasses: []
     allowVars: false
+  UseEmptyCounterpart:
+    active: true
+  UseIfEmptyOrIfBlank:
+    active: true
   UseIfInsteadOfWhen:
     excludes: ['**/resources/**'] 
     active: false
   UseRequire:
     excludes: ['**/resources/**'] 
     active: false
+  UseRequireNotNull:
+    active: true
   UselessCallOnNotNull:
     excludes: ['**/resources/**'] 
     active: true

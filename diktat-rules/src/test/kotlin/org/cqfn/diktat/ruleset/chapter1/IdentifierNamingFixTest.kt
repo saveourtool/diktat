@@ -12,8 +12,8 @@ class IdentifierNamingFixTest : FixTestBase(
     "test/paragraph1/naming",
     ::IdentifierNaming,
     listOf(
-        RulesConfig("PACKAGE_NAME_INCORRECT", false, mapOf()),
-        RulesConfig("PACKAGE_NAME_INCORRECT_PREFIX", false, mapOf())
+        RulesConfig("PACKAGE_NAME_INCORRECT", false, emptyMap()),
+        RulesConfig("PACKAGE_NAME_INCORRECT_PREFIX", false, emptyMap())
     )
 ) {
     @Test

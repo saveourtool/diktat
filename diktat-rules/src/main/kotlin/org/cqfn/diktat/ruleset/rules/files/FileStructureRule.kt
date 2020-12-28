@@ -300,7 +300,7 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         /**
          * A list of imports that are allowed to use wildcards. Input is in a form "foo.bar.*,foo.baz.*".
          */
-        val allowedWildcards = config["allowedWildcards"]?.split(",")?.map { it.trim() } ?: listOf()
+        val allowedWildcards = config["allowedWildcards"]?.split(",")?.map { it.trim() } ?: emptyList()
     }
 
     /**

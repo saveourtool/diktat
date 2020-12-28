@@ -21,7 +21,7 @@ class HeaderCommentRuleFixTest : FixTestBase(
                 "isCopyrightMandatory" to "true",
                 "copyrightText" to "Copyright (c) Huawei Technologies Co., Ltd. 2020-2020. All rights reserved.")
         ),
-        RulesConfig("HEADER_WRONG_FORMAT", true, mapOf())
+        RulesConfig("HEADER_WRONG_FORMAT", true, emptyMap())
     )
 ) {
     @Test
@@ -46,7 +46,7 @@ class HeaderCommentRuleFixTest : FixTestBase(
     @Tags(Tag(WarningNames.HEADER_MISSING_OR_WRONG_COPYRIGHT), Tag(WarningNames.HEADER_WRONG_FORMAT))
     fun `header KDoc should be moved before package - no copyright`() {
         fixAndCompare("MisplacedHeaderKdocNoCopyrightExpected.kt", "MisplacedHeaderKdocNoCopyrightTest.kt",
-            listOf(RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, false, mapOf()), RulesConfig(HEADER_WRONG_FORMAT.name, true, mapOf()))
+            listOf(RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, false, emptyMap()), RulesConfig(HEADER_WRONG_FORMAT.name, true, emptyMap()))
         )
     }
 

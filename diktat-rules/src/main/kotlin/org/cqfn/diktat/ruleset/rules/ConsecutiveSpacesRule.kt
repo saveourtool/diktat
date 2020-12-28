@@ -32,7 +32,7 @@ class ConsecutiveSpacesRule(private val configRules: List<RulesConfig>) : Rule("
         isFixMode = autoCorrect
 
         val configuration = TooManySpacesRuleConfiguration(
-            configRules.getRuleConfig(TOO_MANY_CONSECUTIVE_SPACES)?.configuration ?: mapOf())
+            configRules.getRuleConfig(TOO_MANY_CONSECUTIVE_SPACES)?.configuration ?: emptyMap())
 
         if (node.elementType == WHITE_SPACE) {
             checkWhiteSpace(node, configuration)

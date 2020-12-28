@@ -28,7 +28,7 @@ class LongNumericalValuesSeparatedRule(private val configRules: List<RulesConfig
         isFixMode = autoCorrect
 
         val configuration = LongNumericalValuesConfiguration(
-            configRules.getRuleConfig(Warnings.LONG_NUMERICAL_VALUES_SEPARATED)?.configuration ?: mapOf())
+            configRules.getRuleConfig(Warnings.LONG_NUMERICAL_VALUES_SEPARATED)?.configuration ?: emptyMap())
 
         if (node.elementType == INTEGER_LITERAL) {
             if (!isValidConstant(node.text, configuration, node)) {
