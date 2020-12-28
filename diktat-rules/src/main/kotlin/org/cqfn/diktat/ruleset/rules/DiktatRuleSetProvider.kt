@@ -103,7 +103,6 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
             ::ClassLikeStructuresOrderRule,
             ::WhenMustHaveElseRule,
             ::BracesInConditionalsAndLoopsRule,
-            ::BlockStructureBraces,
             ::EmptyBlock,
             ::AvoidEmptyPrimaryConstructor,
             ::EnumsSeparated,
@@ -144,6 +143,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
             ::AvoidNestedFunctionsRule,
             ::ExtensionFunctionsSameNameRule,
             // formatting: moving blocks, adding line breaks, indentations etc.
+            ::BlockStructureBraces,
             ::ConsecutiveSpacesRule,
             ::HeaderCommentRule,
             ::FileStructureRule,  // this rule should be right before indentation because it should operate on already valid code

@@ -79,7 +79,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
 
     @Test
     @Tag(WarningNames.COMMENTED_OUT_CODE)
-    fun `Should warn if commented out function is detected (single line comments)`() {
+    fun `Should warn if commented out function is detected single line comments`() {
         lintMethod(
             """
            |import org.junit.Test
@@ -255,5 +255,42 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
             |//     name.contains("a")
             """.trimMargin(),
             LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} public fun someFunc(name: String): Boolean =", false))
+    }
+
+    @Test
+    @Tag(WarningNames.COMMENTED_OUT_CODE)
+    fun `should not trigger on multiline comments #1`() {
+        lintMethod(
+            """
+            |/*
+            |
+            |   Copyright 2018-2020 John Doe.
+            |   
+            |   Licensed under the Apache License, Version 2.0 (the "License");
+            |   you may not use this file except in compliance with the License.
+            |   You may obtain a copy of the License at
+            |   
+            |       http://www.apache.org/licenses/LICENSE-2.0
+            |       
+            |   Unless required by applicable law or agreed to in writing, software
+            |   distributed under the License is distributed on an "AS IS" BASIS,
+            |   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+            |   See the License for the specific language governing permissions and
+            |   limitations under the License.
+            |   
+            |*/
+            """.trimMargin())
+    }
+
+    @Test
+    @Tag(WarningNames.COMMENTED_OUT_CODE)
+    fun `should not trigger on multiline comments #2`() {
+        lintMethod(
+            """
+            |   /*
+            |   * some text here
+            |   maybe even with another line
+            |   */
+            """.trimMargin())
     }
 }

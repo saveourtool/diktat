@@ -2,38 +2,11 @@
  * Utilities for diktat gradle plugin
  */
 
+@file:Suppress("FILE_NAME_MATCH_CLASS")
+
 package org.cqfn.diktat.plugin.gradle
 
 import groovy.lang.Closure
-
-/**
- * A wrapper for gradle version, which supports three-digit versions like `6.6.1` or `6.0`
- * with possible suffix: `6.6.0-M1`, `6.6-RC`
- *
- * @property major major version
- * @property minor minor version
- * @property patch patch version
- * @property suffix version suffix
- */
-internal data class GradleVersion(
-    val major: Int,
-    val minor: Int,
-    val patch: Int,
-    val suffix: String?) {
-    companion object {
-        /**
-         * @param version string representation of version, e.g. from [org.gradle.api.invocation.Gradle.getGradleVersion]
-         * @return a [GradleVersion]
-         */
-        fun fromString(version: String): GradleVersion {
-            val (versionDigits, suffix) = version.split('-', limit = 2).let { splits ->
-                splits.first() to splits.getOrNull(1)
-            }
-            val digits = versionDigits.split('.', limit = 3).map { it.toInt() }
-            return GradleVersion(digits.first(), digits.getOrElse(1) { 0 }, digits.getOrElse(2) { 0 }, suffix)
-        }
-    }
-}
 
 // These two are copy-pasted from `kotlin-dsl` plugin's groovy interop.
 // Because `kotlin-dsl` depends on kotlin 1.3.x.

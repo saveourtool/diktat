@@ -46,7 +46,7 @@ Each nesting level will increase the amount of effort needed to read the code be
 Functional decomposition should be implemented to avoid confusion for the developer who reads the code.
 This will help the reader switch between contexts.
 
-#### <a name="r5.1.3"></a> Rule 5.1.3 Avoid using nested functions
+#### <a name="r5.1.3"></a> 5.1.3 Avoid using nested functions
 Nested functions create a more complex function context, thereby confusing readers.
 With nested functions, the visibility context may not be evident to the code reader.
 
