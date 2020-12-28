@@ -212,10 +212,10 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
         }
         (templateEntries.last().firstChildNode as LeafPsiElement)
             .rawReplaceWithText(" ".repeat(expectedIndent) + templateEntries
-                    .last()
-                    .firstChildNode
-                    .text
-                    .trim())
+                .last()
+                .firstChildNode
+                .text
+                .trim())
     }
 
     private fun ASTNode.getExceptionalIndentInitiator() = treeParent.let { parent ->
