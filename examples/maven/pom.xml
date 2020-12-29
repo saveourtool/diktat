@@ -8,7 +8,7 @@
     <version>1.0.0-SNAPSHOT</version>
 
     <properties>
-        <diktat.version>0.1.7</diktat.version>
+        <diktat.version>0.2.0</diktat.version>
     </properties>
 
     <build>
