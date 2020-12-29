@@ -18,6 +18,8 @@
   enabled: true
 - name: FUNCTION_BOOLEAN_PREFIX
   enabled: true
+  configuration:
+    allowedFunctions: "" # A list of functions that return boolean and are allowed to use. Input is in a form "foo, bar".
 - name: FUNCTION_NAME_INCORRECT_CASE
   enabled: true
 - name: GENERIC_NAME

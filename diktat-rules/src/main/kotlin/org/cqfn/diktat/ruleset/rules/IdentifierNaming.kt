@@ -57,6 +57,7 @@ import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevCodeSibling
+import org.cqfn.diktat.ruleset.constants.Warnings
 import org.jetbrains.kotlin.builtins.PrimitiveType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -358,7 +359,10 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
         if (!node.isOverridden()) {
             // if function has Boolean return type in 99% of cases it is much better to name it with isXXX or hasXXX prefix
             if (functionReturnType != null && functionReturnType == PrimitiveType.BOOLEAN.typeName.asString()) {
-                if (booleanMethodPrefixes.none { functionName.text.startsWith(it) }) {
+                val configuration = BooleanFunctionsConfiguration(
+                        this.configRules.getRuleConfig(FUNCTION_BOOLEAN_PREFIX)?.configuration ?: emptyMap()
+                )
+                if (booleanMethodPrefixes.none { functionName.text.startsWith(it) } && functionName.text !in configuration.allowedBooleanFunctions) {
                     FUNCTION_BOOLEAN_PREFIX.warnAndFix(configRules, emitWarn, isFixMode, functionName.text, functionName.startOffset, functionName) {
                         // FixMe: add agressive autofix for this
                     }
@@ -424,6 +428,13 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
             }
             style
         } ?: Style.SNAKE_CASE
+    }
+
+    class BooleanFunctionsConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
+        /**
+         * A list of functions that return boolean and are allowed to use. Input is in a form "foo, bar".
+         */
+        val allowedBooleanFunctions = config["allowedFunctions"]?.split(",")?.map { it.trim() } ?: emptyList()
     }
 
     companion object {
