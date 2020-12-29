@@ -96,4 +96,56 @@ class DataClassesRuleWarnTest : LintTestBase(::DataClassesRule) {
                 """.trimMargin()
         )
     }
+
+    @Test
+    @Tag(USE_DATA_CLASS)
+    fun `should not trigger on classes with no property in constructor`() {
+        lintMethod(
+            """
+                    |class B(map: Map<Int,Int>) {}
+                    |
+                    |class Ab(val map: Map<Int, Int>, map: Map<Int, Int>) {}
+                    |
+                    |class A(val map: Map<Int, Int>) {}
+                    |
+                """.trimMargin(),
+            LintError(5, 1, ruleId, "${Warnings.USE_DATA_CLASS.warnText()} A")
+        )
+    }
+
+    @Test
+    @Tag(USE_DATA_CLASS)
+    fun `should not trigger on empty class`() {
+        lintMethod(
+            """
+                    |class B() {}
+                    |
+                    |class Ab{}
+                    |
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(USE_DATA_CLASS)
+    fun `should trigger on class without constructor but with property`() {
+        lintMethod(
+            """
+                    |class B() {
+                    |   val q = 10
+                    |}
+                    |
+                    |class Ab {
+                    |   val qw = 10 
+                    |}
+                    |
+                    |class Ba {
+                    |   val q = 10
+                    |   fun foo() = 10
+                    |}
+                """.trimMargin(),
+            LintError(1, 1, ruleId, "${Warnings.USE_DATA_CLASS.warnText()} B"),
+            LintError(5, 1, ruleId, "${Warnings.USE_DATA_CLASS.warnText()} Ab")
+        )
+    }
 }
