@@ -3,6 +3,7 @@ package org.cqfn.diktat.plugin.maven
 import com.soebes.itf.jupiter.extension.MavenGoal
 import com.soebes.itf.jupiter.extension.MavenJupiterExtension
 import com.soebes.itf.jupiter.extension.MavenTest
+import com.soebes.itf.jupiter.extension.SystemProperty
 import com.soebes.itf.jupiter.maven.MavenExecutionResult
 import org.junit.jupiter.api.Assertions
 import java.io.File
@@ -19,6 +20,7 @@ import kotlin.io.path.readText
  */
 @OptIn(ExperimentalPathApi::class)
 @MavenJupiterExtension
+@SystemProperty(value = "diktat.version", content = "0.2.1-SNAPSHOT")  // todo set pluin version for example project properly
 class DiktatMavenPluginIntegrationTest {
     @MavenTest
     @MavenGoal("diktat:check@diktat")
