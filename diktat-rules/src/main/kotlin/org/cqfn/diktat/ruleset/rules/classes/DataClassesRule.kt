@@ -65,7 +65,7 @@ class DataClassesRule(private val configRule: List<RulesConfig>) : Rule("data-cl
     @Suppress("UnsafeCallOnNullableType", "FUNCTION_BOOLEAN_PREFIX", "ComplexMethod")
     private fun ASTNode.canBeDataClass(): Boolean {
         val isNotPropertyInClassBody = findChildByType(CLASS_BODY)?.let { (it.psi as KtClassBody).properties.isEmpty() } ?: true
-        val hasPropertyInConstructor  = findChildByType(PRIMARY_CONSTRUCTOR)
+        val hasPropertyInConstructor = findChildByType(PRIMARY_CONSTRUCTOR)
             ?.let { constructor ->
                 (constructor.psi as KtPrimaryConstructor)
                     .valueParameters
