@@ -143,7 +143,7 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
     @Suppress("TOO_LONG_FUNCTION", "ComplexMethod")
     private fun checkCopyright(node: ASTNode) {
         val configuration = CopyrightConfiguration(configRules.getRuleConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT)?.configuration
-            ?: mapOf())
+            ?: emptyMap())
         if (!configuration.isCopyrightMandatory() && !configuration.hasCopyrightText()) {
             return
         }

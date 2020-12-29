@@ -18,7 +18,7 @@ import org.jetbrains.kotlin.psi.KtFunction
 class FunctionArgumentsSize(private val configRules: List<RulesConfig>) : Rule("argument-size") {
     private var isFixMode: Boolean = false
     private val configuration: FunctionArgumentsSizeConfiguration by lazy {
-        FunctionArgumentsSizeConfiguration(configRules.getRuleConfig(TOO_MANY_PARAMETERS)?.configuration ?: mapOf())
+        FunctionArgumentsSizeConfiguration(configRules.getRuleConfig(TOO_MANY_PARAMETERS)?.configuration ?: emptyMap())
     }
     private lateinit var emitWarn: EmitType
 

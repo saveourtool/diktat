@@ -104,7 +104,7 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
         return if (!filePathParts.contains(PACKAGE_PATH_ANCHOR)) {
             log.error("Not able to determine a path to a scanned file or src directory cannot be found in it's path." +
                     " Will not be able to determine correct package name. It can happen due to missing <src> directory in the path")
-            listOf()
+            emptyList()
         } else {
             // creating a real package name:
             // 1) getting a path after the base project directory (after "src" directory)
@@ -113,7 +113,7 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
             val fileSubDir = filePathParts.subList(filePathParts.lastIndexOf(PACKAGE_PATH_ANCHOR), filePathParts.size - 1)
                 .dropWhile { languageDirNames.contains(it) }
             // no need to add DOMAIN_NAME to the package name if it is already in path
-            val domainPrefix = if (!fileSubDir.joinToString(PACKAGE_SEPARATOR).startsWith(domainName)) domainName.split(PACKAGE_SEPARATOR) else listOf()
+            val domainPrefix = if (!fileSubDir.joinToString(PACKAGE_SEPARATOR).startsWith(domainName)) domainName.split(PACKAGE_SEPARATOR) else emptyList()
             domainPrefix + fileSubDir
         }
     }

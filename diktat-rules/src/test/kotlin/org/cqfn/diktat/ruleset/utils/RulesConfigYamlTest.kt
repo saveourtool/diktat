@@ -37,7 +37,7 @@ class RulesConfigYamlTest {
 
         allRulesFromCode.forEach { rule ->
             val foundRule = allRulesFromConfig.getRuleConfig(rule)
-            val ymlCodeSnippet = RulesConfig(rule.ruleName(), true, mapOf())
+            val ymlCodeSnippet = RulesConfig(rule.ruleName(), true, emptyMap())
 
             val ruleYaml = Yaml.default.encodeToString(ymlCodeSnippet)
             Assertions.assertTrue(foundRule != null) {
@@ -62,7 +62,7 @@ class RulesConfigYamlTest {
 
     private fun readAllRulesFromConfig(nameConfig: String) =
             RulesConfigReader(javaClass.classLoader)
-                .readResource(nameConfig) ?: listOf()
+                .readResource(nameConfig) ?: emptyList()
 
     private fun readAllRulesFromCode() =
             Warnings.values()

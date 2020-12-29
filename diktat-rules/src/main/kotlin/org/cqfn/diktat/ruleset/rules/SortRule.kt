@@ -38,7 +38,7 @@ class SortRule(private val configRules: List<RulesConfig>) : Rule("sort-rule") {
         isFixMode = autoCorrect
 
         val configuration = SortRuleConfiguration(
-            configRules.getRuleConfig(WRONG_DECLARATIONS_ORDER)?.configuration ?: mapOf()
+            configRules.getRuleConfig(WRONG_DECLARATIONS_ORDER)?.configuration ?: emptyMap()
         )
 
         val classBody = node.findChildByType(CLASS_BODY)

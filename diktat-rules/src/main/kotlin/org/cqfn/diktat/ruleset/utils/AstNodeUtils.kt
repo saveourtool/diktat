@@ -267,7 +267,7 @@ fun ASTNode.prevNodeUntilNode(stopNodeType: IElementType, checkNodeType: IElemen
  * @return list of siblings
  */
 fun ASTNode.allSiblings(withSelf: Boolean = false): List<ASTNode> =
-        siblings(false).toList() + (if (withSelf) listOf(this) else listOf()) + siblings(true)
+        siblings(false).toList() + (if (withSelf) listOf(this) else emptyList()) + siblings(true)
 
 /**
  * Checks whether [this] node belongs to a companion object

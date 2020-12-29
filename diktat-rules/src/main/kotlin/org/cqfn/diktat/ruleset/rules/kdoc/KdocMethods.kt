@@ -106,7 +106,7 @@ class KdocMethods(private val configRules: List<RulesConfig>) : Rule("kdoc-metho
             .minus(kdocTags
                 ?.filter { it.knownTag == KDocKnownTag.THROWS }
                 ?.mapNotNull { it.getSubjectName() }
-                ?.toSet() ?: setOf()
+                ?.toSet() ?: emptySet()
             )
 
         val paramCheckFailed = (missingParameters.isNotEmpty() && !node.isSingleLineGetterOrSetter()) || kDocMissingParameters.isNotEmpty()
@@ -137,11 +137,11 @@ class KdocMethods(private val configRules: List<RulesConfig>) : Rule("kdoc-metho
         val parameterNames = node.parameterNames()
         val kdocParamList = kdocTags?.filter { it.knownTag == KDocKnownTag.PARAM && it.getSubjectName() != null }
         return if (parameterNames.isEmpty()) {
-            Pair(emptyList(), kdocParamList ?: listOf())
+            Pair(emptyList(), kdocParamList ?: emptyList())
         } else if (kdocParamList != null && kdocParamList.isNotEmpty()) {
             Pair(parameterNames.minus(kdocParamList.map { it.getSubjectName() }), kdocParamList.filter { it.getSubjectName() !in parameterNames })
         } else {
-            Pair(parameterNames.toList(), listOf())
+            Pair(parameterNames.toList(), emptyList())
         }
     }
 
@@ -165,7 +165,7 @@ class KdocMethods(private val configRules: List<RulesConfig>) : Rule("kdoc-metho
             ?.map { it.psi as KtThrowExpression }
             ?.mapNotNull { it.thrownExpression?.referenceExpression()?.text }
             ?.toSet()
-            ?: setOf()
+            ?: emptySet()
     }
 
     @Suppress("UnsafeCallOnNullableType")

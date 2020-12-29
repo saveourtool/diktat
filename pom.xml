@@ -52,7 +52,7 @@
         <commons-cli.version>1.4</commons-cli.version>
         <diktat-check.version>0.1.7</diktat-check.version>
         <kotlinpoet.version>1.7.1</kotlinpoet.version>
-        <detekt.version>1.14.2</detekt.version>
+        <detekt.version>1.15.0</detekt.version>
         <dokka.version>1.4.20</dokka.version>
         <jacoco.version>0.8.6</jacoco.version>
     </properties>

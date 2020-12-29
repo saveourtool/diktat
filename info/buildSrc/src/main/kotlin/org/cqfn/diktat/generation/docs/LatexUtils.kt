@@ -9,7 +9,7 @@ import java.io.PrintWriter
 @Suppress("VARIABLE_NAME_INCORRECT_FORMAT")
 val NUMBER_IN_TAG = Regex("\"([a-z0-9.]*)\"")  // finds "r1.0.2"
 @Suppress("VARIABLE_NAME_INCORRECT_FORMAT")
-val RULE_NAME = Regex("(</a>[A-Za-z 0-9.-]*)")  // get's rule name from ### <a>...</a> Rule name
+val RULE_NAME = Regex("(</a>[A-Za-z 0-9'.-]*)")  // get's rule name from ### <a>...</a> Rule name
 @Suppress("VARIABLE_NAME_INCORRECT_FORMAT")
 val BOLD_TEXT = Regex("""\*\*([^*]+)\*\*""")  // finds bold text in regular lines
 @Suppress("VARIABLE_NAME_INCORRECT_FORMAT")
