@@ -45,13 +45,13 @@
   enabled: true
 # Checks that package name starts with the company's domain
 - name: PACKAGE_NAME_INCORRECT_PREFIX
-  enabled: true
+  enabled: false
 # Checks that package name does not have incorrect symbols like underscore or non-ASCII letters/digits
 - name: PACKAGE_NAME_INCORRECT_SYMBOLS
   enabled: true
 # Checks that the path for a file matches with a package name
 - name: PACKAGE_NAME_INCORRECT_PATH
-  enabled: true
+  enabled: false
 # Checks that package name is in the file
 - name: PACKAGE_NAME_MISSING
   enabled: true
@@ -183,7 +183,7 @@
     # Is newline at the end of a file needed
     newlineAtEnd: true
     # If true: in parameter list when parameters are split by newline they are indented with two indentations instead of one
-    extendedIndentOfParameters: false
+    extendedIndentOfParameters: true
     # If true: if first parameter in parameter list is on the same line as opening parenthesis, then other parameters can be aligned with it
     alignedParameters: true
     # If true: if expression is split by newline after operator like +/-/`*`, then the next line is indented with two indentations instead of one
@@ -207,7 +207,7 @@
 - name: LONG_LINE
   enabled: true
   configuration:
-    lineLength: '180'
+    lineLength: '120'
 # Checks that semicolons are not used at the end of a line
 - name: REDUNDANT_SEMICOLON
   enabled: true
@@ -324,7 +324,7 @@
 - name: TOO_LONG_FUNCTION
   enabled: true
   configuration:
-    maxFunctionLength: 35 # max length of function
+    maxFunctionLength: 30 # max length of function
     isIncludeHeader: false # count function's header
 # Warns if there are nested functions
 - name: AVOID_NESTED_FUNCTIONS
@@ -345,7 +345,7 @@
 # Checks that function use default values, instead overloading
 - name: WRONG_OVERLOADING_FUNCTION_ARGUMENTS
   enabled: true
-# Checks that property in constructor doesn't contains comment
+# Checks that property in constructor doesn't contain comment
 - name: KDOC_NO_CONSTRUCTOR_PROPERTY
   enabled: true
 # Checks that property in KDoc present in class
