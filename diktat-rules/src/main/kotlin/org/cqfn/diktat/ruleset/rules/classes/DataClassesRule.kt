@@ -25,6 +25,7 @@ import com.pinterest.ktlint.core.ast.ElementType.SEALED_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_LIST
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtClass
+import org.jetbrains.kotlin.psi.KtClassBody
 import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.KtPrimaryConstructor
 
@@ -63,9 +64,14 @@ class DataClassesRule(private val configRule: List<RulesConfig>) : Rule("data-cl
 
     @Suppress("UnsafeCallOnNullableType", "FUNCTION_BOOLEAN_PREFIX")
     private fun ASTNode.canBeDataClass(): Boolean {
-        if (findChildByType(PRIMARY_CONSTRUCTOR)?.let { constructor -> (constructor.psi as KtPrimaryConstructor).valueParameters.none { it.hasValOrVar() } } == true) {
+        val isNotPropertyInClassBody = findChildByType(CLASS_BODY)?.let { (it.psi as KtClassBody).properties.isEmpty() } ?: true
+        val isNotPropertyInConstructor = findChildByType(PRIMARY_CONSTRUCTOR)
+            ?.let { constructor -> (constructor.psi as KtPrimaryConstructor)
+                .valueParameters
+                .run { isNotEmpty() && all { it.hasValOrVar() } }
+            } ?: false
+        if (isNotPropertyInClassBody && !isNotPropertyInConstructor)
             return false
-        }
         val classBody = getFirstChildWithType(CLASS_BODY)
         if (hasChildOfType(MODIFIER_LIST)) {
             val list = getFirstChildWithType(MODIFIER_LIST)!!
