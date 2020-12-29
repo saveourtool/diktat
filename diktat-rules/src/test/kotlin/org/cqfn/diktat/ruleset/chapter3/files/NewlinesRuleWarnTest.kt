@@ -970,14 +970,14 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |   goo(a?.b.c)
                 |}
             """.trimMargin(),
-            LintError(2, 10, ruleId, "$functionalStyleWarn .", true),
             LintError(2, 10, ruleId, "${COMPLEX_EXPRESSION.warnText()} .", false),
-            LintError(3, 14, ruleId, "$functionalStyleWarn ?.", true),
+            LintError(2, 10, ruleId, "$functionalStyleWarn .", true),
             LintError(3, 14, ruleId, "${COMPLEX_EXPRESSION.warnText()} ?.", false),
-            LintError(4, 14, ruleId, "$functionalStyleWarn .", true),
+            LintError(3, 14, ruleId, "$functionalStyleWarn ?.", true),
             LintError(4, 14, ruleId, "${COMPLEX_EXPRESSION.warnText()} .", false),
-            LintError(5, 12, ruleId, "$functionalStyleWarn .", true),
+            LintError(4, 14, ruleId, "$functionalStyleWarn .", true),
             LintError(5, 12, ruleId, "${COMPLEX_EXPRESSION.warnText()} .", false),
+            LintError(5, 12, ruleId, "$functionalStyleWarn .", true),
             rulesConfigList = rulesConfigListShort
         )
     }

@@ -93,6 +93,7 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
  * 7. Ensures that in multiline lambda newline follows arrow or, in case of lambda without explicit parameters, opening brace
  * 8. Checks that functions with single `return` are simplified to functions with expression body
  * 9. parameter or argument lists and supertype lists that have more than 2 elements should be separated by newlines
+ * 10. Complex expression inside condition replaced with new variable
  */
 @Suppress("ForbiddenComment")
 class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines") {
@@ -163,6 +164,9 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         val isIncorrect = (if (node.elementType == ELVIS) node.treeParent else node).run {
             if (isCallsChain()) {
                 val isSingleLineIfElse = parent({ it.elementType == IF }, true)?.isSingleLineIfElse() ?: false
+                if (node.isInBrackets()) {
+                    COMPLEX_EXPRESSION.warn(configRules, emitWarn, isFixMode, node.text, node.startOffset, node)
+                }
                 // to follow functional style these operators should be started by newline
                 (isFollowedByNewline() || !isBeginByNewline()) && !isSingleLineIfElse &&
                         (!isFirstCall() || !isMultilineLambda(treeParent))
@@ -190,9 +194,6 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
                         }
                     }
                 }
-            }
-            if (node.isInBrackets()) {
-                COMPLEX_EXPRESSION.warn(configRules, emitWarn, isFixMode, node.text, node.startOffset, node)
             }
         }
     }
