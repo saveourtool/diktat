@@ -96,6 +96,7 @@ enum class Warnings(
     LONG_LINE(true, "3.5.1", "this line is longer than allowed"),
     REDUNDANT_SEMICOLON(true, "3.6.2", "there should be no redundant semicolon at the end of lines"),
     WRONG_NEWLINES(true, "3.6.2", "incorrect line breaking"),
+    COMPLEX_EXPRESSION(false, "3.6.3", "complex dot qualified expression can be replace with variable"),
 
     // FixMe: autofixing will be added for this rule
     STRING_CONCATENATION(false, "3.15.1", "strings should not be concatenated using plus operator - use string templates instead if the statement fits one line"),

@@ -147,6 +147,8 @@
   enabled: true
   configuration:
     maxParametersInOneLine: 2
+- name: COMPLEX_EXPRESSION
+  enabled: true
 - name: TOO_MANY_CONSECUTIVE_SPACES
   enabled: true
   configuration:
