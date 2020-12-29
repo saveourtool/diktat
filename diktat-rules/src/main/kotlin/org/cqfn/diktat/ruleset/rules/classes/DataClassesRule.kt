@@ -62,16 +62,18 @@ class DataClassesRule(private val configRule: List<RulesConfig>) : Rule("data-cl
         USE_DATA_CLASS.warn(configRule, emitWarn, isFixMode, "${(node.psi as KtClass).name}", node.startOffset, node)
     }
 
-    @Suppress("UnsafeCallOnNullableType", "FUNCTION_BOOLEAN_PREFIX")
+    @Suppress("UnsafeCallOnNullableType", "FUNCTION_BOOLEAN_PREFIX", "ComplexMethod")
     private fun ASTNode.canBeDataClass(): Boolean {
         val isNotPropertyInClassBody = findChildByType(CLASS_BODY)?.let { (it.psi as KtClassBody).properties.isEmpty() } ?: true
         val isNotPropertyInConstructor = findChildByType(PRIMARY_CONSTRUCTOR)
-            ?.let { constructor -> (constructor.psi as KtPrimaryConstructor)
-                .valueParameters
-                .run { isNotEmpty() && all { it.hasValOrVar() } }
+            ?.let { constructor ->
+                (constructor.psi as KtPrimaryConstructor)
+                    .valueParameters
+                    .run { isNotEmpty() && all { it.hasValOrVar() } }
             } ?: false
-        if (isNotPropertyInClassBody && !isNotPropertyInConstructor)
+        if (isNotPropertyInClassBody && !isNotPropertyInConstructor) {
             return false
+        }
         val classBody = getFirstChildWithType(CLASS_BODY)
         if (hasChildOfType(MODIFIER_LIST)) {
             val list = getFirstChildWithType(MODIFIER_LIST)!!
