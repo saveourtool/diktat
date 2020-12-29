@@ -111,3 +111,8 @@ fun String.removePrefix(): String {
     }
     return this
 }
+
+/**
+ * Checks if [this] String is a name of a kotlin script file by checking whether file extension equals 'kts'
+ */
+fun String.isKotlinScript() = endsWith(".kts")

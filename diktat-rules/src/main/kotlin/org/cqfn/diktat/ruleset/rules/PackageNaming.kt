@@ -60,7 +60,7 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
             val realPackageName = calculateRealPackageName(filePath)
 
             // if node isLeaf - this means that there is no package name declared
-            if (node.isLeaf() && !filePath.endsWith(".kts")) {
+            if (node.isLeaf() && !filePath.isKotlinScript()) {
                 warnAndFixMissingPackageName(node, realPackageName, filePath)
                 return
             }

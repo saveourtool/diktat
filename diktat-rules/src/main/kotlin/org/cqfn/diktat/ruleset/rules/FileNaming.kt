@@ -7,6 +7,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NAME_MATCH_CLASS
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getFilePath
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
+import org.cqfn.diktat.ruleset.utils.isKotlinScript
 import org.cqfn.diktat.ruleset.utils.isPascalCase
 
 import com.pinterest.ktlint.core.Rule
@@ -39,7 +40,7 @@ class FileNaming(private val configRules: List<RulesConfig>) : Rule("file-naming
 
         if (node.elementType == FILE) {
             filePath = node.getFilePath()
-            if (!filePath.endsWith(".kts")) {
+            if (!filePath.isKotlinScript()) {
                 checkFileNaming(node)
                 checkClassNameMatchesWithFile(node)
             }
