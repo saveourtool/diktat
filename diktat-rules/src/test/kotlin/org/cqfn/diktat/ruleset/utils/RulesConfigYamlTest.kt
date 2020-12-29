@@ -39,10 +39,10 @@ class RulesConfigYamlTest {
 
     private fun checkComments(configName: String) {
         val lines = File(configName)
-                .readLines()
-                .filter {
-                    it.startsWith("-") || it.startsWith("#")
-                }
+            .readLines()
+            .filter {
+                it.startsWith("-") || it.startsWith("#")
+            }
 
         lines.forEachIndexed { index, str ->
             if (str.startsWith("-")) {
