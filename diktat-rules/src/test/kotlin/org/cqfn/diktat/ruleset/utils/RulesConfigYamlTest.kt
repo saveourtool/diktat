@@ -30,6 +30,31 @@ class RulesConfigYamlTest {
         compareRulesAndConfig(thirdConfig, "parent/diktat-analysis.yml")
     }
 
+    @Test
+    fun `check comments before rules`() {
+        checkComments("src/main/resources/diktat-analysis.yml")
+        checkComments("src/main/resources/diktat-analysis-huawei.yml")
+        checkComments("../diktat-analysis.yml")
+    }
+
+    private fun checkComments(configName: String) {
+        val lines = File(configName)
+                .readLines()
+                .filter {
+                    it.startsWith("-") || it.startsWith("#")
+                }
+
+        lines.forEachIndexed { index, str ->
+            if (str.startsWith("-")) {
+                Assertions.assertTrue(lines[if (index > 0) index - 1 else 0].trim().startsWith("#")) {
+                    """
+                        There is no comment before $str in $configName
+                    """.trimIndent()
+                }
+            }
+        }
+    }
+
     private fun compareRulesAndConfig(nameConfig: String, nameConfigToText: String? = null) {
         val filePath = nameConfigToText?.let { pathMap[it] } ?: pathMap[nameConfig]
         val allRulesFromConfig = readAllRulesFromConfig(nameConfig)

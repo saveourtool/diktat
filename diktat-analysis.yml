@@ -1,7 +1,10 @@
+# Common configuration
 - name: DIKTAT_COMMON
   enabled: true
   configuration:
+    # put your package name here - it will be autofixed and checked
     domainName: org.cqfn.diktat
+    # testDirs: test
 # Checks that the Class/Enum/Interface name does not match Pascal case
 - name: CLASS_NAME_INCORRECT
   enabled: true
@@ -157,6 +160,7 @@
 - name: FILE_WILDCARD_IMPORTS
   enabled: true
   configuration:
+    # Allowed wildcards for imports (e.g. "import org.cqfn.diktat.*, import org.jetbrains.kotlin.*")
     allowedWildcards: "kotlinx.serialization.*,org.cqfn.diktat.ruleset.utils.*"
 # Checks that braces are used in if, else, when, for, do, and while statements. Exception: single line if statement
 - name: NO_BRACES_IN_CONDITIONALS_AND_LOOPS
@@ -297,8 +301,10 @@
   enabled: true
   configuration:
     typeReferenceLength: '25' # max length of type reference
+# Checks if casting can be omitted
 - name: SMART_CAST_NEEDED
   enabled: true
+# Checks that variables of generic types have explicit type declaration
 - name: GENERIC_VARIABLE_WRONG_DECLARATION
   enabled: true
 # Inspection that checks if string template has redundant curly braces
