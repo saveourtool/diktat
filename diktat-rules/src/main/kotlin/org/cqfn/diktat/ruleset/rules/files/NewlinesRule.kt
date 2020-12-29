@@ -163,6 +163,9 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         val isIncorrect = (if (node.elementType == ELVIS) node.treeParent else node).run {
             if (isCallsChain()) {
                 val isSingleLineIfElse = parent({ it.elementType == IF }, true)?.isSingleLineIfElse() ?: false
+                if (node.isInBrackets()) {
+                    COMPLEX_EXPRESSION.warn(configRules, emitWarn, isFixMode, node.text, node.startOffset, node)
+                }
                 // to follow functional style these operators should be started by newline
                 (isFollowedByNewline() || !isBeginByNewline()) && !isSingleLineIfElse &&
                         (!isFirstCall() || !isMultilineLambda(treeParent))
@@ -190,9 +193,6 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
                         }
                     }
                 }
-            }
-            if (node.isInBrackets()) {
-                COMPLEX_EXPRESSION.warn(configRules, emitWarn, isFixMode, node.text, node.startOffset, node)
             }
         }
     }

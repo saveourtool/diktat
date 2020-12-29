@@ -366,6 +366,19 @@ Note that all comparison operators, such as `==`, `>`, `<`, should not be split.
 ```kotlin
 if (condition) list.map { foo(it) }.filter { bar(it) } else list.drop(1)
 ```  
+
+**Note:** If dot qualified expression is inside condition or passed as an argument - replace with new vatiable
+
+**Invalid example**: 
+```kotlin
+     if (node.text.length.dec() != 0) {}
+```
+ 
+**Valid example**: 
+```kotlin
+        val nodeLen = node.text.length.dec()
+        if (nodeLen != 0) {}
+```
   
 2)	Newlines should be placed after the assignment operator (`=`).
 3)	In function or class declarations, the name of a function or constructor should not be split by a newline from the opening brace `(`.
