@@ -308,7 +308,7 @@
                             <classPath>${maven.compile.classpath}</classPath>
                             <languageVersion>1.4</languageVersion>
                             <jvmTarget>1.8</jvmTarget>
-                            <excludes>**/resources/**/*.kt</excludes>
+                            <excludes>**/resources/**/*.kt,**/resources/**/*.kts</excludes>
                         </configuration>
                     </execution>
                 </executions>
