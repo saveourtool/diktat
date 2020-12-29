@@ -79,7 +79,7 @@ class ConsecutiveSpacesRule(private val configRules: List<RulesConfig>) : Rule("
         /**
          * Maximum allowed number of consecutive spaces (not counting indentation)
          */
-        val numberOfSpaces = config["max_spaces"]?.toIntOrNull() ?: MAX_SPACES
+        val numberOfSpaces = config["maxSpaces"]?.toIntOrNull() ?: MAX_SPACES
 
         /**
          * Whether formatting for enums should be kept without checking
