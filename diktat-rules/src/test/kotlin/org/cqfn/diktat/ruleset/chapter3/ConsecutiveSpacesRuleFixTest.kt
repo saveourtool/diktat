@@ -14,7 +14,7 @@ class ConsecutiveSpacesRuleFixTest : FixTestBase("test/paragraph3/spaces",
     listOf(
         RulesConfig(Warnings.TOO_MANY_CONSECUTIVE_SPACES.name, true,
             mapOf(
-                "max_spaces" to "1",
+                "maxSpaces" to "1",
                 "saveInitialFormattingForEnums" to "true"
             )
         )
