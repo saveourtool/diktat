@@ -18,13 +18,16 @@ import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.INNER_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.OPEN_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY_ACCESSOR
 import com.pinterest.ktlint.core.ast.ElementType.SEALED_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_LIST
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtClass
+import org.jetbrains.kotlin.psi.KtClassBody
 import org.jetbrains.kotlin.psi.KtExpression
+import org.jetbrains.kotlin.psi.KtPrimaryConstructor
 
 /**
  * This rule checks if class can be made as data class
@@ -59,8 +62,18 @@ class DataClassesRule(private val configRule: List<RulesConfig>) : Rule("data-cl
         USE_DATA_CLASS.warn(configRule, emitWarn, isFixMode, "${(node.psi as KtClass).name}", node.startOffset, node)
     }
 
-    @Suppress("UnsafeCallOnNullableType", "FUNCTION_BOOLEAN_PREFIX")
+    @Suppress("UnsafeCallOnNullableType", "FUNCTION_BOOLEAN_PREFIX", "ComplexMethod")
     private fun ASTNode.canBeDataClass(): Boolean {
+        val isNotPropertyInClassBody = findChildByType(CLASS_BODY)?.let { (it.psi as KtClassBody).properties.isEmpty() } ?: true
+        val hasPropertyInConstructor = findChildByType(PRIMARY_CONSTRUCTOR)
+            ?.let { constructor ->
+                (constructor.psi as KtPrimaryConstructor)
+                    .valueParameters
+                    .run { isNotEmpty() && all { it.hasValOrVar() } }
+            } ?: false
+        if (isNotPropertyInClassBody && !hasPropertyInConstructor) {
+            return false
+        }
         val classBody = getFirstChildWithType(CLASS_BODY)
         if (hasChildOfType(MODIFIER_LIST)) {
             val list = getFirstChildWithType(MODIFIER_LIST)!!
