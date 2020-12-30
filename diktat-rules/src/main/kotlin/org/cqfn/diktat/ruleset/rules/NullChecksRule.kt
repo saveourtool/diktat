@@ -78,14 +78,12 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
                     ElementType.EQEQ, ElementType.EQEQEQ ->
                         warnAndFixOnNullCheck(condition, true,
                             "use '.let/.also/?:/e.t.c' instead of ${condition.text}") {
-                            // todo implement fixer
                             fixNullInIfCondition(node, condition.node, true)
                         }
                     // `!==` and `!==` comparison can be fixed with `.let/also` operators
                     ElementType.EXCLEQ, ElementType.EXCLEQEQEQ ->
                         warnAndFixOnNullCheck(condition, true,
                             "use '.let/.also/?:/e.t.c' instead of ${condition.text}") {
-                            // todo implement fixer
                             fixNullInIfCondition(node, condition.node,false)
                         }
                     else -> return
@@ -94,6 +92,7 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun fixNullInIfCondition(condition: ASTNode,
                                      binaryExpression: ASTNode,
                                      isEqualToNull:Boolean) {
@@ -171,7 +170,6 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
                             true,
                             "use 'requireNotNull' instead of require(${condition.text})"
                         ) {
-                            // todo implement fixer
                             val variableName = binaryExprNode.firstChildNode.text
                             val newMethod = KotlinParser().createNode("requireNotNull($variableName)")
                             grandParent.treeParent.treeParent.addChild(newMethod, grandParent.treeParent)
