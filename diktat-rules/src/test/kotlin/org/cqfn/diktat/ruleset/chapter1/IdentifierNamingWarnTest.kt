@@ -29,7 +29,7 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
 
     private val rulesConfigBooleanFunctions: List<RulesConfig> = listOf(
             RulesConfig(FUNCTION_BOOLEAN_PREFIX.name, true,
-                    mapOf("allowedFunctions" to "equals, equivalent, foo"))
+                    mapOf("allowedPrefixes" to "equals, equivalent, foo"))
     )
     // ======== checks for generics ========
     @Test
@@ -415,9 +415,9 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
     fun `test allowed boolean functions in configuration`() {
         lintMethod(
             """
-                    fun equals(): Boolean { }
-                    fun foo(): Boolean { }
-                    fun equivalent(): Boolean { }
+                    fun equalsSome(): Boolean { }
+                    fun fooBar(): Boolean { }
+                    fun equivalentToAnother(): Boolean { }
                 """.trimIndent(),
                 rulesConfigList = rulesConfigBooleanFunctions
         )

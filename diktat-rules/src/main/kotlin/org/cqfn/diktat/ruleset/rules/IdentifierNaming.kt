@@ -362,7 +362,12 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
                 val configuration = BooleanFunctionsConfiguration(
                         this.configRules.getRuleConfig(FUNCTION_BOOLEAN_PREFIX)?.configuration ?: emptyMap()
                 )
-                if (booleanMethodPrefixes.none { functionName.text.startsWith(it) } && functionName.text !in configuration.allowedBooleanFunctions) {
+                val allMethodPrefixes = if (configuration.allowedBooleanPrefixes.isNullOrEmpty()) {
+                    booleanMethodPrefixes
+                } else {
+                    booleanMethodPrefixes + configuration.allowedBooleanPrefixes.filter { it.isNotEmpty() }
+                }
+                if (allMethodPrefixes.none { functionName.text.startsWith(it) }) {
                     FUNCTION_BOOLEAN_PREFIX.warnAndFix(configRules, emitWarn, isFixMode, functionName.text, functionName.startOffset, functionName) {
                         // FixMe: add agressive autofix for this
                     }
@@ -434,7 +439,7 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
         /**
          * A list of functions that return boolean and are allowed to use. Input is in a form "foo, bar".
          */
-        val allowedBooleanFunctions = config["allowedFunctions"]?.split(",")?.map { it.trim() } ?: emptyList()
+        val allowedBooleanPrefixes = config["allowedPrefixes"]?.split(",")?.map { it.trim() } ?: emptyList()
     }
 
     companion object {
