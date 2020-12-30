@@ -359,13 +359,17 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
         if (!node.isOverridden()) {
             // if function has Boolean return type in 99% of cases it is much better to name it with isXXX or hasXXX prefix
             if (functionReturnType != null && functionReturnType == PrimitiveType.BOOLEAN.typeName.asString()) {
-                val configuration = BooleanFunctionsConfiguration(
-                        this.configRules.getRuleConfig(FUNCTION_BOOLEAN_PREFIX)?.configuration ?: emptyMap()
-                )
-                val allMethodPrefixes = if (configuration.allowedBooleanPrefixes.isNullOrEmpty()) {
+                val configuration by lazy {
+                    BooleanFunctionsConfiguration(
+                            this.configRules.getRuleConfig(FUNCTION_BOOLEAN_PREFIX)?.configuration ?: emptyMap()
+                    )
+                }
+                val allMethodPrefixes by lazy {
+                    if (configuration.allowedBooleanPrefixes.isNullOrEmpty()) {
                     booleanMethodPrefixes
-                } else {
-                    booleanMethodPrefixes + configuration.allowedBooleanPrefixes.filter { it.isNotEmpty() }
+                    } else {
+                        booleanMethodPrefixes + configuration.allowedBooleanPrefixes.filter { it.isNotEmpty() }
+                    }
                 }
                 if (allMethodPrefixes.none { functionName.text.startsWith(it) }) {
                     FUNCTION_BOOLEAN_PREFIX.warnAndFix(configRules, emitWarn, isFixMode, functionName.text, functionName.startOffset, functionName) {
