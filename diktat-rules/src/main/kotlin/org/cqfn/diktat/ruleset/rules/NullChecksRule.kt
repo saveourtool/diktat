@@ -9,14 +9,17 @@ import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CONDITION
+import com.pinterest.ktlint.core.ast.ElementType.ELSE
 import com.pinterest.ktlint.core.ast.ElementType.IF
 import com.pinterest.ktlint.core.ast.ElementType.IF_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.NULL
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.THEN
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
 import com.pinterest.ktlint.core.ast.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtIfExpression
 
@@ -72,13 +75,13 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
                     ElementType.EQEQ, ElementType.EQEQEQ ->
                         warnAndFixOnNullCheck(condition, true,
                             "use '.let/.also/?:/e.t.c' instead of ${condition.text}") {
-                            // todo implement fixer
+                            fixNullInIfCondition(node, condition, true)
                         }
                     // `!==` and `!==` comparison can be fixed with `.let/also` operators
                     ElementType.EXCLEQ, ElementType.EXCLEQEQEQ ->
                         warnAndFixOnNullCheck(condition, true,
                             "use '.let/.also/?:/e.t.c' instead of ${condition.text}") {
-                            // todo implement fixer
+                            fixNullInIfCondition(node, condition, false)
                         }
                     else -> return
                 }
@@ -86,7 +89,46 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
         }
     }
 
-    @Suppress("COMMENT_WHITE_SPACE")
+    @Suppress("UnsafeCallOnNullableType")
+    private fun fixNullInIfCondition(condition: ASTNode,
+                                     binaryExpression: KtBinaryExpression,
+                                     isEqualToNull: Boolean) {
+        val variableName = binaryExpression.left!!.text
+        val thenCodeLines = condition.extractLinesFromBlock(THEN)
+        val elseCodeLines = condition.extractLinesFromBlock(ELSE)
+        val text = if (isEqualToNull) {
+            if (elseCodeLines.isNullOrEmpty()) {
+                "$variableName ?: run {\n${thenCodeLines?.joinToString(separator = "\n")}\n}"
+            } else {
+                """
+                    |$variableName?.let {
+                    |${elseCodeLines.joinToString(separator = "\n")}
+                    |}
+                    |?: run {
+                    |${thenCodeLines?.joinToString(separator = "\n")}
+                    |}
+                """.trimMargin()
+            }
+        } else {
+            if (elseCodeLines.isNullOrEmpty()) {
+                "$variableName?.let {\n${thenCodeLines?.joinToString(separator = "\n")}\n}"
+            } else {
+                """
+                    |$variableName?.let {
+                    |${thenCodeLines?.joinToString(separator = "\n")}
+                    |}
+                    |?: run {
+                    |${elseCodeLines.joinToString(separator = "\n")}
+                    |}
+                """.trimMargin()
+            }
+        }
+        val tree = KotlinParser().createNode(text)
+        condition.treeParent.treeParent.addChild(tree, condition.treeParent)
+        condition.treeParent.treeParent.removeChild(condition.treeParent)
+    }
+
+    @Suppress("COMMENT_WHITE_SPACE", "UnsafeCallOnNullableType")
     private fun nullCheckInOtherStatements(binaryExprNode: ASTNode) {
         val condition = (binaryExprNode.psi as KtBinaryExpression)
         if (isNullCheckBinaryExpression(condition)) {
@@ -104,16 +146,30 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
                     if (listOf(ElementType.EXCLEQ, ElementType.EXCLEQEQEQ).contains(condition.operationToken)) {
                         warnAndFixOnNullCheck(
                             condition,
-                            false,
+                            true,
                             "use 'requireNotNull' instead of require(${condition.text})"
                         ) {
-                            // todo implement fixer
+                            val variableName = (binaryExprNode.psi as KtBinaryExpression).left!!.text
+                            val newMethod = KotlinParser().createNode("requireNotNull($variableName)")
+                            grandParent.treeParent.treeParent.addChild(newMethod, grandParent.treeParent)
+                            grandParent.treeParent.treeParent.removeChild(grandParent.treeParent)
                         }
                     }
                 }
             }
         }
     }
+
+    @Suppress("WRONG_INDENTATION")
+    private fun ASTNode.extractLinesFromBlock(type: IElementType): List<String>? =
+                treeParent
+                .getFirstChildWithType(type)
+                ?.text
+                ?.trim('{', '}')
+                ?.split("\n")
+                ?.filter { it.isNotBlank() }
+                ?.map { it.trim() }
+                ?.toList()
 
     @Suppress("UnsafeCallOnNullableType")
     private fun isNullCheckBinaryExpression(condition: KtBinaryExpression): Boolean =
