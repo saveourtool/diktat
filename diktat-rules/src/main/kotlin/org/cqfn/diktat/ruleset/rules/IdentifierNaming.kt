@@ -57,7 +57,6 @@ import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevCodeSibling
-import org.cqfn.diktat.ruleset.constants.Warnings
 import org.jetbrains.kotlin.builtins.PrimitiveType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -91,11 +90,11 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
     }
     val configuration by lazy {
         BooleanFunctionsConfiguration(
-                this.configRules.getRuleConfig(FUNCTION_BOOLEAN_PREFIX)?.configuration ?: emptyMap()
+            this.configRules.getRuleConfig(FUNCTION_BOOLEAN_PREFIX)?.configuration ?: emptyMap()
         )
     }
-    private lateinit var emitWarn: EmitType
     private var isFixMode: Boolean = false
+    private lateinit var emitWarn: EmitType
 
     override fun visit(
         node: ASTNode,
