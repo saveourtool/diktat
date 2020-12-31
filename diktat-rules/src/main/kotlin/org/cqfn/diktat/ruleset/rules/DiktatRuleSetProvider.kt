@@ -51,6 +51,9 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
         yield(resolveConfigFileFromJarLocation())
         yield(resolveConfigFileFromSystemProperty())
     }
+        .map {
+            it?.takeIf { File(it).exists() }
+        }
 
     @Suppress("LongMethod", "TOO_LONG_FUNCTION")
     override fun get(): RuleSet {
@@ -59,20 +62,20 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
         val configPath = possibleConfigs
             .filterNotNull()
             .firstOrNull()
-        if (configPath == null) {
-            val possibleConfigsList = possibleConfigs.toList()
-            log.warn(
-                "Configuration file not found in directory where diktat is run (${possibleConfigsList[0]}) " +
-                        "or in the directory where diktat.jar is stored (${possibleConfigsList[1]}) " +
-                        "or in system property <diktat.config.path> (${possibleConfigsList[2]}), " +
-                        "the default file included in jar will be used. " +
-                        "Some configuration options will be disabled or substituted with defaults. " +
-                        "Custom configuration file should be placed in diktat working directory if run from CLI " +
-                        "or provided as configuration options in plugins."
-            )
-        } else {
-            diktatConfigFile = configPath
-        }
+        diktatConfigFile = configPath
+            ?: run {
+                val possibleConfigsList = possibleConfigs.toList()
+                log.warn(
+                    "Configuration file not found in directory where diktat is run (${possibleConfigsList[0]}) " +
+                            "or in the directory where diktat.jar is stored (${possibleConfigsList[1]}) " +
+                            "or in system property <diktat.config.path> (${possibleConfigsList[2]}), " +
+                            "the default file included in jar will be used. " +
+                            "Some configuration options will be disabled or substituted with defaults. " +
+                            "Custom configuration file should be placed in diktat working directory if run from CLI " +
+                            "or provided as configuration options in plugins."
+                )
+                diktatConfigFile
+            }
 
         val configRules = RulesConfigReader(javaClass.classLoader)
             .readResource(diktatConfigFile)
@@ -162,31 +165,28 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
                 "Warning name <${config.name}> in configuration file is invalid, did you mean <$closestMatch>?"
             }
 
-    private fun resolveDefaultConfig(): String? {
-        return diktatConfigFile.takeIf { File(it).exists() }
-    }
+    private fun resolveDefaultConfig() = diktatConfigFile
 
-    private fun resolveConfigFileFromJarLocation(): String? {
+    private fun resolveConfigFileFromJarLocation(): String {
         // for some aggregators of static analyzers we need to provide configuration for cli
         // in this case diktat would take the configuration from the directory where jar file is stored
         val ruleSetProviderPath =
-            DiktatRuleSetProvider::class
-                .java
-                .protectionDomain
-                .codeSource
-                .location
-                .toURI()
+                DiktatRuleSetProvider::class
+                    .java
+                    .protectionDomain
+                    .codeSource
+                    .location
+                    .toURI()
 
         val configPathWithFileName = File(ruleSetProviderPath).absolutePath
 
         val indexOfName = configPathWithFileName.lastIndexOf(File.separator)
         val configPath = if (indexOfName > -1) configPathWithFileName.substring(0, indexOfName) else configPathWithFileName
 
-        return "$configPath${File.separator}$diktatConfigFile".takeIf { File(it).exists() }
+        return "$configPath${File.separator}$diktatConfigFile"
     }
 
-    private fun resolveConfigFileFromSystemProperty() = System.getProperty("diktat.config.path")
-        ?.takeIf { File(it).exists() }
+    private fun resolveConfigFileFromSystemProperty(): String? = System.getProperty("diktat.config.path")
 
     companion object {
         private val log = LoggerFactory.getLogger(DiktatRuleSetProvider::class.java)
