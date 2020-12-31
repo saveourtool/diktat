@@ -626,7 +626,6 @@ fun ASTNode.isChildBeforeGroup(child: ASTNode, group: List<ASTNode>): Boolean =
  *
  * @return boolean result
  */
-@Suppress("FUNCTION_BOOLEAN_PREFIX")
 fun ASTNode.areChildrenBeforeChild(children: List<ASTNode>, beforeChild: ASTNode): Boolean =
         areChildrenBeforeGroup(children, listOf(beforeChild))
 
@@ -635,7 +634,7 @@ fun ASTNode.areChildrenBeforeChild(children: List<ASTNode>, beforeChild: ASTNode
  *
  * @return boolean result
  */
-@Suppress("UnsafeCallOnNullableType", "FUNCTION_BOOLEAN_PREFIX")
+@Suppress("UnsafeCallOnNullableType")
 fun ASTNode.areChildrenBeforeGroup(children: List<ASTNode>, group: List<ASTNode>): Boolean {
     require(children.isNotEmpty() && group.isNotEmpty()) { "no sense to operate on empty lists" }
     return children.map { getChildren(null).indexOf(it) }.max()!! < group.map { getChildren(null).indexOf(it) }.min()!!

@@ -28,6 +28,8 @@
 # Checks that functions/methods which return boolean have special prefix like "is/should/e.t.c"
 - name: FUNCTION_BOOLEAN_PREFIX
   enabled: true
+  configuration:
+    allowedPrefixes: "" # A list of functions that return boolean and are allowed to use. Input is in a form "foo, bar".
 # Checks that function/method name is in lowerCamelCase
 - name: FUNCTION_NAME_INCORRECT_CASE
   enabled: true

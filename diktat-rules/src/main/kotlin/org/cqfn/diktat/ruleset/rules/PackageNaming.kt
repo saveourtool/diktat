@@ -150,7 +150,6 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
     /**
      * only letters, digits and underscore are allowed
      */
-    @Suppress("FUNCTION_BOOLEAN_PREFIX")
     private fun areCorrectSymbolsUsed(word: String): Boolean {
         // underscores are allowed in some cases - see "exceptionForUnderscore"
         val wordFromPackage = word.replace("_", "")
