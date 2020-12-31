@@ -122,6 +122,7 @@ open class DiktatJavaExecTaskBase @Inject constructor(
     /**
      * todo: share logic with maven plugin, it's basically copy-paste
      */
+    @Suppress("ForbiddenComment")
     private fun resolveConfigFile(file: File): String {
         if (file.isAbsolute) {
             return file.absolutePath

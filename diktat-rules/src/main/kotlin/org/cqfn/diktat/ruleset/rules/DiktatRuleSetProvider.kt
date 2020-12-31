@@ -46,6 +46,12 @@ const val DIKTAT_ANALYSIS_CONF = "diktat-analysis.yml"
  * @param diktatConfigFile - configuration file where all configurations for inspections and rules are stored
  */
 class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYSIS_CONF) : RuleSetProvider {
+    private val possibleConfigs = sequence {
+        yield(resolveDefaultConfig())
+        yield(resolveConfigFileFromJarLocation())
+        yield(resolveConfigFileFromSystemProperty())
+    }
+
     @Suppress("LongMethod", "TOO_LONG_FUNCTION")
     override fun get(): RuleSet {
         log.debug("Will run $DIKTAT_RULE_SET_ID with $diktatConfigFile" +
@@ -179,16 +185,8 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
         return "$configPath${File.separator}$diktatConfigFile".takeIf { File(it).exists() }
     }
 
-    private fun resolveConfigFileFromSystemProperty(): String? {
-        return System.getProperty("diktat.config.path")
-            ?.takeIf { File(it).exists() }
-    }
-
-    private val possibleConfigs = sequence {
-        yield(resolveDefaultConfig())
-        yield(resolveConfigFileFromJarLocation())
-        yield(resolveConfigFileFromSystemProperty())
-    }
+    private fun resolveConfigFileFromSystemProperty() = System.getProperty("diktat.config.path")
+        ?.takeIf { File(it).exists() }
 
     companion object {
         private val log = LoggerFactory.getLogger(DiktatRuleSetProvider::class.java)
