@@ -82,21 +82,19 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  */
 @Suppress("ForbiddenComment")
 class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("identifier-naming") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
-    val configuration by lazy {
-        BooleanFunctionsConfiguration(
-                this.configRules.getRuleConfig(FUNCTION_BOOLEAN_PREFIX)?.configuration ?: emptyMap()
-        )
-    }
-
     private val allMethodPrefixes by lazy {
         if (configuration.allowedBooleanPrefixes.isNullOrEmpty()) {
             booleanMethodPrefixes
         } else {
             booleanMethodPrefixes + configuration.allowedBooleanPrefixes.filter { it.isNotEmpty() }
         }
+    }
+    private var isFixMode: Boolean = false
+    private lateinit var emitWarn: EmitType
+    val configuration by lazy {
+        BooleanFunctionsConfiguration(
+            this.configRules.getRuleConfig(FUNCTION_BOOLEAN_PREFIX)?.configuration ?: emptyMap()
+        )
     }
 
     override fun visit(

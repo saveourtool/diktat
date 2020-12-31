@@ -26,10 +26,9 @@ import org.junit.jupiter.api.Test
 
 class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
     private val ruleId: String = "$DIKTAT_RULE_SET_ID:identifier-naming"
-
     private val rulesConfigBooleanFunctions: List<RulesConfig> = listOf(
-            RulesConfig(FUNCTION_BOOLEAN_PREFIX.name, true,
-                    mapOf("allowedPrefixes" to "equals, equivalent, foo"))
+        RulesConfig(FUNCTION_BOOLEAN_PREFIX.name, true,
+            mapOf("allowedPrefixes" to "equals, equivalent, foo"))
     )
     // ======== checks for generics ========
     @Test
@@ -419,7 +418,7 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
                     fun fooBar(): Boolean { }
                     fun equivalentToAnother(): Boolean { }
                 """.trimIndent(),
-                rulesConfigList = rulesConfigBooleanFunctions
+            rulesConfigList = rulesConfigBooleanFunctions
         )
     }
 
