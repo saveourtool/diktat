@@ -128,7 +128,7 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
         condition.treeParent.treeParent.removeChild(condition.treeParent)
     }
 
-    @Suppress("COMMENT_WHITE_SPACE")
+    @Suppress("COMMENT_WHITE_SPACE", "UnsafeCallOnNullableType")
     private fun nullCheckInOtherStatements(binaryExprNode: ASTNode) {
         val condition = (binaryExprNode.psi as KtBinaryExpression)
         if (isNullCheckBinaryExpression(condition)) {
@@ -161,14 +161,14 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
     }
 
     private fun ASTNode.extractLinesFromBlock(type: IElementType): List<String>? =
-            treeParent
-            .getFirstChildWithType(type)
-            ?.text
-            ?.trim('{', '}')
-            ?.split("\n")
-            ?.filter { it.isNotBlank() }
-            ?.map { it.trim() }
-            ?.toList()
+        treeParent
+        .getFirstChildWithType(type)
+        ?.text
+        ?.trim('{', '}')
+        ?.split("\n")
+        ?.filter { it.isNotBlank() }
+        ?.map { it.trim() }
+        ?.toList()
 
     @Suppress("UnsafeCallOnNullableType")
     private fun isNullCheckBinaryExpression(condition: KtBinaryExpression): Boolean =
