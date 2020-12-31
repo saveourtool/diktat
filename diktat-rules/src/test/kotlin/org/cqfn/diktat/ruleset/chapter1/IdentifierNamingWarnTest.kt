@@ -26,6 +26,10 @@ import org.junit.jupiter.api.Test
 
 class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
     private val ruleId: String = "$DIKTAT_RULE_SET_ID:identifier-naming"
+    private val rulesConfigBooleanFunctions: List<RulesConfig> = listOf(
+        RulesConfig(FUNCTION_BOOLEAN_PREFIX.name, true,
+            mapOf("allowedPrefixes" to "equals, equivalent, foo"))
+    )
 
     // ======== checks for generics ========
     @Test
@@ -389,6 +393,33 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
             LintError(2, 5, ruleId, "${FUNCTION_BOOLEAN_PREFIX.warnText()} emptyLineAfter", true),
             LintError(3, 13, ruleId, "${FUNCTION_BOOLEAN_PREFIX.warnText()} empty", true),
             LintError(4, 5, ruleId, "${FUNCTION_BOOLEAN_PREFIX.warnText()} empty", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.FUNCTION_BOOLEAN_PREFIX)
+    fun `all prefixes for boolean methods`() {
+        lintMethod(
+            """
+                    fun hasEmptyLineAfter(): Boolean { }    
+                    fun haveEmptyLineAfter(): Boolean { }    
+                    fun isEmpty(): Boolean { }    
+                    fun shouldBeEmpty(): Boolean { }
+                    fun areEmpty(): Boolean { }
+                """.trimIndent()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.FUNCTION_BOOLEAN_PREFIX)
+    fun `test allowed boolean functions in configuration`() {
+        lintMethod(
+            """
+                    fun equalsSome(): Boolean { }
+                    fun fooBar(): Boolean { }
+                    fun equivalentToAnother(): Boolean { }
+                """.trimIndent(),
+            rulesConfigList = rulesConfigBooleanFunctions
         )
     }
 

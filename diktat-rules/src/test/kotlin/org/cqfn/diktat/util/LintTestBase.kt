@@ -30,6 +30,7 @@ open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesCo
         KtLint.lint(
             KtLint.Params(
                 fileName = actualFileName,
+                script = actualFileName.endsWith("kts"),
                 text = code,
                 ruleSets = listOf(DiktatRuleSetProvider4Test(ruleSupplier,
                     rulesConfigList ?: this.rulesConfigList).get()),

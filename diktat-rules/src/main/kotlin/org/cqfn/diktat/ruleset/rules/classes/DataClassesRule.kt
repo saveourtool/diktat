@@ -94,7 +94,6 @@ class DataClassesRule(private val configRule: List<RulesConfig>) : Rule("data-cl
     /**
      * Checks if any property with accessor contains logic in accessor
      */
-    @Suppress("FUNCTION_BOOLEAN_PREFIX")
     private fun areGoodProps(node: ASTNode): Boolean {
         val propertiesWithAccessors = node.getAllChildrenWithType(PROPERTY).filter { it.hasChildOfType(PROPERTY_ACCESSOR) }
 
@@ -109,7 +108,7 @@ class DataClassesRule(private val configRule: List<RulesConfig>) : Rule("data-cl
         return true
     }
 
-    @Suppress("UnsafeCallOnNullableType", "FUNCTION_BOOLEAN_PREFIX")
+    @Suppress("UnsafeCallOnNullableType")
     private fun areGoodAccessors(accessors: List<ASTNode>): Boolean {
         accessors.forEach {
             if (it.hasChildOfType(BLOCK)) {
