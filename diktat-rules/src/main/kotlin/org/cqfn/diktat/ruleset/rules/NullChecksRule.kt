@@ -75,13 +75,13 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
                     ElementType.EQEQ, ElementType.EQEQEQ ->
                         warnAndFixOnNullCheck(condition, true,
                             "use '.let/.also/?:/e.t.c' instead of ${condition.text}") {
-                            fixNullInIfCondition(node, condition.node, true)
+                            fixNullInIfCondition(node, condition, true)
                         }
                     // `!==` and `!==` comparison can be fixed with `.let/also` operators
                     ElementType.EXCLEQ, ElementType.EXCLEQEQEQ ->
                         warnAndFixOnNullCheck(condition, true,
                             "use '.let/.also/?:/e.t.c' instead of ${condition.text}") {
-                            fixNullInIfCondition(node, condition.node,false)
+                            fixNullInIfCondition(node, condition, false)
                         }
                     else -> return
                 }
@@ -91,9 +91,9 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
 
     @Suppress("UnsafeCallOnNullableType")
     private fun fixNullInIfCondition(condition: ASTNode,
-                                     binaryExpression: ASTNode,
-                                     isEqualToNull:Boolean) {
-        val variableName = binaryExpression.firstChildNode.text
+                                     binaryExpression: KtBinaryExpression,
+                                     isEqualToNull: Boolean) {
+        val variableName = binaryExpression.left!!.text
         val thenCodeLines = condition.extractLinesFromBlock(THEN)
         val elseCodeLines = condition.extractLinesFromBlock(ELSE)
         val text = if (isEqualToNull) {
@@ -149,7 +149,7 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
                             true,
                             "use 'requireNotNull' instead of require(${condition.text})"
                         ) {
-                            val variableName = binaryExprNode.firstChildNode.text
+                            val variableName = (binaryExprNode.psi as KtBinaryExpression).left!!.text
                             val newMethod = KotlinParser().createNode("requireNotNull($variableName)")
                             grandParent.treeParent.treeParent.addChild(newMethod, grandParent.treeParent)
                             grandParent.treeParent.treeParent.removeChild(grandParent.treeParent)
@@ -161,7 +161,7 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
     }
 
     private fun ASTNode.extractLinesFromBlock(type: IElementType): List<String>? =
-        treeParent
+            treeParent
             .getFirstChildWithType(type)
             ?.text
             ?.trim('{', '}')
@@ -169,7 +169,6 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
             ?.filter { it.isNotBlank() }
             ?.map { it.trim() }
             ?.toList()
-
 
     @Suppress("UnsafeCallOnNullableType")
     private fun isNullCheckBinaryExpression(condition: KtBinaryExpression): Boolean =
