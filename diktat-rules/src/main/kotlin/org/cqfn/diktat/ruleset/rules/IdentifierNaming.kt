@@ -80,7 +80,7 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  * // FixMe: very important, that current implementation cannot fix identifier naming properly,
  * // FixMe: because it fixes only declaration without the usages
  */
-@Suppress("ForbiddenComment")
+@Suppress("ForbiddenComment", "MISSING_KDOC_CLASS_ELEMENTS")
 class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("identifier-naming") {
     private val allMethodPrefixes by lazy {
         if (configuration.allowedBooleanPrefixes.isNullOrEmpty()) {
@@ -89,13 +89,13 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
             booleanMethodPrefixes + configuration.allowedBooleanPrefixes.filter { it.isNotEmpty() }
         }
     }
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
     val configuration by lazy {
         BooleanFunctionsConfiguration(
-            this.configRules.getRuleConfig(FUNCTION_BOOLEAN_PREFIX)?.configuration ?: emptyMap()
+                this.configRules.getRuleConfig(FUNCTION_BOOLEAN_PREFIX)?.configuration ?: emptyMap()
         )
     }
+    private lateinit var emitWarn: EmitType
+    private var isFixMode: Boolean = false
 
     override fun visit(
         node: ASTNode,

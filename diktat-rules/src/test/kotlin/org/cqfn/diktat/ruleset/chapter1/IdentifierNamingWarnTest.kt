@@ -30,6 +30,7 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
         RulesConfig(FUNCTION_BOOLEAN_PREFIX.name, true,
             mapOf("allowedPrefixes" to "equals, equivalent, foo"))
     )
+
     // ======== checks for generics ========
     @Test
     @Tag(WarningNames.GENERIC_NAME)
