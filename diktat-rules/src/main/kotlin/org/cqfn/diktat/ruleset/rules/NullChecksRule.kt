@@ -160,6 +160,7 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
         }
     }
 
+    @Suppress("WRONG_INDENTATION")
     private fun ASTNode.extractLinesFromBlock(type: IElementType): List<String>? =
                 treeParent
                 .getFirstChildWithType(type)
