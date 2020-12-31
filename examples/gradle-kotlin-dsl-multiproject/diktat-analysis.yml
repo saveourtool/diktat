@@ -1,7 +1,7 @@
 - name: DIKTAT_COMMON
   configuration:
     # put your package name here - it will be autofixed and checked
-    domainName: org.cqfn.diktat.example.gradle.multimodule
+    domainName: org.cqfn.diktat.example.gradle.multiproject
     testDirs: test
 - name: CLASS_NAME_INCORRECT
   enabled: true

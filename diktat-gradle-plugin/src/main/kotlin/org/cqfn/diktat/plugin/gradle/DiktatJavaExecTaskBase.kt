@@ -2,6 +2,7 @@ package org.cqfn.diktat.plugin.gradle
 
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.DIKTAT_CHECK_TASK
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.DIKTAT_FIX_TASK
+import org.cqfn.diktat.ruleset.rules.DIKTAT_CONF_PROPERTY
 
 import generated.DIKTAT_VERSION
 import generated.KTLINT_VERSION
@@ -56,7 +57,7 @@ open class DiktatJavaExecTaskBase @Inject constructor(
         }
         ignoreFailures = diktatExtension.ignoreFailures
         isIgnoreExitValue = ignoreFailures  // ignore returned value of JavaExec started process if lint errors shouldn't fail the build
-        systemProperty("diktat.config.path", resolveConfigFile(diktatExtension.diktatConfigFile).also {
+        systemProperty(DIKTAT_CONF_PROPERTY, resolveConfigFile(diktatExtension.diktatConfigFile).also {
             logger.info("Setting system property for diktat config to $it")
         })
         args = additionalFlags.toMutableList().apply {

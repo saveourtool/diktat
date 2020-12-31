@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 
 import java.io.File
 
-class DiktatGradlePluginMultimoduleFunctionalTest {
+class DiktatGradlePluginMultiprojectFunctionalTest {
     private val testProjectDir = TemporaryFolder()
     private lateinit var buildFile: File
 
@@ -21,7 +21,6 @@ class DiktatGradlePluginMultimoduleFunctionalTest {
         testProjectDir.create()
         val buildInitDsl = BuildInitDsl.KOTLIN
         File("../examples/gradle-kotlin-dsl-multiproject").copyRecursively(testProjectDir.root)
-//        val buildFileName = buildInitDsl.fileNameFor("build")
         buildFile = testProjectDir.root.resolve(buildInitDsl.fileNameFor("build"))
     }
 
@@ -31,7 +30,7 @@ class DiktatGradlePluginMultimoduleFunctionalTest {
     }
 
     @Test
-    fun `should execute diktatCheck on default values in multimodule project`() {
+    fun `should execute diktatCheck on default values in multiproject build`() {
         val result = runDiktat(testProjectDir, shouldSucceed = false)
 
         val diktatCheckRootResult = result.task(":$DIKTAT_CHECK_TASK")
@@ -44,7 +43,7 @@ class DiktatGradlePluginMultimoduleFunctionalTest {
         requireNotNull(diktatCheckBackendResult)
         Assertions.assertEquals(TaskOutcome.FAILED, diktatCheckBackendResult.outcome)
         Assertions.assertTrue(
-            result.output.contains("org.cqfn.diktat.example.gradle.multimodule")
+            result.output.contains("org.cqfn.diktat.example.gradle.multiproject")
         )
     }
 }

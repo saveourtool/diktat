@@ -37,6 +37,7 @@ import java.io.File
  */
 const val DIKTAT_RULE_SET_ID = "diktat-ruleset"
 const val DIKTAT_ANALYSIS_CONF = "diktat-analysis.yml"
+const val DIKTAT_CONF_PROPERTY = "diktat.config.path"
 
 /**
  * [RuleSetProvider] that provides diKTat ruleset.
@@ -186,7 +187,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
         return "$configPath${File.separator}$diktatConfigFile"
     }
 
-    private fun resolveConfigFileFromSystemProperty(): String? = System.getProperty("diktat.config.path")
+    private fun resolveConfigFileFromSystemProperty(): String? = System.getProperty(DIKTAT_CONF_PROPERTY)
 
     companion object {
         private val log = LoggerFactory.getLogger(DiktatRuleSetProvider::class.java)
