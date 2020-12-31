@@ -8,23 +8,20 @@ import org.cqfn.diktat.ruleset.utils.*
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.CONDITION
 import com.pinterest.ktlint.core.ast.ElementType.ELSE
-import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.IF
 import com.pinterest.ktlint.core.ast.ElementType.IF_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.NULL
-import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.THEN
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
 import com.pinterest.ktlint.core.ast.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtIfExpression
-import org.jetbrains.kotlin.psi.psiUtil.parents
 
 /**
  * This rule check and fixes explicit null checks (explicit comparison with `null`)
@@ -97,48 +94,30 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
                                      binaryExpression: ASTNode,
                                      isEqualToNull:Boolean) {
         val variableName = binaryExpression.firstChildNode.text
-        val thenCodeLines = condition
-                .treeParent
-                .getFirstChildWithType(THEN)!!
-                .text
-                .drop(1)
-                .dropLast(1)
-                .split("\n")
-                .filter { it.isNotBlank() }
-                .map { it.trim() }
-                .toList()
-        val elseCodeLines = condition
-                .treeParent
-                .getFirstChildWithType(ELSE)
-                ?.text
-                ?.drop(1)
-                ?.dropLast(1)
-                ?.split("\n")
-                ?.filter { it.isNotBlank() }
-                ?.map { it.trim() }
-                ?.toList()
+        val thenCodeLines = condition.extractLinesFromBlock(THEN)
+        val elseCodeLines = condition.extractLinesFromBlock(ELSE)
         val text = if (isEqualToNull) {
             if (elseCodeLines.isNullOrEmpty()) {
-                "$variableName ?: kotlin.run {\n${thenCodeLines.joinToString(separator = "\n")}\n}"
+                "$variableName ?: run {\n${thenCodeLines?.joinToString(separator = "\n")}\n}"
             } else {
                 """
                     |$variableName?.let {
                     |${elseCodeLines.joinToString(separator = "\n")}
-                    |} ?:
-                    |kotlin.run {
-                    |${thenCodeLines.joinToString(separator = "\n")}
+                    |}
+                    |?: run {
+                    |${thenCodeLines?.joinToString(separator = "\n")}
                     |}
                 """.trimMargin()
             }
         } else {
             if (elseCodeLines.isNullOrEmpty()) {
-                "$variableName?.let {\n${thenCodeLines.joinToString(separator = "\n")}\n}"
+                "$variableName?.let {\n${thenCodeLines?.joinToString(separator = "\n")}\n}"
             } else {
                 """
                     |$variableName?.let {
-                    |${thenCodeLines.joinToString(separator = "\n")}
-                    |} ?:
-                    |kotlin.run {
+                    |${thenCodeLines?.joinToString(separator = "\n")}
+                    |}
+                    |?: run {
                     |${elseCodeLines.joinToString(separator = "\n")}
                     |}
                 """.trimMargin()
@@ -180,6 +159,17 @@ class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-ch
             }
         }
     }
+
+    private fun ASTNode.extractLinesFromBlock(type: IElementType): List<String>? =
+        treeParent
+            .getFirstChildWithType(type)
+            ?.text
+            ?.trim('{', '}')
+            ?.split("\n")
+            ?.filter { it.isNotBlank() }
+            ?.map { it.trim() }
+            ?.toList()
+
 
     @Suppress("UnsafeCallOnNullableType")
     private fun isNullCheckBinaryExpression(condition: KtBinaryExpression): Boolean =

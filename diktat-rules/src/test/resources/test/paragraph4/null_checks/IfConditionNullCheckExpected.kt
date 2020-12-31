@@ -2,7 +2,7 @@ package test.paragraph4.null_checks
 
 fun test() {
     val some: Int? = null
-    some ?: kotlin.run {
+    some ?: run {
 println("some")
 bar()
 }
@@ -18,15 +18,15 @@ bar()
 
     some?.let {
 print("qwe")
-} ?:
-kotlin.run {
+}
+?: run {
 print("asd")
 }
 
     some?.let {
 print("qqq")
-} ?:
-kotlin.run {
+}
+?: run {
 print("www")
 }
 }

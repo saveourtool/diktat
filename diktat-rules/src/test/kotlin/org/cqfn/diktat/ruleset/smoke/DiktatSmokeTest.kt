@@ -97,6 +97,12 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
 
     @Test
     @Tag("DiktatRuleSetProvider")
+    fun `smoke test #7`() {
+        fixAndCompare("Example7Expected.kt", "Example7Test.kt")
+    }
+
+    @Test
+    @Tag("DiktatRuleSetProvider")
     fun `smoke test #6`() {
         fixAndCompare("Example6Expected.kt", "Example6Test.kt")
     }
