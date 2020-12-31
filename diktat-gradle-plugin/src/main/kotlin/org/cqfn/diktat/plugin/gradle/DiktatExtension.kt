@@ -2,6 +2,7 @@ package org.cqfn.diktat.plugin.gradle
 
 import com.pinterest.ktlint.core.Reporter
 import org.gradle.api.file.FileCollection
+import java.io.File
 
 /**
  * An extension to configure diktat in build.gradle(.kts) file
@@ -19,9 +20,8 @@ open class DiktatExtension {
 
     /**
      * Path to diktat yml config file. Can be either absolute or relative to project's root directory.
-     * Private until gradle supports kotlin 1.4 and we can pass this value to DiktatRuleSetProvider
      */
-    internal var diktatConfigFile: String = "diktat-analysis.yml"
+    var diktatConfigFile: File = File("diktat-analysis.yml")
 
     /**
      * Paths that will be excluded from diktat run

@@ -19,7 +19,9 @@ import java.io.File
 import javax.inject.Inject
 
 /**
- * A base diktat task for gradle <6.8, which wraps [JavaExec]
+ * A base diktat task for gradle <6.8, which wraps [JavaExec].
+ *
+ * Note: class being `open` is required for gradle to create a task.
  */
 open class DiktatJavaExecTaskBase @Inject constructor(
     gradleVersionString: String,
@@ -54,6 +56,9 @@ open class DiktatJavaExecTaskBase @Inject constructor(
         }
         ignoreFailures = diktatExtension.ignoreFailures
         isIgnoreExitValue = ignoreFailures  // ignore returned value of JavaExec started process if lint errors shouldn't fail the build
+        systemProperty("diktat.config.path", resolveConfigFile(diktatExtension.diktatConfigFile).also {
+            logger.info("Setting system property for diktat config to $it")
+        })
         args = additionalFlags.toMutableList().apply {
             if (diktatExtension.debug) {
                 add("--debug")
@@ -107,11 +112,27 @@ open class DiktatJavaExecTaskBase @Inject constructor(
 
     private fun MutableList<String>.addPattern(pattern: File, negate: Boolean = false) {
         val path = if (pattern.isAbsolute) {
-            pattern.relativeTo(project.rootDir)
+            pattern.relativeTo(project.projectDir)
         } else {
             pattern
         }.path
         add((if (negate) "!" else "") + path)
+    }
+
+    /**
+     * todo: share logic with maven plugin, it's basically copy-paste
+     */
+    private fun resolveConfigFile(file: File): String {
+        if (file.isAbsolute) {
+            return file.absolutePath
+        }
+
+        return generateSequence(project.projectDir) { it.parentFile }
+            .map { it.resolve(file) }
+            .run {
+                firstOrNull { it.exists() } ?: first()
+            }
+            .absolutePath
     }
 }
 
