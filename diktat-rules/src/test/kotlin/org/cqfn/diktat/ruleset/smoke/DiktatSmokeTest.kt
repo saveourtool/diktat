@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 import kotlinx.serialization.encodeToString
+import java.time.LocalDate
 
 typealias ruleToConfig = Map<Warnings, Map<String, String>>
 
@@ -110,7 +111,7 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
             mapOf(
                 Warnings.HEADER_MISSING_OR_WRONG_COPYRIGHT to mapOf(
                     "isCopyrightMandatory" to "true",
-                    "copyrightText" to """|Copyright 2018-2020 John Doe.
+                    "copyrightText" to """|Copyright 2018-${LocalDate.now().year} John Doe.
                                     |    Licensed under the Apache License, Version 2.0 (the "License");
                                     |    you may not use this file except in compliance with the License.
                                     |    You may obtain a copy of the License at
