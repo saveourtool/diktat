@@ -147,6 +147,7 @@
   enabled: true
   configuration:
     maxParametersInOneLine: 2
+# Inspection that checks if a long dot qualified expression is used in condition or as an argument
 - name: COMPLEX_EXPRESSION
   enabled: true
 - name: TOO_MANY_CONSECUTIVE_SPACES

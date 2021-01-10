@@ -367,7 +367,7 @@ Note that all comparison operators, such as `==`, `>`, `<`, should not be split.
 if (condition) list.map { foo(it) }.filter { bar(it) } else list.drop(1)
 ```  
 
-**Note:** If dot qualified expression is inside condition or passed as an argument - replace with new vatiable
+**Note:** If dot qualified expression is inside condition or passed as an argument - replace with new variable
 
 **Invalid example**: 
 ```kotlin

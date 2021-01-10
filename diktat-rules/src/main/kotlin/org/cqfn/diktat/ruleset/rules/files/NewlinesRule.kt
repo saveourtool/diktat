@@ -164,13 +164,13 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         val isIncorrect = (if (node.elementType == ELVIS) node.treeParent else node).run {
             if (isCallsChain()) {
                 val isSingleLineIfElse = parent({ it.elementType == IF }, true)?.isSingleLineIfElse() ?: false
-                if (node.isInBrackets()) {
-                    COMPLEX_EXPRESSION.warn(configRules, emitWarn, isFixMode, node.text, node.startOffset, node)
-                }
                 // to follow functional style these operators should be started by newline
                 (isFollowedByNewline() || !isBeginByNewline()) && !isSingleLineIfElse &&
                         (!isFirstCall() || !isMultilineLambda(treeParent))
             } else {
+                if (isCallsChain(false) && node.isInParentheses()) {
+                    COMPLEX_EXPRESSION.warn(configRules, emitWarn, isFixMode, node.text, node.startOffset, node)
+                }
                 // unless statement is simple and on single line, these operators cannot have newline after
                 isFollowedByNewline() && !isSingleDotStatementOnSingleLine()
             }
@@ -444,17 +444,23 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
      *
      * @return true - if there is error, and false if there is no error
      */
-    private fun ASTNode.isCallsChain() = getCallChain()?.isNotValidCalls(this) ?: false
+    private fun ASTNode.isCallsChain(isWithoutParentheses: Boolean = true) = getCallChain(isWithoutParentheses)?.isNotValidCalls(this) ?: false
 
-    private fun ASTNode.getCallChain() = getParentExpressions()
-        .lastOrNull()
-        ?.run {
-            mutableListOf<ASTNode>().also {
-                getOrderedCallExpressions(psi, it)
+    private fun ASTNode.getCallChain(isWithoutParentheses: Boolean = true): List<ASTNode>? {
+        val parentExpressionList = getParentExpressions()
+            .lastOrNull()
+            ?.run {
+                mutableListOf<ASTNode>().also {
+                    getOrderedCallExpressions(psi, it)
+                }
             }
+        return if (isWithoutParentheses)
+            // fixme: we can't distinguish fully qualified names (like java.lang) from chain of property accesses (like list.size) for now
+            parentExpressionList?.dropWhile { !it.treeParent.textContains('(') && !it.treeParent.textContains('{') }
+        else {
+            parentExpressionList
         }
-        // fixme: we can't distinguish fully qualified names (like java.lang) from chain of property accesses (like list.size) for now
-        //?.dropWhile { !it.treeParent.textContains('(') && !it.treeParent.textContains('{') }
+    }
 
     private fun List<ASTNode>.isNotValidCalls(node: ASTNode): Boolean {
         if (this.size == 1) {
@@ -512,7 +518,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
     /**
      * This method checks that complex expression should be replace with new variable
      */
-    private fun ASTNode.isInBrackets() =
+    private fun ASTNode.isInParentheses() =
         parent({it.elementType == DOT_QUALIFIED_EXPRESSION || it.elementType == SAFE_ACCESS_EXPRESSION})
             ?.treeParent
             ?.elementType

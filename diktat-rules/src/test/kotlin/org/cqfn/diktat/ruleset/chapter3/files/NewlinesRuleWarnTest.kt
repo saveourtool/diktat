@@ -9,7 +9,9 @@ import org.cqfn.diktat.ruleset.rules.files.NewlinesRule
 import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
+import com.pinterest.ktlint.core.ast.ElementType
 import generated.WarningNames
+import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Tags
@@ -971,13 +973,9 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |}
             """.trimMargin(),
             LintError(2, 10, ruleId, "${COMPLEX_EXPRESSION.warnText()} .", false),
-            LintError(2, 10, ruleId, "$functionalStyleWarn .", true),
             LintError(3, 14, ruleId, "${COMPLEX_EXPRESSION.warnText()} ?.", false),
-            LintError(3, 14, ruleId, "$functionalStyleWarn ?.", true),
             LintError(4, 14, ruleId, "${COMPLEX_EXPRESSION.warnText()} .", false),
-            LintError(4, 14, ruleId, "$functionalStyleWarn .", true),
             LintError(5, 12, ruleId, "${COMPLEX_EXPRESSION.warnText()} .", false),
-            LintError(5, 12, ruleId, "$functionalStyleWarn .", true),
             rulesConfigList = rulesConfigListShort
         )
     }
