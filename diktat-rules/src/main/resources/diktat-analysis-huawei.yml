@@ -230,6 +230,9 @@
     maxSpaces: '1'
     # Whether formatting for enums should be kept without checking
     saveInitialFormattingForEnums: false
+# Inspection that checks if a long dot qualified expression is used in condition or as an argument
+- name: COMPLEX_EXPRESSION
+  enabled: true
 # Checks that blank lines are used correctly.
 # For example: triggers when there are too many blank lines between function declaration
 - name: TOO_MANY_BLANK_LINES
