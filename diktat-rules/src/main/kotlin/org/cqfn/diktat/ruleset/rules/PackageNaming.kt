@@ -60,7 +60,7 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
             val realPackageName = calculateRealPackageName(filePath)
 
             // if node isLeaf - this means that there is no package name declared
-            if (node.isLeaf()) {
+            if (node.isLeaf() && !filePath.isKotlinScript()) {
                 warnAndFixMissingPackageName(node, realPackageName, filePath)
                 return
             }
@@ -129,7 +129,7 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
             }
 
         // package name should start from a company's domain name
-        if (!isDomainMatches(wordsInPackageName)) {
+        if (wordsInPackageName.isNotEmpty() && !isDomainMatches(wordsInPackageName)) {
             PACKAGE_NAME_INCORRECT_PREFIX.warnAndFix(configRules, emitWarn, isFixMode, domainName,
                 wordsInPackageName[0].startOffset, wordsInPackageName[0]) {
                 val oldPackageName = wordsInPackageName.joinToString(PACKAGE_SEPARATOR) { it.text }
@@ -150,7 +150,6 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
     /**
      * only letters, digits and underscore are allowed
      */
-    @Suppress("FUNCTION_BOOLEAN_PREFIX")
     private fun areCorrectSymbolsUsed(word: String): Boolean {
         // underscores are allowed in some cases - see "exceptionForUnderscore"
         val wordFromPackage = word.replace("_", "")

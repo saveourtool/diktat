@@ -17,6 +17,7 @@ import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_LITERAL
 import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
+import com.pinterest.ktlint.core.ast.ElementType.SCRIPT
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
@@ -46,7 +47,11 @@ class BlankLinesRule(private val configRules: List<RulesConfig>) : Rule("blank-l
     }
 
     private fun handleBlankLine(node: ASTNode) {
-        if (node.treeParent.elementType.let { it == BLOCK || it == CLASS_BODY || it == FUNCTION_LITERAL }) {
+        if (node.treeParent.let {
+            // kts files are parsed as a SCRIPT node containing BLOCK, therefore WHITE_SPACEs from these BLOCKS shouldn't be checked
+            it.elementType == BLOCK && it.treeParent?.elementType != SCRIPT ||
+                    it.elementType == CLASS_BODY || it.elementType == FUNCTION_LITERAL
+        }) {
             if ((node.treeNext.elementType == RBRACE) xor (node.treePrev.elementType == LBRACE)) {
                 // if both are present, this is not beginning or end
                 // if both are null, then this block is empty and is handled in another rule

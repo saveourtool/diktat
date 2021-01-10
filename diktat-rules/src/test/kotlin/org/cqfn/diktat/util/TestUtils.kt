@@ -80,9 +80,10 @@ internal fun format(ruleSetProviderRef: (rulesConfigList: List<RulesConfig>?) ->
             KtLint.Params(
                 text = text,
                 ruleSets = listOf(ruleSetProviderRef.invoke(rulesConfigList).get()),
-                fileName = fileName,
+                fileName = fileName.removeSuffix("_copy"),
+                script = fileName.removeSuffix("_copy").endsWith("kts"),
                 cb = cb,
-                userData = mapOf("file_path" to fileName)
+                userData = mapOf("file_path" to fileName.removeSuffix("_copy"))
             )
         )
 
