@@ -447,9 +447,9 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
      *
      * @return true - if there is error, and false if there is no error
      */
-    private fun ASTNode.isCallsChain(dropLeadingBrackets: Boolean = true) = getCallChain(dropLeadingBrackets)?.isNotValidCalls(this) ?: false
+    private fun ASTNode.isCallsChain(dropLeadingProperties: Boolean = true) = getCallChain(dropLeadingProperties)?.isNotValidCalls(this) ?: false
 
-    private fun ASTNode.getCallChain(dropLeadingBrackets: Boolean = true): List<ASTNode>? {
+    private fun ASTNode.getCallChain(dropLeadingProperties: Boolean = true): List<ASTNode>? {
         val parentExpressionList = getParentExpressions()
             .lastOrNull()
             ?.run {
@@ -457,7 +457,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
                     getOrderedCallExpressions(psi, it)
                 }
             }
-        return if (dropLeadingBrackets) {
+        return if (dropLeadingProperties) {
             // fixme: we can't distinguish fully qualified names (like java.lang) from chain of property accesses (like list.size) for now
             parentExpressionList?.dropWhile { !it.treeParent.textContains('(') && !it.treeParent.textContains('{') }
         } else {

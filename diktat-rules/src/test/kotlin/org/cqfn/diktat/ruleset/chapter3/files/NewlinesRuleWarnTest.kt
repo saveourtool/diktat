@@ -909,6 +909,22 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
 
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
+    fun `test for not first prefix`() {
+        lintMethod(
+            """
+                |fun foo() {
+                |   a().b!!.c()
+                |   a().b.c()!!
+                |}
+            """.trimMargin(),
+            LintError(2, 11, ruleId, "$functionalStyleWarn .", true),
+            LintError(3, 9, ruleId, "$functionalStyleWarn .", true),
+            rulesConfigList = rulesConfigListShort
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
     fun `test for null safety several lines`() {
         lintMethod(
             """
