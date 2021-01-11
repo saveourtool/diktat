@@ -11,6 +11,7 @@ import generated.WarningNames.WRONG_COPYRIGHT_YEAR
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Tags
 import org.junit.jupiter.api.Test
+import java.time.LocalDate
 
 class HeaderCommentRuleFixTest : FixTestBase(
     "test/paragraph2/header",
@@ -19,7 +20,7 @@ class HeaderCommentRuleFixTest : FixTestBase(
         RulesConfig("HEADER_MISSING_OR_WRONG_COPYRIGHT", true,
             mapOf(
                 "isCopyrightMandatory" to "true",
-                "copyrightText" to "Copyright (c) Huawei Technologies Co., Ltd. 2020-2020. All rights reserved.")
+                "copyrightText" to "Copyright (c) Huawei Technologies Co., Ltd. 2020-${LocalDate.now().year}. All rights reserved.")
         ),
         RulesConfig("HEADER_WRONG_FORMAT", true, emptyMap())
     )
@@ -36,6 +37,9 @@ class HeaderCommentRuleFixTest : FixTestBase(
         fixAndCompare("AutoCopyrightExpected.kt", "AutoCopyrightTest.kt")
     }
 
+    /**
+     * Fixme there shouldn't be an additional blank line after copyright
+     */
     @Test
     @Tag(WarningNames.HEADER_NOT_BEFORE_PACKAGE)
     fun `header KDoc should be moved before package`() {
@@ -74,7 +78,7 @@ class HeaderCommentRuleFixTest : FixTestBase(
             listOf(RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true, mapOf(
                 "isCopyrightMandatory" to "true",
                 "copyrightText" to """
-                |    Copyright 2018-2020 John Doe.
+                |    Copyright 2018-${LocalDate.now().year} John Doe.
                 |
                 |    Licensed under the Apache License, Version 2.0 (the "License");
                 |    you may not use this file except in compliance with the License.

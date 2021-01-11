@@ -4,7 +4,6 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.constants.Warnings.EMPTY_BLOCK_STRUCTURE_ERROR
-import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NAME_INCORRECT
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NAME_MATCH_CLASS
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_EMPTY_TAGS
@@ -24,6 +23,8 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
+
+import java.time.LocalDate
 
 import kotlinx.serialization.encodeToString
 
@@ -110,7 +111,7 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
             mapOf(
                 Warnings.HEADER_MISSING_OR_WRONG_COPYRIGHT to mapOf(
                     "isCopyrightMandatory" to "true",
-                    "copyrightText" to """|Copyright 2018-2020 John Doe.
+                    "copyrightText" to """|Copyright 2018-${LocalDate.now().year} John Doe.
                                     |    Licensed under the Apache License, Version 2.0 (the "License");
                                     |    you may not use this file except in compliance with the License.
                                     |    You may obtain a copy of the License at
