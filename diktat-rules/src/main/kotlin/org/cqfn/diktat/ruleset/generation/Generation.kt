@@ -13,6 +13,7 @@ import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
+import org.cqfn.diktat.ruleset.utils.log
 
 import java.io.File
 
@@ -58,6 +59,8 @@ private fun generateWarningNames() {
 
 private fun validateYear() {
     val file = File("diktat-rules/src/test/resources/test/paragraph2/header/CopyrightDifferentYearExpected.kt")
+    log.info("===================================")
+    println(file)
     val tempFile = createTempFile()
     tempFile.printWriter().use { writer ->
         file.forEachLine { line ->
