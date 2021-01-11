@@ -457,8 +457,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         return if (isWithoutParentheses) {
             // fixme: we can't distinguish fully qualified names (like java.lang) from chain of property accesses (like list.size) for now
             parentExpressionList?.dropWhile { !it.treeParent.textContains('(') && !it.treeParent.textContains('{') }
-        }
-        else {
+        } else {
             parentExpressionList
         }
     }
@@ -548,6 +547,6 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         private val expressionTypes = TokenSet.create(DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION, CALLABLE_REFERENCE_EXPRESSION, BINARY_EXPRESSION)
         private val chainExpressionTypes = TokenSet.create(DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION)
         private val dropChainValues = TokenSet.create(EOL_COMMENT, WHITE_SPACE, BLOCK_COMMENT, KDOC)
-        private val bracketsTypes = TokenSet.create(CONDITION, WHEN , VALUE_ARGUMENT)
+        private val bracketsTypes = TokenSet.create(CONDITION, WHEN, VALUE_ARGUMENT)
     }
 }
