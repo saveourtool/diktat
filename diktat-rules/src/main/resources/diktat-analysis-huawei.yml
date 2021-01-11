@@ -130,7 +130,7 @@
 # Checks that header kdoc is located before package directive
 - name: HEADER_NOT_BEFORE_PACKAGE
   enabled: true
-# Checks that header kdoc does not contain @author tag ar date
+# Checks that header kdoc does not contain @author tag or date
 - name: HEADER_CONTAINS_DATE_OR_AUTHOR
   enabled: true
 # Checks that file does not contain lines > maxSize

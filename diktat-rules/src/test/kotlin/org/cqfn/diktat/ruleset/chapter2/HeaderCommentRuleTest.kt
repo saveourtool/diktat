@@ -271,7 +271,34 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
                 |
                 |class Example { }
             """.trimMargin(),
-            LintError(4, 1, ruleId, "${HEADER_CONTAINS_DATE_OR_AUTHOR.warnText()} * @author anonymous"),
+            LintError(4, 1, ruleId, "${HEADER_CONTAINS_DATE_OR_AUTHOR.warnText()} @author anonymous"),
+            rulesConfigList = rulesConfigList
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.HEADER_CONTAINS_DATE_OR_AUTHOR)
+    fun `@since tag should only contain versions`() {
+        lintMethod(
+            """
+                |$copyrightBlock
+                |/**
+                | * Description of this file
+                | * @since 2019-10-11
+                | * @since 2019.10.11
+                | * @since 1.2.3
+                | * @since 1.2.3-1
+                | * @since 1.2.3-SNAPSHOT
+                | * @since 1.2.3-rc-1
+                | * @since 1.2.3.RELEASE
+                | */
+                |
+                |package org.cqfn.diktat.example
+                |
+                |class Example { }
+            """.trimMargin(),
+            LintError(4, 1, ruleId, "${HEADER_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 2019-10-11"),
+            LintError(4, 1, ruleId, "${HEADER_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 2019.10.11"),
             rulesConfigList = rulesConfigList
         )
     }

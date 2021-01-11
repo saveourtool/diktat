@@ -94,7 +94,7 @@ When the method has such details as arguments, return value, or can throw except
 /** 
  * This is the short overview comment for the example interface.
  *     / * Add a blank line between the comment text and each KDoc tag underneath * /
- * @since 2019-01-01
+ * @since 1.6
  */
  protected abstract class Sample {
     /**
@@ -137,6 +137,10 @@ Kdoc should not contain:
 - Empty descriptions in tag blocks. It is better not to write Kdoc than waste code line space.
 - There should be no empty lines between the method/class declaration and the end of Kdoc (`*/` symbols).
 Important note: KDoc does not support the `@deprecated` tag. Instead, use the `@Deprecated` annotation.
+
+**Note**:
+* Do not use `@author` tag in KDocs. It doesn't matter who originally created a class when you can use `git blame` or VCS of your choice to look through the changes history.
+* Tag `@since` should be used for versions only. Do not use dates in `@since` tag, it's confusing and less accurate.
  
 If a tag block cannot be described in one line, indent the content of the new line by *four spaces* from the `@` position to achieve alignment (`@` counts as one + three spaces).
  

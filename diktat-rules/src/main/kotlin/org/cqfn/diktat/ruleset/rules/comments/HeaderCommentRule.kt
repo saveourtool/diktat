@@ -25,12 +25,21 @@ import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import org.cqfn.diktat.ruleset.utils.kDocTags
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
+import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
+import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
+import java.text.DateFormat
+import java.text.SimpleDateFormat
 
 import java.time.LocalDate
+import java.time.Year
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoField
+import java.util.Date
 
 /**
  * Visitor for header comment in .kt file:
@@ -61,14 +70,15 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
     private fun checkHeaderKdoc(node: ASTNode) {
         val headerKdoc = node.findChildBefore(PACKAGE_DIRECTIVE, KDOC)
         headerKdoc?.let {
-            // fixme we should also check date of creation, but it can be in different formats
             headerKdoc
-                .text
-                .split('\n')
-                .filter { it.contains("@author") }
-                .forEach {
+                .kDocTags()
+                ?.filter {
+                    it.knownTag == KDocKnownTag.AUTHOR ||
+                            it.knownTag == KDocKnownTag.SINCE && it.containsDate()
+                }
+                ?.forEach {
                     HEADER_CONTAINS_DATE_OR_AUTHOR.warn(configRules, emitWarn, isFixMode,
-                        it.trim(), headerKdoc.startOffset, headerKdoc)
+                        it.text.trim(), headerKdoc.startOffset, headerKdoc)
                 }
 
             if (headerKdoc.treeNext != null && headerKdoc.treeNext.elementType == WHITE_SPACE &&
@@ -219,6 +229,26 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
     }
 
     /**
+     * Checks whether this tag's content represents date
+     */
+    private fun KDocTag.containsDate(): Boolean {
+        val content = getContent().trim()
+        if (' ' in content || '/' in content) {
+            // Filter based on symbols that are not allowed in versions. Assuming that people put either version or date in `@since` tag.
+            return true
+        }
+        // try to parse content as a date, check whether an exception has been thrown
+        return dateFormats.any {
+                // try to parse, get year and check it's value sanity
+                // otherwise it might be a tricky version format
+            runCatching {
+                it.parse(content).get(ChronoField.YEAR) > 1900
+            }
+                .getOrNull() == true
+        }
+    }
+
+    /**
      * Configuration for copyright
      */
     class CopyrightConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
@@ -242,5 +272,16 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
         val hyphenRegex = Regex("""\b(\d+-\d+)\b""")
         val afterCopyrightRegex = Regex("""((©|\([cC]\))+ *\d+)""")
         val curYear = LocalDate.now().year
+
+        val versionSymbolsRegex = Regex("[\\w\\d.-]")
+
+        val dateFormats = listOf("yyyy-dd-mm", "yyyy-mm-dd", "yyyy.mm.dd", "yyyy.dd.mm").map {
+            DateTimeFormatter.ofPattern(it)
+        }
+
+        /**
+         * [semver](https://semver.org/) regex taken from official site
+         */
+        val semverRegex = Regex("^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?\$")
     }
 }
