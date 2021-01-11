@@ -9,9 +9,7 @@ import org.cqfn.diktat.ruleset.rules.files.NewlinesRule
 import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
-import com.pinterest.ktlint.core.ast.ElementType
 import generated.WarningNames
-import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Tags

@@ -5,9 +5,9 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.ListOfList
+import org.cqfn.diktat.ruleset.constants.Warnings.COMPLEX_EXPRESSION
 import org.cqfn.diktat.ruleset.constants.Warnings.REDUNDANT_SEMICOLON
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_NEWLINES
-import org.cqfn.diktat.ruleset.constants.Warnings.COMPLEX_EXPRESSION
 import org.cqfn.diktat.ruleset.utils.*
 
 import com.pinterest.ktlint.core.Rule
@@ -156,7 +156,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         }
     }
 
-    @Suppress("ComplexMethod")
+    @Suppress("ComplexMethod", "TOO_LONG_FUNCTION")
     private fun handleOperatorWithLineBreakBefore(node: ASTNode) {
         if (node.isDotFromPackageOrImport()) {
             return
@@ -454,9 +454,10 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
                     getOrderedCallExpressions(psi, it)
                 }
             }
-        return if (isWithoutParentheses)
+        return if (isWithoutParentheses) {
             // fixme: we can't distinguish fully qualified names (like java.lang) from chain of property accesses (like list.size) for now
             parentExpressionList?.dropWhile { !it.treeParent.textContains('(') && !it.treeParent.textContains('{') }
+        }
         else {
             parentExpressionList
         }
@@ -518,12 +519,11 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
     /**
      * This method checks that complex expression should be replace with new variable
      */
-    private fun ASTNode.isInParentheses() =
-        parent({it.elementType == DOT_QUALIFIED_EXPRESSION || it.elementType == SAFE_ACCESS_EXPRESSION})
-            ?.treeParent
-            ?.elementType
-            ?.let { it in bracketsTypes }
-            ?: false
+    private fun ASTNode.isInParentheses() = parent({it.elementType == DOT_QUALIFIED_EXPRESSION || it.elementType == SAFE_ACCESS_EXPRESSION})
+        ?.treeParent
+        ?.elementType
+        ?.let { it in bracketsTypes }
+        ?: false
 
     /**
      * [RuleConfiguration] for newlines placement
@@ -548,6 +548,6 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         private val expressionTypes = TokenSet.create(DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION, CALLABLE_REFERENCE_EXPRESSION, BINARY_EXPRESSION)
         private val chainExpressionTypes = TokenSet.create(DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION)
         private val dropChainValues = TokenSet.create(EOL_COMMENT, WHITE_SPACE, BLOCK_COMMENT, KDOC)
-        private val bracketsTypes = TokenSet.create(CONDITION, WHEN ,VALUE_ARGUMENT)
+        private val bracketsTypes = TokenSet.create(CONDITION, WHEN , VALUE_ARGUMENT)
     }
 }

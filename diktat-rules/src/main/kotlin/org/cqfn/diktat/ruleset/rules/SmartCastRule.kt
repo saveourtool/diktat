@@ -91,13 +91,14 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
     @Suppress("NestedBlockDepth", "TYPE_ALIAS")
     private fun handleGroups(groups: Map<KtNameReferenceExpression, List<KtNameReferenceExpression>>) {
         groups.keys.forEach {
-            if (it.node.treeParent.text.contains(" is ")) {
+            val parentText = it.node.treeParent.text
+            if (parentText.contains(" is ")) {
                 groups.getValue(it).forEach { asCall ->
                     if (asCall.node.hasParent(THEN)) {
                         raiseWarning(asCall.node)
                     }
                 }
-            } else if (it.node.treeParent.text.contains(" !is ")) {
+            } else if (parentText.contains(" !is ")) {
                 groups.getValue(it).forEach { asCall ->
                     if (asCall.node.hasParent(ELSE)) {
                         raiseWarning(asCall.node)
