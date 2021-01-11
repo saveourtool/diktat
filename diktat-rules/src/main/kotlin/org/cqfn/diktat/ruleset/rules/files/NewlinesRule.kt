@@ -163,6 +163,9 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         }
         val isIncorrect = (if (node.elementType == ELVIS) node.treeParent else node).run {
             if (isCallsChain()) {
+                if (node.isInParentheses()) {
+                    COMPLEX_EXPRESSION.warn(configRules, emitWarn, isFixMode, node.text, node.startOffset, node)
+                }
                 val isSingleLineIfElse = parent({ it.elementType == IF }, true)?.isSingleLineIfElse() ?: false
                 // to follow functional style these operators should be started by newline
                 (isFollowedByNewline() || !isBeginByNewline()) && !isSingleLineIfElse &&
@@ -444,9 +447,9 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
      *
      * @return true - if there is error, and false if there is no error
      */
-    private fun ASTNode.isCallsChain(isWithoutParentheses: Boolean = true) = getCallChain(isWithoutParentheses)?.isNotValidCalls(this) ?: false
+    private fun ASTNode.isCallsChain(dropLeadingBrackets: Boolean = true) = getCallChain(dropLeadingBrackets)?.isNotValidCalls(this) ?: false
 
-    private fun ASTNode.getCallChain(isWithoutParentheses: Boolean = true): List<ASTNode>? {
+    private fun ASTNode.getCallChain(dropLeadingBrackets: Boolean = true): List<ASTNode>? {
         val parentExpressionList = getParentExpressions()
             .lastOrNull()
             ?.run {
@@ -454,7 +457,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
                     getOrderedCallExpressions(psi, it)
                 }
             }
-        return if (isWithoutParentheses) {
+        return if (dropLeadingBrackets) {
             // fixme: we can't distinguish fully qualified names (like java.lang) from chain of property accesses (like list.size) for now
             parentExpressionList?.dropWhile { !it.treeParent.textContains('(') && !it.treeParent.textContains('{') }
         } else {
@@ -521,7 +524,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
     private fun ASTNode.isInParentheses() = parent({it.elementType == DOT_QUALIFIED_EXPRESSION || it.elementType == SAFE_ACCESS_EXPRESSION})
         ?.treeParent
         ?.elementType
-        ?.let { it in bracketsTypes }
+        ?.let { it in parenthesesTypes }
         ?: false
 
     /**
@@ -547,6 +550,6 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         private val expressionTypes = TokenSet.create(DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION, CALLABLE_REFERENCE_EXPRESSION, BINARY_EXPRESSION)
         private val chainExpressionTypes = TokenSet.create(DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION)
         private val dropChainValues = TokenSet.create(EOL_COMMENT, WHITE_SPACE, BLOCK_COMMENT, KDOC)
-        private val bracketsTypes = TokenSet.create(CONDITION, WHEN, VALUE_ARGUMENT)
+        private val parenthesesTypes = TokenSet.create(CONDITION, WHEN, VALUE_ARGUMENT)
     }
 }

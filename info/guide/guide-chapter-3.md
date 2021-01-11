@@ -367,17 +367,20 @@ Note that all comparison operators, such as `==`, `>`, `<`, should not be split.
 if (condition) list.map { foo(it) }.filter { bar(it) } else list.drop(1)
 ```  
 
-**Note:** If dot qualified expression is inside condition or passed as an argument - replace with new variable
+**Note:** If dot qualified expression is inside condition or passed as an argument - it should be replaced with new variable.
 
 **Invalid example**: 
 ```kotlin
-     if (node.text.length.dec() != 0) {}
+ if (node.treeParent.treeParent.findChildByType(IDENTIFIER) != null) {}
 ```
  
 **Valid example**: 
 ```kotlin
-        val nodeLen = node.text.length.dec()
-        if (nodeLen != 0) {}
+        val grandIdentifier = node
+            .treeParent
+            .treeParent
+            .findChildByType(IDENTIFIER)
+        if (grandIdentifier != null) {}
 ```
   
 2)	Newlines should be placed after the assignment operator (`=`).

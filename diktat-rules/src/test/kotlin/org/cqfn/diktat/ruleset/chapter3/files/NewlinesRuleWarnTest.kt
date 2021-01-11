@@ -977,4 +977,19 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
             rulesConfigList = rulesConfigListShort
         )
     }
+
+    @Test
+    @Tags(Tag(WarningNames.WRONG_NEWLINES), Tag(WarningNames.COMPLEX_EXPRESSION))
+    fun `complex expression in condition with double warnings`() {
+        lintMethod(
+            """
+                |fun foo() {
+                |   if(a().b().c()) {}
+                |}
+            """.trimMargin(),
+            LintError(2, 14, ruleId, "${COMPLEX_EXPRESSION.warnText()} .", false),
+            LintError(2, 14, ruleId, "$functionalStyleWarn .", true),
+            rulesConfigList = rulesConfigListShort
+        )
+    }
 }

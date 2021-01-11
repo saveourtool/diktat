@@ -68,12 +68,12 @@ class AnnotationNewLineRule(private val configRules: List<RulesConfig>) : Rule("
             if (node == node.treeParent.getFirstChildWithType(node.elementType)) {
                 // Current node is ANNOTATION_ENTRY. treeParent(ModifierList) -> treeParent(PRIMARY_CONSTRUCTOR)
                 // Checks if there is a white space before grandparent node
-                val isParentWhiteSpace = node
+                val hasSpaceBeforeGrandparent = node
                     .treeParent
                     .treeParent
                     .treePrev
                     .isWhiteSpace()
-                if (isParentWhiteSpace) {
+                if (hasSpaceBeforeGrandparent) {
                     (node.treeParent.treeParent.treePrev as LeafPsiElement).replaceWithText("\n")
                 }
             }
