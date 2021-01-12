@@ -44,6 +44,7 @@ import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
 import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
+import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoField
 
 /**
@@ -342,7 +343,6 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
     /**
      * Checks whether this tag's content represents date
      */
-    @Suppress("MagicNumber")
     private fun KDocTag.containsDate(): Boolean {
         val content = getContent().trim()
         if (' ' in content || '/' in content) {
@@ -350,14 +350,21 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
             return true
         }
         // try to parse content as a date, check whether an exception has been thrown
-        val minimumSaneYear = 1900
-        return HeaderCommentRule.dateFormats.any {
+        return dateFormats.any {
             // try to parse, get year and check it's value sanity
             // otherwise it might be a tricky version format
             runCatching {
                 it.parse(content).get(ChronoField.YEAR) > minimumSaneYear
             }
                 .getOrNull() == true
+        }
+    }
+
+    companion object {
+        private const val minimumSaneYear = 1900
+
+        val dateFormats = listOf("yyyy-dd-mm", "yyyy-mm-dd", "yyyy.mm.dd", "yyyy.dd.mm").map {
+            DateTimeFormatter.ofPattern(it)
         }
     }
 }

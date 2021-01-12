@@ -237,17 +237,5 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
         val hyphenRegex = Regex("""\b(\d+-\d+)\b""")
         val afterCopyrightRegex = Regex("""((©|\([cC]\))+ *\d+)""")
         val curYear = LocalDate.now().year
-
-        val versionSymbolsRegex = Regex("[\\w\\d.-]")
-
-        val dateFormats = listOf("yyyy-dd-mm", "yyyy-mm-dd", "yyyy.mm.dd", "yyyy.dd.mm").map {
-            DateTimeFormatter.ofPattern(it)
-        }
-
-        /**
-         * [semver](https://semver.org/) regex taken from official site
-         */
-        @Suppress("MaxLineLength")
-        val semverRegex = Regex("^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?\$")
     }
 }

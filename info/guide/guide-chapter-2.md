@@ -186,11 +186,27 @@ Also, describe the content inside files that contain multiple or no classes.
 The following examples for Huawei describe the format of the *copyright license*: \
 Chinese version: `版权所有 (c) 华为技术有限公司 2012-2020` \
 English version: `Copyright (c) Huawei Technologies Co., Ltd. 2012-2020. All rights reserved.`
+`2012` and `2020` are the years the file was first created and the current year, respectively.
 
-Regarding the **release notes**, see examples below:
+Do not place **release notes** in header, use VCS to keep track of changes in file. Notable changes can be marked in individual KDocs using `@since` tag with version.
 
-- `2012-2020` can be modified according to your actual situation. `2012` and `2020` are the years the file was first created and last modified, respectively.
-These two years can be the same (for example, `2020–2020`). When the file is substantially changed (for example, through feature extensions and major refactorings), the subsequent years must be updated.
+Invalid example:
+```kotlin
+/**
+ * Release notes:
+ * 2019-10-11: added class Foo
+ */
+
+class Foo
+```
+
+Valid example:
+```kotlin
+/**
+ * @since 2.4.0
+ */
+class Foo
+```
 
 - The **copyright statement** can use your company's subsidiaries, as shown in the below examples: \
 Chinese version: `版权所有 (c) 海思半导体 2012-2020` \
