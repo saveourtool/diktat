@@ -78,6 +78,8 @@ jobs:
             sed -i "s/$PREVIOUS_VERSION/$RELEASE_VERSION/g" $file || echo "File $file hasn't been updated!"
             cp diktat-rules/src/main/resources/diktat-analysis.yml $(dirname $file)
           done
+          next_snapshot_version=$(printf 'VERSION=${project.version}\n0\n' | mvn help:evaluate | grep '^VERSION' | cut -d= -f2)
+          echo "version=$next_snapshot_version" > info/buildSrc/radle.properties
       - name: Create pull request
         uses: peter-evans/create-pull-request@v3
         with:
