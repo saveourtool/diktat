@@ -269,7 +269,7 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
             it.isStandard(StandardPlatforms.ANDROID)
         }
 
-        val (ownDomain, tmp) =domainName?.let {
+        val (ownDomain, tmp) = domainName?.let {
             notAndroid.partition { import ->
                 import
                     .importPath

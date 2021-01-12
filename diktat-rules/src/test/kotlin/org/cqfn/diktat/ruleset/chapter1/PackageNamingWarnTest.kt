@@ -239,7 +239,7 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
     @Tag(WarningNames.PACKAGE_NAME_INCORRECT_PATH)
     fun `should warn if there is not domain name or it empty`() {
         lintMethod(
-                """
+            """
                 |package org.cqfn.diktat
             """.trimMargin(),
             LintError(1, 1, ruleId, "${MISSING_DOMAIN_NAME.warnText()} No domain name", false),
@@ -248,7 +248,7 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
         )
 
         lintMethod(
-                """
+            """
                 |package org.cqfn.diktat
             """.trimMargin(),
             LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PREFIX.warnText()} ", true),
