@@ -25,7 +25,10 @@ import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import org.cqfn.diktat.ruleset.constants.Warnings
+import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_COPYRIGHT_YEAR_CONFIGURATION
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -148,7 +151,13 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
             return
         }
 
-        val copyrightText = configuration.getCopyrightText()
+        // need to make sure that copyright year is consistent with current year
+        val copyrightText = if (makeCopyrightCorrectYear(configuration.getCopyrightText()).isNotEmpty()) {
+            WRONG_COPYRIGHT_YEAR_CONFIGURATION.warn(configRules, emitWarn, isFixMode, "", node.startOffset, node)
+            makeCopyrightCorrectYear(configuration.getCopyrightText())
+        } else {
+            configuration.getCopyrightText()
+        }
 
         val headerComment = node.findChildBefore(PACKAGE_DIRECTIVE, BLOCK_COMMENT)
         val isWrongCopyright = headerComment != null && !headerComment.text.flatten().contains(copyrightText.flatten())
@@ -171,7 +180,7 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
                 val newLines = node.findChildBefore(PACKAGE_DIRECTIVE, KDOC)?.let { "\n" } ?: "\n\n"
                 node.addChild(PsiWhiteSpaceImpl(newLines), node.firstChildNode)
                 node.addChild(LeafPsiElement(BLOCK_COMMENT,
-                    """
+                        """
                         |/*
                         |${handleMultilineCopyright(copyrightText)}
                         |*/
@@ -183,6 +192,7 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
 
         val copyrightWithCorrectYear = makeCopyrightCorrectYear(copyrightText)
 
+        // Triggers when there is a copyright, but its year is not updated.
         if (copyrightWithCorrectYear.isNotEmpty()) {
             WRONG_COPYRIGHT_YEAR.warnAndFix(configRules, emitWarn, isFixMode, "year should be $curYear", node.startOffset, node) {
                 (headerComment as? LeafElement)?.replaceWithText(headerComment.text.replace(copyrightText, copyrightWithCorrectYear))

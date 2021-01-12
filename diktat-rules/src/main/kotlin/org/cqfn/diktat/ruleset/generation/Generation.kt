@@ -27,7 +27,6 @@ private val autoGenerationComment =
         """.trimMargin()
 
 fun main() {
-    generateWarningNames()
     validateYear()
 }
 
@@ -58,27 +57,27 @@ private fun generateWarningNames() {
 }
 
 private fun validateYear() {
-    val file = File("diktat-rules/src/test/resources/test/paragraph2/header/CopyrightDifferentYearExpected.kt")
-    log.info("===================================")
-    println(file)
-    val tempFile = createTempFile()
-    tempFile.printWriter().use { writer ->
-        file.forEachLine { line ->
-            writer.println(when {
-                hyphenRegex.matches(line) -> hyphenRegex.replace(line) {
-                    val years = it.value.split("-")
-                    val validYears = "${years[0]}-$curYear"
-                    line.replace(hyphenRegex, validYears)
-                }
-                afterCopyrightRegex.matches(line) -> afterCopyrightRegex.replace(line) {
-                    val copyrightYears = it.value.split("(c)", "(C)", "©")
-                    val validYears = "${copyrightYears[0]}-$curYear"
-                    line.replace(afterCopyrightRegex, validYears)
-                }
-                else -> line
-            })
+    val files = File("diktat-rules/src/test/resources/test/paragraph2/header")
+    files.listFiles().forEach { file ->
+        val tempFile = createTempFile()
+        tempFile.printWriter().use { writer ->
+            file.forEachLine { line ->
+                writer.println(when {
+                    hyphenRegex.matches(line) -> hyphenRegex.replace(line) {
+                        val years = it.value.split("-")
+                        val validYears = "${years[0]}-$curYear"
+                        line.replace(hyphenRegex, validYears)
+                    }
+                    afterCopyrightRegex.matches(line) -> afterCopyrightRegex.replace(line) {
+                        val copyrightYears = it.value.split("(c)", "(C)", "©")
+                        val validYears = "${copyrightYears[0]}-$curYear"
+                        line.replace(afterCopyrightRegex, validYears)
+                    }
+                    else -> line
+                })
+            }
         }
+        file.delete()
+        tempFile.renameTo(file)
     }
-    file.delete()
-    tempFile.renameTo(file)
 }
