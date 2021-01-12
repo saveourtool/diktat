@@ -37,8 +37,8 @@ import java.util.concurrent.atomic.AtomicInteger
 @Suppress("ForbiddenComment")
 class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-naming") {
     private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
     private var domainName: String? = null
+    private lateinit var emitWarn: EmitType
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
@@ -54,9 +54,10 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
         }
             .domainName
         if (domainName == null) {
-            if (visitorCounter.get() == 1)
+            if (visitorCounter.get() == 1) {
                 MISSING_DOMAIN_NAME.warn(configRules, emitWarn, isFixMode, "No domain name",
-                        node.startOffset, node)
+                    node.startOffset, node)
+            }
         } else if (node.elementType == PACKAGE_DIRECTIVE) {
             val filePath = node.getRootNode().getFilePath()
             // calculating package name based on the directory where the file is placed
@@ -101,6 +102,7 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
      *
      * @return list with words that are parts of package name like [org, diktat, name]
      */
+    @Suppress("UnsafeCallOnNullableType")
     private fun calculateRealPackageName(fileName: String): List<String> {
         val filePathParts = fileName.splitPathToDirs()
 
@@ -121,6 +123,7 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkPackageName(wordsInPackageName: List<ASTNode>, packageDirectiveNode: ASTNode) {
         // all words should be in a lower case (lower case letters/digits/underscore)
         wordsInPackageName
@@ -187,6 +190,7 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
     /**
      * function simply checks that package name starts with a proper domain name
      */
+    @Suppress("UnsafeCallOnNullableType")
     private fun isDomainMatches(packageNameParts: List<ASTNode>): Boolean {
         val packageNamePrefix = domainName!!.split(PACKAGE_SEPARATOR)
         if (packageNameParts.size < packageNamePrefix.size) {

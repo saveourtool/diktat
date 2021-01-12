@@ -232,7 +232,7 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
     @Tag(WarningNames.FILE_INCORRECT_BLOCKS_ORDER)
     fun `test with no domain name in config`() {
         lintMethod(
-                """
+            """
                 |package org.cqfn.diktat.example
                 |
                 |import org.cqfn.diktat.example.Foo
@@ -240,8 +240,8 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
                 |
                 |class Example
             """.trimMargin(),
-                LintError(3, 1, ruleId, "${FILE_UNORDERED_IMPORTS.warnText()} import com.pinterest.ktlint.core.LintError...", true),
-                rulesConfigList = rulesConfigListWithoutDomainName
+            LintError(3, 1, ruleId, "${FILE_UNORDERED_IMPORTS.warnText()} import com.pinterest.ktlint.core.LintError...", true),
+            rulesConfigList = rulesConfigListWithoutDomainName
         )
     }
 }

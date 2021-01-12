@@ -269,19 +269,17 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
             it.isStandard(StandardPlatforms.ANDROID)
         }
 
-        val (ownDomain, tmp) = if (domainName == null) {
-            Pair(emptyList(), notAndroid)
-        } else {
+        val (ownDomain, tmp) =domainName?.let {
             notAndroid.partition { import ->
                 import
-                        .importPath
-                        ?.fqName
-                        ?.pathSegments()
-                        ?.zip(domainName!!.split(PACKAGE_SEPARATOR).map(Name::identifier))
-                        ?.all { it.first == it.second }
-                        ?: false
+                    .importPath
+                    ?.fqName
+                    ?.pathSegments()
+                    ?.zip(domainName!!.split(PACKAGE_SEPARATOR).map(Name::identifier))
+                    ?.all { it.first == it.second }
+                    ?: false
             }
-        }
+        } ?: Pair(emptyList(), notAndroid)
 
         val (others, javaAndKotlin) = tmp.partition {
             !it.isStandard(StandardPlatforms.JAVA) && !it.isStandard(StandardPlatforms.KOTLIN)

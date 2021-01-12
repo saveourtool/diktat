@@ -242,19 +242,19 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
                 """
                 |package org.cqfn.diktat
             """.trimMargin(),
-                LintError(1, 1, ruleId, "${MISSING_DOMAIN_NAME.warnText()} No domain name", false),
-                fileName = "/home/testu/project/src/myProjectMain/kotlin/org/cqfn/diktat/example/Example.kt",
-                rulesConfigList = rulesConfigListWithoutDomainName
+            LintError(1, 1, ruleId, "${MISSING_DOMAIN_NAME.warnText()} No domain name", false),
+            fileName = "/home/testu/project/src/myProjectMain/kotlin/org/cqfn/diktat/example/Example.kt",
+            rulesConfigList = rulesConfigListWithoutDomainName
         )
 
         lintMethod(
                 """
                 |package org.cqfn.diktat
             """.trimMargin(),
-                LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PREFIX.warnText()} ", true),
-                LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} myProjectMain.kotlin.org.cqfn.diktat.example", true),
-                fileName = "/home/testu/project/src/myProjectMain/kotlin/org/cqfn/diktat/example/Example.kt",
-                rulesConfigList = rulesConfigListEmptyDomainName
+            LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PREFIX.warnText()} ", true),
+            LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} myProjectMain.kotlin.org.cqfn.diktat.example", true),
+            fileName = "/home/testu/project/src/myProjectMain/kotlin/org/cqfn/diktat/example/Example.kt",
+            rulesConfigList = rulesConfigListEmptyDomainName
         )
     }
 }
