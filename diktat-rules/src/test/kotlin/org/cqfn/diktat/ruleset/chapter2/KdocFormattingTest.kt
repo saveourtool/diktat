@@ -1,5 +1,6 @@
 package org.cqfn.diktat.ruleset.chapter2
 
+import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_EMPTY_KDOC
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NEWLINES_BEFORE_BASIC_TAGS
@@ -15,7 +16,6 @@ import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
-import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 

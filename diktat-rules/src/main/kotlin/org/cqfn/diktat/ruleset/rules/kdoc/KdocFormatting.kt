@@ -1,6 +1,8 @@
 package org.cqfn.diktat.ruleset.rules.kdoc
 
+import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_EMPTY_KDOC
@@ -33,8 +35,6 @@ import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.nextSibling
 import com.pinterest.ktlint.core.ast.prevSibling
-import org.cqfn.diktat.common.config.rules.RuleConfiguration
-import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -64,8 +64,8 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
     private val basicTagsList = listOf(KDocKnownTag.PARAM, KDocKnownTag.RETURN, KDocKnownTag.THROWS)
     private val specialTagNames = setOf("implSpec", "implNote", "apiNote")
     private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
     private var versionRegex: Regex? = null
+    private lateinit var emitWarn: EmitType
 
     /**
      * @param node
@@ -78,7 +78,7 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
         isFixMode = autoCorrect
         emitWarn = emit
 
-        if (versionRegex == null) {
+        versionRegex ?: run {
             versionRegex = KdocFormatConfiguration(
                 configRules.getRuleConfig(KDOC_CONTAINS_DATE_OR_AUTHOR)?.configuration ?: emptyMap()
             )
@@ -328,7 +328,7 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
         node.kDocTags()
             ?.filter {
                 it.knownTag == KDocKnownTag.AUTHOR ||
-                        it.knownTag == KDocKnownTag.SINCE && it.containsDate()
+                        it.knownTag == KDocKnownTag.SINCE && it.hasInvalidVersion()
             }
             ?.forEach {
                 KDOC_CONTAINS_DATE_OR_AUTHOR.warn(configRules, emitWarn, isFixMode, it.text.trim(), it.startOffset, it.node)
@@ -351,9 +351,9 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
     }
 
     /**
-     * Checks whether this tag's content represents date
+     * Checks whether this tag's content represents an invalid version
      */
-    private fun KDocTag.containsDate(): Boolean {
+    private fun KDocTag.hasInvalidVersion(): Boolean {
         val content = getContent().trim()
         if (' ' in content || '/' in content) {
             // Filter based on symbols that are not allowed in versions. Assuming that people put either version or date in `@since` tag.
@@ -370,16 +370,22 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
             }
     }
 
+    /**
+     * A [RuleConfiguration] for KDoc formatting
+     */
+    class KdocFormatConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
+        /**
+         * Regular expression, if present, against which a version should be matched in `@since` tag.
+         */
+        val versionRegex: Regex? by lazy {
+            config["versionRegex"]?.let { Regex(it) }
+        }
+    }
+
     companion object {
         private const val MINIMUM_SANE_YEAR = 1900
         val dateFormats: List<DateTimeFormatter> = listOf("yyyy-dd-mm", "yyyy-mm-dd", "yyyy.mm.dd", "yyyy.dd.mm").map {
             DateTimeFormatter.ofPattern(it)
-        }
-    }
-
-    class KdocFormatConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
-        val versionRegex: Regex? by lazy {
-            config["versionRegex"]?.let { Regex(it) }
         }
     }
 }
