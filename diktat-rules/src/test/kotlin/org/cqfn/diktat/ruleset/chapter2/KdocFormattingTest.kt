@@ -14,6 +14,7 @@ import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
+import org.cqfn.diktat.ruleset.constants.Warnings
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
@@ -320,5 +321,63 @@ class KdocFormattingTest : LintTestBase(::KdocFormatting) {
         lintMethod(invalidCode,
             LintError(2, 16, ruleId,
                 "${KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS.warnText()} @implSpec, @apiNote, @implNote", true))
+    }
+
+    @Test
+    @Tag(WarningNames.KDOC_CONTAINS_DATE_OR_AUTHOR)
+    fun `@author tag is not allowed in header comment`() {
+        lintMethod(
+            """
+                |/**
+                | * Description of this file
+                | * @author anonymous
+                | */
+                |
+                |package org.cqfn.diktat.example
+                |
+                |/**
+                | * Description of this class
+                | * @author anonymous
+                | */
+                |class Example { }
+            """.trimMargin(),
+            LintError(3, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @author anonymous"),
+            LintError(10, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @author anonymous"),
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.KDOC_CONTAINS_DATE_OR_AUTHOR)
+    fun `@since tag should only contain versions`() {
+        lintMethod(
+            """
+                |/**
+                | * Description of this file
+                | * @since 2019-10-11
+                | * @since 2019.10.11
+                | * @since 2019/10/11
+                | * @since 11 Oct 2019
+                | * @since 1.2.3
+                | * @since 1.2.3-1
+                | * @since 1.2.3-SNAPSHOT
+                | * @since 1.2.3-rc-1
+                | * @since 1.2.3.RELEASE
+                | */
+                |
+                |package org.cqfn.diktat.example
+                |
+                |/**
+                | * Description of this file
+                | * @since 2019-10-11
+                | * @since 1.2.3
+                | */
+                |class Example { }
+            """.trimMargin(),
+            LintError(3, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 2019-10-11"),
+            LintError(4, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 2019.10.11"),
+            LintError(5, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 2019/10/11"),
+            LintError(6, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 11 Oct 2019"),
+            LintError(18, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 2019-10-11"),
+        )
     }
 }

@@ -136,12 +136,11 @@ Therefore, Kdoc should contain the following:
 Kdoc should not contain:
 - Empty descriptions in tag blocks. It is better not to write Kdoc than waste code line space.
 - There should be no empty lines between the method/class declaration and the end of Kdoc (`*/` symbols).
-Important note: KDoc does not support the `@deprecated` tag. Instead, use the `@Deprecated` annotation.
+- `@author` tag. It doesn't matter who originally created a class when you can use `git blame` or VCS of your choice to look through the changes history.
+Important notes:
+- KDoc does not support the `@deprecated` tag. Instead, use the `@Deprecated` annotation.
+- The `@since` tag should be used for versions only. Do not use dates in `@since` tag, it's confusing and less accurate.
 
-**Note**:
-* Do not use `@author` tag in KDocs. It doesn't matter who originally created a class when you can use `git blame` or VCS of your choice to look through the changes history.
-* Tag `@since` should be used for versions only. Do not use dates in `@since` tag, it's confusing and less accurate.
- 
 If a tag block cannot be described in one line, indent the content of the new line by *four spaces* from the `@` position to achieve alignment (`@` counts as one + three spaces).
  
 **Exception:**
@@ -176,11 +175,13 @@ Other KDoc tags (such as @param type parameters and @see.) can be added as follo
 ### <a name="c2.2"></a> 2.2 Adding comments on the file header
 
 This section describes the general rules of adding comments on the file header.
+
+### <a name="r2.2.1"></a> 2.2.1 Formatting of comments in the file header
+
 Comments on the file header should be placed before the package name and imports. If you need to add more content to the comment, subsequently add it in the same format.
 
-Comments on the file header must include copyright information, without the creation date and author's name (use VCS for history management). Also, describe the content inside files that contain multiple or no classes.
-
-Place comments on the file header before the package name and imports. If you need to add more content to the comment, subsequently add it in the same format.
+Comments on the file header must include copyright information, without the creation date and author's name (use VCS for history management).
+Also, describe the content inside files that contain multiple or no classes.
 
 The following examples for Huawei describe the format of the *copyright license*: \
 Chinese version: `版权所有 (c) 华为技术有限公司 2012-2020` \

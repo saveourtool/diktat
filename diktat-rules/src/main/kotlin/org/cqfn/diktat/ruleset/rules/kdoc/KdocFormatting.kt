@@ -2,14 +2,6 @@ package org.cqfn.diktat.ruleset.rules.kdoc
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
-import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_EMPTY_KDOC
-import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NEWLINES_BEFORE_BASIC_TAGS
-import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_DEPRECATED_TAG
-import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_EMPTY_TAGS
-import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS
-import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS
-import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WRONG_SPACES_AFTER_TAG
-import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WRONG_TAGS_ORDER
 import org.cqfn.diktat.ruleset.utils.allSiblings
 import org.cqfn.diktat.ruleset.utils.findChildAfter
 import org.cqfn.diktat.ruleset.utils.findChildBefore
@@ -32,6 +24,9 @@ import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.nextSibling
 import com.pinterest.ktlint.core.ast.prevSibling
+import org.cqfn.diktat.ruleset.constants.Warnings
+import org.cqfn.diktat.ruleset.constants.Warnings.*
+import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -42,6 +37,7 @@ import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
 import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
+import java.time.temporal.ChronoField
 
 /**
  * Formatting visitor for Kdoc:
@@ -50,6 +46,8 @@ import org.jetbrains.kotlin.psi.psiUtil.startOffset
  * 3) ensuring there is only one white space between tag and it's body
  * 4) ensuring tags @apiNote, @implSpec, @implNote have one empty line after their body
  * 5) ensuring tags @param, @return, @throws are arranged in this order
+ * 6) ensuring @author tag is not used
+ * 7) ensuring @since tag contains only versions and not dates
  */
 @Suppress("ForbiddenComment")
 class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-formatting") {
@@ -77,6 +75,7 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
             node.kDocBasicTags()?.let { checkEmptyLinesBetweenBasicTags(it) }
             checkBasicTagsOrder(node)
             checkNewLineAfterSpecialTags(node)
+            checkAuthorAndDate(node)
         }
     }
 
@@ -307,6 +306,17 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
         }
     }
 
+    private fun checkAuthorAndDate(node: ASTNode) {
+        node.kDocTags()
+            ?.filter {
+                it.knownTag == KDocKnownTag.AUTHOR ||
+                        it.knownTag == KDocKnownTag.SINCE && it.containsDate()
+            }
+            ?.forEach {
+                KDOC_CONTAINS_DATE_OR_AUTHOR.warn(configRules, emitWarn, isFixMode, it.text.trim(), it.startOffset, it.node)
+            }
+    }
+
     // fixme this method can be improved and extracted to utils
     private fun ASTNode.hasEmptyLineAfter(): Boolean {
         require(this.elementType == KDOC_TAG) { "This check is only for KDOC_TAG" }
@@ -320,5 +330,26 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
 
     private fun ASTNode.applyToPrevSibling(elementType: IElementType, consumer: ASTNode.() -> Unit) {
         prevSibling { it.elementType == elementType }?.apply(consumer)
+    }
+
+    /**
+     * Checks whether this tag's content represents date
+     */
+    private fun KDocTag.containsDate(): Boolean {
+        val content = getContent().trim()
+        if (' ' in content || '/' in content) {
+            // Filter based on symbols that are not allowed in versions. Assuming that people put either version or date in `@since` tag.
+            return true
+        }
+        // try to parse content as a date, check whether an exception has been thrown
+        val minimumSaneYear = 1900
+        return HeaderCommentRule.dateFormats.any {
+            // try to parse, get year and check it's value sanity
+            // otherwise it might be a tricky version format
+            runCatching {
+                it.parse(content).get(ChronoField.YEAR) > minimumSaneYear
+            }
+                .getOrNull() == true
+        }
     }
 }

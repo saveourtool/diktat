@@ -2,7 +2,7 @@ package org.cqfn.diktat.ruleset.chapter2
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
-import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_CONTAINS_DATE_OR_AUTHOR
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_MISSING_OR_WRONG_COPYRIGHT
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_NOT_BEFORE_PACKAGE
@@ -253,53 +253,6 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
             """.trimIndent(),
             LintError(1, 1, ruleId, """${Warnings.WRONG_COPYRIGHT_YEAR.warnText()} year should be ${LocalDate.now().year}""", true),
             rulesConfigList = rulesConfigListInvalidYearBeforeCopyright
-        )
-    }
-
-    @Test
-    @Tag(WarningNames.HEADER_CONTAINS_DATE_OR_AUTHOR)
-    fun `@author tag is not allowed in header comment`() {
-        lintMethod(
-            """
-                |$copyrightBlock
-                |/**
-                | * Description of this file
-                | * @author anonymous
-                | */
-                |
-                |package org.cqfn.diktat.example
-                |
-                |class Example { }
-            """.trimMargin(),
-            LintError(4, 1, ruleId, "${HEADER_CONTAINS_DATE_OR_AUTHOR.warnText()} @author anonymous"),
-            rulesConfigList = rulesConfigList
-        )
-    }
-
-    @Test
-    @Tag(WarningNames.HEADER_CONTAINS_DATE_OR_AUTHOR)
-    fun `@since tag should only contain versions`() {
-        lintMethod(
-            """
-                |$copyrightBlock
-                |/**
-                | * Description of this file
-                | * @since 2019-10-11
-                | * @since 2019.10.11
-                | * @since 1.2.3
-                | * @since 1.2.3-1
-                | * @since 1.2.3-SNAPSHOT
-                | * @since 1.2.3-rc-1
-                | * @since 1.2.3.RELEASE
-                | */
-                |
-                |package org.cqfn.diktat.example
-                |
-                |class Example { }
-            """.trimMargin(),
-            LintError(4, 1, ruleId, "${HEADER_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 2019-10-11"),
-            LintError(4, 1, ruleId, "${HEADER_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 2019.10.11"),
-            rulesConfigList = rulesConfigList
         )
     }
 

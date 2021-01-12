@@ -4,7 +4,7 @@ import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
-import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_CONTAINS_DATE_OR_AUTHOR
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_MISSING_OR_WRONG_COPYRIGHT
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_NOT_BEFORE_PACKAGE
@@ -25,6 +25,7 @@ import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.utils.kDocTags
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
@@ -32,14 +33,10 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
 import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
-import java.text.DateFormat
-import java.text.SimpleDateFormat
 
 import java.time.LocalDate
-import java.time.Year
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoField
-import java.util.Date
 
 /**
  * Visitor for header comment in .kt file:
@@ -68,21 +65,9 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
     }
 
     private fun checkHeaderKdoc(node: ASTNode) {
-        val headerKdoc = node.findChildBefore(PACKAGE_DIRECTIVE, KDOC)
-        headerKdoc?.let {
-            headerKdoc
-                .kDocTags()
-                ?.filter {
-                    it.knownTag == KDocKnownTag.AUTHOR ||
-                            it.knownTag == KDocKnownTag.SINCE && it.containsDate()
-                }
-                ?.forEach {
-                    HEADER_CONTAINS_DATE_OR_AUTHOR.warn(configRules, emitWarn, isFixMode,
-                        it.text.trim(), headerKdoc.startOffset, headerKdoc)
-                }
-
+        node.findChildBefore(PACKAGE_DIRECTIVE, KDOC)?.let { headerKdoc ->
             if (headerKdoc.treeNext != null && headerKdoc.treeNext.elementType == WHITE_SPACE &&
-                    headerKdoc.treeNext.text.count { it == '\n' } != 2) {
+                headerKdoc.treeNext.text.count { it == '\n' } != 2) {
                 HEADER_WRONG_FORMAT.warnAndFix(configRules, emitWarn, isFixMode,
                     "header KDoc should have a new line after", headerKdoc.startOffset, headerKdoc) {
                     node.replaceChild(headerKdoc.treeNext, PsiWhiteSpaceImpl("\n\n"))
@@ -229,26 +214,6 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
     }
 
     /**
-     * Checks whether this tag's content represents date
-     */
-    private fun KDocTag.containsDate(): Boolean {
-        val content = getContent().trim()
-        if (' ' in content || '/' in content) {
-            // Filter based on symbols that are not allowed in versions. Assuming that people put either version or date in `@since` tag.
-            return true
-        }
-        // try to parse content as a date, check whether an exception has been thrown
-        return dateFormats.any {
-                // try to parse, get year and check it's value sanity
-                // otherwise it might be a tricky version format
-            runCatching {
-                it.parse(content).get(ChronoField.YEAR) > 1900
-            }
-                .getOrNull() == true
-        }
-    }
-
-    /**
      * Configuration for copyright
      */
     class CopyrightConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
@@ -282,6 +247,7 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
         /**
          * [semver](https://semver.org/) regex taken from official site
          */
+        @Suppress("MaxLineLength")
         val semverRegex = Regex("^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?\$")
     }
 }
