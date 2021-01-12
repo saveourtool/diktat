@@ -66,7 +66,7 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
         emitWarn = emit
 
         val configuration = CommentsFormattingConfiguration(
-            configRules.getRuleConfig(COMMENT_WHITE_SPACE)?.configuration ?: mapOf())
+            configRules.getRuleConfig(COMMENT_WHITE_SPACE)?.configuration ?: emptyMap())
 
         when (node.elementType) {
             CLASS, FUN, PROPERTY -> checkBlankLineAfterKdoc(node)

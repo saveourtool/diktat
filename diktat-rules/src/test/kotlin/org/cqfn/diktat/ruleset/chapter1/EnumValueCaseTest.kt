@@ -43,7 +43,7 @@ class EnumValueCaseTest : FixTestBase("test/paragraph1/naming", ::IdentifierNami
         assertThrows<IllegalStateException> {
             IdentifierNaming.IdentifierNamingConfiguration(
                 rulesConfigEnumUnknownStyle.getRuleConfig(Warnings.ENUM_VALUE)
-                    ?.configuration ?: mapOf()
+                    ?.configuration ?: emptyMap()
             )
         }
     }

@@ -35,11 +35,11 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
     )
     private val rulesConfigListYear: List<RulesConfig> = listOf(
         RulesConfig("HEADER_MISSING_OR_WRONG_COPYRIGHT", true,
-            mapOf("copyrightText" to "Copyright (c) 2020 My Company, Ltd. All rights reserved."))
+            mapOf("copyrightText" to "Copyright (c) $curYear My Company, Ltd. All rights reserved."))
     )
     private val rulesConfigListCn: List<RulesConfig> = listOf(
         RulesConfig("HEADER_MISSING_OR_WRONG_COPYRIGHT", true,
-            mapOf("copyrightText" to "版权所有 (c) 华为技术有限公司 2012-2020"))
+            mapOf("copyrightText" to "版权所有 (c) 华为技术有限公司 2012-$curYear"))
     )
     private val curYearCopyright = "Copyright (c) My Company, Ltd. 2012-$curYear. All rights reserved."
     private val copyrightBlock = """
@@ -75,7 +75,7 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
         lintMethod(
             """
                 /*
-                 * 版权所有 (c) 华为技术有限公司 2012-2020
+                 * 版权所有 (c) 华为技术有限公司 2012-$curYear
                  */
                 /**
                  * Very useful description, why this file has two classes
@@ -191,7 +191,7 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
         lintMethod(
             """
                 /*
-                 * Copyright (c) 2020 My Company, Ltd. All rights reserved.
+                 * Copyright (c) $curYear My Company, Ltd. All rights reserved.
                  */
                 /**
                  * Very useful description, why this file has two classes
@@ -346,7 +346,7 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
                 |class Example { }
             """.trimMargin(),
             LintError(5, 1, ruleId, "${HEADER_NOT_BEFORE_PACKAGE.warnText()} header KDoc is located after package or imports", true),
-            rulesConfigList = listOf()
+            rulesConfigList = emptyList()
         )
     }
 

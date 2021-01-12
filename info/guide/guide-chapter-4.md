@@ -65,7 +65,7 @@ if (abs(foo - bar) > 1e-6f) {
 }
 ```
 
-#### <a name="r4.1.3"></a> 4.1.3 Try to use 'val' instead of 'var' for variable declaration [SAY_NO_TO_VAR].
+#### <a name="r4.1.3"></a> 4.1.3 Try to use 'val' instead of 'var' for variable declaration [SAY_NO_TO_VAR]
 
 Variables with the `val` modifier are immutable (read-only).
 Using `val` variables instead of `var` variables increases code robustness and readability.
@@ -75,7 +75,7 @@ However, in some scenarios with loops or accumulators, only `var`s are permitted
 <!-- =============================================================================== -->
 ### <a name="c4.2"></a> 4.2 Types
 This section provides recommendations for using types.
-#### <a name="r4.2.1"></a> 4.2.1: Use Contracts and smart cast as much as possible.
+#### <a name="r4.2.1"></a> 4.2.1: Use Contracts and smart cast as much as possible
 
 The Kotlin compiler has introduced [Smart Casts](https://kotlinlang.org/docs/reference/typecasts.html#smart-casts) that help reduce the size of code.
 
@@ -123,7 +123,7 @@ fun foo(s: String?) {
 }
 ```
 
-#### <a name="r4.2.2"></a> 4.2.2: Try to use type alias to represent types making code more readable.
+#### <a name="r4.2.2"></a> 4.2.2: Try to use type alias to represent types making code more readable
 
 Type aliases provide alternative names for existing types.
 If the type name is too long, you can replace it with a shorter name, which helps to shorten long generic types.
@@ -152,7 +152,7 @@ typealias Predicate<T> = (T) -> Boolean
 ### <a name="c4.3"></a> 4.3 Null safety and variable declarations
 Kotlin is declared as a null-safe programming language. However, to achieve compatibility with Java, it still supports nullable types.
 
-#### <a name="r4.3.1"></a> Recommendation 4.3.1: Avoid declaring variables with nullable types, especially from Kotlin stdlib.
+#### <a name="r4.3.1"></a> 4.3.1: Avoid declaring variables with nullable types, especially from Kotlin stdlib
 To avoid `NullPointerException` and help the compiler prevent Null Pointer Exceptions, avoid using nullable types (with `?` symbol).
 
 **Invalid example**:
@@ -199,7 +199,7 @@ val myVariable = emptyMap<Int, String>()
 val myVariable: Map<Int, String> = emptyMap() 
 ```
 
-#### <a name="r4.3.3"></a> Null-safety
+#### <a name="r4.3.3"></a> 4.3.3 Null-safety
 
 Try to avoid explicit null checks (explicit comparison with `null`) 
 Kotlin is declared as [Null-safe](https://kotlinlang.org/docs/reference/null-safety.html) language.

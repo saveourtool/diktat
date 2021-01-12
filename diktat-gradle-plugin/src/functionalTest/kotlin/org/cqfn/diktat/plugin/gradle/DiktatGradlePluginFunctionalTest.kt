@@ -1,8 +1,8 @@
 package org.cqfn.diktat.plugin.gradle
 
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.DIKTAT_CHECK_TASK
+import org.gradle.buildinit.plugins.internal.modifiers.BuildInitDsl
 import org.gradle.internal.impldep.org.junit.rules.TemporaryFolder
-import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
@@ -17,22 +17,9 @@ class DiktatGradlePluginFunctionalTest {
     @BeforeEach
     fun setUp() {
         testProjectDir.create()
-        File("../examples/gradle-kotlin-dsl").copyRecursively(testProjectDir.root)
-        File(testProjectDir.root, "build.gradle.kts").delete()
-        buildFile = testProjectDir.newFile("build.gradle.kts").apply {
-            writeText(
-                """
-                plugins {
-                    id("org.cqfn.diktat.diktat-gradle-plugin")
-                }
-                
-                repositories {
-                    mavenLocal()
-                    mavenCentral()
-                }
-            """.trimIndent()
-            )
-        }
+        val buildInitDsl = BuildInitDsl.KOTLIN
+        createExampleProject(testProjectDir, File("../examples/gradle-kotlin-dsl"), buildInitDsl)
+        buildFile = testProjectDir.root.resolve(buildInitDsl.fileNameFor("build"))
     }
 
     @AfterEach
@@ -42,7 +29,7 @@ class DiktatGradlePluginFunctionalTest {
 
     @Test
     fun `should execute diktatCheck on default values`() {
-        val result = runDiktat()
+        val result = runDiktat(testProjectDir, shouldSucceed = false)
 
         val diktatCheckBuildResult = result.task(":$DIKTAT_CHECK_TASK")
         requireNotNull(diktatCheckBuildResult)
@@ -61,7 +48,7 @@ class DiktatGradlePluginFunctionalTest {
                 }
             """.trimIndent()
         )
-        val result = runDiktat()
+        val result = runDiktat(testProjectDir, shouldSucceed = false)
 
         val diktatCheckBuildResult = result.task(":$DIKTAT_CHECK_TASK")
         requireNotNull(diktatCheckBuildResult)
@@ -71,31 +58,121 @@ class DiktatGradlePluginFunctionalTest {
         )
     }
 
-    private fun runDiktat() = GradleRunner.create()
-        .withProjectDir(testProjectDir.root)
-        .withArguments(DIKTAT_CHECK_TASK)
-        .withPluginClasspath()
-        .withJaCoCo()
-        .forwardOutput()
-        .runCatching {
-            buildAndFail()
-        }
-        .also {
-            require(it.isSuccess) { "Running gradle returned exception ${it.exceptionOrNull()}" }
-        }
-        .getOrNull()!!
-
-    /**
-     * This is support for jacoco reports in tests run with gradle TestKit
-     */
-    private fun GradleRunner.withJaCoCo() = apply {
-        javaClass.classLoader
-            .getResourceAsStream("testkit-gradle.properties")
-            .also { it ?: println("properties file for testkit is not available, check build configuration") }
-            ?.use { propertiesFileStream ->
-                File(projectDir, "gradle.properties").outputStream().use {
-                    propertiesFileStream.copyTo(it)
+    @Test
+    fun `should execute diktatCheck with excludes`() {
+        buildFile.appendText(
+            """${System.lineSeparator()}
+                diktat {
+                    inputs = files("src/**/*.kt")
+                    excludes = files("src/**/Test.kt")
                 }
-            }
+            """.trimIndent()
+        )
+        val result = runDiktat(testProjectDir)
+
+        val diktatCheckBuildResult = result.task(":$DIKTAT_CHECK_TASK")
+        requireNotNull(diktatCheckBuildResult)
+        Assertions.assertEquals(TaskOutcome.SUCCESS, diktatCheckBuildResult.outcome)
+    }
+
+    @Test
+    fun `should not run diktat with ktlint's default includes when no files match include patterns`() {
+        buildFile.appendText(
+            """${System.lineSeparator()}
+                diktat {
+                    inputs = files("nonexistent-directory/src/**/*.kt")
+                }
+            """.trimIndent()
+        )
+        val result = runDiktat(testProjectDir, arguments = listOf("--info"))
+
+        // if patterns in gradle are not checked for matching, they are passed to ktlint, which does nothing
+        val diktatCheckBuildResult = result.task(":$DIKTAT_CHECK_TASK")
+        requireNotNull(diktatCheckBuildResult)
+        Assertions.assertEquals(TaskOutcome.SUCCESS, diktatCheckBuildResult.outcome)
+        Assertions.assertFalse(
+            result.output.contains("Skipping diktat execution")
+        )
+        Assertions.assertFalse(
+            result.output.contains("Inputs for $DIKTAT_CHECK_TASK do not exist, will not run diktat")
+        )
+    }
+
+    @Test
+    fun `should not run diktat with ktlint's default includes when no files match include patterns - 2`() {
+        buildFile.appendText(
+            """${System.lineSeparator()}
+                diktat {
+                    inputs = fileTree("nonexistent-directory/src").apply { include("**/*.kt") }
+                }
+            """.trimIndent()
+        )
+        val result = runDiktat(testProjectDir, arguments = listOf("--info"))
+
+        val diktatCheckBuildResult = result.task(":$DIKTAT_CHECK_TASK")
+        requireNotNull(diktatCheckBuildResult)
+        Assertions.assertEquals(TaskOutcome.SUCCESS, diktatCheckBuildResult.outcome)
+        Assertions.assertTrue(
+            result.output.contains("Skipping diktat execution")
+        )
+        Assertions.assertTrue(
+            result.output.contains("Inputs for $DIKTAT_CHECK_TASK do not exist, will not run diktat")
+        )
+    }
+
+    @Test
+    fun `should execute diktatCheck with absolute paths`() {
+        val path = testProjectDir.root
+            .resolve("src/**/*.kt")
+            .absolutePath
+            .replace("\\", "\\\\")
+        buildFile.appendText(
+            """${System.lineSeparator()}
+                diktat {
+                    inputs = files("$path")
+                }
+            """.trimIndent()
+        )
+        val result = runDiktat(testProjectDir, shouldSucceed = false)
+
+        val diktatCheckBuildResult = result.task(":$DIKTAT_CHECK_TASK")
+        requireNotNull(diktatCheckBuildResult)
+        Assertions.assertEquals(TaskOutcome.FAILED, diktatCheckBuildResult.outcome)
+        Assertions.assertTrue(
+            result.output.contains("[HEADER_MISSING_OR_WRONG_COPYRIGHT]")
+        )
+    }
+
+    @Test
+    fun `should execute diktatCheck with gradle older than 6_4`() {
+        val result = runDiktat(testProjectDir, shouldSucceed = false, arguments = listOf("--info")) {
+            withGradleVersion("5.0")
+        }
+
+        val diktatCheckBuildResult = result.task(":$DIKTAT_CHECK_TASK")
+        requireNotNull(diktatCheckBuildResult)
+        Assertions.assertEquals(TaskOutcome.FAILED, diktatCheckBuildResult.outcome)
+        Assertions.assertTrue(
+            result.output.contains("[HEADER_MISSING_OR_WRONG_COPYRIGHT]")
+        )
+    }
+
+    @Test
+    fun `should respect ignoreFailures setting`() {
+        buildFile.appendText(
+            """${System.lineSeparator()}
+                diktat {
+                    ignoreFailures = true
+                }
+            """.trimIndent()
+        )
+        val result = runDiktat(testProjectDir, shouldSucceed = true, arguments = listOf("--info"))
+
+        val diktatCheckBuildResult = result.task(":$DIKTAT_CHECK_TASK")
+        requireNotNull(diktatCheckBuildResult)
+        Assertions.assertEquals(TaskOutcome.SUCCESS, diktatCheckBuildResult.outcome)
+        Assertions.assertTrue(
+            result.output.contains("[HEADER_MISSING_OR_WRONG_COPYRIGHT]")
+        )
     }
 }

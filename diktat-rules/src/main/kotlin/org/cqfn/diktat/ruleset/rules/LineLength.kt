@@ -70,7 +70,7 @@ class LineLength(private val configRules: List<RulesConfig>) : Rule("line-length
         isFixMode = autoCorrect
 
         val configuration = LineLengthConfiguration(
-            configRules.getRuleConfig(LONG_LINE)?.configuration ?: mapOf())
+            configRules.getRuleConfig(LONG_LINE)?.configuration ?: emptyMap())
 
         if (node.elementType == FILE) {
             node.getChildren(null).forEach {

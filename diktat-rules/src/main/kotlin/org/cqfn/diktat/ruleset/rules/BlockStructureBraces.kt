@@ -63,7 +63,7 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
         isFixMode = autoCorrect
 
         val configuration = BlockStructureBracesConfiguration(
-            configRules.getRuleConfig(BRACES_BLOCK_STRUCTURE_ERROR)?.configuration ?: mapOf()
+            configRules.getRuleConfig(BRACES_BLOCK_STRUCTURE_ERROR)?.configuration ?: emptyMap()
         )
 
         when (node.elementType) {

@@ -20,7 +20,7 @@ class FileSize(private val configRules: List<RulesConfig>) : Rule("file-size") {
     private var isFixMode: Boolean = false
     private val configuration by lazy {
         FileSizeConfiguration(
-            this.configRules.getRuleConfig(FILE_IS_TOO_LONG)?.configuration ?: mapOf()
+            this.configRules.getRuleConfig(FILE_IS_TOO_LONG)?.configuration ?: emptyMap()
         )
     }
     private lateinit var emitWarn: EmitType

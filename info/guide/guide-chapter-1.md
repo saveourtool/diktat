@@ -4,7 +4,7 @@ In programming, it is not always easy to meaningfully and appropriately name var
 Note: The source file encoding format (including comments) must be UTF-8 only. The ASCII horizontal space character (0x20, that is, space) is the only permitted whitespace character. Tabs should not be used for indentation.
 
 <!-- =============================================================================== -->
-### <a name="c1.1"></a> 1.1 Identifier names
+### <a name="c1.1"></a> 1.1 Identifiers
 This section describes the general rules for naming identifiers.
 #### <a name="r1.1.1"></a> 1.1.1 Identifiers naming conventions
 
@@ -66,7 +66,7 @@ Note that prefixing can also negatively affect the style and the auto-generation
 | Exceptions | Same as class names, but with a suffix Exception, for example: `AccessException` and `NullPointerException`|
 
 <!-- =============================================================================== -->
-### <a name="c1.2"></a> 1.2 Packages names
+### <a name="c1.2"></a> 1.2 Packages
 
 #### <a name="r1.2.1"></a> Rule 1.2.1 Package names dots
 Package names are in lower case and separated by dots. Code developed within your company should start with `your.company.domain.` Numbers are permitted in package names.

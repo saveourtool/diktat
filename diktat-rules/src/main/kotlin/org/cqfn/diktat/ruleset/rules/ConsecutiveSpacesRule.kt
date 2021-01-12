@@ -32,7 +32,7 @@ class ConsecutiveSpacesRule(private val configRules: List<RulesConfig>) : Rule("
         isFixMode = autoCorrect
 
         val configuration = TooManySpacesRuleConfiguration(
-            configRules.getRuleConfig(TOO_MANY_CONSECUTIVE_SPACES)?.configuration ?: mapOf())
+            configRules.getRuleConfig(TOO_MANY_CONSECUTIVE_SPACES)?.configuration ?: emptyMap())
 
         if (node.elementType == WHITE_SPACE) {
             checkWhiteSpace(node, configuration)
@@ -79,7 +79,7 @@ class ConsecutiveSpacesRule(private val configRules: List<RulesConfig>) : Rule("
         /**
          * Maximum allowed number of consecutive spaces (not counting indentation)
          */
-        val numberOfSpaces = config["max_spaces"]?.toIntOrNull() ?: MAX_SPACES
+        val numberOfSpaces = config["maxSpaces"]?.toIntOrNull() ?: MAX_SPACES
 
         /**
          * Whether formatting for enums should be kept without checking

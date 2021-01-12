@@ -37,6 +37,7 @@ import org.cqfn.diktat.ruleset.utils.isPascalCase
 import org.cqfn.diktat.ruleset.utils.isTextLengthInRange
 import org.cqfn.diktat.ruleset.utils.isUpperSnakeCase
 import org.cqfn.diktat.ruleset.utils.removePrefix
+import org.cqfn.diktat.ruleset.utils.search.findAllVariablesWithUsages
 import org.cqfn.diktat.ruleset.utils.toLowerCamelCase
 import org.cqfn.diktat.ruleset.utils.toPascalCase
 import org.cqfn.diktat.ruleset.utils.toUpperSnakeCase
@@ -47,16 +48,21 @@ import com.pinterest.ktlint.core.ast.ElementType.CATCH
 import com.pinterest.ktlint.core.ast.ElementType.CATCH_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.DESTRUCTURING_DECLARATION
 import com.pinterest.ktlint.core.ast.ElementType.DESTRUCTURING_DECLARATION_ENTRY
+import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_TYPE
+import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_PARAMETER
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
+import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevCodeSibling
 import org.jetbrains.kotlin.builtins.PrimitiveType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.psi.KtProperty
+import org.jetbrains.kotlin.psi.psiUtil.isPrivate
 import org.jetbrains.kotlin.psi.psiUtil.parents
 
 /**
@@ -73,8 +79,20 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  * // FixMe: very important, that current implementation cannot fix identifier naming properly,
  * // FixMe: because it fixes only declaration without the usages
  */
-@Suppress("ForbiddenComment")
+@Suppress("ForbiddenComment", "MISSING_KDOC_CLASS_ELEMENTS")
 class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("identifier-naming") {
+    private val allMethodPrefixes by lazy {
+        if (configuration.allowedBooleanPrefixes.isNullOrEmpty()) {
+            booleanMethodPrefixes
+        } else {
+            booleanMethodPrefixes + configuration.allowedBooleanPrefixes.filter { it.isNotEmpty() }
+        }
+    }
+    val configuration by lazy {
+        BooleanFunctionsConfiguration(
+            this.configRules.getRuleConfig(FUNCTION_BOOLEAN_PREFIX)?.configuration ?: emptyMap()
+        )
+    }
     private var isFixMode: Boolean = false
     private lateinit var emitWarn: EmitType
 
@@ -134,10 +152,13 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
     /**
      * all checks for case and naming for vals/vars/constants
      */
-    @Suppress("SAY_NO_TO_VAR")
+    @Suppress("SAY_NO_TO_VAR", "TOO_LONG_FUNCTION", "ComplexMethod")
     private fun checkVariableName(node: ASTNode): List<ASTNode> {
         // special case for Destructuring declarations that can be treated as parameters in lambda:
         var namesOfVariables = extractVariableIdentifiers(node)
+        // Only local private properties will be autofix in order not to break code if there are usages in other files.
+        // Destructuring declarations are only allowed for local variables/values, so we don't need to calculate `isFix` for every node in `namesOfVariables`
+        val isFix = isFixMode && if (node.elementType == PROPERTY) (node.psi as KtProperty).run { isLocal || isPrivate() } else true
         namesOfVariables
             .forEach { variableName ->
                 // variable should not contain only one letter in it's name. This is a bad example: b512
@@ -154,15 +175,21 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
                 // it should be in UPPER_CASE, no need to raise this warning if it is one-letter variable
                 if (node.isConstant()) {
                     if (!variableName.text.isUpperSnakeCase() && variableName.text.length > 1) {
-                        CONSTANT_UPPERCASE.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset, node) {
+                        CONSTANT_UPPERCASE.warnAndFix(configRules, emitWarn, isFix, variableName.text, variableName.startOffset, node) {
                             (variableName as LeafPsiElement).replaceWithText(variableName.text.toUpperSnakeCase())
                         }
                     }
                 } else if (variableName.text != "_" && !variableName.text.isLowerCamelCase()) {
                     // variable name should be in camel case. The only exception is a list of industry standard variables like i, j, k.
-                    VARIABLE_NAME_INCORRECT_FORMAT.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset, node) {
+                    VARIABLE_NAME_INCORRECT_FORMAT.warnAndFix(configRules, emitWarn, isFix, variableName.text, variableName.startOffset, node) {
                         // FixMe: cover fixes with tests
-                        (variableName as LeafPsiElement).replaceWithText(variableName.text.toLowerCamelCase())
+                        val correctVariableName = variableName.text.toLowerCamelCase()
+                        variableName
+                            .parent({it.elementType == FILE})
+                            ?.findAllVariablesWithUsages { it.name == variableName.text }
+                            ?.flatMap { it.value.toList() }
+                            ?.forEach { (it.node.firstChildNode as LeafPsiElement).replaceWithText(correctVariableName)}
+                        (variableName as LeafPsiElement).replaceWithText(correctVariableName)
                     }
                 }
             }
@@ -236,7 +263,7 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
             }
         }
 
-        val className: ASTNode = node.getIdentifierName() ?: return listOf()
+        val className: ASTNode = node.getIdentifierName() ?: return emptyList()
         if (!(className.text.isPascalCase())) {
             CLASS_NAME_INCORRECT.warnAndFix(configRules, emitWarn, isFixMode, className.text, className.startOffset, className) {
                 (className as LeafPsiElement).replaceWithText(className.text.toPascalCase())
@@ -275,7 +302,7 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
      */
     private fun checkObjectNaming(node: ASTNode): List<ASTNode> {
         // if this object is companion object or anonymous object - it does not have any name
-        val objectName: ASTNode = node.getIdentifierName() ?: return listOf()
+        val objectName: ASTNode = node.getIdentifierName() ?: return emptyList()
         if (!objectName.text.isPascalCase()) {
             OBJECT_NAME_INCORRECT.warnAndFix(configRules, emitWarn, isFixMode, objectName.text, objectName.startOffset, objectName) {
                 (objectName as LeafPsiElement).replaceWithText(objectName.text.toPascalCase())
@@ -293,7 +320,7 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
         val enumValues: List<ASTNode> = node.getChildren(null).filter { it.elementType == ElementType.IDENTIFIER }
         enumValues.forEach { value ->
             val configuration = IdentifierNamingConfiguration(configRules.getRuleConfig(ENUM_VALUE)?.configuration
-                ?: mapOf())
+                ?: emptyMap())
             val validator = when (configuration.enumStyle) {
                 Style.PASCAL_CASE -> String::isPascalCase
                 Style.SNAKE_CASE -> String::isUpperSnakeCase
@@ -343,7 +370,7 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
         if (!node.isOverridden()) {
             // if function has Boolean return type in 99% of cases it is much better to name it with isXXX or hasXXX prefix
             if (functionReturnType != null && functionReturnType == PrimitiveType.BOOLEAN.typeName.asString()) {
-                if (booleanMethodPrefixes.none { functionName.text.startsWith(it) }) {
+                if (allMethodPrefixes.none { functionName.text.startsWith(it) }) {
                     FUNCTION_BOOLEAN_PREFIX.warnAndFix(configRules, emitWarn, isFixMode, functionName.text, functionName.startOffset, functionName) {
                         // FixMe: add agressive autofix for this
                     }
@@ -411,13 +438,20 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
         } ?: Style.SNAKE_CASE
     }
 
+    class BooleanFunctionsConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
+        /**
+         * A list of functions that return boolean and are allowed to use. Input is in a form "foo, bar".
+         */
+        val allowedBooleanPrefixes = config["allowedPrefixes"]?.split(",")?.map { it.trim() } ?: emptyList()
+    }
+
     companion object {
         const val MAX_IDENTIFIER_LENGTH = 64
         const val MIN_IDENTIFIER_LENGTH = 2
 
         // FixMe: this should be moved to properties
         val oneCharIdentifiers = setOf("i", "j", "k", "x", "y", "z")
-        val booleanMethodPrefixes = setOf("has", "is")
+        val booleanMethodPrefixes = setOf("has", "is", "are", "have", "should")
         val confusingIdentifierNames = setOf("O", "D", "I", "l", "Z", "S", "e", "B", "h", "n", "m", "rn")
     }
 }

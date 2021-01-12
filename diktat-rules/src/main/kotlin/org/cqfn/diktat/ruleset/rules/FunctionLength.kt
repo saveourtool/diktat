@@ -26,7 +26,7 @@ class FunctionLength(private val configRules: List<RulesConfig>) : Rule("functio
         isFixMode = autoCorrect
 
         val configuration = FunctionLengthConfiguration(
-            configRules.getRuleConfig(TOO_LONG_FUNCTION)?.configuration ?: mapOf()
+            configRules.getRuleConfig(TOO_LONG_FUNCTION)?.configuration ?: emptyMap()
         )
 
         if (node.elementType == FUN) {

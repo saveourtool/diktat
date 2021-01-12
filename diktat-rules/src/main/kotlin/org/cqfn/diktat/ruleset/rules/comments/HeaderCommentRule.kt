@@ -143,7 +143,7 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
     @Suppress("TOO_LONG_FUNCTION", "ComplexMethod")
     private fun checkCopyright(node: ASTNode) {
         val configuration = CopyrightConfiguration(configRules.getRuleConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT)?.configuration
-            ?: mapOf())
+            ?: emptyMap())
         if (!configuration.isCopyrightMandatory() && !configuration.hasCopyrightText()) {
             return
         }
@@ -151,7 +151,7 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
         val copyrightText = configuration.getCopyrightText()
 
         val headerComment = node.findChildBefore(PACKAGE_DIRECTIVE, BLOCK_COMMENT)
-        val isWrongCopyright = headerComment != null && !headerComment.text.contains(copyrightText)
+        val isWrongCopyright = headerComment != null && !headerComment.text.flatten().contains(copyrightText.flatten())
         val isMissingCopyright = headerComment == null && configuration.isCopyrightMandatory()
         val isCopyrightInsideKdoc = (node.getAllChildrenWithType(KDOC) + node.getAllChildrenWithType(ElementType.EOL_COMMENT))
             .any { commentNode ->
@@ -172,10 +172,10 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
                 node.addChild(PsiWhiteSpaceImpl(newLines), node.firstChildNode)
                 node.addChild(LeafPsiElement(BLOCK_COMMENT,
                     """
-                            /*
-                             * $copyrightText
-                             */
-                        """.trimIndent()),
+                        |/*
+                        |${handleMultilineCopyright(copyrightText)}
+                        |*/
+                    """.trimMargin()),
                     node.firstChildNode
                 )
             }
@@ -188,6 +188,34 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
                 (headerComment as LeafElement).replaceWithText(headerComment.text.replace(copyrightText, copyrightWithCorrectYear))
             }
         }
+    }
+
+    /**
+     * Deletes all spaces and newlines
+     * Used to compare copyrights in yaml and file
+     */
+    private fun String.flatten(): String =
+            replace("\n", "")
+                .replace(" ", "")
+
+    /**
+     * If it is multiline copyright, this method deletes spaces in empty lines.
+     * Otherwise, if it is one line copyright, it returns it with 4 spaces at the beginning.
+     */
+    private fun handleMultilineCopyright(copyrightText: String): String {
+        if (copyrightText.startsWith(" ")) {
+            return copyrightText
+                .lines()
+                .dropWhile { it.isBlank() }
+                .reduce { acc, nextLine ->
+                    when {
+                        nextLine.isBlank() -> "$acc\n"
+                        else -> "$acc\n$nextLine"
+                    }
+                }
+        }
+
+        return "    $copyrightText"
     }
 
     /**

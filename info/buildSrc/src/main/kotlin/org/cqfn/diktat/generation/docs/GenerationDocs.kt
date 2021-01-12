@@ -3,6 +3,7 @@
 package org.cqfn.diktat.generation.docs
 
 import java.io.File
+import java.io.PrintWriter
 
 /**
  * Adds/updates diktat code style in white paper document.
@@ -18,10 +19,31 @@ import java.io.File
 fun generateCodeStyle(guideDir: File, wpDir: File) {
     val file = File(guideDir, "diktat-coding-convention.md")
     val tempFile = File(wpDir, "convention.tex")
-    val lines = file.readLines().toMutableList()
+    val lines = file.readLines().toMutableList().drop(1)
     tempFile.printWriter().use { writer ->
         val iterator = lines.iterator()
         writer.writeln("\\lstMakeShortInline[basicstyle=\\ttfamily\\bfseries]`")
+        while (iterator.hasNext()) {
+            val line = iterator.next()
+            if (line.contains("## <a name=\"c0\"></a> Preface"))
+                break;
+
+            when {
+                line.startsWith("#") -> {
+                    writer.writeln("\\section*{${line.removePrefix("#").trim()}}")
+                }
+                line.startsWith("*") -> {
+                    writeTableContentLine(writer, line, 0.5)
+                }
+                line.startsWith(" ") -> {
+                    writeTableContentLine(writer, line, 1.0)
+                }
+                else -> {
+                    writeTableContentLine(writer, line, 0.0)
+                }
+            }
+        }
+
         while (iterator.hasNext()) {
             var line = iterator.next()
             if (line.contains("<!--")) {
@@ -42,6 +64,7 @@ fun generateCodeStyle(guideDir: File, wpDir: File) {
                 if (name.isNullOrEmpty() || number.isNullOrEmpty()) {
                     if (number.isNullOrEmpty() && name.isNullOrEmpty()) {
                         when (line.takeWhile { it == '#' }.count()) {
+                            1 -> writer.writeln("""\section*{\textbf{${line.removePrefix("#").trim()}}}""")
                             2 -> writer.writeln("""\section*{\textbf{${line.removePrefix("##").trim()}}}""")
                             3 -> writer.writeln("""\subsection*{\textbf{${line.removePrefix("###").trim()}}}""")
                             4 -> writer.writeln("""\subsubsection*{\textbf{${line.removePrefix("####").trim()}}}${"\n"}\leavevmode\newline""")
@@ -57,6 +80,8 @@ fun generateCodeStyle(guideDir: File, wpDir: File) {
                     2 -> writer.writeln("""\subsubsection*{\textbf{$name}}${"\n"}\leavevmode\newline""")
                     else -> {}
                 }
+                writer.writeln("\\label{sec:${name.getFirstNumber()}}")
+
                 continue
             }
             if (iterator.hasNext() && line.trim().startsWith("```")) {
@@ -109,16 +134,34 @@ fun generateCodeStyle(guideDir: File, wpDir: File) {
                 correctedString = correctedString.replace("&", "\\&")
                 correctedString = correctedString.replace("_", "\\_")
                 // find backticks should be the last to replace \_ with _
+                correctedString = handleHyperlinks(correctedString)
                 correctedString = findBoldOrItalicText(BACKTICKS_TEXT, correctedString, FindType.BACKTICKS)
+
                 writer.writeln(correctedString)
             }
         }
     }
-    val appendixFileLines = File(wpDir, "sections/appendix.tex").readLines().toMutableList()
-    appendixFileLines.removeAll(appendixFileLines.subList(appendixFileLines.indexOf("\\section*{guide}"), appendixFileLines.lastIndex + 1))
+    val appendixFileLines = File(wpDir, "sections/appendix.tex")
+            .readLines()
+            .takeWhile { it != "\\lstMakeShortInline[basicstyle=\\ttfamily\\bfseries]`" }
+            .toMutableList()
     appendixFileLines.addAll(tempFile.readLines())
     File(wpDir, "sections/appendix.tex").writeText(appendixFileLines.joinToString(separator = "\n"))
     tempFile.delete()
+}
+
+private fun writeTableContentLine(writer: PrintWriter, line: String, numbOfSpaces: Double) {
+    writer.write("\\hspace{${numbOfSpaces}cm}")
+    val correctLine = line
+            .trim()
+            .replace("[", "")
+            .replace("]", "")
+            .replace("*", "")
+            .replace(ANCHORS, "")
+            .replace("_", "\\_")
+            .replace("#", "\\#")
+            .replace("&", "\\&")
+    writer.writeln("\\hyperref[sec:${correctLine.getFirstNumber()}]{$correctLine}")
 }
 
 /**
@@ -129,6 +172,28 @@ enum class FindType {
     BOLD,
     ITALIC,
     ;
+}
+
+private fun handleHyperlinks(line: String): String {
+    var correctedString = line
+    if (correctedString.contains(HYPERLINKS)) {
+        val hyperlinkSubString = HYPERLINKS.findAll(correctedString)
+        hyperlinkSubString.forEach {
+            var (text, link) = HYPERLINKS.find(it.value)!!.destructured
+            // need to replace back, because it is a hyperlink
+            link = link.trim().drop(1).dropLast(1) // drop ( and )
+            link = link.replace("\\#", "#")
+            link = link.replace("\\&", "&")
+            link = link.replace("\\_", "_")
+            // need to replace ` in hyperlink, because it breaks latex compilation
+            text = text.replace("`", "")
+            text = text.trim().drop(1).dropLast(1) // dropping [ and ]
+            val hyperlink = """\href{$link}{$text}"""
+            correctedString = correctedString.replace(it.value, hyperlink)
+        }
+    }
+
+    return correctedString
 }
 
 @Suppress("WRONG_INDENTATION")
@@ -157,3 +222,5 @@ private fun findBoldOrItalicText(regex: Regex,
     }
     return correctedLine
 }
+
+private fun String.getFirstNumber() = trimStart().takeWhile { it.isDigit() || it == '.' }

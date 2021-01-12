@@ -24,13 +24,14 @@ import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.OVERRIDE_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.PRIVATE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PROTECTED_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PUBLIC_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isLeaf
+import com.pinterest.ktlint.core.ast.isPartOfComment
 import com.pinterest.ktlint.core.ast.isRoot
+import com.pinterest.ktlint.core.ast.isWhiteSpace
 import com.pinterest.ktlint.core.ast.lineNumber
 import com.pinterest.ktlint.core.ast.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -170,6 +171,14 @@ fun ASTNode.isBeginByNewline() =
         } ?: false
 
 /**
+ * Checks if there is a newline before this element or before comment before. See [isBeginByNewline] for motivation on parents check.
+ */
+fun ASTNode.isBeginNewLineWithComment() =
+        isBeginByNewline() || siblings(forward = false).takeWhile { !it.textContains('\n') }.toList().run {
+            all { it.isWhiteSpace() || it.isPartOfComment() } && isNotEmpty()
+        }
+
+/**
  * checks if the node has corresponding child with elementTyp
  */
 fun ASTNode.hasChildOfType(elementType: IElementType) =
@@ -258,7 +267,7 @@ fun ASTNode.prevNodeUntilNode(stopNodeType: IElementType, checkNodeType: IElemen
  * @return list of siblings
  */
 fun ASTNode.allSiblings(withSelf: Boolean = false): List<ASTNode> =
-        siblings(false).toList() + (if (withSelf) listOf(this) else listOf()) + siblings(true)
+        siblings(false).toList() + (if (withSelf) listOf(this) else emptyList()) + siblings(true)
 
 /**
  * Checks whether [this] node belongs to a companion object
@@ -617,7 +626,6 @@ fun ASTNode.isChildBeforeGroup(child: ASTNode, group: List<ASTNode>): Boolean =
  *
  * @return boolean result
  */
-@Suppress("FUNCTION_BOOLEAN_PREFIX")
 fun ASTNode.areChildrenBeforeChild(children: List<ASTNode>, beforeChild: ASTNode): Boolean =
         areChildrenBeforeGroup(children, listOf(beforeChild))
 
@@ -626,7 +634,7 @@ fun ASTNode.areChildrenBeforeChild(children: List<ASTNode>, beforeChild: ASTNode
  *
  * @return boolean result
  */
-@Suppress("UnsafeCallOnNullableType", "FUNCTION_BOOLEAN_PREFIX")
+@Suppress("UnsafeCallOnNullableType")
 fun ASTNode.areChildrenBeforeGroup(children: List<ASTNode>, group: List<ASTNode>): Boolean {
     require(children.isNotEmpty() && group.isNotEmpty()) { "no sense to operate on empty lists" }
     return children.map { getChildren(null).indexOf(it) }.max()!! < group.map { getChildren(null).indexOf(it) }.min()!!

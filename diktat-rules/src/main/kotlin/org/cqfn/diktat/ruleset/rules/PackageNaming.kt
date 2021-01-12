@@ -60,7 +60,7 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
             val realPackageName = calculateRealPackageName(filePath)
 
             // if node isLeaf - this means that there is no package name declared
-            if (node.isLeaf()) {
+            if (node.isLeaf() && !filePath.isKotlinScript()) {
                 warnAndFixMissingPackageName(node, realPackageName, filePath)
                 return
             }
@@ -104,7 +104,7 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
         return if (!filePathParts.contains(PACKAGE_PATH_ANCHOR)) {
             log.error("Not able to determine a path to a scanned file or src directory cannot be found in it's path." +
                     " Will not be able to determine correct package name. It can happen due to missing <src> directory in the path")
-            listOf()
+            emptyList()
         } else {
             // creating a real package name:
             // 1) getting a path after the base project directory (after "src" directory)
@@ -113,7 +113,7 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
             val fileSubDir = filePathParts.subList(filePathParts.lastIndexOf(PACKAGE_PATH_ANCHOR), filePathParts.size - 1)
                 .dropWhile { languageDirNames.contains(it) }
             // no need to add DOMAIN_NAME to the package name if it is already in path
-            val domainPrefix = if (!fileSubDir.joinToString(PACKAGE_SEPARATOR).startsWith(domainName)) domainName.split(PACKAGE_SEPARATOR) else listOf()
+            val domainPrefix = if (!fileSubDir.joinToString(PACKAGE_SEPARATOR).startsWith(domainName)) domainName.split(PACKAGE_SEPARATOR) else emptyList()
             domainPrefix + fileSubDir
         }
     }
@@ -129,7 +129,7 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
             }
 
         // package name should start from a company's domain name
-        if (!isDomainMatches(wordsInPackageName)) {
+        if (wordsInPackageName.isNotEmpty() && !isDomainMatches(wordsInPackageName)) {
             PACKAGE_NAME_INCORRECT_PREFIX.warnAndFix(configRules, emitWarn, isFixMode, domainName,
                 wordsInPackageName[0].startOffset, wordsInPackageName[0]) {
                 val oldPackageName = wordsInPackageName.joinToString(PACKAGE_SEPARATOR) { it.text }
@@ -150,7 +150,6 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
     /**
      * only letters, digits and underscore are allowed
      */
-    @Suppress("FUNCTION_BOOLEAN_PREFIX")
     private fun areCorrectSymbolsUsed(word: String): Boolean {
         // underscores are allowed in some cases - see "exceptionForUnderscore"
         val wordFromPackage = word.replace("_", "")

@@ -11,6 +11,7 @@ import generated.WarningNames.WRONG_COPYRIGHT_YEAR
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Tags
 import org.junit.jupiter.api.Test
+import java.time.LocalDate
 
 class HeaderCommentRuleFixTest : FixTestBase(
     "test/paragraph2/header",
@@ -19,9 +20,9 @@ class HeaderCommentRuleFixTest : FixTestBase(
         RulesConfig("HEADER_MISSING_OR_WRONG_COPYRIGHT", true,
             mapOf(
                 "isCopyrightMandatory" to "true",
-                "copyrightText" to "Copyright (c) Huawei Technologies Co., Ltd. 2020-2020. All rights reserved.")
+                "copyrightText" to "Copyright (c) Huawei Technologies Co., Ltd. 2020-${LocalDate.now().year}. All rights reserved.")
         ),
-        RulesConfig("HEADER_WRONG_FORMAT", true, mapOf())
+        RulesConfig("HEADER_WRONG_FORMAT", true, emptyMap())
     )
 ) {
     @Test
@@ -36,6 +37,9 @@ class HeaderCommentRuleFixTest : FixTestBase(
         fixAndCompare("AutoCopyrightExpected.kt", "AutoCopyrightTest.kt")
     }
 
+    /**
+     * Fixme there shouldn't be an additional blank line after copyright
+     */
     @Test
     @Tag(WarningNames.HEADER_NOT_BEFORE_PACKAGE)
     fun `header KDoc should be moved before package`() {
@@ -46,7 +50,7 @@ class HeaderCommentRuleFixTest : FixTestBase(
     @Tags(Tag(WarningNames.HEADER_MISSING_OR_WRONG_COPYRIGHT), Tag(WarningNames.HEADER_WRONG_FORMAT))
     fun `header KDoc should be moved before package - no copyright`() {
         fixAndCompare("MisplacedHeaderKdocNoCopyrightExpected.kt", "MisplacedHeaderKdocNoCopyrightTest.kt",
-            listOf(RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, false, mapOf()), RulesConfig(HEADER_WRONG_FORMAT.name, true, mapOf()))
+            listOf(RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, false, emptyMap()), RulesConfig(HEADER_WRONG_FORMAT.name, true, emptyMap()))
         )
     }
 
@@ -63,6 +67,48 @@ class HeaderCommentRuleFixTest : FixTestBase(
             listOf(RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true, mapOf(
                 "isCopyrightMandatory" to "true",
                 "copyrightText" to "Copyright (c) My Company., Ltd. 2012-2019. All rights reserved."
+            )))
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.HEADER_MISSING_OR_WRONG_COPYRIGHT)
+    fun `copyright multiline`() {
+        fixAndCompare("MultilineCopyrightExample.kt", "MultilineCopyrightTest.kt",
+            listOf(RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true, mapOf(
+                "isCopyrightMandatory" to "true",
+                "copyrightText" to """
+                |    Copyright 2018-${LocalDate.now().year} John Doe.
+                |
+                |    Licensed under the Apache License, Version 2.0 (the "License");
+                |    you may not use this file except in compliance with the License.
+                |    You may obtain a copy of the License at
+                |
+                |        http://www.apache.org/licenses/LICENSE-2.0
+                |
+                |    Unless required by applicable law or agreed to in writing, software
+                |    distributed under the License is distributed on an "AS IS" BASIS,
+                |    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+                |    See the License for the specific language governing permissions and
+                |    limitations under the License.
+                """.trimMargin()
+            )))
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.HEADER_MISSING_OR_WRONG_COPYRIGHT)
+    fun `should not trigger if copyright text have different indents`() {
+        fixAndCompare("MultilineCopyrightNotTriggerExample.kt", "MultilineCopyrightNotTriggerTest.kt",
+            listOf(RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true, mapOf(
+                "isCopyrightMandatory" to "true",
+                "copyrightText" to """
+                    |   Copyright 2018-2020 John Doe.
+                    |
+                    |   Licensed under the Apache License, Version 2.0 (the "License");
+                    |   you may not use this file except in compliance with the License.
+                    |   You may obtain a copy of the License at
+            """.trimMargin()
             )))
         )
     }

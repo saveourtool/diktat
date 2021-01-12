@@ -56,12 +56,12 @@ class CommentsRule(private val configRules: List<RulesConfig>) : Rule("comments"
         val eolCommentsOffsetToText = getOffsetsToTextBlocksFromEolComments(node)
         val blockCommentsOffsetToText = node
             .findAllNodesWithSpecificType(BLOCK_COMMENT)
-            .map { it.startOffset to it.text.removeSurrounding("/*", "*/") }
+            .map { it.startOffset to it.text.trim().removeSurrounding("/*", "*/") }
 
         (eolCommentsOffsetToText + blockCommentsOffsetToText)
             .flatMap { (offset, text) ->
                 val (singleLines, blockLines) = text.lines().partition { it.contains(importOrPackage) }
-                val block = if (blockLines.isNotEmpty()) listOf(blockLines.joinToString("\n")) else listOf()
+                val block = if (blockLines.isNotEmpty()) listOf(blockLines.joinToString("\n")) else emptyList()
                 (singleLines + block).map { offset to it }
             }
             .map { (offset, text) ->
@@ -112,7 +112,7 @@ class CommentsRule(private val configRules: List<RulesConfig>) : Rule("comments"
                     list.first().startOffset to list.joinToString("\n") { it.text.removePrefix("//") }
                 }
         } else {
-            listOf()
+            emptyList()
         }
     }
 

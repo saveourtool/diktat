@@ -30,6 +30,31 @@ class RulesConfigYamlTest {
         compareRulesAndConfig(thirdConfig, "parent/diktat-analysis.yml")
     }
 
+    @Test
+    fun `check comments before rules`() {
+        checkComments("src/main/resources/diktat-analysis.yml")
+        checkComments("src/main/resources/diktat-analysis-huawei.yml")
+        checkComments("../diktat-analysis.yml")
+    }
+
+    private fun checkComments(configName: String) {
+        val lines = File(configName)
+            .readLines()
+            .filter {
+                it.startsWith("-") || it.startsWith("#")
+            }
+
+        lines.forEachIndexed { index, str ->
+            if (str.startsWith("-")) {
+                Assertions.assertTrue(lines[if (index > 0) index - 1 else 0].trim().startsWith("#")) {
+                    """
+                        There is no comment before $str in $configName
+                    """.trimIndent()
+                }
+            }
+        }
+    }
+
     private fun compareRulesAndConfig(nameConfig: String, nameConfigToText: String? = null) {
         val filePath = nameConfigToText?.let { pathMap[it] } ?: pathMap[nameConfig]
         val allRulesFromConfig = readAllRulesFromConfig(nameConfig)
@@ -37,7 +62,7 @@ class RulesConfigYamlTest {
 
         allRulesFromCode.forEach { rule ->
             val foundRule = allRulesFromConfig.getRuleConfig(rule)
-            val ymlCodeSnippet = RulesConfig(rule.ruleName(), true, mapOf())
+            val ymlCodeSnippet = RulesConfig(rule.ruleName(), true, emptyMap())
 
             val ruleYaml = Yaml.default.encodeToString(ymlCodeSnippet)
             Assertions.assertTrue(foundRule != null) {
@@ -62,7 +87,7 @@ class RulesConfigYamlTest {
 
     private fun readAllRulesFromConfig(nameConfig: String) =
             RulesConfigReader(javaClass.classLoader)
-                .readResource(nameConfig) ?: listOf()
+                .readResource(nameConfig) ?: emptyList()
 
     private fun readAllRulesFromCode() =
             Warnings.values()

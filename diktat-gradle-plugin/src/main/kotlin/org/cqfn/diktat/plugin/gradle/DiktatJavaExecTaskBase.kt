@@ -2,6 +2,7 @@ package org.cqfn.diktat.plugin.gradle
 
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.DIKTAT_CHECK_TASK
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.DIKTAT_FIX_TASK
+import org.cqfn.diktat.ruleset.rules.DIKTAT_CONF_PROPERTY
 
 import generated.DIKTAT_VERSION
 import generated.KTLINT_VERSION
@@ -10,14 +11,18 @@ import org.gradle.api.artifacts.Configuration
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.JavaExec
+import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.VerificationTask
+import org.gradle.util.GradleVersion
 
 import java.io.File
 import javax.inject.Inject
 
 /**
- * A base diktat task for gradle <6.8, which wraps [JavaExec]
+ * A base diktat task for gradle <6.8, which wraps [JavaExec].
+ *
+ * Note: class being `open` is required for gradle to create a task.
  */
 open class DiktatJavaExecTaskBase @Inject constructor(
     gradleVersionString: String,
@@ -50,6 +55,11 @@ open class DiktatJavaExecTaskBase @Inject constructor(
         if (diktatExtension.debug) {
             logger.lifecycle("Running diktat $DIKTAT_VERSION with ktlint $KTLINT_VERSION")
         }
+        ignoreFailures = diktatExtension.ignoreFailures
+        isIgnoreExitValue = ignoreFailures  // ignore returned value of JavaExec started process if lint errors shouldn't fail the build
+        systemProperty(DIKTAT_CONF_PROPERTY, resolveConfigFile(diktatExtension.diktatConfigFile).also {
+            logger.info("Setting system property for diktat config to $it")
+        })
         args = additionalFlags.toMutableList().apply {
             if (diktatExtension.debug) {
                 add("--debug")
@@ -68,15 +78,16 @@ open class DiktatJavaExecTaskBase @Inject constructor(
                 }
                 .files
                 .forEach {
-                    add(it.path)
+                    addPattern(it)
                 }
-            diktatExtension.excludes?.files?.forEach {
-                add(it.path)
+            diktatExtension.excludes.files.forEach {
+                addPattern(it, negate = true)
             }
         }
         logger.debug("Setting JavaExec args to $args")
     }
 
+    @TaskAction
     override fun exec() {
         if (shouldRun) {
             super.exec()
@@ -98,9 +109,33 @@ open class DiktatJavaExecTaskBase @Inject constructor(
 
     @Suppress("MagicNumber")
     private fun isMainClassPropertySupported(gradleVersionString: String) =
-            GradleVersion.fromString(gradleVersionString).run {
-                major >= 6 && minor >= 4
+            GradleVersion.version(gradleVersionString) >= GradleVersion.version("6.4")
+
+    private fun MutableList<String>.addPattern(pattern: File, negate: Boolean = false) {
+        val path = if (pattern.isAbsolute) {
+            pattern.relativeTo(project.projectDir)
+        } else {
+            pattern
+        }.path
+        add((if (negate) "!" else "") + path)
+    }
+
+    /**
+     * todo: share logic with maven plugin, it's basically copy-paste
+     */
+    @Suppress("ForbiddenComment")
+    private fun resolveConfigFile(file: File): String {
+        if (file.isAbsolute) {
+            return file.absolutePath
+        }
+
+        return generateSequence(project.projectDir) { it.parentFile }
+            .map { it.resolve(file) }
+            .run {
+                firstOrNull { it.exists() } ?: first()
             }
+            .absolutePath
+    }
 }
 
 /**

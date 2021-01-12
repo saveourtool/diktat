@@ -5,7 +5,7 @@
     <parent>
         <artifactId>diktat-parent</artifactId>
         <groupId>org.cqfn.diktat</groupId>
-        <version>0.1.8-SNAPSHOT</version>
+        <version>0.3.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -161,21 +161,36 @@
                 </executions>
             </plugin>
             <plugin>
-                <!-- override jacoco config to include integration test results -->
+                <!-- Jacoco configuration for report on integration test, doesn't override configuration for unit tests -->
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <!-- HelpMojo is generated automatically -->
+                        <exclude>**/HelpMojo*</exclude>
+                    </excludes>
+                </configuration>
                 <executions>
                     <execution>
+                        <id>report-integration</id>
                         <goals>
-                            <goal>prepare-agent</goal>
+                            <!-- Merge reports of individual maven invokations and build xml report -->
+                            <goal>merge</goal>
+                            <goal>report-integration</goal>
                         </goals>
-                    </execution>
-                    <execution>
-                        <id>report</id>
                         <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
+                        <configuration>
+                            <fileSets>
+                                <fileSet>
+                                    <directory>${project.build.directory}</directory>
+                                    <includes>
+                                        <!-- Every test case runs maven process and therefore generates individual execution report -->
+                                        <inlcude>jacoco-it*.exec</inlcude>
+                                    </includes>
+                                </fileSet>
+                            </fileSets>
+                            <destFile>${project.build.directory}/jacoco-it.exec</destFile>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -185,7 +200,23 @@
                 <directory>../examples/maven</directory>
                 <!-- setting filtering to false keeps unresolved properties, which in diktat-examples do not depend on diktat properties -->
                 <filtering>false</filtering>
-                <targetPath>${project.build.testOutputDirectory}/org/cqfn/diktat/plugin/maven/DiktatMavenPluginIntegrationTest/maven</targetPath>
+                <targetPath>${project.build.testOutputDirectory}/org/cqfn/diktat/plugin/maven/DiktatMavenPluginIntegrationTest/diktatCheck</targetPath>
+            </testResource>
+            <testResource>
+                <directory>${project.basedir}/src/test/resources/.mvn</directory>
+                <!-- Here we need to resolve actual maven properties -->
+                <filtering>true</filtering>
+                <targetPath>${project.build.testOutputDirectory}/org/cqfn/diktat/plugin/maven/DiktatMavenPluginIntegrationTest/diktatCheck/.mvn</targetPath>
+            </testResource>
+            <testResource>
+                <directory>../examples/maven</directory>
+                <filtering>false</filtering>
+                <targetPath>${project.build.testOutputDirectory}/org/cqfn/diktat/plugin/maven/DiktatMavenPluginIntegrationTest/diktatFix</targetPath>
+            </testResource>
+            <testResource>
+                <directory>${project.basedir}/src/test/resources/.mvn</directory>
+                <filtering>true</filtering>
+                <targetPath>${project.build.testOutputDirectory}/org/cqfn/diktat/plugin/maven/DiktatMavenPluginIntegrationTest/diktatFix/.mvn</targetPath>
             </testResource>
         </testResources>
     </build>
