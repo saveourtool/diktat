@@ -153,7 +153,7 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
 
         // need to make sure that copyright year is consistent with current year
         val copyrightText = if (makeCopyrightCorrectYear(configuration.getCopyrightText()).isNotEmpty()) {
-            WRONG_COPYRIGHT_YEAR_CONFIGURATION.warn(configRules, emitWarn, isFixMode, "", node.startOffset, node)
+            WRONG_COPYRIGHT_YEAR_CONFIGURATION.warn(configRules, emitWarn, isFixMode, "should be ${LocalDate.now().year}", node.startOffset, node)
             makeCopyrightCorrectYear(configuration.getCopyrightText())
         } else {
             configuration.getCopyrightText()
@@ -249,7 +249,7 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
     }
 
     companion object {
-        val hyphenRegex = Regex("""\b(\d+-\d+)\b""")
+        val hyphenRegex = Regex("""\d+-\d+""")
         val afterCopyrightRegex = Regex("""((©|\([cC]\))+ *\d+)""")
         val curYear = LocalDate.now().year
     }

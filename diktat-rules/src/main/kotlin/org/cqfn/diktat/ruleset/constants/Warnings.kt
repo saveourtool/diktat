@@ -70,7 +70,7 @@ enum class Warnings(
     HEADER_WRONG_FORMAT(true, "2.2.1", "file header comments should be properly formatted"),
     HEADER_MISSING_OR_WRONG_COPYRIGHT(true, "2.2.1", "file header comment must include copyright information inside a block comment"),
     WRONG_COPYRIGHT_YEAR(true, "2.2.1", "year defined in copyright and current year are different"),
-    WRONG_COPYRIGHT_YEAR_CONFIGURATION(false, "2.2.1", "year defined in copyright is not consistent with current year"),
+    WRONG_COPYRIGHT_YEAR_CONFIGURATION(true, "2.2.1", "year defined in copyright is not consistent with current year"),
     HEADER_CONTAINS_DATE_OR_AUTHOR(false, "2.2.1", "file header comment should not contain creation date and author name"),
     HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE(false, "2.2.1", "files that contain multiple or no classes should contain description of what is inside of this file"),
     HEADER_NOT_BEFORE_PACKAGE(true, "2.2.1", "header KDoc should be placed before package and imports"),

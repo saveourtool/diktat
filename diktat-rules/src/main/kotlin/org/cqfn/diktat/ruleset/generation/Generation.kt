@@ -13,7 +13,6 @@ import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
-import org.cqfn.diktat.ruleset.utils.log
 
 import java.io.File
 
@@ -27,6 +26,7 @@ private val autoGenerationComment =
         """.trimMargin()
 
 fun main() {
+    generateWarningNames()
     validateYear()
 }
 
@@ -59,19 +59,20 @@ private fun generateWarningNames() {
 private fun validateYear() {
     val files = File("diktat-rules/src/test/resources/test/paragraph2/header")
     files.listFiles().forEach { file ->
+        if (file.name.contains("CopyrightDifferentYearTest.kt")) {
+            return@forEach
+        }
         val tempFile = createTempFile()
         tempFile.printWriter().use { writer ->
             file.forEachLine { line ->
                 writer.println(when {
-                    hyphenRegex.matches(line) -> hyphenRegex.replace(line) {
+                    line.contains(hyphenRegex) -> line.replace(hyphenRegex) {
                         val years = it.value.split("-")
-                        val validYears = "${years[0]}-$curYear"
-                        line.replace(hyphenRegex, validYears)
+                        "${years[0]}-$curYear"
                     }
-                    afterCopyrightRegex.matches(line) -> afterCopyrightRegex.replace(line) {
+                    line.contains(afterCopyrightRegex) -> line.replace(afterCopyrightRegex) {
                         val copyrightYears = it.value.split("(c)", "(C)", "©")
-                        val validYears = "${copyrightYears[0]}-$curYear"
-                        line.replace(afterCopyrightRegex, validYears)
+                        "${copyrightYears[0]}-$curYear"
                     }
                     else -> line
                 })
