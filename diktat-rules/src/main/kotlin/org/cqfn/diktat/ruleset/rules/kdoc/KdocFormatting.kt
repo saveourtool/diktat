@@ -24,8 +24,15 @@ import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.nextSibling
 import com.pinterest.ktlint.core.ast.prevSibling
-import org.cqfn.diktat.ruleset.constants.Warnings
-import org.cqfn.diktat.ruleset.constants.Warnings.*
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_EMPTY_KDOC
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NEWLINES_BEFORE_BASIC_TAGS
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_DEPRECATED_TAG
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_EMPTY_TAGS
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WRONG_SPACES_AFTER_TAG
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WRONG_TAGS_ORDER
 import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
@@ -335,6 +342,7 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
     /**
      * Checks whether this tag's content represents date
      */
+    @Suppress("MagicNumber")
     private fun KDocTag.containsDate(): Boolean {
         val content = getContent().trim()
         if (' ' in content || '/' in content) {
