@@ -4,17 +4,18 @@ import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
-import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_MISSING_OR_WRONG_COPYRIGHT
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_NOT_BEFORE_PACKAGE
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_WRONG_FORMAT
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_COPYRIGHT_YEAR
 import org.cqfn.diktat.ruleset.utils.copyrightWords
 import org.cqfn.diktat.ruleset.utils.findChildAfter
 import org.cqfn.diktat.ruleset.utils.findChildBefore
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
+import org.cqfn.diktat.ruleset.utils.kDocTags
 import org.cqfn.diktat.ruleset.utils.moveChildBefore
 
 import com.pinterest.ktlint.core.Rule
@@ -25,8 +26,6 @@ import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
-import org.cqfn.diktat.ruleset.constants.Warnings
-import org.cqfn.diktat.ruleset.utils.kDocTags
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -67,7 +66,7 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
     private fun checkHeaderKdoc(node: ASTNode) {
         node.findChildBefore(PACKAGE_DIRECTIVE, KDOC)?.let { headerKdoc ->
             if (headerKdoc.treeNext != null && headerKdoc.treeNext.elementType == WHITE_SPACE &&
-                headerKdoc.treeNext.text.count { it == '\n' } != 2) {
+                    headerKdoc.treeNext.text.count { it == '\n' } != 2) {
                 HEADER_WRONG_FORMAT.warnAndFix(configRules, emitWarn, isFixMode,
                     "header KDoc should have a new line after", headerKdoc.startOffset, headerKdoc) {
                     node.replaceChild(headerKdoc.treeNext, PsiWhiteSpaceImpl("\n\n"))

@@ -2,6 +2,15 @@ package org.cqfn.diktat.ruleset.rules.kdoc
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_EMPTY_KDOC
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NEWLINES_BEFORE_BASIC_TAGS
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_DEPRECATED_TAG
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_EMPTY_TAGS
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WRONG_SPACES_AFTER_TAG
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WRONG_TAGS_ORDER
 import org.cqfn.diktat.ruleset.utils.allSiblings
 import org.cqfn.diktat.ruleset.utils.findChildAfter
 import org.cqfn.diktat.ruleset.utils.findChildBefore
@@ -24,16 +33,6 @@ import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.nextSibling
 import com.pinterest.ktlint.core.ast.prevSibling
-import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR
-import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_EMPTY_KDOC
-import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NEWLINES_BEFORE_BASIC_TAGS
-import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_DEPRECATED_TAG
-import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_EMPTY_TAGS
-import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS
-import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS
-import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WRONG_SPACES_AFTER_TAG
-import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WRONG_TAGS_ORDER
-import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -44,6 +43,7 @@ import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
 import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
+
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoField
 
@@ -354,16 +354,15 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
             // try to parse, get year and check it's value sanity
             // otherwise it might be a tricky version format
             runCatching {
-                it.parse(content).get(ChronoField.YEAR) > minimumSaneYear
+                it.parse(content).get(ChronoField.YEAR) > MINIMUM_SANE_YEAR
             }
                 .getOrNull() == true
         }
     }
 
     companion object {
-        private const val minimumSaneYear = 1900
-
-        val dateFormats = listOf("yyyy-dd-mm", "yyyy-mm-dd", "yyyy.mm.dd", "yyyy.dd.mm").map {
+        private const val MINIMUM_SANE_YEAR = 1900
+        val dateFormats: List<DateTimeFormatter> = listOf("yyyy-dd-mm", "yyyy-mm-dd", "yyyy.mm.dd", "yyyy.dd.mm").map {
             DateTimeFormatter.ofPattern(it)
         }
     }
