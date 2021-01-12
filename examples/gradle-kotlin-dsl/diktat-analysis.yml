@@ -111,6 +111,9 @@
 # Checks that special tags `@apiNote`, `@implNote`, `@implSpec` have exactly one empty line after
 - name: KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS
   enabled: true
+# Checks that kdoc does not contain @author tag or date
+- name: KDOC_CONTAINS_DATE_OR_AUTHOR
+  enabled: true
 # Checks that KDoc does not contain single line with words 'return', 'get' or 'set'
 - name: KDOC_TRIVIAL_KDOC_ON_FUNCTION
   enabled: true
@@ -128,9 +131,6 @@
     copyrightText: 'Copyright (c) Your Company Name Here. 2010-2021'
 # Checks that header kdoc is located before package directive
 - name: HEADER_NOT_BEFORE_PACKAGE
-  enabled: true
-# Checks that header kdoc does not contain @author tag or date
-- name: HEADER_CONTAINS_DATE_OR_AUTHOR
   enabled: true
 # Checks that file does not contain lines > maxSize
 - name: FILE_IS_TOO_LONG
