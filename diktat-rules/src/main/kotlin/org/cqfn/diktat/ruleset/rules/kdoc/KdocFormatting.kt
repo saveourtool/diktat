@@ -33,6 +33,8 @@ import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.nextSibling
 import com.pinterest.ktlint.core.ast.prevSibling
+import org.cqfn.diktat.common.config.rules.RuleConfiguration
+import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -63,6 +65,7 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
     private val specialTagNames = setOf("implSpec", "implNote", "apiNote")
     private var isFixMode: Boolean = false
     private lateinit var emitWarn: EmitType
+    private var versionRegex: Regex? = null
 
     /**
      * @param node
@@ -74,6 +77,13 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
                        emit: EmitType) {
         isFixMode = autoCorrect
         emitWarn = emit
+
+        if (versionRegex == null) {
+            versionRegex = KdocFormatConfiguration(
+                configRules.getRuleConfig(KDOC_CONTAINS_DATE_OR_AUTHOR)?.configuration ?: emptyMap()
+            )
+                .versionRegex
+        }
 
         if (node.elementType == KDOC && isKdocNotEmpty(node)) {
             checkNoDeprecatedTag(node)
@@ -349,21 +359,27 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
             // Filter based on symbols that are not allowed in versions. Assuming that people put either version or date in `@since` tag.
             return true
         }
-        // try to parse content as a date, check whether an exception has been thrown
-        return dateFormats.any {
-            // try to parse, get year and check it's value sanity
-            // otherwise it might be a tricky version format
-            runCatching {
-                it.parse(content).get(ChronoField.YEAR) > MINIMUM_SANE_YEAR
+        return versionRegex?.matches(content)?.not()
+            ?: dateFormats.any {
+                // try to parse, get year and check it's value sanity
+                // otherwise it might be a tricky version format
+                runCatching {
+                    it.parse(content).get(ChronoField.YEAR) > MINIMUM_SANE_YEAR
+                }
+                    .getOrNull() == true
             }
-                .getOrNull() == true
-        }
     }
 
     companion object {
         private const val MINIMUM_SANE_YEAR = 1900
         val dateFormats: List<DateTimeFormatter> = listOf("yyyy-dd-mm", "yyyy-mm-dd", "yyyy.mm.dd", "yyyy.dd.mm").map {
             DateTimeFormatter.ofPattern(it)
+        }
+    }
+
+    class KdocFormatConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
+        val versionRegex: Regex? by lazy {
+            config["versionRegex"]?.let { Regex(it) }
         }
     }
 }

@@ -15,6 +15,7 @@ import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
+import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
@@ -378,6 +379,40 @@ class KdocFormattingTest : LintTestBase(::KdocFormatting) {
             LintError(5, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 2019/10/11"),
             LintError(6, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 11 Oct 2019"),
             LintError(18, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 2019-10-11"),
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.KDOC_CONTAINS_DATE_OR_AUTHOR)
+    fun `@since tag should only contain versions - with configured regex`() {
+        lintMethod(
+            """
+                |/**
+                | * Description of this file
+                | * @since 2019-10-11
+                | * @since 1.2.3-rc-1
+                | * @since 1.2.3.RELEASE
+                | */
+                |
+                |package org.cqfn.diktat.example
+                |
+                |/**
+                | * Description of this file
+                | * @since 2019-10-11
+                | * @since 1.2.3
+                | */
+                |class Example { }
+            """.trimMargin(),
+            LintError(3, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 2019-10-11"),
+            LintError(5, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 1.2.3.RELEASE"),
+            LintError(12, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 2019-10-11"),
+            rulesConfigList = listOf(
+                RulesConfig(
+                    Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.name, true, mapOf(
+                        "versionRegex" to "\\d+\\.\\d+\\.\\d+[-\\w\\d]*"
+                    )
+                )
+            )
         )
     }
 }
