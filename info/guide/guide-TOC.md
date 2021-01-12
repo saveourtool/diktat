@@ -1,3 +1,4 @@
+# Diktat Coding Style Guide, v.0.0.1
 
 # Table of contents
 I [Preface](#c0)

@@ -16,116 +16,118 @@
 \hline
 \textbf{diKTat rule} & \textbf{code style} & \textbf{autofix} &  \textbf{config} \\
 \hline
-VARIABLE\underline{ }NAME\underline{ }INCORRECT & \hyperref[sec:1.1.1]{ 1.1.1} &  no  &   no  \\
-VARIABLE\underline{ }HAS\underline{ }PREFIX & \hyperref[sec:1.1.1]{ 1.1.1} &  yes  &   no  \\
-IDENTIFIER\underline{ }LENGTH & \hyperref[sec:1.1.1]{ 1.1.1} &  no  &   no  \\
-GENERIC\underline{ }NAME & \hyperref[sec:1.1.1]{ 1.1.1} &  yes  &   no  \\
-BACKTICKS\underline{ }PROHIBITED & \hyperref[sec:1.1.1]{ 1.1.1} &  no  &   no  \\
-FILE\underline{ }NAME\underline{ }INCORRECT & \hyperref[sec:1.1.1]{ 1.1.1} &  yes  &   no  \\
-EXCEPTION\underline{ }SUFFIX & \hyperref[sec:1.1.1]{ 1.1.1} &  yes  &   no  \\
-CONFUSING\underline{ }IDENTIFIER\underline{ }NAMING & \hyperref[sec:1.1.1]{ 1.1.1} &  no  &   no  \\
-PACKAGE\underline{ }NAME\underline{ }MISSING & \hyperref[sec:1.2.1]{ 1.2.1} &  yes  &   no  \\
-PACKAGE\underline{ }NAME\underline{ }INCORRECT\underline{ }CASE & \hyperref[sec:1.2.1]{ 1.2.1} &  yes  &   no  \\
-PACKAGE\underline{ }NAME\underline{ }INCORRECT\underline{ }PREFIX & \hyperref[sec:1.2.1]{ 1.2.1} &  yes  &   no  \\
-PACKAGE\underline{ }NAME\underline{ }INCORRECT\underline{ }SYMBOLS & \hyperref[sec:1.2.1]{ 1.2.1} &  no  &   no  \\
-PACKAGE\underline{ }NAME\underline{ }INCORRECT\underline{ }PATH & \hyperref[sec:1.2.1]{ 1.2.1} &  yes  &   no  \\
-INCORRECT\underline{ }PACKAGE\underline{ }SEPARATOR & \hyperref[sec:1.2.1]{ 1.2.1} &  yes  &   no  \\
-CLASS\underline{ }NAME\underline{ }INCORRECT & \hyperref[sec:1.3.1]{ 1.3.1} &  yes  &   no  \\
-OBJECT\underline{ }NAME\underline{ }INCORRECT & \hyperref[sec:1.3.1]{ 1.3.1} &  yes  &   no  \\
-ENUM\underline{ }VALUE & \hyperref[sec:1.3.1]{ 1.3.1} &  yes  &   enumStyle: snakeCase, pascalCase  \\
-FUNCTION\underline{ }NAME\underline{ }INCORRECT\underline{ }CASE & \hyperref[sec:1.4.1]{ 1.4.1} &  yes  &   no  \\
-CONSTANT\underline{ }UPPERCASE & \hyperref[sec:1.5.1]{ 1.5.1} &  yes  &   no  \\
-VARIABLE\underline{ }NAME\underline{ }INCORRECT\underline{ }FORMAT & \hyperref[sec:1.6.1]{ 1.6.1} &  yes  &   no  \\
-FUNCTION\underline{ }BOOLEAN\underline{ }PREFIX & \hyperref[sec:1.6.2]{ 1.6.2} &  yes  &   no  \\
-MISSING\underline{ }KDOC\underline{ }TOP\underline{ }LEVEL & \hyperref[sec:2.1.1]{ 2.1.1} &  no  &   no  \\
-MISSING\underline{ }KDOC\underline{ }CLASS\underline{ }ELEMENTS & \hyperref[sec:2.1.1]{ 2.1.1} &  no  &   no  \\
-MISSING\underline{ }KDOC\underline{ }ON\underline{ }FUNCTION & \hyperref[sec:2.1.1]{ 2.1.1} &  yes  &   no  \\
-KDOC\underline{ }NO\underline{ }CONSTRUCTOR\underline{ }PROPERTY & \hyperref[sec:2.1.1]{ 2.1.1} &  yes  &   no \\
-KDOC\underline{ }EXTRA\underline{ }PROPERTY & \hyperref[sec:2.1.1]{ 2.1.1} &  no  &  no   \\
-KDOC\underline{ }NO\underline{ }CONSTRUCTOR\underline{ }PROPERTY\underline{ }WITH\underline{ }COMMENT & \hyperref[sec:2.1.1]{ 2.1.1} &  yes  &   no \\
-KDOC\underline{ }WITHOUT\underline{ }PARAM\underline{ }TAG & \hyperref[sec:2.1.2]{ 2.1.2} &  yes  &   no  \\
-KDOC\underline{ }WITHOUT\underline{ }RETURN\underline{ }TAG & \hyperref[sec:2.1.2]{ 2.1.2} &  yes  &   no  \\
-KDOC\underline{ }WITHOUT\underline{ }THROWS\underline{ }TAG & \hyperref[sec:2.1.2]{ 2.1.2} &  yes  &   no  \\
-KDOC\underline{ }EMPTY\underline{ }KDOC & \hyperref[sec:2.1.3]{ 2.1.3} &  no  &   no  \\
-KDOC\underline{ }WRONG\underline{ }SPACES\underline{ }AFTER\underline{ }TAG & \hyperref[sec:2.1.3]{ 2.1.3} &  yes  &   no  \\
-KDOC\underline{ }WRONG\underline{ }TAGS\underline{ }ORDER & \hyperref[sec:2.1.3]{ 2.1.3} &  yes  &   no  \\
-KDOC\underline{ }NEWLINES\underline{ }BEFORE\underline{ }BASIC\underline{ }TAGS & \hyperref[sec:2.1.3]{ 2.1.3} &  yes  &   no  \\
-KDOC\underline{ }NO\underline{ }NEWLINES\underline{ }BETWEEN\underline{ }BASIC\underline{ }TAGS & \hyperref[sec:2.1.3]{ 2.1.3} &  yes  &   no  \\
-KDOC\underline{ }NO\underline{ }NEWLINE\underline{ }AFTER\underline{ }SPECIAL\underline{ }TAGS & \hyperref[sec:2.1.3]{ 2.1.3} &  yes  &   no  \\
-KDOC\underline{ }NO\underline{ }DEPRECATED\underline{ }TAG & \hyperref[sec:2.1.3]{ 2.1.3} &  yes  &   no  \\
-KDOC\underline{ }NO\underline{ }EMPTY\underline{ }TAGS & \hyperref[sec:2.2.1]{ 2.2.1} &  no  &   no  \\
-HEADER\underline{ }WRONG\underline{ }FORMAT & \hyperref[sec:2.2.1]{ 2.2.1} &  yes  &   no  \\
-HEADER\underline{ }MISSING\underline{ }OR\underline{ }WRONG\underline{ }COPYRIGHT & \hyperref[sec:2.2.1]{ 2.2.1} &  yes  &  mandatoryCopyright \\
-WRONG\underline{ }COPYRIGHT\underline{ }YEAR & \hyperref[sec:2.2.1]{ 2.2.1} &  yes  &   no  \\
-HEADER\underline{ }CONTAINS\underline{ }DATE\underline{ }OR\underline{ }AUTHOR & \hyperref[sec:2.2.1]{ 2.2.1} &  no  &   no  \\
-HEADER\underline{ }MISSING\underline{ }IN\underline{ }NON\underline{ }SINGLE\underline{ }CLASS\underline{ }FILE & \hyperref[sec:2.2.1]{ 2.2.1} &  no  &   no  \\
-HEADER\underline{ }NOT\underline{ }BEFORE\underline{ }PACKAGE & \hyperref[sec:2.2.1]{ 2.2.1} &  yes  &   no  \\
-KDOC\underline{ }TRIVIAL\underline{ }KDOC\underline{ }ON\underline{ }FUNCTION & \hyperref[sec:2.3.1]{ 2.3.1} &  no  &   no  \\
-WRONG\underline{ }NEWLINES\underline{ }AROUND\underline{ }KDOC & \hyperref[sec:2.4.1]{ 2.4.1} &  yes  &   no  \\
-FIRST\underline{ }COMMENT\underline{ }NO\underline{ }SPACES & \hyperref[sec:2.4.1]{ 2.4.1} &  yes  &   no  \\
-COMMENT\underline{ }WHITE\underline{ }SPACE & \hyperref[sec:2.4.1]{ 2.4.1} &  yes  &   maxSpaces  \\
-IF\underline{ }ELSE\underline{ }COMMENTS & \hyperref[sec:2.4.1]{ 2.4.1} &  yes  &   no  \\
-COMMENTED\underline{ }OUT\underline{ }CODE & \hyperref[sec:2.4.2]{ 2.4.2} &  no  &   no  \\
-FILE\underline{ }IS\underline{ }TOO\underline{ }LONG & \hyperref[sec:3.1.1]{ 3.1.1} &  no  &   maxSize  ignoreFolders  \\
-FILE\underline{ }CONTAINS\underline{ }ONLY\underline{ }COMMENTS & \hyperref[sec:3.1.2]{ 3.1.2} &  no  &   no  \\
-FILE\underline{ }INCORRECT\underline{ }BLOCKS\underline{ }ORDER & \hyperref[sec:3.1.2]{ 3.1.2} &  yes  &   no  \\
-FILE\underline{ }NO\underline{ }BLANK\underline{ }LINE\underline{ }BETWEEN\underline{ }BLOCKS & \hyperref[sec:3.1.2]{ 3.1.2} &  yes  &   no  \\
-FILE\underline{ }UNORDERED\underline{ }IMPORTS & \hyperref[sec:3.1.2]{ 3.1.2} &  yes  &   no  \\
-FILE\underline{ }WILDCARD\underline{ }IMPORTS & \hyperref[sec:3.1.2]{ 3.1.2} &  no  &   allowedWildcards           \\
-FILE\underline{ }NAME\underline{ }MATCH\underline{ }CLASS & \hyperref[sec:3.1.2]{ 3.1.2} &  yes  &   no  \\
-WRONG\underline{ }ORDER\underline{ }IN\underline{ }CLASS\underline{ }LIKE\underline{ }STRUCTURES & \hyperref[sec:3.1.4]{ 3.1.4} &  yes  &   no  \\
-BLANK\underline{ }LINE\underline{ }BETWEEN\underline{ }PROPERTIES & \hyperref[sec:3.1.4]{ 3.1.4} &  yes  &   no  \\
-WRONG\underline{ }DECLARATIONS\underline{ }ORDER & \hyperref[sec:3.1.4]{ 3.1.4} &  yes  &   no  \\
-NO\underline{ }BRACES\underline{ }IN\underline{ }CONDITIONALS\underline{ }AND\underline{ }LOOPS & \hyperref[sec:3.2.1]{ 3.2.1} &  yes  &   no  \\
-BRACES\underline{ }BLOCK\underline{ }STRUCTURE\underline{ }ERROR & \hyperref[sec:3.2.2]{ 3.2.2} &  yes  &   openBraceNewline closeBraceNewline  \\
-WRONG\underline{ }INDENTATION & \hyperref[sec:3.3.1]{ 3.3.1} &  yes  &  extendedIndentOfParameters alignedParameters extendedIndentAfterOperators extendedIndentBeforeDot indentationSize   \\
-EMPTY\underline{ }BLOCK\underline{ }STRUCTURE\underline{ }ERROR & \hyperref[sec:3.4.1]{ 3.4.1} &  yes  &   allowEmptyBlocks styleEmptyBlockWithNewline  \\
-LONG\underline{ }LINE & \hyperref[sec:3.5.1]{ 3.5.1} &  yes  &   lineLength                 \\
-MORE\underline{ }THAN\underline{ }ONE\underline{ }STATEMENT\underline{ }PER\underline{ }LINE & \hyperref[sec:3.6.1]{ 3.6.1} &  yes  &   no  \\
-REDUNDANT\underline{ }SEMICOLON & \hyperref[sec:3.6.2]{ 3.6.2} &  yes  &   no  \\
-WRONG\underline{ }NEWLINES & \hyperref[sec:3.6.2]{ 3.6.2} &  yes  &   no  \\
-TOO\underline{ }MANY\underline{ }BLANK\underline{ }LINES & \hyperref[sec:3.7.1]{ 3.7.1} &  yes  &   no  \\
-WRONG\underline{ }WHITESPACE & \hyperref[sec:3.8.1]{ 3.8.1} &  yes  &   no  \\
-TOO\underline{ }MANY\underline{ }CONSECUTIVE\underline{ }SPACES & \hyperref[sec:3.8.1]{ 3.8.1} &  yes  &   maxSpaces saveInitialFormattingForEnums  \\
-ENUMS\underline{ }SEPARATED & \hyperref[sec:3.9.1]{ 3.9.1} &  yes  &   no  \\
-LOCAL\underline{ }VARIABLE\underline{ }EARLY\underline{ }DECLARATION & \hyperref[sec:3.10.2]{ 3.10.2} &  no  &   no  \\
-WHEN\underline{ }WITHOUT\underline{ }ELSE & \hyperref[sec:3.11.1]{ 3.11.1} &  yes  &   no  \\
-ANNOTATION\underline{ }NEW\underline{ }LINE & \hyperref[sec:3.12.1]{ 3.12.1} &  yes  &   no  \\
-WRONG\underline{ }MULTIPLE\underline{ }MODIFIERS\underline{ }ORDER & \hyperref[sec:3.14.1]{ 3.14.1} &  yes  &   no  \\
-LONG\underline{ }NUMERICAL\underline{ }VALUES\underline{ }SEPARATED & \hyperref[sec:3.14.2]{ 3.14.2} &  yes  &   maxLength                  \\
-STRING\underline{ }CONCATENATION & \hyperref[sec:3.15.1]{ 3.15.1} &  no  &   no  \\
-STRING\underline{ }TEMPLATE\underline{ }CURLY\underline{ }BRACES & \hyperref[sec:3.15.2]{ 3.15.2} &  yes  &   no  \\
-STRING\underline{ }TEMPLATE\underline{ }QUOTES & \hyperref[sec:3.15.2]{ 3.15.2} &  yes  &   no  \\
-FLOAT\underline{ }IN\underline{ }ACCURATE\underline{ }CALCULATIONS & \hyperref[sec:4.1.1]{ 4.1.1} &  no  &   no  \\
-SAY\underline{ }NO\underline{ }TO\underline{ }VAR & \hyperref[sec:4.1.3]{ 4.1.3} &  no  &   no  \\
-SMART\underline{ }CAST\underline{ }NEEDED & \hyperref[sec:4.2.1]{ 4.2.1} &  yes  &   no  \\
-TYPE\underline{ }ALIAS & \hyperref[sec:4.2.2]{ 4.2.2} &  no  &   typeReferenceLength        \\
-NULLABLE\underline{ }PROPERTY\underline{ }TYPE & \hyperref[sec:4.3.1]{ 4.3.1} &  yes  &   no  \\
-GENERIC\underline{ }VARIABLE\underline{ }WRONG\underline{ }DECLARATION & \hyperref[sec:4.3.2]{ 4.3.2} &  yes  &   no  \\
-AVOID\underline{ }NULL\underline{ }CHECKS & \hyperref[sec:4.3.3]{ 4.3.3} &  no  &   no  \\
-TOO\underline{ }LONG\underline{ }FUNCTION & \hyperref[sec:5.1.1]{ 5.1.1} &  no  &   maxFunctionLength isIncludeHeader\\
-NESTED\underline{ }BLOCK & \hyperref[sec:5.1.2]{ 5.1.2} &  no  &   maxNestedBlockQuantit\\
-AVOID\underline{ }NESTED\underline{ }FUNCTIONS & \hyperref[sec:5.1.3]{ 5.1.3} &  yes  &   no  \\
-LAMBDA\underline{ }IS\underline{ }NOT\underline{ }LAST\underline{ }PARAMETER & \hyperref[sec:5.2.1]{ 5.2.1} &  no  &   no \\
-TOO\underline{ }MANY\underline{ }PARAMETERS & \hyperref[sec:5.2.2]{ 5.2.2} &  no  &   maxParameterListSize \\
-WRONG\underline{ }OVERLOADING\underline{ }FUNCTION\underline{ }ARGUMENTS & \hyperref[sec:5.2.3]{ 5.2.3} &  no  &   no \\
-SINGLE\underline{ }CONSTRUCTOR\underline{ }SHOULD\underline{ }BE\underline{ }PRIMARY & \hyperref[sec:6.1.1]{ 6.1.1} &  yes  &   no  \\
-USE\underline{ }DATA\underline{ }CLASS & \hyperref[sec:6.1.2]{ 6.1.2} &  no  &   no  \\
-EMPTY\underline{ }PRIMARY\underline{ }CONSTRUCTOR & \hyperref[sec:6.1.3]{ 6.1.3} &  yes  &   no  \\
-MULTIPLE\underline{ }INIT\underline{ }BLOCKS & \hyperref[sec:6.1.4]{ 6.1.4} &  yes  &   no  \\
-USELESS\underline{ }SUPERTYPE & \hyperref[sec:6.1.5]{ 6.1.5} &  yes  &   no  \\
-CLASS\underline{ }SHOULD\underline{ }NOT\underline{ }BE\underline{ }ABSTRACT & \hyperref[sec:6.1.6]{ 6.1.6} &  yes  &   no  \\
-NO\underline{ }CORRESPONDING\underline{ }PROPERTY & \hyperref[sec:6.1.7]{ 6.1.7} &  no  &   no  \\
-CUSTOM\underline{ }GETTERS\underline{ }SETTERS & \hyperref[sec:6.1.8]{ 6.1.8} &  no  &   no  \\
-WRONG\underline{ }NAME\underline{ }OF\underline{ }VARIABLE\underline{ }INSIDE\underline{ }ACCESSOR & \hyperref[sec:6.1.9]{ 6.1.9} &  no  &   no \\
-TRIVIAL\underline{ }ACCESSORS\underline{ }ARE\underline{ }NOT\underline{ }RECOMMENDED & \hyperref[sec:6.1.10]{ 6.1.10} &  yes  &   no  \\
-COMPACT\underline{ }OBJECT\underline{ }INITIALIZATION & \hyperref[sec:6.1.11]{ 6.1.11} &  yes  &   no  \\
-EXTENSION\underline{ }FUNCTION\underline{ }SAME\underline{ }SIGNATURE & \hyperref[sec:6.2.2]{ 6.2.2} &  no  &   no  \\
-AVOID\underline{ }USING\underline{ }UTILITY\underline{ }CLASS & \hyperref[sec:6.4.1]{ 6.4.1} &  no  &  no \\
-OBJECT\underline{ }IS\underline{ }PREFERRED & \hyperref[sec:6.4.2]{ 6.4.2} &  yes  &  no \\
+VARIABLE\underline{ }NAME\underline{ }INCORRECT & \hyperref[sec:1.1.1]{1.1.1} &  no  &   no  \\
+VARIABLE\underline{ }HAS\underline{ }PREFIX & \hyperref[sec:1.1.1]{1.1.1} &  yes  &   no  \\
+IDENTIFIER\underline{ }LENGTH & \hyperref[sec:1.1.1]{1.1.1} &  no  &   no  \\
+GENERIC\underline{ }NAME & \hyperref[sec:1.1.1]{1.1.1} &  yes  &   no  \\
+BACKTICKS\underline{ }PROHIBITED & \hyperref[sec:1.1.1]{1.1.1} &  no  &   no  \\
+FILE\underline{ }NAME\underline{ }INCORRECT & \hyperref[sec:1.1.1]{1.1.1} &  yes  &   no  \\
+EXCEPTION\underline{ }SUFFIX & \hyperref[sec:1.1.1]{1.1.1} &  yes  &   no  \\
+CONFUSING\underline{ }IDENTIFIER\underline{ }NAMING & \hyperref[sec:1.1.1]{1.1.1} &  no  &   no  \\
+PACKAGE\underline{ }NAME\underline{ }MISSING & \hyperref[sec:1.2.1]{1.2.1} &  yes  &   no  \\
+PACKAGE\underline{ }NAME\underline{ }INCORRECT\underline{ }CASE & \hyperref[sec:1.2.1]{1.2.1} &  yes  &   no  \\
+PACKAGE\underline{ }NAME\underline{ }INCORRECT\underline{ }PREFIX & \hyperref[sec:1.2.1]{1.2.1} &  yes  &   no  \\
+PACKAGE\underline{ }NAME\underline{ }INCORRECT\underline{ }SYMBOLS & \hyperref[sec:1.2.1]{1.2.1} &  no  &   no  \\
+PACKAGE\underline{ }NAME\underline{ }INCORRECT\underline{ }PATH & \hyperref[sec:1.2.1]{1.2.1} &  yes  &   no  \\
+INCORRECT\underline{ }PACKAGE\underline{ }SEPARATOR & \hyperref[sec:1.2.1]{1.2.1} &  yes  &   no  \\
+CLASS\underline{ }NAME\underline{ }INCORRECT & \hyperref[sec:1.3.1]{1.3.1} &  yes  &   no  \\
+OBJECT\underline{ }NAME\underline{ }INCORRECT & \hyperref[sec:1.3.1]{1.3.1} &  yes  &   no  \\
+ENUM\underline{ }VALUE & \hyperref[sec:1.3.1]{1.3.1} &  yes  &   enumStyle: snakeCase, pascalCase  \\
+FUNCTION\underline{ }NAME\underline{ }INCORRECT\underline{ }CASE & \hyperref[sec:1.4.1]{1.4.1} &  yes  &   no  \\
+CONSTANT\underline{ }UPPERCASE & \hyperref[sec:1.5.1]{1.5.1} &  yes  &   no  \\
+VARIABLE\underline{ }NAME\underline{ }INCORRECT\underline{ }FORMAT & \hyperref[sec:1.6.1]{1.6.1} &  yes  &   no  \\
+FUNCTION\underline{ }BOOLEAN\underline{ }PREFIX & \hyperref[sec:1.6.2]{1.6.2} &  yes  &   no  \\
+MISSING\underline{ }KDOC\underline{ }TOP\underline{ }LEVEL & \hyperref[sec:2.1.1]{2.1.1} &  no  &   no  \\
+MISSING\underline{ }KDOC\underline{ }CLASS\underline{ }ELEMENTS & \hyperref[sec:2.1.1]{2.1.1} &  no  &   no  \\
+MISSING\underline{ }KDOC\underline{ }ON\underline{ }FUNCTION & \hyperref[sec:2.1.1]{2.1.1} &  yes  &   no  \\
+KDOC\underline{ }NO\underline{ }CONSTRUCTOR\underline{ }PROPERTY & \hyperref[sec:2.1.1]{2.1.1} &  yes  &   no \\
+KDOC\underline{ }EXTRA\underline{ }PROPERTY & \hyperref[sec:2.1.1]{2.1.1} &  no  &  no   \\
+KDOC\underline{ }NO\underline{ }CONSTRUCTOR\underline{ }PROPERTY\underline{ }WITH\underline{ }COMMENT & \hyperref[sec:2.1.1]{2.1.1} &  yes  &   no \\
+KDOC\underline{ }WITHOUT\underline{ }PARAM\underline{ }TAG & \hyperref[sec:2.1.2]{2.1.2} &  yes  &   no  \\
+KDOC\underline{ }WITHOUT\underline{ }RETURN\underline{ }TAG & \hyperref[sec:2.1.2]{2.1.2} &  yes  &   no  \\
+KDOC\underline{ }WITHOUT\underline{ }THROWS\underline{ }TAG & \hyperref[sec:2.1.2]{2.1.2} &  yes  &   no  \\
+KDOC\underline{ }EMPTY\underline{ }KDOC & \hyperref[sec:2.1.3]{2.1.3} &  no  &   no  \\
+KDOC\underline{ }WRONG\underline{ }SPACES\underline{ }AFTER\underline{ }TAG & \hyperref[sec:2.1.3]{2.1.3} &  yes  &   no  \\
+KDOC\underline{ }WRONG\underline{ }TAGS\underline{ }ORDER & \hyperref[sec:2.1.3]{2.1.3} &  yes  &   no  \\
+KDOC\underline{ }NEWLINES\underline{ }BEFORE\underline{ }BASIC\underline{ }TAGS & \hyperref[sec:2.1.3]{2.1.3} &  yes  &   no  \\
+KDOC\underline{ }NO\underline{ }NEWLINES\underline{ }BETWEEN\underline{ }BASIC\underline{ }TAGS & \hyperref[sec:2.1.3]{2.1.3} &  yes  &   no  \\
+KDOC\underline{ }NO\underline{ }NEWLINE\underline{ }AFTER\underline{ }SPECIAL\underline{ }TAGS & \hyperref[sec:2.1.3]{2.1.3} &  yes  &   no  \\
+KDOC\underline{ }NO\underline{ }DEPRECATED\underline{ }TAG & \hyperref[sec:2.1.3]{2.1.3} &  yes  &   no  \\
+KDOC\underline{ }NO\underline{ }EMPTY\underline{ }TAGS & \hyperref[sec:2.2.1]{2.2.1} &  no  &   no  \\
+HEADER\underline{ }WRONG\underline{ }FORMAT & \hyperref[sec:2.2.1]{2.2.1} &  yes  &   no  \\
+HEADER\underline{ }MISSING\underline{ }OR\underline{ }WRONG\underline{ }COPYRIGHT & \hyperref[sec:2.2.1]{2.2.1} &  yes  &  mandatoryCopyright \\
+WRONG\underline{ }COPYRIGHT\underline{ }YEAR & \hyperref[sec:2.2.1]{2.2.1} &  yes  &   no  \\
+HEADER\underline{ }CONTAINS\underline{ }DATE\underline{ }OR\underline{ }AUTHOR & \hyperref[sec:2.2.1]{2.2.1} &  no  &   no  \\
+HEADER\underline{ }MISSING\underline{ }IN\underline{ }NON\underline{ }SINGLE\underline{ }CLASS\underline{ }FILE & \hyperref[sec:2.2.1]{2.2.1} &  no  &   no  \\
+HEADER\underline{ }NOT\underline{ }BEFORE\underline{ }PACKAGE & \hyperref[sec:2.2.1]{2.2.1} &  yes  &   no  \\
+KDOC\underline{ }TRIVIAL\underline{ }KDOC\underline{ }ON\underline{ }FUNCTION & \hyperref[sec:2.3.1]{2.3.1} &  no  &   no  \\
+WRONG\underline{ }NEWLINES\underline{ }AROUND\underline{ }KDOC & \hyperref[sec:2.4.1]{2.4.1} &  yes  &   no  \\
+FIRST\underline{ }COMMENT\underline{ }NO\underline{ }SPACES & \hyperref[sec:2.4.1]{2.4.1} &  yes  &   no  \\
+COMMENT\underline{ }WHITE\underline{ }SPACE & \hyperref[sec:2.4.1]{2.4.1} &  yes  &   maxSpaces  \\
+IF\underline{ }ELSE\underline{ }COMMENTS & \hyperref[sec:2.4.1]{2.4.1} &  yes  &   no  \\
+COMMENTED\underline{ }OUT\underline{ }CODE & \hyperref[sec:2.4.2]{2.4.2} &  no  &   no  \\
+FILE\underline{ }IS\underline{ }TOO\underline{ }LONG & \hyperref[sec:3.1.1]{3.1.1} &  no  &   maxSize  ignoreFolders  \\
+FILE\underline{ }CONTAINS\underline{ }ONLY\underline{ }COMMENTS & \hyperref[sec:3.1.2]{3.1.2} &  no  &   no  \\
+FILE\underline{ }INCORRECT\underline{ }BLOCKS\underline{ }ORDER & \hyperref[sec:3.1.2]{3.1.2} &  yes  &   no  \\
+FILE\underline{ }NO\underline{ }BLANK\underline{ }LINE\underline{ }BETWEEN\underline{ }BLOCKS & \hyperref[sec:3.1.2]{3.1.2} &  yes  &   no  \\
+FILE\underline{ }UNORDERED\underline{ }IMPORTS & \hyperref[sec:3.1.2]{3.1.2} &  yes  &   no  \\
+FILE\underline{ }WILDCARD\underline{ }IMPORTS & \hyperref[sec:3.1.2]{3.1.2} &  no  &   allowedWildcards           \\
+FILE\underline{ }NAME\underline{ }MATCH\underline{ }CLASS & \hyperref[sec:3.1.2]{3.1.2} &  yes  &   no  \\
+WRONG\underline{ }ORDER\underline{ }IN\underline{ }CLASS\underline{ }LIKE\underline{ }STRUCTURES & \hyperref[sec:3.1.4]{3.1.4} &  yes  &   no  \\
+BLANK\underline{ }LINE\underline{ }BETWEEN\underline{ }PROPERTIES & \hyperref[sec:3.1.4]{3.1.4} &  yes  &   no  \\
+WRONG\underline{ }DECLARATIONS\underline{ }ORDER & \hyperref[sec:3.1.4]{3.1.4} &  yes  &   no  \\
+NO\underline{ }BRACES\underline{ }IN\underline{ }CONDITIONALS\underline{ }AND\underline{ }LOOPS & \hyperref[sec:3.2.1]{3.2.1} &  yes  &   no  \\
+BRACES\underline{ }BLOCK\underline{ }STRUCTURE\underline{ }ERROR & \hyperref[sec:3.2.2]{3.2.2} &  yes  &   openBraceNewline closeBraceNewline  \\
+WRONG\underline{ }INDENTATION & \hyperref[sec:3.3.1]{3.3.1} &  yes  &  extendedIndentOfParameters alignedParameters extendedIndentAfterOperators extendedIndentBeforeDot indentationSize   \\
+EMPTY\underline{ }BLOCK\underline{ }STRUCTURE\underline{ }ERROR & \hyperref[sec:3.4.1]{3.4.1} &  yes  &   allowEmptyBlocks styleEmptyBlockWithNewline  \\
+LONG\underline{ }LINE & \hyperref[sec:3.5.1]{3.5.1} &  yes  &   lineLength                 \\
+MORE\underline{ }THAN\underline{ }ONE\underline{ }STATEMENT\underline{ }PER\underline{ }LINE & \hyperref[sec:3.6.1]{3.6.1} &  yes  &   no  \\
+REDUNDANT\underline{ }SEMICOLON & \hyperref[sec:3.6.2]{3.6.2} &  yes  &   no  \\
+WRONG\underline{ }NEWLINES & \hyperref[sec:3.6.2]{3.6.2} &  yes  &   no  \\
+TOO\underline{ }MANY\underline{ }BLANK\underline{ }LINES & \hyperref[sec:3.7.1]{3.7.1} &  yes  &   no  \\
+WRONG\underline{ }WHITESPACE & \hyperref[sec:3.8.1]{3.8.1} &  yes  &   no  \\
+TOO\underline{ }MANY\underline{ }CONSECUTIVE\underline{ }SPACES & \hyperref[sec:3.8.1]{3.8.1} &  yes  &   maxSpaces saveInitialFormattingForEnums  \\
+ENUMS\underline{ }SEPARATED & \hyperref[sec:3.9.1]{3.9.1} &  yes  &   no  \\
+LOCAL\underline{ }VARIABLE\underline{ }EARLY\underline{ }DECLARATION & \hyperref[sec:3.10.2]{3.10.2} &  no  &   no  \\
+WHEN\underline{ }WITHOUT\underline{ }ELSE & \hyperref[sec:3.11.1]{3.11.1} &  yes  &   no  \\
+ANNOTATION\underline{ }NEW\underline{ }LINE & \hyperref[sec:3.12.1]{3.12.1} &  yes  &   no  \\
+WRONG\underline{ }MULTIPLE\underline{ }MODIFIERS\underline{ }ORDER & \hyperref[sec:3.14.1]{3.14.1} &  yes  &   no  \\
+LONG\underline{ }NUMERICAL\underline{ }VALUES\underline{ }SEPARATED & \hyperref[sec:3.14.2]{3.14.2} &  yes  &   maxNumberLength maxBlockLength \\
+STRING\underline{ }CONCATENATION & \hyperref[sec:3.15.1]{3.15.1} &  no  &   no  \\
+STRING\underline{ }TEMPLATE\underline{ }CURLY\underline{ }BRACES & \hyperref[sec:3.15.2]{3.15.2} &  yes  &   no  \\
+STRING\underline{ }TEMPLATE\underline{ }QUOTES & \hyperref[sec:3.15.2]{3.15.2} &  yes  &   no  \\
+FLOAT\underline{ }IN\underline{ }ACCURATE\underline{ }CALCULATIONS & \hyperref[sec:4.1.1]{4.1.1} &  no  &   no  \\
+SAY\underline{ }NO\underline{ }TO\underline{ }VAR & \hyperref[sec:4.1.3]{4.1.3} &  no  &   no  \\
+SMART\underline{ }CAST\underline{ }NEEDED & \hyperref[sec:4.2.1]{4.2.1} &  yes  &   no  \\
+TYPE\underline{ }ALIAS & \hyperref[sec:4.2.2]{4.2.2} &  no  &   typeReferenceLength        \\
+NULLABLE\underline{ }PROPERTY\underline{ }TYPE & \hyperref[sec:4.3.1]{4.3.1} &  yes  &   no  \\
+GENERIC\underline{ }VARIABLE\underline{ }WRONG\underline{ }DECLARATION & \hyperref[sec:4.3.2]{4.3.2} &  yes  &   no  \\
+AVOID\underline{ }NULL\underline{ }CHECKS & \hyperref[sec:4.3.3]{4.3.3} &  no  &   no  \\
+TOO\underline{ }LONG\underline{ }FUNCTION & \hyperref[sec:5.1.1]{5.1.1} &  no  &   maxFunctionLength isIncludeHeader \\
+NESTED\underline{ }BLOCK & \hyperref[sec:5.1.2]{5.1.2} &  no  &   maxNestedBlockQuantit\\
+AVOID\underline{ }NESTED\underline{ }FUNCTIONS & \hyperref[sec:5.1.3]{5.1.3} &  yes  &   no  \\
+LAMBDA\underline{ }IS\underline{ }NOT\underline{ }LAST\underline{ }PARAMETER & \hyperref[sec:5.2.1]{5.2.1} &  no  &   no \\
+TOO\underline{ }MANY\underline{ }PARAMETERS & \hyperref[sec:5.2.2]{5.2.2} &  no  &   maxParameterListSize \\
+WRONG\underline{ }OVERLOADING\underline{ }FUNCTION\underline{ }ARGUMENTS & \hyperref[sec:5.2.3]{5.2.3} &  no  &   no \\
+SINGLE\underline{ }CONSTRUCTOR\underline{ }SHOULD\underline{ }BE\underline{ }PRIMARY & \hyperref[sec:6.1.1]{6.1.1} &  yes  &   no  \\
+USE\underline{ }DATA\underline{ }CLASS & \hyperref[sec:6.1.2]{6.1.2} &  no  &   no  \\
+EMPTY\underline{ }PRIMARY\underline{ }CONSTRUCTOR & \hyperref[sec:6.1.3]{6.1.3} &  yes  &   no  \\
+MULTIPLE\underline{ }INIT\underline{ }BLOCKS & \hyperref[sec:6.1.4]{6.1.4} &  yes  &   no  \\
+USELESS\underline{ }SUPERTYPE & \hyperref[sec:6.1.5]{6.1.5} &  yes  &   no  \\
+CLASS\underline{ }SHOULD\underline{ }NOT\underline{ }BE\underline{ }ABSTRACT & \hyperref[sec:6.1.6]{6.1.6} &  yes  &   no  \\
+NO\underline{ }CORRESPONDING\underline{ }PROPERTY & \hyperref[sec:6.1.7]{6.1.7} &  no  &   no  \\
+CUSTOM\underline{ }GETTERS\underline{ }SETTERS & \hyperref[sec:6.1.8]{6.1.8} &  no  &   no  \\
+WRONG\underline{ }NAME\underline{ }OF\underline{ }VARIABLE\underline{ }INSIDE\underline{ }ACCESSOR & \hyperref[sec:6.1.9]{6.1.9} &  no  &   no \\
+TRIVIAL\underline{ }ACCESSORS\underline{ }ARE\underline{ }NOT\underline{ }RECOMMENDED & \hyperref[sec:6.1.10]{6.1.10} &  yes  &   no  \\
+COMPACT\underline{ }OBJECT\underline{ }INITIALIZATION & \hyperref[sec:6.1.11]{6.1.11} &  yes  &   no  \\
+EXTENSION\underline{ }FUNCTION\underline{ }SAME\underline{ }SIGNATURE & \hyperref[sec:6.2.2]{6.2.2} &  no  &   no  \\
+AVOID\underline{ }USING\underline{ }UTILITY\underline{ }CLASS & \hyperref[sec:6.4.1]{6.4.1} &  no  &  no \\
+OBJECT\underline{ }IS\underline{ }PREFERRED & \hyperref[sec:6.4.2]{6.4.2} &  yes  &  no \\
 \hline
 \end{longtable}
 \lstMakeShortInline[basicstyle=\ttfamily\bfseries]`
+
+\hspace{0.0cm}\hyperref[sec:]{}
 
 \section*{Table of contents}
 
@@ -343,6 +345,10 @@ OBJECT\underline{ }IS\underline{ }PREFERRED & \hyperref[sec:6.4.2]{ 6.4.2} &  ye
 
 \hspace{0.0cm}\hyperref[sec:]{}
 
+\section*{Huawei Coding Style Guide}
+
+\section*{International version, v.0.0.1}
+
 \subsection*{\textbf{Purpose of this document}}
 
 \label{sec:}
@@ -518,7 +524,7 @@ No special prefix or suffix should be used in names. The following examples are 
 
 \begin{center}
 
-\begin{tabular}{ |p{5,0cm}|p{5,0cm}|p{5,0cm}| }
+\begin{tabular}{ |p{5.0cm}|p{5.0cm}|p{5.0cm}| }
 
 \hline
 
@@ -564,7 +570,7 @@ The only exception is function names in `Unit tests.`
 
 \begin{center}
 
-\begin{tabular}{ |p{5,0cm}|p{5,0cm}|p{5,0cm}| }
+\begin{tabular}{ |p{5.0cm}|p{5.0cm}|p{5.0cm}| }
 
 \hline
 
@@ -608,7 +614,7 @@ Note that prefixing can also negatively affect the style and the auto-generation
 
 \begin{center}
 
-\begin{tabular}{ |p{7,5cm}|p{7,5cm}| }
+\begin{tabular}{ |p{7.5cm}|p{7.5cm}| }
 
 \hline
 

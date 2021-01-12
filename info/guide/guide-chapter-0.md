@@ -1,3 +1,8 @@
+# Diktat Coding Style Guide
+# International version, v.0.0.1
+
+<img src="logo.svg" width="64px"/>
+
 ## <a name="c0"></a> Preface
  <!-- =============================================================================== -->
 ### <a name="c0.1"></a> Purpose of this document   
