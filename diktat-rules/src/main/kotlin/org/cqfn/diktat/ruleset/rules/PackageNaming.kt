@@ -4,6 +4,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getCommonConfiguration
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.INCORRECT_PACKAGE_SEPARATOR
+import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_DOMAIN_NAME
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_CASE
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_PATH
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_PREFIX
@@ -37,7 +38,7 @@ import java.util.concurrent.atomic.AtomicInteger
 class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-naming") {
     private var isFixMode: Boolean = false
     private lateinit var emitWarn: EmitType
-    private lateinit var domainName: String
+    private var domainName: String? = null
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
@@ -48,13 +49,15 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
         val configuration by configRules.getCommonConfiguration()
         domainName = configuration.also {
             if (it.isDefault && visitorCounter.incrementAndGet() == 1) {
-                log.error("Not able to find an external configuration for domain name in the common" +
-                        " configuration (is it missing in yml config?)")
+                log.error("Not able to find configuration file")
             }
         }
             .domainName
-
-        if (node.elementType == PACKAGE_DIRECTIVE) {
+        if (domainName == null) {
+            if (visitorCounter.get() == 1)
+                MISSING_DOMAIN_NAME.warn(configRules, emitWarn, isFixMode, "No domain name",
+                        node.startOffset, node)
+        } else if (node.elementType == PACKAGE_DIRECTIVE) {
             val filePath = node.getRootNode().getFilePath()
             // calculating package name based on the directory where the file is placed
             val realPackageName = calculateRealPackageName(filePath)
@@ -113,7 +116,7 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
             val fileSubDir = filePathParts.subList(filePathParts.lastIndexOf(PACKAGE_PATH_ANCHOR), filePathParts.size - 1)
                 .dropWhile { languageDirNames.contains(it) }
             // no need to add DOMAIN_NAME to the package name if it is already in path
-            val domainPrefix = if (!fileSubDir.joinToString(PACKAGE_SEPARATOR).startsWith(domainName)) domainName.split(PACKAGE_SEPARATOR) else emptyList()
+            val domainPrefix = if (!fileSubDir.joinToString(PACKAGE_SEPARATOR).startsWith(domainName!!)) domainName!!.split(PACKAGE_SEPARATOR) else emptyList()
             domainPrefix + fileSubDir
         }
     }
@@ -130,7 +133,7 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
 
         // package name should start from a company's domain name
         if (wordsInPackageName.isNotEmpty() && !isDomainMatches(wordsInPackageName)) {
-            PACKAGE_NAME_INCORRECT_PREFIX.warnAndFix(configRules, emitWarn, isFixMode, domainName,
+            PACKAGE_NAME_INCORRECT_PREFIX.warnAndFix(configRules, emitWarn, isFixMode, domainName!!,
                 wordsInPackageName[0].startOffset, wordsInPackageName[0]) {
                 val oldPackageName = wordsInPackageName.joinToString(PACKAGE_SEPARATOR) { it.text }
                 val newPackageName = "$domainName$PACKAGE_SEPARATOR$oldPackageName"
@@ -185,7 +188,7 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
      * function simply checks that package name starts with a proper domain name
      */
     private fun isDomainMatches(packageNameParts: List<ASTNode>): Boolean {
-        val packageNamePrefix = domainName.split(PACKAGE_SEPARATOR)
+        val packageNamePrefix = domainName!!.split(PACKAGE_SEPARATOR)
         if (packageNameParts.size < packageNamePrefix.size) {
             return false
         }

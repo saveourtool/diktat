@@ -22,6 +22,7 @@ enum class Warnings(
     val ruleId: String,
     private val warn: String) : Rule {
     // ======== chapter 1 ========
+    MISSING_DOMAIN_NAME(false, "1.2.1", "missing domain name in config file"),
     PACKAGE_NAME_MISSING(true, "1.2.1", "no package name declared in a file"),
     PACKAGE_NAME_INCORRECT_CASE(true, "1.2.1", "package name should be completely in a lower case"),
     PACKAGE_NAME_INCORRECT_PREFIX(true, "1.2.1", "package name should start from company's domain"),

@@ -263,20 +263,24 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         else -> (headerKdoc ?: copyrightComment) to firstCodeNode
     }
 
-    @Suppress("TYPE_ALIAS")
+    @Suppress("TYPE_ALIAS", "UnsafeCallOnNullableType")
     private fun regroupImports(imports: List<KtImportDirective>): List<List<KtImportDirective>> {
         val (android, notAndroid) = imports.partition {
             it.isStandard(StandardPlatforms.ANDROID)
         }
 
-        val (ownDomain, tmp) = notAndroid.partition { import ->
-            import
-                .importPath
-                ?.fqName
-                ?.pathSegments()
-                ?.zip(domainName.split(PACKAGE_SEPARATOR).map(Name::identifier))
-                ?.all { it.first == it.second }
-                ?: false
+        val (ownDomain, tmp) = if (domainName == null) {
+            Pair(emptyList(), notAndroid)
+        } else {
+            notAndroid.partition { import ->
+                import
+                        .importPath
+                        ?.fqName
+                        ?.pathSegments()
+                        ?.zip(domainName!!.split(PACKAGE_SEPARATOR).map(Name::identifier))
+                        ?.all { it.first == it.second }
+                        ?: false
+            }
         }
 
         val (others, javaAndKotlin) = tmp.partition {
