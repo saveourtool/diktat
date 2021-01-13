@@ -1,3 +1,5 @@
+<img src="logo.svg" width="64px"/>
+
 # Diktat Coding Style Guide, v.0.0.1
 
 # Table of contents
@@ -108,8 +110,11 @@ I [Preface](#c0)
     * [6.4.2 Objects should be used for Stateless Interfaces](#r6.4.2) 
 
 
-# Huawei Coding Style Guide
+# Diktat Coding Style Guide
 # International version, v.0.0.1
+
+<img src="logo.svg" width="64px"/>
+
 ## <a name="c0"></a> Preface
  <!-- =============================================================================== -->
 ### <a name="c0.1"></a> Purpose of this document   

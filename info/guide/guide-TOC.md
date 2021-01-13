@@ -1,3 +1,5 @@
+<img src="logo.svg" width="64px"/>
+
 # Diktat Coding Style Guide, v.0.0.1
 
 # Table of contents
