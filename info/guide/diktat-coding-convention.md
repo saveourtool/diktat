@@ -1877,6 +1877,30 @@ fun foo() {
     println("Nested Output: ${nested()}") 
 } 
 ```  
+#### <a name="r5.1.4"></a> 5.1.4 Negated function calls
+Don't use negated function calls if it can be replaced with negated version of this function
+
+**Invalid example**:
+```kotlin
+fun foo() { 
+    val list = listOf(1, 2, 3)
+  
+    if (!list.isEmpty()) {
+        // Some cool logic
+    }
+} 
+``` 
+
+**Valid example**:
+```kotlin
+fun foo() { 
+    val list = listOf(1, 2, 3)
+  
+    if (list.isNotEmpty()) {
+        // Some cool logic
+    }
+} 
+``` 
 
 <!-- =============================================================================== -->
 ### <a name="c5.2"></a> 5.2 Function arguments

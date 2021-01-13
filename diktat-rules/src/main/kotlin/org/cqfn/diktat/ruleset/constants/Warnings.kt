@@ -147,6 +147,7 @@ enum class Warnings(
     NO_CORRESPONDING_PROPERTY(false, "6.1.7", "backing property should have the same name, but there is no corresponding property"),
     AVOID_USING_UTILITY_CLASS(false, "6.4.1", "avoid using utility classes/objects, use extensions functions"),
     OBJECT_IS_PREFERRED(true, "6.4.2", "it is better to use object for stateless classes"),
+    INVERSE_FUNCTION_PREFERRED(true, "5.1.4", "it is better to use inverse function")
     ;
 
     /**

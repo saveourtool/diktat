@@ -229,4 +229,6 @@ public object WarningNames {
     public const val AVOID_USING_UTILITY_CLASS: String = "AVOID_USING_UTILITY_CLASS"
 
     public const val OBJECT_IS_PREFERRED: String = "OBJECT_IS_PREFERRED"
+
+    public const val INVERSE_FUNCTION_PREFERRED: String = "INVERSE_FUNCTION_PREFERRED"
 }
