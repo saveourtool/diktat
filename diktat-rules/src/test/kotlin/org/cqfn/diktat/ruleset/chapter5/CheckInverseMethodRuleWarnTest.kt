@@ -1,6 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter5
 
 import com.pinterest.ktlint.core.LintError
+import generated.WarningNames.INVERSE_FUNCTION_PREFERRED
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.CheckInverseMethodRule
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
@@ -12,7 +13,7 @@ class CheckInverseMethodRuleWarnTest : LintTestBase(::CheckInverseMethodRule) {
     private val ruleId = "$DIKTAT_RULE_SET_ID:inverse-method"
 
     @Test
-    @Tag("STUB")
+    @Tag(INVERSE_FUNCTION_PREFERRED)
     fun `should not raise warning`() {
         lintMethod(
                 """
@@ -26,7 +27,7 @@ class CheckInverseMethodRuleWarnTest : LintTestBase(::CheckInverseMethodRule) {
     }
 
     @Test
-    @Tag("STUB")
+    @Tag(INVERSE_FUNCTION_PREFERRED)
     fun `should raise warning`() {
         lintMethod(
                 """
