@@ -360,14 +360,14 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
             return true
         }
         return versionRegex?.matches(content)?.not()
-            ?: dateFormats.any {
-                // try to parse, get year and check it's value sanity
-                // otherwise it might be a tricky version format
+            ?: dateFormats.mapNotNull {
+                // try to parse using some standard date patterns
                 runCatching {
-                    it.parse(content).get(ChronoField.YEAR) > MINIMUM_SANE_YEAR
+                    it.parse(content).get(ChronoField.YEAR)
                 }
-                    .getOrNull() == true
+                    .getOrNull()
             }
+                .isNotEmpty()
     }
 
     /**
@@ -383,9 +383,9 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
     }
 
     companion object {
-        private const val MINIMUM_SANE_YEAR = 1900
-        val dateFormats: List<DateTimeFormatter> = listOf("yyyy-dd-mm", "yyyy-mm-dd", "yyyy.mm.dd", "yyyy.dd.mm").map {
-            DateTimeFormatter.ofPattern(it)
-        }
+        val dateFormats: List<DateTimeFormatter> = listOf("yyyy-dd-mm", "yy-dd-mm", "yyyy-mm-dd", "yy-mm-dd", "yyyy.mm.dd", "yyyy.dd.mm")
+            .map {
+                DateTimeFormatter.ofPattern(it)
+            }
     }
 }

@@ -118,6 +118,8 @@
 # Checks that kdoc does not contain @author tag or date
 - name: KDOC_CONTAINS_DATE_OR_AUTHOR
   enabled: true
+  configuration:
+    versionRegex: \d+\.\d+\.\d+[-.\w\d]*
 # Checks that there is newline after header KDoc
 - name: HEADER_WRONG_FORMAT
   enabled: true

@@ -355,6 +355,7 @@ class KdocFormattingTest : LintTestBase(::KdocFormatting) {
                 |/**
                 | * Description of this file
                 | * @since 2019-10-11
+                | * @since 19-10-11
                 | * @since 2019.10.11
                 | * @since 2019/10/11
                 | * @since 11 Oct 2019
@@ -375,10 +376,12 @@ class KdocFormattingTest : LintTestBase(::KdocFormatting) {
                 |class Example { }
             """.trimMargin(),
             LintError(3, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 2019-10-11"),
-            LintError(4, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 2019.10.11"),
-            LintError(5, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 2019/10/11"),
-            LintError(6, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 11 Oct 2019"),
-            LintError(18, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 2019-10-11"),
+            LintError(4, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 19-10-11"),
+            LintError(5, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 2019.10.11"),
+            LintError(6, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 2019/10/11"),
+            LintError(7, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 11 Oct 2019"),
+            LintError(19, 4, ruleId, "${Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR.warnText()} @since 2019-10-11"),
+            rulesConfigList = emptyList()
         )
     }
 

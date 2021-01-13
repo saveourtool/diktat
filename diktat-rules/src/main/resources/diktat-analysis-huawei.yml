@@ -115,6 +115,8 @@
 # Checks that kdoc does not contain @author tag or date
 - name: KDOC_CONTAINS_DATE_OR_AUTHOR
   enabled: true
+  configuration:
+    versionRegex: \d+\.\d+\.\d+[-.\w\d]*
 # Checks that KDoc does not contain single line with words 'return', 'get' or 'set'
 - name: KDOC_TRIVIAL_KDOC_ON_FUNCTION
   enabled: true
