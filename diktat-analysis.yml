@@ -277,9 +277,6 @@
 # Checks year in the copyright
 - name: WRONG_COPYRIGHT_YEAR
   enabled: true
-# Checks copyrights year in configuration
-- name: WRONG_COPYRIGHT_YEAR_CONFIGURATION
-  enabled: true
 # Inspection that checks if local variables are declared close to the first usage site
 - name: LOCAL_VARIABLE_EARLY_DECLARATION
   enabled: true

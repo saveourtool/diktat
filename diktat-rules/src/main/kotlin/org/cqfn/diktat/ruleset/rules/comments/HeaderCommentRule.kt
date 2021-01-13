@@ -25,10 +25,8 @@ import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
-import org.cqfn.diktat.ruleset.constants.Warnings
-import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_COPYRIGHT_YEAR_CONFIGURATION
+import org.cqfn.diktat.ruleset.utils.log
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -151,21 +149,24 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
             return
         }
 
-        // need to make sure that copyright year is consistent with current year
-        val copyrightText = if (makeCopyrightCorrectYear(configuration.getCopyrightText()).isNotEmpty()) {
-            WRONG_COPYRIGHT_YEAR_CONFIGURATION.warn(configRules, emitWarn, isFixMode, "should be ${LocalDate.now().year}", node.startOffset, node)
-            makeCopyrightCorrectYear(configuration.getCopyrightText())
-        } else {
-            configuration.getCopyrightText()
+        if (makeCopyrightCorrectYear(configuration.getCopyrightText()).isNotEmpty()) {
+            log.warn("Copyright year is not up do date.")
         }
 
+        // need to make sure that copyright year is consistent with current year
+        val copyrightText = configuration.getCopyrightText()
+
         val headerComment = node.findChildBefore(PACKAGE_DIRECTIVE, BLOCK_COMMENT)
-        val isWrongCopyright = headerComment != null && !headerComment.text.flatten().contains(copyrightText.flatten())
+        // Depends only on content and doesn't consider years
+        val isWrongCopyright = headerComment != null
+                && !headerComment.text.flatten().contains(copyrightText.flatten())
+                && !headerComment.text.flatten().contains(makeCopyrightCorrectYear(copyrightText).flatten())
         val isMissingCopyright = headerComment == null && configuration.isCopyrightMandatory()
         val isCopyrightInsideKdoc = (node.getAllChildrenWithType(KDOC) + node.getAllChildrenWithType(ElementType.EOL_COMMENT))
             .any { commentNode ->
                 copyrightWords.any { commentNode.text.contains(it, ignoreCase = true) }
             }
+
         if (isWrongCopyright || isMissingCopyright || isCopyrightInsideKdoc) {
             val freeText = when {
                 // If `isCopyrightInsideKdoc` then `isMissingCopyright` is true too, but warning text from `isCopyrightInsideKdoc` is preferable.
@@ -193,9 +194,9 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
         val copyrightWithCorrectYear = makeCopyrightCorrectYear(copyrightText)
 
         // Triggers when there is a copyright, but its year is not updated.
-        if (copyrightWithCorrectYear.isNotEmpty()) {
+        if (!isMissingCopyright && copyrightWithCorrectYear.isNotEmpty()) {
             WRONG_COPYRIGHT_YEAR.warnAndFix(configRules, emitWarn, isFixMode, "year should be $curYear", node.startOffset, node) {
-                (headerComment as? LeafElement)?.replaceWithText(headerComment.text.replace(copyrightText, copyrightWithCorrectYear))
+                (headerComment as LeafElement).replaceWithText(headerComment.text.replace(copyrightText, copyrightWithCorrectYear))
             }
         }
     }

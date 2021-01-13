@@ -92,9 +92,6 @@ public object WarningNames {
 
     public const val WRONG_COPYRIGHT_YEAR: String = "WRONG_COPYRIGHT_YEAR"
 
-    public const val WRONG_COPYRIGHT_YEAR_CONFIGURATION: String =
-            "WRONG_COPYRIGHT_YEAR_CONFIGURATION"
-
     public const val HEADER_CONTAINS_DATE_OR_AUTHOR: String = "HEADER_CONTAINS_DATE_OR_AUTHOR"
 
     public const val HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE: String =
