@@ -4,15 +4,9 @@ plugins {
 
 repositories {
     jcenter()
-    mavenLocal()
-    flatDir {
-        dirs(
-            "$rootDir/../../diktat-rules/target",
-            "$rootDir/../../diktat-common/target"
-        )
-    }
 }
 
 dependencies {
-    implementation("org.cqfn.diktat:diktat-rules:$version")
+    implementation("org.cqfn.diktat:diktat-rules:0.3.0")  // todo correct version of current build?
+    implementation("org.cqfn.diktat:diktat-gradle-plugin:0.3.0")
 }
