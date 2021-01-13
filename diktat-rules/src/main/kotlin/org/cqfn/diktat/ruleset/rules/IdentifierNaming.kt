@@ -79,8 +79,20 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  * // FixMe: very important, that current implementation cannot fix identifier naming properly,
  * // FixMe: because it fixes only declaration without the usages
  */
-@Suppress("ForbiddenComment")
+@Suppress("ForbiddenComment", "MISSING_KDOC_CLASS_ELEMENTS")
 class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("identifier-naming") {
+    private val allMethodPrefixes by lazy {
+        if (configuration.allowedBooleanPrefixes.isNullOrEmpty()) {
+            booleanMethodPrefixes
+        } else {
+            booleanMethodPrefixes + configuration.allowedBooleanPrefixes.filter { it.isNotEmpty() }
+        }
+    }
+    val configuration by lazy {
+        BooleanFunctionsConfiguration(
+            this.configRules.getRuleConfig(FUNCTION_BOOLEAN_PREFIX)?.configuration ?: emptyMap()
+        )
+    }
     private var isFixMode: Boolean = false
     private lateinit var emitWarn: EmitType
 
@@ -358,7 +370,7 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
         if (!node.isOverridden()) {
             // if function has Boolean return type in 99% of cases it is much better to name it with isXXX or hasXXX prefix
             if (functionReturnType != null && functionReturnType == PrimitiveType.BOOLEAN.typeName.asString()) {
-                if (booleanMethodPrefixes.none { functionName.text.startsWith(it) }) {
+                if (allMethodPrefixes.none { functionName.text.startsWith(it) }) {
                     FUNCTION_BOOLEAN_PREFIX.warnAndFix(configRules, emitWarn, isFixMode, functionName.text, functionName.startOffset, functionName) {
                         // FixMe: add agressive autofix for this
                     }
@@ -426,13 +438,20 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
         } ?: Style.SNAKE_CASE
     }
 
+    class BooleanFunctionsConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
+        /**
+         * A list of functions that return boolean and are allowed to use. Input is in a form "foo, bar".
+         */
+        val allowedBooleanPrefixes = config["allowedPrefixes"]?.split(",")?.map { it.trim() } ?: emptyList()
+    }
+
     companion object {
         const val MAX_IDENTIFIER_LENGTH = 64
         const val MIN_IDENTIFIER_LENGTH = 2
 
         // FixMe: this should be moved to properties
         val oneCharIdentifiers = setOf("i", "j", "k", "x", "y", "z")
-        val booleanMethodPrefixes = setOf("has", "is")
+        val booleanMethodPrefixes = setOf("has", "is", "are", "have", "should")
         val confusingIdentifierNames = setOf("O", "D", "I", "l", "Z", "S", "e", "B", "h", "n", "m", "rn")
     }
 }

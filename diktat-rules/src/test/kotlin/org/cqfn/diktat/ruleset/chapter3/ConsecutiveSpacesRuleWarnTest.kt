@@ -15,7 +15,7 @@ class ConsecutiveSpacesRuleWarnTest : LintTestBase(::ConsecutiveSpacesRule) {
     private val ruleId = "$DIKTAT_RULE_SET_ID:too-many-spaces"
     private val rulesConfigListNoSpaces: List<RulesConfig> = listOf(
         RulesConfig(TOO_MANY_CONSECUTIVE_SPACES.name, true,
-            mapOf("max_spaces" to "2"))
+            mapOf("maxSpaces" to "2"))
     )
 
     @Test

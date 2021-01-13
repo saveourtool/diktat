@@ -4,7 +4,6 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.constants.Warnings.EMPTY_BLOCK_STRUCTURE_ERROR
-import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NAME_INCORRECT
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NAME_MATCH_CLASS
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_EMPTY_TAGS
@@ -25,18 +24,16 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-import java.io.File
+import java.time.LocalDate
 
 import kotlinx.serialization.encodeToString
 
-typealias ruleToConfig = Map<String, Map<String, String>>
+typealias ruleToConfig = Map<Warnings, Map<String, String>>
 
 /**
  * Test for [DiktatRuleSetProvider] in autocorrect mode as a whole. All rules are applied to a file.
  * Note: ktlint uses initial text from a file to calculate line and column from offset. Because of that line/col of unfixed errors
  * may change after some changes to text or other rules.
- *
- * fixme: run as a separate maven goal/module?
  */
 class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     { DiktatRuleSetProvider(configFilePath) },
@@ -55,9 +52,9 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
                     rulesConfig.removeIf { it.name == warning.name }
                     rulesConfig.add(RulesConfig(warning.name, enabled = false, configuration = emptyMap()))
                 }
-                rulesToOverride.forEach { (name, configuration) ->
-                    rulesConfig.removeIf { it.name == name }
-                    rulesConfig.add(RulesConfig(name, enabled = true, configuration = configuration))
+                rulesToOverride.forEach { (warning, configuration) ->
+                    rulesConfig.removeIf { it.name == warning.name }
+                    rulesConfig.add(RulesConfig(warning.name, enabled = true, configuration = configuration))
                 }
             }
         createTempFile()
@@ -97,12 +94,24 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
 
     @Test
     @Tag("DiktatRuleSetProvider")
+    fun `smoke test #7`() {
+        fixAndCompare("Example7Expected.kt", "Example7Test.kt")
+    }
+
+    @Test
+    @Tag("DiktatRuleSetProvider")
+    fun `smoke test #6`() {
+        fixAndCompare("Example6Expected.kt", "Example6Test.kt")
+    }
+
+    @Test
+    @Tag("DiktatRuleSetProvider")
     fun `smoke test #5`() {
         overrideRulesConfig(emptyList(),
             mapOf(
-                Warnings.HEADER_MISSING_OR_WRONG_COPYRIGHT.name to mapOf(
+                Warnings.HEADER_MISSING_OR_WRONG_COPYRIGHT to mapOf(
                     "isCopyrightMandatory" to "true",
-                    "copyrightText" to """|Copyright 2018-2020 John Doe.
+                    "copyrightText" to """|Copyright 2018-${LocalDate.now().year} John Doe.
                                     |    Licensed under the Apache License, Version 2.0 (the "License");
                                     |    you may not use this file except in compliance with the License.
                                     |    You may obtain a copy of the License at
@@ -140,13 +149,8 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     @Test
     @Tag("DiktatRuleSetProvider")
     fun `smoke test #2`() {
-        // fixme: path shouldn't point to `target` directory
-        // val expectedFileAbsolutePath = Path.of(Path.of("target/test-classes/$resourceFilePath").toAbsolutePath().toString(), "Example2Test.kt_copy")
-
-        val expectedFileAbsolutePath = File("target/test-classes/$resourceFilePath/Example2Test.kt_copy").absolutePath
         fixAndCompare("Example2Expected.kt", "Example2Test.kt")
         unfixedLintErrors.assertEquals(
-            LintError(1, 1, "$DIKTAT_RULE_SET_ID:file-naming", "${FILE_NAME_INCORRECT.warnText()} Example2Test.kt_copy", true),  // todo this is a false one
             LintError(1, 1, "$DIKTAT_RULE_SET_ID:header-comment", "${HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warnText()} there are 2 declared classes and/or objects", false),
             LintError(14, 17, "$DIKTAT_RULE_SET_ID:comments", "${Warnings.COMMENTED_OUT_CODE.warnText()} private class Test : RuntimeException()", false)
         )
@@ -157,8 +161,7 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     fun `smoke test #1`() {
         fixAndCompare("Example1Expected.kt", "Example1Test.kt")
         unfixedLintErrors.assertEquals(
-            LintError(1, 1, "$DIKTAT_RULE_SET_ID:file-naming", "${FILE_NAME_INCORRECT.warnText()} Example1Test.kt_copy", true),  // todo this is a false one
-            LintError(1, 1, "$DIKTAT_RULE_SET_ID:file-naming", "${FILE_NAME_MATCH_CLASS.warnText()} Example1Test.kt_copy vs Example", true),  // todo this is a false one
+            LintError(1, 1, "$DIKTAT_RULE_SET_ID:file-naming", "${FILE_NAME_MATCH_CLASS.warnText()} Example1Test.kt vs Example", true),
             LintError(1, 1, "$DIKTAT_RULE_SET_ID:kdoc-formatting", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
             LintError(3, 6, "$DIKTAT_RULE_SET_ID:kdoc-comments", "${MISSING_KDOC_TOP_LEVEL.warnText()} Example", false),
             LintError(3, 26, "$DIKTAT_RULE_SET_ID:kdoc-comments", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} isValid", false),
@@ -171,6 +174,25 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
             LintError(14, 3, "$DIKTAT_RULE_SET_ID:kdoc-formatting", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
             LintError(19, 15, "$DIKTAT_RULE_SET_ID:kdoc-formatting", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false)
         )
+    }
+
+    @Test
+    @Tag("DiktatRuleSetProvider")
+    fun `smoke test with kts files`() {
+        overrideRulesConfig(
+            listOf(
+                HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE  // because build.gradle.kts doesn't need extra comments, and this rule can be manually disabled if needed
+            ),
+            mapOf(
+                Warnings.WRONG_INDENTATION to mapOf(
+                    "newlineAtEnd" to "false",
+                    "extendedIndentOfParameters" to "false",
+                )
+            )
+        )  // so that trailing newline isn't checked
+        // file name is `gradle_` so that IDE doesn't suggest to import gradle project
+        fixAndCompare("../../../build.gradle_.kts", "../../../build.gradle_.kts")
+        Assertions.assertTrue(unfixedLintErrors.isEmpty())
     }
 
     companion object {

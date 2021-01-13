@@ -8,6 +8,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
+import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getAllLeafsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getFilePath
 import org.cqfn.diktat.ruleset.utils.indentBy
@@ -26,16 +27,19 @@ import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
 import org.cqfn.diktat.ruleset.utils.log
 
 import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.ELSE
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.LBRACKET
+import com.pinterest.ktlint.core.ast.ElementType.LITERAL_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.LPAR
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.RBRACKET
 import com.pinterest.ktlint.core.ast.ElementType.RPAR
 import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.STRING_TEMPLATE
 import com.pinterest.ktlint.core.ast.ElementType.THEN
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.visit
@@ -188,9 +192,46 @@ class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indent
         if (checkResult?.isCorrect != true && expectedIndent != indentError.actual) {
             WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "expected $expectedIndent but was ${indentError.actual}",
                 whiteSpace.startOffset + whiteSpace.text.lastIndexOf('\n') + 1, whiteSpace.node) {
+                checkStringLiteral(whiteSpace, expectedIndent)
                 whiteSpace.node.indentBy(expectedIndent)
             }
         }
+    }
+
+    /**
+     * Checks if it is triple-quoted string template with trimIndent() or trimMargin() function.
+     */
+    private fun checkStringLiteral(whiteSpace: PsiWhiteSpace, expectedIndent: Int) {
+        val nextNode = whiteSpace.node.treeNext
+        if (nextNode != null &&
+                nextNode.elementType == DOT_QUALIFIED_EXPRESSION &&
+                nextNode.firstChildNode.elementType == STRING_TEMPLATE &&
+                nextNode.firstChildNode.text.startsWith("\"\"\"") &&
+                nextNode.findChildByType(CALL_EXPRESSION)?.text?.let {
+                    it == "trimIndent()" ||
+                            it == "trimMargin()"
+                } == true) {
+            fixStringLiteral(whiteSpace, expectedIndent)
+        }
+    }
+
+    /**
+     * If it is triple-quoted string template we need to indent all its parts
+     */
+    private fun fixStringLiteral(whiteSpace: PsiWhiteSpace, expectedIndent: Int) {
+        val textIndent = " ".repeat(expectedIndent + INDENT_SIZE)
+        val templateEntries = whiteSpace.node.treeNext.firstChildNode.getAllChildrenWithType(LITERAL_STRING_TEMPLATE_ENTRY)
+        templateEntries.forEach {
+            if (!it.text.contains("\n") && it.text.isNotBlank()) {
+                (it.firstChildNode as LeafPsiElement).rawReplaceWithText(textIndent + it.firstChildNode.text.trim())
+            }
+        }
+        (templateEntries.last().firstChildNode as LeafPsiElement)
+            .rawReplaceWithText(" ".repeat(expectedIndent) + templateEntries
+                .last()
+                .firstChildNode
+                .text
+                .trim())
     }
 
     private fun ASTNode.getExceptionalIndentInitiator() = treeParent.let { parent ->
