@@ -84,8 +84,6 @@ Package names are all written in lowercase, and consecutive words are concatenat
 package your.company.domain.mobilecontrol.views
 ```
 
-**Note** If there isn't domain name in config file, then package verification will not be carried out.
-
 <!-- =============================================================================== -->
 ### <a name="c1.3"></a> 1.3 Classes, enumerations, interfaces
 This section describes the general rules for naming classes, enumerations, and interfaces.

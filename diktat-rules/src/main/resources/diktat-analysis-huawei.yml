@@ -43,9 +43,6 @@
 # Checks that the object matches PascalCase
 - name: OBJECT_NAME_INCORRECT
   enabled: true
-# Checks that domain name in DIKTAT_COMMON missing
-- name: MISSING_DOMAIN_NAME
-  enabled: true
 # Checks that package name is in correct (lower) case
 - name: PACKAGE_NAME_INCORRECT_CASE
   enabled: true
