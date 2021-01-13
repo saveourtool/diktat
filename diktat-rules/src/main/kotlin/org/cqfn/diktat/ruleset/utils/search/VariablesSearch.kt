@@ -110,5 +110,5 @@ abstract class VariablesSearch(val node: ASTNode, private val filterForVariables
  *
  * @param node an [ASTNode]
  */
-@SuppressWarnings("FunctionOnlyReturningConstant")
+@Suppress("UNUSED_PARAMETER", "FunctionOnlyReturningConstant")
 fun default(node: KtProperty) = true
