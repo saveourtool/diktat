@@ -789,3 +789,12 @@ private fun ASTNode.calculateLineNumber() = getRootNode()
         require(it >= 0) { "Cannot calculate line number correctly, node's offset $startOffset is greater than file length ${getRootNode().textLength}" }
         it + 1
     }
+
+/**
+ * @return the number of lines in a block of code.
+ */
+fun countCodeLines(copyNode: ASTNode): Int {
+    copyNode.findAllNodesWithCondition({ it.isPartOfComment() }).forEach { it.treeParent.removeChild(it) }
+    val text = copyNode.text.lines().filter { it.isNotBlank() }
+    return text.size
+}

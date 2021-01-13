@@ -43,11 +43,10 @@ class FunctionLength(private val configRules: List<RulesConfig>) : Rule("functio
                 ?.node
                 ?.clone() ?: return) as ASTNode
         }
-        copyNode.findAllNodesWithCondition({ it.elementType in commentType }).forEach { it.treeParent.removeChild(it) }
-        val functionText = copyNode.text.lines().filter { it.isNotBlank() }
-        if (functionText.size > configuration.maxFunctionLength) {
+        val sizeFun = countCodeLines(copyNode)
+        if (sizeFun > configuration.maxFunctionLength) {
             TOO_LONG_FUNCTION.warn(configRules, emitWarn, isFixMode,
-                "max length is ${configuration.maxFunctionLength}, but you have ${functionText.size}",
+                "max length is ${configuration.maxFunctionLength}, but you have $sizeFun",
                 node.startOffset, node)
         }
     }
