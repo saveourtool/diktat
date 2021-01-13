@@ -15,6 +15,7 @@ import org.cqfn.diktat.ruleset.utils.findChildAfter
 import org.cqfn.diktat.ruleset.utils.findChildBefore
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
+import org.cqfn.diktat.ruleset.utils.log
 import org.cqfn.diktat.ruleset.utils.moveChildBefore
 
 import com.pinterest.ktlint.core.Rule
@@ -25,7 +26,6 @@ import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
-import org.cqfn.diktat.ruleset.utils.log
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -158,9 +158,9 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
 
         val headerComment = node.findChildBefore(PACKAGE_DIRECTIVE, BLOCK_COMMENT)
         // Depends only on content and doesn't consider years
-        val isWrongCopyright = headerComment != null
-                && !headerComment.text.flatten().contains(copyrightText.flatten())
-                && !headerComment.text.flatten().contains(makeCopyrightCorrectYear(copyrightText).flatten())
+        val isWrongCopyright = headerComment != null &&
+            !headerComment.text.flatten().contains(copyrightText.flatten()) &&
+            !headerComment.text.flatten().contains(makeCopyrightCorrectYear(copyrightText).flatten())
         val isMissingCopyright = headerComment == null && configuration.isCopyrightMandatory()
         val isCopyrightInsideKdoc = (node.getAllChildrenWithType(KDOC) + node.getAllChildrenWithType(ElementType.EOL_COMMENT))
             .any { commentNode ->
@@ -181,7 +181,7 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
                 val newLines = node.findChildBefore(PACKAGE_DIRECTIVE, KDOC)?.let { "\n" } ?: "\n\n"
                 node.addChild(PsiWhiteSpaceImpl(newLines), node.firstChildNode)
                 node.addChild(LeafPsiElement(BLOCK_COMMENT,
-                        """
+                    """
                         |/*
                         |${handleMultilineCopyright(copyrightText)}
                         |*/
