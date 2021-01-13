@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm") version Versions.Kotlin apply false
+    kotlin("plugin.serialization") version Versions.Kotlin apply false
     id("org.cqfn.diktat.diktat-gradle-plugin") version Versions.Diktat
 }
 

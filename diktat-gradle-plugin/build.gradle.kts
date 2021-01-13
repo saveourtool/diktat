@@ -9,31 +9,21 @@ plugins {
 }
 
 repositories {
-    flatDir {
-        // to use snapshot diktat without necessary installing
-        dirs("../diktat-rules/target")
-    }
-    mavenLocal()  // to use snapshot diktat
     mavenCentral()
     jcenter()
 }
 
-// default value is needed for correct gradle loading in IDEA; actual value from maven is used during build
-val ktlintVersion = project.properties.getOrDefault("ktlintVersion", "0.39.0") as String
-val diktatVersion = project.version.takeIf { it.toString() != Project.DEFAULT_VERSION } ?: "0.1.7"
-val junitVersion = project.properties.getOrDefault("junitVersion", "5.7.0") as String
-val jacocoVersion = project.properties.getOrDefault("jacocoVersion", "0.8.6") as String
 dependencies {
     implementation(kotlin("gradle-plugin-api"))
 
-    implementation("com.pinterest.ktlint:ktlint-core:$ktlintVersion") {
+    implementation("com.pinterest.ktlint:ktlint-core:${Versions.KtLint}") {
         exclude("com.pinterest.ktlint", "ktlint-ruleset-standard")
     }
-    implementation("com.pinterest.ktlint:ktlint-reporter-plain:$ktlintVersion")
-    implementation("org.cqfn.diktat:diktat-rules:$diktatVersion")
+    implementation("com.pinterest.ktlint:ktlint-reporter-plain:${Versions.KtLint}")
+    implementation(project(":diktat-rules"))
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:${Versions.Junit}")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${Versions.Junit}")
 }
 
 val generateVersionsFile by tasks.registering {
@@ -47,8 +37,8 @@ val generateVersionsFile by tasks.registering {
             """
             package generated
 
-            internal const val DIKTAT_VERSION = "$diktatVersion"
-            internal const val KTLINT_VERSION = "$ktlintVersion"
+            internal const val DIKTAT_VERSION = "$version"
+            internal const val KTLINT_VERSION = "${Versions.KtLint}"
 
             """.trimIndent()
         )
@@ -86,7 +76,7 @@ val jacocoMergeTask by tasks.register<JacocoMerge>("jacocoMerge")
 tasks.withType<Test> {
     useJUnitPlatform()
 }
-jacoco.toolVersion = jacocoVersion
+jacoco.toolVersion = Versions.Jacoco
 
 // === integration testing
 // fixme: should probably use KotlinSourceSet instead
