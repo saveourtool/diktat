@@ -53,11 +53,11 @@ private fun generateWarningNames() {
         .addComment(autoGenerationComment)
         .build()
 
-    kotlinFile.writeTo(File("diktat-rules/src/main/kotlin"))  // fixme: need to add it to pom
+    kotlinFile.writeTo(File("src/main/kotlin"))  // fixme: need to add it to build.gradle
 }
 
 private fun validateYear() {
-    val file = File("diktat-rules/src/test/resources/test/paragraph2/header/CopyrightDifferentYearExpected.kt")
+    val file = File("src/test/resources/test/paragraph2/header/CopyrightDifferentYearExpected.kt")
     val tempFile = createTempFile()
     tempFile.printWriter().use { writer ->
         file.forEachLine { line ->
