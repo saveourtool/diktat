@@ -351,7 +351,7 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
 
     @Test
     @Tag(WarningNames.WRONG_WHITESPACE)
-    fun `there should be no space before ? in nullable types`() {
+    fun `there should be no space before question mark in nullable types`() {
         lintMethod(
             """
                     |class Example {
