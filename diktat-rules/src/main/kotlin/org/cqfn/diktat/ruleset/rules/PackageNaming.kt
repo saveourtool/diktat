@@ -73,9 +73,9 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
                     checkFilePathMatchesWithPackageName(wordsInPackageName, realPackageName, node)
                 }
             } ?: if (visitorCounter.get() == 1) {
-                    log.error("Not able to find an external configuration for domain" +
-                        " name in the common configuration (is it missing in yml config?)")
-            }
+            log.error("Not able to find an external configuration for domain" +
+                    " name in the common configuration (is it missing in yml config?)")
+        }
     }
 
     /**
