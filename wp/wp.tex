@@ -1,6 +1,6 @@
 \documentclass[acmlarge, screen, nonacm]{acmart}
 \usepackage[utf8]{inputenc}
-\usepackage{xeCJK}
+\usepackage{CJKutf8}
 \usepackage{graphicx}
 \usepackage{pgf}
 \usepackage{multicol}
@@ -107,6 +107,7 @@
 \pagestyle{plain}
 
 \begin{document}
+\begin{CJK*}{UTF8}{gbsn}
 
 \title[]{
   \includegraphics[width = 150pt, height = 150]{pictures/logo.png}\\
@@ -141,6 +142,11 @@
 \renewcommand{\shortauthors}{}
 
 \maketitle
+
+\lstMakeShortInline[basicstyle=\ttfamily\bfseries]`
+中, 文
+Chinese version: `版权所有 (c) 华为技术有限公司 2012-2020` \
+Chinese version: `版权所有 (c) 海思半导体 2012-2020` \
 
 \section{Introduction}
 \label{sec:intro}
@@ -188,4 +194,5 @@
 \label{sec:appendix}
 \input{sections/appendix}
 
+\end{CJK*}
 \end{document}

@@ -22,7 +22,7 @@ fun generateCodeStyle(guideDir: File, wpDir: File) {
     val lines = file.readLines().toMutableList().drop(1)
     tempFile.printWriter().use { writer ->
         val iterator = lines.iterator()
-        writer.writeln("\\lstMakeShortInline[basicstyle=\\ttfamily\\bfseries]`")
+        //writer.writeln("\\lstMakeShortInline[basicstyle=\\ttfamily\\bfseries]`")
         while (iterator.hasNext()) {
             val line = iterator.next()
             if (line.contains("## <a name=\"c0\"></a> Preface"))
@@ -128,6 +128,7 @@ fun generateCodeStyle(guideDir: File, wpDir: File) {
                 writer.writeln("\\end{center}")
             } else {
                 var correctedString = findBoldOrItalicText(BOLD_TEXT, line, FindType.BOLD)
+                correctedString = correctedString.replaceApostrophe()
                 correctedString = findBoldOrItalicText(ITALIC_TEXT, correctedString, FindType.ITALIC)
                 correctedString = correctedString.replace(ANCHORS, "")
                 correctedString = correctedString.replace("#", "\\#")
@@ -148,6 +149,29 @@ fun generateCodeStyle(guideDir: File, wpDir: File) {
     appendixFileLines.addAll(tempFile.readLines())
     File(wpDir, "sections/appendix.tex").writeText(appendixFileLines.joinToString(separator = "\n"))
     tempFile.delete()
+}
+
+private fun String.replaceApostrophe(): String {
+    val qq = mutableListOf<Int>()
+    var w = this
+    this.mapIndexed { index, c ->
+        if (c == '`')
+            qq.add(index)
+    }
+    for(index in 0..qq.size-2 step 2){
+        val correct = this.substring(qq[index], qq[index + 1]+1)
+        val correct2 = correct
+        if (correct.contains("\\")) {
+            println(this)
+            correct.replace("\\", "\\textbackslash")
+        }
+        if (correct.contains("{"))
+            correct.replace("{", "\\{")
+        if (correct.contains("}"))
+            correct.replace("}", "\\}")
+        w = w.replace(correct2, "\\textbf{${correct.trim('`', ' ')}}")
+    }
+    return w
 }
 
 private fun writeTableContentLine(writer: PrintWriter, line: String, numbOfSpaces: Double) {
