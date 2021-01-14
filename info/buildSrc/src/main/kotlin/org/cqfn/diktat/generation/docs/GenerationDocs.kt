@@ -6,7 +6,6 @@ import java.io.File
 import java.io.PrintWriter
 
 
-var qwe = 0
 /**
  * Adds/updates diktat code style in white paper document.
  */
