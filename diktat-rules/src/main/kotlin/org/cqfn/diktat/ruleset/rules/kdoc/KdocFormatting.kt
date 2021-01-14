@@ -1,7 +1,10 @@
 package org.cqfn.diktat.ruleset.rules.kdoc
 
+import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_EMPTY_KDOC
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NEWLINES_BEFORE_BASIC_TAGS
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_DEPRECATED_TAG
@@ -43,6 +46,9 @@ import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
 
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoField
+
 /**
  * Formatting visitor for Kdoc:
  * 1) removing all blank lines between Kdoc and the code it's declaring
@@ -50,12 +56,15 @@ import org.jetbrains.kotlin.psi.psiUtil.startOffset
  * 3) ensuring there is only one white space between tag and it's body
  * 4) ensuring tags @apiNote, @implSpec, @implNote have one empty line after their body
  * 5) ensuring tags @param, @return, @throws are arranged in this order
+ * 6) ensuring @author tag is not used
+ * 7) ensuring @since tag contains only versions and not dates
  */
 @Suppress("ForbiddenComment")
 class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-formatting") {
     private val basicTagsList = listOf(KDocKnownTag.PARAM, KDocKnownTag.RETURN, KDocKnownTag.THROWS)
     private val specialTagNames = setOf("implSpec", "implNote", "apiNote")
     private var isFixMode: Boolean = false
+    private var versionRegex: Regex? = null
     private lateinit var emitWarn: EmitType
 
     /**
@@ -69,6 +78,13 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
         isFixMode = autoCorrect
         emitWarn = emit
 
+        versionRegex ?: run {
+            versionRegex = KdocFormatConfiguration(
+                configRules.getRuleConfig(KDOC_CONTAINS_DATE_OR_AUTHOR)?.configuration ?: emptyMap()
+            )
+                .versionRegex
+        }
+
         if (node.elementType == KDOC && isKdocNotEmpty(node)) {
             checkNoDeprecatedTag(node)
             checkEmptyTags(node.kDocTags())
@@ -77,6 +93,7 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
             node.kDocBasicTags()?.let { checkEmptyLinesBetweenBasicTags(it) }
             checkBasicTagsOrder(node)
             checkNewLineAfterSpecialTags(node)
+            checkAuthorAndDate(node)
         }
     }
 
@@ -307,6 +324,17 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
         }
     }
 
+    private fun checkAuthorAndDate(node: ASTNode) {
+        node.kDocTags()
+            ?.filter {
+                it.knownTag == KDocKnownTag.AUTHOR ||
+                        it.knownTag == KDocKnownTag.SINCE && it.hasInvalidVersion()
+            }
+            ?.forEach {
+                KDOC_CONTAINS_DATE_OR_AUTHOR.warn(configRules, emitWarn, isFixMode, it.text.trim(), it.startOffset, it.node)
+            }
+    }
+
     // fixme this method can be improved and extracted to utils
     private fun ASTNode.hasEmptyLineAfter(): Boolean {
         require(this.elementType == KDOC_TAG) { "This check is only for KDOC_TAG" }
@@ -320,5 +348,44 @@ class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-fo
 
     private fun ASTNode.applyToPrevSibling(elementType: IElementType, consumer: ASTNode.() -> Unit) {
         prevSibling { it.elementType == elementType }?.apply(consumer)
+    }
+
+    /**
+     * Checks whether this tag's content represents an invalid version
+     */
+    private fun KDocTag.hasInvalidVersion(): Boolean {
+        val content = getContent().trim()
+        if (' ' in content || '/' in content) {
+            // Filter based on symbols that are not allowed in versions. Assuming that people put either version or date in `@since` tag.
+            return true
+        }
+        return versionRegex?.matches(content)?.not()
+            ?: dateFormats.mapNotNull {
+                // try to parse using some standard date patterns
+                runCatching {
+                    it.parse(content).get(ChronoField.YEAR)
+                }
+                    .getOrNull()
+            }
+                .isNotEmpty()
+    }
+
+    /**
+     * A [RuleConfiguration] for KDoc formatting
+     */
+    class KdocFormatConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
+        /**
+         * Regular expression, if present, against which a version should be matched in `@since` tag.
+         */
+        val versionRegex: Regex? by lazy {
+            config["versionRegex"]?.let { Regex(it) }
+        }
+    }
+
+    companion object {
+        val dateFormats: List<DateTimeFormatter> = listOf("yyyy-dd-mm", "yy-dd-mm", "yyyy-mm-dd", "yy-mm-dd", "yyyy.mm.dd", "yyyy.dd.mm")
+            .map {
+                DateTimeFormatter.ofPattern(it)
+            }
     }
 }

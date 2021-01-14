@@ -451,7 +451,7 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
 
         // FixMe: this should be moved to properties
         val oneCharIdentifiers = setOf("i", "j", "k", "x", "y", "z")
-        val booleanMethodPrefixes = setOf("has", "is", "are", "have", "should")
+        val booleanMethodPrefixes = setOf("has", "is", "are", "have", "should", "can")
         val confusingIdentifierNames = setOf("O", "D", "I", "l", "Z", "S", "e", "B", "h", "n", "m", "rn")
     }
 }
