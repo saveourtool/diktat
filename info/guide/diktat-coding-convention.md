@@ -434,7 +434,7 @@ The basic format of KDoc is shown in the following example:
  * Other ...
  */
 fun method(arg: String) {
-    // …
+    // ...
 }
 ```
 
