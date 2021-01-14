@@ -62,23 +62,23 @@ private fun validateYear() {
         .listFiles()
         .filterNot { it.name.contains("CopyrightDifferentYearTest.kt") }
         .forEach { file ->
-        val tempFile = createTempFile()
-        tempFile.printWriter().use { writer ->
-            file.forEachLine { line ->
-                writer.println(when {
-                    line.contains(hyphenRegex) -> line.replace(hyphenRegex) {
-                        val years = it.value.split("-")
-                        "${years[0]}-$curYear"
-                    }
-                    line.contains(afterCopyrightRegex) -> line.replace(afterCopyrightRegex) {
-                        val copyrightYears = it.value.split("(c)", "(C)", "©")
-                        "${copyrightYears[0]}-$curYear"
-                    }
-                    else -> line
-                })
+            val tempFile = createTempFile()
+            tempFile.printWriter().use { writer ->
+                file.forEachLine { line ->
+                    writer.println(when {
+                        line.contains(hyphenRegex) -> line.replace(hyphenRegex) {
+                            val years = it.value.split("-")
+                            "${years[0]}-$curYear"
+                        }
+                        line.contains(afterCopyrightRegex) -> line.replace(afterCopyrightRegex) {
+                            val copyrightYears = it.value.split("(c)", "(C)", "©")
+                            "${copyrightYears[0]}-$curYear"
+                        }
+                        else -> line
+                    })
+                }
             }
-        }
-        file.delete()
-        tempFile.renameTo(file)
+            file.delete()
+            tempFile.renameTo(file)
     }
 }

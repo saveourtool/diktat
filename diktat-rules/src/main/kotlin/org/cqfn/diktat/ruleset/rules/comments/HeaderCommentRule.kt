@@ -159,8 +159,8 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
         val headerComment = node.findChildBefore(PACKAGE_DIRECTIVE, BLOCK_COMMENT)
         // Depends only on content and doesn't consider years
         val isWrongCopyright = headerComment != null &&
-            !headerComment.text.flatten().contains(copyrightText.flatten()) &&
-            !headerComment.text.flatten().contains(makeCopyrightCorrectYear(copyrightText).flatten())
+                !headerComment.text.flatten().contains(copyrightText.flatten()) &&
+                !headerComment.text.flatten().contains(makeCopyrightCorrectYear(copyrightText).flatten())
         val isMissingCopyright = headerComment == null && configuration.isCopyrightMandatory()
         val isCopyrightInsideKdoc = (node.getAllChildrenWithType(KDOC) + node.getAllChildrenWithType(ElementType.EOL_COMMENT))
             .any { commentNode ->

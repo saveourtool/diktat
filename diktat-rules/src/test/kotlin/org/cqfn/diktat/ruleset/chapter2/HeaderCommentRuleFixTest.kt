@@ -76,8 +76,8 @@ class HeaderCommentRuleFixTest : FixTestBase(
     fun `should not raise npe`() {
         fixAndCompare("CopyrightShouldNotTriggerNPEExpected.kt", "CopyrightShouldNotTriggerNPETest.kt",
             listOf(RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true, mapOf(
-                    "isCopyrightMandatory" to "true",
-                    "copyrightText" to "Copyright (c) My Company., Ltd. 2012-2021. All rights reserved."
+                "isCopyrightMandatory" to "true",
+                "copyrightText" to "Copyright (c) My Company., Ltd. 2012-2021. All rights reserved."
             )))
         )
     }
