@@ -332,7 +332,6 @@ class VariablesWithUsagesSearchTest {
                 val var1 = keys.elementAt(0)
                 val var2 = keys.elementAt(1)
                 val var3 = keys.elementAt(2)
-                val var4 = keys.elementAt(3)
                 assertEquals("var v = 0", var1)
                 assertEquals(0, vars[var1]?.size)
                 assertEquals("var v = 1", var2)

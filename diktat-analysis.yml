@@ -115,6 +115,11 @@
 # Checks that KDoc does not contain single line with words 'return', 'get' or 'set'
 - name: KDOC_TRIVIAL_KDOC_ON_FUNCTION
   enabled: true
+# Checks that kdoc does not contain @author tag or date
+- name: KDOC_CONTAINS_DATE_OR_AUTHOR
+  enabled: true
+  configuration:
+    versionRegex: \d+\.\d+\.\d+[-.\w\d]*
 # Checks that there is newline after header KDoc
 - name: HEADER_WRONG_FORMAT
   enabled: true
@@ -129,9 +134,6 @@
     copyrightText: ''
 # Checks that header kdoc is located before package directive
 - name: HEADER_NOT_BEFORE_PACKAGE
-  enabled: true
-# Checks that header kdoc does not contain @author tag ar date
-- name: HEADER_CONTAINS_DATE_OR_AUTHOR
   enabled: true
 # Checks that file does not contain lines > maxSize
 - name: FILE_IS_TOO_LONG

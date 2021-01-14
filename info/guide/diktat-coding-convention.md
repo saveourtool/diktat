@@ -1,3 +1,6 @@
+<img src="logo.svg" width="64px"/>
+
+# Diktat Coding Style Guide, v.0.0.1
 
 # Table of contents
 I [Preface](#c0)
@@ -106,6 +109,11 @@ I [Preface](#c0)
     * [6.4.1 Instead of using utility classes/objects, use extensions](#r6.4.1)
     * [6.4.2 Objects should be used for Stateless Interfaces](#r6.4.2) 
 
+
+# Diktat Coding Style Guide
+# International version, v.0.0.1
+
+<img src="logo.svg" width="64px"/>
 
 ## <a name="c0"></a> Preface
  <!-- =============================================================================== -->
