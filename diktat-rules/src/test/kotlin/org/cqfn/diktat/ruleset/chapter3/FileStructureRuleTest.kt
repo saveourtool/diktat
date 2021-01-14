@@ -26,7 +26,7 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
             mapOf("allowedWildcards" to "org.cqfn.diktat.example.*, org.cqfn.diktat.ruleset.constants.Warnings.*"))
     )
     private val rulesConfigListEmptyDomainName: List<RulesConfig> = listOf(
-            RulesConfig("DIKTAT_COMMON", true, mapOf("domainName" to ""))
+        RulesConfig("DIKTAT_COMMON", true, mapOf("domainName" to ""))
     )
 
     @Test
