@@ -34,24 +34,24 @@ internal fun List<LintError>.assertEquals(vararg expectedLintErrors: LintError) 
         Assertions.assertThat(this)
             .allSatisfy { actual ->
                 val expected = expectedLintErrors[this.indexOf(actual)]
-                SoftAssertions.assertSoftly {
-                    it
+                SoftAssertions.assertSoftly { sa ->
+                    sa
                         .assertThat(actual.line)
                         .`as`("Line")
                         .isEqualTo(expected.line)
-                    it
+                    sa
                         .assertThat(actual.col)
                         .`as`("Column")
                         .isEqualTo(expected.col)
-                    it
+                    sa
                         .assertThat(actual.ruleId)
                         .`as`("Rule id")
                         .isEqualTo(expected.ruleId)
-                    it
+                    sa
                         .assertThat(actual.detail)
                         .`as`("Detailed message")
                         .isEqualTo(expected.detail)
-                    it
+                    sa
                         .assertThat(actual.canBeAutoCorrected)
                         .`as`("Can be autocorrected")
                         .isEqualTo(expected.canBeAutoCorrected)

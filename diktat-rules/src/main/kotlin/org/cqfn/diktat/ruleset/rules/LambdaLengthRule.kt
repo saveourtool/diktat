@@ -40,13 +40,23 @@ class LambdaLengthRule(private val configRules: List<RulesConfig>) : Rule("lambd
 
     private fun checkLambda(node: ASTNode, configuration: LambdaLengthConfiguration) {
         val copyNode = node.clone() as ASTNode
-        val isIt: Boolean = node.findAllNodesWithSpecificType(ElementType.REFERENCE_EXPRESSION).map {re -> re.text}.indexOf("it") != -1
-        val parameters = node.findChildByType(ElementType.FUNCTION_LITERAL)?.findChildByType(ElementType.VALUE_PARAMETER_LIST)
         val sizeLambda = countCodeLines(copyNode)
-        if (parameters == null && isIt && sizeLambda > configuration.maxLambdaLength) {
-            Warnings.TOO_MANY_LINES_IN_LAMBDA.warn(configRules, emitWarn, isFixMode,
-                "max length lambda without arguments is ${configuration.maxLambdaLength}, but you have $sizeLambda",
-                node.startOffset, node)
+        if (sizeLambda > configuration.maxLambdaLength) {
+            val lambdaNodeList = copyNode.findAllNodesWithCondition({it.elementType == ElementType.LAMBDA_EXPRESSION})
+            if (lambdaNodeList.size > 1) {
+                lambdaNodeList.forEach {
+                    if (lambdaNodeList.indexOf(it) > 0) {
+                        it.treeParent.removeChild(it)
+                    }
+                }
+            }
+            val isIt: Boolean = copyNode.findAllNodesWithSpecificType(ElementType.REFERENCE_EXPRESSION).map {re -> re.text}.indexOf("it") != -1
+            val parameters = node.findChildByType(ElementType.FUNCTION_LITERAL)?.findChildByType(ElementType.VALUE_PARAMETER_LIST)
+            if (parameters == null && isIt) {
+                Warnings.TOO_MANY_LINES_IN_LAMBDA.warn(configRules, emitWarn, isFixMode,
+                    "max length lambda without arguments is ${configuration.maxLambdaLength}, but you have $sizeLambda",
+                    node.startOffset, node)
+            }
         }
     }
 

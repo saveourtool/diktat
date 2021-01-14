@@ -203,6 +203,8 @@ public object WarningNames {
 
     public const val RUN_BLOCKING_INSIDE_ASYNC: String = "RUN_BLOCKING_INSIDE_ASYNC"
 
+    public const val TOO_MANY_LINES_IN_LAMBDA: String = "TOO_MANY_LINES_IN_LAMBDA"
+
     public const val SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY: String =
             "SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY"
 

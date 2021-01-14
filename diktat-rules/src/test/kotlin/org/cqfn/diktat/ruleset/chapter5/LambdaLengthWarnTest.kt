@@ -36,6 +36,23 @@ class LambdaLengthWarnTest : LintTestBase(::LambdaLengthRule) {
 
     @Test
     @Tag(WarningNames.TOO_MANY_LINES_IN_LAMBDA)
+    fun `without "it"`() {
+        lintMethod(
+            """
+                    |fun foo() {
+                    |   private val allTestsFromResources: List<String> by lazy {
+                    |     val fileUrl: URL? = javaClass.getResource("123")
+                    |     val resource = fileUrl
+                    |         ?.let { File(it.file) }
+                    | }
+                    |}
+                """.trimMargin(),
+            rulesConfigList = rulesConfigList
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.TOO_MANY_LINES_IN_LAMBDA)
     fun `less than max without argument`() {
         lintMethod(
             """

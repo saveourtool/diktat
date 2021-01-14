@@ -84,21 +84,21 @@ class LineLength(private val configRules: List<RulesConfig>) : Rule("line-length
     @Suppress("UnsafeCallOnNullableType")
     private fun checkLength(node: ASTNode, configuration: LineLengthConfiguration) {
         var offset = 0
-        node.text.lines().forEach {
-            if (it.length > configuration.lineLength) {
+        node.text.lines().forEach { line ->
+            if (line.length > configuration.lineLength) {
                 val newNode = node.psi.findElementAt(offset + configuration.lineLength.toInt())!!.node
                 if ((newNode.elementType != KDOC_TEXT && newNode.elementType != KDOC_MARKDOWN_INLINE_LINK) ||
                         !isKdocValid(newNode)) {
                     positionByOffset = node.treeParent.calculateLineColByOffset()
                     val fixableType = isFixable(newNode, configuration)
                     LONG_LINE.warnAndFix(configRules, emitWarn, isFixMode,
-                        "max line length ${configuration.lineLength}, but was ${it.length}",
+                        "max line length ${configuration.lineLength}, but was ${line.length}",
                         offset + node.startOffset, node, fixableType != LongLineFixableCases.None) {
                         fixError(fixableType)
                     }
                 }
             }
-            offset += it.length + 1
+            offset += line.length + 1
         }
     }
 
