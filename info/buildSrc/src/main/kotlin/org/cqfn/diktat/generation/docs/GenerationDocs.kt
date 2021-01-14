@@ -5,6 +5,7 @@ package org.cqfn.diktat.generation.docs
 import java.io.File
 import java.io.PrintWriter
 
+
 /**
  * Adds/updates diktat code style in white paper document.
  */
@@ -22,15 +23,14 @@ fun generateCodeStyle(guideDir: File, wpDir: File) {
     val lines = file.readLines().toMutableList().drop(1)
     tempFile.printWriter().use { writer ->
         val iterator = lines.iterator()
-        writer.writeln("\\lstMakeShortInline[basicstyle=\\ttfamily\\bfseries]`")
+        writer.writeWithoutApostrophe("%CodeStyle")
         while (iterator.hasNext()) {
             val line = iterator.next()
             if (line.contains("## <a name=\"c0\"></a> Preface"))
-                break;
-
+                break
             when {
                 line.startsWith("#") -> {
-                    writer.writeln("\\section*{${line.removePrefix("#").trim()}}")
+                    writer.writeWithoutApostrophe("\\section*{${line.removePrefix("#").trim()}}")
                 }
                 line.startsWith("*") -> {
                     writeTableContentLine(writer, line, 0.5)
@@ -49,8 +49,7 @@ fun generateCodeStyle(guideDir: File, wpDir: File) {
             if (line.contains("<!--")) {
                 // for now there are no multiline comments in our doc
                 continue
-            }
-            if (line.startsWith("#")) {
+            } else if (line.startsWith("#")) {
                 val number = NUMBER_IN_TAG
                         .find(line)
                         ?.value
@@ -64,10 +63,10 @@ fun generateCodeStyle(guideDir: File, wpDir: File) {
                 if (name.isNullOrEmpty() || number.isNullOrEmpty()) {
                     if (number.isNullOrEmpty() && name.isNullOrEmpty()) {
                         when (line.takeWhile { it == '#' }.count()) {
-                            1 -> writer.writeln("""\section*{\textbf{${line.removePrefix("#").trim()}}}""")
-                            2 -> writer.writeln("""\section*{\textbf{${line.removePrefix("##").trim()}}}""")
-                            3 -> writer.writeln("""\subsection*{\textbf{${line.removePrefix("###").trim()}}}""")
-                            4 -> writer.writeln("""\subsubsection*{\textbf{${line.removePrefix("####").trim()}}}${"\n"}\leavevmode\newline""")
+                            1 -> writer.writeWithoutApostrophe("""\section*{\textbf{${line.removePrefix("#").trim()}}}""")
+                            2 -> writer.writeWithoutApostrophe("""\section*{\textbf{${line.removePrefix("##").trim()}}}""")
+                            3 -> writer.writeWithoutApostrophe("""\subsection*{\textbf{${line.removePrefix("###").trim()}}}""")
+                            4 -> writer.writeWithoutApostrophe("""\subsubsection*{\textbf{${line.removePrefix("####").trim()}}}${"\n"}\leavevmode\newline""")
                             else -> {}
                         }
                         continue
@@ -75,16 +74,15 @@ fun generateCodeStyle(guideDir: File, wpDir: File) {
                     error("String starts with # but has no number or name - $line")
                 }
                 when (number.count { it == '.' }) {
-                    0 -> writer.writeln("""\section*{\textbf{$name}}""")
-                    1 -> writer.writeln("""\subsection*{\textbf{$name}}""")
-                    2 -> writer.writeln("""\subsubsection*{\textbf{$name}}${"\n"}\leavevmode\newline""")
+                    0 -> writer.writeWithoutApostrophe("""\section*{\textbf{$name}}""")
+                    1 -> writer.writeWithoutApostrophe("""\subsection*{\textbf{$name}}""")
+                    2 -> writer.writeWithoutApostrophe("""\subsubsection*{\textbf{$name}}${"\n"}\leavevmode\newline""")
                     else -> {}
                 }
-                writer.writeln("\\label{sec:${name.getFirstNumber()}}")
+                writer.writeWithoutApostrophe("\\label{sec:${name.getFirstNumber()}}")
 
                 continue
-            }
-            if (iterator.hasNext() && line.trim().startsWith("```")) {
+            } else if (iterator.hasNext() && line.trim().startsWith("```")) {
                 writer.writeCode("""\begin{lstlisting}[language=Kotlin]""")
                 line = iterator.next()
                 while (!line.trim().startsWith("```")) {
@@ -93,27 +91,25 @@ fun generateCodeStyle(guideDir: File, wpDir: File) {
                 }
                 writer.writeCode("""\end{lstlisting}""")
                 continue
-            }
-
-            if (line.trim().startsWith("|")) {
+            } else if (line.trim().startsWith("|")) {
                 val columnNumber = line.count { it == '|' } - 1
                 val columnWidth: Float = (A4_PAPER_WIDTH / columnNumber)  // For now it makes all column width equal
                 val createTable = "|p{${columnWidth.format(1)}cm}".repeat(columnNumber).plus("|")
-                writer.writeln("""\begin{center}""")
-                writer.writeln("""\begin{tabular}{ $createTable }""")
-                writer.writeln("""\hline""")
+                writer.writeWithoutApostrophe("""\begin{center}""")
+                writer.writeWithoutApostrophe("""\begin{tabular}{ $createTable }""")
+                writer.writeWithoutApostrophe("""\hline""")
                 val columnNames = TABLE_COLUMN_NAMES
                         .findAll(line)
                         .filter { it.value.isNotEmpty() }
                         .map { it.value.trim() }
                         .toList()
                 writer.write(columnNames.joinToString(separator = "&"))
-                writer.writeln("""\\""")
-                writer.writeln("\\hline")
+                writer.writeWithoutApostrophe("""\\""")
+                writer.writeWithoutApostrophe("\\hline")
                 iterator.next()
                 line = iterator.next()
                 while (iterator.hasNext() && line.trim().startsWith("|")) {
-                    writer.writeln(line
+                    writer.writeWithoutApostrophe(line
                             .replace("&", "\\&")
                             .replace('|', '&')
                             .drop(1)
@@ -123,31 +119,46 @@ fun generateCodeStyle(guideDir: File, wpDir: File) {
                             .replace(ANCHORS, ""))
                     line = iterator.next()
                 }
-                writer.writeln("""\hline""")
-                writer.writeln("\\end{tabular}")
-                writer.writeln("\\end{center}")
+                writer.writeWithoutApostrophe("""\hline""")
+                writer.writeWithoutApostrophe("\\end{tabular}")
+                writer.writeWithoutApostrophe("\\end{center}")
             } else {
-                var correctedString = findBoldOrItalicText(BOLD_TEXT, line, FindType.BOLD)
-                correctedString = findBoldOrItalicText(ITALIC_TEXT, correctedString, FindType.ITALIC)
-                correctedString = correctedString.replace(ANCHORS, "")
-                correctedString = correctedString.replace("#", "\\#")
-                correctedString = correctedString.replace("&", "\\&")
-                correctedString = correctedString.replace("_", "\\_")
-                // find backticks should be the last to replace \_ with _
-                correctedString = handleHyperlinks(correctedString)
-                correctedString = findBoldOrItalicText(BACKTICKS_TEXT, correctedString, FindType.BACKTICKS)
-
-                writer.writeln(correctedString)
+                writer.writeWithoutApostrophe(line, false)
             }
         }
     }
     val appendixFileLines = File(wpDir, "sections/appendix.tex")
             .readLines()
-            .takeWhile { it != "\\lstMakeShortInline[basicstyle=\\ttfamily\\bfseries]`" }
+            .takeWhile { it != "%CodeStyle" }
             .toMutableList()
     appendixFileLines.addAll(tempFile.readLines())
     File(wpDir, "sections/appendix.tex").writeText(appendixFileLines.joinToString(separator = "\n"))
     tempFile.delete()
+}
+
+private fun PrintWriter.writeWithoutApostrophe(text: String, isCommand: Boolean = true) {
+    this.writeln(text.replaceApostrophe(isCommand))
+}
+
+private fun String.replaceApostrophe(isCommand: Boolean): String {
+    if (isCommand){
+        return this
+    }
+    var correctedString = this
+    if (correctedString.contains("\\") && (correctedString.contains("""\\[a-zA-Z]""".toRegex()))) {
+        correctedString = correctedString.replace("\\", "\\textbackslash ")
+    }
+    correctedString = correctedString.replace("{", "\\{")
+    correctedString = correctedString.replace("}", "\\}")
+    correctedString = correctedString.replace("_", "\\_")
+    correctedString = correctedString.replace(ANCHORS, "")
+    correctedString = correctedString.replace("#", "\\#")
+    correctedString = correctedString.replace("&", "\\&")
+    correctedString = handleHyperlinks(correctedString)
+    correctedString = findBoldOrItalicText(BOLD_TEXT, correctedString, FindType.BOLD)
+    correctedString = findBoldOrItalicText(ITALIC_TEXT, correctedString, FindType.ITALIC)
+    correctedString = findBoldOrItalicText(BACKTICKS_TEXT, correctedString, FindType.BACKTICKS)
+    return correctedString
 }
 
 private fun writeTableContentLine(writer: PrintWriter, line: String, numbOfSpaces: Double) {
@@ -158,10 +169,10 @@ private fun writeTableContentLine(writer: PrintWriter, line: String, numbOfSpace
             .replace("]", "")
             .replace("*", "")
             .replace(ANCHORS, "")
-            .replace("_", "\\_")
+            //.replace("_", "\\_")
             .replace("#", "\\#")
             .replace("&", "\\&")
-    writer.writeln("\\hyperref[sec:${correctLine.getFirstNumber()}]{$correctLine}")
+    writer.writeWithoutApostrophe("\\hyperref[sec:${correctLine.getFirstNumber()}]{$correctLine}")
 }
 
 /**
@@ -184,7 +195,7 @@ private fun handleHyperlinks(line: String): String {
             link = link.trim().drop(1).dropLast(1) // drop ( and )
             link = link.replace("\\#", "#")
             link = link.replace("\\&", "&")
-            link = link.replace("\\_", "_")
+            //link = link.replace("\\_", "_")
             // need to replace ` in hyperlink, because it breaks latex compilation
             text = text.replace("`", "")
             text = text.trim().drop(1).dropLast(1) // dropping [ and ]
@@ -206,14 +217,8 @@ private fun findBoldOrItalicText(regex: Regex,
             .toMutableList()
     allRegex.forEachIndexed { index, value ->
         when (type) {
-            FindType.BOLD -> allRegex[index] = "\\textbf{${value.replace("**", "")}}"
+            FindType.BOLD, FindType.BACKTICKS -> allRegex[index] = "\\textbf{${value.replace("**", "").replace("`", "")}}"
             FindType.ITALIC -> allRegex[index] = "\\textit{${value.replace("*", "")}}"
-            /*
-                replaces \_ with _. In default latex we needed to place \ before _.
-                But because of lstMakeShortInline[basicstyle=\ttfamily\bfseries]`
-                it isn't needed.
-             */
-            FindType.BACKTICKS -> allRegex[index] = value.replace("\\_", "_")
         }
     }
     var correctedLine = line.replace(regex, REGEX_PLACEHOLDER)

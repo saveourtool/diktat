@@ -37,11 +37,11 @@
 | KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS | [2.1.3](guide/diktat-coding-convention.md#r2.1.3) | yes |
 | KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS | [2.1.3](guide/diktat-coding-convention.md#r2.1.3) | yes |
 | KDOC_NO_DEPRECATED_TAG | [2.1.3](guide/diktat-coding-convention.md#r2.1.3) | yes |
+| KDOC_CONTAINS_DATE_OR_AUTHOR | [2.1.3](guide/diktat-coding-convention.md#r2.1.3) | no |
 | KDOC_NO_EMPTY_TAGS | [2.2.1](guide/diktat-coding-convention.md#r2.2.1) | no |
 | HEADER_WRONG_FORMAT | [2.2.1](guide/diktat-coding-convention.md#r2.2.1) | yes |
 | HEADER_MISSING_OR_WRONG_COPYRIGHT | [2.2.1](guide/diktat-coding-convention.md#r2.2.1) | yes |
 | WRONG_COPYRIGHT_YEAR | [2.2.1](guide/diktat-coding-convention.md#r2.2.1) | yes |
-| HEADER_CONTAINS_DATE_OR_AUTHOR | [2.2.1](guide/diktat-coding-convention.md#r2.2.1) | no |
 | HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE | [2.2.1](guide/diktat-coding-convention.md#r2.2.1) | no |
 | HEADER_NOT_BEFORE_PACKAGE | [2.2.1](guide/diktat-coding-convention.md#r2.2.1) | yes |
 | KDOC_TRIVIAL_KDOC_ON_FUNCTION | [2.3.1](guide/diktat-coding-convention.md#r2.3.1) | no |
@@ -90,6 +90,7 @@
 | TOO_LONG_FUNCTION | [5.1.1](guide/diktat-coding-convention.md#r5.1.1) | no |
 | NESTED_BLOCK | [5.1.2](guide/diktat-coding-convention.md#r5.1.2) | no |
 | AVOID_NESTED_FUNCTIONS | [5.1.3](guide/diktat-coding-convention.md#r5.1.3) | yes |
+| INVERSE_FUNCTION_PREFERRED | [5.1.4](guide/diktat-coding-convention.md#r5.1.4) | yes |
 | LAMBDA_IS_NOT_LAST_PARAMETER | [5.2.1](guide/diktat-coding-convention.md#r5.2.1) | no |
 | TOO_MANY_PARAMETERS | [5.2.2](guide/diktat-coding-convention.md#r5.2.2) | no |
 | WRONG_OVERLOADING_FUNCTION_ARGUMENTS | [5.2.3](guide/diktat-coding-convention.md#r5.2.3) | no |
