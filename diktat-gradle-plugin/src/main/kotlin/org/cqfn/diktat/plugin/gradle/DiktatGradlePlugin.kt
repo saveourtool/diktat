@@ -20,7 +20,7 @@ class DiktatGradlePlugin : Plugin<Project> {
             inputs = project.fileTree("src").apply {
                 include("**/*.kt")
             }
-            reporter = PlainReporter(System.out)
+            diktatConfigFile = project.rootProject.file("diktat-analysis.yml")
             excludes = project.files()
             reporter = PlainReporter(System.out)
         }
