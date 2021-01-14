@@ -111,6 +111,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
             ::CustomGetterSetterRule,
             ::CompactInitialization,
             // other rules
+            ::CheckInverseMethodRule,
             ::StatelessClassesRule,
             ::ImplicitBackingPropertyRule,
             ::StringTemplateFormatRule,
