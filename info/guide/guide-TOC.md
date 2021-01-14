@@ -30,7 +30,7 @@ I [Preface](#c0)
 * [2.4 Code comments](#c2.4)
     * [2.4.1 Add a blank line between the body of the comment and Kdoc tag-blocks](#r2.4.1)
     * [2.4.2 Do not comment on unused code blocks](#r2.4.2)
-    * [2.4.3 Do not comment on unused code blocks](#r2.4.3)
+    * [2.4.3 Code delivered to the client should not contain TODO/FIXME comments](#r2.4.3)
     
 [3. General formatting (typesetting)](#c3)
 * [3.1 File-related rules](#c3.1)

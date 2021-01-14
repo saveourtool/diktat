@@ -53,11 +53,11 @@ KDOC\underline{ }NEWLINES\underline{ }BEFORE\underline{ }BASIC\underline{ }TAGS 
 KDOC\underline{ }NO\underline{ }NEWLINES\underline{ }BETWEEN\underline{ }BASIC\underline{ }TAGS & \hyperref[sec:2.1.3]{2.1.3} &  yes  &   no  \\
 KDOC\underline{ }NO\underline{ }NEWLINE\underline{ }AFTER\underline{ }SPECIAL\underline{ }TAGS & \hyperref[sec:2.1.3]{2.1.3} &  yes  &   no  \\
 KDOC\underline{ }NO\underline{ }DEPRECATED\underline{ }TAG & \hyperref[sec:2.1.3]{2.1.3} &  yes  &   no  \\
+KDOC\underline{ }CONTAINS\underline{ }DATE\underline{ }OR\underline{ }AUTHOR & \hyperref[sec:2.1.3]{2.1.3} &  no  &   no  \\
 KDOC\underline{ }NO\underline{ }EMPTY\underline{ }TAGS & \hyperref[sec:2.2.1]{2.2.1} &  no  &   no  \\
 HEADER\underline{ }WRONG\underline{ }FORMAT & \hyperref[sec:2.2.1]{2.2.1} &  yes  &   no  \\
 HEADER\underline{ }MISSING\underline{ }OR\underline{ }WRONG\underline{ }COPYRIGHT & \hyperref[sec:2.2.1]{2.2.1} &  yes  &  mandatoryCopyright \\
 WRONG\underline{ }COPYRIGHT\underline{ }YEAR & \hyperref[sec:2.2.1]{2.2.1} &  yes  &   no  \\
-HEADER\underline{ }CONTAINS\underline{ }DATE\underline{ }OR\underline{ }AUTHOR & \hyperref[sec:2.2.1]{2.2.1} &  no  &   no  \\
 HEADER\underline{ }MISSING\underline{ }IN\underline{ }NON\underline{ }SINGLE\underline{ }CLASS\underline{ }FILE & \hyperref[sec:2.2.1]{2.2.1} &  no  &   no  \\
 HEADER\underline{ }NOT\underline{ }BEFORE\underline{ }PACKAGE & \hyperref[sec:2.2.1]{2.2.1} &  yes  &   no  \\
 KDOC\underline{ }TRIVIAL\underline{ }KDOC\underline{ }ON\underline{ }FUNCTION & \hyperref[sec:2.3.1]{2.3.1} &  no  &   no  \\
@@ -106,6 +106,7 @@ AVOID\underline{ }NULL\underline{ }CHECKS & \hyperref[sec:4.3.3]{4.3.3} &  no  &
 TOO\underline{ }LONG\underline{ }FUNCTION & \hyperref[sec:5.1.1]{5.1.1} &  no  &   maxFunctionLength isIncludeHeader \\
 NESTED\underline{ }BLOCK & \hyperref[sec:5.1.2]{5.1.2} &  no  &   maxNestedBlockQuantit\\
 AVOID\underline{ }NESTED\underline{ }FUNCTIONS & \hyperref[sec:5.1.3]{5.1.3} &  yes  &   no  \\
+INVERSE\underline{ }FUNCTION\underline{ }PREFERRED & \hyperref[sec:5.1.4]{5.1.4} &  yes  &  - \\
 LAMBDA\underline{ }IS\underline{ }NOT\underline{ }LAST\underline{ }PARAMETER & \hyperref[sec:5.2.1]{5.2.1} &  no  &   no \\
 TOO\underline{ }MANY\underline{ }PARAMETERS & \hyperref[sec:5.2.2]{5.2.2} &  no  &   maxParameterListSize \\
 WRONG\underline{ }OVERLOADING\underline{ }FUNCTION\underline{ }ARGUMENTS & \hyperref[sec:5.2.3]{5.2.3} &  no  &   no \\
@@ -189,7 +190,7 @@ OBJECT\underline{ }IS\underline{ }PREFERRED & \hyperref[sec:6.4.2]{6.4.2} &  yes
 
 \hspace{1.0cm}\hyperref[sec:2.4.2]{ 2.4.2 Do not comment on unused code blocks}
 
-\hspace{1.0cm}\hyperref[sec:2.4.3]{ 2.4.3 Do not comment on unused code blocks}
+\hspace{1.0cm}\hyperref[sec:2.4.3]{ 2.4.3 Code delivered to the client should not contain TODO/FIXME comments}
 
 \hspace{1.0cm}\hyperref[sec:]{}
 
@@ -294,6 +295,8 @@ OBJECT\underline{ }IS\underline{ }PREFERRED & \hyperref[sec:6.4.2]{6.4.2} &  yes
 \hspace{1.0cm}\hyperref[sec:5.1.2]{ 5.1.2 Avoid deep nesting of function code blocks, limiting to four levels}
 
 \hspace{1.0cm}\hyperref[sec:5.1.3]{ 5.1.3 Avoid using nested functions}
+
+\hspace{1.0cm}\hyperref[sec:5.1.4]{ 5.1.4 Negated function calls}
 
 \hspace{0.5cm}\hyperref[sec:5.2]{ 5.2 Function arguments}
 
@@ -1105,7 +1108,7 @@ When the method has such details as arguments, return value, or can throw except
 /** 
  * This is the short overview comment for the example interface.
  *     / * Add a blank line between the comment text and each KDoc tag underneath * /
- * @since 2019-01-01
+ * @since 1.6
  */
  protected abstract class Sample {
     /**
@@ -1166,9 +1169,15 @@ Kdoc should not contain:
 
 - There should be no empty lines between the method/class declaration and the end of Kdoc (\textbf{*/} symbols).
 
-Important note: KDoc does not support the \textbf{@deprecated} tag. Instead, use the \textbf{@Deprecated} annotation.
+- \textbf{@author} tag. It doesn't matter who originally created a class when you can use \textbf{git blame} or VCS of your choice to look through the changes history.
 
- 
+Important notes:
+
+- KDoc does not support the \textbf{@deprecated} tag. Instead, use the \textbf{@Deprecated} annotation.
+
+- The \textbf{@since} tag should be used for versions only. Do not use dates in \textbf{@since} tag, it's confusing and less accurate.
+
+
 
 If a tag block cannot be described in one line, indent the content of the new line by \textit{four spaces} from the \textbf{@} position to achieve alignment (\textbf{@} counts as one + three spaces).
 
@@ -1224,15 +1233,22 @@ Other KDoc tags (such as @param type parameters and @see.) can be added as follo
 
 This section describes the general rules of adding comments on the file header.
 
+
+
+\subsubsection*{\textbf{2.2.1 Formatting of comments in the file header}}
+\leavevmode\newline
+
+\label{sec:2.2.1}
+
+
+
 Comments on the file header should be placed before the package name and imports. If you need to add more content to the comment, subsequently add it in the same format.
 
 
 
-Comments on the file header must include copyright information, without the creation date and author's name (use VCS for history management). Also, describe the content inside files that contain multiple or no classes.
+Comments on the file header must include copyright information, without the creation date and author's name (use VCS for history management).
 
-
-
-Place comments on the file header before the package name and imports. If you need to add more content to the comment, subsequently add it in the same format.
+Also, describe the content inside files that contain multiple or no classes.
 
 
 
@@ -1242,16 +1258,34 @@ Chinese version: \textbf{版权所有 (c) 华为技术有限公司 2012-2020} \
 
 English version: \textbf{Copyright (c) Huawei Technologies Co., Ltd. 2012-2020. All rights reserved.}
 
-
-
-Regarding the \textbf{release notes}, see examples below:
+\textbf{2012} and \textbf{2020} are the years the file was first created and the current year, respectively.
 
 
 
-- \textbf{2012-2020} can be modified according to your actual situation. \textbf{2012} and \textbf{2020} are the years the file was first created and last modified, respectively.
+Do not place \textbf{release notes} in header, use VCS to keep track of changes in file. Notable changes can be marked in individual KDocs using \textbf{@since} tag with version.
 
-These two years can be the same (for example, \textbf{2020–2020}). When the file is substantially changed (for example, through feature extensions and major refactorings), the subsequent years must be updated.
 
+
+Invalid example:
+
+\begin{lstlisting}[language=Kotlin]
+/**
+ * Release notes:
+ * 2019-10-11: added class Foo
+ */
+
+class Foo
+\end{lstlisting}
+
+
+Valid example:
+
+\begin{lstlisting}[language=Kotlin]
+/**
+ * @since 2.4.0
+ */
+class Foo
+\end{lstlisting}
 
 
 - The \textbf{copyright statement} can use your company's subsidiaries, as shown in the below examples: \
@@ -3308,6 +3342,39 @@ fun foo() {
         return "String from nested function" 
     } 
     println("Nested Output: ${nested()}") 
+} 
+\end{lstlisting}
+\subsubsection*{\textbf{5.1.4 Negated function calls}}
+\leavevmode\newline
+
+\label{sec:5.1.4}
+
+Don't use negated function calls if it can be replaced with negated version of this function
+
+
+
+\textbf{Invalid example}:
+
+\begin{lstlisting}[language=Kotlin]
+fun foo() { 
+    val list = listOf(1, 2, 3)
+  
+    if (!list.isEmpty()) {
+        // Some cool logic
+    }
+} 
+\end{lstlisting}
+
+
+\textbf{Valid example}:
+
+\begin{lstlisting}[language=Kotlin]
+fun foo() { 
+    val list = listOf(1, 2, 3)
+  
+    if (list.isNotEmpty()) {
+        // Some cool logic
+    }
 } 
 \end{lstlisting}
 
