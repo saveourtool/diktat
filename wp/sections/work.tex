@@ -1,4 +1,4 @@
-Diktat does AST-analysis. This means that for internal representation (IR) it uses Abstract Syntax Tree that was created from the parsed code by the kotlin-compiler. This chapter describes how diktat works.
+Diktat does AST-analysis, using Abstract Syntax Tree for creation of internal representation (IR) from the parsed code by the kotlin-compiler. This chapter describes how diktat works.
 
 \subsection{ktlint}
 To quickly and efficiently analyze the program code, you first need to transform it into a convenient data structure. This is exactly what ktlint does - it parses plain text code into an abstract syntax tree. So we decided not to choose the way of development that was chosen by Facebook in ktfmt and not invent our own framework for parsing the code. We decided to write our own Ruleset on the top of ktlint framework. The good thing is that we were able to inject our set of rules to ktlint via Java's \texttt{ServiceLoader}\footnote{\url{https://docs.oracle.com/javase/8/docs/api/java/util/ServiceLoader.html}}
@@ -14,13 +14,13 @@ For example, this simple code:
 will be converted into the following AST:
 
 \tikzstyle{every node}=[draw=black,thick,anchor=west, scale = 0.6]
-  
+
 \begin{tikzpicture}[%
   grow via three points={one child at (0.3,-0.8) and
   two children at (0.3,-0.8) and (0.3,-1.5)},
   scale=0.6,
   edge from parent path={(\tikzparentnode.south) |- (\tikzchildnode.west)}]
-    
+
   \node {FILE}
     child { node {PACKAGE\underline{ }DIRECTIVE}}
     child { node {IMPORT\underline{ }LIST}}
@@ -32,7 +32,7 @@ will be converted into the following AST:
             child {node {LPAR}}
             child {node {RPAR}}
         }
-        child [missing] {}				
+        child [missing] {}
         child [missing] {}
         child {node {WHITE\underline{ }SPACE}}
         child {node {BLOCK}
@@ -84,15 +84,15 @@ will be converted into the following AST:
 \end{tikzpicture}
 \\
 
-If there are error elements inside the constructed tree, then the corresponding error is displayed. If the code is valid and parsed without errors, for each rule in the Ruleset, the \textsl{visit} method is called to which the root node itself and its “children” are sequentially passed.
+If there are error elements inside the constructed tree, then the corresponding error is displayed. If the code is valid and parsed without errors, for each rule in the Ruleset, the \textsl{visit} method is called for the root node itself and its “children” are sequentially passed.
 When you run program, you can pass flags to ktlint - one of them is \texttt{-F}. This flag means that the rule will not only report an error, but will also try to fix it.
 
-\subsection{diKTat}
+\subsection{DiKTat}
 
 Another feature of ktlint is that at it's startup you can provide a JAR file with additional ruleset(s), that will be discovered by the \texttt{ServiceLoader} and then all AST nodes will be passed to these rules. DiKTat uses this approach.
 
-The only modification diktat makes to the framework is that it adds a mechanism to disable Inspection from the code using annotations or configuration file. The set of all rules is described in the \textsl{DiktatRuleSetProvider}\footnote{\url{https://github.com/cqfn/diKTat/blob/v0.1.3/diktat-rules/src/main/kotlin/org/cqfn/diktat/ruleset/rules/DiktatRuleSetProvider.kt}} class. This class overrides the \textsl{get()} method of the \textsl{RuleSetProvider}\footnote{\url{https://github.com/pinterest/ktlint/blob/master/ktlint-core/src/main/kotlin/com/pinterest/ktlint/core/RuleSetProvider.kt}} interface, which returns a set of rules to be "traversed". But before returning this set diktat is reading the configuration file where the user has independently configured all the Inspections. If there is no configuration file, then a warning will be displayed and Inspections will use the default configuration file. 
-Each rule must implement the \textsl{visit} method of the abstract Rule class, which describes the logic of the rule. Implementation example of the simple Rule that contains one Inspections can be found below.
+The only modification Diktat makes to the framework is that it adds a mechanism to disable Inspection from the code using annotations or configuration file. The set of all rules is described in the \textsl{DiktatRuleSetProvider}\footnote{\url{https://github.com/cqfn/diKTat/blob/v0.1.3/diktat-rules/src/main/kotlin/org/cqfn/diktat/ruleset/rules/DiktatRuleSetProvider.kt}} class. This class overrides the \textsl{get()} method of the \textsl{RuleSetProvider}\footnote{\url{https://github.com/pinterest/ktlint/blob/master/ktlint-core/src/main/kotlin/com/pinterest/ktlint/core/RuleSetProvider.kt}} interface, which returns a set of rules to be "traversed". But before returning this set Diktat is reading the configuration file where the user has independently configured all the Inspections. If there is no configuration file, then a warning will be displayed and Inspections will use the default configuration file.
+Each rule must implement the \textsl{visit} method of the abstract Rule class, which describes the logic of the rule. By the way it is a special case of a famous pattern Visitor \cite{ref:gang}. Implementation example of the simple Rule that contains one Inspections can be found below.
 
 \begin{lstlisting}[caption={Example of the Rule.}, label={lst:example1}, language=Kotlin]
 class SingleLineStatementsRule(private val configRules: List<RulesConfig>) : Rule("statement") {
@@ -105,7 +105,7 @@ class SingleLineStatementsRule(private val configRules: List<RulesConfig>) : Rul
         emitWarn = emit
         isFixMode = autoCorrect
 
-        // all the work is done with ASTNode - this is the type, provided by Kotlin compiler 
+        // all the work is done with ASTNode - this is the type, provided by Kotlin compiler
         node.getChildren(TokenSet.create(SEMICOLON)).forEach {
             if (!it.isFollowedByNewline()) {
                 // configuration is checked by warning mechanism under the hood
@@ -148,20 +148,20 @@ All warnings that contain similar logic (e.g. regarding formatting of function K
 \begin{figure}[H]
     \centering
     \includegraphics[scale=0.5]{pictures/class.PNG}
-    \caption{Diktat architecture class diagram}
+    \caption{Diktat class diagram}
     \label{fig:top_languages}
 \end{figure}
 
 
 \subsection{Examples of unique inspections}
 \par
-As already described above, diKTat has more rules than existing analogues, therefore, it will find and fix more errors and shortcomings and, thereby, make the code cleaner and better. To better understand how detailed are checks in diktat,let's mention a few examples:
+As already described above, DiKTat has more rules than existing analogues, therefore, it will find and fix more errors and shortcomings and, thereby, make the code cleaner and better. To better understand how detailed are checks in Diktat,let's mention a few examples:
 
 \begin{enumerate}
     \item \textbf{Package.}
-In diKTat, there are about 6 Inspections that are checking the package naming. For comparison: detekt has only one rule, where the package name is simply checked by a pattern, in ktlint there are zero inspections.
+In DiKTat, there are about 6 Inspections that are checking the package naming. For comparison: detekt has only one rule, where the package name is simply checked by a pattern, in ktlint there are zero inspections.
     \item \textbf{KDoc.}
-KDoc is an important part of good code to make it easier to understand and navigate the program. In diKTat there are 15 rules on KDoc, in detekt there are only 7. Therefore, diKTat will make and correct KDoc in more detail and correctly. 
+KDoc is an important part of good code to make it easier to understand and navigate the program. In DiKTat there are 15 rules on KDoc, in detekt there are only 7. Therefore, DiKTat will make and correct KDoc in more detail and correctly.
 \end{enumerate}
 
 There are also many unique Inspections that other analyzers do not have. Here are some of them:
@@ -170,7 +170,7 @@ There are also many unique Inspections that other analyzers do not have. Here ar
     \item \textbf{COMMENTED\underline{ }OUT\underline{ }CODE} – This Inspection checks if the code contains commented code blocks.
     \item \textbf{FILE\underline{ }CONTAINS\underline{ }ONLY\underline{ }COMMENTS} – This rule checks file contains not only comments.
     \item \textbf{LOCAL\underline{ }VARIABLE\underline{ }EARLY\underline{ }DECLARATION} – This rule checks that local variables are declared close to the point where they are first used.
-    \item \textbf{AVOID\underline{ }NESTED\underline{ }FUNCTIONS} - This rule checks for nested functions and warns and fixes if it finds any. An example of changing the tree when this rule is triggered and diKTat is run with fix mode:\\\\
+    \item \textbf{AVOID\underline{ }NESTED\underline{ }FUNCTIONS} - This rule checks for nested functions and warns and fixes if it finds any. An example of changing the tree when this rule is triggered and DiKTat is run with fix mode:\\\\
     \begin{tikzpicture}[%
   grow via three points={one child at (0.3,-0.8) and
   two children at (0.3,-0.8) and (0.3,-1.5)},
