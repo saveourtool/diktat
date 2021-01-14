@@ -25,7 +25,9 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
         RulesConfig(FILE_WILDCARD_IMPORTS.name, true,
             mapOf("allowedWildcards" to "org.cqfn.diktat.example.*, org.cqfn.diktat.ruleset.constants.Warnings.*"))
     )
-    private val rulesConfigListWithoutDomainName: List<RulesConfig> = emptyList()
+    private val rulesConfigListEmptyDomainName: List<RulesConfig> = listOf(
+            RulesConfig("DIKTAT_COMMON", true, mapOf("domainName" to ""))
+    )
 
     @Test
     @Tag(WarningNames.FILE_CONTAINS_ONLY_COMMENTS)
@@ -230,7 +232,7 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
 
     @Test
     @Tag(WarningNames.FILE_INCORRECT_BLOCKS_ORDER)
-    fun `test with no domain name in config`() {
+    fun `test with empty domain name in config`() {
         lintMethod(
             """
                 |package org.cqfn.diktat.example
@@ -241,7 +243,7 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
                 |class Example
             """.trimMargin(),
             LintError(3, 1, ruleId, "${FILE_UNORDERED_IMPORTS.warnText()} import com.pinterest.ktlint.core.LintError...", true),
-            rulesConfigList = rulesConfigListWithoutDomainName
+            rulesConfigList = rulesConfigListEmptyDomainName
         )
     }
 }

@@ -5,8 +5,6 @@ package generated
 import kotlin.String
 
 public object WarningNames {
-    public const val MISSING_DOMAIN_NAME: String = "MISSING_DOMAIN_NAME"
-
     public const val PACKAGE_NAME_MISSING: String = "PACKAGE_NAME_MISSING"
 
     public const val PACKAGE_NAME_INCORRECT_CASE: String = "PACKAGE_NAME_INCORRECT_CASE"

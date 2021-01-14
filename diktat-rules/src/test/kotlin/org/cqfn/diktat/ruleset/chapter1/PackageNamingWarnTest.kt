@@ -22,7 +22,6 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
     private val rulesConfigList: List<RulesConfig> = listOf(
         RulesConfig("DIKTAT_COMMON", true, mapOf("domainName" to "org.cqfn.diktat"))
     )
-    private val rulesConfigListWithoutDomainName: List<RulesConfig> = emptyList()
     private val rulesConfigListEmptyDomainName: List<RulesConfig> = listOf(
         RulesConfig("DIKTAT_COMMON", true, mapOf("domainName" to ""))
     )
@@ -242,8 +241,8 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
                 |package org.cqfn.diktat
             """.trimMargin(),
             LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PREFIX.warnText()} ", true),
-            LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} myProjectMain.kotlin.org.cqfn.diktat.example", true),
-            fileName = "/home/testu/project/src/myProjectMain/kotlin/org/cqfn/diktat/example/Example.kt",
+            LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} org.cqfn.diktat.example", true),
+            fileName = "/home/testu/project/src/main/kotlin/org/cqfn/diktat/example/Example.kt",
             rulesConfigList = rulesConfigListEmptyDomainName
         )
     }

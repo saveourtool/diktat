@@ -275,7 +275,7 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
                     .importPath
                     ?.fqName
                     ?.pathSegments()
-                    ?.zip(domainName!!.split(PACKAGE_SEPARATOR).map(Name::identifier))
+                    ?.zip(it.split(PACKAGE_SEPARATOR).map(Name::identifier))
                     ?.all { it.first == it.second }
                     ?: false
             }
