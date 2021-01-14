@@ -16,6 +16,7 @@ import org.cqfn.diktat.ruleset.utils.findChildBefore
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.kDocTags
+import org.cqfn.diktat.ruleset.utils.log
 import org.cqfn.diktat.ruleset.utils.moveChildBefore
 
 import com.pinterest.ktlint.core.Rule
@@ -142,15 +143,24 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
             return
         }
 
+        if (makeCopyrightCorrectYear(configuration.getCopyrightText()).isNotEmpty()) {
+            log.warn("Copyright year is not up do date.")
+        }
+
+        // need to make sure that copyright year is consistent with current year
         val copyrightText = configuration.getCopyrightText()
 
         val headerComment = node.findChildBefore(PACKAGE_DIRECTIVE, BLOCK_COMMENT)
-        val isWrongCopyright = headerComment != null && !headerComment.text.flatten().contains(copyrightText.flatten())
+        // Depends only on content and doesn't consider years
+        val isWrongCopyright = headerComment != null &&
+                !headerComment.text.flatten().contains(copyrightText.flatten()) &&
+                !headerComment.text.flatten().contains(makeCopyrightCorrectYear(copyrightText).flatten())
         val isMissingCopyright = headerComment == null && configuration.isCopyrightMandatory()
         val isCopyrightInsideKdoc = (node.getAllChildrenWithType(KDOC) + node.getAllChildrenWithType(ElementType.EOL_COMMENT))
             .any { commentNode ->
                 copyrightWords.any { commentNode.text.contains(it, ignoreCase = true) }
             }
+
         if (isWrongCopyright || isMissingCopyright || isCopyrightInsideKdoc) {
             val freeText = when {
                 // If `isCopyrightInsideKdoc` then `isMissingCopyright` is true too, but warning text from `isCopyrightInsideKdoc` is preferable.
@@ -177,7 +187,8 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
 
         val copyrightWithCorrectYear = makeCopyrightCorrectYear(copyrightText)
 
-        if (copyrightWithCorrectYear.isNotEmpty()) {
+        // Triggers when there is a copyright, but its year is not updated.
+        if (!isMissingCopyright && copyrightWithCorrectYear.isNotEmpty()) {
             WRONG_COPYRIGHT_YEAR.warnAndFix(configRules, emitWarn, isFixMode, "year should be $curYear", node.startOffset, node) {
                 (headerComment as LeafElement).replaceWithText(headerComment.text.replace(copyrightText, copyrightWithCorrectYear))
             }
@@ -233,7 +244,7 @@ class HeaderCommentRule(private val configRules: List<RulesConfig>) : Rule("head
     }
 
     companion object {
-        val hyphenRegex = Regex("""\b(\d+-\d+)\b""")
+        val hyphenRegex = Regex("""\d+-\d+""")
         val afterCopyrightRegex = Regex("""((©|\([cC]\))+ *\d+)""")
         val curYear = LocalDate.now().year
     }

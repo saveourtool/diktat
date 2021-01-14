@@ -57,25 +57,28 @@ private fun generateWarningNames() {
 }
 
 private fun validateYear() {
-    val file = File("diktat-rules/src/test/resources/test/paragraph2/header/CopyrightDifferentYearExpected.kt")
-    val tempFile = createTempFile()
-    tempFile.printWriter().use { writer ->
-        file.forEachLine { line ->
-            writer.println(when {
-                hyphenRegex.matches(line) -> hyphenRegex.replace(line) {
-                    val years = it.value.split("-")
-                    val validYears = "${years[0]}-$curYear"
-                    line.replace(hyphenRegex, validYears)
+    val files = File("diktat-rules/src/test/resources/test/paragraph2/header")
+    files
+        .listFiles()
+        .filterNot { it.name.contains("CopyrightDifferentYearTest.kt") }
+        .forEach { file ->
+            val tempFile = createTempFile()
+            tempFile.printWriter().use { writer ->
+                file.forEachLine { line ->
+                    writer.println(when {
+                        line.contains(hyphenRegex) -> line.replace(hyphenRegex) {
+                            val years = it.value.split("-")
+                            "${years[0]}-$curYear"
+                        }
+                        line.contains(afterCopyrightRegex) -> line.replace(afterCopyrightRegex) {
+                            val copyrightYears = it.value.split("(c)", "(C)", "©")
+                            "${copyrightYears[0]}-$curYear"
+                        }
+                        else -> line
+                    })
                 }
-                afterCopyrightRegex.matches(line) -> afterCopyrightRegex.replace(line) {
-                    val copyrightYears = it.value.split("(c)", "(C)", "©")
-                    val validYears = "${copyrightYears[0]}-$curYear"
-                    line.replace(afterCopyrightRegex, validYears)
-                }
-                else -> line
-            })
+            }
+            file.delete()
+            tempFile.renameTo(file)
         }
-    }
-    file.delete()
-    tempFile.renameTo(file)
 }
