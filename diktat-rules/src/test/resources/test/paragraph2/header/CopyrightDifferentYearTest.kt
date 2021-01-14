@@ -1,6 +1,6 @@
 /*
- * Copyright (c) My Company., Ltd. 2012-2019. All rights reserved.
- */
+    Copyright (c) My Company., Ltd. 2012-2019. All rights reserved.
+*/
 /**
  * Lorem ipsum
  * dolor sit amet

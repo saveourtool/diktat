@@ -1,3 +1,6 @@
+<img src="logo.svg" width="64px"/>
+
+# Diktat Coding Style Guide, v.0.0.1
 
 # Table of contents
 I [Preface](#c0)
@@ -106,6 +109,11 @@ I [Preface](#c0)
     * [6.4.1 Instead of using utility classes/objects, use extensions](#r6.4.1)
     * [6.4.2 Objects should be used for Stateless Interfaces](#r6.4.2) 
 
+
+# Diktat Coding Style Guide
+# International version, v.0.0.1
+
+<img src="logo.svg" width="64px"/>
 
 ## <a name="c0"></a> Preface
  <!-- =============================================================================== -->
@@ -1877,6 +1885,30 @@ fun foo() {
     println("Nested Output: ${nested()}") 
 } 
 ```  
+#### <a name="r5.1.4"></a> 5.1.4 Negated function calls
+Don't use negated function calls if it can be replaced with negated version of this function
+
+**Invalid example**:
+```kotlin
+fun foo() { 
+    val list = listOf(1, 2, 3)
+  
+    if (!list.isEmpty()) {
+        // Some cool logic
+    }
+} 
+``` 
+
+**Valid example**:
+```kotlin
+fun foo() { 
+    val list = listOf(1, 2, 3)
+  
+    if (list.isNotEmpty()) {
+        // Some cool logic
+    }
+} 
+``` 
 
 <!-- =============================================================================== -->
 ### <a name="c5.2"></a> 5.2 Function arguments

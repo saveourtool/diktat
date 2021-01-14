@@ -603,7 +603,7 @@ fun ASTNode.isChildAfterAnother(child: ASTNode, afterChild: ASTNode): Boolean =
  * @return boolean result
  */
 fun ASTNode.isChildAfterGroup(child: ASTNode, group: List<ASTNode>): Boolean =
-        getChildren(null).indexOf(child) > (group.map { getChildren(null).indexOf(it) }.max() ?: 0)
+        getChildren(null).indexOf(child) > (group.map { getChildren(null).indexOf(it) }.maxOrNull() ?: 0)
 
 /**
  * Checks whether [child] is before [beforeChild] among the children of [this] node
@@ -637,7 +637,7 @@ fun ASTNode.areChildrenBeforeChild(children: List<ASTNode>, beforeChild: ASTNode
 @Suppress("UnsafeCallOnNullableType")
 fun ASTNode.areChildrenBeforeGroup(children: List<ASTNode>, group: List<ASTNode>): Boolean {
     require(children.isNotEmpty() && group.isNotEmpty()) { "no sense to operate on empty lists" }
-    return children.map { getChildren(null).indexOf(it) }.max()!! < group.map { getChildren(null).indexOf(it) }.min()!!
+    return children.map { getChildren(null).indexOf(it) }.maxOrNull()!! < group.map { getChildren(null).indexOf(it) }.minOrNull()!!
 }
 
 /**
