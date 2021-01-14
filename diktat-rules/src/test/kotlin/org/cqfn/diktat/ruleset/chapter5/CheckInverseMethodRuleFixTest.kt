@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter5
 
-import org.cqfn.diktat.util.FixTestBase
 import org.cqfn.diktat.ruleset.rules.CheckInverseMethodRule
+import org.cqfn.diktat.util.FixTestBase
 
 import generated.WarningNames.INVERSE_FUNCTION_PREFERRED
 import org.junit.jupiter.api.Tag

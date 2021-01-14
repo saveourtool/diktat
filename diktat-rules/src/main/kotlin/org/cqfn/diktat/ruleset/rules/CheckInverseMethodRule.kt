@@ -55,7 +55,7 @@ class CheckInverseMethodRule(private val configRules: List<RulesConfig>) : Rule(
                 referenceExp.addChild(LeafPsiElement(IDENTIFIER, "${methodMap[node.text]}".dropLast(2)))
                 argList.addChild(LeafPsiElement(LPAR, "("))
                 argList.addChild(LeafPsiElement(RPAR, ")"))
-                node.treeParent.treeParent.removeChild(node.treeParent.treePrev) // removing OPERATION_EXPRESSION - !
+                node.treeParent.treeParent.removeChild(node.treeParent.treePrev)  // removing OPERATION_EXPRESSION - !
                 node.treeParent.removeChild(node)
             }
         }
