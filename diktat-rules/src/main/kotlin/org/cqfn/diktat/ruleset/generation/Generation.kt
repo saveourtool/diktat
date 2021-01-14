@@ -80,5 +80,5 @@ private fun validateYear() {
             }
             file.delete()
             tempFile.renameTo(file)
-    }
+        }
 }
