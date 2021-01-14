@@ -10,14 +10,14 @@ import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class AsyncAndSyncRuleTest: LintTestBase(::AsyncAndSyncRule) {
+class AsyncAndSyncRuleTest : LintTestBase(::AsyncAndSyncRule) {
     private val ruleId = "$DIKTAT_RULE_SET_ID:sync-in-async"
 
     @Test
     @Tag(WarningNames.RUN_BLOCKING_INSIDE_ASYNC)
     fun `test wrong case`() {
         lintMethod(
-                """
+            """
                     |fun foo() {
                     |   GlobalScope.launch {
                     |       c.addAndGet(i)
@@ -40,9 +40,9 @@ class AsyncAndSyncRuleTest: LintTestBase(::AsyncAndSyncRule) {
                     |   }
                     |}
                     |
-                """.trimMargin(),
-                LintError(11,8, ruleId, "${RUN_BLOCKING_INSIDE_ASYNC.warnText()} runBlocking", false),
-                LintError(18,4, ruleId, "${RUN_BLOCKING_INSIDE_ASYNC.warnText()} runBlocking", false)
+            """.trimMargin(),
+            LintError(11, 8, ruleId, "${RUN_BLOCKING_INSIDE_ASYNC.warnText()} runBlocking", false),
+            LintError(18, 4, ruleId, "${RUN_BLOCKING_INSIDE_ASYNC.warnText()} runBlocking", false)
         )
     }
 }

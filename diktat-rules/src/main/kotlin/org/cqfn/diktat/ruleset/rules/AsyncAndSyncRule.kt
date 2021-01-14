@@ -40,4 +40,3 @@ class AsyncAndSyncRule(private val configRules: List<RulesConfig>) : Rule("sync-
 
     private fun ASTNode.isRunBlocking() = this.elementType == REFERENCE_EXPRESSION && this.text == "runBlocking"
 }
-
