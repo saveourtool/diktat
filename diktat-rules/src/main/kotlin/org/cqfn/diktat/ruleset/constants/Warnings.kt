@@ -131,6 +131,7 @@ enum class Warnings(
     TOO_MANY_PARAMETERS(false, "5.2.2", "function has too many parameters"),
     NESTED_BLOCK(false, "5.1.2", "function has too many nested blocks and should be simplified"),
     WRONG_OVERLOADING_FUNCTION_ARGUMENTS(false, "5.2.3", "use default argument instead of function overloading"),
+    RUN_BLOCKING_INSIDE_ASYNC(false, "5.2.4", "avoid using runBlocking in asynchronous code"),
 
     // ======== chapter 6 ========
     SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY(true, "6.1.1", "if a class has single constructor, it should be converted to a primary constructor"),

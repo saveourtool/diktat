@@ -199,6 +199,8 @@ public object WarningNames {
     public const val WRONG_OVERLOADING_FUNCTION_ARGUMENTS: String =
             "WRONG_OVERLOADING_FUNCTION_ARGUMENTS"
 
+    public const val RUN_BLOCKING_INSIDE_ASYNC: String = "RUN_BLOCKING_INSIDE_ASYNC"
+
     public const val SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY: String =
             "SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY"
 

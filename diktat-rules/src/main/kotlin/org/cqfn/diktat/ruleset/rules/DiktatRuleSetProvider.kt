@@ -137,6 +137,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
             ::FunctionArgumentsSize,
             ::BlankLinesRule,
             ::FileSize,
+            ::AsyncAndSyncRule,
             ::NullableTypeRule,
             ::NullChecksRule,
             ::ImmutableValNoVarRule,
