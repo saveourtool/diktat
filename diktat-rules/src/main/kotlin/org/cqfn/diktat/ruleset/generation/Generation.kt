@@ -58,10 +58,10 @@ private fun generateWarningNames() {
 
 private fun validateYear() {
     val files = File("diktat-rules/src/test/resources/test/paragraph2/header")
-    files.listFiles().forEach { file ->
-        if (file.name.contains("CopyrightDifferentYearTest.kt")) {
-            return@forEach
-        }
+    files
+        .listFiles()
+        .filterNot { it.name.contains("CopyrightDifferentYearTest.kt") }
+        .forEach { file ->
         val tempFile = createTempFile()
         tempFile.printWriter().use { writer ->
             file.forEachLine { line ->
