@@ -1,6 +1,7 @@
 package org.cqfn.diktat.ruleset.rules
 
 import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.LPAR
@@ -8,12 +9,14 @@ import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.RPAR
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
+import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.INVERSE_FUNCTION_PREFERRED
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
+import org.jetbrains.kotlin.psi.psiUtil.siblings
 
 /**
  * This rule checks if inverse method can be used.
@@ -35,9 +38,13 @@ class CheckInverseMethodRule(private val configRules: List<RulesConfig>) : Rule(
     }
 
     private fun checkCallExpressionName(node: ASTNode) {
-        if (node.treeParent.treePrev != null &&
-            node.treeParent.treePrev.elementType == OPERATION_REFERENCE &&
-            node.treeParent.treePrev.text == "!") {
+        val operationRef = node
+                .treeParent
+                .siblings(forward = false)
+                .takeWhile { it.elementType in intermediateTokens }
+                .filter { it.elementType == OPERATION_REFERENCE }
+                .toList()
+        if (operationRef.isNotEmpty() && operationRef.first().text == "!") {
             INVERSE_FUNCTION_PREFERRED.warnAndFix(configRules, emitWarn, isFixMode, "${methodMap[node.text]} instead of !${node.text}", node.startOffset, node) {
                 val callExpression = CompositeElement(CALL_EXPRESSION)
                 val referenceExp = CompositeElement(REFERENCE_EXPRESSION)
@@ -61,5 +68,7 @@ class CheckInverseMethodRule(private val configRules: List<RulesConfig>) : Rule(
                 "isNotEmpty()" to "isEmpty()",
                 "isNotBlank()" to "isBlank()"
         )
+
+        val intermediateTokens = listOf(WHITE_SPACE, OPERATION_REFERENCE, BLOCK_COMMENT)
     }
 }

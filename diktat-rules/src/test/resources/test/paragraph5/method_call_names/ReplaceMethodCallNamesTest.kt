@@ -19,5 +19,7 @@ fun coolFunction() {
     if (!testStr.isBlank()) { }
 
     if (!testStr.isNotBlank()) { }
+
+    if (!list.isEmpty() && !testStr.isNotBlank()) { }
 }
 

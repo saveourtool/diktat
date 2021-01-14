@@ -40,4 +40,34 @@ class CheckInverseMethodRuleWarnTest : LintTestBase(::CheckInverseMethodRule) {
                 LintError(2, 14, ruleId, "${Warnings.INVERSE_FUNCTION_PREFERRED.warnText()} isNotEmpty() instead of !isEmpty()", true)
         )
     }
+
+    @Test
+    @Tag(INVERSE_FUNCTION_PREFERRED)
+    fun `should consider white spaces between ! and call expression`() {
+        lintMethod(
+                """
+                    |fun some() {
+                    |   if (!  list.isEmpty()) {
+                    |       // some cool logic 
+                    |   }
+                    |}
+                """.trimMargin(),
+                LintError(2, 16, ruleId, "${Warnings.INVERSE_FUNCTION_PREFERRED.warnText()} isNotEmpty() instead of !isEmpty()", true)
+        )
+    }
+
+    @Test
+    @Tag(INVERSE_FUNCTION_PREFERRED)
+    fun `should consider comments between ! and call expression`() {
+        lintMethod(
+                """
+                    |fun some() {
+                    |   if (! /*cool comment*/ list.isEmpty()) {
+                    |       // some cool logic 
+                    |   }
+                    |}
+                """.trimMargin(),
+                LintError(2, 32, ruleId, "${Warnings.INVERSE_FUNCTION_PREFERRED.warnText()} isNotEmpty() instead of !isEmpty()", true)
+        )
+    }
 }
