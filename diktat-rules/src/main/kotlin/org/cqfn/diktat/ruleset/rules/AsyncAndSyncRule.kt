@@ -13,10 +13,13 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.kotlin.psi.psiUtil.hasSuspendModifier
 
+/**
+ * This rule finds if using runBlocking in asynchronous code
+ */
 class AsyncAndSyncRule(private val configRules: List<RulesConfig>) : Rule("sync-in-async") {
+    private val asyncList = listOf("async", "launch")
     private var isFixMode: Boolean = false
     private lateinit var emitWarn: EmitType
-    private val asyncList = listOf("async", "launch")
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
@@ -24,12 +27,13 @@ class AsyncAndSyncRule(private val configRules: List<RulesConfig>) : Rule("sync-
         emitWarn = emit
         isFixMode = autoCorrect
 
-        if (node.isRunBlocking())
+        if (node.isRunBlocking()) {
             checkRunBlocking(node)
+        }
     }
 
     private fun checkRunBlocking(node: ASTNode) {
-        if (node.parent({it.isAsync() || it.isSuspend()}) != null) {
+        node.parent({it.isAsync() || it.isSuspend()})?.let {
             RUN_BLOCKING_INSIDE_ASYNC.warn(configRules, emitWarn, isFixMode, node.text, node.startOffset, node)
         }
     }
