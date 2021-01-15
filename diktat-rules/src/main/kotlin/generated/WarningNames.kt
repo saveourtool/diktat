@@ -143,6 +143,8 @@ public object WarningNames {
 
     public const val WRONG_NEWLINES: String = "WRONG_NEWLINES"
 
+    public const val COMPLEX_EXPRESSION: String = "COMPLEX_EXPRESSION"
+
     public const val STRING_CONCATENATION: String = "STRING_CONCATENATION"
 
     public const val TOO_MANY_BLANK_LINES: String = "TOO_MANY_BLANK_LINES"
