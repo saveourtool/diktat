@@ -45,4 +45,30 @@ class AsyncAndSyncRuleTest : LintTestBase(::AsyncAndSyncRule) {
             LintError(18, 4, ruleId, "${RUN_BLOCKING_INSIDE_ASYNC.warnText()} runBlocking", false)
         )
     }
+
+    @Test
+    @Tag(WarningNames.RUN_BLOCKING_INSIDE_ASYNC)
+    fun `test dot qualified expression case`() {
+        lintMethod(
+                """
+                    |fun foo() {
+                    |   GlobalScope.async {
+                    |       node.runBlocking()
+                    |       runBlocking {
+                    |           n++
+                    |       }
+                    |   }
+                    |}
+                    |
+                    |fun goo() {
+                    |   runBlocking {
+                    |       GlobalScope.async {
+                    |           n++
+                    |       }
+                    |   }
+                    |}
+            """.trimMargin(),
+            LintError(4, 8, ruleId, "${RUN_BLOCKING_INSIDE_ASYNC.warnText()} runBlocking", false)
+        )
+    }
 }

@@ -135,7 +135,7 @@ private fun foo() {
 #### <a name="r5.2.4"></a> 5.2.4 Synchronizing code inside asynchronous code
 Try to avoid using runBlocking in asynchronous code
 
-**Example**:
+**Invalid example**:
 ```kotlin
 GlobalScope.async {
     runBlocking {
