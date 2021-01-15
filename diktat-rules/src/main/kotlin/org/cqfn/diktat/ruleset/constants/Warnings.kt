@@ -67,10 +67,10 @@ enum class Warnings(
     KDOC_NO_CONSTRUCTOR_PROPERTY(true, "2.1.1", "all properties from the primary constructor should be documented in a @property tag in KDoc"),
     KDOC_EXTRA_PROPERTY(false, "2.1.1", "There is property in KDoc which is not present in the class"),
     KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT(true, "2.1.1", "replace comment before property with @property tag in class KDoc"),
+    KDOC_CONTAINS_DATE_OR_AUTHOR(false, "2.1.3", "KDoc should not contain creation date and author name"),
     HEADER_WRONG_FORMAT(true, "2.2.1", "file header comments should be properly formatted"),
     HEADER_MISSING_OR_WRONG_COPYRIGHT(true, "2.2.1", "file header comment must include copyright information inside a block comment"),
     WRONG_COPYRIGHT_YEAR(true, "2.2.1", "year defined in copyright and current year are different"),
-    HEADER_CONTAINS_DATE_OR_AUTHOR(false, "2.2.1", "file header comment should not contain creation date and author name"),
     HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE(false, "2.2.1", "files that contain multiple or no classes should contain description of what is inside of this file"),
     HEADER_NOT_BEFORE_PACKAGE(true, "2.2.1", "header KDoc should be placed before package and imports"),
     COMMENTED_OUT_CODE(false, "2.4.2", "you should not comment out code, use VCS to save it in history and delete this block"),
@@ -148,6 +148,7 @@ enum class Warnings(
     NO_CORRESPONDING_PROPERTY(false, "6.1.7", "backing property should have the same name, but there is no corresponding property"),
     AVOID_USING_UTILITY_CLASS(false, "6.4.1", "avoid using utility classes/objects, use extensions functions"),
     OBJECT_IS_PREFERRED(true, "6.4.2", "it is better to use object for stateless classes"),
+    INVERSE_FUNCTION_PREFERRED(true, "5.1.4", "it is better to use inverse function"),
     ;
 
     /**

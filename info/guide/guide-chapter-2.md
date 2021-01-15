@@ -19,7 +19,7 @@ The basic format of KDoc is shown in the following example:
  * Other ...
  */
 fun method(arg: String) {
-    // …
+    // ...
 }
 ```
 
@@ -94,7 +94,7 @@ When the method has such details as arguments, return value, or can throw except
 /** 
  * This is the short overview comment for the example interface.
  *     / * Add a blank line between the comment text and each KDoc tag underneath * /
- * @since 2019-01-01
+ * @since 1.6
  */
  protected abstract class Sample {
     /**
@@ -136,8 +136,11 @@ Therefore, Kdoc should contain the following:
 Kdoc should not contain:
 - Empty descriptions in tag blocks. It is better not to write Kdoc than waste code line space.
 - There should be no empty lines between the method/class declaration and the end of Kdoc (`*/` symbols).
-Important note: KDoc does not support the `@deprecated` tag. Instead, use the `@Deprecated` annotation.
- 
+- `@author` tag. It doesn't matter who originally created a class when you can use `git blame` or VCS of your choice to look through the changes history.
+Important notes:
+- KDoc does not support the `@deprecated` tag. Instead, use the `@Deprecated` annotation.
+- The `@since` tag should be used for versions only. Do not use dates in `@since` tag, it's confusing and less accurate.
+
 If a tag block cannot be described in one line, indent the content of the new line by *four spaces* from the `@` position to achieve alignment (`@` counts as one + three spaces).
  
 **Exception:**
@@ -172,20 +175,38 @@ Other KDoc tags (such as @param type parameters and @see.) can be added as follo
 ### <a name="c2.2"></a> 2.2 Adding comments on the file header
 
 This section describes the general rules of adding comments on the file header.
+
+### <a name="r2.2.1"></a> 2.2.1 Formatting of comments in the file header
+
 Comments on the file header should be placed before the package name and imports. If you need to add more content to the comment, subsequently add it in the same format.
 
-Comments on the file header must include copyright information, without the creation date and author's name (use VCS for history management). Also, describe the content inside files that contain multiple or no classes.
-
-Place comments on the file header before the package name and imports. If you need to add more content to the comment, subsequently add it in the same format.
+Comments on the file header must include copyright information, without the creation date and author's name (use VCS for history management).
+Also, describe the content inside files that contain multiple or no classes.
 
 The following examples for Huawei describe the format of the *copyright license*: \
 Chinese version: `版权所有 (c) 华为技术有限公司 2012-2020` \
 English version: `Copyright (c) Huawei Technologies Co., Ltd. 2012-2020. All rights reserved.`
+`2012` and `2020` are the years the file was first created and the current year, respectively.
 
-Regarding the **release notes**, see examples below:
+Do not place **release notes** in header, use VCS to keep track of changes in file. Notable changes can be marked in individual KDocs using `@since` tag with version.
 
-- `2012-2020` can be modified according to your actual situation. `2012` and `2020` are the years the file was first created and last modified, respectively.
-These two years can be the same (for example, `2020–2020`). When the file is substantially changed (for example, through feature extensions and major refactorings), the subsequent years must be updated.
+Invalid example:
+```kotlin
+/**
+ * Release notes:
+ * 2019-10-11: added class Foo
+ */
+
+class Foo
+```
+
+Valid example:
+```kotlin
+/**
+ * @since 2.4.0
+ */
+class Foo
+```
 
 - The **copyright statement** can use your company's subsidiaries, as shown in the below examples: \
 Chinese version: `版权所有 (c) 海思半导体 2012-2020` \

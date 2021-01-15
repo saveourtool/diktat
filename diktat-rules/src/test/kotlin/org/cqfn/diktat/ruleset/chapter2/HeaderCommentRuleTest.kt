@@ -2,11 +2,11 @@ package org.cqfn.diktat.ruleset.chapter2
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
-import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_CONTAINS_DATE_OR_AUTHOR
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_MISSING_OR_WRONG_COPYRIGHT
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_NOT_BEFORE_PACKAGE
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_WRONG_FORMAT
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule
 import org.cqfn.diktat.util.LintTestBase
@@ -253,26 +253,6 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
             """.trimIndent(),
             LintError(1, 1, ruleId, """${Warnings.WRONG_COPYRIGHT_YEAR.warnText()} year should be ${LocalDate.now().year}""", true),
             rulesConfigList = rulesConfigListInvalidYearBeforeCopyright
-        )
-    }
-
-    @Test
-    @Tag(WarningNames.HEADER_CONTAINS_DATE_OR_AUTHOR)
-    fun `@author tag is not allowed in header comment`() {
-        lintMethod(
-            """
-                |$copyrightBlock
-                |/**
-                | * Description of this file
-                | * @author anonymous
-                | */
-                |
-                |package org.cqfn.diktat.example
-                |
-                |class Example { }
-            """.trimMargin(),
-            LintError(4, 1, ruleId, "${HEADER_CONTAINS_DATE_OR_AUTHOR.warnText()} * @author anonymous"),
-            rulesConfigList = rulesConfigList
         )
     }
 

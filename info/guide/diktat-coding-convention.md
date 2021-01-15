@@ -1,3 +1,6 @@
+<img src="logo.svg" width="64px"/>
+
+# Diktat Coding Style Guide, v.0.0.1
 
 # Table of contents
 I [Preface](#c0)
@@ -27,7 +30,7 @@ I [Preface](#c0)
 * [2.4 Code comments](#c2.4)
     * [2.4.1 Add a blank line between the body of the comment and Kdoc tag-blocks](#r2.4.1)
     * [2.4.2 Do not comment on unused code blocks](#r2.4.2)
-    * [2.4.3 Do not comment on unused code blocks](#r2.4.3)
+    * [2.4.3 Code delivered to the client should not contain TODO/FIXME comments](#r2.4.3)
     
 [3. General formatting (typesetting)](#c3)
 * [3.1 File-related rules](#c3.1)
@@ -79,7 +82,8 @@ I [Preface](#c0)
 * [5.1 Function design](#c5.1)       
     * [5.1.1 Avoid functions that are too long ](#r5.1.1)
     * [5.1.2 Avoid deep nesting of function code blocks, limiting to four levels](#r5.1.2) 
-    * [5.1.3 Avoid using nested functions](#r5.1.3)        
+    * [5.1.3 Avoid using nested functions](#r5.1.3)
+    * [5.1.4 Negated function calls](#r5.1.4)        
 * [5.2 Function arguments](#c5.2)              
     * [5.2.1 The lambda parameter of the function should be placed at the end of the argument list](#r5.2.1)
     * [5.2.2 Number of function parameters should be limited to five](#r5.2.2) 
@@ -106,6 +110,11 @@ I [Preface](#c0)
     * [6.4.1 Instead of using utility classes/objects, use extensions](#r6.4.1)
     * [6.4.2 Objects should be used for Stateless Interfaces](#r6.4.2) 
 
+
+# Diktat Coding Style Guide
+# International version, v.0.0.1
+
+<img src="logo.svg" width="64px"/>
 
 ## <a name="c0"></a> Preface
  <!-- =============================================================================== -->
@@ -434,7 +443,7 @@ The basic format of KDoc is shown in the following example:
  * Other ...
  */
 fun method(arg: String) {
-    // …
+    // ...
 }
 ```
 
@@ -509,7 +518,7 @@ When the method has such details as arguments, return value, or can throw except
 /** 
  * This is the short overview comment for the example interface.
  *     / * Add a blank line between the comment text and each KDoc tag underneath * /
- * @since 2019-01-01
+ * @since 1.6
  */
  protected abstract class Sample {
     /**
@@ -551,8 +560,11 @@ Therefore, Kdoc should contain the following:
 Kdoc should not contain:
 - Empty descriptions in tag blocks. It is better not to write Kdoc than waste code line space.
 - There should be no empty lines between the method/class declaration and the end of Kdoc (`*/` symbols).
-Important note: KDoc does not support the `@deprecated` tag. Instead, use the `@Deprecated` annotation.
- 
+- `@author` tag. It doesn't matter who originally created a class when you can use `git blame` or VCS of your choice to look through the changes history.
+Important notes:
+- KDoc does not support the `@deprecated` tag. Instead, use the `@Deprecated` annotation.
+- The `@since` tag should be used for versions only. Do not use dates in `@since` tag, it's confusing and less accurate.
+
 If a tag block cannot be described in one line, indent the content of the new line by *four spaces* from the `@` position to achieve alignment (`@` counts as one + three spaces).
  
 **Exception:**
@@ -587,20 +599,38 @@ Other KDoc tags (such as @param type parameters and @see.) can be added as follo
 ### <a name="c2.2"></a> 2.2 Adding comments on the file header
 
 This section describes the general rules of adding comments on the file header.
+
+### <a name="r2.2.1"></a> 2.2.1 Formatting of comments in the file header
+
 Comments on the file header should be placed before the package name and imports. If you need to add more content to the comment, subsequently add it in the same format.
 
-Comments on the file header must include copyright information, without the creation date and author's name (use VCS for history management). Also, describe the content inside files that contain multiple or no classes.
-
-Place comments on the file header before the package name and imports. If you need to add more content to the comment, subsequently add it in the same format.
+Comments on the file header must include copyright information, without the creation date and author's name (use VCS for history management).
+Also, describe the content inside files that contain multiple or no classes.
 
 The following examples for Huawei describe the format of the *copyright license*: \
 Chinese version: `版权所有 (c) 华为技术有限公司 2012-2020` \
 English version: `Copyright (c) Huawei Technologies Co., Ltd. 2012-2020. All rights reserved.`
+`2012` and `2020` are the years the file was first created and the current year, respectively.
 
-Regarding the **release notes**, see examples below:
+Do not place **release notes** in header, use VCS to keep track of changes in file. Notable changes can be marked in individual KDocs using `@since` tag with version.
 
-- `2012-2020` can be modified according to your actual situation. `2012` and `2020` are the years the file was first created and last modified, respectively.
-These two years can be the same (for example, `2020–2020`). When the file is substantially changed (for example, through feature extensions and major refactorings), the subsequent years must be updated.
+Invalid example:
+```kotlin
+/**
+ * Release notes:
+ * 2019-10-11: added class Foo
+ */
+
+class Foo
+```
+
+Valid example:
+```kotlin
+/**
+ * @since 2.4.0
+ */
+class Foo
+```
 
 - The **copyright statement** can use your company's subsidiaries, as shown in the below examples: \
 Chinese version: `版权所有 (c) 海思半导体 2012-2020` \
@@ -1877,6 +1907,30 @@ fun foo() {
     println("Nested Output: ${nested()}") 
 } 
 ```  
+#### <a name="r5.1.4"></a> 5.1.4 Negated function calls
+Don't use negated function calls if it can be replaced with negated version of this function
+
+**Invalid example**:
+```kotlin
+fun foo() { 
+    val list = listOf(1, 2, 3)
+  
+    if (!list.isEmpty()) {
+        // Some cool logic
+    }
+} 
+``` 
+
+**Valid example**:
+```kotlin
+fun foo() { 
+    val list = listOf(1, 2, 3)
+  
+    if (list.isNotEmpty()) {
+        // Some cool logic
+    }
+} 
+``` 
 
 <!-- =============================================================================== -->
 ### <a name="c5.2"></a> 5.2 Function arguments

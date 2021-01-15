@@ -86,13 +86,13 @@ public object WarningNames {
     public const val KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT: String =
             "KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT"
 
+    public const val KDOC_CONTAINS_DATE_OR_AUTHOR: String = "KDOC_CONTAINS_DATE_OR_AUTHOR"
+
     public const val HEADER_WRONG_FORMAT: String = "HEADER_WRONG_FORMAT"
 
     public const val HEADER_MISSING_OR_WRONG_COPYRIGHT: String = "HEADER_MISSING_OR_WRONG_COPYRIGHT"
 
     public const val WRONG_COPYRIGHT_YEAR: String = "WRONG_COPYRIGHT_YEAR"
-
-    public const val HEADER_CONTAINS_DATE_OR_AUTHOR: String = "HEADER_CONTAINS_DATE_OR_AUTHOR"
 
     public const val HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE: String =
             "HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE"
@@ -231,4 +231,6 @@ public object WarningNames {
     public const val AVOID_USING_UTILITY_CLASS: String = "AVOID_USING_UTILITY_CLASS"
 
     public const val OBJECT_IS_PREFERRED: String = "OBJECT_IS_PREFERRED"
+
+    public const val INVERSE_FUNCTION_PREFERRED: String = "INVERSE_FUNCTION_PREFERRED"
 }

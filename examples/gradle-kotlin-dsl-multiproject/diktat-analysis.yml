@@ -71,6 +71,8 @@
   enabled: true
 - name: KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS
   enabled: true
+- name: KDOC_CONTAINS_DATE_OR_AUTHOR
+  enabled: true
 - name: KDOC_TRIVIAL_KDOC_ON_FUNCTION
   enabled: 'true'
 - name: HEADER_WRONG_FORMAT
@@ -83,8 +85,6 @@
     isCopyrightMandatory: true
     copyrightText: 'Copyright (c) Your Company Name Here. 2010-2021'
 - name: HEADER_NOT_BEFORE_PACKAGE
-  enabled: true
-- name: HEADER_CONTAINS_DATE_OR_AUTHOR
   enabled: true
 - name: FILE_IS_TOO_LONG
   enabled: true
