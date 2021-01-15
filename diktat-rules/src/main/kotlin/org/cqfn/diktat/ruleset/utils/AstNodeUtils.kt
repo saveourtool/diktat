@@ -791,6 +791,8 @@ private fun ASTNode.calculateLineNumber() = getRootNode()
     }
 
 /**
+ * Count number of lines in code block. Note: only *copy* of a node should be passed to this method, because the method changes the node.
+ *
  * @return the number of lines in a block of code.
  */
 fun countCodeLines(copyNode: ASTNode): Int {

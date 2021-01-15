@@ -36,7 +36,7 @@ class LambdaLengthWarnTest : LintTestBase(::LambdaLengthRule) {
 
     @Test
     @Tag(WarningNames.TOO_MANY_LINES_IN_LAMBDA)
-    fun `without "it"`() {
+    fun `nested lambda with implicit parameter`() {
         lintMethod(
             """
                     |fun foo() {
@@ -44,7 +44,24 @@ class LambdaLengthWarnTest : LintTestBase(::LambdaLengthRule) {
                     |     val fileUrl: URL? = javaClass.getResource("123")
                     |     val resource = fileUrl
                     |         ?.let { File(it.file) }
-                    | }
+                    |   }
+                    |}
+                """.trimMargin(),
+            rulesConfigList = rulesConfigList
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.TOO_MANY_LINES_IN_LAMBDA)
+    fun `lambda doesn't expect parameters`() {
+        lintMethod(
+            """
+                    |fun foo() {
+                    |   private val allTestsFromResources: List<String> by lazy {
+                    |     val fileUrl: URL? = javaClass.getResource("123")
+                    |     list = listOf(1, 2, 3, 4, 5)
+                    |         .removeAt(1)
+                    |   }
                     |}
                 """.trimMargin(),
             rulesConfigList = rulesConfigList

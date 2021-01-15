@@ -90,16 +90,16 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
      */
     @Suppress("NestedBlockDepth", "TYPE_ALIAS")
     private fun handleGroups(groups: Map<KtNameReferenceExpression, List<KtNameReferenceExpression>>) {
-        groups.keys.forEach {
-            val parentText = it.node.treeParent.text
+        groups.keys.forEach { key ->
+            val parentText = key.node.treeParent.text
             if (parentText.contains(" is ")) {
-                groups.getValue(it).forEach { asCall ->
+                groups.getValue(key).forEach { asCall ->
                     if (asCall.node.hasParent(THEN)) {
                         raiseWarning(asCall.node)
                     }
                 }
             } else if (parentText.contains(" !is ")) {
-                groups.getValue(it).forEach { asCall ->
+                groups.getValue(key).forEach { asCall ->
                     if (asCall.node.hasParent(ELSE)) {
                         raiseWarning(asCall.node)
                     }
@@ -234,12 +234,12 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
 
         val identifier = node.getFirstChildWithType(REFERENCE_EXPRESSION)?.text
 
-        node.getAllChildrenWithType(WHEN_ENTRY).forEach {
-            if (it.hasChildOfType(WHEN_CONDITION_IS_PATTERN) && identifier != null) {
-                val type = it.getFirstChildWithType(WHEN_CONDITION_IS_PATTERN)!!
+        node.getAllChildrenWithType(WHEN_ENTRY).forEach { node ->
+            if (node.hasChildOfType(WHEN_CONDITION_IS_PATTERN) && identifier != null) {
+                val type = node.getFirstChildWithType(WHEN_CONDITION_IS_PATTERN)!!
                     .getFirstChildWithType(TYPE_REFERENCE)?.text
 
-                val callExpr = it.findAllNodesWithSpecificType(BINARY_WITH_TYPE).firstOrNull()
+                val callExpr = node.findAllNodesWithSpecificType(BINARY_WITH_TYPE).firstOrNull()
                 val blocks = listOf(IsExpressions(identifier, type ?: ""))
 
                 callExpr?.let {

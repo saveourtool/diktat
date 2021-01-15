@@ -9,13 +9,17 @@ import org.cqfn.diktat.ruleset.utils.*
 
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
-import com.pinterest.ktlint.core.ast.isPartOfComment
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 /**
  * Rule 5.2.4 check lambda length without parameters
  */
 class LambdaLengthRule(private val configRules: List<RulesConfig>) : Rule("lambda-length") {
+    private val configuration by lazy {
+        LambdaLengthConfiguration(
+            this.configRules.getRuleConfig(Warnings.TOO_MANY_LINES_IN_LAMBDA)?.configuration ?: emptyMap()
+        )
+    }
     private var isFixMode: Boolean = false
     private lateinit var emitWarn: EmitType
 
@@ -27,12 +31,6 @@ class LambdaLengthRule(private val configRules: List<RulesConfig>) : Rule("lambd
         emitWarn = emit
         isFixMode = autoCorrect
 
-        val configuration by lazy {
-            LambdaLengthConfiguration(
-                configRules.getRuleConfig(Warnings.TOO_MANY_LINES_IN_LAMBDA)?.configuration ?: emptyMap()
-            )
-        }
-
         if (node.elementType == ElementType.LAMBDA_EXPRESSION) {
             checkLambda(node, configuration)
         }
@@ -42,15 +40,12 @@ class LambdaLengthRule(private val configRules: List<RulesConfig>) : Rule("lambd
         val copyNode = node.clone() as ASTNode
         val sizeLambda = countCodeLines(copyNode)
         if (sizeLambda > configuration.maxLambdaLength) {
-            val lambdaNodeList = copyNode.findAllNodesWithCondition({it.elementType == ElementType.LAMBDA_EXPRESSION})
-            if (lambdaNodeList.size > 1) {
-                lambdaNodeList.forEach {
-                    if (lambdaNodeList.indexOf(it) > 0) {
-                        it.treeParent.removeChild(it)
-                    }
+            copyNode.findAllNodesWithCondition({it.elementType == ElementType.LAMBDA_EXPRESSION}).forEachIndexed {index, node ->
+                if (index > 0) {
+                    node.treeParent.removeChild(node)
                 }
             }
-            val isIt: Boolean = copyNode.findAllNodesWithSpecificType(ElementType.REFERENCE_EXPRESSION).map {re -> re.text}.indexOf("it") != -1
+            val isIt: Boolean = copyNode.findAllNodesWithSpecificType(ElementType.REFERENCE_EXPRESSION).map {re -> re.text}.contains("it")
             val parameters = node.findChildByType(ElementType.FUNCTION_LITERAL)?.findChildByType(ElementType.VALUE_PARAMETER_LIST)
             if (parameters == null && isIt) {
                 Warnings.TOO_MANY_LINES_IN_LAMBDA.warn(configRules, emitWarn, isFixMode,
