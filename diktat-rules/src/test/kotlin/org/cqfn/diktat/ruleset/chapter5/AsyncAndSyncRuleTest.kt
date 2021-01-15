@@ -50,7 +50,7 @@ class AsyncAndSyncRuleTest : LintTestBase(::AsyncAndSyncRule) {
     @Tag(WarningNames.RUN_BLOCKING_INSIDE_ASYNC)
     fun `test dot qualified expression case`() {
         lintMethod(
-                """
+            """
                     |fun foo() {
                     |   GlobalScope.async {
                     |       node.runBlocking()
