@@ -80,7 +80,10 @@ class NullableTypeRule(private val configRules: List<RulesConfig>) : Rule("nulla
 
     @Suppress("UnsafeCallOnNullableType")
     private fun findFixableParam(node: ASTNode): FixedParam? {
-        val reference = node.findChildByType(TYPE_REFERENCE)!!.findChildByType(NULLABLE_TYPE)!!.findChildByType(USER_TYPE)?.findChildByType(REFERENCE_EXPRESSION)
+        val reference = node.findChildByType(TYPE_REFERENCE)!!
+            .findChildByType(NULLABLE_TYPE)!!
+            .findChildByType(USER_TYPE)
+            ?.findChildByType(REFERENCE_EXPRESSION)
             ?: return null
         return when (reference.text) {
             "Boolean" -> FixedParam(BOOLEAN_CONSTANT, TRUE_KEYWORD, "true")

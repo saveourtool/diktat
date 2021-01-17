@@ -224,6 +224,9 @@
     maxParametersInOneLine: 2
     # 3 by default.
     # maxCallsInOneLine: 3
+# Inspection that checks if a long dot qualified expression is used in condition or as an argument
+- name: COMPLEX_EXPRESSION
+  enabled: true
 # Checks that there are not too many consecutive spaces in line
 - name: TOO_MANY_CONSECUTIVE_SPACES
   enabled: true
