@@ -350,6 +350,9 @@
 # Checks that function use default values, instead overloading
 - name: WRONG_OVERLOADING_FUNCTION_ARGUMENTS
   enabled: true
+# Checks that using runBlocking inside async block code
+- name: RUN_BLOCKING_INSIDE_ASYNC
+  enabled: true
 # Checks that property in constructor doesn't contain comment
 - name: KDOC_NO_CONSTRUCTOR_PROPERTY
   enabled: true
