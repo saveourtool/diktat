@@ -204,6 +204,52 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         }
     }
 
+    private fun checkUnusedImport(
+        node: ASTNode,
+        unusedImportConfig: UnusedImportConfig
+    ) {
+        node.findAllNodesWithSpecificType(REFERENCE_EXPRESSION)?.forEach {
+            if (!it.isPartOf(IMPORT_DIRECTIVE)) {
+                refSet.add(it.text)
+            }
+        }
+        node.findAllNodesWithSpecificType(OPERATION_REFERENCE)?.forEach {
+            if (!it.isPartOf(IMPORT_DIRECTIVE)) {
+                refSet.add(it.text)
+            }
+        }
+
+        packageName = (node.findChildByType(PACKAGE_DIRECTIVE)?.psi as KtPackageDirective).qualifiedName
+
+        node.findChildByType(IMPORT_LIST)?.getChildren(TokenSet.create(IMPORT_DIRECTIVE))?.toList()
+            ?.forEach { import ->
+                val ktImportDirective = import.psi as KtImportDirective
+                val importName = ktImportDirective.importPath?.importedName?.asString()
+                val importPath = ktImportDirective.importPath?.pathStr
+                if (ktImportDirective.aliasName == null &&
+                    !packageName.isEmpty() && importPath!!.startsWith("$packageName.") &&
+                    importPath.substring(packageName.length + 1).indexOf('.') == -1
+                ) {
+                    if (unusedImportConfig.deleteUnusedImport) {
+                        Warnings.UNUSED_IMPORT.warnAndFix(
+                            configRules, emitWarn, isFixMode,
+                            "$importPath - unused import",
+                            node.startOffset, node
+                        ) { ktImportDirective.delete() }
+                    }
+                } else if (importName != null && !refSet.contains(importName)) {
+                    if (unusedImportConfig.deleteUnusedImport) {
+                        Warnings.UNUSED_IMPORT.warnAndFix(
+                            configRules, emitWarn, isFixMode,
+                            "$importPath - unused import",
+                            node.startOffset, node
+                        ) { ktImportDirective.delete() }
+                    }
+                }
+
+            }
+    }
+
     private fun rearrangeImports(
         node: ASTNode,
         imports: List<ASTNode>,
@@ -313,5 +359,15 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
          * Use imports grouping according to recommendation 3.1
          */
         val useRecommendedImportsOrder = config["useRecommendedImportsOrder"]?.toBoolean() ?: true
+    }
+
+    /**
+     * [RuleConfiguration] for unused import
+     */
+    class UnusedImportConfig(config: Map<String, String>) : RuleConfiguration(config) {
+        /**
+         * delete unused import
+         */
+        val deleteUnusedImport = config["deleteUnusedImport"]?.toBoolean() ?: true
     }
 }

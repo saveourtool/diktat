@@ -12,6 +12,7 @@ import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
+import org.cqfn.diktat.ruleset.constants.Warnings
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
@@ -76,9 +77,12 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
                 |package org.cqfn.diktat.example
                 |
                 |import org.junit.Test
-                |import org.cqfn.diktat.example.Foo
+                |import org.cqfn.diktat.Foo
                 |
-                |class Example { }
+                |class Example { 
+                |val x: Test = null
+                |val x: Foo = null
+                |}
             """.trimMargin(),
             LintError(3, 1, ruleId, "${FILE_UNORDERED_IMPORTS.warnText()} import org.cqfn.diktat.example.Foo...", true)
         )
@@ -246,4 +250,52 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
             rulesConfigList = rulesConfigListEmptyDomainName
         )
     }
+
+    @Test
+    @Tag(WarningNames.UNUSED_IMPORT)
+    fun `import from the package`() {
+        lintMethod(
+            """
+                |package org.cqfn.diktat.example
+                |
+                |import org.cqfn.diktat.example.Foo
+                |
+                |class Example { 
+                |}
+            """.trimMargin(),
+            LintError(1, 1, ruleId, "${Warnings.UNUSED_IMPORT.warnText()} org.cqfn.diktat.example.Foo - unused import", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.UNUSED_IMPORT)
+    fun `unused import`() {
+        lintMethod(
+            """
+                |package org.cqfn.diktat.example
+                |
+                |import org.cqfn.diktat.Foo
+                |
+                |class Example { 
+                |}
+            """.trimMargin(),
+            LintError(1, 1, ruleId, "${Warnings.UNUSED_IMPORT.warnText()} org.cqfn.diktat.Foo - unused import", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.UNUSED_IMPORT)
+    fun `used import`() {
+        lintMethod(
+            """
+                |package org.cqfn.diktat.example
+                |
+                |import org.cqfn.diktat.Foo
+                |
+                |class Example { 
+                |val x: Foo = null
+                |}
+            """.trimMargin(),)
+    }
+
 }
