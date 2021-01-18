@@ -221,14 +221,14 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
         allMiddleSpace: List<ASTNode>,
         node: ASTNode,
         keyword: IElementType) {
-        allMiddleSpace.forEach {
-            if (checkBraceNode(it, true)) {
+        allMiddleSpace.forEach { space ->
+            if (checkBraceNode(space, true)) {
                 BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "incorrect new line after closing brace",
-                    it.startOffset, it) {
-                    if (it.elementType != WHITE_SPACE) {
+                    space.startOffset, space) {
+                    if (space.elementType != WHITE_SPACE) {
                         node.addChild(PsiWhiteSpaceImpl(" "), node.findChildByType(keyword))
                     } else {
-                        (it as LeafPsiElement).replaceWithText(" ")
+                        (space as LeafPsiElement).replaceWithText(" ")
                     }
                 }
             }

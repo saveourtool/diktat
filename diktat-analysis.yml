@@ -356,6 +356,11 @@
 # Checks that using runBlocking inside async block code
 - name: RUN_BLOCKING_INSIDE_ASYNC
   enabled: true
+# Checks that the long lambda has parameters
+- name: TOO_MANY_LINES_IN_LAMBDA
+  enabled: true
+  configuration:
+    maxLambdaLength: 10 # max length of lambda without parameters
 # Checks that property in constructor doesn't contains comment
 - name: KDOC_NO_CONSTRUCTOR_PROPERTY
   enabled: true

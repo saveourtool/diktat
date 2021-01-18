@@ -88,6 +88,7 @@ I [Preface](#c0)
     * [5.2.1 The lambda parameter of the function should be placed at the end of the argument list](#r5.2.1)
     * [5.2.2 Number of function parameters should be limited to five](#r5.2.2) 
     * [5.2.3 Use default values for function arguments instead of overloading them](#r5.2.3)           
+    * [5.2.5 Long lambdas should have explicit parameters](#r5.2.4)
 
 [6. Classes, interfaces, and extension functions](#c6)                 
 * [6.1 Classes](#c6.1)      

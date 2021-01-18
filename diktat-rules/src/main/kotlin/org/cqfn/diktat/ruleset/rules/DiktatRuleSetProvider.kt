@@ -143,6 +143,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
             ::ImmutableValNoVarRule,
             ::AvoidNestedFunctionsRule,
             ::ExtensionFunctionsSameNameRule,
+            ::LambdaLengthRule,
             // formatting: moving blocks, adding line breaks, indentations etc.
             ::BlockStructureBraces,
             ::ConsecutiveSpacesRule,

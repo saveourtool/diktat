@@ -33,18 +33,18 @@ class SingleLineStatementsRule(private val configRules: List<RulesConfig>) : Rul
     }
 
     private fun checkSemicolon(node: ASTNode) {
-        node.getChildren(semicolonToken).forEach {
-            if (!it.isFollowedByNewline()) {
-                MORE_THAN_ONE_STATEMENT_PER_LINE.warnAndFix(configRules, emitWarn, isFixMode, it.extractLineOfText(),
-                    it.startOffset, it) {
-                    if (it.treeParent.elementType == ENUM_ENTRY) {
+        node.getChildren(semicolonToken).forEach { astNode ->
+            if (!astNode.isFollowedByNewline()) {
+                MORE_THAN_ONE_STATEMENT_PER_LINE.warnAndFix(configRules, emitWarn, isFixMode, astNode.extractLineOfText(),
+                    astNode.startOffset, astNode) {
+                    if (astNode.treeParent.elementType == ENUM_ENTRY) {
                         node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node.treeNext)
                     } else {
-                        if (!it.isBeginByNewline()) {
-                            val nextNode = it.parent({ parent -> parent.treeNext != null }, strict = false)?.treeNext
-                            node.appendNewlineMergingWhiteSpace(nextNode, it)
+                        if (!astNode.isBeginByNewline()) {
+                            val nextNode = astNode.parent({ parent -> parent.treeNext != null }, strict = false)?.treeNext
+                            node.appendNewlineMergingWhiteSpace(nextNode, astNode)
                         }
-                        node.removeChild(it)
+                        node.removeChild(astNode)
                     }
                 }
             }
