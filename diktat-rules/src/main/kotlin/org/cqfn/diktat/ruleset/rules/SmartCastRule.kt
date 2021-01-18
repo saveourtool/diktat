@@ -234,12 +234,12 @@ class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-ca
 
         val identifier = node.getFirstChildWithType(REFERENCE_EXPRESSION)?.text
 
-        node.getAllChildrenWithType(WHEN_ENTRY).forEach { node ->
-            if (node.hasChildOfType(WHEN_CONDITION_IS_PATTERN) && identifier != null) {
-                val type = node.getFirstChildWithType(WHEN_CONDITION_IS_PATTERN)!!
+        node.getAllChildrenWithType(WHEN_ENTRY).forEach { entry ->
+            if (entry.hasChildOfType(WHEN_CONDITION_IS_PATTERN) && identifier != null) {
+                val type = entry.getFirstChildWithType(WHEN_CONDITION_IS_PATTERN)!!
                     .getFirstChildWithType(TYPE_REFERENCE)?.text
 
-                val callExpr = node.findAllNodesWithSpecificType(BINARY_WITH_TYPE).firstOrNull()
+                val callExpr = entry.findAllNodesWithSpecificType(BINARY_WITH_TYPE).firstOrNull()
                 val blocks = listOf(IsExpressions(identifier, type ?: ""))
 
                 callExpr?.let {

@@ -12,7 +12,7 @@ import com.pinterest.ktlint.core.ast.ElementType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 /**
- * Rule 5.2.4 check lambda length without parameters
+ * Rule 5.2.5 check lambda length without parameters
  */
 class LambdaLengthRule(private val configRules: List<RulesConfig>) : Rule("lambda-length") {
     private val configuration by lazy {
@@ -40,12 +40,12 @@ class LambdaLengthRule(private val configRules: List<RulesConfig>) : Rule("lambd
         val copyNode = node.clone() as ASTNode
         val sizeLambda = countCodeLines(copyNode)
         if (sizeLambda > configuration.maxLambdaLength) {
-            copyNode.findAllNodesWithCondition({it.elementType == ElementType.LAMBDA_EXPRESSION}).forEachIndexed {index, node ->
+            copyNode.findAllNodesWithCondition({ it.elementType == ElementType.LAMBDA_EXPRESSION }).forEachIndexed { index, node ->
                 if (index > 0) {
                     node.treeParent.removeChild(node)
                 }
             }
-            val isIt: Boolean = copyNode.findAllNodesWithSpecificType(ElementType.REFERENCE_EXPRESSION).map {re -> re.text}.contains("it")
+            val isIt = copyNode.findAllNodesWithSpecificType(ElementType.REFERENCE_EXPRESSION).map {re -> re.text}.contains("it")
             val parameters = node.findChildByType(ElementType.FUNCTION_LITERAL)?.findChildByType(ElementType.VALUE_PARAMETER_LIST)
             if (parameters == null && isIt) {
                 Warnings.TOO_MANY_LINES_IN_LAMBDA.warn(configRules, emitWarn, isFixMode,

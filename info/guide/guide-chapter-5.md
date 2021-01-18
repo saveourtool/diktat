@@ -143,6 +143,6 @@ GlobalScope.async {
     }   
 }
 ```
-#### <a name="r5.2.4"></a> 5.2.4 Long lambdas should have explicit parameters
+#### <a name="r5.2.5"></a> 5.2.5 Long lambdas should have explicit parameters
 The lambda without parameters shouldn't be too long.
 If a lambda is too long, it can confuse the user. Lambda without parameters should consist of 10 lines (non-empty and non-comment) in total.
