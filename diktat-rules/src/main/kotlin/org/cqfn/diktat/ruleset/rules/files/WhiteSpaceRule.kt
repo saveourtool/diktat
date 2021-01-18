@@ -46,6 +46,7 @@ import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.QUEST
 import com.pinterest.ktlint.core.ast.ElementType.RANGE
+import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.RBRACKET
 import com.pinterest.ktlint.core.ast.ElementType.RPAR
 import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS
@@ -63,6 +64,8 @@ import com.pinterest.ktlint.core.ast.ElementType.WHEN_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHILE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isPartOfComment
+import com.pinterest.ktlint.core.ast.isWhiteSpace
+import com.pinterest.ktlint.core.ast.isWhiteSpaceWithoutNewline
 import com.pinterest.ktlint.core.ast.nextCodeLeaf
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevSibling
@@ -116,6 +119,7 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
             }
             // braces and other symbols
             LBRACE -> handleLbrace(node)
+            RBRACE -> handleRbrace(node)
             LBRACKET -> handleLbracket(node)
             LPAR -> handleLpar(node)
             RPAR, RBRACKET -> handleToken(node, 0, null)
@@ -160,10 +164,18 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
         }
     }
 
+    private fun handleRbrace(node: ASTNode) {
+        if (node.treeParent.elementType == FUNCTION_LITERAL && !node.treePrev.isWhiteSpace()) {
+            WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "there should be a whitespace before }", node.startOffset, node) {
+                node.treeParent.addChild(PsiWhiteSpaceImpl(" "), node)
+            }
+        }
+    }
+
     /**
      * This method covers all other opening braces, not covered in [handleKeywordWithParOrBrace].
      */
-    @Suppress("UnsafeCallOnNullableType", "ComplexMethod")
+    @Suppress("UnsafeCallOnNullableType")
     private fun handleLbrace(node: ASTNode) {
         // `{` can't be the very first symbol in the file, so `!!` should be safe
         val whitespaceOrPrevNode = node.selfOrParentsTreePrev()!!
@@ -183,11 +195,20 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
 
         val prevNode = whitespaceOrPrevNode.let { if (it.elementType == WHITE_SPACE) it.treePrev else it }
         val numWhiteSpace = whitespaceOrPrevNode.numWhiteSpaces()
+        handleWhiteSpaceBeforeLeftBrace(node, isFromLambdaAsArgument, numWhiteSpace, whitespaceOrPrevNode, prevNode)
+        handleWhiteSpaceAfterLeftBrace(node)
+    }
+
+    private fun handleWhiteSpaceBeforeLeftBrace(node: ASTNode,
+                                                isFromLambdaAsArgument: Boolean,
+                                                numWhiteSpace: Int?,
+                                                whitespaceOrPrevNode: ASTNode,
+                                                prevNode: ASTNode) {
         // note: the conditions in the following `if`s cannot be collapsed into simple conjunctions
         if (isFromLambdaAsArgument) {
             val isFirstArgument = node
-                .parent({ it.elementType == VALUE_ARGUMENT })
-                .let { it?.prevSibling { prevNode -> prevNode.elementType == COMMA } == null }
+                    .parent({ it.elementType == VALUE_ARGUMENT })
+                    .let { it?.prevSibling { prevNode -> prevNode.elementType == COMMA } == null }
 
             // If it is lambda, then we don't force it to be on newline or same line
             if (numWhiteSpace != 0 && isFirstArgument) {
@@ -196,11 +217,17 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
                     whitespaceOrPrevNode.treeParent.removeChild(whitespaceOrPrevNode)
                 }
             }
-        } else if (prevNode.elementType !in keywordsWithSpaceAfter) {
-            if (numWhiteSpace != 1) {
-                WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "there should be a whitespace before '{'", node.startOffset, node) {
-                    prevNode.leaveSingleWhiteSpace()
-                }
+        } else if (prevNode.elementType !in keywordsWithSpaceAfter && numWhiteSpace != 1) {
+            WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "there should be a whitespace before '{'", node.startOffset, node) {
+                prevNode.leaveSingleWhiteSpace()
+            }
+        }
+    }
+
+    private fun handleWhiteSpaceAfterLeftBrace(node: ASTNode) {
+        if (node.treeParent.elementType == FUNCTION_LITERAL && !node.treeNext.isWhiteSpace()) {
+            WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "there should be a whitespace after {", node.startOffset, node) {
+                node.treeParent.addChild(PsiWhiteSpaceImpl(" "), node.treeNext)
             }
         }
     }
