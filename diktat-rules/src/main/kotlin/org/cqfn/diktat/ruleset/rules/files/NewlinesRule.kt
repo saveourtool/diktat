@@ -5,6 +5,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.ListOfList
+import org.cqfn.diktat.ruleset.constants.Warnings.COMPLEX_EXPRESSION
 import org.cqfn.diktat.ruleset.constants.Warnings.REDUNDANT_SEMICOLON
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_NEWLINES
 import org.cqfn.diktat.ruleset.utils.*
@@ -18,10 +19,10 @@ import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.CALLABLE_REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
-import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.COLON
 import com.pinterest.ktlint.core.ast.ElementType.COLONCOLON
 import com.pinterest.ktlint.core.ast.ElementType.COMMA
+import com.pinterest.ktlint.core.ast.ElementType.CONDITION
 import com.pinterest.ktlint.core.ast.ElementType.DIV
 import com.pinterest.ktlint.core.ast.ElementType.DIVEQ
 import com.pinterest.ktlint.core.ast.ElementType.DOT
@@ -51,7 +52,6 @@ import com.pinterest.ktlint.core.ast.ElementType.PLUS
 import com.pinterest.ktlint.core.ast.ElementType.PLUSEQ
 import com.pinterest.ktlint.core.ast.ElementType.POSTFIX_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
-import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.RETURN
 import com.pinterest.ktlint.core.ast.ElementType.RETURN_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS
@@ -59,11 +59,12 @@ import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.SECONDARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.SEMICOLON
 import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_LIST
+import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
+import com.pinterest.ktlint.core.ast.ElementType.WHEN
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.isWhiteSpace
 import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.nextCodeSibling
 import com.pinterest.ktlint.core.ast.parent
@@ -92,6 +93,7 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
  * 7. Ensures that in multiline lambda newline follows arrow or, in case of lambda without explicit parameters, opening brace
  * 8. Checks that functions with single `return` are simplified to functions with expression body
  * 9. parameter or argument lists and supertype lists that have more than 2 elements should be separated by newlines
+ * 10. Complex expression inside condition replaced with new variable
  */
 @Suppress("ForbiddenComment")
 class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines") {
@@ -154,18 +156,24 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         }
     }
 
-    @Suppress("ComplexMethod")
+    @Suppress("ComplexMethod", "TOO_LONG_FUNCTION")
     private fun handleOperatorWithLineBreakBefore(node: ASTNode) {
         if (node.isDotFromPackageOrImport()) {
             return
         }
         val isIncorrect = (if (node.elementType == ELVIS) node.treeParent else node).run {
             if (isCallsChain()) {
+                if (node.isInParentheses()) {
+                    COMPLEX_EXPRESSION.warn(configRules, emitWarn, isFixMode, node.text, node.startOffset, node)
+                }
                 val isSingleLineIfElse = parent({ it.elementType == IF }, true)?.isSingleLineIfElse() ?: false
                 // to follow functional style these operators should be started by newline
                 (isFollowedByNewline() || !isBeginByNewline()) && !isSingleLineIfElse &&
                         (!isFirstCall() || !isMultilineLambda(treeParent))
             } else {
+                if (isCallsChain(false) && node.isInParentheses()) {
+                    COMPLEX_EXPRESSION.warn(configRules, emitWarn, isFixMode, node.text, node.startOffset, node)
+                }
                 // unless statement is simple and on single line, these operators cannot have newline after
                 isFollowedByNewline() && !isSingleDotStatementOnSingleLine()
             }
@@ -375,11 +383,11 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         if (psi.children.isNotEmpty() && (!psi.isFirstChildElementType(DOT_QUALIFIED_EXPRESSION) &&
                 !psi.isFirstChildElementType(SAFE_ACCESS_EXPRESSION))) {
             val firstChild = psi.firstChild
+            if (firstChild.isFirstChildElementType(DOT_QUALIFIED_EXPRESSION) ||
+                    firstChild.isFirstChildElementType(SAFE_ACCESS_EXPRESSION)) {
+                getOrderedCallExpressions(firstChild.firstChild, result)
+            }
             if (firstChild.isFirstChildElementType(POSTFIX_EXPRESSION)) {
-                if (firstChild.isFirstChildElementType(DOT_QUALIFIED_EXPRESSION) ||
-                        firstChild.isFirstChildElementType(SAFE_ACCESS_EXPRESSION)) {
-                    getOrderedCallExpressions(firstChild.firstChild, result)
-                }
                 result.add(firstChild.node)
             }
             result.add(firstChild.node
@@ -439,17 +447,23 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
      *
      * @return true - if there is error, and false if there is no error
      */
-    private fun ASTNode.isCallsChain() = getCallChain()?.isNotValidCalls(this) ?: false
+    private fun ASTNode.isCallsChain(dropLeadingProperties: Boolean = true) = getCallChain(dropLeadingProperties)?.isNotValidCalls(this) ?: false
 
-    private fun ASTNode.getCallChain() = getParentExpressions()
-        .lastOrNull()
-        ?.run {
-            mutableListOf<ASTNode>().also {
-                getOrderedCallExpressions(psi, it)
+    private fun ASTNode.getCallChain(dropLeadingProperties: Boolean = true): List<ASTNode>? {
+        val parentExpressionList = getParentExpressions()
+            .lastOrNull()
+            ?.run {
+                mutableListOf<ASTNode>().also {
+                    getOrderedCallExpressions(psi, it)
+                }
             }
+        return if (dropLeadingProperties) {
+            // fixme: we can't distinguish fully qualified names (like java.lang) from chain of property accesses (like list.size) for now
+            parentExpressionList?.dropWhile { !it.treeParent.textContains('(') && !it.treeParent.textContains('{') }
+        } else {
+            parentExpressionList
         }
-        // fixme: we can't distinguish fully qualified names (like java.lang) from chain of property accesses (like list.size) for now
-        ?.dropWhile { !it.treeParent.textContains('(') && !it.treeParent.textContains('{') }
+    }
 
     private fun List<ASTNode>.isNotValidCalls(node: ASTNode): Boolean {
         if (this.size == 1) {
@@ -505,6 +519,15 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
             treeParent.elementType == BINARY_EXPRESSION
 
     /**
+     * This method checks that complex expression should be replace with new variable
+     */
+    private fun ASTNode.isInParentheses() = parent({it.elementType == DOT_QUALIFIED_EXPRESSION || it.elementType == SAFE_ACCESS_EXPRESSION})
+        ?.treeParent
+        ?.elementType
+        ?.let { it in parenthesesTypes }
+        ?: false
+
+    /**
      * [RuleConfiguration] for newlines placement
      */
     private class NewlinesRuleConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
@@ -527,5 +550,6 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         private val expressionTypes = TokenSet.create(DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION, CALLABLE_REFERENCE_EXPRESSION, BINARY_EXPRESSION)
         private val chainExpressionTypes = TokenSet.create(DOT_QUALIFIED_EXPRESSION, SAFE_ACCESS_EXPRESSION)
         private val dropChainValues = TokenSet.create(EOL_COMMENT, WHITE_SPACE, BLOCK_COMMENT, KDOC)
+        private val parenthesesTypes = TokenSet.create(CONDITION, WHEN, VALUE_ARGUMENT)
     }
 }

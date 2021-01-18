@@ -53,11 +53,11 @@ KDOC\underline{ }NEWLINES\underline{ }BEFORE\underline{ }BASIC\underline{ }TAGS 
 KDOC\underline{ }NO\underline{ }NEWLINES\underline{ }BETWEEN\underline{ }BASIC\underline{ }TAGS & \hyperref[sec:2.1.3]{2.1.3} &  yes  &   no  \\
 KDOC\underline{ }NO\underline{ }NEWLINE\underline{ }AFTER\underline{ }SPECIAL\underline{ }TAGS & \hyperref[sec:2.1.3]{2.1.3} &  yes  &   no  \\
 KDOC\underline{ }NO\underline{ }DEPRECATED\underline{ }TAG & \hyperref[sec:2.1.3]{2.1.3} &  yes  &   no  \\
+KDOC\underline{ }CONTAINS\underline{ }DATE\underline{ }OR\underline{ }AUTHOR & \hyperref[sec:2.1.3]{2.1.3} &  no  &   no  \\
 KDOC\underline{ }NO\underline{ }EMPTY\underline{ }TAGS & \hyperref[sec:2.2.1]{2.2.1} &  no  &   no  \\
 HEADER\underline{ }WRONG\underline{ }FORMAT & \hyperref[sec:2.2.1]{2.2.1} &  yes  &   no  \\
 HEADER\underline{ }MISSING\underline{ }OR\underline{ }WRONG\underline{ }COPYRIGHT & \hyperref[sec:2.2.1]{2.2.1} &  yes  &  mandatoryCopyright \\
 WRONG\underline{ }COPYRIGHT\underline{ }YEAR & \hyperref[sec:2.2.1]{2.2.1} &  yes  &   no  \\
-HEADER\underline{ }CONTAINS\underline{ }DATE\underline{ }OR\underline{ }AUTHOR & \hyperref[sec:2.2.1]{2.2.1} &  no  &   no  \\
 HEADER\underline{ }MISSING\underline{ }IN\underline{ }NON\underline{ }SINGLE\underline{ }CLASS\underline{ }FILE & \hyperref[sec:2.2.1]{2.2.1} &  no  &   no  \\
 HEADER\underline{ }NOT\underline{ }BEFORE\underline{ }PACKAGE & \hyperref[sec:2.2.1]{2.2.1} &  yes  &   no  \\
 KDOC\underline{ }TRIVIAL\underline{ }KDOC\underline{ }ON\underline{ }FUNCTION & \hyperref[sec:2.3.1]{2.3.1} &  no  &   no  \\
@@ -106,6 +106,7 @@ AVOID\underline{ }NULL\underline{ }CHECKS & \hyperref[sec:4.3.3]{4.3.3} &  no  &
 TOO\underline{ }LONG\underline{ }FUNCTION & \hyperref[sec:5.1.1]{5.1.1} &  no  &   maxFunctionLength isIncludeHeader \\
 NESTED\underline{ }BLOCK & \hyperref[sec:5.1.2]{5.1.2} &  no  &   maxNestedBlockQuantit\\
 AVOID\underline{ }NESTED\underline{ }FUNCTIONS & \hyperref[sec:5.1.3]{5.1.3} &  yes  &   no  \\
+INVERSE\underline{ }FUNCTION\underline{ }PREFERRED & \hyperref[sec:5.1.4]{5.1.4} &  yes  &  - \\
 LAMBDA\underline{ }IS\underline{ }NOT\underline{ }LAST\underline{ }PARAMETER & \hyperref[sec:5.2.1]{5.2.1} &  no  &   no \\
 TOO\underline{ }MANY\underline{ }PARAMETERS & \hyperref[sec:5.2.2]{5.2.2} &  no  &   maxParameterListSize \\
 WRONG\underline{ }OVERLOADING\underline{ }FUNCTION\underline{ }ARGUMENTS & \hyperref[sec:5.2.3]{5.2.3} &  no  &   no \\
@@ -125,7 +126,7 @@ AVOID\underline{ }USING\underline{ }UTILITY\underline{ }CLASS & \hyperref[sec:6.
 OBJECT\underline{ }IS\underline{ }PREFERRED & \hyperref[sec:6.4.2]{6.4.2} &  yes  &  no \\
 \hline
 \end{longtable}
-\lstMakeShortInline[basicstyle=\ttfamily\bfseries]`
+%CodeStyle
 
 \hspace{0.0cm}\hyperref[sec:]{}
 
@@ -189,7 +190,7 @@ OBJECT\underline{ }IS\underline{ }PREFERRED & \hyperref[sec:6.4.2]{6.4.2} &  yes
 
 \hspace{1.0cm}\hyperref[sec:2.4.2]{ 2.4.2 Do not comment on unused code blocks}
 
-\hspace{1.0cm}\hyperref[sec:2.4.3]{ 2.4.3 Do not comment on unused code blocks}
+\hspace{1.0cm}\hyperref[sec:2.4.3]{ 2.4.3 Code delivered to the client should not contain TODO/FIXME comments}
 
 \hspace{1.0cm}\hyperref[sec:]{}
 
@@ -267,7 +268,7 @@ OBJECT\underline{ }IS\underline{ }PREFERRED & \hyperref[sec:6.4.2]{6.4.2} &  yes
 
 \hspace{1.0cm}\hyperref[sec:4.1.2]{ 4.1.2 Comparing numeric float type values}
 
-\hspace{1.0cm}\hyperref[sec:4.1.3]{ 4.1.3 Try to use 'val' instead of 'var' for variable declaration SAY\_NO\_TO\_VAR}
+\hspace{1.0cm}\hyperref[sec:4.1.3]{ 4.1.3 Try to use 'val' instead of 'var' for variable declaration SAY_NO_TO_VAR}
 
 \hspace{0.5cm}\hyperref[sec:4.2]{ 4.2 Types}
 
@@ -294,6 +295,8 @@ OBJECT\underline{ }IS\underline{ }PREFERRED & \hyperref[sec:6.4.2]{6.4.2} &  yes
 \hspace{1.0cm}\hyperref[sec:5.1.2]{ 5.1.2 Avoid deep nesting of function code blocks, limiting to four levels}
 
 \hspace{1.0cm}\hyperref[sec:5.1.3]{ 5.1.3 Avoid using nested functions}
+
+\hspace{1.0cm}\hyperref[sec:5.1.4]{ 5.1.4 Negated function calls}
 
 \hspace{0.5cm}\hyperref[sec:5.2]{ 5.2 Function arguments}
 
@@ -325,7 +328,7 @@ OBJECT\underline{ }IS\underline{ }PREFERRED & \hyperref[sec:6.4.2]{6.4.2} &  yes
 
 \hspace{1.0cm}\hyperref[sec:6.1.8]{ 6.1.8 Avoid using custom getters and setters}
 
-\hspace{1.0cm}\hyperref[sec:6.1.9]{ 6.1.9 Never use the name of a variable in the custom getter or setter (possible\_bug)}
+\hspace{1.0cm}\hyperref[sec:6.1.9]{ 6.1.9 Never use the name of a variable in the custom getter or setter (possible_bug)}
 
 \hspace{1.0cm}\hyperref[sec:6.1.10]{ 6.1.10 No trivial getters and setters are allowed in the code}
 
@@ -335,7 +338,7 @@ OBJECT\underline{ }IS\underline{ }PREFERRED & \hyperref[sec:6.4.2]{6.4.2} &  yes
 
 \hspace{1.0cm}\hyperref[sec:6.2.1]{ 6.2.1 Use extension functions for making logic of classes less coupled}
 
-\hspace{1.0cm}\hyperref[sec:6.2.2]{ 6.2.2 No extension functions with the same name and signature if they extend base and inheritor classes (possible\_bug)}
+\hspace{1.0cm}\hyperref[sec:6.2.2]{ 6.2.2 No extension functions with the same name and signature if they extend base and inheritor classes (possible_bug)}
 
 \hspace{0.5cm}\hyperref[sec:6.3]{ 6.3 Interfaces}
 
@@ -512,11 +515,11 @@ This section describes the general rules for naming identifiers.
 
 For identifiers, use the following naming conventions:
 
-1.	All identifiers should use only ASCII letters or digits, and the names should match regular expressions `\w{2,64}`.
+1.	All identifiers should use only ASCII letters or digits, and the names should match regular expressions \textbf{\textbackslash w\{2,64\}}.
 
-Explanation: Each valid identifier name should match the regular expression `\w{2,64}`.
+Explanation: Each valid identifier name should match the regular expression \textbf{\textbackslash w\{2,64\}}.
 
-`{2,64}` means that the name length is 2 to 64 characters, and the length of the variable name should be proportional to its life range, functionality, and responsibility.
+\textbf{\{2,64\}} means that the name length is 2 to 64 characters, and the length of the variable name should be proportional to its life range, functionality, and responsibility.
 
 Name lengths of less than 31 characters are generally recommended. However, this depends on the project. Otherwise, a class declaration with generics or inheritance from a superclass can cause line breaking.
 
@@ -524,7 +527,7 @@ No special prefix or suffix should be used in names. The following examples are 
 
 
 
-2.	Choose file names that would describe the content. Use camel case (PascalCase) and `.kt` extension.
+2.	Choose file names that would describe the content. Use camel case (PascalCase) and \textbf{.kt} extension.
 
 
 
@@ -558,7 +561,7 @@ Meaning&Correct&Incorrect\\
 
 \end{center}
 
-4.	The usage of (``) and free naming for functions and identifiers are prohibited. For example, the following code is not recommended:
+4.	The usage of (\textbf{}) and free naming for functions and identifiers are prohibited. For example, the following code is not recommended:
 
 
 
@@ -567,11 +570,11 @@ val `my dummy name-with-minus` = "value"
 \end{lstlisting}
 
 
-The only exception is function names in `Unit tests.`
+The only exception is function names in \textbf{Unit tests.}
 
 
 
-5.	Backticks (``) should not be used for identifiers, except the names of test methods (marked with @Test annotation):
+5.	Backticks (\textbf{}) should not be used for identifiers, except the names of test methods (marked with @Test annotation):
 
 \begin{lstlisting}[language=Kotlin]
  @Test fun `my test`() { /*...*/ }
@@ -614,7 +617,7 @@ Expected&Confusing name&Suggested name\\
 
 - The i,j,k variables used in loops are part of the industry standard. One symbol can be used for such variables.
 
-- The `e` variable can be used to catch exceptions in catch block: `catch (e: Exception) {}`
+- The \textbf{e} variable can be used to catch exceptions in catch block: \textbf{catch (e: Exception) \{\}}
 
 - The Java community generally does not recommend the use of prefixes. However, when developing Android code, you can use the s and m prefixes for static and non-public non-static fields, respectively.
 
@@ -659,11 +662,11 @@ Type&Naming style\\
 
 \label{sec:}
 
-Package names are in lower case and separated by dots. Code developed within your company should start with `your.company.domain.` Numbers are permitted in package names.
+Package names are in lower case and separated by dots. Code developed within your company should start with \textbf{your.company.domain.} Numbers are permitted in package names.
 
-Each file should have a `package` directive.
+Each file should have a \textbf{package} directive.
 
-Package names are all written in lowercase, and consecutive words are concatenated together (no underscores). Package names should contain both the product or module names and the department (or team) name to prevent conflicts with other teams.  Numbers are not permitted. For example: `org.apache.commons.lang3`, `xxx.yyy.v2`.
+Package names are all written in lowercase, and consecutive words are concatenated together (no underscores). Package names should contain both the product or module names and the department (or team) name to prevent conflicts with other teams.  Numbers are not permitted. For example: \textbf{org.apache.commons.lang3}, \textbf{xxx.yyy.v2}.
 
 
 
@@ -671,11 +674,11 @@ Package names are all written in lowercase, and consecutive words are concatenat
 
 
 
-- In certain cases, such as open-source projects or commercial cooperation, package names should not start with `your.company.domain.`
+- In certain cases, such as open-source projects or commercial cooperation, package names should not start with \textbf{your.company.domain.}
 
-- If the package name starts with a number or other character that cannot be used at the beginning of the Java/Kotlin package name, then underscores are allowed. For example: `com.example._123name`.
+- If the package name starts with a number or other character that cannot be used at the beginning of the Java/Kotlin package name, then underscores are allowed. For example: \textbf{com.example.\_123name}.
 
-- Underscores are sometimes permitted if the package name contains reserved Java/Kotlin keywords, such as `org.example.hyphenated_name`, `int_.example`.
+- Underscores are sometimes permitted if the package name contains reserved Java/Kotlin keywords, such as \textbf{org.example.hyphenated\_name}, \textbf{int\_.example}.
 
 
 
@@ -697,17 +700,17 @@ This section describes the general rules for naming classes, enumerations, and i
 
 \label{sec:1.3.1}
 
-Classes, enumerations, and interface names use `UpperCamelCase` nomenclature. Follow the naming rules described below:
+Classes, enumerations, and interface names use \textbf{UpperCamelCase} nomenclature. Follow the naming rules described below:
 
-1.	A class name is usually a noun (or a noun phrase) denoted using the camel case nomenclature, such as UpperCamelCase. For example: `Character` or `ImmutableList`.
+1.	A class name is usually a noun (or a noun phrase) denoted using the camel case nomenclature, such as UpperCamelCase. For example: \textbf{Character} or \textbf{ImmutableList}.
 
-An interface name can also be a noun or noun phrase (such as `List`) or an adjective or adjective phrase (such as `Readable`).
+An interface name can also be a noun or noun phrase (such as \textbf{List}) or an adjective or adjective phrase (such as \textbf{Readable}).
 
-Note that verbs are not used to name classes. However, nouns (such as `Customer`, `WikiPage`, and `Account`) can be used. Try to avoid using vague words such as `Manager` and `Process`.
+Note that verbs are not used to name classes. However, nouns (such as \textbf{Customer}, \textbf{WikiPage}, and \textbf{Account}) can be used. Try to avoid using vague words such as \textbf{Manager} and \textbf{Process}.
 
 
 
-2.	Test classes start with the name of the class they are testing and end with 'Test'. For example, `HashTest` or `HashIntegrationTest`.
+2.	Test classes start with the name of the class they are testing and end with 'Test'. For example, \textbf{HashTest} or \textbf{HashIntegrationTest}.
 
 
 
@@ -742,17 +745,17 @@ This section describes the general rules for naming functions.
 
 \label{sec:1.4.1}
 
-Function names should use `lowerCamelCase` nomenclature. Follow the naming rules described below:
+Function names should use \textbf{lowerCamelCase} nomenclature. Follow the naming rules described below:
 
-1.	Function names are usually verbs or verb phrases denoted with the camel case nomenclature (`lowerCamelCase`).
+1.	Function names are usually verbs or verb phrases denoted with the camel case nomenclature (\textbf{lowerCamelCase}).
 
-For example: `sendMessage`, `stopProcess`, or `calculateValue`.
+For example: \textbf{sendMessage}, \textbf{stopProcess}, or \textbf{calculateValue}.
 
 To name functions, use the following formatting rules:
 
 
 
-a) To get, modify, or calculate a certain value: get + non-boolean field(). Note that the Kotlin compiler automatically generates getters for some classes, applying the special syntax preferred for the 'get' fields: kotlin private val field: String get() { }. kotlin private val field: String get() { }.
+a) To get, modify, or calculate a certain value: get + non-boolean field(). Note that the Kotlin compiler automatically generates getters for some classes, applying the special syntax preferred for the 'get' fields: kotlin private val field: String get() \{ \}. kotlin private val field: String get() \{ \}.
 
 \begin{lstlisting}[language=Kotlin]
 private val field: String
@@ -763,21 +766,21 @@ Note: The calling property access syntax is preferred to call getter directly. I
 
 
 
-b) `is` + boolean variable name()
+b) \textbf{is} + boolean variable name()
 
 
 
-c) `set` + field/attribute name(). However, note that the syntax and code generation for Kotlin are completely the same as those described for the getters in point a.
+c) \textbf{set} + field/attribute name(). However, note that the syntax and code generation for Kotlin are completely the same as those described for the getters in point a.
 
 
 
-d) `has` + Noun / adjective ()
+d) \textbf{has} + Noun / adjective ()
 
 
 
 e) verb()
 
-Note: Note: Verb are primarily used for the action objects, such as `document.print ()`
+Note: Note: Verb are primarily used for the action objects, such as \textbf{document.print ()}
 
 
 
@@ -785,7 +788,7 @@ f) verb + noun()
 
 
 
-g) The Callback function allows the names that use the preposition + verb format, such as: `onCreate()`, `onDestroy()`, `toString()`.
+g) The Callback function allows the names that use the preposition + verb format, such as: \textbf{onCreate()}, \textbf{onDestroy()}, \textbf{toString()}.
 
 
 
@@ -815,7 +818,7 @@ fun addKeyListener(Listener)
 \end{lstlisting}
 
 
-2.	An underscore (`_`) can be included in the JUnit test function name and should be used as a separator. Each logical part is denoted in `lowerCamelCase`, for example, a typical pattern of using underscore: `pop_emptyStack`.
+2.	An underscore (\textbf{\_}) can be included in the JUnit test function name and should be used as a separator. Each logical part is denoted in \textbf{lowerCamelCase}, for example, a typical pattern of using underscore: \textbf{pop\_emptyStack}.
 
 \subsection*{\textbf{1.5 Constants}}
 
@@ -830,21 +833,21 @@ This section describes the general rules for naming constraints.
 
 Constant names should be in UPPER case, words separated by underscore. The general constant naming conventions are listed below:
 
-1. Constants are attributes created with the `const` keyword or top-level/`val` local variables of an object that holds immutable data. In most cases, constants can be identified as a `const val` property from the `object`/`companion object`/file top level. These variables contain fixed constant values that typically should never be changed by programmers. This includes basic types, strings, immutable types, and immutable collections of immutable types. The value is not constant for the object, which state can be changed.
+1. Constants are attributes created with the \textbf{const} keyword or top-level/\textbf{val} local variables of an object that holds immutable data. In most cases, constants can be identified as a \textbf{const val} property from the \textbf{object}/\textbf{companion object}/file top level. These variables contain fixed constant values that typically should never be changed by programmers. This includes basic types, strings, immutable types, and immutable collections of immutable types. The value is not constant for the object, which state can be changed.
 
-2. Constant names should contain only uppercase letters separated by an underscores. They should have a val or const val modifier to make them final explicitly. In most cases, if you need to specify a constant value, then you need to create it with the "const val" modifier. Note that not all `val` variables are constants.
+2. Constant names should contain only uppercase letters separated by an underscores. They should have a val or const val modifier to make them final explicitly. In most cases, if you need to specify a constant value, then you need to create it with the "const val" modifier. Note that not all \textbf{val} variables are constants.
 
-3. Objects with immutable content, such as `Logger` and `Lock`, can be in uppercase as constants or have camel case as regular variables.
+3. Objects with immutable content, such as \textbf{Logger} and \textbf{Lock}, can be in uppercase as constants or have camel case as regular variables.
 
-4. Use meaningful constants instead of `magic numbers`. SQL or logging strings should not be treated as magic numbers, nor should they be defined as string constants.
+4. Use meaningful constants instead of \textbf{magic numbers}. SQL or logging strings should not be treated as magic numbers, nor should they be defined as string constants.
 
-Magic constants, such as `NUM_FIVE = 5` or `NUM_5 = 5` should not be treated as constants. This is because mistakes will easily be made if they are changed to `NUM_5 = 50` or 55.
+Magic constants, such as \textbf{NUM\_FIVE = 5} or \textbf{NUM\_5 = 5} should not be treated as constants. This is because mistakes will easily be made if they are changed to \textbf{NUM\_5 = 50} or 55.
 
 These constants typically represent business logic values, such as measures, capacity, scope, location, tax rate, promotional discounts, and power base multiples in algorithms.
 
 You can avoid using magic numbers with the following method:
 
-- Using library functions and APIs. For example, instead of checking that `size == 0`, use `isEmpty()` function. To work with `time`, use built-ins from `java.time API`.
+- Using library functions and APIs. For example, instead of checking that \textbf{size == 0}, use \textbf{isEmpty()} function. To work with \textbf{time}, use built-ins from \textbf{java.time API}.
 
 - Enumerations can be used to name patterns. Refer to [Recommended usage scenario for enumeration in 3.9].
 
@@ -885,11 +888,11 @@ Non-constant field names should use camel case and start with a lowercase letter
 
 A local variable cannot be treated as constant even if it is final and immutable. Therefore, it should not use the preceding rules. Names of collection type variables (sets, lists, etc.) should contain plural nouns.
 
-For example: `var namesList: List<String>`
+For example: \textbf{var namesList: List<String>}
 
 
 
-Names of non-constant variables should use `lowerCamelCase`. The name of the final immutable field used to store the singleton object can use the same camel case notation.
+Names of non-constant variables should use \textbf{lowerCamelCase}. The name of the final immutable field used to store the singleton object can use the same camel case notation.
 
 
 
@@ -990,7 +993,7 @@ The basic format of KDoc is shown in the following example:
  * Other ...
  */
 fun method(arg: String) {
-    // …
+    // ...
 }
 \end{lstlisting}
 
@@ -1017,9 +1020,9 @@ At a minimum, KDoc should be used for every public, protected, or internal decor
 
 Other code blocks can also have KDocs if needed.
 
-Instead of using comments or KDocs before properties in the primary constructor of a class - use `@property` tag in a KDoc of a class.
+Instead of using comments or KDocs before properties in the primary constructor of a class - use \textbf{@property} tag in a KDoc of a class.
 
-All properties of the primary constructor should also be documented in a KDoc with a `@property` tag.
+All properties of the primary constructor should also be documented in a KDoc with a \textbf{@property} tag.
 
 
 
@@ -1061,7 +1064,7 @@ class Example(
 
 
 
-* For setters/getters of properties, obvious comments (like `this getter returns field`) are optional. Note that Kotlin generates simple `get/set` methods under the hood.
+* For setters/getters of properties, obvious comments (like \textbf{this getter returns field}) are optional. Note that Kotlin generates simple \textbf{get/set} methods under the hood.
 
    
 
@@ -1105,7 +1108,7 @@ When the method has such details as arguments, return value, or can throw except
 /** 
  * This is the short overview comment for the example interface.
  *     / * Add a blank line between the comment text and each KDoc tag underneath * /
- * @since 2019-01-01
+ * @since 1.6
  */
  protected abstract class Sample {
     /**
@@ -1148,29 +1151,35 @@ Therefore, Kdoc should contain the following:
 
 - Functional and technical description, explaining the principles, intentions, contracts, API, etc.
 
-- The function description and @tags (`implSpec`, `apiNote`, and `implNote`) require an empty line after them.
+- The function description and @tags (\textbf{implSpec}, \textbf{apiNote}, and \textbf{implNote}) require an empty line after them.
 
-- `@implSpec`: A specification related to API implementation, and it should let the implementer decide whether to override it.
+- \textbf{@implSpec}: A specification related to API implementation, and it should let the implementer decide whether to override it.
 
-- `@apiNote`: Explain the API precautions, including whether to allow null and whether the method is thread-safe, as well as the algorithm complexity, input, and output range, exceptions, etc.
+- \textbf{@apiNote}: Explain the API precautions, including whether to allow null and whether the method is thread-safe, as well as the algorithm complexity, input, and output range, exceptions, etc.
 
-- `@implNote`: A note related to API implementation, which implementers should keep in mind.
+- \textbf{@implNote}: A note related to API implementation, which implementers should keep in mind.
 
-- One empty line, followed by regular `@param`, `@return`, `@throws`, and other comments.
+- One empty line, followed by regular \textbf{@param}, \textbf{@return}, \textbf{@throws}, and other comments.
 
-- The conventional standard "block labels" are arranged in the following order: `@param`, `@return`, `@throws`.
+- The conventional standard "block labels" are arranged in the following order: \textbf{@param}, \textbf{@return}, \textbf{@throws}.
 
 Kdoc should not contain:
 
 - Empty descriptions in tag blocks. It is better not to write Kdoc than waste code line space.
 
-- There should be no empty lines between the method/class declaration and the end of Kdoc (`*/` symbols).
+- There should be no empty lines between the method/class declaration and the end of Kdoc (\textbf{*/} symbols).
 
-Important note: KDoc does not support the `@deprecated` tag. Instead, use the `@Deprecated` annotation.
+- \textbf{@author} tag. It doesn't matter who originally created a class when you can use \textbf{git blame} or VCS of your choice to look through the changes history.
 
- 
+Important notes:
 
-If a tag block cannot be described in one line, indent the content of the new line by \textit{four spaces} from the `@` position to achieve alignment (`@` counts as one + three spaces).
+- KDoc does not support the \textbf{@deprecated} tag. Instead, use the \textbf{@Deprecated} annotation.
+
+- The \textbf{@since} tag should be used for versions only. Do not use dates in \textbf{@since} tag, it's confusing and less accurate.
+
+
+
+If a tag block cannot be described in one line, indent the content of the new line by \textit{four spaces} from the \textbf{@} position to achieve alignment (\textbf{@} counts as one + three spaces).
 
  
 
@@ -1186,7 +1195,7 @@ See [3.8 Horizontal space].
 
 In Kotlin, compared to Java, you can put several classes inside one file, so each class should have a Kdoc formatted comment (as stated in rule 2.1).
 
-This comment should contain @since tag. The right style is to write the application version when its functionality is released. It should be entered after the `@since` tag.
+This comment should contain @since tag. The right style is to write the application version when its functionality is released. It should be entered after the \textbf{@since} tag.
 
 
 
@@ -1224,41 +1233,66 @@ Other KDoc tags (such as @param type parameters and @see.) can be added as follo
 
 This section describes the general rules of adding comments on the file header.
 
+
+
+\subsubsection*{\textbf{2.2.1 Formatting of comments in the file header}}
+\leavevmode\newline
+
+\label{sec:2.2.1}
+
+
+
 Comments on the file header should be placed before the package name and imports. If you need to add more content to the comment, subsequently add it in the same format.
 
 
 
-Comments on the file header must include copyright information, without the creation date and author's name (use VCS for history management). Also, describe the content inside files that contain multiple or no classes.
+Comments on the file header must include copyright information, without the creation date and author's name (use VCS for history management).
 
-
-
-Place comments on the file header before the package name and imports. If you need to add more content to the comment, subsequently add it in the same format.
+Also, describe the content inside files that contain multiple or no classes.
 
 
 
 The following examples for Huawei describe the format of the \textit{copyright license}: \
 
-Chinese version: `版权所有 (c) 华为技术有限公司 2012-2020` \
+Chinese version: \textbf{版权所有 (c) 华为技术有限公司 2012-2020} \
 
-English version: `Copyright (c) Huawei Technologies Co., Ltd. 2012-2020. All rights reserved.`
+English version: \textbf{Copyright (c) Huawei Technologies Co., Ltd. 2012-2020. All rights reserved.}
 
-
-
-Regarding the \textbf{release notes}, see examples below:
+\textbf{2012} and \textbf{2020} are the years the file was first created and the current year, respectively.
 
 
 
-- `2012-2020` can be modified according to your actual situation. `2012` and `2020` are the years the file was first created and last modified, respectively.
+Do not place \textbf{release notes} in header, use VCS to keep track of changes in file. Notable changes can be marked in individual KDocs using \textbf{@since} tag with version.
 
-These two years can be the same (for example, `2020–2020`). When the file is substantially changed (for example, through feature extensions and major refactorings), the subsequent years must be updated.
 
+
+Invalid example:
+
+\begin{lstlisting}[language=Kotlin]
+/**
+ * Release notes:
+ * 2019-10-11: added class Foo
+ */
+
+class Foo
+\end{lstlisting}
+
+
+Valid example:
+
+\begin{lstlisting}[language=Kotlin]
+/**
+ * @since 2.4.0
+ */
+class Foo
+\end{lstlisting}
 
 
 - The \textbf{copyright statement} can use your company's subsidiaries, as shown in the below examples: \
 
-Chinese version: `版权所有 (c) 海思半导体 2012-2020` \
+Chinese version: \textbf{版权所有 (c) 海思半导体 2012-2020} \
 
-English version: `Copyright (c) Hisilicon Technologies Co., Ltd. 2012-2020. All rights reserved.` 
+English version: \textbf{Copyright (c) Hisilicon Technologies Co., Ltd. 2012-2020. All rights reserved.} 
 
 
 
@@ -1277,13 +1311,13 @@ The following example is a copyright statement for Huawei, without other functio
 
 The following factors should be considered when writing the file header or comments for top-level classes:
 
-- File header comments must start from the top of the file. If it is a top-level file comment, there should be a blank line after the last Kdoc `*/` symbol. If it is a comment for a top-level class, the class declaration should start immediately without using a newline.
+- File header comments must start from the top of the file. If it is a top-level file comment, there should be a blank line after the last Kdoc \textbf{*/} symbol. If it is a comment for a top-level class, the class declaration should start immediately without using a newline.
 
 - Maintain a unified format. The specific format can be formulated by the project (for example, if you use an existing opensource project), and you need to follow it.
 
 - A top-level file-Kdoc must include a copyright and functional description, especially if there is more than one top-level class.
 
-- Do not include empty comment blocks. If there is no content after the option `@apiNote`, the entire tag block should be deleted.
+- Do not include empty comment blocks. If there is no content after the option \textbf{@apiNote}, the entire tag block should be deleted.
 
 - The industry practice is not to include historical information in the comments. The corresponding history can be found in VCS (git, svn, etc.). Therefore, it is not recommended to include historical data in the comments of the Kotlin source code.
 
@@ -1381,11 +1415,11 @@ It is a good practice to add a blank line between the body of the comment and Kd
 
 - Leave one single space between the comment on the right side of the code and the code. 
 
-If you use conditional comments in the `if-else-if` scenario, put the comments inside the `else-if` branch or in the conditional block, but not before the `else-if`. This makes the code more understandable.
+If you use conditional comments in the \textbf{if-else-if} scenario, put the comments inside the \textbf{else-if} branch or in the conditional block, but not before the \textbf{else-if}. This makes the code more understandable.
 
 When the if-block is used with curly braces, the comment should be placed on the next line after opening the curly braces.
 
-Compared to Java, the `if` statement in Kotlin statements returns a value. For this reason, a comment block can describe a whole `if-statement`.
+Compared to Java, the \textbf{if} statement in Kotlin statements returns a value. For this reason, a comment block can describe a whole \textbf{if-statement}.
 
 
 
@@ -1417,7 +1451,7 @@ val someVal = if (nr % 15 == 0) {
 \end{lstlisting}
 
 
-- Start all comments (including KDoc) with a space after the first symbol (`//`, `/*`, `/**` and `*`)
+- Start all comments (including KDoc) with a space after the first symbol (\textbf{//}, \textbf{/*}, \textbf{/} and \textbf{*})
 
 
 
@@ -1460,7 +1494,7 @@ If you need the code again, consider porting or rewriting it as changes could ha
 
 The code officially delivered to the client typically should not contain TODO/FIXME comments.
 
-`TODO` comments are typically used to describe modification points that need to be improved and added. For example, refactoring FIXME comments are typically used to describe known defects and bugs that will be subsequently fixed and are not critical for an application.
+\textbf{TODO} comments are typically used to describe modification points that need to be improved and added. For example, refactoring FIXME comments are typically used to describe known defects and bugs that will be subsequently fixed and are not critical for an application.
 
 They should all have a unified style to facilitate unified text search processing.
 
@@ -1516,7 +1550,7 @@ a) Code blocks should be in the following order:
 
 1.	Kdoc for licensed or copyrighted files
 
-2.	`@file` annotation
+2.	\textbf{@file} annotation
 
 3.	Package name
 
@@ -1532,11 +1566,11 @@ b) Each of the preceding code blocks should be separated by a blank line.
 
 
 
-c) Import statements are alphabetically arranged, without using line breaks and wildcards ( wildcard imports - `*`). 
+c) Import statements are alphabetically arranged, without using line breaks and wildcards ( wildcard imports - \textbf{*}). 
 
 
 
-d) \textbf{Recommendation}: One `.kt` source file should contain only one class declaration, and its name should match the filename
+d) \textbf{Recommendation}: One \textbf{.kt} source file should contain only one class declaration, and its name should match the filename
 
 
 
@@ -1603,7 +1637,7 @@ Notes:
 
 2.	Properties with comments/Kdoc should be separated by a newline before the comment/Kdoc.
 
-3.	Enum entries and constant properties (`const val`) in companion objects should be alphabetically arranged.
+3.	Enum entries and constant properties (\textbf{const val}) in companion objects should be alphabetically arranged.
 
 
 
@@ -1629,7 +1663,7 @@ If the classes are meant to be used externally, and are not referenced inside th
 
 \textbf{Exception:}
 
-All variants of a `(private) val` logger should be placed at the beginning of the class (`(private) val log`, `LOG`, `logger`, etc.).
+All variants of a \textbf{(private) val} logger should be placed at the beginning of the class (\textbf{(private) val log}, \textbf{LOG}, \textbf{logger}, etc.).
 
 
 
@@ -1646,7 +1680,7 @@ This section describes the general rules of using braces in your code.
 
 
 
-Braces should always be used in `if`, `else`, `for`, `do`, and `while` statements, even if the program body is empty or contains only one statement. In special Kotlin `when` statements, you do not need to use braces for single-line statements. 
+Braces should always be used in \textbf{if}, \textbf{else}, \textbf{for}, \textbf{do}, and \textbf{while} statements, even if the program body is empty or contains only one statement. In special Kotlin \textbf{when} statements, you do not need to use braces for single-line statements. 
 
 
 
@@ -1663,7 +1697,7 @@ when (node.elementType) {
     CLASS -> checkClassElements(node)
 }
 \end{lstlisting}
-\textbf{Exception:} The only exception is ternary operator in Kotlin (a single line `if () <> else <>` ) 
+\textbf{Exception:} The only exception is ternary operator in Kotlin (a single line \textbf{if () <> else <>} ) 
 
 
 
@@ -1710,7 +1744,7 @@ Follow the K\&R style (1TBS or OTBS) for *non-empty* code blocks with braces:
 
 - The closing brace is on its own new line.
 
-- The closing brace can be followed by a newline character. The only exceptions are `else`, `finally`, and `while` (from `do-while` statement), or `catch` keywords.
+- The closing brace can be followed by a newline character. The only exceptions are \textbf{else}, \textbf{finally}, and \textbf{while} (from \textbf{do-while} statement), or \textbf{catch} keywords.
 
 These keywords should not be split from the closing brace by a newline character.
 
@@ -1720,7 +1754,7 @@ These keywords should not be split from the closing brace by a newline character
 
 
 
-1) For lambdas, there is no need to put a newline character after the first (function-related) opening brace. A newline character should appear only after an arrow (`->`) (see [point 5 of Rule 3.6.2]).
+1) For lambdas, there is no need to put a newline character after the first (function-related) opening brace. A newline character should appear only after an arrow (\textbf{->}) (see [point 5 of Rule 3.6.2]).
 
 
 
@@ -1731,7 +1765,7 @@ arg.map { value ->
 \end{lstlisting}
 
 
-2) for `else`/`catch`/`finally`/`while` (from `do-while` statement) keywords closing brace should stay on the same line:
+2) for \textbf{else}/\textbf{catch}/\textbf{finally}/\textbf{while} (from \textbf{do-while} statement) keywords closing brace should stay on the same line:
 
 \begin{lstlisting}[language=Kotlin]
 do {
@@ -1781,7 +1815,7 @@ do {
 
 
 
-Only spaces are permitted for indentation, and each indentation should equal `four spaces` (tabs are not permitted).
+Only spaces are permitted for indentation, and each indentation should equal \textbf{four spaces} (tabs are not permitted).
 
 If you prefer using tabs, simply configure them to change to spaces in your IDE automatically.
 
@@ -1789,7 +1823,7 @@ These code blocks should be indented if they are placed on the new line, and the
 
 -	The code block is placed immediately after an opening brace.
 
--	The code block is placed after each operator, including the assignment operator (`+`/`-`/`\&\&`/`=`/etc.)
+-	The code block is placed after each operator, including the assignment operator (\textbf{+}/\textbf{-}/\textbf{\&\&}/\textbf{=}/etc.)
 
 -	The code block is a call chain of methods:
 
@@ -1837,7 +1871,7 @@ b) Four spaces are used before each supertype, and eight spaces are used if the 
 
 
 
-\textbf{Note:} there should be an indentation after all statements such as `if`, `for`, etc. However, according to this code style, such statements require braces. 
+\textbf{Note:} there should be an indentation after all statements such as \textbf{if}, \textbf{for}, etc. However, according to this code style, such statements require braces. 
 
 
 
@@ -1849,7 +1883,7 @@ if (condition)
 
 \textbf{Exceptions}: 
 
-- When breaking the parameter list of a method/class constructor, it can be aligned with `8 spaces`. A parameter that was moved to a new line can be on the same level as the previous argument:
+- When breaking the parameter list of a method/class constructor, it can be aligned with \textbf{8 spaces}. A parameter that was moved to a new line can be on the same level as the previous argument:
 
     
 
@@ -1864,7 +1898,7 @@ fun visit(
 \end{lstlisting}
     
 
-- Such operators as `+`/`-`/`*` can be indented with `8 spaces`:
+- Such operators as \textbf{+}/\textbf{-}/\textbf{*} can be indented with \textbf{8 spaces}:
 
     
 
@@ -1874,7 +1908,7 @@ val abcdef = "my splitted" +
 \end{lstlisting}
     
 
-- A list of supertypes should be indented with `4 spaces` if they are on different lines or with `8 spaces` if the leading colon is also on a separate line
+- A list of supertypes should be indented with \textbf{4 spaces} if they are on different lines or with \textbf{8 spaces} if the leading colon is also on a separate line
 
 
 
@@ -1894,7 +1928,7 @@ class A
 
 
 
-Avoid empty blocks, and ensure braces start on a new line. An empty code block can be closed immediately on the same line and the next line. However, a newline is recommended between opening and closing braces `{}` (see the examples below.)
+Avoid empty blocks, and ensure braces start on a new line. An empty code block can be closed immediately on the same line and the next line. However, a newline is recommended between opening and closing braces \textbf{\{\}} (see the examples below.)
 
 
 
@@ -1945,7 +1979,7 @@ try {
 
 
 
-Line length should be less than 120 symbols. The international code style prohibits `non-Latin` (`non-ASCII`) symbols.
+Line length should be less than 120 symbols. The international code style prohibits \textbf{non-Latin} (\textbf{non-ASCII}) symbols.
 
 (See [Identifiers]) However, if you still intend on using them, follow the following convention:
 
@@ -1957,15 +1991,15 @@ The "wide" and "narrow" parts of a character are defined by its \href{https://un
 
 Typically, narrow characters are also called "half-width" characters.
 
-All characters in the ASCII character set include letters (such as `a, A`), numbers (such as `0, 3`), and punctuation spaces (such as `,` , `{`), all of which are narrow characters.
+All characters in the ASCII character set include letters (such as \textbf{a, A}), numbers (such as \textbf{0, 3}), and punctuation spaces (such as \textbf{,} , \textbf{\{}), all of which are narrow characters.
 
-Wide characters are also called "full-width" characters. Chinese characters (such as `中, 文`), Chinese punctuation (`，` , `；` ), full-width letters and numbers (such as `Ａ、３`) are "full-width" characters.
+Wide characters are also called "full-width" characters. Chinese characters (such as \textbf{中, 文}), Chinese punctuation (\textbf{，} , \textbf{；} ), full-width letters and numbers (such as \textbf{Ａ、３}) are "full-width" characters.
 
 Each one of these characters represents two narrow characters.
 
 
 
-- Any line that exceeds this limit (`120 narrow symbols`) should be wrapped, as described in the [Newline section]. 
+- Any line that exceeds this limit (\textbf{120 narrow symbols}) should be wrapped, as described in the [Newline section]. 
 
 
 
@@ -1975,7 +2009,7 @@ Each one of these characters represents two narrow characters.
 
 1.	The long URL or long JSON method reference in KDoc.
 
-2.	The `package` and `import` statements.
+2.	The \textbf{package} and \textbf{import} statements.
 
 3.	The command line in the comment, enabling it to be cut and pasted into the shell for use.
 
@@ -1992,7 +2026,7 @@ This section contains the rules and recommendations on using line breaks.
 
 \label{sec:3.6.1}
 
-Each line can have a maximum of one code statement. This recommendation prohibits the use of code with `;` because it decreases code visibility.
+Each line can have a maximum of one code statement. This recommendation prohibits the use of code with \textbf{;} because it decreases code visibility.
 
 
 
@@ -2018,19 +2052,19 @@ val b = ""
 
 
 
-1) Unlike Java, Kotlin allows you not to put a semicolon (`;`) after each statement separated by a newline character.
+1) Unlike Java, Kotlin allows you not to put a semicolon (\textbf{;}) after each statement separated by a newline character.
 
     There should be no redundant semicolon at the end of the lines.
 
  
 
-When a newline character is needed to split the line, it should be placed after such operators as `\&\&`/`||`/`+`/etc. and all infix functions (for example, `xor`).
+When a newline character is needed to split the line, it should be placed after such operators as \textbf{\&\&}/\textbf{||}/\textbf{+}/etc. and all infix functions (for example, \textbf{xor}).
 
-However, the newline character should be placed before operators such as `.`, `?.`, `?:`, and `::`.
+However, the newline character should be placed before operators such as \textbf{.}, \textbf{?.}, \textbf{?:}, and \textbf{::}.
 
 
 
-Note that all comparison operators, such as `==`, `>`, `<`, should not be split.
+Note that all comparison operators, such as \textbf{==}, \textbf{>}, \textbf{<}, should not be split.
 
 
 
@@ -2051,7 +2085,7 @@ Note that all comparison operators, such as `==`, `>`, `<`, should not be split.
 \end{lstlisting}
   
 
-\textbf{Note:} You need to follow the functional style, meaning each function call in a chain with `.` should start at a new line if the chain of functions contains more than one call:
+\textbf{Note:} You need to follow the functional style, meaning each function call in a chain with \textbf{.} should start at a new line if the chain of functions contains more than one call:
 
 \begin{lstlisting}[language=Kotlin]
   val value = otherValue!!
@@ -2062,7 +2096,7 @@ Note that all comparison operators, such as `==`, `>`, `<`, should not be split.
           }
           .size    
 \end{lstlisting}
-\textbf{Note:} The parser prohibits the separation of the `!!` operator from the value it is checking.
+\textbf{Note:} The parser prohibits the separation of the \textbf{!!} operator from the value it is checking.
 
 
 
@@ -2077,17 +2111,17 @@ if (condition) list.map { foo(it) }.filter { bar(it) } else list.drop(1)
 \end{lstlisting}
   
 
-2)	Newlines should be placed after the assignment operator (`=`).
+2)	Newlines should be placed after the assignment operator (\textbf{=}).
 
-3)	In function or class declarations, the name of a function or constructor should not be split by a newline from the opening brace `(`.
+3)	In function or class declarations, the name of a function or constructor should not be split by a newline from the opening brace \textbf{(}.
 
     A brace should be placed immediately after the name without any spaces in declarations or at call sites.
 
-4)	Newlines should be placed right after the comma (`,`).
+4)	Newlines should be placed right after the comma (\textbf{,}).
 
 5)	If a lambda statement contains more than one line in its body, a newline should be placed after an arrow if the lambda statement has explicit parameters.
 
-    If it uses an implicit parameter (`it`), the newline character should be placed after the opening brace (`{`). 
+    If it uses an implicit parameter (\textbf{it}), the newline character should be placed after the opening brace (\textbf{\{}). 
 
     The following examples illustrate this rule:
 
@@ -2204,7 +2238,7 @@ class MyFavouriteVeryLongClassHolder :
 
 Reduce unnecessary blank lines and maintain a compact code size. By reducing unnecessary blank lines, you can display more code on one screen, which improves code readability.
 
-- Blank lines should separate content based on relevance and should be placed between groups of fields, constructors, methods, nested classes, `init` blocks, and objects (see [3.1.2]).
+- Blank lines should separate content based on relevance and should be placed between groups of fields, constructors, methods, nested classes, \textbf{init} blocks, and objects (see [3.1.2]).
 
 - Do not use more than one line inside methods, type definitions, and initialization expressions.
 
@@ -2247,19 +2281,19 @@ Follow the recommendations below for using space to separate keywords:
 
 
 
-1.  Separate keywords (such as `if`, `when`, `for`) from the opening parenthesis with single whitespace.
+1.  Separate keywords (such as \textbf{if}, \textbf{when}, \textbf{for}) from the opening parenthesis with single whitespace.
 
-    The only exception is the `constructor` keyword, which should not be separated from the opening parenthesis.
-
-
-
-2.  Separate keywords like `else` or `try` from the opening brace (`{`) with single whitespace.
-
-    If `else` is used in a ternary-style statement without braces, there should be a single space between `else` and the statement after: `if (condition) foo() else bar()`
+    The only exception is the \textbf{constructor} keyword, which should not be separated from the opening parenthesis.
 
 
 
-3.  Use a \textbf{single} whitespace before all opening braces (`{`). The only exception is the passing of a lambda as a parameter inside parentheses:
+2.  Separate keywords like \textbf{else} or \textbf{try} from the opening brace (\textbf{\{}) with single whitespace.
+
+    If \textbf{else} is used in a ternary-style statement without braces, there should be a single space between \textbf{else} and the statement after: \textbf{if (condition) foo() else bar()}
+
+
+
+3.  Use a \textbf{single} whitespace before all opening braces (\textbf{\{}). The only exception is the passing of a lambda as a parameter inside parentheses:
 
 \begin{lstlisting}[language=Kotlin]
      private fun foo(a: (Int) -> Int, b: Int) {}
@@ -2273,9 +2307,9 @@ Follow the recommendations below for using space to separate keywords:
 
     
 
- - A colon in generic structures with the `where` keyword:  `where T : Type`
+ - A colon in generic structures with the \textbf{where} keyword:  \textbf{where T : Type}
 
- - Arrow in lambdas: `(str: String) -> str.length()`
+ - Arrow in lambdas: \textbf{(str: String) -> str.length()}
 
 
 
@@ -2283,33 +2317,33 @@ Follow the recommendations below for using space to separate keywords:
 
 
 
-- Two colons (`::`) are written without spaces:\
+- Two colons (\textbf{::}) are written without spaces:\
 
-  `Object::toString`
+  \textbf{Object::toString}
 
-- The dot separator (`.`) that stays on the same line with an object name:\
+- The dot separator (\textbf{.}) that stays on the same line with an object name:\
 
-  `object.toString()`
+  \textbf{object.toString()}
 
-- Safe access modifiers `?.` and `!!` that stay on the same line with an object name:\
+- Safe access modifiers \textbf{?.} and \textbf{!!} that stay on the same line with an object name:\
 
-  `object?.toString()`
+  \textbf{object?.toString()}
 
-- Operator `..` for creating ranges:\
+- Operator \textbf{..} for creating ranges:\
 
-  `1..100`
+  \textbf{1..100}
 
 
 
-5.  Use spaces after (`,`), (`:`), and (`;`), except when the symbol is at the end of the line.
+5.  Use spaces after (\textbf{,}), (\textbf{:}), and (\textbf{;}), except when the symbol is at the end of the line.
 
-    However, note that this code style prohibits the use of (`;`) in the middle of a line ([see 3.3.2]).
+    However, note that this code style prohibits the use of (\textbf{;}) in the middle of a line ([see 3.3.2]).
 
     There should be no whitespaces at the end of a line.
 
-    The only scenario where there should be no space after a colon is when the colon is used in the annotation to specify a use-site target (for example, `@param:JsonProperty`).
+    The only scenario where there should be no space after a colon is when the colon is used in the annotation to specify a use-site target (for example, \textbf{@param:JsonProperty}).
 
-    There should be no spaces before `,` , `:` and `;`. 
+    There should be no spaces before \textbf{,} , \textbf{:} and \textbf{;}. 
 
     
 
@@ -2317,7 +2351,7 @@ Follow the recommendations below for using space to separate keywords:
 
     
 
-    - When `:` is used to separate a type and a supertype, including an anonymous object (after object keyword)
+    - When \textbf{:} is used to separate a type and a supertype, including an anonymous object (after object keyword)
 
     - When delegating to a superclass constructor or different constructor of the same class
 
@@ -2336,19 +2370,19 @@ Follow the recommendations below for using space to separate keywords:
 \end{lstlisting}
 
 
-6. There should be \textit{only one space} between the identifier and its type: `list: List<String>`
+6. There should be \textit{only one space} between the identifier and its type: \textbf{list: List<String>}
 
-If the type is nullable, there should be no space before `?`.
+If the type is nullable, there should be no space before \textbf{?}.
 
 
 
-7. When using `[]` operator (`get/set`) there should be \textbf{no} spaces between identifier and `[` : `someList[0]`.
+7. When using \textbf{[]} operator (\textbf{get/set}) there should be \textbf{no} spaces between identifier and \textbf{[} : \textbf{someList[0]}.
 
 
 
 8. There should be no space between a method or constructor name (both at declaration and at call site) and a parenthesis:
 
-   `foo() {}`. Note that this sub-rule is related only to spaces; the rules for whitespaces are described in [see 3.6.2].
+   \textbf{foo() \{\}}. Note that this sub-rule is related only to spaces; the rules for whitespaces are described in [see 3.6.2].
 
     This rule does not prohibit, for example, the following code:
 
@@ -2360,11 +2394,11 @@ fun foo
 \end{lstlisting}
 
 
-9. Never put a space after `(`, `[`, `<` (when used as a bracket in templates) or before `)`, `]`, `>` (when used as a bracket in templates).
+9. Never put a space after \textbf{(}, \textbf{[}, \textbf{<} (when used as a bracket in templates) or before \textbf{)}, \textbf{]}, \textbf{>} (when used as a bracket in templates).
 
 
 
-10. There should be no spaces between a prefix/postfix operator (like `!!` or `++`) and its operand.
+10. There should be no spaces between a prefix/postfix operator (like \textbf{!!} or \textbf{++}) and its operand.
 
 
 
@@ -2387,7 +2421,7 @@ fun foo
 
 
 
-Recommendation: Alignment only looks suitable for `enum class`, where it can be used in table format to improve code readability:
+Recommendation: Alignment only looks suitable for \textbf{enum class}, where it can be used in table format to improve code readability:
 
 \begin{lstlisting}[language=Kotlin]
 enum class Warnings(private val id: Int, private val canBeAutoCorrected: Boolean, private val warn: String) : Rule {
@@ -2423,7 +2457,7 @@ Enum values are separated by a comma and line break, with ';' placed on the new 
 
 
 
-1) The comma and line break characters separate enum values. Put `;` on the new line:
+1) The comma and line break characters separate enum values. Put \textbf{;} on the new line:
 
 \begin{lstlisting}[language=Kotlin]
 enum class Warnings {
@@ -2469,7 +2503,7 @@ enum class TemperatureScale { CELSIUS, FAHRENHEIT }
 
 - The variable value only changes within a fixed range and is defined with the enum type. 
 
-- Avoid comparison with magic numbers of `-1, 0, and 1`; use enums instead.
+- Avoid comparison with magic numbers of \textbf{-1, 0, and 1}; use enums instead.
 
 
 
@@ -2526,13 +2560,13 @@ The member fields of the class should be declared collectively (see [Rule 3.1.2]
 
 
 
-The `when` statement must have an 'else' branch unless the condition variable is enumerated or a sealed type.
+The \textbf{when} statement must have an 'else' branch unless the condition variable is enumerated or a sealed type.
 
-Each `when` statement should contain an `else` statement group, even if it does not contain any code.
+Each \textbf{when} statement should contain an \textbf{else} statement group, even if it does not contain any code.
 
 
 
-\textbf{Exception:} If 'when' statement of the `enum or sealed` type contains all enum values, there is no need to have an "else" branch.
+\textbf{Exception:} If 'when' statement of the \textbf{enum or sealed} type contains all enum values, there is no need to have an "else" branch.
 
 The compiler can issue a warning when it is missing.
 
@@ -2606,7 +2640,7 @@ class SomeClass {
 \end{lstlisting}
 
 
-\textbf{Note}: Use `/*...*/` block comments to enable automatic formatting by IDEs.
+\textbf{Note}: Use \textbf{/*...*/} block comments to enable automatic formatting by IDEs.
 
 
 
@@ -2769,7 +2803,7 @@ The rules of using variables are explained in the below topics.
 
 Floating-point numbers provide a good approximation over a wide range of values, but they cannot produce accurate results in some cases.
 
-Binary floating-point numbers are unsuitable for precise calculations because it is impossible to represent 0.1 or any other negative power of 10 in a `binary representation` with a finite length.
+Binary floating-point numbers are unsuitable for precise calculations because it is impossible to represent 0.1 or any other negative power of 10 in a \textbf{binary representation} with a finite length.
 
 
 
@@ -2781,13 +2815,13 @@ The following code example seems to be obvious:
 \end{lstlisting}
 
 
-However, it will print the following value: `0.8999999999999999`
+However, it will print the following value: \textbf{0.8999999999999999}
 
 
 
-Therefore, for precise calculations (for example, in finance or exact sciences), using such types as `Int`, `Long`, `BigDecimal`are recommended.
+Therefore, for precise calculations (for example, in finance or exact sciences), using such types as \textbf{Int}, \textbf{Long}, \textbf{BigDecimal}are recommended.
 
-The `BigDecimal` type should serve as a good choice.
+The \textbf{BigDecimal} type should serve as a good choice.
 
 
 
@@ -2814,7 +2848,7 @@ Float values containing more than six or seven decimal numbers will be rounded.
 
 \label{sec:4.1.2}
 
-Numeric float type values should not be directly compared with the equality operator (==) or other methods, such as `compareTo()` and `equals()`. Since floating-point numbers involve precision problems in computer representation, it is better to use `BigDecimal` as recommended in [Rule 4.1.1] to make accurate computations and comparisons. The following code describes these problems.
+Numeric float type values should not be directly compared with the equality operator (==) or other methods, such as \textbf{compareTo()} and \textbf{equals()}. Since floating-point numbers involve precision problems in computer representation, it is better to use \textbf{BigDecimal} as recommended in [Rule 4.1.1] to make accurate computations and comparisons. The following code describes these problems.
 
 
 
@@ -2861,13 +2895,13 @@ if (abs(foo - bar) > 1e-6f) {
 
 
 
-Variables with the `val` modifier are immutable (read-only).
+Variables with the \textbf{val} modifier are immutable (read-only).
 
-Using `val` variables instead of `var` variables increases code robustness and readability.
+Using \textbf{val} variables instead of \textbf{var} variables increases code robustness and readability.
 
-This is because `var` variables can be reassigned several times in the business logic.
+This is because \textbf{var} variables can be reassigned several times in the business logic.
 
-However, in some scenarios with loops or accumulators, only `var`s are permitted.
+However, in some scenarios with loops or accumulators, only \textbf{var}s are permitted.
 
 
 
@@ -2908,7 +2942,7 @@ The Kotlin compiler has introduced \href{https://kotlinlang.org/docs/reference/t
 
 Also, Kotlin 1.3 introduced \href{https://kotlinlang.org/docs/reference/whatsnew13.html#contracts}{Contracts} that provide enhanced logic for smart-cast.
 
-Contracts are used and are very stable in `stdlib`, for example:
+Contracts are used and are very stable in \textbf{stdlib}, for example:
 
  
 
@@ -2958,9 +2992,9 @@ Type aliases provide alternative names for existing types.
 
 If the type name is too long, you can replace it with a shorter name, which helps to shorten long generic types.
 
-For example, code looks much more readable if you introduce a `typealias` instead of a long chain of nested generic types.
+For example, code looks much more readable if you introduce a \textbf{typealias} instead of a long chain of nested generic types.
 
-We recommend using a `typealias` if the type contains \textbf{more than two} nested generic types and is longer than \textbf{25 chars}.
+We recommend using a \textbf{typealias} if the type contains \textbf{more than two} nested generic types and is longer than \textbf{25 chars}.
 
 
 
@@ -3001,7 +3035,7 @@ Kotlin is declared as a null-safe programming language. However, to achieve comp
 
 \label{sec:4.3.1}
 
-To avoid `NullPointerException` and help the compiler prevent Null Pointer Exceptions, avoid using nullable types (with `?` symbol).
+To avoid \textbf{NullPointerException} and help the compiler prevent Null Pointer Exceptions, avoid using nullable types (with \textbf{?} symbol).
 
 
 
@@ -3019,11 +3053,11 @@ val a: Int = 0
 \end{lstlisting}
 
 
-Nevertheless, when using Java libraries extensively, you have to use nullable types and enrich the code with `!!` and `?` symbols.
+Nevertheless, when using Java libraries extensively, you have to use nullable types and enrich the code with \textbf{!!} and \textbf{?} symbols.
 
 Avoid using nullable types for Kotlin stdlib (declared in \href{https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/}{official documentation}). 
 
-Try to use initializers for empty collections. For example, if you want to initialize a list instead of `null`, use `emptyList()`.
+Try to use initializers for empty collections. For example, if you want to initialize a list instead of \textbf{null}, use \textbf{emptyList()}.
 
 
 
@@ -3082,15 +3116,15 @@ val myVariable: Map<Int, String> = emptyMap()
 
 
 
-Try to avoid explicit null checks (explicit comparison with `null`) 
+Try to avoid explicit null checks (explicit comparison with \textbf{null}) 
 
 Kotlin is declared as \href{https://kotlinlang.org/docs/reference/null-safety.html}{Null-safe} language.
 
-However, Kotlin architects wanted Kotlin to be fully compatible with Java; that's why the `null` keyword was also introduced in Kotlin. 
+However, Kotlin architects wanted Kotlin to be fully compatible with Java; that's why the \textbf{null} keyword was also introduced in Kotlin. 
 
 
 
-There are several code-structures that can be used in Kotlin to avoid null-checks. For example: `?:`,  `.let {}`, `.also {}`, e.t.c
+There are several code-structures that can be used in Kotlin to avoid null-checks. For example: \textbf{?:},  \textbf{.let \{\}}, \textbf{.also \{\}}, e.t.c
 
 
 
@@ -3159,7 +3193,7 @@ myVar?.let {
 
 
 
-In the case of complex expressions, such as multiple `else-if` structures or long conditional statements, there is common sense to use explicit comparison with `null`.
+In the case of complex expressions, such as multiple \textbf{else-if} structures or long conditional statements, there is common sense to use explicit comparison with \textbf{null}.
 
 
 
@@ -3181,7 +3215,7 @@ if (myVar == null || otherValue == 5 && isValid) {}
 \end{lstlisting}
 
 
-Please also note, that instead of using `require(a != null)` with a not null check - you should use a special Kotlin function called `requireNotNull(a)`.
+Please also note, that instead of using \textbf{require(a != null)} with a not null check - you should use a special Kotlin function called \textbf{requireNotNull(a)}.
 
 
 
@@ -3219,7 +3253,7 @@ The only exceptions to this are state machines.
 
 Kotlin is \href{https://www.slideshare.net/abreslav/whos-more-functional-kotlin-groovy-scala-or-java}{designed} to support and encourage functional programming, featuring the corresponding built-in mechanisms.
 
-Also, it supports standard collections and sequences feature methods that enable functional programming (for example, `apply`, `with`, `let`, and `run`), Kotlin Higher-Order functions, function types, lambdas, and default function arguments.
+Also, it supports standard collections and sequences feature methods that enable functional programming (for example, \textbf{apply}, \textbf{with}, \textbf{let}, and \textbf{run}), Kotlin Higher-Order functions, function types, lambdas, and default function arguments.
 
 As [previously discussed], Kotlin supports and encourages the use of immutable types, which in turn motivates programmers to write pure functions that avoid side effects and have a corresponding output for specific input. 
 
@@ -3310,6 +3344,39 @@ fun foo() {
     println("Nested Output: ${nested()}") 
 } 
 \end{lstlisting}
+\subsubsection*{\textbf{5.1.4 Negated function calls}}
+\leavevmode\newline
+
+\label{sec:5.1.4}
+
+Don't use negated function calls if it can be replaced with negated version of this function
+
+
+
+\textbf{Invalid example}:
+
+\begin{lstlisting}[language=Kotlin]
+fun foo() { 
+    val list = listOf(1, 2, 3)
+  
+    if (!list.isEmpty()) {
+        // Some cool logic
+    }
+} 
+\end{lstlisting}
+
+
+\textbf{Valid example}:
+
+\begin{lstlisting}[language=Kotlin]
+fun foo() { 
+    val list = listOf(1, 2, 3)
+  
+    if (list.isNotEmpty()) {
+        // Some cool logic
+    }
+} 
+\end{lstlisting}
 
 
 \subsection*{\textbf{5.2 Function arguments}}
@@ -3351,7 +3418,7 @@ println("hey")
 
 
 
-A long argument list is a \href{https://en.wikipedia.org/wiki/Code_smell}{code smell} that leads to less reliable code.
+A long argument list is a \href{https://en.wikipedia.org/wiki/Code\_smell}{code smell} that leads to less reliable code.
 
 It is recommended to reduce the number of parameters. Having \textbf{more than five} parameters leads to difficulties in maintenance and conflicts merging.
 
@@ -3442,9 +3509,9 @@ class Test private constructor(var a: Int) {
 
 \label{sec:6.1.2}
 
-Some people say that the data class is a code smell. However, if you need to use it (which makes your code more simple), you can utilize the Kotlin `data class`. The main purpose of this class is to hold data,
+Some people say that the data class is a code smell. However, if you need to use it (which makes your code more simple), you can utilize the Kotlin \textbf{data class}. The main purpose of this class is to hold data,
 
-but also `data class` will automatically generate several useful methods:
+but also \textbf{data class} will automatically generate several useful methods:
 
 - equals()/hashCode() pair;
 
@@ -3456,7 +3523,7 @@ but also `data class` will automatically generate several useful methods:
 
 
 
-Therefore, instead of using `normal` classes:
+Therefore, instead of using \textbf{normal} classes:
 
 
 
@@ -3553,7 +3620,7 @@ class Test {
 
 \label{sec:6.1.4}
 
-Several init blocks are redundant and generally should not be used in your class. The primary constructor cannot contain any code. That is why Kotlin has introduced `init` blocks.
+Several init blocks are redundant and generally should not be used in your class. The primary constructor cannot contain any code. That is why Kotlin has introduced \textbf{init} blocks.
 
 These blocks store the code to be run during the class initialization.
 
@@ -3561,9 +3628,9 @@ Kotlin allows writing multiple initialization blocks executed in the same order 
 
 Even when you follow (rule 3.2)[\#r3.2], this makes your code less readable as the programmer needs to keep in mind all init blocks and trace the execution of the code.
 
-Therefore, you should try to use a single `init` block to reduce the code's complexity. If you need to do some logging or make some calculations before the class property assignment, you can use powerful functional programming. This will reduce the possibility of the error if your `init` blocks' order is accidentally changed and
+Therefore, you should try to use a single \textbf{init} block to reduce the code's complexity. If you need to do some logging or make some calculations before the class property assignment, you can use powerful functional programming. This will reduce the possibility of the error if your \textbf{init} blocks' order is accidentally changed and
 
-make the code logic more coupled. It is always enough to use one `init` block to implement your idea in Kotlin.
+make the code logic more coupled. It is always enough to use one \textbf{init} block to implement your idea in Kotlin.
 
 
 
@@ -3600,9 +3667,9 @@ class YourClass(var name: String) {
 \end{lstlisting}
 
 
-The `init` block was not added to Kotlin to help you initialize your properties; it is needed for more complex tasks. 
+The \textbf{init} block was not added to Kotlin to help you initialize your properties; it is needed for more complex tasks. 
 
-Therefore if the `init` block contains only assignments of variables - move it directly to properties to be correctly initialized near the declaration.
+Therefore if the \textbf{init} block contains only assignments of variables - move it directly to properties to be correctly initialized near the declaration.
 
 In some cases, this rule can be in clash with [6.1.1], but that should not stop you.
 
@@ -3660,7 +3727,7 @@ class Square() : Rectangle() {
 
 Abstract classes are used to force a developer to implement some of its parts in their inheritors.
 
-When the abstract class has no abstract methods, it was set `abstract` incorrectly and can be converted to a regular class.
+When the abstract class has no abstract methods, it was set \textbf{abstract} incorrectly and can be converted to a regular class.
 
 
 
@@ -3716,7 +3783,7 @@ val table: Map<String, Int>
 \end{lstlisting}
 
 
-In this case, the name of the backing property (`_table`) should be the same as the name of the real property (`table`) but should have an underscore (`_`) prefix.
+In this case, the name of the backing property (\textbf{\_table}) should be the same as the name of the real property (\textbf{table}) but should have an underscore (\textbf{\_}) prefix.
 
 It is one of the exceptions from the [identifier names rule]
 
@@ -3729,7 +3796,7 @@ It is one of the exceptions from the [identifier names rule]
 
 Kotlin has a perfect mechanism of \href{https://kotlinlang.org/docs/reference/properties.html#properties-and-fields}{properties}.
 
-Kotlin compiler automatically generates `get` and `set` methods for properties and can override them.
+Kotlin compiler automatically generates \textbf{get} and \textbf{set} methods for properties and can override them.
 
 
 
@@ -3748,11 +3815,11 @@ class A {
 \end{lstlisting}
 
 
-From the callee code, these methods look like access to this property: `A().isEmpty = true` for setter and `A().isEmpty` for getter.
+From the callee code, these methods look like access to this property: \textbf{A().isEmpty = true} for setter and \textbf{A().isEmpty} for getter.
 
 
 
-However, when `get` and `set` are overridden, it  isn't very clear for a developer who uses this particular class. 
+However, when \textbf{get} and \textbf{set} are overridden, it  isn't very clear for a developer who uses this particular class. 
 
 The developer expects to get the property value but receives some unknown value and some extra side-effect hidden by the custom getter/setter. 
 
@@ -3779,7 +3846,7 @@ class A {
 \end{lstlisting}
 
 
-\textbf{Exception:} `Private setters` are only exceptions that are not prohibited by this rule.
+\textbf{Exception:} \textbf{Private setters} are only exceptions that are not prohibited by this rule.
 
 
 
@@ -3790,7 +3857,7 @@ class A {
 
 If you ignored [recommendation 6.1.8], be careful with using the name of the property in your custom getter/setter
 
-as it can accidentally cause a recursive call and a `StackOverflow Error`. Use the `field` keyword instead.
+as it can accidentally cause a recursive call and a \textbf{StackOverflow Error}. Use the \textbf{field} keyword instead.
 
 
 
@@ -3964,7 +4031,7 @@ fun main() { printClassName(B()) }
 
 \label{sec:6.3}
 
-An `Interface` in Kotlin can contain declarations of abstract methods, as well as method implementations. What makes them different from abstract classes is that interfaces cannot store state.
+An \textbf{Interface} in Kotlin can contain declarations of abstract methods, as well as method implementations. What makes them different from abstract classes is that interfaces cannot store state.
 
 They can have properties, but these need to be abstract or to provide accessor implementations.
 
