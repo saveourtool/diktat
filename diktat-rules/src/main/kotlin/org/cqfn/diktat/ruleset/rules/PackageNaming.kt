@@ -33,7 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger
  * need to support autofixing of directories in the same way as package is named. For example if we have package name:
  * package a.b.c.D -> then class D should be placed in a/b/c/ directories
  */
-@Suppress("ForbiddenComment")
+@Suppress("ForbiddenComment", "TOO_MANY_LINES_IN_LAMBDA")
 class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-naming") {
     private var isFixMode: Boolean = false
     private lateinit var emitWarn: EmitType
