@@ -620,7 +620,7 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
     @Tag(WarningNames.WRONG_WHITESPACE)
     fun `check whitespaces around braces in lambda example - good`() {
         lintMethod(
-                """
+            """
                 |fun foo() {
                 |    list.map { it.text }
                 |}
@@ -632,13 +632,13 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
     @Tag(WarningNames.WRONG_WHITESPACE)
     fun `check whitespaces around braces in lambda example - bad`() {
         lintMethod(
-                """
+            """
                 |fun foo() {
                 |    list.map {it.text}
                 |}
             """.trimMargin(),
-                LintError(2, 14, ruleId, "${WRONG_WHITESPACE.warnText()} there should be a whitespace after {", true),
-                LintError(2, 22, ruleId, "${WRONG_WHITESPACE.warnText()} there should be a whitespace before }", true)
+            LintError(2, 14, ruleId, "${WRONG_WHITESPACE.warnText()} there should be a whitespace after {", true),
+            LintError(2, 22, ruleId, "${WRONG_WHITESPACE.warnText()} there should be a whitespace before }", true)
         )
     }
 }

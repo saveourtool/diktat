@@ -35,7 +35,7 @@ class LambdaParameterOrder(private val configRules: List<RulesConfig>) : Rule("l
     private fun checkArguments(node: ASTNode) {
         val funArguments = (node.psi as KtFunction).valueParameters
         val sortArguments = funArguments.sortedBy { it.typeReference?.node?.hasChildOfType(FUNCTION_TYPE) }
-        funArguments.filterIndexed {index, ktParameter -> ktParameter != sortArguments[index] }.ifNotEmpty {
+        funArguments.filterIndexed { index, ktParameter -> ktParameter != sortArguments[index] }.ifNotEmpty {
             LAMBDA_IS_NOT_LAST_PARAMETER.warn(configRules, emitWarn, isFixMode, node.findChildByType(IDENTIFIER)!!.text,
                 first().node.startOffset, node)
         }

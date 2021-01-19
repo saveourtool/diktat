@@ -207,8 +207,8 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
         // note: the conditions in the following `if`s cannot be collapsed into simple conjunctions
         if (isFromLambdaAsArgument) {
             val isFirstArgument = node
-                    .parent({ it.elementType == VALUE_ARGUMENT })
-                    .let { it?.prevSibling { prevNode -> prevNode.elementType == COMMA } == null }
+                .parent({ it.elementType == VALUE_ARGUMENT })
+                .let { it?.prevSibling { prevNode -> prevNode.elementType == COMMA } == null }
 
             // If it is lambda, then we don't force it to be on newline or same line
             if (numWhiteSpace != 0 && isFirstArgument) {
