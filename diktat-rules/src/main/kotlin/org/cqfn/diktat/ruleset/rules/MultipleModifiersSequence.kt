@@ -59,19 +59,19 @@ class MultipleModifiersSequence(private val configRules: List<RulesConfig>) : Ru
         node
             .getChildren(null)
             .filterIndexed { index, astNode -> astNode.elementType == ANNOTATION_ENTRY && index > firstModifierIndex }
-            .forEach {
+            .forEach { astNode ->
                 WRONG_MULTIPLE_MODIFIERS_ORDER.warnAndFix(configRules, emitWarn, isFixMode,
-                    "${it.text} annotation should be before all modifiers",
-                    it.startOffset, it) {
-                    val spaceBefore = it.treePrev
-                    node.removeChild(it)
+                    "${astNode.text} annotation should be before all modifiers",
+                    astNode.startOffset, astNode) {
+                    val spaceBefore = astNode.treePrev
+                    node.removeChild(astNode)
                     if (spaceBefore != null && spaceBefore.elementType == WHITE_SPACE) {
                         node.removeChild(spaceBefore)
                         node.addChild(spaceBefore, node.firstChildNode)
-                        node.addChild(it.clone() as ASTNode, spaceBefore)
+                        node.addChild(astNode.clone() as ASTNode, spaceBefore)
                     } else {
                         node.addChild(PsiWhiteSpaceImpl(" "), node.getChildren(null).first())
-                        node.addChild(it.clone() as ASTNode, node.getChildren(null).first())
+                        node.addChild(astNode.clone() as ASTNode, node.getChildren(null).first())
                     }
                 }
             }

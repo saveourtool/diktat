@@ -110,6 +110,7 @@
                         </goals>
                         <configuration>
                             <sourceDirs>
+                                <!-- For some weird reason if main sourceset is removed from here, syntax highlighting in idea an ability to launch tests is broken -->
                                 <source>src/main/kotlin</source>
                                 <source>src/test/kotlin</source>
                                 <source>${project.basedir}/src/main/kotlin</source>
