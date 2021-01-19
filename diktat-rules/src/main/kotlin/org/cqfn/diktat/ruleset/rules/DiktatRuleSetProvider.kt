@@ -27,6 +27,7 @@ import org.cqfn.diktat.ruleset.rules.kdoc.KdocMethods
 
 import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.RuleSetProvider
+import org.cqfn.diktat.ruleset.rules.classes.InlineClassesRule
 import org.jetbrains.kotlin.org.jline.utils.Levenshtein
 import org.slf4j.LoggerFactory
 
@@ -111,6 +112,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
             ::CustomGetterSetterRule,
             ::CompactInitialization,
             // other rules
+            ::InlineClassesRule,
             ::CheckInverseMethodRule,
             ::StatelessClassesRule,
             ::ImplicitBackingPropertyRule,
