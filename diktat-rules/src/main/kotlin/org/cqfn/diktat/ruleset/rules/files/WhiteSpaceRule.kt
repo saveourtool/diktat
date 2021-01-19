@@ -168,9 +168,7 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
         if (node.treeParent.elementType == FUNCTION_LITERAL &&
                 !node.treePrev.isWhiteSpace() &&
                 node.treePrev.elementType == BLOCK &&
-                node.treePrev.text.isEmpty() &&
-                node.treePrev.treePrev != null &&
-                !node.treePrev.treePrev.isWhiteSpace()) {
+                node.treePrev.text.isNotEmpty()) {
             WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "there should be a whitespace before }", node.startOffset, node) {
                 node.treeParent.addChild(PsiWhiteSpaceImpl(" "), node)
             }
