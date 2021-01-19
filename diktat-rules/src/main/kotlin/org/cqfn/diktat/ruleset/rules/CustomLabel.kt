@@ -30,7 +30,10 @@ class CustomLabel(private val configRules: List<RulesConfig>) : Rule("custom-lab
         isFixMode = autoCorrect
 
         if (node.elementType == LABEL_QUALIFIER && node.text !in labels) {
-            val nestedCount = node.parents().count { it.elementType in nestedParent || (it.elementType == CALL_EXPRESSION && it.findChildByType(REFERENCE_EXPRESSION)?.text in forEachReference ) }
+            val nestedCount = node.parents().count {
+                it.elementType in nestedParent ||
+                        (it.elementType == CALL_EXPRESSION && it.findChildByType(REFERENCE_EXPRESSION)?.text in forEachReference)
+            }
             if (nestedCount == 1) {
                 CUSTOM_LABEL.warn(configRules, emitWarn, isFixMode, node.text, node.startOffset, node)
             }

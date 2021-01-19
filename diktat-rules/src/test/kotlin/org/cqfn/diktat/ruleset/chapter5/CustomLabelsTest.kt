@@ -10,14 +10,14 @@ import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class CustomLabelsTest: LintTestBase(::CustomLabel) {
+class CustomLabelsTest : LintTestBase(::CustomLabel) {
     private val ruleId = "$DIKTAT_RULE_SET_ID:custom-label"
 
     @Test
     @Tag(WarningNames.CUSTOM_LABEL)
     fun `should trigger custom label`() {
         lintMethod(
-                """
+            """
                     fun foo() {
                         run qwe@ {
                             q.forEach {
@@ -54,8 +54,8 @@ class CustomLabelsTest: LintTestBase(::CustomLabel) {
                         }
                     }
             """.trimMargin(),
-                LintError(4, 39, ruleId, "${CUSTOM_LABEL.warnText()} @qwe", false),
-                LintError(20, 34, ruleId, "${CUSTOM_LABEL.warnText()} @qq", false)
+            LintError(4, 39, ruleId, "${CUSTOM_LABEL.warnText()} @qwe", false),
+            LintError(20, 34, ruleId, "${CUSTOM_LABEL.warnText()} @qq", false)
         )
     }
 }
