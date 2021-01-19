@@ -33,7 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger
  * need to support autofixing of directories in the same way as package is named. For example if we have package name:
  * package a.b.c.D -> then class D should be placed in a/b/c/ directories
  */
-@Suppress("ForbiddenComment")
+@Suppress("ForbiddenComment", "TOO_MANY_LINES_IN_LAMBDA")
 class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-naming") {
     private var isFixMode: Boolean = false
     private lateinit var emitWarn: EmitType
@@ -46,32 +46,30 @@ class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-
         emitWarn = emit
 
         val configuration by configRules.getCommonConfiguration()
-        domainName = configuration.also {
-            if (it.isDefault && visitorCounter.incrementAndGet() == 1) {
-                log.error("Not able to find an external configuration for domain name in the common" +
-                        " configuration (is it missing in yml config?)")
+        configuration.domainName?.let {
+            domainName = it
+            if (node.elementType == PACKAGE_DIRECTIVE) {
+                val filePath = node.getRootNode().getFilePath()
+                // calculating package name based on the directory where the file is placed
+                val realPackageName = calculateRealPackageName(filePath)
+
+                // if node isLeaf - this means that there is no package name declared
+                if (node.isLeaf() && !filePath.isKotlinScript()) {
+                    warnAndFixMissingPackageName(node, realPackageName, filePath)
+                    return
+                }
+
+                // getting all identifiers from existing package name into the list like [org, diktat, project]
+                val wordsInPackageName = node.findAllNodesWithSpecificType(IDENTIFIER)
+
+                // no need to check that packageIdentifiers is empty, because in this case parsing will fail
+                checkPackageName(wordsInPackageName, node)
+                // fix in checkFilePathMatchesWithPackageName is much more aggressive than fixes in checkPackageName, they can conflict
+                checkFilePathMatchesWithPackageName(wordsInPackageName, realPackageName, node)
             }
-        }
-            .domainName
-
-        if (node.elementType == PACKAGE_DIRECTIVE) {
-            val filePath = node.getRootNode().getFilePath()
-            // calculating package name based on the directory where the file is placed
-            val realPackageName = calculateRealPackageName(filePath)
-
-            // if node isLeaf - this means that there is no package name declared
-            if (node.isLeaf() && !filePath.isKotlinScript()) {
-                warnAndFixMissingPackageName(node, realPackageName, filePath)
-                return
-            }
-
-            // getting all identifiers from existing package name into the list like [org, diktat, project]
-            val wordsInPackageName = node.findAllNodesWithSpecificType(IDENTIFIER)
-
-            // no need to check that packageIdentifiers is empty, because in this case parsing will fail
-            checkPackageName(wordsInPackageName, node)
-            // fix in checkFilePathMatchesWithPackageName is much more aggressive than fixes in checkPackageName, they can conflict
-            checkFilePathMatchesWithPackageName(wordsInPackageName, realPackageName, node)
+        } ?: if (visitorCounter.incrementAndGet() == 1) {
+            log.error("Not able to find an external configuration for domain" +
+                    " name in the common configuration (is it missing in yml config?)")
         }
     }
 
