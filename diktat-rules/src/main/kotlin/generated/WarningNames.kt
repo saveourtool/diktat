@@ -86,13 +86,13 @@ public object WarningNames {
     public const val KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT: String =
             "KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT"
 
+    public const val KDOC_CONTAINS_DATE_OR_AUTHOR: String = "KDOC_CONTAINS_DATE_OR_AUTHOR"
+
     public const val HEADER_WRONG_FORMAT: String = "HEADER_WRONG_FORMAT"
 
     public const val HEADER_MISSING_OR_WRONG_COPYRIGHT: String = "HEADER_MISSING_OR_WRONG_COPYRIGHT"
 
     public const val WRONG_COPYRIGHT_YEAR: String = "WRONG_COPYRIGHT_YEAR"
-
-    public const val HEADER_CONTAINS_DATE_OR_AUTHOR: String = "HEADER_CONTAINS_DATE_OR_AUTHOR"
 
     public const val HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE: String =
             "HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE"
@@ -142,6 +142,8 @@ public object WarningNames {
     public const val REDUNDANT_SEMICOLON: String = "REDUNDANT_SEMICOLON"
 
     public const val WRONG_NEWLINES: String = "WRONG_NEWLINES"
+
+    public const val COMPLEX_EXPRESSION: String = "COMPLEX_EXPRESSION"
 
     public const val STRING_CONCATENATION: String = "STRING_CONCATENATION"
 
@@ -199,6 +201,8 @@ public object WarningNames {
     public const val WRONG_OVERLOADING_FUNCTION_ARGUMENTS: String =
             "WRONG_OVERLOADING_FUNCTION_ARGUMENTS"
 
+    public const val RUN_BLOCKING_INSIDE_ASYNC: String = "RUN_BLOCKING_INSIDE_ASYNC"
+
     public const val SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY: String =
             "SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY"
 
@@ -229,4 +233,8 @@ public object WarningNames {
     public const val AVOID_USING_UTILITY_CLASS: String = "AVOID_USING_UTILITY_CLASS"
 
     public const val OBJECT_IS_PREFERRED: String = "OBJECT_IS_PREFERRED"
+
+    public const val INVERSE_FUNCTION_PREFERRED: String = "INVERSE_FUNCTION_PREFERRED"
+
+    public const val TOO_MANY_LINES_IN_LAMBDA: String = "TOO_MANY_LINES_IN_LAMBDA"
 }

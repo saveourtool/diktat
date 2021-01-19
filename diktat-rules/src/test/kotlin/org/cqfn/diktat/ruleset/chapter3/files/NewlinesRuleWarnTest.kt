@@ -1,6 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter3.files
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ruleset.constants.Warnings.COMPLEX_EXPRESSION
 import org.cqfn.diktat.ruleset.constants.Warnings.REDUNDANT_SEMICOLON
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_NEWLINES
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
@@ -11,6 +12,7 @@ import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.Tags
 import org.junit.jupiter.api.Test
 
 @Suppress("LargeClass")
@@ -907,6 +909,22 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
 
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
+    fun `test for not first prefix`() {
+        lintMethod(
+            """
+                |fun foo() {
+                |   a().b!!.c()
+                |   a().b.c()!!
+                |}
+            """.trimMargin(),
+            LintError(2, 11, ruleId, "$functionalStyleWarn .", true),
+            LintError(3, 9, ruleId, "$functionalStyleWarn .", true),
+            rulesConfigList = rulesConfigListShort
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
     fun `test for null safety several lines`() {
         lintMethod(
             """
@@ -952,6 +970,41 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |       ?: boo
                 |}
             """.trimMargin(),
+            rulesConfigList = rulesConfigListShort
+        )
+    }
+
+    @Test
+    @Tags(Tag(WarningNames.WRONG_NEWLINES), Tag(WarningNames.COMPLEX_EXPRESSION))
+    fun `complex expression in condition`() {
+        lintMethod(
+            """
+                |fun foo() {
+                |   if(a.b.c) {}
+                |   while(a?.b?.c) {}
+                |   when(a.b!!.c) {}
+                |   goo(a?.b.c)
+                |}
+            """.trimMargin(),
+            LintError(2, 10, ruleId, "${COMPLEX_EXPRESSION.warnText()} .", false),
+            LintError(3, 14, ruleId, "${COMPLEX_EXPRESSION.warnText()} ?.", false),
+            LintError(4, 14, ruleId, "${COMPLEX_EXPRESSION.warnText()} .", false),
+            LintError(5, 12, ruleId, "${COMPLEX_EXPRESSION.warnText()} .", false),
+            rulesConfigList = rulesConfigListShort
+        )
+    }
+
+    @Test
+    @Tags(Tag(WarningNames.WRONG_NEWLINES), Tag(WarningNames.COMPLEX_EXPRESSION))
+    fun `complex expression in condition with double warnings`() {
+        lintMethod(
+            """
+                |fun foo() {
+                |   if(a().b().c()) {}
+                |}
+            """.trimMargin(),
+            LintError(2, 14, ruleId, "${COMPLEX_EXPRESSION.warnText()} .", false),
+            LintError(2, 14, ruleId, "$functionalStyleWarn .", true),
             rulesConfigList = rulesConfigListShort
         )
     }

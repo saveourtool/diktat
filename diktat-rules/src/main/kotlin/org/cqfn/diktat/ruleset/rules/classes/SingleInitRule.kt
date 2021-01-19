@@ -106,11 +106,11 @@ class SingleInitRule(private val configRule: List<RulesConfig>) : Rule("multiple
                         !(property.psi as KtProperty).hasBody() && assignments.size == 1
                     }
                     .takeIf { it.isNotEmpty() }
-                    ?.let {
+                    ?.let { map ->
                         Warnings.MULTIPLE_INIT_BLOCKS.warnAndFix(configRule, emitWarn, isFixMode,
                             "`init` block has assignments that can be moved to declarations", initBlock.startOffset, initBlock
                         ) {
-                            it.forEach { (property, assignments) ->
+                            map.forEach { (property, assignments) ->
                                 val assignment = assignments.single()
                                 property.addChild(PsiWhiteSpaceImpl(" "), null)
                                 property.addChild(LeafPsiElement(EQ, "="), null)
