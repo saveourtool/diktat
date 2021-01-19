@@ -165,7 +165,12 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
     }
 
     private fun handleRbrace(node: ASTNode) {
-        if (node.treeParent.elementType == FUNCTION_LITERAL && !node.treePrev.isWhiteSpace()) {
+        if (node.treeParent.elementType == FUNCTION_LITERAL &&
+                !node.treePrev.isWhiteSpace() &&
+                node.treePrev.elementType == BLOCK &&
+                node.treePrev.text.isEmpty() &&
+                node.treePrev.treePrev != null &&
+                !node.treePrev.treePrev.isWhiteSpace()) {
             WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "there should be a whitespace before }", node.startOffset, node) {
                 node.treeParent.addChild(PsiWhiteSpaceImpl(" "), node)
             }

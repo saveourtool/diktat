@@ -641,4 +641,18 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
             LintError(2, 22, ruleId, "${WRONG_WHITESPACE.warnText()} there should be a whitespace before }", true)
         )
     }
+
+    @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
+    fun `should not trigger on braces with empty body`() {
+        lintMethod(
+                """
+                |val project = KotlinCoreEnvironment.createForProduction(
+                |   Disposable { },
+                |   compilerConfiguration,
+                |   EnvironmentConfigFiles.JVM_CONFIG_FILES
+                |).project
+            """.trimMargin()
+        )
+    }
 }
