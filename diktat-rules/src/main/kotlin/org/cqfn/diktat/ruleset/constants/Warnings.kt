@@ -134,6 +134,7 @@ enum class Warnings(
     WRONG_OVERLOADING_FUNCTION_ARGUMENTS(false, "5.2.3", "use default argument instead of function overloading"),
     RUN_BLOCKING_INSIDE_ASYNC(false, "5.2.4", "avoid using runBlocking in asynchronous code"),
     TOO_MANY_LINES_IN_LAMBDA(false, "5.2.5", "long lambdas should have a parameter name instead of it"),
+    CUSTOM_LABEL(false, "5.2.6", "avoid using expression with custom label"),
 
     // ======== chapter 6 ========
     SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY(true, "6.1.1", "if a class has single constructor, it should be converted to a primary constructor"),
