@@ -7,6 +7,7 @@ import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
@@ -57,6 +58,56 @@ class InlineClassesWarnTest : LintTestBase(::InlineClassesRule) {
             """
                 |abstract class Some {
                 |   val config = Config()
+                |}
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.INLINE_CLASS_CAN_BE_USED)
+    fun `should trigger on class with val prop in constructor`() {
+        lintMethod(
+            """
+                |class Some(val anything: Int) {
+                |
+                |}
+            """.trimMargin(),
+            LintError(1, 1, ruleId, "${INLINE_CLASS_CAN_BE_USED.warnText()} class Some", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.INLINE_CLASS_CAN_BE_USED)
+    fun `should not trigger on class with var prop #1`() {
+        lintMethod(
+            """
+                |class Some(var anything: Int) {
+                |
+                |}
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.INLINE_CLASS_CAN_BE_USED)
+    fun `should not trigger on class with var prop #2`() {
+        lintMethod(
+                """
+                |class Some {
+                |   var some = 3
+                |}
+            """.trimMargin()
+        )
+    }
+
+    @Disabled
+    @Test
+    @Tag(WarningNames.INLINE_CLASS_CAN_BE_USED)
+    fun `should not trigger on class that extends class or interface`() {
+        lintMethod(
+                """
+                |class Some : Any {
+                |   val some = 3
                 |}
             """.trimMargin()
         )
