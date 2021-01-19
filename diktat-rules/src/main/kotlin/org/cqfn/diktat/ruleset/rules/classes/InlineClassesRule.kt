@@ -40,8 +40,9 @@ class InlineClassesRule(private val configRule: List<RulesConfig>) : Rule("inlin
     }
 
     private fun handleClasses(classPsi: KtClass) {
+        // Fixme: for now we can't understand whether it extends class or interface
         if (hasValidProperties(classPsi)
-                && !classPsi.node.hasChildOfType(SUPER_TYPE_LIST) // Fixme: for now we can't understand whether it extends class or interface
+                && !classPsi.node.hasChildOfType(SUPER_TYPE_LIST)
                 && classPsi.node.getFirstChildWithType(MODIFIER_LIST)?.getChildren(null)?.all { it.elementType in goodModifiers } != false) {
             INLINE_CLASS_CAN_BE_USED.warnAndFix(configRule, emitWarn, isFixMode, "class ${classPsi.name}", classPsi.node.startOffset, classPsi.node) {
                 // Fixme: since it's an experimental feature we shouldn't do fixer
