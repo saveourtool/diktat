@@ -20,8 +20,9 @@ open class DiktatExtension {
 
     /**
      * Path to diktat yml config file. Can be either absolute or relative to project's root directory.
+     * Default value: `diktat-analysis.yml` in rootDir.
      */
-    var diktatConfigFile: File = File("diktat-analysis.yml")
+    lateinit var diktatConfigFile: File
 
     /**
      * Paths that will be excluded from diktat run
