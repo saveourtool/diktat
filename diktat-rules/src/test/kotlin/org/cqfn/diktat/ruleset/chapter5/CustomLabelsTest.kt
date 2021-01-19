@@ -29,21 +29,11 @@ class CustomLabelsTest : LintTestBase(::CustomLabel) {
                         }
                         for(i: Int in q) {
                             println(i)
-                            break
-                        }
-                        for(i: Int in q) {
-                            println(i)
                             break@loop
                         }
                         qq@ for(i: Int in q) {
                             println(i)
                             break@qq
-                        }
-                        qq@ for(i: Int in q) {
-                            for (j: Int in q) {
-                                println(i)
-                                break@qq
-                            }
                         }
                         q.run {
                             it.map {
@@ -55,7 +45,24 @@ class CustomLabelsTest : LintTestBase(::CustomLabel) {
                     }
             """.trimMargin(),
             LintError(4, 39, ruleId, "${CUSTOM_LABEL.warnText()} @qwe", false),
-            LintError(20, 34, ruleId, "${CUSTOM_LABEL.warnText()} @qq", false)
+            LintError(16, 34, ruleId, "${CUSTOM_LABEL.warnText()} @qq", false)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.CUSTOM_LABEL)
+    fun `should not trigger custom label in nested expression`() {
+        lintMethod(
+            """
+                fun foo() {
+                    qq@ for(i: Int in q) {
+                        for (j: Int in q) {
+                            println(i)
+                            break@qq
+                        }
+                    }
+                }
+            """.trimMargin()
         )
     }
 }
