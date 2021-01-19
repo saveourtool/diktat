@@ -24,7 +24,6 @@ class InlineClassesWarnTest : LintTestBase(::InlineClassesRule) {
         )
     }
 
-
     @Test
     @Tag(WarningNames.INLINE_CLASS_CAN_BE_USED)
     fun `should trigger on regular class`() {
@@ -92,7 +91,7 @@ class InlineClassesWarnTest : LintTestBase(::InlineClassesRule) {
     @Tag(WarningNames.INLINE_CLASS_CAN_BE_USED)
     fun `should not trigger on class with var prop #2`() {
         lintMethod(
-                """
+            """
                 |class Some {
                 |   var some = 3
                 |}
@@ -105,7 +104,7 @@ class InlineClassesWarnTest : LintTestBase(::InlineClassesRule) {
     @Tag(WarningNames.INLINE_CLASS_CAN_BE_USED)
     fun `should not trigger on class that extends class or interface`() {
         lintMethod(
-                """
+            """
                 |class Some : Any {
                 |   val some = 3
                 |}
@@ -118,10 +117,10 @@ class InlineClassesWarnTest : LintTestBase(::InlineClassesRule) {
     fun `should not trigger on class with internal constructor`() {
         lintMethod(
             """
-            |class LocalCommandExecutor internal constructor(private val command: String) {
-            |   val some = 3
-            |}
-        """.trimMargin()
+                |class LocalCommandExecutor internal constructor(private val command: String) {
+                |   val some = 3
+                |}
+            """.trimMargin()
         )
     }
 }
