@@ -120,15 +120,14 @@ open class DiktatJavaExecTaskBase @Inject constructor(
         add((if (negate) "!" else "") + path)
     }
 
-    /**
-     * todo: share logic with maven plugin, it's basically copy-paste
-     */
-    @Suppress("ForbiddenComment")
     private fun resolveConfigFile(file: File): String {
-        if (file.isAbsolute) {
+        if (file.toPath().startsWith(project.rootDir.toPath())) {
+            // In gradle, project.files() returns File relative to project.projectDir.
+            // There is no need to resolve file further if it has been passed via gradle files API.
             return file.absolutePath
         }
 
+        // otherwise, e.g. if file is passed as java.io.File with relative path, we try to find it
         return generateSequence(project.projectDir) { it.parentFile }
             .map { it.resolve(file) }
             .run {

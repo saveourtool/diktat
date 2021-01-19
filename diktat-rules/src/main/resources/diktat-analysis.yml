@@ -356,6 +356,11 @@
 # Checks that property in constructor doesn't contain comment
 - name: KDOC_NO_CONSTRUCTOR_PROPERTY
   enabled: true
+# Checks that the long lambda has parameters
+- name: TOO_MANY_LINES_IN_LAMBDA
+  enabled: true
+  configuration:
+    maxLambdaLength: 10 # max length of lambda without parameters
 # Checks that property in KDoc present in class
 - name: KDOC_EXTRA_PROPERTY
   enabled: true

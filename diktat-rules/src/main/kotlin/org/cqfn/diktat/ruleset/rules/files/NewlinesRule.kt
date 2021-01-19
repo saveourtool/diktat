@@ -471,15 +471,15 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         }
         val callsByNewLine: ListOfList = mutableListOf()
         var callsInOneNewLine: MutableList<ASTNode> = mutableListOf()
-        this.forEach {
-            if (it.treePrev.isFollowedByNewline() || it.treePrev.isWhiteSpaceWithNewline()) {
+        this.forEach { node ->
+            if (node.treePrev.isFollowedByNewline() || node.treePrev.isWhiteSpaceWithNewline()) {
                 callsByNewLine.add(callsInOneNewLine)
                 callsInOneNewLine = mutableListOf()
-                callsInOneNewLine.add(it)
+                callsInOneNewLine.add(node)
             } else {
-                callsInOneNewLine.add(it)
+                callsInOneNewLine.add(node)
             }
-            if (it.treePrev.elementType == POSTFIX_EXPRESSION && !it.treePrev.isFollowedByNewline() && configuration.maxCallsInOneLine == 1) {
+            if (node.treePrev.elementType == POSTFIX_EXPRESSION && !node.treePrev.isFollowedByNewline() && configuration.maxCallsInOneLine == 1) {
                 return true
             }
         }

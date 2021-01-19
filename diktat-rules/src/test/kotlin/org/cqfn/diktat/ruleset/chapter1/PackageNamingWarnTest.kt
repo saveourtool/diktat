@@ -22,6 +22,9 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
     private val rulesConfigList: List<RulesConfig> = listOf(
         RulesConfig("DIKTAT_COMMON", true, mapOf("domainName" to "org.cqfn.diktat"))
     )
+    private val rulesConfigListEmptyDomainName: List<RulesConfig> = listOf(
+        RulesConfig("DIKTAT_COMMON", true, mapOf("domainName" to ""))
+    )
 
     @Test
     @Tag(WarningNames.PACKAGE_NAME_MISSING)
@@ -227,6 +230,20 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
             LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} org.cqfn.diktat.myProjectMain.kotlin.org.cqfn.diktat.example", true),
             fileName = "/home/testu/project/src/myProjectMain/kotlin/org/cqfn/diktat/example/Example.kt",
             rulesConfigList = rulesConfigList
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.PACKAGE_NAME_INCORRECT_PATH)
+    fun `should warn if there is empty domain name`() {
+        lintMethod(
+            """
+                |package org.cqfn.diktat
+            """.trimMargin(),
+            LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PREFIX.warnText()} ", true),
+            LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} org.cqfn.diktat.example", true),
+            fileName = "/home/testu/project/src/main/kotlin/org/cqfn/diktat/example/Example.kt",
+            rulesConfigList = rulesConfigListEmptyDomainName
         )
     }
 }

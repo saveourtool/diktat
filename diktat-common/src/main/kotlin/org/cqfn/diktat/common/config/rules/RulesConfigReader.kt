@@ -112,8 +112,8 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
     /**
      * Start of package name, which shoould be common, e.g. org.example.myproject
      */
-    val domainName: String by lazy {
-        (configuration ?: emptyMap()).getOrDefault("domainName", "")
+    val domainName: String? by lazy {
+        configuration?.get("domainName")
     }
 
     /**
