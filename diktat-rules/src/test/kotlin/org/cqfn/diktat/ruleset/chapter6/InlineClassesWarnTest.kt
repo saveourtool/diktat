@@ -112,4 +112,16 @@ class InlineClassesWarnTest : LintTestBase(::InlineClassesRule) {
             """.trimMargin()
         )
     }
+
+    @Test
+    @Tag(WarningNames.INLINE_CLASS_CAN_BE_USED)
+    fun `should not trigger on class with internal constructor`() {
+        lintMethod(
+            """
+            |class LocalCommandExecutor internal constructor(private val command: String) {
+            |   val some = 3
+            |}
+        """.trimMargin()
+        )
+    }
 }

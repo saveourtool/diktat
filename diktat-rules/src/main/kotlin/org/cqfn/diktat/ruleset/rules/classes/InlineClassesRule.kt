@@ -54,7 +54,9 @@ class InlineClassesRule(private val configRule: List<RulesConfig>) : Rule("inlin
         if (classPsi.getProperties().size == 1 && !classPsi.hasExplicitPrimaryConstructor()) {
             return !classPsi.getProperties().first().isVar
         } else if (classPsi.getProperties().isEmpty() && classPsi.hasExplicitPrimaryConstructor()) {
-            return classPsi.primaryConstructorParameters.size == 1 && !classPsi.primaryConstructorParameters.first().node.hasChildOfType(VAR_KEYWORD)
+            return classPsi.primaryConstructorParameters.size == 1
+                    && !classPsi.primaryConstructorParameters.first().node.hasChildOfType(VAR_KEYWORD)
+                    && classPsi.primaryConstructorModifierList == null
         }
         return false
     }
