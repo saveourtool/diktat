@@ -1,6 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter3
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_CONTAINS_ONLY_COMMENTS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_INCORRECT_BLOCKS_ORDER
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NO_BLANK_LINE_BETWEEN_BLOCKS
@@ -12,7 +13,6 @@ import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
-import org.cqfn.diktat.ruleset.constants.Warnings
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
@@ -307,7 +307,7 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
                 |class Example { 
                 |val x: Foo = null
                 |}
-            """.trimMargin(),)
+            """.trimMargin(),
+        )
     }
-
 }
