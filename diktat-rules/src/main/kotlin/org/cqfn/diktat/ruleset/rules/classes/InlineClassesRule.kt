@@ -58,7 +58,7 @@ class InlineClassesRule(private val configRule: List<RulesConfig>) : Rule("inlin
         } else if (classPsi.getProperties().isEmpty() && classPsi.hasExplicitPrimaryConstructor()) {
             return classPsi.primaryConstructorParameters.size == 1 &&
                     !classPsi.primaryConstructorParameters.first().node.hasChildOfType(VAR_KEYWORD) &&
-                    classPsi.primaryConstructor?.visibilityModifierType()?.value ?: true == "public"
+                    classPsi.primaryConstructor?.visibilityModifierType()?.value ?: "public" == "public"
         }
         return false
     }
