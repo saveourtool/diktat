@@ -183,7 +183,7 @@ enum class Warnings(
                    node: ASTNode,
                    canBeAutoCorrected: Boolean = this.canBeAutoCorrected,
                    autoFix: () -> Unit) {
-        if (isRuleFromActiveChapter(configRules.disabledChapters(), this)) {
+        if (isRuleFromActiveChapter(configRules)) {
             warn(configRules, emit, canBeAutoCorrected, freeText, offset, node)
             fix(configRules, isFixMode, node, autoFix)
         }
@@ -204,7 +204,7 @@ enum class Warnings(
              freeText: String,
              offset: Int,
              node: ASTNode) {
-        if (isRuleFromActiveChapter(configs.disabledChapters(), this) && configs.isRuleEnabled(this) && !node.hasSuppress(name)) {
+        if (isRuleFromActiveChapter(configs) && configs.isRuleEnabled(this) && !node.hasSuppress(name)) {
             val trimmedFreeText = freeText
                 .lines()
                 .run { if (size > 1) "${first()}..." else first() }
