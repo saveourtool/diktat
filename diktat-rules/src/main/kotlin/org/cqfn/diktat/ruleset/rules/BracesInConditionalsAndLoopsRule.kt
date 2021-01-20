@@ -23,6 +23,7 @@ import com.pinterest.ktlint.core.ast.ElementType.WHILE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isPartOfComment
 import com.pinterest.ktlint.core.ast.prevSibling
+import org.cqfn.diktat.ruleset.utils.loopType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -50,7 +51,7 @@ class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig
         when (node.elementType) {
             IF -> checkIfNode(node)
             WHEN -> checkWhenBranches(node)
-            FOR, WHILE, DO_WHILE -> checkLoop(node)
+            in loopType -> checkLoop(node)
             else -> return
         }
     }

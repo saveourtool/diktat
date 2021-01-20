@@ -27,7 +27,7 @@ class CustomLabelsTest : LintTestBase(::CustomLabel) {
                         q.forEachIndexed { index, i ->
                             return@forEachIndexed
                         }
-                        for(i: Int in q) {
+                        loop@ for(i: Int in q) {
                             println(i)
                             break@loop
                         }
@@ -59,6 +59,13 @@ class CustomLabelsTest : LintTestBase(::CustomLabel) {
                         for (j: Int in q) {
                             println(i)
                             break@qq
+                        }
+                    }
+                    
+                    q.forEach outer@ {
+                        it.forEach {
+                            if(it == 21)
+                                return@outer
                         }
                     }
                 }
