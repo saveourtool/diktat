@@ -228,7 +228,8 @@ class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizon
     }
 
     private fun handleWhiteSpaceAfterLeftBrace(node: ASTNode) {
-        if (node.treeParent.elementType == FUNCTION_LITERAL && !node.treeNext.isWhiteSpace()) {
+        if (node.treeParent.elementType == FUNCTION_LITERAL && !node.treeNext.isWhiteSpace() &&
+                node.treeNext.elementType == BLOCK && node.treeNext.text.isNotEmpty()) {
             WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "there should be a whitespace after {", node.startOffset, node) {
                 node.treeParent.addChild(PsiWhiteSpaceImpl(" "), node.treeNext)
             }

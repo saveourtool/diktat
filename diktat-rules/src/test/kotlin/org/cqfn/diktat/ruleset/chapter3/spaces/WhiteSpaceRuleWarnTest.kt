@@ -645,9 +645,23 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
 
     @Test
     @Tag(WarningNames.WRONG_WHITESPACE)
-    fun `should not trigger on braces with empty body`() {
+    fun `should not trigger on braces with empty body #1`() {
         lintMethod(
             """
+                |val project = KotlinCoreEnvironment.createForProduction(
+                |   Disposable {},
+                |   compilerConfiguration,
+                |   EnvironmentConfigFiles.JVM_CONFIG_FILES
+                |).project
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
+    fun `should not trigger on braces with empty body #2`() {
+        lintMethod(
+                """
                 |val project = KotlinCoreEnvironment.createForProduction(
                 |   Disposable { },
                 |   compilerConfiguration,
