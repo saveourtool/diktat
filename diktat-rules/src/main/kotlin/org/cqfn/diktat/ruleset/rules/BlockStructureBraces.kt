@@ -72,7 +72,7 @@ class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("b
             FUN, CLASS_INITIALIZER, SECONDARY_CONSTRUCTOR -> checkFun(node, configuration)
             IF -> checkIf(node, configuration)
             WHEN -> checkWhen(node, configuration)
-            FOR, WHILE, DO_WHILE -> checkLoop(node, configuration)
+            in loopType -> checkLoop(node, configuration)
             TRY -> checkTry(node, configuration)
             else -> return
         }
