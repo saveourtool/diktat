@@ -357,8 +357,8 @@ fun main() {
 }
 ```
 
-### <a name="c6.1.12"></a> 6.1.12 Prefer Inline classes when a class has a single property
-If a class has only one property, then it can be transferred to the inline class.
+### <a name="r6.1.12"></a> 6.1.12 Prefer Inline classes when a class has a single property
+If a class has only one immutable property, then it can be converted to the inline class.
 
 <!-- =============================================================================== -->
 ### <a name="c6.2"></a>6.2 Extension functions

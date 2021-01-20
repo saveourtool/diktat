@@ -7,7 +7,6 @@ import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
@@ -99,16 +98,28 @@ class InlineClassesWarnTest : LintTestBase(::InlineClassesRule) {
         )
     }
 
-    @Disabled
     @Test
     @Tag(WarningNames.INLINE_CLASS_CAN_BE_USED)
-    fun `should not trigger on class that extends class or interface`() {
+    fun `should not trigger on class that extends class`() {
+        lintMethod(
+            """
+                |class Some : Any() {
+                |   val some = 3
+                |}
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.INLINE_CLASS_CAN_BE_USED)
+    fun `should trigger on class that extends interface`() {
         lintMethod(
             """
                 |class Some : Any {
                 |   val some = 3
                 |}
-            """.trimMargin()
+            """.trimMargin(),
+            LintError(1, 1, ruleId, "${INLINE_CLASS_CAN_BE_USED.warnText()} class Some", true)
         )
     }
 
@@ -118,9 +129,35 @@ class InlineClassesWarnTest : LintTestBase(::InlineClassesRule) {
         lintMethod(
             """
                 |class LocalCommandExecutor internal constructor(private val command: String) {
-                |   val some = 3
+                |   
                 |}
             """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.INLINE_CLASS_CAN_BE_USED)
+    fun `should trigger on class with public constructor`() {
+        lintMethod(
+            """
+                |class LocalCommandExecutor public constructor(private val command: String) {
+                |   
+                |}
+            """.trimMargin(),
+            LintError(1, 1, ruleId, "${INLINE_CLASS_CAN_BE_USED.warnText()} class LocalCommandExecutor", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.INLINE_CLASS_CAN_BE_USED)
+    fun `should trigger on class with annotation before the constructor`() {
+        lintMethod(
+            """
+                |class LocalCommandExecutor @Inject constructor(private val command: String) {
+                |   
+                |}
+            """.trimMargin(),
+            LintError(1, 1, ruleId, "${INLINE_CLASS_CAN_BE_USED.warnText()} class LocalCommandExecutor", true)
         )
     }
 }

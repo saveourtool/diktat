@@ -425,6 +425,6 @@
 # If there exists negated version of function you should prefer it instead of !functionCall
 - name: INVERSE_FUNCTION_PREFERRED
   enabled: true
-# Checks if class can be transferred to inline class
+# Checks if class can be converted to inline class
 - name: INLINE_CLASS_CAN_BE_USED
   enabled: true
