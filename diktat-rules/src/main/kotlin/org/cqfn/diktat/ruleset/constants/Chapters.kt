@@ -24,6 +24,8 @@ enum class Chapters(val number: String, val chapterName: String) {
 
 /**
  * Function checks if warning from enable chapter
+ *
+ * @return is warning from enable chapter
  */
 fun Warnings.isRuleFromActiveChapter(configRules: List<RulesConfig>): Boolean {
     val chapterFromRule = getChapterByWarning(this)
@@ -50,6 +52,8 @@ private fun validate(configRules: List<RulesConfig>) =
 
 /**
  * Function get chapter by warning
+ *
+ * @return chapter to which warning refers
  */
 @Suppress("UnsafeCallOnNullableType")
 fun getChapterByWarning(warnings: Warnings) = Chapters.values().find { it.number == warnings.ruleId.first().toString() }!!
