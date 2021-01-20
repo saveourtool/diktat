@@ -40,7 +40,9 @@ fun generateRulesMapping() {
         "| ${warn.name} | [${warn.ruleId}](${DIKTAT_GUIDE}r${warn.ruleId}) | ${if (warn.canBeAutoCorrected) "yes" else "no"} |"
     }
 
-    val header = "| Diktat Rule | Code Style | Auto-fixed? |\n"
-    val separator = "| ${"-".repeat(maxRuleNameLength)} | ${"-".repeat(maxRuleIdLength)} | --- |\n"
-    File("rules-mapping.md").writeText("$header$separator$tableWithWarnings")
+    val chapters = listOf("1", "2")//allWarnings.map { getChapterByWarning(it).chapterName }
+
+    val header = "| Diktat Rule | Code Style | Auto-fixed? | Chapter |\n"
+    val separator = "| ${"-".repeat(maxRuleNameLength)} | ${"-".repeat(maxRuleIdLength)} | --- | ${"-".repeat(chapters.maxBy { it.length }?.length ?: 0)} |\n"
+    File("rules-mapping.md").writeText("$header$separator$tableWithWarnings$chapters")
 }

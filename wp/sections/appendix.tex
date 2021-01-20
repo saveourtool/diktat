@@ -84,6 +84,7 @@ LONG\underline{ }LINE & \hyperref[sec:3.5.1]{3.5.1} &  yes  &   lineLength      
 MORE\underline{ }THAN\underline{ }ONE\underline{ }STATEMENT\underline{ }PER\underline{ }LINE & \hyperref[sec:3.6.1]{3.6.1} &  yes  &   no  \\
 REDUNDANT\underline{ }SEMICOLON & \hyperref[sec:3.6.2]{3.6.2} &  yes  &   no  \\
 WRONG\underline{ }NEWLINES & \hyperref[sec:3.6.2]{3.6.2} &  yes  &   no  \\
+COMPLEX\underline{ }EXPRESSION & \hyperref[sec:3.6.3]{3.6.3} &  no  &   no  \\
 TOO\underline{ }MANY\underline{ }BLANK\underline{ }LINES & \hyperref[sec:3.7.1]{3.7.1} &  yes  &   no  \\
 WRONG\underline{ }WHITESPACE & \hyperref[sec:3.8.1]{3.8.1} &  yes  &   no  \\
 TOO\underline{ }MANY\underline{ }CONSECUTIVE\underline{ }SPACES & \hyperref[sec:3.8.1]{3.8.1} &  yes  &   maxSpaces saveInitialFormattingForEnums  \\
@@ -110,6 +111,8 @@ INVERSE\underline{ }FUNCTION\underline{ }PREFERRED & \hyperref[sec:5.1.4]{5.1.4}
 LAMBDA\underline{ }IS\underline{ }NOT\underline{ }LAST\underline{ }PARAMETER & \hyperref[sec:5.2.1]{5.2.1} &  no  &   no \\
 TOO\underline{ }MANY\underline{ }PARAMETERS & \hyperref[sec:5.2.2]{5.2.2} &  no  &   maxParameterListSize \\
 WRONG\underline{ }OVERLOADING\underline{ }FUNCTION\underline{ }ARGUMENTS & \hyperref[sec:5.2.3]{5.2.3} &  no  &   no \\
+RUN\underline{ }BLOCKING\underline{ }INSIDE\underline{ }ASYNC & \hyperref[sec:5.2.4]{5.2.4} &  no  &   no \\
+TOO\underline{ }MANY\underline{ }LINES\underline{ }IN\underline{ }LAMBDA & \hyperref[sec:5.2.5]{5.2.5} &  no  &   maxLambdaLength \\
 SINGLE\underline{ }CONSTRUCTOR\underline{ }SHOULD\underline{ }BE\underline{ }PRIMARY & \hyperref[sec:6.1.1]{6.1.1} &  yes  &   no  \\
 USE\underline{ }DATA\underline{ }CLASS & \hyperref[sec:6.1.2]{6.1.2} &  no  &   no  \\
 EMPTY\underline{ }PRIMARY\underline{ }CONSTRUCTOR & \hyperref[sec:6.1.3]{6.1.3} &  yes  &   no  \\
@@ -305,6 +308,8 @@ OBJECT\underline{ }IS\underline{ }PREFERRED & \hyperref[sec:6.4.2]{6.4.2} &  yes
 \hspace{1.0cm}\hyperref[sec:5.2.2]{ 5.2.2 Number of function parameters should be limited to five}
 
 \hspace{1.0cm}\hyperref[sec:5.2.3]{ 5.2.3 Use default values for function arguments instead of overloading them}
+
+\hspace{1.0cm}\hyperref[sec:5.2.5]{ 5.2.5 Long lambdas should have explicit parameters}
 
 \hspace{0.0cm}\hyperref[sec:]{}
 
@@ -2109,6 +2114,28 @@ Note that all comparison operators, such as \textbf{==}, \textbf{>}, \textbf{<},
 \begin{lstlisting}[language=Kotlin]
 if (condition) list.map { foo(it) }.filter { bar(it) } else list.drop(1)
 \end{lstlisting}
+
+
+\textbf{Note:} If dot qualified expression is inside condition or passed as an argument - it should be replaced with new variable.
+
+
+
+\textbf{Invalid example}: 
+
+\begin{lstlisting}[language=Kotlin]
+ if (node.treeParent.treeParent.findChildByType(IDENTIFIER) != null) {}
+\end{lstlisting}
+ 
+
+\textbf{Valid example}: 
+
+\begin{lstlisting}[language=Kotlin]
+        val grandIdentifier = node
+            .treeParent
+            .treeParent
+            .findChildByType(IDENTIFIER)
+        if (grandIdentifier != null) {}
+\end{lstlisting}
   
 
 2)	Newlines should be placed after the assignment operator (\textbf{=}).
@@ -3459,6 +3486,33 @@ private fun foo() {
      // ...
  }
 \end{lstlisting}
+\subsubsection*{\textbf{5.2.4 Synchronizing code inside asynchronous code}}
+\leavevmode\newline
+
+\label{sec:5.2.4}
+
+Try to avoid using runBlocking in asynchronous code
+
+
+
+\textbf{Invalid example}:
+
+\begin{lstlisting}[language=Kotlin]
+GlobalScope.async {
+    runBlocking {
+        count++
+    }   
+}
+\end{lstlisting}
+\subsubsection*{\textbf{5.2.5 Long lambdas should have explicit parameters}}
+\leavevmode\newline
+
+\label{sec:5.2.5}
+
+The lambda without parameters shouldn't be too long.
+
+If a lambda is too long, it can confuse the user. Lambda without parameters should consist of 10 lines (non-empty and non-comment) in total.
+
 \section*{\textbf{6. Classes}}
 
 \label{sec:6.}

@@ -88,6 +88,7 @@ I [Preface](#c0)
     * [5.2.1 The lambda parameter of the function should be placed at the end of the argument list](#r5.2.1)
     * [5.2.2 Number of function parameters should be limited to five](#r5.2.2) 
     * [5.2.3 Use default values for function arguments instead of overloading them](#r5.2.3)           
+    * [5.2.5 Long lambdas should have explicit parameters](#r5.2.4)
 
 [6. Classes, interfaces, and extension functions](#c6)                 
 * [6.1 Classes](#c6.1)      
@@ -1141,6 +1142,22 @@ Note that all comparison operators, such as `==`, `>`, `<`, should not be split.
 ```kotlin
 if (condition) list.map { foo(it) }.filter { bar(it) } else list.drop(1)
 ```  
+
+**Note:** If dot qualified expression is inside condition or passed as an argument - it should be replaced with new variable.
+
+**Invalid example**: 
+```kotlin
+ if (node.treeParent.treeParent.findChildByType(IDENTIFIER) != null) {}
+```
+ 
+**Valid example**: 
+```kotlin
+        val grandIdentifier = node
+            .treeParent
+            .treeParent
+            .findChildByType(IDENTIFIER)
+        if (grandIdentifier != null) {}
+```
   
 2)	Newlines should be placed after the assignment operator (`=`).
 3)	In function or class declarations, the name of a function or constructor should not be split by a newline from the opening brace `(`.
@@ -1980,6 +1997,20 @@ private fun foo() {
      // ...
  }
 ``` 
+#### <a name="r5.2.4"></a> 5.2.4 Synchronizing code inside asynchronous code
+Try to avoid using runBlocking in asynchronous code
+
+**Invalid example**:
+```kotlin
+GlobalScope.async {
+    runBlocking {
+        count++
+    }   
+}
+```
+#### <a name="r5.2.5"></a> 5.2.5 Long lambdas should have explicit parameters
+The lambda without parameters shouldn't be too long.
+If a lambda is too long, it can confuse the user. Lambda without parameters should consist of 10 lines (non-empty and non-comment) in total.
 # <a name="c6"></a> 6. Classes, interfaces, and extension functions
 <!-- =============================================================================== -->
 ### <a name="c6.1"></a> 6.1 Classes

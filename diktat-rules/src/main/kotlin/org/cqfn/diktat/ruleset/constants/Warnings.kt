@@ -2,6 +2,7 @@ package org.cqfn.diktat.ruleset.constants
 
 import org.cqfn.diktat.common.config.rules.Rule
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.common.config.rules.disabledChapters
 import org.cqfn.diktat.common.config.rules.isRuleEnabled
 import org.cqfn.diktat.ruleset.utils.hasSuppress
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -182,8 +183,10 @@ enum class Warnings(
                    node: ASTNode,
                    canBeAutoCorrected: Boolean = this.canBeAutoCorrected,
                    autoFix: () -> Unit) {
-        warn(configRules, emit, canBeAutoCorrected, freeText, offset, node)
-        fix(configRules, isFixMode, node, autoFix)
+        if (isRuleFromActiveChapter(configRules.disabledChapters(), this)) {
+            warn(configRules, emit, canBeAutoCorrected, freeText, offset, node)
+            fix(configRules, isFixMode, node, autoFix)
+        }
     }
 
     /**
@@ -201,7 +204,7 @@ enum class Warnings(
              freeText: String,
              offset: Int,
              node: ASTNode) {
-        if (configs.isRuleEnabled(this) && !node.hasSuppress(name)) {
+        if (isRuleFromActiveChapter(configs.disabledChapters(), this) && configs.isRuleEnabled(this) && !node.hasSuppress(name)) {
             val trimmedFreeText = freeText
                 .lines()
                 .run { if (size > 1) "${first()}..." else first() }

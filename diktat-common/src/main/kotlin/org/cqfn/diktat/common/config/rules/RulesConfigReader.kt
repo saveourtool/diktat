@@ -148,3 +148,8 @@ fun List<RulesConfig>.isRuleEnabled(rule: Rule): Boolean {
     val ruleMatched = getRuleConfig(rule)
     return ruleMatched?.enabled ?: true
 }
+
+/**
+ * Get disable chapters from configuration
+ */
+fun List<RulesConfig>.disabledChapters() = getCommonConfig()?.configuration?.get("disableChapters")

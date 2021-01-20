@@ -1,5 +1,5 @@
-| Diktat Rule | Code Style | Auto-fixed? |
-| ----------------------------------------- | ------ | --- |
+| Diktat Rule | Code Style | Auto-fixed? | Chapter |
+| ----------------------------------------- | ------ | --- | - |
 | VARIABLE_NAME_INCORRECT | [1.1.1](guide/diktat-coding-convention.md#r1.1.1) | no |
 | VARIABLE_HAS_PREFIX | [1.1.1](guide/diktat-coding-convention.md#r1.1.1) | yes |
 | IDENTIFIER_LENGTH | [1.1.1](guide/diktat-coding-convention.md#r1.1.1) | no |
@@ -68,6 +68,7 @@
 | MORE_THAN_ONE_STATEMENT_PER_LINE | [3.6.1](guide/diktat-coding-convention.md#r3.6.1) | yes |
 | REDUNDANT_SEMICOLON | [3.6.2](guide/diktat-coding-convention.md#r3.6.2) | yes |
 | WRONG_NEWLINES | [3.6.2](guide/diktat-coding-convention.md#r3.6.2) | yes |
+| COMPLEX_EXPRESSION | [3.6.3](guide/diktat-coding-convention.md#r3.6.3) | no |
 | TOO_MANY_BLANK_LINES | [3.7.1](guide/diktat-coding-convention.md#r3.7.1) | yes |
 | WRONG_WHITESPACE | [3.8.1](guide/diktat-coding-convention.md#r3.8.1) | yes |
 | TOO_MANY_CONSECUTIVE_SPACES | [3.8.1](guide/diktat-coding-convention.md#r3.8.1) | yes |
@@ -94,6 +95,8 @@
 | LAMBDA_IS_NOT_LAST_PARAMETER | [5.2.1](guide/diktat-coding-convention.md#r5.2.1) | no |
 | TOO_MANY_PARAMETERS | [5.2.2](guide/diktat-coding-convention.md#r5.2.2) | no |
 | WRONG_OVERLOADING_FUNCTION_ARGUMENTS | [5.2.3](guide/diktat-coding-convention.md#r5.2.3) | no |
+| RUN_BLOCKING_INSIDE_ASYNC | [5.2.4](guide/diktat-coding-convention.md#r5.2.4) | no |
+| TOO_MANY_LINES_IN_LAMBDA | [5.2.5](guide/diktat-coding-convention.md#r5.2.5) | no |
 | SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY | [6.1.1](guide/diktat-coding-convention.md#r6.1.1) | yes |
 | USE_DATA_CLASS | [6.1.2](guide/diktat-coding-convention.md#r6.1.2) | no |
 | EMPTY_PRIMARY_CONSTRUCTOR | [6.1.3](guide/diktat-coding-convention.md#r6.1.3) | yes |
@@ -107,4 +110,4 @@
 | COMPACT_OBJECT_INITIALIZATION | [6.1.11](guide/diktat-coding-convention.md#r6.1.11) | yes |
 | EXTENSION_FUNCTION_SAME_SIGNATURE | [6.2.2](guide/diktat-coding-convention.md#r6.2.2) | no |
 | AVOID_USING_UTILITY_CLASS | [6.4.1](guide/diktat-coding-convention.md#r6.4.1) | no |
-| OBJECT_IS_PREFERRED | [6.4.2](guide/diktat-coding-convention.md#r6.4.2) | yes |
+| OBJECT_IS_PREFERRED | [6.4.2](guide/diktat-coding-convention.md#r6.4.2) | yes |[1, 2]

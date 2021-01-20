@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
 import kotlinx.serialization.encodeToString
+import org.cqfn.diktat.common.config.rules.DIKTAT_COMMON
 
 typealias ruleToConfig = Map<Warnings, Map<String, String>>
 
@@ -193,6 +194,17 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
         // file name is `gradle_` so that IDE doesn't suggest to import gradle project
         fixAndCompare("../../../build.gradle_.kts", "../../../build.gradle_.kts")
         Assertions.assertTrue(unfixedLintErrors.isEmpty())
+    }
+
+    @Test
+    @Tag("DiktatRuleSetProvider")
+    fun `disable charters`() {
+        val rulesConfigPascalCaseEnum: List<RulesConfig> = listOf(
+                RulesConfig(DIKTAT_COMMON, true,
+                        mapOf("disableChapters" to "1,coments,3,4,5,6")) // mistake made on purpose
+        )
+        fixAndCompare("Example1Expected.kt", "Example1Test.kt", rulesConfigPascalCaseEnum)
+        unfixedLintErrors.assertEquals()
     }
 
     companion object {
