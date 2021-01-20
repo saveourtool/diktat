@@ -5,6 +5,13 @@ import org.cqfn.diktat.common.config.rules.disabledChapters
 import org.cqfn.diktat.ruleset.utils.isDigits
 import org.jetbrains.kotlin.org.jline.utils.Levenshtein
 
+/**
+ * This class represents the chapters that are in our code style.
+ *
+ * @property number - number of chapter
+ * @property chapterName name of chapter
+ */
+@Suppress("WRONG_DECLARATIONS_ORDER")
 enum class Chapters(val number: String, val chapterName: String) {
     NAMING("1", "Naming"),
     COMMENTS("2", "Comments"),
@@ -15,6 +22,9 @@ enum class Chapters(val number: String, val chapterName: String) {
     ;
 }
 
+/**
+ * Function checks if warning from enable chapter
+ */
 fun Warnings.isRuleFromActiveChapter(configRules: List<RulesConfig>): Boolean {
     val chapterFromRule = getChapterByWarning(this)
     val disabledChapters = configRules.disabledChapters()
@@ -33,10 +43,13 @@ fun Warnings.isRuleFromActiveChapter(configRules: List<RulesConfig>): Boolean {
 }
 
 private fun validate(configRules: List<RulesConfig>) =
-    require(configRules.disabledChapters() in Chapters.values().map {it.chapterName}) {
-        val closestMatch = Chapters.values().minByOrNull { Levenshtein.distance(it.chapterName, configRules.disabledChapters()) }
-        "Chapter name <${configRules.disabledChapters()}> in configuration file is invalid, did you mean <$closestMatch>?"
-    }
+        require(configRules.disabledChapters() in Chapters.values().map {it.chapterName}) {
+            val closestMatch = Chapters.values().minByOrNull { Levenshtein.distance(it.chapterName, configRules.disabledChapters()) }
+            "Chapter name <${configRules.disabledChapters()}> in configuration file is invalid, did you mean <$closestMatch>?"
+        }
 
+/**
+ * Function get chapter by warning
+ */
 @Suppress("UnsafeCallOnNullableType")
 fun getChapterByWarning(warnings: Warnings) = Chapters.values().find { it.number == warnings.ruleId.first().toString() }!!

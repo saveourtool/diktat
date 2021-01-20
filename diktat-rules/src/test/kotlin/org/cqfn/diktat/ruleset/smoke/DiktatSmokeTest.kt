@@ -1,5 +1,6 @@
 package org.cqfn.diktat.ruleset.smoke
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_COMMON
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
 import org.cqfn.diktat.ruleset.constants.Warnings
@@ -27,7 +28,6 @@ import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
 import kotlinx.serialization.encodeToString
-import org.cqfn.diktat.common.config.rules.DIKTAT_COMMON
 
 typealias ruleToConfig = Map<Warnings, Map<String, String>>
 
@@ -200,8 +200,8 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     @Tag("DiktatRuleSetProvider")
     fun `disable charters`() {
         val rulesConfigPascalCaseEnum: List<RulesConfig> = listOf(
-                RulesConfig(DIKTAT_COMMON, true,
-                        mapOf("disableChapters" to "1,coments,3,4,5,6")) // mistake made on purpose
+            RulesConfig(DIKTAT_COMMON, true,
+                mapOf("disableChapters" to "1,coments,3,4,5,6"))  // mistake made on purpose
         )
         fixAndCompare("Example1Expected.kt", "Example1Test.kt", rulesConfigPascalCaseEnum)
         unfixedLintErrors.assertEquals()
