@@ -151,5 +151,7 @@ fun List<RulesConfig>.isRuleEnabled(rule: Rule): Boolean {
 
 /**
  * Get disable chapters from configuration
+ *
+ * @return parameter in [DIKTAT_COMMON]
  */
 fun List<RulesConfig>.disabledChapters() = getCommonConfig()?.configuration?.get("disableChapters")
