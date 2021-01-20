@@ -11,7 +11,7 @@
 package org.cqfn.diktat.example
 
 
-import org.cqfn.diktat.example.Foo
+import org.cqfn.diktat.Foo
 
 
 
@@ -19,4 +19,6 @@ import org.cqfn.diktat.example.Foo
 
 
 
-class Example
+class Example {
+    val y: Foo = Foo()
+}

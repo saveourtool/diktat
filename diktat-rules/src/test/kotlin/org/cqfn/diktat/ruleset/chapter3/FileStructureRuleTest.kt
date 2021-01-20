@@ -80,10 +80,10 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
                 |
                 |class Example { 
                 |val x: Test = null
-                |val x: Foo = null
+                |val y: Foo = null
                 |}
             """.trimMargin(),
-            LintError(3, 1, ruleId, "${FILE_UNORDERED_IMPORTS.warnText()} import org.cqfn.diktat.example.Foo...", true)
+            LintError(3, 1, ruleId, "${FILE_UNORDERED_IMPORTS.warnText()} import org.cqfn.diktat.Foo...", true)
         )
     }
 
