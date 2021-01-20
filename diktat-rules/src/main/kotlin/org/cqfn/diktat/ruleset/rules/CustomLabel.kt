@@ -3,6 +3,7 @@ package org.cqfn.diktat.ruleset.rules
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.CUSTOM_LABEL
+import org.cqfn.diktat.ruleset.utils.loopType
 
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BREAK
@@ -11,7 +12,6 @@ import com.pinterest.ktlint.core.ast.ElementType.CONTINUE
 import com.pinterest.ktlint.core.ast.ElementType.LABEL_QUALIFIER
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.RETURN
-import org.cqfn.diktat.ruleset.utils.loopType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.psiUtil.parents
 
