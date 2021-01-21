@@ -1,5 +1,8 @@
 package org.cqfn.diktat.plugin.gradle
 
+import com.pinterest.ktlint.reporter.html.HtmlReporter
+import com.pinterest.ktlint.reporter.json.JsonReporter
+import com.pinterest.ktlint.reporter.plain.PlainReporter
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.DIKTAT_CHECK_TASK
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.DIKTAT_FIX_TASK
 import org.cqfn.diktat.ruleset.rules.DIKTAT_CONF_PROPERTY
@@ -49,6 +52,20 @@ open class DiktatJavaExecTaskBase @Inject constructor(
             mainClass.set("com.pinterest.ktlint.Main")
         } else {
             main = "com.pinterest.ktlint.Main"
+        }
+        diktatExtension.reporter = when(diktatExtension.reporterType) {
+            "json" -> {
+                diktatConfiguration.dependencies.add(project.dependencies.create("com.pinterest.ktlint:ktlint-reporter-html:$KTLINT_VERSION"))
+                JsonReporter(System.out)
+            }
+            "html" -> {
+                diktatConfiguration.dependencies.add(project.dependencies.create("com.pinterest.ktlint:ktlint-reporter-json:$KTLINT_VERSION"))
+                HtmlReporter(System.out)
+            }
+            else -> {
+                diktatConfiguration.dependencies.add(project.dependencies.create("com.pinterest.ktlint:ktlint-reporter-plain:$KTLINT_VERSION"))
+                PlainReporter(System.out)
+            }
         }
         classpath = diktatConfiguration
         project.logger.debug("Setting diktatCheck classpath to ${diktatConfiguration.dependencies.toSet()}")

@@ -161,8 +161,6 @@ class DiktatGradlePluginFunctionalTest {
             withGradleVersion("5.0")
         }
 
-        println("=====================" + testProjectDir.root.listFiles().size)
-
         val diktatCheckBuildResult = result.task(":$DIKTAT_CHECK_TASK")
         requireNotNull(diktatCheckBuildResult)
         Assertions.assertEquals(TaskOutcome.FAILED, diktatCheckBuildResult.outcome)

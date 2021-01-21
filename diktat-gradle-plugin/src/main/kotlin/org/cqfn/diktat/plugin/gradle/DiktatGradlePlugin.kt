@@ -24,14 +24,7 @@ class DiktatGradlePlugin : Plugin<Project> {
             }
             diktatConfigFile = project.rootProject.file("diktat-analysis.yml")
             excludes = project.files()
-            reporter = when(reporterType) {
-                "json" -> JsonReporter(System.out)
-                "html" -> HtmlReporter(System.out)
-                else -> {
-                    project.logger.warn("Incorrect name, going to use plain reporter")
-                    PlainReporter(System.out)
-                }
-            }
+            reporter = PlainReporter(System.out)
         }
 
         // only gradle 7+ (or maybe 6.8) will embed kotlin 1.4+, kx.serialization is incompatible with kotlin 1.3, so until then we have to use JavaExec wrapper
@@ -48,12 +41,6 @@ class DiktatGradlePlugin : Plugin<Project> {
                 )
             }))
             configuration.dependencies.add(project.dependencies.create("org.cqfn.diktat:diktat-rules:$DIKTAT_VERSION"))
-            // Adding reporters to dependencies
-            when(diktatExtension.reporterType) {
-                "json" -> configuration.dependencies.add(project.dependencies.create("com.pinterest.ktlint:ktlint-reporter-html:$KTLINT_VERSION"))
-                "html" -> configuration.dependencies.add(project.dependencies.create("com.pinterest.ktlint:ktlint-reporter-json:$KTLINT_VERSION"))
-                else -> configuration.dependencies.add(project.dependencies.create("com.pinterest.ktlint:ktlint-reporter-plain:$KTLINT_VERSION"))
-            }
         }
 
         project.registerDiktatCheckTask(diktatExtension, diktatConfiguration)
