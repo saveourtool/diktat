@@ -22,4 +22,6 @@ private fun foo (node: ASTNode) {
 
     if (x) // comment
         foo()
+
+    setOf<Object>(IOException(), Properties(), LoggerFactory())
 }

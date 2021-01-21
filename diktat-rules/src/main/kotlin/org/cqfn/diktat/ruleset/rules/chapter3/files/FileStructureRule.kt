@@ -207,6 +207,7 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkUnusedImport(
         node: ASTNode,
         unusedImportConfig: UnusedImportConfig
@@ -217,9 +218,9 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
             ?.forEach { import ->
                 val ktImportDirective = import.psi as KtImportDirective
                 val importName = ktImportDirective.importPath?.importedName?.asString()
-                val importPath = ktImportDirective.importPath?.pathStr
+                val importPath = ktImportDirective.importPath?.pathStr!!  // importPath - ifNOtParsed & Nullable
                 if (ktImportDirective.aliasName == null &&
-                        packageName.isNotEmpty() && importPath!!.startsWith("$packageName.") &&
+                        packageName.isNotEmpty() && importPath.startsWith("$packageName.") &&
                         importPath.substring(packageName.length + 1).indexOf('.') == -1
                 ) {
                     if (unusedImportConfig.deleteUnusedImport) {
