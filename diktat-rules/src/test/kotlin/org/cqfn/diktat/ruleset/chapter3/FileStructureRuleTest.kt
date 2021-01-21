@@ -310,4 +310,21 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
             """.trimMargin(),
         )
     }
+
+    @Test
+    @Tag(WarningNames.UNUSED_IMPORT)
+    fun `Operator overloading`() {
+        lintMethod(
+            """
+                |package org.cqfn.diktat.example
+                |
+                |import kotlin.io.path.div
+                |
+                |class Example { 
+                |val pom = kotlin.io.path.createTempFile().toFile()
+                |val x = listOf(pom.parentFile.toPath() / "src/main/kotlin/exclusion")
+                |}
+            """.trimMargin(),
+        )
+    }
 }

@@ -1,4 +1,4 @@
-package org.cqfn.diktat.ruleset.rules.chapter3.files
+package org.cqfn.diktat.ruleset.rules.files
 
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
@@ -68,9 +68,6 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
             value.map { it.split(PACKAGE_SEPARATOR).map(Name::identifier) }
         }
     private lateinit var emitWarn: EmitType
-
-    private val refSet = mutableSetOf<String>()
-    private var packageName = ""
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
