@@ -40,6 +40,18 @@ class DiktatGradlePluginFunctionalTest {
     }
 
     @Test
+    fun `qqq`() {
+        val result = runDiktat(testProjectDir, shouldSucceed = false)
+
+        val diktatCheckBuildResult = result.task(":$DIKTAT_CHECK_TASK")
+        requireNotNull(diktatCheckBuildResult)
+        Assertions.assertEquals(TaskOutcome.FAILED, diktatCheckBuildResult.outcome)
+        Assertions.assertTrue(
+                result.output.contains("[HEADER_MISSING_OR_WRONG_COPYRIGHT]")
+        )
+    }
+
+    @Test
     fun `should execute diktatCheck with explicit inputs`() {
         buildFile.appendText(
             """${System.lineSeparator()}
@@ -148,6 +160,8 @@ class DiktatGradlePluginFunctionalTest {
         val result = runDiktat(testProjectDir, shouldSucceed = false, arguments = listOf("--info")) {
             withGradleVersion("5.0")
         }
+
+        println("=====================" + testProjectDir.root.listFiles().size)
 
         val diktatCheckBuildResult = result.task(":$DIKTAT_CHECK_TASK")
         requireNotNull(diktatCheckBuildResult)

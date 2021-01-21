@@ -19,6 +19,11 @@ open class DiktatExtension {
     var debug = false
 
     /**
+     * Type of the reporter to use
+     */
+    var reporterType: String = "plain"
+
+    /**
      * Path to diktat yml config file. Can be either absolute or relative to project's root directory.
      * Default value: `diktat-analysis.yml` in rootDir.
      */
