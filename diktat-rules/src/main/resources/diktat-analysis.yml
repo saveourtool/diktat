@@ -361,6 +361,9 @@
   enabled: true
   configuration:
     maxLambdaLength: 10 # max length of lambda without parameters
+# Checks that using unnecessary, custom label
+- name: CUSTOM_LABEL
+  enabled: true
 # Checks that property in KDoc present in class
 - name: KDOC_EXTRA_PROPERTY
   enabled: true

@@ -3,11 +3,14 @@
 package org.cqfn.diktat.ruleset.utils
 
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
+import com.pinterest.ktlint.core.ast.ElementType.DO_WHILE
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
+import com.pinterest.ktlint.core.ast.ElementType.FOR
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.SEMICOLON
+import com.pinterest.ktlint.core.ast.ElementType.WHILE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 
 /**
@@ -24,6 +27,7 @@ internal const val SET_PREFIX = "set"
 val emptyBlockList = listOf(LBRACE, WHITE_SPACE, SEMICOLON, RBRACE)
 
 val commentType = listOf(BLOCK_COMMENT, EOL_COMMENT, KDOC)
+val loopType = listOf(FOR, WHILE, DO_WHILE)
 val copyrightWords = setOf("copyright", "版权")
 
 internal const val EMPTY_BLOCK_TEXT = "{}"
