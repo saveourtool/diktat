@@ -65,12 +65,11 @@ class InlineClassesRule(private val configRule: List<RulesConfig>) : Rule("inlin
     }
 
     private fun isExtendingClass(node: ASTNode): Boolean =
-        node
-            .getFirstChildWithType(SUPER_TYPE_LIST)
-            ?.children()
-            ?.any { it.hasChildOfType(CONSTRUCTOR_CALLEE) }
-            ?: false
-
+            node
+                .getFirstChildWithType(SUPER_TYPE_LIST)
+                ?.children()
+                ?.any { it.hasChildOfType(CONSTRUCTOR_CALLEE) }
+                ?: false
 
     companion object {
         val goodModifiers = listOf(PUBLIC_KEYWORD, PRIVATE_KEYWORD, FINAL_KEYWORD, PROTECTED_KEYWORD, INTERNAL_KEYWORD)
