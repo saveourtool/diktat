@@ -110,7 +110,8 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             OPERATION_REFERENCE, EQ -> handleOperatorWithLineBreakAfter(node)
             in lineBreakBeforeOperators -> handleOperatorWithLineBreakBefore(node)
             LPAR -> handleOpeningParentheses(node)
-            COMMA -> handleComma(node)
+            COMMA -> handleCommaOrColon(node, "comma")
+            COLON -> handleCommaOrColon(node, "colon")
             BLOCK -> handleLambdaBody(node)
             RETURN -> handleReturnStatement(node)
             SUPER_TYPE_LIST, VALUE_PARAMETER_LIST, VALUE_ARGUMENT_LIST -> handleList(node)
@@ -215,9 +216,9 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     /**
-     * Check that newline is not placed before a comma
+     * Check that newline is not placed before a comma/colon
      */
-    private fun handleComma(node: ASTNode) {
+    private fun handleCommaOrColon(node: ASTNode, text: String) {
         val prevNewLine = node
             .parent({ it.treePrev != null }, strict = false)
             ?.treePrev
@@ -225,7 +226,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
                 it.elementType == WHITE_SPACE && it.text.contains("\n")
             }
         prevNewLine?.let {
-            WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, "newline should be placed only after comma", node.startOffset, node) {
+            WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, "newline should be placed only after $text", node.startOffset, node) {
                 it.treeParent.removeChild(it)
             }
         }

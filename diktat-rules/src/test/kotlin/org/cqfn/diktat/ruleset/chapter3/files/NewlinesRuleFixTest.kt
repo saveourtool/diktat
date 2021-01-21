@@ -47,6 +47,12 @@ class NewlinesRuleFixTest : FixTestBase("test/paragraph3/newlines", ::NewlinesRu
 
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
+    fun `should fix wrong newlines around colon`() {
+        fixAndCompare("CommaExpected.kt", "CommaTest.kt")
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
     fun `should fix wrong newlines in lambdas`() {
         fixAndCompare("LambdaExpected.kt", "LambdaTest.kt")
     }

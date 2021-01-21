@@ -31,6 +31,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
     private val functionalStyleWarn = "${WRONG_NEWLINES.warnText()} should follow functional style at"
     private val lparWarn = "${WRONG_NEWLINES.warnText()} opening parentheses should not be separated from constructor or function name"
     private val commaWarn = "${WRONG_NEWLINES.warnText()} newline should be placed only after comma"
+    private val colonWarn = "${WRONG_NEWLINES.warnText()} newline should be placed only after colon"
     private val lambdaWithArrowWarn = "${WRONG_NEWLINES.warnText()} in lambda with several lines in body newline should be placed after an arrow"
     private val lambdaWithoutArrowWarn = "${WRONG_NEWLINES.warnText()} in lambda with several lines in body newline should be placed after an opening brace"
     private val singleReturnWarn = "${WRONG_NEWLINES.warnText()} functions with single return statement should be simplified to expression body"
@@ -310,6 +311,23 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
             """.trimMargin(),
             LintError(2, 9, ruleId, commaWarn, true),
             LintError(5, 9, ruleId, commaWarn, true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
+    fun `newline should be placed only after colon`() {
+        lintMethod(
+            """
+                    |fun foo(a
+                    |        : Int,
+                    |        b
+                    |        : Int) {
+                    |    bar(a, b)
+                    |}
+            """.trimMargin(),
+            LintError(2, 9, ruleId, colonWarn, true),
+            LintError(4, 9, ruleId, colonWarn, true)
         )
     }
 
