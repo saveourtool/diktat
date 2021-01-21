@@ -43,6 +43,7 @@ class InlineClassesRule(private val configRule: List<RulesConfig>) : Rule("inlin
     }
 
     private fun handleClasses(classPsi: KtClass) {
+        // Fixme: In Kotlin 1.4.30 inline classes may be used with internal constructors. When it will be released need to check it
         if (hasValidProperties(classPsi) &&
                 !isExtendingClass(classPsi.node) &&
                 classPsi.node.getFirstChildWithType(MODIFIER_LIST)?.getChildren(null)?.all { it.elementType in goodModifiers } != false) {
