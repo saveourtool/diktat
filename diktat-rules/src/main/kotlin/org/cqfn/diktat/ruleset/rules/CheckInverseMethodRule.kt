@@ -43,7 +43,7 @@ class CheckInverseMethodRule(private val configRules: List<RulesConfig>) : Rule(
             .treeParent
             .siblings(forward = false)
             .takeWhile { it.elementType in intermediateTokens }
-            .firstOrNull { it.elementType == OPERATION_REFERENCE}
+            .firstOrNull { it.elementType == OPERATION_REFERENCE }
         if (operationRef?.text == "!") {
             INVERSE_FUNCTION_PREFERRED.warnAndFix(configRules, emitWarn, isFixMode, "${methodMap[node.text]} instead of !${node.text}", node.startOffset, node) {
                 val callExpression = CompositeElement(CALL_EXPRESSION)

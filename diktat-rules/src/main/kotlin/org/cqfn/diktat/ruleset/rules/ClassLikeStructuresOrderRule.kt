@@ -95,7 +95,7 @@ class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) :
             unusedClasses)
             .allBlockFlattened()
             .map { astNode ->
-                Pair(astNode, astNode.siblings(false).takeWhile { it.elementType == WHITE_SPACE || it.isPartOfComment()}.toList())
+                Pair(astNode, astNode.siblings(false).takeWhile { it.elementType == WHITE_SPACE || it.isPartOfComment() }.toList())
             }
 
         val classChildren = node.children().filter { it.elementType in childrenTypes }.toList()

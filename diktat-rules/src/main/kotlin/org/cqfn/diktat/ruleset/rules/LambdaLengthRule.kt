@@ -45,7 +45,7 @@ class LambdaLengthRule(private val configRules: List<RulesConfig>) : Rule("lambd
                     node.treeParent.removeChild(node)
                 }
             }
-            val isIt = copyNode.findAllNodesWithSpecificType(ElementType.REFERENCE_EXPRESSION).map {re -> re.text}.contains("it")
+            val isIt = copyNode.findAllNodesWithSpecificType(ElementType.REFERENCE_EXPRESSION).map { re -> re.text }.contains("it")
             val parameters = node.findChildByType(ElementType.FUNCTION_LITERAL)?.findChildByType(ElementType.VALUE_PARAMETER_LIST)
             if (parameters == null && isIt) {
                 Warnings.TOO_MANY_LINES_IN_LAMBDA.warn(configRules, emitWarn, isFixMode,
