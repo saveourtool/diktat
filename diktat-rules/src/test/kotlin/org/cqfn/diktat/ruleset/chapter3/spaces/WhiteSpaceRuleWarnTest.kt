@@ -10,6 +10,7 @@ import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
+@Suppress("LargeClass")
 class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
     private val ruleId = "$DIKTAT_RULE_SET_ID:horizontal-whitespace"
     private val eolSpaceWarn = "${WRONG_WHITESPACE.warnText()} there should be no spaces in the end of line"
@@ -146,11 +147,11 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
         lintMethod(
             """
                     |fun foo(a: (Int) -> Int, b: Int) {
-                    |    foo({x: Int -> x}, 5)
+                    |    foo({ x: Int -> x }, 5)
                     |}
                     |
                     |fun bar(a: (Int) -> Int, b: Int) {
-                    |    bar( {x: Int -> x}, 5)
+                    |    bar( { x: Int -> x }, 5)
                     |}
                     |
                     |val lambda = { x: Int -> 2 * x }
@@ -613,6 +614,60 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
             """.trimMargin(),
             LintError(9, 5, ruleId, tokenWarn("--", null, 1, null, 0), true),
             LintError(10, 18, ruleId, tokenWarn("++", 1, null, 0, null), true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
+    fun `check whitespaces around braces in lambda example - good`() {
+        lintMethod(
+            """
+                |fun foo() {
+                |    list.map { it.text }
+                |}
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
+    fun `check whitespaces around braces in lambda example - bad`() {
+        lintMethod(
+            """
+                |fun foo() {
+                |    list.map {it.text}
+                |}
+            """.trimMargin(),
+            LintError(2, 14, ruleId, "${WRONG_WHITESPACE.warnText()} there should be a whitespace after {", true),
+            LintError(2, 22, ruleId, "${WRONG_WHITESPACE.warnText()} there should be a whitespace before }", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
+    fun `should not trigger on braces with empty body #1`() {
+        lintMethod(
+            """
+                |val project = KotlinCoreEnvironment.createForProduction(
+                |   Disposable {},
+                |   compilerConfiguration,
+                |   EnvironmentConfigFiles.JVM_CONFIG_FILES
+                |).project
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
+    fun `should not trigger on braces with empty body #2`() {
+        lintMethod(
+            """
+                |val project = KotlinCoreEnvironment.createForProduction(
+                |   Disposable { },
+                |   compilerConfiguration,
+                |   EnvironmentConfigFiles.JVM_CONFIG_FILES
+                |).project
+            """.trimMargin()
         )
     }
 }

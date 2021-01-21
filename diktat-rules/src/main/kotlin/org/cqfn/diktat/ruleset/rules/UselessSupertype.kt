@@ -139,7 +139,7 @@ class UselessSupertype(private val configRules: List<RulesConfig>) : Rule("usele
                             it.getIdentifierName()!!.text in methodsName
                 }
             overrideFunctions.forEach {
-                functionNameMap.compute(it.getIdentifierName()!!.text) { _, oldValue -> (oldValue ?: 0) + 1}
+                functionNameMap.compute(it.getIdentifierName()!!.text) { _, oldValue -> (oldValue ?: 0) + 1 }
             }
         }
         return functionNameMap.toMap()

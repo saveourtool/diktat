@@ -205,6 +205,8 @@ public object WarningNames {
 
     public const val TOO_MANY_LINES_IN_LAMBDA: String = "TOO_MANY_LINES_IN_LAMBDA"
 
+    public const val CUSTOM_LABEL: String = "CUSTOM_LABEL"
+
     public const val SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY: String =
             "SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY"
 

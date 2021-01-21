@@ -35,7 +35,7 @@ class AsyncAndSyncRule(private val configRules: List<RulesConfig>) : Rule("sync-
     }
 
     private fun checkRunBlocking(node: ASTNode) {
-        node.parent({it.isAsync() || it.isSuspend()})?.let {
+        node.parent({ it.isAsync() || it.isSuspend() })?.let {
             RUN_BLOCKING_INSIDE_ASYNC.warn(configRules, emitWarn, isFixMode, node.text, node.startOffset, node)
         }
     }

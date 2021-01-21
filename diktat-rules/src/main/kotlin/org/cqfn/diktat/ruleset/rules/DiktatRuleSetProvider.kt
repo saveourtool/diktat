@@ -124,6 +124,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
             ::PropertyAccessorFields,
             ::AbstractClassesRule,
             ::SingleInitRule,
+            ::CustomLabel,
             ::VariableGenericTypeDeclarationRule,
             ::LongNumericalValuesSeparatedRule,
             ::NestedFunctionBlock,

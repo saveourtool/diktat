@@ -43,7 +43,7 @@ class OverloadingArgumentsFunction(private val configRules: List<RulesConfig>) :
             .map { it.psi as KtFunction }
             .filter { it.nameIdentifier!!.text == funPsi.nameIdentifier!!.text && it.valueParameters.containsAll(funPsi.valueParameters) }
             .filter { funPsi.node.findChildBefore(IDENTIFIER, TYPE_REFERENCE)?.text == it.node.findChildBefore(IDENTIFIER, TYPE_REFERENCE)?.text }
-            .filter {funPsi.node.findChildAfter(IDENTIFIER, TYPE_REFERENCE)?.text == it.node.findChildAfter(IDENTIFIER, TYPE_REFERENCE)?.text }
+            .filter { funPsi.node.findChildAfter(IDENTIFIER, TYPE_REFERENCE)?.text == it.node.findChildAfter(IDENTIFIER, TYPE_REFERENCE)?.text }
             .toList()
         if (allOverloadFunction.isNotEmpty()) {
             WRONG_OVERLOADING_FUNCTION_ARGUMENTS.warn(configRules, emitWarn, isFixMode, funPsi.node.findChildByType(IDENTIFIER)!!.text, funPsi.startOffset, funPsi.node)

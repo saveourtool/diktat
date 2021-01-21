@@ -146,3 +146,29 @@ GlobalScope.async {
 #### <a name="r5.2.5"></a> 5.2.5 Long lambdas should have explicit parameters
 The lambda without parameters shouldn't be too long.
 If a lambda is too long, it can confuse the user. Lambda without parameters should consist of 10 lines (non-empty and non-comment) in total.
+
+#### <a name="r5.2.6"></a> 5.2.6 Avoid using unnecessary, custom label 
+Expressions with unnecessary, custom labels generally increase complexity and worsen the maintainability of the code.
+
+**Invalid example**:
+```kotlin
+run lab@ {
+    list.forEach {
+        return@lab
+    }
+}
+```
+
+**Valid example**:
+```kotlin
+list.forEachIndexed { index, i ->
+    return@forEachIndexed
+}
+
+lab@ for(i: Int in q) {
+    for (j: Int in q) {
+        println(i)
+        break@lab
+    }
+}
+```

@@ -185,10 +185,10 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
                         // FixMe: cover fixes with tests
                         val correctVariableName = variableName.text.toLowerCamelCase()
                         variableName
-                            .parent({it.elementType == FILE})
+                            .parent({ it.elementType == FILE })
                             ?.findAllVariablesWithUsages { it.name == variableName.text }
                             ?.flatMap { it.value.toList() }
-                            ?.forEach { (it.node.firstChildNode as LeafPsiElement).replaceWithText(correctVariableName)}
+                            ?.forEach { (it.node.firstChildNode as LeafPsiElement).replaceWithText(correctVariableName) }
                         (variableName as LeafPsiElement).replaceWithText(correctVariableName)
                     }
                 }
