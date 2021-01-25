@@ -31,10 +31,12 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
     private val functionalStyleWarn = "${WRONG_NEWLINES.warnText()} should follow functional style at"
     private val lparWarn = "${WRONG_NEWLINES.warnText()} opening parentheses should not be separated from constructor or function name"
     private val commaWarn = "${WRONG_NEWLINES.warnText()} newline should be placed only after comma"
-    private val colonWarn = "${WRONG_NEWLINES.warnText()} newline should be placed only after colon"
+    private val prevColonWarn = "${WRONG_NEWLINES.warnText()} newline shouldn't be placed before colon"
+    private val nextColonWarn = "${WRONG_NEWLINES.warnText()} newline shouldn't be placed after colon"
     private val lambdaWithArrowWarn = "${WRONG_NEWLINES.warnText()} in lambda with several lines in body newline should be placed after an arrow"
     private val lambdaWithoutArrowWarn = "${WRONG_NEWLINES.warnText()} in lambda with several lines in body newline should be placed after an opening brace"
     private val singleReturnWarn = "${WRONG_NEWLINES.warnText()} functions with single return statement should be simplified to expression body"
+    private val listParameter = "${WRONG_NEWLINES.warnText()} list parameter should be placed on different lines in declaration of <foo>"
 
     @Test
     @Tag(WarningNames.REDUNDANT_SEMICOLON)
@@ -316,7 +318,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
 
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
-    fun `newline should be placed only after colon`() {
+    fun `newline shouldn't be placed before colon`() {
         lintMethod(
             """
                     |fun foo(a
@@ -326,8 +328,68 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                     |    bar(a, b)
                     |}
             """.trimMargin(),
-            LintError(2, 9, ruleId, colonWarn, true),
-            LintError(4, 9, ruleId, colonWarn, true)
+            LintError(2, 9, ruleId, prevColonWarn, true),
+            LintError(4, 9, ruleId, prevColonWarn, true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
+    fun `One line parameters list sheet must contain no more than 2 parameters`() {
+        lintMethod(
+            """
+                    |fun foo(a: Int, b: Int, c: Int) {
+                    |      bar(a, b)
+                    |}
+            """.trimMargin(),
+            LintError(1, 8, ruleId, listParameter, true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
+    fun `One line parameters list sheet must be no longer than the maximum value`() {
+        lintMethod(
+            """
+                    |fun foo(parameterOneLengthFortyFourCharacters: Int, parameterTwoLengthFortyFourCharacters: Int) {
+                    |      bar(a, b)
+                    |}
+            """.trimMargin(),
+            LintError(1, 8, ruleId, listParameter, true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
+    fun `newline shouldn't be placed after colon`() {
+        lintMethod(
+            """
+                    |fun foo(a:
+                    |      Int,
+                    |      b:
+                    |      Int) {
+                    |      bar(a, b)
+                    |}
+            """.trimMargin(),
+            LintError(1, 10, ruleId, nextColonWarn, true),
+            LintError(3, 8, ruleId, nextColonWarn, true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
+    fun `newline should be placed only around colon`() {
+        lintMethod(
+            """
+                    |fun foo(a:
+                    |      Int, 
+                    |      b
+                    |      : Int,
+                    |      c: Int) {
+                    |}
+            """.trimMargin(),
+            LintError(1, 10, ruleId, nextColonWarn, true),
+            LintError(4, 7, ruleId, prevColonWarn, true)
         )
     }
 

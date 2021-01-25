@@ -3,13 +3,24 @@ package org.cqfn.diktat.ruleset.rules.chapter3.files
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
+import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.ListOfList
 import org.cqfn.diktat.ruleset.constants.Warnings.COMPLEX_EXPRESSION
 import org.cqfn.diktat.ruleset.constants.Warnings.REDUNDANT_SEMICOLON
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_NEWLINES
-import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.ruleset.utils.*
+import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
+import org.cqfn.diktat.ruleset.utils.emptyBlockList
+import org.cqfn.diktat.ruleset.utils.extractLineOfText
+import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
+import org.cqfn.diktat.ruleset.utils.getIdentifierName
+import org.cqfn.diktat.ruleset.utils.isBeginByNewline
+import org.cqfn.diktat.ruleset.utils.isEol
+import org.cqfn.diktat.ruleset.utils.isFollowedByNewline
+import org.cqfn.diktat.ruleset.utils.isSingleLineIfElse
+import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
+import org.cqfn.diktat.ruleset.utils.log
 
+import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.ANDAND
 import com.pinterest.ktlint.core.ast.ElementType.ARROW
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
@@ -69,6 +80,7 @@ import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.nextCodeSibling
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevCodeSibling
+import com.pinterest.ktlint.core.ast.visit
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -110,8 +122,8 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             OPERATION_REFERENCE, EQ -> handleOperatorWithLineBreakAfter(node)
             in lineBreakBeforeOperators -> handleOperatorWithLineBreakBefore(node)
             LPAR -> handleOpeningParentheses(node)
-            COMMA -> handleCommaOrColon(node, "comma")
-            COLON -> handleCommaOrColon(node, "colon")
+            COMMA -> handleComma(node)
+            VALUE_PARAMETER_LIST -> handleColon(node)
             BLOCK -> handleLambdaBody(node)
             RETURN -> handleReturnStatement(node)
             SUPER_TYPE_LIST, VALUE_PARAMETER_LIST, VALUE_ARGUMENT_LIST -> handleList(node)
@@ -216,9 +228,9 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     /**
-     * Check that newline is not placed before a comma/colon
+     * Check that newline is not placed before a comma
      */
-    private fun handleCommaOrColon(node: ASTNode, text: String) {
+    private fun handleComma(node: ASTNode) {
         val prevNewLine = node
             .parent({ it.treePrev != null }, strict = false)
             ?.treePrev
@@ -226,10 +238,52 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
                 it.elementType == WHITE_SPACE && it.text.contains("\n")
             }
         prevNewLine?.let {
-            WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, "newline should be placed only after $text", node.startOffset, node) {
+            WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, "newline should be placed only after comma", node.startOffset, node) {
                 it.treeParent.removeChild(it)
             }
         }
+    }
+
+    private fun lengthFunListPar(node: ASTNode) {
+        val sizeParamList = node.findAllNodesWithSpecificType(VALUE_PARAMETER).size
+        if (!node.text.contains("\n") && (sizeParamList > configuration.maxParametersInOneLine || (node.text.length - 2) > configuration.maxLengthOneLine)
+        ) {
+            handleValueParameterList(node)
+        }
+    }
+
+    /**
+     * Check that newline is not placed before or after a colon
+     */
+    private fun handleColon(node: ASTNode) {
+        node.visit { colonNode ->
+            if (colonNode.elementType == COLON) {
+                val prevNewLine = colonNode
+                    .parent({ it.treePrev != null }, strict = false)
+                    ?.treePrev
+                    ?.takeIf {
+                        it.elementType == WHITE_SPACE && it.text.contains("\n")
+                    }
+                prevNewLine?.let {
+                    WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, "newline shouldn't be placed before colon", colonNode.startOffset, colonNode) {
+                        it.treeParent.removeChild(it)
+                    }
+                }
+                val nextNewLine = colonNode
+                    .parent({ it.treeNext != null }, strict = false)
+                    ?.treeNext
+                    ?.takeIf {
+                        it.elementType == WHITE_SPACE && it.text.contains("\n")
+                    }
+                nextNewLine?.let {
+                    WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, "newline shouldn't be placed after colon", colonNode.startOffset, colonNode) {
+                        it.treeParent.addChild(PsiWhiteSpaceImpl(" "), it)
+                        it.treeParent.removeChild(it)
+                    }
+                }
+            }
+        }
+        lengthFunListPar(node)
     }
 
     private fun handleLambdaBody(node: ASTNode) {
@@ -365,6 +419,38 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
         }
 
     @Suppress("AVOID_NULL_CHECKS")
+    private fun handleValueParameterList(node: ASTNode) {
+        val indent = node.parents().toList().filter { it.elementType == FUN }
+            .get(0).text.substringBefore('(')
+            .length + 1
+
+        node
+            .children()
+            .filter { it.elementType == VALUE_PARAMETER }
+            .toList()
+            .takeIf { it.isNotEmpty() }
+            ?.let { invalidParameter ->
+                WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
+                    "list parameter should be placed on different lines in declaration of <${node.getParentIdentifier()}>", node.startOffset, node) {
+                    invalidParameter.forEachIndexed { index, param ->
+                        if (index > 0) {
+                            param.treeParent.addChild(PsiWhiteSpaceImpl("\n"), param)
+                            var x = 0
+                            while (x < indent) {
+                                param.treeParent.addChild(PsiWhiteSpaceImpl(" "), param)
+                                x++
+                            }
+                        }
+                        if (param.treeNext.elementType == COMMA) {
+                            if (param.treeNext.treeNext.elementType == WHITE_SPACE) {
+                                param.treeParent.removeChild(param.treeNext.treeNext)
+                            }
+                        }
+                    }
+                }
+            }
+    }
+
     private fun handleValueParameterList(node: ASTNode, entryType: String) = node
         .children()
         .filter {
@@ -554,6 +640,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
          * If the number of parameters on one line is more than this threshold, all parameters should be placed on separate lines.
          */
         val maxParametersInOneLine = config["maxParametersInOneLine"]?.toInt() ?: 2
+        val maxLengthOneLine = config["maxLengthOneLine"]?.toInt() ?: 80
         val maxCallsInOneLine = config["maxCallsInOneLine"]?.toInt() ?: MAX_CALLS_IN_ONE_LINE
     }
 
