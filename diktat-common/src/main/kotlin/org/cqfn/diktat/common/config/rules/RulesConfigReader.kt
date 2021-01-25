@@ -117,6 +117,13 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
     }
 
     /**
+     * Get disable chapters from configuration
+     */
+    val disabledChapters: String? by lazy {
+        configuration?.get("disabledChapters")
+    }
+
+    /**
      * False if configuration has been read from config file, true if defaults are used
      */
     val isDefault = configuration == null
@@ -148,10 +155,3 @@ fun List<RulesConfig>.isRuleEnabled(rule: Rule): Boolean {
     val ruleMatched = getRuleConfig(rule)
     return ruleMatched?.enabled ?: true
 }
-
-/**
- * Get disable chapters from configuration
- *
- * @return parameter in [DIKTAT_COMMON]
- */
-fun List<RulesConfig>.disabledChapters() = getCommonConfig()?.configuration?.get("disableChapters")

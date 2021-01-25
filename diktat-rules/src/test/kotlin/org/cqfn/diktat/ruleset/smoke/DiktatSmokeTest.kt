@@ -29,7 +29,7 @@ import java.time.LocalDate
 
 import kotlinx.serialization.encodeToString
 
-typealias ruleToConfig = Map<Warnings, Map<String, String>>
+typealias ruleToConfig = Map<String, Map<String, String>>
 
 /**
  * Test for [DiktatRuleSetProvider] in autocorrect mode as a whole. All rules are applied to a file.
@@ -54,8 +54,8 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
                     rulesConfig.add(RulesConfig(warning.name, enabled = false, configuration = emptyMap()))
                 }
                 rulesToOverride.forEach { (warning, configuration) ->
-                    rulesConfig.removeIf { it.name == warning.name }
-                    rulesConfig.add(RulesConfig(warning.name, enabled = true, configuration = configuration))
+                    rulesConfig.removeIf { it.name == warning }
+                    rulesConfig.add(RulesConfig(warning, enabled = true, configuration = configuration))
                 }
             }
         createTempFile()
@@ -110,7 +110,7 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     fun `smoke test #5`() {
         overrideRulesConfig(emptyList(),
             mapOf(
-                Warnings.HEADER_MISSING_OR_WRONG_COPYRIGHT to mapOf(
+                Warnings.HEADER_MISSING_OR_WRONG_COPYRIGHT.name to mapOf(
                     "isCopyrightMandatory" to "true",
                     "copyrightText" to """|Copyright 2018-${LocalDate.now().year} John Doe.
                                     |    Licensed under the Apache License, Version 2.0 (the "License");
@@ -185,7 +185,7 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
                 HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE  // because build.gradle.kts doesn't need extra comments, and this rule can be manually disabled if needed
             ),
             mapOf(
-                Warnings.WRONG_INDENTATION to mapOf(
+                Warnings.WRONG_INDENTATION.name to mapOf(
                     "newlineAtEnd" to "false",
                     "extendedIndentOfParameters" to "false",
                 )
@@ -199,12 +199,27 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     @Test
     @Tag("DiktatRuleSetProvider")
     fun `disable charters`() {
-        val rulesConfigPascalCaseEnum: List<RulesConfig> = listOf(
-            RulesConfig(DIKTAT_COMMON, true,
-                mapOf("disableChapters" to "1,coments,3,4,5,6"))  // mistake made on purpose
+        overrideRulesConfig(
+            emptyList(),
+            mapOf(
+                DIKTAT_COMMON to mapOf(
+                    "domainName" to "org.cqfn.diktat",
+                    "disabledChapters" to "Naming,3,4,5,Classes"
+                )
+            )
         )
-        fixAndCompare("Example1Expected.kt", "Example1Test.kt", rulesConfigPascalCaseEnum)
-        unfixedLintErrors.assertEquals()
+        fixAndCompare("Example1-2Expected.kt", "Example1Test.kt")
+        unfixedLintErrors.assertEquals(
+            LintError(1, 1, "$DIKTAT_RULE_SET_ID:kdoc-formatting", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
+            LintError(3, 1, "$DIKTAT_RULE_SET_ID:kdoc-comments", "${MISSING_KDOC_TOP_LEVEL.warnText()} example", false),
+            LintError(3, 16, "$DIKTAT_RULE_SET_ID:kdoc-comments", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} isValid", false),
+            LintError(6, 5, "$DIKTAT_RULE_SET_ID:kdoc-comments", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} foo", false),
+            LintError(6, 5, "$DIKTAT_RULE_SET_ID:kdoc-methods", "${MISSING_KDOC_ON_FUNCTION.warnText()} foo", false),
+            LintError(8, 5, "$DIKTAT_RULE_SET_ID:kdoc-comments", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} foo", false),
+            LintError(10, 4, "$DIKTAT_RULE_SET_ID:kdoc-formatting", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
+            LintError(13, 9, "$DIKTAT_RULE_SET_ID:kdoc-formatting", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
+            LintError(18, 40, "$DIKTAT_RULE_SET_ID:kdoc-formatting", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false)
+        )
     }
 
     companion object {
