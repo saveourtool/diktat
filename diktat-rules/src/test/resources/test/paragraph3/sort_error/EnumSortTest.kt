@@ -46,3 +46,7 @@ enum class Alp {
 enum class IssueType {
     VCS, PROJECT_STRUCTURE, TESTS
 }
+
+enum class IssueType {
+    VCS,PROJECT_STRUCTURE,TESTS
+}

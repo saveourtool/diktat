@@ -13,6 +13,7 @@ import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.COMMA
 import com.pinterest.ktlint.core.ast.ElementType.CONST_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.ENUM_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
@@ -82,7 +83,14 @@ class SortRule(private val configRules: List<RulesConfig>) : Rule("sort-rule") {
         sortList: List<ASTNode>,
         nonSortList: List<ASTNode>,
         node: ASTNode) {
-        val spaceBefore = nonSortList.map { astNode -> astNode.prevSibling { it.elementType == WHITE_SPACE } }
+        val spaceBefore = nonSortList.map { astNode ->
+            val nodeBefore = astNode.prevSibling { it.elementType == WHITE_SPACE || it.elementType == ENUM_ENTRY }
+            if (nodeBefore?.elementType == WHITE_SPACE) {
+                nodeBefore
+            } else {
+                null
+            }
+        }
         val nodeBefore: ASTNode? = nonSortList.last().treeNext
         node.removeRange(nonSortList.first(), nonSortList.last().treeNext)
         sortList.forEachIndexed { nodeIndex, astNode ->
