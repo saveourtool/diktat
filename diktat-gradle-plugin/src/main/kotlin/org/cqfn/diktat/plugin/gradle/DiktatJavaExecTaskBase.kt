@@ -1,6 +1,6 @@
 package org.cqfn.diktat.plugin.gradle
 
-import com.pinterest.ktlint.reporter.html.HtmlReporter
+import com.pinterest.ktlint.reporter.checkstyle.CheckStyleReporter
 import com.pinterest.ktlint.reporter.json.JsonReporter
 import com.pinterest.ktlint.reporter.plain.PlainReporter
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.DIKTAT_CHECK_TASK
@@ -20,6 +20,7 @@ import org.gradle.api.tasks.VerificationTask
 import org.gradle.util.GradleVersion
 
 import java.io.File
+import java.io.PrintStream
 import javax.inject.Inject
 
 /**
@@ -53,21 +54,6 @@ open class DiktatJavaExecTaskBase @Inject constructor(
         } else {
             main = "com.pinterest.ktlint.Main"
         }
-        diktatExtension.reporter = when(diktatExtension.reporterType) {
-            "json" -> {
-                diktatConfiguration.dependencies.add(project.dependencies.create("com.pinterest.ktlint:ktlint-reporter-json:$KTLINT_VERSION"))
-                diktatConfiguration.dependencies.remove(diktatConfiguration.dependencies.find { it.name == "ktlint-reporter-plain" })
-                JsonReporter(System.out)
-            }
-            "html" -> {
-                diktatConfiguration.dependencies.add(project.dependencies.create("com.pinterest.ktlint:ktlint-reporter-html:$KTLINT_VERSION"))
-                diktatConfiguration.dependencies.remove(diktatConfiguration.dependencies.find { it.name == "ktlint-reporter-plain" })
-                HtmlReporter(System.out)
-            }
-            else -> {
-                PlainReporter(System.out)
-            }
-        }
         classpath = diktatConfiguration
         project.logger.debug("Setting diktatCheck classpath to ${diktatConfiguration.dependencies.toSet()}")
         if (diktatExtension.debug) {
@@ -100,6 +86,37 @@ open class DiktatJavaExecTaskBase @Inject constructor(
                 }
             diktatExtension.excludes.files.forEach {
                 addPattern(it, negate = true)
+            }
+
+            // Plain, checkstyle and json reporter are provided out of the box in ktlint
+            when (diktatExtension.reporterType) {
+                "json" -> {
+                    add("--reporter=json")
+                    diktatExtension.reporter = if (diktatExtension.output == "out") {
+                        JsonReporter(System.out)
+                    } else {
+//                        require(File(diktatExtension.output).exists())
+                        JsonReporter(PrintStream(File(diktatExtension.output)))
+                    }
+                }
+                "checkstyle" -> {
+                    add("--reporter=checkstyle,output=ktlint-report-in-checkstyle-format.xml")
+                    diktatExtension.reporter = if (diktatExtension.output == "out") {
+                        CheckStyleReporter(System.out)
+                    } else {
+//                        require(File(diktatExtension.output).exists())
+                        CheckStyleReporter(PrintStream(File(project.projectDir.path + diktatExtension.output)))
+                    }
+                }
+                else -> {
+                    add("--reporter=plain")
+                    diktatExtension.reporter = if (diktatExtension.output == "out") {
+                        PlainReporter(System.out)
+                    } else {
+//                        require(File(diktatExtension.output).exists())
+                        PlainReporter(PrintStream(File(diktatExtension.output)))
+                    }
+                }
             }
         }
         logger.debug("Setting JavaExec args to $args")

@@ -23,7 +23,7 @@ class DiktatJavaExecTaskTest {
     @Test
     fun `check command line for various inputs`() {
         assertCommandLineEquals(
-            listOf(null, combinePathParts("src", "**", "*.kt"))
+            listOf(null, combinePathParts("src", "**", "*.kt"), "--reporter=plain")
         ) {
             inputs = project.files("src/**/*.kt")
         }
@@ -32,7 +32,7 @@ class DiktatJavaExecTaskTest {
     @Test
     fun `check command line in debug mode`() {
         assertCommandLineEquals(
-            listOf(null, "--debug", combinePathParts("src", "**", "*.kt"))
+            listOf(null, "--debug", combinePathParts("src", "**", "*.kt"), "--reporter=plain")
         ) {
             inputs = project.files("src/**/*.kt")
             debug = true
@@ -43,7 +43,7 @@ class DiktatJavaExecTaskTest {
     fun `check command line with excludes`() {
         assertCommandLineEquals(
             listOf(null, combinePathParts("src", "**", "*.kt"),
-                "!${combinePathParts("src", "main", "kotlin", "generated")}"
+                "!${combinePathParts("src", "main", "kotlin", "generated")}", "--reporter=plain"
             )
         ) {
             inputs = project.files("src/**/*.kt")
@@ -77,15 +77,14 @@ class DiktatJavaExecTaskTest {
     }
 
     @Test
-    fun `check plain reporter type`() {
-        val task = project.registerDiktatTask {
+    fun `check command line has reporter type`() {
+        assertCommandLineEquals(
+            listOf(null, "--reporter=json")
+        ) {
             inputs = project.files()
             diktatConfigFile = project.file("../diktat-analysis.yml")
             reporterType = "json"
         }
-        Assertions.assertTrue(project.configurations.getByName("diktat").dependencies.any { it.name == "ktlint-reporter-json" })
-        Assertions.assertFalse(project.configurations.getByName("diktat").dependencies.any { it.name == "ktlint-reporter-plain" })
-        Assertions.assertEquals(File(project.projectDir.parentFile, "diktat-analysis.yml").absolutePath, task.systemProperties[DIKTAT_CONF_PROPERTY])
     }
 
     @Test

@@ -1,8 +1,6 @@
 package org.cqfn.diktat.plugin.gradle
 
-import com.pinterest.ktlint.reporter.html.HtmlReporter
 import com.pinterest.ktlint.reporter.plain.PlainReporter
-import com.pinterest.ktlint.reporter.json.JsonReporter
 import generated.DIKTAT_VERSION
 import generated.KTLINT_VERSION
 import org.gradle.api.Plugin
@@ -40,7 +38,6 @@ class DiktatGradlePlugin : Plugin<Project> {
                     )
                 )
             }))
-            configuration.dependencies.add(project.dependencies.create("com.pinterest.ktlint:ktlint-reporter-plain:$KTLINT_VERSION"))
             configuration.dependencies.add(project.dependencies.create("org.cqfn.diktat:diktat-rules:$DIKTAT_VERSION"))
         }
 

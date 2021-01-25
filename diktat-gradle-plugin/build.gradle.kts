@@ -31,7 +31,7 @@ dependencies {
     }
     implementation("com.pinterest.ktlint:ktlint-reporter-plain:$ktlintVersion")
     implementation("com.pinterest.ktlint:ktlint-reporter-json:$ktlintVersion")
-    implementation("com.pinterest.ktlint:ktlint-reporter-html:$ktlintVersion")
+    implementation("com.pinterest.ktlint:ktlint-reporter-checkstyle:$ktlintVersion")
     implementation("org.cqfn.diktat:diktat-rules:$diktatVersion")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")

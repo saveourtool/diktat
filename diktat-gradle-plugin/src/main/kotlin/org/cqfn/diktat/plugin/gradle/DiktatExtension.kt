@@ -2,6 +2,7 @@ package org.cqfn.diktat.plugin.gradle
 
 import com.pinterest.ktlint.core.Reporter
 import org.gradle.api.file.FileCollection
+import org.gradle.api.tasks.Internal
 import java.io.File
 
 /**
@@ -22,6 +23,12 @@ open class DiktatExtension {
      * Type of the reporter to use
      */
     var reporterType: String = "plain"
+
+    /**
+     * Type of output
+     * Default: System.out
+     */
+    var output: String = "out"
 
     /**
      * Path to diktat yml config file. Can be either absolute or relative to project's root directory.
