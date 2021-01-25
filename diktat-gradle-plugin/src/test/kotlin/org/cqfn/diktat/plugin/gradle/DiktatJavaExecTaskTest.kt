@@ -77,6 +77,18 @@ class DiktatJavaExecTaskTest {
     }
 
     @Test
+    fun `check plain reporter type`() {
+        val task = project.registerDiktatTask {
+            inputs = project.files()
+            diktatConfigFile = project.file("../diktat-analysis.yml")
+            reporterType = "json"
+        }
+        Assertions.assertTrue(project.configurations.getByName("diktat").dependencies.any { it.name == "ktlint-reporter-json" })
+        Assertions.assertFalse(project.configurations.getByName("diktat").dependencies.any { it.name == "ktlint-reporter-plain" })
+        Assertions.assertEquals(File(project.projectDir.parentFile, "diktat-analysis.yml").absolutePath, task.systemProperties[DIKTAT_CONF_PROPERTY])
+    }
+
+    @Test
     fun `check system property with multiproject build with default config`() {
         setupMultiProject()
         val subproject = project.subprojects.first()

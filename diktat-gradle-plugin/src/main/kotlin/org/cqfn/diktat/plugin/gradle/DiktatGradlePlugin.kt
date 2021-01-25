@@ -40,6 +40,7 @@ class DiktatGradlePlugin : Plugin<Project> {
                     )
                 )
             }))
+            configuration.dependencies.add(project.dependencies.create("com.pinterest.ktlint:ktlint-reporter-plain:$KTLINT_VERSION"))
             configuration.dependencies.add(project.dependencies.create("org.cqfn.diktat:diktat-rules:$DIKTAT_VERSION"))
         }
 

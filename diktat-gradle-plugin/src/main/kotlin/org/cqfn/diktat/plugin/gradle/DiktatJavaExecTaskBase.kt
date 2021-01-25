@@ -55,15 +55,16 @@ open class DiktatJavaExecTaskBase @Inject constructor(
         }
         diktatExtension.reporter = when(diktatExtension.reporterType) {
             "json" -> {
-                diktatConfiguration.dependencies.add(project.dependencies.create("com.pinterest.ktlint:ktlint-reporter-html:$KTLINT_VERSION"))
+                diktatConfiguration.dependencies.add(project.dependencies.create("com.pinterest.ktlint:ktlint-reporter-json:$KTLINT_VERSION"))
+                diktatConfiguration.dependencies.remove(diktatConfiguration.dependencies.find { it.name == "ktlint-reporter-plain" })
                 JsonReporter(System.out)
             }
             "html" -> {
-                diktatConfiguration.dependencies.add(project.dependencies.create("com.pinterest.ktlint:ktlint-reporter-json:$KTLINT_VERSION"))
+                diktatConfiguration.dependencies.add(project.dependencies.create("com.pinterest.ktlint:ktlint-reporter-html:$KTLINT_VERSION"))
+                diktatConfiguration.dependencies.remove(diktatConfiguration.dependencies.find { it.name == "ktlint-reporter-plain" })
                 HtmlReporter(System.out)
             }
             else -> {
-                diktatConfiguration.dependencies.add(project.dependencies.create("com.pinterest.ktlint:ktlint-reporter-plain:$KTLINT_VERSION"))
                 PlainReporter(System.out)
             }
         }
