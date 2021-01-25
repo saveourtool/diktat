@@ -17,8 +17,10 @@ import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.SEMICOLON
+import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.nextSibling
+import com.pinterest.ktlint.core.ast.prevSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -80,12 +82,11 @@ class SortRule(private val configRules: List<RulesConfig>) : Rule("sort-rule") {
         sortList: List<ASTNode>,
         nonSortList: List<ASTNode>,
         node: ASTNode) {
+        val spaceBefore = nonSortList.map { astNode -> astNode.prevSibling { it.elementType == WHITE_SPACE } }
         val nodeBefore: ASTNode? = nonSortList.last().treeNext
         node.removeRange(nonSortList.first(), nonSortList.last().treeNext)
         sortList.forEachIndexed { nodeIndex, astNode ->
-            if (nodeIndex != 0) {
-                node.addChild(PsiWhiteSpaceImpl("\n"), nodeBefore)
-            }
+            spaceBefore[nodeIndex]?.let { node.addChild(it, nodeBefore) }
             node.addChild(astNode, nodeBefore)
         }
     }

@@ -45,6 +45,10 @@ class Example {
     }
 }
 
+enum class IssueType {
+    PROJECT_STRUCTURE, TESTS, VCS
+}
+
 class Foo {
     /**
      * @implNote lorem ipsum
