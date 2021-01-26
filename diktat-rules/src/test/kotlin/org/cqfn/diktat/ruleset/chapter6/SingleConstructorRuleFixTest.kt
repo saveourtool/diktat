@@ -1,6 +1,6 @@
 package org.cqfn.diktat.ruleset.chapter6
 
-import org.cqfn.diktat.ruleset.rules.classes.SingleConstructorRule
+import org.cqfn.diktat.ruleset.rules.chapter6.classes.SingleConstructorRule
 import org.cqfn.diktat.util.FixTestBase
 
 import generated.WarningNames

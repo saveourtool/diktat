@@ -1,6 +1,6 @@
 package org.cqfn.diktat.ruleset.chapter2
 
-import org.cqfn.diktat.ruleset.rules.kdoc.KdocMethods
+import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocMethods
 import org.cqfn.diktat.util.FixTestBase
 
 import generated.WarningNames
