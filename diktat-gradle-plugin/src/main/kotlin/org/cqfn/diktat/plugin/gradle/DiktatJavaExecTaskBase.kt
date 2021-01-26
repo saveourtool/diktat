@@ -118,19 +118,11 @@ open class DiktatJavaExecTaskBase @Inject constructor(
         val flag: StringBuilder = StringBuilder()
 
         // Plain, checkstyle and json reporter are provided out of the box in ktlint
-        when    (diktatExtension.reporterType) {
-            "json" -> {
-                flag.append("--reporter=json")
-            }
-            "html" -> {
-                flag.append("--reporter=html")
-            }
-            "checkstyle" -> {
-                flag.append("--reporter=checkstyle")
-            }
-            else -> {
-                customReporter(diktatExtension, flag)
-            }
+        when (diktatExtension.reporterType) {
+            "json" -> flag.append("--reporter=json")
+            "html" -> flag.append("--reporter=html")
+            "checkstyle" -> flag.append("--reporter=checkstyle")
+            else -> customReporter(diktatExtension, flag)
         }
 
         if (diktatExtension.output.isNotEmpty()) {
