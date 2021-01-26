@@ -56,7 +56,6 @@ class DiktatGradlePluginFunctionalTest {
         val diktatCheckBuildResult = result.task(":$DIKTAT_CHECK_TASK")
         requireNotNull(diktatCheckBuildResult)
         Assertions.assertEquals(TaskOutcome.FAILED, diktatCheckBuildResult.outcome)
-        assertNotNull(testProjectDir.root.walkTopDown().filter { it.name == "test.txt" }.first())
         val file = assertNotNull(testProjectDir.root.walkTopDown().filter { it.name == "test.txt" }.first())
         Assertions.assertTrue(
                 file.readLines().any { it.contains("[HEADER_MISSING_OR_WRONG_COPYRIGHT]") }
