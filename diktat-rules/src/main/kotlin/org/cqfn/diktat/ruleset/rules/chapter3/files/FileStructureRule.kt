@@ -174,9 +174,9 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
 
     @Suppress("UnsafeCallOnNullableType")
     private fun checkImportsOrder(
-            node: ASTNode,
-            wildCardImportsConfig: WildCardImportsConfig,
-            importsGroupingConfig: ImportsGroupingConfig
+        node: ASTNode,
+        wildCardImportsConfig: WildCardImportsConfig,
+        importsGroupingConfig: ImportsGroupingConfig
     ) {
         val imports = node.getChildren(TokenSet.create(IMPORT_DIRECTIVE)).toList()
 

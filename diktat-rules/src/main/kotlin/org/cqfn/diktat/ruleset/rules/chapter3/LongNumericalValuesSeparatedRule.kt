@@ -63,10 +63,10 @@ class LongNumericalValuesSeparatedRule(private val configRules: List<RulesConfig
     }
 
     private fun fixFloatConstantPart(
-            realPart: String,
-            fractionalPart: String,
-            configuration: LongNumericalValuesConfiguration,
-            node: ASTNode) {
+        realPart: String,
+        fractionalPart: String,
+        configuration: LongNumericalValuesConfiguration,
+        node: ASTNode) {
         val resultRealPart = StringBuilder(nodePrefix(realPart))
         val resultFractionalPart = StringBuilder()
 
@@ -109,9 +109,9 @@ class LongNumericalValuesSeparatedRule(private val configRules: List<RulesConfig
     }
 
     private fun isValidConstant(
-            text: String,
-            configuration: LongNumericalValuesConfiguration,
-            node: ASTNode): Boolean {
+        text: String,
+        configuration: LongNumericalValuesConfiguration,
+        node: ASTNode): Boolean {
         if (text.contains("_")) {
             checkBlocks(removePrefixSuffix(text), configuration, node)
             return true
@@ -124,9 +124,9 @@ class LongNumericalValuesSeparatedRule(private val configRules: List<RulesConfig
     }
 
     private fun checkBlocks(
-            text: String,
-            configuration: LongNumericalValuesConfiguration,
-            node: ASTNode) {
+        text: String,
+        configuration: LongNumericalValuesConfiguration,
+        node: ASTNode) {
         val blocks = text.split("_", ".")
 
         blocks.forEach {
