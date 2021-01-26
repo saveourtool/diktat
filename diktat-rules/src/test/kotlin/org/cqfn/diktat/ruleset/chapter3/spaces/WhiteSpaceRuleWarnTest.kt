@@ -2,7 +2,7 @@ package org.cqfn.diktat.ruleset.chapter3.spaces
 
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_WHITESPACE
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
-import org.cqfn.diktat.ruleset.rules.files.WhiteSpaceRule
+import org.cqfn.diktat.ruleset.rules.chapter3.files.WhiteSpaceRule
 import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError

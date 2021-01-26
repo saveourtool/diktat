@@ -7,7 +7,7 @@
 
 package org.cqfn.diktat.ruleset.utils
 
-import org.cqfn.diktat.ruleset.rules.PackageNaming
+import org.cqfn.diktat.ruleset.rules.chapter1.PackageNaming
 
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.ast.ElementType

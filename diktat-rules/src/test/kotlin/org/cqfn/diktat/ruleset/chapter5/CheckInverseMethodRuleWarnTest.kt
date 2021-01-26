@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter5
 
 import org.cqfn.diktat.ruleset.constants.Warnings
-import org.cqfn.diktat.ruleset.rules.CheckInverseMethodRule
+import org.cqfn.diktat.ruleset.rules.chapter5.CheckInverseMethodRule
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.util.LintTestBase
 

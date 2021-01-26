@@ -1,6 +1,6 @@
 package org.cqfn.diktat.ruleset.chapter6
 
-import org.cqfn.diktat.ruleset.rules.AvoidEmptyPrimaryConstructor
+import org.cqfn.diktat.ruleset.rules.chapter6.AvoidEmptyPrimaryConstructor
 import org.cqfn.diktat.util.FixTestBase
 
 import generated.WarningNames

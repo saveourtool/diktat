@@ -2,7 +2,7 @@ package org.cqfn.diktat.ruleset.chapter4
 
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
-import org.cqfn.diktat.ruleset.rules.SmartCastRule
+import org.cqfn.diktat.ruleset.rules.chapter4.SmartCastRule
 import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError

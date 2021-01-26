@@ -2,7 +2,7 @@ package org.cqfn.diktat.ruleset.chapter6
 
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
-import org.cqfn.diktat.ruleset.rules.PropertyAccessorFields
+import org.cqfn.diktat.ruleset.rules.chapter6.PropertyAccessorFields
 import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
