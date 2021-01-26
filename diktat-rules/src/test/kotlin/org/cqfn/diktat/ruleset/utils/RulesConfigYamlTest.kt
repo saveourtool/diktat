@@ -17,12 +17,10 @@ import kotlinx.serialization.encodeToString
  * Special test that checks that developer has not forgotten to add his warning to a diktat-analysis.yml
  * This file is needed to be in tact with latest changes in Warnings.kt
  */
-@Suppress("INLINE_CLASS_CAN_BE_USED")
-class RulesConfigYamlTest {
-    private val pathMap = mapOf("diktat-analysis.yml" to "diKTat/diktat-rules/src/main/resources/diktat-analysis.yml",
+inline class RulesConfigYamlTest(private val pathMap: Map<String, String> =
+        mapOf("diktat-analysis.yml" to "diKTat/diktat-rules/src/main/resources/diktat-analysis.yml",
         "diktat-analysis-huawei.yml" to "diKTat/diktat-rules/src/main/resources/diktat-analysis-huawei.yml",
-        "parent/diktat-analysis.yml" to "diKTat/diktat-analysis.yml")
-
+        "parent/diktat-analysis.yml" to "diKTat/diktat-analysis.yml")) {
     @Test
     fun `read rules config yml`() {
         compareRulesAndConfig("diktat-analysis.yml")
