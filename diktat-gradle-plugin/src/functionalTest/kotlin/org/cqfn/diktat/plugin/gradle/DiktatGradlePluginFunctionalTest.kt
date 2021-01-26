@@ -4,6 +4,7 @@ import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.DIKTAT_CHECK_T
 import org.gradle.buildinit.plugins.internal.modifiers.BuildInitDsl
 import org.gradle.internal.impldep.org.junit.rules.TemporaryFolder
 import org.gradle.testkit.runner.TaskOutcome
+import org.jetbrains.kotlin.com.intellij.util.ObjectUtils.assertNotNull
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
@@ -55,10 +56,10 @@ class DiktatGradlePluginFunctionalTest {
         val diktatCheckBuildResult = result.task(":$DIKTAT_CHECK_TASK")
         requireNotNull(diktatCheckBuildResult)
         Assertions.assertEquals(TaskOutcome.FAILED, diktatCheckBuildResult.outcome)
-        val file = testProjectDir.root.walkTopDown().filter { it.name == "test.txt" }.firstOrNull()
-        Assertions.assertTrue(file != null)
+        assertNotNull(testProjectDir.root.walkTopDown().filter { it.name == "test.txt" }.first())
+        val file = assertNotNull(testProjectDir.root.walkTopDown().filter { it.name == "test.txt" }.first())
         Assertions.assertTrue(
-                file!!.readLines().any { it.contains("[HEADER_MISSING_OR_WRONG_COPYRIGHT]") }
+                file.readLines().any { it.contains("[HEADER_MISSING_OR_WRONG_COPYRIGHT]") }
         )
     }
 
