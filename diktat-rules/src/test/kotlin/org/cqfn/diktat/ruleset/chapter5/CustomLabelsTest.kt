@@ -1,8 +1,8 @@
 package org.cqfn.diktat.ruleset.chapter5
 
 import org.cqfn.diktat.ruleset.constants.Warnings.CUSTOM_LABEL
-import org.cqfn.diktat.ruleset.rules.CustomLabel
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
+import org.cqfn.diktat.ruleset.rules.chapter5.CustomLabel
 import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError

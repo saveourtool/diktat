@@ -2,7 +2,7 @@ package org.cqfn.diktat.ruleset.chapter3
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.LONG_LINE
-import org.cqfn.diktat.ruleset.rules.LineLength
+import org.cqfn.diktat.ruleset.rules.chapter3.LineLength
 import org.cqfn.diktat.util.FixTestBase
 import org.junit.jupiter.api.Test
 

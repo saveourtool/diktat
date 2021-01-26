@@ -1,6 +1,6 @@
 package org.cqfn.diktat.ruleset.chapter3
 
-import org.cqfn.diktat.ruleset.rules.MultipleModifiersSequence
+import org.cqfn.diktat.ruleset.rules.chapter3.MultipleModifiersSequence
 import org.cqfn.diktat.util.FixTestBase
 
 import generated.WarningNames

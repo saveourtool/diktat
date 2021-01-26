@@ -2,7 +2,7 @@ package org.cqfn.diktat.ruleset.chapter3
 
 import org.cqfn.diktat.ruleset.constants.Warnings.NULLABLE_PROPERTY_TYPE
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
-import org.cqfn.diktat.ruleset.rules.NullableTypeRule
+import org.cqfn.diktat.ruleset.rules.chapter3.NullableTypeRule
 import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
