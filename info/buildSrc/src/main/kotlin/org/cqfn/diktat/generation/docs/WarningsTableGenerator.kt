@@ -38,10 +38,10 @@ fun generateRulesMapping() {
         ?: 0
 
     val tableWithWarnings = allWarnings.joinToString("\n") { warn ->
-        "| ${warn.name} | [${warn.ruleId}](${DIKTAT_GUIDE}r${warn.ruleId}) | ${if (warn.canBeAutoCorrected) "yes" else "no"} | ${getChapterByWarning(warn).title} |"
+        "| ${warn.name} | [${warn.ruleId}](${DIKTAT_GUIDE}r${warn.ruleId}) | ${if (warn.canBeAutoCorrected) "yes" else "no"} | ${warn.getChapterByWarning().title} |"
     }
 
-    val chaptersLength = allWarnings.map { getChapterByWarning(it).title }.maxBy { it.length }?.length ?: 0
+    val chaptersLength = allWarnings.map { it.getChapterByWarning().title }.maxBy { it.length }?.length ?: 0
 
     val header = "| Diktat Rule | Code Style | Auto-fixed? | Chapter |\n"
     val separator = "| ${"-".repeat(maxRuleNameLength)} | ${"-".repeat(maxRuleIdLength)} | --- | ${"-".repeat(chaptersLength)} |\n"
