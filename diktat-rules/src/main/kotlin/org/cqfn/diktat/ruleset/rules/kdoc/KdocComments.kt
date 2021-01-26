@@ -83,7 +83,7 @@ class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comm
             ?.findChildByType(KDOC) ?: return
         val propertiesInKdoc = kdocBeforeClass
             .kDocTags()
-            ?.filter { it.knownTag == KDocKnownTag.PROPERTY}
+            ?.filter { it.knownTag == KDocKnownTag.PROPERTY }
         val propertyNames = (node.psi as KtParameterList)
             .parameters
             .mapNotNull { it.nameIdentifier?.text }

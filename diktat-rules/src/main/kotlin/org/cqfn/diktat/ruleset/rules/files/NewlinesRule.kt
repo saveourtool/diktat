@@ -521,7 +521,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
     /**
      * This method checks that complex expression should be replace with new variable
      */
-    private fun ASTNode.isInParentheses() = parent({it.elementType == DOT_QUALIFIED_EXPRESSION || it.elementType == SAFE_ACCESS_EXPRESSION})
+    private fun ASTNode.isInParentheses() = parent({ it.elementType == DOT_QUALIFIED_EXPRESSION || it.elementType == SAFE_ACCESS_EXPRESSION })
         ?.treeParent
         ?.elementType
         ?.let { it in parenthesesTypes }

@@ -568,7 +568,7 @@ fun ASTNode.findLBrace(): ASTNode? = when (this.elementType) {
     ElementType.THEN, ElementType.ELSE, ElementType.FUN, ElementType.TRY, ElementType.CATCH, ElementType.FINALLY ->
         this.findChildByType(ElementType.BLOCK)?.findChildByType(LBRACE)
     ElementType.WHEN -> this.findChildByType(LBRACE)!!
-    ElementType.FOR, ElementType.WHILE, ElementType.DO_WHILE ->
+    in loopType ->
         this.findChildByType(ElementType.BODY)
             ?.findChildByType(ElementType.BLOCK)
             ?.findChildByType(LBRACE)

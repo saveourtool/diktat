@@ -362,6 +362,9 @@
   enabled: true
   configuration:
     maxLambdaLength: 10 # max length of lambda without parameters
+# Checks that using unnecessary, custom label
+- name: CUSTOM_LABEL
+  enabled: true
 # Checks that property in constructor doesn't contains comment
 - name: KDOC_NO_CONSTRUCTOR_PROPERTY
   enabled: true

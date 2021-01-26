@@ -52,7 +52,13 @@ class WhiteSpaceRuleFixTest : FixTestBase("test/paragraph3/spaces", ::WhiteSpace
 
     @Test
     @Tag(WarningNames.WRONG_WHITESPACE)
-    fun `should add spaes on both sides of equals`() {
+    fun `should add spaces on both sides of equals`() {
         fixAndCompare("EqualsExpected.kt", "EqualsTest.kt")
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_WHITESPACE)
+    fun `should add spaces on both sides of braces in lambda`() {
+        fixAndCompare("BracesLambdaSpacesExpected.kt", "BracesLambdaSpacesTest.kt")
     }
 }
