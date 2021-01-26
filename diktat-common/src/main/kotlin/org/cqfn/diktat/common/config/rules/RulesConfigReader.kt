@@ -119,8 +119,8 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
     /**
      * Get version of kotlin from configuration
      */
-    val kotlinVersion: String by lazy {
-        configuration?.get("kotlinVersion") ?: KotlinVersion.CURRENT.toString()
+    val kotlinVersion: KotlinVersion by lazy {
+        configuration?.get("kotlinVersion")?.kotlinVersion() ?: KotlinVersion.CURRENT
     }
 
     /**
@@ -154,4 +154,16 @@ private fun List<RulesConfig>.getCommonConfig() = find { it.name == DIKTAT_COMMO
 fun List<RulesConfig>.isRuleEnabled(rule: Rule): Boolean {
     val ruleMatched = getRuleConfig(rule)
     return ruleMatched?.enabled ?: true
+}
+
+/**
+ * Parse string into KotlinVersion
+ */
+fun String.kotlinVersion(): KotlinVersion {
+    require(this.contains("^(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)\$".toRegex()))
+    val versions = this.split(".").map { it.toInt() }
+    return if (versions.size == 2)
+        KotlinVersion(versions[0], versions[1])
+    else
+        KotlinVersion(versions[0], versions[1], versions[2])
 }
