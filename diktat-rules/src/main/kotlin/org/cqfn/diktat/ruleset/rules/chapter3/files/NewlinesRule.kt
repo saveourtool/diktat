@@ -420,8 +420,9 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
 
     @Suppress("AVOID_NULL_CHECKS")
     private fun handleValueParameterList(node: ASTNode) {
-        val indent = node.parents().toList().filter { it.elementType == FUN }
-            .get(0).text.substringBefore('(')
+        val parentNode = node.parents().toList().filter { it.elementType in (listOf(FUN, CLASS, SECONDARY_CONSTRUCTOR)) }
+            .get(0)
+        var indent = parentNode.text.substringBefore('(')
             .length + 1
 
         node
@@ -432,13 +433,14 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             ?.let { invalidParameter ->
                 WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
                     "list parameter should be placed on different lines in declaration of <${node.getParentIdentifier()}>", node.startOffset, node) {
+                    if (parentNode.treePrev.elementType == WHITE_SPACE) {
+                        indent += (parentNode.treePrev.text.replace("\n", "").length)
+                    }
                     invalidParameter.forEachIndexed { index, param ->
                         if (index > 0) {
                             param.treeParent.addChild(PsiWhiteSpaceImpl("\n"), param)
-                            var x = 0
-                            while (x < indent) {
+                            repeat(indent) {
                                 param.treeParent.addChild(PsiWhiteSpaceImpl(" "), param)
-                                x++
                             }
                         }
                         if (param.treeNext.elementType == COMMA) {
