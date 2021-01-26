@@ -182,10 +182,8 @@ enum class Warnings(
                    node: ASTNode,
                    canBeAutoCorrected: Boolean = this.canBeAutoCorrected,
                    autoFix: () -> Unit) {
-        if (isRuleFromActiveChapter(configRules)) {
-            warn(configRules, emit, canBeAutoCorrected, freeText, offset, node)
-            fix(configRules, isFixMode, node, autoFix)
-        }
+        warn(configRules, emit, canBeAutoCorrected, freeText, offset, node)
+        fix(configRules, isFixMode, node, autoFix)
     }
 
     /**
@@ -219,7 +217,7 @@ enum class Warnings(
         isFix: Boolean,
         node: ASTNode,
         autoFix: () -> Unit) {
-        if (configs.isRuleEnabled(this) && isFix && !node.hasSuppress(name)) {
+        if (isRuleFromActiveChapter(configs) && configs.isRuleEnabled(this) && isFix && !node.hasSuppress(name)) {
             autoFix()
         }
     }
