@@ -2,7 +2,7 @@ package org.cqfn.diktat.ruleset.chapter5
 
 import org.cqfn.diktat.ruleset.constants.Warnings.LAMBDA_IS_NOT_LAST_PARAMETER
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
-import org.cqfn.diktat.ruleset.rules.LambdaParameterOrder
+import org.cqfn.diktat.ruleset.rules.chapter5.LambdaParameterOrder
 import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError

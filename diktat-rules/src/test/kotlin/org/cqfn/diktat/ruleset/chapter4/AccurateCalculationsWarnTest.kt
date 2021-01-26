@@ -2,7 +2,7 @@ package org.cqfn.diktat.ruleset.chapter4
 
 import org.cqfn.diktat.ruleset.constants.Warnings.FLOAT_IN_ACCURATE_CALCULATIONS
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
-import org.cqfn.diktat.ruleset.rules.calculations.AccurateCalculationsRule
+import org.cqfn.diktat.ruleset.rules.chapter4.calculations.AccurateCalculationsRule
 import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
