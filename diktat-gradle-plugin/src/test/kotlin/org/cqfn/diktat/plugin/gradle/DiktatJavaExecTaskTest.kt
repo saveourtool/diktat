@@ -100,6 +100,17 @@ class DiktatJavaExecTaskTest {
     }
 
     @Test
+    fun `check command line has custom reporter type with output`() {
+        assertCommandLineEquals(
+                listOf(null, "--reporter=customName,artifact=customPath")
+        ) {
+            inputs = project.files()
+            diktatConfigFile = project.file("../diktat-analysis.yml")
+            reporterType = "custom:customName:customPath"
+        }
+    }
+
+    @Test
     fun `check that project has html dependency`() {
         val task = project.registerDiktatTask {
             inputs = project.files()

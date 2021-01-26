@@ -7,7 +7,6 @@ import org.gradle.testkit.runner.TaskOutcome
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.io.File
 
@@ -40,9 +39,6 @@ class DiktatGradlePluginFunctionalTest {
         )
     }
 
-    /*
-        * Should fix output here
-     */
     @Test
     fun `should have json reporter files`() {
         buildFile.appendText(
@@ -58,11 +54,11 @@ class DiktatGradlePluginFunctionalTest {
 
         val diktatCheckBuildResult = result.task(":$DIKTAT_CHECK_TASK")
         requireNotNull(diktatCheckBuildResult)
-        Assertions.assertTrue(testProjectDir.root.walkTopDown().filter { it.name == "test.txt" }.firstOrNull() != null)
         Assertions.assertEquals(TaskOutcome.FAILED, diktatCheckBuildResult.outcome)
-        val file = testProjectDir.root.walkTopDown().filter { it.name == "test.txt" }.first()
+        val file = testProjectDir.root.walkTopDown().filter { it.name == "test.txt" }.firstOrNull()
+        Assertions.assertTrue(file != null)
         Assertions.assertTrue(
-                file.readLines().any { it.contains("[HEADER_MISSING_OR_WRONG_COPYRIGHT]") }
+                file!!.readLines().any { it.contains("[HEADER_MISSING_OR_WRONG_COPYRIGHT]") }
         )
     }
 

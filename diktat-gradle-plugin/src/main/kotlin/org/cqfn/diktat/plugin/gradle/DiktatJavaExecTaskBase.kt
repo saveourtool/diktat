@@ -1,14 +1,12 @@
 package org.cqfn.diktat.plugin.gradle
 
-import com.pinterest.ktlint.reporter.checkstyle.CheckStyleReporter
-import com.pinterest.ktlint.reporter.json.JsonReporter
-import com.pinterest.ktlint.reporter.plain.PlainReporter
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.DIKTAT_CHECK_TASK
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.DIKTAT_FIX_TASK
 import org.cqfn.diktat.ruleset.rules.DIKTAT_CONF_PROPERTY
 
 import generated.DIKTAT_VERSION
 import generated.KTLINT_VERSION
+import org.cqfn.diktat.ruleset.utils.log
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.provider.Property
@@ -54,6 +52,7 @@ open class DiktatJavaExecTaskBase @Inject constructor(
         } else {
             main = "com.pinterest.ktlint.Main"
         }
+        // Plain, checkstyle and json reporter are provided out of the box in ktlint
         if (diktatExtension.reporterType == "html") {
             diktatConfiguration.dependencies.add(project.dependencies.create("com.pinterest.ktlint:ktlint-reporter-html:$KTLINT_VERSION"))
         }
@@ -124,7 +123,21 @@ open class DiktatJavaExecTaskBase @Inject constructor(
             "json" -> flag.append("--reporter=json")
             "html" -> flag.append("--reporter=html")
             "checkstyle" -> flag.append("--reporter=checkstyle")
-            else -> flag.append("--reporter=plain")
+            else -> {
+                if (diktatExtension.reporterType.startsWith("custom")) {
+                    val name = diktatExtension.reporterType.split(":")[1]
+                    val jarPath = diktatExtension.reporterType.split(":")[2]
+                    if (name.isEmpty() || jarPath.isEmpty()) {
+                        log.warn("Either name or path to jar is not specified. Falling to plain reporter")
+                        flag.append("--reporter=plain")
+                    } else {
+                        flag.append("--reporter=$name,artifact=$jarPath")
+                    }
+                } else {
+                    flag.append("--reporter=plain")
+                    log.warn("Unknown reporter was specified. Falling back to plain reporter.")
+                }
+            }
         }
 
         if (diktatExtension.output.isNotEmpty()) {
