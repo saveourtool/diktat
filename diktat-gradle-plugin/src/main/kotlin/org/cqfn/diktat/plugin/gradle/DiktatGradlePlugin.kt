@@ -1,6 +1,5 @@
 package org.cqfn.diktat.plugin.gradle
 
-import com.pinterest.ktlint.reporter.plain.PlainReporter
 import generated.DIKTAT_VERSION
 import generated.KTLINT_VERSION
 import org.gradle.api.Plugin

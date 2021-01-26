@@ -1,8 +1,6 @@
 package org.cqfn.diktat.plugin.gradle
 
-import com.pinterest.ktlint.core.Reporter
 import org.gradle.api.file.FileCollection
-import org.gradle.api.tasks.Internal
 import java.io.File
 
 /**
