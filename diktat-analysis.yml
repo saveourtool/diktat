@@ -4,8 +4,8 @@
   configuration:
     # put your package name here - it will be autofixed and checked
     domainName: org.cqfn.diktat
-    # testDirs: test
-    kotlinVerstion: ""
+    testDirs: test
+    kotlinVersion: ""
 # Checks that the Class/Enum/Interface name does not match Pascal case
 - name: CLASS_NAME_INCORRECT
   enabled: true
