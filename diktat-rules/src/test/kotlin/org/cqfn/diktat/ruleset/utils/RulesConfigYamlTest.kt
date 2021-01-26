@@ -19,8 +19,8 @@ import kotlinx.serialization.encodeToString
  */
 inline class RulesConfigYamlTest(private val pathMap: Map<String, String> =
         mapOf("diktat-analysis.yml" to "diKTat/diktat-rules/src/main/resources/diktat-analysis.yml",
-    "diktat-analysis-huawei.yml" to "diKTat/diktat-rules/src/main/resources/diktat-analysis-huawei.yml",
-    "parent/diktat-analysis.yml" to "diKTat/diktat-analysis.yml")) {
+            "diktat-analysis-huawei.yml" to "diKTat/diktat-rules/src/main/resources/diktat-analysis-huawei.yml",
+            "parent/diktat-analysis.yml" to "diKTat/diktat-analysis.yml")) {
     @Test
     fun `read rules config yml`() {
         compareRulesAndConfig("diktat-analysis.yml")
