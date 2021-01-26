@@ -42,3 +42,10 @@ enum class StandardPlatforms(val packages: List<String>) {
     KOTLIN(listOf("kotlin", "kotlinx")),
     ;
 }
+
+internal val operatorMap = mapOf(
+    "unaryPlus" to "+", "unaryMinus" to "-", "not" to "!",
+    "plus" to "+", "minus" to "-", "times" to "*", "div" to "/", "rem" to "%", "mod" to "%", "rangeTo" to "..",
+    "inc" to "++", "dec" to "--", "contains" to "in",
+    "plusAssign" to "+=", "minusAssign" to "-=", "timesAssign" to "*=", "divAssign" to "/=", "modAssign" to "%="
+)

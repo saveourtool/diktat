@@ -5,7 +5,6 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getCommonConfiguration
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
-import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_CONTAINS_ONLY_COMMENTS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_INCORRECT_BLOCKS_ORDER
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NO_BLANK_LINE_BETWEEN_BLOCKS
@@ -67,6 +66,14 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         .mapValues { (_, value) ->
             value.map { it.split(PACKAGE_SEPARATOR).map(Name::identifier) }
         }
+    private val refSet: MutableSet<String> = mutableSetOf()
+    private var packageName = ""
+    private val operatorMap = mapOf(
+        "unaryPlus" to "+", "unaryMinus" to "-", "not" to "!",
+        "plus" to "+", "minus" to "-", "times" to "*", "div" to "/", "rem" to "%", "mod" to "%", "rangeTo" to "..",
+        "inc" to "++", "dec" to "--", "contains" to "in",
+        "plusAssign" to "+=", "minusAssign" to "-=", "timesAssign" to "*=", "divAssign" to "/=", "modAssign" to "%="
+    )
     private lateinit var emitWarn: EmitType
 
     override fun visit(node: ASTNode,
@@ -82,6 +89,10 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
             val importsGroupingConfig = ImportsGroupingConfig(
                 this.configRules.getRuleConfig(FILE_UNORDERED_IMPORTS)?.configuration ?: emptyMap()
             )
+            val unusedImportConfig = UnusedImportConfig(
+                this.configRules.getRuleConfig(UNUSED_IMPORT)?.configuration ?: emptyMap()
+            )
+            checkUnusedImport(node, unusedImportConfig)
             node.findChildByType(IMPORT_LIST)
                 ?.let { checkImportsOrder(it, wildcardImportsConfig, importsGroupingConfig) }
             if (checkFileHasCode(node)) {
@@ -237,6 +248,28 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
                     }
                 }
             }
+                    // this branch corresponds to imports from the same package
+                    deleteImport(importPath, node, ktImportDirective)
+                } else if (importName != null && !refSet.contains(operatorMap.getOrDefault(importName, null)) && !refSet.contains(
+                    importName
+                )
+                ) {
+                    // this import is not used anywhere
+                    deleteImport(importPath, node, ktImportDirective)
+                }
+            }
+    }
+
+    private fun deleteImport(
+        importPath: String,
+        node: ASTNode,
+        ktImportDirective: KtImportDirective
+    ) {
+        UNUSED_IMPORT.warnAndFix(
+            configRules, emitWarn, isFixMode,
+            "$importPath - unused import",
+            node.startOffset, node
+        ) { ktImportDirective.delete() }
     }
 
     private fun findAllReferences(node: ASTNode) {
@@ -361,15 +394,5 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
          * Use imports grouping according to recommendation 3.1
          */
         val useRecommendedImportsOrder = config["useRecommendedImportsOrder"]?.toBoolean() ?: true
-    }
-
-    /**
-     * [RuleConfiguration] for unused import
-     */
-    class UnusedImportConfig(config: Map<String, String>) : RuleConfiguration(config) {
-        /**
-         * delete unused import
-         */
-        val deleteUnusedImport = config["deleteUnusedImport"]?.toBoolean() ?: true
     }
 }
