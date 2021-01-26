@@ -91,7 +91,7 @@ class DiktatJavaExecTaskTest {
     @Test
     fun `check command line has reporter type without output`() {
         assertCommandLineEquals(
-                listOf(null, "--reporter=json")
+            listOf(null, "--reporter=json")
         ) {
             inputs = project.files()
             diktatConfigFile = project.file("../diktat-analysis.yml")
@@ -102,7 +102,7 @@ class DiktatJavaExecTaskTest {
     @Test
     fun `check command line has custom reporter type with output`() {
         assertCommandLineEquals(
-                listOf(null, "--reporter=customName,artifact=customPath")
+            listOf(null, "--reporter=customName,artifact=customPath")
         ) {
             inputs = project.files()
             diktatConfigFile = project.file("../diktat-analysis.yml")
@@ -118,7 +118,12 @@ class DiktatJavaExecTaskTest {
             reporterType = "html"
         }
 
-        Assertions.assertTrue(project.configurations.getByName("diktat").dependencies.any { it.name == "ktlint-reporter-html" })
+        Assertions.assertTrue(
+            project
+                .configurations
+                .getByName("diktat")
+                .dependencies
+                .any { it.name == "ktlint-reporter-html" })
         Assertions.assertEquals(File(project.projectDir.parentFile, "diktat-analysis.yml").absolutePath, task.systemProperties[DIKTAT_CONF_PROPERTY])
     }
 

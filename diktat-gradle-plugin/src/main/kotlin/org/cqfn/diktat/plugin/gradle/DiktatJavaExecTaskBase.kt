@@ -3,10 +3,10 @@ package org.cqfn.diktat.plugin.gradle
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.DIKTAT_CHECK_TASK
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.DIKTAT_FIX_TASK
 import org.cqfn.diktat.ruleset.rules.DIKTAT_CONF_PROPERTY
+import org.cqfn.diktat.ruleset.utils.log
 
 import generated.DIKTAT_VERSION
 import generated.KTLINT_VERSION
-import org.cqfn.diktat.ruleset.utils.log
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.provider.Property
@@ -18,7 +18,6 @@ import org.gradle.api.tasks.VerificationTask
 import org.gradle.util.GradleVersion
 
 import java.io.File
-import java.io.PrintStream
 import javax.inject.Inject
 
 /**
@@ -119,24 +118,18 @@ open class DiktatJavaExecTaskBase @Inject constructor(
         val flag: StringBuilder = StringBuilder()
 
         // Plain, checkstyle and json reporter are provided out of the box in ktlint
-        when(diktatExtension.reporterType) {
-            "json" -> flag.append("--reporter=json")
-            "html" -> flag.append("--reporter=html")
-            "checkstyle" -> flag.append("--reporter=checkstyle")
+        when    (diktatExtension.reporterType) {
+            "json" -> {
+                flag.append("--reporter=json")
+            }
+            "html" -> {
+                flag.append("--reporter=html")
+            }
+            "checkstyle" -> {
+                flag.append("--reporter=checkstyle")
+            }
             else -> {
-                if (diktatExtension.reporterType.startsWith("custom")) {
-                    val name = diktatExtension.reporterType.split(":")[1]
-                    val jarPath = diktatExtension.reporterType.split(":")[2]
-                    if (name.isEmpty() || jarPath.isEmpty()) {
-                        log.warn("Either name or path to jar is not specified. Falling to plain reporter")
-                        flag.append("--reporter=plain")
-                    } else {
-                        flag.append("--reporter=$name,artifact=$jarPath")
-                    }
-                } else {
-                    flag.append("--reporter=plain")
-                    log.warn("Unknown reporter was specified. Falling back to plain reporter.")
-                }
+                customReporter(diktatExtension, flag)
             }
         }
 
@@ -145,6 +138,22 @@ open class DiktatJavaExecTaskBase @Inject constructor(
         }
 
         return flag.toString()
+    }
+
+    private fun customReporter(diktatExtension: DiktatExtension, flag: java.lang.StringBuilder) {
+        if (diktatExtension.reporterType.startsWith("custom")) {
+            val name = diktatExtension.reporterType.split(":")[1]
+            val jarPath = diktatExtension.reporterType.split(":")[2]
+            if (name.isEmpty() || jarPath.isEmpty()) {
+                log.warn("Either name or path to jar is not specified. Falling to plain reporter")
+                flag.append("--reporter=plain")
+            } else {
+                flag.append("--reporter=$name,artifact=$jarPath")
+            }
+        } else {
+            flag.append("--reporter=plain")
+            log.warn("Unknown reporter was specified. Falling back to plain reporter.")
+        }
     }
 
     @Suppress("MagicNumber")
