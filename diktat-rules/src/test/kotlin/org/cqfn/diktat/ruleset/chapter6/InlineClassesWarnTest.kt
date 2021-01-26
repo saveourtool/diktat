@@ -2,7 +2,7 @@ package org.cqfn.diktat.ruleset.chapter6
 
 import org.cqfn.diktat.ruleset.constants.Warnings.INLINE_CLASS_CAN_BE_USED
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
-import org.cqfn.diktat.ruleset.rules.classes.InlineClassesRule
+import org.cqfn.diktat.ruleset.rules.chapter6.classes.InlineClassesRule
 import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError

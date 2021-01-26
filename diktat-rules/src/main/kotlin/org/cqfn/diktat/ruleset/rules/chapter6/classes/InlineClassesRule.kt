@@ -1,4 +1,4 @@
-package org.cqfn.diktat.ruleset.rules.classes
+package org.cqfn.diktat.ruleset.rules.chapter6.classes
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
