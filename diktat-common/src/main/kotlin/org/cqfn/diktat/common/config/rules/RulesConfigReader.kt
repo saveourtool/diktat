@@ -119,8 +119,8 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
     /**
      * Get version of kotlin from configuration
      */
-    val kotlinVersion: String? by lazy {
-        configuration?.get("kotlinVersion")
+    val kotlinVersion: String by lazy {
+        configuration?.get("kotlinVersion") ?: KotlinVersion.CURRENT.toString()
     }
 
     /**
