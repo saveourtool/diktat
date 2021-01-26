@@ -54,6 +54,9 @@ open class DiktatJavaExecTaskBase @Inject constructor(
         } else {
             main = "com.pinterest.ktlint.Main"
         }
+        if (diktatExtension.reporterType == "html") {
+            diktatConfiguration.dependencies.add(project.dependencies.create("com.pinterest.ktlint:ktlint-reporter-html:$KTLINT_VERSION"))
+        }
         classpath = diktatConfiguration
         project.logger.debug("Setting diktatCheck classpath to ${diktatConfiguration.dependencies.toSet()}")
         if (diktatExtension.debug) {
@@ -88,36 +91,7 @@ open class DiktatJavaExecTaskBase @Inject constructor(
                 addPattern(it, negate = true)
             }
 
-            // Plain, checkstyle and json reporter are provided out of the box in ktlint
-            when (diktatExtension.reporterType) {
-                "json" -> {
-                    add("--reporter=json")
-                    diktatExtension.reporter = if (diktatExtension.output == "out") {
-                        JsonReporter(System.out)
-                    } else {
-//                        require(File(diktatExtension.output).exists())
-                        JsonReporter(PrintStream(File(diktatExtension.output)))
-                    }
-                }
-                "checkstyle" -> {
-                    add("--reporter=checkstyle,output=ktlint-report-in-checkstyle-format.xml")
-                    diktatExtension.reporter = if (diktatExtension.output == "out") {
-                        CheckStyleReporter(System.out)
-                    } else {
-//                        require(File(diktatExtension.output).exists())
-                        CheckStyleReporter(PrintStream(File(project.projectDir.path + diktatExtension.output)))
-                    }
-                }
-                else -> {
-                    add("--reporter=plain")
-                    diktatExtension.reporter = if (diktatExtension.output == "out") {
-                        PlainReporter(System.out)
-                    } else {
-//                        require(File(diktatExtension.output).exists())
-                        PlainReporter(PrintStream(File(diktatExtension.output)))
-                    }
-                }
-            }
+            add(createReporterFlag(diktatExtension))
         }
         logger.debug("Setting JavaExec args to $args")
     }
@@ -141,6 +115,24 @@ open class DiktatJavaExecTaskBase @Inject constructor(
      */
     @Suppress("FUNCTION_BOOLEAN_PREFIX")
     override fun getIgnoreFailures(): Boolean = ignoreFailuresProp.getOrElse(false)
+
+    private fun createReporterFlag(diktatExtension: DiktatExtension): String {
+        val flag: StringBuilder = StringBuilder()
+
+        // Plain, checkstyle and json reporter are provided out of the box in ktlint
+        when(diktatExtension.reporterType) {
+            "json" -> flag.append("--reporter=json")
+            "html" -> flag.append("--reporter=html")
+            "checkstyle" -> flag.append("--reporter=checkstyle")
+            else -> flag.append("--reporter=plain")
+        }
+
+        if (diktatExtension.output.isNotEmpty()) {
+            flag.append(",output=${diktatExtension.output}")
+        }
+
+        return flag.toString()
+    }
 
     @Suppress("MagicNumber")
     private fun isMainClassPropertySupported(gradleVersionString: String) =

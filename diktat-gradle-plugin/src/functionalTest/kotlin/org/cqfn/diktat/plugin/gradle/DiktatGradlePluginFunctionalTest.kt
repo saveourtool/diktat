@@ -29,7 +29,6 @@ class DiktatGradlePluginFunctionalTest {
     }
 
     @Test
-    @Disabled
     fun `should execute diktatCheck on default values`() {
         val result = runDiktat(testProjectDir, shouldSucceed = false)
 
@@ -50,8 +49,8 @@ class DiktatGradlePluginFunctionalTest {
             """${System.lineSeparator()}
                 diktat {
                     inputs = files("src/**/*.kt")
-                    reporterType = "checkstyle"
-                    output = "qqq.txt"
+                    reporterType = "json"
+                    output = "test.txt"
                 }
             """.trimIndent()
         )
@@ -59,28 +58,15 @@ class DiktatGradlePluginFunctionalTest {
 
         val diktatCheckBuildResult = result.task(":$DIKTAT_CHECK_TASK")
         requireNotNull(diktatCheckBuildResult)
-        File("test.txt").bufferedWriter().use { out ->
-            testProjectDir.root.walkTopDown().forEach {
-                out.write(it.name + "\n")
-            }
-
-            out.write("\n===========\n")
-
-            testProjectDir.root.walkTopDown().filter { it.name == "ktlint-report-in-checkstyle-format.xml" }.first {
-                it.readLines().forEach {
-                    out.write(it + "\n")
-                }
-                true
-            }
-        }
+        Assertions.assertTrue(testProjectDir.root.walkTopDown().filter { it.name == "test.txt" }.firstOrNull() != null)
         Assertions.assertEquals(TaskOutcome.FAILED, diktatCheckBuildResult.outcome)
+        val file = testProjectDir.root.walkTopDown().filter { it.name == "test.txt" }.first()
         Assertions.assertTrue(
-                result.output.contains("[HEADER_MISSING_OR_WRONG_COPYRIGHT]")
+                file.readLines().any { it.contains("[HEADER_MISSING_OR_WRONG_COPYRIGHT]") }
         )
     }
 
     @Test
-    @Disabled
     fun `should execute diktatCheck with explicit inputs`() {
         buildFile.appendText(
             """${System.lineSeparator()}
@@ -100,7 +86,6 @@ class DiktatGradlePluginFunctionalTest {
     }
 
     @Test
-    @Disabled
     fun `should execute diktatCheck with excludes`() {
         buildFile.appendText(
             """${System.lineSeparator()}
@@ -118,7 +103,6 @@ class DiktatGradlePluginFunctionalTest {
     }
 
     @Test
-    @Disabled
     fun `should not run diktat with ktlint's default includes when no files match include patterns`() {
         buildFile.appendText(
             """${System.lineSeparator()}
@@ -142,7 +126,6 @@ class DiktatGradlePluginFunctionalTest {
     }
 
     @Test
-    @Disabled
     fun `should not run diktat with ktlint's default includes when no files match include patterns - 2`() {
         buildFile.appendText(
             """${System.lineSeparator()}
@@ -165,7 +148,6 @@ class DiktatGradlePluginFunctionalTest {
     }
 
     @Test
-    @Disabled
     fun `should execute diktatCheck with absolute paths`() {
         val path = testProjectDir.root
             .resolve("src/**/*.kt")
@@ -189,7 +171,6 @@ class DiktatGradlePluginFunctionalTest {
     }
 
     @Test
-    @Disabled
     fun `should execute diktatCheck with gradle older than 6_4`() {
         val result = runDiktat(testProjectDir, shouldSucceed = false, arguments = listOf("--info")) {
             withGradleVersion("5.0")
@@ -204,7 +185,6 @@ class DiktatGradlePluginFunctionalTest {
     }
 
     @Test
-    @Disabled
     fun `should respect ignoreFailures setting`() {
         buildFile.appendText(
             """${System.lineSeparator()}

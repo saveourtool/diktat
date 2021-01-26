@@ -28,7 +28,7 @@ open class DiktatExtension {
      * Type of output
      * Default: System.out
      */
-    var output: String = "out"
+    var output: String = ""
 
     /**
      * Path to diktat yml config file. Can be either absolute or relative to project's root directory.
@@ -40,12 +40,6 @@ open class DiktatExtension {
      * Paths that will be excluded from diktat run
      */
     lateinit var excludes: FileCollection
-
-    /**
-     * Ktlint's [Reporter] which will be used during run.
-     * Private until I find a way to configure it.
-     */
-    internal lateinit var reporter: Reporter
 
     /**
      * Paths that will be scanned for .kt(s) files
