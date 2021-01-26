@@ -420,11 +420,6 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
 
     @Suppress("AVOID_NULL_CHECKS")
     private fun handleValueParameterList(node: ASTNode) {
-        val parentNode = node.parents().toList().filter { it.elementType in (listOf(FUN, CLASS, SECONDARY_CONSTRUCTOR)) }
-            .get(0)
-        var indent = parentNode.text.substringBefore('(')
-            .length + 1
-
         node
             .children()
             .filter { it.elementType == VALUE_PARAMETER }
@@ -433,15 +428,9 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             ?.let { invalidParameter ->
                 WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
                     "list parameter should be placed on different lines in declaration of <${node.getParentIdentifier()}>", node.startOffset, node) {
-                    if (parentNode.treePrev.elementType == WHITE_SPACE) {
-                        indent += (parentNode.treePrev.text.replace("\n", "").length)
-                    }
                     invalidParameter.forEachIndexed { index, param ->
                         if (index > 0) {
                             param.treeParent.addChild(PsiWhiteSpaceImpl("\n"), param)
-                            repeat(indent) {
-                                param.treeParent.addChild(PsiWhiteSpaceImpl(" "), param)
-                            }
                         }
                         if (param.treeNext.elementType == COMMA) {
                             if (param.treeNext.treeNext.elementType == WHITE_SPACE) {
@@ -642,12 +631,13 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
          * If the number of parameters on one line is more than this threshold, all parameters should be placed on separate lines.
          */
         val maxParametersInOneLine = config["maxParametersInOneLine"]?.toInt() ?: 2
-        val maxLengthOneLine = config["maxLengthOneLine"]?.toInt() ?: 80
+        val maxLengthOneLine = config["maxLengthOneLine"]?.toInt() ?: MAX_LENGTH_ONE_LINE
         val maxCallsInOneLine = config["maxCallsInOneLine"]?.toInt() ?: MAX_CALLS_IN_ONE_LINE
     }
 
     companion object {
         const val MAX_CALLS_IN_ONE_LINE = 3
+        const val MAX_LENGTH_ONE_LINE = 80
 
         // fixme: these token sets can be not full, need to add new once as corresponding cases are discovered.
         // error is raised if these operators are prepended by newline

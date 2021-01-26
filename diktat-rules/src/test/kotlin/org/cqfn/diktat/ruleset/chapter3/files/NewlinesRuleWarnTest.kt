@@ -395,6 +395,21 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
 
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
+    fun `list parameter should be placed on different lines`() {
+        lintMethod(
+            """
+                    |fun foo(
+                    |      a: Int, 
+                    |      b: Int,
+                    |      c: Int
+                    |      ) {
+                    |}
+            """.trimMargin(),
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
     fun `function name should not be separated from ( - positive example`() {
         lintMethod(
             """

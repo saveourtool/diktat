@@ -31,7 +31,8 @@ import org.jetbrains.kotlin.psi.psiUtil.referenceExpression
  *  it should be ONLY node of File elementType
  *  @param filterForVariables condition to filter
  */
-abstract class VariablesSearch(val node: ASTNode, private val filterForVariables: (KtProperty) -> Boolean) {
+abstract class VariablesSearch(val node: ASTNode,
+                               private val filterForVariables: (KtProperty) -> Boolean) {
     /**
      * to complete implementation of a search mechanism you need to specify what and how you will search in current scope
      * [this] - scope where to search the usages/assignments/e.t.c of the variable (can be of types KtBlockExpression/KtFile/KtClassBody)

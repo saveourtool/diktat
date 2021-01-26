@@ -6,7 +6,9 @@ import org.cqfn.diktat.common.config.rules.isRuleEnabled
 import org.cqfn.diktat.ruleset.utils.hasSuppress
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
-typealias EmitType = ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
+typealias EmitType = ((offset: Int,
+                       errorMessage: String,
+                       canBeAutoCorrected: Boolean) -> Unit)
 
 typealias ListOfList = MutableList<MutableList<ASTNode>>
 
