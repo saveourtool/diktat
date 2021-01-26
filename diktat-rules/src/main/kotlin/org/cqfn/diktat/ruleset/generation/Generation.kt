@@ -5,9 +5,9 @@
 package org.cqfn.diktat.ruleset.generation
 
 import org.cqfn.diktat.ruleset.constants.Warnings
-import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule.Companion.afterCopyrightRegex
-import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule.Companion.curYear
-import org.cqfn.diktat.ruleset.rules.comments.HeaderCommentRule.Companion.hyphenRegex
+import org.cqfn.diktat.ruleset.rules.chapter2.comments.HeaderCommentRule.Companion.afterCopyrightRegex
+import org.cqfn.diktat.ruleset.rules.chapter2.comments.HeaderCommentRule.Companion.curYear
+import org.cqfn.diktat.ruleset.rules.chapter2.comments.HeaderCommentRule.Companion.hyphenRegex
 
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier

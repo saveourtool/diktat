@@ -3,7 +3,7 @@ package org.cqfn.diktat.ruleset.chapter5
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.TOO_MANY_PARAMETERS
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
-import org.cqfn.diktat.ruleset.rules.FunctionArgumentsSize
+import org.cqfn.diktat.ruleset.rules.chapter5.FunctionArgumentsSize
 import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
