@@ -4,6 +4,7 @@
     # put your package name here - it will be autofixed and checked
     domainName: your.name.here
     testDirs: test
+    kotlinVerstion: ""
 # Checks that the Class/Enum/Interface name does not match Pascal case
 - name: CLASS_NAME_INCORRECT
   enabled: true
