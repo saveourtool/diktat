@@ -16,6 +16,7 @@ import java.io.File
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
+import org.cqfn.diktat.common.config.rules.RulesConfigReader.Companion.log
 
 const val DIKTAT_COMMON = "DIKTAT_COMMON"
 
@@ -119,8 +120,11 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
     /**
      * Get version of kotlin from configuration
      */
-    val kotlinVersion: KotlinVersion? by lazy {
-        configuration?.get("kotlinVersion")?.kotlinVersion()
+    val kotlinVersion: KotlinVersion by lazy {
+        configuration?.get("kotlinVersion")?.kotlinVersion() ?: run {
+            log.error("Kotlin version not specified. Will be use current version")
+            KotlinVersion.CURRENT
+        }
     }
 
     /**
@@ -160,7 +164,9 @@ fun List<RulesConfig>.isRuleEnabled(rule: Rule): Boolean {
  * Parse string into KotlinVersion
  */
 fun String.kotlinVersion(): KotlinVersion {
-    require(this.contains("^(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)\$".toRegex()))
+    require(this.contains("^(\\d+\\.)(\\d+)\\.?(\\d+)?$".toRegex())) {
+        "Kotlin version format is incorrect"
+    }
     val versions = this.split(".").map { it.toInt() }
     return if (versions.size == 2)
         KotlinVersion(versions[0], versions[1])
