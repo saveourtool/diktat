@@ -152,6 +152,7 @@ enum class Warnings(
     NO_CORRESPONDING_PROPERTY(false, "6.1.7", "backing property should have the same name, but there is no corresponding property"),
     AVOID_USING_UTILITY_CLASS(false, "6.4.1", "avoid using utility classes/objects, use extensions functions"),
     OBJECT_IS_PREFERRED(true, "6.4.2", "it is better to use object for stateless classes"),
+    INLINE_CLASS_CAN_BE_USED(true, "6.1.12", "inline class can be used"),
     EXTENSION_FUNCTION_WITH_CLASS(false, "6.2.3", "do not use extension functions with class defined in the same file"),
     ;
 

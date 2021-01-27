@@ -63,13 +63,14 @@ import org.cqfn.diktat.ruleset.rules.chapter6.UselessSupertype
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.AbstractClassesRule
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.CompactInitialization
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.DataClassesRule
+import org.cqfn.diktat.ruleset.rules.chapter6.ExtensionFunctionsInFileRule
+import org.cqfn.diktat.ruleset.rules.chapter6.classes.InlineClassesRule
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.SingleConstructorRule
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.SingleInitRule
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.StatelessClassesRule
 
 import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.RuleSetProvider
-import org.cqfn.diktat.ruleset.rules.chapter6.ExtensionFunctionsInFileRule
 import org.jetbrains.kotlin.org.jline.utils.Levenshtein
 import org.slf4j.LoggerFactory
 
@@ -154,6 +155,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
             ::CustomGetterSetterRule,
             ::CompactInitialization,
             // other rules
+            ::InlineClassesRule,
             ::ExtensionFunctionsInFileRule,
             ::CheckInverseMethodRule,
             ::StatelessClassesRule,

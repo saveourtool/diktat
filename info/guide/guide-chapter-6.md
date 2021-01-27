@@ -357,6 +357,23 @@ fun main() {
 }
 ```
 
+### <a name="r6.1.12"></a> 6.1.12 Prefer Inline classes when a class has a single property
+If a class has only one immutable property, then it can be converted to the inline class.
+
+Sometimes it is necessary for business logic to create a wrapper around some type. However, it introduces runtime overhead due to additional heap allocations. Moreover, if the wrapped type is primitive, the performance hit is terrible, because primitive types are usually heavily optimized by the runtime, while their wrappers don't get any special treatment.
+
+**Invalid example**:
+```kotlin
+class Password {
+    val value: String
+}
+```
+
+**Valid example**:
+```kotlin
+inline class Password(val value: String)
+```
+
 <!-- =============================================================================== -->
 ### <a name="c6.2"></a>6.2 Extension functions
 This section describes the rules of using extension functions in your code.
