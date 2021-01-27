@@ -1,7 +1,8 @@
-@file:Suppress("EXTENSION_FUNCTION_WITH_CLASS")
 /**
  * Classes and extensions needed to read and parse rules configuration file
  */
+
+@file:Suppress("EXTENSION_FUNCTION_WITH_CLASS")
 
 package org.cqfn.diktat.common.config.rules
 
