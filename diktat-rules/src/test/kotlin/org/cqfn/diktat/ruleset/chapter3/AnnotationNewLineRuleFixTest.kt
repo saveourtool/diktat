@@ -1,6 +1,6 @@
 package org.cqfn.diktat.ruleset.chapter3
 
-import org.cqfn.diktat.ruleset.rules.AnnotationNewLineRule
+import org.cqfn.diktat.ruleset.rules.chapter3.AnnotationNewLineRule
 import org.cqfn.diktat.util.FixTestBase
 
 import generated.WarningNames

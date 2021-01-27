@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.utils.indentation
 
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
-import org.cqfn.diktat.ruleset.rules.files.IndentationRule
+import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationRule
 
 /**
  * [RuleConfiguration] for indentation logic

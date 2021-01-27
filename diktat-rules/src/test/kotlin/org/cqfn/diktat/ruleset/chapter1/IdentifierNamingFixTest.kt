@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter1
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.rules.IdentifierNaming
+import org.cqfn.diktat.ruleset.rules.chapter1.IdentifierNaming
 import org.cqfn.diktat.util.FixTestBase
 
 import generated.WarningNames

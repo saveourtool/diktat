@@ -1,6 +1,6 @@
 package org.cqfn.diktat.ruleset.chapter3
 
-import org.cqfn.diktat.ruleset.rules.BracesInConditionalsAndLoopsRule
+import org.cqfn.diktat.ruleset.rules.chapter3.BracesInConditionalsAndLoopsRule
 import org.cqfn.diktat.util.FixTestBase
 
 import generated.WarningNames
