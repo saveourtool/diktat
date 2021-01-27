@@ -3,7 +3,7 @@ package org.cqfn.diktat.ruleset.chapter5
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.NESTED_BLOCK
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
-import org.cqfn.diktat.ruleset.rules.NestedFunctionBlock
+import org.cqfn.diktat.ruleset.rules.chapter5.NestedFunctionBlock
 import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError

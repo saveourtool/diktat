@@ -1,6 +1,7 @@
 package org.cqfn.diktat.generation.docs
 
 import org.cqfn.diktat.ruleset.constants.Warnings
+import org.cqfn.diktat.ruleset.constants.getChapterByWarning
 
 import java.io.File
 
@@ -37,10 +38,12 @@ fun generateRulesMapping() {
         ?: 0
 
     val tableWithWarnings = allWarnings.joinToString("\n") { warn ->
-        "| ${warn.name} | [${warn.ruleId}](${DIKTAT_GUIDE}r${warn.ruleId}) | ${if (warn.canBeAutoCorrected) "yes" else "no"} |"
+        "| ${warn.name} | [${warn.ruleId}](${DIKTAT_GUIDE}r${warn.ruleId}) | ${if (warn.canBeAutoCorrected) "yes" else "no"} | ${warn.getChapterByWarning().title} |"
     }
 
-    val header = "| Diktat Rule | Code Style | Auto-fixed? |\n"
-    val separator = "| ${"-".repeat(maxRuleNameLength)} | ${"-".repeat(maxRuleIdLength)} | --- |\n"
+    val chaptersLength = allWarnings.map { it.getChapterByWarning().title }.maxBy { it.length }?.length ?: 0
+
+    val header = "| Diktat Rule | Code Style | Auto-fixed? | Chapter |\n"
+    val separator = "| ${"-".repeat(maxRuleNameLength)} | ${"-".repeat(maxRuleIdLength)} | --- | ${"-".repeat(chaptersLength)} |\n"
     File("rules-mapping.md").writeText("$header$separator$tableWithWarnings")
 }

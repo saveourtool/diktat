@@ -2,7 +2,7 @@ package org.cqfn.diktat.ruleset.chapter5
 
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_OVERLOADING_FUNCTION_ARGUMENTS
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
-import org.cqfn.diktat.ruleset.rules.OverloadingArgumentsFunction
+import org.cqfn.diktat.ruleset.rules.chapter5.OverloadingArgumentsFunction
 import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError

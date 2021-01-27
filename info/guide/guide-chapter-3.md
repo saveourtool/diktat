@@ -27,6 +27,7 @@ d) **Recommendation**: One `.kt` source file should contain only one class decla
 
 e) Avoid empty files that do not contain the code or contain only imports/comments/package name
 
+f) Unused imports should be removed
 #### <a name="r3.1.3"></a> 3.1.3 Import statements order
 
 From top to bottom, the order is the following:
@@ -413,6 +414,22 @@ Note that all comparison operators, such as `==`, `>`, `<`, should not be split.
 ```kotlin
 if (condition) list.map { foo(it) }.filter { bar(it) } else list.drop(1)
 ```  
+
+**Note:** If dot qualified expression is inside condition or passed as an argument - it should be replaced with new variable.
+
+**Invalid example**: 
+```kotlin
+ if (node.treeParent.treeParent.findChildByType(IDENTIFIER) != null) {}
+```
+ 
+**Valid example**: 
+```kotlin
+        val grandIdentifier = node
+            .treeParent
+            .treeParent
+            .findChildByType(IDENTIFIER)
+        if (grandIdentifier != null) {}
+```
   
 2)	Newlines should be placed after the assignment operator (`=`).
 3)	In function or class declarations, the name of a function or constructor should not be split by a newline from the opening brace `(`.

@@ -1,6 +1,5 @@
 package org.cqfn.diktat.plugin.gradle
 
-import com.pinterest.ktlint.reporter.plain.PlainReporter
 import generated.DIKTAT_VERSION
 import generated.KTLINT_VERSION
 import org.gradle.api.Plugin
@@ -20,9 +19,8 @@ class DiktatGradlePlugin : Plugin<Project> {
             inputs = project.fileTree("src").apply {
                 include("**/*.kt")
             }
-            reporter = PlainReporter(System.out)
+            diktatConfigFile = project.rootProject.file("diktat-analysis.yml")
             excludes = project.files()
-            reporter = PlainReporter(System.out)
         }
 
         // only gradle 7+ (or maybe 6.8) will embed kotlin 1.4+, kx.serialization is incompatible with kotlin 1.3, so until then we have to use JavaExec wrapper

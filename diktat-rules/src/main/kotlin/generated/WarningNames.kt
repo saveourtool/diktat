@@ -143,6 +143,8 @@ public object WarningNames {
 
     public const val WRONG_NEWLINES: String = "WRONG_NEWLINES"
 
+    public const val COMPLEX_EXPRESSION: String = "COMPLEX_EXPRESSION"
+
     public const val STRING_CONCATENATION: String = "STRING_CONCATENATION"
 
     public const val TOO_MANY_BLANK_LINES: String = "TOO_MANY_BLANK_LINES"
@@ -199,6 +201,10 @@ public object WarningNames {
     public const val WRONG_OVERLOADING_FUNCTION_ARGUMENTS: String =
             "WRONG_OVERLOADING_FUNCTION_ARGUMENTS"
 
+    public const val RUN_BLOCKING_INSIDE_ASYNC: String = "RUN_BLOCKING_INSIDE_ASYNC"
+
+    public const val CUSTOM_LABEL: String = "CUSTOM_LABEL"
+
     public const val SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY: String =
             "SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY"
 
@@ -231,4 +237,10 @@ public object WarningNames {
     public const val OBJECT_IS_PREFERRED: String = "OBJECT_IS_PREFERRED"
 
     public const val INVERSE_FUNCTION_PREFERRED: String = "INVERSE_FUNCTION_PREFERRED"
+
+    public const val TOO_MANY_LINES_IN_LAMBDA: String = "TOO_MANY_LINES_IN_LAMBDA"
+
+    public const val UNUSED_IMPORT: String = "UNUSED_IMPORT"
+
+    public const val INLINE_CLASS_CAN_BE_USED: String = "INLINE_CLASS_CAN_BE_USED"
 }

@@ -1,6 +1,6 @@
 package org.cqfn.diktat.ruleset.chapter4
 
-import org.cqfn.diktat.ruleset.rules.VariableGenericTypeDeclarationRule
+import org.cqfn.diktat.ruleset.rules.chapter4.VariableGenericTypeDeclarationRule
 import org.cqfn.diktat.util.FixTestBase
 
 import generated.WarningNames

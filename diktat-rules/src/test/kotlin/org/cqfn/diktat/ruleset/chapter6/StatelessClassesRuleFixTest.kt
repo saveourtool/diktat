@@ -1,6 +1,6 @@
 package org.cqfn.diktat.ruleset.chapter6
 
-import org.cqfn.diktat.ruleset.rules.classes.StatelessClassesRule
+import org.cqfn.diktat.ruleset.rules.chapter6.classes.StatelessClassesRule
 import org.cqfn.diktat.util.FixTestBase
 
 import generated.WarningNames.OBJECT_IS_PREFERRED

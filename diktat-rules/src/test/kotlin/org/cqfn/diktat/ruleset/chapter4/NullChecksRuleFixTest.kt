@@ -1,6 +1,6 @@
 package org.cqfn.diktat.ruleset.chapter4
 
-import org.cqfn.diktat.ruleset.rules.NullChecksRule
+import org.cqfn.diktat.ruleset.rules.chapter4.NullChecksRule
 import org.cqfn.diktat.util.FixTestBase
 
 import generated.WarningNames
