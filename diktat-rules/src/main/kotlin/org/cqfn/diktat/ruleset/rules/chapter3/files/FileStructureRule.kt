@@ -1,4 +1,4 @@
-package org.cqfn.diktat.ruleset.rules.files
+package org.cqfn.diktat.ruleset.rules.chapter3.files
 
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
@@ -10,23 +10,29 @@ import org.cqfn.diktat.ruleset.constants.Warnings.FILE_INCORRECT_BLOCKS_ORDER
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NO_BLANK_LINE_BETWEEN_BLOCKS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_UNORDERED_IMPORTS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_WILDCARD_IMPORTS
+import org.cqfn.diktat.ruleset.constants.Warnings.UNUSED_IMPORT
 import org.cqfn.diktat.ruleset.rules.chapter1.PackageNaming.Companion.PACKAGE_SEPARATOR
 import org.cqfn.diktat.ruleset.utils.StandardPlatforms
 import org.cqfn.diktat.ruleset.utils.copyrightWords
+import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.handleIncorrectOrder
 import org.cqfn.diktat.ruleset.utils.moveChildBefore
+import org.cqfn.diktat.ruleset.utils.operatorMap
 
 import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
+import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FILE_ANNOTATION_LIST
 import com.pinterest.ktlint.core.ast.ElementType.IMPORT_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
+import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
+import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.children
+import com.pinterest.ktlint.core.ast.isPartOf
 import com.pinterest.ktlint.core.ast.isPartOfComment
 import com.pinterest.ktlint.core.ast.isWhiteSpace
 import com.pinterest.ktlint.core.ast.nextSibling
@@ -38,6 +44,7 @@ import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtImportDirective
+import org.jetbrains.kotlin.psi.KtPackageDirective
 import org.jetbrains.kotlin.psi.psiUtil.siblings
 
 /**
@@ -64,6 +71,8 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         .mapValues { (_, value) ->
             value.map { it.split(PACKAGE_SEPARATOR).map(Name::identifier) }
         }
+    private val refSet: MutableSet<String> = mutableSetOf()
+    private var packageName = ""
     private lateinit var emitWarn: EmitType
 
     override fun visit(node: ASTNode,
@@ -72,13 +81,14 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         isFixMode = autoCorrect
         emitWarn = emit
 
-        if (node.elementType == ElementType.FILE) {
+        if (node.elementType == FILE) {
             val wildcardImportsConfig = WildCardImportsConfig(
                 this.configRules.getRuleConfig(FILE_WILDCARD_IMPORTS)?.configuration ?: emptyMap()
             )
             val importsGroupingConfig = ImportsGroupingConfig(
                 this.configRules.getRuleConfig(FILE_UNORDERED_IMPORTS)?.configuration ?: emptyMap()
             )
+            checkUnusedImport(node)
             node.findChildByType(IMPORT_LIST)
                 ?.let { checkImportsOrder(it, wildcardImportsConfig, importsGroupingConfig) }
             if (checkFileHasCode(node)) {
@@ -179,7 +189,6 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         importsGroupingConfig: ImportsGroupingConfig
     ) {
         val imports = node.getChildren(TokenSet.create(IMPORT_DIRECTIVE)).toList()
-
         // importPath can be null if import name cannot be parsed, which should be a very rare case, therefore !! should be safe here
         imports
             .filter {
@@ -188,7 +197,6 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
                 }
             }
             .forEach { FILE_WILDCARD_IMPORTS.warn(configRules, emitWarn, isFixMode, it.text, it.startOffset, it) }
-
         val sortedImportsGroups = if (importsGroupingConfig.useRecommendedImportsOrder) {
             regroupImports(imports.map { it.psi as KtImportDirective })
                 .map { group -> group.map { it.node } }
@@ -196,10 +204,61 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
             listOf(imports)
         }
             .map { group -> group.sortedBy { it.text } }
-
         if (sortedImportsGroups.flatten() != imports) {
             FILE_UNORDERED_IMPORTS.warnAndFix(configRules, emitWarn, isFixMode, "${sortedImportsGroups.flatten().first().text}...", node.startOffset, node) {
                 rearrangeImports(node, imports, sortedImportsGroups)
+            }
+        }
+    }
+
+    @Suppress("UnsafeCallOnNullableType")
+    private fun checkUnusedImport(
+        node: ASTNode
+    ) {
+        findAllReferences(node)
+        packageName = (node.findChildByType(PACKAGE_DIRECTIVE)?.psi as KtPackageDirective).qualifiedName
+        node.findChildByType(IMPORT_LIST)?.getChildren(TokenSet.create(IMPORT_DIRECTIVE))?.toList()
+            ?.forEach { import ->
+                val ktImportDirective = import.psi as KtImportDirective
+                val importName = ktImportDirective.importPath?.importedName?.asString()
+                val importPath = ktImportDirective.importPath?.pathStr!!  // importPath - ifNOtParsed & Nullable
+                if (ktImportDirective.aliasName == null &&
+                        packageName.isNotEmpty() && importPath.startsWith("$packageName.") &&
+                        importPath.substring(packageName.length + 1).indexOf('.') == -1
+                ) {
+                    // this branch corresponds to imports from the same package
+                    deleteImport(importPath, node, ktImportDirective)
+                } else if (importName != null && !refSet.contains(
+                    importName
+                )
+                ) {
+                    // this import is not used anywhere
+                    deleteImport(importPath, node, ktImportDirective)
+                }
+            }
+    }
+
+    private fun deleteImport(
+        importPath: String,
+        node: ASTNode,
+        ktImportDirective: KtImportDirective
+    ) {
+        UNUSED_IMPORT.warnAndFix(
+            configRules, emitWarn, isFixMode,
+            "$importPath - unused import",
+            node.startOffset, node
+        ) { ktImportDirective.delete() }
+    }
+
+    private fun findAllReferences(node: ASTNode) {
+        node.findAllNodesWithSpecificType(OPERATION_REFERENCE)?.forEach { ref ->
+            if (!ref.isPartOf(IMPORT_DIRECTIVE)) {
+                operatorMap.filterValues { it == ref.text }.keys.forEach { key -> refSet.add(key) }
+            }
+        }
+        node.findAllNodesWithSpecificType(REFERENCE_EXPRESSION)?.forEach {
+            if (!it.isPartOf(IMPORT_DIRECTIVE)) {
+                refSet.add(it.text)
             }
         }
     }
