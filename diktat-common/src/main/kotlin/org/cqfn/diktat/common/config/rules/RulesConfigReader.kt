@@ -117,6 +117,13 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
     }
 
     /**
+     * Get disable chapters from configuration
+     */
+    val disabledChapters: String? by lazy {
+        configuration?.get("disabledChapters")
+    }
+
+    /**
      * False if configuration has been read from config file, true if defaults are used
      */
     val isDefault = configuration == null
