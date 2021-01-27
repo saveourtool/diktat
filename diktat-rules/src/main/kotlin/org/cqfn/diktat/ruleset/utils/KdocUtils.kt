@@ -14,7 +14,6 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
 import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
-import org.jetbrains.kotlin.utils.addToStdlib.ifNotEmpty
 
 /**
  * @return a list of [KDocTag]s from this KDoc node
@@ -41,8 +40,10 @@ fun Iterable<KDocTag>.hasKnownKdocTag(knownTag: KDocKnownTag): Boolean =
  * @param consumer lambda which should be used to fill new tag with data, accepts CompositeElement as an argument
  */
 @Suppress("UnsafeCallOnNullableType")
-inline fun ASTNode.insertTagBefore(beforeTag: ASTNode?,
-                                   consumer: CompositeElement.() -> Unit) {
+inline fun ASTNode.insertTagBefore(
+    beforeTag: ASTNode?,
+    consumer: CompositeElement.() -> Unit
+) {
     require(this.elementType == ElementType.KDOC && this.hasChildOfType(KDOC_SECTION)) { "kDoc tags can be inserted only into KDOC node" }
     val kdocSection = this.getFirstChildWithType(KDOC_SECTION)!!
     val newTag = CompositeElement(ElementType.KDOC_TAG)

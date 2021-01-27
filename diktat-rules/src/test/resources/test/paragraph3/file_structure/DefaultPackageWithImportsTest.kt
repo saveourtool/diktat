@@ -8,4 +8,7 @@ import baz.Baz
 /**
  * KDoc
  */
-class Example
+class Example{
+    val x: Bar = Bar()
+    val y: Baz = Baz()
+}
