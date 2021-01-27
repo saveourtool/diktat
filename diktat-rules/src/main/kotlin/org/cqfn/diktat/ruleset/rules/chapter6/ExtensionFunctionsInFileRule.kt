@@ -13,7 +13,9 @@ import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.DOT
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
+import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtFunction
 
 /**
@@ -29,26 +31,33 @@ class ExtensionFunctionsInFileRule(private val configRules: List<RulesConfig>) :
         emitWarn = emit
         isFixMode = autoCorrect
 
-        if (node.elementType == ElementType.FILE && node.hasChildOfType(CLASS)) {
-            collectAllExtensionFunctions(node).forEach {
+        if (node.elementType == ElementType.FILE) {
+            val classNames = collectAllClassNames(node)
+
+            collectAllExtensionFunctionsWithSameClassName(node, classNames).forEach {
                 fireWarning(it)
             }
         }
+    }
+
+    @Suppress("UnsafeCallOnNullableType")
+    private fun collectAllClassNames(node: ASTNode): List<String> {
+        val classes = node.findAllNodesWithSpecificType(CLASS)
+
+        return classes.map { (it.psi as KtClass).name!! }
     }
 
     private fun fireWarning(node: ASTNode) {
         Warnings.EXTENSION_FUNCTION_WITH_CLASS.warn(configRules, emitWarn, isFixMode, "fun ${(node.psi as KtFunction).name}", node.startOffset, node)
     }
 
-    private fun collectAllExtensionFunctions(node: ASTNode): List<ASTNode> {
-        return node.findAllNodesWithSpecificType(FUN).filter { isExtensionFunction(it) }
+    private fun collectAllExtensionFunctionsWithSameClassName(node: ASTNode, classNames: List<String>): List<ASTNode> {
+        return node.findAllNodesWithSpecificType(FUN).filter { isExtensionFunctionWithClassName(it, classNames) }
     }
 
     @Suppress("UnsafeCallOnNullableType")
-    private fun isExtensionFunction(node: ASTNode): Boolean =
-         node
-             .getFirstChildWithType(IDENTIFIER)!!
-             .treePrev
-             .elementType == DOT
+    private fun isExtensionFunctionWithClassName(node: ASTNode, classNames: List<String>): Boolean =
+         node.getFirstChildWithType(IDENTIFIER)!!.treePrev.treePrev.elementType == TYPE_REFERENCE
+             && node.getFirstChildWithType(IDENTIFIER)!!.treePrev.treePrev.text in classNames
 
 }

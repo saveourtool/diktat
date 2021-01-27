@@ -2,8 +2,6 @@
  * Classes and extensions needed to read and parse rules configuration file
  */
 
-@file:Suppress("EXTENSION_FUNCTION_WITH_CLASS")
-
 package org.cqfn.diktat.common.config.rules
 
 import org.cqfn.diktat.common.config.reader.JsonResourceConfigReader

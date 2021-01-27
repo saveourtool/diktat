@@ -434,6 +434,6 @@
 # Checks if class can be converted to inline class
 - name: INLINE_CLASS_CAN_BE_USED
   enabled: true
-# If file contains class, then it can't contain extension functions
+# If file contains class, then it can't contain extension functions for the same class
 - name: EXTENSION_FUNCTION_WITH_CLASS
   enabled: true

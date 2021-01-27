@@ -18,11 +18,11 @@ class ExtensionFunctionsInFileWarnTest : LintTestBase(::ExtensionFunctionsInFile
     fun `should warn on function`() {
         lintMethod(
             """
-                |class Some1 private constructor () {
+                |class Some private constructor () {
                 |
                 |}
                 |
-                |private fun String.coolStr() {
+                |private fun Some.coolStr() {
                 |
                 |}
             """.trimMargin(),
@@ -35,11 +35,11 @@ class ExtensionFunctionsInFileWarnTest : LintTestBase(::ExtensionFunctionsInFile
     fun `should warn on several functions`() {
         lintMethod(
             """
-                |class Some1 private constructor () {
+                |class Another private constructor () {
                 |
                 |}
                 |
-                |private fun /* Random comment */ String.coolStr() {
+                |private fun /* Random comment */ Another.coolStr() {
                 |
                 |}
                 |
@@ -87,7 +87,7 @@ class ExtensionFunctionsInFileWarnTest : LintTestBase(::ExtensionFunctionsInFile
             """
                 |class Some {
                 |   
-                |   fun String.str() {
+                |   fun Some.str() {
                 |   
                 |   }
                 |}
@@ -108,6 +108,24 @@ class ExtensionFunctionsInFileWarnTest : LintTestBase(::ExtensionFunctionsInFile
                 |}
                 |
                 |fun bar() {
+                |
+                |}
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(EXTENSION_FUNCTION_WITH_CLASS)
+    fun `should not trigger on extension functions with different class`() {
+        lintMethod(
+            """
+                |class Some {
+                |   fun foo() {
+                |   
+                |   }
+                |}
+                |
+                |fun String.bar() {
                 |
                 |}
             """.trimMargin()
