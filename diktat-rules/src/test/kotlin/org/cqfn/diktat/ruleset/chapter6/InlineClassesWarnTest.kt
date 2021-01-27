@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test
 
 class InlineClassesWarnTest : LintTestBase(::InlineClassesRule) {
     private val ruleId = "$DIKTAT_RULE_SET_ID:inline-classes"
-
     private val rulesConfigListEarlierVersion: List<RulesConfig> = listOf(
         RulesConfig(
             DIKTAT_COMMON, true,
