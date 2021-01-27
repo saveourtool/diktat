@@ -4,6 +4,8 @@
   configuration:
     # put your package name here - it will be autofixed and checked
     domainName: org.cqfn.diktat
+    # testDirs: test
+    disabledChapters: ""
     testDirs: test
     kotlinVersion: "1.4.10"
 # Checks that the Class/Enum/Interface name does not match Pascal case

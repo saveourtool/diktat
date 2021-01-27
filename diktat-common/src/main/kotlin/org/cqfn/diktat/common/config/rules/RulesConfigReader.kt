@@ -118,6 +118,13 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
     }
 
     /**
+     * Get disable chapters from configuration
+     */
+    val disabledChapters: String? by lazy {
+        configuration?.get("disabledChapters")
+    }
+
+    /**
      * Get version of kotlin from configuration
      */
     val kotlinVersion: KotlinVersion by lazy {
