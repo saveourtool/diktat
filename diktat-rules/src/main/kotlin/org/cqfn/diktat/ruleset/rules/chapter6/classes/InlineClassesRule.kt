@@ -1,6 +1,7 @@
 package org.cqfn.diktat.ruleset.rules.chapter6.classes
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.common.config.rules.getCommonConfiguration
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.INLINE_CLASS_CAN_BE_USED
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
@@ -18,7 +19,6 @@ import com.pinterest.ktlint.core.ast.ElementType.PUBLIC_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_LIST
 import com.pinterest.ktlint.core.ast.ElementType.VAR_KEYWORD
 import com.pinterest.ktlint.core.ast.children
-import org.cqfn.diktat.common.config.rules.getCommonConfiguration
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.psiUtil.visibilityModifierType
@@ -74,7 +74,7 @@ class InlineClassesRule(private val configRule: List<RulesConfig>) : Rule("inlin
                 ?: false
 
     companion object {
-        val ktVersion = KotlinVersion(1,4,10)
+        val ktVersion = KotlinVersion(1, 4, 10)
         val goodModifiers = listOf(PUBLIC_KEYWORD, PRIVATE_KEYWORD, FINAL_KEYWORD, PROTECTED_KEYWORD, INTERNAL_KEYWORD)
     }
 }

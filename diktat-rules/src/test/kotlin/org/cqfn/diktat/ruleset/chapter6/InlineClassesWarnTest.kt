@@ -1,5 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter6
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_COMMON
+import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.INLINE_CLASS_CAN_BE_USED
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.InlineClassesRule
@@ -7,9 +9,6 @@ import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
-import org.cqfn.diktat.common.config.rules.DIKTAT_COMMON
-import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.Warnings
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
@@ -21,13 +20,11 @@ class InlineClassesWarnTest : LintTestBase(::InlineClassesRule) {
             DIKTAT_COMMON, true,
             mapOf("kotlinVersion" to "1.4.9"))
     )
-
     private val rulesConfigListSameVersion: List<RulesConfig> = listOf(
         RulesConfig(
             DIKTAT_COMMON, true,
             mapOf("kotlinVersion" to "1.4.10"))
     )
-
     private val rulesConfigListLateVersion: List<RulesConfig> = listOf(
         RulesConfig(
             DIKTAT_COMMON, true,
