@@ -5,6 +5,7 @@
 package org.cqfn.diktat.common.config.rules
 
 import org.cqfn.diktat.common.config.reader.JsonResourceConfigReader
+import org.cqfn.diktat.common.config.rules.RulesConfigReader.Companion.log
 
 import com.charleskorn.kaml.Yaml
 import com.charleskorn.kaml.YamlConfiguration
@@ -16,7 +17,6 @@ import java.io.File
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
-import org.cqfn.diktat.common.config.rules.RulesConfigReader.Companion.log
 
 const val DIKTAT_COMMON = "DIKTAT_COMMON"
 
@@ -162,14 +162,17 @@ fun List<RulesConfig>.isRuleEnabled(rule: Rule): Boolean {
 
 /**
  * Parse string into KotlinVersion
+ *
+ * @return KotlinVersion from configuration
  */
 fun String.kotlinVersion(): KotlinVersion {
     require(this.contains("^(\\d+\\.)(\\d+)\\.?(\\d+)?$".toRegex())) {
         "Kotlin version format is incorrect"
     }
     val versions = this.split(".").map { it.toInt() }
-    return if (versions.size == 2)
+    return if (versions.size == 2) {
         KotlinVersion(versions[0], versions[1])
-    else
+    } else {
         KotlinVersion(versions[0], versions[1], versions[2])
+    }
 }

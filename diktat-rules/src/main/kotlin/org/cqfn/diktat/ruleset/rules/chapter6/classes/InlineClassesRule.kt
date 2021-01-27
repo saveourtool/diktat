@@ -18,6 +18,7 @@ import com.pinterest.ktlint.core.ast.ElementType.PUBLIC_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_LIST
 import com.pinterest.ktlint.core.ast.ElementType.VAR_KEYWORD
 import com.pinterest.ktlint.core.ast.children
+import org.cqfn.diktat.common.config.rules.getCommonConfiguration
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.psiUtil.visibilityModifierType
@@ -37,7 +38,8 @@ class InlineClassesRule(private val configRule: List<RulesConfig>) : Rule("inlin
         emitWarn = emit
         isFixMode = autoCorrect
 
-        if (node.elementType == CLASS) {
+        val configuration by configRule.getCommonConfiguration()
+        if (node.elementType == CLASS && configuration.kotlinVersion.isAtLeast(ktVersion.major, ktVersion.minor, ktVersion.patch)) {
             handleClasses(node.psi as KtClass)
         }
     }
@@ -72,6 +74,7 @@ class InlineClassesRule(private val configRule: List<RulesConfig>) : Rule("inlin
                 ?: false
 
     companion object {
+        val ktVersion = KotlinVersion(1,4,10)
         val goodModifiers = listOf(PUBLIC_KEYWORD, PRIVATE_KEYWORD, FINAL_KEYWORD, PROTECTED_KEYWORD, INTERNAL_KEYWORD)
     }
 }

@@ -7,11 +7,32 @@ import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
+import org.cqfn.diktat.common.config.rules.DIKTAT_COMMON
+import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ruleset.constants.Warnings
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class InlineClassesWarnTest : LintTestBase(::InlineClassesRule) {
     private val ruleId = "$DIKTAT_RULE_SET_ID:inline-classes"
+
+    private val rulesConfigListEarlierVersion: List<RulesConfig> = listOf(
+        RulesConfig(
+            DIKTAT_COMMON, true,
+            mapOf("kotlinVersion" to "1.4.9"))
+    )
+
+    private val rulesConfigListSameVersion: List<RulesConfig> = listOf(
+        RulesConfig(
+            DIKTAT_COMMON, true,
+            mapOf("kotlinVersion" to "1.4.10"))
+    )
+
+    private val rulesConfigListLateVersion: List<RulesConfig> = listOf(
+        RulesConfig(
+            DIKTAT_COMMON, true,
+            mapOf("kotlinVersion" to "1.4.11"))
+    )
 
     @Test
     @Tag(WarningNames.INLINE_CLASS_CAN_BE_USED)
@@ -158,6 +179,39 @@ class InlineClassesWarnTest : LintTestBase(::InlineClassesRule) {
                 |}
             """.trimMargin(),
             LintError(1, 1, ruleId, "${INLINE_CLASS_CAN_BE_USED.warnText()} class LocalCommandExecutor", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.INLINE_CLASS_CAN_BE_USED)
+    fun `check kotlin version`() {
+        lintMethod(
+            """
+                |class Some {
+                |   val config = Config()
+                |}
+            """.trimMargin(),
+            LintError(1, 1, ruleId, "${INLINE_CLASS_CAN_BE_USED.warnText()} class Some", true),
+            rulesConfigList = rulesConfigListLateVersion
+        )
+
+        lintMethod(
+            """
+                |class Some {
+                |   val config = Config()
+                |}
+            """.trimMargin(),
+            rulesConfigList = rulesConfigListEarlierVersion
+        )
+
+        lintMethod(
+            """
+                |class Some {
+                |   val config = Config()
+                |}
+            """.trimMargin(),
+            LintError(1, 1, ruleId, "${INLINE_CLASS_CAN_BE_USED.warnText()} class Some", true),
+            rulesConfigList = rulesConfigListSameVersion
         )
     }
 }
