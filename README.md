@@ -137,6 +137,30 @@ diktat {
 }
 ```
 
+Also `diktat` extension has different reporters. You can specify `json`, `html`, `checkstyle`, `plain` (default) or your own custom reporter:
+```kotlin
+diktat {
+    reporter = "json" // "html", "checkstyle", "plain"
+}
+```
+
+Example of your custom reporter:
+```kotlin
+diktat {
+    reporter = "custom:name:pathToJar"
+}
+```
+Name parameter is the name of your reporter and as the last parameter you should specify path to jar, which contains your reporter.
+[Example of the junit custom reporter.](https://github.com/kryanod/ktlint-junit-reporter)
+
+You can also specify an output. 
+```kotlin
+diktat {
+    reporter = "json"
+    output = "someFile.json"
+}
+```
+
 You can run diktat checks using task `diktatCheck` and automatically fix errors with tasks `diktatFix`.
 
 ## Customizations via `diktat-analysis.yml`

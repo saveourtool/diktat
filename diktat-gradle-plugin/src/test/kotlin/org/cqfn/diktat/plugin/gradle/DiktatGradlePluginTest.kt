@@ -32,4 +32,10 @@ class DiktatGradlePluginTest {
         Assertions.assertIterableEquals(project.fileTree("src").files, diktatExtension.inputs.files)
         Assertions.assertTrue(diktatExtension.inputs.files.isNotEmpty())
     }
+
+    @Test
+    fun `check that the right reporter dependency added`() {
+        val diktatExtension = project.extensions.getByName("diktat") as DiktatExtension
+        Assertions.assertTrue(diktatExtension.reporterType == "plain")
+    }
 }

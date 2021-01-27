@@ -23,7 +23,7 @@ class DiktatJavaExecTaskTest {
     @Test
     fun `check command line for various inputs`() {
         assertCommandLineEquals(
-            listOf(null, combinePathParts("src", "**", "*.kt"))
+            listOf(null, combinePathParts("src", "**", "*.kt"), "--reporter=plain")
         ) {
             inputs = project.files("src/**/*.kt")
         }
@@ -32,7 +32,7 @@ class DiktatJavaExecTaskTest {
     @Test
     fun `check command line in debug mode`() {
         assertCommandLineEquals(
-            listOf(null, "--debug", combinePathParts("src", "**", "*.kt"))
+            listOf(null, "--debug", combinePathParts("src", "**", "*.kt"), "--reporter=plain")
         ) {
             inputs = project.files("src/**/*.kt")
             debug = true
@@ -43,7 +43,7 @@ class DiktatJavaExecTaskTest {
     fun `check command line with excludes`() {
         assertCommandLineEquals(
             listOf(null, combinePathParts("src", "**", "*.kt"),
-                "!${combinePathParts("src", "main", "kotlin", "generated")}"
+                "!${combinePathParts("src", "main", "kotlin", "generated")}", "--reporter=plain"
             )
         ) {
             inputs = project.files("src/**/*.kt")
@@ -73,6 +73,57 @@ class DiktatJavaExecTaskTest {
             inputs = project.files()
             diktatConfigFile = project.file("../diktat-analysis.yml")
         }
+        Assertions.assertEquals(File(project.projectDir.parentFile, "diktat-analysis.yml").absolutePath, task.systemProperties[DIKTAT_CONF_PROPERTY])
+    }
+
+    @Test
+    fun `check command line has reporter type and output`() {
+        assertCommandLineEquals(
+            listOf(null, "--reporter=json,output=some.txt")
+        ) {
+            inputs = project.files()
+            diktatConfigFile = project.file("../diktat-analysis.yml")
+            reporterType = "json"
+            output = "some.txt"
+        }
+    }
+
+    @Test
+    fun `check command line has reporter type without output`() {
+        assertCommandLineEquals(
+            listOf(null, "--reporter=json")
+        ) {
+            inputs = project.files()
+            diktatConfigFile = project.file("../diktat-analysis.yml")
+            reporterType = "json"
+        }
+    }
+
+    @Test
+    fun `check command line has custom reporter type with output`() {
+        assertCommandLineEquals(
+            listOf(null, "--reporter=customName,artifact=customPath")
+        ) {
+            inputs = project.files()
+            diktatConfigFile = project.file("../diktat-analysis.yml")
+            reporterType = "custom:customName:customPath"
+        }
+    }
+
+    @Test
+    fun `check that project has html dependency`() {
+        val task = project.registerDiktatTask {
+            inputs = project.files()
+            diktatConfigFile = project.file("../diktat-analysis.yml")
+            reporterType = "html"
+        }
+
+        Assertions.assertTrue(
+            project
+                .configurations
+                .getByName("diktat")
+                .dependencies
+                .any { it.name == "ktlint-reporter-html" })
         Assertions.assertEquals(File(project.projectDir.parentFile, "diktat-analysis.yml").absolutePath, task.systemProperties[DIKTAT_CONF_PROPERTY])
     }
 
