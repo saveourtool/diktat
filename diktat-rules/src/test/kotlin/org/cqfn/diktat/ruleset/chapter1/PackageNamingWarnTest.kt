@@ -8,7 +8,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_PREFIX
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_SYMBOLS
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_MISSING
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
-import org.cqfn.diktat.ruleset.rules.PackageNaming
+import org.cqfn.diktat.ruleset.rules.chapter1.PackageNaming
 import org.cqfn.diktat.util.LintTestBase
 import org.cqfn.diktat.util.TEST_FILE_NAME
 

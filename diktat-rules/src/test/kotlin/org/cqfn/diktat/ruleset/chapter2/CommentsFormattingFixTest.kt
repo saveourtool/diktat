@@ -1,6 +1,6 @@
 package org.cqfn.diktat.ruleset.chapter2
 
-import org.cqfn.diktat.ruleset.rules.kdoc.CommentsFormatting
+import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.CommentsFormatting
 import org.cqfn.diktat.util.FixTestBase
 
 import generated.WarningNames.COMMENT_WHITE_SPACE

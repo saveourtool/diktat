@@ -239,4 +239,6 @@ public object WarningNames {
     public const val OBJECT_IS_PREFERRED: String = "OBJECT_IS_PREFERRED"
 
     public const val INVERSE_FUNCTION_PREFERRED: String = "INVERSE_FUNCTION_PREFERRED"
+
+    public const val INLINE_CLASS_CAN_BE_USED: String = "INLINE_CLASS_CAN_BE_USED"
 }

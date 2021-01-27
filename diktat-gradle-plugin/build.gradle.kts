@@ -29,7 +29,6 @@ dependencies {
     implementation("com.pinterest.ktlint:ktlint-core:$ktlintVersion") {
         exclude("com.pinterest.ktlint", "ktlint-ruleset-standard")
     }
-    implementation("com.pinterest.ktlint:ktlint-reporter-plain:$ktlintVersion")
     implementation("org.cqfn.diktat:diktat-rules:$diktatVersion")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")

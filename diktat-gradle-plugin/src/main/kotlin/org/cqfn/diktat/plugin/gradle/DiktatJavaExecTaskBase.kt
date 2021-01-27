@@ -3,6 +3,7 @@ package org.cqfn.diktat.plugin.gradle
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.DIKTAT_CHECK_TASK
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.DIKTAT_FIX_TASK
 import org.cqfn.diktat.ruleset.rules.DIKTAT_CONF_PROPERTY
+import org.cqfn.diktat.ruleset.utils.log
 
 import generated.DIKTAT_VERSION
 import generated.KTLINT_VERSION
@@ -50,6 +51,10 @@ open class DiktatJavaExecTaskBase @Inject constructor(
         } else {
             main = "com.pinterest.ktlint.Main"
         }
+        // Plain, checkstyle and json reporter are provided out of the box in ktlint
+        if (diktatExtension.reporterType == "html") {
+            diktatConfiguration.dependencies.add(project.dependencies.create("com.pinterest.ktlint:ktlint-reporter-html:$KTLINT_VERSION"))
+        }
         classpath = diktatConfiguration
         project.logger.debug("Setting diktatCheck classpath to ${diktatConfiguration.dependencies.toSet()}")
         if (diktatExtension.debug) {
@@ -83,6 +88,8 @@ open class DiktatJavaExecTaskBase @Inject constructor(
             diktatExtension.excludes.files.forEach {
                 addPattern(it, negate = true)
             }
+
+            add(createReporterFlag(diktatExtension))
         }
         logger.debug("Setting JavaExec args to $args")
     }
@@ -106,6 +113,40 @@ open class DiktatJavaExecTaskBase @Inject constructor(
      */
     @Suppress("FUNCTION_BOOLEAN_PREFIX")
     override fun getIgnoreFailures(): Boolean = ignoreFailuresProp.getOrElse(false)
+
+    private fun createReporterFlag(diktatExtension: DiktatExtension): String {
+        val flag: StringBuilder = StringBuilder()
+
+        // Plain, checkstyle and json reporter are provided out of the box in ktlint
+        when (diktatExtension.reporterType) {
+            "json" -> flag.append("--reporter=json")
+            "html" -> flag.append("--reporter=html")
+            "checkstyle" -> flag.append("--reporter=checkstyle")
+            else -> customReporter(diktatExtension, flag)
+        }
+
+        if (diktatExtension.output.isNotEmpty()) {
+            flag.append(",output=${diktatExtension.output}")
+        }
+
+        return flag.toString()
+    }
+
+    private fun customReporter(diktatExtension: DiktatExtension, flag: java.lang.StringBuilder) {
+        if (diktatExtension.reporterType.startsWith("custom")) {
+            val name = diktatExtension.reporterType.split(":")[1]
+            val jarPath = diktatExtension.reporterType.split(":")[2]
+            if (name.isEmpty() || jarPath.isEmpty()) {
+                log.warn("Either name or path to jar is not specified. Falling to plain reporter")
+                flag.append("--reporter=plain")
+            } else {
+                flag.append("--reporter=$name,artifact=$jarPath")
+            }
+        } else {
+            flag.append("--reporter=plain")
+            log.warn("Unknown reporter was specified. Falling back to plain reporter.")
+        }
+    }
 
     @Suppress("MagicNumber")
     private fun isMainClassPropertySupported(gradleVersionString: String) =
