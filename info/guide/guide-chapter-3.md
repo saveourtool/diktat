@@ -79,24 +79,15 @@ All variants of a `(private) val` logger should be placed at the beginning of th
 
 #### <a name="r3.1.5"></a> 3.1.5 Order of declaration of top-level code structures
 Kotlin allows several top-level declaration types: classes, objects, interfaces, properties and functions.
-When declaring more than one class or zero classes (e.g. only functions), as per rule 2.2.1, you should document the whole file in the header KDoc.
+When declaring more than one class or zero classes (e.g. only functions), as per rule [2.2.1](#r2.2.1), you should document the whole file in the header KDoc.
 When declaring top-level structures, keep the following order:
-1. Top-level public constants (`const val`)
-2. Top-level public properties
-   1.1 `val`
-   1.2 `lateinit var`
-   1.3 `var`
-3. Public classes
-4. Public extension functions
-5. Public functions
-6. Private constants and properties, following same order as in 1 and 2
-7. Private classes
-8. Private extension functions
-9. Private functions
+1. Top-level constants and properties (following same order as properties inside a class: `const val`,`val`, `lateinit var`, `var`)
+2. Interfaces, classes and objects (grouped by their visibility modifiers)
+3. Extension functions
+4. Other functions
 
 **Note**:
-Extension functions, that use the class or interface declared in the same file (accept parameters of this type or return this type),
-should be declared immediately after the corresponding class or interface.
+Extension functions shouldn't have receivers declared in the same file according to [rule 6.2.3](#r6.2.3)
 
 Valid example:
 ```kotlin
@@ -110,11 +101,13 @@ interface IExample
 
 class Example : IExample
 
-fun Other.asExample(): Example { /*...*/ }
-
 private class Internal
 
-private fun Other.asInternal(): Internal
+fun Other.asExample(): Example { /* ... */ }
+
+private fun Other.asInternal(): Internal { /* ... */ }
+
+fun doStuff() { /* ... */ }
 ```
 
 **Note**:
