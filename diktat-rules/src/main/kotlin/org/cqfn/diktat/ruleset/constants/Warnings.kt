@@ -135,6 +135,7 @@ enum class Warnings(
     RUN_BLOCKING_INSIDE_ASYNC(false, "5.2.4", "avoid using runBlocking in asynchronous code"),
     TOO_MANY_LINES_IN_LAMBDA(false, "5.2.5", "long lambdas should have a parameter name instead of it"),
     CUSTOM_LABEL(false, "5.2.6", "avoid using expression with custom label"),
+    INVERSE_FUNCTION_PREFERRED(true, "5.1.4", "it is better to use inverse function"),
 
     // ======== chapter 6 ========
     SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY(true, "6.1.1", "if a class has single constructor, it should be converted to a primary constructor"),
@@ -151,7 +152,7 @@ enum class Warnings(
     NO_CORRESPONDING_PROPERTY(false, "6.1.7", "backing property should have the same name, but there is no corresponding property"),
     AVOID_USING_UTILITY_CLASS(false, "6.4.1", "avoid using utility classes/objects, use extensions functions"),
     OBJECT_IS_PREFERRED(true, "6.4.2", "it is better to use object for stateless classes"),
-    INVERSE_FUNCTION_PREFERRED(true, "5.1.4", "it is better to use inverse function"),
+    EXTENSION_FUNCTION_WITH_CLASS(false, "6.2.3", "do not use extension functions with class defined in the same file"),
     ;
 
     /**

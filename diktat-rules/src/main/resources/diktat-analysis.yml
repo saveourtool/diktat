@@ -428,3 +428,6 @@
 # If there exists negated version of function you should prefer it instead of !functionCall
 - name: INVERSE_FUNCTION_PREFERRED
   enabled: true
+# If file contains class, then it can't contain extension functions
+- name: EXTENSION_FUNCTION_WITH_CLASS
+  enabled: true

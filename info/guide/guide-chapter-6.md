@@ -389,6 +389,20 @@ fun printClassName(s: A) { println(s.foo()) }
 fun main() { printClassName(B()) }
 ```
 
+#### <a name="r6.2.3"></a> 6.2.3 Don't use extension functions in the same file, where class is defined
+You should not use extension functions in the file, where class is already defined. Better to create an util file.
+
+**Invalid example**:
+```kotlin
+class SomeClass {
+    
+}
+
+fun String.deleteAllSpaces() {
+    
+}
+```
+
 <!-- =============================================================================== -->
 ### <a name="c6.3"></a> 6.3 Interfaces
 An `Interface` in Kotlin can contain declarations of abstract methods, as well as method implementations. What makes them different from abstract classes is that interfaces cannot store state.

@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
 import kotlinx.serialization.encodeToString
+import org.cqfn.diktat.ruleset.constants.Warnings.EXTENSION_FUNCTION_WITH_CLASS
 
 typealias ruleToConfig = Map<Warnings, Map<String, String>>
 
@@ -166,12 +167,15 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
             LintError(3, 6, "$DIKTAT_RULE_SET_ID:kdoc-comments", "${MISSING_KDOC_TOP_LEVEL.warnText()} Example", false),
             LintError(3, 26, "$DIKTAT_RULE_SET_ID:kdoc-comments", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} isValid", false),
             LintError(6, 9, "$DIKTAT_RULE_SET_ID:kdoc-comments", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} foo", false),
+            LintError(8, 8, "$DIKTAT_RULE_SET_ID:extension-functions-class-file", "${EXTENSION_FUNCTION_WITH_CLASS.warnText()} fun foo", false),
             LintError(8, 8, "$DIKTAT_RULE_SET_ID:kdoc-comments", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} foo", false),
             LintError(8, 8, "$DIKTAT_RULE_SET_ID:kdoc-methods", "${MISSING_KDOC_ON_FUNCTION.warnText()} foo", false),
             LintError(9, 3, "$DIKTAT_RULE_SET_ID:empty-block-structure", EMPTY_BLOCK_STRUCTURE_ERROR.warnText() +
                     " empty blocks are forbidden unless it is function with override keyword", false),
             LintError(12, 10, "$DIKTAT_RULE_SET_ID:kdoc-formatting", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
+            LintError(13, 6, "$DIKTAT_RULE_SET_ID:extension-functions-class-file", "${EXTENSION_FUNCTION_WITH_CLASS.warnText()} fun countSubStringOccurrences", false),
             LintError(14, 3, "$DIKTAT_RULE_SET_ID:kdoc-formatting", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
+            LintError(19, 4, "$DIKTAT_RULE_SET_ID:extension-functions-class-file", "${EXTENSION_FUNCTION_WITH_CLASS.warnText()} fun splitPathToDirs", false),
             LintError(19, 15, "$DIKTAT_RULE_SET_ID:kdoc-formatting", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false)
         )
     }
