@@ -26,9 +26,9 @@ Now diKTat was already added to the lists of [static analysis tools](https://git
 
 ## See first
 
-|  |  |  |  |
-| --- | --- | --- | --- |
-|[DiKTat codestyle](info/guide/diktat-coding-convention.md)|[Supported Rules](info/available-rules.md) | [Examples of Usage](https://github.com/akuleshov7/diktat-examples) | [Online Demo](https://ktlint-demo.herokuapp.com) | [Whitepaper](wp/wp.pdf) |
+|  |  |  |  |  |
+| --- | --- | --- | --- | --- |
+|[DiKTat codestyle](info/guide/diktat-coding-convention.md)|[Supported Rules](info/available-rules.md) | [Examples of Usage](https://github.com/akuleshov7/diktat-examples) | [Online Demo](https://ktlint-demo.herokuapp.com) | [White Paper](wp/wp.pdf) |
 
 ## Why should I use diktat in my CI/CD?
 
@@ -134,6 +134,30 @@ diktat {
     inputs = files("src/**/*.kt")  // file collection that will be checked by diktat
     debug = true  // turn on debug logging
     excludes = files("src/test/kotlin/excluded")  // these files will not be checked by diktat
+}
+```
+
+Also `diktat` extension has different reporters. You can specify `json`, `html`, `checkstyle`, `plain` (default) or your own custom reporter:
+```kotlin
+diktat {
+    reporter = "json" // "html", "checkstyle", "plain"
+}
+```
+
+Example of your custom reporter:
+```kotlin
+diktat {
+    reporter = "custom:name:pathToJar"
+}
+```
+Name parameter is the name of your reporter and as the last parameter you should specify path to jar, which contains your reporter.
+[Example of the junit custom reporter.](https://github.com/kryanod/ktlint-junit-reporter)
+
+You can also specify an output. 
+```kotlin
+diktat {
+    reporter = "json"
+    output = "someFile.json"
 }
 ```
 

@@ -5,6 +5,7 @@
     # put your package name here - it will be autofixed and checked
     domainName: org.cqfn.diktat
     # testDirs: test
+    disabledChapters: ""
 # Checks that the Class/Enum/Interface name does not match Pascal case
 - name: CLASS_NAME_INCORRECT
   enabled: true
@@ -166,6 +167,11 @@
   configuration:
     # Allowed wildcards for imports (e.g. "import org.cqfn.diktat.*, import org.jetbrains.kotlin.*")
     allowedWildcards: "kotlinx.serialization.*,org.cqfn.diktat.ruleset.utils.*"
+# Checks unused imports
+- name: UNUSED_IMPORT
+  enabled: true
+  configuration:
+    deleteUnusedImport: true
 # Checks that braces are used in if, else, when, for, do, and while statements. Exception: single line if statement
 - name: NO_BRACES_IN_CONDITIONALS_AND_LOOPS
   enabled: true
@@ -224,6 +230,9 @@
     maxParametersInOneLine: 2
     # 3 by default.
     # maxCallsInOneLine: 3
+# Inspection that checks if a long dot qualified expression is used in condition or as an argument
+- name: COMPLEX_EXPRESSION
+  enabled: true
 # Checks that there are not too many consecutive spaces in line
 - name: TOO_MANY_CONSECUTIVE_SPACES
   enabled: true
@@ -350,6 +359,17 @@
 # Checks that function use default values, instead overloading
 - name: WRONG_OVERLOADING_FUNCTION_ARGUMENTS
   enabled: true
+# Checks that using runBlocking inside async block code
+- name: RUN_BLOCKING_INSIDE_ASYNC
+  enabled: true
+# Checks that the long lambda has parameters
+- name: TOO_MANY_LINES_IN_LAMBDA
+  enabled: true
+  configuration:
+    maxLambdaLength: 10 # max length of lambda without parameters
+# Checks that using unnecessary, custom label
+- name: CUSTOM_LABEL
+  enabled: true
 # Checks that property in constructor doesn't contains comment
 - name: KDOC_NO_CONSTRUCTOR_PROPERTY
   enabled: true
@@ -416,4 +436,7 @@
   enabled: true
 # If there exists negated version of function you should prefer it instead of !functionCall
 - name: INVERSE_FUNCTION_PREFERRED
+  enabled: true
+# Checks if class can be converted to inline class
+- name: INLINE_CLASS_CAN_BE_USED
   enabled: true

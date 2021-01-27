@@ -7,7 +7,7 @@
 
 package org.cqfn.diktat.ruleset.utils
 
-import org.cqfn.diktat.ruleset.rules.PackageNaming
+import org.cqfn.diktat.ruleset.rules.chapter1.PackageNaming
 
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.ast.ElementType
@@ -568,7 +568,7 @@ fun ASTNode.findLBrace(): ASTNode? = when (this.elementType) {
     ElementType.THEN, ElementType.ELSE, ElementType.FUN, ElementType.TRY, ElementType.CATCH, ElementType.FINALLY ->
         this.findChildByType(ElementType.BLOCK)?.findChildByType(LBRACE)
     ElementType.WHEN -> this.findChildByType(LBRACE)!!
-    ElementType.FOR, ElementType.WHILE, ElementType.DO_WHILE ->
+    in loopType ->
         this.findChildByType(ElementType.BODY)
             ?.findChildByType(ElementType.BLOCK)
             ?.findChildByType(LBRACE)
@@ -789,3 +789,14 @@ private fun ASTNode.calculateLineNumber() = getRootNode()
         require(it >= 0) { "Cannot calculate line number correctly, node's offset $startOffset is greater than file length ${getRootNode().textLength}" }
         it + 1
     }
+
+/**
+ * Count number of lines in code block. Note: only *copy* of a node should be passed to this method, because the method changes the node.
+ *
+ * @return the number of lines in a block of code.
+ */
+fun countCodeLines(copyNode: ASTNode): Int {
+    copyNode.findAllNodesWithCondition({ it.isPartOfComment() }).forEach { it.treeParent.removeChild(it) }
+    val text = copyNode.text.lines().filter { it.isNotBlank() }
+    return text.size
+}

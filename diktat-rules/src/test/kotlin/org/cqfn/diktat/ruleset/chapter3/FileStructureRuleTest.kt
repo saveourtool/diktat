@@ -1,13 +1,14 @@
 package org.cqfn.diktat.ruleset.chapter3
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_CONTAINS_ONLY_COMMENTS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_INCORRECT_BLOCKS_ORDER
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NO_BLANK_LINE_BETWEEN_BLOCKS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_UNORDERED_IMPORTS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_WILDCARD_IMPORTS
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
-import org.cqfn.diktat.ruleset.rules.files.FileStructureRule
+import org.cqfn.diktat.ruleset.rules.chapter3.files.FileStructureRule
 import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
@@ -19,11 +20,14 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
     private val ruleId = "$DIKTAT_RULE_SET_ID:file-structure"
     private val rulesConfigListWildCardImport: List<RulesConfig> = listOf(
         RulesConfig(FILE_WILDCARD_IMPORTS.name, true,
-            mapOf("allowedWildcards" to "org.cqfn.diktat.example.*"))
+            mapOf("allowedWildcards" to "org.cqfn.diktat.*"))
     )
     private val rulesConfigListWildCardImports: List<RulesConfig> = listOf(
         RulesConfig(FILE_WILDCARD_IMPORTS.name, true,
-            mapOf("allowedWildcards" to "org.cqfn.diktat.example.*, org.cqfn.diktat.ruleset.constants.Warnings.*"))
+            mapOf("allowedWildcards" to "org.cqfn.diktat.*, org.cqfn.diktat.ruleset.constants.Warnings.*"))
+    )
+    private val rulesConfigListEmptyDomainName: List<RulesConfig> = listOf(
+        RulesConfig("DIKTAT_COMMON", true, mapOf("domainName" to ""))
     )
 
     @Test
@@ -37,7 +41,6 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
                 | * This file appears to be empty
                 | */
                 |
-                |import org.cqfn.diktat.example.Foo
                 |
                 |// lorem ipsum
             """.trimMargin(),
@@ -73,11 +76,14 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
                 |package org.cqfn.diktat.example
                 |
                 |import org.junit.Test
-                |import org.cqfn.diktat.example.Foo
+                |import org.cqfn.diktat.Foo
                 |
-                |class Example { }
+                |class Example { 
+                |val x: Test = null
+                |val y: Foo = null
+                |}
             """.trimMargin(),
-            LintError(3, 1, ruleId, "${FILE_UNORDERED_IMPORTS.warnText()} import org.cqfn.diktat.example.Foo...", true)
+            LintError(3, 1, ruleId, "${FILE_UNORDERED_IMPORTS.warnText()} import org.cqfn.diktat.Foo...", true)
         )
     }
 
@@ -88,11 +94,11 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
             """
                 |package org.cqfn.diktat.example
                 |
-                |import org.cqfn.diktat.example.*
+                |import org.cqfn.diktat.*
                 |
                 |class Example { }
             """.trimMargin(),
-            LintError(3, 1, ruleId, "${FILE_WILDCARD_IMPORTS.warnText()} import org.cqfn.diktat.example.*", false)
+            LintError(3, 1, ruleId, "${FILE_WILDCARD_IMPORTS.warnText()} import org.cqfn.diktat.*", false),
         )
     }
 
@@ -108,13 +114,15 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
                 |
                 |
                 |package org.cqfn.diktat.example
-                |import org.cqfn.diktat.example.Foo
-                |class Example
+                |import org.cqfn.diktat.Foo
+                |class Example{
+                |val x: Foo = null
+                |}
             """.trimMargin(),
             LintError(1, 1, ruleId, "${FILE_NO_BLANK_LINE_BETWEEN_BLOCKS.warnText()} /**", true),
             LintError(4, 1, ruleId, "${FILE_NO_BLANK_LINE_BETWEEN_BLOCKS.warnText()} @file:JvmName(\"Foo\")", true),
             LintError(7, 1, ruleId, "${FILE_NO_BLANK_LINE_BETWEEN_BLOCKS.warnText()} package org.cqfn.diktat.example", true),
-            LintError(8, 1, ruleId, "${FILE_NO_BLANK_LINE_BETWEEN_BLOCKS.warnText()} import org.cqfn.diktat.example.Foo", true)
+            LintError(8, 1, ruleId, "${FILE_NO_BLANK_LINE_BETWEEN_BLOCKS.warnText()} import org.cqfn.diktat.Foo", true)
         )
     }
 
@@ -125,7 +133,7 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
             """
                 |package org.cqfn.diktat.example
                 |
-                |import org.cqfn.diktat.example.*
+                |import org.cqfn.diktat.*
                 |
                 |class Example { }
             """.trimMargin(), rulesConfigList = rulesConfigListWildCardImport
@@ -139,7 +147,7 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
             """
                 |package org.cqfn.diktat.example
                 |
-                |import org.cqfn.diktat.example.*
+                |import org.cqfn.diktat.*
                 |import org.cqfn.diktat.ruleset.constants.Warnings.*
                 |
                 |class Example { }
@@ -159,9 +167,11 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
                 |// some notes on this file
                 |package org.cqfn.diktat.example
                 |
-                |import org.cqfn.diktat.example.Foo
+                |import org.cqfn.diktat.Foo
                 |
-                |class Example
+                |class Example{
+                |val x: Foo = null
+                |}
             """.trimMargin()
         )
     }
@@ -178,9 +188,11 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
                 |
                 |package org.cqfn.diktat.example
                 |
-                |import org.cqfn.diktat.example.Foo
+                |import org.cqfn.diktat.Foo
                 |
-                |class Example
+                |class Example{
+                |val x: Foo = null
+                |}
             """.trimMargin(),
             LintError(1, 1, ruleId, "${FILE_INCORRECT_BLOCKS_ORDER.warnText()} // some notes on this file", true),
             LintError(2, 1, ruleId, "${FILE_INCORRECT_BLOCKS_ORDER.warnText()} /**", true),
@@ -200,9 +212,11 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
                 |
                 |package org.cqfn.diktat.example
                 |
-                |import org.cqfn.diktat.example.Foo
+                |import org.cqfn.diktat.Foo
                 |
-                |class Example
+                |class Example{
+                |val x: Foo = null
+                |}
             """.trimMargin()
         )
     }
@@ -219,11 +233,98 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
                 |
                 |package org.cqfn.diktat.example
                 |
-                |import org.cqfn.diktat.example.Foo
+                |import org.cqfn.diktat.Foo
                 |
-                |class Example
+                |class Example{
+                |val x: Foo = null
+                |}
             """.trimMargin(),
             LintError(4, 1, ruleId, "${FILE_INCORRECT_BLOCKS_ORDER.warnText()} @file:Annotation", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.FILE_INCORRECT_BLOCKS_ORDER)
+    fun `test with empty domain name in config`() {
+        lintMethod(
+            """
+                |package org.cqfn.diktat.example
+                |
+                |import org.cqfn.diktat.Foo
+                |import com.pinterest.ktlint.core.LintError
+                |
+                |class Example{
+                |val x: LintError = null
+                |val x: Foo = null
+                |}
+            """.trimMargin(),
+            LintError(3, 1, ruleId, "${FILE_UNORDERED_IMPORTS.warnText()} import com.pinterest.ktlint.core.LintError...", true),
+            rulesConfigList = rulesConfigListEmptyDomainName
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.UNUSED_IMPORT)
+    fun `import from the package`() {
+        lintMethod(
+            """
+                |package org.cqfn.diktat.example
+                |
+                |import org.cqfn.diktat.example.Foo
+                |
+                |class Example { 
+                |}
+            """.trimMargin(),
+            LintError(1, 1, ruleId, "${Warnings.UNUSED_IMPORT.warnText()} org.cqfn.diktat.example.Foo - unused import", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.UNUSED_IMPORT)
+    fun `unused import`() {
+        lintMethod(
+            """
+                |package org.cqfn.diktat.example
+                |
+                |import org.cqfn.diktat.Foo
+                |
+                |class Example { 
+                |}
+            """.trimMargin(),
+            LintError(1, 1, ruleId, "${Warnings.UNUSED_IMPORT.warnText()} org.cqfn.diktat.Foo - unused import", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.UNUSED_IMPORT)
+    fun `used import`() {
+        lintMethod(
+            """
+                |package org.cqfn.diktat.example
+                |
+                |import org.cqfn.diktat.Foo
+                |
+                |class Example { 
+                |val x: Foo = null
+                |}
+            """.trimMargin(),
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.UNUSED_IMPORT)
+    fun `Operator overloading`() {
+        lintMethod(
+            """
+                |package org.cqfn.diktat.example
+                |
+                |import kotlin.io.path.div
+                |
+                |class Example { 
+                |val pom = kotlin.io.path.createTempFile().toFile()
+                |val x = listOf(pom.parentFile.toPath() / "src/main/kotlin/exclusion")
+                |}
+            """.trimMargin(),
         )
     }
 }

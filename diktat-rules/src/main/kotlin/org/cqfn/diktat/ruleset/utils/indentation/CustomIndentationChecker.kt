@@ -4,7 +4,7 @@
 
 package org.cqfn.diktat.ruleset.utils.indentation
 
-import org.cqfn.diktat.ruleset.rules.files.IndentationError
+import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationError
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
 
 /**

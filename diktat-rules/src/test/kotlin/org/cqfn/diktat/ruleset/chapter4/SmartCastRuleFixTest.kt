@@ -1,6 +1,6 @@
 package org.cqfn.diktat.ruleset.chapter4
 
-import org.cqfn.diktat.ruleset.rules.SmartCastRule
+import org.cqfn.diktat.ruleset.rules.chapter4.SmartCastRule
 import org.cqfn.diktat.util.FixTestBase
 
 import org.junit.jupiter.api.Test

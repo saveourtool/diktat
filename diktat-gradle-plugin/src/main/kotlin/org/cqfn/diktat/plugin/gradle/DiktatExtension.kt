@@ -1,6 +1,5 @@
 package org.cqfn.diktat.plugin.gradle
 
-import com.pinterest.ktlint.core.Reporter
 import org.gradle.api.file.FileCollection
 import java.io.File
 
@@ -19,20 +18,26 @@ open class DiktatExtension {
     var debug = false
 
     /**
-     * Path to diktat yml config file. Can be either absolute or relative to project's root directory.
+     * Type of the reporter to use
      */
-    var diktatConfigFile: File = File("diktat-analysis.yml")
+    var reporterType: String = "plain"
+
+    /**
+     * Type of output
+     * Default: System.out
+     */
+    var output: String = ""
+
+    /**
+     * Path to diktat yml config file. Can be either absolute or relative to project's root directory.
+     * Default value: `diktat-analysis.yml` in rootDir.
+     */
+    lateinit var diktatConfigFile: File
 
     /**
      * Paths that will be excluded from diktat run
      */
     lateinit var excludes: FileCollection
-
-    /**
-     * Ktlint's [Reporter] which will be used during run.
-     * Private until I find a way to configure it.
-     */
-    internal lateinit var reporter: Reporter
 
     /**
      * Paths that will be scanned for .kt(s) files

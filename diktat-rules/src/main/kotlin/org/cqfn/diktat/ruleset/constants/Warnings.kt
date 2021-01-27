@@ -86,6 +86,7 @@ enum class Warnings(
     FILE_NO_BLANK_LINE_BETWEEN_BLOCKS(true, "3.1.2", "general structure of kotlin source file is wrong, general code blocks sohuld be separated by empty lines"),
     FILE_UNORDERED_IMPORTS(true, "3.1.2", "imports should be ordered alphabetically and shouldn't be separated by newlines"),
     FILE_WILDCARD_IMPORTS(false, "3.1.2", "wildcard imports should not be used"),
+    UNUSED_IMPORT(true, "3.1.2", "unused imports should be removed"),
     NO_BRACES_IN_CONDITIONALS_AND_LOOPS(true, "3.2.1", "in if, else, when, for, do, and while statements braces should be used. Exception: single line if statement."),
     WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES(true, "3.1.4", "the declaration part of a class-like code structures (class/interface/etc.) should be in the proper order"),
     BLANK_LINE_BETWEEN_PROPERTIES(true, "3.1.4", "there should be no blank lines between properties without comments; comment or KDoc on property should have blank line before"),
@@ -96,6 +97,7 @@ enum class Warnings(
     LONG_LINE(true, "3.5.1", "this line is longer than allowed"),
     REDUNDANT_SEMICOLON(true, "3.6.2", "there should be no redundant semicolon at the end of lines"),
     WRONG_NEWLINES(true, "3.6.2", "incorrect line breaking"),
+    COMPLEX_EXPRESSION(false, "3.6.3", "complex dot qualified expression should be replaced with variable"),
 
     // FixMe: autofixing will be added for this rule
     STRING_CONCATENATION(false, "3.15.1", "strings should not be concatenated using plus operator - use string templates instead if the statement fits one line"),
@@ -131,6 +133,9 @@ enum class Warnings(
     TOO_MANY_PARAMETERS(false, "5.2.2", "function has too many parameters"),
     NESTED_BLOCK(false, "5.1.2", "function has too many nested blocks and should be simplified"),
     WRONG_OVERLOADING_FUNCTION_ARGUMENTS(false, "5.2.3", "use default argument instead of function overloading"),
+    RUN_BLOCKING_INSIDE_ASYNC(false, "5.2.4", "avoid using runBlocking in asynchronous code"),
+    TOO_MANY_LINES_IN_LAMBDA(false, "5.2.5", "long lambdas should have a parameter name instead of it"),
+    CUSTOM_LABEL(false, "5.2.6", "avoid using expression with custom label"),
 
     // ======== chapter 6 ========
     SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY(true, "6.1.1", "if a class has single constructor, it should be converted to a primary constructor"),
@@ -148,6 +153,7 @@ enum class Warnings(
     AVOID_USING_UTILITY_CLASS(false, "6.4.1", "avoid using utility classes/objects, use extensions functions"),
     OBJECT_IS_PREFERRED(true, "6.4.2", "it is better to use object for stateless classes"),
     INVERSE_FUNCTION_PREFERRED(true, "5.1.4", "it is better to use inverse function"),
+    INLINE_CLASS_CAN_BE_USED(true, "6.1.12", "inline class can be used"),
     ;
 
     /**
@@ -198,7 +204,7 @@ enum class Warnings(
              freeText: String,
              offset: Int,
              node: ASTNode) {
-        if (configs.isRuleEnabled(this) && !node.hasSuppress(name)) {
+        if (isRuleFromActiveChapter(configs) && configs.isRuleEnabled(this) && !node.hasSuppress(name)) {
             val trimmedFreeText = freeText
                 .lines()
                 .run { if (size > 1) "${first()}..." else first() }
@@ -214,7 +220,7 @@ enum class Warnings(
         isFix: Boolean,
         node: ASTNode,
         autoFix: () -> Unit) {
-        if (configs.isRuleEnabled(this) && isFix && !node.hasSuppress(name)) {
+        if (isRuleFromActiveChapter(configs) && configs.isRuleEnabled(this) && isFix && !node.hasSuppress(name)) {
             autoFix()
         }
     }

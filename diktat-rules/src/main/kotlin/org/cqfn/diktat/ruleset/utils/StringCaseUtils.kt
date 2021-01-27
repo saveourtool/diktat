@@ -145,24 +145,24 @@ private fun convertUnknownCaseToCamel(str: String, isFirstLetterCapital: Boolean
     // [p]a[SC]a[_]l -> [P]a[Sc]a[L]
     var isPreviousLetterCapital = isFirstLetterCapital
     var isPreviousLetterUnderscore = false
-    return str.map {
-        if (it.isUpperCase()) {
-            val result = if (isPreviousLetterCapital && !isPreviousLetterUnderscore) it.toLowerCase() else it
+    return str.map { char ->
+        if (char.isUpperCase()) {
+            val result = if (isPreviousLetterCapital && !isPreviousLetterUnderscore) char.toLowerCase() else char
             isPreviousLetterCapital = true
             isPreviousLetterUnderscore = false
             result.toString()
         } else {
-            val result = if (it == '_') {
+            val result = if (char == '_') {
                 isPreviousLetterUnderscore = true
                 ""
             } else if (isPreviousLetterUnderscore) {
                 isPreviousLetterCapital = true
                 isPreviousLetterUnderscore = false
-                it.toUpperCase().toString()
+                char.toUpperCase().toString()
             } else {
                 isPreviousLetterCapital = false
                 isPreviousLetterUnderscore = false
-                it.toString()
+                char.toString()
             }
             result
         }
@@ -172,17 +172,17 @@ private fun convertUnknownCaseToCamel(str: String, isFirstLetterCapital: Boolean
 private fun convertUnknownCaseToUpperSnake(str: String): String {
     // [p]a[SC]a[_]l -> [P]A_[SC]_A_[L]
     var alreadyInsertedUnderscore = true
-    return str.map {
-        if (it.isUpperCase()) {
+    return str.map { char ->
+        if (char.isUpperCase()) {
             if (!alreadyInsertedUnderscore) {
                 alreadyInsertedUnderscore = true
-                "_$it"
+                "_$char"
             } else {
-                it.toString()
+                char.toString()
             }
         } else {
-            alreadyInsertedUnderscore = (it == '_')
-            it.toUpperCase().toString()
+            alreadyInsertedUnderscore = (char == '_')
+            char.toUpperCase().toString()
         }
     }.joinToString("")
 }
