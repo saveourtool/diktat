@@ -119,6 +119,10 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
                                     |
                                     |        http://www.apache.org/licenses/LICENSE-2.0
                                 """.trimMargin()
+                ),
+                DIKTAT_COMMON to mapOf(
+                    "domainName" to "org.cqfn.diktat",
+                    "kotlinVersion" to "1.3.7"
                 )
             )
         )
@@ -126,6 +130,10 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
 
         Assertions.assertFalse(
             unfixedLintErrors.contains(LintError(line = 1, col = 1, ruleId = "diktat-ruleset:comments", detail = "${Warnings.COMMENTED_OUT_CODE.warnText()} /*"))
+        )
+
+        Assertions.assertTrue(
+            unfixedLintErrors.contains(LintError(1, 1, "diktat-ruleset:inline-classes", "${Warnings.INLINE_CLASS_CAN_BE_USED.warnText()} class Some"))
         )
     }
 

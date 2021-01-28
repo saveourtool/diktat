@@ -152,7 +152,7 @@ enum class Warnings(
     AVOID_USING_UTILITY_CLASS(false, "6.4.1", "avoid using utility classes/objects, use extensions functions"),
     OBJECT_IS_PREFERRED(true, "6.4.2", "it is better to use object for stateless classes"),
     INVERSE_FUNCTION_PREFERRED(true, "5.1.4", "it is better to use inverse function"),
-    INLINE_CLASS_CAN_BE_USED(true, "6.1.12", "inline class can be used"),
+    INLINE_CLASS_CAN_BE_USED(false, "6.1.12", "inline class can be used"),
     ;
 
     /**
