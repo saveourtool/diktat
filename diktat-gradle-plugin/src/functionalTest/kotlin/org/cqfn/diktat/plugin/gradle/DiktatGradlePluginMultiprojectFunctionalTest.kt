@@ -1,7 +1,6 @@
 package org.cqfn.diktat.plugin.gradle
 
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.DIKTAT_CHECK_TASK
-
 import org.gradle.buildinit.plugins.internal.modifiers.BuildInitDsl
 import org.gradle.internal.impldep.org.junit.rules.TemporaryFolder
 import org.gradle.testkit.runner.TaskOutcome
@@ -9,7 +8,6 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-
 import java.io.File
 
 class DiktatGradlePluginMultiprojectFunctionalTest {

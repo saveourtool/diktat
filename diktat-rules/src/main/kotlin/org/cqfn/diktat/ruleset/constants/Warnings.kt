@@ -86,6 +86,7 @@ enum class Warnings(
     FILE_NO_BLANK_LINE_BETWEEN_BLOCKS(true, "3.1.2", "general structure of kotlin source file is wrong, general code blocks sohuld be separated by empty lines"),
     FILE_UNORDERED_IMPORTS(true, "3.1.2", "imports should be ordered alphabetically and shouldn't be separated by newlines"),
     FILE_WILDCARD_IMPORTS(false, "3.1.2", "wildcard imports should not be used"),
+    UNUSED_IMPORT(true, "3.1.2", "unused imports should be removed"),
     NO_BRACES_IN_CONDITIONALS_AND_LOOPS(true, "3.2.1", "in if, else, when, for, do, and while statements braces should be used. Exception: single line if statement."),
     WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES(true, "3.1.4", "the declaration part of a class-like code structures (class/interface/etc.) should be in the proper order"),
     BLANK_LINE_BETWEEN_PROPERTIES(true, "3.1.4", "there should be no blank lines between properties without comments; comment or KDoc on property should have blank line before"),
@@ -204,7 +205,7 @@ enum class Warnings(
              freeText: String,
              offset: Int,
              node: ASTNode) {
-        if (configs.isRuleEnabled(this) && !node.hasSuppress(name)) {
+        if (isRuleFromActiveChapter(configs) && configs.isRuleEnabled(this) && !node.hasSuppress(name)) {
             val trimmedFreeText = freeText
                 .lines()
                 .run { if (size > 1) "${first()}..." else first() }
@@ -220,7 +221,7 @@ enum class Warnings(
         isFix: Boolean,
         node: ASTNode,
         autoFix: () -> Unit) {
-        if (configs.isRuleEnabled(this) && isFix && !node.hasSuppress(name)) {
+        if (isRuleFromActiveChapter(configs) && configs.isRuleEnabled(this) && isFix && !node.hasSuppress(name)) {
             autoFix()
         }
     }

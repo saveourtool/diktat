@@ -4,8 +4,6 @@
 
 package org.cqfn.diktat.plugin.maven
 
-import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
-
 import com.pinterest.ktlint.core.KtLint
 import org.apache.maven.plugins.annotations.Mojo
 

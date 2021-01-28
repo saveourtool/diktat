@@ -27,6 +27,7 @@ d) **Recommendation**: One `.kt` source file should contain only one class decla
 
 e) Avoid empty files that do not contain the code or contain only imports/comments/package name
 
+f) Unused imports should be removed
 #### <a name="r3.1.3"></a> 3.1.3 Import statements order
 
 From top to bottom, the order is the following:
