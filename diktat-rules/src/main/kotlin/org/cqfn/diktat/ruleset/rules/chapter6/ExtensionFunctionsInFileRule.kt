@@ -4,18 +4,16 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
+import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
-import org.cqfn.diktat.ruleset.utils.hasChildOfType
 
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
-import com.pinterest.ktlint.core.ast.ElementType.DOT
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import com.pinterest.ktlint.core.ast.prevSibling
-import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtFunction
@@ -53,13 +51,11 @@ class ExtensionFunctionsInFileRule(private val configRules: List<RulesConfig>) :
         Warnings.EXTENSION_FUNCTION_WITH_CLASS.warn(configRules, emitWarn, isFixMode, "fun ${(node.psi as KtFunction).name}", node.startOffset, node)
     }
 
-    private fun collectAllExtensionFunctionsWithSameClassName(node: ASTNode, classNames: List<String>): List<ASTNode> {
-        return node.getAllChildrenWithType(FUN).filter { isExtensionFunctionWithClassName(it, classNames) }
-    }
+    private fun collectAllExtensionFunctionsWithSameClassName(node: ASTNode, classNames: List<String>): List<ASTNode> =
+            node.getAllChildrenWithType(FUN).filter { isExtensionFunctionWithClassName(it, classNames) }
+
 
     @Suppress("UnsafeCallOnNullableType")
     private fun isExtensionFunctionWithClassName(node: ASTNode, classNames: List<String>): Boolean =
-         node.getFirstChildWithType(IDENTIFIER)!!.prevSibling { it.elementType == TYPE_REFERENCE } != null
-             && node.getFirstChildWithType(IDENTIFIER)!!.prevSibling { it.elementType == TYPE_REFERENCE }!!.text in classNames
-
+            node.getFirstChildWithType(IDENTIFIER)!!.prevSibling { it.elementType == TYPE_REFERENCE }?.text in classNames
 }
