@@ -154,6 +154,7 @@ enum class Warnings(
     OBJECT_IS_PREFERRED(true, "6.4.2", "it is better to use object for stateless classes"),
     INVERSE_FUNCTION_PREFERRED(true, "5.1.4", "it is better to use inverse function"),
     INLINE_CLASS_CAN_BE_USED(true, "6.1.12", "inline class can be used"),
+    RUN_IN_SCRIPT(true, "6.5.1", "wrap blocks of code in top-level scope functions like `run`"),
     ;
 
     /**

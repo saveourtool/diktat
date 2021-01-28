@@ -437,3 +437,6 @@
 # Checks if class can be converted to inline class
 - name: INLINE_CLASS_CAN_BE_USED
   enabled: true
+# Check if kts script contains other functions except run code
+- name: RUN_IN_SCRIPT
+  enabled: true

@@ -454,3 +454,18 @@ object O: I {
     override fun foo() {}
 }
 ```
+
+#### <a name="r6.5.1"></a> 6.5.1 kts files should wrap logic into top-level scope
+It is still recommended wrapping logic inside functions and avoid using top-level statements for function calls or wrapping blocks of code
+in top-level scope functions like `run`.
+
+**Valid example**:
+```
+run {
+    // some code
+}
+
+fun foo() {
+
+}
+```
