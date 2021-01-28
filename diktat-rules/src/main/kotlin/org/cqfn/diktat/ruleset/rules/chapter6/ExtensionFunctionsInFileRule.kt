@@ -54,7 +54,6 @@ class ExtensionFunctionsInFileRule(private val configRules: List<RulesConfig>) :
     private fun collectAllExtensionFunctionsWithSameClassName(node: ASTNode, classNames: List<String>): List<ASTNode> =
             node.getAllChildrenWithType(FUN).filter { isExtensionFunctionWithClassName(it, classNames) }
 
-
     @Suppress("UnsafeCallOnNullableType")
     private fun isExtensionFunctionWithClassName(node: ASTNode, classNames: List<String>): Boolean =
             node.getFirstChildWithType(IDENTIFIER)!!.prevSibling { it.elementType == TYPE_REFERENCE }?.text in classNames
