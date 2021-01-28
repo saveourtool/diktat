@@ -121,6 +121,8 @@ public object WarningNames {
 
     public const val FILE_WILDCARD_IMPORTS: String = "FILE_WILDCARD_IMPORTS"
 
+    public const val UNUSED_IMPORT: String = "UNUSED_IMPORT"
+
     public const val NO_BRACES_IN_CONDITIONALS_AND_LOOPS: String =
             "NO_BRACES_IN_CONDITIONALS_AND_LOOPS"
 
@@ -203,7 +205,11 @@ public object WarningNames {
 
     public const val RUN_BLOCKING_INSIDE_ASYNC: String = "RUN_BLOCKING_INSIDE_ASYNC"
 
+    public const val TOO_MANY_LINES_IN_LAMBDA: String = "TOO_MANY_LINES_IN_LAMBDA"
+
     public const val CUSTOM_LABEL: String = "CUSTOM_LABEL"
+
+    public const val INVERSE_FUNCTION_PREFERRED: String = "INVERSE_FUNCTION_PREFERRED"
 
     public const val SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY: String =
             "SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY"
@@ -236,11 +242,7 @@ public object WarningNames {
 
     public const val OBJECT_IS_PREFERRED: String = "OBJECT_IS_PREFERRED"
 
-    public const val INVERSE_FUNCTION_PREFERRED: String = "INVERSE_FUNCTION_PREFERRED"
-
-    public const val TOO_MANY_LINES_IN_LAMBDA: String = "TOO_MANY_LINES_IN_LAMBDA"
-
-    public const val UNUSED_IMPORT: String = "UNUSED_IMPORT"
-
     public const val INLINE_CLASS_CAN_BE_USED: String = "INLINE_CLASS_CAN_BE_USED"
+
+    public const val EXTENSION_FUNCTION_WITH_CLASS: String = "EXTENSION_FUNCTION_WITH_CLASS"
 }
