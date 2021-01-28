@@ -406,8 +406,8 @@ fun printClassName(s: A) { println(s.foo()) }
 fun main() { printClassName(B()) }
 ```
 
-#### <a name="r6.2.3"></a> 6.2.3 Don't use extension functions in the same file, where class is defined
-You should not use extension functions in the file, where class is already defined. Better to create an util file.
+#### <a name="r6.2.3"></a> 6.2.3 Don't use extension functions for the class in the same file
+You should not use extension functions for the class in the same file, where it is defined.
 
 **Invalid example**:
 ```kotlin
@@ -415,7 +415,7 @@ class SomeClass {
     
 }
 
-fun String.deleteAllSpaces() {
+fun SomeClass.deleteAllSpaces() {
     
 }
 ```

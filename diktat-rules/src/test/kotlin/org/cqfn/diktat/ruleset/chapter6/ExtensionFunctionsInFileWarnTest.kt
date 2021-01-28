@@ -82,7 +82,7 @@ class ExtensionFunctionsInFileWarnTest : LintTestBase(::ExtensionFunctionsInFile
 
     @Test
     @Tag(EXTENSION_FUNCTION_WITH_CLASS)
-    fun `should raise a warning when extension function is in the class`() {
+    fun `should not raise a warning when extension function is in the class`() {
         lintMethod(
             """
                 |class Some {
@@ -91,8 +91,7 @@ class ExtensionFunctionsInFileWarnTest : LintTestBase(::ExtensionFunctionsInFile
                 |   
                 |   }
                 |}
-            """.trimMargin(),
-            LintError(3, 4, ruleId, "${Warnings.EXTENSION_FUNCTION_WITH_CLASS.warnText()} fun str")
+            """.trimMargin()
         )
     }
 

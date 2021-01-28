@@ -14,12 +14,14 @@ import com.pinterest.ktlint.core.ast.ElementType.DOT
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
+import com.pinterest.ktlint.core.ast.prevSibling
+import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtFunction
 
 /**
- * This rule checks if there are any extension functions in the file, where class is already defined.
+ * This rule checks if there are any extension functions for the class in the same file, where it is defined
  */
 class ExtensionFunctionsInFileRule(private val configRules: List<RulesConfig>) : Rule("extension-functions-class-file") {
     private var isFixMode: Boolean = false
@@ -52,12 +54,12 @@ class ExtensionFunctionsInFileRule(private val configRules: List<RulesConfig>) :
     }
 
     private fun collectAllExtensionFunctionsWithSameClassName(node: ASTNode, classNames: List<String>): List<ASTNode> {
-        return node.findAllNodesWithSpecificType(FUN).filter { isExtensionFunctionWithClassName(it, classNames) }
+        return node.getAllChildrenWithType(FUN).filter { isExtensionFunctionWithClassName(it, classNames) }
     }
 
     @Suppress("UnsafeCallOnNullableType")
     private fun isExtensionFunctionWithClassName(node: ASTNode, classNames: List<String>): Boolean =
-         node.getFirstChildWithType(IDENTIFIER)!!.treePrev.treePrev.elementType == TYPE_REFERENCE
-             && node.getFirstChildWithType(IDENTIFIER)!!.treePrev.treePrev.text in classNames
+         node.getFirstChildWithType(IDENTIFIER)!!.prevSibling { it.elementType == TYPE_REFERENCE } != null
+             && node.getFirstChildWithType(IDENTIFIER)!!.prevSibling { it.elementType == TYPE_REFERENCE }!!.text in classNames
 
 }
