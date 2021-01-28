@@ -55,8 +55,8 @@ import org.cqfn.diktat.ruleset.rules.chapter5.OverloadingArgumentsFunction
 import org.cqfn.diktat.ruleset.rules.chapter6.AvoidEmptyPrimaryConstructor
 import org.cqfn.diktat.ruleset.rules.chapter6.AvoidUtilityClass
 import org.cqfn.diktat.ruleset.rules.chapter6.CustomGetterSetterRule
-import org.cqfn.diktat.ruleset.rules.chapter6.ExtensionFunctionsSameNameRule
 import org.cqfn.diktat.ruleset.rules.chapter6.ExtensionFunctionsInFileRule
+import org.cqfn.diktat.ruleset.rules.chapter6.ExtensionFunctionsSameNameRule
 import org.cqfn.diktat.ruleset.rules.chapter6.ImplicitBackingPropertyRule
 import org.cqfn.diktat.ruleset.rules.chapter6.PropertyAccessorFields
 import org.cqfn.diktat.ruleset.rules.chapter6.TrivialPropertyAccessors
