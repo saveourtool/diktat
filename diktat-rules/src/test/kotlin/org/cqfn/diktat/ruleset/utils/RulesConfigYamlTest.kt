@@ -43,7 +43,10 @@ inline class RulesConfigYamlTest(private val pathMap: Map<String, String> =
         val currentKotlinVersion = KotlinVersion.CURRENT
         pathMap.keys.forEach { path ->
             val config = readAllRulesFromConfig(path)
-            val ktVersion = config.find { it.name == DIKTAT_COMMON }?.configuration?.get("kotlinVersion")?.kotlinVersion()
+            val ktVersion = config.find { it.name == DIKTAT_COMMON }
+                ?.configuration
+                ?.get("kotlinVersion")
+                ?.kotlinVersion()
             Assertions.assertEquals(ktVersion, currentKotlinVersion)
         }
     }
