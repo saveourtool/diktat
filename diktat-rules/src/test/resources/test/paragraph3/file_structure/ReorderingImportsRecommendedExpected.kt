@@ -21,4 +21,12 @@ import java.nio.charset.Charset
 
 import kotlin.system.exitProcess
 
-class Example
+class Example {
+    val x = setOf<Object>(CaseFormat(), Detekt(), Assertions(), Logger(), Bean(), IOException(), URL(), Charset(), ObjectMapper())
+
+    fun Foo() {
+        while (true) {
+            exitProcess(1)
+        }
+    }
+}

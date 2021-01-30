@@ -169,6 +169,11 @@
   configuration:
     allowedWildcards: "" # Allowed wildcards for imports (e.g. "import org.cqfn.diktat.*, import org.jetbrains.kotlin.*")
     useRecommendedImportsOrder: true
+# Checks unused imports
+- name: UNUSED_IMPORT
+  enabled: true
+  configuration:
+    deleteUnusedImport: true
 # Checks that braces are used in if, else, when, for, do, and while statements. Exception: single line if statement
 - name: NO_BRACES_IN_CONDITIONALS_AND_LOOPS
   enabled: true
@@ -436,4 +441,7 @@
   enabled: true
 # Checks if class can be converted to inline class
 - name: INLINE_CLASS_CAN_BE_USED
+  enabled: true
+# If file contains class, then it can't contain extension functions for the same class
+- name: EXTENSION_FUNCTION_WITH_CLASS
   enabled: true

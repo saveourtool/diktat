@@ -6,6 +6,8 @@
 // and some more
 package org.cqfn.diktat.example
 
-import org.cqfn.diktat.example.Foo
+import org.cqfn.diktat.Foo
 
-class Example
+class Example {
+    val x: Foo = Foo()
+}

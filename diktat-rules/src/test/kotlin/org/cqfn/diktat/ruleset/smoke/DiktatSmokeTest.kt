@@ -161,7 +161,7 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
         fixAndCompare("Example2Expected.kt", "Example2Test.kt")
         unfixedLintErrors.assertEquals(
             LintError(1, 1, "$DIKTAT_RULE_SET_ID:header-comment", "${HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warnText()} there are 2 declared classes and/or objects", false),
-            LintError(14, 17, "$DIKTAT_RULE_SET_ID:comments", "${Warnings.COMMENTED_OUT_CODE.warnText()} private class Test : RuntimeException()", false)
+            LintError(12, 26, "$DIKTAT_RULE_SET_ID:comments", "${Warnings.COMMENTED_OUT_CODE.warnText()} private class Test : RuntimeException()", false)
         )
     }
 

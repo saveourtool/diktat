@@ -86,6 +86,7 @@ enum class Warnings(
     FILE_NO_BLANK_LINE_BETWEEN_BLOCKS(true, "3.1.2", "general structure of kotlin source file is wrong, general code blocks sohuld be separated by empty lines"),
     FILE_UNORDERED_IMPORTS(true, "3.1.2", "imports should be ordered alphabetically and shouldn't be separated by newlines"),
     FILE_WILDCARD_IMPORTS(false, "3.1.2", "wildcard imports should not be used"),
+    UNUSED_IMPORT(true, "3.1.2", "unused imports should be removed"),
     NO_BRACES_IN_CONDITIONALS_AND_LOOPS(true, "3.2.1", "in if, else, when, for, do, and while statements braces should be used. Exception: single line if statement."),
     WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES(true, "3.1.4", "the declaration part of a class-like code structures (class/interface/etc.) should be in the proper order"),
     BLANK_LINE_BETWEEN_PROPERTIES(true, "3.1.4", "there should be no blank lines between properties without comments; comment or KDoc on property should have blank line before"),
@@ -135,6 +136,7 @@ enum class Warnings(
     RUN_BLOCKING_INSIDE_ASYNC(false, "5.2.4", "avoid using runBlocking in asynchronous code"),
     TOO_MANY_LINES_IN_LAMBDA(false, "5.2.5", "long lambdas should have a parameter name instead of it"),
     CUSTOM_LABEL(false, "5.2.6", "avoid using expression with custom label"),
+    INVERSE_FUNCTION_PREFERRED(true, "5.1.4", "it is better to use inverse function"),
 
     // ======== chapter 6 ========
     SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY(true, "6.1.1", "if a class has single constructor, it should be converted to a primary constructor"),
@@ -151,8 +153,8 @@ enum class Warnings(
     NO_CORRESPONDING_PROPERTY(false, "6.1.7", "backing property should have the same name, but there is no corresponding property"),
     AVOID_USING_UTILITY_CLASS(false, "6.4.1", "avoid using utility classes/objects, use extensions functions"),
     OBJECT_IS_PREFERRED(true, "6.4.2", "it is better to use object for stateless classes"),
-    INVERSE_FUNCTION_PREFERRED(true, "5.1.4", "it is better to use inverse function"),
-    INLINE_CLASS_CAN_BE_USED(false, "6.1.12", "inline class can be used"),
+    INLINE_CLASS_CAN_BE_USED(true, "6.1.12", "inline class can be used"),
+    EXTENSION_FUNCTION_WITH_CLASS(false, "6.2.3", "do not use extension functions for the class defined in the same file"),
     ;
 
     /**

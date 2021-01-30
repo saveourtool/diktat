@@ -8,14 +8,12 @@ import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_MISSING_IN_NON_SINGLE_C
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_MISSING_OR_WRONG_COPYRIGHT
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_NOT_BEFORE_PACKAGE
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_WRONG_FORMAT
-import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_COPYRIGHT_YEAR
 import org.cqfn.diktat.ruleset.utils.copyrightWords
 import org.cqfn.diktat.ruleset.utils.findChildAfter
 import org.cqfn.diktat.ruleset.utils.findChildBefore
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
-import org.cqfn.diktat.ruleset.utils.kDocTags
 import org.cqfn.diktat.ruleset.utils.log
 import org.cqfn.diktat.ruleset.utils.moveChildBefore
 
@@ -31,12 +29,8 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
-import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
-import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
 
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoField
 
 /**
  * Visitor for header comment in .kt file:
