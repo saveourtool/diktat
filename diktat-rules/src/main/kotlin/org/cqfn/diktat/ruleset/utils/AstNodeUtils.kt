@@ -20,6 +20,7 @@ import com.pinterest.ktlint.core.ast.ElementType.FILE_ANNOTATION_LIST
 import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.INTERNAL_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
+import com.pinterest.ktlint.core.ast.ElementType.LATEINIT_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
@@ -329,6 +330,16 @@ fun ASTNode.isValProperty() =
  * Checks whether this node of type PROPERTY has `const` modifier
  */
 fun ASTNode.isConst() = this.findLeafWithSpecificType(CONST_KEYWORD) != null
+
+/**
+ * Checks whether this node of type PROPERTY has `lateinit` modifier
+ */
+fun ASTNode.isLateInit() = this.findLeafWithSpecificType(LATEINIT_KEYWORD) != null
+
+/**
+ * @param modifier modifier to find in node
+ */
+fun ASTNode.hasModifier(modifier: IElementType) = this.findChildByType(MODIFIER_LIST)?.hasChildOfType(modifier) ?: false
 
 /**
  * Checks whether [this] node of type PROPERTY is `var`

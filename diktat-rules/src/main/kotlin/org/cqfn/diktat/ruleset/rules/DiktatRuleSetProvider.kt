@@ -29,12 +29,6 @@ import org.cqfn.diktat.ruleset.rules.chapter3.SortRule
 import org.cqfn.diktat.ruleset.rules.chapter3.StringConcatenationRule
 import org.cqfn.diktat.ruleset.rules.chapter3.StringTemplateFormatRule
 import org.cqfn.diktat.ruleset.rules.chapter3.WhenMustHaveElseRule
-import org.cqfn.diktat.ruleset.rules.chapter3.files.BlankLinesRule
-import org.cqfn.diktat.ruleset.rules.chapter3.files.FileSize
-import org.cqfn.diktat.ruleset.rules.chapter3.files.FileStructureRule
-import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationRule
-import org.cqfn.diktat.ruleset.rules.chapter3.files.NewlinesRule
-import org.cqfn.diktat.ruleset.rules.chapter3.files.WhiteSpaceRule
 import org.cqfn.diktat.ruleset.rules.chapter3.identifiers.LocalVariablesRule
 import org.cqfn.diktat.ruleset.rules.chapter4.ImmutableValNoVarRule
 import org.cqfn.diktat.ruleset.rules.chapter4.NullChecksRule
@@ -71,6 +65,7 @@ import org.cqfn.diktat.ruleset.rules.chapter6.classes.StatelessClassesRule
 
 import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.RuleSetProvider
+import org.cqfn.diktat.ruleset.rules.chapter3.files.*
 import org.jetbrains.kotlin.org.jline.utils.Levenshtein
 import org.slf4j.LoggerFactory
 
@@ -149,6 +144,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
             ::EmptyBlock,
             ::AvoidEmptyPrimaryConstructor,
             ::EnumsSeparated,
+            ::TopLevelOrderRule,
             ::SingleLineStatementsRule,
             ::MultipleModifiersSequence,
             ::TrivialPropertyAccessors,
