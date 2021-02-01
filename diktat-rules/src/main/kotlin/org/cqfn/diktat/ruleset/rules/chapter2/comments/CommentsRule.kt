@@ -71,12 +71,10 @@ class CommentsRule(private val configRules: List<RulesConfig>) : Rule("comments"
                         offset to ktPsiFactory.createImportDirective(ImportPath.fromString(text.substringAfter("$importKeyword "))).node
                     text.contains(packageKeyword) ->
                         offset to ktPsiFactory.createPackageDirective(FqName(text.substringAfter("$packageKeyword "))).node
-                    else -> {
-                        if (text.contains(requirePartOfCode)) {
-                            offset to ktPsiFactory.createBlockCodeFragment(text, null).node
-                        } else {
-                            null
-                        }
+                    else -> if (text.contains(requirePartOfCode)) {
+                        offset to ktPsiFactory.createBlockCodeFragment(text, null).node
+                    } else {
+                        null
                     }
                 }
             }

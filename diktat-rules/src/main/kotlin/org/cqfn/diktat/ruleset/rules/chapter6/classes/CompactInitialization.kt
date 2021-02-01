@@ -52,7 +52,7 @@ class CompactInitialization(private val configRules: List<RulesConfig>) : Rule("
      * Check property's initializer: if it is a method call, we find all consecutive statements that are this property's
      * fields accessors and wrap them in an `apply` function.
      */
-    @Suppress("UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType", "COMMENTED_OUT_CODE")
     private fun handleProperty(property: KtProperty) {
         property.run {
             val propertyName = name
