@@ -5,6 +5,7 @@
     domainName: your.name.here
     testDirs: test
     disabledChapters: ""
+    kotlinVersion: "1.4.21"
 # Checks that the Class/Enum/Interface name does not match Pascal case
 - name: CLASS_NAME_INCORRECT
   enabled: true
