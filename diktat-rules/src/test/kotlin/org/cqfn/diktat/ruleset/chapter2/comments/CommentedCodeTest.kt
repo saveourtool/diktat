@@ -52,10 +52,13 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
            |fun foo(a: Int): Int {
            |    /* println(a + 42)
            |    println("This is a test string")
+           |    val b = a*10
            |    */
            |    return 0
            |}
-        """.trimMargin())
+        """.trimMargin(),
+        LintError(4, 5, ruleId, "${COMMENTED_OUT_CODE.warnText()} println(a + 42)", false)
+        )
     }
 
     @Test
