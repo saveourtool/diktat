@@ -57,7 +57,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
            |    return 0
            |}
         """.trimMargin(),
-        LintError(4, 5, ruleId, "${COMMENTED_OUT_CODE.warnText()} println(a + 42)", false)
+            LintError(4, 5, ruleId, "${COMMENTED_OUT_CODE.warnText()} println(a + 42)", false)
         )
     }
 
@@ -308,9 +308,19 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
             // x = 2+4
             
             // if true make this
+            
+            /*
+                class A {
+                
+                fun foo()  
+                
+                }
+            
+            */
             """.trimMargin(),
             LintError(7, 13, ruleId, "${COMMENTED_OUT_CODE.warnText()} ", false),
-            LintError(10, 13, ruleId, "${COMMENTED_OUT_CODE.warnText()} x = 2+4", false)
-            )
+            LintError(10, 13, ruleId, "${COMMENTED_OUT_CODE.warnText()} x = 2+4", false),
+            LintError(14, 13, ruleId, "${COMMENTED_OUT_CODE.warnText()} ", false)
+        )
     }
 }
