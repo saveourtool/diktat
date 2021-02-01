@@ -42,7 +42,7 @@ class RunInScript(private val configRules: List<RulesConfig>) : Rule("run-script
             ?.map { it.trim() }
             ?: emptyList()
         if (!(possibleWrapper + possibleWrapperFromConfig)
-                .any { node.text.replace("\\s".toRegex(), "").startsWith(it) }) {
+            .any { node.text.replace("\\s".toRegex(), "").startsWith(it) }) {
             RUN_IN_SCRIPT.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
                 val parent = node.treeParent
                 val newNode = KotlinParser().createNode("run {\n ${node.text}\n} \n")
@@ -54,6 +54,9 @@ class RunInScript(private val configRules: List<RulesConfig>) : Rule("run-script
         }
     }
 
+    /**
+     * [RuleConfiguration] for possible wrapper
+     */
     class RunInScriptRuleConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
         /**
          * Another possible wrapper that can be passed in config
