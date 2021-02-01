@@ -81,7 +81,7 @@ class CompactInitialization(private val configRules: List<RulesConfig>) : Rule("
             }
     }
 
-    @Suppress("UnsafeCallOnNullableType", "NestedBlockDepth")
+    @Suppress("UnsafeCallOnNullableType", "NestedBlockDepth", "COMMENTED_OUT_CODE")
     private fun moveAssignmentIntoApply(property: KtProperty, assignment: KtBinaryExpression) {
         // get apply expression or create empty; convert `apply(::foo)` to `apply { foo(this) }` if necessary
         getOrCreateApplyBlock(property).let(::convertValueParametersToLambdaArgument)
