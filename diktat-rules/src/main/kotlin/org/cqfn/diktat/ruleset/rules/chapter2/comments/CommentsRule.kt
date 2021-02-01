@@ -2,6 +2,7 @@ package org.cqfn.diktat.ruleset.rules.chapter2.comments
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
+import org.cqfn.diktat.ruleset.constants.ListOfPairs
 import org.cqfn.diktat.ruleset.constants.Warnings.COMMENTED_OUT_CODE
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 
@@ -11,7 +12,6 @@ import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.prevSibling
-import org.cqfn.diktat.ruleset.constants.ListOfPairs
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.TokenType
 import org.jetbrains.kotlin.lexer.KtTokens
