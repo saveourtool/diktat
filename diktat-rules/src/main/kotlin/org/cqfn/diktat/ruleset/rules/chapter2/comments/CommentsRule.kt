@@ -54,16 +54,21 @@ class CommentsRule(private val configRules: List<RulesConfig>) : Rule("comments"
      */
     @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
     private fun checkCommentedCode(node: ASTNode) {
-        val eolCommentsOffsetToText = getOffsetsToTextBlocksFromEolComments(node)
+        val errorNodesWithText = mutableListOf<Pair<ASTNode, String>>()
+        val eolCommentsOffsetToText = getOffsetsToTextBlocksFromEolComments(node, errorNodesWithText)
         val blockCommentsOffsetToText = node
             .findAllNodesWithSpecificType(BLOCK_COMMENT)
-            .map { it.startOffset to it.text.trim().removeSurrounding("/*", "*/") }
-
+            .map {
+                errorNodesWithText.add(it to it.text.trim().removeSurrounding("/*", "*/"))
+                it.startOffset to it.text.trim().removeSurrounding("/*", "*/")
+            }
         (eolCommentsOffsetToText + blockCommentsOffsetToText)
             .flatMap { (offset, text) ->
                 val (singleLines, blockLines) = text.lines().partition { it.contains(importOrPackage) }
                 val block = if (blockLines.isNotEmpty()) listOf(blockLines.joinToString("\n")) else emptyList()
-                (singleLines + block).map { offset to it }
+                (singleLines + block).map {
+                    offset to it
+                }
             }
             .mapNotNull { (offset, text) ->
                 when {
@@ -84,7 +89,8 @@ class CommentsRule(private val configRules: List<RulesConfig>) : Rule("comments"
                     .isEmpty()
             }
             .forEach { (offset, parsedNode) ->
-                COMMENTED_OUT_CODE.warn(configRules, emitWarn, isFixMode, parsedNode.text.substringBefore("\n").trim(), offset, parsedNode)
+                COMMENTED_OUT_CODE.warn(configRules, emitWarn, isFixMode, parsedNode.text.substringBefore("\n").trim(), offset,
+                errorNodesWithText.find { it.second == parsedNode.text }?.first ?: parsedNode)
             }
     }
 
@@ -94,7 +100,7 @@ class CommentsRule(private val configRules: List<RulesConfig>) : Rule("comments"
      * Splitting back into lines, if necessary, will be done outside of this method, for both text from EOL and block.
      * fixme: in this case offset is lost for lines which will be split once more
      */
-    private fun getOffsetsToTextBlocksFromEolComments(node: ASTNode): List<Pair<Int, String>> {
+    private fun getOffsetsToTextBlocksFromEolComments(node: ASTNode, errorNodesWithText: MutableList<Pair<ASTNode, String>>): List<Pair<Int, String>> {
         val comments = node
             .findAllNodesWithSpecificType(EOL_COMMENT)
             .filter { !it.text.contains(eolCommentStart) || isCodeAfterCommentStart(it.text) }
@@ -113,6 +119,7 @@ class CommentsRule(private val configRules: List<RulesConfig>) : Rule("comments"
                     acc
                 }
                 .map { list ->
+                    list.forEach { errorNodesWithText.add(it to it.text.removePrefix("//")) }
                     list.first().startOffset to list.joinToString("\n") { it.text.removePrefix("//") }
                 }
         } else {

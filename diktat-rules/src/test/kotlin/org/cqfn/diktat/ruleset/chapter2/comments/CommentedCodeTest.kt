@@ -323,4 +323,25 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
             LintError(14, 13, ruleId, "${COMMENTED_OUT_CODE.warnText()} ", false)
         )
     }
+
+    @Test
+    @Tag(WarningNames.COMMENTED_OUT_CODE)
+    fun `should not trigger with suppress`() {
+        lintMethod(
+            """
+            @Suppress("UnsafeCallOnNullableType", "COMMENTED_OUT_CODE")
+            private fun handleProperty(property: KtProperty) {
+             
+             /*
+                x = 1
+             */
+            }
+            
+            @Suppress("COMMENTED_OUT_CODE")
+            class A {
+                // val x = 10
+            }
+            """.trimMargin()
+        )
+    }
 }
