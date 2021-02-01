@@ -11,6 +11,7 @@ import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.prevSibling
+import org.cqfn.diktat.ruleset.constants.ListOfPairs
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.TokenType
 import org.jetbrains.kotlin.lexer.KtTokens
@@ -54,7 +55,7 @@ class CommentsRule(private val configRules: List<RulesConfig>) : Rule("comments"
      */
     @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
     private fun checkCommentedCode(node: ASTNode) {
-        val errorNodesWithText = mutableListOf<Pair<ASTNode, String>>()
+        val errorNodesWithText: ListOfPairs = mutableListOf()
         val eolCommentsOffsetToText = getOffsetsToTextBlocksFromEolComments(node, errorNodesWithText)
         val blockCommentsOffsetToText = node
             .findAllNodesWithSpecificType(BLOCK_COMMENT)
@@ -90,7 +91,7 @@ class CommentsRule(private val configRules: List<RulesConfig>) : Rule("comments"
             }
             .forEach { (offset, parsedNode) ->
                 COMMENTED_OUT_CODE.warn(configRules, emitWarn, isFixMode, parsedNode.text.substringBefore("\n").trim(), offset,
-                errorNodesWithText.find { it.second == parsedNode.text }?.first ?: parsedNode)
+                    errorNodesWithText.find { it.second == parsedNode.text }?.first ?: parsedNode)
             }
     }
 
@@ -100,7 +101,7 @@ class CommentsRule(private val configRules: List<RulesConfig>) : Rule("comments"
      * Splitting back into lines, if necessary, will be done outside of this method, for both text from EOL and block.
      * fixme: in this case offset is lost for lines which will be split once more
      */
-    private fun getOffsetsToTextBlocksFromEolComments(node: ASTNode, errorNodesWithText: MutableList<Pair<ASTNode, String>>): List<Pair<Int, String>> {
+    private fun getOffsetsToTextBlocksFromEolComments(node: ASTNode, errorNodesWithText: ListOfPairs): List<Pair<Int, String>> {
         val comments = node
             .findAllNodesWithSpecificType(EOL_COMMENT)
             .filter { !it.text.contains(eolCommentStart) || isCodeAfterCommentStart(it.text) }
