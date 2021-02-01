@@ -1,6 +1,7 @@
 package org.cqfn.diktat.ruleset.rules.chapter6.classes
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.common.config.rules.getCommonConfiguration
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.INLINE_CLASS_CAN_BE_USED
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
@@ -37,7 +38,8 @@ class InlineClassesRule(private val configRule: List<RulesConfig>) : Rule("inlin
         emitWarn = emit
         isFixMode = autoCorrect
 
-        if (node.elementType == CLASS) {
+        val configuration by configRule.getCommonConfiguration()
+        if (node.elementType == CLASS && configuration.kotlinVersion >= ktVersion) {
             handleClasses(node.psi as KtClass)
         }
     }
@@ -47,9 +49,8 @@ class InlineClassesRule(private val configRule: List<RulesConfig>) : Rule("inlin
         if (hasValidProperties(classPsi) &&
                 !isExtendingClass(classPsi.node) &&
                 classPsi.node.getFirstChildWithType(MODIFIER_LIST)?.getChildren(null)?.all { it.elementType in goodModifiers } != false) {
-            INLINE_CLASS_CAN_BE_USED.warnAndFix(configRule, emitWarn, isFixMode, "class ${classPsi.name}", classPsi.node.startOffset, classPsi.node) {
-                // Fixme: since it's an experimental feature we shouldn't do fixer
-            }
+            // Fixme: since it's an experimental feature we shouldn't do fixer
+            INLINE_CLASS_CAN_BE_USED.warn(configRule, emitWarn, isFixMode, "class ${classPsi.name}", classPsi.node.startOffset, classPsi.node)
         }
     }
 
@@ -72,6 +73,7 @@ class InlineClassesRule(private val configRule: List<RulesConfig>) : Rule("inlin
                 ?: false
 
     companion object {
+        val ktVersion = KotlinVersion(1, 3)
         val goodModifiers = listOf(PUBLIC_KEYWORD, PRIVATE_KEYWORD, FINAL_KEYWORD, PROTECTED_KEYWORD, INTERNAL_KEYWORD)
     }
 }

@@ -1,8 +1,10 @@
 package org.cqfn.diktat.ruleset.utils
 
+import org.cqfn.diktat.common.config.rules.DIKTAT_COMMON
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
 import org.cqfn.diktat.common.config.rules.getRuleConfig
+import org.cqfn.diktat.common.config.rules.kotlinVersion
 import org.cqfn.diktat.ruleset.constants.Warnings
 
 import com.charleskorn.kaml.Yaml
@@ -26,7 +28,7 @@ inline class RulesConfigYamlTest(private val pathMap: Map<String, String> =
         compareRulesAndConfig("diktat-analysis.yml")
         compareRulesAndConfig("diktat-analysis-huawei.yml")
         val thirdConfig = "${System.getProperty("user.dir")}${File.separator}..${File.separator}diktat-analysis.yml${File.separator}"
-        compareRulesAndConfig(thirdConfig, "parent/diktat-analysis.yml")
+        compareRulesAndConfig(thirdConfig, "../diktat-analysis.yml")
     }
 
     @Test
@@ -34,6 +36,19 @@ inline class RulesConfigYamlTest(private val pathMap: Map<String, String> =
         checkComments("src/main/resources/diktat-analysis.yml")
         checkComments("src/main/resources/diktat-analysis-huawei.yml")
         checkComments("../diktat-analysis.yml")
+    }
+
+    @Test
+    fun `check kotlin version`() {
+        val currentKotlinVersion = KotlinVersion.CURRENT
+        pathMap.keys.forEach { path ->
+            val config = readAllRulesFromConfig(path)
+            val ktVersion = config.find { it.name == DIKTAT_COMMON }
+                ?.configuration
+                ?.get("kotlinVersion")
+                ?.kotlinVersion()
+            Assertions.assertEquals(ktVersion, currentKotlinVersion)
+        }
     }
 
     private fun checkComments(configName: String) {
