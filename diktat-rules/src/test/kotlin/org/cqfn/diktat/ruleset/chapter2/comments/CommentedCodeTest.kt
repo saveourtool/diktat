@@ -55,9 +55,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
            |    */
            |    return 0
            |}
-        """.trimMargin(),
-            LintError(4, 5, ruleId, "${COMMENTED_OUT_CODE.warnText()} println(a + 42)", false)
-        )
+        """.trimMargin())
     }
 
     @Test
@@ -72,9 +70,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
            |//    println("This is a test string")
            |    return 0
            |}
-        """.trimMargin(),
-            LintError(4, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} println(a + 42)", false)
-        )
+        """.trimMargin())
     }
 
     @Test
@@ -179,8 +175,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
         lintMethod(
             """
             |// class Test: Exception()
-            """.trimMargin(),
-            LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} class Test: Exception()", false))
+            """.trimMargin())
     }
 
     @Test
@@ -199,8 +194,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
         lintMethod(
             """
             |// internal sealed class Test: Exception()
-            """.trimMargin(),
-            LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} internal sealed class Test: Exception()", false))
+            """.trimMargin())
     }
 
     @Test
@@ -311,6 +305,9 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
             // x = 2+4
             
             // if true make this
-            """.trimMargin())
+            """.trimMargin(),
+            LintError(7, 13, ruleId, "${COMMENTED_OUT_CODE.warnText()} ", false),
+            LintError(10, 13, ruleId, "${COMMENTED_OUT_CODE.warnText()} x = 2+4", false)
+            )
     }
 }
