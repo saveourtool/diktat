@@ -129,7 +129,7 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
      */
     val kotlinVersion: KotlinVersion by lazy {
         configuration?.get("kotlinVersion")?.kotlinVersion() ?: run {
-            log.error("Kotlin version not specified. Will be use ${KotlinVersion.CURRENT} version")
+            log.error("Kotlin version not specified in the configuration file. Will be using ${KotlinVersion.CURRENT} version")
             KotlinVersion.CURRENT
         }
     }

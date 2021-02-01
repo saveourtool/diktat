@@ -28,7 +28,7 @@ inline class RulesConfigYamlTest(private val pathMap: Map<String, String> =
         compareRulesAndConfig("diktat-analysis.yml")
         compareRulesAndConfig("diktat-analysis-huawei.yml")
         val thirdConfig = "${System.getProperty("user.dir")}${File.separator}..${File.separator}diktat-analysis.yml${File.separator}"
-        compareRulesAndConfig(thirdConfig, ".../diktat-analysis.yml")
+        compareRulesAndConfig(thirdConfig, "../diktat-analysis.yml")
     }
 
     @Test
