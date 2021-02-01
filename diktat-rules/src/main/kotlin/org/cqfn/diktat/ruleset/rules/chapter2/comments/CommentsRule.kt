@@ -54,7 +54,7 @@ class CommentsRule(private val configRules: List<RulesConfig>) : Rule("comments"
      *    with '// ' with whitespace, while automatic commenting in, e.g., IDEA creates slashes in the beginning of the line
      *
      */
-    @Suppress("UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
     private fun checkCommentedCode(node: ASTNode) {
         val eolCommentsOffsetToText = getOffsetsToTextBlocksFromEolComments(node)
         val blockCommentsOffsetToText = node
@@ -76,13 +76,15 @@ class CommentsRule(private val configRules: List<RulesConfig>) : Rule("comments"
                     else -> {
                         var newNode = ktPsiFactory.createBlockCodeFragment(text, null).node
                         val isPossibleError = newNode.findChildByType(BLOCK)!!.firstChildNode.elementType == BINARY_EXPRESSION
+                        // A check is performed for the presence of a BINARY_EXPRESSION as first child,
+                        // because the one-line copyright is perceived by the parser as a BINARY EXPRESSION
                         if (isPossibleError) {
                             val nodeInsideClass = ktPsiFactory.createBlockCodeFragment("class A {$text}", null).node
-                            if (nodeInsideClass.findAllNodesWithSpecificType(TokenType.ERROR_ELEMENT).isNotEmpty())
+                            if (nodeInsideClass.findAllNodesWithSpecificType(TokenType.ERROR_ELEMENT).isNotEmpty()) {
                                 newNode = nodeInsideClass
+                            }
                         }
                         offset to newNode
-                        // fixme A check is performed for the presence of a BINARY_EXPRESSION as first child, because the one-line copyright is perceived by the parser as a BINARY EXPRESSION
                     }
                 }
             }
