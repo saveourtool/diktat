@@ -1,7 +1,7 @@
 package org.cqfn.diktat.ruleset.rules.chapter6
 
-import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
+import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.RUN_IN_SCRIPT
