@@ -293,4 +293,24 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
             |   */
             """.trimMargin())
     }
+
+    @Test
+    @Tag(WarningNames.COMMENTED_OUT_CODE)
+    fun `should not trigger on Copyright and another comment`() {
+        lintMethod(
+            """
+            /*
+                Copyright (c) Your Company Name Here. 2010-2021
+            */
+            
+            package org.cqfn.diktat
+            
+            /*
+                x = 2 + 4 + 1
+            */
+            // x = 2+4
+            
+            // if true make this
+            """.trimMargin())
+    }
 }

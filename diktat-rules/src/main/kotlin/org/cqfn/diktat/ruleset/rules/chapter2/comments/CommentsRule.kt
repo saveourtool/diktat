@@ -6,6 +6,8 @@ import org.cqfn.diktat.ruleset.constants.Warnings.COMMENTED_OUT_CODE
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 
 import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.FILE
@@ -52,6 +54,7 @@ class CommentsRule(private val configRules: List<RulesConfig>) : Rule("comments"
      *    with '// ' with whitespace, while automatic commenting in, e.g., IDEA creates slashes in the beginning of the line
      *
      */
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkCommentedCode(node: ASTNode) {
         val eolCommentsOffsetToText = getOffsetsToTextBlocksFromEolComments(node)
         val blockCommentsOffsetToText = node
@@ -70,8 +73,17 @@ class CommentsRule(private val configRules: List<RulesConfig>) : Rule("comments"
                         offset to ktPsiFactory.createImportDirective(ImportPath.fromString(text.substringAfter("$importKeyword "))).node
                     text.contains(packageKeyword) ->
                         offset to ktPsiFactory.createPackageDirective(FqName(text.substringAfter("$packageKeyword "))).node
-                    else ->
-                        offset to ktPsiFactory.createBlockCodeFragment(text, null).node
+                    else -> {
+                        var newNode = ktPsiFactory.createBlockCodeFragment(text, null).node
+                        val isPossibleError = newNode.findChildByType(BLOCK)!!.firstChildNode.elementType == BINARY_EXPRESSION
+                        if (isPossibleError) {
+                            val nodeInsideClass = ktPsiFactory.createBlockCodeFragment("class A {$text}", null).node
+                            if (nodeInsideClass.findAllNodesWithSpecificType(TokenType.ERROR_ELEMENT).isNotEmpty())
+                                newNode = nodeInsideClass
+                        }
+                        offset to newNode
+                        // fixme A check is performed for the presence of a BINARY_EXPRESSION as first child, because the one-line copyright is perceived by the parser as a BINARY EXPRESSION
+                    }
                 }
             }
             .filter { (_, parsedNode) ->
