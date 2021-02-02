@@ -319,7 +319,6 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
             */
             """.trimMargin(),
             LintError(7, 13, ruleId, "${COMMENTED_OUT_CODE.warnText()} ", false),
-            LintError(10, 13, ruleId, "${COMMENTED_OUT_CODE.warnText()} x = 2+4", false),
             LintError(14, 13, ruleId, "${COMMENTED_OUT_CODE.warnText()} ", false)
         )
     }
