@@ -2,16 +2,15 @@ package org.cqfn.diktat.ruleset.rules.chapter2.kdoc
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getCommonConfiguration
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_EXTRA_PROPERTY
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CONSTRUCTOR_PROPERTY
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_CLASS_ELEMENTS
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_TOP_LEVEL
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
@@ -45,23 +44,15 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  * 2) All internal elements in class like class, property or function should be documented with KDoc
  * 3) All properties declared in the primary constructor are documented using `@property` tag in class KDoc
  */
-class KdocComments(private val configRules: List<RulesConfig>) : Rule("kdoc-comments") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
+class KdocComments(configRules: List<RulesConfig>) : DiktatRule("kdoc-comments", configRules,
+        listOf(KDOC_EXTRA_PROPERTY, KDOC_NO_CONSTRUCTOR_PROPERTY,
+                KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT, MISSING_KDOC_CLASS_ELEMENTS, MISSING_KDOC_TOP_LEVEL)) {
     /**
      * @param node
      * @param autoCorrect
      * @param emit
      */
-    override fun visit(
-        node: ASTNode,
-        autoCorrect: Boolean,
-        emit: EmitType
-    ) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+    override fun logic(node: ASTNode) {
         val config = configRules.getCommonConfiguration().value
         val filePath = node.getRootNode().getFilePath()
         if (!(node.hasTestAnnotation() || isLocatedInTest(filePath.splitPathToDirs(), config.testAnchors))) {

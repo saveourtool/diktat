@@ -4,7 +4,6 @@ import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getCommonConfiguration
 import org.cqfn.diktat.common.config.rules.getRuleConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_CONTAINS_ONLY_COMMENTS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_INCORRECT_BLOCKS_ORDER
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NO_BLANK_LINE_BETWEEN_BLOCKS
@@ -12,6 +11,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.FILE_UNORDERED_IMPORTS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_WILDCARD_IMPORTS
 import org.cqfn.diktat.ruleset.constants.Warnings.UNUSED_IMPORT
 import org.cqfn.diktat.ruleset.rules.chapter1.PackageNaming.Companion.PACKAGE_SEPARATOR
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.StandardPlatforms
 import org.cqfn.diktat.ruleset.utils.copyrightWords
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
@@ -19,7 +19,6 @@ import org.cqfn.diktat.ruleset.utils.handleIncorrectOrder
 import org.cqfn.diktat.ruleset.utils.moveChildBefore
 import org.cqfn.diktat.ruleset.utils.operatorMap
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.FILE
@@ -56,8 +55,9 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
  * 4. Ensures imports are ordered alphabetically without blank lines
  * 5. Ensures there are no wildcard imports
  */
-class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file-structure") {
-    private var isFixMode: Boolean = false
+class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule("file-structure", configRules,
+        listOf(FILE_CONTAINS_ONLY_COMMENTS, FILE_INCORRECT_BLOCKS_ORDER, FILE_NO_BLANK_LINE_BETWEEN_BLOCKS,
+                FILE_UNORDERED_IMPORTS, FILE_WILDCARD_IMPORTS, UNUSED_IMPORT)) {
     private val domainName by lazy {
         configRules
             .getCommonConfiguration()
@@ -73,14 +73,8 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         }
     private val refSet: MutableSet<String> = mutableSetOf()
     private var packageName = ""
-    private lateinit var emitWarn: EmitType
 
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        isFixMode = autoCorrect
-        emitWarn = emit
-
+    override fun logic(node: ASTNode) {
         if (node.elementType == FILE) {
             val wildcardImportsConfig = WildCardImportsConfig(
                 this.configRules.getRuleConfig(FILE_WILDCARD_IMPORTS)?.configuration ?: emptyMap()

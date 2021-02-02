@@ -3,10 +3,9 @@ package org.cqfn.diktat.ruleset.rules.chapter3
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
-import org.cqfn.diktat.ruleset.constants.Warnings
+import org.cqfn.diktat.ruleset.constants.Warnings.LONG_NUMERICAL_VALUES_SEPARATED
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.FLOAT_LITERAL
 import com.pinterest.ktlint.core.ast.ElementType.INTEGER_LITERAL
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -17,22 +16,14 @@ import java.lang.StringBuilder
 /**
  * Rule that checks if numerical separators (`_`) are used for long numerical literals
  */
-class LongNumericalValuesSeparatedRule(private val configRules: List<RulesConfig>) : Rule("long-numerical-values") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+class LongNumericalValuesSeparatedRule(configRules: List<RulesConfig>) : DiktatRule("long-numerical-values", configRules, listOf(LONG_NUMERICAL_VALUES_SEPARATED)) {
+    override fun logic(node: ASTNode) {
         val configuration = LongNumericalValuesConfiguration(
-            configRules.getRuleConfig(Warnings.LONG_NUMERICAL_VALUES_SEPARATED)?.configuration ?: emptyMap())
+            configRules.getRuleConfig(LONG_NUMERICAL_VALUES_SEPARATED)?.configuration ?: emptyMap())
 
         if (node.elementType == INTEGER_LITERAL) {
             if (!isValidConstant(node.text, configuration, node)) {
-                Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
+                LONG_NUMERICAL_VALUES_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
                     fixIntegerConstant(node, configuration.maxBlockLength)
                 }
             }
@@ -42,7 +33,7 @@ class LongNumericalValuesSeparatedRule(private val configRules: List<RulesConfig
             if (!isValidConstant(node.text, configuration, node)) {
                 val parts = node.text.split(".")
 
-                Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
+                LONG_NUMERICAL_VALUES_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
                     fixFloatConstantPart(parts[0], parts[1], configuration, node)
                 }
             }
@@ -131,7 +122,7 @@ class LongNumericalValuesSeparatedRule(private val configRules: List<RulesConfig
 
         blocks.forEach {
             if (it.length > configuration.maxBlockLength) {
-                Warnings.LONG_NUMERICAL_VALUES_SEPARATED.warn(configRules, emitWarn, false, "this block is too long $it", node.startOffset, node)
+                LONG_NUMERICAL_VALUES_SEPARATED.warn(configRules, emitWarn, false, "this block is too long $it", node.startOffset, node)
             }
         }
     }

@@ -3,8 +3,8 @@ package org.cqfn.diktat.ruleset.rules.chapter3
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.EMPTY_BLOCK_STRUCTURE_ERROR
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.findLBrace
 import org.cqfn.diktat.ruleset.utils.findLeafWithSpecificType
 import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
@@ -13,7 +13,6 @@ import org.cqfn.diktat.ruleset.utils.isBlockEmpty
 import org.cqfn.diktat.ruleset.utils.isOverridden
 import org.cqfn.diktat.ruleset.utils.isPascalCase
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_LITERAL
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
@@ -26,15 +25,8 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 /**
  * Rule that checks if empty code blocks (`{  }`) are used and checks their formatting.
  */
-class EmptyBlock(private val configRules: List<RulesConfig>) : Rule("empty-block-structure") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        emitWarn = emit
-        isFixMode = autoCorrect
+class EmptyBlock(configRules: List<RulesConfig>) : DiktatRule("empty-block-structure", configRules, listOf(EMPTY_BLOCK_STRUCTURE_ERROR)) {
+    override fun logic(node: ASTNode) {
 
         val configuration = EmptyBlockStyleConfiguration(
             configRules.getRuleConfig(EMPTY_BLOCK_STRUCTURE_ERROR)?.configuration ?: emptyMap()

@@ -1,10 +1,9 @@
 package org.cqfn.diktat.ruleset.rules.chapter3
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_MULTIPLE_MODIFIERS_ORDER
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
@@ -16,16 +15,8 @@ import org.jetbrains.kotlin.psi.psiUtil.children
 /**
  * @property configRules
  */
-class MultipleModifiersSequence(private val configRules: List<RulesConfig>) : Rule("multiple-modifiers") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+class MultipleModifiersSequence(configRules: List<RulesConfig>) : DiktatRule("multiple-modifiers", configRules, listOf(WRONG_MULTIPLE_MODIFIERS_ORDER)) {
+    override fun logic(node: ASTNode) {
         if (node.elementType == MODIFIER_LIST) {
             checkModifierList(node)
             checkAnnotation(node)
