@@ -2,6 +2,7 @@ package org.cqfn.diktat.ruleset.rules.chapter2.comments
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
+import org.cqfn.diktat.ruleset.constants.ListOfPairs
 import org.cqfn.diktat.ruleset.constants.Warnings.COMMENTED_OUT_CODE
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 
@@ -52,26 +53,35 @@ class CommentsRule(private val configRules: List<RulesConfig>) : Rule("comments"
      *    with '// ' with whitespace, while automatic commenting in, e.g., IDEA creates slashes in the beginning of the line
      *
      */
+    @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
     private fun checkCommentedCode(node: ASTNode) {
-        val eolCommentsOffsetToText = getOffsetsToTextBlocksFromEolComments(node)
+        val errorNodesWithText: ListOfPairs = mutableListOf()
+        val eolCommentsOffsetToText = getOffsetsToTextBlocksFromEolComments(node, errorNodesWithText)
         val blockCommentsOffsetToText = node
             .findAllNodesWithSpecificType(BLOCK_COMMENT)
-            .map { it.startOffset to it.text.trim().removeSurrounding("/*", "*/") }
-
+            .map {
+                errorNodesWithText.add(it to it.text.trim().removeSurrounding("/*", "*/"))
+                it.startOffset to it.text.trim().removeSurrounding("/*", "*/")
+            }
         (eolCommentsOffsetToText + blockCommentsOffsetToText)
             .flatMap { (offset, text) ->
                 val (singleLines, blockLines) = text.lines().partition { it.contains(importOrPackage) }
                 val block = if (blockLines.isNotEmpty()) listOf(blockLines.joinToString("\n")) else emptyList()
-                (singleLines + block).map { offset to it }
+                (singleLines + block).map {
+                    offset to it
+                }
             }
-            .map { (offset, text) ->
+            .mapNotNull { (offset, text) ->
                 when {
                     text.contains(importKeyword) ->
                         offset to ktPsiFactory.createImportDirective(ImportPath.fromString(text.substringAfter("$importKeyword "))).node
                     text.contains(packageKeyword) ->
                         offset to ktPsiFactory.createPackageDirective(FqName(text.substringAfter("$packageKeyword "))).node
-                    else ->
+                    else -> if (text.contains(requirePartOfCode)) {
                         offset to ktPsiFactory.createBlockCodeFragment(text, null).node
+                    } else {
+                        null
+                    }
                 }
             }
             .filter { (_, parsedNode) ->
@@ -80,7 +90,8 @@ class CommentsRule(private val configRules: List<RulesConfig>) : Rule("comments"
                     .isEmpty()
             }
             .forEach { (offset, parsedNode) ->
-                COMMENTED_OUT_CODE.warn(configRules, emitWarn, isFixMode, parsedNode.text.substringBefore("\n").trim(), offset, parsedNode)
+                COMMENTED_OUT_CODE.warn(configRules, emitWarn, isFixMode, parsedNode.text.substringBefore("\n").trim(), offset,
+                    errorNodesWithText.find { it.second == parsedNode.text }?.first ?: parsedNode)
             }
     }
 
@@ -90,7 +101,7 @@ class CommentsRule(private val configRules: List<RulesConfig>) : Rule("comments"
      * Splitting back into lines, if necessary, will be done outside of this method, for both text from EOL and block.
      * fixme: in this case offset is lost for lines which will be split once more
      */
-    private fun getOffsetsToTextBlocksFromEolComments(node: ASTNode): List<Pair<Int, String>> {
+    private fun getOffsetsToTextBlocksFromEolComments(node: ASTNode, errorNodesWithText: ListOfPairs): List<Pair<Int, String>> {
         val comments = node
             .findAllNodesWithSpecificType(EOL_COMMENT)
             .filter { !it.text.contains(eolCommentStart) || isCodeAfterCommentStart(it.text) }
@@ -109,6 +120,7 @@ class CommentsRule(private val configRules: List<RulesConfig>) : Rule("comments"
                     acc
                 }
                 .map { list ->
+                    list.forEach { errorNodesWithText.add(it to it.text.removePrefix("//")) }
                     list.first().startOffset to list.joinToString("\n") { it.text.removePrefix("//") }
                 }
         } else {
@@ -139,6 +151,7 @@ class CommentsRule(private val configRules: List<RulesConfig>) : Rule("comments"
         private val importOrPackageRegex = """^(import|package)?\s+([a-zA-Z.])+;*$""".toRegex()
         private val functionRegex = """^(public|private|protected)*\s*(override|abstract|actual|expect)*\s?fun\s+\w+(\(.*\))?(\s*:\s*\w+)?\s*[{=]${'$'}""".toRegex()
         private val rightBraceRegex = """^\s*}$""".toRegex()
+        private val requirePartOfCode = """val |var |=|(\{((.|\n)*)\})""".toRegex()
         private val codeFileStartCases = listOf(classRegex, importOrPackageRegex, functionRegex, rightBraceRegex)
         private val eolCommentStart = """// \S""".toRegex()
     }
