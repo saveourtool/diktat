@@ -74,10 +74,10 @@ class TrailingCommaRule(private val configRules: List<RulesConfig>) : Rule("trai
                 VALUE_PARAMETER_LIST -> Pair(VALUE_PARAMETER, configuration.getParam("valueParameter"))
                 INDICES -> Pair(REFERENCE_EXPRESSION, configuration.getParam("referenceExpression"))
                 WHEN_ENTRY -> Pair(when {
-                        node.hasChildOfType(WHEN_CONDITION_WITH_EXPRESSION) -> WHEN_CONDITION_WITH_EXPRESSION
-                        node.hasChildOfType(WHEN_CONDITION_IS_PATTERN) -> WHEN_CONDITION_IS_PATTERN
-                        else -> WHEN_CONDITION_IN_RANGE
-                    }, configuration.getParam("whenConditions"))
+                    node.hasChildOfType(WHEN_CONDITION_WITH_EXPRESSION) -> WHEN_CONDITION_WITH_EXPRESSION
+                    node.hasChildOfType(WHEN_CONDITION_IS_PATTERN) -> WHEN_CONDITION_IS_PATTERN
+                    else -> WHEN_CONDITION_IN_RANGE
+                }, configuration.getParam("whenConditions"))
                 COLLECTION_LITERAL_EXPRESSION -> Pair(STRING_TEMPLATE, configuration.getParam("collectionLiteral"))
                 TYPE_ARGUMENT_LIST -> Pair(TYPE_PROJECTION, configuration.getParam("typeArgument"))
                 TYPE_PARAMETER_LIST -> Pair(TYPE_PARAMETER, configuration.getParam("typeParameter"))
