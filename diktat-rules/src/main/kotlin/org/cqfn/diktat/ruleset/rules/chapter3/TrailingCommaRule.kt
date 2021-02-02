@@ -6,6 +6,7 @@ import org.cqfn.diktat.common.config.rules.getCommonConfiguration
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.TRAILING_COMMA
+import org.cqfn.diktat.ruleset.utils.hasChildOfType
 
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.COLLECTION_LITERAL_EXPRESSION
@@ -30,7 +31,6 @@ import com.pinterest.ktlint.core.ast.ElementType.WHEN_ENTRY
 import com.pinterest.ktlint.core.ast.children
 import com.pinterest.ktlint.core.ast.isPartOfComment
 import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
-import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.psi.psiUtil.siblings
@@ -49,6 +49,7 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
  * [11] Type parameters
  * [12] Destructuring declarations
  */
+@Suppress("TOO_LONG_FUNCTION")
 class TrailingCommaRule(private val configRules: List<RulesConfig>) : Rule("trailing-comma") {
     private var isFixMode: Boolean = false
     private val commonConfig by configRules.getCommonConfiguration()
@@ -72,19 +73,11 @@ class TrailingCommaRule(private val configRules: List<RulesConfig>) : Rule("trai
                 VALUE_ARGUMENT_LIST -> Pair(VALUE_ARGUMENT, configuration.getParam("valueArgument"))
                 VALUE_PARAMETER_LIST -> Pair(VALUE_PARAMETER, configuration.getParam("valueParameter"))
                 INDICES -> Pair(REFERENCE_EXPRESSION, configuration.getParam("referenceExpression"))
-                WHEN_ENTRY -> {
-                    Pair(when {
-                        node.hasChildOfType(WHEN_CONDITION_WITH_EXPRESSION) -> {
-                            WHEN_CONDITION_WITH_EXPRESSION
-                        }
-                        node.hasChildOfType(WHEN_CONDITION_IS_PATTERN) -> {
-                            WHEN_CONDITION_IS_PATTERN
-                        }
-                        else -> {
-                            WHEN_CONDITION_IN_RANGE
-                        }
-                    } , configuration.getParam("whenConditions"))
-                }
+                WHEN_ENTRY -> Pair(when {
+                        node.hasChildOfType(WHEN_CONDITION_WITH_EXPRESSION) -> WHEN_CONDITION_WITH_EXPRESSION
+                        node.hasChildOfType(WHEN_CONDITION_IS_PATTERN) -> WHEN_CONDITION_IS_PATTERN
+                        else -> WHEN_CONDITION_IN_RANGE
+                    }, configuration.getParam("whenConditions"))
                 COLLECTION_LITERAL_EXPRESSION -> Pair(STRING_TEMPLATE, configuration.getParam("collectionLiteral"))
                 TYPE_ARGUMENT_LIST -> Pair(TYPE_PROJECTION, configuration.getParam("typeArgument"))
                 TYPE_PARAMETER_LIST -> Pair(TYPE_PARAMETER, configuration.getParam("typeParameter"))
