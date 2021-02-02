@@ -2,6 +2,7 @@ package org.cqfn.diktat.ruleset.rules.chapter3
 
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.common.config.rules.getCommonConfiguration
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.TRAILING_COMMA
@@ -25,7 +26,6 @@ import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.WHEN_CONDITION_WITH_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.WHEN_ENTRY
 import com.pinterest.ktlint.core.ast.children
-import org.cqfn.diktat.common.config.rules.getCommonConfiguration
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.psi.psiUtil.siblings
@@ -98,16 +98,18 @@ class TrailingCommaRule(private val configRules: List<RulesConfig>) : Rule("trai
     }
 
     /**
-    * Configuration for trailing comma
-    */
+     * Configuration for trailing comma
+     */
     class TrailingCommaConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
         /**
+         * @param name parameters name
+         *
          * @return param based on its name
          */
         fun getParam(name: String) = config[name]?.toBoolean() ?: false
     }
 
     companion object {
-        val ktVersion = KotlinVersion(1,4)
+        val ktVersion = KotlinVersion(1, 4)
     }
 }

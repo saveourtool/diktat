@@ -11,7 +11,7 @@ import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class TrailingCommaWarnTest: LintTestBase(::TrailingCommaRule) {
+class TrailingCommaWarnTest : LintTestBase(::TrailingCommaRule) {
     private val ruleId = "$DIKTAT_RULE_SET_ID:trailing-comma"
 
     private fun getRulesConfig(paramName: String): List<RulesConfig> = listOf(

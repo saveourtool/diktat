@@ -13,6 +13,23 @@ import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.CommentsFormatting
 import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocComments
 import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocFormatting
 import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocMethods
+import org.cqfn.diktat.ruleset.rules.chapter3.AnnotationNewLineRule
+import org.cqfn.diktat.ruleset.rules.chapter3.BlockStructureBraces
+import org.cqfn.diktat.ruleset.rules.chapter3.BracesInConditionalsAndLoopsRule
+import org.cqfn.diktat.ruleset.rules.chapter3.ClassLikeStructuresOrderRule
+import org.cqfn.diktat.ruleset.rules.chapter3.ConsecutiveSpacesRule
+import org.cqfn.diktat.ruleset.rules.chapter3.EmptyBlock
+import org.cqfn.diktat.ruleset.rules.chapter3.EnumsSeparated
+import org.cqfn.diktat.ruleset.rules.chapter3.LineLength
+import org.cqfn.diktat.ruleset.rules.chapter3.LongNumericalValuesSeparatedRule
+import org.cqfn.diktat.ruleset.rules.chapter3.MultipleModifiersSequence
+import org.cqfn.diktat.ruleset.rules.chapter3.NullableTypeRule
+import org.cqfn.diktat.ruleset.rules.chapter3.SingleLineStatementsRule
+import org.cqfn.diktat.ruleset.rules.chapter3.SortRule
+import org.cqfn.diktat.ruleset.rules.chapter3.StringConcatenationRule
+import org.cqfn.diktat.ruleset.rules.chapter3.StringTemplateFormatRule
+import org.cqfn.diktat.ruleset.rules.chapter3.TrailingCommaRule
+import org.cqfn.diktat.ruleset.rules.chapter3.WhenMustHaveElseRule
 import org.cqfn.diktat.ruleset.rules.chapter3.files.BlankLinesRule
 import org.cqfn.diktat.ruleset.rules.chapter3.files.FileSize
 import org.cqfn.diktat.ruleset.rules.chapter3.files.FileStructureRule
@@ -55,7 +72,6 @@ import org.cqfn.diktat.ruleset.rules.chapter6.classes.StatelessClassesRule
 
 import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.RuleSetProvider
-import org.cqfn.diktat.ruleset.rules.chapter3.*
 import org.jetbrains.kotlin.org.jline.utils.Levenshtein
 import org.slf4j.LoggerFactory
 
