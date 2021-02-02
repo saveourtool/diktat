@@ -1,16 +1,16 @@
 package org.cqfn.diktat.ruleset.chapter3
 
-import generated.WarningNames
 import org.cqfn.diktat.common.config.rules.DIKTAT_COMMON
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.chapter3.TrailingCommaRule
 import org.cqfn.diktat.util.FixTestBase
-import org.junit.jupiter.api.Tag
 
+import generated.WarningNames
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class TrailingCommaFixTest: FixTestBase("test/paragraph3/trailing_comma", ::TrailingCommaRule) {
+class TrailingCommaFixTest : FixTestBase("test/paragraph3/trailing_comma", ::TrailingCommaRule) {
     private val config: List<RulesConfig> = listOf(
         RulesConfig(
             Warnings.TRAILING_COMMA.name, true,
