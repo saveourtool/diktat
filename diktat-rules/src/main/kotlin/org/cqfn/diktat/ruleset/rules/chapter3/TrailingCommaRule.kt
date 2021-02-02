@@ -103,7 +103,6 @@ class TrailingCommaRule(private val configRules: List<RulesConfig>) : Rule("trai
     class TrailingCommaConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
         /**
          * @param name parameters name
-         *
          * @return param based on its name
          */
         fun getParam(name: String) = config[name]?.toBoolean() ?: false
