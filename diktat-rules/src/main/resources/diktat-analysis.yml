@@ -237,7 +237,7 @@
     # VALUE_PARAMETER
     valueParameter: false
     # REFERENCE_EXPRESSION
-    referenceExpression: false
+    indices: false
     # WHEN_CONDITION_WITH_EXPRESSION
     whenConditions: false
     # STRING_TEMPLATE

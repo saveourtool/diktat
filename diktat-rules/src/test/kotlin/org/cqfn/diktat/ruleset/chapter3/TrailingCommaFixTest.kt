@@ -16,7 +16,7 @@ class TrailingCommaFixTest : FixTestBase("test/paragraph3/trailing_comma", ::Tra
             Warnings.TRAILING_COMMA.name, true,
             mapOf("valueArgument" to "true",
                 "valueParameter" to "true",
-                "referenceExpression" to "true",
+                "indices" to "true",
                 "whenConditions" to "true",
                 "collectionLiteral" to "true",
                 "typeArgument" to "true",

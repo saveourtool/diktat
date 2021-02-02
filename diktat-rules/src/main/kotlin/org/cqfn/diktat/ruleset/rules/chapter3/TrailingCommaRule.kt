@@ -23,13 +23,17 @@ import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
+import com.pinterest.ktlint.core.ast.ElementType.WHEN_CONDITION_IN_RANGE
+import com.pinterest.ktlint.core.ast.ElementType.WHEN_CONDITION_IS_PATTERN
 import com.pinterest.ktlint.core.ast.ElementType.WHEN_CONDITION_WITH_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.WHEN_ENTRY
 import com.pinterest.ktlint.core.ast.children
+import com.pinterest.ktlint.core.ast.isPartOfComment
+import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
+import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.psi.psiUtil.siblings
-import org.jetbrains.kotlin.utils.addToStdlib.ifNotEmpty
 
 /**
  * [1] Enumerations (In another rule)
@@ -47,6 +51,7 @@ import org.jetbrains.kotlin.utils.addToStdlib.ifNotEmpty
  */
 class TrailingCommaRule(private val configRules: List<RulesConfig>) : Rule("trailing-comma") {
     private var isFixMode: Boolean = false
+    private val commonConfig by configRules.getCommonConfiguration()
     private val configuration by lazy {
         TrailingCommaConfiguration(
             this.configRules.getRuleConfig(TRAILING_COMMA)?.configuration ?: emptyMap()
@@ -62,13 +67,24 @@ class TrailingCommaRule(private val configRules: List<RulesConfig>) : Rule("trai
         emitWarn = emit
         isFixMode = autoCorrect
 
-        val commonConfig by configRules.getCommonConfiguration()
         if (commonConfig.kotlinVersion >= ktVersion) {
             val (type, config) = when (node.elementType) {
                 VALUE_ARGUMENT_LIST -> Pair(VALUE_ARGUMENT, configuration.getParam("valueArgument"))
                 VALUE_PARAMETER_LIST -> Pair(VALUE_PARAMETER, configuration.getParam("valueParameter"))
                 INDICES -> Pair(REFERENCE_EXPRESSION, configuration.getParam("referenceExpression"))
-                WHEN_ENTRY -> Pair(WHEN_CONDITION_WITH_EXPRESSION, configuration.getParam("whenConditions"))
+                WHEN_ENTRY -> {
+                    Pair(when {
+                        node.hasChildOfType(WHEN_CONDITION_WITH_EXPRESSION) -> {
+                            WHEN_CONDITION_WITH_EXPRESSION
+                        }
+                        node.hasChildOfType(WHEN_CONDITION_IS_PATTERN) -> {
+                            WHEN_CONDITION_IS_PATTERN
+                        }
+                        else -> {
+                            WHEN_CONDITION_IN_RANGE
+                        }
+                    } , configuration.getParam("whenConditions"))
+                }
                 COLLECTION_LITERAL_EXPRESSION -> Pair(STRING_TEMPLATE, configuration.getParam("collectionLiteral"))
                 TYPE_ARGUMENT_LIST -> Pair(TYPE_PROJECTION, configuration.getParam("typeArgument"))
                 TYPE_PARAMETER_LIST -> Pair(TYPE_PARAMETER, configuration.getParam("typeParameter"))
@@ -81,14 +97,16 @@ class TrailingCommaRule(private val configRules: List<RulesConfig>) : Rule("trai
             val astNode = node
                 .children()
                 .toList()
-                .ifNotEmpty { this.lastOrNull { it.elementType == type } }
+                .lastOrNull { it.elementType == type }
             astNode?.checkTrailingComma(config)
         }
     }
 
     private fun ASTNode.checkTrailingComma(config: Boolean) {
-        val isNextComma = this.siblings(true).map { it.elementType }.contains(COMMA)
-        if (!isNextComma && config) {
+        val canFix = this.siblings(true).toList().run {
+            !this.map { it.elementType }.contains(COMMA) && this.find { it.isWhiteSpaceWithNewline() || it.isPartOfComment() } != null
+        }
+        if (canFix && config) {
             // we should write type of node in warning, to make it easier for user to find the parameter
             TRAILING_COMMA.warnAndFix(configRules, emitWarn, isFixMode, "after ${this.elementType}: ${this.text}", this.startOffset, this) {
                 val parent = this.treeParent

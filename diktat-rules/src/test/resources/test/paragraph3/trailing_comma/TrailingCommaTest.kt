@@ -5,7 +5,9 @@ class Customer(
     lastName: String
 )
 
-fun shift(x: Int, y: Int) {
+fun shift(x: Int,
+          y: Int
+) {
     shift(
         25,
         20
@@ -18,13 +20,17 @@ fun shift(x: Int, y: Int) {
     )
 }
 
-fun getZValue(mySurface: Surface, xValue: Int, yValue: Int) =
+fun getZValue(mySurface: Surface,
+              xValue: Int,
+              yValue: Int
+) =
     mySurface[
             xValue,
             yValue
     ]
 
-fun isReferenceApplicable(myReference: KClass<*>) = when (myReference) {
+fun isReferenceApplicable(myReference: KClass<*>
+) = when (myReference) {
     Comparable::class,
     Iterable::class,
     String::class
@@ -37,15 +43,20 @@ fun isReferenceApplicable(myReference: KClass<*>) = when (myReference) {
     "balancer",
     "database",
     "inMemoryCache"
-])
+]
+)
 fun foo() {}
 
-fun <T1, T21> foo() {}
+fun <T1,
+        T21
+        > foo() {}
 
 fun mains() {
     foo<
-            Comparable<Number>,
-            Iterable<Number>
+            Comparable<Number
+                    >,
+            Iterable<Number
+                    >
             >()
 }
 

@@ -144,15 +144,13 @@ class TrailingCommaWarnTest : LintTestBase(::TrailingCommaRule) {
                 fun main() {
                     val x = {
                             x: Comparable<Number>,
-                            y: Iterable<Number> // trailing comma
-                        ->
-                        println("1",)
+                            y: Iterable<Number> 
+                            -> println("1",)
                     }
                 
                     println(x,)
                 }
                 """.trimMargin(),
-            LintError(4, 29, ruleId, "${TRAILING_COMMA.warnText()} after VALUE_PARAMETER: y: Iterable<Number>", true),
             rulesConfigList = getRulesConfig("valueParameter")
         )
     }
@@ -169,8 +167,26 @@ class TrailingCommaWarnTest : LintTestBase(::TrailingCommaRule) {
                         -> true
                     else -> false
                 }
+                                
+                fun someFun() {
+                   when (x) {
+                       is Int,
+                       is String
+                            -> print((x as Int).length)
+                       is Long, -> x as Int
+                   }
+               }
+               
+               fun someFun() {
+                   when (x) {
+                       in 1..2
+                        -> foo()
+                   }
+               }
                 """.trimMargin(),
             LintError(4, 21, ruleId, "${TRAILING_COMMA.warnText()} after WHEN_CONDITION_WITH_EXPRESSION: String::class", true),
+            LintError(12, 24, ruleId, "${TRAILING_COMMA.warnText()} after WHEN_CONDITION_IS_PATTERN: is String", true),
+            LintError(20, 24, ruleId, "${TRAILING_COMMA.warnText()} after WHEN_CONDITION_IN_RANGE: in 1..2", true),
             rulesConfigList = getRulesConfig("whenConditions")
         )
     }
@@ -205,11 +221,12 @@ class TrailingCommaWarnTest : LintTestBase(::TrailingCommaRule) {
                 fun main() {
                     foo<
                             Comparable<Number,>,
-                            Iterable<Number> // trailing comma
+                            Iterable<Number
+                            > // trailing comma
                             >()
                 }
                 """.trimMargin(),
-            LintError(6, 29, ruleId, "${TRAILING_COMMA.warnText()} after TYPE_PROJECTION: Iterable<Number>", true),
+            LintError(6, 29, ruleId, "${TRAILING_COMMA.warnText()} after TYPE_PROJECTION: Iterable<Number...", true),
             LintError(6, 38, ruleId, "${TRAILING_COMMA.warnText()} after TYPE_PROJECTION: Number", true),
             rulesConfigList = getRulesConfig("typeArgument")
         )
