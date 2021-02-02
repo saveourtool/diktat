@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.chapter6
 
-import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.RUN_IN_SCRIPT
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter6.RunInScript
@@ -13,11 +12,6 @@ import org.junit.jupiter.api.Test
 
 class RunInScriptWarnTest : LintTestBase(::RunInScript) {
     private val ruleId: String = "$DIKTAT_RULE_SET_ID:run-script"
-    private val rulesConfigList: List<RulesConfig> = listOf(
-        RulesConfig(
-            RUN_IN_SCRIPT.name, true,
-            mapOf("possibleWrapper" to "custom, oneMore"))
-    )
 
     @Test
     @Tag(WarningNames.RUN_IN_SCRIPT)
@@ -29,12 +23,18 @@ class RunInScriptWarnTest : LintTestBase(::RunInScript) {
                 fun foo() {
                 }
                 
-                diktat {
-                }
+                diktat {}
+                
+                diktat({})
+
+                foo/*df*/()
+
+                foo( //dfdg
+                    10
+                )
+                println("hello")
                 
                 w.map { it -> it }
-                
-                println("hello")
                 
                 tasks.register("a") {
                     dependsOn("b")
@@ -44,8 +44,11 @@ class RunInScriptWarnTest : LintTestBase(::RunInScript) {
                 }
                 
             """.trimMargin(),
-            LintError(9, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} w.map { it -> it }", true),
-            LintError(11, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} println(\"hello\")", true),
+            LintError(10, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} foo/*df*/()", true),
+            LintError(12, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} foo( //dfdg...", true),
+            LintError(15, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} println(\"hello\")", true),
+            LintError(17, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} w.map { it -> it }", true),
+            LintError(19, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} tasks.register(\"a\") {...", true),
             fileName = "src/main/kotlin/org/cqfn/diktat/Example.kts"
         )
     }
@@ -61,7 +64,7 @@ class RunInScriptWarnTest : LintTestBase(::RunInScript) {
                 
                 run{println("hello")}
                 
-                tasks.register("a") {
+                val task = tasks.register("a") {
                 }
                 
             """.trimMargin(),
@@ -71,7 +74,7 @@ class RunInScriptWarnTest : LintTestBase(::RunInScript) {
 
     @Test
     @Tag(WarningNames.RUN_IN_SCRIPT)
-    fun `check correct examples witrh config`() {
+    fun `check correct with custom wrapper`() {
         lintMethod(
             """
                 custom {
@@ -84,8 +87,6 @@ class RunInScriptWarnTest : LintTestBase(::RunInScript) {
                     println("hello")
                 }
             """.trimMargin(),
-            LintError(7, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} another {...", true),
-            rulesConfigList = rulesConfigList,
             fileName = "src/main/kotlin/org/cqfn/diktat/Example.kts"
         )
     }
