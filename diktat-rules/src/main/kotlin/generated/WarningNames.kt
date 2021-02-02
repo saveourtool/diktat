@@ -145,6 +145,8 @@ public object WarningNames {
 
     public const val WRONG_NEWLINES: String = "WRONG_NEWLINES"
 
+    public const val TRAILING_COMMA: String = "TRAILING_COMMA"
+
     public const val COMPLEX_EXPRESSION: String = "COMPLEX_EXPRESSION"
 
     public const val STRING_CONCATENATION: String = "STRING_CONCATENATION"
