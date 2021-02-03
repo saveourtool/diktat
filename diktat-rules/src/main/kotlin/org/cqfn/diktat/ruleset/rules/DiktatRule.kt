@@ -7,7 +7,7 @@ import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.utils.log
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
-typealias DiktatConfigRule = org.cqfn.diktat.common.config.rules.Rule
+private typealias DiktatConfigRule = org.cqfn.diktat.common.config.rules.Rule
 
 abstract class DiktatRule(id: String, val configRules: List<RulesConfig>, val rules: List<DiktatConfigRule>): Rule(id) {
     var isFixMode: Boolean = false
@@ -21,7 +21,7 @@ abstract class DiktatRule(id: String, val configRules: List<RulesConfig>, val ru
         else {
             try {
                 logic(node)
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 log.error("Internal error has occurred in $id. Please make an issue on this bug at https://github.com/cqfn/diKTat/.\n Error: ${e.message}")
             }
         }
