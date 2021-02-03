@@ -136,6 +136,11 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
 // ================== utils for List<RulesConfig> from yml config
 
 /**
+ * Get [RulesConfig] representing common configuration part that can be used in any rule
+ */
+private fun List<RulesConfig>.getCommonConfig() = find { it.name == DIKTAT_COMMON }
+
+/**
  * @return common configuration from list of all rules configuration
  */
 fun List<RulesConfig>.getCommonConfiguration() = lazy {
@@ -178,8 +183,3 @@ fun String.kotlinVersion(): KotlinVersion {
         KotlinVersion(versions[0], versions[1], versions[2])
     }
 }
-
-/**
- * Get [RulesConfig] representing common configuration part that can be used in any rule
- */
-private fun List<RulesConfig>.getCommonConfig() = find { it.name == DIKTAT_COMMON }
