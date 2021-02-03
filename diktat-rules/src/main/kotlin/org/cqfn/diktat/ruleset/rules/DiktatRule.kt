@@ -7,6 +7,7 @@ import org.cqfn.diktat.ruleset.utils.log
 
 import com.pinterest.ktlint.core.Rule
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import kotlin.system.exitProcess
 
 private typealias DiktatConfigRule = org.cqfn.diktat.common.config.rules.Rule
 
@@ -20,7 +21,7 @@ private typealias DiktatConfigRule = org.cqfn.diktat.common.config.rules.Rule
 @Suppress("TooGenericExceptionCaught")
 abstract class DiktatRule(id: String,
                           val configRules: List<RulesConfig>,
-                          val rules: List<DiktatConfigRule>) : Rule(id) {
+                          val inspections: List<DiktatConfigRule>) : Rule(id) {
     /**
      * Default value is false
      */
@@ -37,19 +38,20 @@ abstract class DiktatRule(id: String,
         emitWarn = emit
         isFixMode = autoCorrect
 
-        if (areRulesEnabled()) {
+        if (areInspectionsDisabled()) {
             return
         } else {
             try {
                 logic(node)
             } catch (internalError: Throwable) {
                 log.error("Internal error has occurred in $id. Please make an issue on this bug at https://github.com/cqfn/diKTat/.\n Error: ${internalError.message}")
+                exitProcess(1)
             }
         }
     }
 
-    private fun areRulesEnabled(): Boolean =
-            rules.none { configRules.isRuleEnabled(it) }
+    private fun areInspectionsDisabled(): Boolean =
+            inspections.none { configRules.isRuleEnabled(it) }
 
     /**
      * Logic of the rule
