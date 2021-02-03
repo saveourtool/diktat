@@ -27,7 +27,6 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
  */
 class EmptyBlock(configRules: List<RulesConfig>) : DiktatRule("empty-block-structure", configRules, listOf(EMPTY_BLOCK_STRUCTURE_ERROR)) {
     override fun logic(node: ASTNode) {
-
         val configuration = EmptyBlockStyleConfiguration(
             configRules.getRuleConfig(EMPTY_BLOCK_STRUCTURE_ERROR)?.configuration ?: emptyMap()
         )

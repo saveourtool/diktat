@@ -1,15 +1,25 @@
 package org.cqfn.diktat.ruleset.rules
 
-import com.pinterest.ktlint.core.Rule
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.isRuleEnabled
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.utils.log
+
+import com.pinterest.ktlint.core.Rule
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 private typealias DiktatConfigRule = org.cqfn.diktat.common.config.rules.Rule
 
-abstract class DiktatRule(id: String, val configRules: List<RulesConfig>, val rules: List<DiktatConfigRule>): Rule(id) {
+/**
+ * This is a wrapper around Ktlint Rule
+ *
+ * @param id id of the rule
+ * @param configRules all rules from configuration
+ * @param rules warnings that are used in the rule's code
+ */
+abstract class DiktatRule(id: String,
+                          val configRules: List<RulesConfig>,
+                          val rules: List<DiktatConfigRule>) : Rule(id) {
     var isFixMode: Boolean = false
     lateinit var emitWarn: EmitType
 

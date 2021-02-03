@@ -50,8 +50,8 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
  * * Comments in if else should be inside code blocks. Exception: General if comment
  */
 class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule("kdoc-comments-codeblocks-formatting", configRules,
-        listOf(COMMENT_WHITE_SPACE, FIRST_COMMENT_NO_SPACES,
-                IF_ELSE_COMMENTS, WRONG_NEWLINES_AROUND_KDOC)) {
+    listOf(COMMENT_WHITE_SPACE, FIRST_COMMENT_NO_SPACES,
+        IF_ELSE_COMMENTS, WRONG_NEWLINES_AROUND_KDOC)) {
     /**
      * @param node
      * @param autoCorrect
