@@ -1,11 +1,10 @@
 package org.cqfn.diktat.ruleset.rules.chapter5
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.RUN_BLOCKING_INSIDE_ASYNC
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_ARGUMENT
@@ -18,17 +17,10 @@ import org.jetbrains.kotlin.psi.psiUtil.hasSuspendModifier
 /**
  * This rule finds if using runBlocking in asynchronous code
  */
-class AsyncAndSyncRule(private val configRules: List<RulesConfig>) : Rule("sync-in-async") {
+class AsyncAndSyncRule(configRules: List<RulesConfig>) : DiktatRule("sync-in-async", configRules, listOf(RUN_BLOCKING_INSIDE_ASYNC)) {
     private val asyncList = listOf("async", "launch")
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
 
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+    override fun logic(node: ASTNode) {
         if (node.isRunBlocking()) {
             checkRunBlocking(node)
         }

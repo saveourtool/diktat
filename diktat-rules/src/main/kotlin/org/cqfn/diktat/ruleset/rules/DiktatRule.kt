@@ -4,6 +4,7 @@ import com.pinterest.ktlint.core.Rule
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.isRuleEnabled
 import org.cqfn.diktat.ruleset.constants.EmitType
+import org.cqfn.diktat.ruleset.utils.log
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 typealias DiktatConfigRule = org.cqfn.diktat.common.config.rules.Rule
@@ -21,7 +22,7 @@ abstract class DiktatRule(id: String, val configRules: List<RulesConfig>, val ru
             try {
                 logic(node)
             } catch (e: Exception) {
-                // TODO: Specify message
+                log.error("Internal error has occurred in $id. Please make an issue on this bug at https://github.com/cqfn/diKTat/.\n Error: ${e.message}")
             }
         }
     }

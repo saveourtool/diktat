@@ -2,11 +2,10 @@ package org.cqfn.diktat.ruleset.rules.chapter6
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getCommonConfiguration
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.AVOID_USING_UTILITY_CLASS
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
@@ -25,15 +24,8 @@ import org.jetbrains.kotlin.psi.psiUtil.children
 /**
  * Rule 6.4.1 checks that class/object, with a word "util" in its name, has only functions.
  */
-class AvoidUtilityClass(private val configRules: List<RulesConfig>) : Rule("avoid-utility-class") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        emitWarn = emit
-        isFixMode = autoCorrect
+class AvoidUtilityClass(configRules: List<RulesConfig>) : DiktatRule("avoid-utility-class", configRules, listOf(AVOID_USING_UTILITY_CLASS)) {
+    override fun logic(node: ASTNode) {
         val config by configRules.getCommonConfiguration()
         val filePath = node.getRootNode().getFilePath()
         if (!(node.hasTestAnnotation() || isLocatedInTest(filePath.splitPathToDirs(), config.testAnchors))) {

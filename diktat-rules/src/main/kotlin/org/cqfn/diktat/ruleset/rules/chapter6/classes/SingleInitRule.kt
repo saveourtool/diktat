@@ -14,6 +14,8 @@ import com.pinterest.ktlint.core.ast.ElementType.EQ
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.parent
+import org.cqfn.diktat.ruleset.constants.Warnings.MULTIPLE_INIT_BLOCKS
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -26,18 +28,8 @@ import org.jetbrains.kotlin.psi.psiUtil.children
 /**
  * The rule that checks whether a class has a single `init` block or multiple. Having multiple `init` blocks is a bad practice.
  */
-class SingleInitRule(private val configRule: List<RulesConfig>) : Rule("multiple-init-block") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
-    override fun visit(
-        node: ASTNode,
-        autoCorrect: Boolean,
-        emit: EmitType
-    ) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+class SingleInitRule(configRules: List<RulesConfig>) : DiktatRule("multiple-init-block", configRules, listOf(MULTIPLE_INIT_BLOCKS)) {
+    override fun logic(node: ASTNode) {
         when (node.elementType) {
             CLASS_BODY -> handleInitBlocks(node)
             else -> return
@@ -53,7 +45,7 @@ class SingleInitRule(private val configRule: List<RulesConfig>) : Rule("multiple
             .takeIf { it.size > 1 }
             ?.let { initBlocks ->
                 val className = node.treeParent.getIdentifierName()?.text
-                Warnings.MULTIPLE_INIT_BLOCKS.warnAndFix(configRule, emitWarn, isFixMode,
+                MULTIPLE_INIT_BLOCKS.warnAndFix(configRules, emitWarn, isFixMode,
                     "in class <$className> found ${initBlocks.size} `init` blocks", node.startOffset, node) {
                     mergeInitBlocks(initBlocks)
                 }
@@ -107,7 +99,7 @@ class SingleInitRule(private val configRule: List<RulesConfig>) : Rule("multiple
                     }
                     .takeIf { it.isNotEmpty() }
                     ?.let { map ->
-                        Warnings.MULTIPLE_INIT_BLOCKS.warnAndFix(configRule, emitWarn, isFixMode,
+                        MULTIPLE_INIT_BLOCKS.warnAndFix(configRules, emitWarn, isFixMode,
                             "`init` block has assignments that can be moved to declarations", initBlock.startOffset, initBlock
                         ) {
                             map.forEach { (property, assignments) ->

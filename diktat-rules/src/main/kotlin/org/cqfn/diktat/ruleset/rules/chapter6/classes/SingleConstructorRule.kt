@@ -1,15 +1,14 @@
 package org.cqfn.diktat.ruleset.rules.chapter6.classes
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getIdentifierName
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.cqfn.diktat.ruleset.utils.isGoingAfter
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
@@ -34,19 +33,10 @@ import org.jetbrains.kotlin.psi.psiUtil.collectDescendantsOfType
  * This rule ensures that if a class has a single constructor, this constructor is primary.
  * Secondary constructor is converted into primary, statements that are not assignments are moved into an `init` block.
  */
-class SingleConstructorRule(private val config: List<RulesConfig>) : Rule("single-constructor") {
-    private var isFixMode: Boolean = false
+class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule("single-constructor", configRules, listOf(SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY)) {
     private val kotlinParser by lazy { KotlinParser() }
-    private lateinit var emitWarn: EmitType
 
-    override fun visit(
-        node: ASTNode,
-        autoCorrect: Boolean,
-        emit: EmitType
-    ) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+    override fun logic(node: ASTNode) {
         if (node.elementType == CLASS) {
             handleClassConstructors(node)
         }
@@ -61,7 +51,7 @@ class SingleConstructorRule(private val config: List<RulesConfig>) : Rule("singl
                 ?.singleOrNull()
                 ?.let { secondaryCtor ->
                     SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY.warnAndFix(
-                        config, emitWarn, isFixMode, "in class <${node.getIdentifierName()?.text}>",
+                        configRules, emitWarn, isFixMode, "in class <${node.getIdentifierName()?.text}>",
                         node.startOffset, node
                     ) {
                         convertConstructorToPrimary(node, secondaryCtor)

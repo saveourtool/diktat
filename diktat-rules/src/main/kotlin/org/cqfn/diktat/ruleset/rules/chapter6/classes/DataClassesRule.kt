@@ -1,13 +1,12 @@
 package org.cqfn.diktat.ruleset.rules.chapter6.classes
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.USE_DATA_CLASS
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.ABSTRACT_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
@@ -32,16 +31,8 @@ import org.jetbrains.kotlin.psi.KtPrimaryConstructor
 /**
  * This rule checks if class can be made as data class
  */
-class DataClassesRule(private val configRule: List<RulesConfig>) : Rule("data-classes") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+class DataClassesRule(configRules: List<RulesConfig>) : DiktatRule("data-classes", configRules, listOf(USE_DATA_CLASS)) {
+    override fun logic(node: ASTNode) {
         if (node.elementType == CLASS) {
             handleClass(node)
         }
@@ -59,7 +50,7 @@ class DataClassesRule(private val configRule: List<RulesConfig>) : Rule("data-cl
 
     // fixme: Need to know types of vars and props to create data class
     private fun raiseWarn(node: ASTNode) {
-        USE_DATA_CLASS.warn(configRule, emitWarn, isFixMode, "${(node.psi as KtClass).name}", node.startOffset, node)
+        USE_DATA_CLASS.warn(configRules, emitWarn, isFixMode, "${(node.psi as KtClass).name}", node.startOffset, node)
     }
 
     @Suppress("UnsafeCallOnNullableType", "FUNCTION_BOOLEAN_PREFIX", "ComplexMethod")

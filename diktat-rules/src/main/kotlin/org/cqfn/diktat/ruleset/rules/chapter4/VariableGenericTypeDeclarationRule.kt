@@ -1,11 +1,10 @@
 package org.cqfn.diktat.ruleset.rules.chapter4
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
-import org.cqfn.diktat.ruleset.constants.Warnings
+import org.cqfn.diktat.ruleset.constants.Warnings.GENERIC_VARIABLE_WRONG_DECLARATION
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
@@ -22,16 +21,9 @@ import org.jetbrains.kotlin.psi.KtProperty
  * Recommended: val myVariable: Map<Int, String> = emptyMap()
  */
 // FIXME: we now don't have access to return types, so we can perform this check only if explicit type is present, but should be able also if it's not.
-class VariableGenericTypeDeclarationRule(private val configRules: List<RulesConfig>) : Rule("variable-generic-type") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+class VariableGenericTypeDeclarationRule(configRules: List<RulesConfig>) : DiktatRule("variable-generic-type", configRules,
+        listOf(GENERIC_VARIABLE_WRONG_DECLARATION)) {
+    override fun logic(node: ASTNode) {
         when (node.elementType) {
             PROPERTY, VALUE_PARAMETER -> handleProperty(node)
             else -> {
@@ -63,14 +55,14 @@ class VariableGenericTypeDeclarationRule(private val configRules: List<RulesConf
         if ((rightSide != null && leftSide != null) &&
                 rightSide.size == leftSide.size &&
                 rightSide.zip(leftSide).all { (first, second) -> first.text == second.text }) {
-            Warnings.GENERIC_VARIABLE_WRONG_DECLARATION.warnAndFix(configRules, emitWarn, isFixMode,
+            GENERIC_VARIABLE_WRONG_DECLARATION.warnAndFix(configRules, emitWarn, isFixMode,
                 "type arguments are unnecessary in ${callExpr.text}", node.startOffset, node) {
                 callExpr.removeChild(callExpr.findChildByType(TYPE_ARGUMENT_LIST)!!)
             }
         }
 
         if (leftSide == null && rightSide != null) {
-            Warnings.GENERIC_VARIABLE_WRONG_DECLARATION.warn(configRules, emitWarn, isFixMode, node.text, node.startOffset, node)
+            GENERIC_VARIABLE_WRONG_DECLARATION.warn(configRules, emitWarn, isFixMode, node.text, node.startOffset, node)
         }
     }
 }
