@@ -7,37 +7,6 @@ package org.cqfn.diktat.ruleset.utils
 
 internal typealias LineAndColumn = Pair<Int, Int>
 
-/**
- * Calculate position in text - line and column based on offset from the text start.
- *
- * @param text a piece of text
- * @return mapping function from offset to line and column number
- */
-internal fun buildPositionInTextLocator(text: String): (offset: Int) -> LineAndColumn {
-    val textLength = text.length
-    val identifierArray: ArrayList<Int> = ArrayList()
-    var endOfLineIndex = -1
-
-    do {
-        identifierArray.add(endOfLineIndex + 1)
-        endOfLineIndex = text.indexOf('\n', endOfLineIndex + 1)
-    } while (endOfLineIndex != -1)
-
-    identifierArray.add(textLength + if (identifierArray.last() == textLength) 1 else 0)
-
-    val segmentTree = SegmentTree(identifierArray.toIntArray())
-
-    return { offset ->
-        val line = segmentTree.indexOf(offset)
-        if (line != -1) {
-            val column = offset - segmentTree.get(line).left
-            line + 1 to column + 1
-        } else {
-            1 to 1
-        }
-    }
-}
-
 @Suppress("MISSING_KDOC_ON_FUNCTION", "KDOC_WITHOUT_PARAM_TAG", "KDOC_WITHOUT_RETURN_TAG")
 private class SegmentTree(sortedArray: IntArray) {
     private val segments: List<Segment> = sortedArray
@@ -80,3 +49,34 @@ private data class Segment(
     val left: Int,
     val right: Int
 )
+
+/**
+ * Calculate position in text - line and column based on offset from the text start.
+ *
+ * @param text a piece of text
+ * @return mapping function from offset to line and column number
+ */
+internal fun buildPositionInTextLocator(text: String): (offset: Int) -> LineAndColumn {
+    val textLength = text.length
+    val identifierArray: ArrayList<Int> = ArrayList()
+    var endOfLineIndex = -1
+
+    do {
+        identifierArray.add(endOfLineIndex + 1)
+        endOfLineIndex = text.indexOf('\n', endOfLineIndex + 1)
+    } while (endOfLineIndex != -1)
+
+    identifierArray.add(textLength + if (identifierArray.last() == textLength) 1 else 0)
+
+    val segmentTree = SegmentTree(identifierArray.toIntArray())
+
+    return { offset ->
+        val line = segmentTree.indexOf(offset)
+        if (line != -1) {
+            val column = offset - segmentTree.get(line).left
+            line + 1 to column + 1
+        } else {
+            1 to 1
+        }
+    }
+}

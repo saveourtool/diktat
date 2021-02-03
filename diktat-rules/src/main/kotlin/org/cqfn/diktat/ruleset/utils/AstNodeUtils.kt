@@ -58,6 +58,18 @@ import org.slf4j.LoggerFactory
 val log: Logger = LoggerFactory.getLogger(ASTNode::class.java)
 
 /**
+ * A class that represents result of nodes swapping. [oldNodes] should always have same size as [newNodes]
+ *
+ * @property oldNodes nodes that were to be moved
+ * @property newNodes nodes that have been moved
+ */
+data class ReplacementResult(val oldNodes: List<ASTNode>, val newNodes: List<ASTNode>) {
+    init {
+        require(oldNodes.size == newNodes.size)
+    }
+}
+
+/**
  * @return the highest parent node of the tree
  */
 fun ASTNode.getRootNode() = if (isRoot()) this else parents().last()
@@ -704,19 +716,6 @@ fun ASTNode.hasTestAnnotation() = findChildByType(MODIFIER_LIST)
     ?.any { it.findLeafWithSpecificType(ElementType.IDENTIFIER)?.text == "Test" }
     ?: false
 
-/**
- * Checks node is located in file src/test/**/*Test.kt
- *
- * @param testAnchors names of test directories, e.g. "test", "jvmTest"
- */
-fun isLocatedInTest(filePathParts: List<String>, testAnchors: List<String>) = filePathParts
-    .takeIf { it.contains(PackageNaming.PACKAGE_PATH_ANCHOR) }
-    ?.run { subList(lastIndexOf(PackageNaming.PACKAGE_PATH_ANCHOR), size) }
-    ?.run {
-        // e.g. src/test/ClassTest.kt, other files like src/test/Utils.kt are still checked
-        testAnchors.any { contains(it) } && last().substringBeforeLast('.').endsWith("Test")
-    }
-    ?: false
 
 /**
  * Returns the first line of this node's text if it is single, or the first line followed by [suffix] if there are more than one.
@@ -743,18 +742,6 @@ fun ASTNode.calculateLineColByOffset() = buildPositionInTextLocator(text)
 fun ASTNode.getFilePath(): String = getUserData(KtLint.FILE_PATH_USER_DATA_KEY).let {
     requireNotNull(it) { "File path is not present in user data" }
     it
-}
-
-/**
- * A class that represents result of nodes swapping. [oldNodes] should always have same size as [newNodes]
- *
- * @property oldNodes nodes that were to be moved
- * @property newNodes nodes that have been moved
- */
-data class ReplacementResult(val oldNodes: List<ASTNode>, val newNodes: List<ASTNode>) {
-    init {
-        require(oldNodes.size == newNodes.size)
-    }
 }
 
 /**
@@ -800,6 +787,20 @@ private fun ASTNode.calculateLineNumber() = getRootNode()
         require(it >= 0) { "Cannot calculate line number correctly, node's offset $startOffset is greater than file length ${getRootNode().textLength}" }
         it + 1
     }
+
+/**
+ * Checks node is located in file src/test/**/*Test.kt
+ *
+ * @param testAnchors names of test directories, e.g. "test", "jvmTest"
+ */
+fun isLocatedInTest(filePathParts: List<String>, testAnchors: List<String>) = filePathParts
+    .takeIf { it.contains(PackageNaming.PACKAGE_PATH_ANCHOR) }
+    ?.run { subList(lastIndexOf(PackageNaming.PACKAGE_PATH_ANCHOR), size) }
+    ?.run {
+        // e.g. src/test/ClassTest.kt, other files like src/test/Utils.kt are still checked
+        testAnchors.any { contains(it) } && last().substringBeforeLast('.').endsWith("Test")
+    }
+    ?: false
 
 /**
  * Count number of lines in code block. Note: only *copy* of a node should be passed to this method, because the method changes the node.

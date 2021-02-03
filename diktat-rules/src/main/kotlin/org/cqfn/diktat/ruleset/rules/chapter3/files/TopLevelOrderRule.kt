@@ -37,21 +37,24 @@ class TopLevelOrderRule(private val configRules: List<RulesConfig>) : Rule("top-
         emitWarn = emit
         isFixMode = autoCorrect
 
-        if (node.elementType == FILE)
+        if (node.elementType == FILE) {
             checkNode(node)
+        }
     }
 
     @Suppress("UnsafeCallOnNullableType")
     private fun checkNode(node: ASTNode) {
         val children = node.getChildren(null)
         val ownOrder = children.filter { it.elementType in sortedType }
-        if (ownOrder.isEmpty())
+        if (ownOrder.isEmpty()) {
             return
+        }
         val properties = Properties(children.filter { it.elementType == PROPERTY }).sortElements()
-        val functions = children.filter { it.elementType == FUN}
-        val classes = children.filter { it.elementType == CLASS}
+        val functions = children.filter { it.elementType == FUN }
+        val classes = children.filter { it.elementType == CLASS }
         val sortOrder = Blocks(properties, functions, classes).sortElements().map { astNode ->
-            Pair(astNode, astNode.siblings(false).takeWhile { it.elementType == WHITE_SPACE || it.isPartOfComment() }.toList()) }
+            Pair(astNode, astNode.siblings(false).takeWhile { it.elementType == WHITE_SPACE || it.isPartOfComment() }.toList())
+        }
         val lastNonSortedChildren = ownOrder.last().siblings(true).toList()
         sortOrder.filterIndexed { index, pair -> ownOrder[index] != pair.first }
             .forEach { listOfChildren ->
@@ -63,7 +66,7 @@ class TopLevelOrderRule(private val configRules: List<RulesConfig>) : Rule("top-
                         bodyChild.second.reversed().map { node.addChild(it, null) }
                         node.addChild(bodyChild.first, null)
                     }
-                    lastNonSortedChildren.map { node.addChild(it, null)}
+                    lastNonSortedChildren.map { node.addChild(it, null) }
                 }
             }
     }
@@ -74,6 +77,8 @@ class TopLevelOrderRule(private val configRules: List<RulesConfig>) : Rule("top-
     interface Elements {
         /**
          * Method to sort children
+         *
+         * @return sorted mutable list
          */
         fun sortElements(): MutableList<ASTNode>
     }
@@ -81,12 +86,12 @@ class TopLevelOrderRule(private val configRules: List<RulesConfig>) : Rule("top-
     /**
      * Class containing different groups of properties in file
      */
-    private class Properties(private val properties: List<ASTNode>): Elements {
+    private data class Properties(private val properties: List<ASTNode>) : Elements {
         override fun sortElements(): MutableList<ASTNode> {
             val constValProperties = properties.filter { it.isConstant() }
             val valProperties = properties.filter { it.isValProperty() && !it.isConstant() }
             val lateinitProperties = properties.filter { it.isLateInit() }
-            val varProperties = properties.filter { it.isVarProperty()  && !it.isLateInit()}
+            val varProperties = properties.filter { it.isVarProperty() && !it.isLateInit() }
             return listOf(constValProperties, valProperties, lateinitProperties, varProperties).flatten().toMutableList()
         }
     }
@@ -94,16 +99,15 @@ class TopLevelOrderRule(private val configRules: List<RulesConfig>) : Rule("top-
     /**
      * Class containing different children in file
      */
-    class Blocks(
+    private data class Blocks(
         private val properties: List<ASTNode>,
         private val functions: List<ASTNode>,
-        private val classes: List<ASTNode>): Elements {
-
+        private val classes: List<ASTNode>) : Elements {
         override fun sortElements(): MutableList<ASTNode> {
             val (extensionFun, nonExtensionFun) = functions.partition { (it.psi as KtFunction).isExtensionDeclaration() }
             return (properties + listOf(classes, extensionFun, nonExtensionFun).map { nodes ->
                 val (privatePart, notPrivatePart) = nodes.partition { it.hasModifier(PRIVATE_KEYWORD) }
-                val (protectedPart, notProtectedPart ) = notPrivatePart.partition { it.hasModifier(PROTECTED_KEYWORD) || it.hasModifier(OVERRIDE_KEYWORD) }
+                val (protectedPart, notProtectedPart) = notPrivatePart.partition { it.hasModifier(PROTECTED_KEYWORD) || it.hasModifier(OVERRIDE_KEYWORD) }
                 val (internalPart, publicPart) = notProtectedPart.partition { it.hasModifier(INTERNAL_KEYWORD) }
                 listOf(publicPart, internalPart, protectedPart, privatePart).flatten()
             }.flatten()).toMutableList()

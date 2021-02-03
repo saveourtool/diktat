@@ -10,8 +10,7 @@ import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-class TopLevelOrderRuleWarnTest: LintTestBase(::TopLevelOrderRule) {
-
+class TopLevelOrderRuleWarnTest : LintTestBase(::TopLevelOrderRule) {
     private val ruleId = "$DIKTAT_RULE_SET_ID:top-level-order"
 
     @Test
