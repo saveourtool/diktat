@@ -1,4 +1,4 @@
-@file:Suppress("FILE_NAME_MATCH_CLASS", "MatchingDeclarationName")
+@file:Suppress("FILE_NAME_MATCH_CLASS")
 
 package org.cqfn.diktat.ruleset.utils
 
@@ -7,6 +7,7 @@ import com.google.common.base.CaseFormat
 /**
  * Available cases to name enum members
  */
+@Suppress("MatchingDeclarationName")
 enum class Style {
     PASCAL_CASE,
     SNAKE_CASE,
