@@ -17,6 +17,7 @@ private typealias DiktatConfigRule = org.cqfn.diktat.common.config.rules.Rule
  * @property configRules all rules from configuration
  * @property rules warnings that are used in the rule's code
  */
+@Suppress("TooGenericExceptionCaught")
 abstract class DiktatRule(id: String,
                           val configRules: List<RulesConfig>,
                           val rules: List<DiktatConfigRule>) : Rule(id) {
