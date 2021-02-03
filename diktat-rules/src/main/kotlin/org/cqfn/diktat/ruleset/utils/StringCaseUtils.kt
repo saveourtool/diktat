@@ -7,6 +7,7 @@ import com.google.common.base.CaseFormat
 /**
  * Available cases to name enum members
  */
+@Suppress("MatchingDeclarationName")
 enum class Style {
     PASCAL_CASE,
     SNAKE_CASE,
@@ -154,7 +155,7 @@ fun String.toPascalCase(): String = when {
  * @return index of first character which is a letter or a digit
  */
 private fun String.getFirstLetterOrDigit() =
-    indexOfFirst { it.isLetterOrDigit() }
+        indexOfFirst { it.isLetterOrDigit() }
 
 private fun convertUnknownCaseToCamel(str: String, isFirstLetterCapital: Boolean): String {
     // [p]a[SC]a[_]l -> [P]a[Sc]a[L]

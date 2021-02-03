@@ -716,7 +716,6 @@ fun ASTNode.hasTestAnnotation() = findChildByType(MODIFIER_LIST)
     ?.any { it.findLeafWithSpecificType(ElementType.IDENTIFIER)?.text == "Test" }
     ?: false
 
-
 /**
  * Returns the first line of this node's text if it is single, or the first line followed by [suffix] if there are more than one.
  *
