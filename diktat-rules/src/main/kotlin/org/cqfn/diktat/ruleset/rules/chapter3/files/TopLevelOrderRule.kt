@@ -12,7 +12,7 @@ import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.INTERNAL_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
-import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
+import com.pinterest.ktlint.core.ast.ElementType.OVERRIDE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PRIVATE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.PROTECTED_KEYWORD
@@ -104,10 +104,9 @@ class TopLevelOrderRule(private val configRules: List<RulesConfig>) : Rule("top-
         override fun sortElements(): MutableList<ASTNode> {
             val (extensionFun, nonExtensionFun) = functions.partition { (it.psi as KtFunction).isExtensionDeclaration() }
             return (properties + listOf(classes, extensionFun, nonExtensionFun).map { nodes ->
-                val privatePart = nodes.filter { it.hasModifier(PRIVATE_KEYWORD) }
-                val protectedPart = nodes.filter { it.hasModifier(PROTECTED_KEYWORD) }
-                val internalPart = nodes.filter { it.hasModifier(INTERNAL_KEYWORD) || it.findChildByType(MODIFIER_LIST) == null }
-                val publicPart = nodes.filter { it.hasModifier(PUBLIC_KEYWORD) }
+                val (privatePart, notPrivatePart) = nodes.partition { it.hasModifier(PRIVATE_KEYWORD) }
+                val (protectedPart, notProtectedPart ) = notPrivatePart.partition { it.hasModifier(PROTECTED_KEYWORD) || it.hasModifier(OVERRIDE_KEYWORD) }
+                val (internalPart, publicPart) = notProtectedPart.partition { it.hasModifier(INTERNAL_KEYWORD) }
                 listOf(privatePart, protectedPart, internalPart, publicPart).flatten()
             }.flatten()).toMutableList()
         }
