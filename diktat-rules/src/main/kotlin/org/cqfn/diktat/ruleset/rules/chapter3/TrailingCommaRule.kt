@@ -31,6 +31,7 @@ import com.pinterest.ktlint.core.ast.ElementType.WHEN_ENTRY
 import com.pinterest.ktlint.core.ast.children
 import com.pinterest.ktlint.core.ast.isPartOfComment
 import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
+import org.cqfn.diktat.ruleset.utils.log
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.psi.psiUtil.siblings
@@ -53,10 +54,9 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
 class TrailingCommaRule(private val configRules: List<RulesConfig>) : Rule("trailing-comma") {
     private var isFixMode: Boolean = false
     private val commonConfig by configRules.getCommonConfiguration()
+    private val trailingConfig = this.configRules.getRuleConfig(TRAILING_COMMA)?.configuration ?: emptyMap()
     private val configuration by lazy {
-        TrailingCommaConfiguration(
-            this.configRules.getRuleConfig(TRAILING_COMMA)?.configuration ?: emptyMap()
-        )
+        TrailingCommaConfiguration(trailingConfig)
     }
     private lateinit var emitWarn: EmitType
 
@@ -69,15 +69,22 @@ class TrailingCommaRule(private val configRules: List<RulesConfig>) : Rule("trai
         isFixMode = autoCorrect
 
         if (commonConfig.kotlinVersion >= ktVersion) {
+            if (trailingConfig.isEmpty()){
+                log.warn("You have enabled TRAILING_COMMA, but rule will remain inactive until you explicitly set" +
+                        " configuration options. See [available-rules.md] for possible configuration options.")
+            }
             val (type, config) = when (node.elementType) {
                 VALUE_ARGUMENT_LIST -> Pair(VALUE_ARGUMENT, configuration.getParam("valueArgument"))
                 VALUE_PARAMETER_LIST -> Pair(VALUE_PARAMETER, configuration.getParam("valueParameter"))
                 INDICES -> Pair(REFERENCE_EXPRESSION, configuration.getParam("referenceExpression"))
-                WHEN_ENTRY -> Pair(when {
-                    node.hasChildOfType(WHEN_CONDITION_WITH_EXPRESSION) -> WHEN_CONDITION_WITH_EXPRESSION
-                    node.hasChildOfType(WHEN_CONDITION_IS_PATTERN) -> WHEN_CONDITION_IS_PATTERN
-                    else -> WHEN_CONDITION_IN_RANGE
-                }, configuration.getParam("whenConditions"))
+                WHEN_ENTRY -> {
+                    val lastChildType = node
+                        .children()
+                        .toList()
+                        .findLast { it.elementType in whenChildrenTypes }
+                        ?.elementType
+                    Pair(lastChildType, configuration.getParam("whenConditions"))
+                }
                 COLLECTION_LITERAL_EXPRESSION -> Pair(STRING_TEMPLATE, configuration.getParam("collectionLiteral"))
                 TYPE_ARGUMENT_LIST -> Pair(TYPE_PROJECTION, configuration.getParam("typeArgument"))
                 TYPE_PARAMETER_LIST -> Pair(TYPE_PARAMETER, configuration.getParam("typeParameter"))
@@ -96,10 +103,10 @@ class TrailingCommaRule(private val configRules: List<RulesConfig>) : Rule("trai
     }
 
     private fun ASTNode.checkTrailingComma(config: Boolean) {
-        val canFix = this.siblings(true).toList().run {
+        val shouldFix = this.siblings(true).toList().run {
             !this.map { it.elementType }.contains(COMMA) && this.find { it.isWhiteSpaceWithNewline() || it.isPartOfComment() } != null
         }
-        if (canFix && config) {
+        if (shouldFix && config) {
             // we should write type of node in warning, to make it easier for user to find the parameter
             TRAILING_COMMA.warnAndFix(configRules, emitWarn, isFixMode, "after ${this.elementType}: ${this.text}", this.startOffset, this) {
                 val parent = this.treeParent
@@ -121,5 +128,6 @@ class TrailingCommaRule(private val configRules: List<RulesConfig>) : Rule("trai
 
     companion object {
         val ktVersion = KotlinVersion(1, 4)
+        val whenChildrenTypes = listOf(WHEN_CONDITION_WITH_EXPRESSION, WHEN_CONDITION_IS_PATTERN, WHEN_CONDITION_IN_RANGE)
     }
 }
