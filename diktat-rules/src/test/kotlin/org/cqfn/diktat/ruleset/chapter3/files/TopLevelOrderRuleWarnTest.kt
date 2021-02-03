@@ -23,8 +23,8 @@ class TopLevelOrderRuleWarnTest: LintTestBase(::TopLevelOrderRule) {
                 |val topLevelProperty = "String constant"
                 |lateinit var q: String
                 |fun String.foo() {}
-                |private fun qwe() {}
                 |fun foo() {}
+                |private fun gio() {}
             """.trimMargin()
         )
     }

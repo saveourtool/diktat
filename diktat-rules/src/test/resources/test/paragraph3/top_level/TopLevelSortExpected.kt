@@ -10,6 +10,6 @@ class Qwe() {}
 
 fun String.qq() {}
 
-private fun foo() {}
-
 internal fun kl() {}
+
+private fun foo() {}

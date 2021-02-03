@@ -11,12 +11,10 @@ import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.INTERNAL_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.OVERRIDE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PRIVATE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.PROTECTED_KEYWORD
-import com.pinterest.ktlint.core.ast.ElementType.PUBLIC_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isPartOfComment
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -107,7 +105,7 @@ class TopLevelOrderRule(private val configRules: List<RulesConfig>) : Rule("top-
                 val (privatePart, notPrivatePart) = nodes.partition { it.hasModifier(PRIVATE_KEYWORD) }
                 val (protectedPart, notProtectedPart ) = notPrivatePart.partition { it.hasModifier(PROTECTED_KEYWORD) || it.hasModifier(OVERRIDE_KEYWORD) }
                 val (internalPart, publicPart) = notProtectedPart.partition { it.hasModifier(INTERNAL_KEYWORD) }
-                listOf(privatePart, protectedPart, internalPart, publicPart).flatten()
+                listOf(publicPart, internalPart, protectedPart, privatePart).flatten()
             }.flatten()).toMutableList()
         }
     }
