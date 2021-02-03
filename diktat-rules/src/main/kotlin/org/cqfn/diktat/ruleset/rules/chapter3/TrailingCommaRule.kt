@@ -55,6 +55,10 @@ class TrailingCommaRule(private val configRules: List<RulesConfig>) : Rule("trai
     private val commonConfig by configRules.getCommonConfiguration()
     private val trailingConfig = this.configRules.getRuleConfig(TRAILING_COMMA)?.configuration ?: emptyMap()
     private val configuration by lazy {
+        if (trailingConfig.isEmpty()) {
+            log.warn("You have enabled TRAILING_COMMA, but rule will remain inactive until you explicitly set" +
+                    " configuration options. See [available-rules.md] for possible configuration options.")
+        }
         TrailingCommaConfiguration(trailingConfig)
     }
     private lateinit var emitWarn: EmitType
@@ -68,10 +72,6 @@ class TrailingCommaRule(private val configRules: List<RulesConfig>) : Rule("trai
         isFixMode = autoCorrect
 
         if (commonConfig.kotlinVersion >= ktVersion) {
-            if (trailingConfig.isEmpty()) {
-                log.warn("You have enabled TRAILING_COMMA, but rule will remain inactive until you explicitly set" +
-                        " configuration options. See [available-rules.md] for possible configuration options.")
-            }
             val (type, config) = when (node.elementType) {
                 VALUE_ARGUMENT_LIST -> Pair(VALUE_ARGUMENT, configuration.getParam("valueArgument"))
                 VALUE_PARAMETER_LIST -> Pair(VALUE_PARAMETER, configuration.getParam("valueParameter"))
