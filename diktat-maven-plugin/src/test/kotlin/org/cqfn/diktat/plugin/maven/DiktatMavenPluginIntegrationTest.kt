@@ -31,7 +31,7 @@ class DiktatMavenPluginIntegrationTest {
 
         val mavenLog = result.mavenLog.stdout.readText()
         Assertions.assertTrue(
-            mavenLog.contains("[HEADER_MISSING_OR_WRONG_COPYRIGHT]")
+            mavenLog.contains("[FILE_NAME_MATCH_CLASS]")
         )
 
         File(result.mavenProjectResult.baseDir, "target/jacoco-it.exec").copyTo(

@@ -4,6 +4,8 @@
     # put your package name here - it will be autofixed and checked
     domainName: your.name.here
     testDirs: test
+    disabledChapters: ""
+    kotlinVersion: "1.4.21"
 # Checks that the Class/Enum/Interface name does not match Pascal case
 - name: CLASS_NAME_INCORRECT
   enabled: true
@@ -114,6 +116,8 @@
 # Checks that kdoc does not contain @author tag or date
 - name: KDOC_CONTAINS_DATE_OR_AUTHOR
   enabled: true
+  configuration:
+    versionRegex: \d+\.\d+\.\d+[-.\w\d]*
 # Checks that KDoc does not contain single line with words 'return', 'get' or 'set'
 - name: KDOC_TRIVIAL_KDOC_ON_FUNCTION
   enabled: true
@@ -127,7 +131,7 @@
 - name: HEADER_MISSING_OR_WRONG_COPYRIGHT
   enabled: true
   configuration:
-    isCopyrightMandatory: true
+    isCopyrightMandatory: false
     copyrightText: 'Copyright (c) Your Company Name Here. 2010-2021'
 # Checks that header kdoc is located before package directive
 - name: HEADER_NOT_BEFORE_PACKAGE
@@ -163,6 +167,11 @@
   configuration:
     allowedWildcards: "" # Allowed wildcards for imports (e.g. "import org.cqfn.diktat.*, import org.jetbrains.kotlin.*")
     useRecommendedImportsOrder: true
+# Checks unused imports
+- name: UNUSED_IMPORT
+  enabled: true
+  configuration:
+    deleteUnusedImport: true
 # Checks that braces are used in if, else, when, for, do, and while statements. Exception: single line if statement
 - name: NO_BRACES_IN_CONDITIONALS_AND_LOOPS
   enabled: true
@@ -227,6 +236,9 @@
     maxSpaces: '1'
     # Whether formatting for enums should be kept without checking
     saveInitialFormattingForEnums: false
+# Inspection that checks if a long dot qualified expression is used in condition or as an argument
+- name: COMPLEX_EXPRESSION
+  enabled: true
 # Checks that blank lines are used correctly.
 # For example: triggers when there are too many blank lines between function declaration
 - name: TOO_MANY_BLANK_LINES
@@ -345,8 +357,19 @@
 # Checks that function use default values, instead overloading
 - name: WRONG_OVERLOADING_FUNCTION_ARGUMENTS
   enabled: true
+# Checks that using runBlocking inside async block code
+- name: RUN_BLOCKING_INSIDE_ASYNC
+  enabled: true
 # Checks that property in constructor doesn't contain comment
 - name: KDOC_NO_CONSTRUCTOR_PROPERTY
+  enabled: true
+# Checks that the long lambda has parameters
+- name: TOO_MANY_LINES_IN_LAMBDA
+  enabled: true
+  configuration:
+    maxLambdaLength: 10 # max length of lambda without parameters
+# Checks that using unnecessary, custom label
+- name: CUSTOM_LABEL
   enabled: true
 # Checks that property in KDoc present in class
 - name: KDOC_EXTRA_PROPERTY
@@ -408,4 +431,13 @@
   enabled: true
 # If there is stateless class it is preferred to use object
 - name: OBJECT_IS_PREFERRED
+  enabled: true
+# If there exists negated version of function you should prefer it instead of !functionCall
+- name: INVERSE_FUNCTION_PREFERRED
+  enabled: true
+# Checks if class can be converted to inline class
+- name: INLINE_CLASS_CAN_BE_USED
+  enabled: true
+# If file contains class, then it can't contain extension functions for the same class
+- name: EXTENSION_FUNCTION_WITH_CLASS
   enabled: true
