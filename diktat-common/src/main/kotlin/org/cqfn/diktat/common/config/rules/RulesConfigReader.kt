@@ -5,6 +5,7 @@
 package org.cqfn.diktat.common.config.rules
 
 import org.cqfn.diktat.common.config.reader.JsonResourceConfigReader
+import org.cqfn.diktat.common.config.rules.RulesConfigReader.Companion.log
 
 import com.charleskorn.kaml.Yaml
 import com.charleskorn.kaml.YamlConfiguration
@@ -117,6 +118,16 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
     }
 
     /**
+     * Get version of kotlin from configuration
+     */
+    val kotlinVersion: KotlinVersion by lazy {
+        configuration?.get("kotlinVersion")?.kotlinVersion() ?: run {
+            log.error("Kotlin version not specified in the configuration file. Will be using ${KotlinVersion.CURRENT} version")
+            KotlinVersion.CURRENT
+        }
+    }
+
+    /**
      * False if configuration has been read from config file, true if defaults are used
      */
     val isDefault = configuration == null
@@ -149,6 +160,23 @@ fun List<RulesConfig>.getRuleConfig(rule: Rule): RulesConfig? = this.find { it.n
 fun List<RulesConfig>.isRuleEnabled(rule: Rule): Boolean {
     val ruleMatched = getRuleConfig(rule)
     return ruleMatched?.enabled ?: true
+}
+
+/**
+ * Parse string into KotlinVersion
+ *
+ * @return KotlinVersion from configuration
+ */
+fun String.kotlinVersion(): KotlinVersion {
+    require(this.contains("^(\\d+\\.)(\\d+)\\.?(\\d+)?$".toRegex())) {
+        "Kotlin version format is incorrect"
+    }
+    val versions = this.split(".").map { it.toInt() }
+    return if (versions.size == 2) {
+        KotlinVersion(versions[0], versions[1])
+    } else {
+        KotlinVersion(versions[0], versions[1], versions[2])
+    }
 }
 
 /**

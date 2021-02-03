@@ -10,6 +10,8 @@ typealias EmitType = ((offset: Int, errorMessage: String, canBeAutoCorrected: Bo
 
 typealias ListOfList = MutableList<MutableList<ASTNode>>
 
+typealias ListOfPairs = MutableList<Pair<ASTNode, String>>
+
 /**
  * This class represent individual inspections of diktat code style.
  * A [Warnings] entry contains rule name, warning message and is used in code check.

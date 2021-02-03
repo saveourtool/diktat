@@ -34,7 +34,7 @@ class DiktatGradlePluginGroovyFunctionalTest {
         requireNotNull(diktatCheckBuildResult)
         Assertions.assertEquals(TaskOutcome.FAILED, diktatCheckBuildResult.outcome)
         Assertions.assertTrue(
-            result.output.contains("[HEADER_MISSING_OR_WRONG_COPYRIGHT]")
+            result.output.contains("[FILE_NAME_MATCH_CLASS]")
         )
     }
 }
