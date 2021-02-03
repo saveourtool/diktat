@@ -6,7 +6,7 @@ import org.cqfn.diktat.common.config.rules.getCommonConfiguration
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.TRAILING_COMMA
-import org.cqfn.diktat.ruleset.utils.hasChildOfType
+import org.cqfn.diktat.ruleset.utils.log
 
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.COLLECTION_LITERAL_EXPRESSION
@@ -31,7 +31,6 @@ import com.pinterest.ktlint.core.ast.ElementType.WHEN_ENTRY
 import com.pinterest.ktlint.core.ast.children
 import com.pinterest.ktlint.core.ast.isPartOfComment
 import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
-import org.cqfn.diktat.ruleset.utils.log
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.psi.psiUtil.siblings
@@ -69,7 +68,7 @@ class TrailingCommaRule(private val configRules: List<RulesConfig>) : Rule("trai
         isFixMode = autoCorrect
 
         if (commonConfig.kotlinVersion >= ktVersion) {
-            if (trailingConfig.isEmpty()){
+            if (trailingConfig.isEmpty()) {
                 log.warn("You have enabled TRAILING_COMMA, but rule will remain inactive until you explicitly set" +
                         " configuration options. See [available-rules.md] for possible configuration options.")
             }
