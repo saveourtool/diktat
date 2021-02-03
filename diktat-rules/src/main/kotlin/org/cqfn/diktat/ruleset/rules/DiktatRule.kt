@@ -20,25 +20,24 @@ private typealias DiktatConfigRule = org.cqfn.diktat.common.config.rules.Rule
 abstract class DiktatRule(id: String,
                           val configRules: List<RulesConfig>,
                           val rules: List<DiktatConfigRule>) : Rule(id) {
+    /**
+     * Default value is false
+     */
     var isFixMode: Boolean = false
+    /**
+     * Will be initialized in visit
+     */
     lateinit var emitWarn: EmitType
 
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
                        emit: EmitType) {
-        /**
-         * Emit warn
-         */
         emitWarn = emit
-        /**
-         * Does rule has fix mode
-         */
         isFixMode = autoCorrect
 
         if (areRulesEnabled()) {
             return
-        }
-        else {
+        } else {
             try {
                 logic(node)
             } catch (e: Throwable) {
@@ -48,7 +47,7 @@ abstract class DiktatRule(id: String,
     }
 
     private fun areRulesEnabled(): Boolean =
-        rules.none { configRules.isRuleEnabled(it) }
+            rules.none { configRules.isRuleEnabled(it) }
 
     /**
      * Logic of the rule
