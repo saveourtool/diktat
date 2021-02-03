@@ -90,13 +90,6 @@ open class RulesConfigReader(override val classLoader: ClassLoader) : JsonResour
 }
 
 /**
- * @return common configuration from list of all rules configuration
- */
-fun List<RulesConfig>.getCommonConfiguration() = lazy {
-    CommonConfiguration(getCommonConfig()?.configuration)
-}
-
-/**
  * class returns the list of common configurations that we have read from a configuration map
  *
  * @param configuration map of common configuration
@@ -132,17 +125,19 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
 // ================== utils for List<RulesConfig> from yml config
 
 /**
+ * @return common configuration from list of all rules configuration
+ */
+fun List<RulesConfig>.getCommonConfiguration() = lazy {
+    CommonConfiguration(getCommonConfig()?.configuration)
+}
+
+/**
  * Get [RulesConfig] for particular [Rule] object.
  *
  * @param rule a [Rule] which configuration will be returned
  * @return [RulesConfig] for a particular rule if it is found, else null
  */
 fun List<RulesConfig>.getRuleConfig(rule: Rule): RulesConfig? = this.find { it.name == rule.ruleName() }
-
-/**
- * Get [RulesConfig] representing common configuration part that can be used in any rule
- */
-private fun List<RulesConfig>.getCommonConfig() = find { it.name == DIKTAT_COMMON }
 
 /**
  * checking if in yml config particular rule is enabled or disabled
@@ -155,3 +150,8 @@ fun List<RulesConfig>.isRuleEnabled(rule: Rule): Boolean {
     val ruleMatched = getRuleConfig(rule)
     return ruleMatched?.enabled ?: true
 }
+
+/**
+ * Get [RulesConfig] representing common configuration part that can be used in any rule
+ */
+private fun List<RulesConfig>.getCommonConfig() = find { it.name == DIKTAT_COMMON }
