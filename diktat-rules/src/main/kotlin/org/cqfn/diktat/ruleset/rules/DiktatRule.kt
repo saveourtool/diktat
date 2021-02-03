@@ -24,6 +24,7 @@ abstract class DiktatRule(id: String,
      * Default value is false
      */
     var isFixMode: Boolean = false
+
     /**
      * Will be initialized in visit
      */
