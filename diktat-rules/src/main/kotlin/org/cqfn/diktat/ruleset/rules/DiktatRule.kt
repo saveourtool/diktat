@@ -41,8 +41,8 @@ abstract class DiktatRule(id: String,
         } else {
             try {
                 logic(node)
-            } catch (e: Throwable) {
-                log.error("Internal error has occurred in $id. Please make an issue on this bug at https://github.com/cqfn/diKTat/.\n Error: ${e.message}")
+            } catch (internalError: Throwable) {
+                log.error("Internal error has occurred in $id. Please make an issue on this bug at https://github.com/cqfn/diKTat/.\n Error: ${internalError.message}")
             }
         }
     }
