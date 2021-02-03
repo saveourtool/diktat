@@ -14,8 +14,8 @@ private typealias DiktatConfigRule = org.cqfn.diktat.common.config.rules.Rule
  * This is a wrapper around Ktlint Rule
  *
  * @param id id of the rule
- * @param configRules all rules from configuration
- * @param rules warnings that are used in the rule's code
+ * @property configRules all rules from configuration
+ * @property rules warnings that are used in the rule's code
  */
 abstract class DiktatRule(id: String,
                           val configRules: List<RulesConfig>,
@@ -23,11 +23,21 @@ abstract class DiktatRule(id: String,
     var isFixMode: Boolean = false
     lateinit var emitWarn: EmitType
 
-    override fun visit(node: ASTNode, autoCorrect: Boolean, emit: EmitType) {
+    override fun visit(node: ASTNode,
+                       autoCorrect: Boolean,
+                       emit: EmitType) {
+        /**
+         * Emit warn
+         */
         emitWarn = emit
+        /**
+         * Does rule has fix mode
+         */
         isFixMode = autoCorrect
 
-        if (check()) return
+        if (areRulesEnabled()) {
+            return
+        }
         else {
             try {
                 logic(node)
@@ -37,8 +47,13 @@ abstract class DiktatRule(id: String,
         }
     }
 
-    private fun check(): Boolean {
-        return rules.none { configRules.isRuleEnabled(it) }
-    }
+    private fun areRulesEnabled(): Boolean =
+        rules.none { configRules.isRuleEnabled(it) }
+
+    /**
+     * Logic of the rule
+     *
+     * @param node node that are coming from visit
+     */
     abstract fun logic(node: ASTNode)
 }
