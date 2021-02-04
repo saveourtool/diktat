@@ -504,6 +504,23 @@ fun foo(
 }
  ```
 
+same should be done for function calls/constructor arguments/e.t.c
+
+Kotlin supports trailing commas in the following cases:
+
+Enumerations
+Value arguments
+Class properties and parameters
+Function value parameters
+Parameters with optional type (including setters)
+Indexing suffix
+Lambda parameters
+when entry
+Collection literals (in annotations)
+Type arguments
+Type parameters
+Destructuring declarations
+
 8) If the supertype list has more than two elements, they should be separated by newlines.
 
 **Valid example:** 

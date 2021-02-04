@@ -99,6 +99,7 @@ enum class Warnings(
     LONG_LINE(true, "3.5.1", "this line is longer than allowed"),
     REDUNDANT_SEMICOLON(true, "3.6.2", "there should be no redundant semicolon at the end of lines"),
     WRONG_NEWLINES(true, "3.6.2", "incorrect line breaking"),
+    TRAILING_COMMA(true, "3.6.2", "use trailing comma"),
     COMPLEX_EXPRESSION(false, "3.6.3", "complex dot qualified expression should be replaced with variable"),
 
     // FixMe: autofixing will be added for this rule

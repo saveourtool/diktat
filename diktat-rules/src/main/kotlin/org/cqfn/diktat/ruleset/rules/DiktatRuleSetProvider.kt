@@ -28,6 +28,7 @@ import org.cqfn.diktat.ruleset.rules.chapter3.SingleLineStatementsRule
 import org.cqfn.diktat.ruleset.rules.chapter3.SortRule
 import org.cqfn.diktat.ruleset.rules.chapter3.StringConcatenationRule
 import org.cqfn.diktat.ruleset.rules.chapter3.StringTemplateFormatRule
+import org.cqfn.diktat.ruleset.rules.chapter3.TrailingCommaRule
 import org.cqfn.diktat.ruleset.rules.chapter3.WhenMustHaveElseRule
 import org.cqfn.diktat.ruleset.rules.chapter3.files.BlankLinesRule
 import org.cqfn.diktat.ruleset.rules.chapter3.files.FileSize
@@ -167,6 +168,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
             ::AvoidUtilityClass,
             ::PropertyAccessorFields,
             ::AbstractClassesRule,
+            ::TrailingCommaRule,
             ::SingleInitRule,
             ::CustomLabel,
             ::VariableGenericTypeDeclarationRule,
