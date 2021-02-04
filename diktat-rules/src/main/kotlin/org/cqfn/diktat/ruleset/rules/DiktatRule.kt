@@ -16,7 +16,7 @@ private typealias DiktatConfigRule = org.cqfn.diktat.common.config.rules.Rule
  *
  * @param id id of the rule
  * @property configRules all rules from configuration
- * @property rules warnings that are used in the rule's code
+ * @property inspections warnings that are used in the rule's code
  */
 @Suppress("TooGenericExceptionCaught")
 abstract class DiktatRule(id: String,
@@ -44,7 +44,8 @@ abstract class DiktatRule(id: String,
             try {
                 logic(node)
             } catch (internalError: Throwable) {
-                log.error("Internal error has occurred in $id. Please make an issue on this bug at https://github.com/cqfn/diKTat/.\n Error: ${internalError.message}")
+                log.error("Internal error has occurred in $id. Please make an issue on this bug at https://github.com/cqfn/diKTat/.", internalError)
+                log.error("As a workaround you can disable these inspections in yml config: $inspections")
                 exitProcess(1)
             }
         }
