@@ -3,14 +3,13 @@ package org.cqfn.diktat.ruleset.rules.chapter3.files
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.ListOfList
 import org.cqfn.diktat.ruleset.constants.Warnings.COMPLEX_EXPRESSION
 import org.cqfn.diktat.ruleset.constants.Warnings.REDUNDANT_SEMICOLON
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_NEWLINES
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.ANDAND
 import com.pinterest.ktlint.core.ast.ElementType.ARROW
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
@@ -99,19 +98,11 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
  * 10. Complex expression inside condition replaced with new variable
  */
 @Suppress("ForbiddenComment")
-class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines") {
+class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule("newlines", configRules, listOf(COMPLEX_EXPRESSION, REDUNDANT_SEMICOLON, WRONG_NEWLINES)) {
     private val configuration by lazy {
         NewlinesRuleConfiguration(configRules.getRuleConfig(WRONG_NEWLINES)?.configuration ?: emptyMap())
     }
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        isFixMode = autoCorrect
-        emitWarn = emit
-
+    override fun logic(node: ASTNode) {
         when (node.elementType) {
             SEMICOLON -> handleSemicolon(node)
             OPERATION_REFERENCE, EQ -> handleOperatorWithLineBreakAfter(node)

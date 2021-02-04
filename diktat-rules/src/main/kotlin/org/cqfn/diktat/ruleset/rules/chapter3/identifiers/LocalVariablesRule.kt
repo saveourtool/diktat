@@ -1,8 +1,8 @@
 package org.cqfn.diktat.ruleset.rules.chapter3.identifiers
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.LOCAL_VARIABLE_EARLY_DECLARATION
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.containsOnlyConstants
 import org.cqfn.diktat.ruleset.utils.getDeclarationScope
 import org.cqfn.diktat.ruleset.utils.getLineNumber
@@ -10,7 +10,6 @@ import org.cqfn.diktat.ruleset.utils.lastLineNumber
 import org.cqfn.diktat.ruleset.utils.numNewLines
 import org.cqfn.diktat.ruleset.utils.search.findAllVariablesWithUsages
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isPartOfComment
@@ -38,16 +37,8 @@ import org.jetbrains.kotlin.psi.psiUtil.startOffset
  * * Only properties without initialization or initialized with expressions based on constants are supported.
  * * Properties initialized with constructor calls cannot be distinguished from method call and are no supported.
  */
-class LocalVariablesRule(private val configRules: List<RulesConfig>) : Rule("local-variables") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+class LocalVariablesRule(configRules: List<RulesConfig>) : DiktatRule("local-variables", configRules, listOf(LOCAL_VARIABLE_EARLY_DECLARATION)) {
+    override fun logic(node: ASTNode) {
         if (node.elementType == FILE) {
             // collect all local properties and associate with corresponding references
             val propertiesToUsages = collectLocalPropertiesWithUsages(node)

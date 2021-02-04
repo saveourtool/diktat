@@ -4,11 +4,10 @@ import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getCommonConfiguration
 import org.cqfn.diktat.common.config.rules.getRuleConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.TRAILING_COMMA
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.log
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.COLLECTION_LITERAL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.COMMA
 import com.pinterest.ktlint.core.ast.ElementType.DESTRUCTURING_DECLARATION
@@ -50,8 +49,7 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
  * [12] Destructuring declarations
  */
 @Suppress("TOO_LONG_FUNCTION")
-class TrailingCommaRule(private val configRules: List<RulesConfig>) : Rule("trailing-comma") {
-    private var isFixMode: Boolean = false
+class TrailingCommaRule(configRules: List<RulesConfig>) : DiktatRule("trailing-comma", configRules, listOf(TRAILING_COMMA)) {
     private val commonConfig by configRules.getCommonConfiguration()
     private val trailingConfig = this.configRules.getRuleConfig(TRAILING_COMMA)?.configuration ?: emptyMap()
     private val configuration by lazy {
@@ -61,16 +59,8 @@ class TrailingCommaRule(private val configRules: List<RulesConfig>) : Rule("trai
         }
         TrailingCommaConfiguration(trailingConfig)
     }
-    private lateinit var emitWarn: EmitType
 
-    override fun visit(
-        node: ASTNode,
-        autoCorrect: Boolean,
-        emit: EmitType
-    ) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+    override fun logic(node: ASTNode) {
         if (commonConfig.kotlinVersion >= ktVersion) {
             val (type, config) = when (node.elementType) {
                 VALUE_ARGUMENT_LIST -> Pair(VALUE_ARGUMENT, configuration.getParam("valueArgument"))

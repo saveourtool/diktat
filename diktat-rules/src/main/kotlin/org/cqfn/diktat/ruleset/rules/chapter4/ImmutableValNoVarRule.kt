@@ -1,12 +1,11 @@
 package org.cqfn.diktat.ruleset.rules.chapter4
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.SAY_NO_TO_VAR
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.search.findAllVariablesWithAssignments
 import org.cqfn.diktat.ruleset.utils.search.findAllVariablesWithUsages
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtBlockExpression
@@ -20,16 +19,8 @@ import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
  * because `var` variables can be reassigned several times in the business logic. Of course, in some scenarios with loops or accumulators only `var`s can be used and are allowed.
  * FixMe: here we should also raise warnings for a reassignment of a var (if var has no assignments except in declaration - it can be final)
  */
-class ImmutableValNoVarRule(private val configRules: List<RulesConfig>) : Rule("no-var-rule") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+class ImmutableValNoVarRule(configRules: List<RulesConfig>) : DiktatRule("no-var-rule", configRules, listOf(SAY_NO_TO_VAR)) {
+    override fun logic(node: ASTNode) {
         if (node.elementType == ElementType.FILE) {
             // we will raise warning for cases when var property has no assignments
             val varNoAssignments = node

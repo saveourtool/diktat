@@ -1,13 +1,12 @@
 package org.cqfn.diktat.ruleset.rules.chapter6
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
-import org.cqfn.diktat.ruleset.constants.Warnings
+import org.cqfn.diktat.ruleset.constants.Warnings.EXTENSION_FUNCTION_WITH_CLASS
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.FUN
@@ -21,16 +20,9 @@ import org.jetbrains.kotlin.psi.KtFunction
 /**
  * This rule checks if there are any extension functions for the class in the same file, where it is defined
  */
-class ExtensionFunctionsInFileRule(private val configRules: List<RulesConfig>) : Rule("extension-functions-class-file") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+class ExtensionFunctionsInFileRule(configRules: List<RulesConfig>) : DiktatRule("extension-functions-class-file", configRules,
+    listOf(EXTENSION_FUNCTION_WITH_CLASS)) {
+    override fun logic(node: ASTNode) {
         if (node.elementType == ElementType.FILE) {
             val classNames = collectAllClassNames(node)
 
@@ -48,7 +40,7 @@ class ExtensionFunctionsInFileRule(private val configRules: List<RulesConfig>) :
     }
 
     private fun fireWarning(node: ASTNode) {
-        Warnings.EXTENSION_FUNCTION_WITH_CLASS.warn(configRules, emitWarn, isFixMode, "fun ${(node.psi as KtFunction).name}", node.startOffset, node)
+        EXTENSION_FUNCTION_WITH_CLASS.warn(configRules, emitWarn, isFixMode, "fun ${(node.psi as KtFunction).name}", node.startOffset, node)
     }
 
     private fun collectAllExtensionFunctionsWithSameClassName(node: ASTNode, classNames: List<String>): List<ASTNode> =

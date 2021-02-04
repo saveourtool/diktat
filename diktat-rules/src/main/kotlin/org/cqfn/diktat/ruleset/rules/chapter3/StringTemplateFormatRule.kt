@@ -2,11 +2,12 @@ package org.cqfn.diktat.ruleset.rules.chapter3
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
-import org.cqfn.diktat.ruleset.constants.Warnings
+import org.cqfn.diktat.ruleset.constants.Warnings.STRING_TEMPLATE_CURLY_BRACES
+import org.cqfn.diktat.ruleset.constants.Warnings.STRING_TEMPLATE_QUOTES
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.hasAnyChildOfTypes
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.ARRAY_ACCESS_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CLOSING_QUOTE
 import com.pinterest.ktlint.core.ast.ElementType.FLOAT_CONSTANT
@@ -27,16 +28,9 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
  *
  * FixMe: The important caveat here: in "$foo" kotlin compiler adds implicit call to foo.toString() in case foo type is not string.
  */
-class StringTemplateFormatRule(private val configRules: List<RulesConfig>) : Rule("string-template-format") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+class StringTemplateFormatRule(configRules: List<RulesConfig>) : DiktatRule("string-template-format", configRules,
+    listOf(STRING_TEMPLATE_CURLY_BRACES, STRING_TEMPLATE_QUOTES)) {
+    override fun logic(node: ASTNode) {
         when (node.elementType) {
             LONG_STRING_TEMPLATE_ENTRY -> handleLongStringTemplate(node)
             SHORT_STRING_TEMPLATE_ENTRY -> handleShortStringTemplate(node)
@@ -49,7 +43,7 @@ class StringTemplateFormatRule(private val configRules: List<RulesConfig>) : Rul
     private fun handleLongStringTemplate(node: ASTNode) {
         // Checking if in long templates {a.foo()} there are function calls or class toString call
         if (bracesCanBeOmitted(node)) {
-            Warnings.STRING_TEMPLATE_CURLY_BRACES.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
+            STRING_TEMPLATE_CURLY_BRACES.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
                 val identifierName = node.findChildByType(REFERENCE_EXPRESSION)
                 identifierName?.let {
                     val shortTemplate = CompositeElement(SHORT_STRING_TEMPLATE_ENTRY)
@@ -76,7 +70,7 @@ class StringTemplateFormatRule(private val configRules: List<RulesConfig>) : Rul
         val identifierName = node.findChildByType(REFERENCE_EXPRESSION)?.text
 
         if (identifierName != null && node.treeParent.text.trim('"', '$') == identifierName) {
-            Warnings.STRING_TEMPLATE_QUOTES.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
+            STRING_TEMPLATE_QUOTES.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
                 val identifier = node.findChildByType(REFERENCE_EXPRESSION)!!.copyElement()
                 // node.treeParent is String template that we need to delete
                 node.treeParent.treeParent.addChild(identifier, node.treeParent)

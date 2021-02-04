@@ -2,12 +2,12 @@ package org.cqfn.diktat.ruleset.rules.chapter2.kdoc
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getCommonConfiguration
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_TRIVIAL_KDOC_ON_FUNCTION
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_PARAM_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_RETURN_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_THROWS_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_ON_FUNCTION
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
@@ -30,7 +30,6 @@ import org.cqfn.diktat.ruleset.utils.kDocTags
 import org.cqfn.diktat.ruleset.utils.parameterNames
 import org.cqfn.diktat.ruleset.utils.splitPathToDirs
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.CALLABLE_REFERENCE_EXPRESSION
@@ -66,21 +65,15 @@ import org.jetbrains.kotlin.psi.psiUtil.referenceExpression
  * Currently only `throw` keyword from this methods body is supported for `@throws` check.
  */
 @Suppress("ForbiddenComment")
-class KdocMethods(private val configRules: List<RulesConfig>) : Rule("kdoc-methods") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
+class KdocMethods(configRules: List<RulesConfig>) : DiktatRule("kdoc-methods", configRules,
+    listOf(KDOC_TRIVIAL_KDOC_ON_FUNCTION, KDOC_WITHOUT_PARAM_TAG, KDOC_WITHOUT_RETURN_TAG,
+        KDOC_WITHOUT_THROWS_TAG, MISSING_KDOC_ON_FUNCTION)) {
     /**
      * @param node
      * @param autoCorrect
      * @param emit
      */
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        isFixMode = autoCorrect
-        emitWarn = emit
-
+    override fun logic(node: ASTNode) {
         if (node.elementType == FUN && node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside() && !node.isOverridden()) {
             val config = configRules.getCommonConfiguration().value
             val filePath = node.getRootNode().getFilePath()
