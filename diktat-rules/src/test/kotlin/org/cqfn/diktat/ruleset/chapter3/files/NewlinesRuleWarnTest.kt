@@ -645,6 +645,34 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
 
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
+    fun `should not raise warning on value arguments`() {
+        lintMethod(
+            """
+                |class SomeRule(configRules: List<Int>) : Rule("id", 
+                |configRules, 
+                |listOf("foo", "baz")) {
+                |
+                |}
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
+    fun `should raise warning on value arguments`() {
+        lintMethod(
+            """
+                |class SomeRule(configRules: List<Int>) : Rule("id", configRules, listOf("foo", "baz")) {
+                |
+                |}
+            """.trimMargin(),
+            LintError(1, 46, ruleId, "${WRONG_NEWLINES.warnText()} first value argument (\"id\") should be placed on the new line or all other parameters should be aligned with it", true),
+            LintError(1, 46, ruleId, "${WRONG_NEWLINES.warnText()} value arguments should be placed on different lines", true),
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
     fun `should suggest newlines in a long supertype list`() {
         lintMethod(
             """

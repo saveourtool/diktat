@@ -23,6 +23,7 @@ import com.pinterest.ktlint.core.ast.ElementType.COLON
 import com.pinterest.ktlint.core.ast.ElementType.COLONCOLON
 import com.pinterest.ktlint.core.ast.ElementType.COMMA
 import com.pinterest.ktlint.core.ast.ElementType.CONDITION
+import com.pinterest.ktlint.core.ast.ElementType.CONSTRUCTOR_CALLEE
 import com.pinterest.ktlint.core.ast.ElementType.DIV
 import com.pinterest.ktlint.core.ast.ElementType.DIVEQ
 import com.pinterest.ktlint.core.ast.ElementType.DOT
@@ -58,6 +59,7 @@ import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS
 import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.SECONDARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.SEMICOLON
+import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_CALL_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_LIST
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
@@ -78,6 +80,7 @@ import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtParameterList
 import org.jetbrains.kotlin.psi.KtSuperTypeList
+import org.jetbrains.kotlin.psi.KtValueArgumentList
 import org.jetbrains.kotlin.psi.psiUtil.children
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.siblings
@@ -117,7 +120,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
             COMMA -> handleComma(node)
             BLOCK -> handleLambdaBody(node)
             RETURN -> handleReturnStatement(node)
-            SUPER_TYPE_LIST, VALUE_PARAMETER_LIST -> handleList(node)
+            SUPER_TYPE_LIST, VALUE_PARAMETER_LIST, VALUE_ARGUMENT_LIST -> handleList(node)
             else -> {
             }
         }
@@ -314,9 +317,15 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
             return
         }
 
+        if (node.elementType == VALUE_ARGUMENT_LIST && node.treePrev.elementType != CONSTRUCTOR_CALLEE) {
+            // check that it is not listOf(1,2,3...)
+            return
+        }
+
         val (numEntries, entryType) = when (node.elementType) {
             VALUE_PARAMETER_LIST -> (node.psi as KtParameterList).parameters.size to "value parameters"
             SUPER_TYPE_LIST -> (node.psi as KtSuperTypeList).entries.size to "supertype list entries"
+            VALUE_ARGUMENT_LIST -> (node.psi as KtValueArgumentList).arguments.size to "value arguments"
             else -> {
                 log.warn("Unexpected node element type ${node.elementType}")
                 return
@@ -325,6 +334,7 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         if (numEntries > configuration.maxParametersInOneLine) {
             when (node.elementType) {
                 VALUE_PARAMETER_LIST -> handleFirstValueParameter(node)
+                VALUE_ARGUMENT_LIST -> handleFirstValueArgument(node)
                 else -> {
                 }
             }
@@ -351,6 +361,25 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
             }
         }
 
+    private fun handleFirstValueArgument(node: ASTNode) = node
+            .children()
+            .takeWhile { !it.textContains('\n') }
+            .filter { it.elementType == VALUE_ARGUMENT }
+            .toList()
+            .takeIf { it.size > 1 }
+            ?.let {  list ->
+                WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, "first value argument (${list.first().text}) should be placed on the new line " +
+                        "or all other parameters should be aligned with it",
+                        node.startOffset, node) {
+                    node.appendNewlineMergingWhiteSpace(
+                            list.first()
+                                    .treePrev
+                                    .takeIf { it.elementType == WHITE_SPACE },
+                            list.first()
+                    )
+                }
+            }
+
     private fun handleValueParameterList(node: ASTNode, entryType: String) = node
         .children()
         .filter {
@@ -360,8 +389,13 @@ class NewlinesRule(private val configRules: List<RulesConfig>) : Rule("newlines"
         .toList()
         .takeIf { it.isNotEmpty() }
         ?.let { invalidCommas ->
+            val warnText = if (node.getParentIdentifier() != null) {
+                "$entryType should be placed on different lines in declaration of <${node.getParentIdentifier()}>"
+            } else {
+                "$entryType should be placed on different lines"
+            }
             WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
-                "$entryType should be placed on different lines in declaration of <${node.getParentIdentifier()}>", node.startOffset, node) {
+                warnText, node.startOffset, node) {
                 invalidCommas.forEach { comma ->
                     val nextWhiteSpace = comma.treeNext.takeIf { it.elementType == WHITE_SPACE }
                     comma.appendNewlineMergingWhiteSpace(nextWhiteSpace, nextWhiteSpace?.treeNext ?: comma.treeNext)
