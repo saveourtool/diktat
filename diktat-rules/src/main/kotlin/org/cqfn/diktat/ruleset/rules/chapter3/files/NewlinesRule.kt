@@ -308,7 +308,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule("newlines", conf
             return
         }
 
-        if (node.elementType == VALUE_ARGUMENT_LIST && node.treePrev.elementType != CONSTRUCTOR_CALLEE) {
+        if (node.elementType == VALUE_ARGUMENT_LIST && !node.hasParent(SUPER_TYPE_LIST)) {
             // check that it is not listOf(1,2,3...)
             return
         }
