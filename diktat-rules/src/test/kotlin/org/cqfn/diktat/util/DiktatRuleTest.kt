@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test
 
 class DiktatRuleTest : LintTestBase(::ClassLikeStructuresOrderRule) {
     private val ruleId = "$DIKTAT_RULE_SET_ID:class-like-structures"
-
     private val codeTemplate = """
         |class Example {
         |   private val FOO = 42
@@ -20,15 +19,13 @@ class DiktatRuleTest : LintTestBase(::ClassLikeStructuresOrderRule) {
         |   private val some = 2
         |}
     """.trimMargin()
-
     private val rulesConfigAllDisabled = listOf(
-            RulesConfig(BLANK_LINE_BETWEEN_PROPERTIES.name, enabled = false),
-            RulesConfig(WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.name, enabled = false)
+        RulesConfig(BLANK_LINE_BETWEEN_PROPERTIES.name, enabled = false),
+        RulesConfig(WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.name, enabled = false)
     )
-
     private val rulesConfigOneRuleIsEnabled = listOf(
-            RulesConfig(BLANK_LINE_BETWEEN_PROPERTIES.name, enabled = true),
-            RulesConfig(WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.name, enabled = false)
+        RulesConfig(BLANK_LINE_BETWEEN_PROPERTIES.name, enabled = true),
+        RulesConfig(WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.name, enabled = false)
     )
 
     @Test
@@ -39,7 +36,7 @@ class DiktatRuleTest : LintTestBase(::ClassLikeStructuresOrderRule) {
     @Test
     fun `check that if one inspection is enabled then rule will run`() {
         lintMethod(codeTemplate,
-            LintError(4, 4 , ruleId, "${BLANK_LINE_BETWEEN_PROPERTIES.warnText()} some", true),
+            LintError(4, 4, ruleId, "${BLANK_LINE_BETWEEN_PROPERTIES.warnText()} some", true),
             rulesConfigList = rulesConfigOneRuleIsEnabled
         )
     }
