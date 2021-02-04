@@ -1,8 +1,8 @@
 package org.cqfn.diktat.ruleset.rules.chapter4
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.SMART_CAST_NEEDED
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
@@ -12,7 +12,6 @@ import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.cqfn.diktat.ruleset.utils.hasParent
 import org.cqfn.diktat.ruleset.utils.search.findAllVariablesWithUsages
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_WITH_TYPE
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
@@ -40,16 +39,8 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
 /**
  * Rule that detects redundant explicit casts
  */
-class SmartCastRule(private val configRules: List<RulesConfig>) : Rule("smart-cast-rule") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+class SmartCastRule(configRules: List<RulesConfig>) : DiktatRule("smart-cast-rule", configRules, listOf(SMART_CAST_NEEDED)) {
+    override fun logic(node: ASTNode) {
         if (node.elementType == FILE) {
             val usages = collectLocalPropertiesWithUsages(node)
             val properMap = collectReferenceList(usages)

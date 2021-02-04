@@ -1,14 +1,13 @@
 package org.cqfn.diktat.ruleset.rules.chapter6.classes
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
-import org.cqfn.diktat.ruleset.constants.Warnings
+import org.cqfn.diktat.ruleset.constants.Warnings.OBJECT_IS_PREFERRED
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.FILE
@@ -28,16 +27,8 @@ import org.jetbrains.kotlin.psi.KtClass
 /**
  * This rule checks if class is stateless and if so changes it to object.
  */
-class StatelessClassesRule(private val configRule: List<RulesConfig>) : Rule("stateless-class") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+class StatelessClassesRule(configRules: List<RulesConfig>) : DiktatRule("stateless-class", configRules, listOf(OBJECT_IS_PREFERRED)) {
+    override fun logic(node: ASTNode) {
         // Fixme: We should find interfaces in all project and then check them
         if (node.elementType == FILE) {
             val interfacesNodes = node
@@ -53,7 +44,7 @@ class StatelessClassesRule(private val configRule: List<RulesConfig>) : Rule("st
     @Suppress("UnsafeCallOnNullableType")
     private fun handleClass(node: ASTNode, interfaces: List<ASTNode>) {
         if (isClassExtendsValidInterface(node, interfaces) && isStatelessClass(node)) {
-            Warnings.OBJECT_IS_PREFERRED.warnAndFix(configRule, emitWarn, isFixMode,
+            OBJECT_IS_PREFERRED.warnAndFix(configRules, emitWarn, isFixMode,
                 "class ${(node.psi as KtClass).name!!}", node.startOffset, node) {
                 val newObjectNode = CompositeElement(OBJECT_DECLARATION)
                 node.treeParent.addChild(newObjectNode, node)

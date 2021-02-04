@@ -1,11 +1,10 @@
 package org.cqfn.diktat.ruleset.rules.chapter4
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.AVOID_NULL_CHECKS
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CONDITION
@@ -27,16 +26,8 @@ import org.jetbrains.kotlin.psi.KtIfExpression
  * This rule check and fixes explicit null checks (explicit comparison with `null`)
  * There are several code-structures that can be used in Kotlin to avoid null-checks. For example: `?:`,  `.let {}`, `.also {}`, e.t.c
  */
-class NullChecksRule(private val configRules: List<RulesConfig>) : Rule("null-checks") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule("null-checks", configRules, listOf(AVOID_NULL_CHECKS)) {
+    override fun logic(node: ASTNode) {
         if (node.elementType == CONDITION) {
             node.parent(IF)?.let {
                 // excluding complex cases with else-if statements, because they look better with explicit null-check

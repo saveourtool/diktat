@@ -3,7 +3,6 @@ package org.cqfn.diktat.ruleset.rules.chapter1
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.BACKTICKS_PROHIBITED
 import org.cqfn.diktat.ruleset.constants.Warnings.CLASS_NAME_INCORRECT
 import org.cqfn.diktat.ruleset.constants.Warnings.CONFUSING_IDENTIFIER_NAMING
@@ -18,6 +17,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.OBJECT_NAME_INCORRECT
 import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_HAS_PREFIX
 import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_NAME_INCORRECT
 import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_NAME_INCORRECT_FORMAT
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.Style
 import org.cqfn.diktat.ruleset.utils.containsOneLetterOrZero
 import org.cqfn.diktat.ruleset.utils.findChildAfter
@@ -42,7 +42,6 @@ import org.cqfn.diktat.ruleset.utils.toLowerCamelCase
 import org.cqfn.diktat.ruleset.utils.toPascalCase
 import org.cqfn.diktat.ruleset.utils.toUpperSnakeCase
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.CATCH
 import com.pinterest.ktlint.core.ast.ElementType.CATCH_KEYWORD
@@ -80,7 +79,11 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  * // FixMe: because it fixes only declaration without the usages
  */
 @Suppress("ForbiddenComment", "MISSING_KDOC_CLASS_ELEMENTS")
-class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("identifier-naming") {
+class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule("identifier-naming", configRules,
+    listOf(BACKTICKS_PROHIBITED, VARIABLE_NAME_INCORRECT, VARIABLE_NAME_INCORRECT_FORMAT, CONSTANT_UPPERCASE,
+        VARIABLE_HAS_PREFIX, CONFUSING_IDENTIFIER_NAMING, GENERIC_NAME, CLASS_NAME_INCORRECT,
+        ENUM_VALUE, EXCEPTION_SUFFIX, FUNCTION_BOOLEAN_PREFIX, FUNCTION_NAME_INCORRECT_CASE,
+        IDENTIFIER_LENGTH, OBJECT_NAME_INCORRECT)) {
     private val allMethodPrefixes by lazy {
         if (configuration.allowedBooleanPrefixes.isNullOrEmpty()) {
             booleanMethodPrefixes
@@ -93,17 +96,10 @@ class IdentifierNaming(private val configRules: List<RulesConfig>) : Rule("ident
             this.configRules.getRuleConfig(FUNCTION_BOOLEAN_PREFIX)?.configuration ?: emptyMap()
         )
     }
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
 
-    override fun visit(
-        node: ASTNode,
-        autoCorrect: Boolean,
-        emit: EmitType
+    override fun logic(
+        node: ASTNode
     ) {
-        isFixMode = autoCorrect
-        emitWarn = emit
-
         // backticks are prohibited for identifier declarations everywhere except test methods that are marked with @Test annotation
         if (isIdentifierWithBackticks(node)) {
             return

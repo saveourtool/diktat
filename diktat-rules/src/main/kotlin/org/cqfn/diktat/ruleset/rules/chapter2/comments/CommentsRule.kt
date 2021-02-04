@@ -1,12 +1,11 @@
 package org.cqfn.diktat.ruleset.rules.chapter2.comments
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.ListOfPairs
 import org.cqfn.diktat.ruleset.constants.Warnings.COMMENTED_OUT_CODE
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.FILE
@@ -24,18 +23,10 @@ import org.jetbrains.kotlin.resolve.ImportPath
  * No commented out code is allowed, including imports.
  */
 @Suppress("ForbiddenComment")
-class CommentsRule(private val configRules: List<RulesConfig>) : Rule("comments") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
+class CommentsRule(configRules: List<RulesConfig>) : DiktatRule("comments", configRules, listOf(COMMENTED_OUT_CODE)) {
     private lateinit var ktPsiFactory: KtPsiFactory
 
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType
-    ) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+    override fun logic(node: ASTNode) {
         ktPsiFactory = KtPsiFactory(node.psi.project, false)  // regarding markGenerated see KDoc in Kotlin sources
         if (node.elementType == FILE) {
             checkCommentedCode(node)

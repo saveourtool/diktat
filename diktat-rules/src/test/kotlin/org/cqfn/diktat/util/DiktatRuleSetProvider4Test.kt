@@ -45,6 +45,6 @@ class DiktatRuleSetProviderTest {
     }
 
     companion object {
-        private val ignoreFile = listOf("DiktatRuleSetProvider")
+        private val ignoreFile = listOf("DiktatRuleSetProvider", "DiktatRule")
     }
 }

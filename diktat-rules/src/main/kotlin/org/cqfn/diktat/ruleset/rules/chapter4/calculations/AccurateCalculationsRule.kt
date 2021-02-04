@@ -1,12 +1,11 @@
 package org.cqfn.diktat.ruleset.rules.chapter4.calculations
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.FLOAT_IN_ACCURATE_CALCULATIONS
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.findLocalDeclaration
 import org.cqfn.diktat.ruleset.utils.getFunctionName
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
@@ -25,10 +24,7 @@ import org.jetbrains.kotlin.psi.psiUtil.startOffset
  *    Exception: allows arithmetic operations only when absolute value of result is immediately used in comparison
  * Fixme: detect variables by type, not only floating-point literals
  */
-class AccurateCalculationsRule(private val configRules: List<RulesConfig>) : Rule("accurate-calculations") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
+class AccurateCalculationsRule(configRules: List<RulesConfig>) : DiktatRule("accurate-calculations", configRules, listOf(FLOAT_IN_ACCURATE_CALCULATIONS)) {
     private fun KtCallExpression?.isAbsOfFloat() = this
         ?.run {
             (calleeExpression as? KtNameReferenceExpression)
@@ -114,12 +110,7 @@ class AccurateCalculationsRule(private val configRules: List<RulesConfig>) : Rul
      * @param autoCorrect
      * @param emit
      */
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+    override fun logic(node: ASTNode) {
         when (val psi = node.psi) {
             is KtBinaryExpression -> handleBinaryExpression(psi)
             is KtDotQualifiedExpression -> handleFunction(psi)

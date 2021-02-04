@@ -1,20 +1,17 @@
 package org.cqfn.diktat.ruleset.rules.chapter3.files
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.TOO_MANY_BLANK_LINES
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.leaveExactlyNumNewLines
 import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
 import org.cqfn.diktat.ruleset.utils.numNewLines
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_LITERAL
-import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.SCRIPT
@@ -26,16 +23,8 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
  * 1. Checks that no more than two consecutive blank lines are used in a row
  * 2. Checks that blank lines are not put in the beginning or at the end of code blocks with curly braces
  */
-class BlankLinesRule(private val configRules: List<RulesConfig>) : Rule("blank-lines") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+class BlankLinesRule(configRules: List<RulesConfig>) : DiktatRule("blank-lines", configRules, listOf(TOO_MANY_BLANK_LINES)) {
+    override fun logic(node: ASTNode) {
         if (node.elementType == WHITE_SPACE) {
             // note that no blank lines counts as one newline
             if (node.numNewLines() == 2) {

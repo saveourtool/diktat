@@ -1,11 +1,10 @@
 package org.cqfn.diktat.ruleset.rules.chapter3
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
-import org.cqfn.diktat.ruleset.constants.Warnings
+import org.cqfn.diktat.ruleset.constants.Warnings.ANNOTATION_NEW_LINE
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.FUN
@@ -20,16 +19,8 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 /**
  * This rule makes each annotation applied to a class, method or constructor is on its own line. Except: if first annotation of constructor, class or method
  */
-class AnnotationNewLineRule(private val configRules: List<RulesConfig>) : Rule("annotation-new-line") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+class AnnotationNewLineRule(configRules: List<RulesConfig>) : DiktatRule("annotation-new-line", configRules, listOf(ANNOTATION_NEW_LINE)) {
+    override fun logic(node: ASTNode) {
         when (node.elementType) {
             CLASS, FUN, PRIMARY_CONSTRUCTOR, SECONDARY_CONSTRUCTOR -> checkAnnotation(node)
             else -> return
@@ -56,7 +47,7 @@ class AnnotationNewLineRule(private val configRules: List<RulesConfig>) : Rule("
 
     private fun deleteSpaces(node: ASTNode,
                              rightSide: Boolean) {
-        Warnings.ANNOTATION_NEW_LINE.warnAndFix(configRules, emitWarn, isFixMode, "${node.text} not on a single line",
+        ANNOTATION_NEW_LINE.warnAndFix(configRules, emitWarn, isFixMode, "${node.text} not on a single line",
             node.startOffset, node) {
             if (rightSide) {
                 if (node.treeNext?.isWhiteSpace() == true) {

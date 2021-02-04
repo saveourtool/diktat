@@ -2,16 +2,15 @@ package org.cqfn.diktat.ruleset.rules.chapter1
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getCommonConfiguration
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.INCORRECT_PACKAGE_SEPARATOR
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_CASE
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_PATH
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_PREFIX
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_SYMBOLS
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_MISSING
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
@@ -34,17 +33,12 @@ import java.util.concurrent.atomic.AtomicInteger
  * package a.b.c.D -> then class D should be placed in a/b/c/ directories
  */
 @Suppress("ForbiddenComment", "TOO_MANY_LINES_IN_LAMBDA")
-class PackageNaming(private val configRules: List<RulesConfig>) : Rule("package-naming") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
+class PackageNaming(configRules: List<RulesConfig>) : DiktatRule("package-naming", configRules,
+    listOf(INCORRECT_PACKAGE_SEPARATOR, PACKAGE_NAME_INCORRECT_CASE, PACKAGE_NAME_MISSING,
+        PACKAGE_NAME_INCORRECT_PATH, PACKAGE_NAME_INCORRECT_PREFIX, PACKAGE_NAME_INCORRECT_SYMBOLS)) {
     private lateinit var domainName: String
 
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        isFixMode = autoCorrect
-        emitWarn = emit
-
+    override fun logic(node: ASTNode) {
         val configuration by configRules.getCommonConfiguration()
         configuration.domainName?.let {
             domainName = it
