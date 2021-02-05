@@ -28,7 +28,7 @@ Now diKTat was already added to the lists of [static analysis tools](https://git
 
 |  |  |  |  |  |  |  
 | --- | --- | --- | --- | --- | --- |
-|[DiKTat codestyle](info/guide/diktat-coding-convention.md)|[Supported Inspections](info/available-rules.md) | [Examples of Usage](https://github.com/akuleshov7/diktat-examples) | [Online Demo](https://ktlint-demo.herokuapp.com) | [White Paper](wp/wp.pdf) | [Groups of Inspections](info/rules-mapping.md) |
+|[Codestyle](info/guide/diktat-coding-convention.md)|[Inspections](info/available-rules.md) | [Examples](https://github.com/akuleshov7/diktat-examples) | [Demo](https://ktlint-demo.herokuapp.com) | [White Paper](wp/wp.pdf) | [Groups of Inspections](info/rules-mapping.md) |
 
 ## Why should I use diktat in my CI/CD?
 
