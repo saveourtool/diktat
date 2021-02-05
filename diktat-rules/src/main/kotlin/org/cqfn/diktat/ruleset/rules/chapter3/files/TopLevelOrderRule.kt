@@ -63,9 +63,9 @@ class TopLevelOrderRule(private val configRules: List<RulesConfig>) : Rule("top-
                 TOP_LEVEL_ORDER.warnAndFix(configRules, emitWarn, isFixMode, wrongNode.text, wrongNode.startOffset, wrongNode) {
                     node.removeRange(node.findChildByType(IMPORT_LIST)!!.treeNext, node.lastChildNode)
                     node.removeChild(node.lastChildNode)
-                    sortOrder.map { bodyChild ->
-                        bodyChild.second.reversed().map { node.addChild(it, null) }
-                        node.addChild(bodyChild.first, null)
+                    sortOrder.map { (sortedNode, sortedNodePrevSibling) ->
+                        sortedNodePrevSibling.reversed().map { node.addChild(it, null) }
+                        node.addChild(sortedNode, null)
                     }
                     lastNonSortedChildren.map { node.addChild(it, null) }
                 }
