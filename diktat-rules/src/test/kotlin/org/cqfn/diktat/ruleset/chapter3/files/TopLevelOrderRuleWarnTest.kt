@@ -40,6 +40,7 @@ class TopLevelOrderRuleWarnTest : LintTestBase(::TopLevelOrderRule) {
                 |fun String.foo() {}
                 |private val et = 0
                 |public const val g = 9.8
+                |object B {}
             """.trimMargin(),
             LintError(1, 1, ruleId, "${TOP_LEVEL_ORDER.warnText()} class A {}", true),
             LintError(2, 1, ruleId, "${TOP_LEVEL_ORDER.warnText()} lateinit var q: String", true),
@@ -47,7 +48,8 @@ class TopLevelOrderRuleWarnTest : LintTestBase(::TopLevelOrderRule) {
             LintError(4, 1, ruleId, "${TOP_LEVEL_ORDER.warnText()} fun foo() {}", true),
             LintError(5, 1, ruleId, "${TOP_LEVEL_ORDER.warnText()} fun String.foo() {}", true),
             LintError(6, 1, ruleId, "${TOP_LEVEL_ORDER.warnText()} private val et = 0", true),
-            LintError(7, 1, ruleId, "${TOP_LEVEL_ORDER.warnText()} public const val g = 9.8", true)
+            LintError(7, 1, ruleId, "${TOP_LEVEL_ORDER.warnText()} public const val g = 9.8", true),
+            LintError(8, 1, ruleId, "${TOP_LEVEL_ORDER.warnText()} object B {}", true)
         )
     }
 }

@@ -11,6 +11,7 @@ import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.INTERNAL_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.OBJECT_DECLARATION
 import com.pinterest.ktlint.core.ast.ElementType.OVERRIDE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PRIVATE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
@@ -45,18 +46,18 @@ class TopLevelOrderRule(private val configRules: List<RulesConfig>) : Rule("top-
     @Suppress("UnsafeCallOnNullableType")
     private fun checkNode(node: ASTNode) {
         val children = node.getChildren(null)
-        val ownOrder = children.filter { it.elementType in sortedType }
-        if (ownOrder.isEmpty()) {
+        val initialElementsOrder = children.filter { it.elementType in sortedType }
+        if (initialElementsOrder.isEmpty()) {
             return
         }
         val properties = Properties(children.filter { it.elementType == PROPERTY }).sortElements()
         val functions = children.filter { it.elementType == FUN }
-        val classes = children.filter { it.elementType == CLASS }
+        val classes = children.filter { it.elementType == CLASS || it.elementType == OBJECT_DECLARATION }
         val sortOrder = Blocks(properties, functions, classes).sortElements().map { astNode ->
             Pair(astNode, astNode.siblings(false).takeWhile { it.elementType == WHITE_SPACE || it.isPartOfComment() }.toList())
         }
-        val lastNonSortedChildren = ownOrder.last().siblings(true).toList()
-        sortOrder.filterIndexed { index, pair -> ownOrder[index] != pair.first }
+        val lastNonSortedChildren = initialElementsOrder.last().siblings(true).toList()
+        sortOrder.filterIndexed { index, pair -> initialElementsOrder[index] != pair.first }
             .forEach { listOfChildren ->
                 val wrongNode = listOfChildren.first
                 TOP_LEVEL_ORDER.warnAndFix(configRules, emitWarn, isFixMode, wrongNode.text, wrongNode.startOffset, wrongNode) {
@@ -118,6 +119,6 @@ class TopLevelOrderRule(private val configRules: List<RulesConfig>) : Rule("top-
         /**
          * List of children that should be sort
          */
-        val sortedType = listOf(PROPERTY, FUN, CLASS)
+        val sortedType = listOf(PROPERTY, FUN, CLASS, OBJECT_DECLARATION)
     }
 }
