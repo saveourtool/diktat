@@ -1,11 +1,9 @@
 package org.cqfn.diktat.ruleset.rules.chapter3.files
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.TOP_LEVEL_ORDER
 import org.cqfn.diktat.ruleset.utils.*
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FUN
@@ -18,6 +16,7 @@ import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.PROTECTED_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isPartOfComment
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.kotlin.psi.psiUtil.isExtensionDeclaration
@@ -26,18 +25,9 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
 /**
  * Rule that checks order in top level
  */
-class TopLevelOrderRule(private val configRules: List<RulesConfig>) : Rule("top-level-order") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
+class TopLevelOrderRule(configRules: List<RulesConfig>) : DiktatRule("top-level-order", configRules, listOf(TOP_LEVEL_ORDER)) {
 
-    override fun visit(
-        node: ASTNode,
-        autoCorrect: Boolean,
-        emit: EmitType
-    ) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+    override fun logic(node: ASTNode) {
         if (node.elementType == FILE) {
             checkNode(node)
         }
