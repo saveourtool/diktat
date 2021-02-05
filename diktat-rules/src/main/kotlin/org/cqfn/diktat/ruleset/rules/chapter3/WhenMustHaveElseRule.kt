@@ -1,13 +1,12 @@
 package org.cqfn.diktat.ruleset.rules.chapter3
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
-import org.cqfn.diktat.ruleset.constants.Warnings
+import org.cqfn.diktat.ruleset.constants.Warnings.WHEN_WITHOUT_ELSE
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
 import org.cqfn.diktat.ruleset.utils.hasParent
 import org.cqfn.diktat.ruleset.utils.isBeginByNewline
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.ARROW
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
@@ -37,16 +36,8 @@ import org.jetbrains.kotlin.psi.KtWhenExpression
  * The compiler can issue a warning when it is missing.
  */
 @Suppress("ForbiddenComment")
-class WhenMustHaveElseRule(private val configRules: List<RulesConfig>) : Rule("no-else-in-when") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+class WhenMustHaveElseRule(configRules: List<RulesConfig>) : DiktatRule("no-else-in-when", configRules, listOf(WHEN_WITHOUT_ELSE)) {
+    override fun logic(node: ASTNode) {
         if (node.elementType == ElementType.WHEN && isStatement(node)) {
             checkEntries(node)
         }
@@ -54,7 +45,7 @@ class WhenMustHaveElseRule(private val configRules: List<RulesConfig>) : Rule("n
 
     private fun checkEntries(node: ASTNode) {
         if (!hasElse(node)) {
-            Warnings.WHEN_WITHOUT_ELSE.warnAndFix(configRules, emitWarn, isFixMode, "else was not found", node.startOffset, node) {
+            WHEN_WITHOUT_ELSE.warnAndFix(configRules, emitWarn, isFixMode, "else was not found", node.startOffset, node) {
                 val whenEntryElse = CompositeElement(WHEN_ENTRY)
                 if (!node.lastChildNode.isBeginByNewline()) {
                     node.appendNewlineMergingWhiteSpace(node.lastChildNode.treePrev, node.lastChildNode)

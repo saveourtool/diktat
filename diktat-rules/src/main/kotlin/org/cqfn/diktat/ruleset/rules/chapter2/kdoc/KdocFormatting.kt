@@ -3,7 +3,6 @@ package org.cqfn.diktat.ruleset.rules.chapter2.kdoc
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_EMPTY_KDOC
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NEWLINES_BEFORE_BASIC_TAGS
@@ -13,6 +12,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_NEWLINES_BETWEEN_BASIC
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WRONG_SPACES_AFTER_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WRONG_TAGS_ORDER
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.allSiblings
 import org.cqfn.diktat.ruleset.utils.findChildAfter
 import org.cqfn.diktat.ruleset.utils.findChildBefore
@@ -23,7 +23,6 @@ import org.cqfn.diktat.ruleset.utils.hasChildMatching
 import org.cqfn.diktat.ruleset.utils.kDocTags
 import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_LEADING_ASTERISK
@@ -60,24 +59,20 @@ import java.time.temporal.ChronoField
  * 7) ensuring @since tag contains only versions and not dates
  */
 @Suppress("ForbiddenComment")
-class KdocFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-formatting") {
+class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule("kdoc-formatting", configRules,
+    listOf(KDOC_CONTAINS_DATE_OR_AUTHOR, KDOC_EMPTY_KDOC, KDOC_NEWLINES_BEFORE_BASIC_TAGS, KDOC_NO_DEPRECATED_TAG,
+        KDOC_NO_EMPTY_TAGS, KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS, KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS,
+        KDOC_WRONG_SPACES_AFTER_TAG, KDOC_WRONG_TAGS_ORDER)) {
     private val basicTagsList = listOf(KDocKnownTag.PARAM, KDocKnownTag.RETURN, KDocKnownTag.THROWS)
     private val specialTagNames = setOf("implSpec", "implNote", "apiNote")
-    private var isFixMode: Boolean = false
     private var versionRegex: Regex? = null
-    private lateinit var emitWarn: EmitType
 
     /**
      * @param node
      * @param autoCorrect
      * @param emit
      */
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        isFixMode = autoCorrect
-        emitWarn = emit
-
+    override fun logic(node: ASTNode) {
         versionRegex ?: run {
             versionRegex = KdocFormatConfiguration(
                 configRules.getRuleConfig(KDOC_CONTAINS_DATE_OR_AUTHOR)?.configuration ?: emptyMap()

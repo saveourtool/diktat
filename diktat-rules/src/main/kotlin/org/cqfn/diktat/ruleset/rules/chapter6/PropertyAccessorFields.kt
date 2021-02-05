@@ -1,12 +1,11 @@
 package org.cqfn.diktat.ruleset.rules.chapter6
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.isGoingAfter
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
@@ -21,18 +20,8 @@ import org.jetbrains.kotlin.psi.KtProperty
 /**
  * Rule check that never use the name of a variable in the custom getter or setter
  */
-class PropertyAccessorFields(private val configRules: List<RulesConfig>) : Rule("getter-setter-fields") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
-    override fun visit(
-        node: ASTNode,
-        autoCorrect: Boolean,
-        emit: EmitType
-    ) {
-        isFixMode = autoCorrect
-        emitWarn = emit
-
+class PropertyAccessorFields(configRules: List<RulesConfig>) : DiktatRule("getter-setter-fields", configRules, listOf(WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR)) {
+    override fun logic(node: ASTNode) {
         if (node.elementType == PROPERTY_ACCESSOR) {
             checkPropertyAccessor(node)
         }

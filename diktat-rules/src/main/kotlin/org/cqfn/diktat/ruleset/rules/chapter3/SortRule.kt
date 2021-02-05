@@ -3,12 +3,11 @@ package org.cqfn.diktat.ruleset.rules.chapter3
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_DECLARATIONS_ORDER
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.cqfn.diktat.ruleset.utils.isClassEnum
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.COMMA
@@ -27,16 +26,8 @@ import org.jetbrains.kotlin.psi.KtObjectDeclaration
 /**
  * Rule that sorts class properties and enum members alphabetically
  */
-class SortRule(private val configRules: List<RulesConfig>) : Rule("sort-rule") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+class SortRule(configRules: List<RulesConfig>) : DiktatRule("sort-rule", configRules, listOf(WRONG_DECLARATIONS_ORDER)) {
+    override fun logic(node: ASTNode) {
         val configuration = SortRuleConfiguration(
             configRules.getRuleConfig(WRONG_DECLARATIONS_ORDER)?.configuration ?: emptyMap()
         )

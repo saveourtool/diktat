@@ -26,9 +26,9 @@ Now diKTat was already added to the lists of [static analysis tools](https://git
 
 ## See first
 
-|  |  |  |  |  |
-| --- | --- | --- | --- | --- |
-|[DiKTat codestyle](info/guide/diktat-coding-convention.md)|[Supported Rules](info/available-rules.md) | [Examples of Usage](https://github.com/akuleshov7/diktat-examples) | [Online Demo](https://ktlint-demo.herokuapp.com) | [White Paper](wp/wp.pdf) |
+|  |  |  |  |  |  |  
+| --- | --- | --- | --- | --- | --- |
+|[Codestyle](info/guide/diktat-coding-convention.md)|[Inspections](info/available-rules.md) | [Examples](https://github.com/akuleshov7/diktat-examples) | [Demo](https://ktlint-demo.herokuapp.com) | [White Paper](wp/wp.pdf) | [Groups of Inspections](info/rules-mapping.md) |
 
 ## Why should I use diktat in my CI/CD?
 
@@ -64,7 +64,7 @@ Main features of diktat are the following:
    
 3. Finally, run KTlint (with diKTat injected) to check your `*.kt` files in `dir/your/dir`:
    ```bash
-   $ ./ktlint -R diktat.jar "dir/your/dir/**/*.kt"
+   $ ./ktlint -R diktat.jar --disabled_rules=standard "dir/your/dir/**/*.kt"
    ```
 
 To **autofix** all code style violations use `-F` option.
