@@ -20,6 +20,7 @@ import com.pinterest.ktlint.core.ast.ElementType.FILE_ANNOTATION_LIST
 import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.INTERNAL_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
+import com.pinterest.ktlint.core.ast.ElementType.LATEINIT_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
@@ -55,6 +56,18 @@ import org.slf4j.LoggerFactory
  * A [Logger] that can be used throughout diktat
  */
 val log: Logger = LoggerFactory.getLogger(ASTNode::class.java)
+
+/**
+ * A class that represents result of nodes swapping. [oldNodes] should always have same size as [newNodes]
+ *
+ * @property oldNodes nodes that were to be moved
+ * @property newNodes nodes that have been moved
+ */
+data class ReplacementResult(val oldNodes: List<ASTNode>, val newNodes: List<ASTNode>) {
+    init {
+        require(oldNodes.size == newNodes.size)
+    }
+}
 
 /**
  * @return the highest parent node of the tree
@@ -329,6 +342,16 @@ fun ASTNode.isValProperty() =
  * Checks whether this node of type PROPERTY has `const` modifier
  */
 fun ASTNode.isConst() = this.findLeafWithSpecificType(CONST_KEYWORD) != null
+
+/**
+ * Checks whether this node of type PROPERTY has `lateinit` modifier
+ */
+fun ASTNode.isLateInit() = this.findLeafWithSpecificType(LATEINIT_KEYWORD) != null
+
+/**
+ * @param modifier modifier to find in node
+ */
+fun ASTNode.hasModifier(modifier: IElementType) = this.findChildByType(MODIFIER_LIST)?.hasChildOfType(modifier) ?: false
 
 /**
  * Checks whether [this] node of type PROPERTY is `var`
@@ -694,20 +717,6 @@ fun ASTNode.hasTestAnnotation() = findChildByType(MODIFIER_LIST)
     ?: false
 
 /**
- * Checks node is located in file src/test/**/*Test.kt
- *
- * @param testAnchors names of test directories, e.g. "test", "jvmTest"
- */
-fun isLocatedInTest(filePathParts: List<String>, testAnchors: List<String>) = filePathParts
-    .takeIf { it.contains(PackageNaming.PACKAGE_PATH_ANCHOR) }
-    ?.run { subList(lastIndexOf(PackageNaming.PACKAGE_PATH_ANCHOR), size) }
-    ?.run {
-        // e.g. src/test/ClassTest.kt, other files like src/test/Utils.kt are still checked
-        testAnchors.any { contains(it) } && last().substringBeforeLast('.').endsWith("Test")
-    }
-    ?: false
-
-/**
  * Returns the first line of this node's text if it is single, or the first line followed by [suffix] if there are more than one.
  *
  * @param suffix a suffix to append if there are more than one lines of text
@@ -732,18 +741,6 @@ fun ASTNode.calculateLineColByOffset() = buildPositionInTextLocator(text)
 fun ASTNode.getFilePath(): String = getUserData(KtLint.FILE_PATH_USER_DATA_KEY).let {
     requireNotNull(it) { "File path is not present in user data" }
     it
-}
-
-/**
- * A class that represents result of nodes swapping. [oldNodes] should always have same size as [newNodes]
- *
- * @property oldNodes nodes that were to be moved
- * @property newNodes nodes that have been moved
- */
-data class ReplacementResult(val oldNodes: List<ASTNode>, val newNodes: List<ASTNode>) {
-    init {
-        require(oldNodes.size == newNodes.size)
-    }
 }
 
 /**
@@ -789,6 +786,20 @@ private fun ASTNode.calculateLineNumber() = getRootNode()
         require(it >= 0) { "Cannot calculate line number correctly, node's offset $startOffset is greater than file length ${getRootNode().textLength}" }
         it + 1
     }
+
+/**
+ * Checks node is located in file src/test/**/*Test.kt
+ *
+ * @param testAnchors names of test directories, e.g. "test", "jvmTest"
+ */
+fun isLocatedInTest(filePathParts: List<String>, testAnchors: List<String>) = filePathParts
+    .takeIf { it.contains(PackageNaming.PACKAGE_PATH_ANCHOR) }
+    ?.run { subList(lastIndexOf(PackageNaming.PACKAGE_PATH_ANCHOR), size) }
+    ?.run {
+        // e.g. src/test/ClassTest.kt, other files like src/test/Utils.kt are still checked
+        testAnchors.any { contains(it) } && last().substringBeforeLast('.').endsWith("Test")
+    }
+    ?: false
 
 /**
  * Count number of lines in code block. Note: only *copy* of a node should be passed to this method, because the method changes the node.
