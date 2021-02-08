@@ -131,6 +131,8 @@ public object WarningNames {
 
     public const val BLANK_LINE_BETWEEN_PROPERTIES: String = "BLANK_LINE_BETWEEN_PROPERTIES"
 
+    public const val TOP_LEVEL_ORDER: String = "TOP_LEVEL_ORDER"
+
     public const val BRACES_BLOCK_STRUCTURE_ERROR: String = "BRACES_BLOCK_STRUCTURE_ERROR"
 
     public const val WRONG_INDENTATION: String = "WRONG_INDENTATION"

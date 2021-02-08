@@ -35,6 +35,7 @@ import org.cqfn.diktat.ruleset.rules.chapter3.files.FileSize
 import org.cqfn.diktat.ruleset.rules.chapter3.files.FileStructureRule
 import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationRule
 import org.cqfn.diktat.ruleset.rules.chapter3.files.NewlinesRule
+import org.cqfn.diktat.ruleset.rules.chapter3.files.TopLevelOrderRule
 import org.cqfn.diktat.ruleset.rules.chapter3.files.WhiteSpaceRule
 import org.cqfn.diktat.ruleset.rules.chapter3.identifiers.LocalVariablesRule
 import org.cqfn.diktat.ruleset.rules.chapter4.ImmutableValNoVarRule
@@ -150,6 +151,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
             ::EmptyBlock,
             ::AvoidEmptyPrimaryConstructor,
             ::EnumsSeparated,
+            ::TopLevelOrderRule,
             ::SingleLineStatementsRule,
             ::MultipleModifiersSequence,
             ::TrivialPropertyAccessors,

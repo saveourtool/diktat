@@ -5,7 +5,7 @@
     domainName: your.name.here
     testDirs: test
     disabledChapters: ""
-    kotlinVersion: "1.4.21"
+    kotlinVersion: 1.4
 # Checks that the Class/Enum/Interface name does not match Pascal case
 - name: CLASS_NAME_INCORRECT
   enabled: true
@@ -180,6 +180,9 @@
   enabled: true
 # Checks that properties with comments are separated by a blank line
 - name: BLANK_LINE_BETWEEN_PROPERTIES
+  enabled: true
+# Checks top level order
+- name: TOP_LEVEL_ORDER
   enabled: true
 # Checks that non-empty code blocks with braces follow the K&R style (1TBS or OTBS style)
 - name: BRACES_BLOCK_STRUCTURE_ERROR
