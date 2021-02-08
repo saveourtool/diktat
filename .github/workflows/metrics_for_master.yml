@@ -20,7 +20,7 @@ jobs:
         with:
           java-version: 1.11
       - name: Cache local Maven repository
-        uses: actions/cache@v2
+        uses: actions/cache@v2.1.4
         # keys are the same as in build_and_test workflow to make cache available for PRs
         with:
           path: ~/.m2/repository
