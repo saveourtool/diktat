@@ -229,6 +229,9 @@
                             <source>src/main/kotlin</source>
                             <source>src/main/resources</source>
                         </sourceDirs>
+                        <args>
+                            <arg>-Xuse-ir</arg>
+                        </args>
                     </configuration>
                     <inherited>true</inherited>
                 </plugin>
