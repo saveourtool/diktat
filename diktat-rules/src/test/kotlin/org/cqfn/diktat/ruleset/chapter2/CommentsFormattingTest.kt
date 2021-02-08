@@ -419,7 +419,7 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting) {
     }
 
     @Test
-    @Tag(WarningNames.FIRST_COMMENT_NO_SPACES)
+    @Tag(WarningNames.FIRST_COMMENT_NO_BLANK_LINE)
     fun `first comment no space in if - else bad`() {
         val code =
                 """
@@ -438,7 +438,7 @@ class CommentsFormattingTest : LintTestBase(::CommentsFormatting) {
                 """.trimMargin()
 
         lintMethod(code,
-            LintError(8, 18, ruleId, "${Warnings.FIRST_COMMENT_NO_SPACES.warnText()} // Bad Comment ", true))
+            LintError(8, 18, ruleId, "${Warnings.FIRST_COMMENT_NO_BLANK_LINE.warnText()} // Bad Comment ", true))
     }
 
     @Test
