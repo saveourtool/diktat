@@ -148,4 +148,37 @@ class DataClassesRuleWarnTest : LintTestBase(::DataClassesRule) {
             LintError(5, 1, ruleId, "${Warnings.USE_DATA_CLASS.warnText()} Ab")
         )
     }
+
+    @Test
+    @Tag(USE_DATA_CLASS)
+    fun `shouldn't trigger on class with init block`() {
+        lintMethod(
+            """
+                |class Credentials(auth: String) {
+                |   val gitHubUserName: String
+                |   val gitHubAuthToken: String
+                |   
+                |   init {
+                |       auth.let {
+                |       
+                |       }
+                |   }
+                |}
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(USE_DATA_CLASS)
+    fun `should trigger on class with parameter in constructor`() {
+        lintMethod(
+            """
+                |class Credentials(auth: String) {
+                |   val gitHubUserName: String = auth.toUpperCase()
+                |   val gitHubAuthToken: String = auth.toLowerCase()
+                |}
+            """.trimMargin(),
+            LintError(1, 1, ruleId, "${Warnings.USE_DATA_CLASS.warnText()} Credentials")
+        )
+    }
 }
