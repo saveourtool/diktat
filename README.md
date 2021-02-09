@@ -166,7 +166,7 @@ You can run diktat checks using task `diktatCheck` and automatically fix errors 
 ## Run with Spotless
 [Spotless](https://github.com/diffplug/spotless) is a linter aggregator.
 
-###Gradle
+### Gradle
 Diktat can be run via spotless-gradle-plugin since version 5.10.0
 
 <details>
@@ -174,7 +174,7 @@ Diktat can be run via spotless-gradle-plugin since version 5.10.0
 
 ```kotlin
 plugins {
-   id("com.diffplug.spotless") version "5.10.0-SNAPSHOT"
+   id("com.diffplug.spotless") version "5.10.0"
 }
 
 spotless {
@@ -198,7 +198,7 @@ spotless {
 ```
 </details>
 
-###Maven
+### Maven
 <details>
 <summary>Diktat can be run via spotless-maven-plugin since version 2.8.0</summary>
 
