@@ -17,6 +17,7 @@ import java.io.File
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
+import java.util.concurrent.atomic.AtomicInteger
 
 const val DIKTAT_COMMON = "DIKTAT_COMMON"
 
@@ -122,7 +123,9 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
      */
     val kotlinVersion: KotlinVersion by lazy {
         configuration?.get("kotlinVersion")?.kotlinVersion() ?: run {
-            log.error("Kotlin version not specified in the configuration file. Will be using ${KotlinVersion.CURRENT} version")
+            if(visitorCounter.incrementAndGet() == 1) {
+                log.error("Kotlin version not specified in the configuration file. Will be using ${KotlinVersion.CURRENT} version")
+            }
             KotlinVersion.CURRENT
         }
     }
@@ -131,6 +134,13 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
      * False if configuration has been read from config file, true if defaults are used
      */
     val isDefault = configuration == null
+
+    companion object {
+        /**
+         * Counter that helps not to raise multiple warnings about kotlin version
+         */
+        var visitorCounter = AtomicInteger(0)
+    }
 }
 
 // ================== utils for List<RulesConfig> from yml config
