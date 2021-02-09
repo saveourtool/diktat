@@ -26,9 +26,9 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
  * Rule that checks order in top level
  */
 class TopLevelOrderRule(configRules: List<RulesConfig>) : DiktatRule(
-        "top-level-order",
-        configRules,
-        listOf(TOP_LEVEL_ORDER)) {
+    "top-level-order",
+    configRules,
+    listOf(TOP_LEVEL_ORDER)) {
     override fun logic(node: ASTNode) {
         if (node.elementType == FILE) {
             checkNode(node)

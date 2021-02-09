@@ -40,9 +40,9 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  * Rule that detects redundant explicit casts
  */
 class SmartCastRule(configRules: List<RulesConfig>) : DiktatRule(
-        "smart-cast-rule",
-        configRules,
-        listOf(SMART_CAST_NEEDED)) {
+    "smart-cast-rule",
+    configRules,
+    listOf(SMART_CAST_NEEDED)) {
     override fun logic(node: ASTNode) {
         if (node.elementType == FILE) {
             val usages = collectLocalPropertiesWithUsages(node)

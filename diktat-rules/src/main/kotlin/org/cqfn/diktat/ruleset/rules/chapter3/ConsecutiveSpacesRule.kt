@@ -21,9 +21,9 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
  *
  */
 class ConsecutiveSpacesRule(configRules: List<RulesConfig>) : DiktatRule(
-        "too-many-spaces",
-        configRules,
-        listOf(TOO_MANY_CONSECUTIVE_SPACES)) {
+    "too-many-spaces",
+    configRules,
+    listOf(TOO_MANY_CONSECUTIVE_SPACES)) {
     override fun logic(node: ASTNode) {
         val configuration = TooManySpacesRuleConfiguration(
             configRules.getRuleConfig(TOO_MANY_CONSECUTIVE_SPACES)?.configuration ?: emptyMap())

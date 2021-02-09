@@ -97,9 +97,9 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
  */
 @Suppress("ForbiddenComment")
 class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
-        "newlines",
-        configRules,
-        listOf(COMPLEX_EXPRESSION, REDUNDANT_SEMICOLON, WRONG_NEWLINES)) {
+    "newlines",
+    configRules,
+    listOf(COMPLEX_EXPRESSION, REDUNDANT_SEMICOLON, WRONG_NEWLINES)) {
     private val configuration by lazy {
         NewlinesRuleConfiguration(configRules.getRuleConfig(WRONG_NEWLINES)?.configuration ?: emptyMap())
     }
@@ -346,9 +346,9 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
         .filter { it.elementType == filterType }
         .toList()
         .takeIf { it.size > 1 }
-        ?.let {
+        ?.let { list ->
             val freeText = if (filterType == VALUE_ARGUMENT) {
-                warnText.format(it.first().text)
+                warnText.format(list.first().text)
             } else {
                 warnText
             }
@@ -371,7 +371,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
         .toList()
         .takeIf { it.isNotEmpty() }
         ?.let { invalidCommas ->
-            val warnText = if (node.getParentIdentifier() != null) {
+            val warnText = if (node.getParentIdentifier() ?: false) {
                 "$entryType should be placed on different lines in declaration of <${node.getParentIdentifier()}>"
             } else {
                 "$entryType should be placed on different lines"

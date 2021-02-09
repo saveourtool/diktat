@@ -93,9 +93,9 @@ import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
  */
 @Suppress("ForbiddenComment")
 class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
-        "horizontal-whitespace",
-        configRules,
-        listOf(WRONG_WHITESPACE)) {
+    "horizontal-whitespace",
+    configRules,
+    listOf(WRONG_WHITESPACE)) {
     @Suppress("ComplexMethod")
     override fun logic(node: ASTNode) {
         when (node.elementType) {

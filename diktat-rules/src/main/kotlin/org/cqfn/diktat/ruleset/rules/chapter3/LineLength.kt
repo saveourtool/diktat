@@ -58,9 +58,9 @@ import java.net.URL
  */
 @Suppress("ForbiddenComment")
 class LineLength(configRules: List<RulesConfig>) : DiktatRule(
-        "line-length",
-        configRules,
-        listOf(LONG_LINE)) {
+    "line-length",
+    configRules,
+    listOf(LONG_LINE)) {
     private lateinit var positionByOffset: (Int) -> Pair<Int, Int>
 
     override fun logic(node: ASTNode) {

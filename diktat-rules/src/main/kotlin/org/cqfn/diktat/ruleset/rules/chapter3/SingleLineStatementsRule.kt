@@ -19,9 +19,9 @@ import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
  * Rule that looks for multiple statements on a single line separated with a `;` and splits them in multiple lines.
  */
 class SingleLineStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
-        "statement",
-        configRules,
-        listOf(MORE_THAN_ONE_STATEMENT_PER_LINE)) {
+    "statement",
+    configRules,
+    listOf(MORE_THAN_ONE_STATEMENT_PER_LINE)) {
     override fun logic(node: ASTNode) {
         checkSemicolon(node)
     }

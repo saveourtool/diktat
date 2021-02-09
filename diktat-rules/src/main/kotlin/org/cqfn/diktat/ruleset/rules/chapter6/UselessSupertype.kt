@@ -32,9 +32,9 @@ import java.util.HashMap
  * fixme can't fix supertypes that are defined in other files.
  */
 class UselessSupertype(configRules: List<RulesConfig>) : DiktatRule(
-        "useless-override",
-        configRules,
-        listOf(USELESS_SUPERTYPE)) {
+    "useless-override",
+    configRules,
+    listOf(USELESS_SUPERTYPE)) {
     override fun logic(node: ASTNode) {
         if (node.elementType == CLASS) {
             checkClass(node)

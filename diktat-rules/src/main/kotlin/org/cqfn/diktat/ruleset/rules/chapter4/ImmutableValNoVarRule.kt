@@ -20,9 +20,9 @@ import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
  * FixMe: here we should also raise warnings for a reassignment of a var (if var has no assignments except in declaration - it can be final)
  */
 class ImmutableValNoVarRule(configRules: List<RulesConfig>) : DiktatRule(
-        "no-var-rule",
-        configRules,
-        listOf(SAY_NO_TO_VAR)) {
+    "no-var-rule",
+    configRules,
+    listOf(SAY_NO_TO_VAR)) {
     override fun logic(node: ASTNode) {
         if (node.elementType == ElementType.FILE) {
             // we will raise warning for cases when var property has no assignments

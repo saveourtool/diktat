@@ -20,9 +20,9 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  * Length type reference can be configured
  */
 class TypeAliasRule(configRules: List<RulesConfig>) : DiktatRule(
-        "type-alias",
-        configRules,
-        listOf(TYPE_ALIAS)) {
+    "type-alias",
+    configRules,
+    listOf(TYPE_ALIAS)) {
     override fun logic(node: ASTNode) {
         if (node.elementType == TYPE_REFERENCE && node
             .parents()
