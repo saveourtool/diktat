@@ -263,7 +263,7 @@ class DataClassesRuleWarnTest : LintTestBase(::DataClassesRule) {
     @Tag(USE_DATA_CLASS)
     fun `should not trigger on init block with one ref expression`() {
         lintMethod(
-                """
+            """
                 |class Credentials(auth: String, some: Int?) {
                 |   val gitHubUserName: String = auth.toUpperCase()
                 |   val gitHubAuthToken: String = auth.toLowerCase()

@@ -3,6 +3,7 @@ package org.cqfn.diktat.ruleset.rules.chapter6.classes
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.USE_DATA_CLASS
 import org.cqfn.diktat.ruleset.rules.DiktatRule
+import org.cqfn.diktat.ruleset.utils.*
 
 import com.pinterest.ktlint.core.ast.ElementType.ABSTRACT_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
@@ -21,7 +22,6 @@ import com.pinterest.ktlint.core.ast.ElementType.PROPERTY_ACCESSOR
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.SEALED_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_LIST
-import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtClassBody
@@ -56,14 +56,15 @@ class DataClassesRule(configRules: List<RulesConfig>) : DiktatRule("data-classes
     @Suppress("UnsafeCallOnNullableType", "FUNCTION_BOOLEAN_PREFIX", "ComplexMethod")
     private fun ASTNode.canBeDataClass(): Boolean {
         val isNotPropertyInClassBody = findChildByType(CLASS_BODY)?.let { (it.psi as KtClassBody).properties.isEmpty() } ?: true
-        val constructorParametersNames = mutableListOf<String>()
+        val constructorParametersNames: MutableList<String> = mutableListOf()
         val hasPropertyInConstructor = findChildByType(PRIMARY_CONSTRUCTOR)
             ?.let { constructor ->
                 (constructor.psi as KtPrimaryConstructor)
                     .valueParameters
                     .onEach {
-                        if (!it.hasValOrVar())
+                        if (!it.hasValOrVar()) {
                             constructorParametersNames.add(it.name!!)
+                        }
                     }
                     .run { isNotEmpty() && all { it.hasValOrVar() } }
             } ?: false
@@ -80,21 +81,26 @@ class DataClassesRule(configRules: List<RulesConfig>) : DiktatRule("data-classes
                 }
             }
         }
+        return hasAppropriateClassBody()
+    }
+
+    @Suppress("UnsafeCallOnNullableType")
+    private fun ASTNode.hasAppropriateClassBody() : Boolean {
         val classBody = getFirstChildWithType(CLASS_BODY)
         if (hasChildOfType(MODIFIER_LIST)) {
             val list = getFirstChildWithType(MODIFIER_LIST)!!
             return list.getChildren(null)
-                .none { it.elementType in badModifiers } &&
+                    .none { it.elementType in badModifiers } &&
                     classBody?.getAllChildrenWithType(FUN)
-                        ?.isEmpty()
-                        ?: false &&
+                            ?.isEmpty()
+                    ?: false &&
                     getFirstChildWithType(SUPER_TYPE_LIST) == null
         }
         return classBody?.getAllChildrenWithType(FUN)?.isEmpty() ?: false &&
                 getFirstChildWithType(SUPER_TYPE_LIST) == null &&
                 // if there is any prop with logic in accessor then don't recommend to convert class to data class
                 classBody?.let(::areGoodProps)
-                    ?: true
+                ?: true
     }
 
     /**
