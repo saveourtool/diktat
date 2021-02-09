@@ -163,6 +163,57 @@ diktat {
 
 You can run diktat checks using task `diktatCheck` and automatically fix errors with tasks `diktatFix`.
 
+## Run with Spotless
+[Spotless](https://github.com/diffplug/spotless) is a linter aggregator.
+
+Add this plugin to your `build.gradle.kts`
+```kotlin
+plugins {
+   id("com.diffplug.spotless") version "latest-SNAPSHOT"
+}
+
+spotless {
+   kotlin {
+      diktat()
+   }
+   kotlinGradle {
+      diktat()
+   }
+}
+```
+You can provide a version and configuration path manually as configFile.
+```kotlin
+spotless {
+  kotlin {
+    diktat('0.4.0').configFile("full/path/to/diktat-analysis.yml")
+```
+You can use the following snippet in your `settings.gradle` (for Gradle 6.0+)
+```kotlin
+pluginManagement {
+    repositories {
+        mavenLocal {
+            content {
+                includeGroup ("com.diffplug.spotless")
+            }
+        }
+        gradlePluginPortal()
+    }
+    resolutionStrategy {
+        eachPlugin {
+            if (requested.id.id == "com.diffplug.spotless") {
+                useModule("com.diffplug.spotless:spotless-plugin-gradle:latest-SNAPSHOT")
+            }
+        }
+    }
+}
+```
+### Maven
+```kotlin
+<diktat>
+  <version>0.4.0</version> <!-- optional -->
+  <configFile>full/path/to/diktat-analysis.yml</configFile> <!-- optional, configuration file path -->
+</diktat>
+```
 ## Customizations via `diktat-analysis.yml`
 
 In KTlint, rules can be configured via `.editorconfig`, but
