@@ -23,7 +23,9 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
  * 1. Checks that no more than two consecutive blank lines are used in a row
  * 2. Checks that blank lines are not put in the beginning or at the end of code blocks with curly braces
  */
-class BlankLinesRule(configRules: List<RulesConfig>) : DiktatRule("blank-lines", configRules, listOf(TOO_MANY_BLANK_LINES)) {
+class BlankLinesRule(configRules: List<RulesConfig>) : DiktatRule("blank-lines",
+                                                                configRules,
+                                                                listOf(TOO_MANY_BLANK_LINES)) {
     override fun logic(node: ASTNode) {
         if (node.elementType == WHITE_SPACE) {
             // note that no blank lines counts as one newline

@@ -666,7 +666,8 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |
                 |}
             """.trimMargin(),
-            LintError(1, 46, ruleId, "${WRONG_NEWLINES.warnText()} first value argument (\"id\") should be placed on the new line or all other parameters should be aligned with it", true),
+            LintError(1, 46, ruleId, "${WRONG_NEWLINES.warnText()} first value argument (\"id\") should be placed on the new line or " +
+                    "all other parameters should be aligned with it", true),
             LintError(1, 46, ruleId, "${WRONG_NEWLINES.warnText()} value arguments should be placed on different lines", true),
         )
     }

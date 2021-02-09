@@ -15,7 +15,9 @@ import org.jetbrains.kotlin.utils.addToStdlib.ifNotEmpty
 /**
  * Rule that checks if parameter with function type is the last in parameter list
  */
-class LambdaParameterOrder(configRules: List<RulesConfig>) : DiktatRule("lambda-parameter-order", configRules, listOf(LAMBDA_IS_NOT_LAST_PARAMETER)) {
+class LambdaParameterOrder(configRules: List<RulesConfig>) : DiktatRule("lambda-parameter-order",
+                                                                        configRules,
+                                                                        listOf(LAMBDA_IS_NOT_LAST_PARAMETER)) {
     override fun logic(node: ASTNode) {
         if (node.elementType == ElementType.FUN) {
             checkArguments(node)

@@ -28,8 +28,9 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
  *
  * FixMe: The important caveat here: in "$foo" kotlin compiler adds implicit call to foo.toString() in case foo type is not string.
  */
-class StringTemplateFormatRule(configRules: List<RulesConfig>) : DiktatRule("string-template-format", configRules,
-    listOf(STRING_TEMPLATE_CURLY_BRACES, STRING_TEMPLATE_QUOTES)) {
+class StringTemplateFormatRule(configRules: List<RulesConfig>) : DiktatRule("string-template-format",
+                                                                            configRules,
+                                                                            listOf(STRING_TEMPLATE_CURLY_BRACES, STRING_TEMPLATE_QUOTES)) {
     override fun logic(node: ASTNode) {
         when (node.elementType) {
             LONG_STRING_TEMPLATE_ENTRY -> handleLongStringTemplate(node)

@@ -79,7 +79,9 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  * // FixMe: because it fixes only declaration without the usages
  */
 @Suppress("ForbiddenComment", "MISSING_KDOC_CLASS_ELEMENTS")
-class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule("identifier-naming", configRules,
+class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
+    "identifier-naming",
+    configRules,
     listOf(BACKTICKS_PROHIBITED, VARIABLE_NAME_INCORRECT, VARIABLE_NAME_INCORRECT_FORMAT, CONSTANT_UPPERCASE,
         VARIABLE_HAS_PREFIX, CONFUSING_IDENTIFIER_NAMING, GENERIC_NAME, CLASS_NAME_INCORRECT,
         ENUM_VALUE, EXCEPTION_SUFFIX, FUNCTION_BOOLEAN_PREFIX, FUNCTION_NAME_INCORRECT_CASE,

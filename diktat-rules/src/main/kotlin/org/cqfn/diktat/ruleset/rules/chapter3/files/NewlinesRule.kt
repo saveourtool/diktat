@@ -96,7 +96,9 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
  * 10. Complex expression inside condition replaced with new variable
  */
 @Suppress("ForbiddenComment")
-class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule("newlines", configRules, listOf(COMPLEX_EXPRESSION, REDUNDANT_SEMICOLON, WRONG_NEWLINES)) {
+class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule("newlines",
+                                                                configRules,
+                                                                listOf(COMPLEX_EXPRESSION, REDUNDANT_SEMICOLON, WRONG_NEWLINES)) {
     private val configuration by lazy {
         NewlinesRuleConfiguration(configRules.getRuleConfig(WRONG_NEWLINES)?.configuration ?: emptyMap())
     }
@@ -300,6 +302,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule("newlines", conf
      * Checks that members of [VALUE_PARAMETER_LIST] (list of function parameters at declaration site) are separated with newlines.
      * Also checks that entries of [SUPER_TYPE_LIST] are separated by newlines.
      */
+    @Suppress("ComplexMethod")
     private fun handleList(node: ASTNode) {
         if (node.elementType == VALUE_PARAMETER_LIST && node.treeParent.elementType.let { it == FUNCTION_TYPE || it == FUNCTION_TYPE_RECEIVER }) {
             // do not check other value lists
@@ -334,7 +337,9 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule("newlines", conf
         }
     }
 
-    private fun handleFirstValue(node: ASTNode, filterType: IElementType, warnText: String) = node
+    private fun handleFirstValue(node: ASTNode,
+                                 filterType: IElementType,
+                                 warnText: String) = node
         .children()
         .takeWhile { !it.textContains('\n') }
         .filter { it.elementType == filterType }

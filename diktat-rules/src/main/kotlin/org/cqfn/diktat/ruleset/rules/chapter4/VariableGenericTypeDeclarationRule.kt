@@ -21,8 +21,9 @@ import org.jetbrains.kotlin.psi.KtProperty
  * Recommended: val myVariable: Map<Int, String> = emptyMap()
  */
 // FIXME: we now don't have access to return types, so we can perform this check only if explicit type is present, but should be able also if it's not.
-class VariableGenericTypeDeclarationRule(configRules: List<RulesConfig>) : DiktatRule("variable-generic-type", configRules,
-    listOf(GENERIC_VARIABLE_WRONG_DECLARATION)) {
+class VariableGenericTypeDeclarationRule(configRules: List<RulesConfig>) : DiktatRule("variable-generic-type",
+                                                                                    configRules,
+                                                                                    listOf(GENERIC_VARIABLE_WRONG_DECLARATION)) {
     override fun logic(node: ASTNode) {
         when (node.elementType) {
             PROPERTY, VALUE_PARAMETER -> handleProperty(node)

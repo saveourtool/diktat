@@ -11,7 +11,9 @@ import org.jetbrains.kotlin.psi.KtClass
 /**
  * This rule checks if a class has an empty primary constructor.
  */
-class AvoidEmptyPrimaryConstructor(configRules: List<RulesConfig>) : DiktatRule("avoid-empty-primary-constructor", configRules, listOf(EMPTY_PRIMARY_CONSTRUCTOR)) {
+class AvoidEmptyPrimaryConstructor(configRules: List<RulesConfig>) : DiktatRule("avoid-empty-primary-constructor",
+                                                                                configRules,
+                                                                                listOf(EMPTY_PRIMARY_CONSTRUCTOR)) {
     override fun logic(node: ASTNode) {
         if (node.elementType == CLASS) {
             checkClass(node.psi as KtClass)

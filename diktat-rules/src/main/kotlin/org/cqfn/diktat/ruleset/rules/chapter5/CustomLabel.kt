@@ -17,7 +17,9 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
 /**
  * Rule that checks using custom label
  */
-class CustomLabel(configRules: List<RulesConfig>) : DiktatRule("custom-label", configRules, listOf(CUSTOM_LABEL)) {
+class CustomLabel(configRules: List<RulesConfig>) : DiktatRule("custom-label",
+                                                            configRules,
+                                                            listOf(CUSTOM_LABEL)) {
     private val forEachReference = listOf("forEach", "forEachIndexed")
     private val labels = listOf("@loop", "@forEach", "@forEachIndexed")
     private val stopWords = listOf(RETURN, BREAK, CONTINUE)

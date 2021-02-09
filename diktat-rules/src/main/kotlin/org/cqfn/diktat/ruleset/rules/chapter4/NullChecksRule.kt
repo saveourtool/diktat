@@ -26,7 +26,9 @@ import org.jetbrains.kotlin.psi.KtIfExpression
  * This rule check and fixes explicit null checks (explicit comparison with `null`)
  * There are several code-structures that can be used in Kotlin to avoid null-checks. For example: `?:`,  `.let {}`, `.also {}`, e.t.c
  */
-class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule("null-checks", configRules, listOf(AVOID_NULL_CHECKS)) {
+class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule("null-checks",
+                                                                configRules,
+                                                                listOf(AVOID_NULL_CHECKS)) {
     override fun logic(node: ASTNode) {
         if (node.elementType == CONDITION) {
             node.parent(IF)?.let {
