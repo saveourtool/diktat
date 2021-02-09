@@ -330,17 +330,34 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
 
     @Test
     @Tag(WarningNames.UNUSED_IMPORT)
-    fun `Operator overloading 2`() {
+    fun `Should correctly check infix functions`() {
         lintMethod(
             """
                 |package org.cqfn.diktat.example
                 |
-                |import org.akuleshov7.utils.logAndExit
+                |import org.cqfn.diktat.utils.logAndExit
                 |
                 |fun main() {
                 |"Type is not supported yet" logAndExit 1
                 |}
             """.trimMargin(),
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.UNUSED_IMPORT)
+    fun `unused import to infix functions`() {
+        lintMethod(
+            """
+                |package org.cqfn.diktat.example
+                |
+                |import org.cqfn.diktat.utils.logAndExit
+                |
+                |fun main() {
+                |println("Type is not supported yet")
+                |}
+            """.trimMargin(),
+            LintError(1, 1, ruleId, "${Warnings.UNUSED_IMPORT.warnText()} org.cqfn.diktat.utils.logAndExit - unused import", true)
         )
     }
 
