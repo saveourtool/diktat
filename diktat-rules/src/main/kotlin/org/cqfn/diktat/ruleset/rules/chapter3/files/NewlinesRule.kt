@@ -51,6 +51,7 @@ import com.pinterest.ktlint.core.ast.ElementType.PLUS
 import com.pinterest.ktlint.core.ast.ElementType.PLUSEQ
 import com.pinterest.ktlint.core.ast.ElementType.POSTFIX_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
+import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.RETURN
 import com.pinterest.ktlint.core.ast.ElementType.RETURN_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS
@@ -310,7 +311,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             return
         }
 
-        if (node.elementType == VALUE_ARGUMENT_LIST && !node.hasParent(SUPER_TYPE_LIST)) {
+        if (node.elementType == VALUE_ARGUMENT_LIST && node.treePrev != null && node.treePrev.elementType == REFERENCE_EXPRESSION) {
             // check that it is not function invocation, but only supertype constructor calls
             return
         }
