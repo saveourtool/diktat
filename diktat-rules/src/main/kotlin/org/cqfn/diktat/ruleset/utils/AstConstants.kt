@@ -13,13 +13,14 @@ import com.pinterest.ktlint.core.ast.ElementType.SEMICOLON
 import com.pinterest.ktlint.core.ast.ElementType.WHILE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 
+internal const val GET_PREFIX = "get"
+internal const val SET_PREFIX = "set"
+internal const val EMPTY_BLOCK_TEXT = "{}"
+
 /**
  * List of standard methods which do not need mandatory documentation
  */
 internal val standardMethods = listOf("main", "equals", "hashCode", "toString", "clone", "finalize")
-
-internal const val GET_PREFIX = "get"
-internal const val SET_PREFIX = "set"
 
 /**
  * List of element types present in empty code block `{ }`
@@ -30,7 +31,12 @@ val commentType = listOf(BLOCK_COMMENT, EOL_COMMENT, KDOC)
 val loopType = listOf(FOR, WHILE, DO_WHILE)
 val copyrightWords = setOf("copyright", "版权")
 
-internal const val EMPTY_BLOCK_TEXT = "{}"
+internal val operatorMap = mapOf(
+    "unaryPlus" to "+", "unaryMinus" to "-", "not" to "!",
+    "plus" to "+", "minus" to "-", "times" to "*", "div" to "/", "rem" to "%", "mod" to "%", "rangeTo" to "..",
+    "inc" to "++", "dec" to "--", "contains" to "in",
+    "plusAssign" to "+=", "minusAssign" to "-=", "timesAssign" to "*=", "divAssign" to "/=", "modAssign" to "%="
+)
 
 /**
  * Enum that represents some standard platforms that can appear in kotlin code

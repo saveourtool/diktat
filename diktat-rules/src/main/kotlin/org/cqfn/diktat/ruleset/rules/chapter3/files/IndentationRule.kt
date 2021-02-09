@@ -6,8 +6,8 @@ package org.cqfn.diktat.ruleset.rules.chapter3.files
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getAllLeafsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getFilePath
@@ -26,7 +26,6 @@ import org.cqfn.diktat.ruleset.utils.indentation.ValueParameterListChecker
 import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
 import org.cqfn.diktat.ruleset.utils.log
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.ELSE
@@ -65,21 +64,14 @@ import org.jetbrains.kotlin.utils.addToStdlib.firstNotNullResult
  * Additionally, a set of CustomIndentationChecker objects checks all WHITE_SPACE node if they are exceptions from general rules.
  * @see CustomIndentationChecker
  */
-class IndentationRule(private val configRules: List<RulesConfig>) : Rule("indentation") {
-    private var isFixMode: Boolean = false
+class IndentationRule(configRules: List<RulesConfig>) : DiktatRule("indentation", configRules, listOf(WRONG_INDENTATION)) {
     private val configuration: IndentationConfig by lazy {
         IndentationConfig(configRules.getRuleConfig(WRONG_INDENTATION)?.configuration ?: emptyMap())
     }
     private lateinit var filePath: String
-    private lateinit var emitWarn: EmitType
     private lateinit var customIndentationCheckers: List<CustomIndentationChecker>
 
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        isFixMode = autoCorrect
-        emitWarn = emit
-
+    override fun logic(node: ASTNode) {
         if (node.elementType == FILE) {
             filePath = node.getFilePath()
 

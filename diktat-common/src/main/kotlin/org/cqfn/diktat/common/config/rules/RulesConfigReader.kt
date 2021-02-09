@@ -5,6 +5,7 @@
 package org.cqfn.diktat.common.config.rules
 
 import org.cqfn.diktat.common.config.reader.JsonResourceConfigReader
+import org.cqfn.diktat.common.config.rules.RulesConfigReader.Companion.log
 
 import com.charleskorn.kaml.Yaml
 import com.charleskorn.kaml.YamlConfiguration
@@ -90,13 +91,6 @@ open class RulesConfigReader(override val classLoader: ClassLoader) : JsonResour
 }
 
 /**
- * @return common configuration from list of all rules configuration
- */
-fun List<RulesConfig>.getCommonConfiguration() = lazy {
-    CommonConfiguration(getCommonConfig()?.configuration)
-}
-
-/**
  * class returns the list of common configurations that we have read from a configuration map
  *
  * @param configuration map of common configuration
@@ -117,6 +111,23 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
     }
 
     /**
+     * Get disable chapters from configuration
+     */
+    val disabledChapters: String? by lazy {
+        configuration?.get("disabledChapters")
+    }
+
+    /**
+     * Get version of kotlin from configuration
+     */
+    val kotlinVersion: KotlinVersion by lazy {
+        configuration?.get("kotlinVersion")?.kotlinVersion() ?: run {
+            log.error("Kotlin version not specified in the configuration file. Will be using ${KotlinVersion.CURRENT} version")
+            KotlinVersion.CURRENT
+        }
+    }
+
+    /**
      * False if configuration has been read from config file, true if defaults are used
      */
     val isDefault = configuration == null
@@ -125,17 +136,19 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
 // ================== utils for List<RulesConfig> from yml config
 
 /**
+ * @return common configuration from list of all rules configuration
+ */
+fun List<RulesConfig>.getCommonConfiguration() = lazy {
+    CommonConfiguration(getCommonConfig()?.configuration)
+}
+
+/**
  * Get [RulesConfig] for particular [Rule] object.
  *
  * @param rule a [Rule] which configuration will be returned
  * @return [RulesConfig] for a particular rule if it is found, else null
  */
 fun List<RulesConfig>.getRuleConfig(rule: Rule): RulesConfig? = this.find { it.name == rule.ruleName() }
-
-/**
- * Get [RulesConfig] representing common configuration part that can be used in any rule
- */
-private fun List<RulesConfig>.getCommonConfig() = find { it.name == DIKTAT_COMMON }
 
 /**
  * checking if in yml config particular rule is enabled or disabled
@@ -148,3 +161,25 @@ fun List<RulesConfig>.isRuleEnabled(rule: Rule): Boolean {
     val ruleMatched = getRuleConfig(rule)
     return ruleMatched?.enabled ?: true
 }
+
+/**
+ * Parse string into KotlinVersion
+ *
+ * @return KotlinVersion from configuration
+ */
+fun String.kotlinVersion(): KotlinVersion {
+    require(this.contains("^(\\d+\\.)(\\d+)\\.?(\\d+)?$".toRegex())) {
+        "Kotlin version format is incorrect"
+    }
+    val versions = this.split(".").map { it.toInt() }
+    return if (versions.size == 2) {
+        KotlinVersion(versions[0], versions[1])
+    } else {
+        KotlinVersion(versions[0], versions[1], versions[2])
+    }
+}
+
+/**
+ * Get [RulesConfig] representing common configuration part that can be used in any rule
+ */
+private fun List<RulesConfig>.getCommonConfig() = find { it.name == DIKTAT_COMMON }

@@ -24,6 +24,11 @@ internal const val TEST_FILE_NAME = "TestFileName.kt"
 
 typealias LintErrorCallback = (LintError, Boolean) -> Unit
 
+@Suppress("TYPE_ALIAS")
+internal val defaultCallback: (lintError: LintError, corrected: Boolean) -> Unit = { lintError, _ ->
+    log.warn("Received linting error: $lintError")
+}
+
 /**
  * Compare [LintError]s from [this] with [expectedLintErrors]
  *
@@ -86,11 +91,6 @@ internal fun format(ruleSetProviderRef: (rulesConfigList: List<RulesConfig>?) ->
                 userData = mapOf("file_path" to fileName.removeSuffix("_copy"))
             )
         )
-
-@Suppress("TYPE_ALIAS")
-internal val defaultCallback: (lintError: LintError, corrected: Boolean) -> Unit = { lintError, _ ->
-    log.warn("Received linting error: $lintError")
-}
 
 /**
  * This utility function lets you run arbitrary code on every node of given [code].

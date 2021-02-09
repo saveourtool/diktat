@@ -36,7 +36,7 @@ class DiktatGradlePluginFunctionalTest {
         requireNotNull(diktatCheckBuildResult)
         Assertions.assertEquals(TaskOutcome.FAILED, diktatCheckBuildResult.outcome)
         Assertions.assertTrue(
-            result.output.contains("[HEADER_MISSING_OR_WRONG_COPYRIGHT]")
+            result.output.contains("[FILE_NAME_MATCH_CLASS]")
         )
     }
 
@@ -58,7 +58,7 @@ class DiktatGradlePluginFunctionalTest {
         Assertions.assertEquals(TaskOutcome.FAILED, diktatCheckBuildResult.outcome)
         val file = assertNotNull(testProjectDir.root.walkTopDown().filter { it.name == "test.txt" }.first())
         Assertions.assertTrue(
-                file.readLines().any { it.contains("[HEADER_MISSING_OR_WRONG_COPYRIGHT]") }
+                file.readLines().any { it.contains("[FILE_NAME_MATCH_CLASS]") }
         )
     }
 
@@ -77,7 +77,7 @@ class DiktatGradlePluginFunctionalTest {
         requireNotNull(diktatCheckBuildResult)
         Assertions.assertEquals(TaskOutcome.FAILED, diktatCheckBuildResult.outcome)
         Assertions.assertTrue(
-            result.output.contains("[HEADER_MISSING_OR_WRONG_COPYRIGHT]")
+            result.output.contains("[FILE_NAME_MATCH_CLASS]")
         )
     }
 
@@ -162,7 +162,7 @@ class DiktatGradlePluginFunctionalTest {
         requireNotNull(diktatCheckBuildResult)
         Assertions.assertEquals(TaskOutcome.FAILED, diktatCheckBuildResult.outcome)
         Assertions.assertTrue(
-            result.output.contains("[HEADER_MISSING_OR_WRONG_COPYRIGHT]")
+            result.output.contains("[FILE_NAME_MATCH_CLASS]")
         )
     }
 
@@ -176,7 +176,7 @@ class DiktatGradlePluginFunctionalTest {
         requireNotNull(diktatCheckBuildResult)
         Assertions.assertEquals(TaskOutcome.FAILED, diktatCheckBuildResult.outcome)
         Assertions.assertTrue(
-            result.output.contains("[HEADER_MISSING_OR_WRONG_COPYRIGHT]")
+            result.output.contains("[FILE_NAME_MATCH_CLASS]")
         )
     }
 
@@ -195,7 +195,7 @@ class DiktatGradlePluginFunctionalTest {
         requireNotNull(diktatCheckBuildResult)
         Assertions.assertEquals(TaskOutcome.SUCCESS, diktatCheckBuildResult.outcome)
         Assertions.assertTrue(
-            result.output.contains("[HEADER_MISSING_OR_WRONG_COPYRIGHT]")
+            result.output.contains("[FILE_NAME_MATCH_CLASS]")
         )
     }
 }

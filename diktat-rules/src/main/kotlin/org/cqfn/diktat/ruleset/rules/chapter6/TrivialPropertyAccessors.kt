@@ -1,14 +1,13 @@
 package org.cqfn.diktat.ruleset.rules.chapter6
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
-import org.cqfn.diktat.ruleset.constants.Warnings
+import org.cqfn.diktat.ruleset.constants.Warnings.TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.getIdentifierName
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
@@ -27,16 +26,9 @@ import org.jetbrains.kotlin.psi.KtPropertyAccessor
 /**
  * This rule checks if there are any trivial getters and setters and, if so, deletes them
  */
-class TrivialPropertyAccessors(private val configRules: List<RulesConfig>) : Rule("trivial-property-accessors") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+class TrivialPropertyAccessors(configRules: List<RulesConfig>) : DiktatRule("trivial-property-accessors", configRules,
+    listOf(TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED)) {
+    override fun logic(node: ASTNode) {
         if (node.elementType == PROPERTY_ACCESSOR) {
             handlePropertyAccessors(node)
         }
@@ -85,7 +77,7 @@ class TrivialPropertyAccessors(private val configRules: List<RulesConfig>) : Rul
     }
 
     private fun raiseWarning(node: ASTNode) {
-        Warnings.TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
+        TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
             val property = (node.psi as KtPropertyAccessor).property.node
             if (node.treePrev.isWhiteSpace()) {
                 property.removeChild(node.treePrev)

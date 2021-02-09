@@ -1,13 +1,12 @@
 package org.cqfn.diktat.ruleset.rules.chapter3
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.NO_BRACES_IN_CONDITIONALS_AND_LOOPS
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.findChildrenMatching
 import org.cqfn.diktat.ruleset.utils.isSingleLineIfElse
 import org.cqfn.diktat.ruleset.utils.loopType
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.DO_KEYWORD
@@ -35,16 +34,8 @@ import org.jetbrains.kotlin.psi.psiUtil.astReplace
 /**
  * Rule that checks that all conditionals and loops have braces.
  */
-class BracesInConditionalsAndLoopsRule(private val configRules: List<RulesConfig>) : Rule("braces-rule") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+class BracesInConditionalsAndLoopsRule(configRules: List<RulesConfig>) : DiktatRule("braces-rule", configRules, listOf(NO_BRACES_IN_CONDITIONALS_AND_LOOPS)) {
+    override fun logic(node: ASTNode) {
         when (node.elementType) {
             IF -> checkIfNode(node)
             WHEN -> checkWhenBranches(node)

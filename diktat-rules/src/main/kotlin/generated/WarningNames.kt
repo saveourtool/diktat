@@ -103,7 +103,7 @@ public object WarningNames {
 
     public const val WRONG_NEWLINES_AROUND_KDOC: String = "WRONG_NEWLINES_AROUND_KDOC"
 
-    public const val FIRST_COMMENT_NO_SPACES: String = "FIRST_COMMENT_NO_SPACES"
+    public const val FIRST_COMMENT_NO_BLANK_LINE: String = "FIRST_COMMENT_NO_BLANK_LINE"
 
     public const val COMMENT_WHITE_SPACE: String = "COMMENT_WHITE_SPACE"
 
@@ -121,6 +121,8 @@ public object WarningNames {
 
     public const val FILE_WILDCARD_IMPORTS: String = "FILE_WILDCARD_IMPORTS"
 
+    public const val UNUSED_IMPORT: String = "UNUSED_IMPORT"
+
     public const val NO_BRACES_IN_CONDITIONALS_AND_LOOPS: String =
             "NO_BRACES_IN_CONDITIONALS_AND_LOOPS"
 
@@ -128,6 +130,8 @@ public object WarningNames {
             "WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES"
 
     public const val BLANK_LINE_BETWEEN_PROPERTIES: String = "BLANK_LINE_BETWEEN_PROPERTIES"
+
+    public const val TOP_LEVEL_ORDER: String = "TOP_LEVEL_ORDER"
 
     public const val BRACES_BLOCK_STRUCTURE_ERROR: String = "BRACES_BLOCK_STRUCTURE_ERROR"
 
@@ -142,6 +146,8 @@ public object WarningNames {
     public const val REDUNDANT_SEMICOLON: String = "REDUNDANT_SEMICOLON"
 
     public const val WRONG_NEWLINES: String = "WRONG_NEWLINES"
+
+    public const val TRAILING_COMMA: String = "TRAILING_COMMA"
 
     public const val COMPLEX_EXPRESSION: String = "COMPLEX_EXPRESSION"
 
@@ -207,6 +213,8 @@ public object WarningNames {
 
     public const val CUSTOM_LABEL: String = "CUSTOM_LABEL"
 
+    public const val INVERSE_FUNCTION_PREFERRED: String = "INVERSE_FUNCTION_PREFERRED"
+
     public const val SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY: String =
             "SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY"
 
@@ -238,7 +246,7 @@ public object WarningNames {
 
     public const val OBJECT_IS_PREFERRED: String = "OBJECT_IS_PREFERRED"
 
-    public const val INVERSE_FUNCTION_PREFERRED: String = "INVERSE_FUNCTION_PREFERRED"
-
     public const val INLINE_CLASS_CAN_BE_USED: String = "INLINE_CLASS_CAN_BE_USED"
+
+    public const val EXTENSION_FUNCTION_WITH_CLASS: String = "EXTENSION_FUNCTION_WITH_CLASS"
 }

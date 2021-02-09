@@ -28,12 +28,14 @@ import org.cqfn.diktat.ruleset.rules.chapter3.SingleLineStatementsRule
 import org.cqfn.diktat.ruleset.rules.chapter3.SortRule
 import org.cqfn.diktat.ruleset.rules.chapter3.StringConcatenationRule
 import org.cqfn.diktat.ruleset.rules.chapter3.StringTemplateFormatRule
+import org.cqfn.diktat.ruleset.rules.chapter3.TrailingCommaRule
 import org.cqfn.diktat.ruleset.rules.chapter3.WhenMustHaveElseRule
 import org.cqfn.diktat.ruleset.rules.chapter3.files.BlankLinesRule
 import org.cqfn.diktat.ruleset.rules.chapter3.files.FileSize
 import org.cqfn.diktat.ruleset.rules.chapter3.files.FileStructureRule
 import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationRule
 import org.cqfn.diktat.ruleset.rules.chapter3.files.NewlinesRule
+import org.cqfn.diktat.ruleset.rules.chapter3.files.TopLevelOrderRule
 import org.cqfn.diktat.ruleset.rules.chapter3.files.WhiteSpaceRule
 import org.cqfn.diktat.ruleset.rules.chapter3.identifiers.LocalVariablesRule
 import org.cqfn.diktat.ruleset.rules.chapter4.ImmutableValNoVarRule
@@ -55,6 +57,7 @@ import org.cqfn.diktat.ruleset.rules.chapter5.OverloadingArgumentsFunction
 import org.cqfn.diktat.ruleset.rules.chapter6.AvoidEmptyPrimaryConstructor
 import org.cqfn.diktat.ruleset.rules.chapter6.AvoidUtilityClass
 import org.cqfn.diktat.ruleset.rules.chapter6.CustomGetterSetterRule
+import org.cqfn.diktat.ruleset.rules.chapter6.ExtensionFunctionsInFileRule
 import org.cqfn.diktat.ruleset.rules.chapter6.ExtensionFunctionsSameNameRule
 import org.cqfn.diktat.ruleset.rules.chapter6.ImplicitBackingPropertyRule
 import org.cqfn.diktat.ruleset.rules.chapter6.PropertyAccessorFields
@@ -148,6 +151,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
             ::EmptyBlock,
             ::AvoidEmptyPrimaryConstructor,
             ::EnumsSeparated,
+            ::TopLevelOrderRule,
             ::SingleLineStatementsRule,
             ::MultipleModifiersSequence,
             ::TrivialPropertyAccessors,
@@ -155,6 +159,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
             ::CompactInitialization,
             // other rules
             ::InlineClassesRule,
+            ::ExtensionFunctionsInFileRule,
             ::CheckInverseMethodRule,
             ::StatelessClassesRule,
             ::ImplicitBackingPropertyRule,
@@ -165,6 +170,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
             ::AvoidUtilityClass,
             ::PropertyAccessorFields,
             ::AbstractClassesRule,
+            ::TrailingCommaRule,
             ::SingleInitRule,
             ::CustomLabel,
             ::VariableGenericTypeDeclarationRule,

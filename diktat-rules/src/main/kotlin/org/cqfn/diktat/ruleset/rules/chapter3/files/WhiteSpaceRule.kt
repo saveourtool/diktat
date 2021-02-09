@@ -1,12 +1,11 @@
 package org.cqfn.diktat.ruleset.rules.chapter3.files
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_WHITESPACE
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.cqfn.diktat.ruleset.utils.log
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.ARROW
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
@@ -65,7 +64,6 @@ import com.pinterest.ktlint.core.ast.ElementType.WHILE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isPartOfComment
 import com.pinterest.ktlint.core.ast.isWhiteSpace
-import com.pinterest.ktlint.core.ast.isWhiteSpaceWithoutNewline
 import com.pinterest.ktlint.core.ast.nextCodeLeaf
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevSibling
@@ -94,16 +92,9 @@ import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
  * 10. There should be no spaces between prefix/postfix operator (like `!!` or `++`) and it's operand
  */
 @Suppress("ForbiddenComment")
-class WhiteSpaceRule(private val configRules: List<RulesConfig>) : Rule("horizontal-whitespace") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
+class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule("horizontal-whitespace", configRules, listOf(WRONG_WHITESPACE)) {
     @Suppress("ComplexMethod")
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+    override fun logic(node: ASTNode) {
         when (node.elementType) {
             // keywords
             CONSTRUCTOR_KEYWORD -> handleConstructor(node)

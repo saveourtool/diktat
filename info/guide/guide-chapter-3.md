@@ -27,6 +27,7 @@ d) **Recommendation**: One `.kt` source file should contain only one class decla
 
 e) Avoid empty files that do not contain the code or contain only imports/comments/package name
 
+f) Unused imports should be removed
 #### <a name="r3.1.3"></a> 3.1.3 Import statements order
 
 From top to bottom, the order is the following:
@@ -76,6 +77,53 @@ If the classes are meant to be used externally, and are not referenced inside th
 
 **Exception:**
 All variants of a `(private) val` logger should be placed at the beginning of the class (`(private) val log`, `LOG`, `logger`, etc.).
+
+#### <a name="r3.1.5"></a> 3.1.5 Order of declaration of top-level code structures
+Kotlin allows several top-level declaration types: classes, objects, interfaces, properties and functions.
+When declaring more than one class or zero classes (e.g. only functions), as per rule [2.2.1](#r2.2.1), you should document the whole file in the header KDoc.
+When declaring top-level structures, keep the following order:
+1. Top-level constants and properties (following same order as properties inside a class: `const val`,`val`, `lateinit var`, `var`)
+2. Interfaces, classes and objects (grouped by their visibility modifiers)
+3. Extension functions
+4. Other functions
+
+**Note**:
+Extension functions shouldn't have receivers declared in the same file according to [rule 6.2.3](#r6.2.3)
+
+Valid example:
+```kotlin
+package org.cqfn.diktat.example
+
+const val CONSTANT = 42
+
+val topLevelProperty = "String constant"
+
+interface IExample
+
+class Example : IExample
+
+private class Internal
+
+fun Other.asExample(): Example { /* ... */ }
+
+private fun Other.asInternal(): Internal { /* ... */ }
+
+fun doStuff() { /* ... */ }
+```
+
+**Note**:
+kotlin scripts (.kts) allow arbitrary code to be placed on the top level. When writing kotlin scripts, you should first declare all properties, classes
+and functions. Only then you should execute functions on top level. It is still recommended wrapping logic inside functions and avoid using top-level statements
+for function calls or wrapping blocks of code in top-level scope functions like `run`.
+
+Example:
+```kotlin
+/* class declarations */
+/* function declarations */
+run {
+    // call functions here
+}
+```
 
 <!-- =============================================================================== -->
 ### <a name="c3.2"></a> 3.2 Braces
@@ -455,6 +503,23 @@ fun foo(
 
 }
  ```
+
+same should be done for function calls/constructor arguments/e.t.c
+
+Kotlin supports trailing commas in the following cases:
+
+Enumerations
+Value arguments
+Class properties and parameters
+Function value parameters
+Parameters with optional type (including setters)
+Indexing suffix
+Lambda parameters
+when entry
+Collection literals (in annotations)
+Type arguments
+Type parameters
+Destructuring declarations
 
 8) If the supertype list has more than two elements, they should be separated by newlines.
 

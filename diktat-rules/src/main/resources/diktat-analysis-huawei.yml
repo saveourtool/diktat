@@ -5,6 +5,9 @@
     # put your package name here - it will be autofixed and checked
     domainName: com.huawei
     # testDirs: test
+    disabledChapters: ""
+    testDirs: test
+    kotlinVersion: 1.4.30
 # Checks that the Class/Enum/Interface name does not match Pascal case
 - name: CLASS_NAME_INCORRECT
   enabled: true
@@ -166,6 +169,11 @@
   configuration:
     allowedWildcards: "" # Allowed wildcards for imports (e.g. "import org.cqfn.diktat.*, import org.jetbrains.kotlin.*")
     useRecommendedImportsOrder: true
+# Checks unused imports
+- name: UNUSED_IMPORT
+  enabled: true
+  configuration:
+    deleteUnusedImport: true
 # Checks that braces are used in if, else, when, for, do, and while statements. Exception: single line if statement
 - name: NO_BRACES_IN_CONDITIONALS_AND_LOOPS
   enabled: true
@@ -174,6 +182,9 @@
   enabled: true
 # Checks that properties with comments are separated by a blank line
 - name: BLANK_LINE_BETWEEN_PROPERTIES
+  enabled: true
+# Checks top level order
+- name: TOP_LEVEL_ORDER
   enabled: true
 # Checks that non-empty code blocks with braces follow the K&R style (1TBS or OTBS style)
 - name: BRACES_BLOCK_STRUCTURE_ERROR
@@ -223,7 +234,27 @@
     # If the number of parameters on one line is more than this threshold, all parameters will be placed on separate lines.
     maxParametersInOneLine: 2
     # 3 by default.
-    # maxCallsInOneLine: 3
+    maxCallsInOneLine: 3
+# Checks trailing comma
+- name: TRAILING_COMMA
+  enabled: true
+  configuration:
+    # VALUE_ARGUMENT
+    valueArgument: false
+    # VALUE_PARAMETER
+    valueParameter: false
+    # REFERENCE_EXPRESSION
+    indices: false
+    # WHEN_CONDITION_WITH_EXPRESSION
+    whenConditions: false
+    # STRING_TEMPLATE
+    collectionLiteral: false
+    # TYPE_PROJECTION
+    typeArgument: false
+    # TYPE_PARAMETER
+    typeParameter: false
+    # DESTRUCTURING_DECLARATION_ENTRY
+    destructuringDeclaration: false
 # Checks that there are not too many consecutive spaces in line
 - name: TOO_MANY_CONSECUTIVE_SPACES
   enabled: true
@@ -292,7 +323,7 @@
 - name: WRONG_NEWLINES_AROUND_KDOC
   enabled: true
 # Inspection that checks if there is no blank lines before first comment
-- name: FIRST_COMMENT_NO_SPACES
+- name: FIRST_COMMENT_NO_BLANK_LINE
   enabled: true
 # Inspection that checks if there are blank lines between code and comment and between code start token and comment's text
 - name: COMMENT_WHITE_SPACE
@@ -433,4 +464,7 @@
   enabled: true
 # Checks if class can be converted to inline class
 - name: INLINE_CLASS_CAN_BE_USED
+  enabled: true
+# If file contains class, then it can't contain extension functions for the same class
+- name: EXTENSION_FUNCTION_WITH_CLASS
   enabled: true

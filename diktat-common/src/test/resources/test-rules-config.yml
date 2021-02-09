@@ -2,6 +2,7 @@
   enabled: true
   configuration:
     domainName: org.cqfn.diktat
+    kotlinVersion: 1.4.21
 - name: CLASS_NAME_INCORRECT
   enabled: true
 - name: CONSTANT_UPPERCASE

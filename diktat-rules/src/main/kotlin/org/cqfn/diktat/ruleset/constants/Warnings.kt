@@ -10,6 +10,8 @@ typealias EmitType = ((offset: Int, errorMessage: String, canBeAutoCorrected: Bo
 
 typealias ListOfList = MutableList<MutableList<ASTNode>>
 
+typealias ListOfPairs = MutableList<Pair<ASTNode, String>>
+
 /**
  * This class represent individual inspections of diktat code style.
  * A [Warnings] entry contains rule name, warning message and is used in code check.
@@ -75,7 +77,7 @@ enum class Warnings(
     HEADER_NOT_BEFORE_PACKAGE(true, "2.2.1", "header KDoc should be placed before package and imports"),
     COMMENTED_OUT_CODE(false, "2.4.2", "you should not comment out code, use VCS to save it in history and delete this block"),
     WRONG_NEWLINES_AROUND_KDOC(true, "2.4.1", "there should be a blank line above the kDoc and there should not be no blank lines after kDoc"),
-    FIRST_COMMENT_NO_SPACES(true, "2.4.1", "there should not be any spaces before first comment"),
+    FIRST_COMMENT_NO_BLANK_LINE(true, "2.4.1", "there should not be any blank lines before first comment"),
     COMMENT_WHITE_SPACE(true, "2.4.1", "there should be a white space between code and comment also between code start token and comment text"),
     IF_ELSE_COMMENTS(true, "2.4.1", "invalid comments structure. Comment should be inside the block"),
 
@@ -86,9 +88,11 @@ enum class Warnings(
     FILE_NO_BLANK_LINE_BETWEEN_BLOCKS(true, "3.1.2", "general structure of kotlin source file is wrong, general code blocks sohuld be separated by empty lines"),
     FILE_UNORDERED_IMPORTS(true, "3.1.2", "imports should be ordered alphabetically and shouldn't be separated by newlines"),
     FILE_WILDCARD_IMPORTS(false, "3.1.2", "wildcard imports should not be used"),
+    UNUSED_IMPORT(true, "3.1.2", "unused imports should be removed"),
     NO_BRACES_IN_CONDITIONALS_AND_LOOPS(true, "3.2.1", "in if, else, when, for, do, and while statements braces should be used. Exception: single line if statement."),
     WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES(true, "3.1.4", "the declaration part of a class-like code structures (class/interface/etc.) should be in the proper order"),
     BLANK_LINE_BETWEEN_PROPERTIES(true, "3.1.4", "there should be no blank lines between properties without comments; comment or KDoc on property should have blank line before"),
+    TOP_LEVEL_ORDER(true, "3.1.5", "the declaration part of a top level elements should be in the proper order"),
     BRACES_BLOCK_STRUCTURE_ERROR(true, "3.2.2", "braces should follow 1TBS style"),
     WRONG_INDENTATION(true, "3.3.1", "only spaces are allowed for indentation and each indentation should equal to 4 spaces (tabs are not allowed)"),
     EMPTY_BLOCK_STRUCTURE_ERROR(true, "3.4.1", "incorrect format of empty block"),
@@ -96,6 +100,7 @@ enum class Warnings(
     LONG_LINE(true, "3.5.1", "this line is longer than allowed"),
     REDUNDANT_SEMICOLON(true, "3.6.2", "there should be no redundant semicolon at the end of lines"),
     WRONG_NEWLINES(true, "3.6.2", "incorrect line breaking"),
+    TRAILING_COMMA(true, "3.6.2", "use trailing comma"),
     COMPLEX_EXPRESSION(false, "3.6.3", "complex dot qualified expression should be replaced with variable"),
 
     // FixMe: autofixing will be added for this rule
@@ -135,6 +140,7 @@ enum class Warnings(
     RUN_BLOCKING_INSIDE_ASYNC(false, "5.2.4", "avoid using runBlocking in asynchronous code"),
     TOO_MANY_LINES_IN_LAMBDA(false, "5.2.5", "long lambdas should have a parameter name instead of it"),
     CUSTOM_LABEL(false, "5.2.6", "avoid using expression with custom label"),
+    INVERSE_FUNCTION_PREFERRED(true, "5.1.4", "it is better to use inverse function"),
 
     // ======== chapter 6 ========
     SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY(true, "6.1.1", "if a class has single constructor, it should be converted to a primary constructor"),
@@ -151,8 +157,8 @@ enum class Warnings(
     NO_CORRESPONDING_PROPERTY(false, "6.1.7", "backing property should have the same name, but there is no corresponding property"),
     AVOID_USING_UTILITY_CLASS(false, "6.4.1", "avoid using utility classes/objects, use extensions functions"),
     OBJECT_IS_PREFERRED(true, "6.4.2", "it is better to use object for stateless classes"),
-    INVERSE_FUNCTION_PREFERRED(true, "5.1.4", "it is better to use inverse function"),
     INLINE_CLASS_CAN_BE_USED(true, "6.1.12", "inline class can be used"),
+    EXTENSION_FUNCTION_WITH_CLASS(false, "6.2.3", "do not use extension functions for the class defined in the same file"),
     ;
 
     /**
@@ -203,7 +209,7 @@ enum class Warnings(
              freeText: String,
              offset: Int,
              node: ASTNode) {
-        if (configs.isRuleEnabled(this) && !node.hasSuppress(name)) {
+        if (isRuleFromActiveChapter(configs) && configs.isRuleEnabled(this) && !node.hasSuppress(name)) {
             val trimmedFreeText = freeText
                 .lines()
                 .run { if (size > 1) "${first()}..." else first() }
@@ -219,7 +225,7 @@ enum class Warnings(
         isFix: Boolean,
         node: ASTNode,
         autoFix: () -> Unit) {
-        if (configs.isRuleEnabled(this) && isFix && !node.hasSuppress(name)) {
+        if (isRuleFromActiveChapter(configs) && configs.isRuleEnabled(this) && isFix && !node.hasSuppress(name)) {
             autoFix()
         }
     }

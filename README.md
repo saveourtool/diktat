@@ -2,12 +2,12 @@
 
 ![Build and test](https://github.com/cqfn/diKTat/workflows/Build%20and%20test/badge.svg)
 ![deteKT static analysis](https://github.com/cqfn/diKTat/workflows/Run%20deteKT/badge.svg)
-![diKTat code style](https://github.com/cqfn/diKTat/workflows/Run%20diKTat/badge.svg)
+![diKTat code style](https://github.com/cqfn/diKTat/workflows/Run%20diKTat%20from%20release%20version/badge.svg?branch=master)
 [![License](https://img.shields.io/github/license/cqfn/diKtat)](https://github.com/cqfn/diKTat/blob/master/LICENSE)
 [![codecov](https://codecov.io/gh/cqfn/diKTat/branch/master/graph/badge.svg)](https://codecov.io/gh/cqfn/diKTat)
 
 [![Releases](https://img.shields.io/github/v/release/cqfn/diKTat)](https://github.com/cqfn/diKTat/releases)
-![Maven Central](https://img.shields.io/maven-central/v/org.cqfn.diktat/diktat-rules)
+[![Maven Central](https://img.shields.io/maven-central/v/org.cqfn.diktat/diktat-rules)](https://mvnrepository.com/artifact/org.cqfn.diktat)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fcqfn%2FdiKTat.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fcqfn%2FdiKTat?ref=badge_shield)
 [![ktlint](https://img.shields.io/badge/code%20style-%E2%9D%A4-FF4081.svg)](https://ktlint.github.io/)
 [![Chat on Telegram](https://img.shields.io/badge/Chat%20on-Telegram-brightgreen.svg)](https://t.me/joinchat/AAAAAFDg-ipuZFGyBGPPeg)
@@ -26,9 +26,9 @@ Now diKTat was already added to the lists of [static analysis tools](https://git
 
 ## See first
 
-|  |  |  |  |  |
-| --- | --- | --- | --- | --- |
-|[DiKTat codestyle](info/guide/diktat-coding-convention.md)|[Supported Rules](info/available-rules.md) | [Examples of Usage](https://github.com/akuleshov7/diktat-examples) | [Online Demo](https://ktlint-demo.herokuapp.com) | [White Paper](wp/wp.pdf) |
+|  |  |  |  |  |  |  
+| --- | --- | --- | --- | --- | --- |
+|[Codestyle](info/guide/diktat-coding-convention.md)|[Inspections](info/available-rules.md) | [Examples](https://github.com/akuleshov7/diktat-examples) | [Demo](https://ktlint-demo.herokuapp.com) | [White Paper](wp/wp.pdf) | [Groups of Inspections](info/rules-mapping.md) |
 
 ## Why should I use diktat in my CI/CD?
 
@@ -55,16 +55,16 @@ Main features of diktat are the following:
     # another option is "brew install ktlint"
     ```
    
-2. Load diKTat manually: [here](https://github.com/cqfn/diKTat/releases/download/v0.3.0/diktat.jar)
+2. Load diKTat manually: [here](https://github.com/cqfn/diKTat/releases/download/v0.4.0/diktat.jar)
 
    **OR** use curl:
    ```bash
-   $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v0.3.0/diktat-0.3.0.jar
+   $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v0.4.0/diktat-0.4.0.jar
    ```
    
 3. Finally, run KTlint (with diKTat injected) to check your `*.kt` files in `dir/your/dir`:
    ```bash
-   $ ./ktlint -R diktat.jar "dir/your/dir/**/*.kt"
+   $ ./ktlint -R diktat.jar --disabled_rules=standard "dir/your/dir/**/*.kt"
    ```
 
 To **autofix** all code style violations use `-F` option.
@@ -110,7 +110,7 @@ This plugin is available since version 0.1.5. You can see how the plugin is conf
 Add this plugin to your `build.gradle.kts`:
 ```kotlin
 plugins {
-    id("org.cqfn.diktat.diktat-gradle-plugin") version "0.3.0"
+    id("org.cqfn.diktat.diktat-gradle-plugin") version "0.4.0"
 }
 ```
 
@@ -121,7 +121,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.cqfn.diktat:diktat-gradle-plugin:0.3.0")
+        classpath("org.cqfn.diktat:diktat-gradle-plugin:0.4.0")
     }
 }
 

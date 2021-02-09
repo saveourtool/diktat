@@ -4,29 +4,34 @@ import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getCommonConfiguration
 import org.cqfn.diktat.common.config.rules.getRuleConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_CONTAINS_ONLY_COMMENTS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_INCORRECT_BLOCKS_ORDER
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NO_BLANK_LINE_BETWEEN_BLOCKS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_UNORDERED_IMPORTS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_WILDCARD_IMPORTS
+import org.cqfn.diktat.ruleset.constants.Warnings.UNUSED_IMPORT
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.rules.chapter1.PackageNaming.Companion.PACKAGE_SEPARATOR
 import org.cqfn.diktat.ruleset.utils.StandardPlatforms
 import org.cqfn.diktat.ruleset.utils.copyrightWords
+import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.handleIncorrectOrder
 import org.cqfn.diktat.ruleset.utils.moveChildBefore
+import org.cqfn.diktat.ruleset.utils.operatorMap
 
-import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
+import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FILE_ANNOTATION_LIST
 import com.pinterest.ktlint.core.ast.ElementType.IMPORT_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
+import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
+import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.children
+import com.pinterest.ktlint.core.ast.isPartOf
 import com.pinterest.ktlint.core.ast.isPartOfComment
 import com.pinterest.ktlint.core.ast.isWhiteSpace
 import com.pinterest.ktlint.core.ast.nextSibling
@@ -38,6 +43,7 @@ import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtImportDirective
+import org.jetbrains.kotlin.psi.KtPackageDirective
 import org.jetbrains.kotlin.psi.psiUtil.siblings
 
 /**
@@ -49,8 +55,9 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
  * 4. Ensures imports are ordered alphabetically without blank lines
  * 5. Ensures there are no wildcard imports
  */
-class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file-structure") {
-    private var isFixMode: Boolean = false
+class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule("file-structure", configRules,
+    listOf(FILE_CONTAINS_ONLY_COMMENTS, FILE_INCORRECT_BLOCKS_ORDER, FILE_NO_BLANK_LINE_BETWEEN_BLOCKS,
+        FILE_UNORDERED_IMPORTS, FILE_WILDCARD_IMPORTS, UNUSED_IMPORT)) {
     private val domainName by lazy {
         configRules
             .getCommonConfiguration()
@@ -64,21 +71,19 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         .mapValues { (_, value) ->
             value.map { it.split(PACKAGE_SEPARATOR).map(Name::identifier) }
         }
-    private lateinit var emitWarn: EmitType
+    private val refSet: MutableSet<String> = mutableSetOf()
+    private var packageName = ""
+    private val ignoreImports = setOf("invoke", "get", "set")
 
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        isFixMode = autoCorrect
-        emitWarn = emit
-
-        if (node.elementType == ElementType.FILE) {
+    override fun logic(node: ASTNode) {
+        if (node.elementType == FILE) {
             val wildcardImportsConfig = WildCardImportsConfig(
                 this.configRules.getRuleConfig(FILE_WILDCARD_IMPORTS)?.configuration ?: emptyMap()
             )
             val importsGroupingConfig = ImportsGroupingConfig(
                 this.configRules.getRuleConfig(FILE_UNORDERED_IMPORTS)?.configuration ?: emptyMap()
             )
+            checkUnusedImport(node)
             node.findChildByType(IMPORT_LIST)
                 ?.let { checkImportsOrder(it, wildcardImportsConfig, importsGroupingConfig) }
             if (checkFileHasCode(node)) {
@@ -179,7 +184,6 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         importsGroupingConfig: ImportsGroupingConfig
     ) {
         val imports = node.getChildren(TokenSet.create(IMPORT_DIRECTIVE)).toList()
-
         // importPath can be null if import name cannot be parsed, which should be a very rare case, therefore !! should be safe here
         imports
             .filter {
@@ -188,7 +192,6 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
                 }
             }
             .forEach { FILE_WILDCARD_IMPORTS.warn(configRules, emitWarn, isFixMode, it.text, it.startOffset, it) }
-
         val sortedImportsGroups = if (importsGroupingConfig.useRecommendedImportsOrder) {
             regroupImports(imports.map { it.psi as KtImportDirective })
                 .map { group -> group.map { it.node } }
@@ -196,10 +199,68 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
             listOf(imports)
         }
             .map { group -> group.sortedBy { it.text } }
-
         if (sortedImportsGroups.flatten() != imports) {
             FILE_UNORDERED_IMPORTS.warnAndFix(configRules, emitWarn, isFixMode, "${sortedImportsGroups.flatten().first().text}...", node.startOffset, node) {
                 rearrangeImports(node, imports, sortedImportsGroups)
+            }
+        }
+    }
+
+    @Suppress("UnsafeCallOnNullableType")
+    private fun checkUnusedImport(
+        node: ASTNode
+    ) {
+        findAllReferences(node)
+        packageName = (node.findChildByType(PACKAGE_DIRECTIVE)?.psi as KtPackageDirective).qualifiedName
+        node.findChildByType(IMPORT_LIST)?.getChildren(TokenSet.create(IMPORT_DIRECTIVE))?.toList()
+            ?.forEach { import ->
+                val ktImportDirective = import.psi as KtImportDirective
+                val importName = ktImportDirective.importPath?.importedName?.asString()
+                val importPath = ktImportDirective.importPath?.pathStr!!  // importPath - ifNOtParsed & Nullable
+                if (ktImportDirective.aliasName == null &&
+                        packageName.isNotEmpty() && importPath.startsWith("$packageName.") &&
+                        importPath.substring(packageName.length + 1).indexOf('.') == -1
+                ) {
+                    // this branch corresponds to imports from the same package
+                    deleteImport(importPath, node, ktImportDirective)
+                } else if (importName != null && !ignoreImports.contains(importName) && !refSet.contains(
+                    importName
+                )
+                ) {
+                    // this import is not used anywhere
+                    deleteImport(importPath, node, ktImportDirective)
+                }
+            }
+    }
+
+    private fun deleteImport(
+        importPath: String,
+        node: ASTNode,
+        ktImportDirective: KtImportDirective
+    ) {
+        UNUSED_IMPORT.warnAndFix(
+            configRules, emitWarn, isFixMode,
+            "$importPath - unused import",
+            node.startOffset, node
+        ) { ktImportDirective.delete() }
+    }
+
+    private fun findAllReferences(node: ASTNode) {
+        node.findAllNodesWithSpecificType(OPERATION_REFERENCE).forEach { ref ->
+            if (!ref.isPartOf(IMPORT_DIRECTIVE)) {
+                val references = operatorMap.filterValues { it == ref.text }
+                if (references.isNotEmpty()) {
+                    references.keys.forEach { key -> refSet.add(key) }
+                } else {
+                    // this is needed to check infix functions that relate to operation reference
+                    refSet.add(ref.text)
+                }
+            }
+        }
+        node.findAllNodesWithSpecificType(REFERENCE_EXPRESSION).forEach {
+            if (!it.isPartOf(IMPORT_DIRECTIVE)) {
+                // the importedName method removes the quotes, but the node.text method does not
+                refSet.add(it.text.replace("`", ""))
             }
         }
     }

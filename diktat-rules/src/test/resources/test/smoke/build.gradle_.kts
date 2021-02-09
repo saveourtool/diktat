@@ -1,7 +1,4 @@
 import org.cqfn.diktat.generation.docs.generateAvailableRules
-import org.cqfn.diktat.generation.docs.generateCodeStyle
-import org.cqfn.diktat.generation.docs.generateFullDoc
-import org.cqfn.diktat.generation.docs.generateRulesMapping
 
 plugins {
     kotlin("jvm") version "1.4.21"

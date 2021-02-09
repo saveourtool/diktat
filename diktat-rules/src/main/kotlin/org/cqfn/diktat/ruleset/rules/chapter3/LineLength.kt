@@ -3,14 +3,13 @@ package org.cqfn.diktat.ruleset.rules.chapter3
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.LONG_LINE
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
 import org.cqfn.diktat.ruleset.utils.calculateLineColByOffset
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.BOOLEAN_CONSTANT
@@ -58,17 +57,10 @@ import java.net.URL
  * Rule can fix long binary expressions in condition inside `if` and in property declarations and one line functions
  */
 @Suppress("ForbiddenComment")
-class LineLength(private val configRules: List<RulesConfig>) : Rule("line-length") {
-    private var isFixMode: Boolean = false
+class LineLength(configRules: List<RulesConfig>) : DiktatRule("line-length", configRules, listOf(LONG_LINE)) {
     private lateinit var positionByOffset: (Int) -> Pair<Int, Int>
-    private lateinit var emitWarn: EmitType
 
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+    override fun logic(node: ASTNode) {
         val configuration = LineLengthConfiguration(
             configRules.getRuleConfig(LONG_LINE)?.configuration ?: emptyMap())
 
