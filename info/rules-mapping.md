@@ -46,7 +46,7 @@
 | HEADER_NOT_BEFORE_PACKAGE | [2.2.1](guide/diktat-coding-convention.md#r2.2.1) | yes | Comments |
 | KDOC_TRIVIAL_KDOC_ON_FUNCTION | [2.3.1](guide/diktat-coding-convention.md#r2.3.1) | no | Comments |
 | WRONG_NEWLINES_AROUND_KDOC | [2.4.1](guide/diktat-coding-convention.md#r2.4.1) | yes | Comments |
-| FIRST_COMMENT_NO_SPACES | [2.4.1](guide/diktat-coding-convention.md#r2.4.1) | yes | Comments |
+| FIRST_COMMENT_NO_BLANK_LINE | [2.4.1](guide/diktat-coding-convention.md#r2.4.1) | yes | Comments |
 | COMMENT_WHITE_SPACE | [2.4.1](guide/diktat-coding-convention.md#r2.4.1) | yes | Comments |
 | IF_ELSE_COMMENTS | [2.4.1](guide/diktat-coding-convention.md#r2.4.1) | yes | Comments |
 | COMMENTED_OUT_CODE | [2.4.2](guide/diktat-coding-convention.md#r2.4.2) | no | Comments |
