@@ -22,7 +22,6 @@ import com.pinterest.ktlint.core.ast.ElementType.COLON
 import com.pinterest.ktlint.core.ast.ElementType.COLONCOLON
 import com.pinterest.ktlint.core.ast.ElementType.COMMA
 import com.pinterest.ktlint.core.ast.ElementType.CONDITION
-import com.pinterest.ktlint.core.ast.ElementType.CONSTRUCTOR_CALLEE
 import com.pinterest.ktlint.core.ast.ElementType.DIV
 import com.pinterest.ktlint.core.ast.ElementType.DIVEQ
 import com.pinterest.ktlint.core.ast.ElementType.DOT
@@ -58,7 +57,6 @@ import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS
 import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.SECONDARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.SEMICOLON
-import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_CALL_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_LIST
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
@@ -309,7 +307,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule("newlines", conf
         }
 
         if (node.elementType == VALUE_ARGUMENT_LIST && !node.hasParent(SUPER_TYPE_LIST)) {
-            // check that it is not listOf(1,2,3...)
+            // check that it is not function invocation, but only supertype constructor calls
             return
         }
 
@@ -324,8 +322,10 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule("newlines", conf
         }
         if (numEntries > configuration.maxParametersInOneLine) {
             when (node.elementType) {
-                VALUE_PARAMETER_LIST -> handleFirstValueParameter(node)
-                VALUE_ARGUMENT_LIST -> handleFirstValueArgument(node)
+                VALUE_PARAMETER_LIST -> handleFirstValue(node, VALUE_PARAMETER, "first parameter should be placed on a separate line " +
+                        "or all other parameters should be aligned with it in declaration of <${node.getParentIdentifier()}>")
+                VALUE_ARGUMENT_LIST -> handleFirstValue(node, VALUE_ARGUMENT, "first value argument (%s) should be placed on the new line " +
+                        "or all other parameters should be aligned with it")
                 else -> {
                 }
             }
@@ -334,15 +334,19 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule("newlines", conf
         }
     }
 
-    private fun handleFirstValueParameter(node: ASTNode) = node
+    private fun handleFirstValue(node: ASTNode, filterType: IElementType, warnText: String) = node
         .children()
         .takeWhile { !it.textContains('\n') }
-        .filter { it.elementType == VALUE_PARAMETER }
+        .filter { it.elementType == filterType }
         .toList()
         .takeIf { it.size > 1 }
         ?.let {
-            WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, "first parameter should be placed on a separate line " +
-                    "or all other parameters should be aligned with it in declaration of <${node.getParentIdentifier()}>", node.startOffset, node) {
+            val freeText = if (filterType == VALUE_ARGUMENT) {
+                warnText.format(it.first().text)
+            } else {
+                warnText
+            }
+            WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, freeText, node.startOffset, node) {
                 node.appendNewlineMergingWhiteSpace(
                     it.first()
                         .treePrev
@@ -351,25 +355,6 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule("newlines", conf
                 )
             }
         }
-
-    private fun handleFirstValueArgument(node: ASTNode) = node
-            .children()
-            .takeWhile { !it.textContains('\n') }
-            .filter { it.elementType == VALUE_ARGUMENT }
-            .toList()
-            .takeIf { it.size > 1 }
-            ?.let {  list ->
-                WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, "first value argument (${list.first().text}) should be placed on the new line " +
-                        "or all other parameters should be aligned with it",
-                        node.startOffset, node) {
-                    node.appendNewlineMergingWhiteSpace(
-                            list.first()
-                                    .treePrev
-                                    .takeIf { it.elementType == WHITE_SPACE },
-                            list.first()
-                    )
-                }
-            }
 
     private fun handleValueParameterList(node: ASTNode, entryType: String) = node
         .children()
