@@ -354,14 +354,15 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             }
             WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, freeText, node.startOffset, node) {
                 node.appendNewlineMergingWhiteSpace(
-                    it.first()
+                    list.first()
                         .treePrev
                         .takeIf { it.elementType == WHITE_SPACE },
-                    it.first()
+                    list.first()
                 )
             }
         }
 
+    @Suppress("AVOID_NULL_CHECK")
     private fun handleValueParameterList(node: ASTNode, entryType: String) = node
         .children()
         .filter {
@@ -371,7 +372,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
         .toList()
         .takeIf { it.isNotEmpty() }
         ?.let { invalidCommas ->
-            val warnText = if (node.getParentIdentifier() ?: false) {
+            val warnText = if (node.getParentIdentifier() != null) {
                 "$entryType should be placed on different lines in declaration of <${node.getParentIdentifier()}>"
             } else {
                 "$entryType should be placed on different lines"
