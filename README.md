@@ -105,15 +105,6 @@ Add this plugin to your pom.xml:
 To run diktat in **only-check** mode use command `$ mvn diktat:check@diktat`.
 To run diktat in **autocorrect** mode use command `$ mvn diktat:fix@diktat`.
 
-### Run with Maven using Spotless
-[Spotless](https://github.com/diffplug/spotless) is a linter aggregator. Diktat can be run via spotless-maven-plugin since version 2.8.0
-```xml
-<diktat>
-  <version>0.4.0</version> <!-- optional -->
-  <configFile>full/path/to/diktat-analysis.yml</configFile> <!-- optional, configuration file path -->
-</diktat>
-```
-
 ## Run with Gradle using diktat-gradle-plugin
 This plugin is available since version 0.1.5. You can see how the plugin is configured in our examples: [build.gradle.kts](examples/gradle-kotlin-dsl/build.gradle.kts).
 Add this plugin to your `build.gradle.kts`:
@@ -173,9 +164,14 @@ diktat {
 You can run diktat checks using task `diktatCheck` and automatically fix errors with tasks `diktatFix`.
 
 ## Run with Spotless
-[Spotless](https://github.com/diffplug/spotless) is a linter aggregator. Diktat can be run via spotless-gradle-plugin since version 5.10.0
+[Spotless](https://github.com/diffplug/spotless) is a linter aggregator.
 
-Add this plugin to your `build.gradle.kts`
+###Gradle
+Diktat can be run via spotless-gradle-plugin since version 5.10.0
+
+<details>
+<summary>Add this plugin to your build.gradle.kts</summary>
+
 ```kotlin
 plugins {
    id("com.diffplug.spotless") version "5.10.0-SNAPSHOT"
@@ -190,12 +186,30 @@ spotless {
    }
 }
 ```
-You can provide a version and configuration path manually as configFile.
+</details>
+
+<details>
+<summary>You can provide a version and configuration path manually as configFile.</summary>
+
 ```kotlin
 spotless {
   kotlin {
     diktat("0.4.0").configFile("full/path/to/diktat-analysis.yml")
 ```
+</details>
+
+###Maven
+<details>
+<summary>Diktat can be run via spotless-maven-plugin since version 2.8.0</summary>
+
+```xml
+<diktat>
+  <version>0.4.0</version> <!-- optional -->
+  <configFile>full/path/to/diktat-analysis.yml</configFile> <!-- optional, configuration file path -->
+</diktat>
+```
+</details>
+
 ## Customizations via `diktat-analysis.yml`
 
 In KTlint, rules can be configured via `.editorconfig`, but
