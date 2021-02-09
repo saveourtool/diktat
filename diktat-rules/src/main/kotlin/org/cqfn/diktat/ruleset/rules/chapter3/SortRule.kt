@@ -20,8 +20,8 @@ import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.SEMICOLON
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isPartOfComment
-import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.isWhiteSpace
+import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.nextSibling
 import com.pinterest.ktlint.core.ast.prevSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -98,15 +98,19 @@ class SortRule(configRules: List<RulesConfig>) : DiktatRule("sort-rule", configR
         sortList: List<ASTNode>,
         nonSortList: List<ASTNode>,
         node: ASTNode) {
-        val spaceBefore =  if (node.findAllNodesWithSpecificType(EOL_COMMENT).isNotEmpty()) {
+        val spaceBefore = if (node.findAllNodesWithSpecificType(EOL_COMMENT).isNotEmpty()) {
             val lastEntry = node.findAllNodesWithSpecificType(ENUM_ENTRY).last()
             if (lastEntry.hasChildOfType(EOL_COMMENT) && !lastEntry.hasChildOfType(COMMA)) {
                 lastEntry.addChild(LeafPsiElement(COMMA, ","), lastEntry.findChildByType(EOL_COMMENT))
             }
-            listOf(null) + List(nonSortList.size - 1) {listOf(PsiWhiteSpaceImpl("\n"))}
+            listOf(null) + List(nonSortList.size - 1) { listOf(PsiWhiteSpaceImpl("\n")) }
         } else {
             nonSortList.map { astNode ->
-                astNode.siblings(false).toList().takeWhile { it.isWhiteSpace() || it.isPartOfComment() }.ifEmpty { null }
+                astNode
+                    .siblings(false)
+                    .toList()
+                    .takeWhile { it.isWhiteSpace() || it.isPartOfComment() }
+                    .ifEmpty { null }
             }
         }
         val nodeBefore: ASTNode? = nonSortList.last().treeNext
