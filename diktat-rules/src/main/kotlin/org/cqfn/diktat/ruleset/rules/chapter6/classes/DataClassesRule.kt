@@ -61,7 +61,11 @@ class DataClassesRule(configRules: List<RulesConfig>) : DiktatRule("data-classes
             ?.let { constructor ->
                 (constructor.psi as KtPrimaryConstructor)
                     .valueParameters
-                    .run { isNotEmpty() && all { if (it.hasValOrVar()) true else { constructorParametersNames.add(it.name!!); false } } }
+                    .onEach {
+                        if (!it.hasValOrVar())
+                            constructorParametersNames.add(it.name!!)
+                    }
+                    .run { isNotEmpty() && all { it.hasValOrVar() } }
             } ?: false
         if (isNotPropertyInClassBody && !hasPropertyInConstructor) {
             return false
@@ -71,7 +75,7 @@ class DataClassesRule(configRules: List<RulesConfig>) : DiktatRule("data-classes
             val initBlocks = findChildByType(CLASS_BODY)?.getAllChildrenWithType(CLASS_INITIALIZER)
             initBlocks?.forEach { init ->
                 val refExpressions = init.findAllNodesWithSpecificType(REFERENCE_EXPRESSION)
-                if (refExpressions.any { it.text !in constructorParametersNames }) {
+                if (refExpressions.any { it.text in constructorParametersNames }) {
                     return false
                 }
             }
