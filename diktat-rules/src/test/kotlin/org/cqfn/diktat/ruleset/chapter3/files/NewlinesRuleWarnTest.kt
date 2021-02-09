@@ -664,7 +664,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `should not raise warning on list params`() {
         lintMethod(
-                """
+            """
                 |class SomeRule(configRules: List<Int>) : Rule("id", 
                 |configRules, 
                 |listOf("foo", "baz", "triple", "bar")) {
