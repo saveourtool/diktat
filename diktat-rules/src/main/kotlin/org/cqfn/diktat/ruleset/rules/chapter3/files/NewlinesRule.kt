@@ -362,7 +362,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             }
         }
 
-    @Suppress("AVOID_NULL_CHECK")
+    @Suppress("AVOID_NULL_CHECKS")
     private fun handleValueParameterList(node: ASTNode, entryType: String) = node
         .children()
         .filter {
