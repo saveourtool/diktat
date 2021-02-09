@@ -22,7 +22,8 @@ typealias ListOfPairs = MutableList<Pair<ASTNode, String>>
     "ForbiddenComment",
     "MagicNumber",
     "WRONG_DECLARATIONS_ORDER",
-    "MaxLineLength"
+    "MaxLineLength",
+    "WRONG_NEWLINES"
 )
 enum class Warnings(
     val canBeAutoCorrected: Boolean,

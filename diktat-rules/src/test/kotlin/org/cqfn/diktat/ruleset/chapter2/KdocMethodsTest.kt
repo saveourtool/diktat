@@ -27,7 +27,11 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
     """.trimIndent()
 
     @Test
-    @Tags(Tag(WarningNames.KDOC_WITHOUT_PARAM_TAG), Tag(WarningNames.KDOC_WITHOUT_RETURN_TAG), Tag(WarningNames.KDOC_WITHOUT_THROWS_TAG))
+    @Tags(
+        Tag(WarningNames.KDOC_WITHOUT_PARAM_TAG),
+        Tag(WarningNames.KDOC_WITHOUT_RETURN_TAG),
+        Tag(WarningNames.KDOC_WITHOUT_THROWS_TAG)
+    )
     fun `Accessible methods with parameters, return type and throws should have proper KDoc (positive example)`() {
         val validCode = """
             /**
