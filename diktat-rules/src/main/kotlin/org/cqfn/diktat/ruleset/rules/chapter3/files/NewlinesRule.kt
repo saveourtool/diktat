@@ -311,7 +311,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             return
         }
 
-        if (node.elementType == VALUE_ARGUMENT_LIST && node.treePrev != null && node.treePrev.elementType == REFERENCE_EXPRESSION) {
+        if (node.elementType == VALUE_ARGUMENT_LIST && node.siblings(forward = false).any { it.elementType == REFERENCE_EXPRESSION }) {
             // check that it is not function invocation, but only supertype constructor calls
             return
         }
