@@ -7,7 +7,7 @@
     # testDirs: test
     disabledChapters: ""
     testDirs: test
-    kotlinVersion: "1.4.21"
+    kotlinVersion: 1.4.30
 # Checks that the Class/Enum/Interface name does not match Pascal case
 - name: CLASS_NAME_INCORRECT
   enabled: true
@@ -183,6 +183,9 @@
 # Checks that properties with comments are separated by a blank line
 - name: BLANK_LINE_BETWEEN_PROPERTIES
   enabled: true
+# Checks top level order
+- name: TOP_LEVEL_ORDER
+  enabled: true
 # Checks that non-empty code blocks with braces follow the K&R style (1TBS or OTBS style)
 - name: BRACES_BLOCK_STRUCTURE_ERROR
   enabled: true
@@ -231,7 +234,7 @@
     # If the number of parameters on one line is more than this threshold, all parameters will be placed on separate lines.
     maxParametersInOneLine: 2
     # 3 by default.
-    # maxCallsInOneLine: 3
+    maxCallsInOneLine: 3
 # Checks trailing comma
 - name: TRAILING_COMMA
   enabled: true
@@ -320,7 +323,7 @@
 - name: WRONG_NEWLINES_AROUND_KDOC
   enabled: true
 # Inspection that checks if there is no blank lines before first comment
-- name: FIRST_COMMENT_NO_SPACES
+- name: FIRST_COMMENT_NO_BLANK_LINE
   enabled: true
 # Inspection that checks if there are blank lines between code and comment and between code start token and comment's text
 - name: COMMENT_WHITE_SPACE

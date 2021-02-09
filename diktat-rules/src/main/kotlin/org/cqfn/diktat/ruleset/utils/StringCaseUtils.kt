@@ -1,8 +1,17 @@
-@file:Suppress("FILE_NAME_MATCH_CLASS")
+@file:Suppress("FILE_NAME_MATCH_CLASS", "MatchingDeclarationName")
 
 package org.cqfn.diktat.ruleset.utils
 
 import com.google.common.base.CaseFormat
+
+/**
+ * Available cases to name enum members
+ */
+enum class Style {
+    PASCAL_CASE,
+    SNAKE_CASE,
+    ;
+}
 
 /**
  * checking that string looks like: PascalCaseForClassName
@@ -141,6 +150,12 @@ fun String.toPascalCase(): String = when {
     }
 }
 
+/**
+ * @return index of first character which is a letter or a digit
+ */
+private fun String.getFirstLetterOrDigit() =
+        indexOfFirst { it.isLetterOrDigit() }
+
 private fun convertUnknownCaseToCamel(str: String, isFirstLetterCapital: Boolean): String {
     // [p]a[SC]a[_]l -> [P]a[Sc]a[L]
     var isPreviousLetterCapital = isFirstLetterCapital
@@ -185,19 +200,4 @@ private fun convertUnknownCaseToUpperSnake(str: String): String {
             char.toUpperCase().toString()
         }
     }.joinToString("")
-}
-
-/**
- * @return index of first character which is a letter or a digit
- */
-private fun String.getFirstLetterOrDigit() =
-        indexOfFirst { it.isLetterOrDigit() }
-
-/**
- * Available cases to name enum members
- */
-enum class Style {
-    PASCAL_CASE,
-    SNAKE_CASE,
-    ;
 }

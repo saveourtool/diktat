@@ -103,7 +103,7 @@ public object WarningNames {
 
     public const val WRONG_NEWLINES_AROUND_KDOC: String = "WRONG_NEWLINES_AROUND_KDOC"
 
-    public const val FIRST_COMMENT_NO_SPACES: String = "FIRST_COMMENT_NO_SPACES"
+    public const val FIRST_COMMENT_NO_BLANK_LINE: String = "FIRST_COMMENT_NO_BLANK_LINE"
 
     public const val COMMENT_WHITE_SPACE: String = "COMMENT_WHITE_SPACE"
 
@@ -130,6 +130,8 @@ public object WarningNames {
             "WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES"
 
     public const val BLANK_LINE_BETWEEN_PROPERTIES: String = "BLANK_LINE_BETWEEN_PROPERTIES"
+
+    public const val TOP_LEVEL_ORDER: String = "TOP_LEVEL_ORDER"
 
     public const val BRACES_BLOCK_STRUCTURE_ERROR: String = "BRACES_BLOCK_STRUCTURE_ERROR"
 

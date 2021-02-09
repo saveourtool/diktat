@@ -46,12 +46,6 @@ fun Warnings.isRuleFromActiveChapter(configRules: List<RulesConfig>): Boolean {
     return disabledChapters?.let { return chapterFromRule !in it } ?: true
 }
 
-private fun validate(chapter: String) =
-        require(chapter in Chapters.values().map { it.title }) {
-            val closestMatch = Chapters.values().minByOrNull { Levenshtein.distance(it.title, chapter) }
-            "Chapter name <$chapter> in configuration file is invalid, did you mean <$closestMatch>?"
-        }
-
 /**
  * Function get chapter by warning
  *
@@ -59,3 +53,9 @@ private fun validate(chapter: String) =
  */
 @Suppress("UnsafeCallOnNullableType")
 fun Warnings.getChapterByWarning() = Chapters.values().find { it.number == this.ruleId.first().toString() }!!
+
+private fun validate(chapter: String) =
+        require(chapter in Chapters.values().map { it.title }) {
+            val closestMatch = Chapters.values().minByOrNull { Levenshtein.distance(it.title, chapter) }
+            "Chapter name <$chapter> in configuration file is invalid, did you mean <$closestMatch>?"
+        }

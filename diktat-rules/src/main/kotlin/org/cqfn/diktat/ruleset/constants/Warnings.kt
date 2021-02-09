@@ -77,7 +77,7 @@ enum class Warnings(
     HEADER_NOT_BEFORE_PACKAGE(true, "2.2.1", "header KDoc should be placed before package and imports"),
     COMMENTED_OUT_CODE(false, "2.4.2", "you should not comment out code, use VCS to save it in history and delete this block"),
     WRONG_NEWLINES_AROUND_KDOC(true, "2.4.1", "there should be a blank line above the kDoc and there should not be no blank lines after kDoc"),
-    FIRST_COMMENT_NO_SPACES(true, "2.4.1", "there should not be any spaces before first comment"),
+    FIRST_COMMENT_NO_BLANK_LINE(true, "2.4.1", "there should not be any blank lines before first comment"),
     COMMENT_WHITE_SPACE(true, "2.4.1", "there should be a white space between code and comment also between code start token and comment text"),
     IF_ELSE_COMMENTS(true, "2.4.1", "invalid comments structure. Comment should be inside the block"),
 
@@ -92,6 +92,7 @@ enum class Warnings(
     NO_BRACES_IN_CONDITIONALS_AND_LOOPS(true, "3.2.1", "in if, else, when, for, do, and while statements braces should be used. Exception: single line if statement."),
     WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES(true, "3.1.4", "the declaration part of a class-like code structures (class/interface/etc.) should be in the proper order"),
     BLANK_LINE_BETWEEN_PROPERTIES(true, "3.1.4", "there should be no blank lines between properties without comments; comment or KDoc on property should have blank line before"),
+    TOP_LEVEL_ORDER(true, "3.1.5", "the declaration part of a top level elements should be in the proper order"),
     BRACES_BLOCK_STRUCTURE_ERROR(true, "3.2.2", "braces should follow 1TBS style"),
     WRONG_INDENTATION(true, "3.3.1", "only spaces are allowed for indentation and each indentation should equal to 4 spaces (tabs are not allowed)"),
     EMPTY_BLOCK_STRUCTURE_ERROR(true, "3.4.1", "incorrect format of empty block"),
