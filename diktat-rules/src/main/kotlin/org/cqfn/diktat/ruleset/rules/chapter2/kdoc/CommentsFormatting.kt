@@ -4,7 +4,7 @@ import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.COMMENT_WHITE_SPACE
-import org.cqfn.diktat.ruleset.constants.Warnings.FIRST_COMMENT_NO_SPACES
+import org.cqfn.diktat.ruleset.constants.Warnings.FIRST_COMMENT_NO_BLANK_LINE
 import org.cqfn.diktat.ruleset.constants.Warnings.IF_ELSE_COMMENTS
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_NEWLINES_AROUND_KDOC
 import org.cqfn.diktat.ruleset.rules.DiktatRule
@@ -50,7 +50,7 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
  * * Comments in if else should be inside code blocks. Exception: General if comment
  */
 class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule("kdoc-comments-codeblocks-formatting", configRules,
-    listOf(COMMENT_WHITE_SPACE, FIRST_COMMENT_NO_SPACES,
+    listOf(COMMENT_WHITE_SPACE, FIRST_COMMENT_NO_BLANK_LINE,
         IF_ELSE_COMMENTS, WRONG_NEWLINES_AROUND_KDOC)) {
     /**
      * @param node
@@ -313,7 +313,7 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule("kdoc-comm
         if (node.treePrev.isWhiteSpace()) {
             if (node.treePrev.numNewLines() > 1 ||
                     node.treePrev.numNewLines() == 0) {
-                FIRST_COMMENT_NO_SPACES.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
+                FIRST_COMMENT_NO_BLANK_LINE.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
                     (node.treePrev as LeafPsiElement).replaceWithText("\n")
                 }
             }
