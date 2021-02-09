@@ -37,9 +37,10 @@ import org.jetbrains.kotlin.psi.psiUtil.startOffset
  * * Only properties without initialization or initialized with expressions based on constants are supported.
  * * Properties initialized with constructor calls cannot be distinguished from method call and are no supported.
  */
-class LocalVariablesRule(configRules: List<RulesConfig>) : DiktatRule("local-variables",
-                                                                    configRules,
-                                                                    listOf(LOCAL_VARIABLE_EARLY_DECLARATION)) {
+class LocalVariablesRule(configRules: List<RulesConfig>) : DiktatRule(
+        "local-variables",
+        configRules,
+        listOf(LOCAL_VARIABLE_EARLY_DECLARATION)) {
     override fun logic(node: ASTNode) {
         if (node.elementType == FILE) {
             // collect all local properties and associate with corresponding references

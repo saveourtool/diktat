@@ -36,9 +36,10 @@ import org.jetbrains.kotlin.psi.KtWhenExpression
  * The compiler can issue a warning when it is missing.
  */
 @Suppress("ForbiddenComment")
-class WhenMustHaveElseRule(configRules: List<RulesConfig>) : DiktatRule("no-else-in-when",
-                                                                        configRules,
-                                                                        listOf(WHEN_WITHOUT_ELSE)) {
+class WhenMustHaveElseRule(configRules: List<RulesConfig>) : DiktatRule(
+        "no-else-in-when",
+        configRules,
+        listOf(WHEN_WITHOUT_ELSE)) {
     override fun logic(node: ASTNode) {
         if (node.elementType == ElementType.WHEN && isStatement(node)) {
             checkEntries(node)

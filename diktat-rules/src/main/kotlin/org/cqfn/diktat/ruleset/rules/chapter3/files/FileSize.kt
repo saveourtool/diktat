@@ -15,9 +15,10 @@ import org.slf4j.LoggerFactory
 /**
  * Rule that checks number of lines in a file
  */
-class FileSize(configRules: List<RulesConfig>) : DiktatRule("file-size",
-                                                            configRules,
-                                                            listOf(FILE_IS_TOO_LONG)) {
+class FileSize(configRules: List<RulesConfig>) : DiktatRule(
+        "file-size",
+        configRules,
+        listOf(FILE_IS_TOO_LONG)) {
     private val configuration by lazy {
         FileSizeConfiguration(
             this.configRules.getRuleConfig(FILE_IS_TOO_LONG)?.configuration ?: emptyMap()

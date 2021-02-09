@@ -23,9 +23,10 @@ import org.jetbrains.kotlin.resolve.ImportPath
  * No commented out code is allowed, including imports.
  */
 @Suppress("ForbiddenComment")
-class CommentsRule(configRules: List<RulesConfig>) : DiktatRule("comments",
-                                                                    configRules,
-                                                                    listOf(COMMENTED_OUT_CODE)) {
+class CommentsRule(configRules: List<RulesConfig>) : DiktatRule(
+        "comments",
+        configRules,
+        listOf(COMMENTED_OUT_CODE)) {
     private lateinit var ktPsiFactory: KtPsiFactory
 
     override fun logic(node: ASTNode) {

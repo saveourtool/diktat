@@ -64,9 +64,10 @@ import org.jetbrains.kotlin.utils.addToStdlib.firstNotNullResult
  * Additionally, a set of CustomIndentationChecker objects checks all WHITE_SPACE node if they are exceptions from general rules.
  * @see CustomIndentationChecker
  */
-class IndentationRule(configRules: List<RulesConfig>) : DiktatRule("indentation",
-                                                                configRules,
-                                                                listOf(WRONG_INDENTATION)) {
+class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
+        "indentation",
+        configRules,
+        listOf(WRONG_INDENTATION)) {
     private val configuration: IndentationConfig by lazy {
         IndentationConfig(configRules.getRuleConfig(WRONG_INDENTATION)?.configuration ?: emptyMap())
     }

@@ -65,10 +65,11 @@ import org.jetbrains.kotlin.psi.psiUtil.referenceExpression
  * Currently only `throw` keyword from this methods body is supported for `@throws` check.
  */
 @Suppress("ForbiddenComment")
-class KdocMethods(configRules: List<RulesConfig>) : DiktatRule("kdoc-methods",
-                                                            configRules,
-                                                            listOf(KDOC_TRIVIAL_KDOC_ON_FUNCTION, KDOC_WITHOUT_PARAM_TAG, KDOC_WITHOUT_RETURN_TAG,
-                                                                KDOC_WITHOUT_THROWS_TAG, MISSING_KDOC_ON_FUNCTION)) {
+class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
+        "kdoc-methods",
+        configRules,
+        listOf(KDOC_TRIVIAL_KDOC_ON_FUNCTION, KDOC_WITHOUT_PARAM_TAG, KDOC_WITHOUT_RETURN_TAG,
+            KDOC_WITHOUT_THROWS_TAG, MISSING_KDOC_ON_FUNCTION)) {
     /**
      * @param node
      * @param autoCorrect

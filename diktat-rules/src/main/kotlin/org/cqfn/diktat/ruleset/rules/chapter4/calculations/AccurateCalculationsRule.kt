@@ -24,9 +24,10 @@ import org.jetbrains.kotlin.psi.psiUtil.startOffset
  *    Exception: allows arithmetic operations only when absolute value of result is immediately used in comparison
  * Fixme: detect variables by type, not only floating-point literals
  */
-class AccurateCalculationsRule(configRules: List<RulesConfig>) : DiktatRule("accurate-calculations",
-                                                                            configRules,
-                                                                            listOf(FLOAT_IN_ACCURATE_CALCULATIONS)) {
+class AccurateCalculationsRule(configRules: List<RulesConfig>) : DiktatRule(
+        "accurate-calculations",
+        configRules,
+        listOf(FLOAT_IN_ACCURATE_CALCULATIONS)) {
     private fun KtCallExpression?.isAbsOfFloat() = this
         ?.run {
             (calleeExpression as? KtNameReferenceExpression)

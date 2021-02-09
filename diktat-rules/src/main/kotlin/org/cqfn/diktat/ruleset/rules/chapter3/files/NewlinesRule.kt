@@ -96,9 +96,10 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
  * 10. Complex expression inside condition replaced with new variable
  */
 @Suppress("ForbiddenComment")
-class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule("newlines",
-                                                                configRules,
-                                                                listOf(COMPLEX_EXPRESSION, REDUNDANT_SEMICOLON, WRONG_NEWLINES)) {
+class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
+        "newlines",
+        configRules,
+        listOf(COMPLEX_EXPRESSION, REDUNDANT_SEMICOLON, WRONG_NEWLINES)) {
     private val configuration by lazy {
         NewlinesRuleConfiguration(configRules.getRuleConfig(WRONG_NEWLINES)?.configuration ?: emptyMap())
     }

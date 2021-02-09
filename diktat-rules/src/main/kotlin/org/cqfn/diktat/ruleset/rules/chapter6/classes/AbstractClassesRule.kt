@@ -19,9 +19,10 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 /**
  * Checks if abstract class has any abstract method. If not, warns that class should not be abstract
  */
-class AbstractClassesRule(configRules: List<RulesConfig>) : DiktatRule("abstract-classes",
-                                                                        configRules,
-                                                                        listOf(CLASS_SHOULD_NOT_BE_ABSTRACT)) {
+class AbstractClassesRule(configRules: List<RulesConfig>) : DiktatRule(
+        "abstract-classes",
+        configRules,
+        listOf(CLASS_SHOULD_NOT_BE_ABSTRACT)) {
     override fun logic(node: ASTNode) {
         if (node.elementType == CLASS) {
             val classBody = node.getFirstChildWithType(CLASS_BODY) ?: return
