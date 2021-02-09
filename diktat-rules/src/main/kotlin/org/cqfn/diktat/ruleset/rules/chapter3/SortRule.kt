@@ -18,12 +18,10 @@ import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.SEMICOLON
-import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isPartOfComment
 import com.pinterest.ktlint.core.ast.isWhiteSpace
 import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.nextSibling
-import com.pinterest.ktlint.core.ast.prevSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -74,36 +72,24 @@ class SortRule(configRules: List<RulesConfig>) : DiktatRule("sort-rule", configR
         }
     }
 
+    @OptIn(ExperimentalStdlibApi::class)
     private fun swapSortNodes(
         sortList: List<ASTNode>,
         nonSortList: List<ASTNode>,
         node: ASTNode) {
-        val spaceBefore = nonSortList.map { astNode ->
-            val nodeBefore = astNode.prevSibling { it.elementType == WHITE_SPACE || it.elementType == ENUM_ENTRY }
-            if (nodeBefore?.elementType == WHITE_SPACE) {
-                nodeBefore
-            } else {
-                null
+        val isEnum = nonSortList.first().elementType == ENUM_ENTRY
+        val spaceBefore = if (node.findAllNodesWithSpecificType(EOL_COMMENT).isNotEmpty() && isEnum) {
+            nonSortList.last().run {
+                if (this.hasChildOfType(EOL_COMMENT) && !this.hasChildOfType(COMMA)) {
+                    this.addChild(LeafPsiElement(COMMA, ","), this.findChildByType(EOL_COMMENT))
+                }
             }
-        }
-        val nodeBefore: ASTNode? = nonSortList.last().treeNext
-        node.removeRange(nonSortList.first(), nonSortList.last().treeNext)
-        sortList.forEachIndexed { nodeIndex, astNode ->
-            spaceBefore[nodeIndex]?.let { node.addChild(it, nodeBefore) }
-            node.addChild(astNode, nodeBefore)
-        }
-    }
-
-    private fun swapSortEnumEntry(
-        sortList: List<ASTNode>,
-        nonSortList: List<ASTNode>,
-        node: ASTNode) {
-        val spaceBefore = if (node.findAllNodesWithSpecificType(EOL_COMMENT).isNotEmpty()) {
-            val lastEntry = node.findAllNodesWithSpecificType(ENUM_ENTRY).last()
-            if (lastEntry.hasChildOfType(EOL_COMMENT) && !lastEntry.hasChildOfType(COMMA)) {
-                lastEntry.addChild(LeafPsiElement(COMMA, ","), lastEntry.findChildByType(EOL_COMMENT))
+            buildList(nonSortList.size) {
+                add(null)
+                repeat(nonSortList.size - 1) {
+                    add(listOf(PsiWhiteSpaceImpl("\n")))
+                }
             }
-            listOf(null) + List(nonSortList.size - 1) { listOf(PsiWhiteSpaceImpl("\n")) }
         } else {
             nonSortList.map { astNode ->
                 astNode
@@ -113,14 +99,14 @@ class SortRule(configRules: List<RulesConfig>) : DiktatRule("sort-rule", configR
                     .ifEmpty { null }
             }
         }
-        val nodeBefore: ASTNode? = nonSortList.last().treeNext
+        val nodeInsertBefore: ASTNode? = nonSortList.last().treeNext
         node.removeRange(nonSortList.first(), nonSortList.last().treeNext)
         sortList.mapIndexed { index, astNode ->
-            spaceBefore[index]?.let { prevList -> prevList.map { node.addChild(it, nodeBefore) } }
-            if (!astNode.hasChildOfType(COMMA)) {
+            spaceBefore[index]?.let { prevList -> prevList.map { node.addChild(it, nodeInsertBefore) } }
+            if (!astNode.hasChildOfType(COMMA) && isEnum) {
                 astNode.addChild(LeafPsiElement(COMMA, ","), null)
             }
-            node.addChild(astNode, nodeBefore)
+            node.addChild(astNode, nodeInsertBefore)
         }
     }
 
@@ -151,7 +137,7 @@ class SortRule(configRules: List<RulesConfig>) : DiktatRule("sort-rule", configR
             WRONG_DECLARATIONS_ORDER.warnAndFix(configRules, emitWarn, isFixMode, "enum entries order is incorrect", node.startOffset, node) {
                 val (isEndSemicolon, isEndSpace) = removeLastSemicolonAndSpace(enumEntryList.last())
                 val hasTrailingComma = (sortList.last() != enumEntryList.last() && enumEntryList.last().hasChildOfType(COMMA))
-                swapSortEnumEntry(sortList, enumEntryList, node)
+                swapSortNodes(sortList, enumEntryList, node)
                 if (!hasTrailingComma) {
                     val lastEntry = node.findAllNodesWithSpecificType(ENUM_ENTRY).last()
                     lastEntry.removeChild(lastEntry.findChildByType(COMMA)!!)
