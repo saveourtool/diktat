@@ -105,6 +105,15 @@ Add this plugin to your pom.xml:
 To run diktat in **only-check** mode use command `$ mvn diktat:check@diktat`.
 To run diktat in **autocorrect** mode use command `$ mvn diktat:fix@diktat`.
 
+### Run with Maven using Spotless
+[Spotless](https://github.com/diffplug/spotless) is a linter aggregator. Diktat can be run via spotless-maven-plugin since version 2.8.0
+```xml
+<diktat>
+  <version>0.4.0</version> <!-- optional -->
+  <configFile>full/path/to/diktat-analysis.yml</configFile> <!-- optional, configuration file path -->
+</diktat>
+```
+
 ## Run with Gradle using diktat-gradle-plugin
 This plugin is available since version 0.1.5. You can see how the plugin is configured in our examples: [build.gradle.kts](examples/gradle-kotlin-dsl/build.gradle.kts).
 Add this plugin to your `build.gradle.kts`:
@@ -164,12 +173,12 @@ diktat {
 You can run diktat checks using task `diktatCheck` and automatically fix errors with tasks `diktatFix`.
 
 ## Run with Spotless
-[Spotless](https://github.com/diffplug/spotless) is a linter aggregator.
+[Spotless](https://github.com/diffplug/spotless) is a linter aggregator. Diktat can be run via spotless-gradle-plugin since version 5.10.0
 
 Add this plugin to your `build.gradle.kts`
 ```kotlin
 plugins {
-   id("com.diffplug.spotless") version "latest-SNAPSHOT"
+   id("com.diffplug.spotless") version "5.10.0-SNAPSHOT"
 }
 
 spotless {
@@ -185,34 +194,7 @@ You can provide a version and configuration path manually as configFile.
 ```kotlin
 spotless {
   kotlin {
-    diktat('0.4.0').configFile("full/path/to/diktat-analysis.yml")
-```
-You can use the following snippet in your `settings.gradle` (for Gradle 6.0+)
-```kotlin
-pluginManagement {
-    repositories {
-        mavenLocal {
-            content {
-                includeGroup ("com.diffplug.spotless")
-            }
-        }
-        gradlePluginPortal()
-    }
-    resolutionStrategy {
-        eachPlugin {
-            if (requested.id.id == "com.diffplug.spotless") {
-                useModule("com.diffplug.spotless:spotless-plugin-gradle:latest-SNAPSHOT")
-            }
-        }
-    }
-}
-```
-### Maven
-```kotlin
-<diktat>
-  <version>0.4.0</version> <!-- optional -->
-  <configFile>full/path/to/diktat-analysis.yml</configFile> <!-- optional, configuration file path -->
-</diktat>
+    diktat("0.4.0").configFile("full/path/to/diktat-analysis.yml")
 ```
 ## Customizations via `diktat-analysis.yml`
 
