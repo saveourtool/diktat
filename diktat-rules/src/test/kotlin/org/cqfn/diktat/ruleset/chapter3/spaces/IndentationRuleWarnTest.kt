@@ -606,5 +606,19 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
         )
     }
 
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
+    fun `test`() {
+        lintMethod(
+            """
+                |fun foo(some: String) {
+                |   val a = "${'$'}{
+                |   expression
+                |   }"
+                |}
+            """.trimMargin()
+        )
+    }
+
     private fun warnText(expected: Int, actual: Int) = "${WRONG_INDENTATION.warnText()} expected $expected but was $actual"
 }
