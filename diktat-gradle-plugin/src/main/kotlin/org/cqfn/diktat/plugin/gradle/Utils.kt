@@ -8,8 +8,14 @@ package org.cqfn.diktat.plugin.gradle
 
 import groovy.lang.Closure
 
-@Suppress("MISSING_KDOC_TOP_LEVEL", "MISSING_KDOC_CLASS_ELEMENTS", "KDOC_NO_CONSTRUCTOR_PROPERTY",
-    "MISSING_KDOC_ON_FUNCTION", "KDOC_WITHOUT_PARAM_TAG", "KDOC_WITHOUT_RETURN_TAG")
+@Suppress(
+    "MISSING_KDOC_TOP_LEVEL",
+    "MISSING_KDOC_CLASS_ELEMENTS",
+    "KDOC_NO_CONSTRUCTOR_PROPERTY",
+    "MISSING_KDOC_ON_FUNCTION",
+    "KDOC_WITHOUT_PARAM_TAG",
+    "KDOC_WITHOUT_RETURN_TAG"
+)
 class KotlinClosure1<in T : Any?, V : Any>(
     val function: T.() -> V?,
     owner: Any? = null,
