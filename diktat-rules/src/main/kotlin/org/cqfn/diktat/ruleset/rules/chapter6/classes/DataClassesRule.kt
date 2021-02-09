@@ -56,7 +56,11 @@ class DataClassesRule(configRules: List<RulesConfig>) : DiktatRule(
         USE_DATA_CLASS.warn(configRules, emitWarn, isFixMode, "${(node.psi as KtClass).name}", node.startOffset, node)
     }
 
-    @Suppress("UnsafeCallOnNullableType", "FUNCTION_BOOLEAN_PREFIX", "ComplexMethod")
+    @Suppress(
+        "UnsafeCallOnNullableType",
+        "FUNCTION_BOOLEAN_PREFIX",
+        "ComplexMethod"
+    )
     private fun ASTNode.canBeDataClass(): Boolean {
         val isNotPropertyInClassBody = findChildByType(CLASS_BODY)?.let { (it.psi as KtClassBody).properties.isEmpty() } ?: true
         val hasPropertyInConstructor = findChildByType(PRIMARY_CONSTRUCTOR)

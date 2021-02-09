@@ -53,7 +53,12 @@ class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    @Suppress("UnsafeCallOnNullableType", "LongMethod", "ComplexMethod", "TOO_LONG_FUNCTION")
+    @Suppress(
+        "UnsafeCallOnNullableType",
+        "LongMethod",
+        "ComplexMethod",
+        "TOO_LONG_FUNCTION"
+    )
     private fun checkDeclarationsOrderInClass(node: ASTNode) {
         val allProperties = node.getChildren(TokenSet.create(PROPERTY))
         val constProperties = allProperties.filter { it.findLeafWithSpecificType(CONST_KEYWORD) != null }.toMutableList()

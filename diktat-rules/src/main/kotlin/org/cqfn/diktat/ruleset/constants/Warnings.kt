@@ -18,7 +18,12 @@ typealias ListOfPairs = MutableList<Pair<ASTNode, String>>
  * @property canBeAutoCorrected whether this inspection can automatically fix the code
  * @property ruleId number of the inspection according to []diktat code style](https://www.cqfn.org/diKTat/info/guide/diktat-coding-convention.html)
  */
-@Suppress("ForbiddenComment", "MagicNumber", "WRONG_DECLARATIONS_ORDER", "MaxLineLength")
+@Suppress(
+    "ForbiddenComment",
+    "MagicNumber",
+    "WRONG_DECLARATIONS_ORDER",
+    "MaxLineLength"
+)
 enum class Warnings(
     val canBeAutoCorrected: Boolean,
     val ruleId: String,

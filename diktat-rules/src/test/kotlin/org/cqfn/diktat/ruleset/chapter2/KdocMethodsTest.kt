@@ -51,8 +51,12 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
     }
 
     @Test
-    @Tags(Tag(WarningNames.KDOC_WITHOUT_PARAM_TAG), Tag(WarningNames.KDOC_WITHOUT_RETURN_TAG), Tag(WarningNames.KDOC_WITHOUT_THROWS_TAG),
-        Tag(WarningNames.MISSING_KDOC_ON_FUNCTION))
+    @Tags(
+        Tag(WarningNames.KDOC_WITHOUT_PARAM_TAG),
+        Tag(WarningNames.KDOC_WITHOUT_RETURN_TAG),
+        Tag(WarningNames.KDOC_WITHOUT_THROWS_TAG),
+        Tag(WarningNames.MISSING_KDOC_ON_FUNCTION)
+    )
     fun `Warning should not be triggered for functions in tests`() {
         val validCode = "@Test $funCode"
         val complexAnnotationCode = "@Anno(test = [\"args\"]) $funCode"

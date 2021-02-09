@@ -122,7 +122,11 @@ class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
     }
 
     @Test
-    @Tags(Tag(WarningNames.CLASS_NAME_INCORRECT), Tag(WarningNames.VARIABLE_NAME_INCORRECT_FORMAT), Tag(WarningNames.CONSTANT_UPPERCASE))
+    @Tags(
+        Tag(WarningNames.CLASS_NAME_INCORRECT),
+        Tag(WarningNames.VARIABLE_NAME_INCORRECT_FORMAT),
+        Tag(WarningNames.CONSTANT_UPPERCASE)
+    )
     fun `check identifiers case format (check - negative)`() {
         val code =
                 """

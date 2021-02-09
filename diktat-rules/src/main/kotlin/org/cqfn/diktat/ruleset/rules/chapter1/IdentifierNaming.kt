@@ -150,7 +150,11 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
     /**
      * all checks for case and naming for vals/vars/constants
      */
-    @Suppress("SAY_NO_TO_VAR", "TOO_LONG_FUNCTION", "ComplexMethod")
+    @Suppress(
+        "SAY_NO_TO_VAR",
+        "TOO_LONG_FUNCTION",
+        "ComplexMethod"
+    )
     private fun checkVariableName(node: ASTNode): List<ASTNode> {
         // special case for Destructuring declarations that can be treated as parameters in lambda:
         var namesOfVariables = extractVariableIdentifiers(node)
