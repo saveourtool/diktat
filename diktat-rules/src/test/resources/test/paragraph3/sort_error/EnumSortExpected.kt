@@ -50,3 +50,15 @@ enum class IssueType {
 enum class IssueType {
     PROJECT_STRUCTURE,TESTS,VCS
 }
+
+enum class IssueType {
+    PROJECT_STRUCTURE, // comment
+TESTS,
+VCS
+}
+
+enum class IssueType {
+    PROJECT_STRUCTURE ,// comment
+TESTS,
+VCS
+}

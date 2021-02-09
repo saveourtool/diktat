@@ -5,27 +5,31 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_DECLARATIONS_ORDER
+import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.cqfn.diktat.ruleset.utils.isClassEnum
 
 import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.COMMA
 import com.pinterest.ktlint.core.ast.ElementType.CONST_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.ENUM_ENTRY
+import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.SEMICOLON
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.isPartOfComment
 import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
+import com.pinterest.ktlint.core.ast.isWhiteSpace
 import com.pinterest.ktlint.core.ast.nextSibling
 import com.pinterest.ktlint.core.ast.prevSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.psi.KtObjectDeclaration
+import org.jetbrains.kotlin.psi.psiUtil.siblings
 
 /**
  * Rule that sorts class properties and enum members alphabetically
@@ -99,6 +103,32 @@ class SortRule(private val configRules: List<RulesConfig>) : Rule("sort-rule") {
         }
     }
 
+    private fun swapSortEnumEntry(
+        sortList: List<ASTNode>,
+        nonSortList: List<ASTNode>,
+        node: ASTNode) {
+        val spaceBefore =  if (node.findAllNodesWithSpecificType(EOL_COMMENT).isNotEmpty()) {
+            val lastEntry = node.findAllNodesWithSpecificType(ENUM_ENTRY).last()
+            if (lastEntry.hasChildOfType(EOL_COMMENT) && !lastEntry.hasChildOfType(COMMA)) {
+                lastEntry.addChild(LeafPsiElement(COMMA, ","), lastEntry.findChildByType(EOL_COMMENT))
+            }
+            listOf(null) + List(nonSortList.size - 1) {listOf(PsiWhiteSpaceImpl("\n"))}
+        } else {
+            nonSortList.map { astNode ->
+                astNode.siblings(false).toList().takeWhile { it.isWhiteSpace() || it.isPartOfComment() }.ifEmpty { null }
+            }
+        }
+        val nodeBefore: ASTNode? = nonSortList.last().treeNext
+        node.removeRange(nonSortList.first(), nonSortList.last().treeNext)
+        sortList.mapIndexed { index, astNode ->
+            spaceBefore[index]?.let { prevList -> prevList.map { node.addChild(it, nodeBefore) } }
+            if (!astNode.hasChildOfType(COMMA)) {
+                astNode.addChild(LeafPsiElement(COMMA, ","), null)
+            }
+            node.addChild(astNode, nodeBefore)
+        }
+    }
+
     @Suppress("TYPE_ALIAS")
     private fun createOrderListOfList(propertyList: List<ASTNode>): List<List<ASTNode>> {
         var oneOrderList = mutableListOf(propertyList.first())
@@ -117,7 +147,7 @@ class SortRule(private val configRules: List<RulesConfig>) : Rule("sort-rule") {
 
     @Suppress("UnsafeCallOnNullableType")
     private fun sortEnum(node: ASTNode) {
-        val enumEntryList = node.getChildren(null).filter { it.elementType == ElementType.ENUM_ENTRY }
+        val enumEntryList = node.getChildren(null).filter { it.elementType == ENUM_ENTRY }
         if (enumEntryList.size <= 1) {
             return
         }
@@ -126,10 +156,10 @@ class SortRule(private val configRules: List<RulesConfig>) : Rule("sort-rule") {
             WRONG_DECLARATIONS_ORDER.warnAndFix(configRules, emitWarn, isFixMode, "enum entries order is incorrect", node.startOffset, node) {
                 val (isEndSemicolon, isEndSpace) = removeLastSemicolonAndSpace(enumEntryList.last())
                 val hasTrailingComma = (sortList.last() != enumEntryList.last() && enumEntryList.last().hasChildOfType(COMMA))
-                swapSortNodes(sortList, enumEntryList, node)
+                swapSortEnumEntry(sortList, enumEntryList, node)
                 if (!hasTrailingComma) {
-                    enumEntryList.last().addChild(LeafPsiElement(COMMA, ","), null)
-                    sortList.last().removeChild(sortList.last().findChildByType(COMMA)!!)
+                    val lastEntry = node.findAllNodesWithSpecificType(ENUM_ENTRY).last()
+                    lastEntry.removeChild(lastEntry.findChildByType(COMMA)!!)
                 }
                 if (isEndSpace) {
                     sortList.last().addChild(PsiWhiteSpaceImpl("\n"), null)
