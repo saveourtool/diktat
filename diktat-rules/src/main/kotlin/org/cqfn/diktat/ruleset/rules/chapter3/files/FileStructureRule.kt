@@ -73,6 +73,7 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule("file-struc
         }
     private val refSet: MutableSet<String> = mutableSetOf()
     private var packageName = ""
+    private val ignoreImports = setOf("invoke", "get", "set")
 
     override fun logic(node: ASTNode) {
         if (node.elementType == FILE) {
@@ -222,7 +223,7 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule("file-struc
                 ) {
                     // this branch corresponds to imports from the same package
                     deleteImport(importPath, node, ktImportDirective)
-                } else if (importName != null && !refSet.contains(
+                } else if (importName != null && !ignoreImports.contains(importName) && !refSet.contains(
                     importName
                 )
                 ) {
@@ -245,14 +246,21 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule("file-struc
     }
 
     private fun findAllReferences(node: ASTNode) {
-        node.findAllNodesWithSpecificType(OPERATION_REFERENCE)?.forEach { ref ->
+        node.findAllNodesWithSpecificType(OPERATION_REFERENCE).forEach { ref ->
             if (!ref.isPartOf(IMPORT_DIRECTIVE)) {
-                operatorMap.filterValues { it == ref.text }.keys.forEach { key -> refSet.add(key) }
+                val references = operatorMap.filterValues { it == ref.text }
+                if (references.isNotEmpty()) {
+                    references.keys.forEach { key -> refSet.add(key) }
+                } else {
+                    // this is needed to check infix functions that relate to operation reference
+                    refSet.add(ref.text)
+                }
             }
         }
-        node.findAllNodesWithSpecificType(REFERENCE_EXPRESSION)?.forEach {
+        node.findAllNodesWithSpecificType(REFERENCE_EXPRESSION).forEach {
             if (!it.isPartOf(IMPORT_DIRECTIVE)) {
-                refSet.add(it.text)
+                // the importedName method removes the quotes, but the node.text method does not
+                refSet.add(it.text.replace("`", ""))
             }
         }
     }
