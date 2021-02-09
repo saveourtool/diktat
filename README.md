@@ -193,14 +193,35 @@ spotless {
 
 ```kotlin
 spotless {
-  kotlin {
-    diktat("0.4.0").configFile("full/path/to/diktat-analysis.yml")
+   kotlin {
+      diktat("0.4.0").configFile("full/path/to/diktat-analysis.yml")
+   }
+}
 ```
 </details>
 
 ### Maven
+Diktat can be run via spotless-maven-plugin since version 2.8.0
+
 <details>
-<summary>Diktat can be run via spotless-maven-plugin since version 2.8.0</summary>
+<summary>Add this plugin to your pom.xml</summary>
+
+```xml
+<plugin>
+   <groupId>com.diffplug.spotless</groupId>
+   <artifactId>spotless-maven-plugin</artifactId>
+   <version>${spotless.version}</version>
+   <configuration>
+      <kotlin>
+         <diktat />
+      </kotlin>
+   </configuration>
+</plugin>
+```
+</details>
+
+<details>
+<summary>You can provide a version and configuration path manually as configFile</summary>
 
 ```xml
 <diktat>
