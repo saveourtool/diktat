@@ -85,22 +85,22 @@ class DataClassesRule(configRules: List<RulesConfig>) : DiktatRule("data-classes
     }
 
     @Suppress("UnsafeCallOnNullableType")
-    private fun ASTNode.hasAppropriateClassBody() : Boolean {
+    private fun ASTNode.hasAppropriateClassBody(): Boolean {
         val classBody = getFirstChildWithType(CLASS_BODY)
         if (hasChildOfType(MODIFIER_LIST)) {
             val list = getFirstChildWithType(MODIFIER_LIST)!!
             return list.getChildren(null)
-                    .none { it.elementType in badModifiers } &&
+                .none { it.elementType in badModifiers } &&
                     classBody?.getAllChildrenWithType(FUN)
-                            ?.isEmpty()
-                    ?: false &&
+                        ?.isEmpty()
+                        ?: false &&
                     getFirstChildWithType(SUPER_TYPE_LIST) == null
         }
         return classBody?.getAllChildrenWithType(FUN)?.isEmpty() ?: false &&
                 getFirstChildWithType(SUPER_TYPE_LIST) == null &&
                 // if there is any prop with logic in accessor then don't recommend to convert class to data class
                 classBody?.let(::areGoodProps)
-                ?: true
+                    ?: true
     }
 
     /**
