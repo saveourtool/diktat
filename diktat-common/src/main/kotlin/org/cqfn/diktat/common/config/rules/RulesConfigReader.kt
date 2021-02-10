@@ -14,10 +14,10 @@ import org.slf4j.LoggerFactory
 
 import java.io.BufferedReader
 import java.io.File
+import java.util.concurrent.atomic.AtomicInteger
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
-import java.util.concurrent.atomic.AtomicInteger
 
 const val DIKTAT_COMMON = "DIKTAT_COMMON"
 
@@ -123,7 +123,7 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
      */
     val kotlinVersion: KotlinVersion by lazy {
         configuration?.get("kotlinVersion")?.kotlinVersion() ?: run {
-            if(visitorCounter.incrementAndGet() == 1) {
+            if (visitorCounter.incrementAndGet() == 1) {
                 log.error("Kotlin version not specified in the configuration file. Will be using ${KotlinVersion.CURRENT} version")
             }
             KotlinVersion.CURRENT
@@ -148,9 +148,7 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
 /**
  * @return common configuration from list of all rules configuration
  */
-fun List<RulesConfig>.getCommonConfiguration() = lazy {
-    CommonConfiguration(getCommonConfig()?.configuration)
-}
+fun List<RulesConfig>.getCommonConfiguration() = CommonConfiguration(getCommonConfig()?.configuration)
 
 /**
  * Get [RulesConfig] for particular [Rule] object.
