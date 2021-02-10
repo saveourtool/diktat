@@ -53,7 +53,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule("kdoc-comments",
      * @param emit
      */
     override fun logic(node: ASTNode) {
-        val config = configRules.getCommonConfiguration().value
+        val config = configRules.getCommonConfiguration()
         val filePath = node.getRootNode().getFilePath()
         if (!(node.hasTestAnnotation() || isLocatedInTest(filePath.splitPathToDirs(), config.testAnchors))) {
             when (node.elementType) {

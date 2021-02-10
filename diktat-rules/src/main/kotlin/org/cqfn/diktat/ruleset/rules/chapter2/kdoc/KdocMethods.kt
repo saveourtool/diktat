@@ -75,7 +75,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule("kdoc-methods", c
      */
     override fun logic(node: ASTNode) {
         if (node.elementType == FUN && node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside() && !node.isOverridden()) {
-            val config = configRules.getCommonConfiguration().value
+            val config = configRules.getCommonConfiguration()
             val filePath = node.getRootNode().getFilePath()
             val isTestMethod = node.hasTestAnnotation() || isLocatedInTest(filePath.splitPathToDirs(), config.testAnchors)
             if (!isTestMethod && !node.isStandardMethod() && !node.isSingleLineGetterOrSetter()) {
