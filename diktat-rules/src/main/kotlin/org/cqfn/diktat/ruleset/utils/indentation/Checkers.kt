@@ -24,6 +24,7 @@ import com.pinterest.ktlint.core.ast.ElementType.IS_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_END
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_LEADING_ASTERISK
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_SECTION
+import com.pinterest.ktlint.core.ast.ElementType.LONG_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.LPAR
 import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
