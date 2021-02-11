@@ -50,4 +50,10 @@ class KdocFormattingFixTest : FixTestBase("test/paragraph2/kdoc/", ::KdocFormatt
     fun `KdocFormatting - all warnings`() {
         fixAndCompare("KdocFormattingFullExpected.kt", "KdocFormattingFullTest.kt")
     }
+
+    @Test
+    @Tags(Tag(WarningNames.KDOC_NO_DEPRECATED_TAG), Tag(WarningNames.KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS))
+    fun `KdocFormatting - sort order`() {
+        fixAndCompare("KdocFormattingOrderExpected.kt", "KdocFormattingOrderTest.kt")
+    }
 }

@@ -200,10 +200,14 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule("kdoc-formatti
                     .filter { basicTagsOrdered.contains(it.knownTag) }
                     .map { it.node }
 
-                basicTagsOrdered.forEachIndexed { index, tag ->
-                    val tagNode = kdocTags.find { it.knownTag == tag }!!.node
-                    kdocSection.addChild(tagNode.clone() as CompositeElement, basicTagChildren[index])
-                    kdocSection.removeChild(basicTagChildren[index])
+                val correctKdocOrder = basicTags
+                    .toMutableList()
+                    .sortedBy { basicTagsOrdered.indexOf(it.knownTag) }
+                    .map {it.node }
+
+                basicTagChildren.mapIndexed { index, astNode ->
+                    kdocSection.addChild(correctKdocOrder[index].clone() as CompositeElement, astNode)
+                    kdocSection.removeChild(astNode)
                 }
             }
         }
