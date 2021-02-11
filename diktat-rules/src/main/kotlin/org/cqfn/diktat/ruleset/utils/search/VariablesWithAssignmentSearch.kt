@@ -10,7 +10,7 @@
 
 package org.cqfn.diktat.ruleset.utils.search
 
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
+import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.isGoingAfter
 
 import com.pinterest.ktlint.core.ast.ElementType
@@ -29,7 +29,7 @@ class VariablesWithAssignmentSearch(fileNode: ASTNode,
      * @return
      */
     override fun KtElement.getAllSearchResults(property: KtProperty) = this.node
-        .findAllNodesWithSpecificType(ElementType.BINARY_EXPRESSION)
+        .findAllDescendantsWithSpecificType(ElementType.BINARY_EXPRESSION)
         // filtering out all usages that are declared in the same context but are going before the variable declaration
         // AND checking that there is an assignment
         .filter {

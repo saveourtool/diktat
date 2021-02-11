@@ -82,7 +82,7 @@ class DataClassesRule(configRules: List<RulesConfig>) : DiktatRule(
         if (constructorParametersNames.isNotEmpty()) {
             val initBlocks = findChildByType(CLASS_BODY)?.getAllChildrenWithType(CLASS_INITIALIZER)
             initBlocks?.forEach { init ->
-                val refExpressions = init.findAllNodesWithSpecificType(REFERENCE_EXPRESSION)
+                val refExpressions = init.findAllDescendantsWithSpecificType(REFERENCE_EXPRESSION)
                 if (refExpressions.any { it.text in constructorParametersNames }) {
                     return false
                 }

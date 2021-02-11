@@ -4,7 +4,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.ListOfPairs
 import org.cqfn.diktat.ruleset.constants.Warnings.COMMENTED_OUT_CODE
 import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
+import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
@@ -52,7 +52,7 @@ class CommentsRule(configRules: List<RulesConfig>) : DiktatRule(
         val errorNodesWithText: ListOfPairs = mutableListOf()
         val eolCommentsOffsetToText = getOffsetsToTextBlocksFromEolComments(node, errorNodesWithText)
         val blockCommentsOffsetToText = node
-            .findAllNodesWithSpecificType(BLOCK_COMMENT)
+            .findAllDescendantsWithSpecificType(BLOCK_COMMENT)
             .map {
                 errorNodesWithText.add(it to it.text.trim().removeSurrounding("/*", "*/"))
                 it.startOffset to it.text.trim().removeSurrounding("/*", "*/")
@@ -80,7 +80,7 @@ class CommentsRule(configRules: List<RulesConfig>) : DiktatRule(
             }
             .filter { (_, parsedNode) ->
                 parsedNode
-                    .findAllNodesWithSpecificType(TokenType.ERROR_ELEMENT)
+                    .findAllDescendantsWithSpecificType(TokenType.ERROR_ELEMENT)
                     .isEmpty()
             }
             .forEach { (offset, parsedNode) ->
@@ -97,7 +97,7 @@ class CommentsRule(configRules: List<RulesConfig>) : DiktatRule(
      */
     private fun getOffsetsToTextBlocksFromEolComments(node: ASTNode, errorNodesWithText: ListOfPairs): List<Pair<Int, String>> {
         val comments = node
-            .findAllNodesWithSpecificType(EOL_COMMENT)
+            .findAllDescendantsWithSpecificType(EOL_COMMENT)
             .filter { !it.text.contains(eolCommentStart) || isCodeAfterCommentStart(it.text) }
         return if (comments.isNotEmpty()) {
             val result = mutableListOf(mutableListOf(comments.first()))

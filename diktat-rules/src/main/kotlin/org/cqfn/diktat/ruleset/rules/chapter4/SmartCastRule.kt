@@ -4,7 +4,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.SMART_CAST_NEEDED
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.KotlinParser
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
+import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
@@ -172,7 +172,7 @@ class SmartCastRule(configRules: List<RulesConfig>) : DiktatRule(
         thenBlock?.let {
             // Find all as expressions that are inside this current block
             val asList = thenBlock
-                .findAllNodesWithSpecificType(BINARY_WITH_TYPE)
+                .findAllDescendantsWithSpecificType(BINARY_WITH_TYPE)
                 .filter {
                     it.text.contains(" as ") && it.findParentNodeWithSpecificType(BLOCK) == thenBlock
                 }
@@ -180,7 +180,7 @@ class SmartCastRule(configRules: List<RulesConfig>) : DiktatRule(
             checkAsExpressions(asList, blocks)
         }
             ?: run {
-                val asList = then.findAllNodesWithSpecificType(BINARY_WITH_TYPE).filter { it.text.contains(KtTokens.AS_KEYWORD.value) }
+                val asList = then.findAllDescendantsWithSpecificType(BINARY_WITH_TYPE).filter { it.text.contains(KtTokens.AS_KEYWORD.value) }
                 checkAsExpressions(asList, blocks)
             }
     }
@@ -229,7 +229,7 @@ class SmartCastRule(configRules: List<RulesConfig>) : DiktatRule(
                 val type = entry.getFirstChildWithType(WHEN_CONDITION_IS_PATTERN)!!
                     .getFirstChildWithType(TYPE_REFERENCE)?.text
 
-                val callExpr = entry.findAllNodesWithSpecificType(BINARY_WITH_TYPE).firstOrNull()
+                val callExpr = entry.findAllDescendantsWithSpecificType(BINARY_WITH_TYPE).firstOrNull()
                 val blocks = listOf(IsExpressions(identifier, type ?: ""))
 
                 callExpr?.let {

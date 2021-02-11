@@ -3,7 +3,7 @@ package org.cqfn.diktat.ruleset.rules.chapter5
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.AVOID_NESTED_FUNCTIONS
 import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
+import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.cqfn.diktat.ruleset.utils.hasParent
@@ -43,7 +43,7 @@ class AvoidNestedFunctionsRule(configRules: List<RulesConfig>) : DiktatRule(
             AVOID_NESTED_FUNCTIONS.warnAndFix(configRules, emitWarn, isFixMode, "fun $funcName", node.startOffset, node,
                 canBeAutoCorrected = checkFunctionReferences(node)) {
                 // We take last nested function, then add and remove child from bottom to top
-                val lastFunc = node.findAllNodesWithSpecificType(FUN).last()
+                val lastFunc = node.findAllDescendantsWithSpecificType(FUN).last()
                 val funcSeq = lastFunc
                     .parents()
                     .filter { it.elementType == FUN }
@@ -78,14 +78,14 @@ class AvoidNestedFunctionsRule(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("UnsafeCallOnNullableType", "FUNCTION_BOOLEAN_PREFIX")
     private fun checkFunctionReferences(func: ASTNode): Boolean {
         val localProperties: MutableList<ASTNode> = mutableListOf()
-        localProperties.addAll(func.findAllNodesWithSpecificType(PROPERTY))
+        localProperties.addAll(func.findAllDescendantsWithSpecificType(PROPERTY))
         val propertiesNames: List<String> = mutableListOf<String>().apply {
             addAll(localProperties.map { it.getFirstChildWithType(IDENTIFIER)!!.text })
             addAll(getParameterNames(func))
         }
             .toList()
 
-        return func.findAllNodesWithSpecificType(REFERENCE_EXPRESSION).all { propertiesNames.contains(it.text) }
+        return func.findAllDescendantsWithSpecificType(REFERENCE_EXPRESSION).all { propertiesNames.contains(it.text) }
     }
 
     /**

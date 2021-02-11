@@ -31,6 +31,9 @@ enum class Warnings(
     val canBeAutoCorrected: Boolean,
     val ruleId: String,
     private val warn: String) : Rule {
+    // ======== dummy test warning ======
+    DUMMY_TEST_WARNING(true, "0.0.0", "this is a dummy warning that can be used for manual testing of fixer/checker"),
+
     // ======== chapter 1 ========
     PACKAGE_NAME_MISSING(true, "1.2.1", "no package name declared in a file"),
     PACKAGE_NAME_INCORRECT_CASE(true, "1.2.1", "package name should be completely in a lower case"),
