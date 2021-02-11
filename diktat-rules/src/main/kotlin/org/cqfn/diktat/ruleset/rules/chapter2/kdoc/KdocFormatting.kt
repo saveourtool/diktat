@@ -168,7 +168,7 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule("kdoc-formatti
         }
     )
 
-    @Suppress("UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
     private fun checkBasicTagsOrder(node: ASTNode) {
         val kdocTags = node.kDocTags()
         // distinct basic tags which are present in current KDoc, in proper order
@@ -203,7 +203,7 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule("kdoc-formatti
                 val correctKdocOrder = basicTags
                     .toMutableList()
                     .sortedBy { basicTagsOrdered.indexOf(it.knownTag) }
-                    .map {it.node }
+                    .map { it.node }
 
                 basicTagChildren.mapIndexed { index, astNode ->
                     kdocSection.addChild(correctKdocOrder[index].clone() as CompositeElement, astNode)
