@@ -99,6 +99,7 @@ tasks.getByName<Test>("functionalTest") {
     testClassesDirs = functionalTest.output.classesDirs
     classpath = functionalTest.runtimeClasspath
     maxParallelForks = Runtime.getRuntime().availableProcessors()
+    maxHeapSize = "1024m"
     doLast {
         if (getCurrentOperatingSystem().isWindows) {
             // workaround for https://github.com/koral--/jacoco-gradle-testkit-plugin/issues/9
