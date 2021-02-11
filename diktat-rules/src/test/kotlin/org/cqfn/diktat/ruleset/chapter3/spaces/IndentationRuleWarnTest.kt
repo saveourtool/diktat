@@ -610,7 +610,7 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
     @Tag(WarningNames.WRONG_INDENTATION)
     fun `should trigger on string templates starting with new line`() {
         lintMethod(
-            """
+                """
                 |fun foo(some: String) {
                 |    fun bar() {
                 |        val a = "${'$'}{
@@ -624,9 +624,9 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                 |}
                 |
             """.trimMargin(),
-            LintError(4, 1, ruleId, warnText(12, 8), true),
-            LintError(5, 1, ruleId, warnText(16, 12), true),
-            LintError(6, 1, ruleId, warnText(16, 12), true)
+                LintError(4, 1, ruleId, warnText(12, 8), true),
+                LintError(5, 1, ruleId, warnText(16, 12), true),
+                LintError(6, 1, ruleId, warnText(16, 12), true)
         )
     }
 

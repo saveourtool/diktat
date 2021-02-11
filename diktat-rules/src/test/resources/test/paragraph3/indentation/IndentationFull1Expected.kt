@@ -39,6 +39,12 @@ data class Example(val field1: Type1,
         }"
 
         val b = "${baz().foo()}"
+
+        val c = "${
+            expression
+                .foo()
+                .bar()
+        }"
     }
 }
 

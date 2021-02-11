@@ -29,6 +29,7 @@ import com.pinterest.ktlint.core.ast.ElementType.LPAR
 import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS
+import com.pinterest.ktlint.core.ast.ElementType.STRING_TEMPLATE
 import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_LIST
 import com.pinterest.ktlint.core.ast.ElementType.THEN
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT
@@ -38,6 +39,8 @@ import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.nextCodeSibling
 import com.pinterest.ktlint.core.ast.prevSibling
+import org.cqfn.diktat.ruleset.utils.hasParameters
+import org.cqfn.diktat.ruleset.utils.hasParent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
@@ -195,6 +198,9 @@ internal class DotCallChecker(config: IndentationConfig) : CustomIndentationChec
         return false
     }
 
+    private fun ASTNode.isFromStringTemplate(): Boolean =
+            hasParent(LONG_STRING_TEMPLATE_ENTRY)
+
     @Suppress("ComplexMethod")
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
         whiteSpace.nextSibling.node
@@ -205,6 +211,12 @@ internal class DotCallChecker(config: IndentationConfig) : CustomIndentationChec
                         } || nextNode.isCommentBeforeDot()
             }
             ?.let {
+                if (it.isFromStringTemplate()) {
+                    val template = it.parents().takeWhile { it.elementType != STRING_TEMPLATE }.last()
+                    return CheckResult.from(indentError.actual, indentError.expected +
+                            (if (configuration.extendedIndentBeforeDot) 2 else 1) * configuration.indentationSize, true)
+                }
+
                 // we need to get indent before the first expression in calls chain
                 return CheckResult.from(indentError.actual, (whiteSpace.run {
                     parents.takeWhile { it is KtDotQualifiedExpression || it is KtSafeQualifiedExpression }.lastOrNull() ?: this

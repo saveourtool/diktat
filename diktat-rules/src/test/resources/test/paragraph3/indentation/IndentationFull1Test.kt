@@ -39,5 +39,11 @@ fun foo(
         }"
 
         val b = "${baz().foo()}"
+
+        val c = "${
+        expression
+            .foo()
+            .bar()
+        }"
     }
 }
