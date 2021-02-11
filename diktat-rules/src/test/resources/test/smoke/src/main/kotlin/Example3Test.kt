@@ -41,6 +41,9 @@ class Example {
     }
 }
 
+enum class IssueType {
+    VCS, PROJECT_STRUCTURE, TESTS
+}
 
 class Foo {
     /**

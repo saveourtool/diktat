@@ -28,7 +28,7 @@ Now diKTat was already added to the lists of [static analysis tools](https://git
 
 |  |  |  |  |  |  |  
 | --- | --- | --- | --- | --- | --- |
-|[Codestyle](info/guide/diktat-coding-convention.md)|[Inspections](info/available-rules.md) | [Examples](https://github.com/akuleshov7/diktat-examples) | [Demo](https://ktlint-demo.herokuapp.com) | [White Paper](wp/wp.pdf) | [Groups of Inspections](info/rules-mapping.md) |
+|[Codestyle](info/guide/diktat-coding-convention.md)|[Inspections](info/available-rules.md) | [Examples](examples) | [Demo](https://ktlint-demo.herokuapp.com) | [White Paper](wp/wp.pdf) | [Groups of Inspections](info/rules-mapping.md) |
 
 ## Why should I use diktat in my CI/CD?
 
@@ -162,6 +162,74 @@ diktat {
 ```
 
 You can run diktat checks using task `diktatCheck` and automatically fix errors with tasks `diktatFix`.
+
+## Run with Spotless
+[Spotless](https://github.com/diffplug/spotless) is a linter aggregator.
+
+### Gradle
+Diktat can be run via spotless-gradle-plugin since version 5.10.0
+
+<details>
+<summary>Add this plugin to your build.gradle.kts</summary>
+
+```kotlin
+plugins {
+   id("com.diffplug.spotless") version "5.10.0"
+}
+
+spotless {
+   kotlin {
+      diktat()
+   }
+   kotlinGradle {
+      diktat()
+   }
+}
+```
+</details>
+
+<details>
+<summary>You can provide a version and configuration path manually as configFile.</summary>
+
+```kotlin
+spotless {
+   kotlin {
+      diktat("0.4.0").configFile("full/path/to/diktat-analysis.yml")
+   }
+}
+```
+</details>
+
+### Maven
+Diktat can be run via spotless-maven-plugin since version 2.8.0
+
+<details>
+<summary>Add this plugin to your pom.xml</summary>
+
+```xml
+<plugin>
+   <groupId>com.diffplug.spotless</groupId>
+   <artifactId>spotless-maven-plugin</artifactId>
+   <version>${spotless.version}</version>
+   <configuration>
+      <kotlin>
+         <diktat />
+      </kotlin>
+   </configuration>
+</plugin>
+```
+</details>
+
+<details>
+<summary>You can provide a version and configuration path manually as configFile</summary>
+
+```xml
+<diktat>
+  <version>0.4.0</version> <!-- optional -->
+  <configFile>full/path/to/diktat-analysis.yml</configFile> <!-- optional, configuration file path -->
+</diktat>
+```
+</details>
 
 ## Customizations via `diktat-analysis.yml`
 

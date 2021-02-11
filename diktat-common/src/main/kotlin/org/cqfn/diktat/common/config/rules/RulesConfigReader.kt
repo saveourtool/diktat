@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory
 
 import java.io.BufferedReader
 import java.io.File
+import java.util.concurrent.atomic.AtomicInteger
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
@@ -122,7 +123,9 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
      */
     val kotlinVersion: KotlinVersion by lazy {
         configuration?.get("kotlinVersion")?.kotlinVersion() ?: run {
-            log.error("Kotlin version not specified in the configuration file. Will be using ${KotlinVersion.CURRENT} version")
+            if (visitorCounter.incrementAndGet() == 1) {
+                log.error("Kotlin version not specified in the configuration file. Will be using ${KotlinVersion.CURRENT} version")
+            }
             KotlinVersion.CURRENT
         }
     }
@@ -131,6 +134,13 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
      * False if configuration has been read from config file, true if defaults are used
      */
     val isDefault = configuration == null
+
+    companion object {
+        /**
+         * Counter that helps not to raise multiple warnings about kotlin version
+         */
+        var visitorCounter = AtomicInteger(0)
+    }
 }
 
 // ================== utils for List<RulesConfig> from yml config
@@ -138,9 +148,7 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
 /**
  * @return common configuration from list of all rules configuration
  */
-fun List<RulesConfig>.getCommonConfiguration() = lazy {
-    CommonConfiguration(getCommonConfig()?.configuration)
-}
+fun List<RulesConfig>.getCommonConfiguration() = CommonConfiguration(getCommonConfig()?.configuration)
 
 /**
  * Get [RulesConfig] for particular [Rule] object.

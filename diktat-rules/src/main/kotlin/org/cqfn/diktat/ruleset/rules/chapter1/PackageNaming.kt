@@ -39,7 +39,7 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule("package-naming
     private lateinit var domainName: String
 
     override fun logic(node: ASTNode) {
-        val configuration by configRules.getCommonConfiguration()
+        val configuration = configRules.getCommonConfiguration()
         configuration.domainName?.let {
             domainName = it
             if (node.elementType == PACKAGE_DIRECTIVE) {
