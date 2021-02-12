@@ -381,6 +381,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule("line-length", con
     }
 
     /**
+     *
      * [RuleConfiguration] for maximum line length
      */
     class LineLengthConfiguration(config: Map<String, String>) : RuleConfiguration(config) {

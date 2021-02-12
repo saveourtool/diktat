@@ -112,6 +112,7 @@ enum class Warnings(
     ENUMS_SEPARATED(true, "3.9.1", "enum is incorrectly formatted"),
     WHEN_WITHOUT_ELSE(true, "3.11.1", "each 'when' statement must have else at the end"),
     LONG_NUMERICAL_VALUES_SEPARATED(true, "3.14.2", "long numerical values should be separated with underscore"),
+    MAGIC_NUMBER(false, "3.14.2", "defining constants with clear names describing what the magic number means"),
     WRONG_DECLARATIONS_ORDER(true, "3.1.4", "declarations of constants and enum members should be sorted alphabetically"),
     WRONG_MULTIPLE_MODIFIERS_ORDER(true, "3.14.1", "sequence of modifier-keywords is incorrect"),
     LOCAL_VARIABLE_EARLY_DECLARATION(false, "3.10.2", "local variables should be declared close to the line where they are first used"),
