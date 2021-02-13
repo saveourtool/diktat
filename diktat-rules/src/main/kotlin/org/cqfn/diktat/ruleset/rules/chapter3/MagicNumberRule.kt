@@ -52,7 +52,7 @@ class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule("magic-number
         val isEnums = node.parent({ it.elementType == ENUM_ENTRY }) != null
         val isRanges = node.treeParent.run {
             this.elementType == BINARY_EXPRESSION &&
-                this.findChildByType(OPERATION_REFERENCE)?.hasChildOfType(RANGE) ?: false
+                    this.findChildByType(OPERATION_REFERENCE)?.hasChildOfType(RANGE) ?: false
         }
         val isExtensionFunctions = node.parent({ it.elementType == FUN && (it.psi as KtFunction).isExtensionDeclaration() }) != null &&
                 node.parents().find { it.elementType == PROPERTY } == null
