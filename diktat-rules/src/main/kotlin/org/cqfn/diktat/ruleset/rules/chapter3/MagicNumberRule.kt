@@ -39,12 +39,13 @@ class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule("magic-number
         }
     }
 
+    @Suppress("ComplexMethod")
     private fun checkNumber(node: ASTNode, configuration: MagicNumberConfiguration) {
         val nodeText = node.treePrev?.let { if(it.elementType == OPERATION_REFERENCE && it.hasChildOfType(MINUS)) "-${node.text}" else node.text} ?: node.text
         val isIgnoreNumber = configuration.ignoreNumbers.contains(nodeText)
         val isHashFunction = node.parent({it.elementType == FUN && it.isHashFun()}) != null &&
                 node.parents().find {it.elementType == PROPERTY} == null
-        val isPropertyDeclaration = node.parent({it.elementType == PROPERTY}) != null
+        val isPropertyDeclaration = node.parent({it.elementType == PROPERTY && !it.isNodeFromCompanionObject()}) != null
         val isLocalVariable = node.parent({it.isVarProperty() && (it.psi as KtProperty).isLocal}) != null
         val isConstant = node.parent({it.elementType == PROPERTY && it.isConstant()}) != null
         val isCompanionObjectProperty = node.parent({it.elementType == PROPERTY && it.isNodeFromCompanionObject()}) != null
@@ -74,6 +75,7 @@ class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule("magic-number
          */
         val ignoreNumbers = config["ignoreNumbers"]?.split(",")?.map { it.trim() } ?: ignoreNumbersList
 
+        @Suppress("UnsafeCallOnNullableType")
         fun getParameter(param: String): Boolean = config[param]?.toBoolean() ?: mapConfiguration[param]!!
     }
 

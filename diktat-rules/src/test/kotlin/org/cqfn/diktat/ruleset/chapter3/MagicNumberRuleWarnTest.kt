@@ -50,6 +50,12 @@ class MagicNumberRuleWarnTest : LintTestBase(::MagicNumberRule) {
                 |fun hashCode(): Int {
                 |   return 32
                 |}
+                |
+                |class Cl{
+                |   companion object {
+                |       private const val AA = 4
+                |   }
+                |}
                 """.trimMargin(),
             LintError(2, 18, ruleId, "${MAGIC_NUMBER.warnText()} 4", false),
             LintError(3, 12, ruleId, "${MAGIC_NUMBER.warnText()} 0xff", false),
