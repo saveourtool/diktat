@@ -1,30 +1,33 @@
 package org.cqfn.diktat.ruleset.rules.chapter3
 
-import com.pinterest.ktlint.core.ast.ElementType
-import com.pinterest.ktlint.core.ast.ElementType.ENUM_ENTRY
-import com.pinterest.ktlint.core.ast.ElementType.FILE
-import com.pinterest.ktlint.core.ast.ElementType.FLOAT_CONSTANT
-import com.pinterest.ktlint.core.ast.ElementType.FUN
-import com.pinterest.ktlint.core.ast.ElementType.INTEGER_CONSTANT
-import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
-import com.pinterest.ktlint.core.ast.parent
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.MAGIC_NUMBER
 import org.cqfn.diktat.ruleset.rules.DiktatRule
+import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.cqfn.diktat.ruleset.utils.isConstant
 import org.cqfn.diktat.ruleset.utils.isNodeFromCompanionObject
 import org.cqfn.diktat.ruleset.utils.isVarProperty
-import org.cqfn.diktat.ruleset.utils.prettyPrint
+
+import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.ENUM_ENTRY
+import com.pinterest.ktlint.core.ast.ElementType.FLOAT_CONSTANT
+import com.pinterest.ktlint.core.ast.ElementType.FUN
+import com.pinterest.ktlint.core.ast.ElementType.INTEGER_CONSTANT
+import com.pinterest.ktlint.core.ast.ElementType.MINUS
+import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
+import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
+import com.pinterest.ktlint.core.ast.ElementType.RANGE
+import com.pinterest.ktlint.core.ast.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.psiUtil.isExtensionDeclaration
-import org.jetbrains.kotlin.psi.psiUtil.startOffset
+import org.jetbrains.kotlin.psi.psiUtil.parents
 
 /**
- * Litaral and constant
+ * Rule for magic number
  */
 class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule("magic-number", configRules, listOf(MAGIC_NUMBER)) {
     override fun logic(node: ASTNode) {
@@ -37,47 +40,53 @@ class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule("magic-number
     }
 
     private fun checkNumber(node: ASTNode, configuration: MagicNumberConfiguration) {
-        val isIgnoreNumber = configuration.ignoreNumbers.contains(node.text.toInt())
+        val nodeText = node.treePrev?.let { if(it.elementType == OPERATION_REFERENCE && it.hasChildOfType(MINUS)) "-${node.text}" else node.text} ?: node.text
+        val isIgnoreNumber = configuration.ignoreNumbers.contains(nodeText)
+        val isHashFunction = node.parent({it.elementType == FUN && it.isHashFun()}) != null &&
+                node.parents().find {it.elementType == PROPERTY} == null
         val isPropertyDeclaration = node.parent({it.elementType == PROPERTY}) != null
         val isLocalVariable = node.parent({it.isVarProperty() && (it.psi as KtProperty).isLocal}) != null
-        val isConstant = node.parent({it.isConstant()}) != null
+        val isConstant = node.parent({it.elementType == PROPERTY && it.isConstant()}) != null
         val isCompanionObjectProperty = node.parent({it.elementType == PROPERTY && it.isNodeFromCompanionObject()}) != null
         val isEnums = node.parent({it.elementType == ENUM_ENTRY}) != null
-        val isExtensionFunctions = node.parent({it.elementType == FUN && (it.psi as KtFunction).isExtensionDeclaration()}) != null
-
-        val allList = listOf(isIgnoreNumber, isPropertyDeclaration, isLocalVariable, isConstant,
-            isCompanionObjectProperty, isEnums, isExtensionFunctions)
-
-        val result = allList.zip(mapConfiguration.map {configuration.getParameter(it.key)})
-
-        if(result.all {it.first != it.second}) {
-            MAGIC_NUMBER.warn(configRules, emitWarn, isFixMode, node.text, node.startOffset, node)
+        val isRanges = node.treeParent.run { this.elementType == BINARY_EXPRESSION &&
+                this.findChildByType(OPERATION_REFERENCE)?.hasChildOfType(RANGE) ?: false }
+        val isExtensionFunctions = node.parent({it.elementType == FUN && (it.psi as KtFunction).isExtensionDeclaration()}) != null &&
+                node.parents().find {it.elementType == PROPERTY} == null
+        val result = listOf(isHashFunction, isPropertyDeclaration, isLocalVariable, isConstant,
+            isCompanionObjectProperty, isEnums, isRanges, isExtensionFunctions).zip(mapConfiguration.map {configuration.getParameter(it.key)})
+        if(result.any {it.first && it.first != it.second} && !isIgnoreNumber) {
+            MAGIC_NUMBER.warn(configRules, emitWarn, isFixMode, nodeText, node.startOffset, node)
         }
     }
+
+    private fun ASTNode.isHashFun() =
+        (this.psi as KtFunction).run {
+            this.nameIdentifier?.text == "hashCode" && this.annotationEntries.map { it.text }.contains("@Override")
+        }
 
     /**
      * [RuleConfiguration] for configuration
      */
     class MagicNumberConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
         /**
-         * Ignore numbers
+         * List of ignore numbers
          */
-        val ignoreNumbers = config["ignoreNumbers"]?.split(",")?.map { it.trim().toInt() } ?: ignoreNumbersList
-
-        //val ignoreRange = config["ignoreRange"] ?: LongRange.EMPTY
+        val ignoreNumbers = config["ignoreNumbers"]?.split(",")?.map { it.trim() } ?: ignoreNumbersList
 
         fun getParameter(param: String): Boolean = config[param]?.toBoolean() ?: mapConfiguration[param]!!
-
     }
 
     companion object {
-        val ignoreNumbersList = listOf(-1, 1, 0, 2)
-        val mapConfiguration  = mapOf("ignoreHashCodeFunction" to true,
+        val ignoreNumbersList = listOf("-1", "1", "0", "2")
+        val mapConfiguration  = mapOf(
+            "ignoreHashCodeFunction" to true,
             "ignorePropertyDeclaration" to false,
             "ignoreLocalVariableDeclaration" to false,
             "ignoreConstantDeclaration" to true,
             "ignoreCompanionObjectPropertyDeclaration" to true,
             "ignoreEnums" to false,
-            "ignoreExtensionFunctions" to false,)
+            "ignoreRanges" to false,
+            "ignoreExtensionFunctions" to false)
     }
 }

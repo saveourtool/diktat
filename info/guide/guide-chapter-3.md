@@ -817,6 +817,19 @@ val socialSecurityNumber = 999_99_9999L
 val hexBytes = 0xFF_EC_DE_5E
 val bytes = 0b11010010_01101001_10010100_10010010
 ```
+#### <a name="r3.14.3"></a> 3.14.3: Magic number
+Prefer defining constants with clear names describing what the magic number means.
+**Valid example**:
+```kotlin
+class Person() {
+
+    fun isAdult(age: Int): Boolean = age >= majority
+
+    companion object {
+        const val majority = 18
+    }
+}
+```
 
 <!-- =============================================================================== -->
 ### <a name="c3.15"></a> 3.15 Strings

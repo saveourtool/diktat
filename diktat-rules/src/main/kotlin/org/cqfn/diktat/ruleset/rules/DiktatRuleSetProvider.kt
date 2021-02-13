@@ -22,6 +22,7 @@ import org.cqfn.diktat.ruleset.rules.chapter3.EmptyBlock
 import org.cqfn.diktat.ruleset.rules.chapter3.EnumsSeparated
 import org.cqfn.diktat.ruleset.rules.chapter3.LineLength
 import org.cqfn.diktat.ruleset.rules.chapter3.LongNumericalValuesSeparatedRule
+import org.cqfn.diktat.ruleset.rules.chapter3.MagicNumberRule
 import org.cqfn.diktat.ruleset.rules.chapter3.MultipleModifiersSequence
 import org.cqfn.diktat.ruleset.rules.chapter3.NullableTypeRule
 import org.cqfn.diktat.ruleset.rules.chapter3.SingleLineStatementsRule
@@ -184,6 +185,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
             ::TypeAliasRule,
             ::OverloadingArgumentsFunction,
             ::FunctionLength,
+            ::MagicNumberRule,
             ::LambdaParameterOrder,
             ::FunctionArgumentsSize,
             ::BlankLinesRule,
