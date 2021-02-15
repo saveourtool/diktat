@@ -63,7 +63,6 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
     private val domainName by lazy {
         configRules
             .getCommonConfiguration()
-            .value
             .domainName
     }
     private val standardImportsAsName = StandardPlatforms

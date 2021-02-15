@@ -29,7 +29,7 @@ class AvoidUtilityClass(configRules: List<RulesConfig>) : DiktatRule(
     configRules,
     listOf(AVOID_USING_UTILITY_CLASS)) {
     override fun logic(node: ASTNode) {
-        val config by configRules.getCommonConfiguration()
+        val config = configRules.getCommonConfiguration()
         val filePath = node.getRootNode().getFilePath()
         if (!(node.hasTestAnnotation() || isLocatedInTest(filePath.splitPathToDirs(), config.testAnchors))) {
             if (node.elementType == OBJECT_DECLARATION || node.elementType == CLASS) {

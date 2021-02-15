@@ -30,7 +30,7 @@ class InlineClassesRule(configRules: List<RulesConfig>) : DiktatRule(
     configRules,
     listOf(INLINE_CLASS_CAN_BE_USED)) {
     override fun logic(node: ASTNode) {
-        val configuration by configRules.getCommonConfiguration()
+        val configuration = configRules.getCommonConfiguration()
         if (node.elementType == CLASS && configuration.kotlinVersion >= ktVersion) {
             handleClasses(node.psi as KtClass)
         }

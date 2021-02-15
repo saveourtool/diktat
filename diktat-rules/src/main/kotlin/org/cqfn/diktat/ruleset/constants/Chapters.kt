@@ -30,7 +30,7 @@ enum class Chapters(val number: String, val title: String) {
  */
 fun Warnings.isRuleFromActiveChapter(configRules: List<RulesConfig>): Boolean {
     val chapterFromRule = getChapterByWarning()
-    val configuration by configRules.getCommonConfiguration()
+    val configuration = configRules.getCommonConfiguration()
     val disabledChapters = configuration.disabledChapters
         ?.takeIf { it.isNotBlank() }
         ?.split(",")
