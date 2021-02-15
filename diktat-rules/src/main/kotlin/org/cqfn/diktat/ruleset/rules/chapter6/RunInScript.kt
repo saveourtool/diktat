@@ -6,17 +6,23 @@ import org.cqfn.diktat.ruleset.constants.Warnings.RUN_IN_SCRIPT
 import org.cqfn.diktat.ruleset.utils.*
 
 import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_ARGUMENT
 import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.PARENTHESIZED
 import com.pinterest.ktlint.core.ast.ElementType.SCRIPT_INITIALIZER
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
+import java.nio.file.Paths
 
 /**
  * Rule that checks if kts script contains other functions except run code
+ * In .kts files allow use only property declaration, function, classes, and code inside `run` block
+ * In gradle.kts files allow to call expression and dot qualified expression in addition to everything used in .kts files
  */
 class RunInScript(private val configRules: List<RulesConfig>) : Rule("run-script") {
     private var isFixMode: Boolean = false
@@ -31,7 +37,31 @@ class RunInScript(private val configRules: List<RulesConfig>) : Rule("run-script
         emitWarn = emit
 
         if (node.elementType == SCRIPT_INITIALIZER && node.getRootNode().getFilePath().isKotlinScript()) {
-            checkScript(node)
+            node.getRootNode().getFilePath().split(".").run {
+                if (this.size > 2 && this[this.size-2] == "gradle") {
+                    checkGradleNode(node)
+                } else {
+                    checkScript(node)
+                }
+            }
+        }
+    }
+
+    private fun checkGradleNode(node: ASTNode) {
+        val astNode = if (node.firstChildNode.elementType == PARENTHESIZED) {
+            node.firstChildNode
+        } else {
+            node
+        }
+        if (!astNode.hasChildOfType(CALL_EXPRESSION) && !astNode.hasChildOfType(DOT_QUALIFIED_EXPRESSION)) {
+            RUN_IN_SCRIPT.warnAndFix(configRules, emitWarn, isFixMode, astNode.text, astNode.startOffset, astNode) {
+                val parent = astNode.treeParent
+                val newNode = KotlinParser().createNode("run {\n ${astNode.text}\n} \n")
+                val newScript = CompositeElement(SCRIPT_INITIALIZER)
+                parent.addChild(newScript, astNode)
+                newScript.addChild(newNode)
+                parent.removeChild(astNode)
+            }
         }
     }
 

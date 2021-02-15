@@ -444,5 +444,3 @@
 # Check if kts script contains other functions except run code
 - name: RUN_IN_SCRIPT
   enabled: true
-  configuration:
-    possibleWrapper: ""

@@ -90,4 +90,44 @@ class RunInScriptWarnTest : LintTestBase(::RunInScript) {
             fileName = "src/main/kotlin/org/cqfn/diktat/Example.kts"
         )
     }
+
+    @Test
+    @Tag(WarningNames.RUN_IN_SCRIPT)
+    fun `check gradle file`() {
+        lintMethod(
+            """
+                class A {}
+                
+                fun foo() {
+                }
+                
+                if(true) {
+                    goo()
+                }
+                
+                diktat {}
+                
+                diktat({})
+
+                foo/*df*/()
+
+                foo( //dfdg
+                    10
+                )
+                println("hello")
+                
+                w.map { it -> it }
+                
+                (tasks.register("a") {
+                    dependsOn("b")
+                    doFirst {
+                        generateCodeStyle(file("rootDir/guide"), file("rootDir/../wp"))
+                    }
+                })
+                
+            """.trimMargin(),
+            LintError(6, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} if(true) {...", true),
+            fileName = "src/main/kotlin/org/cqfn/diktat/builds.gradle.kts"
+        )
+    }
 }
