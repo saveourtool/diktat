@@ -20,7 +20,9 @@ import org.jetbrains.kotlin.psi.KtFunction
 /**
  * This rule checks if there are any extension functions for the class in the same file, where it is defined
  */
-class ExtensionFunctionsInFileRule(configRules: List<RulesConfig>) : DiktatRule("extension-functions-class-file", configRules,
+class ExtensionFunctionsInFileRule(configRules: List<RulesConfig>) : DiktatRule(
+    "extension-functions-class-file",
+    configRules,
     listOf(EXTENSION_FUNCTION_WITH_CLASS)) {
     override fun logic(node: ASTNode) {
         if (node.elementType == ElementType.FILE) {

@@ -19,7 +19,10 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
  * // FixMe: fixes will be added
  * // FixMe: .toString() method and functions that return strings are not supported
  */
-class StringConcatenationRule(configRules: List<RulesConfig>) : DiktatRule("string-concatenation", configRules, listOf(STRING_CONCATENATION)) {
+class StringConcatenationRule(configRules: List<RulesConfig>) : DiktatRule(
+    "string-concatenation",
+    configRules,
+    listOf(STRING_CONCATENATION)) {
     override fun logic(node: ASTNode) {
         if (node.elementType == BINARY_EXPRESSION) {
             // searching top-level binary expression to detect any operations with "plus" (+)

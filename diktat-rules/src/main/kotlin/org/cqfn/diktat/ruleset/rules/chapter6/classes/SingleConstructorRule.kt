@@ -33,7 +33,10 @@ import org.jetbrains.kotlin.psi.psiUtil.collectDescendantsOfType
  * This rule ensures that if a class has a single constructor, this constructor is primary.
  * Secondary constructor is converted into primary, statements that are not assignments are moved into an `init` block.
  */
-class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule("single-constructor", configRules, listOf(SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY)) {
+class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
+    "single-constructor",
+    configRules,
+    listOf(SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY)) {
     private val kotlinParser by lazy { KotlinParser() }
 
     override fun logic(node: ASTNode) {

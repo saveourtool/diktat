@@ -13,7 +13,10 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 /**
  * Rule 5.2.5 check lambda length without parameters
  */
-class LambdaLengthRule(configRules: List<RulesConfig>) : DiktatRule("lambda-length", configRules, listOf(TOO_MANY_LINES_IN_LAMBDA)) {
+class LambdaLengthRule(configRules: List<RulesConfig>) : DiktatRule(
+    "lambda-length",
+    configRules,
+    listOf(TOO_MANY_LINES_IN_LAMBDA)) {
     private val configuration by lazy {
         LambdaLengthConfiguration(
             this.configRules.getRuleConfig(TOO_MANY_LINES_IN_LAMBDA)?.configuration ?: emptyMap()

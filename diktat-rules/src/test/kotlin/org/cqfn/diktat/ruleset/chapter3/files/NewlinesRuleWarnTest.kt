@@ -614,7 +614,10 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
             LintError(3, 10, ruleId, "${WRONG_NEWLINES.warnText()} value parameters should be placed on different lines in declaration of <Foo>", true),
             LintError(4, 16, ruleId, "${WRONG_NEWLINES.warnText()} first parameter should be placed on a separate line or all other parameters " +
                     "should be aligned with it in declaration of <Foo>", true),
-            LintError(4, 16, ruleId, "${WRONG_NEWLINES.warnText()} value parameters should be placed on different lines in declaration of <Foo>", true)
+            LintError(4, 16, ruleId, "${WRONG_NEWLINES.warnText()} value parameters should be placed on different lines in declaration of <Foo>", true),
+            LintError(4, 62, ruleId, "${WRONG_NEWLINES.warnText()} first value argument (arg1) should be placed on the new line or " +
+                    "all other parameters should be aligned with it", true),
+            LintError(4, 62, ruleId, "${WRONG_NEWLINES.warnText()} value arguments should be placed on different lines", true)
         )
     }
 
@@ -640,6 +643,49 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
             LintError(3, 8, ruleId, "${WRONG_NEWLINES.warnText()} first parameter should be placed on a separate line or all other parameters " +
                     "should be aligned with it in declaration of <bar>", true),
             LintError(3, 8, ruleId, "${WRONG_NEWLINES.warnText()} value parameters should be placed on different lines in declaration of <bar>", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
+    fun `should not raise warning on value arguments`() {
+        lintMethod(
+            """
+                |class SomeRule(configRules: List<Int>) : Rule("id", 
+                |configRules, 
+                |listOf("foo", "baz")) {
+                |
+                |}
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
+    fun `should not raise warning on list params`() {
+        lintMethod(
+            """
+                |class SomeRule(configRules: List<Int>) : Rule("id", 
+                |configRules, 
+                |listOf("foo", "baz", "triple", "bar")) {
+                |
+                |}
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
+    fun `should raise warning on value arguments`() {
+        lintMethod(
+            """
+                |class SomeRule(configRules: List<Int>) : Rule("id", configRules, listOf("foo", "baz")) {
+                |
+                |}
+            """.trimMargin(),
+            LintError(1, 46, ruleId, "${WRONG_NEWLINES.warnText()} first value argument (\"id\") should be placed on the new line or " +
+                    "all other parameters should be aligned with it", true),
+            LintError(1, 46, ruleId, "${WRONG_NEWLINES.warnText()} value arguments should be placed on different lines", true),
         )
     }
 
