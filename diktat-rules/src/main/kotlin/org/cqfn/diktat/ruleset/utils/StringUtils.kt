@@ -125,5 +125,3 @@ fun String.isKotlinScript() = endsWith(".kts")
  * @return true if this is a gradle kotlin script file name, false otherwise
  */
 fun String.isGradleScript() = endsWith("gradle.kts")
-
-

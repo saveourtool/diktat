@@ -8,7 +8,6 @@ import org.cqfn.diktat.ruleset.utils.*
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_ARGUMENT
 import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.PARENTHESIZED
@@ -17,7 +16,6 @@ import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
-import java.nio.file.Paths
 
 /**
  * Rule that checks if kts script contains other functions except run code
