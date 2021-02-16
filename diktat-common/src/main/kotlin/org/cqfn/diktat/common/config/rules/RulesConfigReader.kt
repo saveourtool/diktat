@@ -131,6 +131,13 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
     }
 
     /**
+     * Get source directories from configuration
+     */
+    val srcDirectories: List<String> by lazy {
+        configuration?.get("srcDirectory")?.split(",")?.map { it.trim() } ?: listOf("main")
+    }
+
+    /**
      * False if configuration has been read from config file, true if defaults are used
      */
     val isDefault = configuration == null
