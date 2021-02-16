@@ -61,6 +61,7 @@ tasks.withType<KotlinCompile> {
         languageVersion = "1.3"
         apiVersion = "1.3"
         jvmTarget = "1.8"
+        useIR = true
     }
 
     dependsOn.add(generateVersionsFile)
@@ -98,6 +99,7 @@ tasks.getByName<Test>("functionalTest") {
     testClassesDirs = functionalTest.output.classesDirs
     classpath = functionalTest.runtimeClasspath
     maxParallelForks = Runtime.getRuntime().availableProcessors()
+    maxHeapSize = "1024m"
     doLast {
         if (getCurrentOperatingSystem().isWindows) {
             // workaround for https://github.com/koral--/jacoco-gradle-testkit-plugin/issues/9
