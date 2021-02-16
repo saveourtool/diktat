@@ -26,7 +26,10 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 /**
  * Rule that checks enum classes formatting
  */
-class EnumsSeparated(configRules: List<RulesConfig>) : DiktatRule("enum-separated", configRules, listOf(ENUMS_SEPARATED)) {
+class EnumsSeparated(configRules: List<RulesConfig>) : DiktatRule(
+    "enum-separated",
+    configRules,
+    listOf(ENUMS_SEPARATED)) {
     override fun logic(node: ASTNode) {
         if (node.elementType == CLASS && node.hasChildOfType(CLASS_BODY)) {
             if (node.isClassEnum()) {

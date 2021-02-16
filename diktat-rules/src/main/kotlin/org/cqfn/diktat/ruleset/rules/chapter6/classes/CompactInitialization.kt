@@ -27,7 +27,10 @@ import org.jetbrains.kotlin.psi.psiUtil.startOffset
  * FixMe: When assigned variable's name is also a `this@apply`'s property, it should be changed to qualified name,
  *  e.g `this@Foo`. But for this we need a mechanism to determine declaration scope and it's label.
  */
-class CompactInitialization(configRules: List<RulesConfig>) : DiktatRule("class-compact-initialization", configRules, listOf(COMPACT_OBJECT_INITIALIZATION)) {
+class CompactInitialization(configRules: List<RulesConfig>) : DiktatRule(
+    "class-compact-initialization",
+    configRules,
+    listOf(COMPACT_OBJECT_INITIALIZATION)) {
     private val kotlinParser by lazy { KotlinParser() }
 
     override fun logic(node: ASTNode) {

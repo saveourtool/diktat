@@ -34,7 +34,10 @@ import org.jetbrains.kotlin.psi.psiUtil.astReplace
 /**
  * Rule that checks that all conditionals and loops have braces.
  */
-class BracesInConditionalsAndLoopsRule(configRules: List<RulesConfig>) : DiktatRule("braces-rule", configRules, listOf(NO_BRACES_IN_CONDITIONALS_AND_LOOPS)) {
+class BracesInConditionalsAndLoopsRule(configRules: List<RulesConfig>) : DiktatRule(
+    "braces-rule",
+    configRules,
+    listOf(NO_BRACES_IN_CONDITIONALS_AND_LOOPS)) {
     override fun logic(node: ASTNode) {
         when (node.elementType) {
             IF -> checkIfNode(node)
@@ -47,7 +50,12 @@ class BracesInConditionalsAndLoopsRule(configRules: List<RulesConfig>) : DiktatR
     /**
      * Check braces in if-else statements. Check for both IF and ELSE needs to be done in one method to discover single-line if-else statements correctly.
      */
-    @Suppress("ForbiddenComment", "UnsafeCallOnNullableType", "ComplexMethod", "TOO_LONG_FUNCTION")
+    @Suppress(
+        "ForbiddenComment",
+        "UnsafeCallOnNullableType",
+        "ComplexMethod",
+        "TOO_LONG_FUNCTION"
+    )
     private fun checkIfNode(node: ASTNode) {
         val ifPsi = node.psi as KtIfExpression
         val thenNode = ifPsi.then?.node

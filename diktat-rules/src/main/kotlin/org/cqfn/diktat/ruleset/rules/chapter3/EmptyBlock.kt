@@ -25,7 +25,10 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 /**
  * Rule that checks if empty code blocks (`{  }`) are used and checks their formatting.
  */
-class EmptyBlock(configRules: List<RulesConfig>) : DiktatRule("empty-block-structure", configRules, listOf(EMPTY_BLOCK_STRUCTURE_ERROR)) {
+class EmptyBlock(configRules: List<RulesConfig>) : DiktatRule(
+    "empty-block-structure",
+    configRules,
+    listOf(EMPTY_BLOCK_STRUCTURE_ERROR)) {
     override fun logic(node: ASTNode) {
         val configuration = EmptyBlockStyleConfiguration(
             configRules.getRuleConfig(EMPTY_BLOCK_STRUCTURE_ERROR)?.configuration ?: emptyMap()

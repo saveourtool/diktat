@@ -31,7 +31,10 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
 /**
  * Rule that sorts class properties and enum members alphabetically
  */
-class SortRule(configRules: List<RulesConfig>) : DiktatRule("sort-rule", configRules, listOf(WRONG_DECLARATIONS_ORDER)) {
+class SortRule(configRules: List<RulesConfig>) : DiktatRule(
+    "sort-rule",
+    configRules,
+    listOf(WRONG_DECLARATIONS_ORDER)) {
     override fun logic(node: ASTNode) {
         val configuration = SortRuleConfiguration(
             configRules.getRuleConfig(WRONG_DECLARATIONS_ORDER)?.configuration ?: emptyMap()

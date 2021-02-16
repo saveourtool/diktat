@@ -33,6 +33,9 @@ import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.LBRACKET
 import com.pinterest.ktlint.core.ast.ElementType.LITERAL_STRING_TEMPLATE_ENTRY
+import com.pinterest.ktlint.core.ast.ElementType.LONG_STRING_TEMPLATE_ENTRY
+import com.pinterest.ktlint.core.ast.ElementType.LONG_TEMPLATE_ENTRY_END
+import com.pinterest.ktlint.core.ast.ElementType.LONG_TEMPLATE_ENTRY_START
 import com.pinterest.ktlint.core.ast.ElementType.LPAR
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.RBRACKET
@@ -56,6 +59,7 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
 import org.jetbrains.kotlin.utils.addToStdlib.firstNotNullResult
+import kotlin.math.abs
 
 /**
  * Rule that checks indentation. The following general rules are checked:
@@ -64,7 +68,10 @@ import org.jetbrains.kotlin.utils.addToStdlib.firstNotNullResult
  * Additionally, a set of CustomIndentationChecker objects checks all WHITE_SPACE node if they are exceptions from general rules.
  * @see CustomIndentationChecker
  */
-class IndentationRule(configRules: List<RulesConfig>) : DiktatRule("indentation", configRules, listOf(WRONG_INDENTATION)) {
+class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
+    "indentation",
+    configRules,
+    listOf(WRONG_INDENTATION)) {
     private val configuration: IndentationConfig by lazy {
         IndentationConfig(configRules.getRuleConfig(WRONG_INDENTATION)?.configuration ?: emptyMap())
     }
@@ -177,10 +184,15 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule("indentation"
         }
 
         val expectedIndent = checkResult?.expectedIndent ?: indentError.expected
-        if (checkResult?.adjustNext == true) {
+        if (checkResult?.adjustNext == true && astNode.parents().none { it.elementType == LONG_STRING_TEMPLATE_ENTRY }) {
             val exceptionInitiatorNode = astNode.getExceptionalIndentInitiator()
             context.addException(exceptionInitiatorNode, expectedIndent - indentError.expected, checkResult.includeLastChild)
         }
+
+        if (astNode.treeParent.elementType == LONG_STRING_TEMPLATE_ENTRY && indentError.expected != indentError.actual) {
+            context.addException(astNode.treeParent, abs(indentError.expected - indentError.actual), false)
+        }
+
         if (checkResult?.isCorrect != true && expectedIndent != indentError.actual) {
             WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "expected $expectedIndent but was ${indentError.actual}",
                 whiteSpace.startOffset + whiteSpace.text.lastIndexOf('\n') + 1, whiteSpace.node) {
@@ -325,15 +337,15 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule("indentation"
 
     companion object {
         const val INDENT_SIZE = 4
-        private val increasingTokens = listOf(LPAR, LBRACE, LBRACKET)
-        private val decreasingTokens = listOf(RPAR, RBRACE, RBRACKET)
+        private val increasingTokens = listOf(LPAR, LBRACE, LBRACKET, LONG_TEMPLATE_ENTRY_START)
+        private val decreasingTokens = listOf(RPAR, RBRACE, RBRACKET, LONG_TEMPLATE_ENTRY_END)
         private val matchingTokens = increasingTokens.zip(decreasingTokens)
     }
 }
 
 /**
  * @property expected expected indentation as a number of spaces
- * @property actual actial indentation as a number of spaces
+ * @property actual actual indentation as a number of spaces
  */
 internal data class IndentationError(val expected: Int, val actual: Int)
 

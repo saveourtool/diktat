@@ -57,7 +57,10 @@ import java.net.URL
  * Rule can fix long binary expressions in condition inside `if` and in property declarations and one line functions
  */
 @Suppress("ForbiddenComment")
-class LineLength(configRules: List<RulesConfig>) : DiktatRule("line-length", configRules, listOf(LONG_LINE)) {
+class LineLength(configRules: List<RulesConfig>) : DiktatRule(
+    "line-length",
+    configRules,
+    listOf(LONG_LINE)) {
     private lateinit var positionByOffset: (Int) -> Pair<Int, Int>
 
     override fun logic(node: ASTNode) {

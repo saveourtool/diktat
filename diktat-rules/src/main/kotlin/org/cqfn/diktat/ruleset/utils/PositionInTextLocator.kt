@@ -7,7 +7,11 @@ package org.cqfn.diktat.ruleset.utils
 
 internal typealias LineAndColumn = Pair<Int, Int>
 
-@Suppress("MISSING_KDOC_ON_FUNCTION", "KDOC_WITHOUT_PARAM_TAG", "KDOC_WITHOUT_RETURN_TAG")
+@Suppress(
+    "MISSING_KDOC_ON_FUNCTION",
+    "KDOC_WITHOUT_PARAM_TAG",
+    "KDOC_WITHOUT_RETURN_TAG"
+)
 private class SegmentTree(sortedArray: IntArray) {
     private val segments: List<Segment> = sortedArray
         .dropLast(1)
