@@ -8,6 +8,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.EMPTY_BLOCK_STRUCTURE_ERROR
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NAME_MATCH_CLASS
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_EMPTY_TAGS
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WITHOUT_PARAM_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_CLASS_ELEMENTS
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_ON_FUNCTION
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_TOP_LEVEL
@@ -160,7 +161,11 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     fun `smoke test #2`() {
         fixAndCompare("Example2Expected.kt", "Example2Test.kt")
         unfixedLintErrors.assertEquals(
-            LintError(1, 1, "$DIKTAT_RULE_SET_ID:header-comment", "${HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warnText()} there are 2 declared classes and/or objects", false)
+            LintError(1, 1, "$DIKTAT_RULE_SET_ID:header-comment", "${HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warnText()} there are 2 declared classes and/or objects", false),
+            LintError(15, 23, "$DIKTAT_RULE_SET_ID:kdoc-methods",
+                "${KDOC_WITHOUT_PARAM_TAG.warnText()} createWithFile (containerName)", true),
+            LintError(31, 13, "$DIKTAT_RULE_SET_ID:empty-block-structure",
+                "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} empty blocks are forbidden unless it is function with override keyword", false)
         )
     }
 
