@@ -41,7 +41,9 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
 /**
  * Rule that checks order of declarations inside classes, interfaces and objects.
  */
-class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule("class-like-structures", configRules,
+class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
+    "class-like-structures",
+    configRules,
     listOf(BLANK_LINE_BETWEEN_PROPERTIES, WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES)) {
     override fun logic(node: ASTNode) {
         if (node.elementType == CLASS_BODY) {
@@ -51,7 +53,12 @@ class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    @Suppress("UnsafeCallOnNullableType", "LongMethod", "ComplexMethod", "TOO_LONG_FUNCTION")
+    @Suppress(
+        "UnsafeCallOnNullableType",
+        "LongMethod",
+        "ComplexMethod",
+        "TOO_LONG_FUNCTION"
+    )
     private fun checkDeclarationsOrderInClass(node: ASTNode) {
         val allProperties = node.getChildren(TokenSet.create(PROPERTY))
         val constProperties = allProperties.filter { it.findLeafWithSpecificType(CONST_KEYWORD) != null }.toMutableList()

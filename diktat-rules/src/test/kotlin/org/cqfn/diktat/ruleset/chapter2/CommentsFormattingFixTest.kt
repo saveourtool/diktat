@@ -19,7 +19,12 @@ class CommentsFormattingFixTest : FixTestBase("test/paragraph2/kdoc/", ::Comment
     }
 
     @Test
-    @Tags(Tag(WRONG_NEWLINES_AROUND_KDOC), Tag(COMMENT_WHITE_SPACE), Tag(IF_ELSE_COMMENTS), Tag(FIRST_COMMENT_NO_BLANK_LINE))
+    @Tags(
+        Tag(WRONG_NEWLINES_AROUND_KDOC),
+        Tag(COMMENT_WHITE_SPACE),
+        Tag(IF_ELSE_COMMENTS),
+        Tag(FIRST_COMMENT_NO_BLANK_LINE)
+    )
     fun `check lines and spaces in comments`() {
         fixAndCompare("KdocCodeBlocksFormattingExpected.kt", "KdocCodeBlocksFormattingTest.kt")
     }

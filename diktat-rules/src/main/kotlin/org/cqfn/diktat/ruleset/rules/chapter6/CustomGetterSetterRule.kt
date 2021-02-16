@@ -15,7 +15,10 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 /**
  * Inspection that checks that no custom getters and setters are used for properties.
  */
-class CustomGetterSetterRule(configRules: List<RulesConfig>) : DiktatRule("custom-getter-setter", configRules, listOf(CUSTOM_GETTERS_SETTERS)) {
+class CustomGetterSetterRule(configRules: List<RulesConfig>) : DiktatRule(
+    "custom-getter-setter",
+    configRules,
+    listOf(CUSTOM_GETTERS_SETTERS)) {
     override fun logic(node: ASTNode) {
         if (node.elementType == PROPERTY_ACCESSOR) {
             checkForCustomGetersSetters(node)
