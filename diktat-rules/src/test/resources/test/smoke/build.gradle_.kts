@@ -11,7 +11,7 @@ repositories {
     maven { url = uri("https://example.com") }
 }
 
-val generateAvailableRules = tasks.register("generateAvailableRules") {
+val generateAvailableRules by tasks.register("generateAvailableRules") {
     dependsOn("generateRulesMapping")
     doFirst {
         generateAvailableRules(rootDir, file("$rootDir/../wp"))
