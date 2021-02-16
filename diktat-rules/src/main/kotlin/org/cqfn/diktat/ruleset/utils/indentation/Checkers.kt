@@ -6,6 +6,7 @@ package org.cqfn.diktat.ruleset.utils.indentation
 
 import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationError
 import org.cqfn.diktat.ruleset.rules.chapter3.files.lastIndent
+import org.cqfn.diktat.ruleset.utils.hasParent
 
 import com.pinterest.ktlint.core.ast.ElementType.ARROW
 import com.pinterest.ktlint.core.ast.ElementType.AS_KEYWORD
@@ -39,7 +40,6 @@ import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.nextCodeSibling
 import com.pinterest.ktlint.core.ast.prevSibling
-import org.cqfn.diktat.ruleset.utils.hasParent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
@@ -205,8 +205,8 @@ internal class DotCallChecker(config: IndentationConfig) : CustomIndentationChec
         whiteSpace.nextSibling.node
             .takeIf { nextNode ->
                 (nextNode.isDotBeforeCallOrReference() ||
-                        nextNode.elementType == OPERATION_REFERENCE && nextNode.firstChildNode.elementType.let {
-                            it == ELVIS || it == IS_EXPRESSION || it == AS_KEYWORD || it == AS_SAFE
+                        nextNode.elementType == OPERATION_REFERENCE && nextNode.firstChildNode.elementType.let { type ->
+                            type == ELVIS || type == IS_EXPRESSION || type == AS_KEYWORD || type == AS_SAFE
                         } || nextNode.isCommentBeforeDot()) && whiteSpace.parents.none { it.node.elementType == LONG_STRING_TEMPLATE_ENTRY }
             }
             ?.let {
