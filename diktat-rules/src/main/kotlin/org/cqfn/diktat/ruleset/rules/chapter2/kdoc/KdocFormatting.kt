@@ -201,7 +201,6 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule("kdoc-formatti
                     .map { it.node }
 
                 val correctKdocOrder = basicTags
-                    .toMutableList()
                     .sortedBy { basicTagsOrdered.indexOf(it.knownTag) }
                     .map { it.node }
 
