@@ -182,7 +182,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule("indentation"
         }
 
         val expectedIndent = checkResult?.expectedIndent ?: indentError.expected
-        if (checkResult?.adjustNext == true && !astNode.hasParent(LONG_STRING_TEMPLATE_ENTRY)) {
+        if (checkResult?.adjustNext == true && astNode.parents().none { it.elementType == LONG_STRING_TEMPLATE_ENTRY }) {
             val exceptionInitiatorNode = astNode.getExceptionalIndentInitiator()
             context.addException(exceptionInitiatorNode, expectedIndent - indentError.expected, checkResult.includeLastChild)
         }

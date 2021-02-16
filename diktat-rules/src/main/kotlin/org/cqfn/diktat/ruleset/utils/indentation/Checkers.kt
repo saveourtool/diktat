@@ -39,7 +39,6 @@ import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.nextCodeSibling
 import com.pinterest.ktlint.core.ast.prevSibling
-import org.cqfn.diktat.ruleset.utils.hasParameters
 import org.cqfn.diktat.ruleset.utils.hasParent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
@@ -205,10 +204,10 @@ internal class DotCallChecker(config: IndentationConfig) : CustomIndentationChec
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
         whiteSpace.nextSibling.node
             .takeIf { nextNode ->
-                nextNode.isDotBeforeCallOrReference() ||
+                (nextNode.isDotBeforeCallOrReference() ||
                         nextNode.elementType == OPERATION_REFERENCE && nextNode.firstChildNode.elementType.let {
                             it == ELVIS || it == IS_EXPRESSION || it == AS_KEYWORD || it == AS_SAFE
-                        } || nextNode.isCommentBeforeDot()
+                        } || nextNode.isCommentBeforeDot()) && whiteSpace.parents.none { it.node.elementType == LONG_STRING_TEMPLATE_ENTRY }
             }
             ?.let {
                 if (it.isFromStringTemplate()) {

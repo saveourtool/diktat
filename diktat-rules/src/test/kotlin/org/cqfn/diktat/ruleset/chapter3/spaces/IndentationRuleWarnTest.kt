@@ -626,7 +626,8 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
             """.trimMargin(),
                 LintError(4, 1, ruleId, warnText(12, 8), true),
                 LintError(5, 1, ruleId, warnText(16, 12), true),
-                LintError(6, 1, ruleId, warnText(16, 12), true)
+                LintError(6, 1, ruleId, warnText(16, 12), true),
+                rulesConfigList = rulesConfigList
         )
     }
 
