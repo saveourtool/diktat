@@ -96,7 +96,11 @@ class KotlinParserTest {
     }
 
     @Test
-    @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION", "AVOID_NULL_CHECKS")
+    @Suppress(
+        "UnsafeCallOnNullableType",
+        "TOO_LONG_FUNCTION",
+        "AVOID_NULL_CHECKS"
+    )
     fun `test multiline class code compare with applyToCode`() {
         val emptyClass = """
             |package org.cqfn.diktat.ruleset.utils

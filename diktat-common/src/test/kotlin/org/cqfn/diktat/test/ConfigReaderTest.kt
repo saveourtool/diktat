@@ -25,7 +25,7 @@ class ConfigReaderTest {
             .readResource("src/test/resources/test-rules-config.yml")
         val kotlinVersionForTest = KotlinVersion(1, 4, 21)
         requireNotNull(rulesConfigList)
-        assert(rulesConfigList.getCommonConfiguration().value.kotlinVersion == kotlinVersionForTest)
+        assert(rulesConfigList.getCommonConfiguration().kotlinVersion == kotlinVersionForTest)
         assert(rulesConfigList.find { it.name == DIKTAT_COMMON }
             ?.configuration
             ?.get("kotlinVersion")

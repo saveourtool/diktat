@@ -143,9 +143,136 @@ class DataClassesRuleWarnTest : LintTestBase(::DataClassesRule) {
                     |   val q = 10
                     |   fun foo() = 10
                     |}
-                """.trimMargin(),
+            """.trimMargin(),
             LintError(1, 1, ruleId, "${Warnings.USE_DATA_CLASS.warnText()} B"),
             LintError(5, 1, ruleId, "${Warnings.USE_DATA_CLASS.warnText()} Ab")
+        )
+    }
+
+    @Test
+    @Tag(USE_DATA_CLASS)
+    fun `shouldn't trigger on class with init block`() {
+        lintMethod(
+            """
+                |class Credentials(auth: String) {
+                |   val gitHubUserName: String
+                |   val gitHubAuthToken: String
+                |   
+                |   init {
+                |       auth.let {
+                |       
+                |       }
+                |   }
+                |}
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(USE_DATA_CLASS)
+    fun `should not trigger on init block with if`() {
+        lintMethod(
+            """
+                |class Credentials(auth: String, second: Int?, third: Double) {
+                |   val gitHubUserName: String
+                |   val gitHubAuthToken: String
+                |   
+                |   init {
+                |       if (second != null) {
+                |       }
+                |   }
+                |}
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(USE_DATA_CLASS)
+    fun `should not trigger on init block with function call`() {
+        lintMethod(
+            """
+                |class Credentials(auth: String, second: Int?, third: Double) {
+                |   val gitHubUserName: String
+                |   val gitHubAuthToken: String
+                |   
+                |   init {
+                |       foo(third)
+                |   }
+                |}
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(USE_DATA_CLASS)
+    fun `should not trigger on class with several parameters`() {
+        lintMethod(
+            """
+                |class Credentials(auth: String, second: Int?, third: Double) {
+                |   val gitHubUserName: String
+                |   val gitHubAuthToken: String
+                |   
+                |   init {
+                |       auth.let {
+                |       
+                |       }
+                |       
+                |       if (second != null) {
+                |       }
+                |       
+                |       foo(third)
+                |   }
+                |}
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(USE_DATA_CLASS)
+    fun `should trigger on class with parameter in constructor`() {
+        lintMethod(
+            """
+                |class Credentials(auth: String) {
+                |   val gitHubUserName: String = auth.toUpperCase()
+                |   val gitHubAuthToken: String = auth.toLowerCase()
+                |}
+            """.trimMargin(),
+            LintError(1, 1, ruleId, "${Warnings.USE_DATA_CLASS.warnText()} Credentials")
+        )
+    }
+
+    @Test
+    @Tag(USE_DATA_CLASS)
+    fun `should trigger on class with parameter in constructor and init block`() {
+        lintMethod(
+            """
+                |class Credentials(auth: String) {
+                |   val gitHubUserName: String = auth.toUpperCase()
+                |   val gitHubAuthToken: String = auth.toLowerCase()
+                |   
+                |   init {
+                |       // some logic
+                |   }
+                |}
+            """.trimMargin(),
+            LintError(1, 1, ruleId, "${Warnings.USE_DATA_CLASS.warnText()} Credentials")
+        )
+    }
+
+    @Test
+    @Tag(USE_DATA_CLASS)
+    fun `should not trigger on init block with one ref expression`() {
+        lintMethod(
+            """
+                |class Credentials(auth: String, some: Int?) {
+                |   val gitHubUserName: String = auth.toUpperCase()
+                |   val gitHubAuthToken: String = auth.toLowerCase()
+                |   
+                |   init {
+                |       val a = auth
+                |   }
+                |}
+            """.trimMargin()
         )
     }
 }

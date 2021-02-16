@@ -92,7 +92,10 @@ import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
  * 10. There should be no spaces between prefix/postfix operator (like `!!` or `++`) and it's operand
  */
 @Suppress("ForbiddenComment")
-class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule("horizontal-whitespace", configRules, listOf(WRONG_WHITESPACE)) {
+class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
+    "horizontal-whitespace",
+    configRules,
+    listOf(WRONG_WHITESPACE)) {
     @Suppress("ComplexMethod")
     override fun logic(node: ASTNode) {
         when (node.elementType) {

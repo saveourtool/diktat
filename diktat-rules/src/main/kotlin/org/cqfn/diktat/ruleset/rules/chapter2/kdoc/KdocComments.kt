@@ -44,7 +44,9 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  * 2) All internal elements in class like class, property or function should be documented with KDoc
  * 3) All properties declared in the primary constructor are documented using `@property` tag in class KDoc
  */
-class KdocComments(configRules: List<RulesConfig>) : DiktatRule("kdoc-comments", configRules,
+class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
+    "kdoc-comments",
+    configRules,
     listOf(KDOC_EXTRA_PROPERTY, KDOC_NO_CONSTRUCTOR_PROPERTY,
         KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT, MISSING_KDOC_CLASS_ELEMENTS, MISSING_KDOC_TOP_LEVEL)) {
     /**
@@ -53,7 +55,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule("kdoc-comments",
      * @param emit
      */
     override fun logic(node: ASTNode) {
-        val config = configRules.getCommonConfiguration().value
+        val config = configRules.getCommonConfiguration()
         val filePath = node.getRootNode().getFilePath()
         if (!(node.hasTestAnnotation() || isLocatedInTest(filePath.splitPathToDirs(), config.testAnchors))) {
             when (node.elementType) {

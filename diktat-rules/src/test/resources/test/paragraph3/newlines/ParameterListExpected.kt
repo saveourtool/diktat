@@ -18,7 +18,10 @@ val arg1: Int,
     constructor(
 arg1: Int,
  arg2: String,
- arg3: String) : this(arg1, 0, 0) { }
+ arg3: String) : this(
+arg1,
+ 0,
+ 0) { }
 }
 
 class Foo(val arg1: Int,

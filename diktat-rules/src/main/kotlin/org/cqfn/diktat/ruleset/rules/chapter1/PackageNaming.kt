@@ -33,13 +33,15 @@ import java.util.concurrent.atomic.AtomicInteger
  * package a.b.c.D -> then class D should be placed in a/b/c/ directories
  */
 @Suppress("ForbiddenComment", "TOO_MANY_LINES_IN_LAMBDA")
-class PackageNaming(configRules: List<RulesConfig>) : DiktatRule("package-naming", configRules,
+class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
+    "package-naming",
+    configRules,
     listOf(INCORRECT_PACKAGE_SEPARATOR, PACKAGE_NAME_INCORRECT_CASE, PACKAGE_NAME_MISSING,
         PACKAGE_NAME_INCORRECT_PATH, PACKAGE_NAME_INCORRECT_PREFIX, PACKAGE_NAME_INCORRECT_SYMBOLS)) {
     private lateinit var domainName: String
 
     override fun logic(node: ASTNode) {
-        val configuration by configRules.getCommonConfiguration()
+        val configuration = configRules.getCommonConfiguration()
         configuration.domainName?.let {
             domainName = it
             if (node.elementType == PACKAGE_DIRECTIVE) {

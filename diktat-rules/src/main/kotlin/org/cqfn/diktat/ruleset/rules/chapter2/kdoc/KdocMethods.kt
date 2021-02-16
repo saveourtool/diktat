@@ -65,7 +65,9 @@ import org.jetbrains.kotlin.psi.psiUtil.referenceExpression
  * Currently only `throw` keyword from this methods body is supported for `@throws` check.
  */
 @Suppress("ForbiddenComment")
-class KdocMethods(configRules: List<RulesConfig>) : DiktatRule("kdoc-methods", configRules,
+class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
+    "kdoc-methods",
+    configRules,
     listOf(KDOC_TRIVIAL_KDOC_ON_FUNCTION, KDOC_WITHOUT_PARAM_TAG, KDOC_WITHOUT_RETURN_TAG,
         KDOC_WITHOUT_THROWS_TAG, MISSING_KDOC_ON_FUNCTION)) {
     /**
@@ -75,7 +77,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule("kdoc-methods", c
      */
     override fun logic(node: ASTNode) {
         if (node.elementType == FUN && node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside() && !node.isOverridden()) {
-            val config = configRules.getCommonConfiguration().value
+            val config = configRules.getCommonConfiguration()
             val filePath = node.getRootNode().getFilePath()
             val isTestMethod = node.hasTestAnnotation() || isLocatedInTest(filePath.splitPathToDirs(), config.testAnchors)
             if (!isTestMethod && !node.isStandardMethod() && !node.isSingleLineGetterOrSetter()) {

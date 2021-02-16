@@ -22,7 +22,8 @@ open class FixTestBase(protected val resourceFilePath: String,
                 ruleSupplier: (rulesConfigList: List<RulesConfig>) -> Rule,
                 rulesConfigList: List<RulesConfig>? = null,
                 cb: LintErrorCallback = defaultCallback) : this(
-        resourceFilePath, { overrideRulesConfigList -> DiktatRuleSetProvider4Test(ruleSupplier, overrideRulesConfigList) },
+        resourceFilePath,
+        { overrideRulesConfigList -> DiktatRuleSetProvider4Test(ruleSupplier, overrideRulesConfigList) },
         cb,
         rulesConfigList
     )

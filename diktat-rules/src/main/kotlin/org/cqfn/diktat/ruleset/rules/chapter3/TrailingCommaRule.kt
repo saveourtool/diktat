@@ -49,8 +49,11 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
  * [12] Destructuring declarations
  */
 @Suppress("TOO_LONG_FUNCTION")
-class TrailingCommaRule(configRules: List<RulesConfig>) : DiktatRule("trailing-comma", configRules, listOf(TRAILING_COMMA)) {
-    private val commonConfig by configRules.getCommonConfiguration()
+class TrailingCommaRule(configRules: List<RulesConfig>) : DiktatRule(
+    "trailing-comma",
+    configRules,
+    listOf(TRAILING_COMMA)) {
+    private val commonConfig = configRules.getCommonConfiguration()
     private val trailingConfig = this.configRules.getRuleConfig(TRAILING_COMMA)?.configuration ?: emptyMap()
     private val configuration by lazy {
         if (trailingConfig.isEmpty()) {
