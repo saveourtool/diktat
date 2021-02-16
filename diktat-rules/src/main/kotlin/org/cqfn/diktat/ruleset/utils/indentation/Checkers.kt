@@ -209,9 +209,9 @@ internal class DotCallChecker(config: IndentationConfig) : CustomIndentationChec
                             type == ELVIS || type == IS_EXPRESSION || type == AS_KEYWORD || type == AS_SAFE
                         } || nextNode.isCommentBeforeDot()) && whiteSpace.parents.none { it.node.elementType == LONG_STRING_TEMPLATE_ENTRY }
             }
-            ?.let {
-                if (it.isFromStringTemplate()) {
-                    val template = it.parents().takeWhile { it.elementType != STRING_TEMPLATE }.last()
+            ?.let { node ->
+                if (node.isFromStringTemplate()) {
+                    val template = node.parents().takeWhile { it.elementType != STRING_TEMPLATE }.last()
                     return CheckResult.from(indentError.actual, indentError.expected +
                             (if (configuration.extendedIndentBeforeDot) 2 else 1) * configuration.indentationSize, true)
                 }
