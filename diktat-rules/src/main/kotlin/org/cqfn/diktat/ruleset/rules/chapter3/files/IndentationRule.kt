@@ -41,6 +41,7 @@ import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.RBRACKET
 import com.pinterest.ktlint.core.ast.ElementType.RPAR
 import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.SHORT_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.STRING_TEMPLATE
 import com.pinterest.ktlint.core.ast.ElementType.THEN
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
@@ -59,6 +60,7 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
 import org.jetbrains.kotlin.utils.addToStdlib.firstNotNullResult
+import java.lang.StringBuilder
 import kotlin.math.abs
 
 /**
@@ -227,7 +229,19 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
         val templateEntries = whiteSpace.node.treeNext.firstChildNode.getAllChildrenWithType(LITERAL_STRING_TEMPLATE_ENTRY)
         templateEntries.forEach {
             if (!it.text.contains("\n") && it.text.isNotBlank()) {
-                (it.firstChildNode as LeafPsiElement).rawReplaceWithText(textIndent + it.firstChildNode.text.trim())
+                val correctedText = StringBuilder()
+                when {
+                    it.treePrev.elementType in stringLiteralTokens && it.treeNext.elementType !in stringLiteralTokens -> {
+                        correctedText.append(it.firstChildNode.text.trimEnd())
+                    }
+                    it.treePrev.elementType !in stringLiteralTokens && it.treeNext.elementType in stringLiteralTokens -> {
+                        correctedText.append(textIndent + it.firstChildNode.text.trimStart())
+                    }
+                    it.treePrev.elementType !in stringLiteralTokens && it.treeNext.elementType !in stringLiteralTokens -> {
+                        correctedText.append(textIndent + it.firstChildNode.text.trim())
+                    }
+                }
+                (it.firstChildNode as LeafPsiElement).rawReplaceWithText(correctedText.toString())
             }
         }
         (templateEntries.last().firstChildNode as LeafPsiElement)
@@ -340,6 +354,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
         private val increasingTokens = listOf(LPAR, LBRACE, LBRACKET, LONG_TEMPLATE_ENTRY_START)
         private val decreasingTokens = listOf(RPAR, RBRACE, RBRACKET, LONG_TEMPLATE_ENTRY_END)
         private val matchingTokens = increasingTokens.zip(decreasingTokens)
+        private val stringLiteralTokens = listOf(SHORT_STRING_TEMPLATE_ENTRY, LONG_STRING_TEMPLATE_ENTRY)
     }
 }
 
