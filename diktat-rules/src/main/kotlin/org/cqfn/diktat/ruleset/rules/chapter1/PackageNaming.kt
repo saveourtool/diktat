@@ -1,6 +1,7 @@
 package org.cqfn.diktat.ruleset.rules.chapter1
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.common.config.rules.CommonConfiguration
 import org.cqfn.diktat.common.config.rules.getCommonConfiguration
 import org.cqfn.diktat.ruleset.constants.Warnings.INCORRECT_PACKAGE_SEPARATOR
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_CASE
@@ -16,7 +17,6 @@ import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.isLeaf
-import org.cqfn.diktat.common.config.rules.CommonConfiguration
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -105,8 +105,9 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
             // 1) getting a path after the base project directory (after "src" directory)
             // 2) removing src/main/kotlin/java/e.t.c dirs and removing file name
             // 3) adding company's domain name at the beginning
+            val allDirs = languageDirNames + configuration.srcDirectories + configuration.testAnchors
             val fileSubDir = filePathParts.subList(filePathParts.lastIndexOf(PACKAGE_PATH_ANCHOR), filePathParts.size - 1)
-                .dropWhile { configuration.srcDirectories.contains(it) || languageDirNames.contains(it) }
+                .dropWhile { allDirs.contains(it) }
             // no need to add DOMAIN_NAME to the package name if it is already in path
             val domainPrefix = if (!fileSubDir.joinToString(PACKAGE_SEPARATOR).startsWith(domainName)) domainName.split(PACKAGE_SEPARATOR) else emptyList()
             domainPrefix + fileSubDir
@@ -260,6 +261,6 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
          * Directories that are supposed to be first in sources file paths, relative to [PACKAGE_PATH_ANCHOR].
          * For kotlin multiplatform projects directories for targets from [kmmTargets] are supported.
          */
-        val languageDirNames = listOf("src", "test", "java", "kotlin") + kmmTargets.flatMap { listOf("${it}Main", "${it}Test") }
+        val languageDirNames = listOf("src", "java", "kotlin") + kmmTargets.flatMap { listOf("${it}Main", "${it}Test") }
     }
 }

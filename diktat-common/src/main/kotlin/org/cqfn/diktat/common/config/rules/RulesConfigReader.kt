@@ -101,7 +101,11 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
      * List of directory names which will be used to detect test sources
      */
     val testAnchors: List<String> by lazy {
-        (configuration ?: emptyMap()).getOrDefault("testDirs", "test").split(',')
+        val testDirs = (configuration ?: emptyMap()).getOrDefault("testDirs", "test").split(',')
+        if (testDirs.none { it.toLowerCase().endsWith("test") }) {
+            log.error("test directories should have `test` word")
+        }
+        testDirs
     }
 
     /**
@@ -134,7 +138,11 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
      * Get source directories from configuration
      */
     val srcDirectories: List<String> by lazy {
-        configuration?.get("srcDirectory")?.split(",")?.map { it.trim() } ?: listOf("main")
+        val srcDirs = configuration?.get("srcDirectories")?.split(",")?.map { it.trim() } ?: listOf("main")
+        if (srcDirs.none { it.toLowerCase().endsWith("main") }) {
+            log.error("source directories should have `main` word")
+        }
+        srcDirs
     }
 
     /**
