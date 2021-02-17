@@ -227,21 +227,22 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun fixStringLiteral(whiteSpace: PsiWhiteSpace, expectedIndent: Int) {
         val textIndent = " ".repeat(expectedIndent + INDENT_SIZE)
         val templateEntries = whiteSpace.node.treeNext.firstChildNode.getAllChildrenWithType(LITERAL_STRING_TEMPLATE_ENTRY)
-        templateEntries.forEach {
-            if (!it.text.contains("\n") && it.text.isNotBlank()) {
+        templateEntries.forEach { node ->
+            if (!node.text.contains("\n") && node.text.isNotBlank()) {
                 val correctedText = StringBuilder()
                 when {
-                    it.treePrev.elementType in stringLiteralTokens && it.treeNext.elementType !in stringLiteralTokens -> {
-                        correctedText.append(it.firstChildNode.text.trimEnd())
+                    node.treePrev.elementType in stringLiteralTokens && node.treeNext.elementType !in stringLiteralTokens -> {
+                        correctedText.append(node.firstChildNode.text.trimEnd())
                     }
-                    it.treePrev.elementType !in stringLiteralTokens && it.treeNext.elementType in stringLiteralTokens -> {
-                        correctedText.append(textIndent + it.firstChildNode.text.trimStart())
+                    node.treePrev.elementType !in stringLiteralTokens && node.treeNext.elementType in stringLiteralTokens -> {
+                        correctedText.append(textIndent + node.firstChildNode.text.trimStart())
                     }
-                    it.treePrev.elementType !in stringLiteralTokens && it.treeNext.elementType !in stringLiteralTokens -> {
-                        correctedText.append(textIndent + it.firstChildNode.text.trim())
+                    node.treePrev.elementType !in stringLiteralTokens && node.treeNext.elementType !in stringLiteralTokens -> {
+                        correctedText.append(textIndent + node.firstChildNode.text.trim())
                     }
+                    else -> {}
                 }
-                (it.firstChildNode as LeafPsiElement).rawReplaceWithText(correctedText.toString())
+                (node.firstChildNode as LeafPsiElement).rawReplaceWithText(correctedText.toString())
             }
         }
         (templateEntries.last().firstChildNode as LeafPsiElement)
