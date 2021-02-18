@@ -6,7 +6,7 @@
     domainName: org.cqfn.diktat
     # testDirs: test
     disabledChapters: ""
-    testDirs: "test"
+    testDirs: test
     kotlinVersion: 1.4.30
     srcDirectories: "main"
 # Checks that the Class/Enum/Interface name does not match Pascal case

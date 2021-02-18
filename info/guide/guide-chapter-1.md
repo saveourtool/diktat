@@ -73,9 +73,6 @@ Package names are in lower case and separated by dots. Code developed within you
 Each file should have a `package` directive.
 Package names are all written in lowercase, and consecutive words are concatenated together (no underscores). Package names should contain both the product or module names and the department (or team) name to prevent conflicts with other teams.  Numbers are not permitted. For example: `org.apache.commons.lang3`, `xxx.yyy.v2`.
 
-**Note**
-Source directory can be change in configuration file, same as test directory. You can specify several options separated by commas.
-
 **Exceptions:** 
 
 - In certain cases, such as open-source projects or commercial cooperation, package names should not start with `your.company.domain.`

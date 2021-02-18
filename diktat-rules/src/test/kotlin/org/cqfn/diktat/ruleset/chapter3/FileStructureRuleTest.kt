@@ -394,4 +394,32 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
             """.trimMargin(),
         )
     }
+
+    @Test
+    @Tag(WarningNames.UNUSED_IMPORT)
+    fun `Ignore Impdorts`() {
+        lintMethod(
+            """
+                package org.cqfn.diktat.example
+                              
+                import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
+                import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
+                import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
+                import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
+                import com.pinterest.ktlint.core.ast.isLeaf                                
+                
+                import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+                import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
+                import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
+                import org.jetbrains.kotlin.konan.file.File
+                import org.jetbrains.kotlin.lexer.KtTokens.PACKAGE_KEYWORD
+                
+                import java.util.concurrent.atomic.AtomicInteger
+                
+                fun main() {
+                   val a = list[1]
+                }
+            """.trimMargin(),
+        )
+    }
 }
