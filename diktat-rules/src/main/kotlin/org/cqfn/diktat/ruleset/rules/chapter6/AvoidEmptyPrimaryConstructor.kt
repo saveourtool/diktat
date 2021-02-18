@@ -1,10 +1,9 @@
 package org.cqfn.diktat.ruleset.rules.chapter6
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.EMPTY_PRIMARY_CONSTRUCTOR
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtClass
@@ -12,16 +11,11 @@ import org.jetbrains.kotlin.psi.KtClass
 /**
  * This rule checks if a class has an empty primary constructor.
  */
-class AvoidEmptyPrimaryConstructor(private val configRules: List<RulesConfig>) : Rule("avoid-empty-primary-constructor") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+class AvoidEmptyPrimaryConstructor(configRules: List<RulesConfig>) : DiktatRule(
+    "avoid-empty-primary-constructor",
+    configRules,
+    listOf(EMPTY_PRIMARY_CONSTRUCTOR)) {
+    override fun logic(node: ASTNode) {
         if (node.elementType == CLASS) {
             checkClass(node.psi as KtClass)
         }

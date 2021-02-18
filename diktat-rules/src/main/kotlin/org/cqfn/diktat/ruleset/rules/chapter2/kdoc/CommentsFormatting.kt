@@ -3,14 +3,13 @@ package org.cqfn.diktat.ruleset.rules.chapter2.kdoc
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.COMMENT_WHITE_SPACE
-import org.cqfn.diktat.ruleset.constants.Warnings.FIRST_COMMENT_NO_SPACES
+import org.cqfn.diktat.ruleset.constants.Warnings.FIRST_COMMENT_NO_BLANK_LINE
 import org.cqfn.diktat.ruleset.constants.Warnings.IF_ELSE_COMMENTS
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_NEWLINES_AROUND_KDOC
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
@@ -50,21 +49,17 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
  * * Leave one single space between the comment on the right side of the code and the code.
  * * Comments in if else should be inside code blocks. Exception: General if comment
  */
-class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdoc-comments-codeblocks-formatting") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
+class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
+    "kdoc-comments-codeblocks-formatting",
+    configRules,
+    listOf(COMMENT_WHITE_SPACE, FIRST_COMMENT_NO_BLANK_LINE,
+        IF_ELSE_COMMENTS, WRONG_NEWLINES_AROUND_KDOC)) {
     /**
      * @param node
      * @param autoCorrect
      * @param emit
      */
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        isFixMode = autoCorrect
-        emitWarn = emit
-
+    override fun logic(node: ASTNode) {
         val configuration = CommentsFormattingConfiguration(
             configRules.getRuleConfig(COMMENT_WHITE_SPACE)?.configuration ?: emptyMap())
 
@@ -320,7 +315,7 @@ class CommentsFormatting(private val configRules: List<RulesConfig>) : Rule("kdo
         if (node.treePrev.isWhiteSpace()) {
             if (node.treePrev.numNewLines() > 1 ||
                     node.treePrev.numNewLines() == 0) {
-                FIRST_COMMENT_NO_SPACES.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
+                FIRST_COMMENT_NO_BLANK_LINE.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
                     (node.treePrev as LeafPsiElement).replaceWithText("\n")
                 }
             }

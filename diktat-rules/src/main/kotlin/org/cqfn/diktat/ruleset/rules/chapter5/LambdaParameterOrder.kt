@@ -1,11 +1,10 @@
 package org.cqfn.diktat.ruleset.rules.chapter5
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.LAMBDA_IS_NOT_LAST_PARAMETER
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_TYPE
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
@@ -16,16 +15,11 @@ import org.jetbrains.kotlin.utils.addToStdlib.ifNotEmpty
 /**
  * Rule that checks if parameter with function type is the last in parameter list
  */
-class LambdaParameterOrder(private val configRules: List<RulesConfig>) : Rule("lambda-parameter-order") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+class LambdaParameterOrder(configRules: List<RulesConfig>) : DiktatRule(
+    "lambda-parameter-order",
+    configRules,
+    listOf(LAMBDA_IS_NOT_LAST_PARAMETER)) {
+    override fun logic(node: ASTNode) {
         if (node.elementType == ElementType.FUN) {
             checkArguments(node)
         }

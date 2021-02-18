@@ -89,7 +89,11 @@ class KotlinParser {
      * Else, try to create node based on text.
      * If this node will contain ERROR_ELEMENT type children this mean that cannot create node based on this text
      */
-    @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION", "SAY_NO_TO_VAR")
+    @Suppress(
+        "UnsafeCallOnNullableType",
+        "TOO_LONG_FUNCTION",
+        "SAY_NO_TO_VAR"
+    )
     private fun makeNode(text: String, isPackage: Boolean = false): ASTNode? {
         if (text.isEmpty()) {
             return null

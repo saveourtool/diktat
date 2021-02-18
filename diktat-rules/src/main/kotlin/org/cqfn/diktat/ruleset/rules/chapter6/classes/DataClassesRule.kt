@@ -1,17 +1,15 @@
 package org.cqfn.diktat.ruleset.rules.chapter6.classes
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.USE_DATA_CLASS
-import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
-import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
-import org.cqfn.diktat.ruleset.utils.hasChildOfType
+import org.cqfn.diktat.ruleset.rules.DiktatRule
+import org.cqfn.diktat.ruleset.utils.*
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.ABSTRACT_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
+import com.pinterest.ktlint.core.ast.ElementType.CLASS_INITIALIZER
 import com.pinterest.ktlint.core.ast.ElementType.DATA_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.ENUM_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.FUN
@@ -21,6 +19,7 @@ import com.pinterest.ktlint.core.ast.ElementType.OPEN_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY_ACCESSOR
+import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.SEALED_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_LIST
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -32,16 +31,11 @@ import org.jetbrains.kotlin.psi.KtPrimaryConstructor
 /**
  * This rule checks if class can be made as data class
  */
-class DataClassesRule(private val configRule: List<RulesConfig>) : Rule("data-classes") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+class DataClassesRule(configRules: List<RulesConfig>) : DiktatRule(
+    "data-classes",
+    configRules,
+    listOf(USE_DATA_CLASS)) {
+    override fun logic(node: ASTNode) {
         if (node.elementType == CLASS) {
             handleClass(node)
         }
@@ -59,21 +53,46 @@ class DataClassesRule(private val configRule: List<RulesConfig>) : Rule("data-cl
 
     // fixme: Need to know types of vars and props to create data class
     private fun raiseWarn(node: ASTNode) {
-        USE_DATA_CLASS.warn(configRule, emitWarn, isFixMode, "${(node.psi as KtClass).name}", node.startOffset, node)
+        USE_DATA_CLASS.warn(configRules, emitWarn, isFixMode, "${(node.psi as KtClass).name}", node.startOffset, node)
     }
 
-    @Suppress("UnsafeCallOnNullableType", "FUNCTION_BOOLEAN_PREFIX", "ComplexMethod")
+    @Suppress(
+        "UnsafeCallOnNullableType",
+        "FUNCTION_BOOLEAN_PREFIX",
+        "ComplexMethod"
+    )
     private fun ASTNode.canBeDataClass(): Boolean {
         val isNotPropertyInClassBody = findChildByType(CLASS_BODY)?.let { (it.psi as KtClassBody).properties.isEmpty() } ?: true
+        val constructorParametersNames: MutableList<String> = mutableListOf()
         val hasPropertyInConstructor = findChildByType(PRIMARY_CONSTRUCTOR)
             ?.let { constructor ->
                 (constructor.psi as KtPrimaryConstructor)
                     .valueParameters
+                    .onEach {
+                        if (!it.hasValOrVar()) {
+                            constructorParametersNames.add(it.name!!)
+                        }
+                    }
                     .run { isNotEmpty() && all { it.hasValOrVar() } }
             } ?: false
         if (isNotPropertyInClassBody && !hasPropertyInConstructor) {
             return false
         }
+        // if parameter of the primary constructor is used in init block then it is hard to refactor this class to data class
+        if (constructorParametersNames.isNotEmpty()) {
+            val initBlocks = findChildByType(CLASS_BODY)?.getAllChildrenWithType(CLASS_INITIALIZER)
+            initBlocks?.forEach { init ->
+                val refExpressions = init.findAllNodesWithSpecificType(REFERENCE_EXPRESSION)
+                if (refExpressions.any { it.text in constructorParametersNames }) {
+                    return false
+                }
+            }
+        }
+        return hasAppropriateClassBody()
+    }
+
+    @Suppress("UnsafeCallOnNullableType")
+    private fun ASTNode.hasAppropriateClassBody(): Boolean {
         val classBody = getFirstChildWithType(CLASS_BODY)
         if (hasChildOfType(MODIFIER_LIST)) {
             val list = getFirstChildWithType(MODIFIER_LIST)!!

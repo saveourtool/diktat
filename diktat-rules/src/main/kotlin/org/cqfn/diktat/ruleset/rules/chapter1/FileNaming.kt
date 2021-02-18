@@ -1,16 +1,15 @@
 package org.cqfn.diktat.ruleset.rules.chapter1
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NAME_INCORRECT
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NAME_MATCH_CLASS
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getFilePath
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.isKotlinScript
 import org.cqfn.diktat.ruleset.utils.isPascalCase
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
@@ -27,17 +26,13 @@ import java.io.File
  * Aggressive: In case file contains only one class on upper level - it should be named with the same name
  */
 @Suppress("ForbiddenComment")
-class FileNaming(private val configRules: List<RulesConfig>) : Rule("file-naming") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
+class FileNaming(configRules: List<RulesConfig>) : DiktatRule(
+    "file-naming",
+    configRules,
+    listOf(FILE_NAME_INCORRECT, FILE_NAME_MATCH_CLASS)) {
     private lateinit var filePath: String
 
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+    override fun logic(node: ASTNode) {
         if (node.elementType == FILE) {
             filePath = node.getFilePath()
             if (!filePath.isKotlinScript()) {

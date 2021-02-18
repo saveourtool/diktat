@@ -1,8 +1,8 @@
 package org.cqfn.diktat.ruleset.rules.chapter6
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.EXTENSION_FUNCTION_SAME_SIGNATURE
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.findChildAfter
 import org.cqfn.diktat.ruleset.utils.findChildBefore
@@ -11,7 +11,6 @@ import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.COLON
 import com.pinterest.ktlint.core.ast.ElementType.DOT
@@ -33,16 +32,11 @@ internal typealias SimilarSignatures = List<Pair<ExtensionFunctionsSameNameRule.
 /**
  * This rule checks if extension functions with the same signature don't have related classes
  */
-class ExtensionFunctionsSameNameRule(private val configRules: List<RulesConfig>) : Rule("extension-functions-same-name") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+class ExtensionFunctionsSameNameRule(configRules: List<RulesConfig>) : DiktatRule(
+    "extension-functions-same-name",
+    configRules,
+    listOf(EXTENSION_FUNCTION_SAME_SIGNATURE)) {
+    override fun logic(node: ASTNode) {
         /**
          * 1) Collect all classes that extend other classes (collect related classes)
          * 2) Collect all extension functions with same signature

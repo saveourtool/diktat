@@ -4,13 +4,13 @@ import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getCommonConfiguration
 import org.cqfn.diktat.common.config.rules.getRuleConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_CONTAINS_ONLY_COMMENTS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_INCORRECT_BLOCKS_ORDER
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NO_BLANK_LINE_BETWEEN_BLOCKS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_UNORDERED_IMPORTS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_WILDCARD_IMPORTS
 import org.cqfn.diktat.ruleset.constants.Warnings.UNUSED_IMPORT
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.rules.chapter1.PackageNaming.Companion.PACKAGE_SEPARATOR
 import org.cqfn.diktat.ruleset.utils.StandardPlatforms
 import org.cqfn.diktat.ruleset.utils.copyrightWords
@@ -19,7 +19,6 @@ import org.cqfn.diktat.ruleset.utils.handleIncorrectOrder
 import org.cqfn.diktat.ruleset.utils.moveChildBefore
 import org.cqfn.diktat.ruleset.utils.operatorMap
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.FILE
@@ -56,12 +55,14 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
  * 4. Ensures imports are ordered alphabetically without blank lines
  * 5. Ensures there are no wildcard imports
  */
-class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file-structure") {
-    private var isFixMode: Boolean = false
+class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
+    "file-structure",
+    configRules,
+    listOf(FILE_CONTAINS_ONLY_COMMENTS, FILE_INCORRECT_BLOCKS_ORDER, FILE_NO_BLANK_LINE_BETWEEN_BLOCKS,
+        FILE_UNORDERED_IMPORTS, FILE_WILDCARD_IMPORTS, UNUSED_IMPORT)) {
     private val domainName by lazy {
         configRules
             .getCommonConfiguration()
-            .value
             .domainName
     }
     private val standardImportsAsName = StandardPlatforms
@@ -73,14 +74,9 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
         }
     private val refSet: MutableSet<String> = mutableSetOf()
     private var packageName = ""
-    private lateinit var emitWarn: EmitType
+    private val ignoreImports = setOf("invoke", "get", "set")
 
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        isFixMode = autoCorrect
-        emitWarn = emit
-
+    override fun logic(node: ASTNode) {
         if (node.elementType == FILE) {
             val wildcardImportsConfig = WildCardImportsConfig(
                 this.configRules.getRuleConfig(FILE_WILDCARD_IMPORTS)?.configuration ?: emptyMap()
@@ -228,7 +224,7 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
                 ) {
                     // this branch corresponds to imports from the same package
                     deleteImport(importPath, node, ktImportDirective)
-                } else if (importName != null && !refSet.contains(
+                } else if (importName != null && !ignoreImports.contains(importName) && !refSet.contains(
                     importName
                 )
                 ) {
@@ -251,14 +247,21 @@ class FileStructureRule(private val configRules: List<RulesConfig>) : Rule("file
     }
 
     private fun findAllReferences(node: ASTNode) {
-        node.findAllNodesWithSpecificType(OPERATION_REFERENCE)?.forEach { ref ->
+        node.findAllNodesWithSpecificType(OPERATION_REFERENCE).forEach { ref ->
             if (!ref.isPartOf(IMPORT_DIRECTIVE)) {
-                operatorMap.filterValues { it == ref.text }.keys.forEach { key -> refSet.add(key) }
+                val references = operatorMap.filterValues { it == ref.text }
+                if (references.isNotEmpty()) {
+                    references.keys.forEach { key -> refSet.add(key) }
+                } else {
+                    // this is needed to check infix functions that relate to operation reference
+                    refSet.add(ref.text)
+                }
             }
         }
-        node.findAllNodesWithSpecificType(REFERENCE_EXPRESSION)?.forEach {
+        node.findAllNodesWithSpecificType(REFERENCE_EXPRESSION).forEach {
             if (!it.isPartOf(IMPORT_DIRECTIVE)) {
-                refSet.add(it.text)
+                // the importedName method removes the quotes, but the node.text method does not
+                refSet.add(it.text.replace("`", ""))
             }
         }
     }

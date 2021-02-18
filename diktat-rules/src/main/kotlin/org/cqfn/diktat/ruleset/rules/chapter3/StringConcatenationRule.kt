@@ -1,13 +1,12 @@
 package org.cqfn.diktat.ruleset.rules.chapter3
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.STRING_CONCATENATION
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.PLUS
@@ -20,16 +19,11 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
  * // FixMe: fixes will be added
  * // FixMe: .toString() method and functions that return strings are not supported
  */
-class StringConcatenationRule(private val configRules: List<RulesConfig>) : Rule("string-concatenation") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+class StringConcatenationRule(configRules: List<RulesConfig>) : DiktatRule(
+    "string-concatenation",
+    configRules,
+    listOf(STRING_CONCATENATION)) {
+    override fun logic(node: ASTNode) {
         if (node.elementType == BINARY_EXPRESSION) {
             // searching top-level binary expression to detect any operations with "plus" (+)
             // string concatenation is prohibited only for single line statements

@@ -3,12 +3,11 @@ package org.cqfn.diktat.ruleset.rules.chapter5
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.NESTED_BLOCK
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_LITERAL
@@ -21,19 +20,15 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
 /**
  * Rule 5.1.2 Nested blokcs
  */
-class NestedFunctionBlock(private val configRules: List<RulesConfig>) : Rule("nested-block") {
+class NestedFunctionBlock(configRules: List<RulesConfig>) : DiktatRule(
+    "nested-block",
+    configRules,
+    listOf(NESTED_BLOCK)) {
     private val configuration: NestedBlockConfiguration by lazy {
         NestedBlockConfiguration(configRules.getRuleConfig(NESTED_BLOCK)?.configuration ?: emptyMap())
     }
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
 
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+    override fun logic(node: ASTNode) {
         if (node.elementType in nullificationType) {
             countNestedBlocks(node, configuration.maxNestedBlockQuantity)
         }

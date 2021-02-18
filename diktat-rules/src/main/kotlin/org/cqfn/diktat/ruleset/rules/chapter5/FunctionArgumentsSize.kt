@@ -3,10 +3,9 @@ package org.cqfn.diktat.ruleset.rules.chapter5
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.TOO_MANY_PARAMETERS
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -15,19 +14,15 @@ import org.jetbrains.kotlin.psi.KtFunction
 /**
  * Rule that checks that function doesn't contains too many parameters
  */
-class FunctionArgumentsSize(private val configRules: List<RulesConfig>) : Rule("argument-size") {
-    private var isFixMode: Boolean = false
+class FunctionArgumentsSize(configRules: List<RulesConfig>) : DiktatRule(
+    "argument-size",
+    configRules,
+    listOf(TOO_MANY_PARAMETERS)) {
     private val configuration: FunctionArgumentsSizeConfiguration by lazy {
         FunctionArgumentsSizeConfiguration(configRules.getRuleConfig(TOO_MANY_PARAMETERS)?.configuration ?: emptyMap())
     }
-    private lateinit var emitWarn: EmitType
 
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+    override fun logic(node: ASTNode) {
         if (node.elementType == ElementType.FUN) {
             checkFun(node, configuration.maxParameterSize)
         }

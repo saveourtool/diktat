@@ -32,5 +32,19 @@ data class Example(val field1: Type1,
         else
             foobaz()
     }
+
+    fun some() {
+        val a = "${
+            foo().bar()
+        }"
+
+        val b = "${baz().foo()}"
+
+        val c = "${
+            expression
+                .foo()
+                .bar()
+        }"
+    }
 }
 

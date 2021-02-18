@@ -15,16 +15,6 @@ class HttpClient(var name: String) {
     fun doRequest() {}
 }
 
-fun mains() {
-    val httpClient = HttpClient("myConnection")
-        .apply {
-            url = "http://example.com"
-            port = "8080"
-            timeout = 100
-        }
-    httpClient.doRequest()
-}
-
 class Example {
     fun foo() {
         if (condition1) {
@@ -45,10 +35,24 @@ class Example {
     }
 }
 
+enum class IssueType {
+    PROJECT_STRUCTURE, TESTS, VCS
+}
+
 class Foo {
     /**
      * @implNote lorem ipsum
      */
     private fun foo() {}
+}
+
+fun mains() {
+    val httpClient = HttpClient("myConnection")
+        .apply {
+            url = "http://example.com"
+            port = "8080"
+            timeout = 100
+        }
+    httpClient.doRequest()
 }
 

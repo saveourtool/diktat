@@ -3,10 +3,9 @@ package org.cqfn.diktat.ruleset.rules.chapter3
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.TOO_MANY_CONSECUTIVE_SPACES
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.ENUM_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
@@ -21,16 +20,11 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
  * 2) If saveInitialFormattingForEnums is true then white spaces in enums will not be affected
  *
  */
-class ConsecutiveSpacesRule(private val configRules: List<RulesConfig>) : Rule("too-many-spaces") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+class ConsecutiveSpacesRule(configRules: List<RulesConfig>) : DiktatRule(
+    "too-many-spaces",
+    configRules,
+    listOf(TOO_MANY_CONSECUTIVE_SPACES)) {
+    override fun logic(node: ASTNode) {
         val configuration = TooManySpacesRuleConfiguration(
             configRules.getRuleConfig(TOO_MANY_CONSECUTIVE_SPACES)?.configuration ?: emptyMap())
 

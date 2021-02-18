@@ -3,11 +3,10 @@ package org.cqfn.diktat.ruleset.rules.chapter4
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.TYPE_ALIAS
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.LT
 import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_LIST
 import com.pinterest.ktlint.core.ast.ElementType.TYPEALIAS
@@ -20,16 +19,11 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  * This rule checks if variable has long type reference and two or more nested generics.
  * Length type reference can be configured
  */
-class TypeAliasRule(private val configRules: List<RulesConfig>) : Rule("type-alias") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+class TypeAliasRule(configRules: List<RulesConfig>) : DiktatRule(
+    "type-alias",
+    configRules,
+    listOf(TYPE_ALIAS)) {
+    override fun logic(node: ASTNode) {
         if (node.elementType == TYPE_REFERENCE && node
             .parents()
             .map { it.elementType }

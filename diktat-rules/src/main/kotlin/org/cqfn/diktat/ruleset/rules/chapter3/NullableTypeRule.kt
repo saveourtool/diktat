@@ -1,13 +1,12 @@
 package org.cqfn.diktat.ruleset.rules.chapter3
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.NULLABLE_PROPERTY_TYPE
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BOOLEAN_CONSTANT
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CHARACTER_CONSTANT
@@ -38,16 +37,11 @@ import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 /**
  * Rule that checks if nullable types are used and suggest to substitute them with non-nullable
  */
-class NullableTypeRule(private val configRules: List<RulesConfig>) : Rule("nullable-type") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        isFixMode = autoCorrect
-        emitWarn = emit
-
+class NullableTypeRule(configRules: List<RulesConfig>) : DiktatRule(
+    "nullable-type",
+    configRules,
+    listOf(NULLABLE_PROPERTY_TYPE)) {
+    override fun logic(node: ASTNode) {
         if (node.elementType == PROPERTY) {
             checkProperty(node)
         }

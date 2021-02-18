@@ -1,10 +1,9 @@
 package org.cqfn.diktat.ruleset.rules.chapter5
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.INVERSE_FUNCTION_PREFERRED
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
@@ -23,16 +22,11 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
  * This rule checks if inverse method can be used.
  * For example if there is !isEmpty() on collection call that it changes it to isNotEmpty()
  */
-class CheckInverseMethodRule(private val configRules: List<RulesConfig>) : Rule("inverse-method") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+class CheckInverseMethodRule(configRules: List<RulesConfig>) : DiktatRule(
+    "inverse-method",
+    configRules,
+    listOf(INVERSE_FUNCTION_PREFERRED)) {
+    override fun logic(node: ASTNode) {
         if (node.elementType == CALL_EXPRESSION && node.text in methodMap.keys) {
             checkCallExpressionName(node)
         }

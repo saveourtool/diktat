@@ -3,34 +3,27 @@ package org.cqfn.diktat.ruleset.rules.chapter5
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
-import org.cqfn.diktat.ruleset.constants.Warnings
+import org.cqfn.diktat.ruleset.constants.Warnings.TOO_MANY_LINES_IN_LAMBDA
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 /**
  * Rule 5.2.5 check lambda length without parameters
  */
-class LambdaLengthRule(private val configRules: List<RulesConfig>) : Rule("lambda-length") {
+class LambdaLengthRule(configRules: List<RulesConfig>) : DiktatRule(
+    "lambda-length",
+    configRules,
+    listOf(TOO_MANY_LINES_IN_LAMBDA)) {
     private val configuration by lazy {
         LambdaLengthConfiguration(
-            this.configRules.getRuleConfig(Warnings.TOO_MANY_LINES_IN_LAMBDA)?.configuration ?: emptyMap()
+            this.configRules.getRuleConfig(TOO_MANY_LINES_IN_LAMBDA)?.configuration ?: emptyMap()
         )
     }
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
 
-    override fun visit(
-        node: ASTNode,
-        autoCorrect: Boolean,
-        emit: EmitType
-    ) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+    override fun logic(node: ASTNode) {
         if (node.elementType == ElementType.LAMBDA_EXPRESSION) {
             checkLambda(node, configuration)
         }
@@ -48,7 +41,7 @@ class LambdaLengthRule(private val configRules: List<RulesConfig>) : Rule("lambd
             val isIt = copyNode.findAllNodesWithSpecificType(ElementType.REFERENCE_EXPRESSION).map { re -> re.text }.contains("it")
             val parameters = node.findChildByType(ElementType.FUNCTION_LITERAL)?.findChildByType(ElementType.VALUE_PARAMETER_LIST)
             if (parameters == null && isIt) {
-                Warnings.TOO_MANY_LINES_IN_LAMBDA.warn(configRules, emitWarn, isFixMode,
+                TOO_MANY_LINES_IN_LAMBDA.warn(configRules, emitWarn, isFixMode,
                     "max length lambda without arguments is ${configuration.maxLambdaLength}, but you have $sizeLambda",
                     node.startOffset, node)
             }

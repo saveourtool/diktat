@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory
 
 import java.io.BufferedReader
 import java.io.File
+import java.util.concurrent.atomic.AtomicInteger
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
@@ -91,13 +92,6 @@ open class RulesConfigReader(override val classLoader: ClassLoader) : JsonResour
 }
 
 /**
- * @return common configuration from list of all rules configuration
- */
-fun List<RulesConfig>.getCommonConfiguration() = lazy {
-    CommonConfiguration(getCommonConfig()?.configuration)
-}
-
-/**
  * class returns the list of common configurations that we have read from a configuration map
  *
  * @param configuration map of common configuration
@@ -129,7 +123,9 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
      */
     val kotlinVersion: KotlinVersion by lazy {
         configuration?.get("kotlinVersion")?.kotlinVersion() ?: run {
-            log.error("Kotlin version not specified in the configuration file. Will be using ${KotlinVersion.CURRENT} version")
+            if (visitorCounter.incrementAndGet() == 1) {
+                log.error("Kotlin version not specified in the configuration file. Will be using ${KotlinVersion.CURRENT} version")
+            }
             KotlinVersion.CURRENT
         }
     }
@@ -138,9 +134,21 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
      * False if configuration has been read from config file, true if defaults are used
      */
     val isDefault = configuration == null
+
+    companion object {
+        /**
+         * Counter that helps not to raise multiple warnings about kotlin version
+         */
+        var visitorCounter = AtomicInteger(0)
+    }
 }
 
 // ================== utils for List<RulesConfig> from yml config
+
+/**
+ * @return common configuration from list of all rules configuration
+ */
+fun List<RulesConfig>.getCommonConfiguration() = CommonConfiguration(getCommonConfig()?.configuration)
 
 /**
  * Get [RulesConfig] for particular [Rule] object.
@@ -149,11 +157,6 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
  * @return [RulesConfig] for a particular rule if it is found, else null
  */
 fun List<RulesConfig>.getRuleConfig(rule: Rule): RulesConfig? = this.find { it.name == rule.ruleName() }
-
-/**
- * Get [RulesConfig] representing common configuration part that can be used in any rule
- */
-private fun List<RulesConfig>.getCommonConfig() = find { it.name == DIKTAT_COMMON }
 
 /**
  * checking if in yml config particular rule is enabled or disabled
@@ -183,3 +186,8 @@ fun String.kotlinVersion(): KotlinVersion {
         KotlinVersion(versions[0], versions[1], versions[2])
     }
 }
+
+/**
+ * Get [RulesConfig] representing common configuration part that can be used in any rule
+ */
+private fun List<RulesConfig>.getCommonConfig() = find { it.name == DIKTAT_COMMON }

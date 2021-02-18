@@ -32,4 +32,18 @@ fun foo(
         else
         foobaz()
     }
+
+    fun some() {
+        val a = "${
+        foo().bar()
+        }"
+
+        val b = "${baz().foo()}"
+
+        val c = "${
+        expression
+            .foo()
+            .bar()
+        }"
+    }
 }

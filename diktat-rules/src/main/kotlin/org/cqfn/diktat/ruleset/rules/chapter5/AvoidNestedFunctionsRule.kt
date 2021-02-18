@@ -1,14 +1,13 @@
 package org.cqfn.diktat.ruleset.rules.chapter5
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.AVOID_NESTED_FUNCTIONS
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.cqfn.diktat.ruleset.utils.hasParent
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
@@ -25,16 +24,11 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
 /**
  * This rule checks for nested functions and warns if it finds any.
  */
-class AvoidNestedFunctionsRule(private val configRules: List<RulesConfig>) : Rule("avoid-nested-functions") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+class AvoidNestedFunctionsRule(configRules: List<RulesConfig>) : DiktatRule(
+    "avoid-nested-functions",
+    configRules,
+    listOf(AVOID_NESTED_FUNCTIONS)) {
+    override fun logic(node: ASTNode) {
         if (node.elementType == FUN) {
             handleNestedFunctions(node)
         }

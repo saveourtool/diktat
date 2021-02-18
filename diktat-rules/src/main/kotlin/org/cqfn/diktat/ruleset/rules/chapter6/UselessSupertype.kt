@@ -1,11 +1,10 @@
 package org.cqfn.diktat.ruleset.rules.chapter6
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.USELESS_SUPERTYPE
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
@@ -32,16 +31,11 @@ import java.util.HashMap
  * Explicit supertype qualification should not be used if there is not clash between called methods
  * fixme can't fix supertypes that are defined in other files.
  */
-class UselessSupertype(private val configRules: List<RulesConfig>) : Rule("useless-override") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+class UselessSupertype(configRules: List<RulesConfig>) : DiktatRule(
+    "useless-override",
+    configRules,
+    listOf(USELESS_SUPERTYPE)) {
+    override fun logic(node: ASTNode) {
         if (node.elementType == CLASS) {
             checkClass(node)
         }

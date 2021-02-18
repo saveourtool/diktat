@@ -52,6 +52,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
            |fun foo(a: Int): Int {
            |    /* println(a + 42)
            |    println("This is a test string")
+           |    val b = a*10
            |    */
            |    return 0
            |}
@@ -72,9 +73,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
            |//    println("This is a test string")
            |    return 0
            |}
-        """.trimMargin(),
-            LintError(4, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} println(a + 42)", false)
-        )
+        """.trimMargin())
     }
 
     @Test
@@ -179,8 +178,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
         lintMethod(
             """
             |// class Test: Exception()
-            """.trimMargin(),
-            LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} class Test: Exception()", false))
+            """.trimMargin())
     }
 
     @Test
@@ -199,8 +197,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
         lintMethod(
             """
             |// internal sealed class Test: Exception()
-            """.trimMargin(),
-            LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} internal sealed class Test: Exception()", false))
+            """.trimMargin())
     }
 
     @Test
@@ -292,5 +289,58 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
             |   maybe even with another line
             |   */
             """.trimMargin())
+    }
+
+    @Test
+    @Tag(WarningNames.COMMENTED_OUT_CODE)
+    fun `should not trigger on Copyright and another comment`() {
+        lintMethod(
+            """
+            /*
+                Copyright (c) Your Company Name Here. 2010-2021
+            */
+            
+            package org.cqfn.diktat
+            
+            /*
+                x = 2 + 4 + 1
+            */
+            // x = 2+4
+            
+            // if true make this
+            
+            /*
+                class A {
+                
+                fun foo()  
+                
+                }
+            
+            */
+            """.trimMargin(),
+            LintError(7, 13, ruleId, "${COMMENTED_OUT_CODE.warnText()} ", false),
+            LintError(14, 13, ruleId, "${COMMENTED_OUT_CODE.warnText()} ", false)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.COMMENTED_OUT_CODE)
+    fun `should not trigger with suppress`() {
+        lintMethod(
+            """
+            @Suppress("UnsafeCallOnNullableType", "COMMENTED_OUT_CODE")
+            private fun handleProperty(property: KtProperty) {
+             
+             /*
+                x = 1
+             */
+            }
+            
+            @Suppress("COMMENTED_OUT_CODE")
+            class A {
+                // val x = 10
+            }
+            """.trimMargin()
+        )
     }
 }

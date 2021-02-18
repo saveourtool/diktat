@@ -1,14 +1,13 @@
 package org.cqfn.diktat.ruleset.rules.chapter6
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.NO_CORRESPONDING_PROPERTY
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.hasAnyChildOfTypes
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
@@ -25,16 +24,11 @@ import org.jetbrains.kotlin.psi.KtProperty
 /**
  * This rule checks if there is a backing property for field with property accessors, in case they don't use field keyword
  */
-class ImplicitBackingPropertyRule(private val configRules: List<RulesConfig>) : Rule("implicit-backing-property") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+class ImplicitBackingPropertyRule(configRules: List<RulesConfig>) : DiktatRule(
+    "implicit-backing-property",
+    configRules,
+    listOf(NO_CORRESPONDING_PROPERTY)) {
+    override fun logic(node: ASTNode) {
         if (node.elementType == CLASS_BODY) {
             findAllProperties(node)
         }

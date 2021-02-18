@@ -26,9 +26,9 @@ Now diKTat was already added to the lists of [static analysis tools](https://git
 
 ## See first
 
-|  |  |  |  |  |
-| --- | --- | --- | --- | --- |
-|[DiKTat codestyle](info/guide/diktat-coding-convention.md)|[Supported Rules](info/available-rules.md) | [Examples of Usage](https://github.com/akuleshov7/diktat-examples) | [Online Demo](https://ktlint-demo.herokuapp.com) | [White Paper](wp/wp.pdf) |
+|  |  |  |  |  |  |  
+| --- | --- | --- | --- | --- | --- |
+|[Codestyle](info/guide/diktat-coding-convention.md)|[Inspections](info/available-rules.md) | [Examples](examples) | [Demo](https://ktlint-demo.herokuapp.com) | [White Paper](wp/wp.pdf) | [Groups of Inspections](info/rules-mapping.md) |
 
 ## Why should I use diktat in my CI/CD?
 
@@ -55,16 +55,16 @@ Main features of diktat are the following:
     # another option is "brew install ktlint"
     ```
    
-2. Load diKTat manually: [here](https://github.com/cqfn/diKTat/releases/download/v0.3.0/diktat.jar)
+2. Load diKTat manually: [here](https://github.com/cqfn/diKTat/releases/download/v0.4.1/diktat.jar)
 
    **OR** use curl:
    ```bash
-   $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v0.3.0/diktat-0.3.0.jar
+   $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v0.4.1/diktat-0.4.1.jar
    ```
    
 3. Finally, run KTlint (with diKTat injected) to check your `*.kt` files in `dir/your/dir`:
    ```bash
-   $ ./ktlint -R diktat.jar "dir/your/dir/**/*.kt"
+   $ ./ktlint -R diktat.jar --disabled_rules=standard "dir/your/dir/**/*.kt"
    ```
 
 To **autofix** all code style violations use `-F` option.
@@ -110,7 +110,7 @@ This plugin is available since version 0.1.5. You can see how the plugin is conf
 Add this plugin to your `build.gradle.kts`:
 ```kotlin
 plugins {
-    id("org.cqfn.diktat.diktat-gradle-plugin") version "0.3.0"
+    id("org.cqfn.diktat.diktat-gradle-plugin") version "0.4.1"
 }
 ```
 
@@ -121,7 +121,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.cqfn.diktat:diktat-gradle-plugin:0.3.0")
+        classpath("org.cqfn.diktat:diktat-gradle-plugin:0.4.1")
     }
 }
 
@@ -162,6 +162,74 @@ diktat {
 ```
 
 You can run diktat checks using task `diktatCheck` and automatically fix errors with tasks `diktatFix`.
+
+## Run with Spotless
+[Spotless](https://github.com/diffplug/spotless) is a linter aggregator.
+
+### Gradle
+Diktat can be run via spotless-gradle-plugin since version 5.10.0
+
+<details>
+<summary>Add this plugin to your build.gradle.kts</summary>
+
+```kotlin
+plugins {
+   id("com.diffplug.spotless") version "5.10.0"
+}
+
+spotless {
+   kotlin {
+      diktat()
+   }
+   kotlinGradle {
+      diktat()
+   }
+}
+```
+</details>
+
+<details>
+<summary>You can provide a version and configuration path manually as configFile.</summary>
+
+```kotlin
+spotless {
+   kotlin {
+      diktat("0.4.1").configFile("full/path/to/diktat-analysis.yml")
+   }
+}
+```
+</details>
+
+### Maven
+Diktat can be run via spotless-maven-plugin since version 2.8.0
+
+<details>
+<summary>Add this plugin to your pom.xml</summary>
+
+```xml
+<plugin>
+   <groupId>com.diffplug.spotless</groupId>
+   <artifactId>spotless-maven-plugin</artifactId>
+   <version>${spotless.version}</version>
+   <configuration>
+      <kotlin>
+         <diktat />
+      </kotlin>
+   </configuration>
+</plugin>
+```
+</details>
+
+<details>
+<summary>You can provide a version and configuration path manually as configFile</summary>
+
+```xml
+<diktat>
+  <version>0.4.1</version> <!-- optional -->
+  <configFile>full/path/to/diktat-analysis.yml</configFile> <!-- optional, configuration file path -->
+</diktat>
+```
+</details>
 
 ## Customizations via `diktat-analysis.yml`
 

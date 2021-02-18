@@ -1,12 +1,11 @@
 package org.cqfn.diktat.ruleset.rules.chapter3
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.BLANK_LINE_BETWEEN_PROPERTIES
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
@@ -42,16 +41,11 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
 /**
  * Rule that checks order of declarations inside classes, interfaces and objects.
  */
-class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) : Rule("class-like-structures") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
+    "class-like-structures",
+    configRules,
+    listOf(BLANK_LINE_BETWEEN_PROPERTIES, WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES)) {
+    override fun logic(node: ASTNode) {
         if (node.elementType == CLASS_BODY) {
             checkDeclarationsOrderInClass(node)
         } else if (node.elementType == PROPERTY) {
@@ -59,7 +53,12 @@ class ClassLikeStructuresOrderRule(private val configRules: List<RulesConfig>) :
         }
     }
 
-    @Suppress("UnsafeCallOnNullableType", "LongMethod", "ComplexMethod", "TOO_LONG_FUNCTION")
+    @Suppress(
+        "UnsafeCallOnNullableType",
+        "LongMethod",
+        "ComplexMethod",
+        "TOO_LONG_FUNCTION"
+    )
     private fun checkDeclarationsOrderInClass(node: ASTNode) {
         val allProperties = node.getChildren(TokenSet.create(PROPERTY))
         val constProperties = allProperties.filter { it.findLeafWithSpecificType(CONST_KEYWORD) != null }.toMutableList()

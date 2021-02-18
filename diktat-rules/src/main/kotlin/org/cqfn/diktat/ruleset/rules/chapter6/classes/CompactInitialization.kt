@@ -1,13 +1,12 @@
 package org.cqfn.diktat.ruleset.rules.chapter6.classes
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
-import org.cqfn.diktat.ruleset.constants.Warnings
+import org.cqfn.diktat.ruleset.constants.Warnings.COMPACT_OBJECT_INITIALIZATION
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.ruleset.utils.getFunctionName
 import org.cqfn.diktat.ruleset.utils.log
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isPartOfComment
@@ -28,19 +27,13 @@ import org.jetbrains.kotlin.psi.psiUtil.startOffset
  * FixMe: When assigned variable's name is also a `this@apply`'s property, it should be changed to qualified name,
  *  e.g `this@Foo`. But for this we need a mechanism to determine declaration scope and it's label.
  */
-class CompactInitialization(private val configRules: List<RulesConfig>) : Rule("class-compact-initialization") {
-    private var isFixMode: Boolean = false
+class CompactInitialization(configRules: List<RulesConfig>) : DiktatRule(
+    "class-compact-initialization",
+    configRules,
+    listOf(COMPACT_OBJECT_INITIALIZATION)) {
     private val kotlinParser by lazy { KotlinParser() }
-    private lateinit var emitWarn: EmitType
 
-    override fun visit(
-        node: ASTNode,
-        autoCorrect: Boolean,
-        emit: EmitType
-    ) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+    override fun logic(node: ASTNode) {
         node
             .psi
             .let { it as? KtProperty }
@@ -72,7 +65,7 @@ class CompactInitialization(private val configRules: List<RulesConfig>) : Rule("
         }
             .toList()
             .forEach { (assignment, field) ->
-                Warnings.COMPACT_OBJECT_INITIALIZATION.warnAndFix(
+                COMPACT_OBJECT_INITIALIZATION.warnAndFix(
                     configRules, emitWarn, isFixMode,
                     field.text, assignment.startOffset, assignment.node
                 ) {

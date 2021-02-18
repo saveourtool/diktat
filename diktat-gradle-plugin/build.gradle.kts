@@ -3,7 +3,7 @@ import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurr
 
 plugins {
     `java-gradle-plugin`
-    kotlin("jvm") version "1.4.21"
+    kotlin("jvm") version "1.4.30"
     jacoco
     id("pl.droidsonroids.jacoco.testkit") version "1.0.7"
 }
@@ -20,7 +20,7 @@ repositories {
 
 // default value is needed for correct gradle loading in IDEA; actual value from maven is used during build
 val ktlintVersion = project.properties.getOrDefault("ktlintVersion", "0.39.0") as String
-val diktatVersion = project.version.takeIf { it.toString() != Project.DEFAULT_VERSION } ?: "0.3.0"
+val diktatVersion = project.version.takeIf { it.toString() != Project.DEFAULT_VERSION } ?: "0.4.0"
 val junitVersion = project.properties.getOrDefault("junitVersion", "5.7.0") as String
 val jacocoVersion = project.properties.getOrDefault("jacocoVersion", "0.8.6") as String
 dependencies {
@@ -53,7 +53,7 @@ val generateVersionsFile by tasks.registering {
         )
     }
 }
-sourceSets.main.get().java.srcDir("$buildDir/generated/src")
+kotlin.sourceSets["main"].kotlin.srcDir("$buildDir/generated/src")
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
@@ -61,6 +61,7 @@ tasks.withType<KotlinCompile> {
         languageVersion = "1.3"
         apiVersion = "1.3"
         jvmTarget = "1.8"
+        useIR = true
     }
 
     dependsOn.add(generateVersionsFile)
@@ -98,6 +99,7 @@ tasks.getByName<Test>("functionalTest") {
     testClassesDirs = functionalTest.output.classesDirs
     classpath = functionalTest.runtimeClasspath
     maxParallelForks = Runtime.getRuntime().availableProcessors()
+    maxHeapSize = "1024m"
     doLast {
         if (getCurrentOperatingSystem().isWindows) {
             // workaround for https://github.com/koral--/jacoco-gradle-testkit-plugin/issues/9

@@ -3,11 +3,10 @@ package org.cqfn.diktat.ruleset.rules.chapter3
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.BRACES_BLOCK_STRUCTURE_ERROR
+import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.BODY
 import com.pinterest.ktlint.core.ast.ElementType.CATCH
@@ -50,16 +49,11 @@ import org.jetbrains.kotlin.psi.KtTryExpression
  * - opening brace of lambda
  * - braces around `else`/`catch`/`finally`/`while` (in `do-while` loop)
  */
-class BlockStructureBraces(private val configRules: List<RulesConfig>) : Rule("block-structure") {
-    private var isFixMode: Boolean = false
-    private lateinit var emitWarn: EmitType
-
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
-        emitWarn = emit
-        isFixMode = autoCorrect
-
+class BlockStructureBraces(configRules: List<RulesConfig>) : DiktatRule(
+    "block-structure",
+    configRules,
+    listOf(BRACES_BLOCK_STRUCTURE_ERROR)) {
+    override fun logic(node: ASTNode) {
         val configuration = BlockStructureBracesConfiguration(
             configRules.getRuleConfig(BRACES_BLOCK_STRUCTURE_ERROR)?.configuration ?: emptyMap()
         )
