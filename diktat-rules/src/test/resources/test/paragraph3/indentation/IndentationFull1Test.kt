@@ -46,4 +46,17 @@ fun foo(
             .bar()
         }"
     }
+
+    val dockerFileAsText =
+                """
+                        FROM $baseImage
+                    COPY resources $resourcesPath
+                        RUN /bin/bash
+                """.trimIndent()
+
+    val some =
+                 """
+                                some $foo test
+                        $start another value
+                 """.trimIndent()
 }

@@ -228,21 +228,8 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
         val textIndent = " ".repeat(expectedIndent + INDENT_SIZE)
         val templateEntries = whiteSpace.node.treeNext.firstChildNode.getAllChildrenWithType(LITERAL_STRING_TEMPLATE_ENTRY)
         templateEntries.forEach { node ->
-            if (!node.text.contains("\n") && node.text.isNotBlank()) {
-                val correctedText = StringBuilder()
-                when {
-                    node.treePrev.elementType in stringLiteralTokens && node.treeNext.elementType !in stringLiteralTokens -> {
-                        correctedText.append(node.firstChildNode.text.trimEnd())
-                    }
-                    node.treePrev.elementType !in stringLiteralTokens && node.treeNext.elementType in stringLiteralTokens -> {
-                        correctedText.append(textIndent + node.firstChildNode.text.trimStart())
-                    }
-                    node.treePrev.elementType !in stringLiteralTokens && node.treeNext.elementType !in stringLiteralTokens -> {
-                        correctedText.append(textIndent + node.firstChildNode.text.trim())
-                    }
-                    else -> {}
-                }
-                (node.firstChildNode as LeafPsiElement).rawReplaceWithText(correctedText.toString())
+            if (!node.text.contains("\n")) {
+                fixFirstTemplateEntries(node, textIndent)
             }
         }
         (templateEntries.last().firstChildNode as LeafPsiElement)
@@ -251,6 +238,33 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
                 .firstChildNode
                 .text
                 .trim())
+    }
+
+    /**
+     * This method fixes all lines of string template except the last one
+     * Also it considers $foo insertions in string
+     */
+    private fun fixFirstTemplateEntries(node: ASTNode, textIndent: String) {
+        val correctedText = StringBuilder()
+        when {
+            // if string template is before literal_string
+            node.treePrev.elementType in stringLiteralTokens && node.treeNext.elementType !in stringLiteralTokens -> {
+                correctedText.append(node.firstChildNode.text.trimEnd())
+            }
+            // if string template is after literal_string
+            node.treePrev.elementType !in stringLiteralTokens && node.treeNext.elementType in stringLiteralTokens -> {
+                correctedText.append(textIndent + node.firstChildNode.text.trimStart())
+            }
+            // if there is no string template in literal_string
+            node.treePrev.elementType !in stringLiteralTokens && node.treeNext.elementType !in stringLiteralTokens -> {
+                correctedText.append(textIndent + node.firstChildNode.text.trim())
+            }
+            node.text.isBlank() -> {
+                correctedText.append(textIndent)
+            }
+            else -> {}
+        }
+        (node.firstChildNode as LeafPsiElement).rawReplaceWithText(correctedText.toString())
     }
 
     private fun ASTNode.getExceptionalIndentInitiator() = treeParent.let { parent ->
