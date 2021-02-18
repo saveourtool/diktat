@@ -17,14 +17,13 @@ import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.isLeaf
+import java.util.concurrent.atomic.AtomicInteger
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.konan.file.File
 import org.jetbrains.kotlin.lexer.KtTokens.PACKAGE_KEYWORD
 import org.slf4j.LoggerFactory
-
-import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * Rule 1.3: package name is in lower case and separated by dots, code developed internally in your company (in example Huawei) should start
