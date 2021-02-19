@@ -46,6 +46,7 @@ fun String.isLowerSnakeCase(): Boolean = this.matches("(([a-z]+)_*)+[a-z0-9]*".t
  *
  * @return converted string
  */
+@Suppress("STRING_CONCATENATION")
 fun String.toUpperSnakeCase(): String {
     // PascalCase -> PASCAL_CASE
     if (this.isPascalCase()) {
@@ -80,7 +81,9 @@ fun String.toUpperSnakeCase(): String {
  *
  * @return converted string
  */
-@Suppress("ForbiddenComment")
+@Suppress(
+    "ForbiddenComment",
+    "STRING_CONCATENATION")
 fun String.toLowerCamelCase(): String {
     // PascalCase -> PASCAL_CASE
     if (this.isPascalCase()) {
@@ -117,7 +120,9 @@ fun String.toLowerCamelCase(): String {
  *
  * @return converted string
  */
-@Suppress("ForbiddenComment")
+@Suppress(
+    "ForbiddenComment",
+    "STRING_CONCATENATION")
 fun String.toPascalCase(): String = when {
     all { it.isUpperCase() } -> {
         // all letters UPPER -> Upper

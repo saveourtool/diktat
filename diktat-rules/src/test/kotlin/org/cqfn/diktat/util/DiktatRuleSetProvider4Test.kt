@@ -40,7 +40,7 @@ class DiktatRuleSetProviderTest {
             .filter { it.isFile }
             .map { it.nameWithoutExtension }
             .filterNot { it in ignoreFile }
-        val rulesName = DiktatRuleSetProvider().get().map { it::class.simpleName!! }
+        val rulesName = DiktatRuleSetProvider().get().map { it::class.simpleName!! }.filter { it != "DummyWarning" }
         Assertions.assertEquals(filesName.sorted().toList(), rulesName.sorted())
     }
 

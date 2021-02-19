@@ -100,7 +100,7 @@ fun ASTNode.getIdentifierName(): ASTNode? =
  * @return a node with type TYPE_PARAMETER_LIST or null if it is not present
  */
 fun ASTNode.getTypeParameterList(): ASTNode? =
-    this.getFirstChildWithType(ElementType.TYPE_PARAMETER_LIST)
+        this.getFirstChildWithType(ElementType.TYPE_PARAMETER_LIST)
 
 /**
  * @return true if this node contains no error elements, false otherwise
@@ -409,7 +409,6 @@ fun ASTNode.numNewLines() = text.count { it == '\n' }
  */
 fun ASTNode.findAllDescendantsWithSpecificType(elementType: IElementType, withSelf: Boolean = true) =
         findAllNodesWithCondition({ it.elementType == elementType }, withSelf)
-
 
 /**
  * This method performs tree traversal and returns all nodes that match condition (lambda).
