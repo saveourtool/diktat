@@ -102,7 +102,7 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
      */
     val testAnchors: List<String> by lazy {
         val testDirs = (configuration ?: emptyMap()).getOrDefault("testDirs", "test").split(',')
-        if (testDirs.none { it.toLowerCase().endsWith("test") }) {
+        if (testDirs.any { !it.toLowerCase().endsWith("test") }) {
             log.error("test directory names should end with `test`")
         }
         testDirs
@@ -139,7 +139,7 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
      */
     val srcDirectories: List<String> by lazy {
         val srcDirs = configuration?.get("srcDirectories")?.split(",")?.map { it.trim() } ?: listOf("main")
-        if (srcDirs.none { it.toLowerCase().endsWith("main") }) {
+        if (srcDirs.any { !it.toLowerCase().endsWith("main") }) {
             log.error("source directory names should end with `main`")
         }
         srcDirs
