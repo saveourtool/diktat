@@ -172,13 +172,13 @@ Also, we need to consider the following factors when programming on Kotlin:
 
 **Invalid Example** — not recommended examples of rules and recommendations.
 
-Unless otherwise stated, this specification applies to versions 1.3 and later of Kotlin.
+Unless otherwise stated, this specification applies to version 1.3 and later of Kotlin.
 
 <!-- =============================================================================== -->
 ### <a name="c0.4"></a> Exceptions
 
 Even though exceptions may exist, it is essential to understand why rules and recommendations are needed.
-Depending on a project situation or personal habits, you can break some of the rules. However, remember that one exception may lead to many and eventually can destroy code consistency. As such, there should be very few exceptions.
+Depending on a project situation or personal habits, you can break some rules. However, remember that one exception may lead to many and eventually can destroy code consistency. As such, there should be very few exceptions.
 When modifying open-source code or third-party code, you can choose to use the code style from this open-source project (instead of using the existing specifications) to maintain consistency.
 Software that is directly based on the Android native operating system interface, such as the Android Framework, remains consistent with the Android style.
 # <a name="c1"></a> 1. Naming
@@ -313,7 +313,7 @@ Note: The calling property access syntax is preferred to call getter directly. I
 
 b) `is` + boolean variable name()
 
-c) `set` + field/attribute name(). However, note that the syntax and code generation for Kotlin are completely the same as those described for the getters in point a.
+c) `set` + field/attribute name(). However, note that the syntax and code generation for Kotlin are completely the same as those described for the getters in point.
 
 d) `has` + Noun / adjective ()
 
@@ -349,7 +349,7 @@ fun addKeyListener(Listener)
 ### <a name="c1.5"></a> 1.5 Constants
 This section describes the general rules for naming constraints.
 ### <a name="r1.5.1"></a> 1.5.1 Using UPPER case and underscore characters in a constraint name
-Constant names should be in UPPER case, words separated by underscore. The general constant naming conventions are listed below:
+Constant names should be in UPPER case, words separated by a underscore. The general constant naming conventions are listed below:
 1. Constants are attributes created with the `const` keyword or top-level/`val` local variables of an object that holds immutable data. In most cases, constants can be identified as a `const val` property from the `object`/`companion object`/file top level. These variables contain fixed constant values that typically should never be changed by programmers. This includes basic types, strings, immutable types, and immutable collections of immutable types. The value is not constant for the object, which state can be changed.
 2. Constant names should contain only uppercase letters separated by an underscores. They should have a val or const val modifier to make them final explicitly. In most cases, if you need to specify a constant value, then you need to create it with the "const val" modifier. Note that not all `val` variables are constants.
 3. Objects with immutable content, such as `Logger` and `Lock`, can be in uppercase as constants or have camel case as regular variables.
@@ -561,7 +561,7 @@ Therefore, Kdoc should contain the following:
 Kdoc should not contain:
 - Empty descriptions in tag blocks. It is better not to write Kdoc than waste code line space.
 - There should be no empty lines between the method/class declaration and the end of Kdoc (`*/` symbols).
-- `@author` tag. It doesn't matter who originally created a class when you can use `git blame` or VCS of your choice to look through the changes history.
+- `@author` tag. It doesn't matter who originally created a class when you can use `git blame` or VCS of your choice to look through the change history.
 Important notes:
 - KDoc does not support the `@deprecated` tag. Instead, use the `@Deprecated` annotation.
 - The `@since` tag should be used for versions only. Do not use dates in `@since` tag, it's confusing and less accurate.
@@ -613,7 +613,7 @@ Chinese version: `版权所有 (c) 华为技术有限公司 2012-2020` \
 English version: `Copyright (c) Huawei Technologies Co., Ltd. 2012-2020. All rights reserved.`
 `2012` and `2020` are the years the file was first created and the current year, respectively.
 
-Do not place **release notes** in header, use VCS to keep track of changes in file. Notable changes can be marked in individual KDocs using `@since` tag with version.
+Do not place **release notes** in a header, use VCS to keep track of changes in a file. Notable changes can be marked in individual KDocs using `@since` tag with version.
 
 Invalid example:
 ```kotlin
@@ -871,7 +871,7 @@ when (node.elementType) {
     CLASS -> checkClassElements(node)
 }
 ```
-**Exception:** The only exception is ternary operator in Kotlin (a single line `if () <> else <>` ) 
+**Exception:** The only exception is a ternary operator in Kotlin (a single line `if () <> else <>` ) 
 
 **Invalid example:**
 
@@ -968,7 +968,7 @@ someObject
     .filter()
 ``` 
 -  The code block is placed immediately after the opening parenthesis.
--  The code block is placed immediately after an arrow in lambda:
+-  The code block is placed immediately after an arrow in a lambda:
 
  ```kotlin
 arg.map { value ->
@@ -1218,7 +1218,7 @@ fun foo(
 If and only if the first parameter is on the same line as an opening parenthesis, all parameters can be horizontally aligned by the first parameter.
 Otherwise, there should be a line break after an opening parenthesis.
 
-Kotlin 1.4 introduced a trailing comma as an optional feature, so it is generally recommended to place all parameters on a separate line
+Kotlin 1.4 introduced a trailing comma as an optional feature, so it is generally recommended placing all parameters on a separate line
 and append [trailing comma](https://kotlinlang.org/docs/reference/whatsnew14.html#trailing-comma).
 It makes the resolving of merge conflicts easier.
 
@@ -1324,7 +1324,7 @@ Follow the recommendations below for using space to separate keywords:
 6. There should be *only one space* between the identifier and its type: `list: List<String>`
 If the type is nullable, there should be no space before `?`.
 
-7. When using `[]` operator (`get/set`) there should be **no** spaces between identifier and `[` : `someList[0]`.
+7. When using `[]` operator (`get/set`) there should be **no** spaces between an identifier and `[` : `someList[0]`.
 
 8. There should be no space between a method or constructor name (both at declaration and at call site) and a parenthesis:
    `foo() {}`. Note that this sub-rule is related only to spaces; the rules for whitespaces are described in [see 3.6.2](#r3.6.2).
@@ -2159,8 +2159,8 @@ class YourClass(var name: String) {
 ```
 
 The `init` block was not added to Kotlin to help you initialize your properties; it is needed for more complex tasks. 
-Therefore if the `init` block contains only assignments of variables - move it directly to properties to be correctly initialized near the declaration.
-In some cases, this rule can be in clash with [6.1.1](#r6.1.1), but that should not stop you.
+Therefore, if the `init` block contains only assignments of variables - move it directly to properties to be correctly initialized near the declaration.
+In some cases, this rule can be in a clash with [6.1.1](#r6.1.1), but that should not stop you.
 
 **Invalid example**:
 ```kotlin
@@ -2227,7 +2227,7 @@ class NotAbstract {
 
 #### <a name="r6.1.7"></a> 6.1.7 When using the "implicit backing property" scheme, the name of real and back property should be the same
 Kotlin has a mechanism of [backing properties](https://kotlinlang.org/docs/reference/properties.html#backing-properties).
-In some cases, implicit backing is not enough and it should be done explicitly:
+In some cases, implicit backing is not enough, and it should be done explicitly:
 ```kotlin
 private var _table: Map<String, Int>? = null
 val table: Map<String, Int>
@@ -2259,10 +2259,10 @@ class A {
 }
 ```
 
-From the callee code, these methods look like access to this property: `A().isEmpty = true` for setter and `A().isEmpty` for getter.
+From the callee code, these methods look like access to this property: `A().isEmpty = true` for a setter and `A().isEmpty` for a getter.
 
 However, when `get` and `set` are overridden, it  isn't very clear for a developer who uses this particular class. 
-The developer expects to get the property value but receives some unknown value and some extra side-effect hidden by the custom getter/setter. 
+The developer expects to get the property value but receives some unknown value and some extra side effect hidden by the custom getter/setter. 
 Use extra functions instead to avoid confusion.
 
 

@@ -56,8 +56,6 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
         IF_ELSE_COMMENTS, WRONG_NEWLINES_AROUND_KDOC)) {
     /**
      * @param node
-     * @param autoCorrect
-     * @param emit
      */
     override fun logic(node: ASTNode) {
         val configuration = CommentsFormattingConfiguration(

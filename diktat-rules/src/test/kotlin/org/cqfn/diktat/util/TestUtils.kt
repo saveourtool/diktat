@@ -16,7 +16,6 @@ import com.pinterest.ktlint.core.RuleSetProvider
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.SoftAssertions
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import org.jetbrains.kotlin.konan.file.File
 
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -118,7 +117,7 @@ internal fun applyToCode(code: String,
                     }
                 })
             ),
-            cb = { _, _ -> Unit }
+            cb = { _, _ -> }
         )
     )
     Assertions

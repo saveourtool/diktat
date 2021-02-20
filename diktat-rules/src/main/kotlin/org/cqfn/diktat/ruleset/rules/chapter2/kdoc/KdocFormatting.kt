@@ -71,8 +71,6 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
 
     /**
      * @param node
-     * @param autoCorrect
-     * @param emit
      */
     override fun logic(node: ASTNode) {
         versionRegex ?: run {
@@ -86,8 +84,8 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
             checkNoDeprecatedTag(node)
             checkEmptyTags(node.kDocTags())
             checkSpaceAfterTag(node.kDocTags())
-            node.kDocBasicTags()?.let { checkEmptyLineBeforeBasicTags(it) }
-            node.kDocBasicTags()?.let { checkEmptyLinesBetweenBasicTags(it) }
+            node.kDocBasicTags().let { checkEmptyLineBeforeBasicTags(it) }
+            node.kDocBasicTags().let { checkEmptyLinesBetweenBasicTags(it) }
             checkBasicTagsOrder(node)
             checkNewLineAfterSpecialTags(node)
             checkAuthorAndDate(node)
@@ -111,7 +109,7 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("UnsafeCallOnNullableType")
     private fun checkNoDeprecatedTag(node: ASTNode) {
         val kdocTags = node.kDocTags()
-        kdocTags?.find { it.name == "deprecated" }
+        kdocTags.find { it.name == "deprecated" }
             ?.let { kdocTag ->
                 KDOC_NO_DEPRECATED_TAG.warnAndFix(configRules, emitWarn, isFixMode, kdocTag.text, kdocTag.node.startOffset, kdocTag.node) {
                     val kdocSection = kdocTag.node.treeParent
@@ -175,12 +173,12 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
         val kdocTags = node.kDocTags()
         // distinct basic tags which are present in current KDoc, in proper order
         val basicTagsOrdered = basicTagsList.filter { basicTag ->
-            kdocTags?.find { it.knownTag == basicTag } != null
+            kdocTags.find { it.knownTag == basicTag } != null
         }
         // all basic tags from current KDoc
-        val basicTags = kdocTags?.filter { basicTagsOrdered.contains(it.knownTag) }
+        val basicTags = kdocTags.filter { basicTagsOrdered.contains(it.knownTag) }
         val isTagsInCorrectOrder = basicTags
-            ?.fold(mutableListOf<KDocTag>()) { acc, kdocTag ->
+            .fold(mutableListOf<KDocTag>()) { acc, kdocTag ->
                 if (acc.size > 0 && acc.last().knownTag != kdocTag.knownTag) {
                     acc.add(kdocTag)
                 } else if (acc.size == 0) {
@@ -188,10 +186,10 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
                 }
                 acc
             }
-            ?.map { it.knownTag }
-            ?.equals(basicTagsOrdered)
+            .map { it.knownTag }
+            .equals(basicTagsOrdered)
 
-        if (kdocTags != null && !isTagsInCorrectOrder!!) {
+        if (!isTagsInCorrectOrder) {
             KDOC_WRONG_TAGS_ORDER.warnAndFix(configRules, emitWarn, isFixMode,
                 basicTags.joinToString(", ") { "@${it.name}" }, basicTags
                     .first()
@@ -326,11 +324,11 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun checkAuthorAndDate(node: ASTNode) {
         node.kDocTags()
-            ?.filter {
+            .filter {
                 it.knownTag == KDocKnownTag.AUTHOR ||
                         it.knownTag == KDocKnownTag.SINCE && it.hasInvalidVersion()
             }
-            ?.forEach {
+            .forEach {
                 KDOC_CONTAINS_DATE_OR_AUTHOR.warn(configRules, emitWarn, isFixMode, it.text.trim(), it.startOffset, it.node)
             }
     }
@@ -342,7 +340,7 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
                 (treeNext == null || treeNext.elementType == WHITE_SPACE && treeNext.text.count { it == '\n' } == 1)
     }
 
-    private fun ASTNode.kDocBasicTags() = kDocTags()?.filter { basicTagsList.contains(it.knownTag) }
+    private fun ASTNode.kDocBasicTags() = kDocTags().filter { basicTagsList.contains(it.knownTag) }
 
     private fun ASTNode.previousAsterisk() = prevSibling { it.elementType == KDOC_LEADING_ASTERISK }
 

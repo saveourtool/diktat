@@ -110,8 +110,6 @@ class AccurateCalculationsRule(configRules: List<RulesConfig>) : DiktatRule(
 
     /**
      * @param node
-     * @param autoCorrect
-     * @param emit
      */
     override fun logic(node: ASTNode) {
         when (val psi = node.psi) {

@@ -1,5 +1,5 @@
 /**
- * Utility classes for [IndentationRule]
+ * Utility classes for IndentationRule
  */
 
 package org.cqfn.diktat.ruleset.utils.indentation

@@ -27,7 +27,6 @@ import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.LATEINIT_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
-import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.OVERRIDE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PRIVATE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PROTECTED_KEYWORD
@@ -41,7 +40,6 @@ import com.pinterest.ktlint.core.ast.lineNumber
 import com.pinterest.ktlint.core.ast.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.TokenType
-import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
@@ -517,15 +515,6 @@ fun ASTNode.isOverridden(): Boolean =
         findChildByType(MODIFIER_LIST)?.findChildByType(OVERRIDE_KEYWORD) != null
 
 /**
- * creation of operation reference in a node
- */
-fun ASTNode.createOperationReference(elementType: IElementType, text: String) {
-    val operationReference = CompositeElement(OPERATION_REFERENCE)
-    this.addChild(operationReference, null)
-    operationReference.addChild(LeafPsiElement(elementType, text), null)
-}
-
-/**
  * removing all newlines in WHITE_SPACE node and replacing it to a one newline saving the initial indenting format
  */
 fun ASTNode.leaveOnlyOneNewLine() = leaveExactlyNumNewLines(1)
@@ -719,13 +708,6 @@ fun ASTNode.hasTestAnnotation() = findChildByType(MODIFIER_LIST)
     ?.flatMap { it.findAllNodesWithSpecificType(ElementType.CONSTRUCTOR_CALLEE) }
     ?.any { it.findLeafWithSpecificType(ElementType.IDENTIFIER)?.text == "Test" }
     ?: false
-
-/**
- * Returns the first line of this node's text if it is single, or the first line followed by [suffix] if there are more than one.
- *
- * @param suffix a suffix to append if there are more than one lines of text
- */
-fun ASTNode.firstLineOfText(suffix: String = "") = text.lines().run { singleOrNull() ?: (first() + suffix) }
 
 /**
  * Return the number in the file of the last line of this node's text

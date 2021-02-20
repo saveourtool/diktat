@@ -67,13 +67,13 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
                 when (condition.operationToken) {
                     // `==` and `===` comparison can be fixed with `?:` operator
                     ElementType.EQEQ, ElementType.EQEQEQ ->
-                        warnAndFixOnNullCheck(condition, true,
+                        warnAndFixOnNullCheck(condition,
                             "use '.let/.also/?:/e.t.c' instead of ${condition.text}") {
                             fixNullInIfCondition(node, condition, true)
                         }
                     // `!==` and `!==` comparison can be fixed with `.let/also` operators
                     ElementType.EXCLEQ, ElementType.EXCLEQEQEQ ->
-                        warnAndFixOnNullCheck(condition, true,
+                        warnAndFixOnNullCheck(condition,
                             "use '.let/.also/?:/e.t.c' instead of ${condition.text}") {
                             fixNullInIfCondition(node, condition, false)
                         }
@@ -140,7 +140,6 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
                     if (listOf(ElementType.EXCLEQ, ElementType.EXCLEQEQEQ).contains(condition.operationToken)) {
                         warnAndFixOnNullCheck(
                             condition,
-                            true,
                             "use 'requireNotNull' instead of require(${condition.text})"
                         ) {
                             val variableName = (binaryExprNode.psi as KtBinaryExpression).left!!.text
@@ -185,7 +184,6 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun warnAndFixOnNullCheck(
         condition: KtBinaryExpression,
-        canBeAutoFixed: Boolean,
         freeText: String,
         autofix: () -> Unit) {
         AVOID_NULL_CHECKS.warnAndFix(
@@ -195,7 +193,7 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
             freeText,
             condition.node.startOffset,
             condition.node,
-            canBeAutoFixed,
+            true,
         ) {
             autofix()
         }

@@ -72,8 +72,6 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
         KDOC_WITHOUT_THROWS_TAG, MISSING_KDOC_ON_FUNCTION)) {
     /**
      * @param node
-     * @param autoCorrect
-     * @param emit
      */
     override fun logic(node: ASTNode) {
         if (node.elementType == FUN && node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside() && !node.isOverridden()) {

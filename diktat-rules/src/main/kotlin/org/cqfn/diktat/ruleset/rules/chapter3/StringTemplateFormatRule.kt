@@ -1,7 +1,6 @@
 package org.cqfn.diktat.ruleset.rules.chapter3
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.STRING_TEMPLATE_CURLY_BRACES
 import org.cqfn.diktat.ruleset.constants.Warnings.STRING_TEMPLATE_QUOTES
 import org.cqfn.diktat.ruleset.rules.DiktatRule

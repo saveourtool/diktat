@@ -145,7 +145,7 @@ class CommentsRule(configRules: List<RulesConfig>) : DiktatRule(
         private val importOrPackageRegex = """^(import|package)?\s+([a-zA-Z.])+;*$""".toRegex()
         private val functionRegex = """^(public|private|protected)*\s*(override|abstract|actual|expect)*\s?fun\s+\w+(\(.*\))?(\s*:\s*\w+)?\s*[{=]${'$'}""".toRegex()
         private val rightBraceRegex = """^\s*}$""".toRegex()
-        private val requirePartOfCode = """val |var |=|(\{((.|\n)*)\})""".toRegex()
+        private val requirePartOfCode = """val |var |=|(\{((.|\n)*)})""".toRegex()
         private val codeFileStartCases = listOf(classRegex, importOrPackageRegex, functionRegex, rightBraceRegex)
         private val eolCommentStart = """// \S""".toRegex()
     }
