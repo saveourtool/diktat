@@ -249,4 +249,6 @@ public object WarningNames {
     public const val INLINE_CLASS_CAN_BE_USED: String = "INLINE_CLASS_CAN_BE_USED"
 
     public const val EXTENSION_FUNCTION_WITH_CLASS: String = "EXTENSION_FUNCTION_WITH_CLASS"
+
+    public const val RUN_IN_SCRIPT: String = "RUN_IN_SCRIPT"
 }

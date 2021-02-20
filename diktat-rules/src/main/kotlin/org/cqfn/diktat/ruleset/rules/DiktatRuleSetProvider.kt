@@ -61,6 +61,7 @@ import org.cqfn.diktat.ruleset.rules.chapter6.ExtensionFunctionsInFileRule
 import org.cqfn.diktat.ruleset.rules.chapter6.ExtensionFunctionsSameNameRule
 import org.cqfn.diktat.ruleset.rules.chapter6.ImplicitBackingPropertyRule
 import org.cqfn.diktat.ruleset.rules.chapter6.PropertyAccessorFields
+import org.cqfn.diktat.ruleset.rules.chapter6.RunInScript
 import org.cqfn.diktat.ruleset.rules.chapter6.TrivialPropertyAccessors
 import org.cqfn.diktat.ruleset.rules.chapter6.UselessSupertype
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.AbstractClassesRule
@@ -181,6 +182,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
             ::StringConcatenationRule,
             ::AccurateCalculationsRule,
             ::LineLength,
+            ::RunInScript,
             ::TypeAliasRule,
             ::OverloadingArgumentsFunction,
             ::FunctionLength,
