@@ -1,5 +1,6 @@
 package org.cqfn.diktat.ruleset.rules.chapter1
 
+import org.cqfn.diktat.common.config.rules.CommonConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getCommonConfiguration
 import org.cqfn.diktat.ruleset.constants.Warnings.INCORRECT_PACKAGE_SEPARATOR
@@ -22,6 +23,7 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.konan.file.File
 import org.jetbrains.kotlin.lexer.KtTokens.PACKAGE_KEYWORD
 import org.slf4j.LoggerFactory
+
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
@@ -47,7 +49,7 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
             if (node.elementType == PACKAGE_DIRECTIVE) {
                 val filePath = node.getRootNode().getFilePath()
                 // calculating package name based on the directory where the file is placed
-                val realPackageName = calculateRealPackageName(filePath)
+                val realPackageName = calculateRealPackageName(filePath, configuration)
 
                 // if node isLeaf - this means that there is no package name declared
                 if (node.isLeaf() && !filePath.isKotlinScript()) {
@@ -92,7 +94,7 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
      *
      * @return list with words that are parts of package name like [org, diktat, name]
      */
-    private fun calculateRealPackageName(fileName: String): List<String> {
+    private fun calculateRealPackageName(fileName: String, configuration: CommonConfiguration): List<String> {
         val filePathParts = fileName.splitPathToDirs()
 
         return if (!filePathParts.contains(PACKAGE_PATH_ANCHOR)) {
@@ -104,8 +106,9 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
             // 1) getting a path after the base project directory (after "src" directory)
             // 2) removing src/main/kotlin/java/e.t.c dirs and removing file name
             // 3) adding company's domain name at the beginning
+            val allDirs = languageDirNames + configuration.srcDirectories + configuration.testAnchors
             val fileSubDir = filePathParts.subList(filePathParts.lastIndexOf(PACKAGE_PATH_ANCHOR), filePathParts.size - 1)
-                .dropWhile { languageDirNames.contains(it) }
+                .dropWhile { allDirs.contains(it) }
             // no need to add DOMAIN_NAME to the package name if it is already in path
             val domainPrefix = if (!fileSubDir.joinToString(PACKAGE_SEPARATOR).startsWith(domainName)) domainName.split(PACKAGE_SEPARATOR) else emptyList()
             domainPrefix + fileSubDir
@@ -259,6 +262,6 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
          * Directories that are supposed to be first in sources file paths, relative to [PACKAGE_PATH_ANCHOR].
          * For kotlin multiplatform projects directories for targets from [kmmTargets] are supported.
          */
-        val languageDirNames = listOf("src", "main", "test", "java", "kotlin") + kmmTargets.flatMap { listOf("${it}Main", "${it}Test") }
+        val languageDirNames = listOf("src", "java", "kotlin") + kmmTargets.flatMap { listOf("${it}Main", "${it}Test") }
     }
 }
