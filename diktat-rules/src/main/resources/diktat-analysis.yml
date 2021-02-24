@@ -228,9 +228,8 @@
 - name: WRONG_NEWLINES
   enabled: true
   configuration:
-    # If the number of parameters on one line is more than this threshold or the string length is longer than the specified one, all parameters will be placed on separate lines.
+    # If the number of parameters on one line is more than this threshold, all parameters will be placed on separate lines.
     maxParametersInOneLine: 2
-    maxLengthOneLine: 80
     # 3 by default.
     maxCallsInOneLine: 3
 # Checks trailing comma

@@ -1,8 +1,9 @@
 package test.paragraph3.newlines
 
-fun bar(arg1: Int,
-arg2: Int,
-arg3: Int) { }
+fun bar(
+arg1: Int,
+ arg2: Int,
+ arg3: Int) { }
 
 class Foo : FooBase<Bar>(),
  BazInterface,

@@ -53,20 +53,8 @@ class NewlinesRuleFixTest : FixTestBase("test/paragraph3/newlines", ::NewlinesRu
 
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
-    fun `should fix wrong newlines after colon`() {
-        fixAndCompare("NextColonExpected.kt", "NextColonTest.kt")
-    }
-
-    @Test
-    @Tag(WarningNames.WRONG_NEWLINES)
     fun `One line parameters list sheet must contain no more than 2 parameters`() {
         fixAndCompare("sizeParameterListExpected.kt", "sizeParameterListTest.kt")
-    }
-
-    @Test
-    @Tag(WarningNames.WRONG_NEWLINES)
-    fun `One line parameters list sheet must be no longer than the maximum value`() {
-        fixAndCompare("lengthParameterListExpected.kt", "lengthParameterListTest.kt")
     }
 
     @Test
