@@ -198,7 +198,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
         if (checkResult?.isCorrect != true && expectedIndent != indentError.actual) {
             WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "expected $expectedIndent but was ${indentError.actual}",
                 whiteSpace.startOffset + whiteSpace.text.lastIndexOf('\n') + 1, whiteSpace.node) {
-                checkStringLiteral(whiteSpace, expectedIndent)
+                checkStringLiteral(whiteSpace, expectedIndent, indentError.actual)
                 whiteSpace.node.indentBy(expectedIndent)
             }
         }
@@ -207,7 +207,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
     /**
      * Checks if it is triple-quoted string template with trimIndent() or trimMargin() function.
      */
-    private fun checkStringLiteral(whiteSpace: PsiWhiteSpace, expectedIndent: Int) {
+    private fun checkStringLiteral(whiteSpace: PsiWhiteSpace, expectedIndent: Int, actualIndent: Int) {
         val nextNode = whiteSpace.node.treeNext
         if (nextNode != null &&
                 nextNode.elementType == DOT_QUALIFIED_EXPRESSION &&
@@ -217,19 +217,19 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
                     it == "trimIndent()" ||
                             it == "trimMargin()"
                 } == true) {
-            fixStringLiteral(whiteSpace, expectedIndent)
+            fixStringLiteral(whiteSpace, expectedIndent, actualIndent)
         }
     }
 
     /**
      * If it is triple-quoted string template we need to indent all its parts
      */
-    private fun fixStringLiteral(whiteSpace: PsiWhiteSpace, expectedIndent: Int) {
+    private fun fixStringLiteral(whiteSpace: PsiWhiteSpace, expectedIndent: Int, actualIndent: Int) {
         val textIndent = " ".repeat(expectedIndent + INDENT_SIZE)
         val templateEntries = whiteSpace.node.treeNext.firstChildNode.getAllChildrenWithType(LITERAL_STRING_TEMPLATE_ENTRY)
         templateEntries.forEach { node ->
             if (!node.text.contains("\n")) {
-                fixFirstTemplateEntries(node, textIndent)
+                fixFirstTemplateEntries(node, textIndent, actualIndent)
             }
         }
         (templateEntries.last().firstChildNode as LeafPsiElement)
@@ -244,8 +244,15 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
      * This method fixes all lines of string template except the last one
      * Also it considers $foo insertions in string
      */
-    private fun fixFirstTemplateEntries(node: ASTNode, textIndent: String) {
+    private fun fixFirstTemplateEntries(node: ASTNode, textIndent: String, actualIndent: Int) {
         val correctedText = StringBuilder()
+        // shift of the node depending on its initial string template indent
+        val nodeStartIndent = if (node.firstChildNode.text.takeWhile { it == ' ' }.count() - actualIndent - INDENT_SIZE > 0) {
+            node.firstChildNode.text.takeWhile { it == ' ' }.count() - actualIndent - INDENT_SIZE
+        }
+        else {
+            0
+        }
         when {
             // if string template is before literal_string
             node.treePrev.elementType in stringLiteralTokens && node.treeNext.elementType !in stringLiteralTokens -> {
@@ -253,11 +260,11 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
             }
             // if string template is after literal_string
             node.treePrev.elementType !in stringLiteralTokens && node.treeNext.elementType in stringLiteralTokens -> {
-                correctedText.append(textIndent + node.firstChildNode.text.trimStart())
+                correctedText.append(textIndent + " ".repeat(nodeStartIndent) + node.firstChildNode.text.trimStart())
             }
             // if there is no string template in literal_string
             node.treePrev.elementType !in stringLiteralTokens && node.treeNext.elementType !in stringLiteralTokens -> {
-                correctedText.append(textIndent + node.firstChildNode.text.trim())
+                correctedText.append(textIndent + " ".repeat(nodeStartIndent)  + node.firstChildNode.text.trim())
             }
             node.text.isBlank() -> {
                 correctedText.append(textIndent)

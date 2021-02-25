@@ -49,15 +49,15 @@ data class Example(val field1: Type1,
 
     val dockerFileAsText =
             """
-                FROM $baseImage
+                    FROM $baseImage
                 COPY resources $resourcesPath
-                RUN /bin/bash
+                    RUN /bin/bash
             """.trimIndent()
 
     val some =
             """
-                some $foo test
-                $start another value
+                          some $foo test
+                  $start another value
             """.trimIndent()
 }
 

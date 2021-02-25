@@ -55,8 +55,8 @@ fun foo(
                 """.trimIndent()
 
     val some =
-                 """
+                  """
                                 some $foo test
                         $start another value
-                 """.trimIndent()
+                  """.trimIndent()
 }
