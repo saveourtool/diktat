@@ -1,12 +1,12 @@
 package org.cqfn.diktat.ruleset.rules.chapter3
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.constants.Warnings.STRING_CONCATENATION
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.PLUS
@@ -51,53 +51,56 @@ class StringConcatenationRule(configRules: List<RulesConfig>) : DiktatRule(
     /**
      * This method works only with top-level binary expressions. It should be checked before the call.
      */
+    @Suppress("AVOID_NULL_CHECKS")
     private fun detectStringConcatenation(topLevelBinaryExpr: ASTNode) {
         val allBinaryExpressions = topLevelBinaryExpr.findAllDescendantsWithSpecificType(BINARY_EXPRESSION)
         val nodeWithBug = allBinaryExpressions.find { isDetectStringConcatenationInExpression(it) }
 
-        val bugDetected = nodeWithBug != null
-
-        if (bugDetected) {
+        if (nodeWithBug != null) {
             STRING_CONCATENATION.warnAndFix(
                 configRules, emitWarn,
-                this.isFixMode, topLevelBinaryExpr.text, nodeWithBug!!.startOffset, nodeWithBug
+                this.isFixMode, topLevelBinaryExpr.text.lines().first(), nodeWithBug.startOffset, nodeWithBug
             ) {
-                circle(topLevelBinaryExpr.treeParent)
+                fixBinaryExpressionWithConcatenation(nodeWithBug)
+                loop(topLevelBinaryExpr.treeParent)
             }
         }
     }
 
-    private fun circle(parentTopLevelBinaryExpr: ASTNode) {
+    private fun loop(parentTopLevelBinaryExpr: ASTNode) {
         val allBinaryExpressions = parentTopLevelBinaryExpr.findAllDescendantsWithSpecificType(BINARY_EXPRESSION)
         val nodeWithBug = allBinaryExpressions.find { isDetectStringConcatenationInExpression(it) }
 
         val bugDetected = nodeWithBug != null
         if (bugDetected) {
             fixBinaryExpressionWithConcatenation(nodeWithBug)
-            circle(parentTopLevelBinaryExpr)
+            loop(parentTopLevelBinaryExpr)
         }
     }
 
     /**
      * We can detect string concatenation by the first (left) operand in binary expression.
      * If it is of type string - then we found string concatenation.
+     * If the right value is not a constant string then don't change them to template.
      */
     private fun isDetectStringConcatenationInExpression(node: ASTNode): Boolean {
-        assert(node.elementType == BINARY_EXPRESSION) {
+        require(node.elementType == BINARY_EXPRESSION) {
             "cannot process non binary expression in the process of detecting string concatenation"
         }
         val firstChild = node.firstChildNode
-        return (isPlusBinaryExpression(node) &&
+        val lastChild = node.lastChildNode
+        return (isPlusBinaryExpression(node) && (lastChild.elementType != CALL_EXPRESSION) &&
                 (firstChild.elementType == STRING_TEMPLATE ||
-                        (firstChild.text.contains("toString()")) && firstChild.elementType == DOT_QUALIFIED_EXPRESSION)
+                        ((firstChild.text.endsWith("toString()")) && firstChild.elementType == DOT_QUALIFIED_EXPRESSION))
         )
     }
 
+    @Suppress("COMMENT_WHITE_SPACE")
     private fun isPlusBinaryExpression(node: ASTNode): Boolean {
-        assert(node.elementType == BINARY_EXPRESSION)
-        // binary expression
-        // /        |        \
-        // expr1 operationRef expr2
+        require(node.elementType == BINARY_EXPRESSION)
+        //     binary expression
+        //    /        |        \
+        //  expr1 operationRef expr2
 
         val operationReference = node.getFirstChildWithType(OPERATION_REFERENCE)
         return operationReference
@@ -105,9 +108,9 @@ class StringConcatenationRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun fixBinaryExpressionWithConcatenation(node: ASTNode?) {
-        val binaryExpressionNode = node?.psi as KtBinaryExpression
+        val binaryExpressionPsi = node?.psi as KtBinaryExpression
         val parentNode = node.treeParent
-        val textNode = checkKtExpression(binaryExpressionNode)
+        val textNode = checkKtExpression(binaryExpressionPsi)
         val newNode = KotlinParser().createNode("\"$textNode\"")
         parentNode.replaceChild(node, newNode)
     }
@@ -118,46 +121,44 @@ class StringConcatenationRule(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress(
         "TOO_LONG_FUNCTION",
         "NESTED_BLOCK",
-        "SAY_NO_TO_VAR")
-    private fun checkKtExpression(binaryExpressionNode: KtBinaryExpression): String {
-        var lvalueText = binaryExpressionNode.left!!.text.replace("\"", "")
-        val rvalueText = binaryExpressionNode.right!!.text
+        "SAY_NO_TO_VAR",
+        "ComplexMethod")
+    private fun checkKtExpression(binaryExpressionPsi: KtBinaryExpression): String {
+        var lvalueText = binaryExpressionPsi.left?.text?.trim('"')
+        val rvalueText = binaryExpressionPsi.right?.text
 
-        if (binaryExpressionNode.isLvalueDotQualifiedExpression() && binaryExpressionNode.firstChild.text.contains("toString()")) {
-            // =========== (1 + 2).toString() -> $(1 + 2)
-            val leftText = binaryExpressionNode.firstChild.firstChild.text
-            lvalueText = "\$$leftText"
+        if (binaryExpressionPsi.isLvalueDotQualifiedExpression() && binaryExpressionPsi.firstChild.text.endsWith("toString()")) {
+            // =========== (1 + 2).toString() -> ${(1 + 2)}
+            val leftText = binaryExpressionPsi.firstChild.firstChild.text
+            lvalueText = "\${$leftText}"
         }
-        if (binaryExpressionNode.isLvalueReferenceExpression() || binaryExpressionNode.isLvalueConstantExpression()) {
-            return binaryExpressionNode.text
+        if (binaryExpressionPsi.isLvalueReferenceExpression() || binaryExpressionPsi.isLvalueConstantExpression()) {
+            return binaryExpressionPsi.text
         }
-        if (binaryExpressionNode.isLvalueBinaryExpression()) {
-            val rightValue = checkKtExpression(binaryExpressionNode.left as KtBinaryExpression)
-            val rightEx = binaryExpressionNode.right
-            val rightVal = if (binaryExpressionNode.isRvalueParenthesized()) {
-                checkKtExpression(rightEx!!.children.get(0) as KtBinaryExpression)
+        if (binaryExpressionPsi.isLvalueBinaryExpression()) {
+            val rightValue = checkKtExpression(binaryExpressionPsi.left as KtBinaryExpression)
+            val rightEx = binaryExpressionPsi.right
+            val rightVal = if (binaryExpressionPsi.isRvalueParenthesized()) {
+                checkKtExpression(rightEx?.children?.get(0) as KtBinaryExpression)
             } else {
-                (rightEx!!.text.replace("\"", ""))
+                (rightEx?.text?.trim('"'))
             }
-            if (binaryExpressionNode.left!!.text == rightValue) {
-                return binaryExpressionNode.text
+            if (binaryExpressionPsi.left?.text == rightValue) {
+                return binaryExpressionPsi.text
             }
             return "$rightValue$rightVal"
-        } else if (binaryExpressionNode.isRvalueConstantExpression() || binaryExpressionNode.isRvalueStringTemplateExpression()) {
+        } else if (binaryExpressionPsi.isRvalueConstantExpression() || binaryExpressionPsi.isRvalueStringTemplateExpression()) {
             // =========== "a " + "b" -> "a b"
-            val rvalueTextNew = rvalueText.replace("\"", "")
+            val rvalueTextNew = rvalueText?.trim('"')
             return "$lvalueText$rvalueTextNew"
-        } else if (binaryExpressionNode.isRvalueReferenceExpression()) {
+        } else if (binaryExpressionPsi.isRvalueReferenceExpression()) {
             // ===========  "a " + b -> "a $b"
             return "$lvalueText$$rvalueText"
-        } else if (binaryExpressionNode.isRvalueDotQualifiedExpression()) {
+        } else if (binaryExpressionPsi.isRvalueDotQualifiedExpression() || binaryExpressionPsi.isRvalueOperation()) {
             // ===========  "string " + "valueStr".replace("my", "") -> "string ${"valueStr".replace("my", "")}""
             return "$lvalueText\${$rvalueText}"
-        } else if (binaryExpressionNode.isRvalueOperation()) {
-            // ===========  "sum " + (1 + 2 + 3) * 4 -> "sum ${(1 + 2 + 3) * 4}"
-            return "$lvalueText\${$rvalueText}"
-        } else if (binaryExpressionNode.isRvalueParenthesized()) {
-            val binExpression = binaryExpressionNode.right!!.children.get(0)
+        } else if (binaryExpressionPsi.isRvalueParenthesized()) {
+            val binExpression = binaryExpressionPsi.right?.children?.first()
             if (binExpression is KtBinaryExpression) {
                 if (isPlusBinaryExpressionAndFirstElementString(binExpression)) {
                     val rightValue = checkKtExpression(binExpression)
@@ -166,11 +167,11 @@ class StringConcatenationRule(configRules: List<RulesConfig>) : DiktatRule(
                     val rightValue = checkKtExpression(binExpression.left as KtBinaryExpression)
                     val rightEx = binExpression.right
                     val rightVal = if (binExpression.isRvalueParenthesized()) {
-                        checkKtExpression(rightEx!!.children.get(0) as KtBinaryExpression)
+                        checkKtExpression(rightEx?.children?.get(0) as KtBinaryExpression)
                     } else {
-                        (rightEx!!.text.replace("\"", ""))
+                        (rightEx?.text?.trim('"'))
                     }
-                    if (binExpression.left!!.text == rightValue) {
+                    if (binExpression.left?.text == rightValue) {
                         return "$lvalueText\${$rvalueText}"
                     }
                     return "$lvalueText$rightValue$rightVal"
@@ -178,7 +179,7 @@ class StringConcatenationRule(configRules: List<RulesConfig>) : DiktatRule(
             }
             return "$lvalueText\${$rvalueText}"
         }
-        return binaryExpressionNode.text
+        return binaryExpressionPsi.text
     }
 
     private fun KtBinaryExpression.isRvalueConstantExpression() =

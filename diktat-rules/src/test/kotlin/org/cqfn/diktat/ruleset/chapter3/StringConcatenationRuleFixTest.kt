@@ -13,7 +13,7 @@ class StringConcatenationRuleFixTest : FixTestBase(
     "test/paragraph3/string_concatenation",
     ::StringConcatenationRule,
     listOf(
-        RulesConfig(Warnings.STRING_CONCATENATION.name, true, mapOf())
+        RulesConfig(Warnings.STRING_CONCATENATION.name, true, emptyMap())
     )
 ) {
     @Test

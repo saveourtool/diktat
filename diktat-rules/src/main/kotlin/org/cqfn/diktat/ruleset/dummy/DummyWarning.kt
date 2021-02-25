@@ -19,5 +19,6 @@ class DummyWarning(configRules: List<RulesConfig>) : DiktatRule(
 ) {
     private lateinit var filePath: String
 
+    @Suppress("EmptyFunctionBlock")
     override fun logic(node: ASTNode) {}
 }

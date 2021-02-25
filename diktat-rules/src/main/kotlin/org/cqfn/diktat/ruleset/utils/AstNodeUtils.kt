@@ -411,20 +411,6 @@ fun ASTNode.findAllDescendantsWithSpecificType(elementType: IElementType, withSe
         findAllNodesWithCondition({ it.elementType == elementType }, withSelf)
 
 /**
- * This method performs tree traversal and returns all nodes that match condition (lambda).
- *
- */
-fun ASTNode.getAllDescendantsWithLevel(level: Int = 0, condition: (ASTNode) -> Boolean): Map<ASTNode, Int> {
-    val initialAcc = if (condition(this)) mutableMapOf(this to level) else mutableMapOf()
-    this.getChildren(null).forEach {
-        it.getAllDescendantsWithLevel(level + 1, condition).forEach { (key, value) ->
-            initialAcc[key] = value
-        }
-    }
-    return initialAcc
-}
-
-/**
  * This method performs tree traversal and returns all nodes which satisfy the condition
  */
 @Suppress("LAMBDA_IS_NOT_LAST_PARAMETER")

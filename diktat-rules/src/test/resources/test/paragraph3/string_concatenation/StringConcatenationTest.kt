@@ -1,6 +1,11 @@
 package test.chapter3.strings
 
 val valueStr = "my str"
+val x = 13
+
+fun foo(): String {
+    return "string"
+}
 
 val myTest1 = "my string " + "string " + valueStr + " other value"
 val myTest2 = "my string " + 1 + valueStr + " other value"
@@ -22,3 +27,6 @@ val myTest16 = 1.0 + 2.0 + ("1" + 3.0).toFloat()
 val myTest17 = "sum " + (1 + 2 + 3) * 4
 val myTest18 = "my string " + (1 + 2 + 3) * 4 + (" other string " + 3) + (1 + (2 + 3)) + (" third string " + ("str " + 5))
 val myTest19 = 1 + 2 + 3 + ("6" + 5).toInt()
+val myTest20 = x.toString() + "string"
+val myTest21 = x.toString() + " string"
+val myTest22 = "string" + foo()
