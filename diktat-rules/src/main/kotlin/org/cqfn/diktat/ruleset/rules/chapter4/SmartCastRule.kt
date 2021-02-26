@@ -117,8 +117,7 @@ class SmartCastRule(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("TYPE_ALIAS")
     private fun groupIsAndAsExpr(isExpr: List<KtNameReferenceExpression>,
                                  asExpr: List<KtNameReferenceExpression>,
-                                 prop: KtProperty)
-    : Map<KtNameReferenceExpression, List<KtNameReferenceExpression>> {
+                                 prop: KtProperty): Map<KtNameReferenceExpression, List<KtNameReferenceExpression>> {
         if (isExpr.isEmpty() && asExpr.isNotEmpty()) {
             handleZeroIsCase(asExpr, prop)
             return emptyMap()
@@ -267,8 +266,7 @@ class SmartCastRule(configRules: List<RulesConfig>) : DiktatRule(
      * @return Map of property and list of expressions
      */
     @Suppress("TYPE_ALIAS")
-    private fun collectReferenceList(propertiesToUsages: Map<KtProperty, List<KtNameReferenceExpression>>)
-    : Map<KtProperty, List<KtNameReferenceExpression>> =
+    private fun collectReferenceList(propertiesToUsages: Map<KtProperty, List<KtNameReferenceExpression>>): Map<KtProperty, List<KtNameReferenceExpression>> =
             propertiesToUsages.mapValues { (_, value) ->
                 value.filter { entry ->
                     entry.parent.node.elementType == IS_EXPRESSION || entry.parent.node.elementType == BINARY_WITH_TYPE
