@@ -6,7 +6,9 @@ import org.cqfn.diktat.common.config.rules.isRuleEnabled
 import org.cqfn.diktat.ruleset.utils.hasSuppress
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
-typealias EmitType = ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
+typealias EmitType = ((offset: Int,
+                       errorMessage: String,
+                       canBeAutoCorrected: Boolean) -> Unit)
 
 typealias ListOfList = MutableList<MutableList<ASTNode>>
 
@@ -165,6 +167,7 @@ enum class Warnings(
     OBJECT_IS_PREFERRED(true, "6.4.2", "it is better to use object for stateless classes"),
     INLINE_CLASS_CAN_BE_USED(true, "6.1.12", "inline class can be used"),
     EXTENSION_FUNCTION_WITH_CLASS(false, "6.2.3", "do not use extension functions for the class defined in the same file"),
+    RUN_IN_SCRIPT(true, "6.5.1", "wrap blocks of code in top-level scope functions like `run`"),
     ;
 
     /**

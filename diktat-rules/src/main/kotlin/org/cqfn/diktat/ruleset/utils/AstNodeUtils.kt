@@ -422,7 +422,8 @@ fun ASTNode.findAllNodesWithSpecificType(elementType: IElementType, withSelf: Bo
  * This method performs tree traversal and returns all nodes which satisfy the condition
  */
 @Suppress("LAMBDA_IS_NOT_LAST_PARAMETER")
-fun ASTNode.findAllNodesWithCondition(condition: (ASTNode) -> Boolean, withSelf: Boolean = true): List<ASTNode> {
+fun ASTNode.findAllNodesWithCondition(condition: (ASTNode) -> Boolean,
+                                      withSelf: Boolean = true): List<ASTNode> {
     val result = if (condition(this) && withSelf) mutableListOf(this) else mutableListOf()
     return result + this.getChildren(null).flatMap {
         it.findAllNodesWithCondition(condition)
@@ -443,14 +444,16 @@ fun ASTNode.findParentNodeWithSpecificType(elementType: IElementType) =
 /**
  * Finds all children of optional type which match the predicate
  */
-fun ASTNode.findChildrenMatching(elementType: IElementType? = null, predicate: (ASTNode) -> Boolean): List<ASTNode> =
+fun ASTNode.findChildrenMatching(elementType: IElementType? = null,
+                                 predicate: (ASTNode) -> Boolean): List<ASTNode> =
         getChildren(elementType?.let { TokenSet.create(it) })
             .filter(predicate)
 
 /**
  * Check if this node has any children of optional type matching the predicate
  */
-fun ASTNode.hasChildMatching(elementType: IElementType? = null, predicate: (ASTNode) -> Boolean): Boolean =
+fun ASTNode.hasChildMatching(elementType: IElementType? = null,
+                             predicate: (ASTNode) -> Boolean): Boolean =
         findChildrenMatching(elementType, predicate).isNotEmpty()
 
 /**
