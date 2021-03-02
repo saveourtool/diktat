@@ -265,25 +265,16 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
         else {
             0
         }
-
         val isPrevStringTemplate = node.treePrev.elementType in stringLiteralTokens
         val isNextStringTemplate = node.treeNext.elementType in stringLiteralTokens
         when {
             // if string template is before literal_string
-            isPrevStringTemplate && !isNextStringTemplate -> {
-                correctedText.append(node.firstChildNode.text.trimEnd())
-            }
+            isPrevStringTemplate && !isNextStringTemplate -> correctedText.append(node.firstChildNode.text.trimEnd())
             // if string template is after literal_string
-            !isPrevStringTemplate && isNextStringTemplate -> {
-                correctedText.append(textIndent + " ".repeat(nodeStartIndent) + node.firstChildNode.text.trimStart())
-            }
+            !isPrevStringTemplate && isNextStringTemplate -> correctedText.append(textIndent + " ".repeat(nodeStartIndent) + node.firstChildNode.text.trimStart())
             // if there is no string template in literal_string
-            !isPrevStringTemplate && !isNextStringTemplate -> {
-                correctedText.append(textIndent + " ".repeat(nodeStartIndent) + node.firstChildNode.text.trim())
-            }
-            node.text.isBlank() -> {
-                correctedText.append(textIndent)
-            }
+            !isPrevStringTemplate && !isNextStringTemplate -> correctedText.append(textIndent + " ".repeat(nodeStartIndent) + node.firstChildNode.text.trim())
+            node.text.isBlank() -> correctedText.append(textIndent)
             else -> {}
         }
         (node.firstChildNode as LeafPsiElement).rawReplaceWithText(correctedText.toString())
@@ -292,16 +283,10 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun ASTNode.getExceptionalIndentInitiator() = treeParent.let { parent ->
         when (parent.psi) {
             // fixme: custom logic for determining exceptional indent initiator, should be moved elsewhere
-            is KtDotQualifiedExpression -> {
-                // get the topmost expression to keep extended indent for the whole chain of dot call expressions
-                parents().takeWhile { it.elementType == DOT_QUALIFIED_EXPRESSION || it.elementType == SAFE_ACCESS_EXPRESSION }.last()
-            }
-            is KtIfExpression -> {
-                parent.findChildByType(THEN) ?: parent.findChildByType(ELSE) ?: parent
-            }
-            is KtLoopExpression -> {
-                (parent.psi as KtLoopExpression).body?.node ?: parent
-            }
+            // get the topmost expression to keep extended indent for the whole chain of dot call expressions
+            is KtDotQualifiedExpression -> parents().takeWhile { it.elementType == DOT_QUALIFIED_EXPRESSION || it.elementType == SAFE_ACCESS_EXPRESSION }.last()
+            is KtIfExpression -> parent.findChildByType(THEN) ?: parent.findChildByType(ELSE) ?: parent
+            is KtLoopExpression -> (parent.psi as KtLoopExpression).body?.node ?: parent
             else -> {
                 parent
             }
