@@ -30,3 +30,4 @@ val myTest19 = 1 + 2 + 3 + ("6" + 5).toInt()
 val myTest20 = x.toString() + "string"
 val myTest21 = x.toString() + " string"
 val myTest22 = "string" + foo()
+val myTest23 = x.toString() + foo()

@@ -29,4 +29,5 @@ val myTest18 = "my string ${(1 + 2 + 3) * 4} other string 3${(1 + (2 + 3))} thir
 val myTest19 = 1 + 2 + 3 + ("65").toInt()
 val myTest20 = "${x}string"
 val myTest21 = "${x} string"
-val myTest22 = "string" + foo()
+val myTest22 = "string${foo()}"
+val myTest23 = x.toString() + foo()

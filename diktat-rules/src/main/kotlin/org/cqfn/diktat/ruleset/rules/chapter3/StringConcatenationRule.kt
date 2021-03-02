@@ -13,6 +13,7 @@ import com.pinterest.ktlint.core.ast.ElementType.PLUS
 import com.pinterest.ktlint.core.ast.ElementType.STRING_TEMPLATE
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtBinaryExpression
+import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtConstantExpression
 import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
 import org.jetbrains.kotlin.psi.KtOperationExpression
@@ -89,7 +90,7 @@ class StringConcatenationRule(configRules: List<RulesConfig>) : DiktatRule(
         }
         val firstChild = node.firstChildNode
         val lastChild = node.lastChildNode
-        return (isPlusBinaryExpression(node) && (lastChild.elementType != CALL_EXPRESSION) &&
+        return (isPlusBinaryExpression(node) && !(firstChild.elementType != STRING_TEMPLATE && lastChild.elementType == CALL_EXPRESSION) &&
                 (firstChild.elementType == STRING_TEMPLATE ||
                         ((firstChild.text.endsWith("toString()")) && firstChild.elementType == DOT_QUALIFIED_EXPRESSION))
         )
@@ -151,12 +152,12 @@ class StringConcatenationRule(configRules: List<RulesConfig>) : DiktatRule(
             // =========== "a " + "b" -> "a b"
             val rvalueTextNew = rvalueText?.trim('"')
             return "$lvalueText$rvalueTextNew"
+        } else if (binaryExpressionPsi.isRvalueCallExpression() || binaryExpressionPsi.isRvalueDotQualifiedExpression() || binaryExpressionPsi.isRvalueOperation()) {
+            // ===========  "a " + foo() -> "a ${foo()}}"
+            return "$lvalueText\${$rvalueText}"
         } else if (binaryExpressionPsi.isRvalueReferenceExpression()) {
             // ===========  "a " + b -> "a $b"
             return "$lvalueText$$rvalueText"
-        } else if (binaryExpressionPsi.isRvalueDotQualifiedExpression() || binaryExpressionPsi.isRvalueOperation()) {
-            // ===========  "string " + "valueStr".replace("my", "") -> "string ${"valueStr".replace("my", "")}""
-            return "$lvalueText\${$rvalueText}"
         } else if (binaryExpressionPsi.isRvalueParenthesized()) {
             val binExpression = binaryExpressionPsi.right?.children?.first()
             if (binExpression is KtBinaryExpression) {
@@ -187,6 +188,9 @@ class StringConcatenationRule(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun KtBinaryExpression.isRvalueStringTemplateExpression() =
             this.right is KtStringTemplateExpression
+
+    private fun KtBinaryExpression.isRvalueCallExpression() =
+            this.right is KtCallExpression
 
     private fun KtBinaryExpression.isRvalueReferenceExpression() =
             this.right is KtReferenceExpression
