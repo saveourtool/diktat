@@ -90,11 +90,11 @@ class StringConcatenationRule(configRules: List<RulesConfig>) : DiktatRule(
         }
         val firstChild = node.firstChildNode
         val lastChild = node.lastChildNode
-        return (isPlusBinaryExpression(node) && !(firstChild.elementType != STRING_TEMPLATE && lastChild.elementType == CALL_EXPRESSION) &&
-                (firstChild.elementType == STRING_TEMPLATE ||
-                        ((firstChild.text.endsWith("toString()")) && firstChild.elementType == DOT_QUALIFIED_EXPRESSION))
-        )
+        return isPlusBinaryExpression(node) && isStringVar(firstChild, lastChild)
     }
+
+    private fun isStringVar(firstChild: ASTNode, lastChild: ASTNode) = firstChild.elementType == STRING_TEMPLATE ||
+            ((firstChild.text.endsWith("toString()")) && firstChild.elementType == DOT_QUALIFIED_EXPRESSION && lastChild.elementType == STRING_TEMPLATE)
 
     @Suppress("COMMENT_WHITE_SPACE")
     private fun isPlusBinaryExpression(node: ASTNode): Boolean {

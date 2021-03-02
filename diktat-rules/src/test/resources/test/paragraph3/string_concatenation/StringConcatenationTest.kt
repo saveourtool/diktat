@@ -31,3 +31,4 @@ val myTest20 = x.toString() + "string"
 val myTest21 = x.toString() + " string"
 val myTest22 = "string" + foo()
 val myTest23 = x.toString() + foo()
+val myTest24 = foo() + "string"
