@@ -265,6 +265,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
         else {
             0
         }
+
         val isPrevStringTemplate = node.treePrev.elementType in stringLiteralTokens
         val isNextStringTemplate = node.treeNext.elementType in stringLiteralTokens
         when {
@@ -287,9 +288,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
             is KtDotQualifiedExpression -> parents().takeWhile { it.elementType == DOT_QUALIFIED_EXPRESSION || it.elementType == SAFE_ACCESS_EXPRESSION }.last()
             is KtIfExpression -> parent.findChildByType(THEN) ?: parent.findChildByType(ELSE) ?: parent
             is KtLoopExpression -> (parent.psi as KtLoopExpression).body?.node ?: parent
-            else -> {
-                parent
-            }
+            else -> parent
         }
     }
 
