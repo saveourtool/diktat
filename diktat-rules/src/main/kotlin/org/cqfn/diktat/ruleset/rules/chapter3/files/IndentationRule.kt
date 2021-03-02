@@ -207,7 +207,11 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
     /**
      * Checks if it is triple-quoted string template with trimIndent() or trimMargin() function.
      */
-    private fun checkStringLiteral(whiteSpace: PsiWhiteSpace, expectedIndent: Int, actualIndent: Int) {
+    private fun checkStringLiteral(
+        whiteSpace: PsiWhiteSpace,
+        expectedIndent: Int,
+        actualIndent: Int
+    ) {
         val nextNode = whiteSpace.node.treeNext
         if (nextNode != null &&
                 nextNode.elementType == DOT_QUALIFIED_EXPRESSION &&
@@ -224,7 +228,11 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
     /**
      * If it is triple-quoted string template we need to indent all its parts
      */
-    private fun fixStringLiteral(whiteSpace: PsiWhiteSpace, expectedIndent: Int, actualIndent: Int) {
+    private fun fixStringLiteral(
+        whiteSpace: PsiWhiteSpace,
+        expectedIndent: Int,
+        actualIndent: Int
+    ) {
         val textIndent = " ".repeat(expectedIndent + INDENT_SIZE)
         val templateEntries = whiteSpace.node.treeNext.firstChildNode.getAllChildrenWithType(LITERAL_STRING_TEMPLATE_ENTRY)
         templateEntries.forEach { node ->
@@ -244,7 +252,11 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
      * This method fixes all lines of string template except the last one
      * Also it considers $foo insertions in string
      */
-    private fun fixFirstTemplateEntries(node: ASTNode, textIndent: String, actualIndent: Int) {
+    private fun fixFirstTemplateEntries(
+        node: ASTNode,
+        textIndent: String,
+        actualIndent: Int
+    ) {
         val correctedText = StringBuilder()
         // shift of the node depending on its initial string template indent
         val nodeStartIndent = if (node.firstChildNode.text.takeWhile { it == ' ' }.count() - actualIndent - INDENT_SIZE > 0) {
@@ -253,6 +265,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
         else {
             0
         }
+
         when {
             // if string template is before literal_string
             node.treePrev.elementType in stringLiteralTokens && node.treeNext.elementType !in stringLiteralTokens -> {
@@ -277,12 +290,19 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun ASTNode.getExceptionalIndentInitiator() = treeParent.let { parent ->
         when (parent.psi) {
             // fixme: custom logic for determining exceptional indent initiator, should be moved elsewhere
-            is KtDotQualifiedExpression ->
+            is KtDotQualifiedExpression -> {
                 // get the topmost expression to keep extended indent for the whole chain of dot call expressions
                 parents().takeWhile { it.elementType == DOT_QUALIFIED_EXPRESSION || it.elementType == SAFE_ACCESS_EXPRESSION }.last()
-            is KtIfExpression -> parent.findChildByType(THEN) ?: parent.findChildByType(ELSE) ?: parent
-            is KtLoopExpression -> (parent.psi as KtLoopExpression).body?.node ?: parent
-            else -> parent
+            }
+            is KtIfExpression -> {
+                parent.findChildByType(THEN) ?: parent.findChildByType(ELSE) ?: parent
+            }
+            is KtLoopExpression -> {
+                (parent.psi as KtLoopExpression).body?.node ?: parent
+            }
+            else -> {
+                parent
+            }
         }
     }
 
