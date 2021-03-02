@@ -266,18 +266,20 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
             0
         }
 
+        val isPrevStringTemplate = node.treePrev.elementType in stringLiteralTokens
+        val isNextStringTemplate = node.treeNext.elementType in stringLiteralTokens
         when {
             // if string template is before literal_string
-            node.treePrev.elementType in stringLiteralTokens && node.treeNext.elementType !in stringLiteralTokens -> {
+            isPrevStringTemplate && !isNextStringTemplate -> {
                 correctedText.append(node.firstChildNode.text.trimEnd())
             }
             // if string template is after literal_string
-            node.treePrev.elementType !in stringLiteralTokens && node.treeNext.elementType in stringLiteralTokens -> {
+            !isPrevStringTemplate && isNextStringTemplate -> {
                 correctedText.append(textIndent + " ".repeat(nodeStartIndent) + node.firstChildNode.text.trimStart())
             }
             // if there is no string template in literal_string
-            node.treePrev.elementType !in stringLiteralTokens && node.treeNext.elementType !in stringLiteralTokens -> {
-                correctedText.append(textIndent + " ".repeat(nodeStartIndent)  + node.firstChildNode.text.trim())
+            !isPrevStringTemplate && !isNextStringTemplate -> {
+                correctedText.append(textIndent + " ".repeat(nodeStartIndent) + node.firstChildNode.text.trim())
             }
             node.text.isBlank() -> {
                 correctedText.append(textIndent)
