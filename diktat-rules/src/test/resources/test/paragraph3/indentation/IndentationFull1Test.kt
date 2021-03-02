@@ -59,4 +59,9 @@ fun foo(
                                 some $foo test
                         $start another value
                   """.trimIndent()
+
+    val teeest =
+                """
+                      some text $foo $bar another text
+                """.trimIndent()
 }

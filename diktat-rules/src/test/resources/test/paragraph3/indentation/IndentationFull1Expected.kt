@@ -59,5 +59,10 @@ data class Example(val field1: Type1,
                           some $foo test
                   $start another value
             """.trimIndent()
+
+    val teeest =
+            """
+                  some text $foo $bar another text
+            """.trimIndent()
 }
 

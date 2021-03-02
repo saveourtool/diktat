@@ -273,6 +273,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
             !isPrevStringTemplate && isNextStringTemplate -> correctedText.append(textIndent + " ".repeat(nodeStartIndent) + node.firstChildNode.text.trimStart())
             // if there is no string template in literal_string
             !isPrevStringTemplate && !isNextStringTemplate -> correctedText.append(textIndent + " ".repeat(nodeStartIndent) + node.firstChildNode.text.trim())
+            isPrevStringTemplate && isNextStringTemplate -> correctedText.append(node.firstChildNode.text)
             node.text.isBlank() -> correctedText.append(textIndent)
             else -> {}
         }
