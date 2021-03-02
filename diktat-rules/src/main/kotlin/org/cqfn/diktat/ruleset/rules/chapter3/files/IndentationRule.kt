@@ -261,11 +261,9 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
         // shift of the node depending on its initial string template indent
         val nodeStartIndent = if (node.firstChildNode.text.takeWhile { it == ' ' }.count() - actualIndent - INDENT_SIZE > 0) {
             node.firstChildNode.text.takeWhile { it == ' ' }.count() - actualIndent - INDENT_SIZE
-        }
-        else {
+        } else {
             0
         }
-
         val isPrevStringTemplate = node.treePrev.elementType in stringLiteralTokens
         val isNextStringTemplate = node.treeNext.elementType in stringLiteralTokens
         when {
