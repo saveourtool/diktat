@@ -31,6 +31,9 @@ enum class Warnings(
     val canBeAutoCorrected: Boolean,
     val ruleId: String,
     private val warn: String) : Rule {
+    // ======== dummy test warning ======
+    DUMMY_TEST_WARNING(true, "0.0.0", "this is a dummy warning that can be used for manual testing of fixer/checker"),
+
     // ======== chapter 1 ========
     PACKAGE_NAME_MISSING(true, "1.2.1", "no package name declared in a file"),
     PACKAGE_NAME_INCORRECT_CASE(true, "1.2.1", "package name should be completely in a lower case"),
@@ -112,7 +115,7 @@ enum class Warnings(
     COMPLEX_EXPRESSION(false, "3.6.3", "complex dot qualified expression should be replaced with variable"),
 
     // FixMe: autofixing will be added for this rule
-    STRING_CONCATENATION(false, "3.15.1", "strings should not be concatenated using plus operator - use string templates instead if the statement fits one line"),
+    STRING_CONCATENATION(true, "3.15.1", "strings should not be concatenated using plus operator - use string templates instead if the statement fits one line"),
     TOO_MANY_BLANK_LINES(true, "3.7.1", "too many consecutive blank lines"),
     WRONG_WHITESPACE(true, "3.8.1", "incorrect usage of whitespaces for code separation"),
     TOO_MANY_CONSECUTIVE_SPACES(true, "3.8.1", "too many consecutive spaces"),

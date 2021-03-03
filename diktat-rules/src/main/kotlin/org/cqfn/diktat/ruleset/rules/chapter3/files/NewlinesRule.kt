@@ -11,7 +11,7 @@ import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
 import org.cqfn.diktat.ruleset.utils.emptyBlockList
 import org.cqfn.diktat.ruleset.utils.extractLineOfText
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
+import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getIdentifierName
 import org.cqfn.diktat.ruleset.utils.hasParent
 import org.cqfn.diktat.ruleset.utils.isBeginByNewline
@@ -558,7 +558,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             parents().takeWhile { it.elementType in chainExpressionTypes && it.elementType != LAMBDA_ARGUMENT }
 
     private fun isMultilineLambda(node: ASTNode): Boolean =
-            node.findAllNodesWithSpecificType(LAMBDA_ARGUMENT)
+            node.findAllDescendantsWithSpecificType(LAMBDA_ARGUMENT)
                 .firstOrNull()
                 ?.text
                 ?.count { it == '\n' } ?: -1 > 0
@@ -572,7 +572,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             val firstCallee = mutableListOf<ASTNode>().also {
                 getOrderedCallExpressions(psi, it)
             }.first()
-            findAllNodesWithSpecificType(firstCallee.elementType, false).first() === this@isFirstCall
+            findAllDescendantsWithSpecificType(firstCallee.elementType, false).first() === this@isFirstCall
         } ?: false
 
     /**

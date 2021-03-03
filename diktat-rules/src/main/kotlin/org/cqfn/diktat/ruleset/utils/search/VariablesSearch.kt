@@ -7,7 +7,7 @@
 
 package org.cqfn.diktat.ruleset.utils.search
 
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
+import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getDeclarationScope
 import org.cqfn.diktat.ruleset.utils.isGoingAfter
 
@@ -50,7 +50,7 @@ abstract class VariablesSearch(val node: ASTNode,
             "To collect all variables in a file you need to provide file root node"
         }
         return node
-            .findAllNodesWithSpecificType(ElementType.PROPERTY)
+            .findAllDescendantsWithSpecificType(ElementType.PROPERTY)
             .map { it.psi as KtProperty }
             .filter(filterForVariables)
             .associateWith { it.getSearchResults() }

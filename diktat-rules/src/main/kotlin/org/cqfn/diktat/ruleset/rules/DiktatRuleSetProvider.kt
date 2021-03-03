@@ -4,6 +4,7 @@ import org.cqfn.diktat.common.config.rules.DIKTAT_COMMON
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.RulesConfigReader
 import org.cqfn.diktat.ruleset.constants.Warnings
+import org.cqfn.diktat.ruleset.dummy.DummyWarning
 import org.cqfn.diktat.ruleset.rules.chapter1.FileNaming
 import org.cqfn.diktat.ruleset.rules.chapter1.IdentifierNaming
 import org.cqfn.diktat.ruleset.rules.chapter1.PackageNaming
@@ -133,6 +134,9 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
         // We don't have a way to enforce a specific order, so we should just be careful when adding new rules to this list and, when possible,
         // cover new rules in smoke test as well. If a rule needs to be at a specific position in a list, please add comment explaining it (like for NewlinesRule).
         val rules = listOf(
+            // test warning that can be used for manual testing of diktat
+            ::DummyWarning,
+
             // comments & documentation
             ::CommentsRule,
             ::SingleConstructorRule,  // this rule can add properties to a primary constructor, so should be before KdocComments
@@ -164,7 +168,6 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
             ::CheckInverseMethodRule,
             ::StatelessClassesRule,
             ::ImplicitBackingPropertyRule,
-            ::StringTemplateFormatRule,
             ::DataClassesRule,
             ::LocalVariablesRule,
             ::SmartCastRule,
@@ -180,6 +183,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
             ::AnnotationNewLineRule,
             ::SortRule,
             ::StringConcatenationRule,
+            ::StringTemplateFormatRule,
             ::AccurateCalculationsRule,
             ::LineLength,
             ::RunInScript,
@@ -204,7 +208,8 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
             ::FileStructureRule,  // this rule should be right before indentation because it should operate on already valid code
             ::NewlinesRule,  // newlines need to be inserted right before fixing indentation
             ::WhiteSpaceRule,  // this rule should be after other rules that can cause wrong spacing
-            ::IndentationRule  // indentation rule should be the last because it fixes formatting after all the changes done by previous rules
+            ::IndentationRule,  // indentation rule should be the last because it fixes formatting after all the changes done by previous rules
+
         )
             .map {
                 it.invoke(configRules)
