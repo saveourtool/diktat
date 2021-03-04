@@ -58,7 +58,7 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
                 }
 
                 // getting all identifiers from existing package name into the list like [org, diktat, project]
-                val wordsInPackageName = node.findAllNodesWithSpecificType(IDENTIFIER)
+                val wordsInPackageName = node.findAllDescendantsWithSpecificType(IDENTIFIER)
 
                 // no need to check that packageIdentifiers is empty, because in this case parsing will fail
                 checkPackageName(wordsInPackageName, node)

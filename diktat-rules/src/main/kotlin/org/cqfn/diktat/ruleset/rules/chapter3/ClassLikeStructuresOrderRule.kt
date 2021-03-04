@@ -80,7 +80,7 @@ class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
                     node
                         .parents()
                         .last()
-                        .findAllNodesWithSpecificType(REFERENCE_EXPRESSION)
+                        .findAllDescendantsWithSpecificType(REFERENCE_EXPRESSION)
                         .any { ref ->
                             ref.parent({ it == classNode }) == null && ref.text.contains(identifierNode.text)
                         }

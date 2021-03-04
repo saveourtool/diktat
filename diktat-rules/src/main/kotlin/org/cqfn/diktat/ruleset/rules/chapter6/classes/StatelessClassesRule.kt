@@ -3,7 +3,7 @@ package org.cqfn.diktat.ruleset.rules.chapter6.classes
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.OBJECT_IS_PREFERRED
 import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
+import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
@@ -35,10 +35,10 @@ class StatelessClassesRule(configRules: List<RulesConfig>) : DiktatRule(
         // Fixme: We should find interfaces in all project and then check them
         if (node.elementType == FILE) {
             val interfacesNodes = node
-                .findAllNodesWithSpecificType(CLASS)
+                .findAllDescendantsWithSpecificType(CLASS)
                 .filter { it.hasChildOfType(INTERFACE_KEYWORD) }
             node
-                .findAllNodesWithSpecificType(CLASS)
+                .findAllDescendantsWithSpecificType(CLASS)
                 .filterNot { it.hasChildOfType(INTERFACE_KEYWORD) }
                 .forEach { handleClass(it, interfacesNodes) }
         }
@@ -64,7 +64,7 @@ class StatelessClassesRule(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun isStatelessClass(node: ASTNode): Boolean {
         val properties = (node.psi as KtClass).getProperties()
-        val functions = node.findAllNodesWithSpecificType(FUN)
+        val functions = node.findAllDescendantsWithSpecificType(FUN)
         return properties.isNullOrEmpty() &&
                 functions.isNotEmpty() &&
                 !(node.psi as KtClass).hasExplicitPrimaryConstructor()

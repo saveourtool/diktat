@@ -4,7 +4,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.NULLABLE_PROPERTY_TYPE
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.KotlinParser
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
+import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 
 import com.pinterest.ktlint.core.ast.ElementType.BOOLEAN_CONSTANT
@@ -53,7 +53,7 @@ class NullableTypeRule(configRules: List<RulesConfig>) : DiktatRule(
             val typeReferenceNode = node.findChildByType(TYPE_REFERENCE)!!
             // check that property has nullable type, right value one of allow expression
             if (!node.hasChildOfType(NULL) &&
-                    node.findAllNodesWithSpecificType(DOT_QUALIFIED_EXPRESSION).isEmpty() &&
+                    node.findAllDescendantsWithSpecificType(DOT_QUALIFIED_EXPRESSION).isEmpty() &&
                     typeReferenceNode.hasChildOfType(NULLABLE_TYPE) &&
                     typeReferenceNode.findChildByType(NULLABLE_TYPE)!!.hasChildOfType(QUEST) &&
                     (node.findChildByType(CALL_EXPRESSION)?.findChildByType(REFERENCE_EXPRESSION) == null ||

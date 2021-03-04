@@ -61,7 +61,7 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun conditionInIfStatement(node: ASTNode) {
-        node.findAllNodesWithSpecificType(BINARY_EXPRESSION).forEach { binaryExprNode ->
+        node.findAllDescendantsWithSpecificType(BINARY_EXPRESSION).forEach { binaryExprNode ->
             val condition = (binaryExprNode.psi as KtBinaryExpression)
             if (isNullCheckBinaryExpression(condition)) {
                 when (condition.operationToken) {

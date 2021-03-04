@@ -270,10 +270,10 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
                 EOL_COMMENT -> (node as LeafPsiElement).replaceWithText("// $commentText")
                 BLOCK_COMMENT -> (node as LeafPsiElement).replaceWithText("/* $commentText")
                 KDOC -> {
-                    node.findAllNodesWithSpecificType(KDOC_TEXT).forEach {
+                    node.findAllDescendantsWithSpecificType(KDOC_TEXT).forEach {
                         modifyKdocText(it, configuration)
                     }
-                    node.findAllNodesWithSpecificType(KDOC_CODE_BLOCK_TEXT).forEach {
+                    node.findAllDescendantsWithSpecificType(KDOC_CODE_BLOCK_TEXT).forEach {
                         modifyKdocText(it, configuration)
                     }
                 }

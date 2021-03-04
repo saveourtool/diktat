@@ -91,7 +91,7 @@ class BlockStructureBraces(configRules: List<RulesConfig>) : DiktatRule(
         val catchBlocks = tryBlock.catchClauses.map { it.node }
         val finallyBlock = tryBlock.finallyBlock?.node
         checkOpenBraceOnSameLine(tryBlock.node, BLOCK, configuration)
-        val allMiddleSpaceNodes = node.findAllNodesWithSpecificType(CATCH).map { it.treePrev }
+        val allMiddleSpaceNodes = node.findAllDescendantsWithSpecificType(CATCH).map { it.treePrev }
         checkMidBrace(allMiddleSpaceNodes, node, CATCH_KEYWORD)
         catchBlocks.forEach {
             checkOpenBraceOnSameLine(it, BLOCK, configuration)
@@ -100,7 +100,7 @@ class BlockStructureBraces(configRules: List<RulesConfig>) : DiktatRule(
         finallyBlock?.let { block ->
             checkOpenBraceOnSameLine(block, BLOCK, configuration)
             checkCloseBrace(block.findChildByType(BLOCK)!!, configuration)
-            val newAllMiddleSpaceNodes = node.findAllNodesWithSpecificType(FINALLY).map { it.treePrev }
+            val newAllMiddleSpaceNodes = node.findAllDescendantsWithSpecificType(FINALLY).map { it.treePrev }
             checkMidBrace(newAllMiddleSpaceNodes, node, FINALLY_KEYWORD)
         }
     }

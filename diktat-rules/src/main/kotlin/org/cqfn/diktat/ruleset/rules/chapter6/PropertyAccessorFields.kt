@@ -3,7 +3,7 @@ package org.cqfn.diktat.ruleset.rules.chapter6
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR
 import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
+import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.isGoingAfter
 
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
@@ -34,7 +34,7 @@ class PropertyAccessorFields(configRules: List<RulesConfig>) : DiktatRule(
     private fun checkPropertyAccessor(node: ASTNode) {
         val leftValue = node.treeParent.findChildByType(IDENTIFIER) ?: return
         val firstReferenceWithSameName = node
-            .findAllNodesWithSpecificType(REFERENCE_EXPRESSION)
+            .findAllDescendantsWithSpecificType(REFERENCE_EXPRESSION)
             .mapNotNull { it.findChildByType(IDENTIFIER) }
             .firstOrNull {
                 it.text == leftValue.text &&
