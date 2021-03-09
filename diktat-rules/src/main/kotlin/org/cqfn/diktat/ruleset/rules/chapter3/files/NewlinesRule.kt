@@ -12,6 +12,7 @@ import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
 import org.cqfn.diktat.ruleset.utils.emptyBlockList
 import org.cqfn.diktat.ruleset.utils.extractLineOfText
 import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
+import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getIdentifierName
 import org.cqfn.diktat.ruleset.utils.hasParent
 import org.cqfn.diktat.ruleset.utils.isBeginByNewline
@@ -352,9 +353,15 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
      */
     @Suppress("ComplexMethod")
     private fun handleList(node: ASTNode) {
-        if (node.elementType == VALUE_PARAMETER_LIST && node.treeParent.elementType.let { it == FUNCTION_TYPE || it == FUNCTION_TYPE_RECEIVER }) {
+        if (node.elementType == VALUE_PARAMETER_LIST) {
+            // do not check list parameter in lambda
+            node.findParentNodeWithSpecificType(LAMBDA_ARGUMENT)?.let {
+                return
+            }
             // do not check other value lists
-            return
+            if (node.treeParent.elementType.let { it == FUNCTION_TYPE || it == FUNCTION_TYPE_RECEIVER }) {
+                return
+            }
         }
 
         if (node.elementType == VALUE_ARGUMENT_LIST && node.siblings(forward = false).any { it.elementType == REFERENCE_EXPRESSION }) {

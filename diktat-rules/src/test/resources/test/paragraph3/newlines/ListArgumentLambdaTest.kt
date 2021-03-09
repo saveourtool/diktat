@@ -7,4 +7,9 @@ class Example {
         }
     }
 
+    fun bar() {
+        foldIndexed("#") { index, acc, pathPart ->
+        }
+    }
+
 }
