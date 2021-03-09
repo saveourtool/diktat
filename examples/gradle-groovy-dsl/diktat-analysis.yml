@@ -6,6 +6,7 @@
     testDirs: test
     disabledChapters: ""
     kotlinVersion: 1.4
+    srcDirectories: "main"
 # Checks that the Class/Enum/Interface name does not match Pascal case
 - name: CLASS_NAME_INCORRECT
   enabled: true
@@ -463,4 +464,7 @@
   enabled: true
 # If file contains class, then it can't contain extension functions for the same class
 - name: EXTENSION_FUNCTION_WITH_CLASS
+  enabled: true
+# Check if kts script contains other functions except run code
+- name: RUN_IN_SCRIPT
   enabled: true
