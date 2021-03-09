@@ -260,8 +260,8 @@ val anotherVal = myVar?.also {
 
 // example 4
 myVar?.let {
-    println("null")
-} ?: run { println("not null") }
+    println("not null")
+} ?: run { println("null") }
 ```
 
 **Exceptions:**

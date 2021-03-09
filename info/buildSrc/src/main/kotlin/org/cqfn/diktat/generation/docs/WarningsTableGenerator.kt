@@ -16,7 +16,7 @@ const val DIKTAT_GUIDE: String = "guide/diktat-coding-convention.md#"
 @Suppress("MagicNumber")
 fun generateRulesMapping() {
     // excluding dummy warning
-    val allWarnings = Warnings.values().filterNot { it == Warnings.DUMMY_TEST_WARNING }
+    val allWarnings = Warnings.values().filterNot { it == Warnings.DUMMY_TEST_WARNING } as MutableList<Warnings>
     allWarnings.sortBy { warn ->
         val numbers = warn.ruleId.split(".")
         val chapter = numbers[0].toInt()
