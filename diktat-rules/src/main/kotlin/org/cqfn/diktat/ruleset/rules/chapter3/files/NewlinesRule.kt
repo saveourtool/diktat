@@ -385,7 +385,6 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    @Suppress("AVOID_NULL_CHECKS")
     private fun handleFirstValue(node: ASTNode,
                                  filterType: IElementType,
                                  warnText: String) = node
@@ -401,7 +400,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
                 warnText
             }
             WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, freeText, node.startOffset, node) {
-                if (list.first().treePrev != null) {
+                list.first().treePrev?.let {
                     node.appendNewlineMergingWhiteSpace(
                         list.first()
                             .treePrev
