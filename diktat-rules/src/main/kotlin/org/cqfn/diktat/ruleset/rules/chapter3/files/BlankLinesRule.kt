@@ -3,6 +3,7 @@ package org.cqfn.diktat.ruleset.rules.chapter3.files
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.TOO_MANY_BLANK_LINES
 import org.cqfn.diktat.ruleset.rules.DiktatRule
+import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.leaveExactlyNumNewLines
 import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
@@ -12,6 +13,7 @@ import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_LITERAL
+import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_ARGUMENT
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.SCRIPT
@@ -44,6 +46,16 @@ class BlankLinesRule(configRules: List<RulesConfig>) : DiktatRule(
             it.elementType == BLOCK && it.treeParent?.elementType != SCRIPT ||
                     it.elementType == CLASS_BODY || it.elementType == FUNCTION_LITERAL
         }) {
+            node.findParentNodeWithSpecificType(LAMBDA_ARGUMENT)?.let {
+                if ((node.treeNext?.treeNext?.elementType == RBRACE) && (node.treePrev.elementType == LBRACE)) {
+                    val freeText = "do not put newlines in empty lambda"
+                    TOO_MANY_BLANK_LINES.warnAndFix(configRules, emitWarn, isFixMode, freeText, node.startOffset, node) {
+                        node.leaveExactlyNumNewLines(0)
+                    }
+                    return
+                }
+            }
+
             if ((node.treeNext.elementType == RBRACE) xor (node.treePrev.elementType == LBRACE)) {
                 // if both are present, this is not beginning or end
                 // if both are null, then this block is empty and is handled in another rule

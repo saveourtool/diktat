@@ -7,6 +7,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.BRACES_BLOCK_STRUCTURE_ERROR
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
+import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.BODY
 import com.pinterest.ktlint.core.ast.ElementType.CATCH
@@ -232,7 +233,12 @@ class BlockStructureBraces(configRules: List<RulesConfig>) : DiktatRule(
         if (!configuration.closeBrace) {
             return
         }
-        val space = node.findChildByType(RBRACE)!!.treePrev
+        var space = node.findChildByType(RBRACE)!!.treePrev
+        node.findParentNodeWithSpecificType(ElementType.LAMBDA_ARGUMENT)?.let {
+            if (space.text == "") {
+                space = space.treePrev
+            }
+        }
         if (checkBraceNode(space)) {
             BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "no newline before closing brace",
                 (space.treeNext ?: node.findChildByType(RBRACE))!!.startOffset, node) {
