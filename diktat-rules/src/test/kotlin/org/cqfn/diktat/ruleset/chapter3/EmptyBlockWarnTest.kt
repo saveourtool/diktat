@@ -96,6 +96,20 @@ class EmptyBlockWarnTest : LintTestBase(::EmptyBlock) {
     }
 
     @Test
+    fun `empty lambda`() {
+        lintMethod(
+            """
+                    |fun foo() {
+                    |   run { 
+                    |   
+                    |   }
+                    |}
+                """.trimMargin(),
+            LintError(2, 8, ruleId, "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} do not put newlines in empty lambda", true)
+        )
+    }
+
+    @Test
     fun `check if-else expression without block`() {
         lintMethod(
             """
@@ -125,24 +139,9 @@ class EmptyBlockWarnTest : LintTestBase(::EmptyBlock) {
         lintMethod(
             """
                     |fun foo() {
-                    |   val y = listOf<Int>().map {} 
+                    |   val y = listOf<Int>().map { } 
                     |}
-                """.trimMargin(),
-            LintError(2, 30, ruleId, "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} empty blocks are forbidden unless it is function with override keyword", false)
-        )
-    }
-
-    @Test
-    @Tag(WarningNames.EMPTY_BLOCK_STRUCTURE_ERROR)
-    fun `check empty lambda with config`() {
-        lintMethod(
-            """
-                |fun foo() {
-                |   val y = listOf<Int>().map {} 
-                |}
-            """.trimMargin(),
-            LintError(2, 30, ruleId, "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} different style for empty block", true),
-            rulesConfigList = rulesConfigListEmptyBlockExist
+                """.trimMargin()
         )
     }
 

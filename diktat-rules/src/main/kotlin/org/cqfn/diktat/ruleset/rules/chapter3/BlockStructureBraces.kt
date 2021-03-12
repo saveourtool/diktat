@@ -233,10 +233,10 @@ class BlockStructureBraces(configRules: List<RulesConfig>) : DiktatRule(
         if (!configuration.closeBrace) {
             return
         }
-        var space = node.findChildByType(RBRACE)!!.treePrev
+        val space = node.findChildByType(RBRACE)!!.treePrev
         node.findParentNodeWithSpecificType(ElementType.LAMBDA_ARGUMENT)?.let {
             if (space.text.isEmpty()) {
-                space = space.treePrev
+                return
             }
         }
         if (checkBraceNode(space)) {
