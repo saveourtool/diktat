@@ -3,7 +3,6 @@ package org.cqfn.diktat.ruleset.rules.chapter3
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
-import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.constants.Warnings.EMPTY_BLOCK_STRUCTURE_ERROR
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
@@ -37,7 +36,7 @@ class EmptyBlock(configRules: List<RulesConfig>) : DiktatRule(
         checkEmptyBlock(newNode, configuration)
     }
 
-    private fun isEmptyWhiteSpace(node: ASTNode) =
+    private fun isNewLine(node: ASTNode) =
             node.findChildByType(WHITE_SPACE)?.text?.contains("\n") ?: true
 
     @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
@@ -46,21 +45,23 @@ class EmptyBlock(configRules: List<RulesConfig>) : DiktatRule(
             return
         }
         if (node.isBlockEmpty()) {
-            node.findParentNodeWithSpecificType(ElementType.LAMBDA_ARGUMENT)?.let {
-                // Lambda body is always has a BLOCK -> run { } - (LBRACE, WHITE_SPACE, BLOCK "", RBRACE)
-                if (!configuration.emptyBlockExist && isEmptyWhiteSpace(node)) {
-                    val freeText = "do not put newlines in empty lambda"
-                    EMPTY_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, freeText, node.startOffset, node) {
-                        val whiteSpaceNode = node.findChildByType(WHITE_SPACE)
-                        whiteSpaceNode?.leaveExactlyNumNewLines(0)
-                    }
-                }
-                return
-            }
             if (!configuration.emptyBlockExist) {
                 EMPTY_BLOCK_STRUCTURE_ERROR.warn(configRules, emitWarn, isFixMode, "empty blocks are forbidden unless it is function with override keyword",
                     node.startOffset, node)
             } else {
+                node.findParentNodeWithSpecificType(ElementType.LAMBDA_ARGUMENT)?.let {
+                    // Lambda body is always has a BLOCK -> run { } - (LBRACE, WHITE_SPACE, BLOCK "", RBRACE)
+                    if (isNewLine(node)) {
+                        val freeText = "do not put newlines in empty lambda"
+                        EMPTY_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, freeText, node.startOffset, node) {
+                            val whiteSpaceNode = node.findChildByType(WHITE_SPACE)
+                            whiteSpaceNode?.let {
+                                node.replaceChild(whiteSpaceNode, PsiWhiteSpaceImpl(" "))
+                            }
+                        }
+                    }
+                    return
+                }
                 val space = node.findChildByType(RBRACE)!!.treePrev
                 if (configuration.emptyBlockNewline && !space.text.contains("\n")) {
                     EMPTY_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "different style for empty block",

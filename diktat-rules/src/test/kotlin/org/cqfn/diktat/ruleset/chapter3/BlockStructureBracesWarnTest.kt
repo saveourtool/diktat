@@ -91,7 +91,9 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
         lintMethod(
             """
                     |fun foo() {
-                    |   run { }
+                    |   run { 
+                    |   
+                    |   }
                     |}
                 """.trimMargin()
         )
