@@ -47,6 +47,7 @@ class BlankLinesRule(configRules: List<RulesConfig>) : DiktatRule(
                     it.elementType == CLASS_BODY || it.elementType == FUNCTION_LITERAL
         }) {
             node.findParentNodeWithSpecificType(LAMBDA_ARGUMENT)?.let {
+                // Lambda body is always has a BLOCK -> run { } - (LBRACE, WHITE_SPACE, BLOCK "", RBRACE)
                 if ((node.treeNext?.treeNext?.elementType == RBRACE) && (node.treePrev.elementType == LBRACE)) {
                     val freeText = "do not put newlines in empty lambda"
                     TOO_MANY_BLANK_LINES.warnAndFix(configRules, emitWarn, isFixMode, freeText, node.startOffset, node) {
