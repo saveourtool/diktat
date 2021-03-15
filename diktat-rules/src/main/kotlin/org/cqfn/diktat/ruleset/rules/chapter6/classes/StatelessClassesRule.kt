@@ -65,7 +65,7 @@ class StatelessClassesRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun isStatelessClass(node: ASTNode): Boolean {
         val properties = (node.psi as KtClass).getProperties()
         val functions = node.findAllDescendantsWithSpecificType(FUN)
-        return properties.isNullOrEmpty() &&
+        return properties.isEmpty() &&
                 functions.isNotEmpty() &&
                 !(node.psi as KtClass).hasExplicitPrimaryConstructor()
     }

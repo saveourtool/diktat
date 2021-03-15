@@ -35,7 +35,6 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
     private val lambdaWithArrowWarn = "${WRONG_NEWLINES.warnText()} in lambda with several lines in body newline should be placed after an arrow"
     private val lambdaWithoutArrowWarn = "${WRONG_NEWLINES.warnText()} in lambda with several lines in body newline should be placed after an opening brace"
     private val singleReturnWarn = "${WRONG_NEWLINES.warnText()} functions with single return statement should be simplified to expression body"
-    private val listParameter = "${WRONG_NEWLINES.warnText()} list parameter should be placed on different lines in declaration of <foo>"
 
     @Test
     @Tag(WarningNames.REDUNDANT_SEMICOLON)
