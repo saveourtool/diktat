@@ -18,7 +18,6 @@ import java.util.concurrent.atomic.AtomicInteger
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
-import java.util.Locale
 
 const val DIKTAT_COMMON = "DIKTAT_COMMON"
 
