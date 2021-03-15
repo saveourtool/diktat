@@ -10,6 +10,7 @@ import kotlin.system.exitProcess
 /**
  * Base class for working with properties files.
  */
+@Suppress("SwallowedException")
 open class ApplicationProperties(propertiesFileName: String) {
     /**
      * The [Properties] loaded from a file.

@@ -41,7 +41,7 @@ internal fun runDiktat(testProjectDir: TemporaryFolder,
 ) = GradleRunner.create()
     .run(configureRunner)
     .withProjectDir(testProjectDir.root)
-    .withArguments(*arguments.toTypedArray(), DiktatGradlePlugin.DIKTAT_CHECK_TASK)
+    .withArguments(arguments + DiktatGradlePlugin.DIKTAT_CHECK_TASK)
     .withPluginClasspath()
     .withJaCoCo(testsCounter.incrementAndGet())
     .forwardOutput()

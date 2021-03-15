@@ -87,7 +87,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
         ENUM_VALUE, EXCEPTION_SUFFIX, FUNCTION_BOOLEAN_PREFIX, FUNCTION_NAME_INCORRECT_CASE,
         IDENTIFIER_LENGTH, OBJECT_NAME_INCORRECT)) {
     private val allMethodPrefixes by lazy {
-        if (configuration.allowedBooleanPrefixes.isNullOrEmpty()) {
+        if (configuration.allowedBooleanPrefixes.isEmpty()) {
             booleanMethodPrefixes
         } else {
             booleanMethodPrefixes + configuration.allowedBooleanPrefixes.filter { it.isNotEmpty() }

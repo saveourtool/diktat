@@ -108,7 +108,10 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
         return hasCode
     }
 
-    @Suppress("ComplexMethod", "TOO_LONG_FUNCTION")
+    @Suppress(
+        "ComplexMethod",
+        "TOO_LONG_FUNCTION",
+        "SpreadOperator")
     private fun checkCodeBlocksOrderAndEmptyLines(node: ASTNode) {
         // From KtFile.kt: 'scripts have no package directive, all other files must have package directives'.
         // Kotlin compiler itself enforces it's position in the file if it is present.
