@@ -37,7 +37,7 @@ class EmptyBlock(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun isNewLine(node: ASTNode) =
-            node.findChildByType(WHITE_SPACE)?.text?.contains("\n") ?: true
+            node.findChildByType(WHITE_SPACE)?.text?.contains("\n") ?: false
 
     @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
     private fun checkEmptyBlock(node: ASTNode, configuration: EmptyBlockStyleConfiguration) {
