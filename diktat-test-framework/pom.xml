@@ -39,8 +39,8 @@
             <artifactId>slf4j-log4j12</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.github.java-diff-utils</groupId>
-            <artifactId>java-diff-utils</artifactId>
+            <groupId>io.github.petertrr</groupId>
+            <artifactId>kotlin-multiplatform-diff-jvm</artifactId>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
