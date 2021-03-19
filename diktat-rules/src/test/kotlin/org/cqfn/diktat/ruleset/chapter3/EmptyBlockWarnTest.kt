@@ -8,6 +8,8 @@ import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
+import org.jetbrains.kotlin.cli.jvm.compiler.EnvironmentConfigFiles
+import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
@@ -216,6 +218,23 @@ class EmptyBlockWarnTest : LintTestBase(::EmptyBlock) {
                 |   fun bar() {
                 |       A({})
                 |   }
+                |}
+            """.trimMargin(),
+            rulesConfigList = rulesConfigListEmptyBlockExist
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.EMPTY_BLOCK_STRUCTURE_ERROR)
+    fun `should not trigger on empty lambdas as a functions #2`() {
+        lintMethod(
+            """
+                |fun some() {
+                |    val project = KotlinCoreEnvironment.createForProduction(
+                |       { },
+                |       compilerConfiguration,
+                |       EnvironmentConfigFiles.JVM_CONFIG_FILES
+                |    ).project
                 |}
             """.trimMargin(),
             rulesConfigList = rulesConfigListEmptyBlockExist

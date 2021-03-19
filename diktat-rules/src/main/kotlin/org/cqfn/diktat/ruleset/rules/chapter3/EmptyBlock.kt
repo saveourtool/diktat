@@ -16,6 +16,8 @@ import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.LPAR
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
+import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT
+import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -106,8 +108,9 @@ class EmptyBlock(configRules: List<RulesConfig>) : DiktatRule(
         return when {
             parents.any { it.elementType == CALL_EXPRESSION } -> {
                 val callExpression = parents.find { it.elementType == CALL_EXPRESSION }!!
-                // excepting cases like list.map { }
-                callExpression.treeParent.elementType != DOT_QUALIFIED_EXPRESSION
+                // excepting cases like list.map { }. In this case call expression will not have value argument list
+                // And in this case: Parser.parse({}, some, thing) it will have value argument list
+                callExpression.hasChildOfType(VALUE_ARGUMENT_LIST)
             }
             parents.any { it.elementType == LAMBDA_EXPRESSION } -> {
                 val lambdaExpression = parents.find { it.elementType == LAMBDA_EXPRESSION }!!
