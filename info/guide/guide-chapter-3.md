@@ -1,4 +1,4 @@
-__# <a name="c3"></a>3. General formatting (typesetting)
+# <a name="c3"></a>3. General formatting (typesetting)
 <!-- =============================================================================== -->
 ### <a name="c3.1"></a> 3.1 File-related rules
 This section describes the rules related to using files in your code.
@@ -319,7 +319,7 @@ fun doNothing() {}
 fun doNothingElse() {
 }
 
-fun foo(bar: () -> Unit = {})__
+fun foo(bar: () -> Unit = {})
 ```
 
 **Invalid examples:**
