@@ -114,9 +114,7 @@ class EmptyBlock(configRules: List<RulesConfig>) : DiktatRule(
                 // cases like A({}). Here Lambda expression is used as a value parameter.
                 lambdaExpression.treeParent.elementType == VALUE_PARAMETER
             }
-            else -> {
-                false
-            }
+            else -> false
         }
     }
 
