@@ -103,6 +103,7 @@ class EmptyBlock(configRules: List<RulesConfig>) : DiktatRule(
                 false
             }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun isLambdaUsedAsFunction(node: ASTNode): Boolean {
         val parents = node.parents()
         if (parents.any { it.elementType == CALL_EXPRESSION }) {
