@@ -209,7 +209,7 @@ class EmptyBlockWarnTest : LintTestBase(::EmptyBlock) {
     @Tag(WarningNames.EMPTY_BLOCK_STRUCTURE_ERROR)
     fun `should not trigger on empty lambdas as a functions`() {
         lintMethod(
-                """
+            """
                 |fun foo(bar: () -> Unit = {})
                 |
                 |class Some {
@@ -218,7 +218,7 @@ class EmptyBlockWarnTest : LintTestBase(::EmptyBlock) {
                 |   }
                 |}
             """.trimMargin(),
-                rulesConfigList = rulesConfigListEmptyBlockExist
+            rulesConfigList = rulesConfigListEmptyBlockExist
         )
     }
 }
