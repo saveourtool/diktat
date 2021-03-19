@@ -34,9 +34,6 @@ class EmptyBlock(configRules: List<RulesConfig>) : DiktatRule(
         val configuration = EmptyBlockStyleConfiguration(
             configRules.getRuleConfig(EMPTY_BLOCK_STRUCTURE_ERROR)?.configuration ?: emptyMap()
         )
-        if (node.elementType == FILE) {
-            println(node.prettyPrint())
-        }
         searchNode(node, configuration)
     }
 
@@ -106,16 +103,21 @@ class EmptyBlock(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("UnsafeCallOnNullableType")
     private fun isLambdaUsedAsFunction(node: ASTNode): Boolean {
         val parents = node.parents()
-        if (parents.any { it.elementType == CALL_EXPRESSION }) {
-            val callExpression = parents.find { it.elementType == CALL_EXPRESSION }!!
-            // excepting cases like list.map { }
-            return callExpression.treeParent.elementType != DOT_QUALIFIED_EXPRESSION
-        } else if (parents.any { it.elementType == LAMBDA_EXPRESSION }) {
-            val lambdaExpression = parents.find { it.elementType == LAMBDA_EXPRESSION }!!
-            // cases like A({}). Here Lambda expression is used as a value parameter.
-            return lambdaExpression.treeParent.elementType == VALUE_PARAMETER
+        return when {
+            parents.any { it.elementType == CALL_EXPRESSION } -> {
+                val callExpression = parents.find { it.elementType == CALL_EXPRESSION }!!
+                // excepting cases like list.map { }
+                callExpression.treeParent.elementType != DOT_QUALIFIED_EXPRESSION
+            }
+            parents.any { it.elementType == LAMBDA_EXPRESSION } -> {
+                val lambdaExpression = parents.find { it.elementType == LAMBDA_EXPRESSION }!!
+                // cases like A({}). Here Lambda expression is used as a value parameter.
+                lambdaExpression.treeParent.elementType == VALUE_PARAMETER
+            }
+            else -> {
+                false
+            }
         }
-        return false
     }
 
     /**

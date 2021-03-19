@@ -1,4 +1,4 @@
-# <a name="c3"></a>3. General formatting (typesetting)
+__# <a name="c3"></a>3. General formatting (typesetting)
 <!-- =============================================================================== -->
 ### <a name="c3.1"></a> 3.1 File-related rules
 This section describes the rules related to using files in your code.
@@ -305,7 +305,7 @@ class A
 Avoid empty blocks, and ensure braces start on a new line. An empty code block can be closed immediately on the same line and the next line. However, a newline is recommended between opening and closing braces `{}` (see the examples below.)
 
 Generally, empty code blocks are prohibited; using them is considered a bad practice (especially for catch block).
-They are only appropriate for overridden functions when the base class's functionality is not needed in the class-inheritor.
+They are appropriate for overridden functions, when the base class's functionality is not needed in the class-inheritor, for lambdas used as a function and for empty function in implementation of functional interface. 
 ```kotlin
 override fun foo() {    
 }
@@ -318,6 +318,8 @@ fun doNothing() {}
 
 fun doNothingElse() {
 }
+
+fun foo(bar: () -> Unit = {})__
 ```
 
 **Invalid examples:**
