@@ -9,13 +9,21 @@ import org.cqfn.diktat.ruleset.utils.*
 
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_LITERAL
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
+import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.LPAR
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
+import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT
+import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
+import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
+import org.jetbrains.kotlin.psi.psiUtil.parents
 
 /**
  * Rule that checks if empty code blocks (`{  }`) are used and checks their formatting.
@@ -41,7 +49,7 @@ class EmptyBlock(configRules: List<RulesConfig>) : DiktatRule(
 
     @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
     private fun checkEmptyBlock(node: ASTNode, configuration: EmptyBlockStyleConfiguration) {
-        if (node.treeParent.isOverridden() || isAnonymousSamClass(node)) {
+        if (node.treeParent.isOverridden() || isAnonymousSamClass(node) || isLambdaUsedAsFunction(node)) {
             return
         }
         if (node.isBlockEmpty()) {
@@ -82,17 +90,36 @@ class EmptyBlock(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    @Suppress("UnsafeCallOnNullableType", "WRONG_WHITESPACE")
-    private fun isAnonymousSamClass(node: ASTNode) : Boolean =
+    @Suppress("UnsafeCallOnNullableType")
+    private fun isAnonymousSamClass(node: ASTNode): Boolean =
             if (node.elementType == FUNCTION_LITERAL && node.hasParent(CALL_EXPRESSION)) {
-                // We are checking identifier because it is not class in AST
-                // , SAM conversions are indistinguishable from lambdas.
+                // We are checking identifier because it is not class in AST,
+                // SAM conversions are indistinguishable from lambdas.
                 // So we just verify that identifier is in PascalCase
                 val valueArgument = node.findParentNodeWithSpecificType(CALL_EXPRESSION)!!
                 valueArgument.findLeafWithSpecificType(IDENTIFIER)?.text?.isPascalCase() ?: false
             } else {
                 false
             }
+
+    @Suppress("UnsafeCallOnNullableType")
+    private fun isLambdaUsedAsFunction(node: ASTNode): Boolean {
+        val parents = node.parents()
+        return when {
+            parents.any { it.elementType == CALL_EXPRESSION } -> {
+                val callExpression = parents.find { it.elementType == CALL_EXPRESSION }!!
+                // excepting cases like list.map { }. In this case call expression will not have value argument list
+                // And in this case: Parser.parse({}, some, thing) it will have value argument list
+                callExpression.hasChildOfType(VALUE_ARGUMENT_LIST)
+            }
+            parents.any { it.elementType == LAMBDA_EXPRESSION } -> {
+                val lambdaExpression = parents.find { it.elementType == LAMBDA_EXPRESSION }!!
+                // cases like A({}). Here Lambda expression is used as a value parameter.
+                lambdaExpression.treeParent.elementType == VALUE_PARAMETER
+            }
+            else -> false
+        }
+    }
 
     /**
      * [RuleConfiguration] for empty blocks formatting

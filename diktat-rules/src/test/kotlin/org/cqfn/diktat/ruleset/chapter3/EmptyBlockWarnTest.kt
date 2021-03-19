@@ -8,6 +8,8 @@ import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
+import org.jetbrains.kotlin.cli.jvm.compiler.EnvironmentConfigFiles
+import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
@@ -201,6 +203,40 @@ class EmptyBlockWarnTest : LintTestBase(::EmptyBlock) {
                 |val some = object : A{}
             """.trimMargin(),
             LintError(3, 22, ruleId, "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} different style for empty block", true),
+            rulesConfigList = rulesConfigListEmptyBlockExist
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.EMPTY_BLOCK_STRUCTURE_ERROR)
+    fun `should not trigger on empty lambdas as a functions`() {
+        lintMethod(
+            """
+                |fun foo(bar: () -> Unit = {})
+                |
+                |class Some {
+                |   fun bar() {
+                |       A({})
+                |   }
+                |}
+            """.trimMargin(),
+            rulesConfigList = rulesConfigListEmptyBlockExist
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.EMPTY_BLOCK_STRUCTURE_ERROR)
+    fun `should not trigger on empty lambdas as a functions #2`() {
+        lintMethod(
+            """
+                |fun some() {
+                |    val project = KotlinCoreEnvironment.createForProduction(
+                |       { },
+                |       compilerConfiguration,
+                |       EnvironmentConfigFiles.JVM_CONFIG_FILES
+                |    ).project
+                |}
+            """.trimMargin(),
             rulesConfigList = rulesConfigListEmptyBlockExist
         )
     }
