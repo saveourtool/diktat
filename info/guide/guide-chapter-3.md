@@ -824,19 +824,17 @@ Prefer defining constants with clear names describing what the magic number mean
 **Valid example**:
 ```kotlin
 class Person() {
-
     fun isAdult(age: Int): Boolean = age >= majority
 
     companion object {
-        const val majority = 18
+        private const val majority = 18
     }
 }
 ```
-**InValid example**:
+**Invalid example**:
 ```kotlin
 class Person() {
-    val oldAge = 65
-    fun isAdult(age: Int): Boolean = age >= 18 && age <= oldAge
+    fun isAdult(age: Int): Boolean = age >= 18
 }
 ```
 
