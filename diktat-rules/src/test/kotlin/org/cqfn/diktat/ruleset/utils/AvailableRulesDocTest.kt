@@ -28,7 +28,7 @@ class AvailableRulesDocTest {
 
     @Test
     fun `read rules from documentation`() {
-        val allRulesFromCode = Warnings.values()
+        val allRulesFromCode = Warnings.values().filterNot { it == Warnings.DUMMY_TEST_WARNING }
         val allRulesFromDoc = getAllRulesFromDoc()
 
         allRulesFromCode.forEach { warning ->

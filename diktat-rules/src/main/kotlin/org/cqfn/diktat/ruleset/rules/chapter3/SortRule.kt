@@ -5,7 +5,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_DECLARATIONS_ORDER
 import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
+import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.cqfn.diktat.ruleset.utils.isClassEnum
 
@@ -31,7 +31,10 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
 /**
  * Rule that sorts class properties and enum members alphabetically
  */
-class SortRule(configRules: List<RulesConfig>) : DiktatRule("sort-rule", configRules, listOf(WRONG_DECLARATIONS_ORDER)) {
+class SortRule(configRules: List<RulesConfig>) : DiktatRule(
+    "sort-rule",
+    configRules,
+    listOf(WRONG_DECLARATIONS_ORDER)) {
     override fun logic(node: ASTNode) {
         val configuration = SortRuleConfiguration(
             configRules.getRuleConfig(WRONG_DECLARATIONS_ORDER)?.configuration ?: emptyMap()
@@ -78,7 +81,7 @@ class SortRule(configRules: List<RulesConfig>) : DiktatRule("sort-rule", configR
         nonSortList: List<ASTNode>,
         node: ASTNode) {
         val isEnum = nonSortList.first().elementType == ENUM_ENTRY
-        val spaceBefore = if (node.findAllNodesWithSpecificType(EOL_COMMENT).isNotEmpty() && isEnum) {
+        val spaceBefore = if (node.findAllDescendantsWithSpecificType(EOL_COMMENT).isNotEmpty() && isEnum) {
             nonSortList.last().run {
                 if (this.hasChildOfType(EOL_COMMENT) && !this.hasChildOfType(COMMA)) {
                     this.addChild(LeafPsiElement(COMMA, ","), this.findChildByType(EOL_COMMENT))
@@ -139,7 +142,7 @@ class SortRule(configRules: List<RulesConfig>) : DiktatRule("sort-rule", configR
                 val hasTrailingComma = (sortList.last() != enumEntryList.last() && enumEntryList.last().hasChildOfType(COMMA))
                 swapSortNodes(sortList, enumEntryList, node)
                 if (!hasTrailingComma) {
-                    val lastEntry = node.findAllNodesWithSpecificType(ENUM_ENTRY).last()
+                    val lastEntry = node.findAllDescendantsWithSpecificType(ENUM_ENTRY).last()
                     lastEntry.removeChild(lastEntry.findChildByType(COMMA)!!)
                 }
                 if (isEndSpace) {

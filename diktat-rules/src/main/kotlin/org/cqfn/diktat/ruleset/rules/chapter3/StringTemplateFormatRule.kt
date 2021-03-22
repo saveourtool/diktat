@@ -1,11 +1,10 @@
 package org.cqfn.diktat.ruleset.rules.chapter3
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.constants.Warnings.STRING_TEMPLATE_CURLY_BRACES
 import org.cqfn.diktat.ruleset.constants.Warnings.STRING_TEMPLATE_QUOTES
 import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
+import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.hasAnyChildOfTypes
 
 import com.pinterest.ktlint.core.ast.ElementType.ARRAY_ACCESS_EXPRESSION
@@ -28,7 +27,9 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
  *
  * FixMe: The important caveat here: in "$foo" kotlin compiler adds implicit call to foo.toString() in case foo type is not string.
  */
-class StringTemplateFormatRule(configRules: List<RulesConfig>) : DiktatRule("string-template-format", configRules,
+class StringTemplateFormatRule(configRules: List<RulesConfig>) : DiktatRule(
+    "string-template-format",
+    configRules,
     listOf(STRING_TEMPLATE_CURLY_BRACES, STRING_TEMPLATE_QUOTES)) {
     override fun logic(node: ASTNode) {
         when (node.elementType) {
@@ -82,13 +83,13 @@ class StringTemplateFormatRule(configRules: List<RulesConfig>) : DiktatRule("str
     @Suppress("UnsafeCallOnNullableType", "FUNCTION_BOOLEAN_PREFIX")
     private fun bracesCanBeOmitted(node: ASTNode): Boolean {
         val onlyOneRefExpr = node
-            .findAllNodesWithSpecificType(REFERENCE_EXPRESSION)
+            .findAllDescendantsWithSpecificType(REFERENCE_EXPRESSION)
             .singleOrNull()
             ?.treeParent
             ?.elementType == LONG_STRING_TEMPLATE_ENTRY
 
         val isArrayAccessExpression = node  // this should be omitted in previous expression, used for safe warranties
-            .findAllNodesWithSpecificType(REFERENCE_EXPRESSION)
+            .findAllDescendantsWithSpecificType(REFERENCE_EXPRESSION)
             .singleOrNull()
             ?.treeParent
             ?.elementType == ARRAY_ACCESS_EXPRESSION

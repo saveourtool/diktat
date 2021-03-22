@@ -10,7 +10,6 @@ import org.jetbrains.kotlin.cli.jvm.compiler.EnvironmentConfigFiles
 import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.mock.MockProject
-import org.jetbrains.kotlin.com.intellij.openapi.Disposable
 import org.jetbrains.kotlin.com.intellij.openapi.project.Project
 import org.jetbrains.kotlin.com.intellij.openapi.util.UserDataHolderBase
 import org.jetbrains.kotlin.com.intellij.pom.PomModel
@@ -49,8 +48,7 @@ class KotlinParser {
                 return null
             }
         }  // I don't really understand what's going on here, but thanks to this, you can use this node in the future
-        val project = KotlinCoreEnvironment.createForProduction(
-            Disposable { },
+        val project = KotlinCoreEnvironment.createForProduction({},
             compilerConfiguration,
             EnvironmentConfigFiles.JVM_CONFIG_FILES
         ).project  // create project
@@ -89,7 +87,11 @@ class KotlinParser {
      * Else, try to create node based on text.
      * If this node will contain ERROR_ELEMENT type children this mean that cannot create node based on this text
      */
-    @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION", "SAY_NO_TO_VAR")
+    @Suppress(
+        "UnsafeCallOnNullableType",
+        "TOO_LONG_FUNCTION",
+        "SAY_NO_TO_VAR"
+    )
     private fun makeNode(text: String, isPackage: Boolean = false): ASTNode? {
         if (text.isEmpty()) {
             return null

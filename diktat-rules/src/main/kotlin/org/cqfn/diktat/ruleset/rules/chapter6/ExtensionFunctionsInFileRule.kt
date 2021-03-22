@@ -3,7 +3,7 @@ package org.cqfn.diktat.ruleset.rules.chapter6
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.EXTENSION_FUNCTION_WITH_CLASS
 import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
+import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 
@@ -20,7 +20,9 @@ import org.jetbrains.kotlin.psi.KtFunction
 /**
  * This rule checks if there are any extension functions for the class in the same file, where it is defined
  */
-class ExtensionFunctionsInFileRule(configRules: List<RulesConfig>) : DiktatRule("extension-functions-class-file", configRules,
+class ExtensionFunctionsInFileRule(configRules: List<RulesConfig>) : DiktatRule(
+    "extension-functions-class-file",
+    configRules,
     listOf(EXTENSION_FUNCTION_WITH_CLASS)) {
     override fun logic(node: ASTNode) {
         if (node.elementType == ElementType.FILE) {
@@ -34,7 +36,7 @@ class ExtensionFunctionsInFileRule(configRules: List<RulesConfig>) : DiktatRule(
 
     @Suppress("UnsafeCallOnNullableType")
     private fun collectAllClassNames(node: ASTNode): List<String> {
-        val classes = node.findAllNodesWithSpecificType(CLASS)
+        val classes = node.findAllDescendantsWithSpecificType(CLASS)
 
         return classes.map { (it.psi as KtClass).name!! }
     }

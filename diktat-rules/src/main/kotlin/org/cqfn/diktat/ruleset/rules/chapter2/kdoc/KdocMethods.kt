@@ -10,7 +10,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_ON_FUNCTION
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
+import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.findChildAfter
 import org.cqfn.diktat.ruleset.utils.getBodyLines
 import org.cqfn.diktat.ruleset.utils.getFilePath
@@ -65,7 +65,9 @@ import org.jetbrains.kotlin.psi.psiUtil.referenceExpression
  * Currently only `throw` keyword from this methods body is supported for `@throws` check.
  */
 @Suppress("ForbiddenComment")
-class KdocMethods(configRules: List<RulesConfig>) : DiktatRule("kdoc-methods", configRules,
+class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
+    "kdoc-methods",
+    configRules,
     listOf(KDOC_TRIVIAL_KDOC_ON_FUNCTION, KDOC_WITHOUT_PARAM_TAG, KDOC_WITHOUT_RETURN_TAG,
         KDOC_WITHOUT_THROWS_TAG, MISSING_KDOC_ON_FUNCTION)) {
     /**
@@ -153,7 +155,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule("kdoc-methods", c
 
     private fun getExplicitlyThrownExceptions(node: ASTNode): Set<String> {
         val codeBlock = node.getFirstChildWithType(BLOCK)
-        val throwKeywords = codeBlock?.findAllNodesWithSpecificType(THROW)
+        val throwKeywords = codeBlock?.findAllDescendantsWithSpecificType(THROW)
         return throwKeywords
             ?.map { it.psi as KtThrowExpression }
             ?.mapNotNull { it.thrownExpression?.referenceExpression()?.text }

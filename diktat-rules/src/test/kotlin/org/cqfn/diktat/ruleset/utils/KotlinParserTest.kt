@@ -27,7 +27,7 @@ class KotlinParserTest {
         val node = KotlinParser().createNode("val x: Int = 10")
         Assertions.assertEquals(PROPERTY, node.elementType)
         Assertions.assertEquals("val x: Int = 10", node.text)
-        Assertions.assertEquals(4, node.findAllNodesWithSpecificType(WHITE_SPACE).size)
+        Assertions.assertEquals(4, node.findAllDescendantsWithSpecificType(WHITE_SPACE).size)
     }
 
     @Test
@@ -37,7 +37,7 @@ class KotlinParserTest {
         Assertions.assertEquals(FUN, node.elementType)
         Assertions.assertEquals("fun foo(text: String) = text.toUpperCase()", node.text)
         Assertions.assertEquals("foo", node.getIdentifierName()!!.text)
-        Assertions.assertEquals(4, node.findAllNodesWithSpecificType(WHITE_SPACE).size)
+        Assertions.assertEquals(4, node.findAllDescendantsWithSpecificType(WHITE_SPACE).size)
     }
 
     @Test
@@ -96,7 +96,11 @@ class KotlinParserTest {
     }
 
     @Test
-    @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION", "AVOID_NULL_CHECKS")
+    @Suppress(
+        "UnsafeCallOnNullableType",
+        "TOO_LONG_FUNCTION",
+        "AVOID_NULL_CHECKS"
+    )
     fun `test multiline class code compare with applyToCode`() {
         val emptyClass = """
             |package org.cqfn.diktat.ruleset.utils

@@ -25,6 +25,13 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
     private val rulesConfigListEmptyDomainName: List<RulesConfig> = listOf(
         RulesConfig("DIKTAT_COMMON", true, mapOf("domainName" to ""))
     )
+    private val rulesConfigSourceDirectories: List<RulesConfig> = listOf(
+        RulesConfig("DIKTAT_COMMON", true, mapOf(
+            "domainName" to "org.cqfn.diktat",
+            "srcDirectories" to "nativeMain, mobileMain",
+            "testDirs" to "nativeTest"
+        ))
+    )
 
     @Test
     @Tag(WarningNames.PACKAGE_NAME_MISSING)
@@ -145,6 +152,84 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
 
             """.trimIndent(),
             rulesConfigList = rulesConfigList
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.PACKAGE_NAME_INCORRECT_SYMBOLS)
+    fun `test source config`() {
+        lintMethod(
+
+            """
+                package org.cqfn.diktat.domain
+
+                import org.cqfn.diktat.a.b.c
+
+                /**
+                 * testComment
+                 */
+                class TestPackageName {  }
+
+            """.trimIndent(),
+            fileName = "~/diktat/diktat-rules/src/nativeMain/kotlin/org/cqfn/diktat/domain/BlaBla.kt",
+            rulesConfigList = rulesConfigSourceDirectories
+        )
+
+        lintMethod(
+
+            """
+                package org.cqfn.diktat.domain
+
+                import org.cqfn.diktat.a.b.c
+
+                /**
+                 * testComment
+                 */
+                class TestPackageName {  }
+
+            """.trimIndent(),
+            LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} org.cqfn.diktat.main.kotlin.org.cqfn.diktat.domain", true),
+            fileName = "~/diktat/diktat-rules/src/main/kotlin/org/cqfn/diktat/domain/BlaBla.kt",
+            rulesConfigList = rulesConfigSourceDirectories
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.PACKAGE_NAME_INCORRECT_SYMBOLS)
+    fun `test directories for test config`() {
+        lintMethod(
+
+            """
+                package org.cqfn.diktat.domain
+
+                import org.cqfn.diktat.a.b.c
+
+                /**
+                 * testComment
+                 */
+                class TestPackageName {  }
+
+            """.trimIndent(),
+            fileName = "~/diktat/diktat-rules/src/nativeTest/kotlin/org/cqfn/diktat/domain/BlaBla.kt",
+            rulesConfigList = rulesConfigSourceDirectories
+        )
+
+        lintMethod(
+
+            """
+                package org.cqfn.diktat.domain
+
+                import org.cqfn.diktat.a.b.c
+
+                /**
+                 * testComment
+                 */
+                class TestPackageName {  }
+
+            """.trimIndent(),
+            LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} org.cqfn.diktat.test.kotlin.org.cqfn.diktat.domain", true),
+            fileName = "~/diktat/diktat-rules/src/test/kotlin/org/cqfn/diktat/domain/BlaBla.kt",
+            rulesConfigList = rulesConfigSourceDirectories
         )
     }
 

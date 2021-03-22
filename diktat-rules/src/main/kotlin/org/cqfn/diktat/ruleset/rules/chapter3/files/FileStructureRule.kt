@@ -14,7 +14,7 @@ import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.rules.chapter1.PackageNaming.Companion.PACKAGE_SEPARATOR
 import org.cqfn.diktat.ruleset.utils.StandardPlatforms
 import org.cqfn.diktat.ruleset.utils.copyrightWords
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
+import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.handleIncorrectOrder
 import org.cqfn.diktat.ruleset.utils.moveChildBefore
 import org.cqfn.diktat.ruleset.utils.operatorMap
@@ -55,7 +55,9 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
  * 4. Ensures imports are ordered alphabetically without blank lines
  * 5. Ensures there are no wildcard imports
  */
-class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule("file-structure", configRules,
+class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
+    "file-structure",
+    configRules,
     listOf(FILE_CONTAINS_ONLY_COMMENTS, FILE_INCORRECT_BLOCKS_ORDER, FILE_NO_BLANK_LINE_BETWEEN_BLOCKS,
         FILE_UNORDERED_IMPORTS, FILE_WILDCARD_IMPORTS, UNUSED_IMPORT)) {
     private val domainName by lazy {
@@ -106,7 +108,10 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule("file-struc
         return hasCode
     }
 
-    @Suppress("ComplexMethod", "TOO_LONG_FUNCTION")
+    @Suppress(
+        "ComplexMethod",
+        "TOO_LONG_FUNCTION",
+        "SpreadOperator")
     private fun checkCodeBlocksOrderAndEmptyLines(node: ASTNode) {
         // From KtFile.kt: 'scripts have no package directive, all other files must have package directives'.
         // Kotlin compiler itself enforces it's position in the file if it is present.
@@ -245,7 +250,7 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule("file-struc
     }
 
     private fun findAllReferences(node: ASTNode) {
-        node.findAllNodesWithSpecificType(OPERATION_REFERENCE).forEach { ref ->
+        node.findAllDescendantsWithSpecificType(OPERATION_REFERENCE).forEach { ref ->
             if (!ref.isPartOf(IMPORT_DIRECTIVE)) {
                 val references = operatorMap.filterValues { it == ref.text }
                 if (references.isNotEmpty()) {
@@ -256,7 +261,7 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule("file-struc
                 }
             }
         }
-        node.findAllNodesWithSpecificType(REFERENCE_EXPRESSION).forEach {
+        node.findAllDescendantsWithSpecificType(REFERENCE_EXPRESSION).forEach {
             if (!it.isPartOf(IMPORT_DIRECTIVE)) {
                 // the importedName method removes the quotes, but the node.text method does not
                 refSet.add(it.text.replace("`", ""))

@@ -31,7 +31,10 @@ import java.util.HashMap
  * Explicit supertype qualification should not be used if there is not clash between called methods
  * fixme can't fix supertypes that are defined in other files.
  */
-class UselessSupertype(configRules: List<RulesConfig>) : DiktatRule("useless-override", configRules, listOf(USELESS_SUPERTYPE)) {
+class UselessSupertype(configRules: List<RulesConfig>) : DiktatRule(
+    "useless-override",
+    configRules,
+    listOf(USELESS_SUPERTYPE)) {
     override fun logic(node: ASTNode) {
         if (node.elementType == CLASS) {
             checkClass(node)
@@ -44,7 +47,7 @@ class UselessSupertype(configRules: List<RulesConfig>) : DiktatRule("useless-ove
             ?.findAllNodesWithCondition({ it.elementType in superType })
             ?.takeIf { it.isNotEmpty() } ?: return
         val qualifiedSuperCalls = node
-            .findAllNodesWithSpecificType(DOT_QUALIFIED_EXPRESSION)
+            .findAllDescendantsWithSpecificType(DOT_QUALIFIED_EXPRESSION)
             .mapNotNull { findFunWithSuper(it) }
             .ifEmpty { return }
         if (superNodes.size == 1) {
@@ -90,10 +93,10 @@ class UselessSupertype(configRules: List<RulesConfig>) : DiktatRule("useless-ove
     private fun findFunWithSuper(node: ASTNode) = Pair(
         node.findChildByType(SUPER_EXPRESSION)
             ?.findChildByType(TYPE_REFERENCE)
-            ?.findAllNodesWithSpecificType(IDENTIFIER)
+            ?.findAllDescendantsWithSpecificType(IDENTIFIER)
             ?.firstOrNull(),
         node.findChildByType(CALL_EXPRESSION)
-            ?.findAllNodesWithSpecificType(IDENTIFIER)
+            ?.findAllDescendantsWithSpecificType(IDENTIFIER)
             ?.firstOrNull())
         .run {
             if (first == null || second == null) null else first!! to second!!
@@ -111,7 +114,7 @@ class UselessSupertype(configRules: List<RulesConfig>) : DiktatRule("useless-ove
     private fun findAllSupers(superTypeList: List<ASTNode>, methodsName: List<String>): Map<String, Int>? {
         val fileNode = superTypeList.first().parent({ it.elementType == FILE })!!
         val superNodesIdentifier = superTypeList.map {
-            it.findAllNodesWithSpecificType(IDENTIFIER)
+            it.findAllDescendantsWithSpecificType(IDENTIFIER)
                 .first()
                 .text
         }
@@ -124,7 +127,7 @@ class UselessSupertype(configRules: List<RulesConfig>) : DiktatRule("useless-ove
         }
         val functionNameMap: HashMap<String, Int> = hashMapOf()
         superNodes.forEach { classBody ->
-            val overrideFunctions = classBody.findAllNodesWithSpecificType(FUN)
+            val overrideFunctions = classBody.findAllDescendantsWithSpecificType(FUN)
                 .filter {
                     (if (classBody.treeParent.hasChildOfType(CLASS_KEYWORD)) it.findChildByType(MODIFIER_LIST)!!.hasChildOfType(OPEN_KEYWORD) else true) &&
                             it.getIdentifierName()!!.text in methodsName

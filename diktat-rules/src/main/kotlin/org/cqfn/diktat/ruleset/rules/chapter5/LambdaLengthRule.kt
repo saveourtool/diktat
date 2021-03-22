@@ -13,7 +13,10 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 /**
  * Rule 5.2.5 check lambda length without parameters
  */
-class LambdaLengthRule(configRules: List<RulesConfig>) : DiktatRule("lambda-length", configRules, listOf(TOO_MANY_LINES_IN_LAMBDA)) {
+class LambdaLengthRule(configRules: List<RulesConfig>) : DiktatRule(
+    "lambda-length",
+    configRules,
+    listOf(TOO_MANY_LINES_IN_LAMBDA)) {
     private val configuration by lazy {
         LambdaLengthConfiguration(
             this.configRules.getRuleConfig(TOO_MANY_LINES_IN_LAMBDA)?.configuration ?: emptyMap()
@@ -35,7 +38,7 @@ class LambdaLengthRule(configRules: List<RulesConfig>) : DiktatRule("lambda-leng
                     node.treeParent.removeChild(node)
                 }
             }
-            val isIt = copyNode.findAllNodesWithSpecificType(ElementType.REFERENCE_EXPRESSION).map { re -> re.text }.contains("it")
+            val isIt = copyNode.findAllDescendantsWithSpecificType(ElementType.REFERENCE_EXPRESSION).map { re -> re.text }.contains("it")
             val parameters = node.findChildByType(ElementType.FUNCTION_LITERAL)?.findChildByType(ElementType.VALUE_PARAMETER_LIST)
             if (parameters == null && isIt) {
                 TOO_MANY_LINES_IN_LAMBDA.warn(configRules, emitWarn, isFixMode,

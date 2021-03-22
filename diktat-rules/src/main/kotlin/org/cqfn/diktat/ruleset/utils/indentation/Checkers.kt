@@ -6,6 +6,7 @@ package org.cqfn.diktat.ruleset.utils.indentation
 
 import org.cqfn.diktat.ruleset.rules.chapter3.files.IndentationError
 import org.cqfn.diktat.ruleset.rules.chapter3.files.lastIndent
+import org.cqfn.diktat.ruleset.utils.hasParent
 
 import com.pinterest.ktlint.core.ast.ElementType.ARROW
 import com.pinterest.ktlint.core.ast.ElementType.AS_KEYWORD
@@ -24,10 +25,12 @@ import com.pinterest.ktlint.core.ast.ElementType.IS_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_END
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_LEADING_ASTERISK
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_SECTION
+import com.pinterest.ktlint.core.ast.ElementType.LONG_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.LPAR
 import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS
+import com.pinterest.ktlint.core.ast.ElementType.STRING_TEMPLATE
 import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_LIST
 import com.pinterest.ktlint.core.ast.ElementType.THEN
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT
@@ -194,16 +197,25 @@ internal class DotCallChecker(config: IndentationConfig) : CustomIndentationChec
         return false
     }
 
+    private fun ASTNode.isFromStringTemplate(): Boolean =
+            hasParent(LONG_STRING_TEMPLATE_ENTRY)
+
     @Suppress("ComplexMethod")
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
         whiteSpace.nextSibling.node
             .takeIf { nextNode ->
-                nextNode.isDotBeforeCallOrReference() ||
-                        nextNode.elementType == OPERATION_REFERENCE && nextNode.firstChildNode.elementType.let {
-                            it == ELVIS || it == IS_EXPRESSION || it == AS_KEYWORD || it == AS_SAFE
-                        } || nextNode.isCommentBeforeDot()
+                (nextNode.isDotBeforeCallOrReference() ||
+                        nextNode.elementType == OPERATION_REFERENCE && nextNode.firstChildNode.elementType.let { type ->
+                            type == ELVIS || type == IS_EXPRESSION || type == AS_KEYWORD || type == AS_SAFE
+                        } || nextNode.isCommentBeforeDot()) && whiteSpace.parents.none { it.node.elementType == LONG_STRING_TEMPLATE_ENTRY }
             }
-            ?.let {
+            ?.let { node ->
+                if (node.isFromStringTemplate()) {
+                    val template = node.parents().takeWhile { it.elementType != STRING_TEMPLATE }.last()
+                    return CheckResult.from(indentError.actual, indentError.expected +
+                            (if (configuration.extendedIndentBeforeDot) 2 else 1) * configuration.indentationSize, true)
+                }
+
                 // we need to get indent before the first expression in calls chain
                 return CheckResult.from(indentError.actual, (whiteSpace.run {
                     parents.takeWhile { it is KtDotQualifiedExpression || it is KtSafeQualifiedExpression }.lastOrNull() ?: this

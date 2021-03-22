@@ -31,7 +31,10 @@ import org.jetbrains.kotlin.psi.KtPrimaryConstructor
 /**
  * This rule checks if class can be made as data class
  */
-class DataClassesRule(configRules: List<RulesConfig>) : DiktatRule("data-classes", configRules, listOf(USE_DATA_CLASS)) {
+class DataClassesRule(configRules: List<RulesConfig>) : DiktatRule(
+    "data-classes",
+    configRules,
+    listOf(USE_DATA_CLASS)) {
     override fun logic(node: ASTNode) {
         if (node.elementType == CLASS) {
             handleClass(node)
@@ -53,7 +56,11 @@ class DataClassesRule(configRules: List<RulesConfig>) : DiktatRule("data-classes
         USE_DATA_CLASS.warn(configRules, emitWarn, isFixMode, "${(node.psi as KtClass).name}", node.startOffset, node)
     }
 
-    @Suppress("UnsafeCallOnNullableType", "FUNCTION_BOOLEAN_PREFIX", "ComplexMethod")
+    @Suppress(
+        "UnsafeCallOnNullableType",
+        "FUNCTION_BOOLEAN_PREFIX",
+        "ComplexMethod"
+    )
     private fun ASTNode.canBeDataClass(): Boolean {
         val isNotPropertyInClassBody = findChildByType(CLASS_BODY)?.let { (it.psi as KtClassBody).properties.isEmpty() } ?: true
         val constructorParametersNames: MutableList<String> = mutableListOf()
@@ -75,7 +82,7 @@ class DataClassesRule(configRules: List<RulesConfig>) : DiktatRule("data-classes
         if (constructorParametersNames.isNotEmpty()) {
             val initBlocks = findChildByType(CLASS_BODY)?.getAllChildrenWithType(CLASS_INITIALIZER)
             initBlocks?.forEach { init ->
-                val refExpressions = init.findAllNodesWithSpecificType(REFERENCE_EXPRESSION)
+                val refExpressions = init.findAllDescendantsWithSpecificType(REFERENCE_EXPRESSION)
                 if (refExpressions.any { it.text in constructorParametersNames }) {
                     return false
                 }

@@ -19,7 +19,10 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  * This rule checks if variable has long type reference and two or more nested generics.
  * Length type reference can be configured
  */
-class TypeAliasRule(configRules: List<RulesConfig>) : DiktatRule("type-alias", configRules, listOf(TYPE_ALIAS)) {
+class TypeAliasRule(configRules: List<RulesConfig>) : DiktatRule(
+    "type-alias",
+    configRules,
+    listOf(TYPE_ALIAS)) {
     override fun logic(node: ASTNode) {
         if (node.elementType == TYPE_REFERENCE && node
             .parents()
@@ -34,7 +37,7 @@ class TypeAliasRule(configRules: List<RulesConfig>) : DiktatRule("type-alias", c
      */
     private fun checkTypeReference(node: ASTNode, config: TypeAliasConfiguration) {
         if (node.textLength > config.typeReferenceLength) {
-            if (node.findAllNodesWithSpecificType(LT).size > 1 || node.findAllNodesWithSpecificType(VALUE_PARAMETER).size > 1) {
+            if (node.findAllDescendantsWithSpecificType(LT).size > 1 || node.findAllDescendantsWithSpecificType(VALUE_PARAMETER).size > 1) {
                 TYPE_ALIAS.warn(configRules, emitWarn, isFixMode, "too long type reference", node.startOffset, node)
             }
         }

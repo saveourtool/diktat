@@ -3,7 +3,11 @@
  * FixMe: fix suppressed inspections on KDocs
  */
 
-@file:Suppress("FILE_NAME_MATCH_CLASS", "KDOC_WITHOUT_RETURN_TAG", "KDOC_WITHOUT_PARAM_TAG")
+@file:Suppress(
+    "FILE_NAME_MATCH_CLASS",
+    "KDOC_WITHOUT_RETURN_TAG",
+    "KDOC_WITHOUT_PARAM_TAG"
+)
 
 package org.cqfn.diktat.ruleset.utils
 
@@ -88,7 +92,7 @@ fun ASTNode.isTextLengthInRange(range: IntRange): Boolean = this.textLength in r
  * @return node with type [IDENTIFIER] or null if it is not present
  */
 fun ASTNode.getIdentifierName(): ASTNode? =
-        this.getChildren(null).find { it.elementType == ElementType.IDENTIFIER }
+        this.getFirstChildWithType(ElementType.IDENTIFIER)
 
 /**
  * getting first child name with TYPE_PARAMETER_LIST type
@@ -96,20 +100,12 @@ fun ASTNode.getIdentifierName(): ASTNode? =
  * @return a node with type TYPE_PARAMETER_LIST or null if it is not present
  */
 fun ASTNode.getTypeParameterList(): ASTNode? =
-        this.getChildren(null).find { it.elementType == ElementType.TYPE_PARAMETER_LIST }
-
-/**
- * getting all children that have IDENTIFIER type
- *
- * @return a list of nodes
- */
-fun ASTNode.getAllIdentifierChildren(): List<ASTNode> =
-        this.getChildren(null).filter { it.elementType == ElementType.IDENTIFIER }
+        this.getFirstChildWithType(ElementType.TYPE_PARAMETER_LIST)
 
 /**
  * @return true if this node contains no error elements, false otherwise
  */
-fun ASTNode.isCorrect() = this.findAllNodesWithSpecificType(TokenType.ERROR_ELEMENT).isEmpty()
+fun ASTNode.isCorrect() = this.findAllDescendantsWithSpecificType(TokenType.ERROR_ELEMENT).isEmpty()
 
 /**
  * obviously returns list with children that match particular element type
@@ -139,7 +135,7 @@ fun ASTNode.replaceWhiteSpaceText(beforeNode: ASTNode, text: String) {
  * @return a node or null if it was not found
  */
 fun ASTNode.getFirstChildWithType(elementType: IElementType): ASTNode? =
-        this.getChildren(null).find { it.elementType == elementType }
+        this.findChildByType(elementType)
 
 /**
  * Checks if the symbols in this node are at the end of line
@@ -411,14 +407,15 @@ fun ASTNode.numNewLines() = text.count { it == '\n' }
 /**
  * This method performs tree traversal and returns all nodes with specific element type
  */
-fun ASTNode.findAllNodesWithSpecificType(elementType: IElementType, withSelf: Boolean = true) =
+fun ASTNode.findAllDescendantsWithSpecificType(elementType: IElementType, withSelf: Boolean = true) =
         findAllNodesWithCondition({ it.elementType == elementType }, withSelf)
 
 /**
  * This method performs tree traversal and returns all nodes which satisfy the condition
  */
 @Suppress("LAMBDA_IS_NOT_LAST_PARAMETER")
-fun ASTNode.findAllNodesWithCondition(condition: (ASTNode) -> Boolean, withSelf: Boolean = true): List<ASTNode> {
+fun ASTNode.findAllNodesWithCondition(condition: (ASTNode) -> Boolean,
+                                      withSelf: Boolean = true): List<ASTNode> {
     val result = if (condition(this) && withSelf) mutableListOf(this) else mutableListOf()
     return result + this.getChildren(null).flatMap {
         it.findAllNodesWithCondition(condition)
@@ -439,14 +436,16 @@ fun ASTNode.findParentNodeWithSpecificType(elementType: IElementType) =
 /**
  * Finds all children of optional type which match the predicate
  */
-fun ASTNode.findChildrenMatching(elementType: IElementType? = null, predicate: (ASTNode) -> Boolean): List<ASTNode> =
+fun ASTNode.findChildrenMatching(elementType: IElementType? = null,
+                                 predicate: (ASTNode) -> Boolean): List<ASTNode> =
         getChildren(elementType?.let { TokenSet.create(it) })
             .filter(predicate)
 
 /**
  * Check if this node has any children of optional type matching the predicate
  */
-fun ASTNode.hasChildMatching(elementType: IElementType? = null, predicate: (ASTNode) -> Boolean): Boolean =
+fun ASTNode.hasChildMatching(elementType: IElementType? = null,
+                             predicate: (ASTNode) -> Boolean): Boolean =
         findChildrenMatching(elementType, predicate).isNotEmpty()
 
 /**
@@ -496,7 +495,7 @@ fun ASTNode.hasSuppress(warningName: String) = parent({ node ->
     } else {
         node.findChildByType(FILE_ANNOTATION_LIST)
     }
-    annotationNode?.findAllNodesWithSpecificType(ANNOTATION_ENTRY)
+    annotationNode?.findAllDescendantsWithSpecificType(ANNOTATION_ENTRY)
         ?.map { it.psi as KtAnnotationEntry }
         ?.any {
             it.shortName.toString() == Suppress::class.simpleName &&
@@ -712,7 +711,7 @@ fun ASTNode.extractLineOfText(): String {
  */
 fun ASTNode.hasTestAnnotation() = findChildByType(MODIFIER_LIST)
     ?.getAllChildrenWithType(ANNOTATION_ENTRY)
-    ?.flatMap { it.findAllNodesWithSpecificType(ElementType.CONSTRUCTOR_CALLEE) }
+    ?.flatMap { it.findAllDescendantsWithSpecificType(ElementType.CONSTRUCTOR_CALLEE) }
     ?.any { it.findLeafWithSpecificType(ElementType.IDENTIFIER)?.text == "Test" }
     ?: false
 

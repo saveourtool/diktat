@@ -38,6 +38,7 @@ I [Preface](#c0)
     * [3.1.2 Code blocks in the source file should be separated by one blank line](#r3.1.2)
     * [3.1.3 Import statements order](#r3.1.3)  
     * [3.1.4 Order of declaration parts of class-like code structures](#r3.1.4)      
+    * [3.1.5 Order of declaration of top-level code structures](#r3.1.5)
 * [3.2 Braces](#c3.2)    
     * [3.2.1 Using braces in conditional statements and loop blocks](#r3.2.1)           
     * [3.2.2 Opening braces are placed at the end of the line in *non-empty* blocks and block structures](#r3.2.2)               
@@ -87,8 +88,10 @@ I [Preface](#c0)
 * [5.2 Function arguments](#c5.2)              
     * [5.2.1 The lambda parameter of the function should be placed at the end of the argument list](#r5.2.1)
     * [5.2.2 Number of function parameters should be limited to five](#r5.2.2) 
-    * [5.2.3 Use default values for function arguments instead of overloading them](#r5.2.3)           
-    * [5.2.5 Long lambdas should have explicit parameters](#r5.2.4)
+    * [5.2.3 Use default values for function arguments instead of overloading them](#r5.2.3)
+    * [5.2.4 Synchronizing code inside asynchronous code](#r5.2.4)
+    * [5.2.5 Long lambdas should have explicit parameters](#r5.2.5)
+    * [5.2.6 Avoid using unnecessary, custom label](#r5.2.6)
 
 [6. Classes, interfaces, and extension functions](#c6)                 
 * [6.1 Classes](#c6.1)      
@@ -102,10 +105,12 @@ I [Preface](#c0)
     * [6.1.8 Avoid using custom getters and setters](#r6.1.8) 
     * [6.1.9 Never use the name of a variable in the custom getter or setter (possible_bug)](#r6.1.9) 
     * [6.1.10 No trivial getters and setters are allowed in the code](#r6.1.10)
-    * [6.1.11 Use 'apply' for grouping object initialization](#r6.1.11) 
-* [6.2 Classes](#c6.2)   
+    * [6.1.11 Use 'apply' for grouping object initialization](#r6.1.11)
+    * [6.1.12 Prefer Inline classes when a class has a single property](#r6.1.12)
+* [6.2 Extension functions](#c6.2)   
     * [6.2.1 Use extension functions for making logic of classes less coupled](#r6.2.1)
-    * [6.2.2 No extension functions with the same name and signature if they extend base and inheritor classes (possible_bug)](#r6.2.2) 
+    * [6.2.2 No extension functions with the same name and signature if they extend base and inheritor classes (possible_bug)](#r6.2.2)
+    * [6.2.3 Don't use extension functions for the class in the same file](#r6.2.3)
 * [6.3 Interfaces](#c6.3)            
 * [6.4 Objects](#c6.4)      
     * [6.4.1 Instead of using utility classes/objects, use extensions](#r6.4.1)
@@ -803,6 +808,7 @@ d) **Recommendation**: One `.kt` source file should contain only one class decla
 
 e) Avoid empty files that do not contain the code or contain only imports/comments/package name
 
+f) Unused imports should be removed
 #### <a name="r3.1.3"></a> 3.1.3 Import statements order
 
 From top to bottom, the order is the following:
@@ -852,6 +858,53 @@ If the classes are meant to be used externally, and are not referenced inside th
 
 **Exception:**
 All variants of a `(private) val` logger should be placed at the beginning of the class (`(private) val log`, `LOG`, `logger`, etc.).
+
+#### <a name="r3.1.5"></a> 3.1.5 Order of declaration of top-level code structures
+Kotlin allows several top-level declaration types: classes, objects, interfaces, properties and functions.
+When declaring more than one class or zero classes (e.g. only functions), as per rule [2.2.1](#r2.2.1), you should document the whole file in the header KDoc.
+When declaring top-level structures, keep the following order:
+1. Top-level constants and properties (following same order as properties inside a class: `const val`,`val`, `lateinit var`, `var`)
+2. Interfaces, classes and objects (grouped by their visibility modifiers)
+3. Extension functions
+4. Other functions
+
+**Note**:
+Extension functions shouldn't have receivers declared in the same file according to [rule 6.2.3](#r6.2.3)
+
+Valid example:
+```kotlin
+package org.cqfn.diktat.example
+
+const val CONSTANT = 42
+
+val topLevelProperty = "String constant"
+
+interface IExample
+
+class Example : IExample
+
+private class Internal
+
+fun Other.asExample(): Example { /* ... */ }
+
+private fun Other.asInternal(): Internal { /* ... */ }
+
+fun doStuff() { /* ... */ }
+```
+
+**Note**:
+kotlin scripts (.kts) allow arbitrary code to be placed on the top level. When writing kotlin scripts, you should first declare all properties, classes
+and functions. Only then you should execute functions on top level. It is still recommended wrapping logic inside functions and avoid using top-level statements
+for function calls or wrapping blocks of code in top-level scope functions like `run`.
+
+Example:
+```kotlin
+/* class declarations */
+/* function declarations */
+run {
+    // call functions here
+}
+```
 
 <!-- =============================================================================== -->
 ### <a name="c3.2"></a> 3.2 Braces
@@ -1231,6 +1284,23 @@ fun foo(
 
 }
  ```
+
+same should be done for function calls/constructor arguments/e.t.c
+
+Kotlin supports trailing commas in the following cases:
+
+Enumerations
+Value arguments
+Class properties and parameters
+Function value parameters
+Parameters with optional type (including setters)
+Indexing suffix
+Lambda parameters
+when entry
+Collection literals (in annotations)
+Type arguments
+Type parameters
+Destructuring declarations
 
 8) If the supertype list has more than two elements, they should be separated by newlines.
 
@@ -1839,8 +1909,8 @@ val anotherVal = myVar?.also {
 
 // example 4
 myVar?.let {
-    println("null")
-} ?: run { println("not null") }
+    println("not null")
+} ?: run { println("null") }
 ```
 
 **Exceptions:**
@@ -2011,6 +2081,32 @@ GlobalScope.async {
 #### <a name="r5.2.5"></a> 5.2.5 Long lambdas should have explicit parameters
 The lambda without parameters shouldn't be too long.
 If a lambda is too long, it can confuse the user. Lambda without parameters should consist of 10 lines (non-empty and non-comment) in total.
+
+#### <a name="r5.2.6"></a> 5.2.6 Avoid using unnecessary, custom label 
+Expressions with unnecessary, custom labels generally increase complexity and worsen the maintainability of the code.
+
+**Invalid example**:
+```kotlin
+run lab@ {
+    list.forEach {
+        return@lab
+    }
+}
+```
+
+**Valid example**:
+```kotlin
+list.forEachIndexed { index, i ->
+    return@forEachIndexed
+}
+
+lab@ for(i: Int in q) {
+    for (j: Int in q) {
+        println(i)
+        break@lab
+    }
+}
+```
 # <a name="c6"></a> 6. Classes, interfaces, and extension functions
 <!-- =============================================================================== -->
 ### <a name="c6.1"></a> 6.1 Classes
@@ -2370,6 +2466,23 @@ fun main() {
 }
 ```
 
+### <a name="r6.1.12"></a> 6.1.12 Prefer Inline classes when a class has a single property
+If a class has only one immutable property, then it can be converted to the inline class.
+
+Sometimes it is necessary for business logic to create a wrapper around some type. However, it introduces runtime overhead due to additional heap allocations. Moreover, if the wrapped type is primitive, the performance hit is terrible, because primitive types are usually heavily optimized by the runtime, while their wrappers don't get any special treatment.
+
+**Invalid example**:
+```kotlin
+class Password {
+    val value: String
+}
+```
+
+**Valid example**:
+```kotlin
+inline class Password(val value: String)
+```
+
 <!-- =============================================================================== -->
 ### <a name="c6.2"></a>6.2 Extension functions
 This section describes the rules of using extension functions in your code.
@@ -2400,6 +2513,20 @@ fun printClassName(s: A) { println(s.foo()) }
 // this call will run foo() method from the base class A, but
 // programmer can expect to run foo() from the class inheritor B
 fun main() { printClassName(B()) }
+```
+
+#### <a name="r6.2.3"></a> 6.2.3 Don't use extension functions for the class in the same file
+You should not use extension functions for the class in the same file, where it is defined.
+
+**Invalid example**:
+```kotlin
+class SomeClass {
+    
+}
+
+fun SomeClass.deleteAllSpaces() {
+    
+}
 ```
 
 <!-- =============================================================================== -->
@@ -2448,5 +2575,20 @@ interface I {
 
 object O: I {
     override fun foo() {}
+}
+```
+
+#### <a name="r6.5.1"></a> 6.5.1 kts files should wrap logic into top-level scope
+It is still recommended wrapping logic inside functions and avoid using top-level statements for function calls or wrapping blocks of code
+in top-level scope functions like `run`.
+
+**Valid example**:
+```
+run {
+    // some code
+}
+
+fun foo() {
+
 }
 ```

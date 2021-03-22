@@ -79,13 +79,15 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  * // FixMe: because it fixes only declaration without the usages
  */
 @Suppress("ForbiddenComment", "MISSING_KDOC_CLASS_ELEMENTS")
-class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule("identifier-naming", configRules,
+class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
+    "identifier-naming",
+    configRules,
     listOf(BACKTICKS_PROHIBITED, VARIABLE_NAME_INCORRECT, VARIABLE_NAME_INCORRECT_FORMAT, CONSTANT_UPPERCASE,
         VARIABLE_HAS_PREFIX, CONFUSING_IDENTIFIER_NAMING, GENERIC_NAME, CLASS_NAME_INCORRECT,
         ENUM_VALUE, EXCEPTION_SUFFIX, FUNCTION_BOOLEAN_PREFIX, FUNCTION_NAME_INCORRECT_CASE,
         IDENTIFIER_LENGTH, OBJECT_NAME_INCORRECT)) {
     private val allMethodPrefixes by lazy {
-        if (configuration.allowedBooleanPrefixes.isNullOrEmpty()) {
+        if (configuration.allowedBooleanPrefixes.isEmpty()) {
             booleanMethodPrefixes
         } else {
             booleanMethodPrefixes + configuration.allowedBooleanPrefixes.filter { it.isNotEmpty() }
@@ -148,7 +150,11 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule("identifier-
     /**
      * all checks for case and naming for vals/vars/constants
      */
-    @Suppress("SAY_NO_TO_VAR", "TOO_LONG_FUNCTION", "ComplexMethod")
+    @Suppress(
+        "SAY_NO_TO_VAR",
+        "TOO_LONG_FUNCTION",
+        "ComplexMethod"
+    )
     private fun checkVariableName(node: ASTNode): List<ASTNode> {
         // special case for Destructuring declarations that can be treated as parameters in lambda:
         var namesOfVariables = extractVariableIdentifiers(node)

@@ -118,3 +118,10 @@ fun String.removePrefix(): String {
  * @return true if this is a kotlin script file name, false otherwise
  */
 fun String.isKotlinScript() = endsWith(".kts")
+
+/**
+ * Checks if [this] String is a name of a gradle kotlin script file by checking whether file extension equals 'gradle.kts'
+ *
+ * @return true if this is a gradle kotlin script file name, false otherwise
+ */
+fun String.isGradleScript() = endsWith("gradle.kts")

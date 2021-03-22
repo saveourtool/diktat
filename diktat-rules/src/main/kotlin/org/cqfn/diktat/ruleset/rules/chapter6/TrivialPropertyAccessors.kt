@@ -3,7 +3,7 @@ package org.cqfn.diktat.ruleset.rules.chapter6
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED
 import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
+import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.getIdentifierName
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
@@ -26,7 +26,9 @@ import org.jetbrains.kotlin.psi.KtPropertyAccessor
 /**
  * This rule checks if there are any trivial getters and setters and, if so, deletes them
  */
-class TrivialPropertyAccessors(configRules: List<RulesConfig>) : DiktatRule("trivial-property-accessors", configRules,
+class TrivialPropertyAccessors(configRules: List<RulesConfig>) : DiktatRule(
+    "trivial-property-accessors",
+    configRules,
     listOf(TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED)) {
     override fun logic(node: ASTNode) {
         if (node.elementType == PROPERTY_ACCESSOR) {
@@ -68,7 +70,7 @@ class TrivialPropertyAccessors(configRules: List<RulesConfig>) : DiktatRule("tri
     @Suppress("UnsafeCallOnNullableType")
     private fun handleGetAccessor(node: ASTNode) {
         // It handles both cases: get() = ...  and  get() { return ... }
-        val references = node.findAllNodesWithSpecificType(REFERENCE_EXPRESSION)
+        val references = node.findAllDescendantsWithSpecificType(REFERENCE_EXPRESSION)
         if (references.singleOrNull()?.text == "field") {
             raiseWarning(node)
         } else if (node.getChildren(null).size == ONE_CHILD_IN_ARRAY) {

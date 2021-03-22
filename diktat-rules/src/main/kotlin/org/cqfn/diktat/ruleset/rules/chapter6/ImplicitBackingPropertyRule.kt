@@ -3,7 +3,7 @@ package org.cqfn.diktat.ruleset.rules.chapter6
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.NO_CORRESPONDING_PROPERTY
 import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
+import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.hasAnyChildOfTypes
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
@@ -24,7 +24,9 @@ import org.jetbrains.kotlin.psi.KtProperty
 /**
  * This rule checks if there is a backing property for field with property accessors, in case they don't use field keyword
  */
-class ImplicitBackingPropertyRule(configRules: List<RulesConfig>) : DiktatRule("implicit-backing-property", configRules,
+class ImplicitBackingPropertyRule(configRules: List<RulesConfig>) : DiktatRule(
+    "implicit-backing-property",
+    configRules,
     listOf(NO_CORRESPONDING_PROPERTY)) {
     override fun logic(node: ASTNode) {
         if (node.elementType == CLASS_BODY) {
@@ -48,7 +50,7 @@ class ImplicitBackingPropertyRule(configRules: List<RulesConfig>) : DiktatRule("
     }
 
     private fun validateAccessors(node: ASTNode, propsWithBackSymbol: List<String>) {
-        val accessors = node.findAllNodesWithSpecificType(PROPERTY_ACCESSOR).filter { it.hasChildOfType(BLOCK) }  // exclude get with expression body
+        val accessors = node.findAllDescendantsWithSpecificType(PROPERTY_ACCESSOR).filter { it.hasChildOfType(BLOCK) }  // exclude get with expression body
 
         accessors.filter { it.hasChildOfType(GET_KEYWORD) }.forEach { handleGetAccessors(it, node, propsWithBackSymbol) }
         accessors.filter { it.hasChildOfType(SET_KEYWORD) }.forEach { handleSetAccessors(it, node, propsWithBackSymbol) }
@@ -60,12 +62,12 @@ class ImplicitBackingPropertyRule(configRules: List<RulesConfig>) : DiktatRule("
         node: ASTNode,
         propsWithBackSymbol: List<String>) {
         val refExprs = accessor
-            .findAllNodesWithSpecificType(RETURN)
+            .findAllDescendantsWithSpecificType(RETURN)
             .filterNot { it.hasChildOfType(DOT_QUALIFIED_EXPRESSION) }
-            .flatMap { it.findAllNodesWithSpecificType(REFERENCE_EXPRESSION) }
+            .flatMap { it.findAllDescendantsWithSpecificType(REFERENCE_EXPRESSION) }
 
         val localProps = accessor
-            .findAllNodesWithSpecificType(PROPERTY)
+            .findAllDescendantsWithSpecificType(PROPERTY)
             .map { (it.psi as KtProperty).name!! }
         // If refExprs is empty then we assume that it returns some constant
         if (refExprs.isNotEmpty()) {
@@ -78,7 +80,7 @@ class ImplicitBackingPropertyRule(configRules: List<RulesConfig>) : DiktatRule("
         accessor: ASTNode,
         node: ASTNode,
         propsWithBackSymbol: List<String>) {
-        val refExprs = accessor.findAllNodesWithSpecificType(REFERENCE_EXPRESSION)
+        val refExprs = accessor.findAllDescendantsWithSpecificType(REFERENCE_EXPRESSION)
 
         // In set we don't check for local properties. At least one reference expression should contain field or _prop
         if (refExprs.isNotEmpty()) {

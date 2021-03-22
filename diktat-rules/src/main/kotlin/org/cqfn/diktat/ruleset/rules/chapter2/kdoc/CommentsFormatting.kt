@@ -49,7 +49,9 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
  * * Leave one single space between the comment on the right side of the code and the code.
  * * Comments in if else should be inside code blocks. Exception: General if comment
  */
-class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule("kdoc-comments-codeblocks-formatting", configRules,
+class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
+    "kdoc-comments-codeblocks-formatting",
+    configRules,
     listOf(COMMENT_WHITE_SPACE, FIRST_COMMENT_NO_BLANK_LINE,
         IF_ELSE_COMMENTS, WRONG_NEWLINES_AROUND_KDOC)) {
     /**
@@ -268,10 +270,10 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule("kdoc-comm
                 EOL_COMMENT -> (node as LeafPsiElement).replaceWithText("// $commentText")
                 BLOCK_COMMENT -> (node as LeafPsiElement).replaceWithText("/* $commentText")
                 KDOC -> {
-                    node.findAllNodesWithSpecificType(KDOC_TEXT).forEach {
+                    node.findAllDescendantsWithSpecificType(KDOC_TEXT).forEach {
                         modifyKdocText(it, configuration)
                     }
-                    node.findAllNodesWithSpecificType(KDOC_CODE_BLOCK_TEXT).forEach {
+                    node.findAllDescendantsWithSpecificType(KDOC_CODE_BLOCK_TEXT).forEach {
                         modifyKdocText(it, configuration)
                     }
                 }

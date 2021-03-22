@@ -6,7 +6,9 @@ import org.cqfn.diktat.common.config.rules.isRuleEnabled
 import org.cqfn.diktat.ruleset.utils.hasSuppress
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
-typealias EmitType = ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
+typealias EmitType = ((offset: Int,
+                       errorMessage: String,
+                       canBeAutoCorrected: Boolean) -> Unit)
 
 typealias ListOfList = MutableList<MutableList<ASTNode>>
 
@@ -18,11 +20,20 @@ typealias ListOfPairs = MutableList<Pair<ASTNode, String>>
  * @property canBeAutoCorrected whether this inspection can automatically fix the code
  * @property ruleId number of the inspection according to []diktat code style](https://www.cqfn.org/diKTat/info/guide/diktat-coding-convention.html)
  */
-@Suppress("ForbiddenComment", "MagicNumber", "WRONG_DECLARATIONS_ORDER", "MaxLineLength")
+@Suppress(
+    "ForbiddenComment",
+    "MagicNumber",
+    "WRONG_DECLARATIONS_ORDER",
+    "MaxLineLength",
+    "WRONG_NEWLINES"
+)
 enum class Warnings(
     val canBeAutoCorrected: Boolean,
     val ruleId: String,
     private val warn: String) : Rule {
+    // ======== dummy test warning ======
+    DUMMY_TEST_WARNING(true, "0.0.0", "this is a dummy warning that can be used for manual testing of fixer/checker"),
+
     // ======== chapter 1 ========
     PACKAGE_NAME_MISSING(true, "1.2.1", "no package name declared in a file"),
     PACKAGE_NAME_INCORRECT_CASE(true, "1.2.1", "package name should be completely in a lower case"),
@@ -104,7 +115,7 @@ enum class Warnings(
     COMPLEX_EXPRESSION(false, "3.6.3", "complex dot qualified expression should be replaced with variable"),
 
     // FixMe: autofixing will be added for this rule
-    STRING_CONCATENATION(false, "3.15.1", "strings should not be concatenated using plus operator - use string templates instead if the statement fits one line"),
+    STRING_CONCATENATION(true, "3.15.1", "strings should not be concatenated using plus operator - use string templates instead if the statement fits one line"),
     TOO_MANY_BLANK_LINES(true, "3.7.1", "too many consecutive blank lines"),
     WRONG_WHITESPACE(true, "3.8.1", "incorrect usage of whitespaces for code separation"),
     TOO_MANY_CONSECUTIVE_SPACES(true, "3.8.1", "too many consecutive spaces"),
@@ -160,6 +171,7 @@ enum class Warnings(
     OBJECT_IS_PREFERRED(true, "6.4.2", "it is better to use object for stateless classes"),
     INLINE_CLASS_CAN_BE_USED(true, "6.1.12", "inline class can be used"),
     EXTENSION_FUNCTION_WITH_CLASS(false, "6.2.3", "do not use extension functions for the class defined in the same file"),
+    RUN_IN_SCRIPT(true, "6.5.1", "wrap blocks of code in top-level scope functions like `run`"),
     ;
 
     /**

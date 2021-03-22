@@ -3,6 +3,7 @@ package org.cqfn.diktat.ruleset.rules.chapter3.files
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.TOO_MANY_BLANK_LINES
 import org.cqfn.diktat.ruleset.rules.DiktatRule
+import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.leaveExactlyNumNewLines
 import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
@@ -12,6 +13,7 @@ import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_LITERAL
+import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_ARGUMENT
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.SCRIPT
@@ -23,7 +25,10 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
  * 1. Checks that no more than two consecutive blank lines are used in a row
  * 2. Checks that blank lines are not put in the beginning or at the end of code blocks with curly braces
  */
-class BlankLinesRule(configRules: List<RulesConfig>) : DiktatRule("blank-lines", configRules, listOf(TOO_MANY_BLANK_LINES)) {
+class BlankLinesRule(configRules: List<RulesConfig>) : DiktatRule(
+    "blank-lines",
+    configRules,
+    listOf(TOO_MANY_BLANK_LINES)) {
     override fun logic(node: ASTNode) {
         if (node.elementType == WHITE_SPACE) {
             // note that no blank lines counts as one newline
@@ -41,6 +46,13 @@ class BlankLinesRule(configRules: List<RulesConfig>) : DiktatRule("blank-lines",
             it.elementType == BLOCK && it.treeParent?.elementType != SCRIPT ||
                     it.elementType == CLASS_BODY || it.elementType == FUNCTION_LITERAL
         }) {
+            node.findParentNodeWithSpecificType(LAMBDA_ARGUMENT)?.let {
+                // Lambda body is always has a BLOCK -> run { } - (LBRACE, WHITE_SPACE, BLOCK "", RBRACE)
+                if (node.treeNext.text.isEmpty()) {
+                    return
+                }
+            }
+
             if ((node.treeNext.elementType == RBRACE) xor (node.treePrev.elementType == LBRACE)) {
                 // if both are present, this is not beginning or end
                 // if both are null, then this block is empty and is handled in another rule

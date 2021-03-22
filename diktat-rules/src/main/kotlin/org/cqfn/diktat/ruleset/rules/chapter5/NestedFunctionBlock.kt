@@ -5,7 +5,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.NESTED_BLOCK
 import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
+import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
@@ -20,7 +20,10 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
 /**
  * Rule 5.1.2 Nested blokcs
  */
-class NestedFunctionBlock(configRules: List<RulesConfig>) : DiktatRule("nested-block", configRules, listOf(NESTED_BLOCK)) {
+class NestedFunctionBlock(configRules: List<RulesConfig>) : DiktatRule(
+    "nested-block",
+    configRules,
+    listOf(NESTED_BLOCK)) {
     private val configuration: NestedBlockConfiguration by lazy {
         NestedBlockConfiguration(configRules.getRuleConfig(NESTED_BLOCK)?.configuration ?: emptyMap())
     }
@@ -32,7 +35,7 @@ class NestedFunctionBlock(configRules: List<RulesConfig>) : DiktatRule("nested-b
     }
 
     private fun countNestedBlocks(node: ASTNode, maxNestedBlockCount: Long) {
-        node.findAllNodesWithSpecificType(LBRACE)
+        node.findAllDescendantsWithSpecificType(LBRACE)
             .reversed()
             .forEach { lbraceNode ->
                 val blockParent = lbraceNode

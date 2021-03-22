@@ -3,7 +3,7 @@ import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurr
 
 plugins {
     `java-gradle-plugin`
-    kotlin("jvm") version "1.4.30"
+    kotlin("jvm") version "1.4.31"
     jacoco
     id("pl.droidsonroids.jacoco.testkit") version "1.0.7"
 }
@@ -61,6 +61,7 @@ tasks.withType<KotlinCompile> {
         languageVersion = "1.3"
         apiVersion = "1.3"
         jvmTarget = "1.8"
+        useIR = true
     }
 
     dependsOn.add(generateVersionsFile)
@@ -98,6 +99,7 @@ tasks.getByName<Test>("functionalTest") {
     testClassesDirs = functionalTest.output.classesDirs
     classpath = functionalTest.runtimeClasspath
     maxParallelForks = Runtime.getRuntime().availableProcessors()
+    maxHeapSize = "1024m"
     doLast {
         if (getCurrentOperatingSystem().isWindows) {
             // workaround for https://github.com/koral--/jacoco-gradle-testkit-plugin/issues/9

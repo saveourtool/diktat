@@ -1,9 +1,16 @@
-@file:Suppress("MISSING_KDOC_TOP_LEVEL", "KDOC_NO_CONSTRUCTOR_PROPERTY", "MISSING_KDOC_CLASS_ELEMENTS", "MISSING_KDOC_ON_FUNCTION", "KDOC_WITHOUT_PARAM_TAG",
-    "KDOC_WITHOUT_RETURN_TAG", "KDOC_NO_EMPTY_TAGS")
+@file:Suppress(
+    "MISSING_KDOC_TOP_LEVEL",
+    "KDOC_NO_CONSTRUCTOR_PROPERTY",
+    "MISSING_KDOC_CLASS_ELEMENTS",
+    "MISSING_KDOC_ON_FUNCTION",
+    "KDOC_WITHOUT_PARAM_TAG",
+    "KDOC_WITHOUT_RETURN_TAG",
+    "KDOC_NO_EMPTY_TAGS"
+)
 
 package org.cqfn.diktat.ruleset.utils.search
 
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
+import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.isGoingAfter
 
 import com.pinterest.ktlint.core.ast.ElementType
@@ -15,7 +22,7 @@ import org.jetbrains.kotlin.psi.KtProperty
 class VariablesWithUsagesSearch(fileNode: ASTNode,
                                 filterForVariables: (KtProperty) -> Boolean) : VariablesSearch(fileNode, filterForVariables) {
     override fun KtElement.getAllSearchResults(property: KtProperty) = this.node
-        .findAllNodesWithSpecificType(ElementType.REFERENCE_EXPRESSION)
+        .findAllDescendantsWithSpecificType(ElementType.REFERENCE_EXPRESSION)
         // filtering out all usages that are declared in the same context but are going before the variable declaration
         .filter { it.isGoingAfter(property.node) }
         .map { it.psi as KtNameReferenceExpression }

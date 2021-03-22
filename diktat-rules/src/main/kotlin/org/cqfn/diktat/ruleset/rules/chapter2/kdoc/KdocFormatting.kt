@@ -59,7 +59,9 @@ import java.time.temporal.ChronoField
  * 7) ensuring @since tag contains only versions and not dates
  */
 @Suppress("ForbiddenComment")
-class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule("kdoc-formatting", configRules,
+class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
+    "kdoc-formatting",
+    configRules,
     listOf(KDOC_CONTAINS_DATE_OR_AUTHOR, KDOC_EMPTY_KDOC, KDOC_NEWLINES_BEFORE_BASIC_TAGS, KDOC_NO_DEPRECATED_TAG,
         KDOC_NO_EMPTY_TAGS, KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS, KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS,
         KDOC_WRONG_SPACES_AFTER_TAG, KDOC_WRONG_TAGS_ORDER)) {
@@ -168,7 +170,7 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule("kdoc-formatti
         }
     )
 
-    @Suppress("UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
     private fun checkBasicTagsOrder(node: ASTNode) {
         val kdocTags = node.kDocTags()
         // distinct basic tags which are present in current KDoc, in proper order
@@ -200,10 +202,13 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule("kdoc-formatti
                     .filter { basicTagsOrdered.contains(it.knownTag) }
                     .map { it.node }
 
-                basicTagsOrdered.forEachIndexed { index, tag ->
-                    val tagNode = kdocTags.find { it.knownTag == tag }!!.node
-                    kdocSection.addChild(tagNode.clone() as CompositeElement, basicTagChildren[index])
-                    kdocSection.removeChild(basicTagChildren[index])
+                val correctKdocOrder = basicTags
+                    .sortedBy { basicTagsOrdered.indexOf(it.knownTag) }
+                    .map { it.node }
+
+                basicTagChildren.mapIndexed { index, astNode ->
+                    kdocSection.addChild(correctKdocOrder[index].clone() as CompositeElement, astNode)
+                    kdocSection.removeChild(astNode)
                 }
             }
         }

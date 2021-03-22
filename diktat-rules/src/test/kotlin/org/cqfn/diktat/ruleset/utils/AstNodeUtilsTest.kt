@@ -1,4 +1,8 @@
-@file:Suppress("HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE", "LOCAL_VARIABLE_EARLY_DECLARATION", "AVOID_NULL_CHECKS")
+@file:Suppress(
+    "HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE",
+    "LOCAL_VARIABLE_EARLY_DECLARATION",
+    "AVOID_NULL_CHECKS"
+)
 
 package org.cqfn.diktat.ruleset.utils
 
@@ -144,7 +148,7 @@ class AstNodeUtilsTest {
         """.trimIndent()
         val list = listOf("Test", "foo", "a", "a", "Int", "Int", "a")
         applyToCode(code, 7) { node, counter ->
-            node.getAllIdentifierChildren().ifNotEmpty {
+            node.getAllChildrenWithType(IDENTIFIER).ifNotEmpty {
                 this.forEach { Assertions.assertEquals(list[counter.get()], it.text) }
                 counter.incrementAndGet()
             }
@@ -553,7 +557,7 @@ class AstNodeUtilsTest {
                 listResults.add(node)
             }
         }
-        val listTypes = firstNode?.findAllNodesWithSpecificType(IDENTIFIER)
+        val listTypes = firstNode?.findAllDescendantsWithSpecificType(IDENTIFIER)
         Assertions.assertEquals(listResults, listTypes)
     }
 

@@ -7,6 +7,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.BRACES_BLOCK_STRUCTURE_ERROR
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
+import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.BODY
 import com.pinterest.ktlint.core.ast.ElementType.CATCH
@@ -49,7 +50,10 @@ import org.jetbrains.kotlin.psi.KtTryExpression
  * - opening brace of lambda
  * - braces around `else`/`catch`/`finally`/`while` (in `do-while` loop)
  */
-class BlockStructureBraces(configRules: List<RulesConfig>) : DiktatRule("block-structure", configRules, listOf(BRACES_BLOCK_STRUCTURE_ERROR)) {
+class BlockStructureBraces(configRules: List<RulesConfig>) : DiktatRule(
+    "block-structure",
+    configRules,
+    listOf(BRACES_BLOCK_STRUCTURE_ERROR)) {
     override fun logic(node: ASTNode) {
         val configuration = BlockStructureBracesConfiguration(
             configRules.getRuleConfig(BRACES_BLOCK_STRUCTURE_ERROR)?.configuration ?: emptyMap()
@@ -88,7 +92,7 @@ class BlockStructureBraces(configRules: List<RulesConfig>) : DiktatRule("block-s
         val catchBlocks = tryBlock.catchClauses.map { it.node }
         val finallyBlock = tryBlock.finallyBlock?.node
         checkOpenBraceOnSameLine(tryBlock.node, BLOCK, configuration)
-        val allMiddleSpaceNodes = node.findAllNodesWithSpecificType(CATCH).map { it.treePrev }
+        val allMiddleSpaceNodes = node.findAllDescendantsWithSpecificType(CATCH).map { it.treePrev }
         checkMidBrace(allMiddleSpaceNodes, node, CATCH_KEYWORD)
         catchBlocks.forEach {
             checkOpenBraceOnSameLine(it, BLOCK, configuration)
@@ -97,7 +101,7 @@ class BlockStructureBraces(configRules: List<RulesConfig>) : DiktatRule("block-s
         finallyBlock?.let { block ->
             checkOpenBraceOnSameLine(block, BLOCK, configuration)
             checkCloseBrace(block.findChildByType(BLOCK)!!, configuration)
-            val newAllMiddleSpaceNodes = node.findAllNodesWithSpecificType(FINALLY).map { it.treePrev }
+            val newAllMiddleSpaceNodes = node.findAllDescendantsWithSpecificType(FINALLY).map { it.treePrev }
             checkMidBrace(newAllMiddleSpaceNodes, node, FINALLY_KEYWORD)
         }
     }
@@ -230,6 +234,11 @@ class BlockStructureBraces(configRules: List<RulesConfig>) : DiktatRule("block-s
             return
         }
         val space = node.findChildByType(RBRACE)!!.treePrev
+        node.findParentNodeWithSpecificType(ElementType.LAMBDA_ARGUMENT)?.let {
+            if (space.text.isEmpty()) {
+                return
+            }
+        }
         if (checkBraceNode(space)) {
             BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "no newline before closing brace",
                 (space.treeNext ?: node.findChildByType(RBRACE))!!.startOffset, node) {
