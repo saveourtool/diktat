@@ -169,6 +169,8 @@ public object WarningNames {
 
     public const val LONG_NUMERICAL_VALUES_SEPARATED: String = "LONG_NUMERICAL_VALUES_SEPARATED"
 
+    public const val MAGIC_NUMBER: String = "MAGIC_NUMBER"
+
     public const val WRONG_DECLARATIONS_ORDER: String = "WRONG_DECLARATIONS_ORDER"
 
     public const val WRONG_MULTIPLE_MODIFIERS_ORDER: String = "WRONG_MULTIPLE_MODIFIERS_ORDER"

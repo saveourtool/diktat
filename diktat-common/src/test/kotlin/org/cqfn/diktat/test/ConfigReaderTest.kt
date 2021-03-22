@@ -23,12 +23,15 @@ class ConfigReaderTest {
     fun `testing kotlin version`() {
         val rulesConfigList: List<RulesConfig>? = RulesConfigReader(javaClass.classLoader)
             .readResource("src/test/resources/test-rules-config.yml")
-        val kotlinVersionForTest = KotlinVersion(1, 4, 21)
         requireNotNull(rulesConfigList)
-        assert(rulesConfigList.getCommonConfiguration().kotlinVersion == kotlinVersionForTest)
+        assert(rulesConfigList.getCommonConfiguration().kotlinVersion == kotlinVersion)
         assert(rulesConfigList.find { it.name == DIKTAT_COMMON }
             ?.configuration
             ?.get("kotlinVersion")
-            ?.kotlinVersion() == kotlinVersionForTest)
+            ?.kotlinVersion() == kotlinVersion)
+    }
+
+    companion object {
+        private val kotlinVersion = KotlinVersion(1, 4, 21)
     }
 }
