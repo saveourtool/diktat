@@ -6,6 +6,7 @@ plugins {
     kotlin("jvm") version "1.4.31"
     jacoco
     id("pl.droidsonroids.jacoco.testkit") version "1.0.7"
+    id("org.gradle.test-retry") version "1.2.0"
 }
 
 repositories {
@@ -100,6 +101,11 @@ tasks.getByName<Test>("functionalTest") {
     classpath = functionalTest.runtimeClasspath
     maxParallelForks = Runtime.getRuntime().availableProcessors()
     maxHeapSize = "1024m"
+    retry {
+        failOnPassedAfterRetry.set(false)
+        maxFailures.set(3)
+        maxRetries.set(3)
+    }
     doLast {
         if (getCurrentOperatingSystem().isWindows) {
             // workaround for https://github.com/koral--/jacoco-gradle-testkit-plugin/issues/9
