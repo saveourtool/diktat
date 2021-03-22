@@ -103,7 +103,7 @@ tasks.getByName<Test>("functionalTest") {
     maxHeapSize = "1024m"
     retry {
         failOnPassedAfterRetry.set(false)
-        maxFailures.set(3)
+        maxFailures.set(10)
         maxRetries.set(3)
     }
     doLast {
