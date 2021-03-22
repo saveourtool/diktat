@@ -830,6 +830,13 @@ class Person() {
     }
 }
 ```
+**InValid example**:
+```kotlin
+class Person() {
+    val oldAge = 65
+    fun isAdult(age: Int): Boolean = age >= 18 && age <= oldAge
+}
+```
 
 <!-- =============================================================================== -->
 ### <a name="c3.15"></a> 3.15 Strings

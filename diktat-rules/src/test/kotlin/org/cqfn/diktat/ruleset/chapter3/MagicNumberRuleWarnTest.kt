@@ -30,7 +30,7 @@ class MagicNumberRuleWarnTest : LintTestBase(::MagicNumberRule) {
         RulesConfig(
             MAGIC_NUMBER.name, true,
             mapOf(
-                "ignoreNumbers" to "50,-240, 0xFF, -3.5f"))
+                "ignoreNumbers" to "50,-240, 128L, -3.5f"))
     )
 
     @Test
@@ -40,7 +40,7 @@ class MagicNumberRuleWarnTest : LintTestBase(::MagicNumberRule) {
             """
                 |fun f1oo() {
                 |   val a: Byte = 4
-                |   val b = 0xff
+                |   val b = 128L
                 |   val e = 3.4f
                 |   val g = 4/3
                 |   val f = "qwe\$\{12\}hhe"
@@ -58,7 +58,7 @@ class MagicNumberRuleWarnTest : LintTestBase(::MagicNumberRule) {
                 |}
                 """.trimMargin(),
             LintError(2, 18, ruleId, "${MAGIC_NUMBER.warnText()} 4", false),
-            LintError(3, 12, ruleId, "${MAGIC_NUMBER.warnText()} 0xff", false),
+            LintError(3, 12, ruleId, "${MAGIC_NUMBER.warnText()} 128L", false),
             LintError(4, 12, ruleId, "${MAGIC_NUMBER.warnText()} 3.4f", false),
             LintError(5, 12, ruleId, "${MAGIC_NUMBER.warnText()} 4", false),
             LintError(5, 14, ruleId, "${MAGIC_NUMBER.warnText()} 3", false)
@@ -73,7 +73,7 @@ class MagicNumberRuleWarnTest : LintTestBase(::MagicNumberRule) {
                 |fun f1oo() {
                 |   val m = -1
                 |   val a: Byte = 4
-                |   val b = 0xFF
+                |   val b = 0xff
                 |}
                 |
                 |enum class A(b:Int) {
@@ -88,6 +88,7 @@ class MagicNumberRuleWarnTest : LintTestBase(::MagicNumberRule) {
                 """.trimMargin(),
             LintError(2, 13, ruleId, "${MAGIC_NUMBER.warnText()} -1", false),
             LintError(3, 18, ruleId, "${MAGIC_NUMBER.warnText()} 4", false),
+            LintError(4, 12, ruleId, "${MAGIC_NUMBER.warnText()} 0xff", false),
             LintError(10, 6, ruleId, "${MAGIC_NUMBER.warnText()} 3", false),
             rulesConfigList = rulesConfigIgnoreNumbersMagicNumber
         )

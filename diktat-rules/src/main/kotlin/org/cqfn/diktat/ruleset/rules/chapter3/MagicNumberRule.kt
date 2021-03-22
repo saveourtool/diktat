@@ -5,10 +5,6 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.MAGIC_NUMBER
 import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.ruleset.utils.hasChildOfType
-import org.cqfn.diktat.ruleset.utils.isConstant
-import org.cqfn.diktat.ruleset.utils.isNodeFromCompanionObject
-import org.cqfn.diktat.ruleset.utils.isVarProperty
 
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.ENUM_ENTRY
@@ -20,6 +16,7 @@ import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.RANGE
 import com.pinterest.ktlint.core.ast.parent
+import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.kotlin.psi.KtProperty
@@ -30,10 +27,12 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  * Rule for magic number
  */
 class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule("magic-number", configRules, listOf(MAGIC_NUMBER)) {
-    override fun logic(node: ASTNode) {
-        val configuration = MagicNumberConfiguration(
+    private val configuration by lazy {
+        MagicNumberConfiguration(
             configRules.getRuleConfig(MAGIC_NUMBER)?.configuration ?: emptyMap()
         )
+    }
+    override fun logic(node: ASTNode) {
         if (node.elementType == INTEGER_CONSTANT || node.elementType == FLOAT_CONSTANT) {
             checkNumber(node, configuration)
         }
@@ -43,8 +42,7 @@ class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule("magic-number
     private fun checkNumber(node: ASTNode, configuration: MagicNumberConfiguration) {
         val nodeText = node.treePrev?.let { if (it.elementType == OPERATION_REFERENCE && it.hasChildOfType(MINUS)) "-${node.text}" else node.text } ?: node.text
         val isIgnoreNumber = configuration.ignoreNumbers.contains(nodeText)
-        val isHashFunction = node.parent({ it.elementType == FUN && it.isHashFun() }) != null &&
-                node.parents().find { it.elementType == PROPERTY } == null
+        val isHashFunction = node.parent({ it.elementType == FUN && it.isHashFun() }) != null
         val isPropertyDeclaration = node.parent({ it.elementType == PROPERTY && !it.isNodeFromCompanionObject() }) != null
         val isLocalVariable = node.parent({ it.isVarProperty() && (it.psi as KtProperty).isLocal }) != null
         val isConstant = node.parent({ it.elementType == PROPERTY && it.isConstant() }) != null
@@ -73,9 +71,9 @@ class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule("magic-number
      */
     class MagicNumberConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
         /**
-         * List of ignore numbers
+         * List of ignored numbers
          */
-        val ignoreNumbers = config["ignoreNumbers"]?.split(",")?.map { it.trim() } ?: ignoreNumbersList
+        val ignoreNumbers = config["ignoreNumbers"]?.split(",")?.map { it.trim() }?.filter { it.isNumber() } ?: ignoreNumbersList
 
         /**
          * @param param parameter from config
@@ -83,6 +81,11 @@ class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule("magic-number
          */
         @Suppress("UnsafeCallOnNullableType")
         fun getParameter(param: String) = config[param]?.toBoolean() ?: mapConfiguration[param]!!
+
+        /**
+         * Check if string is number
+         */
+        private fun String.isNumber() = (this.toLongOrNull() ?: this.toFloatOrNull()) != null
     }
 
     companion object {
@@ -97,4 +100,5 @@ class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule("magic-number
             "ignoreRanges" to false,
             "ignoreExtensionFunctions" to false)
     }
+
 }
