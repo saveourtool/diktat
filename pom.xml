@@ -53,7 +53,7 @@
         <diktat-check.version>0.4.2</diktat-check.version>
         <kotlinpoet.version>1.7.1</kotlinpoet.version>
         <detekt.version>1.16.0</detekt.version>
-        <dokka.version>1.4.20</dokka.version>
+        <dokka.version>1.4.30</dokka.version>
         <jacoco.version>0.8.6</jacoco.version>
     </properties>
 
