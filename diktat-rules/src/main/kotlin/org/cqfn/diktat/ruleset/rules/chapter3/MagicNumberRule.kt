@@ -5,6 +5,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.MAGIC_NUMBER
 import org.cqfn.diktat.ruleset.rules.DiktatRule
+import org.cqfn.diktat.ruleset.utils.*
 
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.ENUM_ENTRY
@@ -16,7 +17,6 @@ import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.RANGE
 import com.pinterest.ktlint.core.ast.parent
-import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.kotlin.psi.KtProperty
@@ -26,7 +26,11 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
 /**
  * Rule for magic number
  */
-class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule("magic-number", configRules, listOf(MAGIC_NUMBER)) {
+class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule(
+    "magic-number",
+    configRules,
+    listOf(MAGIC_NUMBER)
+) {
     private val configuration by lazy {
         MagicNumberConfiguration(
             configRules.getRuleConfig(MAGIC_NUMBER)?.configuration ?: emptyMap()
@@ -100,5 +104,4 @@ class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule("magic-number
             "ignoreRanges" to false,
             "ignoreExtensionFunctions" to false)
     }
-
 }
