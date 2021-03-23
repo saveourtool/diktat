@@ -16,7 +16,7 @@ class AvailableRulesDocTest {
             val splitMarkDown = line
                 .split("|")
 
-            val ruleName = splitMarkDown.get(3).trim()
+            val ruleName = splitMarkDown.get(SPLIT_MARK).trim()
 
             if (!ruleName.startsWith(TABLE_DELIMITER) &&
                     !ruleName.startsWith(RULE_NAME_HEADER)) {
@@ -59,6 +59,7 @@ class AvailableRulesDocTest {
     companion object {
         const val AVAILABLE_RULES_FILE = "../info/available-rules.md"
         const val RULE_NAME_HEADER = "Rule name"
+        const val SPLIT_MARK = 3
         const val TABLE_DELIMITER = "-----"
     }
 }

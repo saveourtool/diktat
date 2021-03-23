@@ -28,7 +28,7 @@ class TestProcessingFactory(private val argReader: TestArgumentsReader) {
             ?: run {
                 log.error("Not able to get directory with test configuration files: " +
                         argReader.properties.testConfigsRelativePath)
-                exitProcess(5)
+                exitProcess(STATUS_FIVE)
             }
         try {
             resource
@@ -38,7 +38,7 @@ class TestProcessingFactory(private val argReader: TestArgumentsReader) {
                 .toList()
         } catch (e: IOException) {
             log.error("Got -all option, but cannot read config files ", e)
-            exitProcess(3)
+            exitProcess(STATUS_THREE)
         }
     }
 
@@ -91,5 +91,7 @@ class TestProcessingFactory(private val argReader: TestArgumentsReader) {
 
     companion object {
         private val log = LoggerFactory.getLogger(TestProcessingFactory::class.java)
+        private const val STATUS_FIVE = 5
+        private const val STATUS_THREE = 3
     }
 }
