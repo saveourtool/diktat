@@ -22,10 +22,10 @@ class DummyWarningWarnTest : LintTestBase(::DummyWarning) {
     @Tag(WarningNames.DUMMY_TEST_WARNING)
     fun `check dummy property`() {
         lintMethod(
-                """
-                    |// provide your check here
-                """.trimMargin(),
-                LintError(1, 1, ruleId, "${DUMMY_TEST_WARNING.warnText()} some detailed explanation", true)
+            """
+                |// provide your check here
+            """.trimMargin(),
+            LintError(1, 1, ruleId, "${DUMMY_TEST_WARNING.warnText()} some detailed explanation", true)
         )
     }
 }
