@@ -40,6 +40,7 @@ The only exception is function names in `Unit tests.`
  @Test fun `my test`() { /*...*/ }
 ``` 
 6.  The following table contains some characters that may cause confusion. Be careful when using them as identifiers. To avoid issues, use other names instead.
+
 | Expected      | Confusing name           | Suggested name   |
 | ------------- | ------------------------ | ---------------- |
 | 0 (zero)      | O, D                     | obj, dgt         |
