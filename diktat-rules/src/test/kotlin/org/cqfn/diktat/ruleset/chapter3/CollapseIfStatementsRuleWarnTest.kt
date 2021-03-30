@@ -45,6 +45,7 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             |     if (cond1) {
             |         if (cond2) {
             |             firstAction()
+            |             second()
             |         }
             |         if (cond3) {
             |             secondAction()
@@ -95,6 +96,26 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             |     }    
             |}
             """.trimMargin()
+        )
+    }
+
+    // FIXME:
+    @Test
+    @Tag(WarningNames.COLLAPSE_IF_STATEMENTS)
+    fun `three if statements`() {
+        lintMethod(
+            """
+            |fun foo () {
+            |     if (true) {
+            |         if (true) {
+            |             if (true) {
+            |                 doSomething()
+            |             }    
+            |         }
+            |     }    
+            |}
+            """.trimMargin(),
+            LintError(3, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
         )
     }
 }
