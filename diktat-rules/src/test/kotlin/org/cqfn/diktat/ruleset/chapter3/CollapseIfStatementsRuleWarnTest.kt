@@ -15,7 +15,7 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
 
     @Test
     @Tag(WarningNames.COLLAPSE_IF_STATEMENTS)
-    fun `check if property`() {
+    fun `simple check`() {
         lintMethod(
             """
             |fun foo () {
@@ -26,12 +26,75 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             |     }
             |
             |     if (false) {
+            |         someAction()
             |     } else {
             |         print("some text")
             |     }
             |} 
             """.trimMargin(),
             LintError(3, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.COLLAPSE_IF_STATEMENTS)
+    fun `simple check 2`() {
+        lintMethod(
+            """
+            |fun foo () {
+            |     if (cond1) {
+            |         if (cond2) {
+            |             firstAction()
+            |         }
+            |         if (cond3) {
+            |             secondAction()
+            |         }
+            |     }
+            |} 
+            """.trimMargin(),
+            LintError(3, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
+        )
+    }
+
+    // TODO: Add more checks for nested if statements with comments
+    @Test
+    @Tag(WarningNames.COLLAPSE_IF_STATEMENTS)
+    fun `comments check`() {
+        lintMethod(
+            """
+            |fun foo () {
+            |     if (true) {
+            |         /**
+            |          * Some Comments
+            |          */
+            |         /*
+            |          More comments
+            |         */
+            |         // Even more comments
+            |         if (true) {
+            |             doSomething()
+            |         }
+            |     }
+            |} 
+            """.trimMargin(),
+            LintError(10, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.COLLAPSE_IF_STATEMENTS)
+    fun `not nested if`() {
+        lintMethod(
+            """
+            |fun foo () {
+            |     if (true) {
+            |         val someConstant = 5
+            |         if (true) {
+            |             doSomething()
+            |         }
+            |     }    
+            |}
+            """.trimMargin()
         )
     }
 }
