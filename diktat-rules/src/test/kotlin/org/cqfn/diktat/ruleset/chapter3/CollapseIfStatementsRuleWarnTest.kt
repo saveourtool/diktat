@@ -45,7 +45,7 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             |     if (cond1) {
             |         if (cond2) {
             |             firstAction()
-            |             second()
+            |             secondAction()
             |         }
             |         if (cond3) {
             |             secondAction()

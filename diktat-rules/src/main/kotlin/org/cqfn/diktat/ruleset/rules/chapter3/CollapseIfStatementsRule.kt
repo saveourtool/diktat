@@ -16,11 +16,8 @@ import com.pinterest.ktlint.core.ast.ElementType.THEN
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.getRuleConfig
-import org.cqfn.diktat.ruleset.utils.getBodyLines
-import org.cqfn.diktat.ruleset.utils.prettyPrint
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtBlockExpression
-import org.jetbrains.kotlin.psi.KtClassBody
 import org.jetbrains.kotlin.psi.KtIfExpression
 
 /**
@@ -40,7 +37,6 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
     }
     override fun logic(node: ASTNode) {
         if (node.elementType == IF) {
-            //println("Before\n ${node.text}")
             val startCollapseFromLevel = configuration.startCollapseFromNestedLevel
             val thenNode = (node.psi as KtIfExpression).then?.node
             val nestedIfNode = thenNode?.findChildByType(IF) ?: return
@@ -52,30 +48,26 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
             if (listOfNodesBeforeNestedIf.any { it.elementType !in allowedTypes }) {
                 return
             }
-
-            Warnings.COLLAPSE_IF_STATEMENTS.warnAndFix(configRules, emitWarn, true,
+            Warnings.COLLAPSE_IF_STATEMENTS.warnAndFix(configRules, emitWarn, isFixMode,
                 "avoid using redundant nested if-statements", nestedIfNode.startOffset, nestedIfNode) {
                 collapse(node, nestedIfNode)
             }
-            //println("----------\nAfter\n ${node.text}")
         }
     }
 
     private fun collapse(parentNode : ASTNode, nestedNode : ASTNode) {
+        // Merge parent and nested conditions
         val parentConditionNode = parentNode.findChildByType(CONDITION)!!
         val nestedConditionNode = nestedNode.findChildByType(CONDITION)!!
-        val unionCondition = "${parentConditionNode.text} && ${nestedConditionNode.text}"
-        val newParentConditionNode = KotlinParser().createNode(unionCondition)
+        val mergeCondition = "${parentConditionNode.text} && ${nestedConditionNode.text}"
+        val newParentConditionNode = KotlinParser().createNode(mergeCondition)
         parentNode.replaceChild(parentConditionNode, newParentConditionNode)
-
-        // TODO: fix collapsing of `THEN` parts
-        //val nestedThenNode = nestedNode.findChildByType(THEN)!!
+        // Merge parent and nested `THEN` blocks
         val nestedThenNode = (nestedNode.psi as KtIfExpression).then
-        nestedThenNode?.node?.removeChild(nestedThenNode.node!!.firstChildNode) // remove {
-        nestedThenNode?.node?.removeChild(nestedThenNode.node!!.lastChildNode) // remove }
-        val newNestedText = (nestedThenNode as KtBlockExpression).statements.joinToString("\n") { it.text }
-        val newNestedThenNode = KotlinParser().createNode(newNestedText)
-
+        val nestedThenText = (nestedThenNode as KtBlockExpression).statements.joinToString("\n") { it.text }
+        val newNestedNode = KotlinParser().createNode(nestedThenText)
+        val parentThenNode = (parentNode.psi as KtIfExpression).then?.node
+        parentThenNode?.replaceChild(nestedNode, newNestedNode)
     }
 
     /**
