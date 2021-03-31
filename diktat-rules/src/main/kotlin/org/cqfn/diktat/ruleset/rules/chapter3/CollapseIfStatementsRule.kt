@@ -9,6 +9,7 @@ import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.CONDITION
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.IF
+import com.pinterest.ktlint.core.ast.ElementType.IF_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
@@ -37,31 +38,85 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
     }
     override fun logic(node: ASTNode) {
         if (node.elementType == IF) {
-            val startCollapseFromLevel = configuration.startCollapseFromNestedLevel
-            val thenNode = (node.psi as KtIfExpression).then?.node
-            val nestedIfNode = thenNode?.findChildByType(IF) ?: return
-            // We monitor which types of nodes are followed before nested `if`
-            // and we allow only a limited number of types to pass through.
-            // Otherwise discovered `if` it is not nested
-            val listOfNodesBeforeNestedIf = thenNode.getChildren(null).takeWhile { it.elementType != IF }
-            val allowedTypes = listOf(LBRACE, WHITE_SPACE, RBRACE, KDOC, BLOCK_COMMENT, EOL_COMMENT)
-            if (listOfNodesBeforeNestedIf.any { it.elementType !in allowedTypes }) {
-                return
+            var nestedIfNode = findNestedIf(node) ?: return
+            println("Before\n ${node.text}")
+            process(node, nestedIfNode, 2)
+            println("----------\nAfter\n ${node.text}")
+        }
+    }
+
+    private fun process(node: ASTNode, nestedNode : ASTNode, currNestedLevel : Int)  {
+        val startCollapseFromLevel = configuration.startCollapseFromNestedLevel
+
+        var nestedLevel = currNestedLevel
+        var currNode = nestedNode
+        var nestedIfNode :ASTNode?
+        while (true) {
+            nestedIfNode = findNestedIf(currNode)
+            if (nestedIfNode != null) {
+                nestedLevel++
+                currNode = nestedIfNode
+            } else {
+                break
             }
-            Warnings.COLLAPSE_IF_STATEMENTS.warnAndFix(configRules, emitWarn, isFixMode,
-                "avoid using redundant nested if-statements", nestedIfNode.startOffset, nestedIfNode) {
-                collapse(node, nestedIfNode)
+        }
+        if (nestedLevel < startCollapseFromLevel) {
+            return
+        }
+
+        var currParentNode = currNode.treeParent.treeParent.treeParent
+
+        while (nestedLevel != 1) {
+            Warnings.COLLAPSE_IF_STATEMENTS.warnAndFix(
+                configRules, emitWarn, true,
+                "avoid using redundant nested if-statements", currNode.startOffset, currNode
+            ) {
+                collapse(currParentNode, currNode)
+                currNode = currParentNode
+                // { -> block -> then
+                currParentNode = currParentNode.treeParent.treeParent.treeParent
+                nestedLevel--
             }
         }
     }
 
+
+    private fun findNestedIf(parentNode: ASTNode) : ASTNode? {
+        val parentThenNode = (parentNode.psi as KtIfExpression).then?.node
+        val nestedIfNode = parentThenNode?.findChildByType(IF) ?: return null
+        // We monitor which types of nodes are followed before nested `if`
+        // and we allow only a limited number of types to pass through.
+        // Otherwise discovered `if` it is not nested
+        val listOfNodesBeforeNestedIf = parentThenNode.getChildren(null).takeWhile { it.elementType != IF }
+        val allowedTypes = listOf(LBRACE, WHITE_SPACE, RBRACE, KDOC, BLOCK_COMMENT, EOL_COMMENT)
+        if (listOfNodesBeforeNestedIf.any { it.elementType !in allowedTypes }) {
+            return null
+        }
+        return nestedIfNode
+    }
+
     private fun collapse(parentNode : ASTNode, nestedNode : ASTNode) {
         // Merge parent and nested conditions
-        val parentConditionNode = parentNode.findChildByType(CONDITION)!!
-        val nestedConditionNode = nestedNode.findChildByType(CONDITION)!!
-        val mergeCondition = "${parentConditionNode.text} && ${nestedConditionNode.text}"
-        val newParentConditionNode = KotlinParser().createNode(mergeCondition)
-        parentNode.replaceChild(parentConditionNode, newParentConditionNode)
+        val parentCondition = (parentNode.psi as KtIfExpression).condition?.text
+        val nestedCondition = (nestedNode.psi as KtIfExpression).condition?.text
+        val mergeCondition = "if ($parentCondition && $nestedCondition) {}"
+        val newParentIfNode = KotlinParser().createNode(mergeCondition)
+        // Remove THEN block
+        newParentIfNode.removeChild(newParentIfNode.lastChildNode)
+        // Remove old `if` from parent
+        parentNode.removeRange(parentNode.firstChildNode, parentNode.findChildByType(THEN)!!)
+        // Add to parent all child from new `if` node
+        var addAfter = parentNode.firstChildNode
+        newParentIfNode.getChildren(null).forEachIndexed {
+            index, child ->
+            parentNode.addChild(child, addAfter)
+            var shift = index + 1
+            addAfter = parentNode.firstChildNode
+            while (shift > 0) {
+                addAfter = addAfter.treeNext
+                shift--
+            }
+        }
         // Merge parent and nested `THEN` blocks
         val nestedThenNode = (nestedNode.psi as KtIfExpression).then
         val nestedThenText = (nestedThenNode as KtBlockExpression).statements.joinToString("\n") { it.text }
