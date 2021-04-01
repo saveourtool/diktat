@@ -886,3 +886,49 @@ val someString = "$myArgument"
 ```kotlin
 val someString = myArgument
 ```
+
+<!-- =============================================================================== -->
+### <a name="c3.16"></a> 3.16 Conditional Statements
+This section describes the general rules related to the сonditional statements.
+
+#### <a name="r3.16.1"></a> 3.16.1 Collapsing redundant nested if-statements
+The nested if-statements, when possible, should be collapsed into a single one
+by concatenating their conditions with the infix operator &&.
+
+This improves the readability by reducing the number of the nested language constructs.
+
+### Simple collapse
+
+**Invalid example**:
+```kotlin
+if (cond1) {
+    if (cond2) {
+        doSomething()
+    }
+}
+```
+
+**Valid example**:
+```kotlin
+if (cond1 && cond2) {
+    doSomething()
+}
+```
+
+### Compound conditions
+
+**Invalid example**:
+```kotlin
+if (cond1) {
+    if (cond2 || cond3) {
+        doSomething()
+    }
+}
+```
+
+**Valid example**:
+```kotlin
+if (cond1 && (cond2 || cond3)) {
+    doSomething()
+}
+```

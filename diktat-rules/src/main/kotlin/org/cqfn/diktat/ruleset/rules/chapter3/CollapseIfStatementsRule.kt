@@ -6,10 +6,8 @@ import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.KotlinParser
 
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
-import com.pinterest.ktlint.core.ast.ElementType.CONDITION
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.IF
-import com.pinterest.ktlint.core.ast.ElementType.IF_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
@@ -38,18 +36,15 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
     }
     override fun logic(node: ASTNode) {
         if (node.elementType == IF) {
-            var nestedIfNode = findNestedIf(node) ?: return
-            println("Before\n ${node.text}")
-            process(node, nestedIfNode, 2)
-            println("----------\nAfter\n ${node.text}")
+            process(node)
         }
     }
 
-    private fun process(node: ASTNode, nestedNode : ASTNode, currNestedLevel : Int)  {
+    private fun process(node: ASTNode)  {
         val startCollapseFromLevel = configuration.startCollapseFromNestedLevel
 
-        var nestedLevel = currNestedLevel
-        var currNode = nestedNode
+        var currNode = findNestedIf(node) ?: return
+        var nestedLevel = 2
         var nestedIfNode :ASTNode?
         while (true) {
             nestedIfNode = findNestedIf(currNode)
@@ -63,23 +58,23 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
         if (nestedLevel < startCollapseFromLevel) {
             return
         }
-
+        // Since the external `if` statement is not the direct parent,
+        // we need multiple steps to take the required one
+        // BLOCK -> THEN -> IF
         var currParentNode = currNode.treeParent.treeParent.treeParent
-
-        while (nestedLevel != 1) {
+        // Now collapse in reverse order
+        while (nestedLevel != 1 && isFixMode) {
             Warnings.COLLAPSE_IF_STATEMENTS.warnAndFix(
-                configRules, emitWarn, true,
+                configRules, emitWarn, isFixMode,
                 "avoid using redundant nested if-statements", currNode.startOffset, currNode
             ) {
                 collapse(currParentNode, currNode)
                 currNode = currParentNode
-                // { -> block -> then
                 currParentNode = currParentNode.treeParent.treeParent.treeParent
                 nestedLevel--
             }
         }
     }
-
 
     private fun findNestedIf(parentNode: ASTNode) : ASTNode? {
         val parentThenNode = (parentNode.psi as KtIfExpression).then?.node
@@ -129,6 +124,9 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
      * [RuleConfiguration] for configuration
      */
     class CollapseIfStatementsConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
+        /**
+         *  Collapse statements only if nested level more than this value
+         */
         val startCollapseFromNestedLevel = config["startCollapseFromNestedLevel"]?.toInt() ?: DEFAULT_NESTED_LEVEL
     }
 
