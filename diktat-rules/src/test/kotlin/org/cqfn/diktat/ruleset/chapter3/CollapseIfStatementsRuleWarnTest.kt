@@ -212,4 +212,25 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             LintError(7, 12, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true),
         )
     }
+
+    @Test
+    @Tag(WarningNames.COLLAPSE_IF_STATEMENTS)
+    fun `compound condition`() {
+        lintMethod(
+            """
+            |fun foo () {
+            |     if (cond1) {
+            |         if (cond2 || cond3) {
+            |             firstAction()
+            |             secondAction()
+            |         }
+            |         if (cond4) {
+            |             secondAction()
+            |         }
+            |     }
+            |} 
+            """.trimMargin(),
+            LintError(3, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
+        )
+    }
 }

@@ -89,3 +89,26 @@ fun foo() {
         }
     }
 }
+
+fun foo() {
+    if (cond1 && (cond2 || cond3)) {
+        firstAction()
+secondAction()
+        if (cond4) {
+            secondAction()
+        }
+    }
+}
+
+fun foo() {
+    if (cond1 && (cond2 && cond3 || cond4)) {
+        firstAction()
+secondAction()
+    }
+}
+
+fun foo() {
+    if (cond1 && cond2 && (cond3 || cond4)) {
+        someAction()
+    }
+}

@@ -1,5 +1,6 @@
 package org.cqfn.diktat.ruleset.rules.chapter3
 
+import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.DiktatRule
@@ -10,6 +11,7 @@ import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.IF
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
+import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.THEN
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
@@ -93,8 +95,17 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun collapse(parentNode : ASTNode, nestedNode : ASTNode) {
         // Merge parent and nested conditions
         val parentCondition = (parentNode.psi as KtIfExpression).condition?.text
-        val nestedCondition = (nestedNode.psi as KtIfExpression).condition?.text
-        val mergeCondition = "if ($parentCondition && $nestedCondition) {}"
+        val nestedCondition = (nestedNode.psi as KtIfExpression).condition
+        lateinit var mergeCondition : String
+        // If the nested condition is compound,
+        // we need to put it to the brackets, according algebra of logic
+        if (nestedCondition?.node?.elementType == BINARY_EXPRESSION &&
+            nestedCondition.node?.findChildByType(OPERATION_REFERENCE)?.text == "||"
+        ) {
+            mergeCondition = "if ($parentCondition && (${nestedCondition.text})) {}"
+        } else {
+            mergeCondition = "if ($parentCondition && ${nestedCondition?.text}) {}"
+        }
         val newParentIfNode = KotlinParser().createNode(mergeCondition)
         // Remove THEN block
         newParentIfNode.removeChild(newParentIfNode.lastChildNode)
