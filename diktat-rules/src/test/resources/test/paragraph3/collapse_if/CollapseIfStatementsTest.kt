@@ -150,3 +150,31 @@ fun foo() {
         }
     }
 }
+
+fun foo() {
+    if (cond1) {
+        if (cond2) {
+            firstAction()
+            secondAction()
+        } else {
+            firstAction()
+        }
+    } else {
+        secondAction()
+    }
+}
+
+fun foo () {
+    if (cond1) {
+        if (cond2) {
+            firstAction()
+            secondAction()
+        } else if (cond3) {
+            firstAction()
+        } else {
+            val a = 5
+        }
+    } else {
+        secondAction()
+    }
+}

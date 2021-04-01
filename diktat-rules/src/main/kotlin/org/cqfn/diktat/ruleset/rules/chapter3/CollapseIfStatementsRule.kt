@@ -81,6 +81,10 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun findNestedIf(parentNode: ASTNode) : ASTNode? {
         val parentThenNode = (parentNode.psi as KtIfExpression).then?.node
         val nestedIfNode = parentThenNode?.findChildByType(IF) ?: return null
+        // We won't collapse statements, if nested `if` statement have `else` node
+        (nestedIfNode.psi as KtIfExpression).`else`?.node?.let {
+            return null
+        }
         // We monitor which types of nodes are followed before nested `if`
         // and we allow only a limited number of types to pass through.
         // Otherwise discovered `if` it is not nested
@@ -93,6 +97,11 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun collapse(parentNode : ASTNode, nestedNode : ASTNode) {
+        collapseConditions(parentNode, nestedNode)
+        collapseThenBlocks(parentNode, nestedNode)
+    }
+
+    private fun collapseConditions(parentNode : ASTNode, nestedNode : ASTNode) {
         // Merge parent and nested conditions
         val parentCondition = (parentNode.psi as KtIfExpression).condition?.text
         val nestedCondition = (nestedNode.psi as KtIfExpression).condition
@@ -123,6 +132,9 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
                 shift--
             }
         }
+    }
+
+    private fun collapseThenBlocks(parentNode : ASTNode, nestedNode : ASTNode) {
         // Merge parent and nested `THEN` blocks
         val nestedThenNode = (nestedNode.psi as KtIfExpression).then
         val nestedThenText = (nestedThenNode as KtBlockExpression).statements.joinToString("\n") { it.text }
