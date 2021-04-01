@@ -157,7 +157,8 @@ open class DiktatJavaExecTaskBase @Inject constructor(
             pattern.relativeTo(project.projectDir)
         } else {
             pattern
-        }.path
+        }
+            .invariantSeparatorsPath
         add((if (negate) "!" else "") + path)
     }
 
