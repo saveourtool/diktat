@@ -897,7 +897,7 @@ by concatenating their conditions with the infix operator &&.
 
 This improves the readability by reducing the number of the nested language constructs.
 
-### Simple collapse
+#### Simple collapse
 
 **Invalid example**:
 ```kotlin
@@ -915,7 +915,7 @@ if (cond1 && cond2) {
 }
 ```
 
-### Compound conditions
+#### Compound conditions
 
 **Invalid example**:
 ```kotlin

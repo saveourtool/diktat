@@ -1,11 +1,13 @@
 package org.cqfn.diktat.ruleset.rules.chapter3
 
-import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
+import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.KotlinParser
 
+import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.IF
@@ -15,11 +17,14 @@ import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.THEN
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
-import org.cqfn.diktat.common.config.rules.RuleConfiguration
-import org.cqfn.diktat.common.config.rules.getRuleConfig
+import com.pinterest.ktlint.core.ast.children
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtIfExpression
+
+import java.util.Stack
+
+typealias placeOfwarningForCurrentNode = Pair<Int, ASTNode>
 
 /**
  * Rule for redundant nested if-statements, which could be collapsed into a single one
@@ -36,49 +41,50 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
             configRules.getRuleConfig(Warnings.COLLAPSE_IF_STATEMENTS)?.configuration ?: emptyMap()
         )
     }
+
+    // We hold the warnings, which we raised, since in case of multi nested if-statement,
+    // there are could be several identical warning for one line
+    private val listOfWarnings: MutableSet<placeOfwarningForCurrentNode> = mutableSetOf()
+
     override fun logic(node: ASTNode) {
         if (node.elementType == IF) {
             process(node)
         }
     }
 
-    private fun process(node: ASTNode)  {
+    private fun process(node: ASTNode) {
         val startCollapseFromLevel = configuration.startCollapseFromNestedLevel
+        val listOfNestedNodes: Stack<ASTNode> = Stack()
 
-        var currNode = findNestedIf(node) ?: return
-        var nestedLevel = 2
-        var nestedIfNode :ASTNode?
-        while (true) {
-            nestedIfNode = findNestedIf(currNode)
-            if (nestedIfNode != null) {
-                nestedLevel++
-                currNode = nestedIfNode
-            } else {
-                break
+        var nestedIfNode = findNestedIf(node)
+        while (nestedIfNode != null) {
+            if (nestedIfNode !in listOfNestedNodes) {
+                listOfNestedNodes.push(nestedIfNode)
             }
+            nestedIfNode = findNestedIf(nestedIfNode)
         }
+        val nestedLevel = listOfNestedNodes.size + 1
         if (nestedLevel < startCollapseFromLevel) {
             return
         }
-        // Since the external `if` statement is not the direct parent,
-        // we need multiple steps to take the required one
-        // BLOCK -> THEN -> IF
-        var currParentNode = currNode.treeParent.treeParent.treeParent
-        // Now collapse in reverse order
-        while (nestedLevel != 1 && isFixMode) {
-            Warnings.COLLAPSE_IF_STATEMENTS.warnAndFix(
-                configRules, emitWarn, isFixMode,
-                "avoid using redundant nested if-statements", currNode.startOffset, currNode
-            ) {
-                collapse(currParentNode, currNode)
-                currNode = currParentNode
-                currParentNode = currParentNode.treeParent.treeParent.treeParent
-                nestedLevel--
+        while (listOfNestedNodes.isNotEmpty()) {
+            val currNode = listOfNestedNodes.pop()
+            // Since the external `if` statement is not the direct parent,
+            // we need multiple steps to take the required one
+            // BLOCK -> THEN -> IF
+            val currParentNode = currNode.treeParent.treeParent.treeParent
+            if (listOfWarnings.add(currNode.startOffset to currNode)) {
+                Warnings.COLLAPSE_IF_STATEMENTS.warnAndFix(
+                    configRules, emitWarn, isFixMode,
+                    "avoid using redundant nested if-statements", currNode.startOffset, currNode
+                ) {
+                    collapse(currParentNode, currNode)
+                }
             }
         }
     }
 
-    private fun findNestedIf(parentNode: ASTNode) : ASTNode? {
+    private fun findNestedIf(parentNode: ASTNode): ASTNode? {
         val parentThenNode = (parentNode.psi as KtIfExpression).then?.node
         val nestedIfNode = parentThenNode?.findChildByType(IF) ?: return null
         // We won't collapse statements, if nested `if` statement have `else` node
@@ -96,25 +102,26 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
         return nestedIfNode
     }
 
-    private fun collapse(parentNode : ASTNode, nestedNode : ASTNode) {
+    private fun collapse(parentNode: ASTNode, nestedNode: ASTNode) {
         collapseConditions(parentNode, nestedNode)
         collapseThenBlocks(parentNode, nestedNode)
     }
 
-    private fun collapseConditions(parentNode : ASTNode, nestedNode : ASTNode) {
+    private fun collapseConditions(parentNode: ASTNode, nestedNode: ASTNode) {
         // Merge parent and nested conditions
         val parentCondition = (parentNode.psi as KtIfExpression).condition?.text
         val nestedCondition = (nestedNode.psi as KtIfExpression).condition
-        lateinit var mergeCondition : String
         // If the nested condition is compound,
         // we need to put it to the brackets, according algebra of logic
-        if (nestedCondition?.node?.elementType == BINARY_EXPRESSION &&
-            nestedCondition.node?.findChildByType(OPERATION_REFERENCE)?.text == "||"
-        ) {
-            mergeCondition = "if ($parentCondition && (${nestedCondition.text})) {}"
-        } else {
-            mergeCondition = "if ($parentCondition && ${nestedCondition?.text}) {}"
-        }
+        val mergeCondition =
+                if (nestedCondition?.node?.elementType == BINARY_EXPRESSION &&
+                        nestedCondition.node?.findChildByType(OPERATION_REFERENCE)?.text == "||"
+                ) {
+                    "if ($parentCondition && (${nestedCondition.text})) {}"
+                } else {
+                    "if ($parentCondition && ${nestedCondition?.text}) {}"
+                }
+
         val newParentIfNode = KotlinParser().createNode(mergeCondition)
         // Remove THEN block
         newParentIfNode.removeChild(newParentIfNode.lastChildNode)
@@ -122,19 +129,13 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
         parentNode.removeRange(parentNode.firstChildNode, parentNode.findChildByType(THEN)!!)
         // Add to parent all child from new `if` node
         var addAfter = parentNode.firstChildNode
-        newParentIfNode.getChildren(null).forEachIndexed {
-            index, child ->
+        newParentIfNode.getChildren(null).forEachIndexed { index, child ->
             parentNode.addChild(child, addAfter)
-            var shift = index + 1
-            addAfter = parentNode.firstChildNode
-            while (shift > 0) {
-                addAfter = addAfter.treeNext
-                shift--
-            }
+            addAfter = parentNode.children().drop(index + 1).first()
         }
     }
 
-    private fun collapseThenBlocks(parentNode : ASTNode, nestedNode : ASTNode) {
+    private fun collapseThenBlocks(parentNode: ASTNode, nestedNode: ASTNode) {
         // Merge parent and nested `THEN` blocks
         val nestedThenNode = (nestedNode.psi as KtIfExpression).then
         val nestedThenText = (nestedThenNode as KtBlockExpression).statements.joinToString("\n") { it.text }
