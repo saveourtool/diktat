@@ -24,7 +24,7 @@ import org.jetbrains.kotlin.psi.KtIfExpression
 
 import java.util.Stack
 
-typealias placeOfwarningForCurrentNode = Pair<Int, ASTNode>
+typealias placeOfWarningForCurrentNode = Pair<Int, ASTNode>
 
 /**
  * Rule for redundant nested if-statements, which could be collapsed into a single one
@@ -44,7 +44,7 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
 
     // We hold the warnings, which we raised, since in case of multi nested if-statement,
     // there are could be several identical warning for one line
-    private val listOfWarnings: MutableSet<placeOfwarningForCurrentNode> = mutableSetOf()
+    private val listOfWarnings: MutableSet<placeOfWarningForCurrentNode> = mutableSetOf()
 
     override fun logic(node: ASTNode) {
         if (node.elementType == IF) {
@@ -58,9 +58,7 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
 
         var nestedIfNode = findNestedIf(node)
         while (nestedIfNode != null) {
-            if (nestedIfNode !in listOfNestedNodes) {
-                listOfNestedNodes.push(nestedIfNode)
-            }
+            listOfNestedNodes.push(nestedIfNode)
             nestedIfNode = findNestedIf(nestedIfNode)
         }
         val nestedLevel = listOfNestedNodes.size + 1
@@ -86,14 +84,17 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun findNestedIf(parentNode: ASTNode): ASTNode? {
         val parentThenNode = (parentNode.psi as KtIfExpression).then?.node
-        val nestedIfNode = parentThenNode?.findChildByType(IF) ?: return null
+        if (parentThenNode?.children()?.count {it.elementType == IF}!! > 1) {
+            return null
+        }
+        val nestedIfNode = parentThenNode.findChildByType(IF) ?: return null
         // We won't collapse statements, if nested `if` statement have `else` node
         (nestedIfNode.psi as KtIfExpression).`else`?.node?.let {
             return null
         }
         // We monitor which types of nodes are followed before nested `if`
         // and we allow only a limited number of types to pass through.
-        // Otherwise discovered `if` it is not nested
+        // Otherwise discovered `if` is not nested
         val listOfNodesBeforeNestedIf = parentThenNode.getChildren(null).takeWhile { it.elementType != IF }
         val allowedTypes = listOf(LBRACE, WHITE_SPACE, RBRACE, KDOC, BLOCK_COMMENT, EOL_COMMENT)
         if (listOfNodesBeforeNestedIf.any { it.elementType !in allowedTypes }) {

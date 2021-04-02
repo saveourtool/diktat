@@ -47,9 +47,9 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             |             firstAction()
             |             secondAction()
             |         }
-            |         if (cond3) {
-            |             secondAction()
-            |         }
+            |     }    
+            |     if (cond3) {
+            |         secondAction()
             |     }
             |} 
             """.trimMargin(),
@@ -75,7 +75,6 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
         )
     }
 
-    // TODO: Add more checks for nested if statements with comments
     @Test
     @Tag(WarningNames.COLLAPSE_IF_STATEMENTS)
     fun `comments check`() {
@@ -117,7 +116,6 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
         )
     }
 
-    // TODO: should such statements be collapsed in some manner (?), guess not
     @Test
     @Tag(WarningNames.COLLAPSE_IF_STATEMENTS)
     fun `not nested if 2`() {
@@ -269,13 +267,33 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             |             firstAction()
             |             secondAction()
             |         }
+            |     }    
+            |     if (cond4) {
+            |         secondAction()
+            |     }
+            |} 
+            """.trimMargin(),
+            LintError(3, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true),
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.COLLAPSE_IF_STATEMENTS)
+    fun `not nested compound condition`() {
+        lintMethod(
+            """
+            |fun foo () {
+            |     if (cond1) {
+            |         if (cond2 || cond3) {
+            |             firstAction()
+            |             secondAction()
+            |         }
             |         if (cond4) {
             |             secondAction()
             |         }
             |     }
             |} 
-            """.trimMargin(),
-            LintError(3, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
+            """.trimMargin()
         )
     }
 }

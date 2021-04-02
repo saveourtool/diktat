@@ -30,18 +30,6 @@ fun foo() {
 }
 
 fun foo() {
-     if (cond1) {
-         if (cond2) {
-             firstAction()
-             secondAction()
-         }
-         if (cond3) {
-             secondAction()
-         }
-     }
-}
-
-fun foo() {
     if (true) {
         if (true) {
             if (true) {
@@ -122,18 +110,6 @@ fun foo() {
 
 fun foo() {
     if (cond1) {
-        if (cond2 || cond3) {
-            firstAction()
-            secondAction()
-        }
-        if (cond4) {
-            secondAction()
-        }
-    }
-}
-
-fun foo() {
-    if (cond1) {
         if (cond2 && cond3 || cond4) {
             firstAction()
             secondAction()
@@ -176,5 +152,41 @@ fun foo () {
         }
     } else {
         secondAction()
+    }
+}
+
+fun foo() {
+    if (cond1) {
+        if (cond2) {
+            firstAction()
+            secondAction()
+        }
+    }
+    if (cond3) {
+        secondAction()
+    }
+}
+
+fun foo() {
+    if (cond1) {
+        if (cond2 || cond3) {
+            firstAction()
+            secondAction()
+        }
+    }
+    if (cond4) {
+        secondAction()
+    }
+}
+
+fun foo () {
+    if (cond1) {
+        if (cond2 || cond3) {
+            firstAction()
+            secondAction()
+        }
+        if (cond4) {
+            secondAction()
+        }
     }
 }
