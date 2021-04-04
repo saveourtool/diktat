@@ -169,7 +169,7 @@ class DiktatGradlePluginFunctionalTest {
     @Test
     fun `should execute diktatCheck with gradle older than 6_4`() {
         val result = runDiktat(testProjectDir, shouldSucceed = false, arguments = listOf("--info")) {
-            withGradleVersion("5.0")
+            withGradleVersion("5.3")
         }
 
         val diktatCheckBuildResult = result.task(":$DIKTAT_CHECK_TASK")

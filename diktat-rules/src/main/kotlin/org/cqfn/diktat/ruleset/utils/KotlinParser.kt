@@ -27,7 +27,6 @@ import sun.reflect.ReflectionFactory
 /**
  * A class that wraps kotlin compiler's code parser and converts source code into AST
  */
-@Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
 class KotlinParser {
     private val project: Project by lazy {
         val compilerConfiguration = CompilerConfiguration()
