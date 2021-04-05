@@ -83,11 +83,13 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun findNestedIf(parentNode: ASTNode): ASTNode? {
-        val parentThenNode = (parentNode.psi as KtIfExpression).then?.node
-        if (parentThenNode?.children()?.count {it.elementType == IF}!! > 1) {
+        val parentThenNode = (parentNode.psi as KtIfExpression).then?.node ?: return null
+        val nestedIfNode = parentThenNode.findChildByType(IF) ?: return null
+        // Nested `if` node should be the last child, but actually,
+        // the last children are WHITESPACE and `}`, so take treePrev
+        if ((nestedIfNode.psi as KtIfExpression).node != parentThenNode.lastChildNode.treePrev.treePrev) {
             return null
         }
-        val nestedIfNode = parentThenNode.findChildByType(IF) ?: return null
         // We won't collapse statements, if nested `if` statement have `else` node
         (nestedIfNode.psi as KtIfExpression).`else`?.node?.let {
             return null
@@ -127,7 +129,7 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
         // Remove THEN block
         newParentIfNode.removeChild(newParentIfNode.lastChildNode)
         // Remove old `if` from parent
-        parentNode.removeRange(parentNode.firstChildNode, parentNode.findChildByType(THEN)!!)
+        parentNode.removeRange(parentNode.firstChildNode, parentNode.findChildByType(THEN))
         // Add to parent all child from new `if` node
         var addAfter = parentNode.firstChildNode
         newParentIfNode.getChildren(null).forEachIndexed { index, child ->

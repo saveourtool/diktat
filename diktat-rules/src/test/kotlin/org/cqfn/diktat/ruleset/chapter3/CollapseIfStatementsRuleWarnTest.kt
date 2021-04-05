@@ -162,6 +162,23 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
 
     @Test
     @Tag(WarningNames.COLLAPSE_IF_STATEMENTS)
+    fun `not nested if 4`() {
+        lintMethod(
+            """
+            |fun foo() {
+            |   if (cond1) {
+            |       if (cond2) {
+            |            doSomething()
+            |       }
+            |       val a = 5
+            |   }
+            |}
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.COLLAPSE_IF_STATEMENTS)
     fun `three if statements`() {
         lintMethod(
             """

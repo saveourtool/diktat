@@ -152,3 +152,12 @@ fun foo () {
         }
     }
 }
+
+fun foo() {
+    if (cond1) {
+        if (cond2) {
+            doSomething()
+        }
+        val a = 5
+    }
+}
