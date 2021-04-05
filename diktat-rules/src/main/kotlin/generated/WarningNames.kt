@@ -183,6 +183,8 @@ public object WarningNames {
 
     public const val FILE_NAME_MATCH_CLASS: String = "FILE_NAME_MATCH_CLASS"
 
+    public const val COLLAPSE_IF_STATEMENTS: String = "COLLAPSE_IF_STATEMENTS"
+
     public const val NULLABLE_PROPERTY_TYPE: String = "NULLABLE_PROPERTY_TYPE"
 
     public const val TYPE_ALIAS: String = "TYPE_ALIAS"

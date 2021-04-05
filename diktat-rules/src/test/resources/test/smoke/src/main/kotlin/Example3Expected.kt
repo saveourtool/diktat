@@ -17,10 +17,8 @@ class HttpClient(var name: String) {
 
 class Example {
     fun foo() {
-        if (condition1) {
-            if (condition2) {
-                bar()
-            }
+        if (condition1 && condition2) {
+            bar()
         }
 
         if (condition3) {

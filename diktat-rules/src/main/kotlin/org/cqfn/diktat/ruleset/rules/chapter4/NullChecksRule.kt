@@ -137,6 +137,7 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
             if (parent != null && parent.elementType == VALUE_ARGUMENT) {
                 val grandParent = parent.treeParent
                 if (grandParent != null && grandParent.elementType == VALUE_ARGUMENT_LIST && isRequireFun(grandParent.treePrev)) {
+                    @Suppress("COLLAPSE_IF_STATEMENTS")
                     if (listOf(ElementType.EXCLEQ, ElementType.EXCLEQEQEQ).contains(condition.operationToken)) {
                         warnAndFixOnNullCheck(
                             condition,

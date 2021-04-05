@@ -13,6 +13,7 @@ import org.jetbrains.kotlin.org.jline.utils.Levenshtein
  */
 @Suppress("WRONG_DECLARATIONS_ORDER")
 enum class Chapters(val number: String, val title: String) {
+    DUMMY("0", "Dummy"),
     NAMING("1", "Naming"),
     COMMENTS("2", "Comments"),
     TYPESETTING("3", "General"),

@@ -18,6 +18,7 @@ import org.cqfn.diktat.ruleset.rules.chapter3.AnnotationNewLineRule
 import org.cqfn.diktat.ruleset.rules.chapter3.BlockStructureBraces
 import org.cqfn.diktat.ruleset.rules.chapter3.BracesInConditionalsAndLoopsRule
 import org.cqfn.diktat.ruleset.rules.chapter3.ClassLikeStructuresOrderRule
+import org.cqfn.diktat.ruleset.rules.chapter3.CollapseIfStatementsRule
 import org.cqfn.diktat.ruleset.rules.chapter3.ConsecutiveSpacesRule
 import org.cqfn.diktat.ruleset.rules.chapter3.EmptyBlock
 import org.cqfn.diktat.ruleset.rules.chapter3.EnumsSeparated
@@ -206,6 +207,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
             ::AvoidNestedFunctionsRule,
             ::ExtensionFunctionsSameNameRule,
             ::LambdaLengthRule,
+            ::CollapseIfStatementsRule,
             // formatting: moving blocks, adding line breaks, indentations etc.
             ::BlockStructureBraces,
             ::ConsecutiveSpacesRule,
