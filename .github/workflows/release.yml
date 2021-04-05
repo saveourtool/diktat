@@ -40,7 +40,7 @@ jobs:
       - name: Set version
         run: mvn -B versions:set -DnewVersion=${{ env.RELEASE_VERSION }} versions:commit
       - name: Create settings.xml
-        uses: whelk-io/maven-settings-xml-action@v14
+        uses: whelk-io/maven-settings-xml-action@v15
         with:
           servers: '[{ "id": "ossrh", "username": "${{ secrets.SONATYPE_USER }}", "password": "${{ secrets.SONATYPE_PASSWORD }}" }, { "id": "gpg.passphrase", "passphrase": "${{ secrets.DIKTAT_GPG_PASS }}" }]'
       - name: Deploy artifacts
