@@ -24,7 +24,7 @@ import org.jetbrains.kotlin.psi.KtIfExpression
 
 import java.util.Stack
 
-typealias placeOfWarningForCurrentNode = Pair<Int, ASTNode>
+typealias PlaceOfWarningForCurrentNode = Pair<Int, ASTNode>
 
 /**
  * Rule for redundant nested if-statements, which could be collapsed into a single one
@@ -44,7 +44,7 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
 
     // We hold the warnings, which we raised, since in case of multi nested if-statement,
     // there are could be several identical warning for one line
-    private val listOfWarnings: MutableSet<placeOfWarningForCurrentNode> = mutableSetOf()
+    private val listOfWarnings: MutableSet<PlaceOfWarningForCurrentNode> = mutableSetOf()
 
     override fun logic(node: ASTNode) {
         if (node.elementType == IF) {
@@ -91,8 +91,8 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
             return null
         }
         // We won't collapse, if statements some of them have `else` node
-        if ((parentNode.psi as KtIfExpression).`else`?.node != null ||
-                (nestedIfNode.psi as KtIfExpression).`else`?.node != null) {
+        if ((parentNode.psi as KtIfExpression).`else` != null ||
+                (nestedIfNode.psi as KtIfExpression).`else` != null) {
             return null
         }
         // We monitor which types of nodes are followed before nested `if`
