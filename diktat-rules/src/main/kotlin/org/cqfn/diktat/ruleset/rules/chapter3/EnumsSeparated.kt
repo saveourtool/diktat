@@ -31,10 +31,8 @@ class EnumsSeparated(configRules: List<RulesConfig>) : DiktatRule(
     configRules,
     listOf(ENUMS_SEPARATED)) {
     override fun logic(node: ASTNode) {
-        if (node.elementType == CLASS && node.hasChildOfType(CLASS_BODY)) {
-            if (node.isClassEnum()) {
-                checkEnumEntry(node)
-            }
+        if (node.elementType == CLASS && node.hasChildOfType(CLASS_BODY) && node.isClassEnum()) {
+            checkEnumEntry(node)
         }
     }
 

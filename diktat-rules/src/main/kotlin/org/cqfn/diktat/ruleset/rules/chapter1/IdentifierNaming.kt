@@ -371,7 +371,9 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
         // We don't need to ask subclasses to rename superclass methods
         if (!node.isOverridden()) {
             // if function has Boolean return type in 99% of cases it is much better to name it with isXXX or hasXXX prefix
+            @Suppress("COLLAPSE_IF_STATEMENTS")
             if (functionReturnType != null && functionReturnType == PrimitiveType.BOOLEAN.typeName.asString()) {
+                @Suppress("COLLAPSE_IF_STATEMENTS")
                 if (allMethodPrefixes.none { functionName.text.startsWith(it) }) {
                     FUNCTION_BOOLEAN_PREFIX.warnAndFix(configRules, emitWarn, isFixMode, functionName.text, functionName.startOffset, functionName) {
                         // FixMe: add agressive autofix for this
