@@ -48,8 +48,10 @@ fun foo() {
     fun1()
     if (cond1) {
         fun2()
-    } else if (cond2 && true) {
-        fun3()
+    } else if (cond2) {
+        if (true) {
+            fun3()
+        }
     } else {
         fun4()
     }
@@ -59,8 +61,10 @@ fun foo() {
     fun1()
     if (cond1) {
         fun2()
-    } else if (cond2 && true && true) {
-        fun3()
+    } else if (cond2) {
+        if (true && true) {
+            fun3()
+        }
     } else {
         fun4()
     }
@@ -70,8 +74,10 @@ fun foo() {
     fun1()
     if (cond1) {
         fun2()
-    } else if (cond2 && true && true) {
-        fun3()
+    } else if (cond2) {
+        if (true && true) {
+            fun3()
+        }
     } else {
         fun4()
         if (true && true) {

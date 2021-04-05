@@ -15,7 +15,7 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
 
     @Test
     @Tag(WarningNames.COLLAPSE_IF_STATEMENTS)
-    fun `simple check`() {
+    fun `one nested if`() {
         lintMethod(
             """
             |fun foo () {
@@ -38,7 +38,7 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
 
     @Test
     @Tag(WarningNames.COLLAPSE_IF_STATEMENTS)
-    fun `simple check 2`() {
+    fun `simple check`() {
         lintMethod(
             """
             |fun foo () {
@@ -59,7 +59,7 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
 
     @Test
     @Tag(WarningNames.COLLAPSE_IF_STATEMENTS)
-    fun `simple check 3`() {
+    fun `simple check 2`() {
         lintMethod(
             """
             |fun foo () {
@@ -118,7 +118,7 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
 
     @Test
     @Tag(WarningNames.COLLAPSE_IF_STATEMENTS)
-    fun `not nested if 2`() {
+    fun `internal if with else branch`() {
         lintMethod(
             """
             |fun foo () {
@@ -139,7 +139,7 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
 
     @Test
     @Tag(WarningNames.COLLAPSE_IF_STATEMENTS)
-    fun `not nested if 3`() {
+    fun `internal if with multiple else and elif branches`() {
         lintMethod(
             """
             |fun foo () {
@@ -162,7 +162,7 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
 
     @Test
     @Tag(WarningNames.COLLAPSE_IF_STATEMENTS)
-    fun `not nested if 4`() {
+    fun `if isn't last child`() {
         lintMethod(
             """
             |fun foo() {
@@ -174,6 +174,46 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             |   }
             |}
             """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.COLLAPSE_IF_STATEMENTS)
+    fun `external if with else branch`() {
+        lintMethod(
+            """
+            |fun foo() {
+            |   if (cond1) {
+            |       if (cond2) {
+            |            doSomething()
+            |       }
+            |   } else {
+            |       val b = 1
+            |   }
+            |}
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.COLLAPSE_IF_STATEMENTS)
+    fun `external if with else node, but exist nested if`() {
+        lintMethod(
+            """
+            |fun foo() {
+            |   val a = 0
+            |   if (cond1) {
+            |       if (cond2) {
+            |           if (cond3) {
+            |               doSomething()
+            |           }
+            |       }
+            |   } else {
+            |       val b = 1
+            |   }
+            |}
+            """.trimMargin(),
+            LintError(5, 12, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true),
         )
     }
 
@@ -228,7 +268,7 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
 
     @Test
     @Tag(WarningNames.COLLAPSE_IF_STATEMENTS)
-    fun `else if statement`() {
+    fun `not nested else if statement`() {
         lintMethod(
             """
             |fun foo() {
@@ -243,14 +283,13 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             |        fun4()
             |    }
             |}
-            """.trimMargin(),
-            LintError(6, 9, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true),
+            """.trimMargin()
         )
     }
 
     @Test
     @Tag(WarningNames.COLLAPSE_IF_STATEMENTS)
-    fun `else if statement 2`() {
+    fun `nested else if statement`() {
         lintMethod(
             """
             |fun foo() {
@@ -268,7 +307,6 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             |    }
             |}
             """.trimMargin(),
-            LintError(6, 9, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true),
             LintError(7, 12, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true),
         )
     }

@@ -90,8 +90,9 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
         if ((nestedIfNode.psi as KtIfExpression).node != parentThenNode.lastChildNode.treePrev.treePrev) {
             return null
         }
-        // We won't collapse statements, if nested `if` statement have `else` node
-        (nestedIfNode.psi as KtIfExpression).`else`?.node?.let {
+        // We won't collapse, if statements some of them have `else` node
+        if ((parentNode.psi as KtIfExpression).`else`?.node != null ||
+                (nestedIfNode.psi as KtIfExpression).`else`?.node != null) {
             return null
         }
         // We monitor which types of nodes are followed before nested `if`
