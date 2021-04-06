@@ -302,22 +302,19 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
             WRONG_NEWLINES_AROUND_KDOC.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
                 node.treeParent.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node.treeParent)
             }
-        } else if (node.treeParent.elementType != FILE) {
-            if (node.treeParent.treePrev.numNewLines() == 1 || node.treeParent.treePrev.numNewLines() > 2) {
-                WRONG_NEWLINES_AROUND_KDOC.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
-                    (node.treeParent.treePrev as LeafPsiElement).replaceWithText("\n\n")
-                }
+        } else if (node.treeParent.elementType != FILE &&
+                (node.treeParent.treePrev.numNewLines() == 1 || node.treeParent.treePrev.numNewLines() > 2)) {
+            WRONG_NEWLINES_AROUND_KDOC.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
+                (node.treeParent.treePrev as LeafPsiElement).replaceWithText("\n\n")
             }
         }
     }
 
     private fun checkFirstCommentSpaces(node: ASTNode) {
-        if (node.treePrev.isWhiteSpace()) {
-            if (node.treePrev.numNewLines() > 1 ||
-                    node.treePrev.numNewLines() == 0) {
-                FIRST_COMMENT_NO_BLANK_LINE.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
-                    (node.treePrev as LeafPsiElement).replaceWithText("\n")
-                }
+        if (node.treePrev.isWhiteSpace() &&
+                (node.treePrev.numNewLines() > 1 || node.treePrev.numNewLines() == 0)) {
+            FIRST_COMMENT_NO_BLANK_LINE.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
+                (node.treePrev as LeafPsiElement).replaceWithText("\n")
             }
         }
     }

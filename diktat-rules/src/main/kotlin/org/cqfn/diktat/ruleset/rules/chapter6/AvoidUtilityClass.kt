@@ -32,6 +32,7 @@ class AvoidUtilityClass(configRules: List<RulesConfig>) : DiktatRule(
         val config = configRules.getCommonConfiguration()
         val filePath = node.getRootNode().getFilePath()
         if (!(node.hasTestAnnotation() || isLocatedInTest(filePath.splitPathToDirs(), config.testAnchors))) {
+            @Suppress("COLLAPSE_IF_STATEMENTS")
             if (node.elementType == OBJECT_DECLARATION || node.elementType == CLASS) {
                 checkClass(node)
             }

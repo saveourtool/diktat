@@ -379,6 +379,11 @@
 # Inspection that checks if string template has redundant quotes
 - name: STRING_TEMPLATE_QUOTES
   enabled: true
+# Check if there are redundant nested if-statements, which could be collapsed into a single one by concatenating their conditions
+- name: COLLAPSE_IF_STATEMENTS
+  enabled: true
+  configuration:
+    startCollapseFromNestedLevel: 2
 # Checks that floating-point values are not used in arithmetic expressions
 - name: FLOAT_IN_ACCURATE_CALCULATIONS
   enabled: true

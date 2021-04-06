@@ -36,6 +36,7 @@ class StringConcatenationRule(configRules: List<RulesConfig>) : DiktatRule(
         STRING_CONCATENATION
     )
 ) {
+    @Suppress("COLLAPSE_IF_STATEMENTS")
     override fun logic(node: ASTNode) {
         if (node.elementType == BINARY_EXPRESSION) {
             // searching top-level binary expression to detect any operations with "plus" (+)
