@@ -7,6 +7,7 @@ import org.cqfn.diktat.common.config.rules.getCommonConfiguration
 import org.cqfn.diktat.common.config.rules.kotlinVersion
 import org.junit.jupiter.api.Test
 
+@Suppress("MISSING_KDOC_TOP_LEVEL", "MISSING_KDOC_CLASS_ELEMENTS")
 class ConfigReaderTest {
     @Test
     fun `testing json reading`() {
