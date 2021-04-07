@@ -85,24 +85,23 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun findNestedIf(parentNode: ASTNode): ASTNode? {
         val parentThenNode = (parentNode.psi as KtIfExpression).then?.node ?: return null
         val nestedIfNode = parentThenNode.findChildByType(IF) ?: return null
-        // Nested `if` node should be the last child, but actually,
-        // the last children are WHITESPACE and `}`, so take treePrev
-        if ((nestedIfNode.psi as KtIfExpression).node != parentThenNode.lastChildNode.treePrev.treePrev) {
-            return null
-        }
-        // We won't collapse, if statements some of them have `else` node
+        // We won't collapse if-statements, if some of them have `else` node
         if ((parentNode.psi as KtIfExpression).`else` != null ||
                 (nestedIfNode.psi as KtIfExpression).`else` != null) {
             return null
         }
-        // We monitor which types of nodes are followed before nested `if`
+        // We monitor which types of nodes are followed before and after nested `if`
         // and we allow only a limited number of types to pass through.
         // Otherwise discovered `if` is not nested
         val listOfNodesBeforeNestedIf = parentThenNode.getChildren(null).takeWhile { it.elementType != IF }
+        val listOfNodesAfterNestedIf = parentThenNode.getChildren(null).takeLastWhile { it != parentThenNode.findChildByType(IF) }
         val allowedTypes = listOf(LBRACE, WHITE_SPACE, RBRACE, KDOC, BLOCK_COMMENT, EOL_COMMENT)
-        if (listOfNodesBeforeNestedIf.any { it.elementType !in allowedTypes }) {
+        if (listOfNodesBeforeNestedIf.any { it.elementType !in allowedTypes } ||
+                listOfNodesAfterNestedIf.any { it.elementType !in allowedTypes }) {
             return null
         }
+        //TODO: process comments
+        val comments = takeCommentsFromNode(parentThenNode)
         return nestedIfNode
     }
 
@@ -142,10 +141,28 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun collapseThenBlocks(parentNode: ASTNode, nestedNode: ASTNode) {
         // Merge parent and nested `THEN` blocks
         val nestedThenNode = (nestedNode.psi as KtIfExpression).then
-        val nestedThenText = (nestedThenNode as KtBlockExpression).statements.joinToString("\n") { it.text }
-        val newNestedNode = KotlinParser().createNode(nestedThenText)
+        val nestedContent = (nestedThenNode as KtBlockExpression).children().toMutableList()
+        // Remove {, }, and white spaces
+        repeat(2) {
+            nestedContent.removeFirst()
+            nestedContent.removeLast()
+        }
+        val nestedThenText = nestedContent.joinToString ("") { it.text }
+        val newNestedNode = KotlinParser().createNode(nestedThenText).treeParent
         val parentThenNode = (parentNode.psi as KtIfExpression).then?.node
-        parentThenNode?.replaceChild(nestedNode, newNestedNode)
+        newNestedNode.getChildren(null).forEach {
+            parentThenNode?.addChild(it, nestedNode)
+        }
+        parentThenNode?.removeChild(nestedNode)
+
+    }
+
+    private fun takeCommentsFromNode(node: ASTNode): Sequence<ASTNode> {
+        return node.children().filter {
+            it.elementType == EOL_COMMENT ||
+                    it.elementType == BLOCK_COMMENT ||
+                    it.elementType == KDOC
+        }
     }
 
     /**

@@ -77,6 +77,24 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
 
     @Test
     @Tag(WarningNames.COLLAPSE_IF_STATEMENTS)
+    fun `eol comment`() {
+        lintMethod(
+            """
+            |fun foo () {
+            |     if (true) {
+            |         // Some comments
+            |         if (true) {
+            |             doSomething()
+            |         }
+            |     }
+            |}
+            """.trimMargin(),
+            LintError(4, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.COLLAPSE_IF_STATEMENTS)
     fun `comments check`() {
         lintMethod(
             """
@@ -90,8 +108,12 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             |         */
             |         // Even more comments
             |         if (true) {
+            |             // comment 1
+            |             val a = 5
+            |             // comment 2
             |             doSomething()
             |         }
+            |         // comment 3
             |     }
             |} 
             """.trimMargin(),

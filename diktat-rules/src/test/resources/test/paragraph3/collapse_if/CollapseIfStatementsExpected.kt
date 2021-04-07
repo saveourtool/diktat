@@ -89,7 +89,7 @@ fun foo() {
 fun foo() {
     if (cond1 && (cond2 && cond3 || cond4)) {
         firstAction()
-secondAction()
+            secondAction()
     }
 }
 
@@ -130,7 +130,7 @@ fun foo () {
 fun foo() {
     if (cond1 && cond2) {
         firstAction()
-secondAction()
+            secondAction()
     }
     if (cond3) {
         secondAction()
@@ -140,7 +140,7 @@ secondAction()
 fun foo() {
     if (cond1 && (cond2 || cond3)) {
         firstAction()
-secondAction()
+            secondAction()
     }
     if (cond4) {
         secondAction()
