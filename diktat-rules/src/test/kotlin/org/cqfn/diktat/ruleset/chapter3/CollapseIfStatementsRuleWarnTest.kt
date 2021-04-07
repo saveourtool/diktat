@@ -82,31 +82,68 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             """
             |fun foo () {
             |     if (true) {
-            |         // Some comments
+            |         // Some
+            |         // comments
             |         if (true) {
             |             doSomething()
             |         }
             |     }
             |}
             """.trimMargin(),
-            LintError(4, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
+            LintError(5, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
         )
     }
 
     @Test
     @Tag(WarningNames.COLLAPSE_IF_STATEMENTS)
-    fun `comments check`() {
+    fun `block comment`() {
+        lintMethod(
+            """
+            |fun foo () {
+            |     if (true) {
+            |         /*
+            |          Some comments
+            |         */
+            |         if (true) {
+            |             doSomething()
+            |         }
+            |     }
+            |}
+            """.trimMargin(),
+            LintError(6, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.COLLAPSE_IF_STATEMENTS)
+    fun `kdoc comment`() {
         lintMethod(
             """
             |fun foo () {
             |     if (true) {
             |         /**
-            |          * Some Comments
-            |          */
-            |         /*
-            |          More comments
+            |          * Some comments
             |         */
-            |         // Even more comments
+            |         if (true) {
+            |             doSomething()
+            |         }
+            |     }
+            |}
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.COLLAPSE_IF_STATEMENTS)
+    fun `combine comments`() {
+        lintMethod(
+            """
+            |fun foo () {
+            |     if (true) {
+            |         /*
+            |          Some Comments
+            |         */
+            |         // More comments
             |         if (true) {
             |             // comment 1
             |             val a = 5
@@ -117,7 +154,7 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
             |     }
             |} 
             """.trimMargin(),
-            LintError(10, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
+            LintError(7, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
         )
     }
 

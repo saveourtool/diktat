@@ -167,3 +167,27 @@ fun foo() {
         val a = 5
     }
 }
+
+fun foo() {
+    if (true &&
+/*
+         Some Comments
+        */
+// More comments
+true) {
+        // comment 1
+            val a = 5
+            // comment 2
+            doSomething()
+        // comment 3
+    }
+}
+
+fun foo() {
+    if (true &&
+// Some
+// comments
+true) {
+        doSomething()
+    }
+}
