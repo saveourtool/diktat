@@ -4,7 +4,6 @@ import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.DIKTAT_CHECK_T
 import org.gradle.buildinit.plugins.internal.modifiers.BuildInitDsl
 import org.gradle.internal.impldep.org.junit.rules.TemporaryFolder
 import org.gradle.testkit.runner.TaskOutcome
-import org.jetbrains.kotlin.com.intellij.util.ObjectUtils.assertNotNull
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
@@ -56,7 +55,8 @@ class DiktatGradlePluginFunctionalTest {
         val diktatCheckBuildResult = result.task(":$DIKTAT_CHECK_TASK")
         requireNotNull(diktatCheckBuildResult)
         Assertions.assertEquals(TaskOutcome.FAILED, diktatCheckBuildResult.outcome)
-        val file = assertNotNull(testProjectDir.root.walkTopDown().filter { it.name == "test.txt" }.first())
+        val file = testProjectDir.root.walkTopDown().filter { it.name == "test.txt" }.first()
+        Assertions.assertNotNull(file)
         Assertions.assertTrue(
                 file.readLines().any { it.contains("[FILE_NAME_MATCH_CLASS]") }
         )
