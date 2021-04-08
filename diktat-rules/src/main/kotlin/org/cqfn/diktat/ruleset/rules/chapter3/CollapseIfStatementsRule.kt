@@ -120,7 +120,7 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
         // If there are comments before nested if, we will move them into parent condition
         val comments = takeCommentsBeforeNestedIf(parentNode)
         val commentsText = if (comments.isNotEmpty()) {
-            "\n${comments.joinToString("\n") { it.text }}\n"
+            comments.joinToString(prefix = "\n", postfix = "\n", separator = "\n") { it.text }
         } else {
             " "
         }
@@ -165,8 +165,16 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
         val nestedContent = (nestedThenNode as KtBlockExpression).children().toMutableList()
         // Remove {, }, and white spaces
         repeat(2) {
-            nestedContent.removeFirst()
-            nestedContent.removeLast()
+            val firstElType = nestedContent.first().elementType
+            if (firstElType == WHITE_SPACE ||
+                    firstElType == LBRACE) {
+                nestedContent.removeFirst()
+            }
+            val lastElType = nestedContent.last().elementType
+            if (lastElType == WHITE_SPACE ||
+                    lastElType == RBRACE) {
+                nestedContent.removeLast()
+            }
         }
         val nestedThenText = nestedContent.joinToString("") { it.text }
         val newNestedNode = KotlinParser().createNode(nestedThenText).treeParent

@@ -250,3 +250,9 @@ fun foo() {
         }
     }
 }
+
+fun foo () {
+    if (true) {
+        if (true) {doSomething()}
+    }
+}

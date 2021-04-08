@@ -77,6 +77,21 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
 
     @Test
     @Tag(WarningNames.COLLAPSE_IF_STATEMENTS)
+    fun `nested if with incorrect indention`() {
+        lintMethod(
+            """
+            |fun foo () {
+            |     if (true) {
+            |         if (true) {doSomething()}
+            |     }
+            |}
+            """.trimMargin(),
+            LintError(3, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.COLLAPSE_IF_STATEMENTS)
     fun `eol comment`() {
         lintMethod(
             """

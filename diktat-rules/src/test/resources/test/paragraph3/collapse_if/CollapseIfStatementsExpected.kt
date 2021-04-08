@@ -213,3 +213,9 @@ cond3) {
         doSomething()
     }
 }
+
+fun foo () {
+    if (true && true) {
+        doSomething()
+    }
+}
