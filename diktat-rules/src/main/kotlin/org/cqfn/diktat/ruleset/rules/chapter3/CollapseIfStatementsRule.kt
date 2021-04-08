@@ -92,6 +92,9 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
         // We monitor which types of nodes are followed before and after nested `if`
         // and we allow only a limited number of types to pass through.
         // Otherwise discovered `if` is not nested
+        // We don't expect KDOC in `if-statements`, since it's a bad practise, and such code by meaning of our
+        // code analyzer is invalid
+        // However, if in some case we will hit the KDOC, than we won't collapse statements
         val listOfNodesBeforeNestedIf = parentThenNode.getChildren(null).takeWhile { it.elementType != IF }
         val listOfNodesAfterNestedIf = parentThenNode.getChildren(null).takeLastWhile { it != parentThenNode.findChildByType(IF) }
         val allowedTypes = listOf(LBRACE, WHITE_SPACE, RBRACE, BLOCK_COMMENT, EOL_COMMENT)
