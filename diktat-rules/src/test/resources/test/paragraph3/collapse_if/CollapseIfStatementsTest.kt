@@ -225,3 +225,28 @@ fun foo() {
         }
     }
 }
+
+fun foo() {
+    // comment
+    if (cond1) {
+        /*
+         Some comments
+        */
+        // More comments
+        if (cond2 || cond3) {
+            doSomething()
+        }
+    }
+}
+
+fun foo() {
+    if (cond1) {
+        // comment
+        if (cond2) {
+            // comment 2
+            if (cond3) {
+                doSomething()
+            }
+        }
+    }
+}

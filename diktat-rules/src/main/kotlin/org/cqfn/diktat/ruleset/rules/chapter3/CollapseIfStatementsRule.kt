@@ -108,7 +108,7 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
             it.elementType == EOL_COMMENT ||
                     it.elementType == BLOCK_COMMENT
         }
-            ?.toList() ?: listOf()
+            ?.toList() ?: emptyList()
     }
 
     private fun collapse(parentNode: ASTNode, nestedNode: ASTNode) {

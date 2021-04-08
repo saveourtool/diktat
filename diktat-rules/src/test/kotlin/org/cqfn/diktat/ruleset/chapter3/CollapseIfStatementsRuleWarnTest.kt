@@ -160,6 +160,50 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
 
     @Test
     @Tag(WarningNames.COLLAPSE_IF_STATEMENTS)
+    fun `comments in compound cond`() {
+        lintMethod(
+            """
+            |fun foo() {
+            |     // comment
+            |     if (cond1) {
+            |         /*
+            |          Some comments
+            |         */
+            |         // More comments
+            |         if (cond2 || cond3) {
+            |             doSomething()
+            |         }
+            |     }
+            |}
+            """.trimMargin(),
+            LintError(8, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.COLLAPSE_IF_STATEMENTS)
+    fun `comments in multiple if-statements`() {
+        lintMethod(
+            """
+            |fun foo() {
+            |     if (cond1) {
+            |         // comment
+            |         if (cond2) {
+            |             // comment 2
+            |             if (cond3) {
+            |                 doSomething()
+            |             }
+            |         }
+            |     }
+            |}
+            """.trimMargin(),
+            LintError(4, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true),
+            LintError(6, 14, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.COLLAPSE_IF_STATEMENTS)
     fun `not nested if`() {
         lintMethod(
             """
