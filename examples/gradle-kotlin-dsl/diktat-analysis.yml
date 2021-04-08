@@ -293,6 +293,28 @@
     maxNumberLength: '5'
     # Maximum number of digits between separators
     maxBlockLength: '3'
+# Checks magic number
+- name: MAGIC_NUMBER
+  enabled: true
+  configuration:
+    # Ignore numbers
+    ignoreNumbers: "-1, 1, 0, 2"
+    # Is ignore override hashCode function
+    ignoreHashCodeFunction: "true"
+    # Is ignore property
+    ignorePropertyDeclaration: "false"
+    # Is ignore local variable
+    ignoreLocalVariableDeclaration: "false"
+    # Is ignore constant
+    ignoreConstantDeclaration: "true"
+    # Is ignore property in companion object
+    ignoreCompanionObjectPropertyDeclaration: "true"
+    # Is ignore numbers in enum
+    ignoreEnums: "false"
+    # Is ignore number in ranges
+    ignoreRanges: "false"
+    # Is ignore number in extension function
+    ignoreExtensionFunctions: "false"
 # Checks that order of enum values or constant property inside companion is correct
 - name: WRONG_DECLARATIONS_ORDER
   enabled: true
@@ -353,6 +375,11 @@
 # Inspection that checks if string template has redundant quotes
 - name: STRING_TEMPLATE_QUOTES
   enabled: true
+# Check if there are redundant nested if-statements, which could be collapsed into a single one by concatenating their conditions
+- name: COLLAPSE_IF_STATEMENTS
+  enabled: true
+  configuration:
+    startCollapseFromNestedLevel: 2
 # Checks that floating-point values are not used in arithmetic expressions
 - name: FLOAT_IN_ACCURATE_CALCULATIONS
   enabled: true
