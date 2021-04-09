@@ -190,6 +190,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
             ::StringConcatenationRule,
             ::StringTemplateFormatRule,
             ::AccurateCalculationsRule,
+            ::CollapseIfStatementsRule,
             ::LineLength,
             ::RunInScript,
             ::TypeAliasRule,
@@ -207,7 +208,6 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
             ::AvoidNestedFunctionsRule,
             ::ExtensionFunctionsSameNameRule,
             ::LambdaLengthRule,
-            ::CollapseIfStatementsRule,
             // formatting: moving blocks, adding line breaks, indentations etc.
             ::BlockStructureBraces,
             ::ConsecutiveSpacesRule,
