@@ -219,3 +219,37 @@ fun foo () {
         doSomething()
     }
 }
+
+fun foo () {
+     if (/*comment*/ true && true) {
+         doSomething()
+     }
+}
+
+fun foo () {
+    if (true /*comment*/ && true) {
+        doSomething()
+    }
+}
+
+fun foo () {
+    if (true && true /*comment*/) {
+        doSomething()
+    }
+}
+
+fun foo () {
+    if (true && (true || false) /*comment*/ && true /*comment*/) {
+        doSomething()
+    }
+}
+
+fun foo () {
+     if (true
+     /*comment
+     * more comments
+     */
+      && true /*comment 2*/) {
+         doSomething()
+     }
+}

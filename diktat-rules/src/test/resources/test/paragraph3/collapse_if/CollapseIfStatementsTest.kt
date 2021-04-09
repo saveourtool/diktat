@@ -256,3 +256,47 @@ fun foo () {
         if (true) {doSomething()}
     }
 }
+
+fun foo () {
+     if (/*comment*/ true) {
+         if (true) {
+             doSomething()
+         }
+     }
+}
+
+fun foo () {
+    if (true /*comment*/) {
+        if (true) {
+            doSomething()
+        }
+    }
+}
+
+fun foo () {
+    if (true) {
+        if (true /*comment*/) {
+            doSomething()
+        }
+    }
+}
+
+fun foo () {
+    if (true && (true || false) /*comment*/) {
+        if (true /*comment*/) {
+            doSomething()
+        }
+    }
+}
+
+fun foo () {
+     if (true
+     /*comment
+     * more comments
+     */
+     ) {
+         if (true /*comment 2*/) {
+             doSomething()
+         }
+     }
+}

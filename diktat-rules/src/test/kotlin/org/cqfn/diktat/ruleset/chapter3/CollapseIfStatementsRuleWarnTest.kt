@@ -197,6 +197,61 @@ class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule
 
     @Test
     @Tag(WarningNames.COLLAPSE_IF_STATEMENTS)
+    fun `comments already in cond`() {
+        lintMethod(
+            """
+            |fun foo () {
+            |     if (/*comment*/ true) {
+            |         if (true) {
+            |             doSomething()
+            |         }
+            |     }
+            |}
+            """.trimMargin(),
+            LintError(3, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.COLLAPSE_IF_STATEMENTS)
+    fun `comments already in complex cond`() {
+        lintMethod(
+            """
+            |fun foo () {
+            |     if (true && (true || false) /*comment*/) {
+            |         if (true /*comment*/) {
+            |             doSomething()
+            |         }
+            |     }
+            |}
+            """.trimMargin(),
+            LintError(3, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.COLLAPSE_IF_STATEMENTS)
+    fun `multiline comments already in cond`() {
+        lintMethod(
+            """
+            |fun foo () {
+            |     if (true
+            |     /*comment
+            |     * more comments
+            |     */
+            |     ) {
+            |         if (true /*comment 2*/) {
+            |             doSomething()
+            |         }
+            |     }
+            |}
+            """.trimMargin(),
+            LintError(7, 10, ruleId, "${COLLAPSE_IF_STATEMENTS.warnText()} avoid using redundant nested if-statements", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.COLLAPSE_IF_STATEMENTS)
     fun `comments in multiple if-statements`() {
         lintMethod(
             """

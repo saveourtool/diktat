@@ -12,8 +12,10 @@ import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.IF
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
+import com.pinterest.ktlint.core.ast.ElementType.LPAR
 import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
+import com.pinterest.ktlint.core.ast.ElementType.RPAR
 import com.pinterest.ktlint.core.ast.ElementType.THEN
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.children
@@ -128,17 +130,18 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
             " "
         }
         // Merge parent and nested conditions
-        val parentCondition = (parentNode.psi as KtIfExpression).condition?.text
+        val parentConditionText = extractConditions(parentNode)
         val nestedCondition = (nestedNode.psi as KtIfExpression).condition
+        val nestedConditionText = extractConditions(nestedNode)
         // If the nested condition is compound,
         // we need to put it to the brackets, according algebra of logic
         val mergeCondition =
                 if (nestedCondition?.node?.elementType == BINARY_EXPRESSION &&
                         nestedCondition.node?.findChildByType(OPERATION_REFERENCE)?.text == "||"
                 ) {
-                    "if ($parentCondition &&$commentsText(${nestedCondition.text})) {}"
+                    "if ($parentConditionText &&$commentsText(${nestedConditionText})) {}"
                 } else {
-                    "if ($parentCondition &&$commentsText${nestedCondition?.text}) {}"
+                    "if ($parentConditionText &&$commentsText${nestedConditionText}) {}"
                 }
         val newParentIfNode = KotlinParser().createNode(mergeCondition)
         // Remove THEN block
@@ -151,6 +154,14 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
             parentNode.addChild(child, addAfter)
             addAfter = parentNode.children().drop(index + 1).first()
         }
+    }
+    // If condition contains comments, we need additional actions
+    // Because of `node.condition` will ignore comments
+    private fun extractConditions(node: ASTNode): String {
+        val condition = node.getChildren(null)
+            .takeLastWhile { it != node.findChildByType(LPAR)}
+                .takeWhile { it != node.findChildByType(RPAR) }
+        return condition.joinToString("") { it.text }
     }
 
     private fun collapseThenBlocks(parentNode: ASTNode, nestedNode: ASTNode) {
