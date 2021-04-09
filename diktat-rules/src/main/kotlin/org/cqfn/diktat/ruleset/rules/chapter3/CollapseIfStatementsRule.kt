@@ -139,9 +139,9 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
                 if (nestedCondition?.node?.elementType == BINARY_EXPRESSION &&
                         nestedCondition.node?.findChildByType(OPERATION_REFERENCE)?.text == "||"
                 ) {
-                    "if ($parentConditionText &&$commentsText(${nestedConditionText})) {}"
+                    "if ($parentConditionText &&$commentsText($nestedConditionText)) {}"
                 } else {
-                    "if ($parentConditionText &&$commentsText${nestedConditionText}) {}"
+                    "if ($parentConditionText &&$commentsText$nestedConditionText) {}"
                 }
         val newParentIfNode = KotlinParser().createNode(mergeCondition)
         // Remove THEN block
@@ -155,12 +155,13 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
             addAfter = parentNode.children().drop(index + 1).first()
         }
     }
+
     // If condition contains comments, we need additional actions
     // Because of `node.condition` will ignore comments
     private fun extractConditions(node: ASTNode): String {
         val condition = node.getChildren(null)
-            .takeLastWhile { it != node.findChildByType(LPAR)}
-                .takeWhile { it != node.findChildByType(RPAR) }
+            .takeLastWhile { it != node.findChildByType(LPAR) }
+            .takeWhile { it != node.findChildByType(RPAR) }
         return condition.joinToString("") { it.text }
     }
 
