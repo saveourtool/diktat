@@ -117,7 +117,7 @@ jobs:
             [
               { "id": "ossrh", "username": "${{ secrets.SONATYPE_USER }}", "password": "${{ secrets.SONATYPE_PASSWORD }}" },
               { "id": "gpg.passphrase", "passphrase": "${{ secrets.DIKTAT_GPG_PASS }}" },
-              { "id": "kotlin-maven-plugin-tools", "password": "${{ secrets.GITHUB_TOKEN }}" }
+              { "id": "kotlin-maven-plugin-tools", "username": "${{github.actor}}", "password": "${{ secrets.GITHUB_TOKEN }}" }
             ]
       - name: Maven Install
         if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
