@@ -43,7 +43,12 @@ jobs:
       - name: Create settings.xml
         uses: whelk-io/maven-settings-xml-action@v15
         with:
-          servers: '[{ "id": "ossrh", "username": "${{ secrets.SONATYPE_USER }}", "password": "${{ secrets.SONATYPE_PASSWORD }}" }, { "id": "gpg.passphrase", "passphrase": "${{ secrets.DIKTAT_GPG_PASS }}" }]'
+          servers: |
+            [
+              { "id": "ossrh", "username": "${{ secrets.SONATYPE_USER }}", "password": "${{ secrets.SONATYPE_PASSWORD }}" },
+              { "id": "gpg.passphrase", "passphrase": "${{ secrets.DIKTAT_GPG_PASS }}" },
+              { "id": "github", "passphrase": "${{ secrets.GITHUB_TOKEN }}" }
+            ]
       - name: Deploy artifacts
         run: mvn -B clean deploy -Prelease --projects '!diktat-ruleset'
       - name: Build diktat.jar
