@@ -109,21 +109,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-build-
 
-      # Todo: remove; this is for testing purposes
-      - name: Create settings.xml
-        uses: whelk-io/maven-settings-xml-action@v15
-        with:
-          servers: |
-            [
-              { "id": "ossrh", "username": "${{ secrets.SONATYPE_USER }}", "password": "${{ secrets.SONATYPE_PASSWORD }}" },
-              { "id": "gpg.passphrase", "passphrase": "${{ secrets.DIKTAT_GPG_PASS }}" },
-              { "id": "kotlin-maven-plugin-tools", "username": "${{github.actor}}", "password": "${{ secrets.GITHUB_TOKEN }}" }
-            ]
       - name: Maven Install
         if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
         run: |
           mvn -B -T1C clean install
-          mvn -B install -Prelease --pl diktat-maven-plugin
         shell: bash
 
       - name: Maven Install on windows
