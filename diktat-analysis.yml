@@ -38,7 +38,7 @@
 # Checks that function/method name is in lowerCamelCase
 - name: FUNCTION_NAME_INCORRECT_CASE
   enabled: true
-# Checks that typealias name is in pascalCase
+# Checks that typealias name is in PascalCase
 - name: TYPEALIAS_NAME_INCORRECT_CASE
   enabled: true
 # Checks that generic name doesn't contain more than 1 letter (capital). It can be followed by numbers, example: T12, T

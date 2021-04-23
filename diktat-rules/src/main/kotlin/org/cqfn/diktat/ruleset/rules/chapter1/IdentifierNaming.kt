@@ -120,7 +120,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
             ElementType.ENUM_ENTRY -> Pair(checkEnumValues(node), false)
             // covers global functions, extensions and class methods
             ElementType.FUN -> Pair(checkFunctionName(node), false)
-            // covers global functions, extensions and class methods
+            // covers case of typeAlias values
             ElementType.TYPEALIAS -> Pair(checkTypeAliases(node), false)
             else -> Pair(null, false)
         }
