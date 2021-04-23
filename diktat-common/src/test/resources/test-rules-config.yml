@@ -20,6 +20,8 @@
   enabled: true
 - name: FUNCTION_NAME_INCORRECT_CASE
   enabled: true
+- name: TYPEALIAS_NAME_INCORRECT_CASE
+  enabled: true
 - name: GENERIC_NAME
   enabled: true
 - name: IDENTIFIER_LENGTH

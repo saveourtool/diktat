@@ -14,6 +14,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.FUNCTION_NAME_INCORRECT_CASE
 import org.cqfn.diktat.ruleset.constants.Warnings.GENERIC_NAME
 import org.cqfn.diktat.ruleset.constants.Warnings.IDENTIFIER_LENGTH
 import org.cqfn.diktat.ruleset.constants.Warnings.OBJECT_NAME_INCORRECT
+import org.cqfn.diktat.ruleset.constants.Warnings.TYPEALIAS_NAME_INCORRECT_CASE
 import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_HAS_PREFIX
 import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_NAME_INCORRECT
 import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_NAME_INCORRECT_FORMAT
@@ -85,7 +86,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
     listOf(BACKTICKS_PROHIBITED, VARIABLE_NAME_INCORRECT, VARIABLE_NAME_INCORRECT_FORMAT, CONSTANT_UPPERCASE,
         VARIABLE_HAS_PREFIX, CONFUSING_IDENTIFIER_NAMING, GENERIC_NAME, CLASS_NAME_INCORRECT,
         ENUM_VALUE, EXCEPTION_SUFFIX, FUNCTION_BOOLEAN_PREFIX, FUNCTION_NAME_INCORRECT_CASE,
-        IDENTIFIER_LENGTH, OBJECT_NAME_INCORRECT)) {
+        IDENTIFIER_LENGTH, OBJECT_NAME_INCORRECT, TYPEALIAS_NAME_INCORRECT_CASE)) {
     private val allMethodPrefixes by lazy {
         if (configuration.allowedBooleanPrefixes.isEmpty()) {
             booleanMethodPrefixes
@@ -119,6 +120,8 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
             ElementType.ENUM_ENTRY -> Pair(checkEnumValues(node), false)
             // covers global functions, extensions and class methods
             ElementType.FUN -> Pair(checkFunctionName(node), false)
+            // covers global functions, extensions and class methods
+            ElementType.TYPEALIAS -> Pair(checkTypeAliases(node), false)
             else -> Pair(null, false)
         }
 
@@ -383,6 +386,18 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
         }
 
         return listOf(functionName)
+    }
+
+    @Suppress("UnsafeCallOnNullableType")
+    private fun checkTypeAliases(node: ASTNode): List<ASTNode> {
+        val aliasName = node.getIdentifierName()!!
+
+        if (!aliasName.text.isPascalCase()) {
+            TYPEALIAS_NAME_INCORRECT_CASE.warnAndFix(configRules, emitWarn, isFixMode, aliasName.text, aliasName.startOffset, aliasName) {
+                (aliasName as LeafPsiElement).replaceWithText(aliasName.text.toPascalCase())
+            }
+        }
+        return listOf(aliasName)
     }
 
     /**

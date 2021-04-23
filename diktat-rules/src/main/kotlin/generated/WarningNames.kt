@@ -41,6 +41,8 @@ public object WarningNames {
 
     public const val FUNCTION_NAME_INCORRECT_CASE: String = "FUNCTION_NAME_INCORRECT_CASE"
 
+    public const val TYPEALIAS_NAME_INCORRECT_CASE: String = "TYPEALIAS_NAME_INCORRECT_CASE"
+
     public const val FUNCTION_BOOLEAN_PREFIX: String = "FUNCTION_BOOLEAN_PREFIX"
 
     public const val FILE_NAME_INCORRECT: String = "FILE_NAME_INCORRECT"

@@ -55,6 +55,7 @@ enum class Warnings(
     GENERIC_NAME(true, "1.1.1", "generic name should contain only one single capital letter, it can be followed by a number"),
     BACKTICKS_PROHIBITED(false, "1.1.1", "backticks should not be used in identifier's naming. The only exception test methods marked with @Test annotation"),
     FUNCTION_NAME_INCORRECT_CASE(true, "1.4.1", "function/method name should be in lowerCamelCase"),
+    TYPEALIAS_NAME_INCORRECT_CASE(true, "1.4.2", "typealias name should be in pascalCase"),
     FUNCTION_BOOLEAN_PREFIX(true, "1.6.2", "functions that return the value of Boolean type should have <is> or <has> prefix"),
     FILE_NAME_INCORRECT(true, "1.1.1", "file name is incorrect - it should end with .kt extension and be in PascalCase"),
     EXCEPTION_SUFFIX(true, "1.1.1", "all exception classes should have \"Exception\" suffix"),
