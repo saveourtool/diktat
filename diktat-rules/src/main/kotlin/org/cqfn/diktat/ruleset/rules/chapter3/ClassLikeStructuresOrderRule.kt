@@ -19,7 +19,6 @@ import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.LATEINIT_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
-import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.OBJECT_DECLARATION
 import com.pinterest.ktlint.core.ast.ElementType.PRIVATE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
@@ -36,7 +35,6 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
-import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtClassBody
 import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.psiUtil.parents
@@ -114,9 +112,10 @@ class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     /**
-     * When [this] is a ClassBody node, returns nested classes grouped by whether they are used inside [this] file
+     * Returns nested classes grouped by whether they are used inside [this] file.
+     * [this] ASTNode should have elementType [CLASS_BODY]
      */
-    private fun ASTNode.getUsedAndUnusedClasses() = getChildren(TokenSet.create(CLASS))
+    private fun ASTNode.getUsedAndUnusedClasses() = getAllChildrenWithType(CLASS)
         .partition { classNode ->
             classNode.getIdentifierName()?.let { identifierNode ->
                 parents()
@@ -129,6 +128,9 @@ class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
         }
 
     /**
+     * Checks whether all class elements in [this] node are correctly ordered and reorders them in fix mode.
+     * [this] ASTNode should have elementType [CLASS_BODY]
+     *
      * @param blocks list of class elements with leading whitespaces and comments
      */
     @Suppress("UnsafeCallOnNullableType")
