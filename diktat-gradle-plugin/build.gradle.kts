@@ -16,7 +16,6 @@ repositories {
     }
     mavenLocal()  // to use snapshot diktat
     mavenCentral()
-    jcenter()
 }
 
 // default value is needed for correct gradle loading in IDEA; actual value from maven is used during build
