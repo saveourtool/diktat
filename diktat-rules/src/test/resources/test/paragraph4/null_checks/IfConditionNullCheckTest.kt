@@ -27,5 +27,11 @@ fun test() {
     } else {
         print("www")
     }
+
+    if (some != null) {
+        print("ttt")
+    } else {
+        null
+    }
 }
 

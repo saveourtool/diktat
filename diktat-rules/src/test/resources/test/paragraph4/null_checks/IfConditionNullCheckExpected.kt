@@ -29,5 +29,9 @@ print("qqq")
 ?: run {
 print("www")
 }
+
+    some?.let {
+print("ttt")
+}
 }
 
