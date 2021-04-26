@@ -104,7 +104,7 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
                 """.trimMargin()
             }
         } else {
-            if (elseCodeLines.isNullOrEmpty() || elseCodeLines.first() == "null") {
+            if (elseCodeLines.isNullOrEmpty() || (elseCodeLines.first() == "null" && elseCodeLines.size == 1)) {
                 "$variableName?.let {\n${thenCodeLines?.joinToString(separator = "\n")}\n}"
             } else {
                 """

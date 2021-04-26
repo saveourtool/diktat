@@ -33,5 +33,13 @@ print("www")
     some?.let {
 print("ttt")
 }
+
+    some?.let {
+print("ttt")
+}
+?: run {
+null
+value
+}
 }
 

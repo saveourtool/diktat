@@ -33,5 +33,12 @@ fun test() {
     } else {
         null
     }
+
+    if (some != null) {
+        print("ttt")
+    } else {
+        null
+        value
+    }
 }
 
