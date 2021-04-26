@@ -156,18 +156,6 @@
 
     </dependencyManagement>
 
-    <pluginRepositories>
-        <pluginRepository>
-            <!-- for dokka and probably other kotlin-related artifacts -->
-            <id>jcenter</id>
-            <name>JCenter</name>
-            <url>https://jcenter.bintray.com/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-        </pluginRepository>
-    </pluginRepositories>
-
     <build>
         <pluginManagement>
             <plugins>
