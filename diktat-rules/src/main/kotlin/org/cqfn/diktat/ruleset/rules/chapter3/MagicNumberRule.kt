@@ -8,6 +8,7 @@ import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.CONST_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.ENUM_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.FLOAT_CONSTANT
 import com.pinterest.ktlint.core.ast.ElementType.FUN
@@ -37,9 +38,17 @@ class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule(
         )
     }
     override fun logic(node: ASTNode) {
-        if (node.elementType == INTEGER_CONSTANT || node.elementType == FLOAT_CONSTANT) {
+        if ((node.elementType == INTEGER_CONSTANT || node.elementType == FLOAT_CONSTANT)
+                && !isTopLevelDeclarationConstant(node)) {
             checkNumber(node, configuration)
         }
+    }
+
+    private fun isTopLevelDeclarationConstant(node: ASTNode): Boolean {
+        if (node.treeParent.elementType == PROPERTY) {
+            return (node.treeParent.psi as KtProperty).isTopLevel && (node.treeParent.psi as KtProperty).modifierList?.node?.hasChildOfType(CONST_KEYWORD) ?: false
+        }
+        return false
     }
 
     @Suppress("ComplexMethod")
