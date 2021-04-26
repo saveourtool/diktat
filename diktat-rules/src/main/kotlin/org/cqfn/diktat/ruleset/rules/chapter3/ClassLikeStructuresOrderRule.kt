@@ -165,7 +165,13 @@ class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
                                      val properties: List<ASTNode>,
                                      val lateInitProperties: List<ASTNode>) {
         companion object {
-            @Suppress("UnsafeCllOnNullableType")
+            /**
+             * Create [AllProperties] wrapper from node with type [CLASS_BODY]
+             *
+             * @param node an ASTNode with type [CLASS_BODY]
+             * @return an instance of [AllProperties]
+             */
+            @Suppress("UnsafeCallOnNullableType")
             fun fromClassBody(node: ASTNode): AllProperties {
                 val allProperties = node.getAllChildrenWithType(PROPERTY)
                 val constProperties = allProperties.filterByModifier(CONST_KEYWORD)

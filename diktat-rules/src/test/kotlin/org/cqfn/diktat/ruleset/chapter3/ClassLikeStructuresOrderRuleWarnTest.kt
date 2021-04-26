@@ -58,10 +58,9 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
                     |    private val log = LoggerFactory.getLogger(Example.javaClass)
                     |}
                 """.trimMargin(),
-                LintError(2, 5, ruleId, "${WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnText()} PROPERTY: FOO", true),
-                LintError(3, 5, ruleId, "${WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnText()} PROPERTY: log", true)
-            )
-
+            LintError(2, 5, ruleId, "${WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnText()} PROPERTY: FOO", true),
+            LintError(3, 5, ruleId, "${WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnText()} PROPERTY: log", true)
+        )
     }
 
     // ===== comments on properties ======
