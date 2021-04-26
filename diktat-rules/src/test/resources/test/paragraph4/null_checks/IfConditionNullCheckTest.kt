@@ -22,6 +22,12 @@ fun test() {
         print("qwe")
     }
 
+    if (some == null) {
+        null
+    } else {
+        print("qweqwe")
+    }
+
     if (some != null) {
         print("qqq")
     } else {

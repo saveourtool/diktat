@@ -91,17 +91,27 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
         val thenCodeLines = condition.extractLinesFromBlock(THEN)
         val elseCodeLines = condition.extractLinesFromBlock(ELSE)
         val text = if (isEqualToNull) {
-            if (elseCodeLines.isNullOrEmpty()) {
-                "$variableName ?: run {\n${thenCodeLines?.joinToString(separator = "\n")}\n}"
-            } else {
-                """
-                    |$variableName?.let {
-                    |${elseCodeLines.joinToString(separator = "\n")}
-                    |}
-                    |?: run {
-                    |${thenCodeLines?.joinToString(separator = "\n")}
-                    |}
-                """.trimMargin()
+            when {
+                elseCodeLines.isNullOrEmpty() -> {
+                    "$variableName ?: run {\n${thenCodeLines?.joinToString(separator = "\n")}\n}"
+                }
+                thenCodeLines!!.singleOrNull() == "null" -> {
+                    """
+                        |$variableName?.let {
+                        |${elseCodeLines.joinToString(separator = "\n")}
+                        |}
+                    """.trimMargin()
+                }
+                else -> {
+                    """
+                        |$variableName?.let {
+                        |${elseCodeLines.joinToString(separator = "\n")}
+                        |}
+                        |?: run {
+                        |${thenCodeLines?.joinToString(separator = "\n")}
+                        |}
+                    """.trimMargin()
+                }
             }
         } else {
             if (elseCodeLines.isNullOrEmpty() || (elseCodeLines.singleOrNull() == "null")) {

@@ -24,6 +24,10 @@ print("asd")
 }
 
     some?.let {
+print("qweqwe")
+}
+
+    some?.let {
 print("qqq")
 }
 ?: run {
