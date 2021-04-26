@@ -12,6 +12,7 @@ import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_INITIALIZER
 import com.pinterest.ktlint.core.ast.ElementType.COMPANION_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.CONST_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.ENUM_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
@@ -34,6 +35,8 @@ import com.pinterest.ktlint.core.ast.prevSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.psi.KtClass
+import org.jetbrains.kotlin.psi.KtClassBody
 import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.siblings
@@ -56,7 +59,6 @@ class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress(
         "UnsafeCallOnNullableType",
         "LongMethod",
-        "ComplexMethod",
         "TOO_LONG_FUNCTION"
     )
     private fun checkDeclarationsOrderInClass(node: ASTNode) {
@@ -73,49 +75,21 @@ class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
         val initBlocks = node.getChildren(TokenSet.create(CLASS_INITIALIZER)).toMutableList()
         val constructors = node.getChildren(TokenSet.create(SECONDARY_CONSTRUCTOR)).toMutableList()
         val methods = node.getChildren(TokenSet.create(FUN)).toMutableList()
-        val (usedClasses, unusedClasses) = node
-            .getChildren(TokenSet.create(CLASS))
-            .partition { classNode ->
-                classNode.getIdentifierName()?.let { identifierNode ->
-                    node
-                        .parents()
-                        .last()
-                        .findAllDescendantsWithSpecificType(REFERENCE_EXPRESSION)
-                        .any { ref ->
-                            ref.parent({ it == classNode }) == null && ref.text.contains(identifierNode.text)
-                        }
-                } ?: false
-            }
-            .let { it.first.toMutableList() to it.second.toMutableList() }
+        val (usedClasses, unusedClasses) = node.getUsedAndUnusedClasses()
         val (companionObject, objects) = node.getChildren(TokenSet.create(OBJECT_DECLARATION))
             .partition { it.findChildByType(MODIFIER_LIST)?.findLeafWithSpecificType(COMPANION_KEYWORD) != null }
-        val blocks = Blocks(AllProperties(loggers, constProperties, properties, lateInitProperties), objects.toMutableList(),
-            initBlocks, constructors, methods, usedClasses, companionObject.toMutableList(),
-            unusedClasses)
+        val blocks = Blocks(
+            (node.psi as KtClassBody).enumEntries.map { it.node },
+            AllProperties(loggers, constProperties, properties, lateInitProperties),
+            objects.toMutableList(), initBlocks, constructors, methods, usedClasses,
+            companionObject.toMutableList(), unusedClasses
+        )
             .allBlockFlattened()
             .map { astNode ->
-                Pair(astNode, astNode.siblings(false).takeWhile { it.elementType == WHITE_SPACE || it.isPartOfComment() }.toList())
+                listOf(astNode) + astNode.siblings(false).takeWhile { it.elementType == WHITE_SPACE || it.isPartOfComment() }.toList()
             }
 
-        val classChildren = node.children().filter { it.elementType in childrenTypes }.toList()
-        if (classChildren != blocks.map { it.first }) {
-            blocks.filterIndexed { index, pair -> classChildren[index] != pair.first }
-                .forEach { listOfChildren ->
-                    val astNode = listOfChildren.first
-                    WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnAndFix(configRules, emitWarn, isFixMode,
-                        "${astNode.elementType}: ${astNode.findChildByType(IDENTIFIER)?.text ?: astNode.text}", astNode.startOffset, astNode) {
-                        node.removeRange(node.findChildByType(LBRACE)!!.treeNext, node.findChildByType(RBRACE)!!)
-                        blocks
-                            .reversed()
-                            .map { bodyChild ->
-                                node.addChild(bodyChild.first, node.children().toList()[1])
-                                bodyChild.second.map { node.addChild(it, node.children().toList()[1]) }
-                            }
-                        node.addChild(PsiWhiteSpaceImpl("\n"), node.lastChildNode)
-                        // fixme maybe wrong space between nodes
-                    }
-                }
-        }
+        node.checkAndReorderBlocks(blocks)
     }
 
     @Suppress("UnsafeCallOnNullableType")
@@ -151,6 +125,47 @@ class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     /**
+     * When [this] is a ClassBody node, returns nested classes grouped by whether they are used inside [this] class
+     */
+    private fun ASTNode.getUsedAndUnusedClasses() = getChildren(TokenSet.create(CLASS))
+        .partition { classNode ->
+            classNode.getIdentifierName()?.let { identifierNode ->
+                parents()
+                    .last()
+                    .findAllDescendantsWithSpecificType(REFERENCE_EXPRESSION)
+                    .any { ref ->
+                        ref.parent({ it == classNode }) == null && ref.text.contains(identifierNode.text)
+                    }
+            } ?: false
+        }
+        .let { it.first.toMutableList() to it.second.toMutableList() }
+
+    /**
+     * @param blocks list of class elements with leading whitespaces and comments
+     */
+    @Suppress("UnsafeCallOnNullableType")
+    private fun ASTNode.checkAndReorderBlocks(blocks: List<List<ASTNode>>) {
+        val classChildren = this.children().filter { it.elementType in childrenTypes }.toList()
+        if (classChildren != blocks.map { it.first() }) {
+            blocks.filterIndexed { index, pair -> classChildren[index] != pair.first() }
+                .forEach { listOfChildren ->
+                    val astNode = listOfChildren.first()
+                    WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnAndFix(configRules, emitWarn, isFixMode,
+                        "${astNode.elementType}: ${astNode.findChildByType(IDENTIFIER)?.text ?: astNode.text}", astNode.startOffset, astNode) {
+                        removeRange(findChildByType(LBRACE)!!.treeNext, findChildByType(RBRACE)!!)
+                        blocks
+                            .reversed()
+                            .forEach { bodyChild ->
+                                bodyChild.forEach { this.addChild(it, this.children().toList()[1]) }
+                            }
+                        // Add newline before the closing `}`. All other newlines will be properly formatted by `NewlinesRule`.
+                        this.addChild(PsiWhiteSpaceImpl("\n"), this.lastChildNode)
+                    }
+                }
+        }
+    }
+
+    /**
      * Data class containing different groups of properties in file
      *
      * @property loggers loggers (for example, properties called `log` or `logger`)
@@ -164,6 +179,7 @@ class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
                                      val lateInitProperties: MutableList<ASTNode>)
 
     /**
+     * @property enumEntries if this class is a enum class, list of its entries. Otherwise an empty list.
      * @property allProperties an instance of [AllProperties]
      * @property objects objects
      * @property initBlocks `init` blocks
@@ -173,7 +189,8 @@ class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
      * @property companion `companion object`s
      * @property unusedClasses nested classes that are *not* used in the enclosing class
      */
-    private data class Blocks(val allProperties: AllProperties,
+    private data class Blocks(val enumEntries: List<ASTNode>,
+                              val allProperties: AllProperties,
                               val objects: MutableList<ASTNode>,
                               val initBlocks: MutableList<ASTNode>,
                               val constructors: MutableList<ASTNode>,
@@ -182,14 +199,14 @@ class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
                               val companion: MutableList<ASTNode>,
                               val unusedClasses: MutableList<ASTNode>) {
         init {
-            require(companion.size in 0..1)
+            require(companion.size in 0..1) { "There is more than one companion object in class" }
         }
 
         /**
          * @return all groups of structures in the class
          */
         fun allBlocks() = with(allProperties) {
-            listOf(loggers, constProperties, properties, lateInitProperties, objects,
+            listOf(enumEntries, loggers, constProperties, properties, lateInitProperties, objects,
                 initBlocks, constructors, methods, usedClasses, companion, unusedClasses)
         }
 
@@ -200,6 +217,6 @@ class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        private val childrenTypes = listOf(PROPERTY, CLASS, CLASS_INITIALIZER, SECONDARY_CONSTRUCTOR, FUN, OBJECT_DECLARATION)
+        private val childrenTypes = listOf(PROPERTY, CLASS, CLASS_INITIALIZER, SECONDARY_CONSTRUCTOR, FUN, OBJECT_DECLARATION, ENUM_ENTRY)
     }
 }

@@ -8,6 +8,7 @@ import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
@@ -196,6 +197,24 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
             """.trimMargin(),
             LintError(3, 29, ruleId, "${WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnText()} PROPERTY: b", true),
             LintError(5, 29, ruleId, "${WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnText()} PROPERTY: a", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES)
+    @Disabled
+    fun `should correctly check class elements order in enum classes`() {
+        lintMethod(
+            """
+                enum class Enum {
+                    FOO,
+                    BAR,
+                    ;
+                    
+                    fun f() {}
+                    companion object
+                }
+            """.trimMargin()
         )
     }
 }
