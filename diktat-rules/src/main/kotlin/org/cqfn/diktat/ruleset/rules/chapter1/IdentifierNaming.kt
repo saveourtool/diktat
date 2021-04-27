@@ -174,7 +174,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
                 }
                 // check if identifier of a property has a confusing name
                 if (confusingIdentifierNames.contains(variableName.text) && !isValidCatchIdentifier(variableName) &&
-                    node.elementType == ElementType.PROPERTY
+                        node.elementType == ElementType.PROPERTY
                 ) {
                     warnConfusingName(variableName)
                 }
@@ -248,7 +248,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
             destructingDeclaration.getAllChildrenWithType(DESTRUCTURING_DECLARATION_ENTRY)
                 .map { it.getIdentifierName()!! }
         } else if (node.parents().count() > 1 && node.treeParent.elementType == VALUE_PARAMETER_LIST &&
-            node.treeParent.treeParent.elementType == FUNCTION_TYPE
+                node.treeParent.treeParent.elementType == FUNCTION_TYPE
         ) {
             listOfNotNull(node.getIdentifierName())
         } else {
@@ -424,9 +424,9 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
     ) {
         nodes.forEach {
             if (it.text != "_" && !(it.isTextLengthInRange(MIN_IDENTIFIER_LENGTH..MAX_IDENTIFIER_LENGTH) ||
-                        oneCharIdentifiers.contains(it.text) && isVariable || isValidCatchIdentifier(it)
+                    oneCharIdentifiers.contains(it.text) && isVariable || isValidCatchIdentifier(it)
 
-                        )
+            )
             ) {
                 IDENTIFIER_LENGTH.warn(configRules, emitWarn, isFixMode, it.text, it.startOffset, it)
             }

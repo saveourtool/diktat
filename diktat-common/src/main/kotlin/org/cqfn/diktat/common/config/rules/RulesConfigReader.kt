@@ -14,11 +14,11 @@ import org.slf4j.LoggerFactory
 
 import java.io.BufferedReader
 import java.io.File
+import java.util.Locale
 import java.util.concurrent.atomic.AtomicInteger
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
-import java.util.Locale
 
 const val DIKTAT_COMMON = "DIKTAT_COMMON"
 
