@@ -45,6 +45,13 @@ enum class IssueType {
     VCS, PROJECT_STRUCTURE, TESTS
 }
 
+enum class IssueType2 {
+    VCS, PROJECT_STRUCTURE, TESTS;
+
+    companion object
+    fun foo(bar: Int) = bar
+}
+
 class Foo {
     /**
      * @implNote lorem ipsum

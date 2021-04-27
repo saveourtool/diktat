@@ -5,7 +5,7 @@
 
     <groupId>org.cqfn.diktat</groupId>
     <artifactId>diktat-parent</artifactId>
-    <version>0.5.1-SNAPSHOT</version>
+    <version>0.5.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>diktat</name>
@@ -50,11 +50,12 @@
         <guava.version>30.1.1-jre</guava.version>
         <slf4j.version>1.7.30</slf4j.version>
         <commons-cli.version>1.4</commons-cli.version>
-        <diktat-check.version>0.5.0</diktat-check.version>
+        <diktat-check.version>0.5.1</diktat-check.version>
         <kotlinpoet.version>1.8.0</kotlinpoet.version>
         <detekt.version>1.16.0</detekt.version>
         <dokka.version>1.4.32</dokka.version>
         <jacoco.version>0.8.6</jacoco.version>
+        <maven-plugin-tools.version>3.6.1</maven-plugin-tools.version>
     </properties>
 
     <modules>
@@ -192,7 +193,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-plugin-plugin</artifactId>
-                    <version>3.6.0</version>
+                    <version>${maven-plugin-tools.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -248,7 +249,7 @@
             <plugin>
                 <groupId>com.rudikershaw.gitbuildhook</groupId>
                 <artifactId>git-build-hook-maven-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>3.1.0</version>
                 <configuration>
                     <installHooks>
                         <!-- The location of a git hook to install into the default hooks directory. -->

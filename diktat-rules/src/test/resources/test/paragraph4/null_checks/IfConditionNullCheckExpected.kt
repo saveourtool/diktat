@@ -24,10 +24,26 @@ print("asd")
 }
 
     some?.let {
+print("qweqwe")
+}
+
+    some?.let {
 print("qqq")
 }
 ?: run {
 print("www")
+}
+
+    some?.let {
+print("ttt")
+}
+
+    some?.let {
+print("ttt")
+}
+?: run {
+null
+value
 }
 }
 
