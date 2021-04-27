@@ -76,7 +76,7 @@ If the classes are meant to be used externally, and are not referenced inside th
 - Companion object
 
 **Exception:**
-All variants of a `(private) val` logger should be placed at the beginning of the class (`(private) val log`, `LOG`, `logger`, etc.).
+All variants of a `private val` logger should be placed at the beginning of the class (`private val log`, `LOG`, `logger`, etc.).
 
 #### <a name="r3.1.5"></a> 3.1.5 Order of declaration of top-level code structures
 Kotlin allows several top-level declaration types: classes, objects, interfaces, properties and functions.
