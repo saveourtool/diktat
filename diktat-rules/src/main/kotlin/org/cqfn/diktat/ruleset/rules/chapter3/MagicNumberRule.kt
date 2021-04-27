@@ -48,7 +48,7 @@ class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule(
         val nodeText = node.treePrev?.let { if (it.elementType == OPERATION_REFERENCE && it.hasChildOfType(MINUS)) "-${node.text}" else node.text } ?: node.text
         val isIgnoreNumber = configuration.ignoreNumbers.contains(nodeText)
         val isHashFunction = node.parent({ it.elementType == FUN && it.isHashFun() }) != null
-        val isPropertyDeclaration = node.parent({ it.elementType == PROPERTY && !it.isNodeFromCompanionObject() && !isTopLevelDeclarationConstant(it) }) != null
+        var isPropertyDeclaration = node.parent({ it.elementType == PROPERTY && !it.isNodeFromCompanionObject() }) != null
         val isLocalVariable = node.parent({ it.isVarProperty() && (it.psi as KtProperty).isLocal }) != null
         val isConstant = node.parent({ it.elementType == PROPERTY && it.isConstant() }) != null
         val isCompanionObjectProperty = node.parent({ it.elementType == PROPERTY && it.isNodeFromCompanionObject() }) != null
@@ -56,6 +56,10 @@ class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule(
         val isRanges = node.treeParent.run {
             this.elementType == BINARY_EXPRESSION &&
                     this.findChildByType(OPERATION_REFERENCE)?.hasChildOfType(RANGE) ?: false
+        }
+        if (isConstant) {
+            // excluding const properties
+            isPropertyDeclaration = false
         }
         val isExtensionFunctions = node.parent({ it.elementType == FUN && (it.psi as KtFunction).isExtensionDeclaration() }) != null &&
                 node.parents().find { it.elementType == PROPERTY } == null
@@ -65,9 +69,6 @@ class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule(
             MAGIC_NUMBER.warn(configRules, emitWarn, isFixMode, nodeText, node.startOffset, node)
         }
     }
-
-    private fun isTopLevelDeclarationConstant(node: ASTNode): Boolean =
-            (node.psi as KtProperty).isTopLevel && (node.psi as KtProperty).modifierList?.node?.hasChildOfType(CONST_KEYWORD) ?: false
 
     private fun ASTNode.isHashFun() =
             (this.psi as KtFunction).run {
