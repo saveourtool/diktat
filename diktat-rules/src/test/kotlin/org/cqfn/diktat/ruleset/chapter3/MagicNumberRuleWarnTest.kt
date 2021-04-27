@@ -96,6 +96,23 @@ class MagicNumberRuleWarnTest : LintTestBase(::MagicNumberRule) {
 
     @Test
     @Tag(WarningNames.MAGIC_NUMBER)
+    fun `check ignore top level constants`() {
+        lintMethod(
+            """
+            |const val topLevel = 31
+            |
+            |val shouldTrigger = 32
+            |
+            |fun some() {
+            |
+            |}
+            """.trimMargin(),
+            LintError(3, 21, ruleId, "${MAGIC_NUMBER.warnText()} 32", false),
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.MAGIC_NUMBER)
     fun `check all param in config true`() {
         lintMethod(
             """
