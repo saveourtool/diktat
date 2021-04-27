@@ -48,18 +48,14 @@ class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule(
         val nodeText = node.treePrev?.let { if (it.elementType == OPERATION_REFERENCE && it.hasChildOfType(MINUS)) "-${node.text}" else node.text } ?: node.text
         val isIgnoreNumber = configuration.ignoreNumbers.contains(nodeText)
         val isHashFunction = node.parent({ it.elementType == FUN && it.isHashFun() }) != null
-        var isPropertyDeclaration = node.parent({ it.elementType == PROPERTY && !it.isNodeFromCompanionObject() }) != null
-        val isLocalVariable = node.parent({ it.isVarProperty() && (it.psi as KtProperty).isLocal }) != null
         val isConstant = node.parent({ it.elementType == PROPERTY && it.isConstant() }) != null
+        val isPropertyDeclaration = !isConstant && node.parent({ it.elementType == PROPERTY && !it.isNodeFromCompanionObject() }) != null
+        val isLocalVariable = node.parent({ it.isVarProperty() && (it.psi as KtProperty).isLocal }) != null
         val isCompanionObjectProperty = node.parent({ it.elementType == PROPERTY && it.isNodeFromCompanionObject() }) != null
         val isEnums = node.parent({ it.elementType == ENUM_ENTRY }) != null
         val isRanges = node.treeParent.run {
             this.elementType == BINARY_EXPRESSION &&
                     this.findChildByType(OPERATION_REFERENCE)?.hasChildOfType(RANGE) ?: false
-        }
-        if (isConstant) {
-            // excluding const properties
-            isPropertyDeclaration = false
         }
         val isExtensionFunctions = node.parent({ it.elementType == FUN && (it.psi as KtFunction).isExtensionDeclaration() }) != null &&
                 node.parents().find { it.elementType == PROPERTY } == null
