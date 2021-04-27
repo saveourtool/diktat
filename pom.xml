@@ -55,6 +55,7 @@
         <detekt.version>1.16.0</detekt.version>
         <dokka.version>1.4.32</dokka.version>
         <jacoco.version>0.8.6</jacoco.version>
+        <maven-plugin-tools.version>3.6.1</maven-plugin-tools.version>
     </properties>
 
     <modules>
@@ -192,7 +193,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-plugin-plugin</artifactId>
-                    <version>3.6.1</version>
+                    <version>${maven-plugin-tools.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
