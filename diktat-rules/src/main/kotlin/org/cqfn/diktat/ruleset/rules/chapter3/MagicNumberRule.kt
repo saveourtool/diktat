@@ -38,17 +38,9 @@ class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule(
         )
     }
     override fun logic(node: ASTNode) {
-        if ((node.elementType == INTEGER_CONSTANT || node.elementType == FLOAT_CONSTANT)
-                && !isTopLevelDeclarationConstant(node)) {
+        if (node.elementType == INTEGER_CONSTANT || node.elementType == FLOAT_CONSTANT) {
             checkNumber(node, configuration)
         }
-    }
-
-    private fun isTopLevelDeclarationConstant(node: ASTNode): Boolean {
-        if (node.treeParent.elementType == PROPERTY) {
-            return (node.treeParent.psi as KtProperty).isTopLevel && (node.treeParent.psi as KtProperty).modifierList?.node?.hasChildOfType(CONST_KEYWORD) ?: false
-        }
-        return false
     }
 
     @Suppress("ComplexMethod")
@@ -56,7 +48,7 @@ class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule(
         val nodeText = node.treePrev?.let { if (it.elementType == OPERATION_REFERENCE && it.hasChildOfType(MINUS)) "-${node.text}" else node.text } ?: node.text
         val isIgnoreNumber = configuration.ignoreNumbers.contains(nodeText)
         val isHashFunction = node.parent({ it.elementType == FUN && it.isHashFun() }) != null
-        val isPropertyDeclaration = node.parent({ it.elementType == PROPERTY && !it.isNodeFromCompanionObject() }) != null
+        val isPropertyDeclaration = node.parent({ it.elementType == PROPERTY && !it.isNodeFromCompanionObject() && !isTopLevelDeclarationConstant(it) }) != null
         val isLocalVariable = node.parent({ it.isVarProperty() && (it.psi as KtProperty).isLocal }) != null
         val isConstant = node.parent({ it.elementType == PROPERTY && it.isConstant() }) != null
         val isCompanionObjectProperty = node.parent({ it.elementType == PROPERTY && it.isNodeFromCompanionObject() }) != null
@@ -73,6 +65,9 @@ class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule(
             MAGIC_NUMBER.warn(configRules, emitWarn, isFixMode, nodeText, node.startOffset, node)
         }
     }
+
+    private fun isTopLevelDeclarationConstant(node: ASTNode): Boolean =
+            (node.psi as KtProperty).isTopLevel && (node.psi as KtProperty).modifierList?.node?.hasChildOfType(CONST_KEYWORD) ?: false
 
     private fun ASTNode.isHashFun() =
             (this.psi as KtFunction).run {
