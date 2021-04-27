@@ -42,7 +42,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <kotlin.version>1.4.32</kotlin.version>
+        <kotlin.version>1.5.0</kotlin.version>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
         <kotlinx.serialization.version>1.1.0</kotlinx.serialization.version>
         <ktlint.version>0.39.0</ktlint.version>
@@ -54,7 +54,7 @@
         <kotlinpoet.version>1.8.0</kotlinpoet.version>
         <detekt.version>1.16.0</detekt.version>
         <dokka.version>1.4.32</dokka.version>
-        <jacoco.version>0.8.6</jacoco.version>
+        <jacoco.version>0.8.7-SNAPSHOT</jacoco.version>
         <maven-plugin-tools.version>3.6.1</maven-plugin-tools.version>
     </properties>
 
@@ -74,6 +74,16 @@
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>maven-central-snapshots</id>
+            <name>Maven Central Snapshots</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
 
     <dependencyManagement>
         <dependencies>
@@ -303,7 +313,6 @@
                         <configuration>
                             <config>detekt-config.yml</config>
                             <classPath>${maven.compile.classpath}</classPath>
-                            <languageVersion>1.4</languageVersion>
                             <jvmTarget>1.8</jvmTarget>
                             <excludes>**/resources/**/*.kt,**/resources/**/*.kts</excludes>
                         </configuration>
@@ -416,7 +425,6 @@
                             <sourceDirectories>
                                 <dir>${project.basedir}/src/main/kotlin</dir>
                             </sourceDirectories>
-                            <languageVersion>1.3</languageVersion>
                             <dokkaPlugins>
                                 <plugin>
                                     <groupId>org.jetbrains.dokka</groupId>

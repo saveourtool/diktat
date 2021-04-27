@@ -3,7 +3,7 @@ import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurr
 
 plugins {
     `java-gradle-plugin`
-    kotlin("jvm") version "1.4.32"
+    kotlin("jvm") version "1.5.0"
     jacoco
     id("pl.droidsonroids.jacoco.testkit") version "1.0.7"
     id("org.gradle.test-retry") version "1.2.1"
@@ -16,6 +16,7 @@ repositories {
     }
     mavenLocal()  // to use snapshot diktat
     mavenCentral()
+    maven("https://oss.sonatype.org/content/repositories/snapshots")  // for jacoco snapshot
 }
 
 // default value is needed for correct gradle loading in IDEA; actual value from maven is used during build
