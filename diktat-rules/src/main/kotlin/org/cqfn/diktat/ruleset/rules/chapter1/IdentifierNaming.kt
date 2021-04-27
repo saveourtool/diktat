@@ -64,6 +64,7 @@ import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.psiUtil.isPrivate
 import org.jetbrains.kotlin.psi.psiUtil.parents
+import java.util.Locale
 
 /**
  * This visitor covers rules:  1.2, 1.3, 1.4, 1.5 of Huawei code style. It covers following rules:
@@ -173,7 +174,8 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
                 }
                 // check if identifier of a property has a confusing name
                 if (confusingIdentifierNames.contains(variableName.text) && !isValidCatchIdentifier(variableName) &&
-                        node.elementType == ElementType.PROPERTY) {
+                    node.elementType == ElementType.PROPERTY
+                ) {
                     warnConfusingName(variableName)
                 }
                 // check for constant variables - check for val from companion object or on global file level
@@ -246,7 +248,8 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
             destructingDeclaration.getAllChildrenWithType(DESTRUCTURING_DECLARATION_ENTRY)
                 .map { it.getIdentifierName()!! }
         } else if (node.parents().count() > 1 && node.treeParent.elementType == VALUE_PARAMETER_LIST &&
-                node.treeParent.treeParent.elementType == FUNCTION_TYPE) {
+            node.treeParent.treeParent.elementType == FUNCTION_TYPE
+        ) {
             listOfNotNull(node.getIdentifierName())
         } else {
             listOf(node.getIdentifierName()!!)
@@ -299,7 +302,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    private fun hasExceptionSuffix(text: String) = text.toLowerCase().endsWith("exception")
+    private fun hasExceptionSuffix(text: String) = text.lowercase(Locale.getDefault()).endsWith("exception")
 
     /**
      * basic check for object naming of code blocks (PascalCase)
@@ -324,8 +327,10 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
     private fun checkEnumValues(node: ASTNode): List<ASTNode> {
         val enumValues: List<ASTNode> = node.getChildren(null).filter { it.elementType == ElementType.IDENTIFIER }
         enumValues.forEach { value ->
-            val configuration = IdentifierNamingConfiguration(configRules.getRuleConfig(ENUM_VALUE)?.configuration
-                ?: emptyMap())
+            val configuration = IdentifierNamingConfiguration(
+                configRules.getRuleConfig(ENUM_VALUE)?.configuration
+                    ?: emptyMap()
+            )
             val validator = when (configuration.enumStyle) {
                 Style.PASCAL_CASE -> String::isPascalCase
                 Style.SNAKE_CASE -> String::isUpperSnakeCase
@@ -413,13 +418,16 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
     /**
      * identifier name length should not be longer than 64 symbols and shorter than 2 symbols
      */
-    private fun checkIdentifierLength(nodes: List<ASTNode>,
-                                      isVariable: Boolean) {
+    private fun checkIdentifierLength(
+        nodes: List<ASTNode>,
+        isVariable: Boolean
+    ) {
         nodes.forEach {
             if (it.text != "_" && !(it.isTextLengthInRange(MIN_IDENTIFIER_LENGTH..MAX_IDENTIFIER_LENGTH) ||
-                    oneCharIdentifiers.contains(it.text) && isVariable || isValidCatchIdentifier(it)
+                        oneCharIdentifiers.contains(it.text) && isVariable || isValidCatchIdentifier(it)
 
-            )) {
+                        )
+            ) {
                 IDENTIFIER_LENGTH.warn(configRules, emitWarn, isFixMode, it.text, it.startOffset, it)
             }
         }

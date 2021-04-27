@@ -104,7 +104,7 @@ fun String.hasPrefix(): Boolean {
 fun String.removePrefix(): String {
     // FixMe: there can be cases when after you will change variable name - it becomes a keyword
     if (this.isLowerCamelCase()) {
-        return this[1].toLowerCase() + this.substring(2)
+        return this[1].lowercaseChar() + this.substring(2)
     }
     if (this.isUpperSnakeCase()) {
         return this.substring(2)

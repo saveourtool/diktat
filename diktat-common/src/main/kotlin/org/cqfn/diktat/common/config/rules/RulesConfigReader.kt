@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
+import java.util.Locale
 
 const val DIKTAT_COMMON = "DIKTAT_COMMON"
 
@@ -102,7 +103,7 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
      */
     val testAnchors: List<String> by lazy {
         val testDirs = (configuration ?: emptyMap()).getOrDefault("testDirs", "test").split(',')
-        if (testDirs.any { !it.toLowerCase().endsWith("test") }) {
+        if (testDirs.any { !it.lowercase(Locale.getDefault()).endsWith("test") }) {
             log.error("test directory names should end with `test`")
         }
         testDirs
@@ -139,7 +140,7 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
      */
     val srcDirectories: List<String> by lazy {
         val srcDirs = configuration?.get("srcDirectories")?.split(",")?.map { it.trim() } ?: listOf("main")
-        if (srcDirs.any { !it.toLowerCase().endsWith("main") }) {
+        if (srcDirs.any { !it.lowercase(Locale.getDefault()).endsWith("main") }) {
             log.error("source directory names should end with `main`")
         }
         srcDirs

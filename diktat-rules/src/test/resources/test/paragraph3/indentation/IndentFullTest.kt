@@ -1,5 +1,7 @@
 package test.paragraph3.indentation
 
+import java.util.Locale
+
 @Deprecated("Use NewFoo instead")
 class Foo :
 Comparable<Any>,
@@ -67,17 +69,17 @@ foo: String,
 bar: String?,
 x: Int?
 ) {
-foo.toUpperCase()
-.trim()
-.length
-val barLen =
-bar?.length ?: x
-?: -1
-if (foo.length > 0 &&
-barLen > 0
-) {
-println("> 0")
-}
+    foo.uppercase(Locale.getDefault())
+        .trim()
+        .length
+    val barLen =
+        bar?.length ?: x
+        ?: -1
+    if (foo.length > 0 &&
+        barLen > 0
+    ) {
+        println("> 0")
+    }
 }
 }
 
