@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.rules.chapter3
 
-import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
@@ -11,6 +10,7 @@ import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
 import org.cqfn.diktat.ruleset.utils.calculateLineColByOffset
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 
+import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.BOOLEAN_CONSTANT
@@ -230,7 +230,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun divideAnnotationByComma(text: String): String {
-        val lastIndex = text.indexOfLast { it == ',' } + 1 //  plus one is to include comma on the first line
+        val lastIndex = text.indexOfLast { it == ',' } + 1  // plus one is to include comma on the first line
         return text.substring(0, lastIndex) + "\n" + text.substring(lastIndex, text.length)
     }
 
@@ -239,9 +239,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         return text.substring(0, divisionIndex) + "\" +\n\"" + text.substring(divisionIndex, text.length)
     }
 
-    private fun isDividerInString(text: String): Boolean =
-            text.count { it == '"' } % 2 != 0
-
+    private fun isDividerInString(text: String): Boolean = text.count { it == '"' } % 2 != 0
 
     private fun fixComment(wrongComment: LongLineFixableCases.Comment) {
         val wrongNode = wrongComment.node
