@@ -32,6 +32,20 @@ class BlankLinesWarnTest : LintTestBase(::BlankLinesRule) {
 
     @Test
     @Tag(WarningNames.TOO_MANY_BLANK_LINES)
+    fun `check lambda with empty block`() {
+        lintMethod(
+            """
+                    |fun foo() {
+                    |   run { 
+                    |   
+                    |   }
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.TOO_MANY_BLANK_LINES)
     fun `should prohibit usage of two or more consecutive blank lines`() {
         lintMethod(
             """

@@ -37,7 +37,8 @@ class TypeAliasRule(configRules: List<RulesConfig>) : DiktatRule(
      */
     private fun checkTypeReference(node: ASTNode, config: TypeAliasConfiguration) {
         if (node.textLength > config.typeReferenceLength) {
-            if (node.findAllNodesWithSpecificType(LT).size > 1 || node.findAllNodesWithSpecificType(VALUE_PARAMETER).size > 1) {
+            @Suppress("COLLAPSE_IF_STATEMENTS")
+            if (node.findAllDescendantsWithSpecificType(LT).size > 1 || node.findAllDescendantsWithSpecificType(VALUE_PARAMETER).size > 1) {
                 TYPE_ALIAS.warn(configRules, emitWarn, isFixMode, "too long type reference", node.startOffset, node)
             }
         }

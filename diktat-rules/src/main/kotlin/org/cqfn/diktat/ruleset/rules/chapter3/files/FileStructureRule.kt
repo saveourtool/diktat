@@ -14,7 +14,7 @@ import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.rules.chapter1.PackageNaming.Companion.PACKAGE_SEPARATOR
 import org.cqfn.diktat.ruleset.utils.StandardPlatforms
 import org.cqfn.diktat.ruleset.utils.copyrightWords
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
+import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.handleIncorrectOrder
 import org.cqfn.diktat.ruleset.utils.moveChildBefore
 import org.cqfn.diktat.ruleset.utils.operatorMap
@@ -108,7 +108,10 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
         return hasCode
     }
 
-    @Suppress("ComplexMethod", "TOO_LONG_FUNCTION")
+    @Suppress(
+        "ComplexMethod",
+        "TOO_LONG_FUNCTION",
+        "SpreadOperator")
     private fun checkCodeBlocksOrderAndEmptyLines(node: ASTNode) {
         // From KtFile.kt: 'scripts have no package directive, all other files must have package directives'.
         // Kotlin compiler itself enforces it's position in the file if it is present.
@@ -247,7 +250,7 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun findAllReferences(node: ASTNode) {
-        node.findAllNodesWithSpecificType(OPERATION_REFERENCE).forEach { ref ->
+        node.findAllDescendantsWithSpecificType(OPERATION_REFERENCE).forEach { ref ->
             if (!ref.isPartOf(IMPORT_DIRECTIVE)) {
                 val references = operatorMap.filterValues { it == ref.text }
                 if (references.isNotEmpty()) {
@@ -258,7 +261,7 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
                 }
             }
         }
-        node.findAllNodesWithSpecificType(REFERENCE_EXPRESSION).forEach {
+        node.findAllDescendantsWithSpecificType(REFERENCE_EXPRESSION).forEach {
             if (!it.isPartOf(IMPORT_DIRECTIVE)) {
                 // the importedName method removes the quotes, but the node.text method does not
                 refSet.add(it.text.replace("`", ""))

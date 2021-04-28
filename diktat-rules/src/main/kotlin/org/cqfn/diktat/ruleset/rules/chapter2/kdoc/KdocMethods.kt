@@ -10,7 +10,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_ON_FUNCTION
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
+import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.findChildAfter
 import org.cqfn.diktat.ruleset.utils.getBodyLines
 import org.cqfn.diktat.ruleset.utils.getFilePath
@@ -153,7 +153,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun getExplicitlyThrownExceptions(node: ASTNode): Set<String> {
         val codeBlock = node.getFirstChildWithType(BLOCK)
-        val throwKeywords = codeBlock?.findAllNodesWithSpecificType(THROW)
+        val throwKeywords = codeBlock?.findAllDescendantsWithSpecificType(THROW)
         return throwKeywords
             ?.map { it.psi as KtThrowExpression }
             ?.mapNotNull { it.thrownExpression?.referenceExpression()?.text }

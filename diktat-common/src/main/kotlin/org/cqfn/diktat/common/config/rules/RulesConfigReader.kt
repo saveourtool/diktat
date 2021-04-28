@@ -106,7 +106,11 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
      * List of directory names which will be used to detect test sources
      */
     val testAnchors: List<String> by lazy {
-        (configuration ?: emptyMap()).getOrDefault("testDirs", "test").split(',')
+        val testDirs = (configuration ?: emptyMap()).getOrDefault("testDirs", "test").split(',')
+        if (testDirs.any { !it.toLowerCase().endsWith("test") }) {
+            log.error("test directory names should end with `test`")
+        }
+        testDirs
     }
 
     /**
@@ -134,6 +138,22 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
             KotlinVersion.CURRENT
         }
     }
+
+    /**
+     * Get source directories from configuration
+     */
+    val srcDirectories: List<String> by lazy {
+        val srcDirs = configuration?.get("srcDirectories")?.split(",")?.map { it.trim() } ?: listOf("main")
+        if (srcDirs.any { !it.toLowerCase().endsWith("main") }) {
+            log.error("source directory names should end with `main`")
+        }
+        srcDirs
+    }
+
+    /**
+     * False if configuration has been read from config file, true if defaults are used
+     */
+    val isDefault = configuration == null
 
     companion object {
         /**

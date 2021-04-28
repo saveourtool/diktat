@@ -6,7 +6,9 @@ import org.cqfn.diktat.common.config.rules.isRuleEnabled
 import org.cqfn.diktat.ruleset.utils.hasSuppress
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
-typealias EmitType = ((offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit)
+typealias EmitType = ((offset: Int,
+                       errorMessage: String,
+                       canBeAutoCorrected: Boolean) -> Unit)
 
 typealias ListOfList = MutableList<MutableList<ASTNode>>
 
@@ -29,6 +31,9 @@ enum class Warnings(
     val canBeAutoCorrected: Boolean,
     val ruleId: String,
     private val warn: String) : Rule {
+    // ======== dummy test warning ======
+    DUMMY_TEST_WARNING(true, "0.0.0", "this is a dummy warning that can be used for manual testing of fixer/checker"),
+
     // ======== chapter 1 ========
     PACKAGE_NAME_MISSING(true, "1.2.1", "no package name declared in a file"),
     PACKAGE_NAME_INCORRECT_CASE(true, "1.2.1", "package name should be completely in a lower case"),
@@ -50,6 +55,7 @@ enum class Warnings(
     GENERIC_NAME(true, "1.1.1", "generic name should contain only one single capital letter, it can be followed by a number"),
     BACKTICKS_PROHIBITED(false, "1.1.1", "backticks should not be used in identifier's naming. The only exception test methods marked with @Test annotation"),
     FUNCTION_NAME_INCORRECT_CASE(true, "1.4.1", "function/method name should be in lowerCamelCase"),
+    TYPEALIAS_NAME_INCORRECT_CASE(true, "1.3.1", "typealias name should be in pascalCase"),
     FUNCTION_BOOLEAN_PREFIX(true, "1.6.2", "functions that return the value of Boolean type should have <is> or <has> prefix"),
     FILE_NAME_INCORRECT(true, "1.1.1", "file name is incorrect - it should end with .kt extension and be in PascalCase"),
     EXCEPTION_SUFFIX(true, "1.1.1", "all exception classes should have \"Exception\" suffix"),
@@ -110,7 +116,7 @@ enum class Warnings(
     COMPLEX_EXPRESSION(false, "3.6.3", "complex dot qualified expression should be replaced with variable"),
 
     // FixMe: autofixing will be added for this rule
-    STRING_CONCATENATION(false, "3.15.1", "strings should not be concatenated using plus operator - use string templates instead if the statement fits one line"),
+    STRING_CONCATENATION(true, "3.15.1", "strings should not be concatenated using plus operator - use string templates instead if the statement fits one line"),
     TOO_MANY_BLANK_LINES(true, "3.7.1", "too many consecutive blank lines"),
     WRONG_WHITESPACE(true, "3.8.1", "incorrect usage of whitespaces for code separation"),
     TOO_MANY_CONSECUTIVE_SPACES(true, "3.8.1", "too many consecutive spaces"),
@@ -118,12 +124,14 @@ enum class Warnings(
     ENUMS_SEPARATED(true, "3.9.1", "enum is incorrectly formatted"),
     WHEN_WITHOUT_ELSE(true, "3.11.1", "each 'when' statement must have else at the end"),
     LONG_NUMERICAL_VALUES_SEPARATED(true, "3.14.2", "long numerical values should be separated with underscore"),
+    MAGIC_NUMBER(false, "3.14.3", "avoid using magic numbers, instead define constants with clear names describing what the magic number means"),
     WRONG_DECLARATIONS_ORDER(true, "3.1.4", "declarations of constants and enum members should be sorted alphabetically"),
     WRONG_MULTIPLE_MODIFIERS_ORDER(true, "3.14.1", "sequence of modifier-keywords is incorrect"),
     LOCAL_VARIABLE_EARLY_DECLARATION(false, "3.10.2", "local variables should be declared close to the line where they are first used"),
     STRING_TEMPLATE_CURLY_BRACES(true, "3.15.2", "string template has redundant curly braces"),
     STRING_TEMPLATE_QUOTES(true, "3.15.2", "string template has redundant quotes"),
     FILE_NAME_MATCH_CLASS(true, "3.1.2", "file name is incorrect - it should match with the class described in it if there is the only one class declared"),
+    COLLAPSE_IF_STATEMENTS(true, "3.16.1", "avoid using redundant nested if-statements, which could be collapsed into a single one"),
 
     // ======== chapter 4 ========
     NULLABLE_PROPERTY_TYPE(true, "4.3.1", "try to avoid use of nullable types"),
@@ -165,6 +173,7 @@ enum class Warnings(
     OBJECT_IS_PREFERRED(true, "6.4.2", "it is better to use object for stateless classes"),
     INLINE_CLASS_CAN_BE_USED(true, "6.1.12", "inline class can be used"),
     EXTENSION_FUNCTION_WITH_CLASS(false, "6.2.3", "do not use extension functions for the class defined in the same file"),
+    RUN_IN_SCRIPT(true, "6.5.1", "wrap blocks of code in top-level scope functions like `run`"),
     ;
 
     /**

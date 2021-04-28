@@ -8,7 +8,19 @@ import org.cqfn.diktat.ruleset.constants.Warnings.COMPLEX_EXPRESSION
 import org.cqfn.diktat.ruleset.constants.Warnings.REDUNDANT_SEMICOLON
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_NEWLINES
 import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.ruleset.utils.*
+import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
+import org.cqfn.diktat.ruleset.utils.emptyBlockList
+import org.cqfn.diktat.ruleset.utils.extractLineOfText
+import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
+import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
+import org.cqfn.diktat.ruleset.utils.getIdentifierName
+import org.cqfn.diktat.ruleset.utils.hasParent
+import org.cqfn.diktat.ruleset.utils.isBeginByNewline
+import org.cqfn.diktat.ruleset.utils.isEol
+import org.cqfn.diktat.ruleset.utils.isFollowedByNewline
+import org.cqfn.diktat.ruleset.utils.isSingleLineIfElse
+import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
+import org.cqfn.diktat.ruleset.utils.log
 
 import com.pinterest.ktlint.core.ast.ElementType.ANDAND
 import com.pinterest.ktlint.core.ast.ElementType.ARROW
@@ -111,6 +123,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             in lineBreakBeforeOperators -> handleOperatorWithLineBreakBefore(node)
             LPAR -> handleOpeningParentheses(node)
             COMMA -> handleComma(node)
+            COLON -> handleColon(node)
             BLOCK -> handleLambdaBody(node)
             RETURN -> handleReturnStatement(node)
             SUPER_TYPE_LIST, VALUE_PARAMETER_LIST, VALUE_ARGUMENT_LIST -> handleList(node)
@@ -231,6 +244,40 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
+    /**
+     * Check that newline is not placed before or after a colon
+     */
+    private fun handleColon(node: ASTNode) {
+        val prevNewLine = node
+            .parent({ it.treePrev != null }, strict = false)
+            ?.treePrev
+            ?.takeIf {
+                it.elementType == WHITE_SPACE && it.text.contains("\n")
+            }
+        prevNewLine?.let { whiteSpace ->
+            WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, "newline shouldn't be placed before colon", node.startOffset, node) {
+                whiteSpace.treeParent.removeChild(whiteSpace)
+
+                if (node.hasParent(VALUE_PARAMETER_LIST)) {
+                    // If inside the list of arguments the rule for a new line before the colon has worked,
+                    // then we delete the new line on both sides of the colon
+                    whiteSpace.treeParent?.let {
+                        val nextNewLine = node
+                            .parent({ it.treeNext != null }, strict = false)
+                            ?.treeNext
+                            ?.takeIf {
+                                it.elementType == WHITE_SPACE && it.text.contains("\n")
+                            }
+                        nextNewLine?.let {
+                            it.treeParent.addChild(PsiWhiteSpaceImpl(" "), it)
+                            it.treeParent.removeChild(it)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private fun handleLambdaBody(node: ASTNode) {
         if (node.treeParent.elementType == FUNCTION_LITERAL) {
             val isSingleLineLambda = node.treeParent.text.lines().size == 1
@@ -306,9 +353,15 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
      */
     @Suppress("ComplexMethod")
     private fun handleList(node: ASTNode) {
-        if (node.elementType == VALUE_PARAMETER_LIST && node.treeParent.elementType.let { it == FUNCTION_TYPE || it == FUNCTION_TYPE_RECEIVER }) {
+        if (node.elementType == VALUE_PARAMETER_LIST) {
+            // do not check list parameter in lambda
+            node.findParentNodeWithSpecificType(LAMBDA_ARGUMENT)?.let {
+                return
+            }
             // do not check other value lists
-            return
+            if (node.treeParent.elementType.let { it == FUNCTION_TYPE || it == FUNCTION_TYPE_RECEIVER }) {
+                return
+            }
         }
 
         if (node.elementType == VALUE_ARGUMENT_LIST && node.siblings(forward = false).any { it.elementType == REFERENCE_EXPRESSION }) {
@@ -354,12 +407,14 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
                 warnText
             }
             WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode, freeText, node.startOffset, node) {
-                node.appendNewlineMergingWhiteSpace(
-                    list.first()
-                        .treePrev
-                        .takeIf { it.elementType == WHITE_SPACE },
-                    list.first()
-                )
+                list.first().treePrev?.let {
+                    node.appendNewlineMergingWhiteSpace(
+                        list.first()
+                            .treePrev
+                            .takeIf { it.elementType == WHITE_SPACE },
+                        list.first()
+                    )
+                }
             }
         }
 
@@ -512,7 +567,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             parents().takeWhile { it.elementType in chainExpressionTypes && it.elementType != LAMBDA_ARGUMENT }
 
     private fun isMultilineLambda(node: ASTNode): Boolean =
-            node.findAllNodesWithSpecificType(LAMBDA_ARGUMENT)
+            node.findAllDescendantsWithSpecificType(LAMBDA_ARGUMENT)
                 .firstOrNull()
                 ?.text
                 ?.count { it == '\n' } ?: -1 > 0
@@ -526,7 +581,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             val firstCallee = mutableListOf<ASTNode>().also {
                 getOrderedCallExpressions(psi, it)
             }.first()
-            findAllNodesWithSpecificType(firstCallee.elementType, false).first() === this@isFirstCall
+            findAllDescendantsWithSpecificType(firstCallee.elementType, false).first() === this@isFirstCall
         } ?: false
 
     /**

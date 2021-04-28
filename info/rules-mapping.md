@@ -17,6 +17,7 @@
 | CLASS_NAME_INCORRECT | [1.3.1](guide/diktat-coding-convention.md#r1.3.1) | yes | Naming |
 | OBJECT_NAME_INCORRECT | [1.3.1](guide/diktat-coding-convention.md#r1.3.1) | yes | Naming |
 | ENUM_VALUE | [1.3.1](guide/diktat-coding-convention.md#r1.3.1) | yes | Naming |
+| TYPEALIAS_NAME_INCORRECT_CASE | [1.3.1](guide/diktat-coding-convention.md#r1.3.1) | yes | Naming |
 | FUNCTION_NAME_INCORRECT_CASE | [1.4.1](guide/diktat-coding-convention.md#r1.4.1) | yes | Naming |
 | CONSTANT_UPPERCASE | [1.5.1](guide/diktat-coding-convention.md#r1.5.1) | yes | Naming |
 | VARIABLE_NAME_INCORRECT_FORMAT | [1.6.1](guide/diktat-coding-convention.md#r1.6.1) | yes | Naming |

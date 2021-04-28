@@ -17,10 +17,8 @@ class HttpClient(var name: String) {
 
 class Example {
     fun foo() {
-        if (condition1) {
-            if (condition2) {
-                bar()
-            }
+        if (condition1 && condition2) {
+            bar()
         }
 
         if (condition3) {
@@ -37,6 +35,21 @@ class Example {
 
 enum class IssueType {
     PROJECT_STRUCTURE, TESTS, VCS
+}
+
+enum class IssueType2 {
+    PROJECT_STRUCTURE,
+    TESTS,
+    VCS,
+    ;
+
+    /**
+     * @param bar
+     * @return
+     */
+    fun foo(bar: Int) = bar
+
+    companion object
 }
 
 class Foo {

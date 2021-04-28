@@ -22,10 +22,29 @@ fun test() {
         print("qwe")
     }
 
+    if (some == null) {
+        null
+    } else {
+        print("qweqwe")
+    }
+
     if (some != null) {
         print("qqq")
     } else {
         print("www")
+    }
+
+    if (some != null) {
+        print("ttt")
+    } else {
+        null
+    }
+
+    if (some != null) {
+        print("ttt")
+    } else {
+        null
+        value
     }
 }
 

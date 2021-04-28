@@ -8,6 +8,8 @@ import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
+import org.jetbrains.kotlin.cli.jvm.compiler.EnvironmentConfigFiles
+import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
@@ -96,6 +98,18 @@ class EmptyBlockWarnTest : LintTestBase(::EmptyBlock) {
     }
 
     @Test
+    fun `empty lambda`() {
+        lintMethod(
+            """
+                    |fun foo() {
+                    |   run { }
+                    |}
+                """.trimMargin(),
+            rulesConfigList = rulesConfigListEmptyBlockExist
+        )
+    }
+
+    @Test
     fun `check if-else expression without block`() {
         lintMethod(
             """
@@ -121,28 +135,30 @@ class EmptyBlockWarnTest : LintTestBase(::EmptyBlock) {
     }
 
     @Test
-    fun `check empty lambda`() {
-        lintMethod(
-            """
-                    |fun foo() {
-                    |   val y = listOf<Int>().map {} 
-                    |}
-                """.trimMargin(),
-            LintError(2, 30, ruleId, "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} empty blocks are forbidden unless it is function with override keyword", false)
-        )
-    }
-
-    @Test
     @Tag(WarningNames.EMPTY_BLOCK_STRUCTURE_ERROR)
     fun `check empty lambda with config`() {
         lintMethod(
             """
                 |fun foo() {
-                |   val y = listOf<Int>().map {} 
+                |   val y = listOf<Int>().map { 
+                |   
+                |   } 
                 |}
             """.trimMargin(),
-            LintError(2, 30, ruleId, "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} different style for empty block", true),
+            LintError(2, 30, ruleId, "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} do not put newlines in empty lambda", true),
             rulesConfigList = rulesConfigListEmptyBlockExist
+        )
+    }
+
+    @Test
+    fun `check empty lambda`() {
+        lintMethod(
+            """
+                    |fun foo() {
+                    |   val y = listOf<Int>().map { } 
+                    |}
+                """.trimMargin(),
+            LintError(2, 30, ruleId, "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} empty blocks are forbidden unless it is function with override keyword", false)
         )
     }
 
@@ -187,6 +203,40 @@ class EmptyBlockWarnTest : LintTestBase(::EmptyBlock) {
                 |val some = object : A{}
             """.trimMargin(),
             LintError(3, 22, ruleId, "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} different style for empty block", true),
+            rulesConfigList = rulesConfigListEmptyBlockExist
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.EMPTY_BLOCK_STRUCTURE_ERROR)
+    fun `should not trigger on empty lambdas as a functions`() {
+        lintMethod(
+            """
+                |fun foo(bar: () -> Unit = {})
+                |
+                |class Some {
+                |   fun bar() {
+                |       A({})
+                |   }
+                |}
+            """.trimMargin(),
+            rulesConfigList = rulesConfigListEmptyBlockExist
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.EMPTY_BLOCK_STRUCTURE_ERROR)
+    fun `should not trigger on empty lambdas as a functions #2`() {
+        lintMethod(
+            """
+                |fun some() {
+                |    val project = KotlinCoreEnvironment.createForProduction(
+                |       { },
+                |       compilerConfiguration,
+                |       EnvironmentConfigFiles.JVM_CONFIG_FILES
+                |    ).project
+                |}
+            """.trimMargin(),
             rulesConfigList = rulesConfigListEmptyBlockExist
         )
     }

@@ -27,16 +27,18 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 import java.time.LocalDate
-
+import kotlin.io.path.ExperimentalPathApi
+import kotlin.io.path.createTempFile
 import kotlinx.serialization.encodeToString
 
-typealias ruleToConfig = Map<String, Map<String, String>>
+typealias RuleToConfig = Map<String, Map<String, String>>
 
 /**
  * Test for [DiktatRuleSetProvider] in autocorrect mode as a whole. All rules are applied to a file.
  * Note: ktlint uses initial text from a file to calculate line and column from offset. Because of that line/col of unfixed errors
  * may change after some changes to text or other rules.
  */
+@OptIn(ExperimentalPathApi::class)
 class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     { DiktatRuleSetProvider(configFilePath) },
     { lintError, _ -> unfixedLintErrors.add(lintError) },
@@ -46,7 +48,7 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
      * Disable some of the rules.
      */
     @Suppress("UnsafeCallOnNullableType")
-    private fun overrideRulesConfig(rulesToDisable: List<Warnings>, rulesToOverride: ruleToConfig = emptyMap()) {
+    private fun overrideRulesConfig(rulesToDisable: List<Warnings>, rulesToOverride: RuleToConfig = emptyMap()) {
         val rulesConfig = RulesConfigReader(javaClass.classLoader).readResource(configFilePath)!!
             .toMutableList()
             .also { rulesConfig ->
@@ -59,7 +61,7 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
                     rulesConfig.add(RulesConfig(warning, enabled = true, configuration = configuration))
                 }
             }
-        createTempFile()
+        createTempFile().toFile()
             .also {
                 configFilePath = it.absolutePath
             }

@@ -3,9 +3,10 @@ import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurr
 
 plugins {
     `java-gradle-plugin`
-    kotlin("jvm") version "1.4.30"
+    kotlin("jvm") version "1.4.32"
     jacoco
     id("pl.droidsonroids.jacoco.testkit") version "1.0.7"
+    id("org.gradle.test-retry") version "1.2.1"
 }
 
 repositories {
@@ -15,7 +16,6 @@ repositories {
     }
     mavenLocal()  // to use snapshot diktat
     mavenCentral()
-    jcenter()
 }
 
 // default value is needed for correct gradle loading in IDEA; actual value from maven is used during build
@@ -100,6 +100,11 @@ tasks.getByName<Test>("functionalTest") {
     classpath = functionalTest.runtimeClasspath
     maxParallelForks = Runtime.getRuntime().availableProcessors()
     maxHeapSize = "1024m"
+    retry {
+        failOnPassedAfterRetry.set(false)
+        maxFailures.set(10)
+        maxRetries.set(3)
+    }
     doLast {
         if (getCurrentOperatingSystem().isWindows) {
             // workaround for https://github.com/koral--/jacoco-gradle-testkit-plugin/issues/9

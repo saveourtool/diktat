@@ -46,5 +46,23 @@ data class Example(val field1: Type1,
                 .bar()
         }"
     }
+
+    val dockerFileAsText =
+            """
+                    FROM $baseImage
+                COPY resources $resourcesPath
+                    RUN /bin/bash
+            """.trimIndent()
+
+    val some =
+            """
+                          some $foo test
+                  $start another value
+            """.trimIndent()
+
+    val teeest =
+            """
+                  some text $foo $bar another text
+            """.trimIndent()
 }
 

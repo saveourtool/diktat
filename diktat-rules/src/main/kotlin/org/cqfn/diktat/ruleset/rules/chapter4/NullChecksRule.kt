@@ -61,7 +61,7 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun conditionInIfStatement(node: ASTNode) {
-        node.findAllNodesWithSpecificType(BINARY_EXPRESSION).forEach { binaryExprNode ->
+        node.findAllDescendantsWithSpecificType(BINARY_EXPRESSION).forEach { binaryExprNode ->
             val condition = (binaryExprNode.psi as KtBinaryExpression)
             if (isNullCheckBinaryExpression(condition)) {
                 when (condition.operationToken) {
@@ -83,7 +83,7 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    @Suppress("UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
     private fun fixNullInIfCondition(condition: ASTNode,
                                      binaryExpression: KtBinaryExpression,
                                      isEqualToNull: Boolean) {
@@ -91,20 +91,24 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
         val thenCodeLines = condition.extractLinesFromBlock(THEN)
         val elseCodeLines = condition.extractLinesFromBlock(ELSE)
         val text = if (isEqualToNull) {
-            if (elseCodeLines.isNullOrEmpty()) {
-                "$variableName ?: run {\n${thenCodeLines?.joinToString(separator = "\n")}\n}"
-            } else {
-                """
-                    |$variableName?.let {
-                    |${elseCodeLines.joinToString(separator = "\n")}
-                    |}
-                    |?: run {
-                    |${thenCodeLines?.joinToString(separator = "\n")}
-                    |}
-                """.trimMargin()
+            when {
+                elseCodeLines.isNullOrEmpty() -> "$variableName ?: run {\n${thenCodeLines?.joinToString(separator = "\n")}\n}"
+                thenCodeLines!!.singleOrNull() == "null" -> """
+                        |$variableName?.let {
+                        |${elseCodeLines.joinToString(separator = "\n")}
+                        |}
+                    """.trimMargin()
+                else -> """
+                        |$variableName?.let {
+                        |${elseCodeLines.joinToString(separator = "\n")}
+                        |}
+                        |?: run {
+                        |${thenCodeLines.joinToString(separator = "\n")}
+                        |}
+                    """.trimMargin()
             }
         } else {
-            if (elseCodeLines.isNullOrEmpty()) {
+            if (elseCodeLines.isNullOrEmpty() || (elseCodeLines.singleOrNull() == "null")) {
                 "$variableName?.let {\n${thenCodeLines?.joinToString(separator = "\n")}\n}"
             } else {
                 """
@@ -137,6 +141,7 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
             if (parent != null && parent.elementType == VALUE_ARGUMENT) {
                 val grandParent = parent.treeParent
                 if (grandParent != null && grandParent.elementType == VALUE_ARGUMENT_LIST && isRequireFun(grandParent.treePrev)) {
+                    @Suppress("COLLAPSE_IF_STATEMENTS")
                     if (listOf(ElementType.EXCLEQ, ElementType.EXCLEQEQEQ).contains(condition.operationToken)) {
                         warnAndFixOnNullCheck(
                             condition,

@@ -24,21 +24,16 @@ class LongNumericalValuesSeparatedRule(configRules: List<RulesConfig>) : DiktatR
         val configuration = LongNumericalValuesConfiguration(
             configRules.getRuleConfig(LONG_NUMERICAL_VALUES_SEPARATED)?.configuration ?: emptyMap())
 
-        if (node.elementType == INTEGER_LITERAL) {
-            if (!isValidConstant(node.text, configuration, node)) {
-                LONG_NUMERICAL_VALUES_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
-                    fixIntegerConstant(node, configuration.maxBlockLength)
-                }
+        if (node.elementType == INTEGER_LITERAL && !isValidConstant(node.text, configuration, node)) {
+            LONG_NUMERICAL_VALUES_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
+                fixIntegerConstant(node, configuration.maxBlockLength)
             }
         }
 
-        if (node.elementType == FLOAT_LITERAL) {
-            if (!isValidConstant(node.text, configuration, node)) {
-                val parts = node.text.split(".")
-
-                LONG_NUMERICAL_VALUES_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
-                    fixFloatConstantPart(parts[0], parts[1], configuration, node)
-                }
+        if (node.elementType == FLOAT_LITERAL && !isValidConstant(node.text, configuration, node)) {
+            val parts = node.text.split(".")
+            LONG_NUMERICAL_VALUES_SEPARATED.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
+                fixFloatConstantPart(parts[0], parts[1], configuration, node)
             }
         }
     }

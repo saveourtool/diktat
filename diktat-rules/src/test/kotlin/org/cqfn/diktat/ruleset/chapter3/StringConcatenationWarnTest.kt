@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 
 class StringConcatenationWarnTest : LintTestBase(::StringConcatenationRule) {
     private val ruleId = "$DIKTAT_RULE_SET_ID:string-concatenation"
-    private val canBeAutoCorrected = false
+    private val canBeAutoCorrected = true
 
     @Test
     @Tag(WarningNames.STRING_CONCATENATION)
@@ -48,7 +48,9 @@ class StringConcatenationWarnTest : LintTestBase(::StringConcatenationRule) {
             """
                     | val a = (1 + 2).toString() + "my string" + 3
                     |
-                """.trimMargin()
+                """.trimMargin(),
+            LintError(1, 10, ruleId, Warnings.STRING_CONCATENATION.warnText() +
+                    " (1 + 2).toString() + \"my string\" + 3", canBeAutoCorrected)
         )
     }
 
@@ -60,7 +62,9 @@ class StringConcatenationWarnTest : LintTestBase(::StringConcatenationRule) {
                     | val myObject = 12
                     | val a = (1 + 2).toString() + "my string" + 3 + "string" + myObject + myObject
                     |
-                """.trimMargin()
+                """.trimMargin(),
+            LintError(2, 10, ruleId, Warnings.STRING_CONCATENATION.warnText() +
+                    " (1 + 2).toString() + \"my string\" + 3 + \"string\" + myObject + myObject", canBeAutoCorrected)
         )
     }
 
@@ -73,7 +77,7 @@ class StringConcatenationWarnTest : LintTestBase(::StringConcatenationRule) {
                     | val a = (1 + 2).toString() + "my string" + ("string" + myObject) + myObject
                     |
                 """.trimMargin(),
-            LintError(2, 46, ruleId, Warnings.STRING_CONCATENATION.warnText() +
+            LintError(2, 10, ruleId, Warnings.STRING_CONCATENATION.warnText() +
                     " (1 + 2).toString() + \"my string\" + (\"string\" + myObject) + myObject", canBeAutoCorrected)
         )
     }

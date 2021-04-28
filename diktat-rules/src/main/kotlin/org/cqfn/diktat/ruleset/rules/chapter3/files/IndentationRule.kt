@@ -41,6 +41,7 @@ import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.RBRACKET
 import com.pinterest.ktlint.core.ast.ElementType.RPAR
 import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.SHORT_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.STRING_TEMPLATE
 import com.pinterest.ktlint.core.ast.ElementType.THEN
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
@@ -59,6 +60,7 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
 import org.jetbrains.kotlin.utils.addToStdlib.firstNotNullResult
+import java.lang.StringBuilder
 import kotlin.math.abs
 
 /**
@@ -196,7 +198,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
         if (checkResult?.isCorrect != true && expectedIndent != indentError.actual) {
             WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "expected $expectedIndent but was ${indentError.actual}",
                 whiteSpace.startOffset + whiteSpace.text.lastIndexOf('\n') + 1, whiteSpace.node) {
-                checkStringLiteral(whiteSpace, expectedIndent)
+                checkStringLiteral(whiteSpace, expectedIndent, indentError.actual)
                 whiteSpace.node.indentBy(expectedIndent)
             }
         }
@@ -205,7 +207,11 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
     /**
      * Checks if it is triple-quoted string template with trimIndent() or trimMargin() function.
      */
-    private fun checkStringLiteral(whiteSpace: PsiWhiteSpace, expectedIndent: Int) {
+    private fun checkStringLiteral(
+        whiteSpace: PsiWhiteSpace,
+        expectedIndent: Int,
+        actualIndent: Int
+    ) {
         val nextNode = whiteSpace.node.treeNext
         if (nextNode != null &&
                 nextNode.elementType == DOT_QUALIFIED_EXPRESSION &&
@@ -215,19 +221,23 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
                     it == "trimIndent()" ||
                             it == "trimMargin()"
                 } == true) {
-            fixStringLiteral(whiteSpace, expectedIndent)
+            fixStringLiteral(whiteSpace, expectedIndent, actualIndent)
         }
     }
 
     /**
      * If it is triple-quoted string template we need to indent all its parts
      */
-    private fun fixStringLiteral(whiteSpace: PsiWhiteSpace, expectedIndent: Int) {
+    private fun fixStringLiteral(
+        whiteSpace: PsiWhiteSpace,
+        expectedIndent: Int,
+        actualIndent: Int
+    ) {
         val textIndent = " ".repeat(expectedIndent + INDENT_SIZE)
         val templateEntries = whiteSpace.node.treeNext.firstChildNode.getAllChildrenWithType(LITERAL_STRING_TEMPLATE_ENTRY)
-        templateEntries.forEach {
-            if (!it.text.contains("\n") && it.text.isNotBlank()) {
-                (it.firstChildNode as LeafPsiElement).rawReplaceWithText(textIndent + it.firstChildNode.text.trim())
+        templateEntries.forEach { node ->
+            if (!node.text.contains("\n")) {
+                fixFirstTemplateEntries(node, textIndent, actualIndent)
             }
         }
         (templateEntries.last().firstChildNode as LeafPsiElement)
@@ -238,12 +248,43 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
                 .trim())
     }
 
+    /**
+     * This method fixes all lines of string template except the last one
+     * Also it considers $foo insertions in string
+     */
+    private fun fixFirstTemplateEntries(
+        node: ASTNode,
+        textIndent: String,
+        actualIndent: Int
+    ) {
+        val correctedText = StringBuilder()
+        // shift of the node depending on its initial string template indent
+        val nodeStartIndent = if (node.firstChildNode.text.takeWhile { it == ' ' }.count() - actualIndent - INDENT_SIZE > 0) {
+            node.firstChildNode.text.takeWhile { it == ' ' }.count() - actualIndent - INDENT_SIZE
+        } else {
+            0
+        }
+        val isPrevStringTemplate = node.treePrev.elementType in stringLiteralTokens
+        val isNextStringTemplate = node.treeNext.elementType in stringLiteralTokens
+        when {
+            // if string template is before literal_string
+            isPrevStringTemplate && !isNextStringTemplate -> correctedText.append(node.firstChildNode.text.trimEnd())
+            // if string template is after literal_string
+            !isPrevStringTemplate && isNextStringTemplate -> correctedText.append(textIndent + " ".repeat(nodeStartIndent) + node.firstChildNode.text.trimStart())
+            // if there is no string template in literal_string
+            !isPrevStringTemplate && !isNextStringTemplate -> correctedText.append(textIndent + " ".repeat(nodeStartIndent) + node.firstChildNode.text.trim())
+            isPrevStringTemplate && isNextStringTemplate -> correctedText.append(node.firstChildNode.text)
+            node.text.isBlank() -> correctedText.append(textIndent)
+            else -> {}
+        }
+        (node.firstChildNode as LeafPsiElement).rawReplaceWithText(correctedText.toString())
+    }
+
     private fun ASTNode.getExceptionalIndentInitiator() = treeParent.let { parent ->
         when (parent.psi) {
             // fixme: custom logic for determining exceptional indent initiator, should be moved elsewhere
-            is KtDotQualifiedExpression ->
-                // get the topmost expression to keep extended indent for the whole chain of dot call expressions
-                parents().takeWhile { it.elementType == DOT_QUALIFIED_EXPRESSION || it.elementType == SAFE_ACCESS_EXPRESSION }.last()
+            // get the topmost expression to keep extended indent for the whole chain of dot call expressions
+            is KtDotQualifiedExpression -> parents().takeWhile { it.elementType == DOT_QUALIFIED_EXPRESSION || it.elementType == SAFE_ACCESS_EXPRESSION }.last()
             is KtIfExpression -> parent.findChildByType(THEN) ?: parent.findChildByType(ELSE) ?: parent
             is KtLoopExpression -> (parent.psi as KtLoopExpression).body?.node ?: parent
             else -> parent
@@ -340,6 +381,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
         private val increasingTokens = listOf(LPAR, LBRACE, LBRACKET, LONG_TEMPLATE_ENTRY_START)
         private val decreasingTokens = listOf(RPAR, RBRACE, RBRACKET, LONG_TEMPLATE_ENTRY_END)
         private val matchingTokens = increasingTokens.zip(decreasingTokens)
+        private val stringLiteralTokens = listOf(SHORT_STRING_TEMPLATE_ENTRY, LONG_STRING_TEMPLATE_ENTRY)
     }
 }
 

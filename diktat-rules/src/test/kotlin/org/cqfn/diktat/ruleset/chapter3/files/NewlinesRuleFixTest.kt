@@ -47,6 +47,18 @@ class NewlinesRuleFixTest : FixTestBase("test/paragraph3/newlines", ::NewlinesRu
 
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
+    fun `should fix wrong newlines before colon`() {
+        fixAndCompare("ColonExpected.kt", "ColonTest.kt")
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
+    fun `One line parameters list sheet must contain no more than 2 parameters`() {
+        fixAndCompare("sizeParameterListExpected.kt", "sizeParameterListTest.kt")
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
     fun `should fix wrong newlines in lambdas`() {
         fixAndCompare("LambdaExpected.kt", "LambdaTest.kt")
     }
@@ -67,5 +79,11 @@ class NewlinesRuleFixTest : FixTestBase("test/paragraph3/newlines", ::NewlinesRu
     @Tag(WarningNames.WRONG_NEWLINES)
     fun `should fix one line function with and without semicolon`() {
         fixAndCompare("OneLineFunctionExpected.kt", "OneLineFunctionTest.kt")
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
+    fun `list argument in lambda`() {
+        fixAndCompare("ListArgumentLambdaExpected.kt", "ListArgumentLambdaTest.kt")
     }
 }

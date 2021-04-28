@@ -3,7 +3,7 @@ package org.cqfn.diktat.ruleset.rules.chapter6
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.EXTENSION_FUNCTION_SAME_SIGNATURE
 import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
+import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.findChildAfter
 import org.cqfn.diktat.ruleset.utils.findChildBefore
 import org.cqfn.diktat.ruleset.utils.findLeafWithSpecificType
@@ -53,7 +53,7 @@ class ExtensionFunctionsSameNameRule(configRules: List<RulesConfig>) : DiktatRul
     @Suppress("UnsafeCallOnNullableType", "TYPE_ALIAS")
     private fun collectAllRelatedClasses(node: ASTNode): List<Pair<String, String>> {
         val classListWithInheritance = node
-            .findAllNodesWithSpecificType(CLASS)
+            .findAllDescendantsWithSpecificType(CLASS)
             .filterNot { (it.psi as KtClass).isInterface() }
             .filter { it.hasChildOfType(SUPER_TYPE_LIST) }
 
@@ -72,7 +72,7 @@ class ExtensionFunctionsSameNameRule(configRules: List<RulesConfig>) : DiktatRul
 
     @Suppress("UnsafeCallOnNullableType", "TYPE_ALIAS")
     private fun collectAllExtensionFunctions(node: ASTNode): SimilarSignatures {
-        val extensionFunctionList = node.findAllNodesWithSpecificType(FUN).filter { it.hasChildOfType(TYPE_REFERENCE) && it.hasChildOfType(DOT) }
+        val extensionFunctionList = node.findAllDescendantsWithSpecificType(FUN).filter { it.hasChildOfType(TYPE_REFERENCE) && it.hasChildOfType(DOT) }
         val distinctFunctionSignatures: MutableMap<FunctionSignature, ASTNode> = mutableMapOf()  // maps function signatures on node it is used by
         val extensionFunctionsPairs: MutableList<Pair<ExtensionFunction, ExtensionFunction>> = mutableListOf()  // pairs extension functions with same signature
 

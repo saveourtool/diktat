@@ -38,7 +38,7 @@ class LambdaLengthRule(configRules: List<RulesConfig>) : DiktatRule(
                     astNode.treeParent.removeChild(astNode)
                 }
             }
-            val isIt = copyNode.findAllNodesWithSpecificType(ElementType.REFERENCE_EXPRESSION).map { re -> re.text }.contains("it")
+            val isIt = copyNode.findAllDescendantsWithSpecificType(ElementType.REFERENCE_EXPRESSION).map { re -> re.text }.contains("it")
             val parameters = node.findChildByType(ElementType.FUNCTION_LITERAL)?.findChildByType(ElementType.VALUE_PARAMETER_LIST)
             if (parameters == null && isIt) {
                 TOO_MANY_LINES_IN_LAMBDA.warn(configRules, emitWarn, isFixMode,

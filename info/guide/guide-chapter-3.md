@@ -76,7 +76,7 @@ If the classes are meant to be used externally, and are not referenced inside th
 - Companion object
 
 **Exception:**
-All variants of a `(private) val` logger should be placed at the beginning of the class (`(private) val log`, `LOG`, `logger`, etc.).
+All variants of a `private val` logger should be placed at the beginning of the class (`private val log`, `LOG`, `logger`, etc.).
 
 #### <a name="r3.1.5"></a> 3.1.5 Order of declaration of top-level code structures
 Kotlin allows several top-level declaration types: classes, objects, interfaces, properties and functions.
@@ -305,7 +305,7 @@ class A
 Avoid empty blocks, and ensure braces start on a new line. An empty code block can be closed immediately on the same line and the next line. However, a newline is recommended between opening and closing braces `{}` (see the examples below.)
 
 Generally, empty code blocks are prohibited; using them is considered a bad practice (especially for catch block).
-They are only appropriate for overridden functions when the base class's functionality is not needed in the class-inheritor.
+They are appropriate for overridden functions, when the base class's functionality is not needed in the class-inheritor, for lambdas used as a function and for empty function in implementation of functional interface. 
 ```kotlin
 override fun foo() {    
 }
@@ -318,6 +318,8 @@ fun doNothing() {}
 
 fun doNothingElse() {
 }
+
+fun foo(bar: () -> Unit = {})
 ```
 
 **Invalid examples:**
@@ -817,6 +819,24 @@ val socialSecurityNumber = 999_99_9999L
 val hexBytes = 0xFF_EC_DE_5E
 val bytes = 0b11010010_01101001_10010100_10010010
 ```
+#### <a name="r3.14.3"></a> 3.14.3: Magic number
+Prefer defining constants with clear names describing what the magic number means.
+**Valid example**:
+```kotlin
+class Person() {
+    fun isAdult(age: Int): Boolean = age >= majority
+
+    companion object {
+        private const val majority = 18
+    }
+}
+```
+**Invalid example**:
+```kotlin
+class Person() {
+    fun isAdult(age: Int): Boolean = age >= 18
+}
+```
 
 <!-- =============================================================================== -->
 ### <a name="c3.15"></a> 3.15 Strings
@@ -865,4 +885,50 @@ val someString = "$myArgument"
 **Valid example**:
 ```kotlin
 val someString = myArgument
+```
+
+<!-- =============================================================================== -->
+### <a name="c3.16"></a> 3.16 Conditional Statements
+This section describes the general rules related to the сonditional statements.
+
+#### <a name="r3.16.1"></a> 3.16.1 Collapsing redundant nested if-statements
+The nested if-statements, when possible, should be collapsed into a single one
+by concatenating their conditions with the infix operator &&.
+
+This improves the readability by reducing the number of the nested language constructs.
+
+#### Simple collapse
+
+**Invalid example**:
+```kotlin
+if (cond1) {
+    if (cond2) {
+        doSomething()
+    }
+}
+```
+
+**Valid example**:
+```kotlin
+if (cond1 && cond2) {
+    doSomething()
+}
+```
+
+#### Compound conditions
+
+**Invalid example**:
+```kotlin
+if (cond1) {
+    if (cond2 || cond3) {
+        doSomething()
+    }
+}
+```
+
+**Valid example**:
+```kotlin
+if (cond1 && (cond2 || cond3)) {
+    doSomething()
+}
 ```

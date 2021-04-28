@@ -48,8 +48,7 @@ class KotlinParser {
                 return null
             }
         }  // I don't really understand what's going on here, but thanks to this, you can use this node in the future
-        val project = KotlinCoreEnvironment.createForProduction(
-            { },
+        val project = KotlinCoreEnvironment.createForProduction({},
             compilerConfiguration,
             EnvironmentConfigFiles.JVM_CONFIG_FILES
         ).project  // create project

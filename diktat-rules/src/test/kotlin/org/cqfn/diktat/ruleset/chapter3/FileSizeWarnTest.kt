@@ -118,11 +118,15 @@ class FileSizeWarnTest : LintTestBase(::FileSize) {
         lintMethod(file.readText(), fileName = file.absolutePath, rulesConfigList = rulesConfigListTwoIgnoreFolders)
         path = javaClass.classLoader.getResource("test/paragraph3/src/main/C/FileSizeC.kt")
         file = File(path!!.file)
-        val size = 10
+        val size = SIZE
         lintMethod(file.readText(),
             LintError(1, 1, "$DIKTAT_RULE_SET_ID:file-size",
                 "${Warnings.FILE_IS_TOO_LONG.warnText()} $size", false),
             fileName = file.absolutePath,
             rulesConfigList = rulesConfigListTwoIgnoreFolders)
+    }
+
+    companion object {
+        private const val SIZE = 10
     }
 }

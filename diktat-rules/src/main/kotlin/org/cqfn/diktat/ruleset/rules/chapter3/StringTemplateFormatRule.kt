@@ -4,7 +4,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.STRING_TEMPLATE_CURLY_BRACES
 import org.cqfn.diktat.ruleset.constants.Warnings.STRING_TEMPLATE_QUOTES
 import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificType
+import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.hasAnyChildOfTypes
 
 import com.pinterest.ktlint.core.ast.ElementType.ARRAY_ACCESS_EXPRESSION
@@ -83,13 +83,13 @@ class StringTemplateFormatRule(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("UnsafeCallOnNullableType", "FUNCTION_BOOLEAN_PREFIX")
     private fun bracesCanBeOmitted(node: ASTNode): Boolean {
         val onlyOneRefExpr = node
-            .findAllNodesWithSpecificType(REFERENCE_EXPRESSION)
+            .findAllDescendantsWithSpecificType(REFERENCE_EXPRESSION)
             .singleOrNull()
             ?.treeParent
             ?.elementType == LONG_STRING_TEMPLATE_ENTRY
 
         val isArrayAccessExpression = node  // this should be omitted in previous expression, used for safe warranties
-            .findAllNodesWithSpecificType(REFERENCE_EXPRESSION)
+            .findAllDescendantsWithSpecificType(REFERENCE_EXPRESSION)
             .singleOrNull()
             ?.treeParent
             ?.elementType == ARRAY_ACCESS_EXPRESSION

@@ -87,6 +87,20 @@ class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
 
     @Test
     @Tag(WarningNames.BRACES_BLOCK_STRUCTURE_ERROR)
+    fun `check lambda with empty block`() {
+        lintMethod(
+            """
+                    |fun foo() {
+                    |   run { 
+                    |   
+                    |   }
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.BRACES_BLOCK_STRUCTURE_ERROR)
     fun `check empty block in else expression`() {
         lintMethod(
             """

@@ -9,7 +9,7 @@
     <parent>
         <groupId>org.cqfn.diktat</groupId>
         <artifactId>diktat-parent</artifactId>
-        <version>0.4.2-SNAPSHOT</version>
+        <version>0.5.2-SNAPSHOT</version>
     </parent>
 
     <dependencies>
@@ -24,8 +24,8 @@
         </dependency>
         <dependency>
             <groupId>com.charleskorn.kaml</groupId>
-            <artifactId>kaml</artifactId>
-            <version>0.27.0</version>
+            <artifactId>kaml-jvm</artifactId>
+            <version>0.31.0</version>
         </dependency>
         <dependency>
             <groupId>commons-cli</groupId>

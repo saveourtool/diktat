@@ -5,6 +5,8 @@ package generated
 import kotlin.String
 
 public object WarningNames {
+    public const val DUMMY_TEST_WARNING: String = "DUMMY_TEST_WARNING"
+
     public const val PACKAGE_NAME_MISSING: String = "PACKAGE_NAME_MISSING"
 
     public const val PACKAGE_NAME_INCORRECT_CASE: String = "PACKAGE_NAME_INCORRECT_CASE"
@@ -38,6 +40,8 @@ public object WarningNames {
     public const val BACKTICKS_PROHIBITED: String = "BACKTICKS_PROHIBITED"
 
     public const val FUNCTION_NAME_INCORRECT_CASE: String = "FUNCTION_NAME_INCORRECT_CASE"
+
+    public const val TYPEALIAS_NAME_INCORRECT_CASE: String = "TYPEALIAS_NAME_INCORRECT_CASE"
 
     public const val FUNCTION_BOOLEAN_PREFIX: String = "FUNCTION_BOOLEAN_PREFIX"
 
@@ -167,6 +171,8 @@ public object WarningNames {
 
     public const val LONG_NUMERICAL_VALUES_SEPARATED: String = "LONG_NUMERICAL_VALUES_SEPARATED"
 
+    public const val MAGIC_NUMBER: String = "MAGIC_NUMBER"
+
     public const val WRONG_DECLARATIONS_ORDER: String = "WRONG_DECLARATIONS_ORDER"
 
     public const val WRONG_MULTIPLE_MODIFIERS_ORDER: String = "WRONG_MULTIPLE_MODIFIERS_ORDER"
@@ -178,6 +184,8 @@ public object WarningNames {
     public const val STRING_TEMPLATE_QUOTES: String = "STRING_TEMPLATE_QUOTES"
 
     public const val FILE_NAME_MATCH_CLASS: String = "FILE_NAME_MATCH_CLASS"
+
+    public const val COLLAPSE_IF_STATEMENTS: String = "COLLAPSE_IF_STATEMENTS"
 
     public const val NULLABLE_PROPERTY_TYPE: String = "NULLABLE_PROPERTY_TYPE"
 
@@ -249,4 +257,6 @@ public object WarningNames {
     public const val INLINE_CLASS_CAN_BE_USED: String = "INLINE_CLASS_CAN_BE_USED"
 
     public const val EXTENSION_FUNCTION_WITH_CLASS: String = "EXTENSION_FUNCTION_WITH_CLASS"
+
+    public const val RUN_IN_SCRIPT: String = "RUN_IN_SCRIPT"
 }

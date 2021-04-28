@@ -1,8 +1,8 @@
 package org.cqfn.diktat.test.framework.processing
 
-import com.github.difflib.DiffUtils
-import com.github.difflib.patch.ChangeDelta
-import com.github.difflib.text.DiffRowGenerator
+import io.github.petertrr.diffutils.diff
+import io.github.petertrr.diffutils.patch.ChangeDelta
+import io.github.petertrr.diffutils.text.DiffRowGenerator
 import org.slf4j.LoggerFactory
 
 import java.io.File
@@ -17,7 +17,7 @@ import java.util.stream.Collectors
  */
 class FileComparator {
     private val expectedResultFile: File
-    private val actualResultList: List<String?>
+    private val actualResultList: List<String>
     private val diffGenerator = DiffRowGenerator.create()
         .showInlineDiffs(true)
         .mergeOriginalRevised(true)
@@ -26,7 +26,7 @@ class FileComparator {
         .newTag { start -> if (start) "<" else ">" }
         .build()
 
-    constructor(expectedResultFile: File, actualResultList: List<String?>) {
+    constructor(expectedResultFile: File, actualResultList: List<String>) {
         this.expectedResultFile = expectedResultFile
         this.actualResultList = actualResultList
     }
@@ -47,7 +47,7 @@ class FileComparator {
             if (expect.isEmpty()) {
                 return false
             }
-            val patch = DiffUtils.diff(expect, actualResultList)
+            val patch = diff(expect, actualResultList)
             if (patch.deltas.isEmpty()) {
                 return true
             }

@@ -147,7 +147,7 @@ class DiktatJavaExecTaskBase @Inject constructor(
             }
         } else {
             flag.append("--reporter=plain")
-            log.warn("Unknown reporter was specified. Falling back to plain reporter.")
+            log.debug("Unknown reporter was specified. Falling back to plain reporter.")
         }
     }
 

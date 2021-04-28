@@ -6,19 +6,18 @@ plugins {
 }
 
 repositories {
-    jcenter()
     mavenCentral()
     maven { url = uri("https://example.com") }
 }
 
-tasks.register("generateAvailableRules") {
+val generateAvailableRules by tasks.register("generateAvailableRules") {
     dependsOn("generateRulesMapping")
     doFirst {
         generateAvailableRules(rootDir, file("$rootDir/../wp"))
     }
 }
 
-tasks.register("updateDocumentation") {
+val updateDocumentation = tasks.register("updateDocumentation") {
     dependsOn(
         "generateRulesMapping",
         "generateAvailableRules",
