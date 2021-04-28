@@ -25,7 +25,7 @@ import javax.inject.Inject
  *
  * Note: class being `open` is required for gradle to create a task.
  */
-class DiktatJavaExecTaskBase @Inject constructor(
+open class DiktatJavaExecTaskBase @Inject constructor(
     gradleVersionString: String,
     diktatExtension: DiktatExtension,
     diktatConfiguration: Configuration,

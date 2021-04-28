@@ -84,8 +84,8 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
             checkNoDeprecatedTag(node)
             checkEmptyTags(node.kDocTags())
             checkSpaceAfterTag(node.kDocTags())
-            node.kDocBasicTags().let { checkEmptyLineBeforeBasicTags(it) }
-            node.kDocBasicTags().let { checkEmptyLinesBetweenBasicTags(it) }
+            checkEmptyLineBeforeBasicTags(node.kDocBasicTags())
+            checkEmptyLinesBetweenBasicTags(node.kDocBasicTags())
             checkBasicTagsOrder(node)
             checkNewLineAfterSpecialTags(node)
             checkAuthorAndDate(node)
@@ -186,8 +186,7 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
                 }
                 acc
             }
-            .map { it.knownTag }
-            .equals(basicTagsOrdered)
+            .map { it.knownTag } == basicTagsOrdered
 
         if (!isTagsInCorrectOrder) {
             KDOC_WRONG_TAGS_ORDER.warnAndFix(configRules, emitWarn, isFixMode,

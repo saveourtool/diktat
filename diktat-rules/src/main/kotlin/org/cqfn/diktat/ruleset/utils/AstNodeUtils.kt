@@ -87,7 +87,7 @@ fun ASTNode.isTextLengthInRange(range: IntRange): Boolean = this.textLength in r
 /**
  * getting first child name with IDENTIFIER type
  *
- * @return node with type [IDENTIFIER] or null if it is not present
+ * @return node with type [ElementType.IDENTIFIER] or null if it is not present
  */
 fun ASTNode.getIdentifierName(): ASTNode? =
         this.getFirstChildWithType(ElementType.IDENTIFIER)
@@ -648,7 +648,7 @@ fun ASTNode.areChildrenBeforeChild(children: List<ASTNode>, beforeChild: ASTNode
 @Suppress("UnsafeCallOnNullableType")
 fun ASTNode.areChildrenBeforeGroup(children: List<ASTNode>, group: List<ASTNode>): Boolean {
     require(children.isNotEmpty() && group.isNotEmpty()) { "no sense to operate on empty lists" }
-    return children.map { getChildren(null).indexOf(it) }.maxOrNull()!! < group.map { getChildren(null).indexOf(it) }.minOrNull()!!
+    return children.maxOf { getChildren(null).indexOf(it) } < group.minOf { getChildren(null).indexOf(it) }
 }
 
 /**

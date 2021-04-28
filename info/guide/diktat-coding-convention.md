@@ -318,7 +318,7 @@ Note: The calling property access syntax is preferred to call getter directly. I
 
 b) `is` + boolean variable name()
 
-c) `set` + field/attribute name(). However, note that the syntax and code generation for Kotlin are completely the same as those described for the getters in point.
+c) `set` + field/attribute name(). However, note that the syntax and code generation for Kotlin are completely the same as those described for the getters in point a.
 
 d) `has` + Noun / adjective ()
 
@@ -354,7 +354,7 @@ fun addKeyListener(Listener)
 ### <a name="c1.5"></a> 1.5 Constants
 This section describes the general rules for naming constraints.
 ### <a name="r1.5.1"></a> 1.5.1 Using UPPER case and underscore characters in a constraint name
-Constant names should be in UPPER case, words separated by a underscore. The general constant naming conventions are listed below:
+Constant names should be in UPPER case, words separated by an underscore. The general constant naming conventions are listed below:
 1. Constants are attributes created with the `const` keyword or top-level/`val` local variables of an object that holds immutable data. In most cases, constants can be identified as a `const val` property from the `object`/`companion object`/file top level. These variables contain fixed constant values that typically should never be changed by programmers. This includes basic types, strings, immutable types, and immutable collections of immutable types. The value is not constant for the object, which state can be changed.
 2. Constant names should contain only uppercase letters separated by an underscores. They should have a val or const val modifier to make them final explicitly. In most cases, if you need to specify a constant value, then you need to create it with the "const val" modifier. Note that not all `val` variables are constants.
 3. Objects with immutable content, such as `Logger` and `Lock`, can be in uppercase as constants or have camel case as regular variables.
