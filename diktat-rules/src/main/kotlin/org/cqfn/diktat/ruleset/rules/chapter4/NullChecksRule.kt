@@ -93,10 +93,7 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
         listOf(THEN, ELSE).forEach { elementType ->
             // `break` word in block should be converted to `return`
             condition.treeParent.findChildByType(elementType)?.let { blockNode ->
-                val correctChild = if (blockNode.hasChildOfType(BLOCK))
-                    blockNode.findChildByType(BLOCK)!!
-                else
-                    blockNode
+                val correctChild = blockNode.findChildByType(BLOCK) ?: blockNode
                 correctChild.findChildByType(BREAK)?.let {
                     val newNode = KotlinParser().createNode("return")
                     correctChild.addChild(newNode, it)
