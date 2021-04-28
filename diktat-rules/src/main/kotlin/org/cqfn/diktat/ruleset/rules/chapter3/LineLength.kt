@@ -230,8 +230,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun divideAnnotationByComma(text: String): String {
-        val lastIndex = text.indexOfLast { it == ',' } + 1 // plus one is to include comma on the first line
-        return text.substring(0, lastIndex)  + "\n" + text.substring(lastIndex, text.length)
+        val lastIndex = text.indexOfLast { it == ',' } + 1 //  plus one is to include comma on the first line
+        return text.substring(0, lastIndex) + "\n" + text.substring(lastIndex, text.length)
     }
 
     private fun divideString(text: String): String {
@@ -240,7 +240,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun isDividerInString(text: String): Boolean =
-        text.count { it == '"' } % 2 != 0
+            text.count { it == '"' } % 2 != 0
 
 
     private fun fixComment(wrongComment: LongLineFixableCases.Comment) {
