@@ -1,5 +1,6 @@
 package org.cqfn.diktat.ruleset.rules.chapter3
 
+import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
@@ -28,6 +29,7 @@ import com.pinterest.ktlint.core.ast.ElementType.KDOC_TEXT
 import com.pinterest.ktlint.core.ast.ElementType.LITERAL_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.LONG_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.LPAR
+import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.PARENTHESIZED
@@ -89,7 +91,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                     LONG_LINE.warnAndFix(configRules, emitWarn, isFixMode,
                         "max line length ${configuration.lineLength}, but was ${line.length}",
                         offset + node.startOffset, node, fixableType != LongLineFixableCases.None) {
-                        fixError(fixableType)
+                        fixError(fixableType, configuration)
                     }
                 }
             }
@@ -187,9 +189,9 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     @Suppress("UnsafeCallOnNullableType", "WHEN_WITHOUT_ELSE")
-    private fun fixError(fixableType: LongLineFixableCases) {
+    private fun fixError(fixableType: LongLineFixableCases, configuration: LineLengthConfiguration) {
         when (fixableType) {
-            is LongLineFixableCases.Fun -> fixableType.node.appendNewlineMergingWhiteSpace(null, fixableType.node.findChildByType(EQ)!!.treeNext)
+            is LongLineFixableCases.Fun -> fixFunction(fixableType.node, configuration)
             is LongLineFixableCases.Comment -> fixComment(fixableType)
             is LongLineFixableCases.Condition -> fixLongBinaryExpression(fixableType)
             is LongLineFixableCases.Property -> createSplitProperty(fixableType)
@@ -197,6 +199,49 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             is LongLineFixableCases.None -> return
         }
     }
+
+    /**
+     * This function handles two cases:
+     *      1. When fun foo() = ...
+     *      2. There is an annotation before the function which breaks the maxLength parameter.
+     */
+    private fun fixFunction(wrongFunction: ASTNode, configuration: LineLengthConfiguration) {
+        if (wrongFunction.findChildByType(EQ) != null) {
+            wrongFunction.appendNewlineMergingWhiteSpace(null, wrongFunction.findChildByType(EQ)!!.treeNext)
+            return
+        } else if (wrongFunction.findChildByType(MODIFIER_LIST) != null) {
+            val annotationText = fixAnnotation(wrongFunction.findChildByType(MODIFIER_LIST)!!, configuration)
+            // The last one will always be fun declaration as there is no block.
+            val funText = wrongFunction.text.lines().last()
+            wrongFunction.treeParent.replaceChild(wrongFunction, KotlinParser().createNode("$annotationText\n$funText"))
+        }
+    }
+
+    private fun fixAnnotation(node: ASTNode, configuration: LineLengthConfiguration): String {
+        val annotationEntry = node.findChildByType(ANNOTATION_ENTRY)!!
+        val annotationText = annotationEntry.text
+        val firstPart = annotationText.substring(0, configuration.lineLength.toInt())
+        val remainingPart = annotationText.substring(configuration.lineLength.toInt(), annotationText.length)
+        return if (isDividerInString(firstPart)) {
+            divideString(firstPart) + remainingPart
+        } else {
+            divideAnnotationByComma(firstPart) + remainingPart
+        }
+    }
+
+    private fun divideAnnotationByComma(text: String): String {
+        val lastIndex = text.indexOfLast { it == ',' } + 1 // plus one is to include comma on the first line
+        return text.substring(0, lastIndex)  + "\n" + text.substring(lastIndex, text.length)
+    }
+
+    private fun divideString(text: String): String {
+        val divisionIndex = text.indexOfLast { it == ' ' }
+        return text.substring(0, divisionIndex) + "\" +\n\"" + text.substring(divisionIndex, text.length)
+    }
+
+    private fun isDividerInString(text: String): Boolean =
+        text.count { it == '"' } % 2 != 0
+
 
     private fun fixComment(wrongComment: LongLineFixableCases.Comment) {
         val wrongNode = wrongComment.node
