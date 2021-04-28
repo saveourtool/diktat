@@ -3,11 +3,11 @@ package org.cqfn.diktat.ruleset.rules
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.isRuleEnabled
 import org.cqfn.diktat.ruleset.constants.EmitType
-import org.cqfn.diktat.ruleset.utils.log
+import org.cqfn.diktat.ruleset.rules.chapter1.PackageNaming
 
 import com.pinterest.ktlint.core.Rule
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import kotlin.system.exitProcess
+import org.slf4j.LoggerFactory
 
 private typealias DiktatConfigRule = org.cqfn.diktat.common.config.rules.Rule
 
@@ -46,7 +46,7 @@ abstract class DiktatRule(id: String,
             } catch (internalError: Throwable) {
                 log.error("Internal error has occurred in $id. Please make an issue on this bug at https://github.com/cqfn/diKTat/.", internalError)
                 log.error("As a workaround you can disable these inspections in yml config: $inspections")
-                exitProcess(1)
+                throw Error("Internal error in diktat application")
             }
         }
     }
@@ -60,4 +60,8 @@ abstract class DiktatRule(id: String,
      * @param node node that are coming from visit
      */
     abstract fun logic(node: ASTNode)
+
+    companion object {
+        private val log = LoggerFactory.getLogger(DiktatRule::class.java)
+    }
 }

@@ -3,7 +3,6 @@ package org.cqfn.diktat.plugin.gradle
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.DIKTAT_CHECK_TASK
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.DIKTAT_FIX_TASK
 import org.cqfn.diktat.ruleset.rules.DIKTAT_CONF_PROPERTY
-import org.cqfn.diktat.ruleset.utils.log
 
 import generated.DIKTAT_VERSION
 import generated.KTLINT_VERSION
@@ -16,6 +15,7 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.VerificationTask
 import org.gradle.util.GradleVersion
+import org.slf4j.LoggerFactory
 
 import java.io.File
 import javax.inject.Inject
@@ -175,6 +175,10 @@ open class DiktatJavaExecTaskBase @Inject constructor(
                 firstOrNull { it.exists() } ?: first()
             }
             .absolutePath
+    }
+
+    companion object {
+        private val log = LoggerFactory.getLogger(DiktatJavaExecTaskBase::class.java)
     }
 }
 
