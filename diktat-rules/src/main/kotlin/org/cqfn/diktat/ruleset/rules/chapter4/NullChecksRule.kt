@@ -7,6 +7,8 @@ import org.cqfn.diktat.ruleset.utils.*
 
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.BLOCK
+import com.pinterest.ktlint.core.ast.ElementType.BREAK
 import com.pinterest.ktlint.core.ast.ElementType.CONDITION
 import com.pinterest.ktlint.core.ast.ElementType.ELSE
 import com.pinterest.ktlint.core.ast.ElementType.IF
@@ -88,6 +90,20 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
                                      binaryExpression: KtBinaryExpression,
                                      isEqualToNull: Boolean) {
         val variableName = binaryExpression.left!!.text
+        listOf(THEN, ELSE).forEach { elementType ->
+            // `break` word in block should be converted to `return`
+            condition.treeParent.findChildByType(elementType)?.let { blockNode ->
+                val correctChild = if (blockNode.hasChildOfType(BLOCK))
+                    blockNode.findChildByType(BLOCK)!!
+                else
+                    blockNode
+                correctChild.findChildByType(BREAK)?.let {
+                    val newNode = KotlinParser().createNode("return")
+                    correctChild.addChild(newNode, it)
+                    correctChild.removeChild(it)
+                }
+            }
+        }
         val thenCodeLines = condition.extractLinesFromBlock(THEN)
         val elseCodeLines = condition.extractLinesFromBlock(ELSE)
         val text = if (isEqualToNull) {
