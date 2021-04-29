@@ -206,7 +206,8 @@ enum class Warnings(
                    canBeAutoCorrected: Boolean = this.canBeAutoCorrected,
                    autoFix: () -> Unit) {
         warn(configRules, emit, canBeAutoCorrected, freeText, offset, node)
-        fix(configRules, isFixMode, node, autoFix)
+        if (canBeAutoCorrected)
+            fix(configRules, isFixMode, node, autoFix)
     }
 
     /**

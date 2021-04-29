@@ -60,13 +60,12 @@ break
     }
     while (result != 0) {
         result = goo()
-        result?.let {
-goo()
-}
-?: run {
-println(123)
-return
-}
+        if (result != null) {
+            goo()
+        } else {
+            println(123)
+            break
+        }
     }
 }
 
