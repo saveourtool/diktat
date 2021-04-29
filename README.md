@@ -150,7 +150,7 @@ diktat {
     reporter = "custom:name:pathToJar"
 }
 ```
-Name parameter is the name of your reporter and as the last parameter you should specify a path to jar, which contains your reporter.
+Name parameter is the name of your reporter and as the last parameter you should specify path to jar, which contains your reporter.
 [Example of the junit custom reporter.](https://github.com/kryanod/ktlint-junit-reporter)
 
 You can also specify an output. 
@@ -286,7 +286,7 @@ for example, a filename of file where the code is stored;
 3) We added a bunch of visitors, checkers and fixers that will extended KTlint functionaliity with code style rules;
 4) We have proposed a code style for Kotlin language. 
 
-Before you make a pull request, make sure the build is clean as we have a lot of tests and other prechecks:
+Before you make a pull request, make sure the build is clean as we have lot of tests and other prechecks:
 
 ```bash
 $ mvn clean install

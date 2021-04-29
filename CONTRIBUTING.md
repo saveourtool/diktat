@@ -1,6 +1,6 @@
 # Contributing
 
-If you're reading this - then you have decided to contribute to our project. Oh, poor you...
+If you reading this - then you have decided to contribute to our project. Oh, poor you...
 Rules are very simple:
 1. Fork this repository to your own account
 2. Make your changes and verify that tests pass (or wait that our CI/CD will do everything for you)

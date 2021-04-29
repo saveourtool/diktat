@@ -238,7 +238,6 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
      *     * need to handle DESTRUCTURING_DECLARATION correctly, as it does not have IDENTIFIER leaf.
      *     * function type can have VALUE_PARAMETERs without name
      */
-    @Suppress("UnsafeCallOnNullableType")
     private fun extractVariableIdentifiers(node: ASTNode): List<ASTNode> {
         val destructingDeclaration = node.getFirstChildWithType(DESTRUCTURING_DECLARATION)
         val result = destructingDeclaration?.getAllChildrenWithType(DESTRUCTURING_DECLARATION_ENTRY)?.map { it.getIdentifierName()!! }
