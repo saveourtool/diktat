@@ -92,10 +92,11 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun isFixable(condition: ASTNode,
                           isEqualToNull: Boolean): Boolean {
         // Handle cases with `break` word in blocks
-        val typePair = if(isEqualToNull) {
+        val typePair = if (isEqualToNull) {
             (ELSE to THEN)
         } else {
             (THEN to ELSE)
