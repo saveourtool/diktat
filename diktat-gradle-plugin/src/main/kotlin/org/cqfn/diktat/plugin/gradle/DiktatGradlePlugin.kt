@@ -48,14 +48,17 @@ class DiktatGradlePlugin : Plugin<Project> {
          * Task to check diKTat
          */
         const val DIKTAT_CHECK_TASK = "diktatCheck"
+
         /**
          * DiKTat configuration
          */
         const val DIKTAT_CONFIGURATION = "diktat"
+
         /**
          * DiKTat extension
          */
         const val DIKTAT_EXTENSION = "diktat"
+
         /**
          * Task to run diKTat with fix
          */
