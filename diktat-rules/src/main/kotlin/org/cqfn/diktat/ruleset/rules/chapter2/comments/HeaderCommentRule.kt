@@ -14,7 +14,6 @@ import org.cqfn.diktat.ruleset.utils.findChildAfter
 import org.cqfn.diktat.ruleset.utils.findChildBefore
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
-import org.cqfn.diktat.ruleset.utils.log
 import org.cqfn.diktat.ruleset.utils.moveChildBefore
 
 import com.pinterest.ktlint.core.ast.ElementType
@@ -28,6 +27,7 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
+import org.slf4j.LoggerFactory
 
 import java.time.LocalDate
 
@@ -233,6 +233,7 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
+        private val log = LoggerFactory.getLogger(HeaderCommentRule::class.java)
         val hyphenRegex = Regex("""\d+-\d+""")
         val afterCopyrightRegex = Regex("""((©|\([cC]\))+ *\d+)""")
         val curYear = LocalDate.now().year
