@@ -6,7 +6,6 @@ import org.cqfn.diktat.common.config.rules.getCommonConfiguration
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.TRAILING_COMMA
 import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.ruleset.rules.chapter2.comments.HeaderCommentRule
 
 import com.pinterest.ktlint.core.ast.ElementType.COLLECTION_LITERAL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.COMMA

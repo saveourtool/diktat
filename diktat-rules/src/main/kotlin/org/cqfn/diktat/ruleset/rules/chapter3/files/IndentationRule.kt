@@ -8,7 +8,6 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
 import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.ruleset.rules.chapter2.comments.HeaderCommentRule
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getAllLeafsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getFilePath

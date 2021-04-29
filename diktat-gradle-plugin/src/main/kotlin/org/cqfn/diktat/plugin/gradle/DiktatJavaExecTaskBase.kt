@@ -15,7 +15,6 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.VerificationTask
 import org.gradle.util.GradleVersion
-import org.slf4j.LoggerFactory
 
 import java.io.File
 import javax.inject.Inject
@@ -58,12 +57,12 @@ open class DiktatJavaExecTaskBase @Inject constructor(
         classpath = diktatConfiguration
         project.logger.debug("Setting diktatCheck classpath to ${diktatConfiguration.dependencies.toSet()}")
         if (diktatExtension.debug) {
-            logger.lifecycle("Running diktat $DIKTAT_VERSION with ktlint $KTLINT_VERSION")
+            project.logger.lifecycle("Running diktat $DIKTAT_VERSION with ktlint $KTLINT_VERSION")
         }
         ignoreFailures = diktatExtension.ignoreFailures
         isIgnoreExitValue = ignoreFailures  // ignore returned value of JavaExec started process if lint errors shouldn't fail the build
         systemProperty(DIKTAT_CONF_PROPERTY, resolveConfigFile(diktatExtension.diktatConfigFile).also {
-            logger.info("Setting system property for diktat config to $it")
+            project.logger.info("Setting system property for diktat config to $it")
         })
         args = additionalFlags.toMutableList().apply {
             if (diktatExtension.debug) {
@@ -77,7 +76,7 @@ open class DiktatJavaExecTaskBase @Inject constructor(
                          If ktlint receives empty patterns, it implicitly uses &#42;&#42;/*.kt, **/*.kts instead.
                          This can lead to diktat analyzing gradle buildscripts and so on. We want to prevent it.
                         */
-                        logger.warn("Inputs for $name do not exist, will not run diktat")
+                        project.logger.warn("Inputs for $name do not exist, will not run diktat")
                         shouldRun = false
                     }
                 }
@@ -91,7 +90,7 @@ open class DiktatJavaExecTaskBase @Inject constructor(
 
             add(createReporterFlag(diktatExtension))
         }
-        logger.debug("Setting JavaExec args to $args")
+        project.logger.debug("Setting JavaExec args to $args")
     }
 
     @TaskAction
@@ -99,7 +98,7 @@ open class DiktatJavaExecTaskBase @Inject constructor(
         if (shouldRun) {
             super.exec()
         } else {
-            logger.info("Skipping diktat execution")
+            project.logger.info("Skipping diktat execution")
         }
     }
 
@@ -137,14 +136,14 @@ open class DiktatJavaExecTaskBase @Inject constructor(
             val name = diktatExtension.reporterType.split(":")[1]
             val jarPath = diktatExtension.reporterType.split(":")[2]
             if (name.isEmpty() || jarPath.isEmpty()) {
-                log.warn("Either name or path to jar is not specified. Falling to plain reporter")
+                project.logger.warn("Either name or path to jar is not specified. Falling to plain reporter")
                 flag.append("--reporter=plain")
             } else {
                 flag.append("--reporter=$name,artifact=$jarPath")
             }
         } else {
             flag.append("--reporter=plain")
-            log.debug("Unknown reporter was specified. Falling back to plain reporter.")
+            project.logger.debug("Unknown reporter was specified. Falling back to plain reporter.")
         }
     }
 
@@ -175,10 +174,6 @@ open class DiktatJavaExecTaskBase @Inject constructor(
                 firstOrNull { it.exists() } ?: first()
             }
             .absolutePath
-    }
-
-    companion object {
-        private val log = LoggerFactory.getLogger(DiktatJavaExecTaskBase::class.java)
     }
 }
 
