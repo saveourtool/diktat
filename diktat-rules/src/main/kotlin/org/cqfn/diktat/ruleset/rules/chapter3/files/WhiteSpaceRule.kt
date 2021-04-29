@@ -387,7 +387,8 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
         0
     } else {
         // this can happen, e.g. in lambdas after an arrow, where block can be not surrounded by braces
-        val isBlockStartingWithComment = treeNext.elementType == BLOCK && treeNext.firstChildNode.isPartOfComment()
+        // treeNext may not have children ( {_, _ -> })
+        val isBlockStartingWithComment = treeNext.elementType == BLOCK && treeNext.firstChildNode?.isPartOfComment() == true
         if (textContains('\n') || treeNext.isPartOfComment() || isBlockStartingWithComment) null else text.count { it == ' ' }
     }
 

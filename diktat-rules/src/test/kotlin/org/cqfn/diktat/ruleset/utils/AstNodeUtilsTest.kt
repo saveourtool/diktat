@@ -746,6 +746,7 @@ private class PrettyPrintingVisitor(private val elementType: IElementType,
             )
         }
     }
+    @Suppress("WRONG_WHITESPACE")
     companion object {
         fun assertStringRepr(
             elementType: IElementType,
