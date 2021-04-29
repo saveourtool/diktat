@@ -48,6 +48,15 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
             domainName = it
             if (node.elementType == PACKAGE_DIRECTIVE) {
                 val filePath = node.getRootNode().getFilePath()
+
+                // getting all identifiers from existing package name into the list like [org, diktat, project]
+                val wordsInPackageName = node.findAllDescendantsWithSpecificType(IDENTIFIER)
+
+                if (wordsInPackageName.isEmpty() && filePath.isKotlinScript()) {
+                    // kotlin scripts are allowed to have empty package; in this case we don't suggest a new one and don't run checks
+                    return
+                }
+
                 // calculating package name based on the directory where the file is placed
                 val realPackageName = calculateRealPackageName(filePath, configuration)
 
@@ -56,9 +65,6 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
                     warnAndFixMissingPackageName(node, realPackageName, filePath)
                     return
                 }
-
-                // getting all identifiers from existing package name into the list like [org, diktat, project]
-                val wordsInPackageName = node.findAllDescendantsWithSpecificType(IDENTIFIER)
 
                 // no need to check that packageIdentifiers is empty, because in this case parsing will fail
                 checkPackageName(wordsInPackageName, node)
@@ -126,7 +132,7 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
             }
 
         // package name should start from a company's domain name
-        if (wordsInPackageName.isNotEmpty() && !isDomainMatches(wordsInPackageName)) {
+        if (!isDomainMatches(wordsInPackageName)) {
             PACKAGE_NAME_INCORRECT_PREFIX.warnAndFix(configRules, emitWarn, isFixMode, domainName,
                 wordsInPackageName[0].startOffset, wordsInPackageName[0]) {
                 val oldPackageName = wordsInPackageName.joinToString(PACKAGE_SEPARATOR) { it.text }

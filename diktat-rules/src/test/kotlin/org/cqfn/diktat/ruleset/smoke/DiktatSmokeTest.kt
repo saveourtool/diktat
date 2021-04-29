@@ -26,7 +26,9 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
+import java.io.File
 import java.time.LocalDate
+
 import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.createTempFile
 import kotlinx.serialization.encodeToString
@@ -204,10 +206,24 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
                     "extendedIndentOfParameters" to "false",
                 )
             )
-        )  // so that trailing newline isn't checked
+        )  // so that trailing newline isn't checked, because it's incorrectly read in tests and we are comparing file with itself
         // file name is `gradle_` so that IDE doesn't suggest to import gradle project
-        fixAndCompare("../../../build.gradle_.kts", "../../../build.gradle_.kts")
+        val tmpTestFile = javaClass.classLoader.getResource("$resourceFilePath/../../../build.gradle_.kts")!!.toURI().let {
+            val tmpTestFile = File(it).parentFile.resolve("build.gradle.kts")
+            File(it).copyTo(tmpTestFile)
+            tmpTestFile
+        }
+        val tmpFilePath = "../../../build.gradle.kts"
+        fixAndCompare(tmpFilePath, tmpFilePath)
         Assertions.assertTrue(unfixedLintErrors.isEmpty())
+        tmpTestFile.delete()
+    }
+
+    @Test
+    @Tag("DiktatRuleSetProvider")
+    fun `smoke test with kts files #2`() {
+        fixAndCompare("script/SimpleRunInScriptExpected.kts", "script/SimpleRunInScriptTest.kts")
+        Assertions.assertEquals(3, unfixedLintErrors.size)
     }
 
     @Test
