@@ -23,6 +23,7 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtIfExpression
+import org.jetbrains.kotlin.util.collectionUtils.concat
 
 /**
  * This rule check and fixes explicit null checks (explicit comparison with `null`)
@@ -109,7 +110,7 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
             ?.let { it.findChildByType(BLOCK) ?: it }
             ?.let { astNode ->
                 astNode.hasChildOfType(BREAK) &&
-                        !emptyBlockList.containsAll(astNode.getChildren(null).map { it.elementType })
+                        !emptyBlockList.concat(listOf(BREAK))!!.containsAll(astNode.getChildren(null).map { it.elementType })
             } ?: false
         return !(isElseContainBreak || isThenContainBreakOneLine)
     }
