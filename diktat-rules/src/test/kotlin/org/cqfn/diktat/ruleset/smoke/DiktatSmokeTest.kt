@@ -228,6 +228,13 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
 
     @Test
     @Tag("DiktatRuleSetProvider")
+    fun `smoke test with kts files with package name`() {
+        fixAndCompare("script/PackageInScriptExpected.kts", "script/PackageInScriptTest.kts")
+        Assertions.assertEquals(3, unfixedLintErrors.size)
+    }
+
+    @Test
+    @Tag("DiktatRuleSetProvider")
     fun `disable charters`() {
         overrideRulesConfig(
             emptyList(),
