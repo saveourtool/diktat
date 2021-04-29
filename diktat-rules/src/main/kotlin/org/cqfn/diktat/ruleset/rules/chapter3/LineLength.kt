@@ -439,12 +439,6 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             val node: ASTNode,
             val indexLastSpace: Int,
             val text: String) : LongLineFixableCases()
-
-        class PropertyWithTemplateEntry(
-            val node: ASTNode,
-            val maximumLineLength: Long,
-            val leftOffset: Int,
-            val binList: MutableList<ASTNode>) : LongLineFixableCases()
     }
 
     /**
