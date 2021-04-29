@@ -15,7 +15,6 @@ import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.BOOLEAN_CONSTANT
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CHARACTER_CONSTANT
-import com.pinterest.ktlint.core.ast.ElementType.CLOSING_QUOTE
 import com.pinterest.ktlint.core.ast.ElementType.CONDITION
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.EQ
@@ -31,7 +30,6 @@ import com.pinterest.ktlint.core.ast.ElementType.LITERAL_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.LONG_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.LPAR
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
-import com.pinterest.ktlint.core.ast.ElementType.OPEN_QUOTE
 import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.PARENTHESIZED
@@ -39,7 +37,6 @@ import com.pinterest.ktlint.core.ast.ElementType.POSTFIX_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.PREFIX_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.REGULAR_STRING_PART
 import com.pinterest.ktlint.core.ast.ElementType.RPAR
 import com.pinterest.ktlint.core.ast.ElementType.SHORT_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.STRING_TEMPLATE
@@ -48,8 +45,6 @@ import com.pinterest.ktlint.core.ast.nextSibling
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevSibling
 import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
-import org.cqfn.diktat.ruleset.utils.hasParent
-import org.jetbrains.kotlin.codegen.writeKotlinMetadata
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -147,14 +142,17 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         if (difference > node.text.length) {
             return LongLineFixableCases.BinaryExpression(node.treeParent)
         }
-        var delimiterIndex = node.text.substring(0, configuration.lineLength.toInt() - leftOffset).lastIndexOf(' ')
+        val delimiterIndex = node.text.substring(0, configuration.lineLength.toInt() - leftOffset).lastIndexOf(' ')
         if (delimiterIndex == -1) {
             return LongLineFixableCases.None
         }
-        if (leftOffset + delimiterIndex > configuration.lineLength.toInt() - 2) {
-            delimiterIndex = node.text.substring(0, delimiterIndex - 2).lastIndexOf(' ')
+        // minus 2 here as we are inserting ` +` and we don't want it to exceed line length
+        val correcterDelimiter = if (leftOffset + delimiterIndex > configuration.lineLength.toInt() - 2) {
+            node.text.substring(0, delimiterIndex - 2).lastIndexOf(' ')
+        } else {
+            delimiterIndex
         }
-        return LongLineFixableCases.StringTemplate(node, delimiterIndex)
+        return LongLineFixableCases.StringTemplate(node, correcterDelimiter)
     }
 
     private fun checkFun(wrongNode: ASTNode) =
@@ -249,6 +247,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun fixBinaryExpression(node: ASTNode) {
         val whiteSpaceAfterPlus = node.findChildByType(OPERATION_REFERENCE)!!.treeNext
         node.replaceChild(whiteSpaceAfterPlus, PsiWhiteSpaceImpl("\n"))
