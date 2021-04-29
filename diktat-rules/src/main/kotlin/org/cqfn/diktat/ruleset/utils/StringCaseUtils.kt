@@ -3,6 +3,9 @@
 package org.cqfn.diktat.ruleset.utils
 
 import com.google.common.base.CaseFormat
+import org.slf4j.LoggerFactory
+
+private val log = LoggerFactory.getLogger("StringCaseUtils")
 
 /**
  * Available cases to name enum members

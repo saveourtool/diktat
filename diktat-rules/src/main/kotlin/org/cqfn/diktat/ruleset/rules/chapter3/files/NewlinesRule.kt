@@ -20,7 +20,6 @@ import org.cqfn.diktat.ruleset.utils.isEol
 import org.cqfn.diktat.ruleset.utils.isFollowedByNewline
 import org.cqfn.diktat.ruleset.utils.isSingleLineIfElse
 import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
-import org.cqfn.diktat.ruleset.utils.log
 
 import com.pinterest.ktlint.core.ast.ElementType.ANDAND
 import com.pinterest.ktlint.core.ast.ElementType.ARROW
@@ -94,6 +93,7 @@ import org.jetbrains.kotlin.psi.KtValueArgumentList
 import org.jetbrains.kotlin.psi.psiUtil.children
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.siblings
+import org.slf4j.LoggerFactory
 
 /**
  * Rule that checks line break styles.
@@ -612,6 +612,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
+        private val log = LoggerFactory.getLogger(NewlinesRule::class.java)
         const val MAX_CALLS_IN_ONE_LINE = 3
 
         // fixme: these token sets can be not full, need to add new once as corresponding cases are discovered.

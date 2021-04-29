@@ -3,8 +3,8 @@ package org.cqfn.diktat.ruleset.rules.chapter3.files
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_WHITESPACE
 import org.cqfn.diktat.ruleset.rules.DiktatRule
+import org.cqfn.diktat.ruleset.rules.chapter6.classes.CompactInitialization
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
-import org.cqfn.diktat.ruleset.utils.log
 
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.ARROW
@@ -76,6 +76,7 @@ import org.jetbrains.kotlin.psi.KtPostfixExpression
 import org.jetbrains.kotlin.psi.KtPrefixExpression
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
+import org.slf4j.LoggerFactory
 
 /**
  * This rule checks usage of whitespaces for horizontal code separation
@@ -418,6 +419,8 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
             }
 
     companion object {
+        private val log = LoggerFactory.getLogger(CompactInitialization::class.java)
+
         private const val NUM_PARENTS_FOR_LAMBDA = 3  // this is the number of parent nodes needed to check if this node is lambda from argument list
         private val keywordsWithSpaceAfter = TokenSet.create(
             // these keywords are followed by {

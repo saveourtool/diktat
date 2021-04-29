@@ -6,7 +6,6 @@ package org.cqfn.diktat.util
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.EmitType
-import org.cqfn.diktat.ruleset.utils.log
 
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.LintError
@@ -16,12 +15,15 @@ import com.pinterest.ktlint.core.RuleSetProvider
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.SoftAssertions
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.slf4j.LoggerFactory
 
 import java.util.concurrent.atomic.AtomicInteger
 
 internal const val TEST_FILE_NAME = "TestFileName.kt"
 
 typealias LintErrorCallback = (LintError, Boolean) -> Unit
+
+private val log = LoggerFactory.getLogger("TestUtils")
 
 @Suppress("TYPE_ALIAS")
 internal val defaultCallback: (lintError: LintError, corrected: Boolean) -> Unit = { lintError, _ ->
