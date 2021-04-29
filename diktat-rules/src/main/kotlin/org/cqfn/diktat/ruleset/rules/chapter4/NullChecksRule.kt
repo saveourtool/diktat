@@ -22,8 +22,8 @@ import com.pinterest.ktlint.core.ast.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.psi.KtBinaryExpression
+import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtIfExpression
-import org.jetbrains.kotlin.util.collectionUtils.concat
 
 /**
  * This rule check and fixes explicit null checks (explicit comparison with `null`)
@@ -101,20 +101,16 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
         } else {
             (THEN to ELSE)
         }
-        val isElseContainBreak = condition
-            .treeParent
-            .findChildByType(typePair.first)?.let {
-                it.findChildByType(BLOCK) ?: it
-            }?.hasChildOfType(BREAK) ?: false
-        val isThenContainBreakOneLine = condition
+        val isBlockInIfWithBreak = condition.getBreakNodeFromIf(typePair.first)
+        val isOneLineBlockInIfWithBreak = condition
             .treeParent
             .findChildByType(typePair.second)
             ?.let { it.findChildByType(BLOCK) ?: it }
             ?.let { astNode ->
                 astNode.hasChildOfType(BREAK) &&
-                        !emptyBlockList.concat(listOf(BREAK))!!.containsAll(astNode.getChildren(null).map { it.elementType })
+                        (astNode.psi as? KtBlockExpression)?.statements?.size != 1
             } ?: false
-        return !(isElseContainBreak || isThenContainBreakOneLine)
+        return !(isBlockInIfWithBreak || isOneLineBlockInIfWithBreak)
     }
 
     @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
@@ -127,12 +123,7 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
         val text = if (isEqualToNull) {
             when {
                 elseCodeLines.isNullOrEmpty() ->
-                    if (condition
-                        .treeParent
-                        .findChildByType(THEN)?.let {
-                            it.findChildByType(BLOCK) ?: it
-                        }?.hasChildOfType(BREAK) == true
-                    ) {
+                    if (condition.getBreakNodeFromIf(THEN)) {
                         "$variableName ?: break"
                     } else {
                         "$variableName ?: run {\n${thenCodeLines?.joinToString(separator = "\n")}\n}"
@@ -209,6 +200,12 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
             }
         }
     }
+
+    private fun ASTNode.getBreakNodeFromIf(type: IElementType) = this
+        .treeParent
+        .findChildByType(type)?.let {
+            it.findChildByType(BLOCK) ?: it
+        }?.hasChildOfType(BREAK) ?: false
 
     private fun ASTNode.extractLinesFromBlock(type: IElementType): List<String>? =
             treeParent

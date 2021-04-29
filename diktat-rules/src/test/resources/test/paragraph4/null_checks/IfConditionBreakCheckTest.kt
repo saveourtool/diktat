@@ -45,17 +45,6 @@ fun foo() {
     }
 }
 
-////////////////////////////////
-
-fun foo() {
-    var result: Int? = 19
-    while(result != 0 ) {
-        if (result == null) {
-            foo()
-        }
-    }
-}
-
 fun foo() {
     var result: Int? = 19
     while(result != 0 ) {
@@ -70,15 +59,6 @@ fun foo() {
     while(result != 0 ) {
         if (result != null) {
             break
-        }
-    }
-}
-
-fun foo() {
-    var result: Int? = 19
-    while(result != 0 ) {
-        if (result != null) {
-            foo()
         }
     }
 }
