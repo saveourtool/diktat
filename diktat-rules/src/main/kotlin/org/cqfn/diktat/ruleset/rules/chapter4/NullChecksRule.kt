@@ -69,7 +69,7 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
             if (isNullCheckBinaryExpression(condition)) {
                 when (condition.operationToken) {
                     // `==` and `===` comparison can be fixed with `?:` operator
-                    ElementType.EQEQ, ElementType.EQEQEQ -> {
+                    ElementType.EQEQ, ElementType.EQEQEQ ->
                         warnAndFixOnNullCheck(
                             condition,
                             isFixable(node, true),
@@ -77,10 +77,8 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
                         ) {
                             fixNullInIfCondition(node, condition, true)
                         }
-
-                    }
                     // `!==` and `!==` comparison can be fixed with `.let/also` operators
-                    ElementType.EXCLEQ, ElementType.EXCLEQEQEQ -> {
+                    ElementType.EXCLEQ, ElementType.EXCLEQEQEQ ->
                         warnAndFixOnNullCheck(
                             condition,
                             isFixable(node, false),
@@ -88,7 +86,6 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
                         ) {
                             fixNullInIfCondition(node, condition, false)
                         }
-                    }
                     else -> return
                 }
             }
@@ -98,10 +95,14 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun isFixable(condition: ASTNode,
                           isEqualToNull: Boolean): Boolean {
         // Handle cases with `break` word in blocks
-        val typePair = if(isEqualToNull) (ELSE to THEN) else (THEN to ELSE)
+        val typePair = if(isEqualToNull) {
+            (ELSE to THEN)
+        } else {
+            (THEN to ELSE)
+        }
         val isElseContainBreak = condition
             .treeParent
-            .findChildByType(typePair.first)?.let{
+            .findChildByType(typePair.first)?.let {
                 it.findChildByType(BLOCK) ?: it
             }?.hasChildOfType(BREAK) ?: false
         val isThenContainBreakOneLine = condition
@@ -124,17 +125,17 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
         val elseCodeLines = condition.extractLinesFromBlock(ELSE)
         val text = if (isEqualToNull) {
             when {
-                elseCodeLines.isNullOrEmpty() -> {
-                    if(condition
+                elseCodeLines.isNullOrEmpty() ->
+                    if (condition
                         .treeParent
-                        .findChildByType(THEN)?.let{
+                        .findChildByType(THEN)?.let {
                             it.findChildByType(BLOCK) ?: it
                         }?.hasChildOfType(BREAK) == true
-                    )
+                    ) {
                         "$variableName ?: break"
-                    else
+                    } else {
                         "$variableName ?: run {\n${thenCodeLines?.joinToString(separator = "\n")}\n}"
-                }
+                    }
                 thenCodeLines!!.singleOrNull() == "null" -> """
                         |$variableName?.let {
                         |${elseCodeLines.joinToString(separator = "\n")}
