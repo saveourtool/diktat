@@ -1,5 +1,6 @@
 package org.cqfn.diktat.ruleset.rules.chapter3
 
+import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
@@ -11,7 +12,6 @@ import org.cqfn.diktat.ruleset.utils.calculateLineColByOffset
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.BOOLEAN_CONSTANT
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CHARACTER_CONSTANT
@@ -29,7 +29,6 @@ import com.pinterest.ktlint.core.ast.ElementType.KDOC_TEXT
 import com.pinterest.ktlint.core.ast.ElementType.LITERAL_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.LONG_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.LPAR
-import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.PARENTHESIZED
@@ -114,9 +113,10 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                     // 2. FUN with EQ, it seems that new line should be inserted after `=`
                     parent.findParentNodeWithSpecificType(IF)?.let {
                         parent = parent.treeParent
-                    } ?: parent.findParentNodeWithSpecificType(FUN)?.let {
-                        if (it.hasChildOfType(EQ)) {
-                            parent = it
+                    } ?: parent.findParentNodeWithSpecificType(FUN)?.let { node ->
+                        // checking that string template is not in annotation
+                        if (node.hasChildOfType(EQ) && !wrongNode.parents().any { it.elementType == ANNOTATION_ENTRY }) {
+                            parent = node
                         } else {
                             return checkStringTemplate(parent, configuration)
                         }
@@ -132,7 +132,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      * This class finds where the string can be split
      *
      * @return StringTemplate - if the string can be split,
-     *         BinaryExpression - if there is two concatenated strings and new line should be inserted before `+`
+     *         BinaryExpression - if there is two concatenated strings and new line should be inserted after `+`
      *         None - if the string can't be split
      */
     private fun checkStringTemplate(node: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
@@ -156,7 +156,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun checkFun(wrongNode: ASTNode) =
-            if (!wrongNode.hasChildOfType(BLOCK) && !wrongNode.hasChildOfType(MODIFIER_LIST)) LongLineFixableCases.Fun(wrongNode) else LongLineFixableCases.None
+            if (wrongNode.hasChildOfType(EQ)) LongLineFixableCases.Fun(wrongNode) else LongLineFixableCases.None
 
     private fun checkComment(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
         val leftOffset = positionByOffset(wrongNode.startOffset).second
