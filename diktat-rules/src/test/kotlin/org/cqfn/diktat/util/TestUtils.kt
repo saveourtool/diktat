@@ -119,7 +119,7 @@ internal fun applyToCode(code: String,
                     }
                 })
             ),
-            cb = { _, _ -> Unit }
+            cb = { _, _ -> }
         )
     )
     Assertions

@@ -77,7 +77,7 @@ class FileComparator {
      * @param fileName - file where to write these list to, separated with newlines
      * @return a list of lines from the file
      */
-    fun readFile(fileName: String): List<String> {
+    private fun readFile(fileName: String): List<String> {
         var list: List<String> = ArrayList()
         try {
             Files.newBufferedReader(Paths.get(fileName)).use { list = it.lines().collect(Collectors.toList()) }

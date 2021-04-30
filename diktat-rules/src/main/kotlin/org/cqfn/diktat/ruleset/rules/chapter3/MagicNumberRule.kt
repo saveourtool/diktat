@@ -8,7 +8,6 @@ import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.CONST_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.ENUM_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.FLOAT_CONSTANT
 import com.pinterest.ktlint.core.ast.ElementType.FUN

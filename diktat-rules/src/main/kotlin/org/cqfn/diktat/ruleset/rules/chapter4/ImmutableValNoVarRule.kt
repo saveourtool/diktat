@@ -30,7 +30,7 @@ class ImmutableValNoVarRule(configRules: List<RulesConfig>) : DiktatRule(
                 .findAllVariablesWithAssignments { it.name != null && it.isVar }
                 .filter { it.value.isEmpty() }
 
-            varNoAssignments.forEach { (property, usages) ->
+            varNoAssignments.forEach { (_, _) ->
                 // FixMe: raise another warning and fix the code (change to val) for variables without assignment
             }
 

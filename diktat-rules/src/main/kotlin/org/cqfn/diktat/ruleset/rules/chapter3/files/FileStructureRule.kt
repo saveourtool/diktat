@@ -67,8 +67,7 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
     }
     private val standardImportsAsName = StandardPlatforms
         .values()
-        .map { it to it.packages }
-        .toMap()
+        .associate { it to it.packages }
         .mapValues { (_, value) ->
             value.map { it.split(PACKAGE_SEPARATOR).map(Name::identifier) }
         }
