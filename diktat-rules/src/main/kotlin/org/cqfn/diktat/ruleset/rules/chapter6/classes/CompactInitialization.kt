@@ -5,7 +5,6 @@ import org.cqfn.diktat.ruleset.constants.Warnings.COMPACT_OBJECT_INITIALIZATION
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.ruleset.utils.getFunctionName
-import org.cqfn.diktat.ruleset.utils.log
 
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
@@ -20,6 +19,7 @@ import org.jetbrains.kotlin.psi.KtNameReferenceExpression
 import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.psiUtil.siblings
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
+import org.slf4j.LoggerFactory
 
 /**
  * This rules checks if an object initialization can be wrapped into an `apply` function.
@@ -157,5 +157,9 @@ class CompactInitialization(configRules: List<RulesConfig>) : DiktatRule(
                     log.warn("apply with unexpected parameters: ${applyExpression.text}")
                 }
         }
+    }
+
+    companion object {
+        private val log = LoggerFactory.getLogger(CompactInitialization::class.java)
     }
 }
