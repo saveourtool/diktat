@@ -3,7 +3,7 @@ import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurr
 
 plugins {
     `java-gradle-plugin`
-    kotlin("jvm") version "1.4.32"
+    kotlin("jvm") version "1.3.72"
     jacoco
     id("pl.droidsonroids.jacoco.testkit") version "1.0.7"
     id("org.gradle.test-retry") version "1.2.1"
@@ -26,9 +26,6 @@ val jacocoVersion = project.properties.getOrDefault("jacocoVersion", "0.8.6") as
 dependencies {
     implementation(kotlin("gradle-plugin-api"))
 
-    implementation("com.pinterest.ktlint:ktlint-core:$ktlintVersion") {
-        exclude("com.pinterest.ktlint", "ktlint-ruleset-standard")
-    }
     implementation("org.cqfn.diktat:diktat-rules:$diktatVersion")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
