@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory
 /**
  * A [Logger] that can be used throughout diktat
  */
-val log: Logger = LoggerFactory.getLogger(ASTNode::class.java)
+private val log: Logger = LoggerFactory.getLogger("AstNodeUtils")
 
 /**
  * A class that represents result of nodes swapping. [oldNodes] should always have same size as [newNodes]
