@@ -81,9 +81,6 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <args>
-                        <arg>-Werror</arg>
-                    </args>
                     <compilerPlugins>
                         <plugin>kotlinx-serialization</plugin>
                     </compilerPlugins>

@@ -121,9 +121,7 @@
                 </executions>
                 <configuration>
                     <args>
-                        <arg>-Werror</arg>
                         <arg>-Xinline-classes</arg>
-                        <arg>-Xopt-in=kotlin.RequiresOptIn</arg>
                     </args>
                 </configuration>
             </plugin>

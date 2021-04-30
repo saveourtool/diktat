@@ -225,6 +225,8 @@
                         </sourceDirs>
                         <args>
                             <arg>-Xuse-ir</arg>
+                            <arg>-Werror</arg>
+                            <arg>-Xopt-in=kotlin.RequiresOptIn</arg>
                         </args>
                     </configuration>
                     <inherited>true</inherited>

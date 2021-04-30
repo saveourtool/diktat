@@ -106,10 +106,6 @@
                                 <!-- for some weird reason this is essential to compile kotlin test sources despite testSourceDirectory is set -->
                                 <source>src/test/kotlin</source>
                             </sourceDirs>
-                            <args>
-                                <arg>-Werror</arg>
-                                <arg>-Xopt-in=kotlin.RequiresOptIn</arg>
-                            </args>
                         </configuration>
                     </execution>
                 </executions>
