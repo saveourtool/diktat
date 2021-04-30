@@ -618,7 +618,7 @@ Chinese version: `版权所有 (c) 华为技术有限公司 2012-2020` \
 English version: `Copyright (c) Huawei Technologies Co., Ltd. 2012-2020. All rights reserved.`
 `2012` and `2020` are the years the file was first created and the current year, respectively.
 
-Do not place **release notes** in header, use VCS to keep track of changes in a file. Notable changes can be marked in individual KDocs using `@since` tag with version.
+Do not place **release notes** in header, use VCS to keep track of changes in file. Notable changes can be marked in individual KDocs using `@since` tag with version.
 
 Invalid example:
 ```kotlin
@@ -2254,7 +2254,7 @@ class YourClass(var name: String) {
 }
 ```
 
-The `init` block was not added to Kotlin to help you initialize your properties; it is needed for more complex tasks.
+The `init` block was not added to Kotlin to help you initialize your properties; it is needed for more complex tasks. 
 Therefore if the `init` block contains only assignments of variables - move it directly to properties to be correctly initialized near the declaration.
 In some cases, this rule can be in clash with [6.1.1](#r6.1.1), but that should not stop you.
 
@@ -2357,7 +2357,7 @@ class A {
 
 From the callee code, these methods look like access to this property: `A().isEmpty = true` for setter and `A().isEmpty` for getter.
 
-However, when `get` and `set` are overridden, it  isn't very clear for a developer who uses this particular class.
+However, when `get` and `set` are overridden, it  isn't very clear for a developer who uses this particular class. 
 The developer expects to get the property value but receives some unknown value and some extra side-effect hidden by the custom getter/setter. 
 Use extra functions instead to avoid confusion.
 

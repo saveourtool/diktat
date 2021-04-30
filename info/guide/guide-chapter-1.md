@@ -188,7 +188,7 @@ val String sL = "Launcher";
 **Valid example**:
 
 ```kotlin
-const val Int MAX_USER_NUM = 200;
+const val int MAX_USER_NUM = 200;
 const val String APPLICATION_NAME = "Launcher";
 ```
 
