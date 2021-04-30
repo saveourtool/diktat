@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Assertions
 /**
  * @property resourceFilePath path to files which will be compared in tests
  */
-open class FixTestBase(private val resourceFilePath: String,
+open class FixTestBase(val resourceFilePath: String,
                        private val ruleSetProviderRef: (rulesConfigList: List<RulesConfig>?) -> RuleSetProvider,
                        private val cb: LintErrorCallback = defaultCallback,
                        private val rulesConfigList: List<RulesConfig>? = null) {
