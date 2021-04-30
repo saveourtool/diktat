@@ -245,7 +245,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
             destructingDeclaration.getAllChildrenWithType(DESTRUCTURING_DECLARATION_ENTRY)
                 .map { it.getIdentifierName()!! }
         } else if (node.parents().count() > 1 && node.treeParent.elementType == VALUE_PARAMETER_LIST &&
-            node.treeParent.treeParent.elementType == FUNCTION_TYPE) {
+                node.treeParent.treeParent.elementType == FUNCTION_TYPE) {
             listOfNotNull(node.getIdentifierName())
         } else {
             listOf(node.getIdentifierName()!!)

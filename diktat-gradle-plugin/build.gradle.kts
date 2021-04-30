@@ -62,7 +62,8 @@ tasks.withType<KotlinCompile> {
         apiVersion = "1.3"
         jvmTarget = "1.8"
         useIR = true
-    }
+        allWarningsAsErrors = true
+        }
 
     dependsOn.add(generateVersionsFile)
 }
