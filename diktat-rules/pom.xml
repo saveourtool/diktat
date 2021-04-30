@@ -73,6 +73,11 @@
             <artifactId>mockito-all</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- is used for simplifying boolean expressions-->
+        <dependency>
+            <groupId>com.bpodgursky</groupId>
+            <artifactId>jbool_expressions</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

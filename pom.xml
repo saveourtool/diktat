@@ -56,6 +56,7 @@
         <dokka.version>1.4.32</dokka.version>
         <jacoco.version>0.8.6</jacoco.version>
         <maven-plugin-tools.version>3.6.1</maven-plugin-tools.version>
+        <jbool.version>1.23</jbool.version>
     </properties>
 
     <modules>
@@ -152,6 +153,12 @@
                 <artifactId>mockito-all</artifactId>
                 <version>1.10.19</version>
                 <scope>test</scope>
+            </dependency>
+            <!-- is used for simplifying boolean expressions-->
+            <dependency>
+                <groupId>com.bpodgursky</groupId>
+                <artifactId>jbool_expressions</artifactId>
+                <version>${jbool.version}</version>
             </dependency>
         </dependencies>
 

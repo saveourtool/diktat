@@ -77,6 +77,7 @@ import org.cqfn.diktat.ruleset.rules.chapter6.classes.StatelessClassesRule
 
 import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.RuleSetProvider
+import org.cqfn.diktat.ruleset.rules.chapter3.BooleanExpressionsRule
 import org.jetbrains.kotlin.org.jline.utils.Levenshtein
 import org.slf4j.LoggerFactory
 
@@ -208,6 +209,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
             ::AvoidNestedFunctionsRule,
             ::ExtensionFunctionsSameNameRule,
             ::LambdaLengthRule,
+            ::BooleanExpressionsRule,
             // formatting: moving blocks, adding line breaks, indentations etc.
             ::BlockStructureBraces,
             ::ConsecutiveSpacesRule,
