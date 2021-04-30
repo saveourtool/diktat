@@ -27,12 +27,11 @@ dependencies {
     implementation(kotlin("gradle-plugin-api"))
 
     implementation("org.cqfn.diktat:diktat-rules:$diktatVersion") {
+        exclude("org.jetbrains.kotlin", "kotlin-compiler-embeddable")
         exclude("org.jetbrains.kotlin", "kotlin-stdlib-jdk8")
         exclude("org.jetbrains.kotlin", "kotlin-stdlib-jdk7")
         exclude("org.jetbrains.kotlin", "kotlin-stdlib")
         exclude("org.jetbrains.kotlin", "kotlin-stdlib-common")
-        exclude("org.jetbrains.kotlin", "kotlin-script-runtime")
-        exclude("org.jetbrains.kotlin", "kotlin-reflect")
     }
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
