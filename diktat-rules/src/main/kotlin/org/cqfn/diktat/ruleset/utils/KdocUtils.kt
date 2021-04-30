@@ -18,7 +18,7 @@ import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
 /**
  * @return a list of [KDocTag]s from this KDoc node
  */
-fun ASTNode.kDocTags(): List<KDocTag>? {
+fun ASTNode.kDocTags(): List<KDocTag> {
     require(this.elementType == ElementType.KDOC) { "kDoc tags can be retrieved only from KDOC node" }
     return this.getAllChildrenWithType(KDOC_SECTION).flatMap { sectionNode ->
         sectionNode.getAllChildrenWithType(ElementType.KDOC_TAG)

@@ -86,7 +86,7 @@ class TestArgumentsReader(
     @Throws(IOException::class)
     override fun parseResource(fileStream: BufferedReader): List<CliArgument> {
         val jsonValue = fileStream.lines().collect(Collectors.joining())
-        return Json.decodeFromString<List<CliArgument>>(jsonValue)
+        return Json.decodeFromString(jsonValue)
     }
 
     companion object {

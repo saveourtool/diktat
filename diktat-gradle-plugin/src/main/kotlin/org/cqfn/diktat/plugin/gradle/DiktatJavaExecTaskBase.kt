@@ -93,6 +93,9 @@ open class DiktatJavaExecTaskBase @Inject constructor(
         project.logger.debug("Setting JavaExec args to $args")
     }
 
+    /**
+     * Function to execute diKTat
+     */
     @TaskAction
     override fun exec() {
         if (shouldRun) {

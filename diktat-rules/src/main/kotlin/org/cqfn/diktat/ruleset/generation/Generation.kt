@@ -64,8 +64,8 @@ private fun validateYear() {
     val files = File("diktat-rules/src/test/resources/test/paragraph2/header")
     files
         .listFiles()
-        .filterNot { it.name.contains("CopyrightDifferentYearTest.kt") }
-        .forEach { file ->
+        ?.filterNot { it.name.contains("CopyrightDifferentYearTest.kt") }
+        ?.forEach { file ->
             val tempFile = createTempFile().toFile()
             tempFile.printWriter().use { writer ->
                 file.forEachLine { line ->

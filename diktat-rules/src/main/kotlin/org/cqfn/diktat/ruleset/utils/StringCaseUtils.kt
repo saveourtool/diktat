@@ -170,17 +170,21 @@ private fun convertUnknownCaseToCamel(str: String, isFirstLetterCapital: Boolean
             isPreviousLetterUnderscore = false
             result.toString()
         } else {
-            val result = if (char == '_') {
-                isPreviousLetterUnderscore = true
-                ""
-            } else if (isPreviousLetterUnderscore) {
-                isPreviousLetterCapital = true
-                isPreviousLetterUnderscore = false
-                char.toUpperCase().toString()
-            } else {
-                isPreviousLetterCapital = false
-                isPreviousLetterUnderscore = false
-                char.toString()
+            val result = when {
+                char == '_' -> {
+                    isPreviousLetterUnderscore = true
+                    ""
+                }
+                isPreviousLetterUnderscore -> {
+                    isPreviousLetterCapital = true
+                    isPreviousLetterUnderscore = false
+                    char.toUpperCase().toString()
+                }
+                else -> {
+                    isPreviousLetterCapital = false
+                    isPreviousLetterUnderscore = false
+                    char.toString()
+                }
             }
             result
         }
