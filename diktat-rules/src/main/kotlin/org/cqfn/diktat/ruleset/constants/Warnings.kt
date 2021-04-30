@@ -28,7 +28,7 @@ typealias ListOfPairs = MutableList<Pair<ASTNode, String>>
     "WRONG_NEWLINES"
 )
 enum class Warnings(
-    val canBeAutoCorrected: Boolean,
+    private val canBeAutoCorrected: Boolean,
     val ruleId: String,
     private val warn: String) : Rule {
     // ======== dummy test warning ======
