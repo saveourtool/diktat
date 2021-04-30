@@ -45,4 +45,9 @@ class LineLengthFixTest : FixTestBase("test/paragraph3/long_line", ::LineLength)
     fun `shouldn't fix`() {
         fixAndCompare("LongExpressionNoFixExpected.kt", "LongExpressionNoFixTest.kt", rulesConfigListShortLineLength)
     }
+
+    @Test
+    fun `should fix annotation`() {
+        fixAndCompare("LongLineAnnotationExpected.kt", "LongLineAnnotationTest.kt", rulesConfigListLineLength)
+    }
 }
