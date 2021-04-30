@@ -110,7 +110,7 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
                 astNode.hasChildOfType(BREAK) &&
                         (astNode.psi as? KtBlockExpression)?.statements?.size != 1
             } ?: false
-        return !(isBlockInIfWithBreak || isOneLineBlockInIfWithBreak)
+        return (!isBlockInIfWithBreak && !isOneLineBlockInIfWithBreak)
     }
 
     @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
@@ -126,7 +126,7 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
                     if (condition.getBreakNodeFromIf(THEN)) {
                         "$variableName ?: break"
                     } else {
-                        "$variableName ?: run {\n${thenCodeLines?.joinToString(separator = "\n")}\n}"
+                        "$variableName ?: run {${thenCodeLines?.joinToString(prefix = "\n" , postfix = "\n", separator = "\n")}}"
                     }
                 thenCodeLines!!.singleOrNull() == "null" -> """
                         |$variableName?.let {
@@ -150,9 +150,9 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
         } else {
             when {
                 elseCodeLines.isNullOrEmpty() || (elseCodeLines.singleOrNull() == "null") ->
-                    "$variableName?.let {\n${thenCodeLines?.joinToString(separator = "\n")}\n}"
+                    "$variableName?.let {${thenCodeLines?.joinToString(prefix = "\n" , postfix = "\n", separator = "\n")}}"
                 elseCodeLines.singleOrNull() == "break" ->
-                    "$variableName?.let {\n${thenCodeLines?.joinToString(separator = "\n")}\n} ?: break"
+                    "$variableName?.let {${thenCodeLines?.joinToString(prefix = "\n" , postfix = "\n", separator = "\n")}} ?: break"
                 else -> """
                         |$variableName?.let {
                         |${thenCodeLines?.joinToString(separator = "\n")}
@@ -203,9 +203,10 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun ASTNode.getBreakNodeFromIf(type: IElementType) = this
         .treeParent
-        .findChildByType(type)?.let {
-            it.findChildByType(BLOCK) ?: it
-        }?.hasChildOfType(BREAK) ?: false
+        .findChildByType(type)
+        ?.let { it.findChildByType(BLOCK) ?: it }
+        ?.findAllNodesWithCondition({it.elementType == BREAK})?.isNotEmpty()
+        ?: false
 
     private fun ASTNode.extractLinesFromBlock(type: IElementType): List<String>? =
             treeParent

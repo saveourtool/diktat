@@ -63,3 +63,30 @@ fun foo() {
     }
 }
 
+fun foo() {
+    var result: Int? = 19
+    while(result != 0 ) {
+        if (result != null) {
+            foo()
+            break
+        } else {
+            break
+        }
+    }
+}
+
+fun foo() {
+    var result: Int? = 19
+    while(result != 0 ) {
+        if (result != null) {
+            if (result != null) {
+                goo()
+            } else {
+                break
+            }
+        } else {
+            break
+        }
+    }
+}
+

@@ -57,3 +57,28 @@ fun foo() {
     }
 }
 
+fun foo() {
+    var result: Int? = 19
+    while(result != 0 ) {
+        if (result != null) {
+            foo()
+            break
+        } else {
+            break
+        }
+    }
+}
+
+fun foo() {
+    var result: Int? = 19
+    while(result != 0 ) {
+        if (result != null) {
+            result?.let {
+goo()
+} ?: break
+        } else {
+            break
+        }
+    }
+}
+
