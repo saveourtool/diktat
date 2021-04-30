@@ -126,7 +126,7 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
                     if (condition.getBreakNodeFromIf(THEN)) {
                         "$variableName ?: break"
                     } else {
-                        "$variableName ?: run {${thenCodeLines?.joinToString(prefix = "\n" , postfix = "\n", separator = "\n")}}"
+                        "$variableName ?: run {${thenCodeLines?.joinToString(prefix = "\n", postfix = "\n", separator = "\n")}}"
                     }
                 thenCodeLines!!.singleOrNull() == "null" -> """
                         |$variableName?.let {
@@ -150,9 +150,9 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
         } else {
             when {
                 elseCodeLines.isNullOrEmpty() || (elseCodeLines.singleOrNull() == "null") ->
-                    "$variableName?.let {${thenCodeLines?.joinToString(prefix = "\n" , postfix = "\n", separator = "\n")}}"
+                    "$variableName?.let {${thenCodeLines?.joinToString(prefix = "\n", postfix = "\n", separator = "\n")}}"
                 elseCodeLines.singleOrNull() == "break" ->
-                    "$variableName?.let {${thenCodeLines?.joinToString(prefix = "\n" , postfix = "\n", separator = "\n")}} ?: break"
+                    "$variableName?.let {${thenCodeLines?.joinToString(prefix = "\n", postfix = "\n", separator = "\n")}} ?: break"
                 else -> """
                         |$variableName?.let {
                         |${thenCodeLines?.joinToString(separator = "\n")}
@@ -205,7 +205,7 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
         .treeParent
         .findChildByType(type)
         ?.let { it.findChildByType(BLOCK) ?: it }
-        ?.findAllNodesWithCondition({it.elementType == BREAK})?.isNotEmpty()
+        ?.findAllNodesWithCondition({ it.elementType == BREAK })?.isNotEmpty()
         ?: false
 
     private fun ASTNode.extractLinesFromBlock(type: IElementType): List<String>? =
