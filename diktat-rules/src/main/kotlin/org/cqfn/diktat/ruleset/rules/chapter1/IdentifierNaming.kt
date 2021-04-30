@@ -238,15 +238,18 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
      *     * need to handle DESTRUCTURING_DECLARATION correctly, as it does not have IDENTIFIER leaf.
      *     * function type can have VALUE_PARAMETERs without name
      */
+    @Suppress("UnsafeCallOnNullableType")
     private fun extractVariableIdentifiers(node: ASTNode): List<ASTNode> {
         val destructingDeclaration = node.getFirstChildWithType(DESTRUCTURING_DECLARATION)
-        val result = destructingDeclaration?.getAllChildrenWithType(DESTRUCTURING_DECLARATION_ENTRY)?.map { it.getIdentifierName()!! }
-            ?: if (node.parents().count() > 1 && node.treeParent.elementType == VALUE_PARAMETER_LIST &&
-                    node.treeParent.treeParent.elementType == FUNCTION_TYPE) {
-                listOfNotNull(node.getIdentifierName())
-            } else {
-                listOf(node.getIdentifierName()!!)
-            }
+        val result = if (destructingDeclaration != null) {
+            destructingDeclaration.getAllChildrenWithType(DESTRUCTURING_DECLARATION_ENTRY)
+                .map { it.getIdentifierName()!! }
+        } else if (node.parents().count() > 1 && node.treeParent.elementType == VALUE_PARAMETER_LIST &&
+            node.treeParent.treeParent.elementType == FUNCTION_TYPE) {
+            listOfNotNull(node.getIdentifierName())
+        } else {
+            listOf(node.getIdentifierName()!!)
+        }
 
         // no need to do checks if variables are in a special list with exceptions
         return result.filterNot { oneCharIdentifiers.contains(it.text) }
