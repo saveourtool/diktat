@@ -54,7 +54,7 @@
         <kotlinpoet.version>1.8.0</kotlinpoet.version>
         <detekt.version>1.16.0</detekt.version>
         <dokka.version>1.4.32</dokka.version>
-        <jacoco.version>0.8.6</jacoco.version>
+        <jacoco.version>0.8.7</jacoco.version>
         <maven-plugin-tools.version>3.6.1</maven-plugin-tools.version>
     </properties>
 
