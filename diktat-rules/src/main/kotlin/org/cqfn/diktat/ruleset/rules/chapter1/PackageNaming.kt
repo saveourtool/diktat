@@ -219,7 +219,12 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
                 // there is missing package statement in a file, so it will be created and inserted
                 val newPackageDirective = generatedPackageDirective.findLeafWithSpecificType(PACKAGE_DIRECTIVE)!!
                 packageDirectiveNode.treeParent.replaceChild(packageDirectiveNode, newPackageDirective)
-                newPackageDirective.treeParent.addChild(PsiWhiteSpaceImpl("\n\n"), newPackageDirective.treeNext)
+                val insertPackageDirectiveBefore = if (newPackageDirective != newPackageDirective.treeParent.firstChildNode) {
+                    newPackageDirective
+                } else {
+                    newPackageDirective.treeNext
+                }
+                newPackageDirective.treeParent.addChild(PsiWhiteSpaceImpl("\n\n"), insertPackageDirectiveBefore)
             }
     }
 

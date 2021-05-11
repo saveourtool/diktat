@@ -33,6 +33,12 @@ class PackagePathFixTest : FixTestBase(
 
     @Test
     @Tag(WarningNames.PACKAGE_NAME_MISSING)
+    fun `fix missing package name with file annotation`() {
+        fixAndCompare("org/cqfn/diktat/some/name/FixMissingWithAnnotationExpected.kt", "org/cqfn/diktat/some/name/FixMissingWithAnnotationTest.kt")
+    }
+
+    @Test
+    @Tag(WarningNames.PACKAGE_NAME_MISSING)
     fun `fix missing package name with a proper location without domain`() {
         fixAndCompare("some/FixMissingExpected.kt", "some/FixMissingTest.kt")
     }
