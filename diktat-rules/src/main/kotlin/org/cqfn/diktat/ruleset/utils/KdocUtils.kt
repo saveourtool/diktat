@@ -7,6 +7,7 @@ package org.cqfn.diktat.ruleset.utils
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_SECTION
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.prevSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
@@ -32,6 +33,22 @@ fun ASTNode.kDocTags(): List<KDocTag> {
  */
 fun Iterable<KDocTag>.hasKnownKdocTag(knownTag: KDocKnownTag): Boolean =
         this.find { it.knownTag == knownTag } != null
+
+/**
+ * checks for trailing newlines for cases, when there is no leading asterisk on an empty line:
+ * ```
+ * * @param param
+ *
+ * * @return
+ * ```
+ *
+ * @return true if there is a trailing newline
+ */
+fun KDocTag.hasTrailingNewlineInTagBody() = node.lastChildNode.isWhiteSpaceWithNewline() ||
+        node.reversedChildren()
+            .takeWhile { it.elementType == WHITE_SPACE || it.elementType == ElementType.KDOC_LEADING_ASTERISK }
+            .firstOrNull { it.elementType == ElementType.KDOC_LEADING_ASTERISK }
+            ?.takeIf { it.treeNext == null || it.treeNext.elementType == WHITE_SPACE } != null
 
 /**
  * This method inserts a new tag into KDoc before specified another tag, aligning it with the rest of this KDoc
