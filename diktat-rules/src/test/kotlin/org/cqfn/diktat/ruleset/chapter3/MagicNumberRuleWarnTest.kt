@@ -175,9 +175,9 @@ class MagicNumberRuleWarnTest : LintTestBase(::MagicNumberRule) {
     fun `check value parameter in function with config`() {
         lintMethod(
             """
-                fun TomlDecoder(var elementsCount: Int = 100) {}
+                fun TomlDecoder(elementsCount: Int = 100) {}
             """.trimMargin(),
-            LintError(1, 58, ruleId, "${MAGIC_NUMBER.warnText()} 100", false),
+            LintError(1, 54, ruleId, "${MAGIC_NUMBER.warnText()} 100", false),
             rulesConfigList = rulesConfigMagicNumber
         )
     }
