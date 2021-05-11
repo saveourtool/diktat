@@ -51,7 +51,7 @@ class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule(
         val isConstant = node.parent({ it.elementType == PROPERTY && it.isConstant() }) != null
         val isPropertyDeclaration = !isConstant && node.parent({ it.elementType == PROPERTY && !it.isNodeFromCompanionObject() }) != null
         val isLocalVariable = node.parent({ it.isVarProperty() && (it.psi as KtProperty).isLocal }) != null
-        val isValueParameter = node.parent({it.elementType == VALUE_PARAMETER}) != null
+        val isValueParameter = node.parent({ it.elementType == VALUE_PARAMETER }) != null
         val isCompanionObjectProperty = node.parent({ it.elementType == PROPERTY && it.isNodeFromCompanionObject() }) != null
         val isEnums = node.parent({ it.elementType == ENUM_ENTRY }) != null
         val isRanges = node.treeParent.run {
