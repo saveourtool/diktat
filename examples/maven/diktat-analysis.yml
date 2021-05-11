@@ -308,6 +308,8 @@
     ignorePropertyDeclaration: "false"
     # Is ignore local variable
     ignoreLocalVariableDeclaration: "false"
+    # Is ignore value parameter
+    ignoreValueParaeter: "true"
     # Is ignore constant
     ignoreConstantDeclaration: "true"
     # Is ignore property in companion object

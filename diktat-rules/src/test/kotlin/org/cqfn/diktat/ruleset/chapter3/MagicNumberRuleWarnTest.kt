@@ -20,6 +20,7 @@ class MagicNumberRuleWarnTest : LintTestBase(::MagicNumberRule) {
                 "ignoreHashCodeFunction" to "true",
                 "ignorePropertyDeclaration" to "true",
                 "ignoreLocalVariableDeclaration" to "true",
+                "ignoreValueParameter" to "false",
                 "ignoreConstantDeclaration" to "true",
                 "ignoreCompanionObjectPropertyDeclaration" to "true",
                 "ignoreEnums" to "true",
@@ -140,6 +141,32 @@ class MagicNumberRuleWarnTest : LintTestBase(::MagicNumberRule) {
                 |
                 |fun Int.foo() = 2
                 """.trimMargin(), rulesConfigList = rulesConfigMagicNumber
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.MAGIC_NUMBER)
+    fun `check value parameter`() {
+        lintMethod(
+            """
+                class TomlDecoder(
+                    var elementsCount: Int = 100
+                )
+            """.trimMargin(),
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.MAGIC_NUMBER)
+    fun `check value parameter with config`() {
+        lintMethod(
+            """
+                class TomlDecoder(
+                    var elementsCount: Int = 100
+                )
+            """.trimMargin(),
+            LintError(2, 46, ruleId, "${MAGIC_NUMBER.warnText()} 100", false),
+            rulesConfigList = rulesConfigMagicNumber
         )
     }
 }

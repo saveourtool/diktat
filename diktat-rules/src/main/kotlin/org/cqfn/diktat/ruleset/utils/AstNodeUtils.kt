@@ -29,6 +29,7 @@ import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.OVERRIDE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PRIVATE_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.PROTECTED_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PUBLIC_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
@@ -351,8 +352,8 @@ fun ASTNode.hasModifier(modifier: IElementType) = this.findChildByType(MODIFIER_
  * Checks whether [this] node of type PROPERTY is `var`
  */
 fun ASTNode.isVarProperty() =
-        this.getChildren(null)
-            .any { it.elementType == ElementType.VAR_KEYWORD }
+        this.elementType == PROPERTY &&
+                this.getChildren(null).any { it.elementType == ElementType.VAR_KEYWORD }
 
 /**
  * Replaces text of [this] node with lowercase text
