@@ -35,12 +35,13 @@ fun Iterable<KDocTag>.hasKnownKdocTag(knownTag: KDocKnownTag): Boolean =
         this.find { it.knownTag == knownTag } != null
 
 /**
- * checks for trailing newlines for cases, when there is no leading asterisk on an empty line:
+ * Checks for trailing newlines in tag's body. Handles cases, when there is no leading asterisk on an empty line:
  * ```
  * * @param param
  *
  * * @return
  * ```
+ * as well as usual simple cases.
  *
  * @return true if there is a trailing newline
  */

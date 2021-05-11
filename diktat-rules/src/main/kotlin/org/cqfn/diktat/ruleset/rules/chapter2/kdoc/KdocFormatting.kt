@@ -257,21 +257,22 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
     private fun checkEmptyLinesBetweenBasicTags(basicTags: List<KDocTag>) {
         val tagsWithRedundantEmptyLines = basicTags.dropLast(1).filter { tag ->
             val nextWhiteSpace = tag.node.nextSibling { it.elementType == WHITE_SPACE }
-            val hasTrailingNewlineInTagBody = tag.hasTrailingNewlineInTagBody()
             // either there is a trailing blank line in tag's body OR there are empty lines right after this tag
-            hasTrailingNewlineInTagBody || nextWhiteSpace?.text?.count { it == '\n' } != 1
+            tag.hasTrailingNewlineInTagBody() || nextWhiteSpace?.text?.count { it == '\n' } != 1
         }
 
         tagsWithRedundantEmptyLines.forEach { tag ->
             KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS.warnAndFix(configRules, emitWarn, isFixMode,
                 "@${tag.name}", tag.startOffset, tag.node) {
                 if (tag.hasTrailingNewlineInTagBody()) {
+                    // if there is a blank line in tag's body, we remove it and everything after it, so that the next white space is kept in place
                     // we look for the last LEADING_ASTERISK and take its previous node which should be WHITE_SPACE with newline
                     tag.node.reversedChildren()
                         .takeWhile { it.elementType == WHITE_SPACE || it.elementType == KDOC_LEADING_ASTERISK }
                         .firstOrNull { it.elementType == KDOC_LEADING_ASTERISK }
                         ?.let { tag.node.removeRange(it.treePrev, null) }
                 } else {
+                    // otherwise we remove redundant blank lines from white space node after tag
                     tag.node.nextSibling { it.elementType == WHITE_SPACE }?.leaveOnlyOneNewLine()
                 }
             }
