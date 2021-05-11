@@ -10,6 +10,12 @@ import org.junit.jupiter.api.Test
 class NullChecksRuleFixTest : FixTestBase("test/paragraph4/null_checks", ::NullChecksRule) {
     @Test
     @Tag(WarningNames.AVOID_NULL_CHECKS)
+    fun `should careful fix if conditions with break`() {
+        fixAndCompare("IfConditionBreakCheckExpected.kt", "IfConditionBreakCheckTest.kt")
+    }
+
+    @Test
+    @Tag(WarningNames.AVOID_NULL_CHECKS)
     fun `should fix if conditions`() {
         fixAndCompare("IfConditionNullCheckExpected.kt", "IfConditionNullCheckTest.kt")
     }

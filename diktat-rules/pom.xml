@@ -9,7 +9,7 @@
     <parent>
         <groupId>org.cqfn.diktat</groupId>
         <artifactId>diktat-parent</artifactId>
-        <version>0.5.2-SNAPSHOT</version>
+        <version>0.5.3-SNAPSHOT</version>
     </parent>
 
     <properties>
@@ -124,6 +124,11 @@
                         </configuration>
                     </execution>
                 </executions>
+                <configuration>
+                    <args>
+                        <arg>-Xinline-classes</arg>
+                    </args>
+                </configuration>
             </plugin>
 
             <plugin>

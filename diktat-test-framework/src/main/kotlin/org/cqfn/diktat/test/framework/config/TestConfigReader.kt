@@ -26,6 +26,6 @@ class TestConfigReader(configFilePath: String, override val classLoader: ClassLo
     @Throws(IOException::class)
     override fun parseResource(fileStream: BufferedReader): TestConfig {
         val jsonValue: String = fileStream.lines().collect(Collectors.joining())
-        return Json.decodeFromString<TestConfig>(jsonValue)
+        return Json.decodeFromString(jsonValue)
     }
 }
