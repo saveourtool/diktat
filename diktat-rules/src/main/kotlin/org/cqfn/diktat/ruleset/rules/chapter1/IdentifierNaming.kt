@@ -50,7 +50,6 @@ import com.pinterest.ktlint.core.ast.ElementType.DESTRUCTURING_DECLARATION
 import com.pinterest.ktlint.core.ast.ElementType.DESTRUCTURING_DECLARATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_TYPE
-import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_PARAMETER
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
@@ -164,7 +163,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
         var namesOfVariables = extractVariableIdentifiers(node)
         // Only local private properties will be autofix in order not to break code if there are usages in other files.
         // Destructuring declarations are only allowed for local variables/values, so we don't need to calculate `isFix` for every node in `namesOfVariables`
-        val isFix = isFixMode && if (node.elementType == PROPERTY) (node.psi as KtProperty).run { isLocal || isPrivate() } else true
+        val isFix = isFixMode && if (node.elementType == ElementType.PROPERTY) (node.psi as KtProperty).run { isLocal || isPrivate() } else true
         namesOfVariables
             .forEach { variableName ->
                 // variable should not contain only one letter in it's name. This is a bad example: b512

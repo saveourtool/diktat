@@ -3,7 +3,11 @@
 package org.cqfn.diktat.ruleset.utils
 
 import com.google.common.base.CaseFormat
+import org.slf4j.LoggerFactory
+
 import java.util.Locale
+
+private val log = LoggerFactory.getLogger("StringCaseUtils")
 
 /**
  * Available cases to name enum members
@@ -168,17 +172,21 @@ private fun convertUnknownCaseToCamel(str: String, isFirstLetterCapital: Boolean
             isPreviousLetterUnderscore = false
             result.toString()
         } else {
-            val result = if (char == '_') {
-                isPreviousLetterUnderscore = true
-                ""
-            } else if (isPreviousLetterUnderscore) {
-                isPreviousLetterCapital = true
-                isPreviousLetterUnderscore = false
-                char.uppercaseChar().toString()
-            } else {
-                isPreviousLetterCapital = false
-                isPreviousLetterUnderscore = false
-                char.toString()
+            val result = when {
+                char == '_' -> {
+                    isPreviousLetterUnderscore = true
+                    ""
+                }
+                isPreviousLetterUnderscore -> {
+                    isPreviousLetterCapital = true
+                    isPreviousLetterUnderscore = false
+                    char.uppercaseChar().toString()
+                }
+                else -> {
+                    isPreviousLetterCapital = false
+                    isPreviousLetterUnderscore = false
+                    char.toString()
+                }
             }
             result
         }

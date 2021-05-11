@@ -20,6 +20,9 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 
+/**
+ * Name of common configuration
+ */
 const val DIKTAT_COMMON = "DIKTAT_COMMON"
 
 /**
@@ -50,7 +53,6 @@ data class RulesConfig(
  * @property config a map of strings with configuration options for a particular rule
  */
 open class RuleConfiguration(protected val config: Map<String, String>)
-object EmptyConfiguration : RuleConfiguration(emptyMap())
 
 /**
  * class returns the list of configurations that we have read from a yml: diktat-analysis.yml
@@ -88,6 +90,9 @@ open class RulesConfigReader(override val classLoader: ClassLoader) : JsonResour
     }
 
     companion object {
+        /**
+         * A [Logger] that can be used
+         */
         val log: Logger = LoggerFactory.getLogger(RulesConfigReader::class.java)
     }
 }

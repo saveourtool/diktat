@@ -59,12 +59,6 @@ fun String.containsOneLetterOrZero(): Boolean {
 }
 
 /**
- * @param sub a substring to search
- * @return count of ocurrences
- */
-fun String.countSubStringOccurrences(sub: String) = this.split(sub).size - 1
-
-/**
  * Splits [this] string by file path separator
  *
  * @return list of path parts

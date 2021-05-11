@@ -48,3 +48,24 @@ fun test() {
     }
 }
 
+fun foo() {
+    var result: Int? = 10
+    while (result != 0 ) {
+        if (result != null) {
+            goo()
+        } else {
+            for(i in 1..10)
+                break
+        }
+    }
+    while (result != 0) {
+        result = goo()
+        if (result != null) {
+            goo()
+        } else {
+            println(123)
+            break
+        }
+    }
+}
+

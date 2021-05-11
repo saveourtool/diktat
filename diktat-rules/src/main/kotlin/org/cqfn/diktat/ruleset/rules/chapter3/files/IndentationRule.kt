@@ -24,7 +24,6 @@ import org.cqfn.diktat.ruleset.utils.indentation.KdocIndentationChecker
 import org.cqfn.diktat.ruleset.utils.indentation.SuperTypeListChecker
 import org.cqfn.diktat.ruleset.utils.indentation.ValueParameterListChecker
 import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
-import org.cqfn.diktat.ruleset.utils.log
 
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
@@ -60,7 +59,10 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
 import org.jetbrains.kotlin.utils.addToStdlib.firstNotNullResult
+import org.slf4j.LoggerFactory
+
 import java.lang.StringBuilder
+
 import kotlin.math.abs
 
 /**
@@ -377,6 +379,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
+        private val log = LoggerFactory.getLogger(IndentationRule::class.java)
         const val INDENT_SIZE = 4
         private val increasingTokens = listOf(LPAR, LBRACE, LBRACKET, LONG_TEMPLATE_ENTRY_START)
         private val decreasingTokens = listOf(RPAR, RBRACE, RBRACKET, LONG_TEMPLATE_ENTRY_END)

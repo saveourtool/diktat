@@ -363,7 +363,7 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
 
     @Test
     @Tag(WarningNames.UNUSED_IMPORT)
-    fun `Acute`() {
+    fun `Acute import`() {
         lintMethod(
             """
                 |package org.cqfn.diktat.example
