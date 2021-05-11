@@ -238,11 +238,9 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
                         previousTag.addChild(treePrev.clone() as ASTNode, null)
                         previousTag.addChild(this.clone() as ASTNode, null)
                     }
-                        ?: run {
-                            firstBasicTag.node.applyToPrevSibling(KDOC_LEADING_ASTERISK) {
-                                treeParent.addChild(treePrev.clone() as ASTNode, this)
-                                treeParent.addChild(this.clone() as ASTNode, treePrev)
-                            }
+                        ?: firstBasicTag.node.applyToPrevSibling(KDOC_LEADING_ASTERISK) {
+                            treeParent.addChild(treePrev.clone() as ASTNode, this)
+                            treeParent.addChild(this.clone() as ASTNode, treePrev)
                         }
                 } else {
                     firstBasicTag.node.apply {
@@ -256,14 +254,15 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun checkEmptyLinesBetweenBasicTags(basicTags: List<KDocTag>) {
-        val tagsWithRedundantEmptyLines = basicTags.dropLast(1).filterNot { tag ->
+        val tagsWithRedundantEmptyLines = basicTags.dropLast(1).filter { tag ->
             val nextWhiteSpace = tag.node.nextSibling { it.elementType == WHITE_SPACE }
-            val noEmptyKdocLines = tag
+            val hasTrailingNewlineInTagBody = tag
                 .node
                 .getChildren(TokenSet.create(KDOC_LEADING_ASTERISK))
-                .filter { it.treeNext == null || it.treeNext.elementType == WHITE_SPACE }
-                .count() == 0
-            nextWhiteSpace?.text?.count { it == '\n' } == 1 && noEmptyKdocLines
+                .lastOrNull()
+                ?.takeIf { it.treeNext == null || it.treeNext.elementType == WHITE_SPACE } != null
+            // either there is a trailing blank line in tag's body OR there are empty lines right after this tag
+            hasTrailingNewlineInTagBody || nextWhiteSpace?.text?.count { it == '\n' } != 1
         }
 
         tagsWithRedundantEmptyLines.forEach { tag ->
