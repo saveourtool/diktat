@@ -16,6 +16,7 @@ import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocFormatting
 import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocMethods
 import org.cqfn.diktat.ruleset.rules.chapter3.AnnotationNewLineRule
 import org.cqfn.diktat.ruleset.rules.chapter3.BlockStructureBraces
+import org.cqfn.diktat.ruleset.rules.chapter3.BooleanExpressionsRule
 import org.cqfn.diktat.ruleset.rules.chapter3.BracesInConditionalsAndLoopsRule
 import org.cqfn.diktat.ruleset.rules.chapter3.ClassLikeStructuresOrderRule
 import org.cqfn.diktat.ruleset.rules.chapter3.CollapseIfStatementsRule
@@ -77,7 +78,6 @@ import org.cqfn.diktat.ruleset.rules.chapter6.classes.StatelessClassesRule
 
 import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.RuleSetProvider
-import org.cqfn.diktat.ruleset.rules.chapter3.BooleanExpressionsRule
 import org.jetbrains.kotlin.org.jline.utils.Levenshtein
 import org.slf4j.LoggerFactory
 
