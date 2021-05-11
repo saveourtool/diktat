@@ -18,6 +18,7 @@ import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.RANGE
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER
 import com.pinterest.ktlint.core.ast.parent
+import org.cqfn.diktat.common.config.rules.getCommonConfiguration
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.kotlin.psi.KtProperty
@@ -38,8 +39,12 @@ class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule(
         )
     }
     override fun logic(node: ASTNode) {
+        val filePath = node.getRootNode().getFilePath()
+        val config = configRules.getCommonConfiguration()
         if (node.elementType == INTEGER_CONSTANT || node.elementType == FLOAT_CONSTANT) {
-            checkNumber(node, configuration)
+            if (!isLocatedInTest(filePath.splitPathToDirs(), config.testAnchors) || !configuration.isIgnoreTest) {
+                checkNumber(node, configuration)
+            }
         }
     }
 
@@ -77,6 +82,11 @@ class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule(
      */
     class MagicNumberConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
         /**
+         * Flag to ignore numbers from test
+         */
+        val isIgnoreTest = config["ignoreTest"]?.toBoolean() ?: ignoreTest
+
+        /**
          * List of ignored numbers
          */
         val ignoreNumbers = config["ignoreNumbers"]?.split(",")?.map { it.trim() }?.filter { it.isNumber() } ?: ignoreNumbersList
@@ -95,6 +105,7 @@ class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
+        const val ignoreTest = true
         val ignoreNumbersList = listOf("-1", "1", "0", "2")
         val mapConfiguration = mapOf(
             "ignoreHashCodeFunction" to true,

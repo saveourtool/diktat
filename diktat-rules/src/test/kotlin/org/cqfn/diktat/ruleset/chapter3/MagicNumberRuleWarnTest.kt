@@ -181,4 +181,30 @@ class MagicNumberRuleWarnTest : LintTestBase(::MagicNumberRule) {
             rulesConfigList = rulesConfigMagicNumber
         )
     }
+
+    @Test
+    @Tag(WarningNames.MAGIC_NUMBER)
+    fun `check ignore numbers in test`() {
+        lintMethod(
+            """
+                |fun f1oo() {
+                |   val m = -1
+                |   val a: Byte = 4
+                |   val b = 0xff
+                |}
+                |
+                |enum class A(b:Int) {
+                |   A(-240),
+                |   B(50),
+                |   C(3),
+                |}
+                |@Override                
+                |fun hashCode(): Int {
+                |   return 32
+                |}
+            """.trimMargin(),
+            fileName = "src/test/kotlin/org/cqfn/diktat/test/hehe/MagicNumberTest.kt",
+            rulesConfigList = rulesConfigIgnoreNumbersMagicNumber,
+        )
+    }
 }
