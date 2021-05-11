@@ -54,7 +54,7 @@
         <kotlinpoet.version>1.8.0</kotlinpoet.version>
         <detekt.version>1.16.0</detekt.version>
         <dokka.version>1.4.32</dokka.version>
-        <jacoco.version>0.8.7-SNAPSHOT</jacoco.version>
+        <jacoco.version>0.8.7</jacoco.version>
         <maven-plugin-tools.version>3.6.1</maven-plugin-tools.version>
     </properties>
 
@@ -74,16 +74,6 @@
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>maven-central-snapshots</id>
-            <name>Maven Central Snapshots</name>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
 
     <dependencyManagement>
         <dependencies>
@@ -238,9 +228,6 @@
                             <source>src/main/kotlin</source>
                             <source>src/main/resources</source>
                         </sourceDirs>
-                        <args>
-                            <arg>-Xuse-ir</arg>
-                        </args>
                     </configuration>
                     <inherited>true</inherited>
                 </plugin>
