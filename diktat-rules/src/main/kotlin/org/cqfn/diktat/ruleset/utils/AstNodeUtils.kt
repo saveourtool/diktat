@@ -352,8 +352,8 @@ fun ASTNode.hasModifier(modifier: IElementType) = this.findChildByType(MODIFIER_
  * Checks whether [this] node of type PROPERTY is `var`
  */
 fun ASTNode.isVarProperty() =
-        this.elementType == PROPERTY &&
-                this.getChildren(null).any { it.elementType == ElementType.VAR_KEYWORD }
+    this.getChildren(null)
+        .any { it.elementType == ElementType.VAR_KEYWORD }
 
 /**
  * Replaces text of [this] node with lowercase text
