@@ -12,10 +12,16 @@ import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_MISSING
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
+import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
+import com.pinterest.ktlint.core.ast.ElementType.FILE_ANNOTATION_LIST
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
+import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.children
 import com.pinterest.ktlint.core.ast.isLeaf
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -219,13 +225,26 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
                 // there is missing package statement in a file, so it will be created and inserted
                 val newPackageDirective = generatedPackageDirective.findLeafWithSpecificType(PACKAGE_DIRECTIVE)!!
                 val packageDirectiveParent = packageDirectiveNode.treeParent
-                packageDirectiveParent.replaceChild(packageDirectiveNode, newPackageDirective)
-                val insertWhitespaceBefore = if (newPackageDirective != packageDirectiveParent.firstChildNode) {
-                    newPackageDirective
+                // When package directive is missing in .kt file,
+                // the node is still present in the AST, and not always in a convenient place.
+                // E.g. `@file:Suppress("...") // comments`
+                // AST will be: FILE_ANNOTATION_LIST, PACKAGE_DIRECTIVE, WHITE_SPACE, EOL_COMMENT
+                // So, we can't just put new package directive in it's old place and rely on FileStructure rule
+                if (packageDirectiveNode != packageDirectiveParent.firstChildNode) {
+                    // We will insert new package directive node before first node, which is not in the following list
+                    val possibleTypesBeforePackageDirective = listOf(WHITE_SPACE, EOL_COMMENT, BLOCK_COMMENT, KDOC, PACKAGE_DIRECTIVE, FILE_ANNOTATION_LIST)
+                    val addBefore = packageDirectiveParent.children().filter { it.elementType !in possibleTypesBeforePackageDirective }.first()
+                    packageDirectiveParent.removeChild(packageDirectiveNode)
+                    packageDirectiveParent.addChild(newPackageDirective, addBefore)
+                    if (newPackageDirective.treePrev.elementType != WHITE_SPACE) {
+                        packageDirectiveParent.addChild(PsiWhiteSpaceImpl("\n"), newPackageDirective)
+                    }
                 } else {
-                    newPackageDirective.treeNext
+                    packageDirectiveParent.replaceChild(packageDirectiveNode, newPackageDirective)
                 }
-                packageDirectiveParent.addChild(PsiWhiteSpaceImpl("\n\n"), insertWhitespaceBefore)
+                if (newPackageDirective.treeNext.elementType != WHITE_SPACE) {
+                    packageDirectiveParent.addChild(PsiWhiteSpaceImpl("\n"), newPackageDirective.treeNext)
+                }
             }
     }
 
