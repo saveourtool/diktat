@@ -73,12 +73,7 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     private val refSet: MutableSet<String> = mutableSetOf()
     private var packageName = ""
-    private val ignoreImports = setOf("invoke", "get", "set")
-
-    // Fixme: this imports should be deleted if unused
-    private val ignoreOperators = setOf("getValue", "plus", "minus", "times", "div",
-        "rem", "rangeTo", "contains", "plusAssign", "minusAssign", "timesAssign",
-        "divAssign", "remAssign", "compareTo", "inc", "dec", "unaryPlus", "unaryMinus", "not")
+    private val ignoreImports = setOf("invoke", "get", "set", "getValue")
 
     override fun logic(node: ASTNode) {
         if (node.elementType == FILE) {
@@ -231,8 +226,9 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
                 ) {
                     // this branch corresponds to imports from the same package
                     deleteImport(importPath, node, ktImportDirective)
-                } else if (importName != null && !ignoreImports.contains(importName) && !refSet.contains(importName) && !ignoreOperators.contains(importName)) {
+                } else if (importName != null && !ignoreImports.contains(importName) && !refSet.contains(importName) && !operatorMap.containsKey(importName)) {
                     // this import is not used anywhere
+                    // Fixme: operatorMap imports and `getValue` should be deleted if unused
                     deleteImport(importPath, node, ktImportDirective)
                 }
             }
