@@ -15,6 +15,7 @@ import org.cqfn.diktat.ruleset.rules.chapter1.PackageNaming
 
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.ast.ElementType
+import com.pinterest.ktlint.core.ast.ElementType.ANNOTATED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.CONST_KEYWORD
@@ -503,7 +504,7 @@ fun ASTNode?.isAccessibleOutside(): Boolean =
  */
 fun ASTNode.hasSuppress(warningName: String) = parent({ node ->
     val annotationNode = if (node.elementType != FILE) {
-        node.findChildByType(MODIFIER_LIST)
+        node.findChildByType(MODIFIER_LIST) ?: node.findChildByType(ANNOTATED_EXPRESSION)
     } else {
         node.findChildByType(FILE_ANNOTATION_LIST)
     }

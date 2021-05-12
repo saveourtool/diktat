@@ -2,6 +2,7 @@ package org.cqfn.diktat.ruleset.rules.chapter3
 
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.common.config.rules.getCommonConfiguration
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.MAGIC_NUMBER
 import org.cqfn.diktat.ruleset.rules.DiktatRule
@@ -37,9 +38,14 @@ class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule(
             configRules.getRuleConfig(MAGIC_NUMBER)?.configuration ?: emptyMap()
         )
     }
+    @Suppress("COLLAPSE_IF_STATEMENTS")
     override fun logic(node: ASTNode) {
+        val filePath = node.getRootNode().getFilePath()
+        val config = configRules.getCommonConfiguration()
         if (node.elementType == INTEGER_CONSTANT || node.elementType == FLOAT_CONSTANT) {
-            checkNumber(node, configuration)
+            if (!isLocatedInTest(filePath.splitPathToDirs(), config.testAnchors) || !configuration.isIgnoreTest) {
+                checkNumber(node, configuration)
+            }
         }
     }
 
@@ -77,6 +83,11 @@ class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule(
      */
     class MagicNumberConfiguration(config: Map<String, String>) : RuleConfiguration(config) {
         /**
+         * Flag to ignore numbers from test
+         */
+        val isIgnoreTest = config["ignoreTest"]?.toBoolean() ?: IGNORE_TEST
+
+        /**
          * List of ignored numbers
          */
         val ignoreNumbers = config["ignoreNumbers"]?.split(",")?.map { it.trim() }?.filter { it.isNumber() } ?: ignoreNumbersList
@@ -95,6 +106,7 @@ class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
+        const val IGNORE_TEST = true
         val ignoreNumbersList = listOf("-1", "1", "0", "2")
         val mapConfiguration = mapOf(
             "ignoreHashCodeFunction" to true,
