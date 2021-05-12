@@ -233,7 +233,7 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
                 if (packageDirectiveNode != packageDirectiveParent.firstChildNode) {
                     // We will insert new package directive node before first node, which is not in the following list
                     val possibleTypesBeforePackageDirective = listOf(WHITE_SPACE, EOL_COMMENT, BLOCK_COMMENT, KDOC, PACKAGE_DIRECTIVE, FILE_ANNOTATION_LIST)
-                    val addBefore = packageDirectiveParent.children().filter { it.elementType !in possibleTypesBeforePackageDirective }.first()
+                    val addBefore = packageDirectiveParent.children().first { it.elementType !in possibleTypesBeforePackageDirective }
                     packageDirectiveParent.removeChild(packageDirectiveNode)
                     packageDirectiveParent.addChild(newPackageDirective, addBefore)
                     if (newPackageDirective.treePrev.elementType != WHITE_SPACE) {

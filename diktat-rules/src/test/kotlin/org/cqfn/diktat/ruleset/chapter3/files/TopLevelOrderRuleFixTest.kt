@@ -21,8 +21,8 @@ class TopLevelOrderRuleFixTest : FixTestBase("test/paragraph3/top_level", ::TopL
         fixAndCompare("TopLevelWithCommentExpected.kt", "TopLevelWithCommentTest.kt")
     }
 
-    // FixMe:
-    @Disabled
+    // FixMe: should be considered this case (swapped order of kdoc and package directive)
+    @Disabled("Isn't working yet")
     @Test
     @Tag(WarningNames.TOP_LEVEL_ORDER)
     fun `should fix top level order with header kdoc`() {
