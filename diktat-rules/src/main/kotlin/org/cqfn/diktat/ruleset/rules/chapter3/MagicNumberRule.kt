@@ -2,6 +2,7 @@ package org.cqfn.diktat.ruleset.rules.chapter3
 
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.common.config.rules.getCommonConfiguration
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.MAGIC_NUMBER
 import org.cqfn.diktat.ruleset.rules.DiktatRule
@@ -18,7 +19,6 @@ import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.RANGE
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER
 import com.pinterest.ktlint.core.ast.parent
-import org.cqfn.diktat.common.config.rules.getCommonConfiguration
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.kotlin.psi.KtProperty
@@ -38,6 +38,7 @@ class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule(
             configRules.getRuleConfig(MAGIC_NUMBER)?.configuration ?: emptyMap()
         )
     }
+    @Suppress("COLLAPSE_IF_STATEMENTS")
     override fun logic(node: ASTNode) {
         val filePath = node.getRootNode().getFilePath()
         val config = configRules.getCommonConfiguration()
@@ -84,7 +85,7 @@ class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule(
         /**
          * Flag to ignore numbers from test
          */
-        val isIgnoreTest = config["ignoreTest"]?.toBoolean() ?: ignoreTest
+        val isIgnoreTest = config["ignoreTest"]?.toBoolean() ?: IGNORE_TEST
 
         /**
          * List of ignored numbers
@@ -105,7 +106,7 @@ class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        const val ignoreTest = true
+        const val IGNORE_TEST = true
         val ignoreNumbersList = listOf("-1", "1", "0", "2")
         val mapConfiguration = mapOf(
             "ignoreHashCodeFunction" to true,
