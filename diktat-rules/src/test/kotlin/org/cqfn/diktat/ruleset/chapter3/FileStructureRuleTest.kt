@@ -454,6 +454,7 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
         )
     }
 
+    // Fixme: This test is not passing because for now we don't have type resolution
     @Disabled
     @Test
     @Tag(WarningNames.UNUSED_IMPORT)
