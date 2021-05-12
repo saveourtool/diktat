@@ -259,6 +259,12 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
         )
     }
 
+    @Test
+    @Tag("DiktatRuleSetProvider")
+    fun `regression - should correctly handle tags with empty lines`() {
+        fixAndCompare("KdocFormattingMultilineTagsExpected.kt", "KdocFormattingMultilineTagsTest.kt")
+    }
+
     companion object {
         private const val DEFAULT_CONFIG_PATH = "../diktat-analysis.yml"
         private val unfixedLintErrors: MutableList<LintError> = mutableListOf()

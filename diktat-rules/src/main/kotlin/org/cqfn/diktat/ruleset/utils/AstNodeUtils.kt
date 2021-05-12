@@ -30,6 +30,7 @@ import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.OVERRIDE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PRIVATE_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.PROTECTED_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PUBLIC_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
@@ -114,6 +115,19 @@ fun ASTNode.isCorrect() = this.findAllDescendantsWithSpecificType(TokenType.ERRO
  */
 fun ASTNode.getAllChildrenWithType(elementType: IElementType): List<ASTNode> =
         this.getChildren(null).filter { it.elementType == elementType }
+
+/**
+ * Generates a sequence of this ASTNode's children in reversed order
+ *
+ * @return a reevrsed sequence of children
+ */
+fun ASTNode.reversedChildren(): Sequence<ASTNode> = sequence {
+    var node = lastChildNode
+    while (node != null) {
+        yield(node)
+        node = node.treePrev
+    }
+}
 
 /**
  * Replaces the [beforeNode] of type [WHITE_SPACE] with the node with specified [text]
