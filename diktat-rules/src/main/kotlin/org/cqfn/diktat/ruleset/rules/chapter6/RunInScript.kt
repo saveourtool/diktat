@@ -46,7 +46,6 @@ class RunInScript(private val configRules: List<RulesConfig>) : Rule("run-script
     }
 
     private fun checkGradleNode(node: ASTNode) {
-        node.findChildByType(BINARY_EXPRESSION)?.findChildByType(OPERATION_REFERENCE)
         val astNode = if (node.hasEqBinaryExpression()) {
             return
         } else {
