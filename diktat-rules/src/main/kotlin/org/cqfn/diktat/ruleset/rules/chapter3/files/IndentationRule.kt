@@ -8,6 +8,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
 import org.cqfn.diktat.ruleset.rules.DiktatRule
+import org.cqfn.diktat.ruleset.utils.*
 import org.cqfn.diktat.ruleset.utils.indentation.ArrowInWhenChecker
 import org.cqfn.diktat.ruleset.utils.indentation.AssignmentOperatorChecker
 import org.cqfn.diktat.ruleset.utils.indentation.ConditionalsAndLoopsWithoutBracesChecker
@@ -19,7 +20,6 @@ import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig
 import org.cqfn.diktat.ruleset.utils.indentation.KdocIndentationChecker
 import org.cqfn.diktat.ruleset.utils.indentation.SuperTypeListChecker
 import org.cqfn.diktat.ruleset.utils.indentation.ValueParameterListChecker
-import org.cqfn.diktat.ruleset.utils.*
 
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
