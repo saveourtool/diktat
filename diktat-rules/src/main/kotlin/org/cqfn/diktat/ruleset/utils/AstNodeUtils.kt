@@ -58,6 +58,7 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.siblings
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.util.Locale
 
 /**
  * A [Logger] that can be used throughout diktat
@@ -376,7 +377,7 @@ fun ASTNode.isVarProperty() =
  * Replaces text of [this] node with lowercase text
  */
 fun ASTNode.toLower() {
-    (this as LeafPsiElement).replaceWithText(this.text.toLowerCase())
+    (this as LeafPsiElement).replaceWithText(this.text.lowercase(Locale.getDefault()))
 }
 
 /**

@@ -5,7 +5,7 @@
     domainName: your.name.here
     testDirs: test
     disabledChapters: ""
-    kotlinVersion: 1.4
+    kotlinVersion: 1.5
     srcDirectories: "main"
 # Checks that the Class/Enum/Interface name does not match Pascal case
 - name: CLASS_NAME_INCORRECT
@@ -300,6 +300,8 @@
 - name: MAGIC_NUMBER
   enabled: true
   configuration:
+    # Ignore numbers from test
+    ignoreTest: "true"
     # Ignore numbers
     ignoreNumbers: "-1, 1, 0, 2"
     # Is ignore override hashCode function
