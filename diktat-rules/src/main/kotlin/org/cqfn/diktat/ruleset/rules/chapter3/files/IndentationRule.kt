@@ -68,6 +68,7 @@ import kotlin.math.abs
  * Additionally, a set of CustomIndentationChecker objects checks all WHITE_SPACE node if they are exceptions from general rules.
  * @see CustomIndentationChecker
  */
+@Suppress("LargeClass")
 class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
     "indentation",
     configRules,
@@ -132,15 +133,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
      */
     private fun checkNewlineAtEnd(node: ASTNode) {
         if (configuration.newlineAtEnd) {
-            val lastChild = if (filePath.endsWith(".kts")) {
-                var lstChild = node.lastChildNode
-                while (lstChild != null) {
-                    lstChild = lstChild.lastChildNode
-                }
-                return lstChild
-            } else {
-                node.lastChildNode
-            }
+            val lastChild = generateSequence(node) { it.lastChildNode }.last()
             val numBlankLinesAfter = lastChild.text.count { it == '\n' }
             if (lastChild.elementType != WHITE_SPACE || numBlankLinesAfter != 1) {
                 val warnText = if (lastChild.elementType != WHITE_SPACE || numBlankLinesAfter == 0) "no newline" else "too many blank lines"
