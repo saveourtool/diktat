@@ -339,7 +339,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
         /**
          * @return full current indent
          */
-        fun indent() = regularIndent + exceptionalIndents.sumBy { it.indent }
+        fun indent() = regularIndent + exceptionalIndents.sumOf { it.indent }
 
         /**
          * @param initiator a node that caused exceptional indentation

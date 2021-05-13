@@ -109,10 +109,6 @@
                         </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <apiVersion>1.4</apiVersion>
-                    <languageVersion>1.4</languageVersion>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
