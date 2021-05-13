@@ -400,5 +400,4 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
 
         )
     }
-
 }

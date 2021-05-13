@@ -50,12 +50,8 @@ class RunInScript(private val configRules: List<RulesConfig>) : Rule("run-script
             return
         } else {
             when (node.firstChildNode.elementType) {
-                PARENTHESIZED -> {
-                    node.firstChildNode
-                }
-                else -> {
-                    node
-                }
+                PARENTHESIZED -> node.firstChildNode
+                else -> node
             }
         }
         if (!astNode.hasChildOfType(CALL_EXPRESSION) && !astNode.hasChildOfType(DOT_QUALIFIED_EXPRESSION)) {
