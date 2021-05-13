@@ -6,10 +6,12 @@ import org.cqfn.diktat.ruleset.constants.Warnings.RUN_IN_SCRIPT
 import org.cqfn.diktat.ruleset.utils.*
 
 import com.pinterest.ktlint.core.Rule
+import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_ARGUMENT
 import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.PARENTHESIZED
 import com.pinterest.ktlint.core.ast.ElementType.SCRIPT_INITIALIZER
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT
@@ -44,20 +46,21 @@ class RunInScript(private val configRules: List<RulesConfig>) : Rule("run-script
     }
 
     private fun checkGradleNode(node: ASTNode) {
-        val astNode = if (node.firstChildNode.elementType == PARENTHESIZED) {
-            node.firstChildNode
+        node.findChildByType(BINARY_EXPRESSION)?.findChildByType(OPERATION_REFERENCE)
+        val astNode = if (node.hasEqBinaryExpression()) {
+            return
         } else {
-            node
+            when (node.firstChildNode.elementType) {
+                PARENTHESIZED -> {
+                    node.firstChildNode
+                }
+                else -> {
+                    node
+                }
+            }
         }
         if (!astNode.hasChildOfType(CALL_EXPRESSION) && !astNode.hasChildOfType(DOT_QUALIFIED_EXPRESSION)) {
-            RUN_IN_SCRIPT.warnAndFix(configRules, emitWarn, isFixMode, astNode.text, astNode.startOffset, astNode) {
-                val parent = astNode.treeParent
-                val newNode = KotlinParser().createNode("run {\n ${astNode.text}\n} \n")
-                val newScript = CompositeElement(SCRIPT_INITIALIZER)
-                parent.addChild(newScript, astNode)
-                newScript.addChild(newNode)
-                parent.removeChild(astNode)
-            }
+            warnRunInScript(astNode)
         }
     }
 
@@ -65,15 +68,19 @@ class RunInScript(private val configRules: List<RulesConfig>) : Rule("run-script
         val isLambdaArgument = node.firstChildNode.hasChildOfType(LAMBDA_ARGUMENT)
         val isLambdaInsideValueArgument = node.firstChildNode.findChildByType(VALUE_ARGUMENT_LIST)?.findChildByType(VALUE_ARGUMENT)?.findChildByType(LAMBDA_EXPRESSION) != null
         if (!(isLambdaArgument || isLambdaInsideValueArgument)) {
-            RUN_IN_SCRIPT.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
-                if (node.firstChildNode.elementType != DOT_QUALIFIED_EXPRESSION) {
-                    val parent = node.treeParent
-                    val newNode = KotlinParser().createNode("run {\n ${node.text}\n} \n")
-                    val newScript = CompositeElement(SCRIPT_INITIALIZER)
-                    parent.addChild(newScript, node)
-                    newScript.addChild(newNode)
-                    parent.removeChild(node)
-                }
+            warnRunInScript(node)
+        }
+    }
+
+    private fun warnRunInScript(node: ASTNode) {
+        RUN_IN_SCRIPT.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
+            if (node.firstChildNode.elementType != DOT_QUALIFIED_EXPRESSION) {
+                val parent = node.treeParent
+                val newNode = KotlinParser().createNode("run {\n ${node.text}\n} \n")
+                val newScript = CompositeElement(SCRIPT_INITIALIZER)
+                parent.addChild(newScript, node)
+                newScript.addChild(newNode)
+                parent.removeChild(node)
             }
         }
     }
