@@ -11,6 +11,7 @@ import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
+@Suppress("LargeClass")
 class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
     private val ruleId = "$DIKTAT_RULE_SET_ID:indentation"
     private val rulesConfigList = listOf(
