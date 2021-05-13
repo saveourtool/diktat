@@ -143,6 +143,8 @@ class RunInScriptWarnTest : LintTestBase(::RunInScript) {
                 diktat({})
 
                 foo/*df*/()
+                
+                foo().goo()
             """.trimMargin(),
             fileName = "src/main/kotlin/org/cqfn/diktat/builds.gradle.kts"
         )

@@ -6,12 +6,10 @@ import org.cqfn.diktat.ruleset.constants.Warnings.RUN_IN_SCRIPT
 import org.cqfn.diktat.ruleset.utils.*
 
 import com.pinterest.ktlint.core.Rule
-import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_ARGUMENT
 import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.PARENTHESIZED
 import com.pinterest.ktlint.core.ast.ElementType.SCRIPT_INITIALIZER
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT
@@ -22,7 +20,7 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 /**
  * Rule that checks if kts script contains other functions except run code
  * In .kts files allow use only property declaration, function, classes, and code inside `run` block
- * In gradle.kts files allow to call expression and dot qualified expression in addition to everything used in .kts files
+ * In gradle.kts files allow to call binary expression with EQ, expression and dot qualified expression in addition to everything used in .kts files
  */
 class RunInScript(private val configRules: List<RulesConfig>) : Rule("run-script") {
     private var isFixMode: Boolean = false
