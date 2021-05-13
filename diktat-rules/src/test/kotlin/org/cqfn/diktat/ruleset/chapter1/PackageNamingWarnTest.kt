@@ -52,6 +52,26 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
     }
 
     @Test
+    @Tag(WarningNames.PACKAGE_NAME_MISSING)
+    fun `missing package name with annotation (check)`() {
+        lintMethod(
+            """
+                @file:Suppress("CONSTANT_UPPERCASE")
+
+                import org.cqfn.diktat.a.b.c
+
+                /**
+                 * testComment
+                 */
+                class TestPackageName {  }
+
+            """.trimIndent(),
+            LintError(1, 37, ruleId, "${PACKAGE_NAME_MISSING.warnText()} $TEST_FILE_NAME", true),
+            rulesConfigList = rulesConfigList
+        )
+    }
+
+    @Test
     @Tag(WarningNames.PACKAGE_NAME_INCORRECT_CASE)
     fun `package name should be in a lower case (check)`() {
         lintMethod(
