@@ -631,5 +631,29 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
         )
     }
 
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
+    fun `check script`() {
+        lintMethod(
+            """
+                |val q = 1
+                |
+            """.trimMargin(),
+            fileName = "src/main/kotlin/org/cqfn/diktat/Example.kts"
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
+    fun `check gradle script`() {
+        lintMethod(
+            """
+                |projectName = "diKTat"
+                |
+            """.trimMargin(),
+            fileName = "src/main/kotlin/org/cqfn/diktat/build.gradle.kts"
+        )
+    }
+
     private fun warnText(expected: Int, actual: Int) = "${WRONG_INDENTATION.warnText()} expected $expected but was $actual"
 }
