@@ -13,6 +13,7 @@ import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
@@ -392,6 +393,86 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
                 |   val a = list[1]
                 |}
             """.trimMargin(),
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.UNUSED_IMPORT)
+    fun `check by #1`() {
+        lintMethod(
+            """
+                |package org.cqfn.diktat.example
+                |
+                |import com.example.get
+                |import com.example.invoke
+                |import com.example.set
+                |import kotlin.properties.Delegates
+                |
+                |fun main() {
+                |   val a by Delegates.observable()
+                |}
+            """.trimMargin(),
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.UNUSED_IMPORT)
+    fun `check by #2 should not trigger`() {
+        lintMethod(
+            """
+                |package org.cqfn.diktat.example
+                |
+                |import com.example.get
+                |import com.example.invoke
+                |import com.example.set
+                |import tasks.getValue
+                |
+                |fun main() {
+                |   val a by tasks.getting
+                |}
+            """.trimMargin(),
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.UNUSED_IMPORT)
+    fun `check by #3 should trigger`() {
+        lintMethod(
+            """
+                |package org.cqfn.diktat.example
+                |
+                |import Delegate
+                |import com.example.get
+                |import com.example.invoke
+                |import com.example.set
+                |
+                |fun main() {
+                |   val a
+                |}
+            """.trimMargin(),
+            LintError(1, 1, ruleId, "${Warnings.UNUSED_IMPORT.warnText()} Delegate - unused import", true)
+        )
+    }
+
+    // Fixme: This test is not passing because for now we don't have type resolution
+    @Disabled
+    @Test
+    @Tag(WarningNames.UNUSED_IMPORT)
+    fun `check by #4 should trigger`() {
+        lintMethod(
+            """
+                |package org.cqfn.diktat.example
+                |
+                |import com.example.get
+                |import com.example.invoke
+                |import com.example.set
+                |import tasks.getValue
+                |
+                |fun main() {
+                |   val a
+                |}
+            """.trimMargin(),
+            LintError(1, 1, ruleId, "${Warnings.UNUSED_IMPORT.warnText()} tasks.getValue - unused import", true)
         )
     }
 }

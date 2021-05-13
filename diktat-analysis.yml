@@ -301,6 +301,8 @@
 - name: MAGIC_NUMBER
   enabled: true
   configuration:
+    # Ignore numbers from test
+    ignoreTest: "true"
     # Ignore numbers
     ignoreNumbers: "-1, 1, 0, 2"
     # Is ignore override hashCode function
@@ -309,6 +311,8 @@
     ignorePropertyDeclaration: "false"
     # Is ignore local variable
     ignoreLocalVariableDeclaration: "false"
+    # Is ignore value parameter
+    ignoreValueParameter: "true"
     # Is ignore constant
     ignoreConstantDeclaration: "true"
     # Is ignore property in companion object

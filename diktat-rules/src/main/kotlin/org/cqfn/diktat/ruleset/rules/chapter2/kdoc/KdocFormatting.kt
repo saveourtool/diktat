@@ -20,8 +20,10 @@ import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.getIdentifierName
 import org.cqfn.diktat.ruleset.utils.hasChildMatching
+import org.cqfn.diktat.ruleset.utils.hasTrailingNewlineInTagBody
 import org.cqfn.diktat.ruleset.utils.kDocTags
 import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
+import org.cqfn.diktat.ruleset.utils.reversedChildren
 
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
@@ -39,7 +41,6 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
-import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
 import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
 import org.jetbrains.kotlin.lexer.KtTokens
@@ -238,11 +239,9 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
                         previousTag.addChild(treePrev.clone() as ASTNode, null)
                         previousTag.addChild(this.clone() as ASTNode, null)
                     }
-                        ?: run {
-                            firstBasicTag.node.applyToPrevSibling(KDOC_LEADING_ASTERISK) {
-                                treeParent.addChild(treePrev.clone() as ASTNode, this)
-                                treeParent.addChild(this.clone() as ASTNode, treePrev)
-                            }
+                        ?: firstBasicTag.node.applyToPrevSibling(KDOC_LEADING_ASTERISK) {
+                            treeParent.addChild(treePrev.clone() as ASTNode, this)
+                            treeParent.addChild(this.clone() as ASTNode, treePrev)
                         }
                 } else {
                     firstBasicTag.node.apply {
@@ -256,27 +255,26 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun checkEmptyLinesBetweenBasicTags(basicTags: List<KDocTag>) {
-        val tagsWithRedundantEmptyLines = basicTags.dropLast(1).filterNot { tag ->
+        val tagsWithRedundantEmptyLines = basicTags.dropLast(1).filter { tag ->
             val nextWhiteSpace = tag.node.nextSibling { it.elementType == WHITE_SPACE }
-            val noEmptyKdocLines = tag
-                .node
-                .getChildren(TokenSet.create(KDOC_LEADING_ASTERISK))
-                .filter { it.treeNext == null || it.treeNext.elementType == WHITE_SPACE }
-                .count() == 0
-            nextWhiteSpace?.text?.count { it == '\n' } == 1 && noEmptyKdocLines
+            // either there is a trailing blank line in tag's body OR there are empty lines right after this tag
+            tag.hasTrailingNewlineInTagBody() || nextWhiteSpace?.text?.count { it == '\n' } != 1
         }
 
         tagsWithRedundantEmptyLines.forEach { tag ->
             KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS.warnAndFix(configRules, emitWarn, isFixMode,
                 "@${tag.name}", tag.startOffset, tag.node) {
-                tag.node.nextSibling { it.elementType == WHITE_SPACE }?.leaveOnlyOneNewLine()
-                // the first asterisk before tag is not included inside KDOC_TAG node
-                // we look for the second and take its previous which should be WHITE_SPACE with newline
-                tag
-                    .node
-                    .getAllChildrenWithType(KDOC_LEADING_ASTERISK)
-                    .firstOrNull()
-                    ?.let { tag.node.removeRange(it.treePrev, null) }
+                if (tag.hasTrailingNewlineInTagBody()) {
+                    // if there is a blank line in tag's body, we remove it and everything after it, so that the next white space is kept in place
+                    // we look for the last LEADING_ASTERISK and take its previous node which should be WHITE_SPACE with newline
+                    tag.node.reversedChildren()
+                        .takeWhile { it.elementType == WHITE_SPACE || it.elementType == KDOC_LEADING_ASTERISK }
+                        .firstOrNull { it.elementType == KDOC_LEADING_ASTERISK }
+                        ?.let { tag.node.removeRange(it.treePrev, null) }
+                } else {
+                    // otherwise we remove redundant blank lines from white space node after tag
+                    tag.node.nextSibling { it.elementType == WHITE_SPACE }?.leaveOnlyOneNewLine()
+                }
             }
         }
     }

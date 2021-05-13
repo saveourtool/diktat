@@ -73,7 +73,7 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     private val refSet: MutableSet<String> = mutableSetOf()
     private var packageName = ""
-    private val ignoreImports = setOf("invoke", "get", "set")
+    private val ignoreImports = setOf("invoke", "get", "set", "getValue")
 
     override fun logic(node: ASTNode) {
         if (node.elementType == FILE) {
@@ -226,11 +226,9 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
                 ) {
                     // this branch corresponds to imports from the same package
                     deleteImport(importPath, node, ktImportDirective)
-                } else if (importName != null && !ignoreImports.contains(importName) && !refSet.contains(
-                    importName
-                )
-                ) {
+                } else if (importName != null && !ignoreImports.contains(importName) && !refSet.contains(importName) && !operatorMap.containsKey(importName)) {
                     // this import is not used anywhere
+                    // Fixme: operatorMap imports and `getValue` should be deleted if unused
                     deleteImport(importPath, node, ktImportDirective)
                 }
             }
@@ -304,7 +302,7 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
                 if (elementType == WHITE_SPACE && text.count { it == '\n' } != 2) {
                     FILE_NO_BLANK_LINE_BETWEEN_BLOCKS.warnAndFix(configRules, emitWarn, isFixMode, astNode.text.lines().first(),
                         astNode.startOffset, astNode) {
-                        (this as LeafPsiElement).replaceWithText("\n\n${text.replace("\n", "")}")
+                        (this as LeafPsiElement).parent.node.replaceChild(this, PsiWhiteSpaceImpl("\n\n${text.replace("\n", "")}"))
                     }
                 }
             }
