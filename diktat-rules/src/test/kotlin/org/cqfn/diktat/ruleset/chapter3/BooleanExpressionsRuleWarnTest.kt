@@ -7,6 +7,8 @@ import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
+import org.cqfn.diktat.ruleset.utils.KotlinParser
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
@@ -109,5 +111,40 @@ class BooleanExpressionsRuleWarnTest : LintTestBase(::BooleanExpressionsRule) {
                     |}
             """.trimMargin()
         )
+    }
+
+    @Test
+    fun `test makeCorrectExpressionString method #1`() {
+        val firstCondition = KotlinParser().createNode("a > 5 && b < 6")
+        val returnedString = BooleanExpressionsRule(emptyList()).makeCorrectExpressionString(firstCondition, HashMap())
+        Assertions.assertEquals(returnedString, "(A & B)")
+    }
+
+    @Test
+    fun `test makeCorrectExpressionString method #2`() {
+        val firstCondition = KotlinParser().createNode("a > 5 && b < 6 && c > 7 || a > 5")
+        val returnedString = BooleanExpressionsRule(emptyList()).makeCorrectExpressionString(firstCondition, HashMap())
+        Assertions.assertEquals(returnedString, "(A & B & C | A)")
+    }
+
+    @Test
+    fun `test makeCorrectExpressionString method #3`() {
+        val firstCondition = KotlinParser().createNode("a > 5 && b < 6 && (c > 3 || b < 6) && a > 5")
+        val returnedString = BooleanExpressionsRule(emptyList()).makeCorrectExpressionString(firstCondition, HashMap())
+        Assertions.assertEquals(returnedString, "(A & B & (C | B) & A)")
+    }
+
+    @Test
+    fun `test makeCorrectExpressionString method #4`() {
+        val firstCondition = KotlinParser().createNode("a > 5 && b < 6 && (c > 3 || b < 6) && a > 666")
+        val returnedString = BooleanExpressionsRule(emptyList()).makeCorrectExpressionString(firstCondition, HashMap())
+        Assertions.assertEquals(returnedString, "(A & B & (C | B) & D)")
+    }
+
+    @Test
+    fun `test makeCorrectExpressionString method #5`() {
+        val firstCondition = KotlinParser().createNode("a.and(b)")
+        val returnedString = BooleanExpressionsRule(emptyList()).makeCorrectExpressionString(firstCondition, HashMap())
+        Assertions.assertEquals(returnedString, "(a.and(b))")
     }
 }

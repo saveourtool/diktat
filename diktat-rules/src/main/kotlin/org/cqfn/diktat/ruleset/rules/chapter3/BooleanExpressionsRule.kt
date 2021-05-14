@@ -33,13 +33,14 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
 
     @Suppress("TooGenericExceptionCaught")
     private fun checkBooleanExpression(node: ASTNode) {
-        // This map is used to represent expressions as single chars, which are used by the lib.
+        // This map is used to assign a variable name for every elementary boolean expression.
         val mapOfExpressionToChar: HashMap<String, Char> = HashMap()
         val correctedExpression = makeCorrectExpressionString(node, mapOfExpressionToChar)
         // If there are method calls in conditions
         val expr: Expression<String> = try {
             ExprParser.parse(correctedExpression)
-        } catch (runTimeExc: RuntimeException) {
+        } catch (exc: RuntimeException) {
+            // this comes up if there is an unparsable expression. For example a.and(b)
             return
         }
         val distributiveLawString = checkDistributiveLaw(expr, mapOfExpressionToChar, node)
@@ -54,19 +55,16 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    private fun makeCorrectExpressionString(node: ASTNode, mapOfExpressionToChar: HashMap<String, Char>): String {
+    internal fun makeCorrectExpressionString(node: ASTNode, mapOfExpressionToChar: HashMap<String, Char>): String {
         // `A` character in ASCII
         var characterAsciiCode = 'A'.code
         node
             .findAllNodesWithCondition({ it.elementType == BINARY_EXPRESSION })
             .filterNot { it.text.contains("&&") || it.text.contains("||") }
-            .forEach {
-                if (mapOfExpressionToChar.containsKey(it.text)) {
-                    return@forEach
+            .forEach { expression ->
+                mapOfExpressionToChar.computeIfAbsent(expression.text) {
+                    characterAsciiCode++.toChar()
                 }
-                // Assigning the boolean expression to a char. The lib represents expressions[a > 5] as chars [A, B, C ...].
-                mapOfExpressionToChar[it.text] = characterAsciiCode.toChar()
-                characterAsciiCode++
             }
         // Library is using & as && and | as ||.
         var correctedExpression = "(${node
