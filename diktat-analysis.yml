@@ -7,7 +7,7 @@
     # testDirs: test
     disabledChapters: ""
     testDirs: test
-    kotlinVersion: 1.4.30
+    kotlinVersion: 1.5
     srcDirectories: "main"
 # Checks that the Class/Enum/Interface name does not match Pascal case
 - name: CLASS_NAME_INCORRECT
@@ -37,9 +37,6 @@
     allowedPrefixes: "" # A list of functions that return boolean and are allowed to use. Input is in a form "foo, bar".
 # Checks that function/method name is in lowerCamelCase
 - name: FUNCTION_NAME_INCORRECT_CASE
-  enabled: true
-# Checks that typealias name is in PascalCase
-- name: TYPEALIAS_NAME_INCORRECT_CASE
   enabled: true
 # Checks that generic name doesn't contain more than 1 letter (capital). It can be followed by numbers, example: T12, T
 - name: GENERIC_NAME
@@ -304,6 +301,8 @@
 - name: MAGIC_NUMBER
   enabled: true
   configuration:
+    # Ignore numbers from test
+    ignoreTest: "true"
     # Ignore numbers
     ignoreNumbers: "-1, 1, 0, 2"
     # Is ignore override hashCode function
@@ -312,6 +311,8 @@
     ignorePropertyDeclaration: "false"
     # Is ignore local variable
     ignoreLocalVariableDeclaration: "false"
+    # Is ignore value parameter
+    ignoreValueParameter: "true"
     # Is ignore constant
     ignoreConstantDeclaration: "true"
     # Is ignore property in companion object

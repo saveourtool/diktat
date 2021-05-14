@@ -15,10 +15,13 @@ import org.cqfn.diktat.ruleset.rules.chapter1.PackageNaming
 
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.ast.ElementType
+import com.pinterest.ktlint.core.ast.ElementType.ANNOTATED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
+import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.CONST_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
+import com.pinterest.ktlint.core.ast.ElementType.EQ
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FILE_ANNOTATION_LIST
 import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
@@ -27,8 +30,10 @@ import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.LATEINIT_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
+import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.OVERRIDE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PRIVATE_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.PROTECTED_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PUBLIC_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
@@ -53,6 +58,7 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.siblings
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.util.Locale
 
 /**
  * A [Logger] that can be used throughout diktat
@@ -113,6 +119,19 @@ fun ASTNode.isCorrect() = this.findAllDescendantsWithSpecificType(TokenType.ERRO
  */
 fun ASTNode.getAllChildrenWithType(elementType: IElementType): List<ASTNode> =
         this.getChildren(null).filter { it.elementType == elementType }
+
+/**
+ * Generates a sequence of this ASTNode's children in reversed order
+ *
+ * @return a reevrsed sequence of children
+ */
+fun ASTNode.reversedChildren(): Sequence<ASTNode> = sequence {
+    var node = lastChildNode
+    while (node != null) {
+        yield(node)
+        node = node.treePrev
+    }
+}
 
 /**
  * Replaces the [beforeNode] of type [WHITE_SPACE] with the node with specified [text]
@@ -358,7 +377,7 @@ fun ASTNode.isVarProperty() =
  * Replaces text of [this] node with lowercase text
  */
 fun ASTNode.toLower() {
-    (this as LeafPsiElement).replaceWithText(this.text.toLowerCase())
+    (this as LeafPsiElement).replaceWithText(this.text.lowercase(Locale.getDefault()))
 }
 
 /**
@@ -489,7 +508,7 @@ fun ASTNode?.isAccessibleOutside(): Boolean =
  */
 fun ASTNode.hasSuppress(warningName: String) = parent({ node ->
     val annotationNode = if (node.elementType != FILE) {
-        node.findChildByType(MODIFIER_LIST)
+        node.findChildByType(MODIFIER_LIST) ?: node.findChildByType(ANNOTATED_EXPRESSION)
     } else {
         node.findChildByType(FILE_ANNOTATION_LIST)
     }
@@ -733,6 +752,15 @@ fun ASTNode.isGoingAfter(otherNode: ASTNode): Boolean {
 
     return (thisLineNumber > otherLineNumber)
 }
+
+/**
+ * check that node has binary expression with `EQ`
+ */
+fun ASTNode.hasEqBinaryExpression(): Boolean =
+        findChildByType(BINARY_EXPRESSION)
+            ?.findChildByType(OPERATION_REFERENCE)
+            ?.hasChildOfType(EQ)
+            ?: false
 
 /**
  * Get line number, where this node's content starts. To avoid `ArrayIndexOutOfBoundsException`s we check whether node's maximum offset is less than

@@ -20,7 +20,7 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 /**
  * Rule that checks if kts script contains other functions except run code
  * In .kts files allow use only property declaration, function, classes, and code inside `run` block
- * In gradle.kts files allow to call expression and dot qualified expression in addition to everything used in .kts files
+ * In gradle.kts files allow to call binary expression with EQ, expression and dot qualified expression in addition to everything used in .kts files
  */
 class RunInScript(private val configRules: List<RulesConfig>) : Rule("run-script") {
     private var isFixMode: Boolean = false
@@ -44,20 +44,16 @@ class RunInScript(private val configRules: List<RulesConfig>) : Rule("run-script
     }
 
     private fun checkGradleNode(node: ASTNode) {
-        val astNode = if (node.firstChildNode.elementType == PARENTHESIZED) {
-            node.firstChildNode
+        val astNode = if (node.hasEqBinaryExpression()) {
+            return
         } else {
-            node
+            when (node.firstChildNode.elementType) {
+                PARENTHESIZED -> node.firstChildNode
+                else -> node
+            }
         }
         if (!astNode.hasChildOfType(CALL_EXPRESSION) && !astNode.hasChildOfType(DOT_QUALIFIED_EXPRESSION)) {
-            RUN_IN_SCRIPT.warnAndFix(configRules, emitWarn, isFixMode, astNode.text, astNode.startOffset, astNode) {
-                val parent = astNode.treeParent
-                val newNode = KotlinParser().createNode("run {\n ${astNode.text}\n} \n")
-                val newScript = CompositeElement(SCRIPT_INITIALIZER)
-                parent.addChild(newScript, astNode)
-                newScript.addChild(newNode)
-                parent.removeChild(astNode)
-            }
+            warnRunInScript(astNode)
         }
     }
 
@@ -65,15 +61,19 @@ class RunInScript(private val configRules: List<RulesConfig>) : Rule("run-script
         val isLambdaArgument = node.firstChildNode.hasChildOfType(LAMBDA_ARGUMENT)
         val isLambdaInsideValueArgument = node.firstChildNode.findChildByType(VALUE_ARGUMENT_LIST)?.findChildByType(VALUE_ARGUMENT)?.findChildByType(LAMBDA_EXPRESSION) != null
         if (!(isLambdaArgument || isLambdaInsideValueArgument)) {
-            RUN_IN_SCRIPT.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
-                if (node.firstChildNode.elementType != DOT_QUALIFIED_EXPRESSION) {
-                    val parent = node.treeParent
-                    val newNode = KotlinParser().createNode("run {\n ${node.text}\n} \n")
-                    val newScript = CompositeElement(SCRIPT_INITIALIZER)
-                    parent.addChild(newScript, node)
-                    newScript.addChild(newNode)
-                    parent.removeChild(node)
-                }
+            warnRunInScript(node)
+        }
+    }
+
+    private fun warnRunInScript(node: ASTNode) {
+        RUN_IN_SCRIPT.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
+            if (node.firstChildNode.elementType != DOT_QUALIFIED_EXPRESSION) {
+                val parent = node.treeParent
+                val newNode = KotlinParser().createNode("run {\n ${node.text}\n} \n")
+                val newScript = CompositeElement(SCRIPT_INITIALIZER)
+                parent.addChild(newScript, node)
+                newScript.addChild(newNode)
+                parent.removeChild(node)
             }
         }
     }
