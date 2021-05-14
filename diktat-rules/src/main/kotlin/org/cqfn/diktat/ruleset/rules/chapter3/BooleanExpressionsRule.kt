@@ -55,6 +55,11 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
+    /**
+     * @param node
+     * @param mapOfExpressionToChar
+     * @return
+     */
     internal fun makeCorrectExpressionString(node: ASTNode, mapOfExpressionToChar: HashMap<String, Char>): String {
         // `A` character in ASCII
         var characterAsciiCode = 'A'.code
