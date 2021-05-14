@@ -933,7 +933,7 @@ if (cond1 && (cond2 || cond3)) {
 }
 ```
 #### <a name="r3.16.2"></a> 3.16.2 Too complex conditions
-Too complex conditions should be replaced with simplified ones.
+Too complex conditions should be simplified according to boolean algebra rules, if it is possible
 
 **Valid example**
 ```kotlin
