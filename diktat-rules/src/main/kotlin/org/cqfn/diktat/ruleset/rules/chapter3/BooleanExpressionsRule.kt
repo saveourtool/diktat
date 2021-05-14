@@ -108,61 +108,107 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
         mapOfExpressionToChar: HashMap<String, Char>,
         node: ASTNode): String? {
         // checking that expression can be considered as distributive law
-        if (!isDistributiveLaw(node, expr.toString(), mapOfExpressionToChar)) {
-            return null
-        }
+        val commonDistributiveOperand = getCommonDistributiveOperand(node, expr.toString(), mapOfExpressionToChar)?.first() ?: return null
+        val correctSymbolsSequence = mapOfExpressionToChar.values.toMutableList()
+        correctSymbolsSequence.remove(commonDistributiveOperand)
+        correctSymbolsSequence.add(0, commonDistributiveOperand)
         val expressionsLogicalOperator = expr.toString().first { it == '&' || it == '|' }
         // we return expression depending on second operator
-        return if (expressionsLogicalOperator == '&') {
-            "A & (B | C)"
-        } else {
-            "A | (B & C)"
+        return returnNeededDistributiveExpression(expressionsLogicalOperator, correctSymbolsSequence)
+    }
+
+    /**
+     * Returns correct result string in distributive law
+     */
+    private fun returnNeededDistributiveExpression(firstLogicalOperator: Char, symbols: List<Char>): String {
+        val secondSymbol = if (firstLogicalOperator == '&') '|' else '&' // this is used to alter symbols
+        val resultString = StringBuilder()
+        symbols.forEachIndexed { index, symbol ->
+            if (index == 0) {
+                resultString.append("$symbol $firstLogicalOperator (")
+            } else {
+                resultString.append("$symbol $secondSymbol ")
+            }
         }
+        return resultString.delete(resultString.length - 2, resultString.length).append(")").toString()
     }
 
     /**
      * Method that checks that the expression can be simplified by distributive law.
      * Distributive law - A && B || A && C -> A && (B || C) or (A || B) && (A || C) -> A || (B && C)
+     *
+     * @return common operand for distributed law
      */
-    private fun isDistributiveLaw(
+    private fun getCommonDistributiveOperand(
         node: ASTNode,
         expression: String,
-        mapOfExpressionToChar: HashMap<String, Char>): Boolean {
+        mapOfExpressionToChar: HashMap<String, Char>): String? {
         val numberOfOperationReferences = expression.count { it == '&' || it == '|' }
         val operationSequence = expression.filter { it == '&' || it == '|' }
         // There should be three operands and three operation references in order to consider the expression
         // Moreover the operation references between operands should alternate.
-        if (mapOfExpressionToChar.size != DISTRIBUTIVE_LAW_NEEDED_EXPRESSIONS ||
-                numberOfOperationReferences != DISTRIBUTIVE_LAW_NEEDED_OPERATIONS ||
-                (operationSequence != "&|&" && operationSequence != "|&|")) {
-            return false
+        if (mapOfExpressionToChar.size < DISTRIBUTIVE_LAW_MIN_EXPRESSIONS ||
+                numberOfOperationReferences < DISTRIBUTIVE_LAW_MIN_OPERATIONS ||
+                    !isSequenceAlternate(operationSequence)) {
+            return null
         }
-        return if (operationSequence == "&|&") {
-            hasCommonOperand(expression, '|', '&')
+        return if (operationSequence.first() == '&') {
+            getCommonOperand(expression, '|', '&')
         } else {
             // this is done for excluding A || B && A || C without parenthesis.
             val parenthesizedExpressions = node.findAllNodesWithCondition({ it.elementType == PARENTHESIZED })
             parenthesizedExpressions.forEach {
                 it.findLeafWithSpecificType(OPERATION_REFERENCE) ?: run {
-                    return false
+                    return null
                 }
             }
-            hasCommonOperand(expression, '&', '|')
+            getCommonOperand(expression, '&', '|')
         }
     }
 
-    private fun hasCommonOperand(
+    private fun isSequenceAlternate(seq: String): Boolean {
+        seq.forEachIndexed { index, character ->
+            if (index == 0) {
+                return@forEachIndexed
+            }
+            if (character == seq[index - 1]) {
+                return false
+            }
+        }
+        return true
+    }
+
+    /**
+     * This method returns common operand in distributive law.
+     * We need common operand for special case, when the first expression is not common.
+     * For example: (some != null && a) || (a && c) || (a && d). When the expressions are mapped to `char`s, `some != null` points to `A` character
+     */
+    private fun getCommonOperand(
         expression: String,
         firstSplitDelimiter: Char,
-        secondSplitDelimiter: Char): Boolean {
-        val twoExpressions = expression.split(firstSplitDelimiter)
-        val firstOperands = twoExpressions[0].filterNot { it == ' ' || it == '(' || it == ')' }.split(secondSplitDelimiter)
-        val secondOperands = twoExpressions[1].filterNot { it == ' ' || it == '(' || it == ')' }.split(secondSplitDelimiter)
-        return firstOperands.any { secondOperands.contains(it) }
+        secondSplitDelimiter: Char): String? {
+        val expressions = expression.split(firstSplitDelimiter)
+        val listOfPairs = mutableListOf<List<String>>()
+        expressions.forEach { expr ->
+            listOfPairs.add(expr.filterNot { it == ' ' || it == '(' || it == ')' }.split(secondSplitDelimiter))
+        }
+        val firstOperands = listOfPairs.first()
+        listOfPairs.removeFirst()
+        return when {
+            listOfPairs.all { it.contains(firstOperands.first()) } -> {
+                firstOperands.first()
+            }
+            listOfPairs.all { it.contains(firstOperands.last()) } -> {
+                firstOperands.last()
+            }
+            else -> {
+                null
+            }
+        }
     }
 
     companion object {
-        const val DISTRIBUTIVE_LAW_NEEDED_EXPRESSIONS = 3
-        const val DISTRIBUTIVE_LAW_NEEDED_OPERATIONS = 3
+        const val DISTRIBUTIVE_LAW_MIN_EXPRESSIONS = 3
+        const val DISTRIBUTIVE_LAW_MIN_OPERATIONS = 3
     }
 }

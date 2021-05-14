@@ -101,6 +101,26 @@ class BooleanExpressionsRuleWarnTest : LintTestBase(::BooleanExpressionsRule) {
 
     @Test
     @Tag(WarningNames.COMPLEX_BOOLEAN_EXPRESSION)
+    fun `check distributive laws #2`() {
+        lintMethod(
+            """
+                    |fun foo() {
+                    |    if ((a > 5 || b > 5) && (a > 5 || c > 5) && (a > 5 || d > 5)) {
+                    |    
+                    |    }
+                    |    
+                    |    if (a > 5 && b > 5 || a > 5 && c > 5 || a > 5 || d > 5) {
+                    |    
+                    |    }
+                    |}
+            """.trimMargin(),
+            LintError(2, 9, ruleId, "${Warnings.COMPLEX_BOOLEAN_EXPRESSION.warnText()} (a > 5 || b > 5) && (a > 5 || c > 5) && (a > 5 || d > 5)", true),
+            LintError(6, 9, ruleId, "${Warnings.COMPLEX_BOOLEAN_EXPRESSION.warnText()} a > 5 && b > 5 || a > 5 && c > 5 || a > 5 || d > 5", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.COMPLEX_BOOLEAN_EXPRESSION)
     fun `should not trigger on method calls`() {
         lintMethod(
             """
