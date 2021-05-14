@@ -17,6 +17,7 @@ fun some() {
 
     }
 
+    // Special case
     if ((b > 6 && a > 5) || (c > 7 && a > 5) || (a > 5 && d > 8)) {
 
     }

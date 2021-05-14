@@ -121,7 +121,7 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
      * Returns correct result string in distributive law
      */
     private fun returnNeededDistributiveExpression(firstLogicalOperator: Char, symbols: List<Char>): String {
-        val secondSymbol = if (firstLogicalOperator == '&') '|' else '&' // this is used to alter symbols
+        val secondSymbol = if (firstLogicalOperator == '&') '|' else '&'  // this is used to alter symbols
         val resultString = StringBuilder()
         symbols.forEachIndexed { index, symbol ->
             if (index == 0) {
@@ -149,7 +149,7 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
         // Moreover the operation references between operands should alternate.
         if (mapOfExpressionToChar.size < DISTRIBUTIVE_LAW_MIN_EXPRESSIONS ||
                 numberOfOperationReferences < DISTRIBUTIVE_LAW_MIN_OPERATIONS ||
-                    !isSequenceAlternate(operationSequence)) {
+                !isSequenceAlternate(operationSequence)) {
             return null
         }
         return if (operationSequence.first() == '&') {
@@ -188,22 +188,16 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
         firstSplitDelimiter: Char,
         secondSplitDelimiter: Char): String? {
         val expressions = expression.split(firstSplitDelimiter)
-        val listOfPairs = mutableListOf<List<String>>()
+        val listOfPairs: MutableList<List<String>> = mutableListOf()
         expressions.forEach { expr ->
             listOfPairs.add(expr.filterNot { it == ' ' || it == '(' || it == ')' }.split(secondSplitDelimiter))
         }
         val firstOperands = listOfPairs.first()
         listOfPairs.removeFirst()
         return when {
-            listOfPairs.all { it.contains(firstOperands.first()) } -> {
-                firstOperands.first()
-            }
-            listOfPairs.all { it.contains(firstOperands.last()) } -> {
-                firstOperands.last()
-            }
-            else -> {
-                null
-            }
+            listOfPairs.all { it.contains(firstOperands.first()) } -> firstOperands.first()
+            listOfPairs.all { it.contains(firstOperands.last()) } -> firstOperands.last()
+            else -> null
         }
     }
 
