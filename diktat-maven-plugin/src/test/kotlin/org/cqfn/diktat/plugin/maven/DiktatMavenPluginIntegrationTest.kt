@@ -34,7 +34,7 @@ class DiktatMavenPluginIntegrationTest {
             mavenLog.contains("[FILE_NAME_MATCH_CLASS]")
         )
 
-        File(result.mavenProjectResult.targetBaseDirectory, "target/jacoco-it.exec").copyTo(
+        File(result.mavenProjectResult.targetProjectDirectory, "target/jacoco-it.exec").copyTo(
             File("target/jacoco-it-1.exec")
         )
     }
@@ -58,7 +58,7 @@ class DiktatMavenPluginIntegrationTest {
             mavenLog.contains("[MISSING_KDOC_TOP_LEVEL]")
         )
 
-        File(result.mavenProjectResult.targetBaseDirectory, "target/jacoco-it.exec").copyTo(
+        File(result.mavenProjectResult.targetProjectDirectory, "target/jacoco-it.exec").copyTo(
             File("target/jacoco-it-2.exec")
         )
     }
