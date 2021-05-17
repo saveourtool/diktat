@@ -26,7 +26,7 @@ class DiktatMavenPluginIntegrationTest {
     fun diktatCheck(result: MavenExecutionResult) {
         Assertions.assertEquals(1, result.returnCode)
         Assertions.assertFalse(result.isError)
-        Assertions.assertFalse(result.isSuccesful)
+        Assertions.assertFalse(result.isSuccessful)
         Assertions.assertTrue(result.isFailure)
 
         val mavenLog = result.mavenLog.stdout.readText()
@@ -34,7 +34,7 @@ class DiktatMavenPluginIntegrationTest {
             mavenLog.contains("[FILE_NAME_MATCH_CLASS]")
         )
 
-        File(result.mavenProjectResult.baseDir, "target/jacoco-it.exec").copyTo(
+        File(result.mavenProjectResult.targetBaseDirectory, "target/jacoco-it.exec").copyTo(
             File("target/jacoco-it-1.exec")
         )
     }
@@ -44,7 +44,7 @@ class DiktatMavenPluginIntegrationTest {
     fun diktatFix(result: MavenExecutionResult) {
         Assertions.assertEquals(1, result.returnCode)
         Assertions.assertFalse(result.isError)
-        Assertions.assertFalse(result.isSuccesful)
+        Assertions.assertFalse(result.isSuccessful)
         Assertions.assertTrue(result.isFailure)
 
         val mavenLog = result.mavenLog.stdout.readText()
@@ -58,7 +58,7 @@ class DiktatMavenPluginIntegrationTest {
             mavenLog.contains("[MISSING_KDOC_TOP_LEVEL]")
         )
 
-        File(result.mavenProjectResult.baseDir, "target/jacoco-it.exec").copyTo(
+        File(result.mavenProjectResult.targetBaseDirectory, "target/jacoco-it.exec").copyTo(
             File("target/jacoco-it-2.exec")
         )
     }
