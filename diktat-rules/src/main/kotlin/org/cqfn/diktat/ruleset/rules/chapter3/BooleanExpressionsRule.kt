@@ -35,7 +35,7 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun checkBooleanExpression(node: ASTNode) {
         // This map is used to assign a variable name for every elementary boolean expression.
         val mapOfExpressionToChar: HashMap<String, Char> = HashMap()
-        val correctedExpression = makeCorrectExpressionString(node, mapOfExpressionToChar)
+        val correctedExpression = formatBooleanExpressionAsString(node, mapOfExpressionToChar)
         // If there are method calls in conditions
         val expr: Expression<String> = try {
             ExprParser.parse(correctedExpression)
@@ -60,7 +60,7 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
      * @param mapOfExpressionToChar
      * @return corrected string
      */
-    internal fun makeCorrectExpressionString(node: ASTNode, mapOfExpressionToChar: HashMap<String, Char>): String {
+    internal fun formatBooleanExpressionAsString(node: ASTNode, mapOfExpressionToChar: HashMap<String, Char>): String {
         // `A` character in ASCII
         var characterAsciiCode = 'A'.code
         node
@@ -108,7 +108,7 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
         mapOfExpressionToChar: HashMap<String, Char>,
         node: ASTNode): String? {
         // checking that expression can be considered as distributive law
-        val commonDistributiveOperand = getCommonDistributiveOperand(node, expr.toString(), mapOfExpressionToChar)?.first() ?: return null
+        val commonDistributiveOperand = getCommonDistributiveOperand(node, expr.toString(), mapOfExpressionToChar) ?: return null
         val correctSymbolsSequence = mapOfExpressionToChar.values.toMutableList()
         correctSymbolsSequence.remove(commonDistributiveOperand)
         correctSymbolsSequence.add(0, commonDistributiveOperand)
@@ -130,7 +130,8 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
                 resultString.append("$symbol $secondSymbol ")
             }
         }
-        return resultString.delete(resultString.length - 2, resultString.length).append(")").toString()
+        // remove last space and last operate
+        return StringBuilder(resultString.dropLast(2)).append(")").toString()
     }
 
     /**
@@ -142,9 +143,9 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun getCommonDistributiveOperand(
         node: ASTNode,
         expression: String,
-        mapOfExpressionToChar: HashMap<String, Char>): String? {
-        val numberOfOperationReferences = expression.count { it == '&' || it == '|' }
+        mapOfExpressionToChar: HashMap<String, Char>): Char? {
         val operationSequence = expression.filter { it == '&' || it == '|' }
+        val numberOfOperationReferences = operationSequence.length
         // There should be three operands and three operation references in order to consider the expression
         // Moreover the operation references between operands should alternate.
         if (mapOfExpressionToChar.size < DISTRIBUTIVE_LAW_MIN_EXPRESSIONS ||
@@ -167,15 +168,7 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun isSequenceAlternate(seq: String): Boolean {
-        seq.forEachIndexed { index, character ->
-            if (index == 0) {
-                return@forEachIndexed
-            }
-            if (character == seq[index - 1]) {
-                return false
-            }
-        }
-        return true
+        return seq.zipWithNext().all { it.first != it.second }
     }
 
     /**
@@ -186,7 +179,7 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun getCommonOperand(
         expression: String,
         firstSplitDelimiter: Char,
-        secondSplitDelimiter: Char): String? {
+        secondSplitDelimiter: Char): Char? {
         val expressions = expression.split(firstSplitDelimiter)
         val listOfPairs: MutableList<List<String>> = mutableListOf()
         expressions.forEach { expr ->
@@ -195,8 +188,8 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
         val firstOperands = listOfPairs.first()
         listOfPairs.removeFirst()
         return when {
-            listOfPairs.all { it.contains(firstOperands.first()) } -> firstOperands.first()
-            listOfPairs.all { it.contains(firstOperands.last()) } -> firstOperands.last()
+            listOfPairs.all { it.contains(firstOperands.first()) } -> firstOperands.first().first()
+            listOfPairs.all { it.contains(firstOperands.last()) } -> firstOperands.last().first()
             else -> null
         }
     }
