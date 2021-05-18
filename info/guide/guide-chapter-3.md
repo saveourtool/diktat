@@ -932,3 +932,19 @@ if (cond1 && (cond2 || cond3)) {
     doSomething()
 }
 ```
+#### <a name="r3.16.2"></a> 3.16.2 Too complex conditions
+Too complex conditions should be simplified according to boolean algebra rules, if it is possible
+
+**Valid example**
+```kotlin
+if (cond1 && cond2) {
+    foo()
+}
+```
+
+**Invalid example**
+```kotlin
+if (cond1 && cond2 && cond1) {
+    foo()
+}
+```

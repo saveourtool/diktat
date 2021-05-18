@@ -16,6 +16,7 @@ import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocFormatting
 import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocMethods
 import org.cqfn.diktat.ruleset.rules.chapter3.AnnotationNewLineRule
 import org.cqfn.diktat.ruleset.rules.chapter3.BlockStructureBraces
+import org.cqfn.diktat.ruleset.rules.chapter3.BooleanExpressionsRule
 import org.cqfn.diktat.ruleset.rules.chapter3.BracesInConditionalsAndLoopsRule
 import org.cqfn.diktat.ruleset.rules.chapter3.ClassLikeStructuresOrderRule
 import org.cqfn.diktat.ruleset.rules.chapter3.CollapseIfStatementsRule
@@ -208,6 +209,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
             ::AvoidNestedFunctionsRule,
             ::ExtensionFunctionsSameNameRule,
             ::LambdaLengthRule,
+            ::BooleanExpressionsRule,
             // formatting: moving blocks, adding line breaks, indentations etc.
             ::BlockStructureBraces,
             ::ConsecutiveSpacesRule,
