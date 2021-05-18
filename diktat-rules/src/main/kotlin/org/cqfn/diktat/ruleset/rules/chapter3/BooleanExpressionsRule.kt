@@ -40,8 +40,12 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
         val expr: Expression<String> = try {
             ExprParser.parse(correctedExpression)
         } catch (exc: RuntimeException) {
-            // this comes up if there is an unparsable expression. For example a.and(b)
-            return
+            if (exc.message?.startsWith("Unrecognized!") == true) {
+                // this comes up if there is an unparsable expression. For example a.and(b)
+                return
+            } else {
+                throw exc
+            }
         }
         val distributiveLawString = checkDistributiveLaw(expr, mapOfExpressionToChar, node)
         val simplifiedExpression = distributiveLawString?.let {
