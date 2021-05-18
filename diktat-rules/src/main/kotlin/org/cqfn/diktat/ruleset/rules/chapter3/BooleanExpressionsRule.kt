@@ -167,9 +167,7 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    private fun isSequenceAlternate(seq: String): Boolean {
-        return seq.zipWithNext().all { it.first != it.second }
-    }
+    private fun isSequenceAlternate(seq: String) = seq.zipWithNext().all { it.first != it.second }
 
     /**
      * This method returns common operand in distributive law.
