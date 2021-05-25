@@ -315,6 +315,7 @@
                         </goals>
                         <configuration>
                             <config>detekt-config.yml</config>
+                            <buildUponDefaultConfig>true</buildUponDefaultConfig>
                             <classPath>${maven.compile.classpath}</classPath>
                             <jvmTarget>1.8</jvmTarget>
                             <excludes>**/resources/**/*.kt,**/resources/**/*.kts</excludes>
