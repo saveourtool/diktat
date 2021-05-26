@@ -55,11 +55,11 @@ Main features of diktat are the following:
     # another option is "brew install ktlint"
     ```
    
-2. Load diKTat manually: [here](https://github.com/cqfn/diKTat/releases/download/v0.5.3/diktat-0.5.3.jar)
+2. Load diKTat manually: [here](https://github.com/cqfn/diKTat/releases/download/v0.6.0/diktat-0.6.0.jar)
 
    **OR** use curl:
    ```bash
-   $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v0.5.3/diktat-0.5.3.jar
+   $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v0.6.0/diktat-0.6.0.jar
    ```
    
 3. Finally, run KTlint (with diKTat injected) to check your `*.kt` files in `dir/your/dir`:
@@ -110,7 +110,7 @@ This plugin is available since version 0.1.5. You can see how the plugin is conf
 Add this plugin to your `build.gradle.kts`:
 ```kotlin
 plugins {
-    id("org.cqfn.diktat.diktat-gradle-plugin") version "0.5.3"
+    id("org.cqfn.diktat.diktat-gradle-plugin") version "0.6.0"
 }
 ```
 
@@ -121,7 +121,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.cqfn.diktat:diktat-gradle-plugin:0.5.3")
+        classpath("org.cqfn.diktat:diktat-gradle-plugin:0.6.0")
     }
 }
 
@@ -194,7 +194,7 @@ spotless {
 ```kotlin
 spotless {
    kotlin {
-      diktat("0.5.3").configFile("full/path/to/diktat-analysis.yml")
+      diktat("0.6.0").configFile("full/path/to/diktat-analysis.yml")
    }
 }
 ```
@@ -225,7 +225,7 @@ Diktat can be run via spotless-maven-plugin since version 2.8.0
 
 ```xml
 <diktat>
-  <version>0.5.3</version> <!-- optional -->
+  <version>0.6.0</version> <!-- optional -->
   <configFile>full/path/to/diktat-analysis.yml</configFile> <!-- optional, configuration file path -->
 </diktat>
 ```
