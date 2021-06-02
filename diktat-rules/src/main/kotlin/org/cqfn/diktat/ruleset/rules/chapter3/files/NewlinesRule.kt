@@ -638,12 +638,15 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 }
 
-fun KtNamedFunction.isRecursive(): Boolean {
-    return bodyBlockExpression
-        ?.statements?.any { statement ->
-            statement.anyDescendantOfType<KtReferenceExpression> {
-                it.text == this@isRecursive.name
-            }
-        }
-    ?: false
+/**
+ * Checks whether [this] function is recursive, i.e. calls itself inside from it's body
+ *
+ * @return true if function is recursive, false otherwise
+ */
+fun KtNamedFunction.isRecursive() = bodyBlockExpression
+    ?.statements?.any { statement ->
+    statement.anyDescendantOfType<KtReferenceExpression> {
+        it.text == this@isRecursive.name
+    }
 }
+    ?: false
