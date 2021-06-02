@@ -80,6 +80,7 @@ import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.nextCodeSibling
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevCodeSibling
+import com.pinterest.ktlint.core.ast.prevSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -87,9 +88,12 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.psi.KtBinaryExpression
+import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.KtParameterList
+import org.jetbrains.kotlin.psi.KtReferenceExpression
 import org.jetbrains.kotlin.psi.KtSuperTypeList
 import org.jetbrains.kotlin.psi.KtValueArgumentList
+import org.jetbrains.kotlin.psi.psiUtil.anyDescendantOfType
 import org.jetbrains.kotlin.psi.psiUtil.children
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.siblings
@@ -335,9 +339,15 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
                     // if return type is not Unit, then there should be type specification
                     // otherwise code won't compile and colon being null is correctly invalid
                     val colon = funNode.findChildByType(COLON)!!
+                    val returnType = colon.prevSibling { it.elementType == REFERENCE_EXPRESSION }
+                    val needsExplicitType = returnType != null && (funNode.psi as? KtNamedFunction)?.isRecursive() == true
                     val expression = node.findChildByType(RETURN_KEYWORD)!!.nextCodeSibling()!!
                     funNode.apply {
-                        removeRange(if (colon.treePrev.elementType == WHITE_SPACE) colon.treePrev else colon, null)
+                        if (needsExplicitType) {
+                            removeRange(if (returnType!!.treePrev.elementType == WHITE_SPACE) returnType.treePrev else returnType, null)
+                        } else {
+                            removeRange(if (colon.treePrev.elementType == WHITE_SPACE) colon.treePrev else colon, null)
+                        }
                         addChild(PsiWhiteSpaceImpl(" "), null)
                         addChild(LeafPsiElement(EQ, "="), null)
                         addChild(PsiWhiteSpaceImpl(" "), null)
@@ -626,4 +636,14 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
         private val dropChainValues = TokenSet.create(EOL_COMMENT, WHITE_SPACE, BLOCK_COMMENT, KDOC)
         private val parenthesesTypes = TokenSet.create(CONDITION, WHEN, VALUE_ARGUMENT)
     }
+}
+
+fun KtNamedFunction.isRecursive(): Boolean {
+    return bodyBlockExpression
+        ?.statements?.any { statement ->
+            statement.anyDescendantOfType<KtReferenceExpression> {
+                it.text == this@isRecursive.name
+            }
+        }
+    ?: false
 }
