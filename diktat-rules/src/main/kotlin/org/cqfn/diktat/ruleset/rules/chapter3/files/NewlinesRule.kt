@@ -339,12 +339,12 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
                     // if return type is not Unit, then there should be type specification
                     // otherwise code won't compile and colon being null is correctly invalid
                     val colon = funNode.findChildByType(COLON)!!
-                    val returnType = colon.prevSibling { it.elementType == REFERENCE_EXPRESSION }
+                    val returnType = (funNode.psi as? KtNamedFunction)?.typeReference?.node
                     val needsExplicitType = returnType != null && (funNode.psi as? KtNamedFunction)?.isRecursive() == true
                     val expression = node.findChildByType(RETURN_KEYWORD)!!.nextCodeSibling()!!
                     funNode.apply {
                         if (needsExplicitType) {
-                            removeRange(if (returnType!!.treePrev.elementType == WHITE_SPACE) returnType.treePrev else returnType, null)
+                            removeRange(returnType!!.treeNext, null)
                         } else {
                             removeRange(if (colon.treePrev.elementType == WHITE_SPACE) colon.treePrev else colon, null)
                         }
