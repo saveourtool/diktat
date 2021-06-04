@@ -24,21 +24,21 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
 import java.lang.RuntimeException
 
 /**
- * Rule that warns if the boolean expression can be simplified.
+ * Rule that checks if the boolean expression can be simplified.
  */
 class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
     "boolean-expressions-rule",
     configRules,
     listOf(COMPLEX_BOOLEAN_EXPRESSION)) {
     override fun logic(node: ASTNode) {
-        if (node.elementType == ElementType.CONDITION) {
+        if (node.elementType == CONDITION) {
             checkBooleanExpression(node)
         }
     }
 
     @Suppress("TooGenericExceptionCaught")
     private fun checkBooleanExpression(node: ASTNode) {
-        // This map is used to assign a variable name for every elementary boolean expression.
+        // This map is used to assign a variable name for every elementary boolean expression. It is required for jbool to operate.
         val mapOfExpressionToChar: HashMap<String, Char> = HashMap()
         val correctedExpression = formatBooleanExpressionAsString(node, mapOfExpressionToChar)
         if (mapOfExpressionToChar.isEmpty()) {
@@ -85,6 +85,7 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
      */
     @Suppress("UnsafeCallOnNullableType")
     internal fun formatBooleanExpressionAsString(node: ASTNode, mapOfExpressionToChar: HashMap<String, Char>): String {
+        // Split the complex expression into elementary parts
         val (booleanBinaryExpressions, otherBinaryExpressions) = node
             .findAllNodesWithCondition({ astNode ->
                 astNode.elementType == BINARY_EXPRESSION &&
@@ -96,14 +97,23 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
         // `A` character in ASCII
         var characterAsciiCode = 'A'.code
         (otherBinaryExpressions +
+                // Boolean expressions like `a > 5 && b < 7` or `x.isEmpty() || (y.isNotEmpty())` we convert to individual parts.
                 booleanBinaryExpressions
                     .map { it.psi as KtBinaryExpression }
                     .flatMap { listOf(it.left!!.node, it.right!!.node) }
-                    .map { (it.psi as? KtParenthesizedExpression)?.expression?.node ?: it }
-                    .filterNot { it.elementType == BINARY_EXPRESSION || it.text == "true" || it.text == "false" }
+                    .map {
+                        // remove parentheses around expression, if there are any
+                        (it.psi as? KtParenthesizedExpression)?.expression?.node ?: it
+                    }
+                    .filterNot {
+                        // finally, if parts are binary expressions themselves, they should be present in our lists and we will process them later.
+                        // `true` and `false` are valid tokens for jBool, so we keep them.
+                        it.elementType == BINARY_EXPRESSION || it.text == "true" || it.text == "false"
+                    }
         )
             .forEach { expression ->
                 mapOfExpressionToChar.computeIfAbsent(expression.text) {
+                    // Every elementary expression is assigned a single-letter variable.
                     characterAsciiCode++.toChar()
                 }
             }
