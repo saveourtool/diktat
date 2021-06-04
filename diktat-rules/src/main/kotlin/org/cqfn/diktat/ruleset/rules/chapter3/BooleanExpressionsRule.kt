@@ -4,6 +4,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.COMPLEX_BOOLEAN_EXPRESSION
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.KotlinParser
+import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithCondition
 import org.cqfn.diktat.ruleset.utils.findLeafWithSpecificType
 
@@ -14,7 +15,6 @@ import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.PARENTHESIZED
-import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtParenthesizedExpression
@@ -81,25 +81,26 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
      * @param mapOfExpressionToChar a mutable map for expression->token
      * @return formatted string representation of expression
      */
+    @Suppress("UnsafeCallOnNullableType")
     internal fun formatBooleanExpressionAsString(node: ASTNode, mapOfExpressionToChar: HashMap<String, Char>): String {
-        // `A` character in ASCII
-        var characterAsciiCode = 'A'.code
         val (booleanBinaryExpressions, otherBinaryExpressions) = node
             .findAllDescendantsWithSpecificType(BINARY_EXPRESSION)
             .partition { it.text.contains("&&") || it.text.contains("||") }
+        // `A` character in ASCII
+        var characterAsciiCode = 'A'.code
         (otherBinaryExpressions +
-            booleanBinaryExpressions
-                .map { it.psi as KtBinaryExpression }
-                .flatMap { listOf(it.left!!.node, it.right!!.node) }
-                .map { (it.psi as? KtParenthesizedExpression)?.expression?.node ?: it }
-                .filterNot { it.elementType == BINARY_EXPRESSION || it.text == "true" || it.text == "false" }
-                )
+                booleanBinaryExpressions
+                    .map { it.psi as KtBinaryExpression }
+                    .flatMap { listOf(it.left!!.node, it.right!!.node) }
+                    .map { (it.psi as? KtParenthesizedExpression)?.expression?.node ?: it }
+                    .filterNot { it.elementType == BINARY_EXPRESSION || it.text == "true" || it.text == "false" }
+        )
             .forEach { expression ->
                 mapOfExpressionToChar.computeIfAbsent(expression.text) {
                     characterAsciiCode++.toChar()
                 }
             }
-        // Library is using & as && and | as ||.
+        // jBool library is using & as && and | as ||.
         var correctedExpression = "(${node
             .text
             .replace("&&", "&")
