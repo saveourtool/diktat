@@ -7,6 +7,7 @@ import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithCondition
 import org.cqfn.diktat.ruleset.utils.findLeafWithSpecificType
+import org.cqfn.diktat.ruleset.utils.logicalInfixMethods
 
 import com.bpodgursky.jbool_expressions.Expression
 import com.bpodgursky.jbool_expressions.parsers.ExprParser
@@ -86,20 +87,13 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
      */
     @Suppress("UnsafeCallOnNullableType")
     internal fun formatBooleanExpressionAsString(node: ASTNode, mapOfExpressionToChar: HashMap<String, Char>): String {
-        // Split the complex expression into elementary parts
-        val (booleanBinaryExpressions, otherBinaryExpressions) = node
-            .findAllNodesWithCondition({ astNode ->
-                astNode.elementType == BINARY_EXPRESSION &&
-                        // filter out boolean conditions in nested lambdas, e.g. `if (foo.filter { a && b })`
-                        (astNode == node || astNode.parents().takeWhile { it != node }
-                            .all { it.elementType in setOf(BINARY_EXPRESSION, PARENTHESIZED, PREFIX_EXPRESSION) })
-            })
-            .partition { it.text.contains("&&") || it.text.contains("||") }
-        // `A` character in ASCII
-        var characterAsciiCode = 'A'.code
+        val (booleanBinaryExpressions, otherBinaryExpressions) = node.collectElementaryExpressions()
+        var characterAsciiCode = 'A'.code  // `A` character in ASCII
         (otherBinaryExpressions.filter {
             // keeping only boolean expressions, keeping things like `a + b < 6` and excluding `a + b`
-            (it.psi as KtBinaryExpression).operationReference.text in setOf("==", "!=", ">", "<", ">=", "<=")
+            (it.psi as KtBinaryExpression).operationReference.text in logicalInfixMethods &&
+                    // todo: support xor; for now skip all expressions that are nested in xor
+                    it.parents().takeWhile { it != node }.none { (it.psi as? KtBinaryExpression)?.isXorExpression() ?: false }
         } +
                 // Boolean expressions like `a > 5 && b < 7` or `x.isEmpty() || (y.isNotEmpty())` we convert to individual parts.
                 booleanBinaryExpressions
@@ -132,6 +126,18 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
             .replace("&&", "&")
             .replace("||", "|")})"
     }
+
+    /**
+     * Split the complex expression into elementary parts
+     */
+    private fun ASTNode.collectElementaryExpressions() = this
+        .findAllNodesWithCondition({ astNode ->
+            astNode.elementType == BINARY_EXPRESSION &&
+                    // filter out boolean conditions in nested lambdas, e.g. `if (foo.filter { a && b })`
+                    (astNode == this || astNode.parents().takeWhile { it != this }
+                        .all { it.elementType in setOf(BINARY_EXPRESSION, PARENTHESIZED, PREFIX_EXPRESSION) })
+        })
+        .partition { it.text.contains("&&") || it.text.contains("||") }
 
     private fun fixBooleanExpression(
         node: ASTNode,
@@ -242,6 +248,8 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
             else -> null
         }
     }
+
+    private fun KtBinaryExpression.isXorExpression() = operationReference.text == "xor"
 
     companion object {
         const val DISTRIBUTIVE_LAW_MIN_EXPRESSIONS = 3

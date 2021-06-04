@@ -227,6 +227,12 @@ class BooleanExpressionsRuleWarnTest : LintTestBase(::BooleanExpressionsRule) {
                     if (result?.flag == true) {}
                     
                     if (leftOffset + binaryText.length > wrongBinaryExpression.maximumLineLength && index != 0) {}
+                    
+                    // with in and !in
+                    if (!isImportOrPackage && previousNonWhiteSpaceNode in acc.last()) {}
+                    if (node.elementType == LABEL_QUALIFIER && node.text !in labels && node.treeParent.elementType in stopWords) {}
+                    
+                    if ((node.treeNext.elementType == RBRACE) xor (node.treePrev.elementType == LBRACE)) {}
                 }
             """.trimIndent()
         )
