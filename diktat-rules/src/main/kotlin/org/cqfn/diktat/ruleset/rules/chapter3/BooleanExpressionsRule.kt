@@ -97,7 +97,10 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
             .partition { it.text.contains("&&") || it.text.contains("||") }
         // `A` character in ASCII
         var characterAsciiCode = 'A'.code
-        (otherBinaryExpressions +
+        (otherBinaryExpressions.filter {
+            // keeping only boolean expressions, keeping things like `a + b < 6` and excluding `a + b`
+            (it.psi as KtBinaryExpression).operationReference.text in setOf("==", "!=", ">", "<", ">=", "<=")
+        } +
                 // Boolean expressions like `a > 5 && b < 7` or `x.isEmpty() || (y.isNotEmpty())` we convert to individual parts.
                 booleanBinaryExpressions
                     .map { it.psi as KtBinaryExpression }

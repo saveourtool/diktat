@@ -223,6 +223,10 @@ class BooleanExpressionsRuleWarnTest : LintTestBase(::BooleanExpressionsRule) {
                         .parents()
                         .map { it.elementType }
                         .none { it == SUPER_TYPE_LIST || it == TYPEALIAS }) {}
+                        
+                    if (result?.flag == true) {}
+                    
+                    if (leftOffset + binaryText.length > wrongBinaryExpression.maximumLineLength && index != 0) {}
                 }
             """.trimIndent()
         )
