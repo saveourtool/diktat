@@ -16,6 +16,7 @@ import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CONDITION
 import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.PARENTHESIZED
+import com.pinterest.ktlint.core.ast.ElementType.PREFIX_EXPRESSION
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtParenthesizedExpression
@@ -90,8 +91,8 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
             .findAllNodesWithCondition({ astNode ->
                 astNode.elementType == BINARY_EXPRESSION &&
                         // filter out boolean conditions in nested lambdas, e.g. `if (foo.filter { a && b })`
-                        astNode.parents().takeWhile { it != node }
-                            .all { it.elementType in setOf(BINARY_EXPRESSION, PARENTHESIZED) }
+                        (astNode == node || astNode.parents().takeWhile { it != node }
+                            .all { it.elementType in setOf(BINARY_EXPRESSION, PARENTHESIZED, PREFIX_EXPRESSION) })
             })
             .partition { it.text.contains("&&") || it.text.contains("||") }
         // `A` character in ASCII
