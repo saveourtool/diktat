@@ -194,7 +194,7 @@ class BooleanExpressionsRuleWarnTest : LintTestBase(::BooleanExpressionsRule) {
     }
 
     @Test
-    fun `regression - should not try to parse certain expressions (should check stderr of this test)`() {
+    fun `regression - should not try to parse certain expressions - NB should check stderr of this test`() {
         lintMethod(
             """
                 fun foo() {
@@ -207,6 +207,22 @@ class BooleanExpressionsRuleWarnTest : LintTestBase(::BooleanExpressionsRule) {
                     if (::testContainerId.isInitialized || a > 2) {
                         containerManager.dockerClient.removeContainerCmd(testContainerId).exec()
                     }
+                    
+                    // nested boolean expressions in lambdas
+                    if (currentProperty.nextSibling { it.elementType == PROPERTY } == nextProperty) {}
+                    
+                    if (!(rightSide == null || leftSide == null) &&
+                        rightSide.size == leftSide.size &&
+                        rightSide.zip(leftSide).all { (first, second) -> first.text == second.text }) {}
+                    
+                    // nested lambda with if-else
+                    if (currentProperty.nextSibling { if (it.elementType == PROPERTY) true else false } == nextProperty) {}
+                    
+                    // nested boolean expressions in lambdas with multi-line expressions
+                    if (node.elementType == TYPE_REFERENCE && node
+                        .parents()
+                        .map { it.elementType }
+                        .none { it == SUPER_TYPE_LIST || it == TYPEALIAS }) {}
                 }
             """.trimIndent()
         )

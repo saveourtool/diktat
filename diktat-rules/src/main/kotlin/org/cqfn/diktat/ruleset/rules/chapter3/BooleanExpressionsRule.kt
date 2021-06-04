@@ -13,11 +13,13 @@ import com.bpodgursky.jbool_expressions.parsers.ExprParser
 import com.bpodgursky.jbool_expressions.rules.RuleSet
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.CONDITION
 import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.PARENTHESIZED
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtParenthesizedExpression
+import org.jetbrains.kotlin.psi.psiUtil.parents
 
 import java.lang.RuntimeException
 
@@ -84,7 +86,12 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("UnsafeCallOnNullableType")
     internal fun formatBooleanExpressionAsString(node: ASTNode, mapOfExpressionToChar: HashMap<String, Char>): String {
         val (booleanBinaryExpressions, otherBinaryExpressions) = node
-            .findAllDescendantsWithSpecificType(BINARY_EXPRESSION)
+            .findAllNodesWithCondition({ astNode ->
+                astNode.elementType == BINARY_EXPRESSION &&
+                        // filter out boolean conditions in nested lambdas, e.g. `if (foo.filter { a && b })`
+                        astNode.parents().takeWhile { it != node }
+                            .all { it.elementType in setOf(BINARY_EXPRESSION, PARENTHESIZED) }
+            })
             .partition { it.text.contains("&&") || it.text.contains("||") }
         // `A` character in ASCII
         var characterAsciiCode = 'A'.code
@@ -100,15 +107,16 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
                     characterAsciiCode++.toChar()
                 }
             }
-        // jBool library is using & as && and | as ||.
-        var correctedExpression = "(${node
-            .text
-            .replace("&&", "&")
-            .replace("||", "|")})"
+        // Prepare final formatted string
+        var correctedExpression = node.text
+        // At first, substitute all elementary expressions with variables
         mapOfExpressionToChar.forEach { (refExpr, char) ->
             correctedExpression = correctedExpression.replace(refExpr, char.toString())
         }
-        return correctedExpression
+        // jBool library is using & as && and | as ||
+        return "(${correctedExpression
+            .replace("&&", "&")
+            .replace("||", "|")})"
     }
 
     private fun fixBooleanExpression(

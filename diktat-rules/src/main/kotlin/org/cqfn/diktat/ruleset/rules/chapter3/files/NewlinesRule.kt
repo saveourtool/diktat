@@ -463,8 +463,8 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun ASTNode.getOrderedCallExpressions(psi: PsiElement, result: MutableList<ASTNode>) {
         // if statements here have the only right order - don't change it
 
-        if (psi.children.isNotEmpty() && (!psi.isFirstChildElementType(DOT_QUALIFIED_EXPRESSION) &&
-                !psi.isFirstChildElementType(SAFE_ACCESS_EXPRESSION))) {
+        if (psi.children.isNotEmpty() && !(psi.isFirstChildElementType(DOT_QUALIFIED_EXPRESSION) ||
+                psi.isFirstChildElementType(SAFE_ACCESS_EXPRESSION))) {
             val firstChild = psi.firstChild
             if (firstChild.isFirstChildElementType(DOT_QUALIFIED_EXPRESSION) ||
                     firstChild.isFirstChildElementType(SAFE_ACCESS_EXPRESSION)) {
