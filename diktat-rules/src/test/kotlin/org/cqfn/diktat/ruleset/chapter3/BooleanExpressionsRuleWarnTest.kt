@@ -137,34 +137,78 @@ class BooleanExpressionsRuleWarnTest : LintTestBase(::BooleanExpressionsRule) {
     fun `test makeCorrectExpressionString method #1`() {
         val firstCondition = KotlinParser().createNode("a > 5 && b < 6")
         val returnedString = BooleanExpressionsRule(emptyList()).formatBooleanExpressionAsString(firstCondition, HashMap())
-        Assertions.assertEquals(returnedString, "(A & B)")
+        Assertions.assertEquals("(A & B)", returnedString)
     }
 
     @Test
     fun `test makeCorrectExpressionString method #2`() {
         val firstCondition = KotlinParser().createNode("a > 5 && b < 6 && c > 7 || a > 5")
         val returnedString = BooleanExpressionsRule(emptyList()).formatBooleanExpressionAsString(firstCondition, HashMap())
-        Assertions.assertEquals(returnedString, "(A & B & C | A)")
+        Assertions.assertEquals("(A & B & C | A)", returnedString)
     }
 
     @Test
     fun `test makeCorrectExpressionString method #3`() {
         val firstCondition = KotlinParser().createNode("a > 5 && b < 6 && (c > 3 || b < 6) && a > 5")
         val returnedString = BooleanExpressionsRule(emptyList()).formatBooleanExpressionAsString(firstCondition, HashMap())
-        Assertions.assertEquals(returnedString, "(A & B & (C | B) & A)")
+        Assertions.assertEquals("(A & B & (C | B) & A)", returnedString)
     }
 
     @Test
     fun `test makeCorrectExpressionString method #4`() {
         val firstCondition = KotlinParser().createNode("a > 5 && b < 6 && (c > 3 || b < 6) && a > 666")
         val returnedString = BooleanExpressionsRule(emptyList()).formatBooleanExpressionAsString(firstCondition, HashMap())
-        Assertions.assertEquals(returnedString, "(A & B & (C | B) & D)")
+        Assertions.assertEquals("(A & B & (C | B) & D)", returnedString)
     }
 
     @Test
     fun `test makeCorrectExpressionString method #5`() {
         val firstCondition = KotlinParser().createNode("a.and(b)")
         val returnedString = BooleanExpressionsRule(emptyList()).formatBooleanExpressionAsString(firstCondition, HashMap())
-        Assertions.assertEquals(returnedString, "(a.and(b))")
+        Assertions.assertEquals("(a.and(b))", returnedString)
+    }
+
+    @Test
+    fun `test makeCorrectExpressionString method #6 - should not convert single expressions`() {
+        val firstCondition = KotlinParser().createNode("x.isFoo()")
+        val map: java.util.HashMap<String, Char> = HashMap()
+        val returnedString = BooleanExpressionsRule(emptyList()).formatBooleanExpressionAsString(firstCondition, map)
+        Assertions.assertEquals("(x.isFoo())", returnedString)
+        Assertions.assertTrue(map.isEmpty())
+    }
+
+    @Test
+    fun `test makeCorrectExpressionString method #7`() {
+        val firstCondition = KotlinParser().createNode("x.isFoo() && true")
+        val returnedString = BooleanExpressionsRule(emptyList()).formatBooleanExpressionAsString(firstCondition, HashMap())
+        Assertions.assertEquals("(A & true)", returnedString)
+    }
+
+    @Test
+    fun `test makeCorrectExpressionString method #8`() {
+        val firstCondition = KotlinParser().createNode("a > 5 && b > 6 || c > 7 && a > 5")
+        val map: java.util.HashMap<String, Char> = HashMap()
+        val returnedString = BooleanExpressionsRule(emptyList()).formatBooleanExpressionAsString(firstCondition, map)
+        Assertions.assertEquals("(A & B | C & A)", returnedString)
+        Assertions.assertEquals(3, map.size)
+    }
+
+    @Test
+    fun `regression - should not try to parse certain expressions (should check stderr of this test)`() {
+        lintMethod(
+            """
+                fun foo() {
+                    // single variable in condition
+                    if (::testContainerId.isInitialized) {
+                        containerManager.dockerClient.removeContainerCmd(testContainerId).exec()
+                    }
+                    
+                    // single variable and binary expression
+                    if (::testContainerId.isInitialized || a > 2) {
+                        containerManager.dockerClient.removeContainerCmd(testContainerId).exec()
+                    }
+                }
+            """.trimIndent()
+        )
     }
 }

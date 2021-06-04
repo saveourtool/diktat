@@ -14,7 +14,10 @@ import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.PARENTHESIZED
+import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.psi.KtBinaryExpression
+import org.jetbrains.kotlin.psi.KtParenthesizedExpression
 
 import java.lang.RuntimeException
 
@@ -36,12 +39,17 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
         // This map is used to assign a variable name for every elementary boolean expression.
         val mapOfExpressionToChar: HashMap<String, Char> = HashMap()
         val correctedExpression = formatBooleanExpressionAsString(node, mapOfExpressionToChar)
+        if (mapOfExpressionToChar.isEmpty()) {
+            // this happens, if we haven't found any expressions that can be simplified
+            return
+        }
+
         // If there are method calls in conditions
         val expr: Expression<String> = try {
             ExprParser.parse(correctedExpression)
         } catch (exc: RuntimeException) {
             if (exc.message?.startsWith("Unrecognized!") == true) {
-                // this comes up if there is an unparsable expression. For example a.and(b)
+                // this comes up if there is an unparsable expression (jbool doesn't have own exception type). For example a.and(b)
                 return
             } else {
                 throw exc
@@ -60,16 +68,32 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     /**
+     * Converts a complex boolean expression into a string representation, mapping each elementary expression to a letter token.
+     * These tokens are collected into [mapOfExpressionToChar].
+     * For example:
+     * ```
+     * (a > 5 && b != 2) -> A & B
+     * (a > 5 || false) -> A | false
+     * (a > 5 || x.foo()) -> A | B
+     * ```
+     *
      * @param node
-     * @param mapOfExpressionToChar
-     * @return corrected string
+     * @param mapOfExpressionToChar a mutable map for expression->token
+     * @return formatted string representation of expression
      */
     internal fun formatBooleanExpressionAsString(node: ASTNode, mapOfExpressionToChar: HashMap<String, Char>): String {
         // `A` character in ASCII
         var characterAsciiCode = 'A'.code
-        node
-            .findAllNodesWithCondition({ it.elementType == BINARY_EXPRESSION })
-            .filterNot { it.text.contains("&&") || it.text.contains("||") }
+        val (booleanBinaryExpressions, otherBinaryExpressions) = node
+            .findAllDescendantsWithSpecificType(BINARY_EXPRESSION)
+            .partition { it.text.contains("&&") || it.text.contains("||") }
+        (otherBinaryExpressions +
+            booleanBinaryExpressions
+                .map { it.psi as KtBinaryExpression }
+                .flatMap { listOf(it.left!!.node, it.right!!.node) }
+                .map { (it.psi as? KtParenthesizedExpression)?.expression?.node ?: it }
+                .filterNot { it.elementType == BINARY_EXPRESSION || it.text == "true" || it.text == "false" }
+                )
             .forEach { expression ->
                 mapOfExpressionToChar.computeIfAbsent(expression.text) {
                     characterAsciiCode++.toChar()
