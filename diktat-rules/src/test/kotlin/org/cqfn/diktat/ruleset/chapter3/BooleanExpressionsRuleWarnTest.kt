@@ -11,6 +11,8 @@ import generated.WarningNames
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
+import java.io.ByteArrayOutputStream
+import java.io.PrintStream
 
 class BooleanExpressionsRuleWarnTest : LintTestBase(::BooleanExpressionsRule) {
     private val ruleId = "$DIKTAT_RULE_SET_ID:boolean-expressions-rule"
@@ -162,7 +164,7 @@ class BooleanExpressionsRuleWarnTest : LintTestBase(::BooleanExpressionsRule) {
     }
 
     @Test
-    fun `test makeCorrectExpressionString method #5`() {
+    fun `test makeCorrectExpressionString method #5 - should not convert single expressions`() {
         val firstCondition = KotlinParser().createNode("a.and(b)")
         val returnedString = BooleanExpressionsRule(emptyList()).formatBooleanExpressionAsString(firstCondition, HashMap())
         Assertions.assertEquals("(a.and(b))", returnedString)
@@ -194,7 +196,24 @@ class BooleanExpressionsRuleWarnTest : LintTestBase(::BooleanExpressionsRule) {
     }
 
     @Test
-    fun `regression - should not try to parse certain expressions - NB should check stderr of this test`() {
+    fun `test makeCorrectExpressionString method #9 - should not account for boolean operators in nested lambdas`() {
+        val node = KotlinParser().createNode(
+            """
+                nextNode != null && nextNode.findChildByType(CALL_EXPRESSION)?.text?.let {
+                    it == "trimIndent()" || it == "trimMargin()"
+                } == true
+            """.trimIndent()
+        )
+        val map: java.util.HashMap<String, Char> = HashMap()
+        val returnedString = BooleanExpressionsRule(emptyList()).formatBooleanExpressionAsString(node, map)
+        Assertions.assertEquals("(A & B)", returnedString)
+        Assertions.assertEquals(2, map.size)
+    }
+
+    @Test
+    fun `regression - should not log ANTLR errors when parsing is not required`() {
+        val stream = ByteArrayOutputStream()
+        System.setErr(PrintStream(stream))
         lintMethod(
             """
                 fun foo() {
@@ -233,8 +252,26 @@ class BooleanExpressionsRuleWarnTest : LintTestBase(::BooleanExpressionsRule) {
                     if (node.elementType == LABEL_QUALIFIER && node.text !in labels && node.treeParent.elementType in stopWords) {}
                     
                     if ((node.treeNext.elementType == RBRACE) xor (node.treePrev.elementType == LBRACE)) {}
+                    
+                    if (nextNode != null &&
+                        nextNode.findChildByType(CALL_EXPRESSION)?.text?.let {
+                            it == "trimIndent()" || it == "trimMargin()"
+                        } == true) {}
+                        
+                    if (listOfNodesBeforeNestedIf.any { it.elementType !in allowedTypes } ||
+                        listOfNodesAfterNestedIf.any { it.elementType !in allowedTypes }) {
+                            return null
+                    }
+                    if ((parentNode.psi as KtIfExpression).`else` != null ||
+                        (nestedIfNode.psi as KtIfExpression).`else` != null) {}
+                    if (listOfWarnings.add(currNode.startOffset to currNode)) {}
                 }
             """.trimIndent()
         )
+        System.setErr(System.err)
+        val stderr = stream.toString()
+        Assertions.assertTrue(stderr.isEmpty()) {
+            "stderr should be empty, but got the following:${System.lineSeparator()}$stderr"
+        }
     }
 }

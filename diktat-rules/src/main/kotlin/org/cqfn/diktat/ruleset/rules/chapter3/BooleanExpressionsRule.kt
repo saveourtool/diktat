@@ -85,7 +85,7 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
      * @param mapOfExpressionToChar a mutable map for expression->token
      * @return formatted string representation of expression
      */
-    @Suppress("UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType", "ForbiddenComment")
     internal fun formatBooleanExpressionAsString(node: ASTNode, mapOfExpressionToChar: HashMap<String, Char>): String {
         val (booleanBinaryExpressions, otherBinaryExpressions) = node.collectElementaryExpressions()
         var characterAsciiCode = 'A'.code  // `A` character in ASCII
@@ -137,7 +137,10 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
                     (astNode == this || astNode.parents().takeWhile { it != this }
                         .all { it.elementType in setOf(BINARY_EXPRESSION, PARENTHESIZED, PREFIX_EXPRESSION) })
         })
-        .partition { it.text.contains("&&") || it.text.contains("||") }
+        .partition {
+            val operationReferenceText = (it.psi as KtBinaryExpression).operationReference.text
+            operationReferenceText == "&&" || operationReferenceText == "||"
+        }
 
     private fun fixBooleanExpression(
         node: ASTNode,
