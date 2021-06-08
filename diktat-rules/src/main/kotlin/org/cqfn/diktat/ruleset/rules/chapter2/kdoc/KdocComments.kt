@@ -55,7 +55,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     override fun logic(node: ASTNode) {
         val config = configRules.getCommonConfiguration()
         val filePath = node.getRootNode().getFilePath()
-        if (!(node.hasTestAnnotation() || isLocatedInTest(filePath.splitPathToDirs(), config.testAnchors))) {
+        if (!node.hasTestAnnotation() && !isLocatedInTest(filePath.splitPathToDirs(), config.testAnchors)) {
             when (node.elementType) {
                 FILE -> checkTopLevelDoc(node)
                 CLASS -> checkClassElements(node)
@@ -86,7 +86,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("UnsafeCallOnNullableType", "ComplexMethod")
     private fun checkValueParameter(node: ASTNode) {
         if (node.parents().none { it.elementType == PRIMARY_CONSTRUCTOR } ||
-                !(node.hasChildOfType(VAL_KEYWORD) || node.hasChildOfType(VAR_KEYWORD))) {
+                !node.hasChildOfType(VAL_KEYWORD) && !node.hasChildOfType(VAR_KEYWORD)) {
             return
         }
         val prevComment = if (node.treePrev.elementType == WHITE_SPACE &&

@@ -140,7 +140,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
             val identifierText = identifier.text
             if (identifierText.startsWith('`') && identifierText.endsWith('`')) {
                 // the only exception is test method with @Test annotation
-                if (!(node.elementType == ElementType.FUN && node.hasTestAnnotation())) {
+                if (node.elementType != ElementType.FUN || !node.hasTestAnnotation()) {
                     BACKTICKS_PROHIBITED.warn(configRules, emitWarn, isFixMode, identifierText, identifier.startOffset, identifier)
                 }
                 return true
@@ -422,10 +422,9 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
         isVariable: Boolean
     ) {
         nodes.forEach {
-            if (it.text != "_" && !(it.isTextLengthInRange(MIN_IDENTIFIER_LENGTH..MAX_IDENTIFIER_LENGTH) ||
-                    oneCharIdentifiers.contains(it.text) && isVariable || isValidCatchIdentifier(it)
-
-            )
+            val isValidOneCharVariable = oneCharIdentifiers.contains(it.text) && isVariable
+            if (it.text != "_" && !it.isTextLengthInRange(MIN_IDENTIFIER_LENGTH..MAX_IDENTIFIER_LENGTH) &&
+                 !isValidOneCharVariable && !isValidCatchIdentifier(it)
             ) {
                 IDENTIFIER_LENGTH.warn(configRules, emitWarn, isFixMode, it.text, it.startOffset, it)
             }
