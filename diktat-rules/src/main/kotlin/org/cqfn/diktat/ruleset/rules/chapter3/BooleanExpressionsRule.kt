@@ -10,8 +10,10 @@ import org.cqfn.diktat.ruleset.utils.findLeafWithSpecificType
 import org.cqfn.diktat.ruleset.utils.logicalInfixMethods
 
 import com.bpodgursky.jbool_expressions.Expression
+import com.bpodgursky.jbool_expressions.options.ExprOptions
 import com.bpodgursky.jbool_expressions.parsers.ExprParser
 import com.bpodgursky.jbool_expressions.rules.RuleSet
+import com.bpodgursky.jbool_expressions.rules.RulesHelper
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CONDITION
@@ -63,7 +65,7 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
         val simplifiedExpression = distributiveLawString?.let {
             ExprParser.parse(distributiveLawString)
         }
-            ?: RuleSet.simplify(expr)
+            ?: RulesHelper.applySet(expr, RulesHelper.demorganRules(), ExprOptions.noCaching())
         if (expr != simplifiedExpression) {
             COMPLEX_BOOLEAN_EXPRESSION.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
                 fixBooleanExpression(node, simplifiedExpression, mapOfExpressionToChar)
