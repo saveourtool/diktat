@@ -88,33 +88,32 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("UnsafeCallOnNullableType", "ForbiddenComment")
     internal fun formatBooleanExpressionAsString(node: ASTNode, mapOfExpressionToChar: HashMap<String, Char>): String {
         val (booleanBinaryExpressions, otherBinaryExpressions) = node.collectElementaryExpressions()
-        var characterAsciiCode = 'A'.code  // `A` character in ASCII
-        (otherBinaryExpressions.filter {
+        val logicalExpressions = otherBinaryExpressions.filter {
             // keeping only boolean expressions, keeping things like `a + b < 6` and excluding `a + b`
             (it.psi as KtBinaryExpression).operationReference.text in logicalInfixMethods &&
                     // todo: support xor; for now skip all expressions that are nested in xor
                     it.parents().takeWhile { it != node }.none { (it.psi as? KtBinaryExpression)?.isXorExpression() ?: false }
-        } +
-                // Boolean expressions like `a > 5 && b < 7` or `x.isEmpty() || (y.isNotEmpty())` we convert to individual parts.
-                booleanBinaryExpressions
-                    .map { it.psi as KtBinaryExpression }
-                    .flatMap { listOf(it.left!!.node, it.right!!.node) }
-                    .map {
-                        // remove parentheses around expression, if there are any
-                        (it.psi as? KtParenthesizedExpression)?.expression?.node ?: it
-                    }
-                    .filterNot {
-                        // finally, if parts are binary expressions themselves, they should be present in our lists and we will process them later.
-                        // `true` and `false` are valid tokens for jBool, so we keep them.
-                        it.elementType == BINARY_EXPRESSION || it.text == "true" || it.text == "false"
-                    }
-        )
-            .forEach { expression ->
-                mapOfExpressionToChar.computeIfAbsent(expression.text) {
-                    // Every elementary expression is assigned a single-letter variable.
-                    characterAsciiCode++.toChar()
-                }
+        }
+        // Boolean expressions like `a > 5 && b < 7` or `x.isEmpty() || (y.isNotEmpty())` we convert to individual parts.
+        val elementaryBooleanExpressions = booleanBinaryExpressions
+            .map { it.psi as KtBinaryExpression }
+            .flatMap { listOf(it.left!!.node, it.right!!.node) }
+            .map {
+                // remove parentheses around expression, if there are any
+                (it.psi as? KtParenthesizedExpression)?.expression?.node ?: it
             }
+            .filterNot {
+                // finally, if parts are binary expressions themselves, they should be present in our lists and we will process them later.
+                // `true` and `false` are valid tokens for jBool, so we keep them.
+                it.elementType == BINARY_EXPRESSION || it.text == "true" || it.text == "false"
+            }
+        var characterAsciiCode = 'A'.code  // `A` character in ASCII
+        (logicalExpressions + elementaryBooleanExpressions).forEach { expression ->
+            mapOfExpressionToChar.computeIfAbsent(expression.text) {
+                // Every elementary expression is assigned a single-letter variable.
+                characterAsciiCode++.toChar()
+            }
+        }
         // Prepare final formatted string
         var correctedExpression = node.text
         // At first, substitute all elementary expressions with variables
