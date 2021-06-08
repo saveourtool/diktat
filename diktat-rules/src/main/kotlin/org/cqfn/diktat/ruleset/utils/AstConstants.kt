@@ -23,6 +23,11 @@ internal const val EMPTY_BLOCK_TEXT = "{}"
 internal val standardMethods = listOf("main", "equals", "hashCode", "toString", "clone", "finalize")
 
 /**
+ * List of infix methods that return Boolean
+ */
+internal val logicalInfixMethods = setOf("==", "!=", ">", "<", ">=", "<=", "in", "!in", "xor")
+
+/**
  * List of element types present in empty code block `{ }`
  */
 val emptyBlockList = listOf(LBRACE, WHITE_SPACE, SEMICOLON, RBRACE)
