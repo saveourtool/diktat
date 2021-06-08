@@ -137,96 +137,87 @@ class BooleanExpressionsRuleWarnTest : LintTestBase(::BooleanExpressionsRule) {
 
     @Test
     fun `test makeCorrectExpressionString method #1`() {
-        val firstCondition = KotlinParser().createNode("a > 5 && b < 6")
-        val returnedString = BooleanExpressionsRule(emptyList()).formatBooleanExpressionAsString(firstCondition, HashMap())
-        Assertions.assertEquals("(A & B)", returnedString)
+        checkExpressionFormatter("a > 5 && b < 6", "(A & B)", 2)
     }
 
     @Test
     fun `test makeCorrectExpressionString method #2`() {
-        val firstCondition = KotlinParser().createNode("a > 5 && b < 6 && c > 7 || a > 5")
-        val returnedString = BooleanExpressionsRule(emptyList()).formatBooleanExpressionAsString(firstCondition, HashMap())
-        Assertions.assertEquals("(A & B & C | A)", returnedString)
+        checkExpressionFormatter("a > 5 && b < 6 && c > 7 || a > 5", "(A & B & C | A)", 3)
     }
 
     @Test
     fun `test makeCorrectExpressionString method #3`() {
-        val firstCondition = KotlinParser().createNode("a > 5 && b < 6 && (c > 3 || b < 6) && a > 5")
-        val returnedString = BooleanExpressionsRule(emptyList()).formatBooleanExpressionAsString(firstCondition, HashMap())
-        Assertions.assertEquals("(A & B & (C | B) & A)", returnedString)
+        checkExpressionFormatter("a > 5 && b < 6 && (c > 3 || b < 6) && a > 5", "(A & B & (C | B) & A)", 3)
     }
 
     @Test
     fun `test makeCorrectExpressionString method #4`() {
-        val firstCondition = KotlinParser().createNode("a > 5 && b < 6 && (c > 3 || b < 6) && a > 666")
-        val returnedString = BooleanExpressionsRule(emptyList()).formatBooleanExpressionAsString(firstCondition, HashMap())
-        Assertions.assertEquals("(A & B & (C | B) & D)", returnedString)
+        checkExpressionFormatter("a > 5 && b < 6 && (c > 3 || b < 6) && a > 666", "(A & B & (C | B) & D)", 4)
     }
 
     @Test
     fun `test makeCorrectExpressionString method #5 - should not convert single expressions`() {
-        val firstCondition = KotlinParser().createNode("a.and(b)")
-        val returnedString = BooleanExpressionsRule(emptyList()).formatBooleanExpressionAsString(firstCondition, HashMap())
-        Assertions.assertEquals("(a.and(b))", returnedString)
+        checkExpressionFormatter("a.and(b)", "(a.and(b))", 0)
     }
 
     @Test
     fun `test makeCorrectExpressionString method #6 - should not convert single expressions`() {
-        val firstCondition = KotlinParser().createNode("x.isFoo()")
-        val map: java.util.HashMap<String, Char> = HashMap()
-        val returnedString = BooleanExpressionsRule(emptyList()).formatBooleanExpressionAsString(firstCondition, map)
-        Assertions.assertEquals("(x.isFoo())", returnedString)
-        Assertions.assertTrue(map.isEmpty())
+        checkExpressionFormatter("x.isFoo()", "(x.isFoo())", 0)
     }
 
     @Test
     fun `test makeCorrectExpressionString method #7`() {
-        val firstCondition = KotlinParser().createNode("x.isFoo() && true")
-        val returnedString = BooleanExpressionsRule(emptyList()).formatBooleanExpressionAsString(firstCondition, HashMap())
-        Assertions.assertEquals("(A & true)", returnedString)
+        checkExpressionFormatter("x.isFoo() && true", "(A & true)", 1)
     }
 
     @Test
     fun `test makeCorrectExpressionString method #8`() {
-        val firstCondition = KotlinParser().createNode("a > 5 && b > 6 || c > 7 && a > 5")
-        val map: java.util.HashMap<String, Char> = HashMap()
-        val returnedString = BooleanExpressionsRule(emptyList()).formatBooleanExpressionAsString(firstCondition, map)
-        Assertions.assertEquals("(A & B | C & A)", returnedString)
-        Assertions.assertEquals(3, map.size)
+        checkExpressionFormatter(
+            "a > 5 && b > 6 || c > 7 && a > 5",
+            "(A & B | C & A)",
+            3
+        )
     }
 
     @Test
     fun `test makeCorrectExpressionString method #9 - should not account for boolean operators in nested lambdas`() {
-        val node = KotlinParser().createNode(
+        checkExpressionFormatter(
             """
                 nextNode != null && nextNode.findChildByType(CALL_EXPRESSION)?.text?.let {
                     it == "trimIndent()" || it == "trimMargin()"
                 } == true
-            """.trimIndent()
+            """.trimIndent(),
+            "(A & B)",
+            2
         )
-        val map: java.util.HashMap<String, Char> = HashMap()
-        val returnedString = BooleanExpressionsRule(emptyList()).formatBooleanExpressionAsString(node, map)
-        Assertions.assertEquals("(A & B)", returnedString)
-        Assertions.assertEquals(2, map.size)
     }
 
     @Test
+    fun `test makeCorrectExpressionString method #10 - single variable in condition`() {
+        checkExpressionFormatter(
+            "::testContainerId.isInitialized",
+            "(::testContainerId.isInitialized)",
+            0
+        )
+    }
+
+    @Test
+    fun `test makeCorrectExpressionString method #11 - variable in condition and binary expression`() {
+        checkExpressionFormatter(
+            "::testContainerId.isInitialized || a > 2",
+            "(B | A)",
+            2
+        )
+    }
+
+    @Test
+    @Suppress("TOO_LONG_FUNCTION", "LongMethod")
     fun `regression - should not log ANTLR errors when parsing is not required`() {
         val stream = ByteArrayOutputStream()
         System.setErr(PrintStream(stream))
         lintMethod(
             """
                 fun foo() {
-                    // single variable in condition
-                    if (::testContainerId.isInitialized) {
-                        containerManager.dockerClient.removeContainerCmd(testContainerId).exec()
-                    }
-                    
-                    // single variable and binary expression
-                    if (::testContainerId.isInitialized || a > 2) {
-                        containerManager.dockerClient.removeContainerCmd(testContainerId).exec()
-                    }
-                    
                     // nested boolean expressions in lambdas
                     if (currentProperty.nextSibling { it.elementType == PROPERTY } == nextProperty) {}
                     
@@ -243,6 +234,7 @@ class BooleanExpressionsRuleWarnTest : LintTestBase(::BooleanExpressionsRule) {
                         .map { it.elementType }
                         .none { it == SUPER_TYPE_LIST || it == TYPEALIAS }) {}
                         
+                    // binary expression with boolean literal
                     if (result?.flag == true) {}
                     
                     if (leftOffset + binaryText.length > wrongBinaryExpression.maximumLineLength && index != 0) {}
@@ -253,11 +245,6 @@ class BooleanExpressionsRuleWarnTest : LintTestBase(::BooleanExpressionsRule) {
                     
                     if ((node.treeNext.elementType == RBRACE) xor (node.treePrev.elementType == LBRACE)) {}
                     
-                    if (nextNode != null &&
-                        nextNode.findChildByType(CALL_EXPRESSION)?.text?.let {
-                            it == "trimIndent()" || it == "trimMargin()"
-                        } == true) {}
-                        
                     if (listOfNodesBeforeNestedIf.any { it.elementType !in allowedTypes } ||
                         listOfNodesAfterNestedIf.any { it.elementType !in allowedTypes }) {
                             return null
@@ -268,6 +255,25 @@ class BooleanExpressionsRuleWarnTest : LintTestBase(::BooleanExpressionsRule) {
                 }
             """.trimIndent()
         )
+        System.setErr(System.err)
+        val stderr = stream.toString()
+        Assertions.assertTrue(stderr.isEmpty()) {
+            "stderr should be empty, but got the following:${System.lineSeparator()}$stderr"
+        }
+    }
+
+    private fun checkExpressionFormatter(
+        expression: String,
+        expectedRepresentation: String,
+        expectedMapSize: Int
+    ) {
+        val stream = ByteArrayOutputStream()
+        System.setErr(PrintStream(stream))
+        val node = KotlinParser().createNode(expression)
+        val map: java.util.HashMap<String, Char> = HashMap()
+        val result = BooleanExpressionsRule(emptyList()).formatBooleanExpressionAsString(node, map)
+        Assertions.assertEquals(expectedRepresentation, result)
+        Assertions.assertEquals(expectedMapSize, map.size)
         System.setErr(System.err)
         val stderr = stream.toString()
         Assertions.assertTrue(stderr.isEmpty()) {
