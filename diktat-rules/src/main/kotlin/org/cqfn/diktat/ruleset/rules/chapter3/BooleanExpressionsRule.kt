@@ -12,7 +12,6 @@ import org.cqfn.diktat.ruleset.utils.logicalInfixMethods
 import com.bpodgursky.jbool_expressions.Expression
 import com.bpodgursky.jbool_expressions.options.ExprOptions
 import com.bpodgursky.jbool_expressions.parsers.ExprParser
-import com.bpodgursky.jbool_expressions.rules.RuleSet
 import com.bpodgursky.jbool_expressions.rules.RulesHelper
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
