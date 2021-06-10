@@ -269,6 +269,19 @@ class SomeClass {
     }
 }
 ``` 
+
+## Suppress groups of inspections
+It is easy to suppress even groups of inspections in diKTat.
+
+These groups are linked to chapters of [Codestyle](info/guide/diktat-coding-convention.md). 
+
+To disable chapters, you will need to add the following configuration to common configuration (`- name: DIKTAT_COMMON`):
+```yaml
+    disabledChapters: "1, 2, 3"
+```  
+
+Mapping of inspections to chapters can be found in [Groups of Inspections](info/rules-mapping.md) .
+
 ## How to contribute?
 
 Main components are:
