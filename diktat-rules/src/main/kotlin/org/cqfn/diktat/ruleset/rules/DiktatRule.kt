@@ -55,8 +55,6 @@ abstract class DiktatRule(
                     """Internal error has occurred in rule [$id]. Please make an issue on this bug at https://github.com/cqfn/diKTat/. 
                        As a workaround you can disable these inspections in yml config: <$inspections>.
                        Root cause of the problem is in [${node.getFilePath()}] file.
-                       Node, where the problem appeared:
-                       ${node.prettyPrint()}
                        """.trimIndent(), internalError
                 )
                 // we are very sorry for throwing common Error here, but unfortunately we are not able to throw
