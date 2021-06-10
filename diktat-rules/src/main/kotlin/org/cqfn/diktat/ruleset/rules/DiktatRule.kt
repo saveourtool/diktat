@@ -4,10 +4,10 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.isRuleEnabled
 import org.cqfn.diktat.ruleset.constants.EmitType
 import org.cqfn.diktat.ruleset.rules.chapter1.PackageNaming
-
-import com.pinterest.ktlint.core.Rule
 import org.cqfn.diktat.ruleset.utils.getFilePath
 import org.cqfn.diktat.ruleset.utils.prettyPrint
+
+import com.pinterest.ktlint.core.Rule
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.slf4j.LoggerFactory
 
@@ -68,7 +68,7 @@ abstract class DiktatRule(
     }
 
     private fun areInspectionsDisabled(): Boolean =
-        inspections.none { configRules.isRuleEnabled(it) }
+            inspections.none { configRules.isRuleEnabled(it) }
 
     /**
      * Logic of the rule
