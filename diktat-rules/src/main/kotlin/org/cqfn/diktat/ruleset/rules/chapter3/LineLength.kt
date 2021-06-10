@@ -5,11 +5,6 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.LONG_LINE
 import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.ruleset.utils.KotlinParser
-import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
-import org.cqfn.diktat.ruleset.utils.calculateLineColByOffset
-import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
-import org.cqfn.diktat.ruleset.utils.hasChildOfType
 
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
@@ -44,6 +39,7 @@ import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.nextSibling
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevSibling
+import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -83,9 +79,15 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         var offset = 0
         node.text.lines().forEach { line ->
             if (line.length > configuration.lineLength) {
+                println("\n-------------\n${line} ${line.length}")
+                println("OFFSET $offset")
+                println("\n\n==============\nOLDNODE ${node.psi.node.text}")
+                println("FIND AT ${offset + configuration.lineLength.toInt()}")
                 val newNode = node.psi.findElementAt(offset + configuration.lineLength.toInt())!!.node
+                println("NEWNODE ${newNode.text}")
                 if ((newNode.elementType != KDOC_TEXT && newNode.elementType != KDOC_MARKDOWN_INLINE_LINK) ||
                         !isKdocValid(newNode)) {
+                    println("ENTER ${newNode.text}")
                     positionByOffset = node.treeParent.calculateLineColByOffset()
                     val fixableType = isFixable(newNode, configuration)
                     LONG_LINE.warnAndFix(configRules, emitWarn, isFixMode,
@@ -159,7 +161,12 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             if (wrongNode.hasChildOfType(EQ)) LongLineFixableCases.Fun(wrongNode) else LongLineFixableCases.None
 
     private fun checkComment(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
+        println("\n\nCHECK COMMENTS")
+        println(wrongNode.prettyPrint())
         val leftOffset = positionByOffset(wrongNode.startOffset).second
+        println("MAX LEN ${configuration.lineLength} - Left offset $leftOffset" )
+        println("TEXT LEN ${wrongNode.text.length}")
+        println("FROM 0 to ${configuration.lineLength.toInt() - leftOffset}")
         val indexLastSpace = wrongNode.text.substring(0, configuration.lineLength.toInt() - leftOffset).lastIndexOf(' ')
         if (indexLastSpace == -1) {
             return LongLineFixableCases.None
