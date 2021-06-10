@@ -3,9 +3,7 @@ package org.cqfn.diktat.ruleset.rules
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.isRuleEnabled
 import org.cqfn.diktat.ruleset.constants.EmitType
-import org.cqfn.diktat.ruleset.rules.chapter1.PackageNaming
 import org.cqfn.diktat.ruleset.utils.getFilePath
-import org.cqfn.diktat.ruleset.utils.prettyPrint
 
 import com.pinterest.ktlint.core.Rule
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
