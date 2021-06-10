@@ -106,6 +106,7 @@ To run diktat in **only-check** mode use command `$ mvn diktat:check@diktat`.
 To run diktat in **autocorrect** mode use command `$ mvn diktat:fix@diktat`.
 
 ## Run with Gradle using diktat-gradle-plugin
+Please be advised that to run functional tests of Gradle plugin you will need to have Java 11 or **older**.
 This plugin is available since version 0.1.5. You can see how the plugin is configured in our examples: [build.gradle.kts](examples/gradle-kotlin-dsl/build.gradle.kts).
 Add this plugin to your `build.gradle.kts`:
 ```kotlin
@@ -269,6 +270,19 @@ class SomeClass {
     }
 }
 ``` 
+
+## Suppress groups of inspections
+It is easy to suppress even groups of inspections in diKTat.
+
+These groups are linked to chapters of [Codestyle](info/guide/diktat-coding-convention.md). 
+
+To disable chapters, you will need to add the following configuration to common configuration (`- name: DIKTAT_COMMON`):
+```yaml
+    disabledChapters: "1, 2, 3"
+```  
+
+Mapping of inspections to chapters can be found in [Groups of Inspections](info/rules-mapping.md) .
+
 ## How to contribute?
 
 Main components are:

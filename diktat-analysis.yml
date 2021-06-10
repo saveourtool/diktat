@@ -5,7 +5,8 @@
     # put your package name here - it will be autofixed and checked
     domainName: org.cqfn.diktat
     # testDirs: test
-    disabledChapters: ""
+    # can also use chapter names here (not only numbers)
+    disabledChapters: "1, 2, 3"
     testDirs: test
     kotlinVersion: 1.5
     srcDirectories: "main"
