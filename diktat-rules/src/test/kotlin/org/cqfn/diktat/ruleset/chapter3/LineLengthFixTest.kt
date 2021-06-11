@@ -26,8 +26,8 @@ class LineLengthFixTest : FixTestBase("test/paragraph3/long_line", ::LineLength)
     }
 
     @Test
-    fun `should fix long comment2`() {
-        fixAndCompare("LongLineCommentExpected.kt", "LongLineCommentTest.kt", rulesConfigListDefaultLineLength)
+    fun `should fix long comment 2`() {
+        fixAndCompare("LongLineCommentExpected2.kt", "LongLineCommentTest2.kt", rulesConfigListDefaultLineLength)
     }
 
     @Test

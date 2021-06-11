@@ -79,21 +79,24 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         var offset = 0
         node.text.lines().forEach { line ->
             if (line.length > configuration.lineLength) {
-                println("\n-------------\n${line} ${line.length}")
                 println("OFFSET $offset")
-                println("\n\n==============\nOLDNODE ${node.psi.node.text}")
-                println("FIND AT ${offset + configuration.lineLength.toInt()}")
+                println("\n-------------\n${line} ${line.length}. Curr symbol `${line[configuration.lineLength.toInt()-1]}`")
                 val newNode = node.psi.findElementAt(offset + configuration.lineLength.toInt())!!.node
-                println("NEWNODE ${newNode.text}")
+                println("NEWNODE ${newNode.text} | ${newNode.startOffset}")
+                println(node.psi.findElementAt(offset)!!.node.text)
+                println(node.psi.findElementAt(newNode.startOffset)!!.node.text == newNode.text)
                 if ((newNode.elementType != KDOC_TEXT && newNode.elementType != KDOC_MARKDOWN_INLINE_LINK) ||
                         !isKdocValid(newNode)) {
-                    println("ENTER ${newNode.text}")
                     positionByOffset = node.treeParent.calculateLineColByOffset()
                     val fixableType = isFixable(newNode, configuration)
+                    println("CAN BE FIXED? ${fixableType != LongLineFixableCases.None}")
                     LONG_LINE.warnAndFix(configRules, emitWarn, isFixMode,
                         "max line length ${configuration.lineLength}, but was ${line.length}",
                         offset + node.startOffset, node, fixableType != LongLineFixableCases.None) {
+                        val before = node.textLength
                         fixError(fixableType)
+                        val after = node.textLength
+                        offset += (after - before) + 1
                     }
                 }
             }
@@ -162,12 +165,17 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun checkComment(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
         println("\n\nCHECK COMMENTS")
-        println(wrongNode.prettyPrint())
         val leftOffset = positionByOffset(wrongNode.startOffset).second
-        println("MAX LEN ${configuration.lineLength} - Left offset $leftOffset" )
-        println("TEXT LEN ${wrongNode.text.length}")
-        println("FROM 0 to ${configuration.lineLength.toInt() - leftOffset}")
-        val indexLastSpace = wrongNode.text.substring(0, configuration.lineLength.toInt() - leftOffset).lastIndexOf(' ')
+        // We won't move comment to the next line, if it's located after line length limit, since it isn't
+        // corresponds to the next line, and can be confused. Such logic processed by other rule, and such comments
+        // will be moved before current line
+        val rangeOfCommentLessThenLimit = configuration.lineLength.toInt() - leftOffset
+        if (rangeOfCommentLessThenLimit <= 0) {
+            return LongLineFixableCases.None
+        }
+        val indexLastSpace = wrongNode.text.substring(0, rangeOfCommentLessThenLimit).lastIndexOf(' ')
+        println("indexLastSpace $indexLastSpace")
+        println("Substr: ${wrongNode.text.substring(0, configuration.lineLength.toInt() - leftOffset)}")
         if (indexLastSpace == -1) {
             return LongLineFixableCases.None
         }
