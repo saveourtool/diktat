@@ -44,7 +44,6 @@ import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.nextSibling
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevSibling
-import org.cqfn.diktat.ruleset.utils.prettyPrint
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -84,15 +83,11 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         var offset = 0
         node.text.lines().forEach { line ->
             if (line.length > configuration.lineLength) {
-                println("\n-------------\nOFFSET $offset")
-                println("${line} Line len: ${line.length}. Curr symbol `${line[configuration.lineLength.toInt() - 1]}` in `${line.substring(configuration.lineLength.toInt()-2, configuration.lineLength.toInt() + 1)}`")
                 val newNode = node.psi.findElementAt(offset + configuration.lineLength.toInt() - 1)!!.node
-                println("NEWNODE ${newNode.text} | ${newNode.startOffset}")
                 if ((newNode.elementType != KDOC_TEXT && newNode.elementType != KDOC_MARKDOWN_INLINE_LINK) ||
                         !isKdocValid(newNode)) {
                     positionByOffset = node.treeParent.calculateLineColByOffset()
                     val fixableType = isFixable(newNode, configuration)
-                    println("CAN BE FIXED? ${fixableType != LongLineFixableCases.None} FIXMODE? ${isFixMode}")
                     LONG_LINE.warnAndFix(configRules, emitWarn, isFixMode,
                         "max line length ${configuration.lineLength}, but was ${line.length}",
                         offset + node.startOffset, node, fixableType != LongLineFixableCases.None) {
@@ -107,7 +102,6 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     private fun isFixable(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
         var parent = wrongNode
         do {
-            //println("Current: ${parent.elementType} `${parent.text.substring(0, minOf(20, parent.text.length))}`")
             when (parent.elementType) {
                 FUN -> return checkFun(parent)
                 CONDITION -> return checkCondition(parent, configuration)
@@ -255,7 +249,6 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
 
     @Suppress("UnsafeCallOnNullableType")
     private fun fixBinaryExpression(node: ASTNode) {
-        println("FIXING NODE: ${node.prettyPrint()}")
         val whiteSpaceAfterPlus = node.findChildByType(OPERATION_REFERENCE)!!.treeNext
         node.replaceChild(whiteSpaceAfterPlus, PsiWhiteSpaceImpl("\n"))
     }
