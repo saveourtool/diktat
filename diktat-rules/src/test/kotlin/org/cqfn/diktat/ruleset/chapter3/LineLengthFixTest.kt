@@ -7,6 +7,10 @@ import org.cqfn.diktat.util.FixTestBase
 import org.junit.jupiter.api.Test
 
 class LineLengthFixTest : FixTestBase("test/paragraph3/long_line", ::LineLength) {
+    private val rulesConfigListDefaultLineLength: List<RulesConfig> = listOf(
+        RulesConfig(LONG_LINE.name, true,
+            mapOf("lineLength" to "120"))
+    )
     private val rulesConfigListLineLength: List<RulesConfig> = listOf(
         RulesConfig(LONG_LINE.name, true,
             mapOf("lineLength" to "50"))
@@ -19,6 +23,11 @@ class LineLengthFixTest : FixTestBase("test/paragraph3/long_line", ::LineLength)
     @Test
     fun `should fix long comment`() {
         fixAndCompare("LongLineCommentExpected.kt", "LongLineCommentTest.kt", rulesConfigListLineLength)
+    }
+
+    @Test
+    fun `should not fix long comment which located on the line length limit`() {
+        fixAndCompare("LongLineCommentExpected2.kt", "LongLineCommentTest2.kt", rulesConfigListDefaultLineLength)
     }
 
     @Test

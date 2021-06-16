@@ -83,7 +83,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         var offset = 0
         node.text.lines().forEach { line ->
             if (line.length > configuration.lineLength) {
-                val newNode = node.psi.findElementAt(offset + configuration.lineLength.toInt())!!.node
+                val newNode = node.psi.findElementAt(offset + configuration.lineLength.toInt() - 1)!!.node
                 if ((newNode.elementType != KDOC_TEXT && newNode.elementType != KDOC_MARKDOWN_INLINE_LINK) ||
                         !isKdocValid(newNode)) {
                     positionByOffset = node.treeParent.calculateLineColByOffset()
