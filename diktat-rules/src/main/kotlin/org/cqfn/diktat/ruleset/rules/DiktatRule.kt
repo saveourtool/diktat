@@ -3,7 +3,7 @@ package org.cqfn.diktat.ruleset.rules
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.isRuleEnabled
 import org.cqfn.diktat.ruleset.constants.EmitType
-import org.cqfn.diktat.ruleset.rules.chapter1.PackageNaming
+import org.cqfn.diktat.ruleset.utils.getFilePath
 
 import com.pinterest.ktlint.core.Rule
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -19,9 +19,11 @@ private typealias DiktatConfigRule = org.cqfn.diktat.common.config.rules.Rule
  * @property inspections warnings that are used in the rule's code
  */
 @Suppress("TooGenericExceptionCaught")
-abstract class DiktatRule(id: String,
-                          val configRules: List<RulesConfig>,
-                          private val inspections: List<DiktatConfigRule>) : Rule(id) {
+abstract class DiktatRule(
+    id: String,
+    val configRules: List<RulesConfig>,
+    private val inspections: List<DiktatConfigRule>
+) : Rule(id) {
     /**
      * Default value is false
      */
@@ -33,9 +35,11 @@ abstract class DiktatRule(id: String,
     lateinit var emitWarn: EmitType
 
     @Suppress("TooGenericExceptionThrown")
-    override fun visit(node: ASTNode,
-                       autoCorrect: Boolean,
-                       emit: EmitType) {
+    override fun visit(
+        node: ASTNode,
+        autoCorrect: Boolean,
+        emit: EmitType
+    ) {
         emitWarn = emit
         isFixMode = autoCorrect
 
@@ -45,11 +49,15 @@ abstract class DiktatRule(id: String,
             try {
                 logic(node)
             } catch (internalError: Throwable) {
-                log.error("Internal error has occurred in $id. Please make an issue on this bug at https://github.com/cqfn/diKTat/.", internalError)
-                log.error("As a workaround you can disable these inspections in yml config: $inspections")
+                log.error(
+                    """Internal error has occurred in rule [$id]. Please make an issue on this bug at https://github.com/cqfn/diKTat/. 
+                       As a workaround you can disable these inspections in yml config: <$inspections>.
+                       Root cause of the problem is in [${node.getFilePath()}] file.
+                       """.trimIndent(), internalError
+                )
                 // we are very sorry for throwing common Error here, but unfortunately we are not able to throw
                 // any existing Exception, as they will be caught in ktlint framework and the logging will be confusing:
-                // it will incorrectly ask you to report issues in diktat to ktlint
+                // in this case it will incorrectly ask you to report issues in diktat to ktlint repository
                 throw Error("Internal error in diktat application")
             }
         }
