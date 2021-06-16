@@ -15,6 +15,7 @@ import com.pinterest.ktlint.core.ast.ElementType.OVERRIDE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PRIVATE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.PROTECTED_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.TYPEALIAS
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isPartOfComment
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -44,18 +45,19 @@ class TopLevelOrderRule(configRules: List<RulesConfig>) : DiktatRule(
         }
         val properties = Properties(children.filter { it.elementType == PROPERTY }).sortElements()
         val functions = children.filter { it.elementType == FUN }
+        val typealiases = children.filter { it.elementType == TYPEALIAS }
         val classes = children.filter { it.elementType == CLASS || it.elementType == OBJECT_DECLARATION }
-        val sortOrder = Blocks(properties, functions, classes).sortElements().map { astNode ->
-            Pair(astNode, astNode.siblings(false).takeWhile { it.elementType == WHITE_SPACE || it.isPartOfComment() }.toList())
+        val sortedElementsWithTrailingNonCodeNodes = Blocks(properties, typealiases, functions, classes).sortElements().map { astNode ->
+            astNode to astNode.siblings(false).takeWhile { it.elementType == WHITE_SPACE || it.isPartOfComment() }.toList()
         }
         val lastNonSortedChildren = initialElementsOrder.last().siblings(true).toList()
-        sortOrder.filterIndexed { index, pair -> initialElementsOrder[index] != pair.first }
+        sortedElementsWithTrailingNonCodeNodes.filterIndexed { index, pair -> initialElementsOrder[index] != pair.first }
             .forEach { listOfChildren ->
                 val wrongNode = listOfChildren.first
                 TOP_LEVEL_ORDER.warnAndFix(configRules, emitWarn, isFixMode, wrongNode.text, wrongNode.startOffset, wrongNode) {
                     node.removeRange(node.findChildByType(IMPORT_LIST)!!.treeNext, node.lastChildNode)
                     node.removeChild(node.lastChildNode)
-                    sortOrder.map { (sortedNode, sortedNodePrevSibling) ->
+                    sortedElementsWithTrailingNonCodeNodes.map { (sortedNode, sortedNodePrevSibling) ->
                         sortedNodePrevSibling.reversed().map { node.addChild(it, null) }
                         node.addChild(sortedNode, null)
                     }
@@ -94,16 +96,17 @@ class TopLevelOrderRule(configRules: List<RulesConfig>) : DiktatRule(
      */
     private data class Blocks(
         private val properties: List<ASTNode>,
+        val typealiases: List<ASTNode>,
         private val functions: List<ASTNode>,
         private val classes: List<ASTNode>) : Elements {
         override fun sortElements(): MutableList<ASTNode> {
             val (extensionFun, nonExtensionFun) = functions.partition { (it.psi as KtFunction).isExtensionDeclaration() }
-            return (properties + listOf(classes, extensionFun, nonExtensionFun).map { nodes ->
+            return (properties + listOf(typealiases, classes, extensionFun, nonExtensionFun).flatMap { nodes ->
                 val (privatePart, notPrivatePart) = nodes.partition { it.hasModifier(PRIVATE_KEYWORD) }
                 val (protectedPart, notProtectedPart) = notPrivatePart.partition { it.hasModifier(PROTECTED_KEYWORD) || it.hasModifier(OVERRIDE_KEYWORD) }
                 val (internalPart, publicPart) = notProtectedPart.partition { it.hasModifier(INTERNAL_KEYWORD) }
                 listOf(publicPart, internalPart, protectedPart, privatePart).flatten()
-            }.flatten()).toMutableList()
+            }).toMutableList()
         }
     }
 
@@ -111,6 +114,6 @@ class TopLevelOrderRule(configRules: List<RulesConfig>) : DiktatRule(
         /**
          * List of children that should be sort
          */
-        val sortedType = listOf(PROPERTY, FUN, CLASS, OBJECT_DECLARATION)
+        val sortedType = listOf(PROPERTY, FUN, CLASS, OBJECT_DECLARATION, TYPEALIAS)
     }
 }
