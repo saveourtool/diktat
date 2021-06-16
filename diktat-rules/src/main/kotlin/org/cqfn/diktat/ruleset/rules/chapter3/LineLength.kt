@@ -83,7 +83,10 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         var offset = 0
         node.text.lines().forEach { line ->
             if (line.length > configuration.lineLength) {
+                println("\n-------------\nOFFSET $offset")
+                println("${line} Line len: ${line.length}. Curr symbol `${line[configuration.lineLength.toInt() - 1]}` in `${line.substring(configuration.lineLength.toInt()-2, configuration.lineLength.toInt() + 1)}`")
                 val newNode = node.psi.findElementAt(offset + configuration.lineLength.toInt() - 1)!!.node
+                println("NEWNODE ${newNode.text} | ${newNode.startOffset}")
                 if ((newNode.elementType != KDOC_TEXT && newNode.elementType != KDOC_MARKDOWN_INLINE_LINK) ||
                         !isKdocValid(newNode)) {
                     positionByOffset = node.treeParent.calculateLineColByOffset()
@@ -102,6 +105,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     private fun isFixable(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
         var parent = wrongNode
         do {
+            //println("Current: ${parent.elementType} `${parent.text.substring(0, minOf(20, parent.text.length))}`")
             when (parent.elementType) {
                 FUN -> return checkFun(parent)
                 CONDITION -> return checkCondition(parent, configuration)
