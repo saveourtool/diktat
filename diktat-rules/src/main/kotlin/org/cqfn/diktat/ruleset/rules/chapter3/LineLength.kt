@@ -41,6 +41,7 @@ import com.pinterest.ktlint.core.ast.ElementType.RPAR
 import com.pinterest.ktlint.core.ast.ElementType.SHORT_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.STRING_TEMPLATE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.children
 import com.pinterest.ktlint.core.ast.nextSibling
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevSibling
@@ -91,10 +92,14 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                         !isKdocValid(newNode)) {
                     positionByOffset = node.treeParent.calculateLineColByOffset()
                     val fixableType = isFixable(newNode, configuration)
+                    println("IS FIXABLE? ${fixableType != LongLineFixableCases.None} FIXMODE? ${isFixMode}")
                     LONG_LINE.warnAndFix(configRules, emitWarn, isFixMode,
                         "max line length ${configuration.lineLength}, but was ${line.length}",
                         offset + node.startOffset, node, fixableType != LongLineFixableCases.None) {
+                        val start = node.text.lines().size
                         fixError(fixableType)
+                        val end = node.text.lines().size
+                        offset += (end - start)
                     }
                 }
             }
@@ -105,7 +110,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     private fun isFixable(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
         var parent = wrongNode
         do {
-            //println("Current: ${parent.elementType} `${parent.text.substring(0, minOf(20, parent.text.length))}`")
+            println("Current: ${parent.elementType} `${parent.text.substring(0, minOf(20, parent.text.length))}`")
             when (parent.elementType) {
                 FUN -> return checkFun(parent)
                 CONDITION -> return checkCondition(parent, configuration)
@@ -140,10 +145,14 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      *         None - if the string can't be split
      */
     private fun checkStringTemplate(node: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
+        println("CHECK STRING TEMPLATE ${node.text}")
         val leftOffset = positionByOffset(node.startOffset).second
         val difference = configuration.lineLength.toInt() - leftOffset
+        println("OFFSET ${leftOffset}")
+        println("configuration.lineLength.toInt() - leftOffset ${difference}")
+        println("node.text.length ${node.text.length}")
         // case when new line should be inserted after `+`. Example: "first" + "second"
-        if (difference > node.text.length) {
+        if (node.treeParent.findChildByType(OPERATION_REFERENCE) != null && difference > node.text.length) {
             return LongLineFixableCases.BinaryExpression(node.treeParent)
         }
         val delimiterIndex = node.text.substring(0, configuration.lineLength.toInt() - leftOffset).lastIndexOf(' ')
