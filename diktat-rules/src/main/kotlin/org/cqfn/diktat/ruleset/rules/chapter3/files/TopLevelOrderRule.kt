@@ -96,7 +96,7 @@ class TopLevelOrderRule(configRules: List<RulesConfig>) : DiktatRule(
      */
     private data class Blocks(
         private val properties: List<ASTNode>,
-        val typealiases: List<ASTNode>,
+        private val typealiases: List<ASTNode>,
         private val functions: List<ASTNode>,
         private val classes: List<ASTNode>) : Elements {
         override fun sortElements(): MutableList<ASTNode> {
