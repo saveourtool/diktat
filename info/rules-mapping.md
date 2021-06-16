@@ -57,10 +57,12 @@
 | FILE_NO_BLANK_LINE_BETWEEN_BLOCKS | [3.1.2](guide/diktat-coding-convention.md#r3.1.2) | yes | General |
 | FILE_UNORDERED_IMPORTS | [3.1.2](guide/diktat-coding-convention.md#r3.1.2) | yes | General |
 | FILE_WILDCARD_IMPORTS | [3.1.2](guide/diktat-coding-convention.md#r3.1.2) | no | General |
+| UNUSED_IMPORT | [3.1.2](guide/diktat-coding-convention.md#r3.1.2) | yes | General |
 | FILE_NAME_MATCH_CLASS | [3.1.2](guide/diktat-coding-convention.md#r3.1.2) | yes | General |
 | WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES | [3.1.4](guide/diktat-coding-convention.md#r3.1.4) | yes | General |
 | BLANK_LINE_BETWEEN_PROPERTIES | [3.1.4](guide/diktat-coding-convention.md#r3.1.4) | yes | General |
 | WRONG_DECLARATIONS_ORDER | [3.1.4](guide/diktat-coding-convention.md#r3.1.4) | yes | General |
+| TOP_LEVEL_ORDER | [3.1.5](guide/diktat-coding-convention.md#r3.1.5) | yes | General |
 | NO_BRACES_IN_CONDITIONALS_AND_LOOPS | [3.2.1](guide/diktat-coding-convention.md#r3.2.1) | yes | General |
 | BRACES_BLOCK_STRUCTURE_ERROR | [3.2.2](guide/diktat-coding-convention.md#r3.2.2) | yes | General |
 | WRONG_INDENTATION | [3.3.1](guide/diktat-coding-convention.md#r3.3.1) | yes | General |
@@ -69,7 +71,9 @@
 | MORE_THAN_ONE_STATEMENT_PER_LINE | [3.6.1](guide/diktat-coding-convention.md#r3.6.1) | yes | General |
 | REDUNDANT_SEMICOLON | [3.6.2](guide/diktat-coding-convention.md#r3.6.2) | yes | General |
 | WRONG_NEWLINES | [3.6.2](guide/diktat-coding-convention.md#r3.6.2) | yes | General |
+| TRAILING_COMMA | [3.6.2](guide/diktat-coding-convention.md#r3.6.2) | yes | General |
 | COMPLEX_EXPRESSION | [3.6.3](guide/diktat-coding-convention.md#r3.6.3) | no | General |
+| COMPLEX_BOOLEAN_EXPRESSION | [3.6.4](guide/diktat-coding-convention.md#r3.6.4) | yes | General |
 | TOO_MANY_BLANK_LINES | [3.7.1](guide/diktat-coding-convention.md#r3.7.1) | yes | General |
 | WRONG_WHITESPACE | [3.8.1](guide/diktat-coding-convention.md#r3.8.1) | yes | General |
 | TOO_MANY_CONSECUTIVE_SPACES | [3.8.1](guide/diktat-coding-convention.md#r3.8.1) | yes | General |
@@ -79,9 +83,11 @@
 | ANNOTATION_NEW_LINE | [3.12.1](guide/diktat-coding-convention.md#r3.12.1) | yes | General |
 | WRONG_MULTIPLE_MODIFIERS_ORDER | [3.14.1](guide/diktat-coding-convention.md#r3.14.1) | yes | General |
 | LONG_NUMERICAL_VALUES_SEPARATED | [3.14.2](guide/diktat-coding-convention.md#r3.14.2) | yes | General |
-| STRING_CONCATENATION | [3.15.1](guide/diktat-coding-convention.md#r3.15.1) | no | General |
+| MAGIC_NUMBER | [3.14.3](guide/diktat-coding-convention.md#r3.14.3) | no | General |
+| STRING_CONCATENATION | [3.15.1](guide/diktat-coding-convention.md#r3.15.1) | yes | General |
 | STRING_TEMPLATE_CURLY_BRACES | [3.15.2](guide/diktat-coding-convention.md#r3.15.2) | yes | General |
 | STRING_TEMPLATE_QUOTES | [3.15.2](guide/diktat-coding-convention.md#r3.15.2) | yes | General |
+| COLLAPSE_IF_STATEMENTS | [3.16.1](guide/diktat-coding-convention.md#r3.16.1) | yes | General |
 | FLOAT_IN_ACCURATE_CALCULATIONS | [4.1.1](guide/diktat-coding-convention.md#r4.1.1) | no | Variables |
 | SAY_NO_TO_VAR | [4.1.3](guide/diktat-coding-convention.md#r4.1.3) | no | Variables |
 | SMART_CAST_NEEDED | [4.2.1](guide/diktat-coding-convention.md#r4.2.1) | yes | Variables |
@@ -98,6 +104,7 @@
 | WRONG_OVERLOADING_FUNCTION_ARGUMENTS | [5.2.3](guide/diktat-coding-convention.md#r5.2.3) | no | Functions |
 | RUN_BLOCKING_INSIDE_ASYNC | [5.2.4](guide/diktat-coding-convention.md#r5.2.4) | no | Functions |
 | TOO_MANY_LINES_IN_LAMBDA | [5.2.5](guide/diktat-coding-convention.md#r5.2.5) | no | Functions |
+| CUSTOM_LABEL | [5.2.6](guide/diktat-coding-convention.md#r5.2.6) | no | Functions |
 | SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY | [6.1.1](guide/diktat-coding-convention.md#r6.1.1) | yes | Classes |
 | USE_DATA_CLASS | [6.1.2](guide/diktat-coding-convention.md#r6.1.2) | no | Classes |
 | EMPTY_PRIMARY_CONSTRUCTOR | [6.1.3](guide/diktat-coding-convention.md#r6.1.3) | yes | Classes |
@@ -109,6 +116,9 @@
 | WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR | [6.1.9](guide/diktat-coding-convention.md#r6.1.9) | no | Classes |
 | TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED | [6.1.10](guide/diktat-coding-convention.md#r6.1.10) | yes | Classes |
 | COMPACT_OBJECT_INITIALIZATION | [6.1.11](guide/diktat-coding-convention.md#r6.1.11) | yes | Classes |
+| INLINE_CLASS_CAN_BE_USED | [6.1.12](guide/diktat-coding-convention.md#r6.1.12) | yes | Classes |
 | EXTENSION_FUNCTION_SAME_SIGNATURE | [6.2.2](guide/diktat-coding-convention.md#r6.2.2) | no | Classes |
+| EXTENSION_FUNCTION_WITH_CLASS | [6.2.3](guide/diktat-coding-convention.md#r6.2.3) | no | Classes |
 | AVOID_USING_UTILITY_CLASS | [6.4.1](guide/diktat-coding-convention.md#r6.4.1) | no | Classes |
 | OBJECT_IS_PREFERRED | [6.4.2](guide/diktat-coding-convention.md#r6.4.2) | yes | Classes |
+| RUN_IN_SCRIPT | [6.5.1](guide/diktat-coding-convention.md#r6.5.1) | yes | Classes |
