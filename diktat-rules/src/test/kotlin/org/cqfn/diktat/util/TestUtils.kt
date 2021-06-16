@@ -21,14 +21,14 @@ import java.util.concurrent.atomic.AtomicInteger
 
 internal const val TEST_FILE_NAME = "TestFileName.kt"
 
-typealias LintErrorCallback = (LintError, Boolean) -> Unit
-
 private val log = LoggerFactory.getLogger("TestUtils")
 
 @Suppress("TYPE_ALIAS")
 internal val defaultCallback: (lintError: LintError, corrected: Boolean) -> Unit = { lintError, _ ->
     log.warn("Received linting error: $lintError")
 }
+
+typealias LintErrorCallback = (LintError, Boolean) -> Unit
 
 /**
  * Compare [LintError]s from [this] with [expectedLintErrors]
