@@ -27,6 +27,8 @@ fun foo() {
     val longStringExpression = "First very long" +
 " part" + "second Part"
 
+    val longStringExpression2 =                   "String starts at the line len limit"
+
     val veryLooooooooooooooooooooooooooooooongVal = "text"
 
     val longIntExpression = (12345 + 12345 +

@@ -5,6 +5,11 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.LONG_LINE
 import org.cqfn.diktat.ruleset.rules.DiktatRule
+import org.cqfn.diktat.ruleset.utils.KotlinParser
+import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
+import org.cqfn.diktat.ruleset.utils.calculateLineColByOffset
+import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
+import org.cqfn.diktat.ruleset.utils.hasChildOfType
 
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
@@ -39,7 +44,7 @@ import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.nextSibling
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevSibling
-import org.cqfn.diktat.ruleset.utils.*
+import org.cqfn.diktat.ruleset.utils.prettyPrint
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -79,24 +84,19 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         var offset = 0
         node.text.lines().forEach { line ->
             if (line.length > configuration.lineLength) {
-                println("OFFSET $offset")
-                println("\n-------------\n${line} ${line.length}. Curr symbol `${line[configuration.lineLength.toInt()-1]}`")
-                val newNode = node.psi.findElementAt(offset + configuration.lineLength.toInt())!!.node
+                println("\n-------------\nOFFSET $offset")
+                println("${line} Line len: ${line.length}. Curr symbol `${line[configuration.lineLength.toInt() - 1]}` in `${line.substring(configuration.lineLength.toInt()-2, configuration.lineLength.toInt() + 1)}`")
+                val newNode = node.psi.findElementAt(offset + configuration.lineLength.toInt() - 1)!!.node
                 println("NEWNODE ${newNode.text} | ${newNode.startOffset}")
-                println(node.psi.findElementAt(offset)!!.node.text)
-                println(node.psi.findElementAt(newNode.startOffset)!!.node.text == newNode.text)
                 if ((newNode.elementType != KDOC_TEXT && newNode.elementType != KDOC_MARKDOWN_INLINE_LINK) ||
                         !isKdocValid(newNode)) {
                     positionByOffset = node.treeParent.calculateLineColByOffset()
                     val fixableType = isFixable(newNode, configuration)
-                    println("CAN BE FIXED? ${fixableType != LongLineFixableCases.None}")
+                    println("CAN BE FIXED? ${fixableType != LongLineFixableCases.None} FIXMODE? ${isFixMode}")
                     LONG_LINE.warnAndFix(configRules, emitWarn, isFixMode,
                         "max line length ${configuration.lineLength}, but was ${line.length}",
                         offset + node.startOffset, node, fixableType != LongLineFixableCases.None) {
-                        val before = node.textLength
                         fixError(fixableType)
-                        val after = node.textLength
-                        offset += (after - before) + 1
                     }
                 }
             }
@@ -107,6 +107,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     private fun isFixable(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
         var parent = wrongNode
         do {
+            //println("Current: ${parent.elementType} `${parent.text.substring(0, minOf(20, parent.text.length))}`")
             when (parent.elementType) {
                 FUN -> return checkFun(parent)
                 CONDITION -> return checkCondition(parent, configuration)
@@ -164,18 +165,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             if (wrongNode.hasChildOfType(EQ)) LongLineFixableCases.Fun(wrongNode) else LongLineFixableCases.None
 
     private fun checkComment(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
-        println("\n\nCHECK COMMENTS")
         val leftOffset = positionByOffset(wrongNode.startOffset).second
-        // We won't move comment to the next line, if it's located after line length limit, since it isn't
-        // corresponds to the next line, and can be confused. Such logic processed by other rule, and such comments
-        // will be moved before current line
-        val rangeOfCommentLessThenLimit = configuration.lineLength.toInt() - leftOffset
-        if (rangeOfCommentLessThenLimit <= 0) {
-            return LongLineFixableCases.None
-        }
-        val indexLastSpace = wrongNode.text.substring(0, rangeOfCommentLessThenLimit).lastIndexOf(' ')
-        println("indexLastSpace $indexLastSpace")
-        println("Substr: ${wrongNode.text.substring(0, configuration.lineLength.toInt() - leftOffset)}")
+        val indexLastSpace = wrongNode.text.substring(0, configuration.lineLength.toInt() - leftOffset).lastIndexOf(' ')
         if (indexLastSpace == -1) {
             return LongLineFixableCases.None
         }
@@ -264,6 +255,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
 
     @Suppress("UnsafeCallOnNullableType")
     private fun fixBinaryExpression(node: ASTNode) {
+        println("FIXING NODE: ${node.prettyPrint()}")
         val whiteSpaceAfterPlus = node.findChildByType(OPERATION_REFERENCE)!!.treeNext
         node.replaceChild(whiteSpaceAfterPlus, PsiWhiteSpaceImpl("\n"))
     }
