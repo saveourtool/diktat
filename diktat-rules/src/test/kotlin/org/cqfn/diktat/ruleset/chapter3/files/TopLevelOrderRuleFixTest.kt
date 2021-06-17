@@ -22,7 +22,7 @@ class TopLevelOrderRuleFixTest : FixTestBase("test/paragraph3/top_level", ::TopL
     }
 
     // FixMe: should be considered this case (swapped order of kdoc and package directive)
-    @Disabled("Isn't working yet")
+    @Disabled("Isn't working yet, because KDoc is bound to class declaration here. Also, should be moved to FileStructureRuleFixTest.")
     @Test
     @Tag(WarningNames.TOP_LEVEL_ORDER)
     fun `should fix top level order with header kdoc`() {
