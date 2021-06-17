@@ -870,6 +870,7 @@ Kotlin allows several top-level declaration types: classes, objects, interfaces,
 When declaring more than one class or zero classes (e.g. only functions), as per rule [2.2.1](#r2.2.1), you should document the whole file in the header KDoc.
 When declaring top-level structures, keep the following order:
 1. Top-level constants and properties (following same order as properties inside a class: `const val`,`val`, `lateinit var`, `var`)
+2. typealiases (grouped by their visibility modifiers)
 2. Interfaces, classes and objects (grouped by their visibility modifiers)
 3. Extension functions
 4. Other functions
@@ -884,6 +885,8 @@ package org.cqfn.diktat.example
 const val CONSTANT = 42
 
 val topLevelProperty = "String constant"
+
+internal typealias ExamplesHandler = (IExample) -> Unit
 
 interface IExample
 

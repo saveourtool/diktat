@@ -42,7 +42,7 @@ tasks.register("updateMarkdownDocumentation") {
     description = "Task that aggregates all documentation updates without white paper updates"
     dependsOn(
         "generateRulesMapping",
-        "generateFullDoc",
+        "generateFullDoc"
     )
 }
 
