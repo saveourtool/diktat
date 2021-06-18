@@ -41,6 +41,8 @@ import com.pinterest.ktlint.core.ast.ElementType.RPAR
 import com.pinterest.ktlint.core.ast.ElementType.SHORT_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.STRING_TEMPLATE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.isWhiteSpace
+import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.nextSibling
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevSibling
@@ -164,7 +166,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         if (indexLastSpace == -1) {
             return LongLineFixableCases.None
         }
-        return LongLineFixableCases.Comment(wrongNode, indexLastSpace)
+        val isNewLine = wrongNode.treePrev?.isWhiteSpaceWithNewline() ?: wrongNode.treeParent?.treePrev?.isWhiteSpaceWithNewline() ?: false
+        return LongLineFixableCases.Comment(wrongNode, isNewLine, indexLastSpace)
     }
 
     private fun checkCondition(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
@@ -237,13 +240,24 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun fixComment(wrongComment: LongLineFixableCases.Comment) {
         val wrongNode = wrongComment.node
-        val indexLastSpace = wrongComment.indexLastSpace
-        val nodeText = "//${wrongNode.text.substring(indexLastSpace, wrongNode.text.length)}"
-        wrongNode.treeParent.run {
-            addChild(LeafPsiElement(EOL_COMMENT, wrongNode.text.substring(0, indexLastSpace)), wrongNode)
-            addChild(PsiWhiteSpaceImpl("\n"), wrongNode)
-            addChild(LeafPsiElement(EOL_COMMENT, nodeText), wrongNode)
-            removeChild(wrongNode)
+        if (wrongComment.isNewLine) {
+            val indexLastSpace = wrongComment.indexLastSpace
+            val nodeText = "//${wrongNode.text.substring(indexLastSpace, wrongNode.text.length)}"
+            wrongNode.treeParent.run {
+                addChild(LeafPsiElement(EOL_COMMENT, wrongNode.text.substring(0, indexLastSpace)), wrongNode)
+                addChild(PsiWhiteSpaceImpl("\n"), wrongNode)
+                addChild(LeafPsiElement(EOL_COMMENT, nodeText), wrongNode)
+                removeChild(wrongNode)
+            }
+        } else {
+            val grandParent = wrongNode.treeParent.treeParent
+            val parent = wrongNode.treeParent
+            if (wrongNode.treePrev.isWhiteSpace()) {
+                parent.removeChild(wrongNode.treePrev)
+            }
+            parent.removeChild(wrongNode)
+            grandParent?.addChild(wrongNode, parent)
+            grandParent?.addChild(PsiWhiteSpaceImpl("\n"), parent)
         }
     }
 
@@ -421,7 +435,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     sealed class LongLineFixableCases {
         object None : LongLineFixableCases()
 
-        class Comment(val node: ASTNode, val indexLastSpace: Int) : LongLineFixableCases()
+        class Comment(val node: ASTNode, val isNewLine: Boolean, val indexLastSpace: Int = 0) : LongLineFixableCases()
 
         class StringTemplate(val node: ASTNode, val delimiterIndex: Int) : LongLineFixableCases()
 
