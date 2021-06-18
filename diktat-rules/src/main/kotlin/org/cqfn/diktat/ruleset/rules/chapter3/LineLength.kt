@@ -435,7 +435,10 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     sealed class LongLineFixableCases {
         object None : LongLineFixableCases()
 
-        class Comment(val node: ASTNode, val isNewLine: Boolean, val indexLastSpace: Int = 0) : LongLineFixableCases()
+        class Comment(
+            val node: ASTNode,
+            val isNewLine: Boolean,
+            val indexLastSpace: Int = 0) : LongLineFixableCases()
 
         class StringTemplate(val node: ASTNode, val delimiterIndex: Int) : LongLineFixableCases()
 
