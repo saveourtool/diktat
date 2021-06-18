@@ -12,3 +12,8 @@ fun foo() {
         }
     }
 }
+
+fun goo() {
+    val ok = true // short comment
+    val someLongFieldName = "some string" // comment looong comment
+}

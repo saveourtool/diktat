@@ -14,3 +14,9 @@ it.subSequence(0, 1)
         }
     }
 }
+
+fun goo() {
+    val ok = true // short comment
+    // comment looong comment
+val someLongFieldName = "some string"
+}
