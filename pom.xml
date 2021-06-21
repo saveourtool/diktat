@@ -48,7 +48,7 @@
         <ktlint.version>0.39.0</ktlint.version>
         <junit.version>5.7.2</junit.version>
         <guava.version>30.1.1-jre</guava.version>
-        <slf4j.version>1.7.30</slf4j.version>
+        <slf4j.version>1.7.31</slf4j.version>
         <commons-cli.version>1.4</commons-cli.version>
         <diktat-check.version>0.6.2</diktat-check.version>
         <kotlinpoet.version>1.8.0</kotlinpoet.version>
