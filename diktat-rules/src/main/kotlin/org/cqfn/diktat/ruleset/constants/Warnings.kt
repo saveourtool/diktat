@@ -17,7 +17,7 @@ typealias ListOfPairs = MutableList<Pair<ASTNode, String>>
 /**
  * This class represent individual inspections of diktat code style.
  * A [Warnings] entry contains rule name, warning message and is used in code check.
- * @property canBeAutoCorrected whether this inspection can automatically fix the code
+ * @property canBeAutoCorrected whether this inspection can automatically fix the code. Should be public to be able to use it in docs generator.
  * @property ruleId number of the inspection according to []diktat code style](https://www.cqfn.org/diKTat/info/guide/diktat-coding-convention.html)
  */
 @Suppress(
@@ -28,7 +28,7 @@ typealias ListOfPairs = MutableList<Pair<ASTNode, String>>
     "WRONG_NEWLINES"
 )
 enum class Warnings(
-    private val canBeAutoCorrected: Boolean,
+    @Suppress("PRIVATE_MEMBER") val canBeAutoCorrected: Boolean,
     val ruleId: String,
     private val warn: String) : Rule {
     // ======== dummy test warning ======

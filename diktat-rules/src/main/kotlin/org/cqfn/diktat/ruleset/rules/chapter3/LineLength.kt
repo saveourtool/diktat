@@ -91,7 +91,12 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                     LONG_LINE.warnAndFix(configRules, emitWarn, isFixMode,
                         "max line length ${configuration.lineLength}, but was ${line.length}",
                         offset + node.startOffset, node, fixableType != LongLineFixableCases.None) {
+                        // we should keep in mind, that in the course of fixing we change the offset
+                        val textLenBeforeFix = node.textLength
                         fixError(fixableType)
+                        val textLenAfterFix = node.textLength
+                        // offset for all next nodes changed to this delta
+                        offset += (textLenAfterFix - textLenBeforeFix)
                     }
                 }
             }
@@ -137,13 +142,14 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      */
     private fun checkStringTemplate(node: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
         val leftOffset = positionByOffset(node.startOffset).second
-        val difference = configuration.lineLength.toInt() - leftOffset
-        // case when new line should be inserted after `+`. Example: "first" + "second"
-        if (difference > node.text.length) {
-            return LongLineFixableCases.BinaryExpression(node.treeParent)
-        }
         val delimiterIndex = node.text.substring(0, configuration.lineLength.toInt() - leftOffset).lastIndexOf(' ')
         if (delimiterIndex == -1) {
+            // we can't split this string, however may be we can move it entirely:
+            // case when new line should be inserted after `+`. Example: "first" + "second"
+            node.treeParent.findChildByType(OPERATION_REFERENCE)?.let {
+                return LongLineFixableCases.BinaryExpression(node.treeParent)
+            }
+            // can't fix this case
             return LongLineFixableCases.None
         }
         // minus 2 here as we are inserting ` +` and we don't want it to exceed line length
@@ -161,7 +167,9 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     private fun checkComment(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
         val leftOffset = positionByOffset(wrongNode.startOffset).second
         val indexLastSpace = wrongNode.text.substring(0, configuration.lineLength.toInt() - leftOffset).lastIndexOf(' ')
-        if (indexLastSpace == -1) {
+        // index == -1 indicates, that we didn't find any possible way to split this comment
+        // index == 2 indicates, that we found the white space after `//`, and shouldn't fix it
+        if (indexLastSpace == -1 || indexLastSpace == 2) {
             return LongLineFixableCases.None
         }
         return LongLineFixableCases.Comment(wrongNode, indexLastSpace)
