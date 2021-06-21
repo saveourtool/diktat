@@ -167,7 +167,9 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     private fun checkComment(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
         val leftOffset = positionByOffset(wrongNode.startOffset).second
         val indexLastSpace = wrongNode.text.substring(0, configuration.lineLength.toInt() - leftOffset).lastIndexOf(' ')
-        if (indexLastSpace == -1) {
+        // index == -1 indicates, that we didn't find any possible way to split this comment
+        // index == 2 indicates, that we found the white space after `//`, and shouldn't fix it
+        if (indexLastSpace == -1 || indexLastSpace == 2) {
             return LongLineFixableCases.None
         }
         return LongLineFixableCases.Comment(wrongNode, indexLastSpace)
