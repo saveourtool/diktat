@@ -936,18 +936,25 @@ if (cond1 && (cond2 || cond3)) {
 }
 ```
 #### <a name="r3.16.2"></a> 3.16.2 Too complex conditions
-Too complex conditions should be simplified according to boolean algebra rules, if it is possible
+Too complex conditions should be simplified according to boolean algebra rules, if it is possible.
+The following rules are considered when simplifying an expression:
+* boolean literals are removed (e.g. `foo() || false` -> `foo()`)
+* double negation is removed (e.g. `!(!a)` -> `a`)
+* expression with the same variable are simplified (e.g. `a && b && a` -> `a && b`)
+* remove expression from disjunction, if they are subset of other expression (e.g. `a || (a && b)` -> `a`)
+* remove expression from conjunction, if they are more broad than other expression (e.g. `a && (a || b)` -> `a`)
+* de Morgan's rule (negation is moved inside parentheses, i.e. `!(a || b)` -> `!a && !b`)
 
 **Valid example**
 ```kotlin
-if (cond1 && cond2) {
+if (condition1 && condition2) {
     foo()
 }
 ```
 
 **Invalid example**
 ```kotlin
-if (cond1 && cond2 && cond1) {
+if (condition1 && condition2 && condition1) {
     foo()
 }
 ```
