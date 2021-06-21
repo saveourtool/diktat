@@ -3,7 +3,12 @@ plugins {
 }
 
 repositories {
-    mavenLocal()
+    mavenCentral()
+    mavenLocal {
+        content {
+            includeGroup("org.cqfn.diktat")
+        }
+    }
     flatDir {
         dirs(
             "$rootDir/../../diktat-rules/target",

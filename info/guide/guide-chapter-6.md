@@ -387,8 +387,9 @@ It is recommended that for classes, the non-tightly coupled functions, which are
 They should be implemented in the same class/file where they are used. This is a non-deterministic rule, so the code cannot be checked or fixed automatically by a static analyzer.
 
 #### <a name="r6.2.2"></a> 6.2.2 No extension functions with the same name and signature if they extend base and inheritor classes (possible_bug)
-You should have ho extension functions with the same name and signature if they extend base and inheritor classes (possible_bug).esolved statically. There could be a situation when a developer implements two extension functions: one is for the base class and another for the inheritor.
-This can lead to an issue when an incorrect method is used.
+You should avoid declaring extension functions with the same name and signature if their receivers are base and inheritor classes (possible_bug),
+as extension functions are resolved statically. There could be a situation when a developer implements two extension functions: one is for the base class and
+another for the inheritor. This can lead to an issue when an incorrect method is used.
 
 **Invalid example**:
 ```kotlin
