@@ -41,7 +41,7 @@ jobs:
       - name: Set version
         run: mvn -B versions:set -DnewVersion=${{ env.RELEASE_VERSION }} versions:commit
       - name: Create settings.xml
-        uses: whelk-io/maven-settings-xml-action@v17
+        uses: whelk-io/maven-settings-xml-action@v18
         with:
           servers: |
             [
