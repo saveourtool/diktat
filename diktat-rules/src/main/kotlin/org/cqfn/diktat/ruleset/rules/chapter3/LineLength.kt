@@ -445,11 +445,10 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         object None : LongLineFixableCases()
 
         /**
-         * @param node node
-         * @param hasNewLineBefore  flag to handle type of comment: ordinary comment(long part of which should be moved to the next line)
+         * @property node node
+         * @property hasNewLineBefore  flag to handle type of comment: ordinary comment(long part of which should be moved to the next line)
          * and inline comments (which should be moved entirely to the previous line)
-         *
-         * @param indexLastSpace index of last space to substring comment
+         * @property indexLastSpace index of last space to substring comment
          */
         class Comment(
             val node: ASTNode,
