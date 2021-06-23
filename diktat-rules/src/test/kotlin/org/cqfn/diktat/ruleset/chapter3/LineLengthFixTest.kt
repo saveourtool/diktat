@@ -31,6 +31,11 @@ class LineLengthFixTest : FixTestBase("test/paragraph3/long_line", ::LineLength)
     }
 
     @Test
+    fun `should fix long string template while some fix is already done`() {
+        fixAndCompare("LongStringTemplateExpected.kt", "LongStringTemplateTest.kt", rulesConfigListDefaultLineLength)
+    }
+
+    @Test
     fun `should fix long binary expression`() {
         fixAndCompare("LongLineExpressionExpected.kt", "LongLineExpressionTest.kt", rulesConfigListLineLength)
     }
