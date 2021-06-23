@@ -240,24 +240,25 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun fixComment(wrongComment: LongLineFixableCases.Comment) {
         val wrongNode = wrongComment.node
-        if (wrongComment.isNewLine) {
+        if (wrongComment.hasNewLineBefore) {
             val indexLastSpace = wrongComment.indexLastSpace
             val nodeText = "//${wrongNode.text.substring(indexLastSpace, wrongNode.text.length)}"
-            wrongNode.treeParent.run {
+            wrongNode.treeParent.apply {
                 addChild(LeafPsiElement(EOL_COMMENT, wrongNode.text.substring(0, indexLastSpace)), wrongNode)
                 addChild(PsiWhiteSpaceImpl("\n"), wrongNode)
                 addChild(LeafPsiElement(EOL_COMMENT, nodeText), wrongNode)
                 removeChild(wrongNode)
             }
         } else {
-            val grandParent = wrongNode.treeParent.treeParent
-            val parent = wrongNode.treeParent
-            if (wrongNode.treePrev.isWhiteSpace()) {
-                parent.removeChild(wrongNode.treePrev)
+            wrongNode.treeParent?.treeParent?.let {
+                val parent = wrongNode.treeParent
+                if (wrongNode.treePrev.isWhiteSpace()) {
+                    parent.removeChild(wrongNode.treePrev)
+                }
+                parent.removeChild(wrongNode)
+                it.addChild(wrongNode, parent)
+                it.addChild(PsiWhiteSpaceImpl("\n"), parent)
             }
-            parent.removeChild(wrongNode)
-            grandParent?.addChild(wrongNode, parent)
-            grandParent?.addChild(PsiWhiteSpaceImpl("\n"), parent)
         }
     }
 
@@ -437,13 +438,13 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
 
         /**
          * @param node node
-         * @param isNewLine  flag to handle type of comment: ordinary comment(long part of which should be moved to the next line)
+         * @param hasNewLineBefore  flag to handle type of comment: ordinary comment(long part of which should be moved to the next line)
          * and inline comments (which should be moved entirely to the previous line)
          * @param indexLastSpace index of last space to substring comment
          */
         class Comment(
             val node: ASTNode,
-            val isNewLine: Boolean,
+            val hasNewLineBefore: Boolean,
             val indexLastSpace: Int = 0) : LongLineFixableCases()
 
         class StringTemplate(val node: ASTNode, val delimiterIndex: Int) : LongLineFixableCases()
