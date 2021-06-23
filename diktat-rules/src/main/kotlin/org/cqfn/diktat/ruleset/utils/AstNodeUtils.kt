@@ -376,7 +376,7 @@ fun ASTNode.isVarProperty() =
  * Replaces text of [this] node with lowercase text
  */
 fun ASTNode.toLower() {
-    (this as LeafPsiElement).replaceWithText(this.text.lowercase(Locale.getDefault()))
+    (this as LeafPsiElement).rawReplaceWithText(this.text.lowercase(Locale.getDefault()))
 }
 
 /**
@@ -537,7 +537,7 @@ fun ASTNode.leaveOnlyOneNewLine() = leaveExactlyNumNewLines(1)
  */
 fun ASTNode.leaveExactlyNumNewLines(num: Int) {
     require(this.elementType == WHITE_SPACE)
-    (this as LeafPsiElement).replaceWithText("${"\n".repeat(num)}${this.text.replace("\n", "")}")
+    (this as LeafPsiElement).rawReplaceWithText("${"\n".repeat(num)}${this.text.replace("\n", "")}")
 }
 
 /**
@@ -549,7 +549,7 @@ fun ASTNode.leaveExactlyNumNewLines(num: Int) {
  */
 fun ASTNode.appendNewlineMergingWhiteSpace(whiteSpaceNode: ASTNode?, beforeNode: ASTNode?) {
     if (whiteSpaceNode != null && whiteSpaceNode.elementType == WHITE_SPACE) {
-        (whiteSpaceNode as LeafPsiElement).replaceWithText("\n${whiteSpaceNode.text}")
+        (whiteSpaceNode as LeafPsiElement).rawReplaceWithText("\n${whiteSpaceNode.text}")
     } else {
         addChild(PsiWhiteSpaceImpl("\n"), beforeNode)
     }

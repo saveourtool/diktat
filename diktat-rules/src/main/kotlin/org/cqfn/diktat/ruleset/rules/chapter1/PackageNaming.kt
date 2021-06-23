@@ -172,7 +172,7 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
     private fun correctPackageWordSeparatorsUsed(word: ASTNode) {
         if (word.text.contains("_") && !isExceptionForUnderscore(word.text)) {
             INCORRECT_PACKAGE_SEPARATOR.warnAndFix(configRules, emitWarn, isFixMode, word.text, word.startOffset, word) {
-                (word as LeafPsiElement).replaceWithText(word.text.replace("_", ""))
+                (word as LeafPsiElement).rawReplaceWithText(word.text.replace("_", ""))
             }
         }
     }

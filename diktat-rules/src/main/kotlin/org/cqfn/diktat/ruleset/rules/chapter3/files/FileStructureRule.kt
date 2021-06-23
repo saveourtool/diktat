@@ -302,8 +302,7 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
                 if (elementType == WHITE_SPACE && text.count { it == '\n' } != 2) {
                     FILE_NO_BLANK_LINE_BETWEEN_BLOCKS.warnAndFix(configRules, emitWarn, isFixMode, astNode.text.lines().first(),
                         astNode.startOffset, astNode) {
-                        (this as LeafPsiElement).parent.node.replaceChild(this, PsiWhiteSpaceImpl("\n\n${text.replace("\n", "")}"))
-                    }
+                        (this as LeafPsiElement).rawReplaceWithText("\n\n${text.replace("\n", "")}")                    }
                 }
             }
         }

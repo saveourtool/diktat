@@ -182,7 +182,7 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
         // Triggers when there is a copyright, but its year is not updated.
         if (!isMissingCopyright && copyrightWithCorrectYear.isNotEmpty()) {
             WRONG_COPYRIGHT_YEAR.warnAndFix(configRules, emitWarn, isFixMode, "year should be $curYear", node.startOffset, node) {
-                (headerComment as LeafElement).replaceWithText(headerComment.text.replace(copyrightText, copyrightWithCorrectYear))
+                (headerComment as LeafElement).rawReplaceWithText(headerComment.text.replace(copyrightText, copyrightWithCorrectYear))
             }
         }
     }

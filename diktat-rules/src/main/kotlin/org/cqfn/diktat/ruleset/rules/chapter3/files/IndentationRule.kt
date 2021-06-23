@@ -122,7 +122,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
             }
             .forEach {
                 WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "tabs are not allowed for indentation", it.startOffset + it.text.indexOf('\t'), it) {
-                    (it as LeafPsiElement).replaceWithText(it.text.replace("\t", " ".repeat(configuration.indentationSize)))
+                    (it as LeafPsiElement).rawReplaceWithText(it.text.replace("\t", " ".repeat(configuration.indentationSize)))
                 }
             }
         return isFixMode  // true if we changed all tabs to spaces

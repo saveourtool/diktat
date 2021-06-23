@@ -237,7 +237,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         propertyInClassKdoc?.let {
             if (propertyInClassKdoc.hasChildOfType(KDOC_TEXT)) {
                 val kdocText = propertyInClassKdoc.findChildByType(KDOC_TEXT)!!
-                (kdocText as LeafPsiElement).replaceWithText("${kdocText.text} ${prevComment.text}")
+                (kdocText as LeafPsiElement).rawReplaceWithText("${kdocText.text} ${prevComment.text}")
             } else {
                 propertyInClassKdoc.addChild(LeafPsiElement(KDOC_TEXT, prevComment.text), null)
             }
