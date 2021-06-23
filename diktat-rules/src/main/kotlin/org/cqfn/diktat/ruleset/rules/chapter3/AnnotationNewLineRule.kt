@@ -68,7 +68,7 @@ class AnnotationNewLineRule(configRules: List<RulesConfig>) : DiktatRule(
                     .treePrev
                     .isWhiteSpace()
                 if (hasSpaceBeforeGrandparent) {
-                    (node.treeParent.treeParent.treePrev as LeafPsiElement).replaceWithText("\n")
+                    (node.treeParent.treeParent.treePrev as LeafPsiElement).rawReplaceWithText("\n")
                 }
             }
         }

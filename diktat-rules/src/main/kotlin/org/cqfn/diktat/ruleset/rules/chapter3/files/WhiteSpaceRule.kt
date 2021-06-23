@@ -313,7 +313,7 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
         val isEol = node.textContains('\n') || node.psi.parentsWithSelf.all { it.nextSibling == null }
         if (hasSpaces && isEol) {
             WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "there should be no spaces in the end of line", node.startOffset, node) {
-                (node as LeafElement).replaceWithText(node.text.trimStart(' '))
+                (node as LeafElement).rawReplaceWithText(node.text.trimStart(' '))
             }
         }
     }
@@ -395,7 +395,7 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun ASTNode.leaveSingleWhiteSpace() {
         if (treeNext.elementType == WHITE_SPACE) {
-            (treeNext as LeafElement).replaceWithText(" ")
+            (treeNext as LeafElement).rawReplaceWithText(" ")
         } else {
             treeParent.addChild(PsiWhiteSpaceImpl(" "), treeNext)
         }
