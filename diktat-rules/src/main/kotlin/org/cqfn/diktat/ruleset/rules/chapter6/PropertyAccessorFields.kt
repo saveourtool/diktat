@@ -8,11 +8,14 @@ import org.cqfn.diktat.ruleset.utils.isGoingAfter
 
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.FILE
+import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY_ACCESSOR
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.THIS_EXPRESSION
+import com.pinterest.ktlint.core.ast.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.psi.KtProperty
@@ -33,6 +36,11 @@ class PropertyAccessorFields(configRules: List<RulesConfig>) : DiktatRule(
     // fixme should use shadow-check when it will be done
     private fun checkPropertyAccessor(node: ASTNode) {
         val leftValue = node.treeParent.findChildByType(IDENTIFIER) ?: return
+        val funNames: List<String> = node
+            .parent(FILE)
+            ?.findAllDescendantsWithSpecificType(FUN)
+            ?.mapNotNull { it.findChildByType(IDENTIFIER) }
+            ?.map { it.text } ?: emptyList()
         val firstReferenceWithSameName = node
             .findAllDescendantsWithSpecificType(REFERENCE_EXPRESSION)
             .mapNotNull { it.findChildByType(IDENTIFIER) }
@@ -46,7 +54,7 @@ class PropertyAccessorFields(configRules: List<RulesConfig>) : DiktatRule(
             ?.getChildren(TokenSet.create(PROPERTY))
             ?.filter { (it.psi as KtProperty).nameIdentifier?.text == leftValue.text }
             ?.none { firstReferenceWithSameName?.isGoingAfter(it) ?: false } ?: true
-        if (firstReferenceWithSameName != null && isContainLocalVarSameName) {
+        if (firstReferenceWithSameName != null && isContainLocalVarSameName && funNames.all { it != firstReferenceWithSameName.text }) {
             WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warn(configRules, emitWarn, isFixMode, node.text, node.startOffset, node)
         }
     }
