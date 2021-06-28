@@ -64,7 +64,7 @@ class ConsecutiveSpacesRule(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun ASTNode.hasEolComment(): Boolean = this.treeNext.elementType == EOL_COMMENT
 
-    private fun ASTNode.squeezeSpaces() = (this as LeafElement).replaceWithText(" ")
+    private fun ASTNode.squeezeSpaces() = (this as LeafElement).rawReplaceWithText(" ")
 
     /**
      * [RuleConfiguration] for consecutive spaces
