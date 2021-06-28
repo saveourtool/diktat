@@ -126,7 +126,7 @@ class PropertyAccessorFieldsWarnTest : LintTestBase(::PropertyAccessorFields) {
                     |class A {
                     |
                     |   val String.blaBla: String
-                    |   get() = "bla".blaBla("bla")
+                    |       get() = "bla".blaBla("bla")
                     |   
                     |   fun String.blaBla(string: String): String = this + string
                     |   fun boo(string: String): String = string + string
