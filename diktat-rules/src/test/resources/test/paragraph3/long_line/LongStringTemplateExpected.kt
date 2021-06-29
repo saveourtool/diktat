@@ -1,5 +1,6 @@
 object Observables {
-    val someCode = 15 // looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooongggggggggggggggggggggggggg
+    // looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooongggggggggggggggggggggggggg
+val someCode = 15
     // Some
 // looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong line
     @Deprecated("New type inference algorithm in Kotlin 1.4 makes this method obsolete. Method will be removed in" +
