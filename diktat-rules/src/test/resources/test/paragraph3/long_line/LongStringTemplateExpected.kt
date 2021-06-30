@@ -21,4 +21,9 @@ class Foo() {
  "dfjvndsdcsdcsdcskjnbvif" + response.message}")
     }
 
+    val q = """
+        <--${respodcnse.ccode}${if (response.mesdscsage.isEmpty()) "skfnvkdjdsdcfvd" else "dfjvndksdcjnbvif" + 
+response.mecsssdcage}
+    """.trimIndent()
+
 }
