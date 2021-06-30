@@ -278,22 +278,23 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         node.replaceChild(whiteSpaceAfterPlus, PsiWhiteSpaceImpl("\n"))
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun fixStringTemplate(wrongStringTemplate: LongLineFixableCases.StringTemplate) {
         val incorrectText = wrongStringTemplate.node.text
         val firstPart = incorrectText.substring(0, wrongStringTemplate.delimiterIndex)
         val secondPart = incorrectText.substring(wrongStringTemplate.delimiterIndex, incorrectText.length)
         val isSplitInWhiteSpace = wrongStringTemplate.node.psi.findElementAt(wrongStringTemplate.delimiterIndex)!!.node.isWhiteSpace()
         val correctNode =
-            if (!isSplitInWhiteSpace) {
-                KotlinParser().createNode("$firstPart\" +\n\"$secondPart")
-            } else {
-                // case when split space end in string interpolation
-                // "Hello ${if (true) "Alice" else "Nick"}"
-                //                                ^
-                //                                |
-                //                           split space
-                KotlinParser().createNode("$firstPart \n$secondPart")
-            }
+                if (!isSplitInWhiteSpace) {
+                    KotlinParser().createNode("$firstPart\" +\n\"$secondPart")
+                } else {
+                    // case when split space end in string interpolation
+                    // "Hello ${if (true) "Alice" else "Nick"}"
+                    //                                ^
+                    //                                |
+                    //                           split space
+                    KotlinParser().createNode("$firstPart \n$secondPart")
+                }
         wrongStringTemplate.node.treeParent.replaceChild(wrongStringTemplate.node, correctNode)
     }
 
