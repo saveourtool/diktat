@@ -41,6 +41,8 @@ import com.pinterest.ktlint.core.ast.ElementType.RPAR
 import com.pinterest.ktlint.core.ast.ElementType.SHORT_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.STRING_TEMPLATE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.isWhiteSpace
+import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.nextSibling
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevSibling
@@ -166,13 +168,16 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun checkComment(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
         val leftOffset = positionByOffset(wrongNode.startOffset).second
-        val indexLastSpace = wrongNode.text.substring(0, configuration.lineLength.toInt() - leftOffset).lastIndexOf(' ')
-        // index == -1 indicates, that we didn't find any possible way to split this comment
-        // index == 2 indicates, that we found the white space after `//`, and shouldn't fix it
-        if (indexLastSpace == -1 || indexLastSpace == 2) {
+        val stringBeforeCommentContent = wrongNode.text.takeWhile { it == ' ' || it == '/' }
+        if (stringBeforeCommentContent.length >= configuration.lineLength.toInt() - leftOffset) {
             return LongLineFixableCases.None
         }
-        return LongLineFixableCases.Comment(wrongNode, indexLastSpace)
+        val indexLastSpace = wrongNode.text.substring(stringBeforeCommentContent.length, configuration.lineLength.toInt() - leftOffset).lastIndexOf(' ')
+        val isNewLine = wrongNode.treePrev?.isWhiteSpaceWithNewline() ?: wrongNode.treeParent?.treePrev?.isWhiteSpaceWithNewline() ?: false
+        if (isNewLine && indexLastSpace == -1) {
+            return LongLineFixableCases.None
+        }
+        return LongLineFixableCases.Comment(wrongNode, isNewLine, indexLastSpace + stringBeforeCommentContent.length)
     }
 
     private fun checkCondition(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
@@ -245,13 +250,25 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun fixComment(wrongComment: LongLineFixableCases.Comment) {
         val wrongNode = wrongComment.node
-        val indexLastSpace = wrongComment.indexLastSpace
-        val nodeText = "//${wrongNode.text.substring(indexLastSpace, wrongNode.text.length)}"
-        wrongNode.treeParent.run {
-            addChild(LeafPsiElement(EOL_COMMENT, wrongNode.text.substring(0, indexLastSpace)), wrongNode)
-            addChild(PsiWhiteSpaceImpl("\n"), wrongNode)
-            addChild(LeafPsiElement(EOL_COMMENT, nodeText), wrongNode)
-            removeChild(wrongNode)
+        if (wrongComment.hasNewLineBefore) {
+            val indexLastSpace = wrongComment.indexLastSpace
+            val nodeText = "//${wrongNode.text.substring(indexLastSpace, wrongNode.text.length)}"
+            wrongNode.treeParent.apply {
+                addChild(LeafPsiElement(EOL_COMMENT, wrongNode.text.substring(0, indexLastSpace)), wrongNode)
+                addChild(PsiWhiteSpaceImpl("\n"), wrongNode)
+                addChild(LeafPsiElement(EOL_COMMENT, nodeText), wrongNode)
+                removeChild(wrongNode)
+            }
+        } else {
+            wrongNode.treeParent.treeParent?.let {
+                val parent = wrongNode.treeParent
+                if (wrongNode.treePrev.isWhiteSpace()) {
+                    parent.removeChild(wrongNode.treePrev)
+                }
+                parent.removeChild(wrongNode)
+                it.addChild(wrongNode, parent)
+                it.addChild(PsiWhiteSpaceImpl("\n"), parent)
+            }
         }
     }
 
@@ -429,7 +446,16 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     sealed class LongLineFixableCases {
         object None : LongLineFixableCases()
 
-        class Comment(val node: ASTNode, val indexLastSpace: Int) : LongLineFixableCases()
+        /**
+         * @property node node
+         * @property hasNewLineBefore flag to handle type of comment: ordinary comment(long part of which should be moved to the next line)
+         * and inline comments (which should be moved entirely to the previous line)
+         * @property indexLastSpace index of last space to substring comment
+         */
+        class Comment(
+            val node: ASTNode,
+            val hasNewLineBefore: Boolean,
+            val indexLastSpace: Int = 0) : LongLineFixableCases()
 
         class StringTemplate(val node: ASTNode, val delimiterIndex: Int) : LongLineFixableCases()
 

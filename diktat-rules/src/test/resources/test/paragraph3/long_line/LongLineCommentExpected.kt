@@ -7,10 +7,16 @@ fun foo() {
     namesList.forEach { name ->
         if (name == "Nick") {
             namesList.map {
-                it.subSequence(0, 1) // This is
-// another comment inside map
+                // This is another comment inside map
+it.subSequence(0, 1)
                 it.split("this is long regex") // this comment start to the right of max length
             }
         }
     }
+}
+
+fun goo() {
+    val ok = true // short comment
+    // h k comment looong comment
+val someLongFieldName = "some string"
 }
