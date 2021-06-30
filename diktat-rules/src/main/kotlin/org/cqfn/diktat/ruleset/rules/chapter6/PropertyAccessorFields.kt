@@ -14,6 +14,7 @@ import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY_ACCESSOR
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.THIS_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.psi.KtProperty
@@ -34,6 +35,7 @@ class PropertyAccessorFields(configRules: List<RulesConfig>) : DiktatRule(
     // fixme should use shadow-check when it will be done
     private fun checkPropertyAccessor(node: ASTNode) {
         val leftValue = node.treeParent.findChildByType(IDENTIFIER) ?: return
+        val isNotExtensionProperty = leftValue.treePrev?.treePrev?.elementType != TYPE_REFERENCE
         val firstReferenceWithSameName = node
             .findAllDescendantsWithSpecificType(REFERENCE_EXPRESSION)
             .mapNotNull { it.findChildByType(IDENTIFIER) }
@@ -47,7 +49,8 @@ class PropertyAccessorFields(configRules: List<RulesConfig>) : DiktatRule(
             ?.getChildren(TokenSet.create(PROPERTY))
             ?.filter { (it.psi as KtProperty).nameIdentifier?.text == leftValue.text }
             ?.none { firstReferenceWithSameName?.isGoingAfter(it) ?: false } ?: true
-        if (firstReferenceWithSameName != null && isContainLocalVarSameName && firstReferenceWithSameName.treeParent.treeParent.elementType != CALL_EXPRESSION) {
+        val isNotCallExpression = firstReferenceWithSameName?.treeParent?.treeParent?.elementType != CALL_EXPRESSION
+        if (firstReferenceWithSameName != null && isContainLocalVarSameName && isNotCallExpression && isNotExtensionProperty) {
             WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warn(configRules, emitWarn, isFixMode, node.text, node.startOffset, node)
         }
     }

@@ -125,11 +125,27 @@ class PropertyAccessorFieldsWarnTest : LintTestBase(::PropertyAccessorFields) {
             """
                     |class A {
                     |
-                    |   val String.blaBla: String
+                    |   val blaBla: String
                     |       get() = "bla".blaBla("bla")
                     |   
-                    |   fun String.blaBla(string: String): String = this + string
-                    |   fun boo(string: String): String = string + string
+                    |   fun blaBla(string: String): String = this + string
+                    |
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR)
+    fun `shouldn't be triggered when the property is an extension property`() {
+        lintMethod(
+            """
+                    |class A {
+                    |
+                    |   fun String.foo() = 42
+                    |       val String.foo: Int
+                    |       get() = foo
+                    |
                     |}
                 """.trimMargin()
         )
