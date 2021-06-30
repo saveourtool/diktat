@@ -8,3 +8,12 @@ object Observables {
     @SchedulerSupport(SchedulerSupport.NONE)
     inline fun <T1 : Any, T2 : Any, T3 : Any, T4 : Any, R : Any> combineLatest() {}
 }
+
+class Foo() {
+
+    fun Fuu() {
+        logger.log("<-- ${response.code} ${ if (response.message.isEmpty()) "skfnvkdjdfvd" else "dfjvndkjnbvif" + response.message}")
+        logger.log("<-- ${response.code} ${ if (response.message.isEmpty()) "skfnvsdcsdcscskdjdfvd" else "dfjvndsdcsdcsdcskjnbvif" + response.message}")
+    }
+
+}
