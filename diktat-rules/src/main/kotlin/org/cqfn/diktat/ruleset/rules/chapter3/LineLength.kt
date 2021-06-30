@@ -6,7 +6,6 @@ import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.LONG_LINE
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.KotlinParser
-import org.cqfn.diktat.ruleset.utils.KotlinParseException
 import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
 import org.cqfn.diktat.ruleset.utils.calculateLineColByOffset
 import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
@@ -283,20 +282,17 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         val incorrectText = wrongStringTemplate.node.text
         val firstPart = incorrectText.substring(0, wrongStringTemplate.delimiterIndex)
         val secondPart = incorrectText.substring(wrongStringTemplate.delimiterIndex, incorrectText.length)
+        val isSplitInWhiteSpace = wrongStringTemplate.node.psi.findElementAt(wrongStringTemplate.delimiterIndex)!!.node.isWhiteSpace()
         val correctNode =
-            try {
+            if (!isSplitInWhiteSpace) {
                 KotlinParser().createNode("$firstPart\" +\n\"$secondPart")
-            } catch (ex: KotlinParseException) {
-                try {
-                    // case when split space end in string interpolation
-                    // "Hello ${if (true) "Alice" else "Nick"}"
-                    //                                ^
-                    //                                |
-                    //                           split space
-                    KotlinParser().createNode("$firstPart \n$secondPart")
-                } catch (ex: KotlinParseException) {
-                    return
-                }
+            } else {
+                // case when split space end in string interpolation
+                // "Hello ${if (true) "Alice" else "Nick"}"
+                //                                ^
+                //                                |
+                //                           split space
+                KotlinParser().createNode("$firstPart \n$secondPart")
             }
         wrongStringTemplate.node.treeParent.replaceChild(wrongStringTemplate.node, correctNode)
     }
