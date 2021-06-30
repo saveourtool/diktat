@@ -278,7 +278,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         node.replaceChild(whiteSpaceAfterPlus, PsiWhiteSpaceImpl("\n"))
     }
 
-    @Suppress("UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType", "COMMENT_WHITE_SPACE")
     private fun fixStringTemplate(wrongStringTemplate: LongLineFixableCases.StringTemplate) {
         val incorrectText = wrongStringTemplate.node.text
         val firstPart = incorrectText.substring(0, wrongStringTemplate.delimiterIndex)
