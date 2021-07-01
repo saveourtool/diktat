@@ -97,7 +97,9 @@ class LocalVariablesRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     /**
-     * Check declarations of properties, that are used on the same line
+     * Check declarations, for which the properties are used on the same line.
+     * If properties are used for the first time in the same statement, then they can be declared on consecutive lines
+     * with maybe empty lines in between.
      */
     @Suppress("TOO_LONG_FUNCTION")
     private fun handleConsecutiveDeclarations(statement: PsiElement, properties: List<KtProperty>) {
@@ -176,6 +178,8 @@ class LocalVariablesRule(configRules: List<RulesConfig>) : DiktatRule(
 
     /**
      * Returns the [KtBlockExpression] with which a property should be compared.
+     * If the usage is in nested block, compared to declaration, then statement from declaration scope, which contains block
+     * with usage, is returned.
      *
      * @return either the line on which the property is used if it is first used in the same scope, or the block in the same scope as declaration
      */
