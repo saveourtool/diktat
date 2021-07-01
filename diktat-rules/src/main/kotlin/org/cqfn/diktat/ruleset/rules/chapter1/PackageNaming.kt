@@ -91,12 +91,18 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
         realPackageName: List<String>,
         filePath: String) {
         val fileName = filePath.substringAfterLast(File.separator)
-        PACKAGE_NAME_MISSING.warnAndFix(configRules, emitWarn, isFixMode, fileName,
-            initialPackageDirectiveNode.startOffset, initialPackageDirectiveNode) {
-            if (realPackageName.isNotEmpty()) {
-                // creating node for package directive using Kotlin parser
-                val newPackageDirectiveName = realPackageName.joinToString(PACKAGE_SEPARATOR)
-                insertNewPackageName(initialPackageDirectiveNode, newPackageDirectiveName)
+
+        // if the file path contains "buildSrc" - don't add the package name to the file
+        val isBuildSrcPath = "buildSrc" in filePath
+
+        if (!isBuildSrcPath) {
+            PACKAGE_NAME_MISSING.warnAndFix(configRules, emitWarn, isFixMode, fileName,
+                initialPackageDirectiveNode.startOffset, initialPackageDirectiveNode) {
+                if (realPackageName.isNotEmpty()) {
+                    // creating node for package directive using Kotlin parser
+                    val newPackageDirectiveName = realPackageName.joinToString(PACKAGE_SEPARATOR)
+                    insertNewPackageName(initialPackageDirectiveNode, newPackageDirectiveName)
+                }
             }
         }
     }
