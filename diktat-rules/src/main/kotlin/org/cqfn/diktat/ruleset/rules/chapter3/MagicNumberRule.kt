@@ -40,7 +40,7 @@ class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule(
     }
     @Suppress("COLLAPSE_IF_STATEMENTS")
     override fun logic(node: ASTNode) {
-        val filePath = node.getRootNode().getFilePath()
+        val filePath = node.getFilePath()
         val config = configRules.getCommonConfiguration()
         if (node.elementType == INTEGER_CONSTANT || node.elementType == FLOAT_CONSTANT) {
             if (!isLocatedInTest(filePath.splitPathToDirs(), config.testAnchors) || !configuration.isIgnoreTest) {

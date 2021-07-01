@@ -31,7 +31,7 @@ class AvoidUtilityClass(configRules: List<RulesConfig>) : DiktatRule(
     listOf(AVOID_USING_UTILITY_CLASS)) {
     override fun logic(node: ASTNode) {
         val config = configRules.getCommonConfiguration()
-        val filePath = node.getRootNode().getFilePath()
+        val filePath = node.getFilePath()
         if (!node.hasTestAnnotation() && !isLocatedInTest(filePath.splitPathToDirs(), config.testAnchors)) {
             @Suppress("COLLAPSE_IF_STATEMENTS")
             if (node.elementType == OBJECT_DECLARATION || node.elementType == CLASS) {

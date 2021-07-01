@@ -53,7 +53,7 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
         configuration.domainName?.let {
             domainName = it
             if (node.elementType == PACKAGE_DIRECTIVE) {
-                val filePath = node.getRootNode().getFilePath()
+                val filePath = node.getFilePath()
 
                 // getting all identifiers from existing package name into the list like [org, diktat, project]
                 val wordsInPackageName = node.findAllDescendantsWithSpecificType(IDENTIFIER)
