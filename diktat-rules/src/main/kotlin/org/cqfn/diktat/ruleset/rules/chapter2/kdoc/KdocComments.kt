@@ -54,7 +54,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
      */
     override fun logic(node: ASTNode) {
         val config = configRules.getCommonConfiguration()
-        val filePath = node.getRootNode().getFilePath()
+        val filePath = node.getFilePath()
         if (!node.hasTestAnnotation() && !isLocatedInTest(filePath.splitPathToDirs(), config.testAnchors)) {
             when (node.elementType) {
                 FILE -> checkTopLevelDoc(node)
