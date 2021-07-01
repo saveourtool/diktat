@@ -96,6 +96,9 @@ class LocalVariablesRule(configRules: List<RulesConfig>) : DiktatRule(
         checkLineNumbers(property, firstUsageStatementLine, firstUsageLine = firstUsage.node.getLineNumber(), offset = offset)
     }
 
+    /**
+     * Check declarations of properties, that are used on the same line
+     */
     @Suppress("TOO_LONG_FUNCTION")
     private fun handleConsecutiveDeclarations(statement: PsiElement, properties: List<KtProperty>) {
         val numLinesAfterLastProp =
