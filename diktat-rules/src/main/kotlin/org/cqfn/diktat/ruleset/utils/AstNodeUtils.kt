@@ -737,7 +737,10 @@ fun ASTNode.calculateLineColByOffset() = buildPositionInTextLocator(text)
  *
  * @return name of the file [this] node belongs to
  */
-fun ASTNode.getFilePath(): String = getUserData(KtLint.FILE_PATH_USER_DATA_KEY).let {
+fun ASTNode.getFilePath(): String = getRootNode().let {
+    require(it.elementType == FILE) { "Root node type is not FILE" }
+    it
+}.getUserData(KtLint.FILE_PATH_USER_DATA_KEY).let {
     requireNotNull(it) { "File path is not present in user data" }
     it
 }

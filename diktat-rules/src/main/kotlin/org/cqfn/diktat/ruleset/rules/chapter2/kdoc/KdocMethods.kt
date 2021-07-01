@@ -16,7 +16,6 @@ import org.cqfn.diktat.ruleset.utils.getBodyLines
 import org.cqfn.diktat.ruleset.utils.getFilePath
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.getIdentifierName
-import org.cqfn.diktat.ruleset.utils.getRootNode
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.cqfn.diktat.ruleset.utils.hasKnownKdocTag
 import org.cqfn.diktat.ruleset.utils.hasTestAnnotation
@@ -76,7 +75,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
     override fun logic(node: ASTNode) {
         if (node.elementType == FUN && node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside() && !node.isOverridden()) {
             val config = configRules.getCommonConfiguration()
-            val filePath = node.getRootNode().getFilePath()
+            val filePath = node.getFilePath()
             val isTestMethod = node.hasTestAnnotation() || isLocatedInTest(filePath.splitPathToDirs(), config.testAnchors)
             if (!isTestMethod && !node.isStandardMethod() && !node.isSingleLineGetterOrSetter()) {
                 checkSignatureDescription(node)
