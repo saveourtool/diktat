@@ -142,6 +142,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      *         BinaryExpression - if there is two concatenated strings and new line should be inserted after `+`
      *         None - if the string can't be split
      */
+    @Suppress("UnsafeCallOnNullableType")
     private fun checkStringTemplate(node: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
         var multiLineOffset = 0
         val (nodeText, leftOffset) = if (node.text.lines().size > 1 ) {
@@ -150,7 +151,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                 .lines()
                 .takeWhile { it.length < configuration.lineLength }
                 .forEach { multiLineOffset += it.length }
-            node.text.lines().find { it.length > 120 }!! to positionByOffset(node.psi.findElementAt(multiLineOffset + 1)!!.node.startOffset).second
+            node.text.lines().find { it.length > configuration.lineLength }!! to positionByOffset(node.psi.findElementAt(multiLineOffset + 1)!!.node.startOffset).second
         } else {
             node.text to positionByOffset(node.startOffset).second
         }
@@ -293,6 +294,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         val incorrectText = wrongStringTemplate.node.text
         val firstPart = incorrectText.substring(0, wrongStringTemplate.delimiterIndex)
         val secondPart = incorrectText.substring(wrongStringTemplate.delimiterIndex, incorrectText.length)
+        // wrongStringTemplate.multiLineOffset equals zero if string in one line
         val isSplitInWhiteSpace = wrongStringTemplate.multiLineOffset == 0 && wrongStringTemplate.node.psi.findElementAt(wrongStringTemplate.delimiterIndex)!!.node.isWhiteSpace()
         val correctNode =
                 if (!isSplitInWhiteSpace) {
