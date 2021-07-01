@@ -295,6 +295,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         val firstPart = incorrectText.substring(0, wrongStringTemplate.delimiterIndex)
         val secondPart = incorrectText.substring(wrongStringTemplate.delimiterIndex, incorrectText.length)
         // wrongStringTemplate.multiLineOffset equals zero if string in one line
+        // if wrongStringTemplate.multiLineOffset isn't equal to 0, it means that string is multiline, which means that split should be without quote
         val isSplitInWhiteSpace = wrongStringTemplate.multiLineOffset == 0 && wrongStringTemplate.node.psi.findElementAt(wrongStringTemplate.delimiterIndex)!!.node.isWhiteSpace()
         val correctNode =
                 if (!isSplitInWhiteSpace) {
@@ -482,6 +483,11 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             val hasNewLineBefore: Boolean,
             val indexLastSpace: Int = 0) : LongLineFixableCases()
 
+        /**
+         * @property node node
+         * @property delimiterIndex index to split
+         * @property multiLineOffset only if string is multiline
+         */
         class StringTemplate(val node: ASTNode, val delimiterIndex: Int, val multiLineOffset: Int) : LongLineFixableCases()
 
         class BinaryExpression(val node: ASTNode) : LongLineFixableCases()
