@@ -84,7 +84,7 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
                 class TestPackageName {  }
 
             """.trimIndent(),
-            fileName = "~/diktat/diktat-rules/src/nativeMain/kotlin/org/cqfn/diktat/buildSrc/BlaBla.kt",
+            fileName = "~/diktat/buildSrc/src/main/kotlin/Version.kt",
             rulesConfigList = rulesConfigList
         )
     }
