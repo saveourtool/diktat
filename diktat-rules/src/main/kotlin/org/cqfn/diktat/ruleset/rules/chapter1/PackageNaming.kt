@@ -66,12 +66,9 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
                 // calculating package name based on the directory where the file is placed
                 val realPackageName = calculateRealPackageName(filePath, configuration)
 
-                // if the file path contains "buildSrc" - don't add the package name to the file
-                val isNotBuildSrcPath = "buildSrc" in filePath
-
                 // if node isLeaf - this means that there is no package name declared
                 if (node.isLeaf() && !filePath.isKotlinScript()) {
-                    warnAndFixMissingPackageName(node, realPackageName, filePath, isNotBuildSrcPath)
+                    warnAndFixMissingPackageName(node, realPackageName, filePath)
                     return
                 }
 
@@ -92,12 +89,15 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
     private fun warnAndFixMissingPackageName(
         initialPackageDirectiveNode: ASTNode,
         realPackageName: List<String>,
-        filePath: String,
-        isNotBuildSrcPath: Boolean) {
+        filePath: String) {
         val fileName = filePath.substringAfterLast(File.separator)
         PACKAGE_NAME_MISSING.warnAndFix(configRules, emitWarn, isFixMode, fileName,
             initialPackageDirectiveNode.startOffset, initialPackageDirectiveNode) {
-            if (realPackageName.isNotEmpty() && isNotBuildSrcPath) {
+
+            // if the file path contains "buildSrc" - don't add the package name to the file
+            val isBuildSrcPath  = "buildSrc" in filePath
+
+            if (realPackageName.isNotEmpty() && !isBuildSrcPath ) {
                 // creating node for package directive using Kotlin parser
                 val newPackageDirectiveName = realPackageName.joinToString(PACKAGE_SEPARATOR)
                 insertNewPackageName(initialPackageDirectiveNode, newPackageDirectiveName)
