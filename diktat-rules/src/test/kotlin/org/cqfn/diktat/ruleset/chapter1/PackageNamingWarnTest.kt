@@ -72,6 +72,24 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
     }
 
     @Test
+    @Tag(WarningNames.PACKAGE_NAME_MISSING)
+    fun `don't add the package name to the file in buildSrc path`() {
+        lintMethod(
+            """
+                import org.cqfn.diktat.a.b.c
+
+                /**
+                 * testComment
+                 */
+                class TestPackageName {  }
+
+            """.trimIndent(),
+            fileName = "~/diktat/diktat-rules/src/nativeMain/kotlin/org/cqfn/diktat/buildSrc/BlaBla.kt",
+            rulesConfigList = rulesConfigList
+        )
+    }
+
+    @Test
     @Tag(WarningNames.PACKAGE_NAME_INCORRECT_CASE)
     fun `package name should be in a lower case (check)`() {
         lintMethod(
