@@ -673,4 +673,17 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
                 """.trimMargin()
         )
     }
+
+    @Test
+    @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)
+    fun `shouldn't fail on double invocations`() {
+        lintMethod(
+            """
+                |fun bar() {
+                |    val x = foo()()
+                |    val x = foo()()()
+                |}
+            """.trimMargin()
+        )
+    }
 }
