@@ -142,7 +142,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      *         BinaryExpression - if there is two concatenated strings and new line should be inserted after `+`
      *         None - if the string can't be split
      */
-    @Suppress("UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
     private fun checkStringTemplate(node: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
         var multiLineOffset = 0
         val leftOffset = if (node.text.lines().size > 1) {
