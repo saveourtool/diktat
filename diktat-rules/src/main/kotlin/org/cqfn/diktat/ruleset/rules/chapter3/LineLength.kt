@@ -142,9 +142,25 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      *         BinaryExpression - if there is two concatenated strings and new line should be inserted after `+`
      *         None - if the string can't be split
      */
+    @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
     private fun checkStringTemplate(node: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
-        val leftOffset = positionByOffset(node.startOffset).second
-        val delimiterIndex = node.text.substring(0, configuration.lineLength.toInt() - leftOffset).lastIndexOf(' ')
+        var multiLineOffset = 0
+        val leftOffset = if (node.text.lines().size > 1) {
+            node
+                .text
+                .lines()
+                .takeWhile { it.length < configuration.lineLength }
+                .forEach { multiLineOffset += it.length }
+            node
+                .text
+                .lines()
+                .first { it.length > configuration.lineLength }
+                .takeWhile { it.isWhitespace() }
+                .count()
+        } else {
+            positionByOffset(node.startOffset).second
+        }
+        val delimiterIndex = node.text.substring(0, multiLineOffset + configuration.lineLength.toInt() - leftOffset).lastIndexOf(' ')
         if (delimiterIndex == -1) {
             // we can't split this string, however may be we can move it entirely:
             // case when new line should be inserted after `+`. Example: "first" + "second"
@@ -154,13 +170,20 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             // can't fix this case
             return LongLineFixableCases.None
         }
+        // check, that space to split is a part of text - not code
+        // If the space split is part of the code, then there is a chance of breaking the code when fixing, that why we should ignore it
+        val isSpaceIsWhiteSpace = node.psi.findElementAt(delimiterIndex)!!.node.isWhiteSpace()
+        if (isSpaceIsWhiteSpace) {
+            return LongLineFixableCases.None
+        }
         // minus 2 here as we are inserting ` +` and we don't want it to exceed line length
-        val correcterDelimiter = if (leftOffset + delimiterIndex > configuration.lineLength.toInt() - 2) {
+        val shouldAddTwoSpaces = multiLineOffset == 0 && leftOffset + delimiterIndex > configuration.lineLength.toInt() - 2
+        val correcterDelimiter = if (shouldAddTwoSpaces) {
             node.text.substring(0, delimiterIndex - 2).lastIndexOf(' ')
         } else {
             delimiterIndex
         }
-        return LongLineFixableCases.StringTemplate(node, correcterDelimiter)
+        return LongLineFixableCases.StringTemplate(node, correcterDelimiter, multiLineOffset == 0)
     }
 
     private fun checkFun(wrongNode: ASTNode) =
@@ -278,11 +301,19 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         node.replaceChild(whiteSpaceAfterPlus, PsiWhiteSpaceImpl("\n"))
     }
 
+    @Suppress("UnsafeCallOnNullableType", "COMMENT_WHITE_SPACE")
     private fun fixStringTemplate(wrongStringTemplate: LongLineFixableCases.StringTemplate) {
         val incorrectText = wrongStringTemplate.node.text
         val firstPart = incorrectText.substring(0, wrongStringTemplate.delimiterIndex)
         val secondPart = incorrectText.substring(wrongStringTemplate.delimiterIndex, incorrectText.length)
-        wrongStringTemplate.node.treeParent.replaceChild(wrongStringTemplate.node, KotlinParser().createNode("$firstPart\" +\n\"$secondPart"))
+        val textBetwenParts =
+                if (wrongStringTemplate.isOneLineString) {
+                    "\" +\n\""
+                } else {
+                    "\n"
+                }
+        val correctNode = KotlinParser().createNode("$firstPart$textBetwenParts$secondPart")
+        wrongStringTemplate.node.treeParent.replaceChild(wrongStringTemplate.node, correctNode)
     }
 
     /**
@@ -457,7 +488,15 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             val hasNewLineBefore: Boolean,
             val indexLastSpace: Int = 0) : LongLineFixableCases()
 
-        class StringTemplate(val node: ASTNode, val delimiterIndex: Int) : LongLineFixableCases()
+        /**
+         * @property node node
+         * @property delimiterIndex index to split
+         * @property isOneLineString flag is string is one line
+         */
+        class StringTemplate(
+            val node: ASTNode,
+            val delimiterIndex: Int,
+            val isOneLineString: Boolean) : LongLineFixableCases()
 
         class BinaryExpression(val node: ASTNode) : LongLineFixableCases()
 
