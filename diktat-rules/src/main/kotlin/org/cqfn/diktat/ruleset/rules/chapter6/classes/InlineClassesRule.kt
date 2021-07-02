@@ -31,7 +31,11 @@ class InlineClassesRule(configRules: List<RulesConfig>) : DiktatRule(
     listOf(INLINE_CLASS_CAN_BE_USED)) {
     override fun logic(node: ASTNode) {
         val configuration = configRules.getCommonConfiguration()
-        if (node.elementType == CLASS && configuration.kotlinVersion >= ktVersion) {
+        if (node.elementType == CLASS &&
+            !(node.psi as KtClass).isInterface() &&
+            configuration.kotlinVersion >= minKtVersion &&
+            configuration.kotlinVersion < maxKtVersion
+        ) {
             handleClasses(node.psi as KtClass)
         }
     }
@@ -65,7 +69,8 @@ class InlineClassesRule(configRules: List<RulesConfig>) : DiktatRule(
                 ?: false
 
     companion object {
-        val ktVersion = KotlinVersion(1, 3)
+        val minKtVersion = KotlinVersion(1, 3)
+        val maxKtVersion = KotlinVersion(1, 5, 0)
         val goodModifiers = listOf(PUBLIC_KEYWORD, PRIVATE_KEYWORD, FINAL_KEYWORD, PROTECTED_KEYWORD, INTERNAL_KEYWORD)
     }
 }
