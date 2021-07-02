@@ -196,7 +196,9 @@ class LocalVariablesRule(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun KtCallExpression?.isWhitelistedMethod() =
             this?.run {
-                (referenceExpression() as KtNameReferenceExpression).getReferencedName() in functionInitializers &&
+                // `referenceExpression()` can return something different than just a name, e.g. when function returns a function:
+                // `foo()()` `referenceExpression()` will be a `KtCallExpression` as well
+                (referenceExpression() as? KtNameReferenceExpression)?.getReferencedName() in functionInitializers &&
                         valueArguments.isEmpty()
             } ?: false
 
