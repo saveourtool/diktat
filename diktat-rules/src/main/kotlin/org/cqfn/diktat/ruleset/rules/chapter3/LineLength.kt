@@ -173,7 +173,13 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         // check, that space to split is a part of text - not code
         if (node.psi.findElementAt(delimiterIndex)!!.node.isWhiteSpace())
             return LongLineFixableCases.None
-        return LongLineFixableCases.StringTemplate(node, delimiterIndex, multiLineOffset == 0)
+        // minus 2 here as we are inserting ` +` and we don't want it to exceed line length
+        val correcterDelimiter = if (multiLineOffset ==0 && leftOffset + delimiterIndex > configuration.lineLength.toInt() - 2) {
+            node.text.substring(0, delimiterIndex - 2).lastIndexOf(' ')
+        } else {
+            delimiterIndex
+        }
+        return LongLineFixableCases.StringTemplate(node, correcterDelimiter, multiLineOffset == 0)
     }
 
     private fun checkFun(wrongNode: ASTNode) =
