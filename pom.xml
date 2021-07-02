@@ -337,7 +337,6 @@
                             <goal>fix</goal>
                         </goals>
                         <configuration>
-                            <debug>true</debug>
                             <inputs>
                                 <input>${project.basedir}/src/main/kotlin</input>
                                 <input>${project.basedir}/src/test/kotlin</input>
