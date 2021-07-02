@@ -98,14 +98,11 @@ const val DIKTAT_CONF_PROPERTY = "diktat.config.path"
  * @param diktatConfigFile - configuration file where all configurations for inspections and rules are stored
  */
 class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYSIS_CONF) : RuleSetProvider {
-    private val possibleConfigs = sequence {
+    private val possibleConfigs: Sequence<String?> = sequence {
         yield(resolveDefaultConfig())
         yield(resolveConfigFileFromJarLocation())
         yield(resolveConfigFileFromSystemProperty())
     }
-        .map {
-            it?.takeIf { File(it).exists() }
-        }
 
     @Suppress(
         "LongMethod",
@@ -115,8 +112,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
         log.debug("Will run $DIKTAT_RULE_SET_ID with $diktatConfigFile" +
                 " (it can be placed to the run directory or the default file from resources will be used)")
         val configPath = possibleConfigs
-            .filterNotNull()
-            .firstOrNull()
+            .firstOrNull { it != null && File(it).exists() }
         diktatConfigFile = configPath
             ?: run {
                 val possibleConfigsList = possibleConfigs.toList()
