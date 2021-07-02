@@ -265,6 +265,15 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
         fixAndCompare("KdocFormattingMultilineTagsExpected.kt", "KdocFormattingMultilineTagsTest.kt")
     }
 
+    @Test
+    @Tag("DiktatRuleSetProvider")
+    fun `regression - FP of local variables rule`() {
+        fixAndCompare("LocalVariableWithOffsetExpected.kt", "LocalVariableWithOffsetTest.kt")
+        org.assertj.core.api.Assertions.assertThat(unfixedLintErrors).noneMatch {
+            it.ruleId == "diktat-ruleset:local-variables"
+        }
+    }
+
     companion object {
         private const val DEFAULT_CONFIG_PATH = "../diktat-analysis.yml"
         private val unfixedLintErrors: MutableList<LintError> = mutableListOf()

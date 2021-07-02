@@ -40,7 +40,6 @@ import com.pinterest.ktlint.core.ast.isLeaf
 import com.pinterest.ktlint.core.ast.isPartOfComment
 import com.pinterest.ktlint.core.ast.isRoot
 import com.pinterest.ktlint.core.ast.isWhiteSpace
-import com.pinterest.ktlint.core.ast.lineNumber
 import com.pinterest.ktlint.core.ast.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.TokenType
@@ -52,7 +51,6 @@ import org.jetbrains.kotlin.psi.KtAnnotationEntry
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.psiUtil.children
-import org.jetbrains.kotlin.psi.psiUtil.endOffset
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.siblings
 import org.slf4j.Logger
@@ -763,18 +761,12 @@ fun ASTNode.hasEqBinaryExpression(): Boolean =
             ?: false
 
 /**
- * Get line number, where this node's content starts. To avoid `ArrayIndexOutOfBoundsException`s we check whether node's maximum offset is less than
- * Document's maximum offset, and calculate line number manually if needed.
+ * Get line number, where this node's content starts.
  *
- * @return line number or null if it cannot be calculated
+ * @return line number
  */
 fun ASTNode.getLineNumber(): Int =
-        psi.containingFile
-            .viewProvider
-            .document
-            ?.takeIf { it.getLineEndOffset(it.lineCount - 1) >= psi.endOffset }
-            ?.let { lineNumber() }
-            ?: calculateLineNumber()
+        calculateLineNumber()
 
 /**
  * This function calculates line number instead of using cached values.
