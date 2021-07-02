@@ -171,7 +171,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             return LongLineFixableCases.None
         }
         // check, that space to split is a part of text - not code
-        if (node.psi.findElementAt(delimiterIndex)!!.node.isWhiteSpace()) {
+        val isSpaceIsWhiteSpace = node.psi.findElementAt(delimiterIndex)!!.node.isWhiteSpace()
+        if (isSpaceIsWhiteSpace) {
             return LongLineFixableCases.None
         }
         // minus 2 here as we are inserting ` +` and we don't want it to exceed line length
