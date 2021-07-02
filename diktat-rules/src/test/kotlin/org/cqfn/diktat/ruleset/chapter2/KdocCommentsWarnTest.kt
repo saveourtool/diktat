@@ -270,6 +270,19 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
 
     @Test
     @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY)
+    fun `shouldn't trigger on override parameter`() {
+        lintMethod(
+            """
+                    |@Suppress("MISSING_KDOC_TOP_LEVEL")
+                    |public class Example (
+                    |   override val serializersModule: SerializersModule = EmptySerializersModule
+                    |)
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY)
     fun `shouldn't trigger because not primary constructor`() {
         lintMethod(
             """
