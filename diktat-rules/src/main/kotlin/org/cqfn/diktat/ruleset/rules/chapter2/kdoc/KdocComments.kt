@@ -54,7 +54,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
      */
     override fun logic(node: ASTNode) {
         val config = configRules.getCommonConfiguration()
-        val filePath = node.getRootNode().getFilePath()
+        val filePath = node.getFilePath()
         if (!node.hasTestAnnotation() && !isLocatedInTest(filePath.splitPathToDirs(), config.testAnchors)) {
             when (node.elementType) {
                 FILE -> checkTopLevelDoc(node)
@@ -161,7 +161,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
 
     @Suppress("UnsafeCallOnNullableType")
     private fun createKdocBasicKdoc(node: ASTNode) {
-        if (node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside()) {
+        if (node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside() && !node.isOverridden()) {
             KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixMode,
                 "add <${node.findChildByType(IDENTIFIER)!!.text}> to KDoc", node.startOffset, node) {
                 val newKdoc = KotlinParser().createNode("/**\n * @property ${node.findChildByType(IDENTIFIER)!!.text}\n */")

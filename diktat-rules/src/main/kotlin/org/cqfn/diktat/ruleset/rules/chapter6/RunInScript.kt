@@ -34,8 +34,8 @@ class RunInScript(private val configRules: List<RulesConfig>) : Rule("run-script
         isFixMode = autoCorrect
         emitWarn = emit
 
-        if (node.elementType == SCRIPT_INITIALIZER && node.getRootNode().getFilePath().isKotlinScript()) {
-            if (node.getRootNode().getFilePath().isGradleScript()) {
+        if (node.elementType == SCRIPT_INITIALIZER && node.getFilePath().isKotlinScript()) {
+            if (node.getFilePath().isGradleScript()) {
                 checkGradleNode(node)
             } else {
                 checkScript(node)
