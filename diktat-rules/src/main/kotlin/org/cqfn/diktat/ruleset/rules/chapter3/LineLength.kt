@@ -145,7 +145,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("UnsafeCallOnNullableType")
     private fun checkStringTemplate(node: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
         var multiLineOffset = 0
-        val leftOffset = if (node.text.lines().size > 1 ) {
+        val leftOffset = if (node.text.lines().size > 1) {
             node
                 .text
                 .lines()
@@ -171,10 +171,12 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             return LongLineFixableCases.None
         }
         // check, that space to split is a part of text - not code
-        if (node.psi.findElementAt(delimiterIndex)!!.node.isWhiteSpace())
+        if (node.psi.findElementAt(delimiterIndex)!!.node.isWhiteSpace()) {
             return LongLineFixableCases.None
+        }
         // minus 2 here as we are inserting ` +` and we don't want it to exceed line length
-        val correcterDelimiter = if (multiLineOffset ==0 && leftOffset + delimiterIndex > configuration.lineLength.toInt() - 2) {
+        val shouldAddTwoSpaces = multiLineOffset == 0 && leftOffset + delimiterIndex > configuration.lineLength.toInt() - 2
+        val correcterDelimiter = if (shouldAddTwoSpaces) {
             node.text.substring(0, delimiterIndex - 2).lastIndexOf(' ')
         } else {
             delimiterIndex
@@ -303,11 +305,11 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         val firstPart = incorrectText.substring(0, wrongStringTemplate.delimiterIndex)
         val secondPart = incorrectText.substring(wrongStringTemplate.delimiterIndex, incorrectText.length)
         val textBetwenParts =
-            if (wrongStringTemplate.isOneLineString) {
-                "\" +\n\""
-            } else {
-                "\n"
-            }
+                if (wrongStringTemplate.isOneLineString) {
+                    "\" +\n\""
+                } else {
+                    "\n"
+                }
         val correctNode = KotlinParser().createNode("$firstPart$textBetwenParts$secondPart")
         wrongStringTemplate.node.treeParent.replaceChild(wrongStringTemplate.node, correctNode)
     }
@@ -487,9 +489,12 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         /**
          * @property node node
          * @property delimiterIndex index to split
-         * @property isMultiString flag is string is multiline
+         * @property isOneLineString flag is string is one line
          */
-        class StringTemplate(val node: ASTNode, val delimiterIndex: Int, val isOneLineString: Boolean) : LongLineFixableCases()
+        class StringTemplate(
+            val node: ASTNode,
+            val delimiterIndex: Int,
+            val isOneLineString: Boolean) : LongLineFixableCases()
 
         class BinaryExpression(val node: ASTNode) : LongLineFixableCases()
 
