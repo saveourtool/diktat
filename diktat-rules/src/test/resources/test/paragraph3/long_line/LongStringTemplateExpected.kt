@@ -15,15 +15,22 @@ val someCode = 15
 class Foo() {
 
     fun Fuu() {
-        logger.log("<-- ${response.code} ${ if (response.message.isEmpty()) "skfnvkdjdfvd" else "dfjvndkjnbvif" + 
- response.message}")
-        logger.log("<-- ${response.code} ${ if (response.message.isEmpty()) "skfnvsdcsdcscskdjdfvd" else 
- "dfjvndsdcsdcsdcskjnbvif" + response.message}")
+        logger.log("<-- ${response.code} ${ if (response.message.isEmpty()) "skfnvkdjdfvd" else "dfjvndkjnbvif" + response.message}")
+        logger.log("<-- ${response.code} ${ if (response.message.isEmpty()) "skfnvsdcsdcscskdjdfvd" else "dfjvndsdcsdcsdcskjnbvif" + response.message}")
     }
 
     val q = """
-        <--${respodcnse.ccode}${if (response.mesdscsage.isEmpty()) "skfnvkdjdsdcfvd" else "dfjvndksdcjnbvif" + 
-response.mecsssdcage}
+        <--${respodcnsee.ccode}${if (response.mesdscsage.isEmpty()) "skfnvkdjeeeeeee" else "dfjvndksdcjnbvif" + response.mecsssdcage}
     """.trimIndent()
 
+    val w = """
+        first line
+    veryy looooooooooooooooong second line didfuhyg djfghdf gjh erughdjf gbdpfughb ergen r fgdngjkdg e g s g d g
+ d bd jk;g,e,r gd bnsfg e
+    """.trimIndent()
+
+    val e = """
+        another line
+        <--${respodcnse.ccode}${if (response.mesdscsage.isEmpty()) "skfnvkdjdsdcfvd" else "dfjvndksdcjnbvif" + response.mecsssdcage}
+    """.trimIndent()
 }

@@ -17,8 +17,16 @@ class Foo() {
     }
 
     val q = """
-        <--${respodcnse.ccode}${if (response.mesdscsage.isEmpty()) "skfnvkdjdsdcfvd" else "dfjvndksdcjnbvif" + 
-response.mecsssdcage}
+        <--${respodcnsee.ccode}${if (response.mesdscsage.isEmpty()) "skfnvkdjeeeeeee" else "dfjvndksdcjnbvif" + response.mecsssdcage}
     """.trimIndent()
 
+    val w = """
+        first line
+    veryy looooooooooooooooong second line didfuhyg djfghdf gjh erughdjf gbdpfughb ergen r fgdngjkdg e g s g d g d bd jk;g,e,r gd bnsfg e
+    """.trimIndent()
+
+    val e = """
+        another line
+        <--${respodcnse.ccode}${if (response.mesdscsage.isEmpty()) "skfnvkdjdsdcfvd" else "dfjvndksdcjnbvif" + response.mecsssdcage}
+    """.trimIndent()
 }
