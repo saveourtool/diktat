@@ -210,6 +210,7 @@ class InlineClassesWarnTest : LintTestBase(::InlineClassesRule) {
 
     @Test
     @Tag(WarningNames.INLINE_CLASS_CAN_BE_USED)
+    @Suppress("TOO_LONG_FUNCTION")
     fun `check kotlin version`() {
         lintMethod(
             """

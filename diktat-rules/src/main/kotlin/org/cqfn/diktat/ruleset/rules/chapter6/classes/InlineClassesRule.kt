@@ -32,9 +32,9 @@ class InlineClassesRule(configRules: List<RulesConfig>) : DiktatRule(
     override fun logic(node: ASTNode) {
         val configuration = configRules.getCommonConfiguration()
         if (node.elementType == CLASS &&
-            !(node.psi as KtClass).isInterface() &&
-            configuration.kotlinVersion >= minKtVersion &&
-            configuration.kotlinVersion < maxKtVersion
+                !(node.psi as KtClass).isInterface() &&
+                configuration.kotlinVersion >= minKtVersion &&
+                configuration.kotlinVersion < maxKtVersion
         ) {
             handleClasses(node.psi as KtClass)
         }
