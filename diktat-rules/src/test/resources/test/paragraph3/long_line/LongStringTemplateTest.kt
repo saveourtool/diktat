@@ -29,4 +29,13 @@ class Foo() {
         another line
         <--${respodcnse.ccode}${if (response.mesdscsage.isEmpty()) "skfnvkdjdsdcfvd" else "dfjvndksdcjnbvif" + response.mecsssdcage}
     """.trimIndent()
+
+    fun foo() {
+        val q = """
+        re
+        ${
+            if (( x >  "436587365486374568343658736548637456834365873654863745683436587365486374568343658736548637456834365873654863745683") || y<238479283749238 && !isFoo()){}
+        }
+    """.trimIndent()
+    }
 }

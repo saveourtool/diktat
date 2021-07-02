@@ -154,7 +154,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             node
                 .text
                 .lines()
-                .find { it.length > configuration.lineLength }!!
+                .first { it.length > configuration.lineLength }
                 .takeWhile { it.isWhitespace() }
                 .count()
         } else {
@@ -171,6 +171,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             return LongLineFixableCases.None
         }
         // check, that space to split is a part of text - not code
+        // If the space split is part of the code, then there is a chance of breaking the code when fixing, that why we should ignore it
         val isSpaceIsWhiteSpace = node.psi.findElementAt(delimiterIndex)!!.node.isWhiteSpace()
         if (isSpaceIsWhiteSpace) {
             return LongLineFixableCases.None
