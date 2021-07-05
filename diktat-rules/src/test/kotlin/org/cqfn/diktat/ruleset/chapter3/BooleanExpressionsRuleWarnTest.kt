@@ -211,6 +211,19 @@ class BooleanExpressionsRuleWarnTest : LintTestBase(::BooleanExpressionsRule) {
     }
 
     @Test
+    fun `test makeCorrectExpressionString method - comment should be removed`() {
+        checkExpressionFormatter(
+            """
+                foo && bar &&
+                // FixMe: isLetterOrDigit is not supported in Kotlin 1.4, but 1.5 is not compiling right now
+                setOf('_', '-', '.', '"', '\'').baz() && ch.isLetterOrDigit()
+            """.trimIndent(),
+            "(C & D &  B & A)",
+            4
+        )
+    }
+
+    @Test
     @Suppress("TOO_LONG_FUNCTION", "LongMethod")
     fun `regression - should not log ANTLR errors when parsing is not required`() {
         val stream = ByteArrayOutputStream()
