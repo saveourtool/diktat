@@ -474,4 +474,37 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
             LintError(3, 4, ruleId, "${KDOC_EXTRA_PROPERTY.warnText()} @property kek", false)
         )
     }
+
+    @Test
+    @Tag(WarningNames.KDOC_EXTRA_PROPERTY)
+    fun `property described only in class KDoc`() {
+        lintMethod(
+            """
+                |/**
+                | * @property foo lorem ipsum
+                | */
+                |class Example {
+                |    val foo: Any
+                |}
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.KDOC_EXTRA_PROPERTY)
+    fun `property described both in class KDoc and own KDoc`() {
+        lintMethod(
+            """
+                |/**
+                | * @property foo lorem ipsum
+                | */
+                |class Example {
+                |    /**
+                |     * dolor sit amet
+                |     */
+                |    val foo: Any
+                |}
+            """.trimMargin()
+        )
+    }
 }
