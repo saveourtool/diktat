@@ -57,4 +57,21 @@ class SingleInitRuleWarnTest : LintTestBase(::SingleInitRule) {
             LintError(3, 5, ruleId, "${Warnings.MULTIPLE_INIT_BLOCKS.warnText()} `init` block has assignments that can be moved to declarations", true)
         )
     }
+
+    @Test
+    @Tag(WarningNames.MULTIPLE_INIT_BLOCKS)
+    fun `shouldn't warn if property are assigned on property in init block`() {
+        lintMethod(
+            """
+                |class A {
+                |    var a: String
+                |    
+                |    init {
+                |        val b: String = "a"
+                |        a = b
+                |    }
+                |}
+            """.trimMargin()
+        )
+    }
 }

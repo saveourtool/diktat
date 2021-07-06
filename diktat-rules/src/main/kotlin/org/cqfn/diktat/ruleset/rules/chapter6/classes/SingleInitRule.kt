@@ -88,6 +88,14 @@ class SingleInitRule(configRules: List<RulesConfig>) : DiktatRule(
                     .statements
                     .mapNotNull { it.asAssignment() }
                     .filter { it.left is KtNameReferenceExpression }
+                    .filter { state ->
+                        val assignedRef = state.right
+                        if (assignedRef is KtNameReferenceExpression) {
+                            properties.find { (it.psi as KtProperty).name == assignedRef.getReferencedName() } != null
+                        } else {
+                            true
+                        }
+                    }
                     .groupBy { assignment ->
                         val assignedRef = assignment.left as KtNameReferenceExpression
                         properties.find { (it.psi as KtProperty).name == assignedRef.getReferencedName() }
