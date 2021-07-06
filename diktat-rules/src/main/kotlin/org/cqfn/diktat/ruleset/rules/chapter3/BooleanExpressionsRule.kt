@@ -133,20 +133,20 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
      * Split the complex expression into elementary parts
      */
     private fun ASTNode.collectElementaryExpressions() = this
-        .findAllNodesWithCondition({ astNode ->
+        .findAllNodesWithCondition { astNode ->
             astNode.elementType == BINARY_EXPRESSION &&
                     // filter out boolean conditions in nested lambdas, e.g. `if (foo.filter { a && b })`
                     (astNode == this || astNode.parents().takeWhile { it != this }
                         .all { it.elementType in setOf(BINARY_EXPRESSION, PARENTHESIZED, PREFIX_EXPRESSION) })
-        })
+        }
         .partition {
             val operationReferenceText = (it.psi as KtBinaryExpression).operationReference.text
             operationReferenceText == "&&" || operationReferenceText == "||"
         }
 
-    private fun ASTNode.textWithoutComments() = findAllNodesWithCondition(withSelf = false, condition = {
+    private fun ASTNode.textWithoutComments() = findAllNodesWithCondition(withSelf = false) {
         it.isLeaf()
-    })
+    }
         .filterNot { it.isPartOfComment() }
         .joinToString(separator = "") { it.text }
         .replace("\n", " ")
@@ -226,7 +226,7 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
             getCommonOperand(expression, '|', '&')
         } else {
             // this is done for excluding A || B && A || C without parenthesis.
-            val parenthesizedExpressions = node.findAllNodesWithCondition({ it.elementType == PARENTHESIZED })
+            val parenthesizedExpressions = node.findAllNodesWithCondition { it.elementType == PARENTHESIZED }
             parenthesizedExpressions.forEach {
                 it.findLeafWithSpecificType(OPERATION_REFERENCE) ?: run {
                     return null

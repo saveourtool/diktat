@@ -33,7 +33,7 @@ class LambdaLengthRule(configRules: List<RulesConfig>) : DiktatRule(
         val copyNode = node.clone() as ASTNode
         val sizeLambda = countCodeLines(copyNode)
         if (sizeLambda > configuration.maxLambdaLength) {
-            copyNode.findAllNodesWithCondition({ it.elementType == ElementType.LAMBDA_EXPRESSION }).forEachIndexed { index, astNode ->
+            copyNode.findAllNodesWithCondition { it.elementType == ElementType.LAMBDA_EXPRESSION }.forEachIndexed { index, astNode ->
                 if (index > 0) {
                     astNode.treeParent.removeChild(astNode)
                 }
