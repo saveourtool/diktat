@@ -44,7 +44,7 @@ class UselessSupertype(configRules: List<RulesConfig>) : DiktatRule(
     private fun checkClass(node: ASTNode) {
         val superNodes = node
             .findChildByType(SUPER_TYPE_LIST)
-            ?.findAllNodesWithCondition({ it.elementType in superType })
+            ?.findAllNodesWithCondition { it.elementType in superType }
             ?.takeIf { it.isNotEmpty() } ?: return
         val qualifiedSuperCalls = node
             .findAllDescendantsWithSpecificType(DOT_QUALIFIED_EXPRESSION)
@@ -118,10 +118,10 @@ class UselessSupertype(configRules: List<RulesConfig>) : DiktatRule(
                 .first()
                 .text
         }
-        val superNodes = fileNode.findAllNodesWithCondition({ superClass ->
+        val superNodes = fileNode.findAllNodesWithCondition { superClass ->
             superClass.elementType == CLASS &&
                     superClass.getIdentifierName()!!.text in superNodesIdentifier
-        }).mapNotNull { it.findChildByType(CLASS_BODY) }
+        }.mapNotNull { it.findChildByType(CLASS_BODY) }
         if (superNodes.size != superTypeList.size) {
             return null
         }
