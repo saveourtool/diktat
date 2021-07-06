@@ -422,17 +422,16 @@ fun ASTNode.numNewLines() = text.count { it == '\n' }
  * This method performs tree traversal and returns all nodes with specific element type
  */
 fun ASTNode.findAllDescendantsWithSpecificType(elementType: IElementType, withSelf: Boolean = true) =
-        findAllNodesWithCondition({ it.elementType == elementType }, withSelf)
+        findAllNodesWithCondition(withSelf) { it.elementType == elementType }
 
 /**
  * This method performs tree traversal and returns all nodes which satisfy the condition
  */
-@Suppress("LAMBDA_IS_NOT_LAST_PARAMETER")
-fun ASTNode.findAllNodesWithCondition(condition: (ASTNode) -> Boolean,
-                                      withSelf: Boolean = true): List<ASTNode> {
+fun ASTNode.findAllNodesWithCondition(withSelf: Boolean = true,
+                                      condition: (ASTNode) -> Boolean): List<ASTNode> {
     val result = if (condition(this) && withSelf) mutableListOf(this) else mutableListOf()
     return result + this.getChildren(null).flatMap {
-        it.findAllNodesWithCondition(condition)
+        it.findAllNodesWithCondition(withSelf = true, condition)
     }
 }
 
@@ -808,7 +807,7 @@ fun isLocatedInTest(filePathParts: List<String>, testAnchors: List<String>) = fi
  * @return the number of lines in a block of code.
  */
 fun countCodeLines(copyNode: ASTNode): Int {
-    copyNode.findAllNodesWithCondition({ it.isPartOfComment() }).forEach { it.treeParent.removeChild(it) }
+    copyNode.findAllNodesWithCondition { it.isPartOfComment() }.forEach { it.treeParent.removeChild(it) }
     val text = copyNode.text.lines().filter { it.isNotBlank() }
     return text.size
 }

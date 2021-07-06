@@ -205,7 +205,7 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
         .treeParent
         .findChildByType(type)
         ?.let { it.findChildByType(BLOCK) ?: it }
-        ?.findAllNodesWithCondition({ it.elementType == BREAK })?.isNotEmpty()
+        ?.findAllNodesWithCondition { it.elementType == BREAK }?.isNotEmpty()
         ?: false
 
     private fun ASTNode.extractLinesFromBlock(type: IElementType): List<String>? =
