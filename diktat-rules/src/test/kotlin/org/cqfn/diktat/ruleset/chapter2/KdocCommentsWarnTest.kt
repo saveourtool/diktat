@@ -1,6 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter2
 
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_EXTRA_PROPERTY
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NOT_CONSTRUCTOR_PROPERTY
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CONSTRUCTOR_PROPERTY
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_CLASS_ELEMENTS
@@ -401,7 +402,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |   ) {
                     |}
                 """.trimMargin(),
-            LintError(5, 4, ruleId, "${KDOC_NO_CONSTRUCTOR_PROPERTY.warnText()} /**...", false)
+            LintError(5, 4, ruleId, "${KDOC_NOT_CONSTRUCTOR_PROPERTY.warnText()} /**...", false)
         )
     }
 
@@ -476,7 +477,7 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
     }
 
     @Test
-    @Tag(WarningNames.KDOC_EXTRA_PROPERTY)
+    @Tag(WarningNames.KDOC_NOT_CONSTRUCTOR_PROPERTY)
     fun `property described only in class KDoc`() {
         lintMethod(
             """
@@ -486,12 +487,12 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                 |class Example {
                 |    val foo: Any
                 |}
-            """.trimMargin()
+            """.trimMargin(),
+            LintError(5, 5, ruleId, "${KDOC_NOT_CONSTRUCTOR_PROPERTY.warnText()} val foo: Any")
         )
     }
 
     @Test
-    @Tag(WarningNames.KDOC_EXTRA_PROPERTY)
     fun `property described both in class KDoc and own KDoc`() {
         lintMethod(
             """
@@ -504,7 +505,8 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                 |     */
                 |    val foo: Any
                 |}
-            """.trimMargin()
+            """.trimMargin(),
+            LintError(5, 5, ruleId, "${KDOC_NOT_CONSTRUCTOR_PROPERTY.warnText()} /**...")
         )
     }
 }

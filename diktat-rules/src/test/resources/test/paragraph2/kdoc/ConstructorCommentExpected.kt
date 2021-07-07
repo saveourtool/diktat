@@ -10,9 +10,11 @@ class A (
 
 /**
  * @property name another text
-some text
  */
 class A (
+        /**
+         * @property name some text
+         */
         val name: String
 ){}
 

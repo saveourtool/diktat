@@ -85,6 +85,8 @@ public object WarningNames {
 
     public const val KDOC_NO_CONSTRUCTOR_PROPERTY: String = "KDOC_NO_CONSTRUCTOR_PROPERTY"
 
+    public const val KDOC_NOT_CONSTRUCTOR_PROPERTY: String = "KDOC_NOT_CONSTRUCTOR_PROPERTY"
+
     public const val KDOC_EXTRA_PROPERTY: String = "KDOC_EXTRA_PROPERTY"
 
     public const val KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT: String =

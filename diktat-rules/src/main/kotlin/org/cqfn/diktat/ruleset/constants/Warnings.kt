@@ -79,6 +79,7 @@ enum class Warnings(
     KDOC_NO_EMPTY_TAGS(false, "2.2.1", "no empty descriptions in tag blocks are allowed"),
     KDOC_NO_DEPRECATED_TAG(true, "2.1.3", "KDoc doesn't support @deprecated tag, use @Deprecated annotation instead"),
     KDOC_NO_CONSTRUCTOR_PROPERTY(true, "2.1.1", "all properties from the primary constructor should be documented in a @property tag in KDoc"),
+    KDOC_NOT_CONSTRUCTOR_PROPERTY(true, "2.1.1", "only properties from the primary constructor should be documented in a @property tag in class KDoc"),
     KDOC_EXTRA_PROPERTY(false, "2.1.1", "There is property in KDoc which is not present in the class"),
     KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT(true, "2.1.1", "replace comment before property with @property tag in class KDoc"),
     KDOC_CONTAINS_DATE_OR_AUTHOR(false, "2.1.3", "KDoc should not contain creation date and author name"),

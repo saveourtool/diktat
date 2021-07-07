@@ -4,6 +4,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getCommonConfiguration
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_EXTRA_PROPERTY
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NOT_CONSTRUCTOR_PROPERTY
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CONSTRUCTOR_PROPERTY
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_CLASS_ELEMENTS
@@ -35,7 +36,6 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
-import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
 import org.jetbrains.kotlin.psi.KtParameterList
 import org.jetbrains.kotlin.psi.psiUtil.parents
 
@@ -110,9 +110,9 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
                 ?: createKdocWithProperty(node, prevComment)
         }
             ?: kdocBeforeClass?.let {
-                    checkBasicKdocBeforeClass(node, kdocBeforeClass)
-                }
-                    ?: createKdocBasicKdoc(node)
+                checkBasicKdocBeforeClass(node, kdocBeforeClass)
+            }
+            ?: createKdocBasicKdoc(node)
     }
 
     @Suppress("UnsafeCallOnNullableType")
@@ -205,22 +205,23 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         } else {
             prevComment.text.removePrefix("/*").removeSuffix("*/").trim('\n', ' ')
         }
-//        val isFixable = propertyInLocalKdoc == null || propertyInClassKdoc == null
-        KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixMode, prevComment.text, prevComment.startOffset, node, isFixMode) {
-            if (propertyInClassKdoc == null && propertyInLocalKdoc == null) {
-                insertTextInKdoc(kdocBeforeClass, " * @property ${node.findChildByType(IDENTIFIER)!!.text} ${kdocText.removePrefix("*")}\n")
-            } else if (propertyInClassKdoc == null && propertyInLocalKdoc != null) {
-                insertTextInKdoc(kdocBeforeClass, "${kdocText}\n")
-            } else if (propertyInClassKdoc != null) {
-                // local docs should be appended to docs in class
-                val contentToMove = if (propertyInLocalKdoc != null) {
-                    (propertyInLocalKdoc.psi as KDocTag).getContent()
-                } else {
-                    kdocText
-                }
-                appendKdocTagContent(propertyInClassKdoc, "\n$contentToMove")
-
+        // if property is documented with KDoc, which has a property tag inside, then it can contain some additional more complicated
+        // structure, that will be hard to move automatically
+        val isFixable = propertyInLocalKdoc == null
+        val warning = propertyInClassKdoc?.let {
+            KDOC_NOT_CONSTRUCTOR_PROPERTY
+        }
+            ?: run {
+                KDOC_NO_CONSTRUCTOR_PROPERTY
             }
+        warning.warnAndFix(configRules, emitWarn, isFixable, prevComment.text, prevComment.startOffset, node, isFixable) {
+            propertyInClassKdoc?.let {
+                // local docs should be appended to docs in class
+                appendKdocTagContent(propertyInClassKdoc, "\n$kdocText")
+            }
+                ?: run {
+                    insertTextInKdoc(kdocBeforeClass, " * @property ${node.findChildByType(IDENTIFIER)!!.text} ${kdocText.removePrefix("*")}\n")
+                }
 
             if (prevComment.treeNext.elementType == WHITE_SPACE) {
                 node.removeChild(prevComment.treeNext)
@@ -287,7 +288,22 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
                 .filterNot {
                     (it.elementType == FUN && it.isStandardMethod()) || (it.elementType == FUN && it.isOverridden()) || (it.elementType == PROPERTY && it.isOverridden())
                 }
-                .forEach { checkDoc(it, MISSING_KDOC_CLASS_ELEMENTS) }
+                .forEach { classElement ->
+                    if (classElement.elementType == PROPERTY) {
+                        // we check if property declared in class body is also documented in class header via `@property` tag
+                        val classKdoc = node.getFirstChildWithType(KDOC)
+                        val propertyInClassKdoc = classKdoc?.kDocTags()?.find {
+                            it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == classElement.getIdentifierName()?.text
+                        }
+                        propertyInClassKdoc?.let {
+                            // if property is documented as `@property`, then we suggest to move docs to the declaration inside the class body
+                            KDOC_NOT_CONSTRUCTOR_PROPERTY.warn(configRules, emitWarn, isFixMode, classElement.text, classElement.startOffset, classElement)
+                            return
+                        }
+                    }
+                    // for everything else, we raise a missing kdoc warning
+                    checkDoc(classElement, MISSING_KDOC_CLASS_ELEMENTS)
+                }
         }
     }
 
