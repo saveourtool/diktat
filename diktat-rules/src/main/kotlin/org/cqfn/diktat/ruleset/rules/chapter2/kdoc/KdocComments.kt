@@ -211,17 +211,13 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         val warning = propertyInClassKdoc?.let {
             KDOC_NOT_CONSTRUCTOR_PROPERTY
         }
-            ?: run {
-                KDOC_NO_CONSTRUCTOR_PROPERTY
-            }
+            ?: KDOC_NO_CONSTRUCTOR_PROPERTY
         warning.warnAndFix(configRules, emitWarn, isFixable, prevComment.text, prevComment.startOffset, node, isFixable) {
             propertyInClassKdoc?.let {
                 // local docs should be appended to docs in class
                 appendKdocTagContent(propertyInClassKdoc, "\n$kdocText")
             }
-                ?: run {
-                    insertTextInKdoc(kdocBeforeClass, " * @property ${node.findChildByType(IDENTIFIER)!!.text} ${kdocText.removePrefix("*")}\n")
-                }
+                ?: insertTextInKdoc(kdocBeforeClass, " * @property ${node.findChildByType(IDENTIFIER)!!.text} ${kdocText.removePrefix("*")}\n")
 
             if (prevComment.treeNext.elementType == WHITE_SPACE) {
                 node.removeChild(prevComment.treeNext)
