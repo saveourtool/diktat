@@ -6,3 +6,12 @@ fun String.createPluginConfig() {
     ).apply {
     configLocation = this@createPluginConfig.toPath()}
 }
+
+class HttpServer {
+    val defaultPort = "8080"
+    fun foo() {
+        val httpClient = HttpClient("myConnection").apply {
+        url = "http://example.com"
+        port = this@HttpServer.defaultPort}
+    }
+}
