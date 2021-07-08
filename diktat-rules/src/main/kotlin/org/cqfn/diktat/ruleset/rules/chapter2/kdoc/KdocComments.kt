@@ -4,7 +4,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getCommonConfiguration
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_EXTRA_PROPERTY
-import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NOT_CONSTRUCTOR_PROPERTY
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CONSTRUCTOR_PROPERTY
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_CLASS_ELEMENTS
@@ -146,7 +146,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
             null
         }
         if (prevComment.elementType == KDOC || prevComment.elementType == BLOCK_COMMENT) {
-            // there is a documentation that we can extract before property, and there is class KDoc, where we can move it to
+            // there is a documentation before property that we can extract, and there is class KDoc, where we can move it to
             handleKdocAndBlock(node, prevComment, kdocBeforeClass, propertyInClassKdoc, propertyInLocalKdoc)
         } else {
             KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnAndFix(configRules, emitWarn, isFixMode, node.findChildByType(IDENTIFIER)!!.text, prevComment.startOffset, node) {
@@ -208,11 +208,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         // if property is documented with KDoc, which has a property tag inside, then it can contain some additional more complicated
         // structure, that will be hard to move automatically
         val isFixable = propertyInLocalKdoc == null
-        val warning = propertyInClassKdoc?.let {
-            KDOC_NOT_CONSTRUCTOR_PROPERTY
-        }
-            ?: KDOC_NO_CONSTRUCTOR_PROPERTY
-        warning.warnAndFix(configRules, emitWarn, isFixable, prevComment.text, prevComment.startOffset, node, isFixable) {
+        KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixable, prevComment.text, prevComment.startOffset, node, isFixable) {
             propertyInClassKdoc?.let {
                 // local docs should be appended to docs in class
                 appendKdocTagContent(propertyInClassKdoc, "\n$kdocText")
@@ -293,7 +289,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
                         }
                         propertyInClassKdoc?.let {
                             // if property is documented as `@property`, then we suggest to move docs to the declaration inside the class body
-                            KDOC_NOT_CONSTRUCTOR_PROPERTY.warn(configRules, emitWarn, isFixMode, classElement.text, classElement.startOffset, classElement)
+                            KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER.warn(configRules, emitWarn, isFixMode, classElement.text, classElement.startOffset, classElement)
                             return
                         }
                     }
