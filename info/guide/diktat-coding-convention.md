@@ -1130,8 +1130,93 @@ try {
 <!-- =============================================================================== -->
 ### <a name="c3.5"></a> 3.5 Line length
 
-Line length should be less than 120 symbols. The international code style prohibits `non-Latin` (`non-ASCII`) symbols.
-(See [Identifiers](#r1.1.1)) However, if you still intend on using them, follow the following convention:
+Line length should be less than 120 symbols. Otherwise, it should be split.
+
+If `complex property` initializing is too long, it should be split:
+
+**Invalid example:**
+```kotlin
+val complexProperty = 1 + 2 + 3 + 4
+```
+**Valid example:**
+```kotlin
+val complexProperty = 1 + 2
++ 3 + 4
+```
+
+If `annotation` is too long, it also should be split:
+
+**Invalid example:**
+```kotlin
+@Query(value = "select * from table where age = 10", nativeQuery = true)
+fun foo() {}
+```
+**Valid example:**
+```kotlin
+@Query(value = "select * from table " +
+        "where age = 10", nativeQuery = true)
+fun foo() {}
+```
+
+Long one line `function` should be split:
+
+**Invalid example:**
+```kotlin
+fun foo() = goo().write("TooLong")
+```
+**Valid example:**
+```kotlin
+fun foo() = 
+    goo().write("TooLong")
+```
+
+Long `binary expression` should be split:
+
+**Invalid example:**
+```kotlin
+if (( x >  100) || y < 100 && !isFoo()) {}
+```
+
+**Valid example:**
+```kotlin
+if (( x >  100) ||
+    y < 100 && !isFoo()) {}
+```
+
+`Eol comment` also can be split, but it depends on comment location.
+If this comment is on the same line with code it should be on line before:
+
+**Invalid example:**
+```kotlin
+fun foo() {
+    val name = "Nick" // this comment is too long
+}
+```
+**Valid example:**
+```kotlin
+fun foo() {
+    // this comment is too long
+    val name = "Nick"
+}
+```
+
+But if this comment is on new line - it should be split to several lines:
+
+**Invalid example:**
+```kotlin
+// This comment is too long. It should be on two lines.
+fun foo() {}
+```
+
+**Valid example:**
+```kotlin
+// This comment is too long.
+// It should be on two lines.
+fun foo() {}
+```
+
+The international code style prohibits `non-Latin` (`non-ASCII`) symbols. (See [Identifiers](#r1.1.1)) However, if you still intend on using them, follow
+the following convention:
 
 - One wide character occupies the width of two narrow characters.
 The "wide" and "narrow" parts of a character are defined by its [east Asian width Unicode attribute](https://unicode.org/reports/tr11/).
