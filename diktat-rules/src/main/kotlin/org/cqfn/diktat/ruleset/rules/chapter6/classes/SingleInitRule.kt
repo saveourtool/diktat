@@ -3,14 +3,19 @@ package org.cqfn.diktat.ruleset.rules.chapter6.classes
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.MULTIPLE_INIT_BLOCKS
 import org.cqfn.diktat.ruleset.rules.DiktatRule
+import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getIdentifierName
 
+import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_INITIALIZER
 import com.pinterest.ktlint.core.ast.ElementType.EQ
+import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
+import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -18,6 +23,7 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtNameReferenceExpression
+import org.jetbrains.kotlin.psi.KtParameter
 import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.psiUtil.asAssignment
 import org.jetbrains.kotlin.psi.psiUtil.children
@@ -53,11 +59,20 @@ class SingleInitRule(configRules: List<RulesConfig>) : DiktatRule(
 
         // move property assignments from init block to property declarations
         node.findChildByType(CLASS_INITIALIZER)?.let { initBlock ->
+            val classParameters = node
+                .treeParent
+                .findChildByType(PRIMARY_CONSTRUCTOR)
+                ?.findChildByType(VALUE_PARAMETER_LIST)
+                ?.children()
+                ?.toList()
+                ?.filter { it.elementType == ElementType.VALUE_PARAMETER }
+                ?.map { it.psi as KtParameter }
+                ?.map { it.name }
             val properties = node
                 .children()
                 .filter { it.elementType == PROPERTY }
                 .toList()
-            moveAssignmentsToProperties(properties, initBlock)
+            moveAssignmentsToProperties(properties, classParameters, initBlock)
         }
     }
 
@@ -80,7 +95,10 @@ class SingleInitRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
-    private fun moveAssignmentsToProperties(properties: List<ASTNode>, initBlock: ASTNode) {
+    private fun moveAssignmentsToProperties(
+        properties: List<ASTNode>,
+        classParameters: List<String?>?,
+        initBlock: ASTNode) {
         initBlock
             .findChildByType(BLOCK)
             ?.run {
@@ -88,13 +106,10 @@ class SingleInitRule(configRules: List<RulesConfig>) : DiktatRule(
                     .statements
                     .mapNotNull { it.asAssignment() }
                     .filter { it.left is KtNameReferenceExpression }
-                    .filter { state ->
-                        val assignedRef = state.right
-                        if (assignedRef is KtNameReferenceExpression) {
-                            properties.find { (it.psi as KtProperty).name == assignedRef.getReferencedName() } != null
-                        } else {
-                            true
-                        }
+                    .filter { statement ->
+                        statement.right?.node?.findAllDescendantsWithSpecificType(REFERENCE_EXPRESSION)?.all { arg ->
+                            properties.find { (it.psi as KtProperty).name == arg.text } != null || classParameters?.find { it == arg.text } != null
+                        } ?: false
                     }
                     .groupBy { assignment ->
                         val assignedRef = assignment.left as KtNameReferenceExpression
