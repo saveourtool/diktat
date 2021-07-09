@@ -84,4 +84,10 @@ class FileStructureRuleFixTest : FixTestBase("test/paragraph3/file_structure", :
     fun `should move other comments before package node`() {
         fixAndCompare("OtherCommentsExpected.kt", "OtherCommentsTest.kt")
     }
+
+    @Test
+    @Tag(WarningNames.TOP_LEVEL_ORDER)
+    fun `should fix top level order with header kdoc`() {
+        fixAndCompare("MoveHeaderKdocExpected.kt", "MoveHeaderKdocTest.kt")
+    }
 }

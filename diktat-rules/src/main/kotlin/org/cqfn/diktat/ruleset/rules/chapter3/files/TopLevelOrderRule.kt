@@ -38,6 +38,7 @@ class TopLevelOrderRule(configRules: List<RulesConfig>) : DiktatRule(
 
     @Suppress("UnsafeCallOnNullableType")
     private fun checkNode(node: ASTNode) {
+        println(node.prettyPrint())
         val children = node.getChildren(null)
         val initialElementsOrder = children.filter { it.elementType in sortedType }
         if (initialElementsOrder.isEmpty()) {
