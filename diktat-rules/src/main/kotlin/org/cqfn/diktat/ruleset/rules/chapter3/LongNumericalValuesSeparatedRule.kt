@@ -48,7 +48,7 @@ class LongNumericalValuesSeparatedRule(configRules: List<RulesConfig>) : DiktatR
         resultRealPart.append(chunks.joinToString(separator = "_") { it.reversed() })
 
         resultRealPart.append(nodeSuffix(node.text))
-        (node as LeafPsiElement).replaceWithText(resultRealPart.toString())
+        (node as LeafPsiElement).rawReplaceWithText(resultRealPart.toString())
     }
 
     private fun fixFloatConstantPart(
@@ -82,7 +82,7 @@ class LongNumericalValuesSeparatedRule(configRules: List<RulesConfig>) : DiktatR
             resultFractionalPart.append(fractionalNumber).append(nodeSuffix(fractionalPart))
         }
 
-        (node as LeafPsiElement).replaceWithText(resultRealPart.append(resultFractionalPart).toString())
+        (node as LeafPsiElement).rawReplaceWithText(resultRealPart.append(resultFractionalPart).toString())
     }
 
     private fun nodePrefix(nodeText: String) = when {

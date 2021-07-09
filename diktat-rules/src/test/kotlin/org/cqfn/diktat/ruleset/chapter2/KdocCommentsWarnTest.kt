@@ -1,6 +1,7 @@
 package org.cqfn.diktat.ruleset.chapter2
 
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_EXTRA_PROPERTY
+import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CONSTRUCTOR_PROPERTY
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_CLASS_ELEMENTS
@@ -270,6 +271,19 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
 
     @Test
     @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY)
+    fun `shouldn't trigger on override parameter`() {
+        lintMethod(
+            """
+                    |@Suppress("MISSING_KDOC_TOP_LEVEL")
+                    |public class Example (
+                    |   override val serializersModule: SerializersModule = EmptySerializersModule
+                    |)
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY)
     fun `shouldn't trigger because not primary constructor`() {
         lintMethod(
             """
@@ -459,6 +473,40 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
                     |}
                 """.trimMargin(),
             LintError(3, 4, ruleId, "${KDOC_EXTRA_PROPERTY.warnText()} @property kek", false)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER)
+    fun `property described only in class KDoc`() {
+        lintMethod(
+            """
+                |/**
+                | * @property foo lorem ipsum
+                | */
+                |class Example {
+                |    val foo: Any
+                |}
+            """.trimMargin(),
+            LintError(5, 5, ruleId, "${KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER.warnText()} val foo: Any")
+        )
+    }
+
+    @Test
+    fun `property described both in class KDoc and own KDoc`() {
+        lintMethod(
+            """
+                |/**
+                | * @property foo lorem ipsum
+                | */
+                |class Example {
+                |    /**
+                |     * dolor sit amet
+                |     */
+                |    val foo: Any
+                |}
+            """.trimMargin(),
+            LintError(5, 5, ruleId, "${KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER.warnText()} /**...")
         )
     }
 }

@@ -56,7 +56,7 @@ class TestComparatorUnit(private val resourceFilePath: String,
         try {
             Files.newBufferedReader(Paths.get(fileName)).use { list = it.lines().collect(Collectors.toList()) }
         } catch (e: IOException) {
-            println("Not able to read file: $fileName")
+            log.error("Not able to read file: $fileName")
         }
         return list
     }

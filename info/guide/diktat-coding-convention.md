@@ -65,6 +65,9 @@ I [Preface](#c0)
  * [3.15 Strings](#c3.15)
      * [3.15.1 Concatenation of Strings](#r3.15.1)
      * [3.15.2 String template format](#r3.15.2)
+ * [3.16 Conditional statements](#c3.16)
+     * [3.16.1 Collapsing redundant nested if-statements](#r3.16.1)
+     * [3.16.2 Too complex conditions](#r3.16.2)
 
 [4. Variables and types](#c4)
 * [4.1 Variables](#c4.1)
@@ -114,7 +117,9 @@ I [Preface](#c0)
 * [6.3 Interfaces](#c6.3)            
 * [6.4 Objects](#c6.4)      
     * [6.4.1 Instead of using utility classes/objects, use extensions](#r6.4.1)
-    * [6.4.2 Objects should be used for Stateless Interfaces](#r6.4.2) 
+    * [6.4.2 Objects should be used for Stateless Interfaces](#r6.4.2)
+* [6.5 Kts Files](#c6.5)
+    * [6.5.1 kts files should wrap logic into top-level scope](#r6.5.1)
 
 
 # Diktat Coding Style Guide
@@ -228,6 +233,7 @@ The only exception is function names in `Unit tests.`
  @Test fun `my test`() { /*...*/ }
 ``` 
 6.  The following table contains some characters that may cause confusion. Be careful when using them as identifiers. To avoid issues, use other names instead.
+
 | Expected      | Confusing name           | Suggested name   |
 | ------------- | ------------------------ | ---------------- |
 | 0 (zero)      | O, D                     | obj, dgt         |
@@ -857,13 +863,14 @@ If the classes are meant to be used externally, and are not referenced inside th
 - Companion object
 
 **Exception:**
-All variants of a `(private) val` logger should be placed at the beginning of the class (`(private) val log`, `LOG`, `logger`, etc.).
+All variants of a `private val` logger should be placed at the beginning of the class (`private val log`, `LOG`, `logger`, etc.).
 
 #### <a name="r3.1.5"></a> 3.1.5 Order of declaration of top-level code structures
 Kotlin allows several top-level declaration types: classes, objects, interfaces, properties and functions.
 When declaring more than one class or zero classes (e.g. only functions), as per rule [2.2.1](#r2.2.1), you should document the whole file in the header KDoc.
 When declaring top-level structures, keep the following order:
 1. Top-level constants and properties (following same order as properties inside a class: `const val`,`val`, `lateinit var`, `var`)
+2. typealiases (grouped by their visibility modifiers)
 2. Interfaces, classes and objects (grouped by their visibility modifiers)
 3. Extension functions
 4. Other functions
@@ -878,6 +885,8 @@ package org.cqfn.diktat.example
 const val CONSTANT = 42
 
 val topLevelProperty = "String constant"
+
+internal typealias ExamplesHandler = (IExample) -> Unit
 
 interface IExample
 
@@ -1086,7 +1095,7 @@ class A
 Avoid empty blocks, and ensure braces start on a new line. An empty code block can be closed immediately on the same line and the next line. However, a newline is recommended between opening and closing braces `{}` (see the examples below.)
 
 Generally, empty code blocks are prohibited; using them is considered a bad practice (especially for catch block).
-They are only appropriate for overridden functions when the base class's functionality is not needed in the class-inheritor.
+They are appropriate for overridden functions, when the base class's functionality is not needed in the class-inheritor, for lambdas used as a function and for empty function in implementation of functional interface. 
 ```kotlin
 override fun foo() {    
 }
@@ -1099,6 +1108,8 @@ fun doNothing() {}
 
 fun doNothingElse() {
 }
+
+fun foo(bar: () -> Unit = {})
 ```
 
 **Invalid examples:**
@@ -1119,8 +1130,93 @@ try {
 <!-- =============================================================================== -->
 ### <a name="c3.5"></a> 3.5 Line length
 
-Line length should be less than 120 symbols. The international code style prohibits `non-Latin` (`non-ASCII`) symbols.
-(See [Identifiers](#r1.1.1)) However, if you still intend on using them, follow the following convention:
+Line length should be less than 120 symbols. Otherwise, it should be split.
+
+If `complex property` initializing is too long, it should be split:
+
+**Invalid example:**
+```kotlin
+val complexProperty = 1 + 2 + 3 + 4
+```
+**Valid example:**
+```kotlin
+val complexProperty = 1 + 2
++ 3 + 4
+```
+
+If `annotation` is too long, it also should be split:
+
+**Invalid example:**
+```kotlin
+@Query(value = "select * from table where age = 10", nativeQuery = true)
+fun foo() {}
+```
+**Valid example:**
+```kotlin
+@Query(value = "select * from table " +
+        "where age = 10", nativeQuery = true)
+fun foo() {}
+```
+
+Long one line `function` should be split:
+
+**Invalid example:**
+```kotlin
+fun foo() = goo().write("TooLong")
+```
+**Valid example:**
+```kotlin
+fun foo() = 
+    goo().write("TooLong")
+```
+
+Long `binary expression` should be split:
+
+**Invalid example:**
+```kotlin
+if (( x >  100) || y < 100 && !isFoo()) {}
+```
+
+**Valid example:**
+```kotlin
+if (( x >  100) ||
+    y < 100 && !isFoo()) {}
+```
+
+`Eol comment` also can be split, but it depends on comment location.
+If this comment is on the same line with code it should be on line before:
+
+**Invalid example:**
+```kotlin
+fun foo() {
+    val name = "Nick" // this comment is too long
+}
+```
+**Valid example:**
+```kotlin
+fun foo() {
+    // this comment is too long
+    val name = "Nick"
+}
+```
+
+But if this comment is on new line - it should be split to several lines:
+
+**Invalid example:**
+```kotlin
+// This comment is too long. It should be on two lines.
+fun foo() {}
+```
+
+**Valid example:**
+```kotlin
+// This comment is too long.
+// It should be on two lines.
+fun foo() {}
+```
+
+The international code style prohibits `non-Latin` (`non-ASCII`) symbols. (See [Identifiers](#r1.1.1)) However, if you still intend on using them, follow
+the following convention:
 
 - One wide character occupies the width of two narrow characters.
 The "wide" and "narrow" parts of a character are defined by its [east Asian width Unicode attribute](https://unicode.org/reports/tr11/).
@@ -1598,6 +1694,24 @@ val socialSecurityNumber = 999_99_9999L
 val hexBytes = 0xFF_EC_DE_5E
 val bytes = 0b11010010_01101001_10010100_10010010
 ```
+#### <a name="r3.14.3"></a> 3.14.3: Magic number
+Prefer defining constants with clear names describing what the magic number means.
+**Valid example**:
+```kotlin
+class Person() {
+    fun isAdult(age: Int): Boolean = age >= majority
+
+    companion object {
+        private const val majority = 18
+    }
+}
+```
+**Invalid example**:
+```kotlin
+class Person() {
+    fun isAdult(age: Int): Boolean = age >= 18
+}
+```
 
 <!-- =============================================================================== -->
 ### <a name="c3.15"></a> 3.15 Strings
@@ -1646,6 +1760,75 @@ val someString = "$myArgument"
 **Valid example**:
 ```kotlin
 val someString = myArgument
+```
+
+<!-- =============================================================================== -->
+### <a name="c3.16"></a> 3.16 Conditional Statements
+This section describes the general rules related to the сonditional statements.
+
+#### <a name="r3.16.1"></a> 3.16.1 Collapsing redundant nested if-statements
+The nested if-statements, when possible, should be collapsed into a single one
+by concatenating their conditions with the infix operator &&.
+
+This improves the readability by reducing the number of the nested language constructs.
+
+#### Simple collapse
+
+**Invalid example**:
+```kotlin
+if (cond1) {
+    if (cond2) {
+        doSomething()
+    }
+}
+```
+
+**Valid example**:
+```kotlin
+if (cond1 && cond2) {
+    doSomething()
+}
+```
+
+#### Compound conditions
+
+**Invalid example**:
+```kotlin
+if (cond1) {
+    if (cond2 || cond3) {
+        doSomething()
+    }
+}
+```
+
+**Valid example**:
+```kotlin
+if (cond1 && (cond2 || cond3)) {
+    doSomething()
+}
+```
+#### <a name="r3.16.2"></a> 3.16.2 Too complex conditions
+Too complex conditions should be simplified according to boolean algebra rules, if it is possible.
+The following rules are considered when simplifying an expression:
+* boolean literals are removed (e.g. `foo() || false` -> `foo()`)
+* double negation is removed (e.g. `!(!a)` -> `a`)
+* expression with the same variable are simplified (e.g. `a && b && a` -> `a && b`)
+* remove expression from disjunction, if they are subset of other expression (e.g. `a || (a && b)` -> `a`)
+* remove expression from conjunction, if they are more broad than other expression (e.g. `a && (a || b)` -> `a`)
+* de Morgan's rule (negation is moved inside parentheses, i.e. `!(a || b)` -> `!a && !b`)
+
+**Valid example**
+```kotlin
+if (condition1 && condition2) {
+    foo()
+}
+```
+
+**Invalid example**
+```kotlin
+if (condition1 && condition2 && condition1) {
+    foo()
+}
 ```
 # <a name="c4"></a> 4. Variables and types
 This section is dedicated to the rules and recommendations for using variables and types in your code.
@@ -2496,8 +2679,9 @@ It is recommended that for classes, the non-tightly coupled functions, which are
 They should be implemented in the same class/file where they are used. This is a non-deterministic rule, so the code cannot be checked or fixed automatically by a static analyzer.
 
 #### <a name="r6.2.2"></a> 6.2.2 No extension functions with the same name and signature if they extend base and inheritor classes (possible_bug)
-You should have ho extension functions with the same name and signature if they extend base and inheritor classes (possible_bug).esolved statically. There could be a situation when a developer implements two extension functions: one is for the base class and another for the inheritor.
-This can lead to an issue when an incorrect method is used.
+You should avoid declaring extension functions with the same name and signature if their receivers are base and inheritor classes (possible_bug),
+as extension functions are resolved statically. There could be a situation when a developer implements two extension functions: one is for the base class and
+another for the inheritor. This can lead to an issue when an incorrect method is used.
 
 **Invalid example**:
 ```kotlin
@@ -2577,7 +2761,8 @@ object O: I {
     override fun foo() {}
 }
 ```
-
+### <a name="c6.5"></a> 6.5 Kts Files
+This section describes general rules for `.kts` files
 #### <a name="r6.5.1"></a> 6.5.1 kts files should wrap logic into top-level scope
 It is still recommended wrapping logic inside functions and avoid using top-level statements for function calls or wrapping blocks of code
 in top-level scope functions like `run`.

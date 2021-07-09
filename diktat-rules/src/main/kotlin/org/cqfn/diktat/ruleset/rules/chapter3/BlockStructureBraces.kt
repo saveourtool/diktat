@@ -204,7 +204,7 @@ class BlockStructureBraces(configRules: List<RulesConfig>) : DiktatRule(
                 if (newNode.elementType != WHITE_SPACE) {
                     newNode.treeParent.addChild(PsiWhiteSpaceImpl("\n"), newNode)
                 } else {
-                    (newNode as LeafPsiElement).replaceWithText("\n")
+                    (newNode as LeafPsiElement).rawReplaceWithText("\n")
                 }
             }
         }
@@ -221,7 +221,7 @@ class BlockStructureBraces(configRules: List<RulesConfig>) : DiktatRule(
                     if (space.elementType != WHITE_SPACE) {
                         node.addChild(PsiWhiteSpaceImpl(" "), node.findChildByType(keyword))
                     } else {
-                        (space as LeafPsiElement).replaceWithText(" ")
+                        (space as LeafPsiElement).rawReplaceWithText(" ")
                     }
                 }
             }
@@ -245,7 +245,7 @@ class BlockStructureBraces(configRules: List<RulesConfig>) : DiktatRule(
                 if (space.elementType != WHITE_SPACE) {
                     node.addChild(PsiWhiteSpaceImpl("\n"), node.findChildByType(RBRACE))
                 } else {
-                    (space as LeafPsiElement).replaceWithText("\n")
+                    (space as LeafPsiElement).rawReplaceWithText("\n")
                 }
             }
         }

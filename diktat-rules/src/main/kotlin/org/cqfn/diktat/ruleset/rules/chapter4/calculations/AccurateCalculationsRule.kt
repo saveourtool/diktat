@@ -105,7 +105,6 @@ class AccurateCalculationsRule(configRules: List<RulesConfig>) : DiktatRule(
             val floatValue = left!!.takeIf { it.isFloatingPoint() }
                 ?: right!!.takeIf { it.isFloatingPoint() }
             checkFloatValue(floatValue, this)
-            println()
         }
 
     /**

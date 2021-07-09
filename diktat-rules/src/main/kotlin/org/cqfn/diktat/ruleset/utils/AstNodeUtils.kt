@@ -40,7 +40,6 @@ import com.pinterest.ktlint.core.ast.isLeaf
 import com.pinterest.ktlint.core.ast.isPartOfComment
 import com.pinterest.ktlint.core.ast.isRoot
 import com.pinterest.ktlint.core.ast.isWhiteSpace
-import com.pinterest.ktlint.core.ast.lineNumber
 import com.pinterest.ktlint.core.ast.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.TokenType
@@ -52,7 +51,6 @@ import org.jetbrains.kotlin.psi.KtAnnotationEntry
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.psiUtil.children
-import org.jetbrains.kotlin.psi.psiUtil.endOffset
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.siblings
 import org.slf4j.Logger
@@ -376,7 +374,7 @@ fun ASTNode.isVarProperty() =
  * Replaces text of [this] node with lowercase text
  */
 fun ASTNode.toLower() {
-    (this as LeafPsiElement).replaceWithText(this.text.lowercase(Locale.getDefault()))
+    (this as LeafPsiElement).rawReplaceWithText(this.text.lowercase(Locale.getDefault()))
 }
 
 /**
@@ -424,17 +422,16 @@ fun ASTNode.numNewLines() = text.count { it == '\n' }
  * This method performs tree traversal and returns all nodes with specific element type
  */
 fun ASTNode.findAllDescendantsWithSpecificType(elementType: IElementType, withSelf: Boolean = true) =
-        findAllNodesWithCondition({ it.elementType == elementType }, withSelf)
+        findAllNodesWithCondition(withSelf) { it.elementType == elementType }
 
 /**
  * This method performs tree traversal and returns all nodes which satisfy the condition
  */
-@Suppress("LAMBDA_IS_NOT_LAST_PARAMETER")
-fun ASTNode.findAllNodesWithCondition(condition: (ASTNode) -> Boolean,
-                                      withSelf: Boolean = true): List<ASTNode> {
+fun ASTNode.findAllNodesWithCondition(withSelf: Boolean = true,
+                                      condition: (ASTNode) -> Boolean): List<ASTNode> {
     val result = if (condition(this) && withSelf) mutableListOf(this) else mutableListOf()
     return result + this.getChildren(null).flatMap {
-        it.findAllNodesWithCondition(condition)
+        it.findAllNodesWithCondition(withSelf = true, condition)
     }
 }
 
@@ -537,7 +534,7 @@ fun ASTNode.leaveOnlyOneNewLine() = leaveExactlyNumNewLines(1)
  */
 fun ASTNode.leaveExactlyNumNewLines(num: Int) {
     require(this.elementType == WHITE_SPACE)
-    (this as LeafPsiElement).replaceWithText("${"\n".repeat(num)}${this.text.replace("\n", "")}")
+    (this as LeafPsiElement).rawReplaceWithText("${"\n".repeat(num)}${this.text.replace("\n", "")}")
 }
 
 /**
@@ -549,7 +546,7 @@ fun ASTNode.leaveExactlyNumNewLines(num: Int) {
  */
 fun ASTNode.appendNewlineMergingWhiteSpace(whiteSpaceNode: ASTNode?, beforeNode: ASTNode?) {
     if (whiteSpaceNode != null && whiteSpaceNode.elementType == WHITE_SPACE) {
-        (whiteSpaceNode as LeafPsiElement).replaceWithText("\n${whiteSpaceNode.text}")
+        (whiteSpaceNode as LeafPsiElement).rawReplaceWithText("\n${whiteSpaceNode.text}")
     } else {
         addChild(PsiWhiteSpaceImpl("\n"), beforeNode)
     }
@@ -737,9 +734,10 @@ fun ASTNode.calculateLineColByOffset() = buildPositionInTextLocator(text)
  *
  * @return name of the file [this] node belongs to
  */
-fun ASTNode.getFilePath(): String = getUserData(KtLint.FILE_PATH_USER_DATA_KEY).let {
+fun ASTNode.getFilePath(): String = getRootNode().also {
+    require(it.elementType == FILE) { "Root node type is not FILE, but file_path is present in user_data only in FILE nodes" }
+}.getUserData(KtLint.FILE_PATH_USER_DATA_KEY).let {
     requireNotNull(it) { "File path is not present in user data" }
-    it
 }
 
 /**
@@ -762,18 +760,12 @@ fun ASTNode.hasEqBinaryExpression(): Boolean =
             ?: false
 
 /**
- * Get line number, where this node's content starts. To avoid `ArrayIndexOutOfBoundsException`s we check whether node's maximum offset is less than
- * Document's maximum offset, and calculate line number manually if needed.
+ * Get line number, where this node's content starts.
  *
- * @return line number or null if it cannot be calculated
+ * @return line number
  */
 fun ASTNode.getLineNumber(): Int =
-        psi.containingFile
-            .viewProvider
-            .document
-            ?.takeIf { it.getLineEndOffset(it.lineCount - 1) >= psi.endOffset }
-            ?.let { lineNumber() }
-            ?: calculateLineNumber()
+        calculateLineNumber()
 
 /**
  * This function calculates line number instead of using cached values.
@@ -815,7 +807,7 @@ fun isLocatedInTest(filePathParts: List<String>, testAnchors: List<String>) = fi
  * @return the number of lines in a block of code.
  */
 fun countCodeLines(copyNode: ASTNode): Int {
-    copyNode.findAllNodesWithCondition({ it.isPartOfComment() }).forEach { it.treeParent.removeChild(it) }
+    copyNode.findAllNodesWithCondition { it.isPartOfComment() }.forEach { it.treeParent.removeChild(it) }
     val text = copyNode.text.lines().filter { it.isNotBlank() }
     return text.size
 }

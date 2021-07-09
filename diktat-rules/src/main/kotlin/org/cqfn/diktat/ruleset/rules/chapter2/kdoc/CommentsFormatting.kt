@@ -181,7 +181,7 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
         } else {
             if (node.treePrev.numNewLines() == 1 || node.treePrev.numNewLines() > 2) {
                 WRONG_NEWLINES_AROUND_KDOC.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
-                    (node.treePrev as LeafPsiElement).replaceWithText("\n\n")
+                    (node.treePrev as LeafPsiElement).rawReplaceWithText("\n\n")
                 }
             }
         }
@@ -198,7 +198,7 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
                     "There should be 0 space(s) before comment text, but are ${node.treePrev.text.count { it == ' ' }} in ${node.text}",
                     node.startOffset, node) {
                     if (node.treePrev.elementType == WHITE_SPACE) {
-                        (node.treePrev as LeafPsiElement).replaceWithText("\n")
+                        (node.treePrev as LeafPsiElement).rawReplaceWithText("\n")
                     } else {
                         node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node)
                     }
@@ -214,7 +214,7 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
             // if there are too many spaces before comment
             COMMENT_WHITE_SPACE.warnAndFix(configRules, emitWarn, isFixMode,
                 "There should be ${configuration.maxSpacesBeforeComment} space(s) before comment text, but there are too many in ${node.text}", node.startOffset, node) {
-                (node.treePrev as LeafPsiElement).replaceWithText(" ".repeat(configuration.maxSpacesBeforeComment))
+                (node.treePrev as LeafPsiElement).rawReplaceWithText(" ".repeat(configuration.maxSpacesBeforeComment))
             }
         }
     }
@@ -265,8 +265,8 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
             val commentText = node.text.drop(2).trim()
 
             when (node.elementType) {
-                EOL_COMMENT -> (node as LeafPsiElement).replaceWithText("// $commentText")
-                BLOCK_COMMENT -> (node as LeafPsiElement).replaceWithText("/* $commentText")
+                EOL_COMMENT -> (node as LeafPsiElement).rawReplaceWithText("// $commentText")
+                BLOCK_COMMENT -> (node as LeafPsiElement).rawReplaceWithText("/* $commentText")
                 KDOC -> {
                     node.findAllDescendantsWithSpecificType(KDOC_TEXT).forEach {
                         modifyKdocText(it, configuration)
@@ -283,7 +283,7 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
         if (!node.text.startsWith(" ".repeat(configuration.maxSpacesInComment))) {
             val commentText = node.text.trim()
             val indent = " ".repeat(configuration.maxSpacesInComment)
-            (node as LeafPsiElement).replaceWithText("$indent$commentText")
+            (node as LeafPsiElement).rawReplaceWithText("$indent$commentText")
         }
     }
 
@@ -303,7 +303,7 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
         } else if (node.treeParent.elementType != FILE &&
                 (node.treeParent.treePrev.numNewLines() == 1 || node.treeParent.treePrev.numNewLines() > 2)) {
             WRONG_NEWLINES_AROUND_KDOC.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
-                (node.treeParent.treePrev as LeafPsiElement).replaceWithText("\n\n")
+                (node.treeParent.treePrev as LeafPsiElement).rawReplaceWithText("\n\n")
             }
         }
     }
@@ -312,7 +312,7 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
         if (node.treePrev.isWhiteSpace() &&
                 (node.treePrev.numNewLines() > 1 || node.treePrev.numNewLines() == 0)) {
             FIRST_COMMENT_NO_BLANK_LINE.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
-                (node.treePrev as LeafPsiElement).replaceWithText("\n")
+                (node.treePrev as LeafPsiElement).rawReplaceWithText("\n")
             }
         }
     }

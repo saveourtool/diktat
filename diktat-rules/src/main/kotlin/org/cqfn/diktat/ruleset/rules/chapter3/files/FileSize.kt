@@ -29,7 +29,7 @@ class FileSize(configRules: List<RulesConfig>) : DiktatRule(
         if (node.elementType == ElementType.FILE) {
             val filePathParts = node.getFilePath().splitPathToDirs()
             if (SRC_PATH !in filePathParts) {
-                log.error("$SRC_PATH directory is not found in file path")
+                log.error("$SRC_PATH directory is not found in file path ${node.getFilePath()}")
             } else {
                 if (configuration.ignoreFolders.none {
                     filePathParts.containsAll(it.splitPathToDirs())

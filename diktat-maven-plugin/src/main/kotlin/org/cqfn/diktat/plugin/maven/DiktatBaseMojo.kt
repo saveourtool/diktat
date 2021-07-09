@@ -22,7 +22,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
     /**
      * Flag that indicates whether to turn debug logging on
      */
-    @Parameter(property = "debug")
+    @Parameter(property = "diktat.debug")
     var debug = false
 
     // FixMe: Reporter should be chosen via plugin configuration
