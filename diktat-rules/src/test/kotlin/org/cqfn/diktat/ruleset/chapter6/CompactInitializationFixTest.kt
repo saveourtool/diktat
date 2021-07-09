@@ -25,4 +25,10 @@ class CompactInitializationFixTest : FixTestBase("test/chapter6/compact_initiali
     fun `should wrap properties into apply - existing apply with value argument`() {
         fixAndCompare("ApplyWithValueArgumentExpected.kt", "ApplyWithValueArgumentTest.kt")
     }
+
+    @Test
+    @Tag(WarningNames.COMPACT_OBJECT_INITIALIZATION)
+    fun `should not move statements with this keyword into apply block`() {
+        fixAndCompare("ApplyOnStatementsWithThisKeywordExpected.kt", "ApplyOnStatementsWithThisKeywordTest.kt")
+    }
 }

@@ -4,9 +4,14 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.COMPACT_OBJECT_INITIALIZATION
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.KotlinParser
+import org.cqfn.diktat.ruleset.utils.findLeafWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getFunctionName
 
+import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
+import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
+import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
+import com.pinterest.ktlint.core.ast.ElementType.THIS_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isPartOfComment
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -63,6 +68,9 @@ class CompactInitialization(configRules: List<RulesConfig>) : DiktatRule(
                     it as KtBinaryExpression to (it.left as KtDotQualifiedExpression).selectorExpression!!
                 }
         }
+            .filter { (assignment, _) ->
+                assignment.node.findLeafWithSpecificType(THIS_KEYWORD) == null
+            }
             .toList()
             .forEach { (assignment, field) ->
                 COMPACT_OBJECT_INITIALIZATION.warnAndFix(
@@ -94,7 +102,7 @@ class CompactInitialization(configRules: List<RulesConfig>) : DiktatRule(
                     assignment
                         .node
                         .siblings(forward = false)
-                        .takeWhile { it != property.node }
+                        .takeWhile { it.elementType in listOf(WHITE_SPACE, EOL_COMMENT, BLOCK_COMMENT, KDOC) }
                         .toList()
                         .reversed()
                         .forEachIndexed { index, it ->
