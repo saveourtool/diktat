@@ -28,7 +28,7 @@ class CompactInitializationFixTest : FixTestBase("test/chapter6/compact_initiali
 
     @Test
     @Tag(WarningNames.COMPACT_OBJECT_INITIALIZATION)
-    fun `should add annotation in apply block`() {
-        fixAndCompare("ApplyInFunctionExtensionsExpected.kt", "ApplyInFunctionExtensionsTest.kt")
+    fun `should not move statements with this keyword into apply block`() {
+        fixAndCompare("ApplyOnStatementsWithThisKeywordExpected.kt", "ApplyOnStatementsWithThisKeywordTest.kt")
     }
 }
