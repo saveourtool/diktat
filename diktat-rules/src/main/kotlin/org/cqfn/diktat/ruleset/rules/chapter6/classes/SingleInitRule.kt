@@ -59,20 +59,20 @@ class SingleInitRule(configRules: List<RulesConfig>) : DiktatRule(
 
         // move property assignments from init block to property declarations
         node.findChildByType(CLASS_INITIALIZER)?.let { initBlock ->
-            val classParameters = node
+            val propertiesFromPrimaryConstructor = node
                 .treeParent
                 .findChildByType(PRIMARY_CONSTRUCTOR)
                 ?.findChildByType(VALUE_PARAMETER_LIST)
                 ?.children()
-                ?.toList()
                 ?.filter { it.elementType == ElementType.VALUE_PARAMETER }
                 ?.map { it.psi as KtParameter }
                 ?.map { it.name }
-            val properties = node
+                ?.toList()
+            val propertiesFromClassBody = node
                 .children()
                 .filter { it.elementType == PROPERTY }
                 .toList()
-            moveAssignmentsToProperties(properties, classParameters, initBlock)
+            moveAssignmentsToProperties(propertiesFromClassBody, propertiesFromPrimaryConstructor, initBlock)
         }
     }
 
@@ -96,8 +96,8 @@ class SingleInitRule(configRules: List<RulesConfig>) : DiktatRule(
 
     @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
     private fun moveAssignmentsToProperties(
-        properties: List<ASTNode>,
-        classParameters: List<String?>?,
+        propertiesFromClassBody: List<ASTNode>,
+        propertiesFromPrimaryConstructor: List<String?>?,
         initBlock: ASTNode) {
         initBlock
             .findChildByType(BLOCK)
@@ -108,12 +108,12 @@ class SingleInitRule(configRules: List<RulesConfig>) : DiktatRule(
                     .filter { it.left is KtNameReferenceExpression }
                     .filter { statement ->
                         statement.right?.node?.findAllDescendantsWithSpecificType(REFERENCE_EXPRESSION)?.all { arg ->
-                            properties.none { (it.psi as KtProperty).name == arg.text } || classParameters?.find { it == arg.text } != null
+                            propertiesFromClassBody.any { (it.psi as KtProperty).name == arg.text } || propertiesFromPrimaryConstructor?.find { it == arg.text } != null
                         } ?: false
                     }
                     .groupBy { assignment ->
                         val assignedRef = assignment.left as KtNameReferenceExpression
-                        properties.find { (it.psi as KtProperty).name == assignedRef.getReferencedName() }
+                        propertiesFromClassBody.find { (it.psi as KtProperty).name == assignedRef.getReferencedName() }
                     }
                     .filterKeys { it != null }
                     .mapKeys { (k, _) -> k as ASTNode }
