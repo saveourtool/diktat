@@ -2,8 +2,8 @@ package test.paragraph2.kdoc
 
 /**
  * @property name another text
- * some text
-*/
+* some text
+ */
 class A (
         var name: String
 ){}
@@ -20,8 +20,8 @@ class A (
 
 /**
  * @property name another text
- * text
-*/
+* text
+ */
 class A (
         val name: String
 ){}
