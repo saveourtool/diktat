@@ -47,7 +47,7 @@ class SingleInitRuleWarnTest : LintTestBase(::SingleInitRule) {
     fun `should warn if properties are assigned in init block`() {
         lintMethod(
             """
-                |class A(baseUrl: String) {
+                |class A(baseUrl: String, hardUrl: String) {
                 |    private val customUrl: String
                 |    init {
                 |        customUrl = "${'$'}baseUrl/myUrl"
@@ -55,6 +55,27 @@ class SingleInitRuleWarnTest : LintTestBase(::SingleInitRule) {
                 |}
             """.trimMargin(),
             LintError(3, 5, ruleId, "${Warnings.MULTIPLE_INIT_BLOCKS.warnText()} `init` block has assignments that can be moved to declarations", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.MULTIPLE_INIT_BLOCKS)
+    fun `shouldn't warn if property are assigned on property in init block`() {
+        lintMethod(
+            """
+                |class A {
+                |    var a: String
+                |    var c: String
+                |    
+                |    init {
+                |        val b: String = "a"
+                |        a = b
+                |        
+                |        val d: String = "c"
+                |        c = foo(d)
+                |    }
+                |}
+            """.trimMargin()
         )
     }
 }
