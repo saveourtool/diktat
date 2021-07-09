@@ -4,6 +4,8 @@
 
 package test.paragraph3.top_level
 
-import org.cqfn.diktat.bar
+import org.cqfn.diktat.Bar
 
-class A {}
+class A {
+    val a = Bar()
+}

@@ -146,6 +146,7 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
                 copyrightWords.any { blockCommentNode.text.contains(it, ignoreCase = true) }
             }
         var headerKdoc = firstCodeNode.prevSibling { it.elementType == KDOC }
+            ?: importsList?.prevSibling { it.elementType == KDOC }
         // Annotations with target`file` can only be placed before `package` directive.
         var fileAnnotations = node.findChildByType(FILE_ANNOTATION_LIST)
         // We also collect all other elements that are placed on top of the file.
