@@ -54,6 +54,7 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
 
 import java.net.MalformedURLException
 import java.net.URL
+import kotlin.math.min
 
 /**
  * The rule checks for lines in the file that exceed the maximum length.
@@ -86,6 +87,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         node.text.lines().forEach { line ->
             if (line.length > configuration.lineLength) {
                 val newNode = node.psi.findElementAt(offset + configuration.lineLength.toInt() - 1)!!.node
+                println("NEW_NODE ${newNode.elementType} | ${newNode.text} IN ${node.psi.text.substring(offset + configuration.lineLength.toInt() - 1, minOf(offset + configuration.lineLength.toInt() + 5, offset + line.length))}")
                 if ((newNode.elementType != KDOC_TEXT && newNode.elementType != KDOC_MARKDOWN_INLINE_LINK) ||
                         !isKdocValid(newNode)) {
                     positionByOffset = node.treeParent.calculateLineColByOffset()
@@ -223,6 +225,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             if (newParent.hasChildOfType(BINARY_EXPRESSION)) {
                 val leftOffset = positionByOffset(newParent.findChildByType(BINARY_EXPRESSION)!!.startOffset).second
                 val binList: MutableList<ASTNode> = mutableListOf()
+                println("WRONG NODE : ${wrongNode.text}")
                 dfsForProperty(wrongNode, binList)
                 if (binList.size == 1) {
                     return LongLineFixableCases.None
@@ -324,6 +327,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      */
     @Suppress("UnsafeCallOnNullableType")
     private fun fixLongBinaryExpression(wrongBinaryExpression: LongLineFixableCases.Condition) {
+        println("BINARY EXPR")
+        wrongBinaryExpression.binList.forEach { print(" | ${it.text} | ") }
         val leftOffset = wrongBinaryExpression.leftOffset
         val binList = wrongBinaryExpression.binList
         var binaryText = ""
@@ -331,6 +336,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             binaryText += findAllText(astNode)
             if (leftOffset + binaryText.length > wrongBinaryExpression.maximumLineLength && index != 0) {
                 val commonParent = astNode.parent({ it in binList[index - 1].parents() })!!
+                println("\nASTNODE ${astNode.text}")
+                println("COMMON PARENT ${commonParent.text}")
                 val nextNode = commonParent.findChildByType(OPERATION_REFERENCE)!!.treeNext
                 if (!nextNode.text.contains("\n")) {
                     commonParent.appendNewlineMergingWhiteSpace(nextNode, nextNode)
