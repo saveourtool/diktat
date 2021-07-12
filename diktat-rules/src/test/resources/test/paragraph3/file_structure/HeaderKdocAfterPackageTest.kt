@@ -1,8 +1,8 @@
+package test.paragraph3.file_structure
+
 /**
  * Header Kdoc
  */
-
-package test.paragraph3.top_level
 
 import org.cqfn.diktat.Bar
 

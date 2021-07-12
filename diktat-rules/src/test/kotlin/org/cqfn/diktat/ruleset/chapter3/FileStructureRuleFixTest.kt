@@ -24,6 +24,12 @@ class FileStructureRuleFixTest : FixTestBase("test/paragraph3/file_structure", :
     }
 
     @Test
+    @Tag(WarningNames.FILE_INCORRECT_BLOCKS_ORDER)
+    fun `should move header kdoc before package directive`() {
+        fixAndCompare("HeaderKdocAfterPackageExpected.kt", "HeaderKdocAfterPackageTest.kt")
+    }
+
+    @Test
     @Tag(WarningNames.FILE_NO_BLANK_LINE_BETWEEN_BLOCKS)
     fun `should insert blank lines between code blocks`() {
         fixAndCompare("BlankLinesBetweenBlocksExpected.kt", "MissingBlankLinesBetweenBlocksTest.kt")
@@ -83,11 +89,5 @@ class FileStructureRuleFixTest : FixTestBase("test/paragraph3/file_structure", :
     @Tag(WarningNames.FILE_UNORDERED_IMPORTS)
     fun `should move other comments before package node`() {
         fixAndCompare("OtherCommentsExpected.kt", "OtherCommentsTest.kt")
-    }
-
-    @Test
-    @Tag(WarningNames.TOP_LEVEL_ORDER)
-    fun `should fix top level order with header kdoc`() {
-        fixAndCompare("MoveHeaderKdocExpected.kt", "MoveHeaderKdocTest.kt")
     }
 }
