@@ -145,7 +145,12 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
             ?.takeIf { blockCommentNode ->
                 copyrightWords.any { blockCommentNode.text.contains(it, ignoreCase = true) }
             }
+        // firstCodeNode could be:
+        // * package directive - in this case we looking for kdoc before package directive
+        // and if it doesn't exist, additionally looking for kdoc before imports list
+        // * imports list or actual code - if there is no kdoc before it, suppose that it is absent in file
         var headerKdoc = firstCodeNode.prevSibling { it.elementType == KDOC }
+            ?: if (firstCodeNode == packageDirectiveNode) importsList?.prevSibling { it.elementType == KDOC } else null
         // Annotations with target`file` can only be placed before `package` directive.
         var fileAnnotations = node.findChildByType(FILE_ANNOTATION_LIST)
         // We also collect all other elements that are placed on top of the file.
