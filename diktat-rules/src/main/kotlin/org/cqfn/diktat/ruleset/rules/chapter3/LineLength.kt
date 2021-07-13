@@ -17,16 +17,19 @@ import com.pinterest.ktlint.core.ast.ElementType.BOOLEAN_CONSTANT
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CHARACTER_CONSTANT
 import com.pinterest.ktlint.core.ast.ElementType.CONDITION
+import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.EQ
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FLOAT_CONSTANT
 import com.pinterest.ktlint.core.ast.ElementType.FUN
+import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_LITERAL
 import com.pinterest.ktlint.core.ast.ElementType.IF
 import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.INTEGER_CONSTANT
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_MARKDOWN_INLINE_LINK
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_TEXT
+import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.LITERAL_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.LONG_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.LPAR
@@ -38,6 +41,7 @@ import com.pinterest.ktlint.core.ast.ElementType.PREFIX_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.RPAR
+import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.SHORT_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.STRING_TEMPLATE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
@@ -54,7 +58,6 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
 
 import java.net.MalformedURLException
 import java.net.URL
-import kotlin.math.min
 
 /**
  * The rule checks for lines in the file that exceed the maximum length.
@@ -227,6 +230,9 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                 val binList: MutableList<ASTNode> = mutableListOf()
                 println("WRONG NODE : ${wrongNode.text}")
                 dfsForProperty(wrongNode, binList)
+                print("BINARY EXPR: [")
+                binList.forEach { print("${it.text} | ") }
+                print("]\n")
                 if (binList.size == 1) {
                     return LongLineFixableCases.None
                 }
@@ -327,17 +333,16 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      */
     @Suppress("UnsafeCallOnNullableType")
     private fun fixLongBinaryExpression(wrongBinaryExpression: LongLineFixableCases.Condition) {
-        println("BINARY EXPR")
-        wrongBinaryExpression.binList.forEach { print(" | ${it.text} | ") }
         val leftOffset = wrongBinaryExpression.leftOffset
         val binList = wrongBinaryExpression.binList
         var binaryText = ""
         binList.forEachIndexed { index, astNode ->
             binaryText += findAllText(astNode)
+            println("binaryText [${binaryText}]")
             if (leftOffset + binaryText.length > wrongBinaryExpression.maximumLineLength && index != 0) {
                 val commonParent = astNode.parent({ it in binList[index - 1].parents() })!!
                 println("\nASTNODE ${astNode.text}")
-                println("COMMON PARENT ${commonParent.text}")
+                println("COMMON PARENT ${commonParent.elementType} | ${commonParent.text}")
                 val nextNode = commonParent.findChildByType(OPERATION_REFERENCE)!!.treeNext
                 if (!nextNode.text.contains("\n")) {
                     commonParent.appendNewlineMergingWhiteSpace(nextNode, nextNode)
@@ -377,7 +382,9 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         node = astNode.parent({ newNode -> newNode.nextSibling { it.elementType == OPERATION_REFERENCE } != null },
             strict = false)
             ?: return text
+        //println("NODE 1 ${node.text}")
         node = node.nextSibling { it.elementType == OPERATION_REFERENCE }!!
+        //println("NODE 2 ${node.text}")
         if (node.treePrev.elementType == WHITE_SPACE) {
             text += node.treePrev.text
         }
@@ -436,10 +443,17 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
+    // Collect all children to the right of the equal sign with specific type (propertyList).
     private fun dfsForProperty(node: ASTNode, binList: MutableList<ASTNode>) {
         node.getChildren(null).forEach {
-            if (it.elementType in propertyList) {
+            println("CHILD: ${it.elementType} | ${it.text}")
+            if (it.elementType in propertyList ){
+                //&& it.treeParent.treeParent?.elementType == BINARY_EXPRESSION) {
+                //&& it.treeParent.treeParent?.elementType != DOT_QUALIFIED_EXPRESSION
+                //&& it.treeParent.treeParent?.elementType != SAFE_ACCESS_EXPRESSION) {
+                //println("CHILD: ${it.elementType} | ${it.text}")
                 if (it.elementType == REFERENCE_EXPRESSION && it.treeParent.elementType == CALL_EXPRESSION) {
+                    println("PAR: ${it.treeParent.elementType} | ${it.treeParent.text}")
                     binList.add(it.treeParent)
                 } else {
                     binList.add(it)
@@ -486,7 +500,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
 
         /**
          * @property node node
-         * @property hasNewLineBefore flag to handle type of comment: ordinary comment(long part of which should be moved to the next line)
+         * @property hasNewLineBefore flag to handle type of comment: ordinary comment (long part of which should be moved to the next line)
          * and inline comments (which should be moved entirely to the previous line)
          * @property indexLastSpace index of last space to substring comment
          */
