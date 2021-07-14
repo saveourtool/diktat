@@ -422,13 +422,18 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
             """
                 |package org.cqfn.diktat.example
                 |
+                |import com.example.equals
                 |import com.example.get
                 |import com.example.invoke
                 |import com.example.set
+                |import org.gradle.kotlin.dsl.provideDelegate
                 |import tasks.getValue
+                |import tasks.setValue
                 |
                 |fun main() {
-                |   val a by tasks.getting
+                |   val a by tasks.getting  // `getValue` is used
+                |   val b by project.tasks  // `provideDelegate` is used
+                |   a != 0
                 |}
             """.trimMargin(),
         )
@@ -442,15 +447,17 @@ class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
                 |package org.cqfn.diktat.example
                 |
                 |import Delegate
+                |import com.example.equals
                 |import com.example.get
                 |import com.example.invoke
                 |import com.example.set
                 |
                 |fun main() {
-                |   val a
+                |   val a: Foo
                 |}
             """.trimMargin(),
-            LintError(1, 1, ruleId, "${Warnings.UNUSED_IMPORT.warnText()} Delegate - unused import", true)
+            LintError(1, 1, ruleId, "${Warnings.UNUSED_IMPORT.warnText()} Delegate - unused import", true),
+            LintError(1, 1, ruleId, "${Warnings.UNUSED_IMPORT.warnText()} com.example.equals - unused import", true)
         )
     }
 

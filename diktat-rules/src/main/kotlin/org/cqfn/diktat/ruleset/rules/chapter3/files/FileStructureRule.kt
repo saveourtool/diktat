@@ -16,6 +16,7 @@ import org.cqfn.diktat.ruleset.utils.StandardPlatforms
 import org.cqfn.diktat.ruleset.utils.copyrightWords
 import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.handleIncorrectOrder
+import org.cqfn.diktat.ruleset.utils.ignoreImports
 import org.cqfn.diktat.ruleset.utils.moveChildBefore
 import org.cqfn.diktat.ruleset.utils.operatorMap
 
@@ -73,7 +74,12 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     private val refSet: MutableSet<String> = mutableSetOf()
     private var packageName = ""
-    private val ignoreImports = setOf("invoke", "get", "set", "getValue")
+    
+    /**
+     * There are groups of methods, which should be excluded from usage check without type resolution.
+     * `componentN` is a method for N-th component in destructuring declarations.
+     */
+    private val ignoreImportsPatterns = setOf("component\\d+".toRegex())
 
     override fun logic(node: ASTNode) {
         if (node.elementType == FILE) {
@@ -231,10 +237,13 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
                 ) {
                     // this branch corresponds to imports from the same package
                     deleteImport(importPath, node, ktImportDirective)
-                } else if (importName != null && !ignoreImports.contains(importName) && !refSet.contains(importName) && !operatorMap.containsKey(importName)) {
-                    // this import is not used anywhere
-                    // Fixme: operatorMap imports and `getValue` should be deleted if unused
-                    deleteImport(importPath, node, ktImportDirective)
+                } else if (importName != null && !refSet.contains(importName)) {
+                    // Fixme: operatorMap imports and `getValue` should be deleted if unused, but we can't detect for sure
+                    val shouldImportBeIgnored = ignoreImports.contains(importName) || ignoreImportsPatterns.any { it.matches(importName) }
+                    if (!shouldImportBeIgnored) {
+                        // this import is not used anywhere
+                        deleteImport(importPath, node, ktImportDirective)
+                    }
                 }
             }
     }
@@ -254,7 +263,7 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun findAllReferences(node: ASTNode) {
         node.findAllDescendantsWithSpecificType(OPERATION_REFERENCE).forEach { ref ->
             if (!ref.isPartOf(IMPORT_DIRECTIVE)) {
-                val references = operatorMap.filterValues { it == ref.text }
+                val references = operatorMap.filterValues { ref.text in it }
                 if (references.isNotEmpty()) {
                     references.keys.forEach { key -> refSet.add(key) }
                 } else {
