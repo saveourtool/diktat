@@ -74,6 +74,11 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     private val refSet: MutableSet<String> = mutableSetOf()
     private var packageName = ""
+    
+    /**
+     * There are groups of methods, which should be excluded from usage check without type resolution.
+     * `componentN` is a method for N-th component in destructuring declarations.
+     */
     private val ignoreImportsPatterns = setOf("component\\d+".toRegex())
 
     override fun logic(node: ASTNode) {
