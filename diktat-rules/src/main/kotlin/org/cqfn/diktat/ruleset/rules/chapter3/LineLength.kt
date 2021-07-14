@@ -17,6 +17,7 @@ import com.pinterest.ktlint.core.ast.ElementType.BOOLEAN_CONSTANT
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CHARACTER_CONSTANT
 import com.pinterest.ktlint.core.ast.ElementType.CONDITION
+import com.pinterest.ktlint.core.ast.ElementType.DOT
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.EQ
@@ -90,7 +91,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         node.text.lines().forEach { line ->
             if (line.length > configuration.lineLength) {
                 val newNode = node.psi.findElementAt(offset + configuration.lineLength.toInt() - 1)!!.node
-                println("NEW_NODE ${newNode.elementType} | ${newNode.text} IN ${node.psi.text.substring(offset + configuration.lineLength.toInt() - 1, minOf(offset + configuration.lineLength.toInt() + 5, offset + line.length))}")
+                println("\n------------------\n[isFixMode: ${isFixMode}] NEW_NODE ${newNode.elementType} | ${newNode.text} IN ${node.psi.text.substring(offset + configuration.lineLength.toInt() - 1, minOf(offset + configuration.lineLength.toInt() + 5, offset + line.length))}")
                 if ((newNode.elementType != KDOC_TEXT && newNode.elementType != KDOC_MARKDOWN_INLINE_LINK) ||
                         !isKdocValid(newNode)) {
                     positionByOffset = node.treeParent.calculateLineColByOffset()
@@ -220,6 +221,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
 
     @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
     private fun checkProperty(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
+        println("Check property")
         var newParent = wrongNode
         while (newParent.hasChildOfType(PARENTHESIZED)) {
             newParent = wrongNode.findChildByType(PARENTHESIZED)!!
@@ -329,7 +331,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      * This method fix too long binary expression: split after OPERATION_REFERENCE closest to max length
      *
      * In this method we collect all binary expression in correct order and then
-     * we collect their if their length less then max.
+     * we collect their if their length less than max.
      */
     @Suppress("UnsafeCallOnNullableType")
     private fun fixLongBinaryExpression(wrongBinaryExpression: LongLineFixableCases.Condition) {
@@ -338,7 +340,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         var binaryText = ""
         binList.forEachIndexed { index, astNode ->
             binaryText += findAllText(astNode)
-            println("binaryText [${binaryText}]")
+            println("binaryText [${leftOffset + binaryText.length } vs ${wrongBinaryExpression.maximumLineLength}] [${binaryText}]")
             if (leftOffset + binaryText.length > wrongBinaryExpression.maximumLineLength && index != 0) {
                 val commonParent = astNode.parent({ it in binList[index - 1].parents() })!!
                 println("\nASTNODE ${astNode.text}")
@@ -443,23 +445,30 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    // Collect all children to the right of the equal sign with specific type (propertyList).
+    // Depth-first search. Collect all children to the right of the equal sign with specific type (propertyList), by which
+    // we can split expression. Such logic needed because AST representation of complex conditions is quite strange
     private fun dfsForProperty(node: ASTNode, binList: MutableList<ASTNode>) {
         node.getChildren(null).forEach {
-            println("CHILD: ${it.elementType} | ${it.text}")
-            if (it.elementType in propertyList ){
-                //&& it.treeParent.treeParent?.elementType == BINARY_EXPRESSION) {
-                //&& it.treeParent.treeParent?.elementType != DOT_QUALIFIED_EXPRESSION
-                //&& it.treeParent.treeParent?.elementType != SAFE_ACCESS_EXPRESSION) {
-                //println("CHILD: ${it.elementType} | ${it.text}")
-                if (it.elementType == REFERENCE_EXPRESSION && it.treeParent.elementType == CALL_EXPRESSION) {
-                    println("PAR: ${it.treeParent.elementType} | ${it.treeParent.text}")
-                    binList.add(it.treeParent)
+            //println("CHILD: ${it.elementType} | ${it.text}")
+            if (it.elementType in propertyList) {
+                val parentType = it.treeParent?.elementType
+                if (it.elementType == REFERENCE_EXPRESSION &&
+                    (parentType == CALL_EXPRESSION || parentType == DOT_QUALIFIED_EXPRESSION || parentType == SAFE_ACCESS_EXPRESSION)
+                ) {
+                    //println("PAR: ${it.treeParent.elementType} | ${it.treeParent.text}")
+                    binList.tryAdd(it.treeParent)
                 } else {
-                    binList.add(it)
+                    //println("CHILD: ${it.elementType} | ${it.text}")
+                    binList.tryAdd(it)
                 }
             }
             dfsForProperty(it, binList)
+        }
+    }
+
+    private fun MutableList<ASTNode>.tryAdd(node: ASTNode) {
+        if (node !in this && node.treeParent?.elementType == BINARY_EXPRESSION) {
+            this.add(node)
         }
     }
 
