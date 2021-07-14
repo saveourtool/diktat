@@ -95,7 +95,6 @@
   enabled: true
   configuration:
     maxSize: '2000'
-    ignoreFolders: ''
 - name: COMMENTED_OUT_CODE
   enabled: true
 - name: FILE_CONTAINS_ONLY_COMMENTS
