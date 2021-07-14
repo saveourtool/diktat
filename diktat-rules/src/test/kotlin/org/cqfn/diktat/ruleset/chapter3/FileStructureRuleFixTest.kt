@@ -24,6 +24,12 @@ class FileStructureRuleFixTest : FixTestBase("test/paragraph3/file_structure", :
     }
 
     @Test
+    @Tag(WarningNames.FILE_INCORRECT_BLOCKS_ORDER)
+    fun `should move header kdoc before package directive`() {
+        fixAndCompare("HeaderKdocAfterPackageExpected.kt", "HeaderKdocAfterPackageTest.kt")
+    }
+
+    @Test
     @Tag(WarningNames.FILE_NO_BLANK_LINE_BETWEEN_BLOCKS)
     fun `should insert blank lines between code blocks`() {
         fixAndCompare("BlankLinesBetweenBlocksExpected.kt", "MissingBlankLinesBetweenBlocksTest.kt")
