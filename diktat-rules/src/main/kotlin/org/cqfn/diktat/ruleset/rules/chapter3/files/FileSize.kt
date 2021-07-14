@@ -5,12 +5,12 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_IS_TOO_LONG
 import org.cqfn.diktat.ruleset.rules.DiktatRule
+import org.cqfn.diktat.ruleset.utils.SRC_DIRECTORY_NAME
 import org.cqfn.diktat.ruleset.utils.getFilePath
+import org.cqfn.diktat.ruleset.utils.isGradleScript
 import org.cqfn.diktat.ruleset.utils.splitPathToDirs
 
 import com.pinterest.ktlint.core.ast.ElementType
-import org.cqfn.diktat.ruleset.utils.SRC_DIRECTORY_NAME
-import org.cqfn.diktat.ruleset.utils.isGradleScript
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.slf4j.LoggerFactory
 

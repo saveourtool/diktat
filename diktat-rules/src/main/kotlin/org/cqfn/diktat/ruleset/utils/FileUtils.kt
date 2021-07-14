@@ -1,3 +1,7 @@
+/**
+ * Utility methods to work with file paths.
+ */
+
 package org.cqfn.diktat.ruleset.utils
 
 internal const val SRC_DIRECTORY_NAME = "src"
@@ -8,9 +12,9 @@ internal const val SRC_DIRECTORY_NAME = "src"
  * @return list of path parts
  */
 fun String.splitPathToDirs(): List<String> =
-    this.replace("\\", "/")
-        .replace("//", "/")
-        .split("/")
+        this.replace("\\", "/")
+            .replace("//", "/")
+            .split("/")
 
 /**
  * Checks if [this] String is a name of a kotlin script file by checking whether file extension equals 'kts'
