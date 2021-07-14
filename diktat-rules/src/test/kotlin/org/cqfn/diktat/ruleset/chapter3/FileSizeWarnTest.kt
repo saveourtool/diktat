@@ -22,22 +22,10 @@ class FileSizeWarnTest : LintTestBase(::FileSize) {
         RulesConfig(Warnings.FILE_IS_TOO_LONG.name, true,
             mapOf("maxSize" to "10"))
     )
-    private val rulesConfigListIgnore: List<RulesConfig> = listOf(
-        RulesConfig(Warnings.FILE_IS_TOO_LONG.name, true,
-            mapOf("maxSize" to "5"))
-    )
     private val rulesConfigListEmpty: List<RulesConfig> = listOf(
         RulesConfig(Warnings.FILE_IS_TOO_LONG.name, true,
             emptyMap())
     )
-
-    @Test
-    @Tag(WarningNames.FILE_IS_TOO_LONG)
-    fun `file larger then max with ignore`() {
-        val path = javaClass.classLoader.getResource("test/paragraph3/src/main/FileSizeLarger.kt")
-        val file = File(path!!.file)
-        lintMethod(file.readText(), fileName = file.absolutePath, rulesConfigList = rulesConfigListIgnore)
-    }
 
     @Test
     @Tag(WarningNames.FILE_IS_TOO_LONG)
