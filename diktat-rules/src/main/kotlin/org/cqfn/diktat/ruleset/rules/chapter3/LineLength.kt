@@ -34,6 +34,7 @@ import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.LITERAL_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.LONG_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.LPAR
+import com.pinterest.ktlint.core.ast.ElementType.NULL
 import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.PARENTHESIZED
@@ -42,6 +43,7 @@ import com.pinterest.ktlint.core.ast.ElementType.PREFIX_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.RPAR
+import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS
 import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.SHORT_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.STRING_TEMPLATE
@@ -96,6 +98,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                         !isKdocValid(newNode)) {
                     positionByOffset = node.treeParent.calculateLineColByOffset()
                     val fixableType = isFixable(newNode, configuration)
+                    println("CAN BE FIXED? ${fixableType != LongLineFixableCases.None}")
                     LONG_LINE.warnAndFix(configRules, emitWarn, isFixMode,
                         "max line length ${configuration.lineLength}, but was ${line.length}",
                         offset + node.startOffset, node, fixableType != LongLineFixableCases.None) {
@@ -176,6 +179,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             // can't fix this case
             return LongLineFixableCases.None
         }
+        println("DEL INDEX ${delimiterIndex} ${node.text.substring(0, delimiterIndex)}")
         // check, that space to split is a part of text - not code
         // If the space split is part of the code, then there is a chance of breaking the code when fixing, that why we should ignore it
         val isSpaceIsWhiteSpace = node.psi.findElementAt(delimiterIndex)!!.node.isWhiteSpace()
@@ -183,11 +187,14 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             return LongLineFixableCases.None
         }
         // minus 2 here as we are inserting ` +` and we don't want it to exceed line length
-        val shouldAddTwoSpaces = multiLineOffset == 0 && leftOffset + delimiterIndex > configuration.lineLength.toInt() - 2
+        val shouldAddTwoSpaces = (multiLineOffset == 0) && (leftOffset + delimiterIndex > configuration.lineLength.toInt() - 2)
         val correcterDelimiter = if (shouldAddTwoSpaces) {
             node.text.substring(0, delimiterIndex - 2).lastIndexOf(' ')
         } else {
             delimiterIndex
+        }
+        if (correcterDelimiter == -1) {
+            return LongLineFixableCases.None
         }
         return LongLineFixableCases.StringTemplate(node, correcterDelimiter, multiLineOffset == 0)
     }
@@ -342,8 +349,9 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             binaryText += findAllText(astNode)
             println("binaryText [${leftOffset + binaryText.length } vs ${wrongBinaryExpression.maximumLineLength}] [${binaryText}]")
             if (leftOffset + binaryText.length > wrongBinaryExpression.maximumLineLength && index != 0) {
-                val commonParent = astNode.parent({ it in binList[index - 1].parents() })!!
-                println("\nASTNODE ${astNode.text}")
+                println("---")
+                val commonParent = astNode.parent({ println("${it.elementType} ${it.text} ast ${astNode.elementType}"); it.elementType == BINARY_EXPRESSION && it in binList[index - 1].parents() })!!
+                println("\nASTNODE ${astNode.elementType} | ${astNode.text}")
                 println("COMMON PARENT ${commonParent.elementType} | ${commonParent.text}")
                 val nextNode = commonParent.findChildByType(OPERATION_REFERENCE)!!.treeNext
                 if (!nextNode.text.contains("\n")) {
@@ -384,9 +392,9 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         node = astNode.parent({ newNode -> newNode.nextSibling { it.elementType == OPERATION_REFERENCE } != null },
             strict = false)
             ?: return text
-        //println("NODE 1 ${node.text}")
+
         node = node.nextSibling { it.elementType == OPERATION_REFERENCE }!!
-        //println("NODE 2 ${node.text}")
+
         if (node.treePrev.elementType == WHITE_SPACE) {
             text += node.treePrev.text
         }
@@ -453,12 +461,18 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             if (it.elementType in propertyList) {
                 val parentType = it.treeParent?.elementType
                 if (it.elementType == REFERENCE_EXPRESSION &&
-                    (parentType == CALL_EXPRESSION || parentType == DOT_QUALIFIED_EXPRESSION || parentType == SAFE_ACCESS_EXPRESSION)
+                    (parentType == CALL_EXPRESSION)
+                            //|| parentType == DOT_QUALIFIED_EXPRESSION || parentType == SAFE_ACCESS_EXPRESSION)
                 ) {
                     //println("PAR: ${it.treeParent.elementType} | ${it.treeParent.text}")
-                    binList.tryAdd(it.treeParent)
+                    //if (it.treeParent?.treeParent?.elementType != DOT_QUALIFIED_EXPRESSION && it.treeParent?.treeParent?.elementType != SAFE_ACCESS_EXPRESSION) {
+                        //println("PAR: ${it.treeParent.elementType} | ${it.treeParent.text}")
+                        //println("GRAND PAR: ${it.treeParent.treeParent.elementType} | ${it.treeParent.treeParent.text}")
+                        binList.tryAdd(it.treeParent)
+                    //}
                 } else {
                     //println("CHILD: ${it.elementType} | ${it.text}")
+                    //binList.add(it)
                     binList.tryAdd(it)
                 }
             }
@@ -467,7 +481,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun MutableList<ASTNode>.tryAdd(node: ASTNode) {
-        if (node !in this && node.treeParent?.elementType == BINARY_EXPRESSION) {
+        //println(node.treeParent?.elementType)
+        if (node !in this) {
             this.add(node)
         }
     }
@@ -555,6 +570,6 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         private const val STRING_PART_OFFSET = 4
         private val propertyList = listOf(INTEGER_CONSTANT, LITERAL_STRING_TEMPLATE_ENTRY, FLOAT_CONSTANT,
             CHARACTER_CONSTANT, REFERENCE_EXPRESSION, BOOLEAN_CONSTANT, LONG_STRING_TEMPLATE_ENTRY,
-            SHORT_STRING_TEMPLATE_ENTRY)
+            SHORT_STRING_TEMPLATE_ENTRY, NULL)
     }
 }

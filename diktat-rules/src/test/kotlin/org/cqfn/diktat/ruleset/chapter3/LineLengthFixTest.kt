@@ -70,12 +70,13 @@ class LineLengthFixTest : FixTestBase("test/paragraph3/long_line", ::LineLength)
     }
 
     @Test
-    fun `should fix long binary expression 2, limit 50`() {
+    fun `should fix complex long binary expressions`() {
         fixAndCompare("LongBinaryExpressionExpected.kt", "LongBinaryExpressionTest.kt", rulesConfigListLineLength)
     }
 
     @Test
     fun `should fix long binary expression 2, limit 180`() {
-        fixAndCompare("LongBinaryExpressionExpected.kt", "LongBinaryExpressionTest.kt", rulesConfigListLargeLineLength)
+        //fixAndCompare("LongBinaryExpressionExpected2.kt", "LongBinaryExpressionTest2.kt", rulesConfigListLargeLineLength)
+        fixAndCompare("LongBinaryExpressionExpected2.kt", "LongBinaryExpressionTest2.kt", rulesConfigListLineLength)
     }
 }
