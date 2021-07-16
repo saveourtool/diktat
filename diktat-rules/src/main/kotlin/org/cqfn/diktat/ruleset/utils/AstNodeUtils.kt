@@ -768,6 +768,17 @@ fun ASTNode.getLineNumber(): Int =
         calculateLineNumber()
 
 /**
+ * Get node by taking children by types
+ *
+ * @return child of type
+ */
+fun ASTNode.takeByChainOfTypes(vararg types: IElementType): ASTNode? {
+    var node: ASTNode? = this
+    types.forEach { node = node?.findChildByType(it) }
+    return node
+}
+
+/**
  * This function calculates line number instead of using cached values.
  * It should be used when AST could be previously mutated by auto fixers.
  */
