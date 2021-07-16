@@ -116,8 +116,8 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
         val filePathParts = fileName.splitPathToDirs()
 
         return if (!filePathParts.contains(PACKAGE_PATH_ANCHOR)) {
-            log.error("Not able to determine a path to a scanned file or src directory cannot be found in it's path." +
-                    " Will not be able to determine correct package name. It can happen due to missing <src> directory in the path")
+            log.error("Not able to determine a path to a scanned file or \"$PACKAGE_PATH_ANCHOR\" directory cannot be found in it's path." +
+                    " Will not be able to determine correct package name. It can happen due to missing <$PACKAGE_PATH_ANCHOR> directory in the path")
             emptyList()
         } else {
             // creating a real package name:
@@ -276,7 +276,7 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
         /**
          * Directory which is considered the start of sources file tree
          */
-        const val PACKAGE_PATH_ANCHOR = "src"
+        const val PACKAGE_PATH_ANCHOR = SRC_DIRECTORY_NAME
 
         /**
          * Symbol that is used to separate parts in package name
