@@ -445,18 +445,12 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         node.getChildren(null).forEach {
             if (it.elementType in propertyList) {
                 if (it.elementType == REFERENCE_EXPRESSION && it.treeParent?.elementType == CALL_EXPRESSION) {
-                    binList.tryAdd(it.treeParent)
+                    binList.add(it.treeParent)
                 } else {
-                    binList.tryAdd(it)
+                    binList.add(it)
                 }
             }
             dfsForProperty(it, binList)
-        }
-    }
-
-    private fun MutableList<ASTNode>.tryAdd(node: ASTNode) {
-        if (node !in this) {
-            this.add(node)
         }
     }
 
