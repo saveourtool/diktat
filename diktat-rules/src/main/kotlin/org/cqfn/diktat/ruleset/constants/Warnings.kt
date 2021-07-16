@@ -116,6 +116,7 @@ enum class Warnings(
     TRAILING_COMMA(true, "3.6.2", "use trailing comma"),
     COMPLEX_EXPRESSION(false, "3.6.3", "complex dot qualified expression should be replaced with variable"),
     COMPLEX_BOOLEAN_EXPRESSION(true, "3.6.4", "too complex boolean expression, that can be simplified"),
+
     // FixMe: autofixing will be added for this rule
     STRING_CONCATENATION(true, "3.15.1", "strings should not be concatenated using plus operator - use string templates instead if the statement fits one line"),
     TOO_MANY_BLANK_LINES(true, "3.7.1", "too many consecutive blank lines"),
