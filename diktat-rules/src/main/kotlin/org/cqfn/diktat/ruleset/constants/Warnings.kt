@@ -133,7 +133,7 @@ enum class Warnings(
     STRING_TEMPLATE_QUOTES(true, "3.15.2", "string template has redundant quotes"),
     FILE_NAME_MATCH_CLASS(true, "3.1.2", "file name is incorrect - it should match with the class described in it if there is the only one class declared"),
     COLLAPSE_IF_STATEMENTS(true, "3.16.1", "avoid using redundant nested if-statements, which could be collapsed into a single one"),
-    RANGE_TO_UNTIL(true, "3.17", "use until instead of range"),
+    RANGE_TO_UNTIL(true, "3.17.1", "use until instead of range"),
 
     // ======== chapter 4 ========
     NULLABLE_PROPERTY_TYPE(true, "4.3.1", "try to avoid use of nullable types"),
