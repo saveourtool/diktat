@@ -148,7 +148,6 @@
   configuration:
     # number of lines
     maxSize: '2000'
-    ignoreFolders: ''
 # Checks that file does not contain commented out code
 - name: COMMENTED_OUT_CODE
   enabled: true
