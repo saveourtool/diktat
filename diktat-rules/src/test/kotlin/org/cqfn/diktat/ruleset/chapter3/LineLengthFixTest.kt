@@ -7,10 +7,6 @@ import org.cqfn.diktat.util.FixTestBase
 import org.junit.jupiter.api.Test
 
 class LineLengthFixTest : FixTestBase("test/paragraph3/long_line", ::LineLength) {
-    private val rulesConfigListLargeLineLength: List<RulesConfig> = listOf(
-        RulesConfig(LONG_LINE.name, true,
-            mapOf("lineLength" to "180"))
-    )
     private val rulesConfigListDefaultLineLength: List<RulesConfig> = listOf(
         RulesConfig(LONG_LINE.name, true,
             mapOf("lineLength" to "120"))
@@ -45,6 +41,11 @@ class LineLengthFixTest : FixTestBase("test/paragraph3/long_line", ::LineLength)
     }
 
     @Test
+    fun `should fix complex long binary expressions`() {
+        fixAndCompare("LongBinaryExpressionExpected.kt", "LongBinaryExpressionTest.kt", rulesConfigListLineLength)
+    }
+
+    @Test
     fun `should fix long function`() {
         fixAndCompare("LongLineFunExpected.kt", "LongLineFunTest.kt", rulesConfigListLineLength)
     }
@@ -67,16 +68,5 @@ class LineLengthFixTest : FixTestBase("test/paragraph3/long_line", ::LineLength)
     @Test
     fun `should fix annotation`() {
         fixAndCompare("LongLineAnnotationExpected.kt", "LongLineAnnotationTest.kt", rulesConfigListLineLength)
-    }
-
-    @Test
-    fun `should fix complex long binary expressions`() {
-        fixAndCompare("LongBinaryExpressionExpected.kt", "LongBinaryExpressionTest.kt", rulesConfigListLineLength)
-    }
-
-    @Test
-    fun `should fix long binary expression 2, limit 180`() {
-        //fixAndCompare("LongBinaryExpressionExpected2.kt", "LongBinaryExpressionTest2.kt", rulesConfigListLargeLineLength)
-        fixAndCompare("LongBinaryExpressionExpected2.kt", "LongBinaryExpressionTest2.kt", rulesConfigListLineLength)
     }
 }
