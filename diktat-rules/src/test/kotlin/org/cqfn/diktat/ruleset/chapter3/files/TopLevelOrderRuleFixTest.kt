@@ -20,12 +20,4 @@ class TopLevelOrderRuleFixTest : FixTestBase("test/paragraph3/top_level", ::TopL
     fun `should fix top level order with comment`() {
         fixAndCompare("TopLevelWithCommentExpected.kt", "TopLevelWithCommentTest.kt")
     }
-
-    // FixMe: should be considered this case (swapped order of kdoc and package directive)
-    @Disabled("Isn't working yet, because KDoc is bound to class declaration here. Also, should be moved to FileStructureRuleFixTest.")
-    @Test
-    @Tag(WarningNames.TOP_LEVEL_ORDER)
-    fun `should fix top level order with header kdoc`() {
-        fixAndCompare("TopLevelWithHeaderKdocExpected.kt", "TopLevelWithHeaderKdocTest.kt")
-    }
 }
