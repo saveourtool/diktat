@@ -252,14 +252,13 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun ASTNode.isSingleLineGetterOrSetter(): Boolean {
-        val isDotQualifiedExp = this.findChildByType(DOT_QUALIFIED_EXPRESSION)?.psi
-        val isThisExpression = isDotQualifiedExp != null && (isDotQualifiedExp as KtDotQualifiedExpression).receiverExpression.node.elementType == THIS_EXPRESSION
+        val dotQualifiedExp = this.findChildByType(DOT_QUALIFIED_EXPRESSION)?.psi?.let { it as KtDotQualifiedExpression }
+        val isThisExpression = dotQualifiedExp != null && dotQualifiedExp.receiverExpression.node.elementType == THIS_EXPRESSION
         val isExpressionBodyTypes = expressionBodyTypes.any { hasChildOfType(it) }
         return isGetterOrSetter() && (isExpressionBodyTypes || getBodyLines().size == 1 || isThisExpression)
     }
 
     companion object {
-        // expression body of function can have a lot of 'ElementType's, this list might be not full
         private val expressionBodyTypes = setOf(CALL_EXPRESSION, REFERENCE_EXPRESSION)
         private val allExpressionBodyTypes = setOf(
             DOT_QUALIFIED_EXPRESSION,
