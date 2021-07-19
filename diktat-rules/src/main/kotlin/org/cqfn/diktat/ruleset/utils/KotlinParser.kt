@@ -76,6 +76,8 @@ class KotlinParser {
 
     /**
      * @param text kotlin code
+     *
+     * @return [KtPrimaryConstructor]
      */
     fun createPrimaryConstructor(text: String) = ktPsiFactory.createPrimaryConstructor(text)
 
