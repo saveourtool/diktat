@@ -74,6 +74,8 @@ class TestArgumentsReader(
 
     /**
      * Whether all tests should be run
+     *
+     * @return true if command has option "all"
      */
     fun shouldRunAllTests() = cmd.hasOption("all")
 

@@ -23,6 +23,12 @@ class KdocMethodsFixTest : FixTestBase("test/paragraph2/kdoc/package/src/main/ko
     }
 
     @Test
+    @Tag(WarningNames.MISSING_KDOC_ON_FUNCTION)
+    fun `KDoc should be for function with single line body`() {
+        fixAndCompare("MissingKdocOnFunctionExpected.kt", "MissingKdocOnFunctionTest.kt")
+    }
+
+    @Test
     @Tag(WarningNames.KDOC_EMPTY_KDOC)
     fun `Rule should not suggest empty KDoc templates`() {
         fixAndCompare("EmptyKdocExpected.kt", "EmptyKdocTested.kt")
