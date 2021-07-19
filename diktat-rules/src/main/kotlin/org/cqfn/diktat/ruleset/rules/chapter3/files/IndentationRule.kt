@@ -303,6 +303,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
 
         /**
          * @param token a token that caused indentation increment, for example an opening brace
+         * @return Unit
          */
         fun storeIncrementingToken(token: IElementType) = token
             .also { require(it in increasingTokens) { "Only tokens that increase indentation should be passed to this method" } }
@@ -342,6 +343,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
          * @param initiator a node that caused exceptional indentation
          * @param indent an additional indent
          * @param includeLastChild whether the last child node should be included in the range affected by exceptional indentation
+         * @return true if add exception in exceptionalIndents
          */
         fun addException(
             initiator: ASTNode,
@@ -351,6 +353,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
 
         /**
          * @param astNode the node which is used to determine whether exceptinoal indents are still active
+         * @return boolean result
          */
         fun checkAndReset(astNode: ASTNode) = exceptionalIndents.retainAll { it.isActive(astNode) }
 
