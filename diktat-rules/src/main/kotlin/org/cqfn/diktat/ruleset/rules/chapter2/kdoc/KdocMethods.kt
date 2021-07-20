@@ -170,7 +170,9 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
             ?: emptySet()
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun getRethrownExceptions(node: ASTNode) = node.findAllDescendantsWithSpecificType(CATCH).flatMap { catchClauseNode ->
+        // `parameterList` is `@Nullable @IfNotParsed`
         (catchClauseNode.psi as KtCatchClause).parameterList!!.parameters
             .filter {
                 // `catch (_: Exception)` - parameter can be anonymous
@@ -182,7 +184,10 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
                     it.thrownExpression?.referenceExpression()?.text == param.name
                 } == true
             }
-            .map { it.typeReference!!.typeElement!!.text }
+            .map {
+                // parameter in catch statement `catch (e: Type)` should always have type
+                it.typeReference!!.text
+            }
     }
         .toSet()
 
