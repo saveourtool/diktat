@@ -32,6 +32,7 @@ import org.cqfn.diktat.ruleset.utils.splitPathToDirs
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.CATCH
 import com.pinterest.ktlint.core.ast.ElementType.COLON
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.EQ
@@ -51,8 +52,12 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
 import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
+import org.jetbrains.kotlin.psi.KtCallExpression
+import org.jetbrains.kotlin.psi.KtCatchClause
 import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
+import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.KtThrowExpression
+import org.jetbrains.kotlin.psi.psiUtil.collectDescendantsOfType
 import org.jetbrains.kotlin.psi.psiUtil.referenceExpression
 
 /**
@@ -92,7 +97,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
 
         val (missingParameters, kDocMissingParameters) = getMissingParameters(node, kdocTags)
 
-        val explicitlyThrownExceptions = getExplicitlyThrownExceptions(node)
+        val explicitlyThrownExceptions = getExplicitlyThrownExceptions(node) + getRethrownExceptions(node)
         val missingExceptions = explicitlyThrownExceptions
             .minus(kdocTags
                 ?.filter { it.knownTag == KDocKnownTag.THROWS }
@@ -154,11 +159,32 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
         val codeBlock = node.getFirstChildWithType(BLOCK)
         val throwKeywords = codeBlock?.findAllDescendantsWithSpecificType(THROW)
         return throwKeywords
+            ?.asSequence()
             ?.map { it.psi as KtThrowExpression }
+            ?.filter {
+                // we only take freshly created exceptions here: `throw IAE("stuff")` vs `throw e`
+                it.thrownExpression is KtCallExpression
+            }
             ?.mapNotNull { it.thrownExpression?.referenceExpression()?.text }
             ?.toSet()
             ?: emptySet()
     }
+
+    private fun getRethrownExceptions(node: ASTNode) = node.findAllDescendantsWithSpecificType(CATCH).flatMap { catchClauseNode ->
+        (catchClauseNode.psi as KtCatchClause).parameterList!!.parameters
+            .filter {
+                // `catch (_: Exception)` - parameter can be anonymous
+                it.name != "_"
+            }
+            .filter { param ->
+                // check whether caught parameter is rethrown in the same catch clause
+                (catchClauseNode.psi as KtCatchClause).catchBody?.collectDescendantsOfType<KtThrowExpression>()?.any {
+                    it.thrownExpression?.referenceExpression()?.text == param.name
+                } == true
+            }
+            .map { it.typeReference!!.typeElement!!.text }
+    }
+        .toSet()
 
     @Suppress("UnsafeCallOnNullableType")
     private fun handleParamCheck(node: ASTNode,

@@ -40,4 +40,19 @@ class Example {
         if (true) throw IllegalStateException("Lorem ipsum")
         else throw IllegalAccessException("Dolor sit amet")
     }
+
+    fun test6() {
+        try {
+            foo()
+        } catch (_: NullPointerException) {
+            println("NPE!")
+        } catch (e: RuntimeException) {
+            println("Whoops...")
+            throw e
+        } catch (e: Error) {
+            val x = IllegalStateException()
+            println("Nothing to do here")
+            throw x
+        }
+    }
 }
