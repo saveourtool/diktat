@@ -19,6 +19,7 @@ import org.jetbrains.kotlin.psi.KtBinaryExpression
 /**
  * This rule warn and fix cases when it possible to replace range with until
  */
+@Suppress("UnsafeCallOnNullableType")
 class RangeRule(configRules: List<RulesConfig>) : DiktatRule(
     "until",
     configRules,
