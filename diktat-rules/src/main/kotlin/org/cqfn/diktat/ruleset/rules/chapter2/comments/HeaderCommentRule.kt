@@ -225,6 +225,8 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
 
         /**
          * Whether copyright text is present in the configuration
+         *
+         * @return true if config has "copyrightText"
          */
         internal fun hasCopyrightText() = config.keys.contains("copyrightText")
 

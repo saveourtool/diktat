@@ -29,30 +29,29 @@ import org.cqfn.diktat.ruleset.utils.kDocTags
 import org.cqfn.diktat.ruleset.utils.parameterNames
 import org.cqfn.diktat.ruleset.utils.splitPathToDirs
 
-import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
-import com.pinterest.ktlint.core.ast.ElementType.CALLABLE_REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.COLLECTION_LITERAL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.COLON
+import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.EQ
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_SECTION
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_TAG_NAME
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_TEXT
-import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.THIS_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.THROW
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
-import com.pinterest.ktlint.core.ast.ElementType.WHEN_CONDITION_WITH_EXPRESSION
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
 import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
+import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
 import org.jetbrains.kotlin.psi.KtThrowExpression
 import org.jetbrains.kotlin.psi.psiUtil.referenceExpression
 
@@ -143,11 +142,12 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
         }
 
         val explicitReturnType = node.findChildAfter(COLON, TYPE_REFERENCE)
+        val hasNotExpressionBodyTypes = allExpressionBodyTypes.any { node.hasChildOfType(it) }
         val hasExplicitNotUnitReturnType = explicitReturnType != null && explicitReturnType.text != "Unit"
         val hasExplicitUnitReturnType = explicitReturnType != null && explicitReturnType.text == "Unit"
-        val isFunWithExpressionBody = expressionBodyTypes.any { node.hasChildOfType(it) }
+        val isFunWithExpressionBody = node.hasChildOfType(EQ)
         val hasReturnKdoc = kdocTags != null && kdocTags.hasKnownKdocTag(KDocKnownTag.RETURN)
-        return (hasExplicitNotUnitReturnType || isFunWithExpressionBody && !hasExplicitUnitReturnType) && !hasReturnKdoc
+        return (hasExplicitNotUnitReturnType || isFunWithExpressionBody && !hasExplicitUnitReturnType && hasNotExpressionBodyTypes) && !hasReturnKdoc
     }
 
     private fun getExplicitlyThrownExceptions(node: ASTNode): Set<String> {
@@ -251,12 +251,26 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    private fun ASTNode.isSingleLineGetterOrSetter() = isGetterOrSetter() && (expressionBodyTypes.any { hasChildOfType(it) } || getBodyLines().size == 1)
+    private fun ASTNode.isSingleLineGetterOrSetter(): Boolean {
+        val dotQualifiedExp = this.findChildByType(DOT_QUALIFIED_EXPRESSION)?.psi?.let { it as KtDotQualifiedExpression }
+        val isThisExpression = dotQualifiedExp != null && dotQualifiedExp.receiverExpression.node.elementType == THIS_EXPRESSION
+        val isExpressionBodyTypes = expressionBodyTypes.any { hasChildOfType(it) }
+        return isGetterOrSetter() && (isExpressionBodyTypes || getBodyLines().size == 1 || isThisExpression)
+    }
 
     companion object {
-        // expression body of function can have a lot of 'ElementType's, this list might be not full
-        private val expressionBodyTypes = setOf(BINARY_EXPRESSION, CALL_EXPRESSION, LAMBDA_EXPRESSION, REFERENCE_EXPRESSION,
-            CALLABLE_REFERENCE_EXPRESSION, SAFE_ACCESS_EXPRESSION, WHEN_CONDITION_WITH_EXPRESSION, COLLECTION_LITERAL_EXPRESSION)
+        private val expressionBodyTypes = setOf(CALL_EXPRESSION, REFERENCE_EXPRESSION)
+        private val allExpressionBodyTypes = setOf(
+            DOT_QUALIFIED_EXPRESSION,
+            CALL_EXPRESSION,
+            REFERENCE_EXPRESSION,
+            ElementType.BINARY_EXPRESSION,
+            ElementType.LAMBDA_EXPRESSION,
+            ElementType.CALLABLE_REFERENCE_EXPRESSION,
+            ElementType.SAFE_ACCESS_EXPRESSION,
+            ElementType.WHEN_CONDITION_WITH_EXPRESSION,
+            ElementType.COLLECTION_LITERAL_EXPRESSION
+        )
         private val uselessKdocRegex = """^([rR]eturn|[gGsS]et)[s]?\s+\w+(\s+\w+)?$""".toRegex()
     }
 }
