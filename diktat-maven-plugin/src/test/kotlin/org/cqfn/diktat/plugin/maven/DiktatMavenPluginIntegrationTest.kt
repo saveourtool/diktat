@@ -25,7 +25,6 @@ class DiktatMavenPluginIntegrationTest {
     @MavenGoal("diktat:check@diktat")
     fun diktatCheck(result: MavenExecutionResult) {
         Assertions.assertEquals(1, result.returnCode)
-        Assertions.assertFalse(result.isError)
         Assertions.assertFalse(result.isSuccessful)
         Assertions.assertTrue(result.isFailure)
 
@@ -43,7 +42,6 @@ class DiktatMavenPluginIntegrationTest {
     @MavenGoal("diktat:fix@diktat")
     fun diktatFix(result: MavenExecutionResult) {
         Assertions.assertEquals(1, result.returnCode)
-        Assertions.assertFalse(result.isError)
         Assertions.assertFalse(result.isSuccessful)
         Assertions.assertTrue(result.isFailure)
 
