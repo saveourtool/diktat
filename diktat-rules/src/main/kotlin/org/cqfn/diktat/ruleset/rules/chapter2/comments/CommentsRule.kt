@@ -65,6 +65,7 @@ class CommentsRule(configRules: List<RulesConfig>) : DiktatRule(
                     offset to it
                 }
             }
+            .map { (offset, text) -> offset to text.trim() }
             .mapNotNull { (offset, text) ->
                 when {
                     text.contains(importKeyword) ->
@@ -85,7 +86,7 @@ class CommentsRule(configRules: List<RulesConfig>) : DiktatRule(
             }
             .forEach { (offset, parsedNode) ->
                 COMMENTED_OUT_CODE.warn(configRules, emitWarn, isFixMode, parsedNode.text.substringBefore("\n").trim(), offset,
-                    errorNodesWithText.find { it.second == parsedNode.text }?.first ?: parsedNode)
+                    errorNodesWithText.find { it.second.trim().contains(parsedNode.text, false) || parsedNode.text.contains(it.second.trim(), false) }?.first!!)
             }
     }
 
@@ -148,7 +149,8 @@ class CommentsRule(configRules: List<RulesConfig>) : DiktatRule(
         private val importOrPackageRegex = """^(import|package)?\s+([a-zA-Z.])+;*$""".toRegex()
         private val functionRegex = """^(public|private|protected)*\s*(override|abstract|actual|expect)*\s?fun\s+\w+(\(.*\))?(\s*:\s*\w+)?\s*[{=]${'$'}""".toRegex()
         private val rightBraceRegex = """^\s*}$""".toRegex()
-        private val codeFileStartCases = listOf(classRegex, importOrPackageRegex, functionRegex, rightBraceRegex)
+        private val valOrVarRegex = """val |var """.toRegex()
+        private val codeFileStartCases = listOf(classRegex, importOrPackageRegex, functionRegex, rightBraceRegex, valOrVarRegex)
         private val eolCommentStart = """// \S""".toRegex()
     }
 }

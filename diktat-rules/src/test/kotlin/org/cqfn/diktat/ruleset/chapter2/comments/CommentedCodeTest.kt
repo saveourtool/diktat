@@ -214,7 +214,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
                 |   */
                 |}
             """.trimMargin(),
-            LintError(2, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} ", false)
+            LintError(2, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} fun clickFilters_showFilters() {", false)
         )
     }
 
@@ -257,6 +257,38 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
             |// public data class Test(val some: Int): Exception()
             """.trimMargin(),
             LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} public data class Test(val some: Int): Exception()", false))
+    }
+
+    @Test
+    @Tag(WarningNames.COMMENTED_OUT_CODE)
+    fun `should trigger on one-line comment with var or val`() {
+        lintMethod(
+            """
+            |// var foo: Int = 1
+            """.trimMargin(),
+            LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} var foo: Int = 1", false))
+    }
+
+    @Test
+    @Tag(WarningNames.COMMENTED_OUT_CODE)
+    fun `should trigger on one-line multi comment`() {
+        lintMethod(
+            """
+            | // fun foo() {
+            | //     varfoo adda foofoo
+            | // }
+            """.trimMargin(),
+            LintError(1, 2, ruleId, "${COMMENTED_OUT_CODE.warnText()} fun foo() {", false))
+    }
+
+    @Test
+    @Tag(WarningNames.COMMENTED_OUT_CODE)
+    fun `should trigger on one-line comment`() {
+        lintMethod(
+            """
+            | // class A { val a = 2 } 
+            """.trimMargin(),
+            LintError(1, 2, ruleId, "${COMMENTED_OUT_CODE.warnText()} class A { val a = 2 }", false))
     }
 
     @Test
@@ -386,8 +418,8 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
             
             */
             """.trimMargin(),
-            LintError(7, 13, ruleId, "${COMMENTED_OUT_CODE.warnText()} ", false),
-            LintError(14, 13, ruleId, "${COMMENTED_OUT_CODE.warnText()} ", false)
+            LintError(7, 13, ruleId, "${COMMENTED_OUT_CODE.warnText()} x = 2 + 4 + 1", false),
+            LintError(14, 13, ruleId, "${COMMENTED_OUT_CODE.warnText()} class A {", false)
         )
     }
 
