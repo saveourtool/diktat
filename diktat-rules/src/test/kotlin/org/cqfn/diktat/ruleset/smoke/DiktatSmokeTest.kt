@@ -32,7 +32,6 @@ import java.time.LocalDate
 import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.createTempFile
 import kotlinx.serialization.encodeToString
-import org.cqfn.diktat.ruleset.rules.chapter2.comments.CommentsRule
 
 typealias RuleToConfig = Map<String, Map<String, String>>
 
@@ -223,7 +222,8 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     fun `smoke test with gradle script plugin`() {
         fixAndCompare("kotlin-library-expected.gradle.kts", "kotlin-library.gradle.kts")
         Assertions.assertEquals(
-            LintError(2, 1, "$DIKTAT_RULE_SET_ID:comments", "[COMMENTED_OUT_CODE] you should not comment out code, use VCS to save it in history and delete this block: import org.jetbrains.kotlin.gradle.dsl.jvm", false),
+            LintError(2, 1, "$DIKTAT_RULE_SET_ID:comments", "[COMMENTED_OUT_CODE] you should not comment out code, " +
+                    "use VCS to save it in history and delete this block: import org.jetbrains.kotlin.gradle.dsl.jvm", false),
             unfixedLintErrors.single()
         )
     }
