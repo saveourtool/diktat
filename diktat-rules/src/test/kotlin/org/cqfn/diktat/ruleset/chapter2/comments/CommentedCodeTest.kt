@@ -293,6 +293,16 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
 
     @Test
     @Tag(WarningNames.COMMENTED_OUT_CODE)
+    fun `should trigger on one-line block comment`() {
+        lintMethod(
+            """
+            | /* class A { val a = 2 } */
+            """.trimMargin(),
+            LintError(1, 2, ruleId, "${COMMENTED_OUT_CODE.warnText()} class A { val a = 2 }", false))
+    }
+
+    @Test
+    @Tag(WarningNames.COMMENTED_OUT_CODE)
     fun `should trigger on class with one space after comment start token and 2 modifiers #2`() {
         lintMethod(
             """

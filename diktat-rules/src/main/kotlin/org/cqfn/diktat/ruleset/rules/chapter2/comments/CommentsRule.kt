@@ -72,7 +72,7 @@ class CommentsRule(configRules: List<RulesConfig>) : DiktatRule(
                         offset to ktPsiFactory.createImportDirective(ImportPath.fromString(text.substringAfter("$importKeyword "))).node
                     text.contains(packageKeyword) ->
                         offset to ktPsiFactory.createPackageDirective(FqName(text.substringAfter("$packageKeyword "))).node
-                    else -> if (isContainsRequiredPartOfCode(text)) {
+                    else -> if (isContainingRequiredPartOfCode(text)) {
                         offset to ktPsiFactory.createBlockCodeFragment(text, null).node
                     } else {
                         null
@@ -136,7 +136,7 @@ class CommentsRule(configRules: List<RulesConfig>) : DiktatRule(
         return codeFileStartCases.any { textWithoutCommentStartToken.contains(it) }
     }
 
-    private fun isContainsRequiredPartOfCode(text: String): Boolean =
+    private fun isContainingRequiredPartOfCode(text: String): Boolean =
             text.contains("val ", true) || text.contains("var ", true) || text.contains("=", true) || (text.contains("{", true) && text.substringAfter("{").contains("}", true))
 
     @Suppress("MaxLineLength")
