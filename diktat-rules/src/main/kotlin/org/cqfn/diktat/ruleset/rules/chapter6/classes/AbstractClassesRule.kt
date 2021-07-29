@@ -3,6 +3,7 @@ package org.cqfn.diktat.ruleset.rules.chapter6.classes
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.CLASS_SHOULD_NOT_BE_ABSTRACT
 import org.cqfn.diktat.ruleset.rules.DiktatRule
+import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
@@ -13,7 +14,6 @@ import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
-import com.pinterest.ktlint.core.ast.isWhiteSpace
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 /**
@@ -45,25 +45,9 @@ class AbstractClassesRule(configRules: List<RulesConfig>) : DiktatRule(
         if (functions.isNotEmpty() && functions.none { hasAbstractModifier(it) }) {
             CLASS_SHOULD_NOT_BE_ABSTRACT.warnAndFix(configRules, emitWarn, isFixMode, identifier, node.startOffset, node) {
                 val modList = classNode.getFirstChildWithType(MODIFIER_LIST)!!
-                if (modList.getChildren(null).size > 1) {
-                    val abstractKeyword = modList.getFirstChildWithType(ABSTRACT_KEYWORD)!!
-
-                    // we are deleting one keyword, so we need to delete extra space
-                    val spaceInModifiers = if (abstractKeyword == modList.firstChildNode) {
-                        abstractKeyword.treeNext
-                    } else {
-                        abstractKeyword.treePrev
-                    }
-                    modList.removeChild(abstractKeyword)
-                    if (spaceInModifiers != null && spaceInModifiers.isWhiteSpace()) {
-                        modList.removeChild(spaceInModifiers)
-                    }
-                } else {
-                    if (modList.treeNext.isWhiteSpace()) {
-                        classNode.removeChild(modList.treeNext)
-                    }
-                    classNode.removeChild(modList)
-                }
+                val abstractKeyword = modList.getFirstChildWithType(ABSTRACT_KEYWORD)!!
+                val newOpenKeyword = KotlinParser().createNode("open")
+                modList.replaceChild(abstractKeyword, newOpenKeyword)
             }
         }
     }
