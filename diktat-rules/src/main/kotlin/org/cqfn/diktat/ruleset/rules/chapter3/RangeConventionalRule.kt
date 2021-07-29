@@ -7,6 +7,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.CONVENTIONAL_RANGE
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.ruleset.utils.getIdentifierName
+import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.cqfn.diktat.ruleset.utils.takeByChainOfTypes
 
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
@@ -65,6 +66,7 @@ class RangeConventionalRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
+    @Suppress("TOO_MANY_LINES_IN_LAMBDA")
     private fun handleRange(node: ASTNode) {
         val binaryInExpression = (node.parent({ it.elementType == BINARY_EXPRESSION })?.psi as KtBinaryExpression?)
         (binaryInExpression
@@ -72,24 +74,32 @@ class RangeConventionalRule(configRules: List<RulesConfig>) : DiktatRule(
             ?.node
             ?.takeByChainOfTypes(BINARY_EXPRESSION)
             ?.psi as KtBinaryExpression?)
-            ?.operationReference
-            ?.node
-            ?.findChildByType(MINUS)
             ?.let {
-                val errorNode = binaryInExpression!!.node
-                CONVENTIONAL_RANGE.warnAndFix(configRules, emitWarn, isFixMode, "replace `..` with `until`: ${errorNode.text}", errorNode.startOffset, errorNode) {
-                    val untilNode = LeafPsiElement(IDENTIFIER, "until")
-                    val parent = node.treeParent
-                    if (parent.treePrev?.isWhiteSpace() != true) {
-                        parent.treeParent.addChild(PsiWhiteSpaceImpl(" "), parent)
+                if (it.operationReference.node.hasChildOfType(MINUS)) {
+                    val errorNode = binaryInExpression!!.node
+                    CONVENTIONAL_RANGE.warnAndFix(configRules, emitWarn, isFixMode, "replace `..` with `until`: ${errorNode.text}", errorNode.startOffset, errorNode) {
+                        replaceUntil(node)
+                        // fix right side of binary expression to correct form (remove ` - 1 `) : (b-1) -> (b)
+                        val astNode = it.node
+                        val parent = astNode.treeParent
+                        parent.addChild(astNode.firstChildNode, astNode)
+                        parent.removeChild(astNode)
                     }
-                    if (parent.treeNext?.isWhiteSpace() != true) {
-                        parent.treeParent.addChild(PsiWhiteSpaceImpl(" "), parent.treeNext)
-                    }
-                    parent.addChild(untilNode, node)
-                    parent.removeChild(node)
                 }
             }
+    }
+
+    private fun replaceUntil(node: ASTNode) {
+        val untilNode = LeafPsiElement(IDENTIFIER, "until")
+        val parent = node.treeParent
+        if (parent.treePrev?.isWhiteSpace() != true) {
+            parent.treeParent.addChild(PsiWhiteSpaceImpl(" "), parent)
+        }
+        if (parent.treeNext?.isWhiteSpace() != true) {
+            parent.treeParent.addChild(PsiWhiteSpaceImpl(" "), parent.treeNext)
+        }
+        parent.addChild(untilNode, node)
+        parent.removeChild(node)
     }
 
     /**
