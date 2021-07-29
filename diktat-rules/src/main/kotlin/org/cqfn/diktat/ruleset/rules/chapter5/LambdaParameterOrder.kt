@@ -30,13 +30,11 @@ class LambdaParameterOrder(configRules: List<RulesConfig>) : DiktatRule(
     private fun checkArguments(node: ASTNode) {
         val funArguments = (node.psi as KtFunction).valueParameters
         val sortArguments = funArguments
-            .sortedBy {
-                it
+            .sortedBy { valueParam ->
+                valueParam
                     .typeReference
                     ?.node
-                    ?.let { astNode ->
-                        astNode.findChildByType(NULLABLE_TYPE) ?: astNode
-                    }
+                    ?.let { it.findChildByType(NULLABLE_TYPE) ?: it }
                     ?.hasChildOfType(FUNCTION_TYPE)
             }
         funArguments.filterIndexed { index, ktParameter -> ktParameter != sortArguments[index] }.ifNotEmpty {
