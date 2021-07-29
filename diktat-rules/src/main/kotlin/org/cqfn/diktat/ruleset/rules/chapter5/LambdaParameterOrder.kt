@@ -37,7 +37,8 @@ class LambdaParameterOrder(configRules: List<RulesConfig>) : DiktatRule(
                     ?.let { astNode ->
                         astNode.findChildByType(NULLABLE_TYPE) ?: astNode
                     }
-                    ?.hasChildOfType(FUNCTION_TYPE) }
+                    ?.hasChildOfType(FUNCTION_TYPE)
+            }
         funArguments.filterIndexed { index, ktParameter -> ktParameter != sortArguments[index] }.ifNotEmpty {
             LAMBDA_IS_NOT_LAST_PARAMETER.warn(configRules, emitWarn, isFixMode, node.findChildByType(IDENTIFIER)!!.text,
                 first().node.startOffset, node)
