@@ -90,7 +90,6 @@ internal class ValueParameterListChecker(configuration: IndentationConfig) : Cus
                         it.node.elementType.run { this == VALUE_ARGUMENT || this == VALUE_PARAMETER }
                     }
 
-    @Suppress("ANNOTATION_NEW_LINE")  // https://github.com/cqfn/diKTat/issues/609
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
         if (isCheckNeeded(whiteSpace)) {
             val parameterList = whiteSpace.parent.node

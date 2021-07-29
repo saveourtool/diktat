@@ -197,9 +197,7 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     @Tag("DiktatRuleSetProvider")
     fun `smoke test with kts files`() {
         overrideRulesConfig(
-            listOf(
-                HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE  // because build.gradle.kts doesn't need extra comments, and this rule can be manually disabled if needed
-            ),
+            emptyList(),
             mapOf(
                 Warnings.WRONG_INDENTATION.name to mapOf(
                     "newlineAtEnd" to "false",
@@ -217,6 +215,17 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
         fixAndCompare(tmpFilePath, tmpFilePath)
         Assertions.assertTrue(unfixedLintErrors.isEmpty())
         tmpTestFile.delete()
+    }
+
+    @Test
+    @Tag("DiktatRuleSetProvider")
+    fun `smoke test with gradle script plugin`() {
+        fixAndCompare("kotlin-library-expected.gradle.kts", "kotlin-library.gradle.kts")
+        Assertions.assertEquals(
+            LintError(2, 1, "$DIKTAT_RULE_SET_ID:comments", "[COMMENTED_OUT_CODE] you should not comment out code, " +
+                    "use VCS to save it in history and delete this block: import org.jetbrains.kotlin.gradle.dsl.jvm", false),
+            unfixedLintErrors.single()
+        )
     }
 
     @Test
