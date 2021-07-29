@@ -105,7 +105,7 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
             // Checking if comment is inside a code block like fun{}
             // Not checking last comment as well
             if (isFirstComment(node)) {
-                if (node.isBlockOrClassBody()) {
+                if (node.isChildOfBlockOrClassBody()) {
                     // Just check white spaces before comment
                     checkFirstCommentSpaces(node)
                 }
@@ -166,7 +166,7 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun checkCommentsInCodeBlocks(node: ASTNode) {
         if (isFirstComment(node)) {
-            if (node.isBlockOrClassBody()) {
+            if (node.isChildOfBlockOrClassBody()) {
                 // Just check white spaces before comment
                 checkFirstCommentSpaces(node)
             }
@@ -289,7 +289,7 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun checkClassComment(node: ASTNode) {
         if (isFirstComment(node)) {
-            if (node.isBlockOrClassBody()) {
+            if (node.isChildOfBlockOrClassBody()) {
                 checkFirstCommentSpaces(node)
             } else {
                 checkFirstCommentSpaces(node.treeParent)
@@ -317,10 +317,11 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    private fun isFirstComment(node: ASTNode) = if (node.isBlockOrClassBody()) {
+    private fun isFirstComment(node: ASTNode) = if (node.isChildOfBlockOrClassBody()) {
         // In case when comment is inside of a function or class
         if (node.treePrev.isWhiteSpace()) {
-            node.treePrev.treePrev.elementType == LBRACE
+            // in some cases (e.g. kts files) BLOCK doesn't have a leading brace
+            node.treePrev?.treePrev?.elementType == LBRACE
         } else {
             node.treePrev == null || node.treePrev.elementType == LBRACE  // null is handled for functional literal
         }
@@ -335,7 +336,7 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
         node.treeParent.getAllChildrenWithType(node.elementType).first() == node
     }
 
-    private fun ASTNode.isBlockOrClassBody(): Boolean = treeParent.elementType == BLOCK || treeParent.elementType == CLASS_BODY
+    private fun ASTNode.isChildOfBlockOrClassBody(): Boolean = treeParent.elementType == BLOCK || treeParent.elementType == CLASS_BODY
 
     /**
      * [RuleConfiguration] for [CommentsFormatting] rule
