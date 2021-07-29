@@ -8,6 +8,7 @@ import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_TYPE
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
+import com.pinterest.ktlint.core.ast.ElementType.NULLABLE_TYPE
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.kotlin.utils.addToStdlib.ifNotEmpty
@@ -28,7 +29,15 @@ class LambdaParameterOrder(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("UnsafeCallOnNullableType")
     private fun checkArguments(node: ASTNode) {
         val funArguments = (node.psi as KtFunction).valueParameters
-        val sortArguments = funArguments.sortedBy { it.typeReference?.node?.hasChildOfType(FUNCTION_TYPE) }
+        val sortArguments = funArguments
+            .sortedBy {
+                it
+                    .typeReference
+                    ?.node
+                    ?.let { astNode ->
+                        astNode.findChildByType(NULLABLE_TYPE) ?: astNode
+                    }
+                    ?.hasChildOfType(FUNCTION_TYPE) }
         funArguments.filterIndexed { index, ktParameter -> ktParameter != sortArguments[index] }.ifNotEmpty {
             LAMBDA_IS_NOT_LAST_PARAMETER.warn(configRules, emitWarn, isFixMode, node.findChildByType(IDENTIFIER)!!.text,
                 first().node.startOffset, node)
