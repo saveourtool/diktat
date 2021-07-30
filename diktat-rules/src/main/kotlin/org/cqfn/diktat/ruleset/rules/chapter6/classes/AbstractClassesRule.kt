@@ -13,6 +13,7 @@ import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
+import com.pinterest.ktlint.core.ast.ElementType.OPEN_KEYWORD
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 
@@ -46,7 +47,8 @@ class AbstractClassesRule(configRules: List<RulesConfig>) : DiktatRule(
             CLASS_SHOULD_NOT_BE_ABSTRACT.warnAndFix(configRules, emitWarn, isFixMode, identifier, node.startOffset, node) {
                 val modList = classNode.getFirstChildWithType(MODIFIER_LIST)!!
                 val abstractKeyword = modList.getFirstChildWithType(ABSTRACT_KEYWORD)!!
-                (abstractKeyword as LeafPsiElement).rawReplaceWithText("open")
+                val newOpenKeyword = LeafPsiElement(OPEN_KEYWORD, "open")
+                modList.replaceChild(abstractKeyword, newOpenKeyword)
             }
         }
     }
