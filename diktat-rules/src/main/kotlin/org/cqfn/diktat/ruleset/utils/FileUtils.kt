@@ -14,7 +14,7 @@ internal const val SRC_DIRECTORY_NAME = "src"
 fun String.splitPathToDirs(): List<String> =
         this.replace("\\", "/")
             .replace("//", "/")
-            .split("/")
+            .split("\\.|\\/".toRegex())
 
 /**
  * Checks if [this] String is a name of a kotlin script file by checking whether file extension equals 'kts'

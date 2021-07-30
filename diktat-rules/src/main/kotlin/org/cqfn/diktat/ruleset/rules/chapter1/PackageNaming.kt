@@ -125,7 +125,7 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
             // 2) removing src/main/kotlin/java/e.t.c dirs and removing file name
             // 3) adding company's domain name at the beginning
             val allDirs = languageDirNames + configuration.srcDirectories + configuration.testAnchors
-            val fileSubDir = filePathParts.subList(filePathParts.lastIndexOf(PACKAGE_PATH_ANCHOR), filePathParts.size - 1)
+            val fileSubDir = filePathParts.subList(filePathParts.lastIndexOf(PACKAGE_PATH_ANCHOR), filePathParts.size - FILE_NAME_AND_TYPE_SIZE)
                 .dropWhile { allDirs.contains(it) }
             // no need to add DOMAIN_NAME to the package name if it is already in path
             val domainPrefix = if (!fileSubDir.joinToString(PACKAGE_SEPARATOR).startsWith(domainName)) domainName.split(PACKAGE_SEPARATOR) else emptyList()
@@ -282,6 +282,11 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
          * Symbol that is used to separate parts in package name
          */
         const val PACKAGE_SEPARATOR = "."
+
+        /**
+         * Count element to drop when splitting file path
+         */
+        const val FILE_NAME_AND_TYPE_SIZE = 2
 
         /**
          * tricky hack (counter) that helps not to raise multiple warnings about the package name if config is missing
