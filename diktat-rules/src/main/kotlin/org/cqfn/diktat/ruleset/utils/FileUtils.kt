@@ -14,7 +14,7 @@ internal const val SRC_DIRECTORY_NAME = "src"
 fun String.splitPathToDirs(): List<String> =
         this.replace("\\", "/")
             .replace("//", "/")
-            .split("\\.|\\/".toRegex())
+            .split("[./]".toRegex())
             .dropLast(1)
 
 /**
