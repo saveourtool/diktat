@@ -15,7 +15,7 @@ class AbstractClassesWarnTest : LintTestBase(::AbstractClassesRule) {
 
     @Test
     @Tag(CLASS_SHOULD_NOT_BE_ABSTRACT)
-    fun `should not replace abstract on open`() {
+    fun `should not replace abstract with open`() {
         lintMethod(
             """
                 |abstract class Some(val a: Int = 5) {

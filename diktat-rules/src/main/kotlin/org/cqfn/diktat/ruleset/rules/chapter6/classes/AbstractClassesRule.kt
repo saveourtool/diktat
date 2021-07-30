@@ -3,7 +3,6 @@ package org.cqfn.diktat.ruleset.rules.chapter6.classes
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.CLASS_SHOULD_NOT_BE_ABSTRACT
 import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
@@ -15,6 +14,7 @@ import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 
 /**
  * Checks if abstract class has any abstract method. If not, warns that class should not be abstract
@@ -46,8 +46,7 @@ class AbstractClassesRule(configRules: List<RulesConfig>) : DiktatRule(
             CLASS_SHOULD_NOT_BE_ABSTRACT.warnAndFix(configRules, emitWarn, isFixMode, identifier, node.startOffset, node) {
                 val modList = classNode.getFirstChildWithType(MODIFIER_LIST)!!
                 val abstractKeyword = modList.getFirstChildWithType(ABSTRACT_KEYWORD)!!
-                val newOpenKeyword = KotlinParser().createNode("open")
-                modList.replaceChild(abstractKeyword, newOpenKeyword)
+                (abstractKeyword as LeafPsiElement).rawReplaceWithText("open")
             }
         }
     }
