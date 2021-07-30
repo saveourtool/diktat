@@ -14,6 +14,7 @@ import com.pinterest.ktlint.core.ast.ElementType.DATA_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.ENUM_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.INNER_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.INTERFACE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.OPEN_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
@@ -42,10 +43,11 @@ class DataClassesRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun handleClass(node: ASTNode) {
-        if (node.isDataClass()) {
-            return
+        with((node.psi as KtClass)) {
+            if (isData() || isInterface()) {
+                return
+            }
         }
-
         if (node.canBeDataClass()) {
             raiseWarn(node)
         }
@@ -141,15 +143,6 @@ class DataClassesRule(configRules: List<RulesConfig>) : DiktatRule(
         }
 
         return true
-    }
-
-    @Suppress("UnsafeCallOnNullableType")
-    private fun ASTNode.isDataClass(): Boolean {
-        if (hasChildOfType(MODIFIER_LIST)) {
-            val list = getFirstChildWithType(MODIFIER_LIST)!!
-            return list.getChildren(null).any { it.elementType == DATA_KEYWORD }
-        }
-        return false
     }
 
     companion object {
