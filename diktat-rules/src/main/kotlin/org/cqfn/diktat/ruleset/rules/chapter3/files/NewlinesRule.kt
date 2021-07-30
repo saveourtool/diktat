@@ -335,18 +335,10 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
                 WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
                     "functions with single return statement should be simplified to expression body", node.startOffset, node) {
                     val funNode = blockNode.treeParent
-                    // if return type is not Unit, then there should be type specification
-                    // otherwise code won't compile and colon being null is correctly invalid
-                    val colon = funNode.findChildByType(COLON)!!
                     val returnType = (funNode.psi as? KtNamedFunction)?.typeReference?.node
-                    val needsExplicitType = returnType != null && (funNode.psi as? KtNamedFunction)?.isRecursive() == true
                     val expression = node.findChildByType(RETURN_KEYWORD)!!.nextCodeSibling()!!
                     funNode.apply {
-                        if (needsExplicitType) {
-                            removeRange(returnType!!.treeNext, null)
-                        } else {
-                            removeRange(if (colon.treePrev.elementType == WHITE_SPACE) colon.treePrev else colon, null)
-                        }
+                        removeRange(returnType!!.treeNext, null)
                         addChild(PsiWhiteSpaceImpl(" "), null)
                         addChild(LeafPsiElement(EQ, "="), null)
                         addChild(PsiWhiteSpaceImpl(" "), null)

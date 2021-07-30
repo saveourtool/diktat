@@ -1,10 +1,10 @@
 package test.paragraph3.newlines
 
-fun foo() = "lorem ipsum"
+fun foo(): String = "lorem ipsum"
 
-fun foo() = "lorem ipsum"
+fun foo():String = "lorem ipsum"
 
-fun foo() = "lorem ipsum"
+fun foo() : String = "lorem ipsum"
 
 fun recFoo(): String = "lorem " + recFoo()
 
