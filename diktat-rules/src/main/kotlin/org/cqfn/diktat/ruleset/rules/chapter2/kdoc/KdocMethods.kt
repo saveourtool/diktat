@@ -30,6 +30,7 @@ import org.cqfn.diktat.ruleset.utils.parameterNames
 import org.cqfn.diktat.ruleset.utils.splitPathToDirs
 
 import com.pinterest.ktlint.core.ast.ElementType
+import com.pinterest.ktlint.core.ast.ElementType.ACTUAL_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CATCH
@@ -55,7 +56,6 @@ import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtCatchClause
 import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
-import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.KtThrowExpression
 import org.jetbrains.kotlin.psi.psiUtil.collectDescendantsOfType
 import org.jetbrains.kotlin.psi.psiUtil.referenceExpression
@@ -77,7 +77,12 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
      * @param node
      */
     override fun logic(node: ASTNode) {
-        if (node.elementType == FUN && node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside() && !node.isOverridden()) {
+        val isSuccessModifier : Boolean by lazy {
+            node.getFirstChildWithType(MODIFIER_LIST).run {
+                isAccessibleOutside() && !(this?.hasChildOfType(ACTUAL_KEYWORD) ?: false)
+            }
+        }
+        if (node.elementType == FUN && isSuccessModifier && !node.isOverridden()) {
             val config = configRules.getCommonConfiguration()
             val filePath = node.getFilePath()
             val isTestMethod = node.hasTestAnnotation() || isLocatedInTest(filePath.splitPathToDirs(), config.testAnchors)

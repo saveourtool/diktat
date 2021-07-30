@@ -1,5 +1,6 @@
 package org.cqfn.diktat.ruleset.rules.chapter2.kdoc
 
+import com.pinterest.ktlint.core.ast.ElementType
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getCommonConfiguration
 import org.cqfn.diktat.ruleset.constants.Warnings
@@ -310,10 +311,12 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("UnsafeCallOnNullableType")
     private fun checkDoc(node: ASTNode, warning: Warnings) {
         val kdoc = node.getFirstChildWithType(KDOC)
-        val modifier = node.getFirstChildWithType(MODIFIER_LIST)
         val name = node.getIdentifierName()
+        val isSuccessModifier = node.getFirstChildWithType(MODIFIER_LIST).run {
+            isAccessibleOutside() && !(this?.hasChildOfType(ElementType.ACTUAL_KEYWORD) ?: false)
+        }
 
-        if (modifier.isAccessibleOutside() && kdoc == null && !isTopLevelFunctionStandard(node)) {
+        if (isSuccessModifier && kdoc == null && !isTopLevelFunctionStandard(node)) {
             warning.warn(configRules, emitWarn, isFixMode, name!!.text, node.startOffset, node)
         }
     }

@@ -509,4 +509,15 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
             LintError(5, 5, ruleId, "${KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER.warnText()} /**...")
         )
     }
+
+    @Test
+    fun `shouldn't trigger kdoc top level on actual methods`() {
+        lintMethod(
+            """
+                |actual fun foo() {}
+                |expect fun fo() {}
+            """.trimMargin(),
+            LintError(2, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} fo")
+        )
+    }
 }
