@@ -4,7 +4,7 @@
     <parent>
         <artifactId>diktat-gradle-plugin</artifactId>
         <groupId>org.cqfn.diktat</groupId>
-        <version>1.0.0-rc.3-SNAPSHOT</version>
+        <version>1.0.0-rc.4-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 

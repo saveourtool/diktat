@@ -152,6 +152,74 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
 
     @Test
     @Tag(WarningNames.COMMENTED_OUT_CODE)
+    @Suppress("TOO_LONG_FUNCTION", "LongMethod")
+    fun `very long commented code`() {
+        lintMethod(
+            """
+                |class ScheduleTest {
+                |/* 
+                |   fun clickFilters_showFilters() {
+                |       checkAnimationsDisabled()
+                |
+                |       onView(withId(R.id.filter_fab)).perform(click())
+                |
+                |       val uncheckedFilterContentDesc =
+                |           getDisabledFilterContDesc(FakeConferenceDataSource.FAKE_SESSION_TAG_NAME)
+                |       val checkedFilterContentDesc =
+                |           getActiveFilterContDesc(FakeConferenceDataSource.FAKE_SESSION_TAG_NAME)
+                |
+                |       // Scroll to the filter
+                |       onView(allOf(withId(R.id.recyclerview_filter), withParent(withId(R.id.filter_sheet))))
+                |           .perform(
+                |               RecyclerViewActions.scrollTo<ScheduleFilterAdapter.FilterViewHolder>(
+                |                   withContentDescription(uncheckedFilterContentDesc)
+                |               )
+                |           )
+                |
+                |       onView(withContentDescription(uncheckedFilterContentDesc))
+                |           .check(matches(isDisplayed()))
+                |           .perform(click())
+                |
+                |       // Check that the filter is enabled
+                |       onView(
+                |           allOf(
+                |               withId(R.id.filter_label),
+                |               withContentDescription(checkedFilterContentDesc),
+                |               not(withParent(withId(R.id.filter_description_tags)))
+                |           )
+                |       )
+                |           .check(matches(isDisplayed()))
+                |           .perform(click())
+                |   }
+                |
+                |   private fun applyFilter(filter: String) {
+                |       // Open the filters sheet
+                |       onView(withId(R.id.filter_fab)).perform(click())
+                |   
+                |       // Get the content description of the view we need to click on
+                |       val uncheckedFilterContentDesc =
+                |           resources.getString(R.string.a11y_filter_not_applied, filter)
+                |   
+                |      onView(allOf(withId(R.id.recyclerview_filter), withParent(withId(R.id.filter_sheet))))
+                |          .check(matches(isDisplayed()))
+                |   
+                |       // Scroll to the filter
+                |       onView(allOf(withId(R.id.recyclerview_filter), withParent(withId(R.id.filter_sheet))))
+                |         .perform(
+                |             RecyclerViewActions.scrollTo<ScheduleFilterAdapter.FilterViewHolder>(
+                |                 withContentDescription(uncheckedFilterContentDesc)
+                |             )
+                |         )
+                |   }
+                |   */
+                |}
+            """.trimMargin(),
+            LintError(2, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} fun clickFilters_showFilters() {", false)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.COMMENTED_OUT_CODE)
     fun `Should warn if detects commented out code example with IDEA style indents`() {
         lintMethod(
             """
@@ -189,6 +257,48 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
             |// public data class Test(val some: Int): Exception()
             """.trimMargin(),
             LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} public data class Test(val some: Int): Exception()", false))
+    }
+
+    @Test
+    @Tag(WarningNames.COMMENTED_OUT_CODE)
+    fun `should trigger on one-line comment with var or val`() {
+        lintMethod(
+            """
+            |// var foo: Int = 1
+            """.trimMargin(),
+            LintError(1, 1, ruleId, "${COMMENTED_OUT_CODE.warnText()} var foo: Int = 1", false))
+    }
+
+    @Test
+    @Tag(WarningNames.COMMENTED_OUT_CODE)
+    fun `should trigger on one-line multi comment`() {
+        lintMethod(
+            """
+            | // fun foo() {
+            | //     varfoo adda foofoo
+            | // }
+            """.trimMargin(),
+            LintError(1, 2, ruleId, "${COMMENTED_OUT_CODE.warnText()} fun foo() {", false))
+    }
+
+    @Test
+    @Tag(WarningNames.COMMENTED_OUT_CODE)
+    fun `should trigger on one-line comment`() {
+        lintMethod(
+            """
+            | // class A { val a = 2 } 
+            """.trimMargin(),
+            LintError(1, 2, ruleId, "${COMMENTED_OUT_CODE.warnText()} class A { val a = 2 }", false))
+    }
+
+    @Test
+    @Tag(WarningNames.COMMENTED_OUT_CODE)
+    fun `should trigger on one-line block comment`() {
+        lintMethod(
+            """
+            | /* class A { val a = 2 } */
+            """.trimMargin(),
+            LintError(1, 2, ruleId, "${COMMENTED_OUT_CODE.warnText()} class A { val a = 2 }", false))
     }
 
     @Test
@@ -318,8 +428,8 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
             
             */
             """.trimMargin(),
-            LintError(7, 13, ruleId, "${COMMENTED_OUT_CODE.warnText()} ", false),
-            LintError(14, 13, ruleId, "${COMMENTED_OUT_CODE.warnText()} ", false)
+            LintError(7, 13, ruleId, "${COMMENTED_OUT_CODE.warnText()} x = 2 + 4 + 1", false),
+            LintError(14, 13, ruleId, "${COMMENTED_OUT_CODE.warnText()} class A {", false)
         )
     }
 
