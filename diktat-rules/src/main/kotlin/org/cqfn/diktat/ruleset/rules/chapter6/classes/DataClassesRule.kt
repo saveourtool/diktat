@@ -43,10 +43,11 @@ class DataClassesRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun handleClass(node: ASTNode) {
-        if (node.isDataClassOrInterface()) {
-            return
+        with((node.psi as KtClass)) {
+            if (isData() || isInterface()) {
+                return
+            }
         }
-
         if (node.canBeDataClass()) {
             raiseWarn(node)
         }
@@ -142,15 +143,6 @@ class DataClassesRule(configRules: List<RulesConfig>) : DiktatRule(
         }
 
         return true
-    }
-
-    @Suppress("UnsafeCallOnNullableType")
-    private fun ASTNode.isDataClassOrInterface(): Boolean {
-        if (hasChildOfType(MODIFIER_LIST)) {
-            val list = getFirstChildWithType(MODIFIER_LIST)!!
-            return list.getChildren(null).any { it.elementType == DATA_KEYWORD }
-        }
-        return hasChildOfType(INTERFACE_KEYWORD)
     }
 
     companion object {
