@@ -11,6 +11,6 @@ class AbstractClassesFixTest : FixTestBase("test/chapter6/abstract_classes", ::A
     @Test
     @Tag(CLASS_SHOULD_NOT_BE_ABSTRACT)
     fun `fix abstract class`() {
-        fixAndCompare("ShouldRemoveAbstractKeywordExpected.kt", "ShouldRemoveAbstractKeywordTest.kt")
+        fixAndCompare("ShouldReplaceAbstractKeywordExpected.kt", "ShouldReplaceAbstractKeywordTest.kt")
     }
 }
