@@ -15,6 +15,7 @@ fun String.splitPathToDirs(): List<String> =
         this.replace("\\", "/")
             .replace("//", "/")
             .split("\\.|\\/".toRegex())
+            .dropLast(1)
 
 /**
  * Checks if [this] String is a name of a kotlin script file by checking whether file extension equals 'kts'
