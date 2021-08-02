@@ -113,7 +113,10 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
      * @return list with words that are parts of package name like [org, diktat, name]
      */
     private fun calculateRealPackageName(fileName: String, configuration: CommonConfiguration): List<String> {
-        val filePathParts = fileName.splitPathToDirs()
+        val filePathParts = fileName
+            .splitPathToDirs()
+            .dropLast(1) // remove filename
+            .flatMap { it.split(".") }
 
         return if (!filePathParts.contains(PACKAGE_PATH_ANCHOR)) {
             log.error("Not able to determine a path to a scanned file or \"$PACKAGE_PATH_ANCHOR\" directory cannot be found in it's path." +
@@ -122,10 +125,10 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
         } else {
             // creating a real package name:
             // 1) getting a path after the base project directory (after "src" directory)
-            // 2) removing src/main/kotlin/java/e.t.c dirs and removing file name
+            // 2) removing src/main/kotlin/java/e.t.c dirs
             // 3) adding company's domain name at the beginning
             val allDirs = languageDirNames + configuration.srcDirectories + configuration.testAnchors
-            val fileSubDir = filePathParts.subList(filePathParts.lastIndexOf(PACKAGE_PATH_ANCHOR), filePathParts.size - 1)
+            val fileSubDir = filePathParts.subList(filePathParts.lastIndexOf(PACKAGE_PATH_ANCHOR), filePathParts.size)
                 .dropWhile { allDirs.contains(it) }
             // no need to add DOMAIN_NAME to the package name if it is already in path
             val domainPrefix = if (!fileSubDir.joinToString(PACKAGE_SEPARATOR).startsWith(domainName)) domainName.split(PACKAGE_SEPARATOR) else emptyList()

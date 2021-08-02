@@ -7,15 +7,14 @@ package org.cqfn.diktat.ruleset.utils
 internal const val SRC_DIRECTORY_NAME = "src"
 
 /**
- * Splits [this] string by file path separator. Drop last element - file type
+ * Splits [this] string by file path separator.
  *
  * @return list of path parts
  */
 fun String.splitPathToDirs(): List<String> =
         this.replace("\\", "/")
             .replace("//", "/")
-            .split("[./]".toRegex())
-            .dropLast(1)
+            .split("/")
 
 /**
  * Checks if [this] String is a name of a kotlin script file by checking whether file extension equals 'kts'
