@@ -383,6 +383,17 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
 
     @Test
     @Tag(WarningNames.MISSING_KDOC_ON_FUNCTION)
+    fun `KDoc shouldn't be for function with name as method`() {
+        lintMethod(
+            """
+                    |@GetMapping("/projects")
+                    |fun getProjects() = projectService.getProjects()
+                """.trimMargin(),
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.MISSING_KDOC_ON_FUNCTION)
     fun `KDoc shouldn't trigger on actual methods`() {
         lintMethod(
             """

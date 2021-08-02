@@ -56,6 +56,7 @@ import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtCatchClause
 import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
+import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.kotlin.psi.KtThrowExpression
 import org.jetbrains.kotlin.psi.psiUtil.collectDescendantsOfType
 import org.jetbrains.kotlin.psi.psiUtil.referenceExpression
@@ -113,12 +114,13 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
         val paramCheckFailed = (missingParameters.isNotEmpty() && !node.isSingleLineGetterOrSetter()) || kDocMissingParameters.isNotEmpty()
         val returnCheckFailed = hasReturnCheckFailed(node, kdocTags)
         val throwsCheckFailed = missingExceptions.isNotEmpty()
+        val checkFunName = isReferenceExpressionWithSameName(node, kdocTags)
 
         val anyTagFailed = paramCheckFailed || returnCheckFailed || throwsCheckFailed
         // if no tag failed, we have too little information to suggest KDoc - it would just be empty
         if (kdoc == null && anyTagFailed) {
             addKdocTemplate(node, name, missingParameters, explicitlyThrownExceptions, returnCheckFailed)
-        } else if (kdoc == null) {
+        } else if (kdoc == null && !checkFunName) {
             MISSING_KDOC_ON_FUNCTION.warn(configRules, emitWarn, false, name, node.startOffset, node)
         } else {
             if (paramCheckFailed) {
@@ -146,6 +148,14 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
+    private fun isReferenceExpressionWithSameName(node: ASTNode, kdocTags: Collection<KDocTag>?): Boolean {
+        if (node.isSingleLineGetterOrSetter()) {
+            return false
+        }
+        val hasReturnKdoc = kdocTags != null && kdocTags.hasKnownKdocTag(KDocKnownTag.RETURN)
+        return node.findAllDescendantsWithSpecificType(REFERENCE_EXPRESSION).map { it.text }.lastOrNull() == (node.psi as KtFunction).name // || !hasReturnKdoc
+    }
+
     private fun hasReturnCheckFailed(node: ASTNode, kdocTags: Collection<KDocTag>?): Boolean {
         if (node.isSingleLineGetterOrSetter()) {
             return false
@@ -156,8 +166,10 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
         val hasExplicitNotUnitReturnType = explicitReturnType != null && explicitReturnType.text != "Unit"
         val hasExplicitUnitReturnType = explicitReturnType != null && explicitReturnType.text == "Unit"
         val isFunWithExpressionBody = node.hasChildOfType(EQ)
+        val isReferenceExpressionWithSameName = node.findAllDescendantsWithSpecificType(REFERENCE_EXPRESSION).map { it.text }.contains((node.psi as KtFunction).name)
         val hasReturnKdoc = kdocTags != null && kdocTags.hasKnownKdocTag(KDocKnownTag.RETURN)
-        return (hasExplicitNotUnitReturnType || isFunWithExpressionBody && !hasExplicitUnitReturnType && hasNotExpressionBodyTypes) && !hasReturnKdoc
+        return (hasExplicitNotUnitReturnType || isFunWithExpressionBody && !hasExplicitUnitReturnType && hasNotExpressionBodyTypes)
+                && !hasReturnKdoc && !isReferenceExpressionWithSameName
     }
 
     private fun getExplicitlyThrownExceptions(node: ASTNode): Set<String> {
