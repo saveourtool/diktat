@@ -337,13 +337,13 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
                     val funNode = blockNode.treeParent
                     val returnType = (funNode.psi as? KtNamedFunction)?.typeReference?.node
                     val expression = node.findChildByType(RETURN_KEYWORD)!!.nextCodeSibling()!!
-                    val blockNOde = funNode.findChildByType(BLOCK)
+                    val blockNode = funNode.findChildByType(BLOCK)
                     funNode.apply {
                         if (returnType != null) {
                             removeRange(returnType.treeNext, null)
                             addChild(PsiWhiteSpaceImpl(" "), null)
-                        } else if(blockNOde != null) {
-                            removeChild(blockNOde)
+                        } else if (blockNode != null) {
+                            removeChild(blockNode)
                         }
                         addChild(LeafPsiElement(EQ, "="), null)
                         addChild(PsiWhiteSpaceImpl(" "), null)
