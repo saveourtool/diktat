@@ -12,6 +12,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_TOP_LEVEL
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
+import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
@@ -255,17 +256,17 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
      * (`@property foo bar`, "baz") -> `@property foo bar baz`
      */
     private fun appendKdocTagContent(
-        kdocTagNode: ASTNode, content: String
+        kdocTagNode: ASTNode, content: String,
     ) {
         kdocTagNode.findChildByType(KDOC_TEXT)?.let {
             kdocTagNode.replaceChild(
                 it,
-                LeafPsiElement(KDOC_TEXT, "${it.text}$content")
+                LeafPsiElement(KDOC_TEXT, "${it.text}$content"),
             )
         }
             ?: kdocTagNode.addChild(
                 LeafPsiElement(KDOC_TEXT, content),
-                null
+                null,
             )
     }
 
@@ -310,10 +311,12 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("UnsafeCallOnNullableType")
     private fun checkDoc(node: ASTNode, warning: Warnings) {
         val kdoc = node.getFirstChildWithType(KDOC)
-        val modifier = node.getFirstChildWithType(MODIFIER_LIST)
         val name = node.getIdentifierName()
+        val isModifierAccessibleOutsideOrActual = node.getFirstChildWithType(MODIFIER_LIST).run {
+            isAccessibleOutside() && this?.hasChildOfType(ElementType.ACTUAL_KEYWORD) != true
+        }
 
-        if (modifier.isAccessibleOutside() && kdoc == null && !isTopLevelFunctionStandard(node)) {
+        if (isModifierAccessibleOutsideOrActual && kdoc == null && !isTopLevelFunctionStandard(node)) {
             warning.warn(configRules, emitWarn, isFixMode, name!!.text, node.startOffset, node)
         }
     }
