@@ -93,7 +93,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         }
         val prevComment = if (node.treePrev.elementType == WHITE_SPACE &&
                 (node.treePrev.treePrev.elementType == EOL_COMMENT ||
-                node.treePrev.treePrev.elementType == BLOCK_COMMENT)) {
+                        node.treePrev.treePrev.elementType == BLOCK_COMMENT)) {
             node.treePrev.treePrev
         } else if (node.hasChildOfType(KDOC)) {
             node.findChildByType(KDOC)!!
