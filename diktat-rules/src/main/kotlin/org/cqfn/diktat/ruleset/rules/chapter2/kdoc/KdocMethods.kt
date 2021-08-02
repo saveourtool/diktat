@@ -77,12 +77,12 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
      * @param node
      */
     override fun logic(node: ASTNode) {
-        val isSuccessModifier : Boolean by lazy {
+        val isModifierAccessibleOutsideOrActual: Boolean by lazy {
             node.getFirstChildWithType(MODIFIER_LIST).run {
-                isAccessibleOutside() && !(this?.hasChildOfType(ACTUAL_KEYWORD) ?: false)
+                isAccessibleOutside() && this?.hasChildOfType(ACTUAL_KEYWORD) != true
             }
         }
-        if (node.elementType == FUN && isSuccessModifier && !node.isOverridden()) {
+        if (node.elementType == FUN && isModifierAccessibleOutsideOrActual && !node.isOverridden()) {
             val config = configRules.getCommonConfiguration()
             val filePath = node.getFilePath()
             val isTestMethod = node.hasTestAnnotation() || isLocatedInTest(filePath.splitPathToDirs(), config.testAnchors)
@@ -107,7 +107,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
             .minus(kdocTags
                 ?.filter { it.knownTag == KDocKnownTag.THROWS }
                 ?.mapNotNull { it.getSubjectName() }
-                ?.toSet() ?: emptySet()
+                ?.toSet() ?: emptySet(),
             )
 
         val paramCheckFailed = (missingParameters.isNotEmpty() && !node.isSingleLineGetterOrSetter()) || kDocMissingParameters.isNotEmpty()
@@ -226,7 +226,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("UnsafeCallOnNullableType")
     private fun handleReturnCheck(node: ASTNode,
                                   kdoc: ASTNode?,
-                                  kdocTags: Collection<KDocTag>?
+                                  kdocTags: Collection<KDocTag>?,
     ) {
         KDOC_WITHOUT_RETURN_TAG.warnAndFix(configRules, emitWarn, isFixMode, node.getIdentifierName()!!.text,
             node.startOffset, node) {
@@ -240,7 +240,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("UnsafeCallOnNullableType")
     private fun handleThrowsCheck(node: ASTNode,
                                   kdoc: ASTNode?,
-                                  missingExceptions: Collection<String>
+                                  missingExceptions: Collection<String>,
     ) {
         KDOC_WITHOUT_THROWS_TAG.warnAndFix(configRules, emitWarn, isFixMode,
             "${node.getIdentifierName()!!.text} (${missingExceptions.joinToString()})", node.startOffset, node) {
@@ -259,7 +259,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
                                 name: String,
                                 missingParameters: Collection<String?>,
                                 explicitlyThrownExceptions: Collection<String>,
-                                returnCheckFailed: Boolean
+                                returnCheckFailed: Boolean,
     ) {
         MISSING_KDOC_ON_FUNCTION.warnAndFix(configRules, emitWarn, isFixMode, name, node.startOffset, node) {
             val kdocTemplate = "/**\n" +
@@ -267,7 +267,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
                             (if (returnCheckFailed) " * @return\n" else "") +
                             explicitlyThrownExceptions.joinToString("") { " * @throws $it\n" } +
                             " */\n"
-                    )
+                            )
             val kdocNode = KotlinParser().createNode(kdocTemplate).findChildByType(KDOC)!!
             node.appendNewlineMergingWhiteSpace(node.firstChildNode, node.firstChildNode)
             node.addChild(kdocNode, node.firstChildNode)
@@ -305,7 +305,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
             ElementType.CALLABLE_REFERENCE_EXPRESSION,
             ElementType.SAFE_ACCESS_EXPRESSION,
             ElementType.WHEN_CONDITION_WITH_EXPRESSION,
-            ElementType.COLLECTION_LITERAL_EXPRESSION
+            ElementType.COLLECTION_LITERAL_EXPRESSION,
         )
         private val uselessKdocRegex = """^([rR]eturn|[gGsS]et)[s]?\s+\w+(\s+\w+)?$""".toRegex()
     }

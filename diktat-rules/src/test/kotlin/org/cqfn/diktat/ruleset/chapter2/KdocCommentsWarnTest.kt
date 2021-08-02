@@ -516,8 +516,16 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
             """
                 |actual fun foo() {}
                 |expect fun fo() {}
+                |internal actual fun foo() {}
+                |internal expect fun foo() {}
+                |
+                |expect class B{}
+                |
+                |actual class A{}
             """.trimMargin(),
-            LintError(2, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} fo")
+            LintError(2, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} fo"),
+            LintError(4, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} foo"),
+            LintError(6, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} B")
         )
     }
 }

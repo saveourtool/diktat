@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.rules.chapter2.kdoc
 
-import com.pinterest.ktlint.core.ast.ElementType
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getCommonConfiguration
 import org.cqfn.diktat.ruleset.constants.Warnings
@@ -13,6 +12,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_TOP_LEVEL
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
+import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
@@ -88,12 +88,12 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("UnsafeCallOnNullableType", "ComplexMethod")
     private fun checkValueParameter(node: ASTNode) {
         if (node.parents().none { it.elementType == PRIMARY_CONSTRUCTOR } ||
-                !node.hasChildOfType(VAL_KEYWORD) && !node.hasChildOfType(VAR_KEYWORD)) {
+            !node.hasChildOfType(VAL_KEYWORD) && !node.hasChildOfType(VAR_KEYWORD)) {
             return
         }
         val prevComment = if (node.treePrev.elementType == WHITE_SPACE &&
-                (node.treePrev.treePrev.elementType == EOL_COMMENT ||
-                        node.treePrev.treePrev.elementType == BLOCK_COMMENT)) {
+            (node.treePrev.treePrev.elementType == EOL_COMMENT ||
+                    node.treePrev.treePrev.elementType == BLOCK_COMMENT)) {
             node.treePrev.treePrev
         } else if (node.hasChildOfType(KDOC)) {
             node.findChildByType(KDOC)!!
@@ -256,17 +256,17 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
      * (`@property foo bar`, "baz") -> `@property foo bar baz`
      */
     private fun appendKdocTagContent(
-        kdocTagNode: ASTNode, content: String
+        kdocTagNode: ASTNode, content: String,
     ) {
         kdocTagNode.findChildByType(KDOC_TEXT)?.let {
             kdocTagNode.replaceChild(
                 it,
-                LeafPsiElement(KDOC_TEXT, "${it.text}$content")
+                LeafPsiElement(KDOC_TEXT, "${it.text}$content"),
             )
         }
             ?: kdocTagNode.addChild(
                 LeafPsiElement(KDOC_TEXT, content),
-                null
+                null,
             )
     }
 
@@ -301,9 +301,9 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun checkTopLevelDoc(node: ASTNode) =
-            // checking that all top level class declarations and functions have kDoc
-            (node.getAllChildrenWithType(CLASS) + node.getAllChildrenWithType(FUN))
-                .forEach { checkDoc(it, MISSING_KDOC_TOP_LEVEL) }
+        // checking that all top level class declarations and functions have kDoc
+        (node.getAllChildrenWithType(CLASS) + node.getAllChildrenWithType(FUN))
+            .forEach { checkDoc(it, MISSING_KDOC_TOP_LEVEL) }
 
     /**
      * raises warning if protected, public or internal code element does not have a Kdoc
@@ -312,11 +312,11 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     private fun checkDoc(node: ASTNode, warning: Warnings) {
         val kdoc = node.getFirstChildWithType(KDOC)
         val name = node.getIdentifierName()
-        val isSuccessModifier = node.getFirstChildWithType(MODIFIER_LIST).run {
-            isAccessibleOutside() && !(this?.hasChildOfType(ElementType.ACTUAL_KEYWORD) ?: false)
+        val isModifierAccessibleOutsideOrActual = node.getFirstChildWithType(MODIFIER_LIST).run {
+            isAccessibleOutside() && this?.hasChildOfType(ElementType.ACTUAL_KEYWORD) != true
         }
 
-        if (isSuccessModifier && kdoc == null && !isTopLevelFunctionStandard(node)) {
+        if (isModifierAccessibleOutsideOrActual && kdoc == null && !isTopLevelFunctionStandard(node)) {
             warning.warn(configRules, emitWarn, isFixMode, name!!.text, node.startOffset, node)
         }
     }
