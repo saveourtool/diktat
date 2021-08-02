@@ -89,12 +89,12 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     private fun checkValueParameter(node: ASTNode) {
         if (node.parents().none { it.elementType == PRIMARY_CONSTRUCTOR } ||
                 !node.hasChildOfType(VAL_KEYWORD) && !node.hasChildOfType(VAR_KEYWORD)) {
-                    return
+            return
         }
         val prevComment = if (node.treePrev.elementType == WHITE_SPACE &&
                 (node.treePrev.treePrev.elementType == EOL_COMMENT ||
-                    node.treePrev.treePrev.elementType == BLOCK_COMMENT)) {
-                        node.treePrev.treePrev
+                node.treePrev.treePrev.elementType == BLOCK_COMMENT)) {
+            node.treePrev.treePrev
         } else if (node.hasChildOfType(KDOC)) {
             node.findChildByType(KDOC)!!
         } else if (node.treePrev.elementType == BLOCK_COMMENT) {
