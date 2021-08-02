@@ -369,4 +369,26 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
             rulesConfigList = rulesConfigListEmptyDomainName
         )
     }
+
+    @Test
+    @Tag(WarningNames.PACKAGE_NAME_INCORRECT_PATH)
+    fun `shouldn't trigger if path contains dot`() {
+        lintMethod(
+            """
+                |package org.cqfn.diktat.test.utils
+            """.trimMargin(),
+            fileName = "/home/testu/project/src/main/kotlin/org/cqfn/diktat/test.utils/Example.kt",
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.PACKAGE_NAME_INCORRECT_PATH)
+    fun `shouldn't trigger for gradle script`() {
+        lintMethod(
+            """
+                |import org.cqfn.diktat.generation.docs.generateAvailableRules
+            """.trimMargin(),
+            fileName = "/home/testu/project/build.gradle.kts",
+        )
+    }
 }

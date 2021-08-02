@@ -7,7 +7,7 @@ package org.cqfn.diktat.ruleset.utils
 internal const val SRC_DIRECTORY_NAME = "src"
 
 /**
- * Splits [this] string by file path separator
+ * Splits [this] string by file path separator.
  *
  * @return list of path parts
  */
