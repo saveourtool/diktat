@@ -88,13 +88,13 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("UnsafeCallOnNullableType", "ComplexMethod")
     private fun checkValueParameter(node: ASTNode) {
         if (node.parents().none { it.elementType == PRIMARY_CONSTRUCTOR } ||
-            !node.hasChildOfType(VAL_KEYWORD) && !node.hasChildOfType(VAR_KEYWORD)) {
-            return
+                !node.hasChildOfType(VAL_KEYWORD) && !node.hasChildOfType(VAR_KEYWORD)) {
+                    return
         }
         val prevComment = if (node.treePrev.elementType == WHITE_SPACE &&
-            (node.treePrev.treePrev.elementType == EOL_COMMENT ||
+                (node.treePrev.treePrev.elementType == EOL_COMMENT ||
                     node.treePrev.treePrev.elementType == BLOCK_COMMENT)) {
-            node.treePrev.treePrev
+                        node.treePrev.treePrev
         } else if (node.hasChildOfType(KDOC)) {
             node.findChildByType(KDOC)!!
         } else if (node.treePrev.elementType == BLOCK_COMMENT) {
@@ -301,9 +301,9 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun checkTopLevelDoc(node: ASTNode) =
-        // checking that all top level class declarations and functions have kDoc
-        (node.getAllChildrenWithType(CLASS) + node.getAllChildrenWithType(FUN))
-            .forEach { checkDoc(it, MISSING_KDOC_TOP_LEVEL) }
+            // checking that all top level class declarations and functions have kDoc
+            (node.getAllChildrenWithType(CLASS) + node.getAllChildrenWithType(FUN))
+                .forEach { checkDoc(it, MISSING_KDOC_TOP_LEVEL) }
 
     /**
      * raises warning if protected, public or internal code element does not have a Kdoc

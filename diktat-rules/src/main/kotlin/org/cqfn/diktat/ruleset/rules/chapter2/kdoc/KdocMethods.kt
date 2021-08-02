@@ -267,7 +267,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
                             (if (returnCheckFailed) " * @return\n" else "") +
                             explicitlyThrownExceptions.joinToString("") { " * @throws $it\n" } +
                             " */\n"
-                            )
+                    )
             val kdocNode = KotlinParser().createNode(kdocTemplate).findChildByType(KDOC)!!
             node.appendNewlineMergingWhiteSpace(node.firstChildNode, node.firstChildNode)
             node.addChild(kdocNode, node.firstChildNode)
