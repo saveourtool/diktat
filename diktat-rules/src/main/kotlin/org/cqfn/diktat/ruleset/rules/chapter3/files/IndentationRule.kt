@@ -138,7 +138,10 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
             if (lastChild.elementType != WHITE_SPACE || numBlankLinesAfter != 1) {
                 val warnText = if (lastChild.elementType != WHITE_SPACE || numBlankLinesAfter == 0) "no newline" else "too many blank lines"
                 val fileName = filePath.substringAfterLast(File.separator)
-                WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "$warnText at the end of file $fileName", node.startOffset + node.textLength, node) {
+                println("node.startOffset ${node.startOffset} | node.textLength ${node.textLength}")
+                val (line, column) = node.calculateLineColByOffset()(node.textLength)
+                println("line ${line}, column ${column}")
+                WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "$warnText at the end of file $fileName", node.textLength -1, node) {
                     if (lastChild.elementType != WHITE_SPACE) {
                         node.addChild(PsiWhiteSpaceImpl("\n"), null)
                     } else {
