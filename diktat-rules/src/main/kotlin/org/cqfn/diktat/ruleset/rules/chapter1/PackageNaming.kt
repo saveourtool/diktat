@@ -115,7 +115,7 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
     private fun calculateRealPackageName(fileName: String, configuration: CommonConfiguration): List<String> {
         val filePathParts = fileName
             .splitPathToDirs()
-            .dropLast(1) // remove filename
+            .dropLast(1)  // remove filename
             .flatMap { it.split(".") }
 
         return if (!filePathParts.contains(PACKAGE_PATH_ANCHOR)) {
