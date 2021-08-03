@@ -11,7 +11,7 @@ fun foo(list: List<Bar>?) {
             ?:foobar
 }
 
-fun bar(x :Int,y:Int) = x+ y
+fun bar(x :Int,y:Int) :Int = x+ y
 
 fun goo() {
     x.map()

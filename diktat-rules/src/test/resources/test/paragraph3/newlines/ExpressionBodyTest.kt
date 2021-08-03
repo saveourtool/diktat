@@ -25,3 +25,7 @@ fun recFoo(): String{
 }
 
 fun foo() = "lorem ipsum"
+
+fun foo() {
+    return println("Logging")
+}
