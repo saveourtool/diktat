@@ -138,10 +138,12 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
             if (lastChild.elementType != WHITE_SPACE || numBlankLinesAfter != 1) {
                 val warnText = if (lastChild.elementType != WHITE_SPACE || numBlankLinesAfter == 0) "no newline" else "too many blank lines"
                 val fileName = filePath.substringAfterLast(File.separator)
-                println("node.startOffset ${node.startOffset} | node.textLength ${node.textLength}")
-                val (line, column) = node.calculateLineColByOffset()(node.textLength)
-                println("line ${line}, column ${column}")
-                WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "$warnText at the end of file $fileName", node.textLength -1, node) {
+                // In case, when last child is newline, visually user will see blank line at the end of file,
+                // however, the text length does not consider it, since it's blank and line appeared only because of `\n`
+                // But ktlint synthetically increase length in aim to have ability to point to this line, so in this case
+                // offset will be `node.textLength`, otherwise we will point to the last symbol, i.e `node.textLength - 1`
+                val offset = if (lastChild.elementType == WHITE_SPACE && lastChild.textContains('\n')) node.textLength else node.textLength - 1
+                WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "$warnText at the end of file $fileName", offset, node) {
                     if (lastChild.elementType != WHITE_SPACE) {
                         node.addChild(PsiWhiteSpaceImpl("\n"), null)
                     } else {

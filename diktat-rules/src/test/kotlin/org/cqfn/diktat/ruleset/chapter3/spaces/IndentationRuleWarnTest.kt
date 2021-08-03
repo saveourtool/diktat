@@ -80,7 +80,20 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
 
     @Test
     @Tag(WarningNames.WRONG_INDENTATION)
-    fun `should warn if many new line at the end of file`() {
+    fun `should warn if no new line at the end of file, last child whitespace`() {
+        lintMethod(
+            """
+                    |class Example {
+                    |    val zero = 0
+                    |} 
+                """.trimMargin(),
+            LintError(3, 2, ruleId, "${WRONG_INDENTATION.warnText()} no newline at the end of file TestFileName.kt", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
+    fun `should warn if too many blank lines at the end of file`() {
         lintMethod(
             """
                     |class Example {
