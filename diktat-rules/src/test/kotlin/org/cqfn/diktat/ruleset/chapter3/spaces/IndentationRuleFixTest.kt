@@ -45,10 +45,4 @@ class IndentationRuleFixTest : FixTestBase("test/paragraph3/indentation",
     fun `regression - incorrect fixing in constructor parameter list`() {
         fixAndCompare("ConstructorExpected.kt", "ConstructorTest.kt")
     }
-
-    @Test
-    @Tag(WarningNames.WRONG_INDENTATION)
-    fun `should add new line at the end of file`() {
-        fixAndCompare("NoNewLineAtTheEndExpected.kt", "NoNewLineAtTheEndTest.kt")
-    }
 }
