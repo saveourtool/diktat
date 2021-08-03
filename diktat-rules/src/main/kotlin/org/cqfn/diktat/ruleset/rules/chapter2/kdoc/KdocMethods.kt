@@ -157,6 +157,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
         return funName?.let { lastDotQualifiedExpression?.contains(it, ignoreCase = false) } ?: false
     }
 
+    @Suppress("WRONG_NEWLINES")
     private fun hasReturnCheckFailed(node: ASTNode, kdocTags: Collection<KDocTag>?): Boolean {
         if (node.isSingleLineGetterOrSetter()) {
             return false
@@ -170,7 +171,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
         val isReferenceExpressionWithSameName = node.findAllDescendantsWithSpecificType(REFERENCE_EXPRESSION).map { it.text }.contains((node.psi as KtFunction).name)
         val hasReturnKdoc = kdocTags != null && kdocTags.hasKnownKdocTag(KDocKnownTag.RETURN)
         return (hasExplicitNotUnitReturnType || isFunWithExpressionBody && !hasExplicitUnitReturnType && hasNotExpressionBodyTypes)
-                && !hasReturnKdoc && !isReferenceExpressionWithSameName
+        && !hasReturnKdoc && !isReferenceExpressionWithSameName
     }
 
     private fun getExplicitlyThrownExceptions(node: ASTNode): Set<String> {
