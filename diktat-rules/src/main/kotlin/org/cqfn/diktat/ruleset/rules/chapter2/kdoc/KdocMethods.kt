@@ -152,8 +152,9 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
         if (node.isSingleLineGetterOrSetter()) {
             return false
         }
-        val hasReturnKdoc = kdocTags != null && kdocTags.hasKnownKdocTag(KDocKnownTag.RETURN)
-        return node.findAllDescendantsWithSpecificType(REFERENCE_EXPRESSION).map { it.text }.lastOrNull() == (node.psi as KtFunction).name // || !hasReturnKdoc
+        val lastDotQualifiedExpression = node.findChildByType(DOT_QUALIFIED_EXPRESSION)?.text?.substringAfterLast('.')
+        val funName = (node.psi as KtFunction).name
+        return funName?.let { lastDotQualifiedExpression?.contains(it, ignoreCase = false) } ?: false
     }
 
     private fun hasReturnCheckFailed(node: ASTNode, kdocTags: Collection<KDocTag>?): Boolean {
