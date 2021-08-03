@@ -1117,4 +1117,14 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
             rulesConfigList = rulesConfigListShort
         )
     }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
+    fun `not complaining on fun without return type`() {
+        lintMethod(
+            """
+                |fun foo(x: Int, y: Int) = x + y
+            """.trimMargin(),
+        )
+    }
 }
