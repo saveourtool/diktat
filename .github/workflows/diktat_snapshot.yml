@@ -14,11 +14,12 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-      - uses: actions/checkout@v2.3.3
+      - uses: actions/checkout@v2.3.4
       - name: Set up JDK 11
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v2
         with:
-          java-version: 1.11
+          distribution: zulu
+          java-version: 11
       - name: Cache local Maven repository (shared with regular CI build)
         uses: actions/cache@v2
         with:
@@ -44,6 +45,6 @@ jobs:
         run: |
           mvn -B versions:set -DnewVersion=${{ env.BASE_VERSION }}-SNAPSHOT
           mvn -B versions:set-property -Dproperty=diktat-check.version -DnewVersion=${{ env.BASE_VERSION }}-pre
-      - name: Run diktat snapshot via ktlint
+      - name: Run diktat snapshot via maven plugin
         run: |
-          mvn -B diktat:check@diktat
+          mvn -B diktat:check@diktat -Ddiktat.debug=true

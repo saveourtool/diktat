@@ -20,4 +20,10 @@ class ClassLikeStructuresOrderFixTest : FixTestBase("test/paragraph3/file_struct
     fun `should fix order and newlines with comment`() {
         fixAndCompare("OrderWithCommentExpected.kt", "OrderWithCommentTest.kt")
     }
+
+    @Test
+    @Tags(Tag(WarningNames.WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES))
+    fun `regression - should not remove enum members`() {
+        fixAndCompare("OrderWithEnumsExpected.kt", "OrderWithEnumsTest.kt")
+    }
 }

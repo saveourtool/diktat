@@ -130,4 +130,42 @@ class RunInScriptWarnTest : LintTestBase(::RunInScript) {
             fileName = "src/main/kotlin/org/cqfn/diktat/builds.gradle.kts"
         )
     }
+
+    @Test
+    @Tag(WarningNames.RUN_IN_SCRIPT)
+    fun `check gradle script with eq expression`() {
+        lintMethod(
+            """
+                version = "0.1.0-SNAPSHOT"
+                
+                diktat {}
+                
+                diktat({})
+
+                foo/*df*/()
+                
+                foo().goo()
+            """.trimMargin(),
+            fileName = "src/main/kotlin/org/cqfn/diktat/builds.gradle.kts"
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.RUN_IN_SCRIPT)
+    fun `check kts script with eq expression`() {
+        lintMethod(
+            """
+                version = "0.1.0-SNAPSHOT"
+                
+                diktat {}
+                
+                diktat({})
+
+                foo/*df*/()
+            """.trimMargin(),
+            LintError(1, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} version = \"0.1.0-SNAPSHOT\"", true),
+            LintError(7, 17, ruleId, "${RUN_IN_SCRIPT.warnText()} foo/*df*/()", true),
+            fileName = "src/main/kotlin/org/cqfn/diktat/Example.kts"
+        )
+    }
 }

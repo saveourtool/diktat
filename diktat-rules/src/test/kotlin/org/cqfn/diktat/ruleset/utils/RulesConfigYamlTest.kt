@@ -19,6 +19,7 @@ import kotlinx.serialization.encodeToString
  * Special test that checks that developer has not forgotten to add his warning to a diktat-analysis.yml
  * This file is needed to be in tact with latest changes in Warnings.kt
  */
+@Suppress("UNUSED")
 inline class RulesConfigYamlTest(private val pathMap: Map<String, String> =
         mapOf("diktat-analysis.yml" to "diKTat/diktat-rules/src/main/resources/diktat-analysis.yml",
             "diktat-analysis-huawei.yml" to "diKTat/diktat-rules/src/main/resources/diktat-analysis-huawei.yml",
@@ -39,6 +40,7 @@ inline class RulesConfigYamlTest(private val pathMap: Map<String, String> =
     }
 
     @Test
+    @Suppress("UNUSED")
     fun `check kotlin version`() {
         val currentKotlinVersion = KotlinVersion.CURRENT
         pathMap.keys.forEach { path ->

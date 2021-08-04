@@ -89,7 +89,7 @@ fun foo() {
 fun foo() {
     if (cond1 && (cond2 && cond3 || cond4)) {
         firstAction()
-secondAction()
+            secondAction()
     }
 }
 
@@ -130,7 +130,7 @@ fun foo () {
 fun foo() {
     if (cond1 && cond2) {
         firstAction()
-secondAction()
+            secondAction()
     }
     if (cond3) {
         secondAction()
@@ -140,7 +140,7 @@ secondAction()
 fun foo() {
     if (cond1 && (cond2 || cond3)) {
         firstAction()
-secondAction()
+            secondAction()
     }
     if (cond4) {
         secondAction()
@@ -166,4 +166,90 @@ fun foo() {
         }
         val a = 5
     }
+}
+
+fun foo() {
+    if (true &&
+/*
+         Some Comments
+        */
+// More comments
+true) {
+        // comment 1
+            val a = 5
+            // comment 2
+            doSomething()
+        // comment 3
+    }
+}
+
+fun foo() {
+    if (true &&
+// Some
+// comments
+true) {
+        doSomething()
+    }
+}
+
+fun foo() {
+    // comment
+    if (cond1 &&
+/*
+         Some comments
+        */
+// More comments
+(cond2 || cond3)) {
+        doSomething()
+    }
+}
+
+fun foo() {
+    if (cond1 &&
+// comment
+cond2 &&
+// comment 2
+cond3) {
+        doSomething()
+    }
+}
+
+fun foo () {
+    if (true && true) {
+        doSomething()
+    }
+}
+
+fun foo () {
+     if (/*comment*/ true && true) {
+         doSomething()
+     }
+}
+
+fun foo () {
+    if (true /*comment*/ && true) {
+        doSomething()
+    }
+}
+
+fun foo () {
+    if (true && true /*comment*/) {
+        doSomething()
+    }
+}
+
+fun foo () {
+    if (true && (true || false) /*comment*/ && true /*comment*/) {
+        doSomething()
+    }
+}
+
+fun foo () {
+     if (true
+     /*comment
+     * more comments
+     */
+      && true /*comment 2*/) {
+         doSomething()
+     }
 }

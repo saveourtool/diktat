@@ -4,8 +4,6 @@
 
 package org.cqfn.diktat.ruleset.utils
 
-import com.pinterest.ktlint.core.ast.ElementType
-import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtCallExpression
@@ -58,26 +56,6 @@ fun KtProperty.getDeclarationScope() =
             .let { if (it is KtIfExpression) it.then!! else it }
             .let { if (it is KtTryExpression) it.tryBlock else it }
             as KtBlockExpression?
-
-/**
- * Checks if this [PsiElement] is an ancestor of [block].
- * Nodes like `IF`, `TRY` are parents of `ELSE`, `CATCH`, but their scopes are not intersecting, and false is returned in this case.
- *
- * @param block
- * @return boolean result
- */
-fun PsiElement.isContainingScope(block: KtBlockExpression): Boolean {
-    when (block.parent.node.elementType) {
-        ElementType.ELSE -> getParentOfType<KtIfExpression>(true)
-        ElementType.CATCH -> getParentOfType<KtTryExpression>(true)
-        else -> null
-    }.let {
-        if (this == it) {
-            return false
-        }
-    }
-    return isAncestor(block, false)
-}
 
 /**
  * Method that tries to find a local property declaration with the same name as current [KtNameReferenceExpression] element

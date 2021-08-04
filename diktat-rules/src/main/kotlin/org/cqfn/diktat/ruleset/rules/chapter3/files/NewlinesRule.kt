@@ -20,7 +20,6 @@ import org.cqfn.diktat.ruleset.utils.isEol
 import org.cqfn.diktat.ruleset.utils.isFollowedByNewline
 import org.cqfn.diktat.ruleset.utils.isSingleLineIfElse
 import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
-import org.cqfn.diktat.ruleset.utils.log
 
 import com.pinterest.ktlint.core.ast.ElementType.ANDAND
 import com.pinterest.ktlint.core.ast.ElementType.ARROW
@@ -88,12 +87,16 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.psi.KtBinaryExpression
+import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.KtParameterList
+import org.jetbrains.kotlin.psi.KtReferenceExpression
 import org.jetbrains.kotlin.psi.KtSuperTypeList
 import org.jetbrains.kotlin.psi.KtValueArgumentList
+import org.jetbrains.kotlin.psi.psiUtil.anyDescendantOfType
 import org.jetbrains.kotlin.psi.psiUtil.children
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.siblings
+import org.slf4j.LoggerFactory
 
 /**
  * Rule that checks line break styles.
@@ -146,7 +149,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun handleOperatorWithLineBreakAfter(node: ASTNode) {
         // [node] should be either EQ or OPERATION_REFERENCE which has single child
-        if (!(node.elementType == EQ || node.firstChildNode.elementType in lineBreakAfterOperators || node.isInfixCall())) {
+        if (node.elementType != EQ && node.firstChildNode.elementType !in lineBreakAfterOperators && !node.isInfixCall()) {
             return
         }
 
@@ -315,7 +318,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    @Suppress("UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType", "AVOID_NULL_CHECKS")
     private fun handleReturnStatement(node: ASTNode) {
         val blockNode = node.treeParent.takeIf { it.elementType == BLOCK && it.treeParent.elementType == FUN }
         val returnsUnit = node.children().count() == 1  // the only child is RETURN_KEYWORD
@@ -332,13 +335,16 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
                 WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
                     "functions with single return statement should be simplified to expression body", node.startOffset, node) {
                     val funNode = blockNode.treeParent
-                    // if return type is not Unit, then there should be type specification
-                    // otherwise code won't compile and colon being null is correctly invalid
-                    val colon = funNode.findChildByType(COLON)!!
+                    val returnType = (funNode.psi as? KtNamedFunction)?.typeReference?.node
                     val expression = node.findChildByType(RETURN_KEYWORD)!!.nextCodeSibling()!!
+                    val blockNode = funNode.findChildByType(BLOCK)
                     funNode.apply {
-                        removeRange(if (colon.treePrev.elementType == WHITE_SPACE) colon.treePrev else colon, null)
-                        addChild(PsiWhiteSpaceImpl(" "), null)
+                        if (returnType != null) {
+                            removeRange(returnType.treeNext, null)
+                            addChild(PsiWhiteSpaceImpl(" "), null)
+                        } else if (blockNode != null) {
+                            removeChild(blockNode)
+                        }
                         addChild(LeafPsiElement(EQ, "="), null)
                         addChild(PsiWhiteSpaceImpl(" "), null)
                         addChild(expression.clone() as ASTNode, null)
@@ -453,8 +459,8 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun ASTNode.getOrderedCallExpressions(psi: PsiElement, result: MutableList<ASTNode>) {
         // if statements here have the only right order - don't change it
 
-        if (psi.children.isNotEmpty() && (!psi.isFirstChildElementType(DOT_QUALIFIED_EXPRESSION) &&
-                !psi.isFirstChildElementType(SAFE_ACCESS_EXPRESSION))) {
+        if (psi.children.isNotEmpty() && !psi.isFirstChildElementType(DOT_QUALIFIED_EXPRESSION) &&
+                !psi.isFirstChildElementType(SAFE_ACCESS_EXPRESSION)) {
             val firstChild = psi.firstChild
             if (firstChild.isFirstChildElementType(DOT_QUALIFIED_EXPRESSION) ||
                     firstChild.isFirstChildElementType(SAFE_ACCESS_EXPRESSION)) {
@@ -544,15 +550,15 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
         }
         val callsByNewLine: ListOfList = mutableListOf()
         var callsInOneNewLine: MutableList<ASTNode> = mutableListOf()
-        this.forEach { node ->
-            if (node.treePrev.isFollowedByNewline() || node.treePrev.isWhiteSpaceWithNewline()) {
+        this.forEach { astNode ->
+            if (astNode.treePrev.isFollowedByNewline() || astNode.treePrev.isWhiteSpaceWithNewline()) {
                 callsByNewLine.add(callsInOneNewLine)
                 callsInOneNewLine = mutableListOf()
-                callsInOneNewLine.add(node)
+                callsInOneNewLine.add(astNode)
             } else {
-                callsInOneNewLine.add(node)
+                callsInOneNewLine.add(astNode)
             }
-            if (node.treePrev.elementType == POSTFIX_EXPRESSION && !node.treePrev.isFollowedByNewline() && configuration.maxCallsInOneLine == 1) {
+            if (astNode.treePrev.elementType == POSTFIX_EXPRESSION && !astNode.treePrev.isFollowedByNewline() && configuration.maxCallsInOneLine == 1) {
                 return true
             }
         }
@@ -612,6 +618,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
+        private val log = LoggerFactory.getLogger(NewlinesRule::class.java)
         const val MAX_CALLS_IN_ONE_LINE = 3
 
         // fixme: these token sets can be not full, need to add new once as corresponding cases are discovered.
@@ -626,3 +633,16 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
         private val parenthesesTypes = TokenSet.create(CONDITION, WHEN, VALUE_ARGUMENT)
     }
 }
+
+/**
+ * Checks whether [this] function is recursive, i.e. calls itself inside from it's body
+ *
+ * @return true if function is recursive, false otherwise
+ */
+fun KtNamedFunction.isRecursive() = bodyBlockExpression
+    ?.statements?.any { statement ->
+    statement.anyDescendantOfType<KtReferenceExpression> {
+        it.text == this@isRecursive.name
+    }
+}
+    ?: false

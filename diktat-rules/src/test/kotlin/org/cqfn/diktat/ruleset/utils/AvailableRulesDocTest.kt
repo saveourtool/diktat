@@ -16,7 +16,7 @@ class AvailableRulesDocTest {
             val splitMarkDown = line
                 .split("|")
 
-            val ruleName = splitMarkDown.get(SPLIT_MARK).trim()
+            val ruleName = splitMarkDown[SPLIT_MARK].trim()
 
             if (!ruleName.startsWith(TABLE_DELIMITER) &&
                     !ruleName.startsWith(RULE_NAME_HEADER)) {

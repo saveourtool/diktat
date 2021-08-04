@@ -4,8 +4,10 @@
     # put your package name here - it will be autofixed and checked
     domainName: your.name.here
     testDirs: test
+    # expected values:  disabledChapters: "Naming, Comments, General, Variables, Functions, Classes"
+    # or: "1, 2, 3, 4, 5, 6"
     disabledChapters: ""
-    kotlinVersion: 1.4
+    kotlinVersion: 1.5
     srcDirectories: "main"
 # Checks that the Class/Enum/Interface name does not match Pascal case
 - name: CLASS_NAME_INCORRECT
@@ -35,6 +37,9 @@
     allowedPrefixes: "" # A list of functions that return boolean and are allowed to use. Input is in a form "foo, bar".
 # Checks that function/method name is in lowerCamelCase
 - name: FUNCTION_NAME_INCORRECT_CASE
+  enabled: true
+# Checks that typealias name is in PascalCase
+- name: TYPEALIAS_NAME_INCORRECT_CASE
   enabled: true
 # Checks that generic name doesn't contain more than 1 letter (capital). It can be followed by numbers, example: T12, T
 - name: GENERIC_NAME
@@ -143,7 +148,6 @@
   configuration:
     # number of lines
     maxSize: '2000'
-    ignoreFolders: ''
 # Checks that file does not contain commented out code
 - name: COMMENTED_OUT_CODE
   enabled: true
@@ -297,6 +301,8 @@
 - name: MAGIC_NUMBER
   enabled: true
   configuration:
+    # Ignore numbers from test
+    ignoreTest: "true"
     # Ignore numbers
     ignoreNumbers: "-1, 1, 0, 2"
     # Is ignore override hashCode function
@@ -494,4 +500,7 @@
   enabled: true
 # Check if kts script contains other functions except run code
 - name: RUN_IN_SCRIPT
+  enabled: true
+# Check if boolean expression can be simplified
+- name: COMPLEX_BOOLEAN_EXPRESSION
   enabled: true

@@ -578,8 +578,9 @@ style:
     imports: []
     forbiddenPatterns: ''
   ForbiddenMethodCall:
-    active: false
+    active: true
     methods: ['kotlin.io.println', 'kotlin.io.print']
+    excludes: ["**/src/test/**"]
   ForbiddenPublicDataClass:
     active: true
     excludes: ['**']

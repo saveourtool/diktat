@@ -746,6 +746,7 @@ private class PrettyPrintingVisitor(private val elementType: IElementType,
             )
         }
     }
+
     companion object {
         fun assertStringRepr(
             elementType: IElementType,
@@ -757,7 +758,7 @@ private class PrettyPrintingVisitor(private val elementType: IElementType,
                 KtLint.Params(
                     text = code,
                     ruleSets = listOf(RuleSet("test", PrettyPrintingVisitor(elementType, level, maxLevel, expected))),
-                    cb = { _, _ -> Unit }
+                    cb = { _, _ -> }
                 )
             )
         }

@@ -33,6 +33,32 @@ class PackagePathFixTest : FixTestBase(
 
     @Test
     @Tag(WarningNames.PACKAGE_NAME_MISSING)
+    fun `fix missing package name with file annotation`() {
+        fixAndCompare("org/cqfn/diktat/some/name/FixMissingWithAnnotationExpected.kt", "org/cqfn/diktat/some/name/FixMissingWithAnnotationTest.kt")
+    }
+
+    @Test
+    @Tag(WarningNames.PACKAGE_NAME_MISSING)
+    fun `fix missing package name with file annotation and comments`() {
+        fixAndCompare("org/cqfn/diktat/some/name/FixMissingWithAnnotationExpected2.kt", "org/cqfn/diktat/some/name/FixMissingWithAnnotationTest2.kt")
+    }
+
+    @Test
+    @Tag(WarningNames.PACKAGE_NAME_MISSING)
+    fun `fix missing package name with file annotation and comments 2`() {
+        fixAndCompare("org/cqfn/diktat/some/name/FixMissingWithAnnotationExpected3.kt", "org/cqfn/diktat/some/name/FixMissingWithAnnotationTest3.kt")
+    }
+
+    // If there is no import list in code, the node is still present in the AST, but without any whitespaces around
+    // So, this check covered case, when we manually add whitespace before package directive
+    @Test
+    @Tag(WarningNames.PACKAGE_NAME_MISSING)
+    fun `fix missing package name without import list`() {
+        fixAndCompare("org/cqfn/diktat/some/name/FixMissingWithoutImportExpected.kt", "org/cqfn/diktat/some/name/FixMissingWithoutImportTest.kt")
+    }
+
+    @Test
+    @Tag(WarningNames.PACKAGE_NAME_MISSING)
     fun `fix missing package name with a proper location without domain`() {
         fixAndCompare("some/FixMissingExpected.kt", "some/FixMissingTest.kt")
     }

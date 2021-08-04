@@ -105,13 +105,10 @@ class AccurateCalculationsRule(configRules: List<RulesConfig>) : DiktatRule(
             val floatValue = left!!.takeIf { it.isFloatingPoint() }
                 ?: right!!.takeIf { it.isFloatingPoint() }
             checkFloatValue(floatValue, this)
-            println()
         }
 
     /**
      * @param node
-     * @param autoCorrect
-     * @param emit
      */
     override fun logic(node: ASTNode) {
         when (val psi = node.psi) {

@@ -5,7 +5,7 @@
 
     <groupId>org.cqfn.diktat</groupId>
     <artifactId>diktat-parent</artifactId>
-    <version>0.4.3-SNAPSHOT</version>
+    <version>1.0.0-rc.4-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>diktat</name>
@@ -42,19 +42,21 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <kotlin.version>1.4.32</kotlin.version>
+        <kotlin.version>1.5.21</kotlin.version>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
-        <kotlinx.serialization.version>1.1.0</kotlinx.serialization.version>
+        <kotlinx.serialization.version>1.2.2</kotlinx.serialization.version>
         <ktlint.version>0.41.0</ktlint.version>
-        <junit.version>5.7.1</junit.version>
+        <junit.version>5.7.2</junit.version>
         <guava.version>30.1.1-jre</guava.version>
-        <slf4j.version>1.7.30</slf4j.version>
+        <slf4j.version>1.7.31</slf4j.version>
         <commons-cli.version>1.4</commons-cli.version>
-        <diktat-check.version>0.4.2</diktat-check.version>
-        <kotlinpoet.version>1.8.0</kotlinpoet.version>
-        <detekt.version>1.16.0</detekt.version>
-        <dokka.version>1.4.30</dokka.version>
-        <jacoco.version>0.8.6</jacoco.version>
+        <diktat-check.version>1.0.0-rc.3</diktat-check.version>
+        <kotlinpoet.version>1.9.0</kotlinpoet.version>
+        <detekt.version>1.17.1</detekt.version>
+        <dokka.version>1.5.0</dokka.version>
+        <jacoco.version>0.8.7</jacoco.version>
+        <maven-plugin-tools.version>3.6.1</maven-plugin-tools.version>
+        <jbool.version>1.23</jbool.version>
     </properties>
 
     <modules>
@@ -93,6 +95,11 @@
             </dependency>
             <dependency>
                 <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-stdlib-common</artifactId>
+                <version>${kotlin.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-compiler-embeddable</artifactId>
                 <version>${kotlin.version}</version>
             </dependency>
@@ -114,7 +121,7 @@
             <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
-                <version>2.8.0</version>
+                <version>2.11.0</version>
             </dependency>
             <dependency>
                 <groupId>commons-configuration</groupId>
@@ -134,7 +141,7 @@
             <dependency>
                 <groupId>io.github.petertrr</groupId>
                 <artifactId>kotlin-multiplatform-diff-jvm</artifactId>
-                <version>0.1.0</version>
+                <version>0.2.0</version>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
@@ -144,7 +151,7 @@
             <dependency>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
-                <version>3.19.0</version>
+                <version>3.20.2</version>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
@@ -152,21 +159,15 @@
                 <version>1.10.19</version>
                 <scope>test</scope>
             </dependency>
+            <!-- is used for simplifying boolean expressions-->
+            <dependency>
+                <groupId>com.bpodgursky</groupId>
+                <artifactId>jbool_expressions</artifactId>
+                <version>${jbool.version}</version>
+            </dependency>
         </dependencies>
 
     </dependencyManagement>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <!-- for dokka and probably other kotlin-related artifacts -->
-            <id>jcenter</id>
-            <name>JCenter</name>
-            <url>https://jcenter.bintray.com/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-        </pluginRepository>
-    </pluginRepositories>
 
     <build>
         <pluginManagement>
@@ -204,7 +205,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-plugin-plugin</artifactId>
-                    <version>3.6.0</version>
+                    <version>${maven-plugin-tools.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -235,7 +236,8 @@
                             <source>src/main/resources</source>
                         </sourceDirs>
                         <args>
-                            <arg>-Xuse-ir</arg>
+                            <arg>-Werror</arg>
+                            <arg>-Xopt-in=kotlin.RequiresOptIn</arg>
                         </args>
                     </configuration>
                     <inherited>true</inherited>
@@ -260,7 +262,7 @@
             <plugin>
                 <groupId>com.rudikershaw.gitbuildhook</groupId>
                 <artifactId>git-build-hook-maven-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>3.1.0</version>
                 <configuration>
                     <installHooks>
                         <!-- The location of a git hook to install into the default hooks directory. -->
@@ -285,7 +287,7 @@
 
             <plugin>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.1.2</version>
+                <version>3.2.0</version>
                 <executions>
                     <execution>
                         <id>detekt</id>
@@ -313,8 +315,8 @@
                         </goals>
                         <configuration>
                             <config>detekt-config.yml</config>
+                            <buildUponDefaultConfig>true</buildUponDefaultConfig>
                             <classPath>${maven.compile.classpath}</classPath>
-                            <languageVersion>1.4</languageVersion>
                             <jvmTarget>1.8</jvmTarget>
                             <excludes>**/resources/**/*.kt,**/resources/**/*.kts</excludes>
                         </configuration>
@@ -335,7 +337,6 @@
                             <goal>fix</goal>
                         </goals>
                         <configuration>
-                            <debug>true</debug>
                             <inputs>
                                 <input>${project.basedir}/src/main/kotlin</input>
                                 <input>${project.basedir}/src/test/kotlin</input>
@@ -427,7 +428,6 @@
                             <sourceDirectories>
                                 <dir>${project.basedir}/src/main/kotlin</dir>
                             </sourceDirectories>
-                            <languageVersion>1.3</languageVersion>
                             <dokkaPlugins>
                                 <plugin>
                                     <groupId>org.jetbrains.dokka</groupId>
@@ -440,7 +440,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.6</version>
+                        <version>3.0.1</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>

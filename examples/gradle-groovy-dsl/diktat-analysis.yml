@@ -4,8 +4,10 @@
     # put your package name here - it will be autofixed and checked
     domainName: your.name.here
     testDirs: test
+    # expected values:  disabledChapters: "Naming, Comments, General, Variables, Functions, Classes"
+    # or: "1, 2, 3, 4, 5, 6"
     disabledChapters: ""
-    kotlinVersion: 1.4
+    kotlinVersion: 1.5
     srcDirectories: "main"
 # Checks that the Class/Enum/Interface name does not match Pascal case
 - name: CLASS_NAME_INCORRECT
@@ -35,6 +37,9 @@
     allowedPrefixes: "" # A list of functions that return boolean and are allowed to use. Input is in a form "foo, bar".
 # Checks that function/method name is in lowerCamelCase
 - name: FUNCTION_NAME_INCORRECT_CASE
+  enabled: true
+# Checks that typealias name is in PascalCase
+- name: TYPEALIAS_NAME_INCORRECT_CASE
   enabled: true
 # Checks that generic name doesn't contain more than 1 letter (capital). It can be followed by numbers, example: T12, T
 - name: GENERIC_NAME
@@ -143,7 +148,6 @@
   configuration:
     # number of lines
     maxSize: '2000'
-    ignoreFolders: ''
 # Checks that file does not contain commented out code
 - name: COMMENTED_OUT_CODE
   enabled: true
@@ -293,6 +297,30 @@
     maxNumberLength: '5'
     # Maximum number of digits between separators
     maxBlockLength: '3'
+# Checks magic number
+- name: MAGIC_NUMBER
+  enabled: true
+  configuration:
+    # Ignore numbers from test
+    ignoreTest: "true"
+    # Ignore numbers
+    ignoreNumbers: "-1, 1, 0, 2"
+    # Is ignore override hashCode function
+    ignoreHashCodeFunction: "true"
+    # Is ignore property
+    ignorePropertyDeclaration: "false"
+    # Is ignore local variable
+    ignoreLocalVariableDeclaration: "false"
+    # Is ignore constant
+    ignoreConstantDeclaration: "true"
+    # Is ignore property in companion object
+    ignoreCompanionObjectPropertyDeclaration: "true"
+    # Is ignore numbers in enum
+    ignoreEnums: "false"
+    # Is ignore number in ranges
+    ignoreRanges: "false"
+    # Is ignore number in extension function
+    ignoreExtensionFunctions: "false"
 # Checks that order of enum values or constant property inside companion is correct
 - name: WRONG_DECLARATIONS_ORDER
   enabled: true
@@ -353,6 +381,11 @@
 # Inspection that checks if string template has redundant quotes
 - name: STRING_TEMPLATE_QUOTES
   enabled: true
+# Check if there are redundant nested if-statements, which could be collapsed into a single one by concatenating their conditions
+- name: COLLAPSE_IF_STATEMENTS
+  enabled: true
+  configuration:
+    startCollapseFromNestedLevel: 2
 # Checks that floating-point values are not used in arithmetic expressions
 - name: FLOAT_IN_ACCURATE_CALCULATIONS
   enabled: true
@@ -467,4 +500,7 @@
   enabled: true
 # Check if kts script contains other functions except run code
 - name: RUN_IN_SCRIPT
+  enabled: true
+# Check if boolean expression can be simplified
+- name: COMPLEX_BOOLEAN_EXPRESSION
   enabled: true

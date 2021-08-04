@@ -23,6 +23,11 @@ internal const val EMPTY_BLOCK_TEXT = "{}"
 internal val standardMethods = listOf("main", "equals", "hashCode", "toString", "clone", "finalize")
 
 /**
+ * List of infix methods that return Boolean
+ */
+internal val logicalInfixMethods = setOf("==", "!=", ">", "<", ">=", "<=", "in", "!in", "xor")
+
+/**
  * List of element types present in empty code block `{ }`
  */
 val emptyBlockList = listOf(LBRACE, WHITE_SPACE, SEMICOLON, RBRACE)
@@ -35,8 +40,15 @@ internal val operatorMap = mapOf(
     "unaryPlus" to "+", "unaryMinus" to "-", "not" to "!",
     "plus" to "+", "minus" to "-", "times" to "*", "div" to "/", "rem" to "%", "mod" to "%", "rangeTo" to "..",
     "inc" to "++", "dec" to "--", "contains" to "in",
-    "plusAssign" to "+=", "minusAssign" to "-=", "timesAssign" to "*=", "divAssign" to "/=", "modAssign" to "%="
+    "plusAssign" to "+=", "minusAssign" to "-=", "timesAssign" to "*=", "divAssign" to "/=", "modAssign" to "%=",
+).mapValues { (_, value) ->
+    listOf(value)
+} + mapOf(
+    "equals" to listOf("==", "!="),
+    "compareTo" to listOf("<", "<=", ">", ">="),
 )
+
+internal val ignoreImports = setOf("invoke", "get", "set", "getValue", "setValue", "provideDelegate")
 
 /**
  * Enum that represents some standard platforms that can appear in kotlin code

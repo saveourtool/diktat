@@ -54,6 +54,7 @@ class TestConfig internal constructor(
      * different profiles that can be used to control common processing part for tests
      * (processing differs for different programming languages)
      */
+    @Suppress("UNUSED")
     enum class TestProfile {
         CXX, JAVA, KT, PYTHON
     }

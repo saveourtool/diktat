@@ -65,13 +65,14 @@ class CommentsRule(configRules: List<RulesConfig>) : DiktatRule(
                     offset to it
                 }
             }
+            .map { (offset, text) -> offset to text.trim() }
             .mapNotNull { (offset, text) ->
                 when {
                     text.contains(importKeyword) ->
                         offset to ktPsiFactory.createImportDirective(ImportPath.fromString(text.substringAfter("$importKeyword "))).node
                     text.contains(packageKeyword) ->
                         offset to ktPsiFactory.createPackageDirective(FqName(text.substringAfter("$packageKeyword "))).node
-                    else -> if (text.contains(requirePartOfCode)) {
+                    else -> if (isContainingRequiredPartOfCode(text)) {
                         offset to ktPsiFactory.createBlockCodeFragment(text, null).node
                     } else {
                         null
@@ -85,7 +86,7 @@ class CommentsRule(configRules: List<RulesConfig>) : DiktatRule(
             }
             .forEach { (offset, parsedNode) ->
                 COMMENTED_OUT_CODE.warn(configRules, emitWarn, isFixMode, parsedNode.text.substringBefore("\n").trim(), offset,
-                    errorNodesWithText.find { it.second == parsedNode.text }?.first ?: parsedNode)
+                    errorNodesWithText.find { it.second.trim().contains(parsedNode.text, false) || parsedNode.text.contains(it.second.trim(), false) }?.first!!)
             }
     }
 
@@ -135,6 +136,9 @@ class CommentsRule(configRules: List<RulesConfig>) : DiktatRule(
         return codeFileStartCases.any { textWithoutCommentStartToken.contains(it) }
     }
 
+    private fun isContainingRequiredPartOfCode(text: String): Boolean =
+            text.contains("val ", true) || text.contains("var ", true) || text.contains("=", true) || (text.contains("{", true) && text.substringAfter("{").contains("}", true))
+
     @Suppress("MaxLineLength")
     companion object {
         private val importKeyword = KtTokens.IMPORT_KEYWORD.value
@@ -145,8 +149,8 @@ class CommentsRule(configRules: List<RulesConfig>) : DiktatRule(
         private val importOrPackageRegex = """^(import|package)?\s+([a-zA-Z.])+;*$""".toRegex()
         private val functionRegex = """^(public|private|protected)*\s*(override|abstract|actual|expect)*\s?fun\s+\w+(\(.*\))?(\s*:\s*\w+)?\s*[{=]${'$'}""".toRegex()
         private val rightBraceRegex = """^\s*}$""".toRegex()
-        private val requirePartOfCode = """val |var |=|(\{((.|\n)*)\})""".toRegex()
-        private val codeFileStartCases = listOf(classRegex, importOrPackageRegex, functionRegex, rightBraceRegex)
+        private val valOrVarRegex = """val |var """.toRegex()
+        private val codeFileStartCases = listOf(classRegex, importOrPackageRegex, functionRegex, rightBraceRegex, valOrVarRegex)
         private val eolCommentStart = """// \S""".toRegex()
     }
 }

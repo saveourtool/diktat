@@ -5,7 +5,7 @@
     <parent>
         <artifactId>diktat-parent</artifactId>
         <groupId>org.cqfn.diktat</groupId>
-        <version>0.4.3-SNAPSHOT</version>
+        <version>1.0.0-rc.4-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -28,21 +28,13 @@
             <groupId>org.cqfn.diktat</groupId>
             <artifactId>diktat-rules</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.pinterest.ktlint</groupId>
-            <artifactId>ktlint-core</artifactId>
             <exclusions>
                 <exclusion>
-                    <groupId>com.pinterest.ktlint</groupId>
-                    <artifactId>ktlint-ruleset-standard</artifactId>
+                    <!-- Since we need diktat-rules only for property name, we can exclude everything else -->
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.pinterest.ktlint</groupId>
-            <artifactId>ktlint-reporter-plain</artifactId>
-            <version>${ktlint.version}</version>
         </dependency>
     </dependencies>
 

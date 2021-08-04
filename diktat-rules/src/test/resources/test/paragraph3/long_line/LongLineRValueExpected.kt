@@ -22,10 +22,14 @@ fun foo() {
 " woooooordsdcsdcsdcsdc $variable"
 
     val longStringExpression = "First part" +
- "second Part"
+"second Part"
 
-    val longStringExpression = "First very long part" +
- "second Part"
+    val longStringExpression = "First" + "second Part"
+
+    val longStringExpression = "First very long" +
+" part" + "second Part"
+
+    val longStringExpression2 =                   "String starts at the line len limit"
 
     val veryLooooooooooooooooooooooooooooooongVal = "text"
 

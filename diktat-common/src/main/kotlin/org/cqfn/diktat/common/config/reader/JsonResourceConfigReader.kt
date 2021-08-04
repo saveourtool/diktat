@@ -57,6 +57,9 @@ abstract class JsonResourceConfigReader<T> {
     protected abstract fun parseResource(fileStream: BufferedReader): T
 
     companion object {
+        /**
+         * A [Logger] that can be used
+         */
         val log: Logger = LoggerFactory.getLogger(JsonResourceConfigReader::class.java)
     }
 }

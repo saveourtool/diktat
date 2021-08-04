@@ -9,7 +9,7 @@
     <parent>
         <groupId>org.cqfn.diktat</groupId>
         <artifactId>diktat-parent</artifactId>
-        <version>0.4.3-SNAPSHOT</version>
+        <version>1.0.0-rc.4-SNAPSHOT</version>
     </parent>
 
     <properties>
@@ -73,6 +73,11 @@
             <artifactId>mockito-all</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- is used for simplifying boolean expressions-->
+        <dependency>
+            <groupId>com.bpodgursky</groupId>
+            <artifactId>jbool_expressions</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -119,6 +124,11 @@
                         </configuration>
                     </execution>
                 </executions>
+                <configuration>
+                    <args>
+                        <arg>-Xinline-classes</arg>
+                    </args>
+                </configuration>
             </plugin>
 
             <plugin>

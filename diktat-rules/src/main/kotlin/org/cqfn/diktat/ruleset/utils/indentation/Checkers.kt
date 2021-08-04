@@ -1,5 +1,5 @@
 /**
- * Implementations of [CustomIndentationChecker] for [IndentationRule]
+ * Implementations of CustomIndentationChecker for IndentationRule
  */
 
 package org.cqfn.diktat.ruleset.utils.indentation
@@ -30,7 +30,6 @@ import com.pinterest.ktlint.core.ast.ElementType.LPAR
 import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS
-import com.pinterest.ktlint.core.ast.ElementType.STRING_TEMPLATE
 import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_LIST
 import com.pinterest.ktlint.core.ast.ElementType.THEN
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT
@@ -91,7 +90,6 @@ internal class ValueParameterListChecker(configuration: IndentationConfig) : Cus
                         it.node.elementType.run { this == VALUE_ARGUMENT || this == VALUE_PARAMETER }
                     }
 
-    @Suppress("ANNOTATION_NEW_LINE")  // https://github.com/cqfn/diKTat/issues/609
     override fun checkNode(whiteSpace: PsiWhiteSpace, indentError: IndentationError): CheckResult? {
         if (isCheckNeeded(whiteSpace)) {
             val parameterList = whiteSpace.parent.node
@@ -211,7 +209,6 @@ internal class DotCallChecker(config: IndentationConfig) : CustomIndentationChec
             }
             ?.let { node ->
                 if (node.isFromStringTemplate()) {
-                    val template = node.parents().takeWhile { it.elementType != STRING_TEMPLATE }.last()
                     return CheckResult.from(indentError.actual, indentError.expected +
                             (if (configuration.extendedIndentBeforeDot) 2 else 1) * configuration.indentationSize, true)
                 }

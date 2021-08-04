@@ -14,11 +14,15 @@ import org.slf4j.LoggerFactory
 
 import java.io.BufferedReader
 import java.io.File
+import java.util.Locale
 import java.util.concurrent.atomic.AtomicInteger
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 
+/**
+ * Name of common configuration
+ */
 const val DIKTAT_COMMON = "DIKTAT_COMMON"
 
 /**
@@ -49,7 +53,6 @@ data class RulesConfig(
  * @property config a map of strings with configuration options for a particular rule
  */
 open class RuleConfiguration(protected val config: Map<String, String>)
-object EmptyConfiguration : RuleConfiguration(emptyMap())
 
 /**
  * class returns the list of configurations that we have read from a yml: diktat-analysis.yml
@@ -87,6 +90,9 @@ open class RulesConfigReader(override val classLoader: ClassLoader) : JsonResour
     }
 
     companion object {
+        /**
+         * A [Logger] that can be used
+         */
         val log: Logger = LoggerFactory.getLogger(RulesConfigReader::class.java)
     }
 }
@@ -102,7 +108,7 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
      */
     val testAnchors: List<String> by lazy {
         val testDirs = (configuration ?: emptyMap()).getOrDefault("testDirs", "test").split(',')
-        if (testDirs.any { !it.toLowerCase().endsWith("test") }) {
+        if (testDirs.any { !it.lowercase(Locale.getDefault()).endsWith("test") }) {
             log.error("test directory names should end with `test`")
         }
         testDirs
@@ -139,7 +145,7 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
      */
     val srcDirectories: List<String> by lazy {
         val srcDirs = configuration?.get("srcDirectories")?.split(",")?.map { it.trim() } ?: listOf("main")
-        if (srcDirs.any { !it.toLowerCase().endsWith("main") }) {
+        if (srcDirs.any { !it.lowercase(Locale.getDefault()).endsWith("main") }) {
             log.error("source directory names should end with `main`")
         }
         srcDirs

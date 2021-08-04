@@ -117,4 +117,37 @@ class PropertyAccessorFieldsWarnTest : LintTestBase(::PropertyAccessorFields) {
             LintError(24, 4, ruleId, "${WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warnText()} set(value) {...")
         )
     }
+
+    @Test
+    @Tag(WarningNames.WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR)
+    fun `shouldn't be triggered when there's a method with the same name as the property`() {
+        lintMethod(
+            """
+                    |class A {
+                    |
+                    |   val blaBla: String
+                    |       get() = "bla".blaBla("bla")
+                    |   
+                    |   fun blaBla(string: String): String = this + string
+                    |
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR)
+    fun `shouldn't be triggered when the property is an extension property`() {
+        lintMethod(
+            """
+                    |class A {
+                    |
+                    |   fun String.foo() = 42
+                    |       val String.foo: Int
+                    |       get() = foo
+                    |
+                    |}
+                """.trimMargin()
+        )
+    }
 }

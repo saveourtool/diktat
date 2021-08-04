@@ -7,6 +7,7 @@ package org.cqfn.diktat.ruleset.utils
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_SECTION
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.prevSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
@@ -18,7 +19,7 @@ import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
 /**
  * @return a list of [KDocTag]s from this KDoc node
  */
-fun ASTNode.kDocTags(): List<KDocTag>? {
+fun ASTNode.kDocTags(): List<KDocTag> {
     require(this.elementType == ElementType.KDOC) { "kDoc tags can be retrieved only from KDOC node" }
     return this.getAllChildrenWithType(KDOC_SECTION).flatMap { sectionNode ->
         sectionNode.getAllChildrenWithType(ElementType.KDOC_TAG)
@@ -32,6 +33,23 @@ fun ASTNode.kDocTags(): List<KDocTag>? {
  */
 fun Iterable<KDocTag>.hasKnownKdocTag(knownTag: KDocKnownTag): Boolean =
         this.find { it.knownTag == knownTag } != null
+
+/**
+ * Checks for trailing newlines in tag's body. Handles cases, when there is no leading asterisk on an empty line:
+ * ```
+ * * @param param
+ *
+ * * @return
+ * ```
+ * as well as usual simple cases.
+ *
+ * @return true if there is a trailing newline
+ */
+fun KDocTag.hasTrailingNewlineInTagBody() = node.lastChildNode.isWhiteSpaceWithNewline() ||
+        node.reversedChildren()
+            .takeWhile { it.elementType == WHITE_SPACE || it.elementType == ElementType.KDOC_LEADING_ASTERISK }
+            .firstOrNull { it.elementType == ElementType.KDOC_LEADING_ASTERISK }
+            ?.takeIf { it.treeNext == null || it.treeNext.elementType == WHITE_SPACE } != null
 
 /**
  * This method inserts a new tag into KDoc before specified another tag, aligning it with the rest of this KDoc

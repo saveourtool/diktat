@@ -26,13 +26,14 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
+import java.io.File
 import java.time.LocalDate
 
 import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.createTempFile
 import kotlinx.serialization.encodeToString
 
-typealias ruleToConfig = Map<String, Map<String, String>>
+typealias RuleToConfig = Map<String, Map<String, String>>
 
 /**
  * Test for [DiktatRuleSetProvider] in autocorrect mode as a whole. All rules are applied to a file.
@@ -49,7 +50,7 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
      * Disable some of the rules.
      */
     @Suppress("UnsafeCallOnNullableType")
-    private fun overrideRulesConfig(rulesToDisable: List<Warnings>, rulesToOverride: ruleToConfig = emptyMap()) {
+    private fun overrideRulesConfig(rulesToDisable: List<Warnings>, rulesToOverride: RuleToConfig = emptyMap()) {
         val rulesConfig = RulesConfigReader(javaClass.classLoader).readResource(configFilePath)!!
             .toMutableList()
             .also { rulesConfig ->
@@ -187,8 +188,8 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
             LintError(9, 3, "$DIKTAT_RULE_SET_ID:empty-block-structure", EMPTY_BLOCK_STRUCTURE_ERROR.warnText() +
                     " empty blocks are forbidden unless it is function with override keyword", false),
             LintError(12, 10, "$DIKTAT_RULE_SET_ID:kdoc-formatting", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
-            LintError(14, 3, "$DIKTAT_RULE_SET_ID:kdoc-formatting", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
-            LintError(19, 15, "$DIKTAT_RULE_SET_ID:kdoc-formatting", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false)
+            LintError(14, 8, "$DIKTAT_RULE_SET_ID:kdoc-formatting", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
+            LintError(19, 20, "$DIKTAT_RULE_SET_ID:kdoc-formatting", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false)
         )
     }
 
@@ -196,19 +197,49 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     @Tag("DiktatRuleSetProvider")
     fun `smoke test with kts files`() {
         overrideRulesConfig(
-            listOf(
-                HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE  // because build.gradle.kts doesn't need extra comments, and this rule can be manually disabled if needed
-            ),
+            emptyList(),
             mapOf(
                 Warnings.WRONG_INDENTATION.name to mapOf(
                     "newlineAtEnd" to "false",
                     "extendedIndentOfParameters" to "false",
                 )
             )
-        )  // so that trailing newline isn't checked
+        )  // so that trailing newline isn't checked, because it's incorrectly read in tests and we are comparing file with itself
         // file name is `gradle_` so that IDE doesn't suggest to import gradle project
-        fixAndCompare("../../../build.gradle_.kts", "../../../build.gradle_.kts")
+        val tmpTestFile = javaClass.classLoader.getResource("$resourceFilePath/../../../build.gradle_.kts")!!.toURI().let {
+            val tmpTestFile = File(it).parentFile.resolve("build.gradle.kts")
+            File(it).copyTo(tmpTestFile)
+            tmpTestFile
+        }
+        val tmpFilePath = "../../../build.gradle.kts"
+        fixAndCompare(tmpFilePath, tmpFilePath)
         Assertions.assertTrue(unfixedLintErrors.isEmpty())
+        tmpTestFile.delete()
+    }
+
+    @Test
+    @Tag("DiktatRuleSetProvider")
+    fun `smoke test with gradle script plugin`() {
+        fixAndCompare("kotlin-library-expected.gradle.kts", "kotlin-library.gradle.kts")
+        Assertions.assertEquals(
+            LintError(2, 1, "$DIKTAT_RULE_SET_ID:comments", "[COMMENTED_OUT_CODE] you should not comment out code, " +
+                    "use VCS to save it in history and delete this block: import org.jetbrains.kotlin.gradle.dsl.jvm", false),
+            unfixedLintErrors.single()
+        )
+    }
+
+    @Test
+    @Tag("DiktatRuleSetProvider")
+    fun `smoke test with kts files #2`() {
+        fixAndCompare("script/SimpleRunInScriptExpected.kts", "script/SimpleRunInScriptTest.kts")
+        Assertions.assertEquals(3, unfixedLintErrors.size)
+    }
+
+    @Test
+    @Tag("DiktatRuleSetProvider")
+    fun `smoke test with kts files with package name`() {
+        fixAndCompare("script/PackageInScriptExpected.kts", "script/PackageInScriptTest.kts")
+        Assertions.assertEquals(3, unfixedLintErrors.size)
     }
 
     @Test
@@ -235,6 +266,21 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
             LintError(13, 9, "$DIKTAT_RULE_SET_ID:kdoc-formatting", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
             LintError(18, 40, "$DIKTAT_RULE_SET_ID:kdoc-formatting", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false)
         )
+    }
+
+    @Test
+    @Tag("DiktatRuleSetProvider")
+    fun `regression - should correctly handle tags with empty lines`() {
+        fixAndCompare("KdocFormattingMultilineTagsExpected.kt", "KdocFormattingMultilineTagsTest.kt")
+    }
+
+    @Test
+    @Tag("DiktatRuleSetProvider")
+    fun `regression - FP of local variables rule`() {
+        fixAndCompare("LocalVariableWithOffsetExpected.kt", "LocalVariableWithOffsetTest.kt")
+        org.assertj.core.api.Assertions.assertThat(unfixedLintErrors).noneMatch {
+            it.ruleId == "diktat-ruleset:local-variables"
+        }
     }
 
     companion object {

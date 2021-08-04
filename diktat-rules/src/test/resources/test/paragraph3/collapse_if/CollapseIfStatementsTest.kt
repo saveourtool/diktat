@@ -199,3 +199,104 @@ fun foo() {
         val a = 5
     }
 }
+
+fun foo() {
+    if (true) {
+        /*
+         Some Comments
+        */
+        // More comments
+        if (true) {
+            // comment 1
+            val a = 5
+            // comment 2
+            doSomething()
+        }
+        // comment 3
+    }
+}
+
+fun foo() {
+    if (true) {
+        // Some
+        // comments
+        if (true) {
+            doSomething()
+        }
+    }
+}
+
+fun foo() {
+    // comment
+    if (cond1) {
+        /*
+         Some comments
+        */
+        // More comments
+        if (cond2 || cond3) {
+            doSomething()
+        }
+    }
+}
+
+fun foo() {
+    if (cond1) {
+        // comment
+        if (cond2) {
+            // comment 2
+            if (cond3) {
+                doSomething()
+            }
+        }
+    }
+}
+
+fun foo () {
+    if (true) {
+        if (true) {doSomething()}
+    }
+}
+
+fun foo () {
+     if (/*comment*/ true) {
+         if (true) {
+             doSomething()
+         }
+     }
+}
+
+fun foo () {
+    if (true /*comment*/) {
+        if (true) {
+            doSomething()
+        }
+    }
+}
+
+fun foo () {
+    if (true) {
+        if (true /*comment*/) {
+            doSomething()
+        }
+    }
+}
+
+fun foo () {
+    if (true && (true || false) /*comment*/) {
+        if (true /*comment*/) {
+            doSomething()
+        }
+    }
+}
+
+fun foo () {
+     if (true
+     /*comment
+     * more comments
+     */
+     ) {
+         if (true /*comment 2*/) {
+             doSomething()
+         }
+     }
+}

@@ -8,10 +8,7 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
 import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
-import org.cqfn.diktat.ruleset.utils.getAllLeafsWithSpecificType
-import org.cqfn.diktat.ruleset.utils.getFilePath
-import org.cqfn.diktat.ruleset.utils.indentBy
+import org.cqfn.diktat.ruleset.utils.*
 import org.cqfn.diktat.ruleset.utils.indentation.ArrowInWhenChecker
 import org.cqfn.diktat.ruleset.utils.indentation.AssignmentOperatorChecker
 import org.cqfn.diktat.ruleset.utils.indentation.ConditionalsAndLoopsWithoutBracesChecker
@@ -23,8 +20,6 @@ import org.cqfn.diktat.ruleset.utils.indentation.IndentationConfig
 import org.cqfn.diktat.ruleset.utils.indentation.KdocIndentationChecker
 import org.cqfn.diktat.ruleset.utils.indentation.SuperTypeListChecker
 import org.cqfn.diktat.ruleset.utils.indentation.ValueParameterListChecker
-import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
-import org.cqfn.diktat.ruleset.utils.log
 
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
@@ -60,7 +55,10 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
 import org.jetbrains.kotlin.utils.addToStdlib.firstNotNullResult
+import org.slf4j.LoggerFactory
+
 import java.lang.StringBuilder
+
 import kotlin.math.abs
 
 /**
@@ -70,6 +68,7 @@ import kotlin.math.abs
  * Additionally, a set of CustomIndentationChecker objects checks all WHITE_SPACE node if they are exceptions from general rules.
  * @see CustomIndentationChecker
  */
+@Suppress("LargeClass")
 class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
     "indentation",
     configRules,
@@ -123,7 +122,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
             }
             .forEach {
                 WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "tabs are not allowed for indentation", it.startOffset + it.text.indexOf('\t'), it) {
-                    (it as LeafPsiElement).replaceWithText(it.text.replace("\t", " ".repeat(configuration.indentationSize)))
+                    (it as LeafPsiElement).rawReplaceWithText(it.text.replace("\t", " ".repeat(configuration.indentationSize)))
                 }
             }
         return isFixMode  // true if we changed all tabs to spaces
@@ -134,12 +133,17 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
      */
     private fun checkNewlineAtEnd(node: ASTNode) {
         if (configuration.newlineAtEnd) {
-            val lastChild = node.lastChildNode
+            val lastChild = generateSequence(node) { it.lastChildNode }.last()
             val numBlankLinesAfter = lastChild.text.count { it == '\n' }
             if (lastChild.elementType != WHITE_SPACE || numBlankLinesAfter != 1) {
                 val warnText = if (lastChild.elementType != WHITE_SPACE || numBlankLinesAfter == 0) "no newline" else "too many blank lines"
                 val fileName = filePath.substringAfterLast(File.separator)
-                WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "$warnText at the end of file $fileName", node.startOffset + node.textLength, node) {
+                // In case, when last child is newline, visually user will see blank line at the end of file,
+                // however, the text length does not consider it, since it's blank and line appeared only because of `\n`
+                // But ktlint synthetically increase length in aim to have ability to point to this line, so in this case
+                // offset will be `node.textLength`, otherwise we will point to the last symbol, i.e `node.textLength - 1`
+                val offset = if (lastChild.elementType == WHITE_SPACE && lastChild.textContains('\n')) node.textLength else node.textLength - 1
+                WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "$warnText at the end of file $fileName", offset, node) {
                     if (lastChild.elementType != WHITE_SPACE) {
                         node.addChild(PsiWhiteSpaceImpl("\n"), null)
                     } else {
@@ -304,6 +308,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
 
         /**
          * @param token a token that caused indentation increment, for example an opening brace
+         * @return Unit
          */
         fun storeIncrementingToken(token: IElementType) = token
             .also { require(it in increasingTokens) { "Only tokens that increase indentation should be passed to this method" } }
@@ -337,12 +342,13 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
         /**
          * @return full current indent
          */
-        fun indent() = regularIndent + exceptionalIndents.sumBy { it.indent }
+        fun indent() = regularIndent + exceptionalIndents.sumOf { it.indent }
 
         /**
          * @param initiator a node that caused exceptional indentation
          * @param indent an additional indent
          * @param includeLastChild whether the last child node should be included in the range affected by exceptional indentation
+         * @return true if add exception in exceptionalIndents
          */
         fun addException(
             initiator: ASTNode,
@@ -352,6 +358,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
 
         /**
          * @param astNode the node which is used to determine whether exceptinoal indents are still active
+         * @return boolean result
          */
         fun checkAndReset(astNode: ASTNode) = exceptionalIndents.retainAll { it.isActive(astNode) }
 
@@ -377,6 +384,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
+        private val log = LoggerFactory.getLogger(IndentationRule::class.java)
         const val INDENT_SIZE = 4
         private val increasingTokens = listOf(LPAR, LBRACE, LBRACKET, LONG_TEMPLATE_ENTRY_START)
         private val decreasingTokens = listOf(RPAR, RBRACE, RBRACKET, LONG_TEMPLATE_ENTRY_END)

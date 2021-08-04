@@ -13,8 +13,9 @@ import org.cqfn.diktat.ruleset.utils.copyrightWords
 import org.cqfn.diktat.ruleset.utils.findChildAfter
 import org.cqfn.diktat.ruleset.utils.findChildBefore
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
+import org.cqfn.diktat.ruleset.utils.getFilePath
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
-import org.cqfn.diktat.ruleset.utils.log
+import org.cqfn.diktat.ruleset.utils.isGradleScript
 import org.cqfn.diktat.ruleset.utils.moveChildBefore
 
 import com.pinterest.ktlint.core.ast.ElementType
@@ -28,6 +29,7 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
+import org.slf4j.LoggerFactory
 
 import java.time.LocalDate
 
@@ -45,7 +47,7 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
     listOf(HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE, HEADER_MISSING_OR_WRONG_COPYRIGHT, HEADER_NOT_BEFORE_PACKAGE,
         HEADER_NOT_BEFORE_PACKAGE, HEADER_WRONG_FORMAT, WRONG_COPYRIGHT_YEAR)) {
     override fun logic(node: ASTNode) {
-        if (node.elementType == FILE) {
+        if (node.elementType == FILE && !node.getFilePath().isGradleScript()) {
             checkCopyright(node)
             if (checkHeaderKdocPosition(node)) {
                 checkHeaderKdoc(node)
@@ -179,7 +181,7 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
         // Triggers when there is a copyright, but its year is not updated.
         if (!isMissingCopyright && copyrightWithCorrectYear.isNotEmpty()) {
             WRONG_COPYRIGHT_YEAR.warnAndFix(configRules, emitWarn, isFixMode, "year should be $curYear", node.startOffset, node) {
-                (headerComment as LeafElement).replaceWithText(headerComment.text.replace(copyrightText, copyrightWithCorrectYear))
+                (headerComment as LeafElement).rawReplaceWithText(headerComment.text.replace(copyrightText, copyrightWithCorrectYear))
             }
         }
     }
@@ -223,6 +225,8 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
 
         /**
          * Whether copyright text is present in the configuration
+         *
+         * @return true if config has "copyrightText"
          */
         internal fun hasCopyrightText() = config.keys.contains("copyrightText")
 
@@ -233,6 +237,7 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
+        private val log = LoggerFactory.getLogger(HeaderCommentRule::class.java)
         val hyphenRegex = Regex("""\d+-\d+""")
         val afterCopyrightRegex = Regex("""((©|\([cC]\))+ *\d+)""")
         val curYear = LocalDate.now().year

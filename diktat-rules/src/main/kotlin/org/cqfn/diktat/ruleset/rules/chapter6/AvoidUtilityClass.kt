@@ -20,6 +20,7 @@ import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.psiUtil.children
+import java.util.Locale
 
 /**
  * Rule 6.4.1 checks that class/object, with a word "util" in its name, has only functions.
@@ -30,8 +31,8 @@ class AvoidUtilityClass(configRules: List<RulesConfig>) : DiktatRule(
     listOf(AVOID_USING_UTILITY_CLASS)) {
     override fun logic(node: ASTNode) {
         val config = configRules.getCommonConfiguration()
-        val filePath = node.getRootNode().getFilePath()
-        if (!(node.hasTestAnnotation() || isLocatedInTest(filePath.splitPathToDirs(), config.testAnchors))) {
+        val filePath = node.getFilePath()
+        if (!node.hasTestAnnotation() && !isLocatedInTest(filePath.splitPathToDirs(), config.testAnchors)) {
             @Suppress("COLLAPSE_IF_STATEMENTS")
             if (node.elementType == OBJECT_DECLARATION || node.elementType == CLASS) {
                 checkClass(node)
@@ -43,7 +44,7 @@ class AvoidUtilityClass(configRules: List<RulesConfig>) : DiktatRule(
     private fun checkClass(node: ASTNode) {
         // checks that class/object doesn't contain primary constructor and its identifier doesn't has "utli"
         if (!node.hasChildOfType(IDENTIFIER) || node.hasChildOfType(PRIMARY_CONSTRUCTOR) ||
-                !node.findChildByType(IDENTIFIER)!!.text.toLowerCase().contains("util")) {
+                !node.findChildByType(IDENTIFIER)!!.text.lowercase(Locale.getDefault()).contains("util")) {
             return
         }
         node.findChildByType(CLASS_BODY)

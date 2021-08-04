@@ -1,5 +1,13 @@
 package test.paragraph6.abstract_classes
 
+actual abstract class CoroutineTest actual constructor() {
+    actual fun <T> runTest(block: suspend CoroutineScope.() -> T) {
+        runBlocking {
+            block()
+        }
+    }
+}
+
 abstract class Some() {
     fun some(){}
 

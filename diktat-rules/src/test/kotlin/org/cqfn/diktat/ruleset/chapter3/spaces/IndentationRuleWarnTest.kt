@@ -11,6 +11,7 @@ import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
+@Suppress("LargeClass")
 class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
     private val ruleId = "$DIKTAT_RULE_SET_ID:indentation"
     private val rulesConfigList = listOf(
@@ -61,6 +62,47 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
                     |
                 """.trimMargin(),
             LintError(2, 1, ruleId, warnText(4, 3), true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
+    fun `should warn if no new line at the end of file`() {
+        lintMethod(
+            """
+                    |class Example {
+                    |    val zero = 0
+                    |}
+                """.trimMargin(),
+            LintError(3, 1, ruleId, "${WRONG_INDENTATION.warnText()} no newline at the end of file TestFileName.kt", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
+    fun `should warn if no new line at the end of file, last child whitespace`() {
+        lintMethod(
+            """
+                    |class Example {
+                    |    val zero = 0
+                    |} 
+                """.trimMargin(),
+            LintError(3, 2, ruleId, "${WRONG_INDENTATION.warnText()} no newline at the end of file TestFileName.kt", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
+    fun `should warn if too many blank lines at the end of file`() {
+        lintMethod(
+            """
+                    |class Example {
+                    |    val zero = 0
+                    |}
+                    |
+                    |
+                """.trimMargin(),
+            LintError(5, 1, ruleId, "${WRONG_INDENTATION.warnText()} too many blank lines at the end of file TestFileName.kt", true)
         )
     }
 
@@ -628,6 +670,30 @@ class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
             LintError(5, 1, ruleId, warnText(16, 12), true),
             LintError(6, 1, ruleId, warnText(16, 12), true),
             rulesConfigList = rulesConfigList
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
+    fun `check script`() {
+        lintMethod(
+            """
+                |val q = 1
+                |
+            """.trimMargin(),
+            fileName = "src/main/kotlin/org/cqfn/diktat/Example.kts"
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_INDENTATION)
+    fun `check gradle script`() {
+        lintMethod(
+            """
+                |projectName = "diKTat"
+                |
+            """.trimMargin(),
+            fileName = "src/main/kotlin/org/cqfn/diktat/build.gradle.kts"
         )
     }
 

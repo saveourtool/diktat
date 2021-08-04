@@ -20,7 +20,7 @@ class FileComparator {
     private val actualResultList: List<String>
     private val diffGenerator = DiffRowGenerator.create()
         .showInlineDiffs(true)
-        .mergeOriginalRevised(true)
+        .mergeOriginalRevised(false)
         .inlineDiffByWord(false)
         .oldTag { start -> if (start) "[" else "]" }
         .newTag { start -> if (start) "<" else ">" }
@@ -55,15 +55,19 @@ class FileComparator {
                 when (delta) {
                     is ChangeDelta -> diffGenerator
                         .generateDiffRows(delta.source.lines, delta.target.lines)
-                        .joinToString(System.lineSeparator()) { it.oldLine }
-                        .let { "[ChangeDelta, position ${delta.source.position}, lines: [$it]]" }
+                        .joinToString(prefix = "ChangeDelta, position ${delta.source.position}, lines:\n", separator = "\n\n") {
+                            """-${it.oldLine}
+                      |+${it.newLine}
+                      |""".trimMargin()
+                        }
+                        .let { "ChangeDelta, position ${delta.source.position}, lines:\n$it" }
                     else -> delta.toString()
                 }
             }
 
             log.error("""
                 |Expected result from <${expectedResultFile.name}> and actual formatted are different.
-                |See difference below (for ChangeDelta [text] indicates removed text, <text> - inserted):
+                |See difference below:
                 |$joinedDeltas
                 """.trimMargin()
             )
@@ -77,7 +81,7 @@ class FileComparator {
      * @param fileName - file where to write these list to, separated with newlines
      * @return a list of lines from the file
      */
-    fun readFile(fileName: String): List<String> {
+    private fun readFile(fileName: String): List<String> {
         var list: List<String> = ArrayList()
         try {
             Files.newBufferedReader(Paths.get(fileName)).use { list = it.lines().collect(Collectors.toList()) }

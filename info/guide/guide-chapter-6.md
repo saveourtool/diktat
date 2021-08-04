@@ -184,7 +184,7 @@ class Square() : Rectangle() {
 
 #### <a name="r6.1.6"></a> 6.1.6 Abstract class should have at least one abstract method
 Abstract classes are used to force a developer to implement some of its parts in their inheritors.
-When the abstract class has no abstract methods, it was set `abstract` incorrectly and can be converted to a regular class.
+When the abstract class has no abstract methods, it was set `abstract` incorrectly and can be converted to open class.
 
 **Invalid example**:
 ```kotlin
@@ -204,9 +204,16 @@ abstract class NotAbstract {
 }
 
 // OR
-class NotAbstract {
+open class NotAbstract {
     fun foo() {}
     
+    fun test() {}
+}
+
+// OR
+class NotAbstract {
+    fun foo() {}
+
     fun test() {}
 }
 ```
@@ -387,8 +394,9 @@ It is recommended that for classes, the non-tightly coupled functions, which are
 They should be implemented in the same class/file where they are used. This is a non-deterministic rule, so the code cannot be checked or fixed automatically by a static analyzer.
 
 #### <a name="r6.2.2"></a> 6.2.2 No extension functions with the same name and signature if they extend base and inheritor classes (possible_bug)
-You should have ho extension functions with the same name and signature if they extend base and inheritor classes (possible_bug).esolved statically. There could be a situation when a developer implements two extension functions: one is for the base class and another for the inheritor.
-This can lead to an issue when an incorrect method is used.
+You should avoid declaring extension functions with the same name and signature if their receivers are base and inheritor classes (possible_bug),
+as extension functions are resolved statically. There could be a situation when a developer implements two extension functions: one is for the base class and
+another for the inheritor. This can lead to an issue when an incorrect method is used.
 
 **Invalid example**:
 ```kotlin
@@ -468,7 +476,8 @@ object O: I {
     override fun foo() {}
 }
 ```
-
+### <a name="c6.5"></a> 6.5 Kts Files
+This section describes general rules for `.kts` files
 #### <a name="r6.5.1"></a> 6.5.1 kts files should wrap logic into top-level scope
 It is still recommended wrapping logic inside functions and avoid using top-level statements for function calls or wrapping blocks of code
 in top-level scope functions like `run`.

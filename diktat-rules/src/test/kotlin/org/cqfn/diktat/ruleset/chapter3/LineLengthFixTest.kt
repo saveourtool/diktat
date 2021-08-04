@@ -7,6 +7,10 @@ import org.cqfn.diktat.util.FixTestBase
 import org.junit.jupiter.api.Test
 
 class LineLengthFixTest : FixTestBase("test/paragraph3/long_line", ::LineLength) {
+    private val rulesConfigListDefaultLineLength: List<RulesConfig> = listOf(
+        RulesConfig(LONG_LINE.name, true,
+            mapOf("lineLength" to "120"))
+    )
     private val rulesConfigListLineLength: List<RulesConfig> = listOf(
         RulesConfig(LONG_LINE.name, true,
             mapOf("lineLength" to "50"))
@@ -22,8 +26,23 @@ class LineLengthFixTest : FixTestBase("test/paragraph3/long_line", ::LineLength)
     }
 
     @Test
+    fun `should not fix long comment which located on the line length limit`() {
+        fixAndCompare("LongLineCommentExpected2.kt", "LongLineCommentTest2.kt", rulesConfigListDefaultLineLength)
+    }
+
+    @Test
+    fun `should fix long string template while some fix is already done`() {
+        fixAndCompare("LongStringTemplateExpected.kt", "LongStringTemplateTest.kt", rulesConfigListDefaultLineLength)
+    }
+
+    @Test
     fun `should fix long binary expression`() {
         fixAndCompare("LongLineExpressionExpected.kt", "LongLineExpressionTest.kt", rulesConfigListLineLength)
+    }
+
+    @Test
+    fun `should fix complex long binary expressions`() {
+        fixAndCompare("LongBinaryExpressionExpected.kt", "LongBinaryExpressionTest.kt", rulesConfigListLineLength)
     }
 
     @Test
@@ -44,5 +63,10 @@ class LineLengthFixTest : FixTestBase("test/paragraph3/long_line", ::LineLength)
     @Test
     fun `shouldn't fix`() {
         fixAndCompare("LongExpressionNoFixExpected.kt", "LongExpressionNoFixTest.kt", rulesConfigListShortLineLength)
+    }
+
+    @Test
+    fun `should fix annotation`() {
+        fixAndCompare("LongLineAnnotationExpected.kt", "LongLineAnnotationTest.kt", rulesConfigListLineLength)
     }
 }

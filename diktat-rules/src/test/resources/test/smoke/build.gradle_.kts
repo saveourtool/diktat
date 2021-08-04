@@ -6,7 +6,6 @@ plugins {
 }
 
 repositories {
-    jcenter()
     mavenCentral()
     maven { url = uri("https://example.com") }
 }

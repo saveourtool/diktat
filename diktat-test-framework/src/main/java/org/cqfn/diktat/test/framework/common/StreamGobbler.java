@@ -13,9 +13,9 @@ import java.util.List;
 
 public class StreamGobbler extends Thread {
     private static final Logger log = LoggerFactory.getLogger(StreamGobbler.class);
-    private InputStream inputStream;
-    private String streamType;
-    private ArrayList<String> result;
+    private final InputStream inputStream;
+    private final String streamType;
+    private final ArrayList<String> result;
     private volatile boolean isStopped = false;
 
     /**

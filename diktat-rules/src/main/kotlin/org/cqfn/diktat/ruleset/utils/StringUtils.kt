@@ -59,22 +59,6 @@ fun String.containsOneLetterOrZero(): Boolean {
 }
 
 /**
- * @param sub a substring to search
- * @return count of ocurrences
- */
-fun String.countSubStringOccurrences(sub: String) = this.split(sub).size - 1
-
-/**
- * Splits [this] string by file path separator
- *
- * @return list of path parts
- */
-fun String.splitPathToDirs(): List<String> =
-        this.replace("\\", "/")
-            .replace("//", "/")
-            .split("/")
-
-/**
  * method checks that string has prefix like:
  * mFunction, kLength or M_VAR
  *
@@ -104,24 +88,10 @@ fun String.hasPrefix(): Boolean {
 fun String.removePrefix(): String {
     // FixMe: there can be cases when after you will change variable name - it becomes a keyword
     if (this.isLowerCamelCase()) {
-        return this[1].toLowerCase() + this.substring(2)
+        return this[1].lowercaseChar() + this.substring(2)
     }
     if (this.isUpperSnakeCase()) {
         return this.substring(2)
     }
     return this
 }
-
-/**
- * Checks if [this] String is a name of a kotlin script file by checking whether file extension equals 'kts'
- *
- * @return true if this is a kotlin script file name, false otherwise
- */
-fun String.isKotlinScript() = endsWith(".kts")
-
-/**
- * Checks if [this] String is a name of a gradle kotlin script file by checking whether file extension equals 'gradle.kts'
- *
- * @return true if this is a gradle kotlin script file name, false otherwise
- */
-fun String.isGradleScript() = endsWith("gradle.kts")

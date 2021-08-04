@@ -17,7 +17,7 @@ typealias ListOfPairs = MutableList<Pair<ASTNode, String>>
 /**
  * This class represent individual inspections of diktat code style.
  * A [Warnings] entry contains rule name, warning message and is used in code check.
- * @property canBeAutoCorrected whether this inspection can automatically fix the code
+ * @property canBeAutoCorrected whether this inspection can automatically fix the code. Should be public to be able to use it in docs generator.
  * @property ruleId number of the inspection according to []diktat code style](https://www.cqfn.org/diKTat/info/guide/diktat-coding-convention.html)
  */
 @Suppress(
@@ -28,7 +28,7 @@ typealias ListOfPairs = MutableList<Pair<ASTNode, String>>
     "WRONG_NEWLINES"
 )
 enum class Warnings(
-    val canBeAutoCorrected: Boolean,
+    @Suppress("PRIVATE_MEMBER") val canBeAutoCorrected: Boolean,
     val ruleId: String,
     private val warn: String) : Rule {
     // ======== dummy test warning ======
@@ -55,6 +55,7 @@ enum class Warnings(
     GENERIC_NAME(true, "1.1.1", "generic name should contain only one single capital letter, it can be followed by a number"),
     BACKTICKS_PROHIBITED(false, "1.1.1", "backticks should not be used in identifier's naming. The only exception test methods marked with @Test annotation"),
     FUNCTION_NAME_INCORRECT_CASE(true, "1.4.1", "function/method name should be in lowerCamelCase"),
+    TYPEALIAS_NAME_INCORRECT_CASE(true, "1.3.1", "typealias name should be in pascalCase"),
     FUNCTION_BOOLEAN_PREFIX(true, "1.6.2", "functions that return the value of Boolean type should have <is> or <has> prefix"),
     FILE_NAME_INCORRECT(true, "1.1.1", "file name is incorrect - it should end with .kt extension and be in PascalCase"),
     EXCEPTION_SUFFIX(true, "1.1.1", "all exception classes should have \"Exception\" suffix"),
@@ -78,6 +79,7 @@ enum class Warnings(
     KDOC_NO_EMPTY_TAGS(false, "2.2.1", "no empty descriptions in tag blocks are allowed"),
     KDOC_NO_DEPRECATED_TAG(true, "2.1.3", "KDoc doesn't support @deprecated tag, use @Deprecated annotation instead"),
     KDOC_NO_CONSTRUCTOR_PROPERTY(true, "2.1.1", "all properties from the primary constructor should be documented in a @property tag in KDoc"),
+    KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER(true, "2.1.1", "only properties from the primary constructor should be documented in a @property tag in class KDoc"),
     KDOC_EXTRA_PROPERTY(false, "2.1.1", "There is property in KDoc which is not present in the class"),
     KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT(true, "2.1.1", "replace comment before property with @property tag in class KDoc"),
     KDOC_CONTAINS_DATE_OR_AUTHOR(false, "2.1.3", "KDoc should not contain creation date and author name"),
@@ -113,6 +115,7 @@ enum class Warnings(
     WRONG_NEWLINES(true, "3.6.2", "incorrect line breaking"),
     TRAILING_COMMA(true, "3.6.2", "use trailing comma"),
     COMPLEX_EXPRESSION(false, "3.6.3", "complex dot qualified expression should be replaced with variable"),
+    COMPLEX_BOOLEAN_EXPRESSION(true, "3.6.4", "too complex boolean expression, that can be simplified"),
 
     // FixMe: autofixing will be added for this rule
     STRING_CONCATENATION(true, "3.15.1", "strings should not be concatenated using plus operator - use string templates instead if the statement fits one line"),
@@ -205,7 +208,9 @@ enum class Warnings(
                    canBeAutoCorrected: Boolean = this.canBeAutoCorrected,
                    autoFix: () -> Unit) {
         warn(configRules, emit, canBeAutoCorrected, freeText, offset, node)
-        fix(configRules, isFixMode, node, autoFix)
+        if (canBeAutoCorrected) {
+            fix(configRules, isFixMode, node, autoFix)
+        }
     }
 
     /**

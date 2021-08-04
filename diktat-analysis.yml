@@ -5,9 +5,12 @@
     # put your package name here - it will be autofixed and checked
     domainName: org.cqfn.diktat
     # testDirs: test
+    # can also use chapter names here (not only numbers)
+    # expected values:  disabledChapters: "Naming, Comments, General, Variables, Functions, Classes"
+    # or: "1, 2, 3, 4, 5, 6"
     disabledChapters: ""
     testDirs: test
-    kotlinVersion: 1.4.30
+    kotlinVersion: 1.5
     srcDirectories: "main"
 # Checks that the Class/Enum/Interface name does not match Pascal case
 - name: CLASS_NAME_INCORRECT
@@ -145,7 +148,6 @@
   configuration:
     # number of lines
     maxSize: '2000'
-    ignoreFolders: ''
 # Checks that file does not contain commented out code
 - name: COMMENTED_OUT_CODE
   enabled: true
@@ -301,6 +303,8 @@
 - name: MAGIC_NUMBER
   enabled: true
   configuration:
+    # Ignore numbers from test
+    ignoreTest: "true"
     # Ignore numbers
     ignoreNumbers: "-1, 1, 0, 2"
     # Is ignore override hashCode function
@@ -309,6 +313,8 @@
     ignorePropertyDeclaration: "false"
     # Is ignore local variable
     ignoreLocalVariableDeclaration: "false"
+    # Is ignore value parameter
+    ignoreValueParameter: "true"
     # Is ignore constant
     ignoreConstantDeclaration: "true"
     # Is ignore property in companion object
@@ -498,4 +504,7 @@
   enabled: true
 # Check if kts script contains other functions except run code
 - name: RUN_IN_SCRIPT
+  enabled: true
+# Check if boolean expression can be simplified
+- name: COMPLEX_BOOLEAN_EXPRESSION
   enabled: true

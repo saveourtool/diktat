@@ -86,9 +86,9 @@ package your.company.domain.mobilecontrol.views
 ```
 
 <!-- =============================================================================== -->
-### <a name="c1.3"></a> 1.3 Classes, enumerations, interfaces
+### <a name="c1.3"></a> 1.3 Classes, enumerations, typealias, interfaces
 This section describes the general rules for naming classes, enumerations, and interfaces.
-### <a name="r1.3.1"></a> 1.3.1 Classes, enumerations, interface names use Camel case
+### <a name="r1.3.1"></a> 1.3.1 Classes, enumerations, typealias, interface names use Camel case
 Classes, enumerations, and interface names use `UpperCamelCase` nomenclature. Follow the naming rules described below:
 1.	A class name is usually a noun (or a noun phrase) denoted using the camel case nomenclature, such as UpperCamelCase. For example: `Character` or `ImmutableList`.
 An interface name can also be a noun or noun phrase (such as `List`) or an adjective or adjective phrase (such as `Readable`).

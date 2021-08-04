@@ -3,6 +3,11 @@
 package org.cqfn.diktat.ruleset.utils
 
 import com.google.common.base.CaseFormat
+import org.slf4j.LoggerFactory
+
+import java.util.Locale
+
+private val log = LoggerFactory.getLogger("StringCaseUtils")
 
 /**
  * Available cases to name enum members
@@ -53,7 +58,7 @@ fun String.toUpperSnakeCase(): String {
     }
     // lower -> LOWER
     if (this.all { it.isLowerCase() }) {
-        return this.toUpperCase()
+        return this.uppercase(Locale.getDefault())
     }
     // lowerCamel -> LOWER_CAMEL
     if (this.isLowerCamelCase()) {
@@ -68,7 +73,7 @@ fun String.toUpperSnakeCase(): String {
     if (idx != -1) {
         // any other format -> UPPER_SNAKE_CASE
         // [p]a[SC]a[_]l -> [P]A_[SC]_A_[L]
-        return this[idx].toUpperCase().toString() + convertUnknownCaseToUpperSnake(this.substring(idx + 1))
+        return this[idx].uppercaseChar().toString() + convertUnknownCaseToUpperSnake(this.substring(idx + 1))
     }
 
     log.error("Not able to fix case format for: $this")
@@ -88,7 +93,7 @@ fun String.toLowerCamelCase(): String {
     }
     // lower -> LOWER
     if (this.all { it.isUpperCase() }) {
-        return this.toLowerCase()
+        return this.lowercase(Locale.getDefault())
     }
     // lowerCamel -> LOWER_CAMEL
     if (this.isUpperSnakeCase()) {
@@ -105,7 +110,7 @@ fun String.toLowerCamelCase(): String {
         // changing first letter to uppercase and replacing several uppercase letters in raw to lowercase:
         // example of change: [P]a[SC]a[_]l -> [p]a[Sc]a[L]
         // FixMe: there is some discussion on how lowerN_Case should be resolved: to lowerNcase or to lowernCase or lowerNCase (current version)
-        return this[idx].toLowerCase().toString() + convertUnknownCaseToCamel(this.substring(idx + 1), this[idx].isUpperCase())
+        return this[idx].lowercaseChar().toString() + convertUnknownCaseToCamel(this.substring(idx + 1), this[idx].isUpperCase())
     }
 
     log.error("Not able to fix case format for: $this")
@@ -121,11 +126,11 @@ fun String.toLowerCamelCase(): String {
 fun String.toPascalCase(): String = when {
     all { it.isUpperCase() } -> {
         // all letters UPPER -> Upper
-        this[0] + substring(1).toLowerCase()
+        this[0] + substring(1).lowercase(Locale.getDefault())
     }
     all { it.isLowerCase() } -> {
         // all letters lower -> Lower
-        this[0].toUpperCase() + substring(1)
+        this[0].uppercaseChar() + substring(1)
     }
     isUpperSnakeCase() -> {
         // lowerCamel -> LowerCamel
@@ -142,7 +147,7 @@ fun String.toPascalCase(): String = when {
             // changing first letter to uppercase and replacing several uppercase letters in raw to lowercase:
             // example of change: [p]a[SC]a[_]l -> [P]a[Sc]a[L]
             // FixMe: there is some discussion on how PascalN_Case should be resolved: to PascalNcase or to PascalnCase or PascalNCase (current version)
-            this[idx].toUpperCase().toString() + convertUnknownCaseToCamel(substring(idx + 1), true)
+            this[idx].uppercaseChar().toString() + convertUnknownCaseToCamel(substring(idx + 1), true)
         } else {
             log.error("Not able to fix case format for: $this")
             this
@@ -162,22 +167,26 @@ private fun convertUnknownCaseToCamel(str: String, isFirstLetterCapital: Boolean
     var isPreviousLetterUnderscore = false
     return str.map { char ->
         if (char.isUpperCase()) {
-            val result = if (isPreviousLetterCapital && !isPreviousLetterUnderscore) char.toLowerCase() else char
+            val result = if (isPreviousLetterCapital && !isPreviousLetterUnderscore) char.lowercaseChar() else char
             isPreviousLetterCapital = true
             isPreviousLetterUnderscore = false
             result.toString()
         } else {
-            val result = if (char == '_') {
-                isPreviousLetterUnderscore = true
-                ""
-            } else if (isPreviousLetterUnderscore) {
-                isPreviousLetterCapital = true
-                isPreviousLetterUnderscore = false
-                char.toUpperCase().toString()
-            } else {
-                isPreviousLetterCapital = false
-                isPreviousLetterUnderscore = false
-                char.toString()
+            val result = when {
+                char == '_' -> {
+                    isPreviousLetterUnderscore = true
+                    ""
+                }
+                isPreviousLetterUnderscore -> {
+                    isPreviousLetterCapital = true
+                    isPreviousLetterUnderscore = false
+                    char.uppercaseChar().toString()
+                }
+                else -> {
+                    isPreviousLetterCapital = false
+                    isPreviousLetterUnderscore = false
+                    char.toString()
+                }
             }
             result
         }
@@ -197,7 +206,7 @@ private fun convertUnknownCaseToUpperSnake(str: String): String {
             }
         } else {
             alreadyInsertedUnderscore = (char == '_')
-            char.toUpperCase().toString()
+            char.uppercaseChar().toString()
         }
     }.joinToString("")
 }

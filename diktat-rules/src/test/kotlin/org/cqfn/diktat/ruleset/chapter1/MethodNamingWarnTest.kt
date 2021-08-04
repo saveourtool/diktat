@@ -2,6 +2,7 @@ package org.cqfn.diktat.ruleset.chapter1
 
 import org.cqfn.diktat.ruleset.constants.Warnings.FUNCTION_BOOLEAN_PREFIX
 import org.cqfn.diktat.ruleset.constants.Warnings.FUNCTION_NAME_INCORRECT_CASE
+import org.cqfn.diktat.ruleset.constants.Warnings.TYPEALIAS_NAME_INCORRECT_CASE
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter1.IdentifierNaming
 import org.cqfn.diktat.util.LintTestBase
@@ -83,6 +84,30 @@ class MethodNamingWarnTest : LintTestBase(::IdentifierNaming) {
                   }
                 """.trimIndent()
         lintMethod(code, LintError(2, 7, ruleId, "${FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREE", true))
+    }
+
+    @Test
+    @Tag(WarningNames.TYPEALIAS_NAME_INCORRECT_CASE)
+    fun `typeAlias name incorrect, part 1`() {
+        val code =
+                """
+                      class TestPackageName {
+                        typealias relatedClasses = List<Pair<String, String>>
+                      }
+                """.trimIndent()
+        lintMethod(code, LintError(2, 13, ruleId, "${TYPEALIAS_NAME_INCORRECT_CASE.warnText()} relatedClasses", true))
+    }
+
+    @Test
+    @Tag(WarningNames.TYPEALIAS_NAME_INCORRECT_CASE)
+    fun `typeAlias name incorrect, part 2`() {
+        lintMethod(
+            """
+                  class TestPackageName {
+                    typealias RelatedClasses = List<Pair<String, String>>
+                  }
+                """.trimIndent()
+        )
     }
 
     @Test

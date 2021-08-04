@@ -76,13 +76,14 @@ If the classes are meant to be used externally, and are not referenced inside th
 - Companion object
 
 **Exception:**
-All variants of a `(private) val` logger should be placed at the beginning of the class (`(private) val log`, `LOG`, `logger`, etc.).
+All variants of a `private val` logger should be placed at the beginning of the class (`private val log`, `LOG`, `logger`, etc.).
 
 #### <a name="r3.1.5"></a> 3.1.5 Order of declaration of top-level code structures
 Kotlin allows several top-level declaration types: classes, objects, interfaces, properties and functions.
 When declaring more than one class or zero classes (e.g. only functions), as per rule [2.2.1](#r2.2.1), you should document the whole file in the header KDoc.
 When declaring top-level structures, keep the following order:
 1. Top-level constants and properties (following same order as properties inside a class: `const val`,`val`, `lateinit var`, `var`)
+2. typealiases (grouped by their visibility modifiers)
 2. Interfaces, classes and objects (grouped by their visibility modifiers)
 3. Extension functions
 4. Other functions
@@ -97,6 +98,8 @@ package org.cqfn.diktat.example
 const val CONSTANT = 42
 
 val topLevelProperty = "String constant"
+
+internal typealias ExamplesHandler = (IExample) -> Unit
 
 interface IExample
 
@@ -340,8 +343,93 @@ try {
 <!-- =============================================================================== -->
 ### <a name="c3.5"></a> 3.5 Line length
 
-Line length should be less than 120 symbols. The international code style prohibits `non-Latin` (`non-ASCII`) symbols.
-(See [Identifiers](#r1.1.1)) However, if you still intend on using them, follow the following convention:
+Line length should be less than 120 symbols. Otherwise, it should be split.
+
+If `complex property` initializing is too long, it should be split:
+
+**Invalid example:**
+```kotlin
+val complexProperty = 1 + 2 + 3 + 4
+```
+**Valid example:**
+```kotlin
+val complexProperty = 1 + 2
++ 3 + 4
+```
+
+If `annotation` is too long, it also should be split:
+
+**Invalid example:**
+```kotlin
+@Query(value = "select * from table where age = 10", nativeQuery = true)
+fun foo() {}
+```
+**Valid example:**
+```kotlin
+@Query(value = "select * from table " +
+        "where age = 10", nativeQuery = true)
+fun foo() {}
+```
+
+Long one line `function` should be split:
+
+**Invalid example:**
+```kotlin
+fun foo() = goo().write("TooLong")
+```
+**Valid example:**
+```kotlin
+fun foo() = 
+    goo().write("TooLong")
+```
+
+Long `binary expression` should be split:
+
+**Invalid example:**
+```kotlin
+if (( x >  100) || y < 100 && !isFoo()) {}
+```
+
+**Valid example:**
+```kotlin
+if (( x >  100) ||
+    y < 100 && !isFoo()) {}
+```
+
+`Eol comment` also can be split, but it depends on comment location.
+If this comment is on the same line with code it should be on line before:
+
+**Invalid example:**
+```kotlin
+fun foo() {
+    val name = "Nick" // this comment is too long
+}
+```
+**Valid example:**
+```kotlin
+fun foo() {
+    // this comment is too long
+    val name = "Nick"
+}
+```
+
+But if this comment is on new line - it should be split to several lines:
+
+**Invalid example:**
+```kotlin
+// This comment is too long. It should be on two lines.
+fun foo() {}
+```
+
+**Valid example:**
+```kotlin
+// This comment is too long.
+// It should be on two lines.
+fun foo() {}
+```
+
+The international code style prohibits `non-Latin` (`non-ASCII`) symbols. (See [Identifiers](#r1.1.1)) However, if you still intend on using them, follow
+the following convention:
 
 - One wide character occupies the width of two narrow characters.
 The "wide" and "narrow" parts of a character are defined by its [east Asian width Unicode attribute](https://unicode.org/reports/tr11/).
@@ -930,5 +1018,28 @@ if (cond1) {
 ```kotlin
 if (cond1 && (cond2 || cond3)) {
     doSomething()
+}
+```
+#### <a name="r3.16.2"></a> 3.16.2 Too complex conditions
+Too complex conditions should be simplified according to boolean algebra rules, if it is possible.
+The following rules are considered when simplifying an expression:
+* boolean literals are removed (e.g. `foo() || false` -> `foo()`)
+* double negation is removed (e.g. `!(!a)` -> `a`)
+* expression with the same variable are simplified (e.g. `a && b && a` -> `a && b`)
+* remove expression from disjunction, if they are subset of other expression (e.g. `a || (a && b)` -> `a`)
+* remove expression from conjunction, if they are more broad than other expression (e.g. `a && (a || b)` -> `a`)
+* de Morgan's rule (negation is moved inside parentheses, i.e. `!(a || b)` -> `!a && !b`)
+
+**Valid example**
+```kotlin
+if (condition1 && condition2) {
+    foo()
+}
+```
+
+**Invalid example**
+```kotlin
+if (condition1 && condition2 && condition1) {
+    foo()
 }
 ```

@@ -49,3 +49,8 @@ fun bar() {
     }
     diktatExtension.reporter = PlainReporter(System.out)
 }
+
+@Suppress("")
+fun foo() {
+    val y = "akgjsaujtmaksdkfasakgjsaujtmaksdkfasakgjsaujtmaksdkfasakgjsaujtm aksdkfasfasakgjsaujtmaksdfasafasakgjsaujtmaksdfasakgjsaujtmaksdfasakgjsaujtmaksdfasakgjsaujtmaksdfasakgjsaujtmaksdkgjsaujtmaksdfasakgjsaujtmaksd"
+}

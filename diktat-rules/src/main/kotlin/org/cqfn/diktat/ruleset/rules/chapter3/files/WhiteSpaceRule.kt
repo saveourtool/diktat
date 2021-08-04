@@ -3,8 +3,8 @@ package org.cqfn.diktat.ruleset.rules.chapter3.files
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_WHITESPACE
 import org.cqfn.diktat.ruleset.rules.DiktatRule
+import org.cqfn.diktat.ruleset.rules.chapter6.classes.CompactInitialization
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
-import org.cqfn.diktat.ruleset.utils.log
 
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.ARROW
@@ -76,6 +76,7 @@ import org.jetbrains.kotlin.psi.KtPostfixExpression
 import org.jetbrains.kotlin.psi.KtPrefixExpression
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
+import org.slf4j.LoggerFactory
 
 /**
  * This rule checks usage of whitespaces for horizontal code separation
@@ -312,7 +313,7 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
         val isEol = node.textContains('\n') || node.psi.parentsWithSelf.all { it.nextSibling == null }
         if (hasSpaces && isEol) {
             WRONG_WHITESPACE.warnAndFix(configRules, emitWarn, isFixMode, "there should be no spaces in the end of line", node.startOffset, node) {
-                (node as LeafElement).replaceWithText(node.text.trimStart(' '))
+                (node as LeafElement).rawReplaceWithText(node.text.trimStart(' '))
             }
         }
     }
@@ -387,13 +388,14 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
         0
     } else {
         // this can happen, e.g. in lambdas after an arrow, where block can be not surrounded by braces
-        val isBlockStartingWithComment = treeNext.elementType == BLOCK && treeNext.firstChildNode.isPartOfComment()
+        // treeNext may not have children ( {_, _ -> })
+        val isBlockStartingWithComment = treeNext.elementType == BLOCK && treeNext.firstChildNode?.isPartOfComment() == true
         if (textContains('\n') || treeNext.isPartOfComment() || isBlockStartingWithComment) null else text.count { it == ' ' }
     }
 
     private fun ASTNode.leaveSingleWhiteSpace() {
         if (treeNext.elementType == WHITE_SPACE) {
-            (treeNext as LeafElement).replaceWithText(" ")
+            (treeNext as LeafElement).rawReplaceWithText(" ")
         } else {
             treeParent.addChild(PsiWhiteSpaceImpl(" "), treeNext)
         }
@@ -417,6 +419,8 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
             }
 
     companion object {
+        private val log = LoggerFactory.getLogger(CompactInitialization::class.java)
+
         private const val NUM_PARENTS_FOR_LAMBDA = 3  // this is the number of parent nodes needed to check if this node is lambda from argument list
         private val keywordsWithSpaceAfter = TokenSet.create(
             // these keywords are followed by {

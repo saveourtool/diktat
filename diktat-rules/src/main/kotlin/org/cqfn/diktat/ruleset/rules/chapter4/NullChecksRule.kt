@@ -7,6 +7,8 @@ import org.cqfn.diktat.ruleset.utils.*
 
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.BLOCK
+import com.pinterest.ktlint.core.ast.ElementType.BREAK
 import com.pinterest.ktlint.core.ast.ElementType.CONDITION
 import com.pinterest.ktlint.core.ast.ElementType.ELSE
 import com.pinterest.ktlint.core.ast.ElementType.IF
@@ -20,6 +22,7 @@ import com.pinterest.ktlint.core.ast.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.psi.KtBinaryExpression
+import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtIfExpression
 
 /**
@@ -67,14 +70,20 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
                 when (condition.operationToken) {
                     // `==` and `===` comparison can be fixed with `?:` operator
                     ElementType.EQEQ, ElementType.EQEQEQ ->
-                        warnAndFixOnNullCheck(condition, true,
-                            "use '.let/.also/?:/e.t.c' instead of ${condition.text}") {
+                        warnAndFixOnNullCheck(
+                            condition,
+                            isFixable(node, true),
+                            "use '.let/.also/?:/e.t.c' instead of ${condition.text}"
+                        ) {
                             fixNullInIfCondition(node, condition, true)
                         }
                     // `!==` and `!==` comparison can be fixed with `.let/also` operators
                     ElementType.EXCLEQ, ElementType.EXCLEQEQEQ ->
-                        warnAndFixOnNullCheck(condition, true,
-                            "use '.let/.also/?:/e.t.c' instead of ${condition.text}") {
+                        warnAndFixOnNullCheck(
+                            condition,
+                            isFixable(node, false),
+                            "use '.let/.also/?:/e.t.c' instead of ${condition.text}"
+                        ) {
                             fixNullInIfCondition(node, condition, false)
                         }
                     else -> return
@@ -84,6 +93,27 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     @Suppress("UnsafeCallOnNullableType")
+    private fun isFixable(condition: ASTNode,
+                          isEqualToNull: Boolean): Boolean {
+        // Handle cases with `break` word in blocks
+        val typePair = if (isEqualToNull) {
+            (ELSE to THEN)
+        } else {
+            (THEN to ELSE)
+        }
+        val isBlockInIfWithBreak = condition.getBreakNodeFromIf(typePair.first)
+        val isOneLineBlockInIfWithBreak = condition
+            .treeParent
+            .findChildByType(typePair.second)
+            ?.let { it.findChildByType(BLOCK) ?: it }
+            ?.let { astNode ->
+                astNode.hasChildOfType(BREAK) &&
+                        (astNode.psi as? KtBlockExpression)?.statements?.size != 1
+            } ?: false
+        return (!isBlockInIfWithBreak && !isOneLineBlockInIfWithBreak)
+    }
+
+    @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
     private fun fixNullInIfCondition(condition: ASTNode,
                                      binaryExpression: KtBinaryExpression,
                                      isEqualToNull: Boolean) {
@@ -91,30 +121,46 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
         val thenCodeLines = condition.extractLinesFromBlock(THEN)
         val elseCodeLines = condition.extractLinesFromBlock(ELSE)
         val text = if (isEqualToNull) {
-            if (elseCodeLines.isNullOrEmpty()) {
-                "$variableName ?: run {\n${thenCodeLines?.joinToString(separator = "\n")}\n}"
-            } else {
-                """
-                    |$variableName?.let {
-                    |${elseCodeLines.joinToString(separator = "\n")}
-                    |}
-                    |?: run {
-                    |${thenCodeLines?.joinToString(separator = "\n")}
-                    |}
-                """.trimMargin()
+            when {
+                elseCodeLines.isNullOrEmpty() ->
+                    if (condition.getBreakNodeFromIf(THEN)) {
+                        "$variableName ?: break"
+                    } else {
+                        "$variableName ?: run {${thenCodeLines?.joinToString(prefix = "\n", postfix = "\n", separator = "\n")}}"
+                    }
+                thenCodeLines!!.singleOrNull() == "null" -> """
+                        |$variableName?.let {
+                        |${elseCodeLines.joinToString(separator = "\n")}
+                        |}
+                    """.trimMargin()
+                thenCodeLines.singleOrNull() == "break" -> """
+                        |$variableName?.let {
+                        |${elseCodeLines.joinToString(separator = "\n")}
+                        |} ?: break
+                        """.trimMargin()
+                else -> """
+                        |$variableName?.let {
+                        |${elseCodeLines.joinToString(separator = "\n")}
+                        |}
+                        |?: run {
+                        |${thenCodeLines.joinToString(separator = "\n")}
+                        |}
+                    """.trimMargin()
             }
         } else {
-            if (elseCodeLines.isNullOrEmpty()) {
-                "$variableName?.let {\n${thenCodeLines?.joinToString(separator = "\n")}\n}"
-            } else {
-                """
-                    |$variableName?.let {
-                    |${thenCodeLines?.joinToString(separator = "\n")}
-                    |}
-                    |?: run {
-                    |${elseCodeLines.joinToString(separator = "\n")}
-                    |}
-                """.trimMargin()
+            when {
+                elseCodeLines.isNullOrEmpty() || (elseCodeLines.singleOrNull() == "null") ->
+                    "$variableName?.let {${thenCodeLines?.joinToString(prefix = "\n", postfix = "\n", separator = "\n")}}"
+                elseCodeLines.singleOrNull() == "break" ->
+                    "$variableName?.let {${thenCodeLines?.joinToString(prefix = "\n", postfix = "\n", separator = "\n")}} ?: break"
+                else -> """
+                        |$variableName?.let {
+                        |${thenCodeLines?.joinToString(separator = "\n")}
+                        |}
+                        |?: run {
+                        |${elseCodeLines.joinToString(separator = "\n")}
+                        |}
+                    """.trimMargin()
             }
         }
         val tree = KotlinParser().createNode(text)
@@ -154,6 +200,13 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
             }
         }
     }
+
+    private fun ASTNode.getBreakNodeFromIf(type: IElementType) = this
+        .treeParent
+        .findChildByType(type)
+        ?.let { it.findChildByType(BLOCK) ?: it }
+        ?.findAllNodesWithCondition { it.elementType == BREAK }?.isNotEmpty()
+        ?: false
 
     private fun ASTNode.extractLinesFromBlock(type: IElementType): List<String>? =
             treeParent

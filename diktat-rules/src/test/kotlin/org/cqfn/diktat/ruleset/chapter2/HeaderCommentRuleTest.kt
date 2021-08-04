@@ -6,7 +6,6 @@ import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_MISSING_IN_NON_SINGLE_C
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_MISSING_OR_WRONG_COPYRIGHT
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_NOT_BEFORE_PACKAGE
 import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_WRONG_FORMAT
-import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_CONTAINS_DATE_OR_AUTHOR
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.chapter2.comments.HeaderCommentRule
 import org.cqfn.diktat.util.LintTestBase
@@ -372,6 +371,33 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
             """.trimMargin(),
             LintError(1, 1, ruleId, "${HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warnText()} there are 2 declared classes and/or objects"),
             rulesConfigList = rulesConfigList
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.HEADER_NOT_BEFORE_PACKAGE)
+    fun `header KDoc in gradle script`() {
+        lintMethod(
+            """                
+                |version = "0.1.0-SNAPSHOT"
+                |
+            """.trimMargin(),
+            fileName = "src/main/kotlin/org/cqfn/diktat/builds.gradle.kts"
+
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.HEADER_NOT_BEFORE_PACKAGE)
+    fun `header KDoc in kts script`() {
+        lintMethod(
+            """                
+                |val version = "0.1.0-SNAPSHOT"
+                |
+            """.trimMargin(),
+            LintError(1, 1, ruleId, "${HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warnText()} there are 0 declared classes and/or objects"),
+            fileName = "src/main/kotlin/org/cqfn/diktat/Example.kts"
+
         )
     }
 }

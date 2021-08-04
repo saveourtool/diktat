@@ -54,7 +54,7 @@ class VariableGenericTypeDeclarationRule(configRules: List<RulesConfig>) : Dikta
                 ?.typeArgumentsAsTypes
         }
 
-        if ((rightSide != null && leftSide != null) &&
+        if (rightSide != null && leftSide != null &&
                 rightSide.size == leftSide.size &&
                 rightSide.zip(leftSide).all { (first, second) -> first.text == second.text }) {
             GENERIC_VARIABLE_WRONG_DECLARATION.warnAndFix(configRules, emitWarn, isFixMode,

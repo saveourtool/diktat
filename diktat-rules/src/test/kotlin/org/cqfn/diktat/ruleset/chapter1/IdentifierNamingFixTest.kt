@@ -57,4 +57,10 @@ class IdentifierNamingFixTest : FixTestBase(
     fun `incorrect lambda argument case fix`() {
         fixAndCompare("identifiers/LambdaArgExpected.kt", "identifiers/LambdaArgTest.kt")
     }
+
+    @Test
+    @Tag(WarningNames.TYPEALIAS_NAME_INCORRECT_CASE)
+    fun `typeAlias name incorrect`() {
+        fixAndCompare("identifiers/TypeAliasNameExpected.kt", "identifiers/TypeAliasNameTest.kt")
+    }
 }

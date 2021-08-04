@@ -3,7 +3,7 @@ import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurr
 
 plugins {
     `java-gradle-plugin`
-    kotlin("jvm") version "1.4.32"
+    kotlin("jvm") version "1.4.20"
     jacoco
     id("pl.droidsonroids.jacoco.testkit") version "1.0.7"
     id("org.gradle.test-retry") version "1.2.1"
@@ -16,21 +16,23 @@ repositories {
     }
     mavenLocal()  // to use snapshot diktat
     mavenCentral()
-    jcenter()
 }
 
 // default value is needed for correct gradle loading in IDEA; actual value from maven is used during build
 val ktlintVersion = project.properties.getOrDefault("ktlintVersion", "0.39.0") as String
-val diktatVersion = project.version.takeIf { it.toString() != Project.DEFAULT_VERSION } ?: "0.4.0"
+val diktatVersion = project.version.takeIf { it.toString() != Project.DEFAULT_VERSION } ?: "0.5.2"
 val junitVersion = project.properties.getOrDefault("junitVersion", "5.7.0") as String
-val jacocoVersion = project.properties.getOrDefault("jacocoVersion", "0.8.6") as String
+val jacocoVersion = project.properties.getOrDefault("jacocoVersion", "0.8.7") as String
 dependencies {
     implementation(kotlin("gradle-plugin-api"))
 
-    implementation("com.pinterest.ktlint:ktlint-core:$ktlintVersion") {
-        exclude("com.pinterest.ktlint", "ktlint-ruleset-standard")
+    implementation("org.cqfn.diktat:diktat-rules:$diktatVersion") {
+        exclude("org.jetbrains.kotlin", "kotlin-compiler-embeddable")
+        exclude("org.jetbrains.kotlin", "kotlin-stdlib-jdk8")
+        exclude("org.jetbrains.kotlin", "kotlin-stdlib-jdk7")
+        exclude("org.jetbrains.kotlin", "kotlin-stdlib")
+        exclude("org.jetbrains.kotlin", "kotlin-stdlib-common")
     }
-    implementation("org.cqfn.diktat:diktat-rules:$diktatVersion")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
@@ -62,7 +64,8 @@ tasks.withType<KotlinCompile> {
         languageVersion = "1.3"
         apiVersion = "1.3"
         jvmTarget = "1.8"
-        useIR = true
+        useIR = false  // for compatibility with older gradle
+        allWarningsAsErrors = true
     }
 
     dependsOn.add(generateVersionsFile)

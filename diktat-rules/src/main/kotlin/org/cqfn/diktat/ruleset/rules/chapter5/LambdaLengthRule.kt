@@ -33,9 +33,9 @@ class LambdaLengthRule(configRules: List<RulesConfig>) : DiktatRule(
         val copyNode = node.clone() as ASTNode
         val sizeLambda = countCodeLines(copyNode)
         if (sizeLambda > configuration.maxLambdaLength) {
-            copyNode.findAllNodesWithCondition({ it.elementType == ElementType.LAMBDA_EXPRESSION }).forEachIndexed { index, node ->
+            copyNode.findAllNodesWithCondition { it.elementType == ElementType.LAMBDA_EXPRESSION }.forEachIndexed { index, astNode ->
                 if (index > 0) {
-                    node.treeParent.removeChild(node)
+                    astNode.treeParent.removeChild(astNode)
                 }
             }
             val isIt = copyNode.findAllDescendantsWithSpecificType(ElementType.REFERENCE_EXPRESSION).map { re -> re.text }.contains("it")

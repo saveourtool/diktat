@@ -41,6 +41,8 @@ public object WarningNames {
 
     public const val FUNCTION_NAME_INCORRECT_CASE: String = "FUNCTION_NAME_INCORRECT_CASE"
 
+    public const val TYPEALIAS_NAME_INCORRECT_CASE: String = "TYPEALIAS_NAME_INCORRECT_CASE"
+
     public const val FUNCTION_BOOLEAN_PREFIX: String = "FUNCTION_BOOLEAN_PREFIX"
 
     public const val FILE_NAME_INCORRECT: String = "FILE_NAME_INCORRECT"
@@ -82,6 +84,9 @@ public object WarningNames {
     public const val KDOC_NO_DEPRECATED_TAG: String = "KDOC_NO_DEPRECATED_TAG"
 
     public const val KDOC_NO_CONSTRUCTOR_PROPERTY: String = "KDOC_NO_CONSTRUCTOR_PROPERTY"
+
+    public const val KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER: String =
+            "KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER"
 
     public const val KDOC_EXTRA_PROPERTY: String = "KDOC_EXTRA_PROPERTY"
 
@@ -152,6 +157,8 @@ public object WarningNames {
     public const val TRAILING_COMMA: String = "TRAILING_COMMA"
 
     public const val COMPLEX_EXPRESSION: String = "COMPLEX_EXPRESSION"
+
+    public const val COMPLEX_BOOLEAN_EXPRESSION: String = "COMPLEX_BOOLEAN_EXPRESSION"
 
     public const val STRING_CONCATENATION: String = "STRING_CONCATENATION"
 

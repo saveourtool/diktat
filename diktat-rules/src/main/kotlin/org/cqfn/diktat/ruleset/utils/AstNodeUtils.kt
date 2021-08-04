@@ -15,10 +15,13 @@ import org.cqfn.diktat.ruleset.rules.chapter1.PackageNaming
 
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.ast.ElementType
+import com.pinterest.ktlint.core.ast.ElementType.ANNOTATED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
+import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.CONST_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
+import com.pinterest.ktlint.core.ast.ElementType.EQ
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FILE_ANNOTATION_LIST
 import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
@@ -37,11 +40,9 @@ import com.pinterest.ktlint.core.ast.isLeaf
 import com.pinterest.ktlint.core.ast.isPartOfComment
 import com.pinterest.ktlint.core.ast.isRoot
 import com.pinterest.ktlint.core.ast.isWhiteSpace
-import com.pinterest.ktlint.core.ast.lineNumber
 import com.pinterest.ktlint.core.ast.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.TokenType
-import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
@@ -50,16 +51,16 @@ import org.jetbrains.kotlin.psi.KtAnnotationEntry
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.psiUtil.children
-import org.jetbrains.kotlin.psi.psiUtil.endOffset
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.siblings
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.util.Locale
 
 /**
  * A [Logger] that can be used throughout diktat
  */
-val log: Logger = LoggerFactory.getLogger(ASTNode::class.java)
+private val log: Logger = LoggerFactory.getLogger("AstNodeUtils")
 
 /**
  * A class that represents result of nodes swapping. [oldNodes] should always have same size as [newNodes]
@@ -89,7 +90,7 @@ fun ASTNode.isTextLengthInRange(range: IntRange): Boolean = this.textLength in r
 /**
  * getting first child name with IDENTIFIER type
  *
- * @return node with type [IDENTIFIER] or null if it is not present
+ * @return node with type [ElementType.IDENTIFIER] or null if it is not present
  */
 fun ASTNode.getIdentifierName(): ASTNode? =
         this.getFirstChildWithType(ElementType.IDENTIFIER)
@@ -115,6 +116,19 @@ fun ASTNode.isCorrect() = this.findAllDescendantsWithSpecificType(TokenType.ERRO
  */
 fun ASTNode.getAllChildrenWithType(elementType: IElementType): List<ASTNode> =
         this.getChildren(null).filter { it.elementType == elementType }
+
+/**
+ * Generates a sequence of this ASTNode's children in reversed order
+ *
+ * @return a reevrsed sequence of children
+ */
+fun ASTNode.reversedChildren(): Sequence<ASTNode> = sequence {
+    var node = lastChildNode
+    while (node != null) {
+        yield(node)
+        node = node.treePrev
+    }
+}
 
 /**
  * Replaces the [beforeNode] of type [WHITE_SPACE] with the node with specified [text]
@@ -360,7 +374,7 @@ fun ASTNode.isVarProperty() =
  * Replaces text of [this] node with lowercase text
  */
 fun ASTNode.toLower() {
-    (this as LeafPsiElement).replaceWithText(this.text.toLowerCase())
+    (this as LeafPsiElement).rawReplaceWithText(this.text.lowercase(Locale.getDefault()))
 }
 
 /**
@@ -408,17 +422,16 @@ fun ASTNode.numNewLines() = text.count { it == '\n' }
  * This method performs tree traversal and returns all nodes with specific element type
  */
 fun ASTNode.findAllDescendantsWithSpecificType(elementType: IElementType, withSelf: Boolean = true) =
-        findAllNodesWithCondition({ it.elementType == elementType }, withSelf)
+        findAllNodesWithCondition(withSelf) { it.elementType == elementType }
 
 /**
  * This method performs tree traversal and returns all nodes which satisfy the condition
  */
-@Suppress("LAMBDA_IS_NOT_LAST_PARAMETER")
-fun ASTNode.findAllNodesWithCondition(condition: (ASTNode) -> Boolean,
-                                      withSelf: Boolean = true): List<ASTNode> {
+fun ASTNode.findAllNodesWithCondition(withSelf: Boolean = true,
+                                      condition: (ASTNode) -> Boolean): List<ASTNode> {
     val result = if (condition(this) && withSelf) mutableListOf(this) else mutableListOf()
     return result + this.getChildren(null).flatMap {
-        it.findAllNodesWithCondition(condition)
+        it.findAllNodesWithCondition(withSelf = true, condition)
     }
 }
 
@@ -491,7 +504,7 @@ fun ASTNode?.isAccessibleOutside(): Boolean =
  */
 fun ASTNode.hasSuppress(warningName: String) = parent({ node ->
     val annotationNode = if (node.elementType != FILE) {
-        node.findChildByType(MODIFIER_LIST)
+        node.findChildByType(MODIFIER_LIST) ?: node.findChildByType(ANNOTATED_EXPRESSION)
     } else {
         node.findChildByType(FILE_ANNOTATION_LIST)
     }
@@ -512,15 +525,6 @@ fun ASTNode.isOverridden(): Boolean =
         findChildByType(MODIFIER_LIST)?.findChildByType(OVERRIDE_KEYWORD) != null
 
 /**
- * creation of operation reference in a node
- */
-fun ASTNode.createOperationReference(elementType: IElementType, text: String) {
-    val operationReference = CompositeElement(OPERATION_REFERENCE)
-    this.addChild(operationReference, null)
-    operationReference.addChild(LeafPsiElement(elementType, text), null)
-}
-
-/**
  * removing all newlines in WHITE_SPACE node and replacing it to a one newline saving the initial indenting format
  */
 fun ASTNode.leaveOnlyOneNewLine() = leaveExactlyNumNewLines(1)
@@ -530,7 +534,7 @@ fun ASTNode.leaveOnlyOneNewLine() = leaveExactlyNumNewLines(1)
  */
 fun ASTNode.leaveExactlyNumNewLines(num: Int) {
     require(this.elementType == WHITE_SPACE)
-    (this as LeafPsiElement).replaceWithText("${"\n".repeat(num)}${this.text.replace("\n", "")}")
+    (this as LeafPsiElement).rawReplaceWithText("${"\n".repeat(num)}${this.text.replace("\n", "")}")
 }
 
 /**
@@ -542,7 +546,7 @@ fun ASTNode.leaveExactlyNumNewLines(num: Int) {
  */
 fun ASTNode.appendNewlineMergingWhiteSpace(whiteSpaceNode: ASTNode?, beforeNode: ASTNode?) {
     if (whiteSpaceNode != null && whiteSpaceNode.elementType == WHITE_SPACE) {
-        (whiteSpaceNode as LeafPsiElement).replaceWithText("\n${whiteSpaceNode.text}")
+        (whiteSpaceNode as LeafPsiElement).rawReplaceWithText("\n${whiteSpaceNode.text}")
     } else {
         addChild(PsiWhiteSpaceImpl("\n"), beforeNode)
     }
@@ -659,7 +663,7 @@ fun ASTNode.areChildrenBeforeChild(children: List<ASTNode>, beforeChild: ASTNode
 @Suppress("UnsafeCallOnNullableType")
 fun ASTNode.areChildrenBeforeGroup(children: List<ASTNode>, group: List<ASTNode>): Boolean {
     require(children.isNotEmpty() && group.isNotEmpty()) { "no sense to operate on empty lists" }
-    return children.map { getChildren(null).indexOf(it) }.maxOrNull()!! < group.map { getChildren(null).indexOf(it) }.minOrNull()!!
+    return children.maxOf { getChildren(null).indexOf(it) } < group.minOf { getChildren(null).indexOf(it) }
 }
 
 /**
@@ -716,13 +720,6 @@ fun ASTNode.hasTestAnnotation() = findChildByType(MODIFIER_LIST)
     ?: false
 
 /**
- * Returns the first line of this node's text if it is single, or the first line followed by [suffix] if there are more than one.
- *
- * @param suffix a suffix to append if there are more than one lines of text
- */
-fun ASTNode.firstLineOfText(suffix: String = "") = text.lines().run { singleOrNull() ?: (first() + suffix) }
-
-/**
  * Return the number in the file of the last line of this node's text
  */
 fun ASTNode.lastLineNumber() = getLineNumber() + text.count { it == '\n' }
@@ -737,9 +734,10 @@ fun ASTNode.calculateLineColByOffset() = buildPositionInTextLocator(text)
  *
  * @return name of the file [this] node belongs to
  */
-fun ASTNode.getFilePath(): String = getUserData(KtLint.FILE_PATH_USER_DATA_KEY).let {
+fun ASTNode.getFilePath(): String = getRootNode().also {
+    require(it.elementType == FILE) { "Root node type is not FILE, but file_path is present in user_data only in FILE nodes" }
+}.getUserData(KtLint.FILE_PATH_USER_DATA_KEY).let {
     requireNotNull(it) { "File path is not present in user data" }
-    it
 }
 
 /**
@@ -753,18 +751,21 @@ fun ASTNode.isGoingAfter(otherNode: ASTNode): Boolean {
 }
 
 /**
- * Get line number, where this node's content starts. To avoid `ArrayIndexOutOfBoundsException`s we check whether node's maximum offset is less than
- * Document's maximum offset, and calculate line number manually if needed.
+ * check that node has binary expression with `EQ`
+ */
+fun ASTNode.hasEqBinaryExpression(): Boolean =
+        findChildByType(BINARY_EXPRESSION)
+            ?.findChildByType(OPERATION_REFERENCE)
+            ?.hasChildOfType(EQ)
+            ?: false
+
+/**
+ * Get line number, where this node's content starts.
  *
- * @return line number or null if it cannot be calculated
+ * @return line number
  */
 fun ASTNode.getLineNumber(): Int =
-        psi.containingFile
-            .viewProvider
-            .document
-            ?.takeIf { it.getLineEndOffset(it.lineCount - 1) >= psi.endOffset }
-            ?.let { lineNumber() }
-            ?: calculateLineNumber()
+        calculateLineNumber()
 
 /**
  * This function calculates line number instead of using cached values.
@@ -806,7 +807,7 @@ fun isLocatedInTest(filePathParts: List<String>, testAnchors: List<String>) = fi
  * @return the number of lines in a block of code.
  */
 fun countCodeLines(copyNode: ASTNode): Int {
-    copyNode.findAllNodesWithCondition({ it.isPartOfComment() }).forEach { it.treeParent.removeChild(it) }
+    copyNode.findAllNodesWithCondition { it.isPartOfComment() }.forEach { it.treeParent.removeChild(it) }
     val text = copyNode.text.lines().filter { it.isNotBlank() }
     return text.size
 }

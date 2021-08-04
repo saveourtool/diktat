@@ -50,18 +50,16 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
     @Test
     @Tag(WarningNames.WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES)
     fun `should warn if loggers are not on top`() {
-        listOf("private ", "").forEach { modifier ->
-            lintMethod(
-                """
+        lintMethod(
+            """
                     |class Example {
                     |    private val FOO = 42
-                    |    ${modifier}val log = LoggerFactory.getLogger(Example.javaClass)
+                    |    private val log = LoggerFactory.getLogger(Example.javaClass)
                     |}
                 """.trimMargin(),
-                LintError(2, 5, ruleId, "${WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnText()} PROPERTY: FOO", true),
-                LintError(3, 5, ruleId, "${WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnText()} PROPERTY: log", true)
-            )
-        }
+            LintError(2, 5, ruleId, "${WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnText()} PROPERTY: FOO", true),
+            LintError(3, 5, ruleId, "${WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnText()} PROPERTY: log", true)
+        )
     }
 
     // ===== comments on properties ======
@@ -196,6 +194,23 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
             """.trimMargin(),
             LintError(3, 29, ruleId, "${WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnText()} PROPERTY: b", true),
             LintError(5, 29, ruleId, "${WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES.warnText()} PROPERTY: a", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES)
+    fun `should correctly check class elements order in enum classes`() {
+        lintMethod(
+            """
+                enum class Enum {
+                    FOO,
+                    BAR,
+                    ;
+                    
+                    fun f() {}
+                    companion object
+                }
+            """.trimMargin()
         )
     }
 }

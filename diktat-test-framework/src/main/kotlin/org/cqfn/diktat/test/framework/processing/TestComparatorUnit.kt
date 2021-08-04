@@ -51,12 +51,12 @@ class TestComparatorUnit(private val resourceFilePath: String,
      * @param fileName
      * @return file content as a list of lines
      */
-    fun readFile(fileName: String): List<String> {
+    private fun readFile(fileName: String): List<String> {
         var list: List<String> = ArrayList()
         try {
             Files.newBufferedReader(Paths.get(fileName)).use { list = it.lines().collect(Collectors.toList()) }
         } catch (e: IOException) {
-            println("Not able to read file: $fileName")
+            log.error("Not able to read file: $fileName")
         }
         return list
     }

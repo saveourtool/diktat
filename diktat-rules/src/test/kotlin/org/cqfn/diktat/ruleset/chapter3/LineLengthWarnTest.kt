@@ -19,6 +19,10 @@ class LineLengthWarnTest : LintTestBase(::LineLength) {
         RulesConfig(LONG_LINE.name, true,
             mapOf("lineLength" to "163"))
     )
+    private val shortLineLength: List<RulesConfig> = listOf(
+        RulesConfig(LONG_LINE.name, true,
+            mapOf("lineLength" to "40"))
+    )
     private val wrongUrl = "dhttps://www.google.com/search?q=djfhvkdfhvkdh+gthtdj%" +
             "3Bb&rlz=1C1GCEU_enRU909RU909&oq=posible+gthtdj%3Bb&aqs=chrome.." +
             "69i57j0l3.2680j1j7&sourceid=chrome&ie=UTF-8"
@@ -219,6 +223,20 @@ class LineLengthWarnTest : LintTestBase(::LineLength) {
                 """.trimMargin(),
             LintError(8, 1, ruleId, "${LONG_LINE.warnText()} max line length 120, but was 130", false),
             LintError(9, 1, ruleId, "${LONG_LINE.warnText()} max line length 120, but was 123", false)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.LONG_LINE)
+    fun `check annotation and fun with expr body`() {
+        lintMethod(
+            """
+                    |@Query(value = "ASDAASDASDASDASDASDASDASDAASDASDASDASDASDASDASDAASDASDASDASDASDASD")
+                    |fun foo() = println("ASDAASDASDASDASDASDASDASDAASDASDASDASDASDASDASDAASDASDASDASDASDASD")
+            """.trimMargin(),
+            LintError(1, 1, ruleId, "${LONG_LINE.warnText()} max line length 40, but was 84", false),
+            LintError(2, 1, ruleId, "${LONG_LINE.warnText()} max line length 40, but was 89", true),
+            rulesConfigList = shortLineLength
         )
     }
 }
