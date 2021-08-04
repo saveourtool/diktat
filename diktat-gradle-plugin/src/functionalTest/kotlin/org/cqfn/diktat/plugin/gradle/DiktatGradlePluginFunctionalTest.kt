@@ -7,7 +7,6 @@ import org.gradle.testkit.runner.TaskOutcome
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.condition.DisabledOnOs
 import org.junit.jupiter.api.condition.OS
@@ -31,7 +30,6 @@ class DiktatGradlePluginFunctionalTest {
     }
 
     @Test
-    @Disabled
     fun `should execute diktatCheck on default values`() {
         val result = runDiktat(testProjectDir, shouldSucceed = false)
 
@@ -44,7 +42,6 @@ class DiktatGradlePluginFunctionalTest {
     }
 
     @Test
-    @Disabled
     fun `should have json reporter files`() {
         buildFile.appendText(
             """${System.lineSeparator()}
@@ -68,7 +65,6 @@ class DiktatGradlePluginFunctionalTest {
     }
 
     @Test
-    @Disabled
     fun `should execute diktatCheck with explicit inputs`() {
         buildFile.appendText(
             """${System.lineSeparator()}
@@ -88,7 +84,6 @@ class DiktatGradlePluginFunctionalTest {
     }
 
     @Test
-    @Disabled
     fun `should execute diktatCheck with excludes`() {
         buildFile.appendText(
             """${System.lineSeparator()}
@@ -106,7 +101,6 @@ class DiktatGradlePluginFunctionalTest {
     }
 
     @Test
-    @Disabled
     fun `should not run diktat with ktlint's default includes when no files match include patterns`() {
         buildFile.appendText(
             """${System.lineSeparator()}
@@ -130,7 +124,6 @@ class DiktatGradlePluginFunctionalTest {
     }
 
     @Test
-    @Disabled
     fun `should not run diktat with ktlint's default includes when no files match include patterns - 2`() {
         buildFile.appendText(
             """${System.lineSeparator()}
@@ -153,7 +146,6 @@ class DiktatGradlePluginFunctionalTest {
     }
 
     @Test
-    @DisabledOnOs(OS.WINDOWS)
     fun `should execute diktatCheck with absolute paths`() {
         val path = testProjectDir.root
             .resolve("src/**/*.kt")
@@ -178,7 +170,6 @@ class DiktatGradlePluginFunctionalTest {
     }
 
     @Test
-    @Disabled
     fun `should execute diktatCheck with gradle older than 6_4`() {
         val result = runDiktat(testProjectDir, shouldSucceed = false, arguments = listOf("--info")) {
             withGradleVersion("5.3")
@@ -193,7 +184,6 @@ class DiktatGradlePluginFunctionalTest {
     }
 
     @Test
-    @Disabled
     fun `should respect ignoreFailures setting`() {
         buildFile.appendText(
             """${System.lineSeparator()}
