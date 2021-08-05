@@ -59,13 +59,6 @@ import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
 import org.jetbrains.kotlin.psi.KtThrowExpression
 import org.jetbrains.kotlin.psi.psiUtil.collectDescendantsOfType
 import org.jetbrains.kotlin.psi.psiUtil.referenceExpression
-import java.nio.file.FileSystems
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.PathMatcher
-import java.nio.file.Paths
-import java.util.stream.Collectors
-import java.io.IOException
 
 /**
  * This rule checks that whenever the method has arguments, return value, can throw exceptions,
@@ -98,18 +91,6 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
             }
         } else if (node.elementType == KDOC_SECTION) {
             checkKdocBody(node)
-        }
-    }
-
-    private fun find(searchDirectory: String, matcher: PathMatcher): List<Path?> {
-        try {
-            Files.walk(Paths.get(searchDirectory)).use { files ->
-                return files
-                    .filter { path -> matcher.matches(path) }
-                    .collect(Collectors.toList())
-            }
-        } catch (e: IOException) {
-            return listOf()
         }
     }
 

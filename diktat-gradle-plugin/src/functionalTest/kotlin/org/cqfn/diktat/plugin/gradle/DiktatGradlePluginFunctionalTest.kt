@@ -146,6 +146,7 @@ class DiktatGradlePluginFunctionalTest {
     }
 
     @Test
+    @DisabledOnOs(OS.WINDOWS, disabledReason = "Windows uses abbreviated paths, so relative path cannot be built correctly")
     fun `should execute diktatCheck with absolute paths`() {
         val path = testProjectDir.root
             .resolve("src/**/*.kt")
