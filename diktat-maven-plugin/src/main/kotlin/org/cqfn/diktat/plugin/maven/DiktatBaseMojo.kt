@@ -143,7 +143,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         val text = file.readText()
         val params =
                 KtLint.Params(
-                    fileName = file.name,
+                    fileName = file.relativeTo(mavenProject.basedir).path,
                     text = text,
                     ruleSets = ruleSets,
                     userData = mapOf("file_path" to file.path),
