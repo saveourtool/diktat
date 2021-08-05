@@ -114,13 +114,12 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
         val paramCheckFailed = (missingParameters.isNotEmpty() && !node.isSingleLineGetterOrSetter()) || kDocMissingParameters.isNotEmpty()
         val returnCheckFailed = hasReturnCheckFailed(node, kdocTags)
         val throwsCheckFailed = missingExceptions.isNotEmpty()
-        val checkFunName = isReferenceExpressionWithSameName(node, kdocTags)
 
         val anyTagFailed = paramCheckFailed || returnCheckFailed || throwsCheckFailed
         // if no tag failed, we have too little information to suggest KDoc - it would just be empty
         if (kdoc == null && anyTagFailed) {
             addKdocTemplate(node, name, missingParameters, explicitlyThrownExceptions, returnCheckFailed)
-        } else if (kdoc == null && !checkFunName) {
+        } else if (kdoc == null && !isReferenceExpressionWithSameName(node, kdocTags)) {
             MISSING_KDOC_ON_FUNCTION.warn(configRules, emitWarn, false, name, node.startOffset, node)
         } else {
             if (paramCheckFailed) {
@@ -152,9 +151,9 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
         if (node.isSingleLineGetterOrSetter()) {
             return false
         }
-        val lastDotQualifiedExpression = node.findChildByType(DOT_QUALIFIED_EXPRESSION)?.text?.substringAfterLast('.')
+        val lastDotQualifiedExpression = node.findChildByType(DOT_QUALIFIED_EXPRESSION)?.text?.substringBeforeLast('(')?.substringAfterLast('.')
         val funName = (node.psi as KtFunction).name
-        return funName?.let { lastDotQualifiedExpression?.contains(it, ignoreCase = false) } ?: false
+        return funName == lastDotQualifiedExpression
     }
 
     @Suppress("WRONG_NEWLINES")
