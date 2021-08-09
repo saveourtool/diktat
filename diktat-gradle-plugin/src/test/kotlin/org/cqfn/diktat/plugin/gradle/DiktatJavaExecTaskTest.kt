@@ -197,7 +197,7 @@ class DiktatJavaExecTaskTest {
         project.file("diktat-analysis.yml").createNewFile()
     }
 
-    private fun combinePathParts(vararg parts: String) = parts.joinToString("/")
+    private fun combinePathParts(vararg parts: String) = parts.joinToString(File.separator)
     
     companion object {
         private const val DIKTAT_CHECK_TASK = "diktatCheck"
