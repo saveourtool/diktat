@@ -13,9 +13,22 @@ repositories {
     flatDir {
         // to use snapshot diktat without necessary installing
         dirs("../diktat-rules/target")
+        content {
+            includeGroup("org.cqfn.diktat")
+        }
     }
-    mavenLocal()  // to use snapshot diktat
     mavenCentral()
+    mavenLocal {
+        // to use snapshot diktat
+        content {
+            includeGroup("org.cqfn.diktat")
+        }
+    }
+    maven("https://oss.sonatype.org/content/repositories/snapshots") {
+        content {
+            includeGroup("com.pinterest.ktlint")
+        }
+    }
 }
 
 // default value is needed for correct gradle loading in IDEA; actual value from maven is used during build

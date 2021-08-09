@@ -47,8 +47,6 @@ jobs:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
 
     steps:
-      - uses: actions/checkout@v2.3.4
-
       - name: Setup environment variables
         run: |
           cat pom.xml | grep "<version>.*</version>" | head -1 | awk -F'[><]' '{ printf "DIKTAT_VERSION=%s\n",$3 }' >> $GITHUB_ENV

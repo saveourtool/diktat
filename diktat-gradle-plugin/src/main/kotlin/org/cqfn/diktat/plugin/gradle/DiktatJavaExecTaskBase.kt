@@ -156,11 +156,16 @@ open class DiktatJavaExecTaskBase @Inject constructor(
 
     private fun MutableList<String>.addPattern(pattern: File, negate: Boolean = false) {
         val path = if (pattern.isAbsolute) {
-            pattern.relativeTo(project.projectDir).normalize()
+            project.logger.info("Pattern before normalizing: $pattern")
+            pattern
+                .relativeTo(project.projectDir)
+                .normalize()
         } else {
             pattern
         }
-            .invariantSeparatorsPath
+            .invariantSeparatorsPath.also {
+                project.logger.info("Pattern after normalizing and changing separators: $it")
+            }
         add((if (negate) "!" else "") + path)
     }
 
