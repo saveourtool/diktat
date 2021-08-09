@@ -151,7 +151,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
         if (node.isSingleLineGetterOrSetter()) {
             return false
         }
-        val lastDotQualifiedExpression = (node.findChildByType(DOT_QUALIFIED_EXPRESSION)?.psi as KtDotQualifiedExpression).lastChild?.text?.substringBefore('(')
+        val lastDotQualifiedExpression = node.findChildByType(DOT_QUALIFIED_EXPRESSION)?.psi?.let { (it as KtDotQualifiedExpression).lastChild?.text?.substringBefore('(') }
         val funName = (node.psi as KtFunction).name
         return funName == lastDotQualifiedExpression
     }
