@@ -22,12 +22,14 @@ class DiktatGradlePluginMultiprojectFunctionalTest {
         buildFile = testProjectDir.root.resolve(buildInitDsl.fileNameFor("build"))
         buildFile.appendText(
             """${System.lineSeparator()}
-            repositories {
-                mavenCentral()
-                maven("https://oss.sonatype.org/content/repositories/snapshots") {
-                    content {
-                        includeGroup("com.pinterest")
-                        includeGroup("com.pinterest.ktlint")
+            allprojects {
+                repositories {
+                    mavenCentral()
+                    maven("https://oss.sonatype.org/content/repositories/snapshots") {
+                        content {
+                            includeGroup("com.pinterest")
+                            includeGroup("com.pinterest.ktlint")
+                        }
                     }
                 }
             }

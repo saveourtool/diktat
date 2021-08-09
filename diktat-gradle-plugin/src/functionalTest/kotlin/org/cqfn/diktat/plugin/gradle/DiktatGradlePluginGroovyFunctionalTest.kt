@@ -23,7 +23,8 @@ class DiktatGradlePluginGroovyFunctionalTest {
             """${System.lineSeparator()}
             repositories {
                 mavenCentral()
-                maven("https://oss.sonatype.org/content/repositories/snapshots") {
+                maven {
+                    url "https://oss.sonatype.org/content/repositories/snapshots"
                     content {
                         includeGroup("com.pinterest")
                         includeGroup("com.pinterest.ktlint")
