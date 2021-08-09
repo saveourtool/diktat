@@ -19,6 +19,19 @@ class DiktatGradlePluginGroovyFunctionalTest {
         val buildInitDsl = BuildInitDsl.GROOVY
         createExampleProject(testProjectDir, File("../examples/gradle-groovy-dsl"), buildInitDsl)
         buildFile = testProjectDir.root.resolve(buildInitDsl.fileNameFor("build"))
+        buildFile.appendText(
+            """${System.lineSeparator()}
+            repositories {
+                mavenCentral()
+                maven("https://oss.sonatype.org/content/repositories/snapshots") {
+                    content {
+                        includeGroup("com.pinterest")
+                        includeGroup("com.pinterest.ktlint")
+                    }
+                }
+            }
+        """.trimIndent()
+        )
     }
 
     @AfterEach
