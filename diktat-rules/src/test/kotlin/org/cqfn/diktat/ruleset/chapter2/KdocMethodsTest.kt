@@ -387,7 +387,7 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
         lintMethod(
             """
                     |@GetMapping("/projects")
-                    |fun getProjects() = projectService.getProjects(x.prop)
+                    |fun getProjects() = projectService.getProjects(x.prop())
                 """.trimMargin(),
         )
     }
