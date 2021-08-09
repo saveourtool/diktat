@@ -159,11 +159,11 @@ class DiktatGradlePluginFunctionalTest {
     }
 
     @Test
-    @DisabledOnOs(OS.WINDOWS, disabledReason = "Because of short directory notation")
     fun `should execute diktatCheck with absolute paths`() {
         val path = testProjectDir.root
-            .resolve("src/**/*.kt")
+            .resolve("src")
             .absolutePath
+            .plus("/**/*.kt")
             .replace("\\", "\\\\")
         buildFile.appendText(
             """${System.lineSeparator()}
