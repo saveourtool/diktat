@@ -148,10 +148,8 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun isReferenceExpressionWithSameName(node: ASTNode, kdocTags: Collection<KDocTag>?): Boolean {
-        if (node.isSingleLineGetterOrSetter()) {
-            return false
-        }
-        val lastDotQualifiedExpression = node.findChildByType(DOT_QUALIFIED_EXPRESSION)?.psi?.let { (it as KtDotQualifiedExpression).lastChild?.text?.substringBefore('(') }
+        val lastDotQualifiedExpression = node.findChildByType(DOT_QUALIFIED_EXPRESSION)?.psi
+            ?.let { (it as KtDotQualifiedExpression).selectorExpression?.text?.substringBefore('(') }
         val funName = (node.psi as KtFunction).name
         return funName == lastDotQualifiedExpression
     }
