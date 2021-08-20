@@ -21,6 +21,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_NAME_INCORRECT_FORMAT
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.Style
 import org.cqfn.diktat.ruleset.utils.containsOneLetterOrZero
+import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.findChildAfter
 import org.cqfn.diktat.ruleset.utils.findLeafWithSpecificType
 import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
@@ -37,6 +38,7 @@ import org.cqfn.diktat.ruleset.utils.isOverridden
 import org.cqfn.diktat.ruleset.utils.isPascalCase
 import org.cqfn.diktat.ruleset.utils.isTextLengthInRange
 import org.cqfn.diktat.ruleset.utils.isUpperSnakeCase
+import org.cqfn.diktat.ruleset.utils.kDocTags
 import org.cqfn.diktat.ruleset.utils.removePrefix
 import org.cqfn.diktat.ruleset.utils.search.findAllVariablesWithUsages
 import org.cqfn.diktat.ruleset.utils.toLowerCamelCase
@@ -46,10 +48,13 @@ import org.cqfn.diktat.ruleset.utils.toUpperSnakeCase
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.CATCH
 import com.pinterest.ktlint.core.ast.ElementType.CATCH_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.DESTRUCTURING_DECLARATION
 import com.pinterest.ktlint.core.ast.ElementType.DESTRUCTURING_DECLARATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_TYPE
+import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
+import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_PARAMETER
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
@@ -60,9 +65,14 @@ import org.jetbrains.kotlin.builtins.PrimitiveType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
+import org.jetbrains.kotlin.psi.KtParameter
+import org.jetbrains.kotlin.psi.KtPrimaryConstructor
 import org.jetbrains.kotlin.psi.KtProperty
+import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 import org.jetbrains.kotlin.psi.psiUtil.isPrivate
 import org.jetbrains.kotlin.psi.psiUtil.parents
+
 import java.util.Locale
 
 /**
@@ -163,7 +173,11 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
         var namesOfVariables = extractVariableIdentifiers(node)
         // Only local private properties will be autofix in order not to break code if there are usages in other files.
         // Destructuring declarations are only allowed for local variables/values, so we don't need to calculate `isFix` for every node in `namesOfVariables`
-        val isFix = isFixMode && if (node.elementType == ElementType.PROPERTY) (node.psi as KtProperty).run { isLocal || isPrivate() } else true
+        val isPrivateOrLocalProperty = if (node.elementType == ElementType.PROPERTY) (node.psi as KtProperty).run { isLocal || isPrivate() } else false
+        val isPrivatePrimaryConstructorParameter = (node.psi as? KtParameter)?.run {
+            getParentOfType<KtPrimaryConstructor>(true)?.valueParameters?.contains(this)
+        } ?: false
+        val isFix = isFixMode && (isPrivateOrLocalProperty || isPrivatePrimaryConstructorParameter)
         namesOfVariables
             .forEach { variableName ->
                 // variable should not contain only one letter in it's name. This is a bad example: b512
@@ -195,6 +209,18 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
                             ?.findAllVariablesWithUsages { it.name == variableName.text }
                             ?.flatMap { it.value.toList() }
                             ?.forEach { (it.node.firstChildNode as LeafPsiElement).rawReplaceWithText(correctVariableName) }
+                        if (variableName.treeParent.psi.run {
+                            (this is KtProperty && isMember) ||
+                                    (this is KtParameter && getParentOfType<KtPrimaryConstructor>(true)?.valueParameters?.contains(this) == true)
+                        }) {
+                            // for class members also check `@property` KDoc tag
+                            variableName.parent(CLASS)!!.findChildByType(KDOC)?.kDocTags()
+                                ?.firstOrNull {
+                                    it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == variableName.text
+                                }?.run {
+                                (this.node.findAllDescendantsWithSpecificType(IDENTIFIER).single() as LeafPsiElement).rawReplaceWithText(correctVariableName)
+                            }
+                        }
                         (variableName as LeafPsiElement).rawReplaceWithText(correctVariableName)
                     }
                 }
