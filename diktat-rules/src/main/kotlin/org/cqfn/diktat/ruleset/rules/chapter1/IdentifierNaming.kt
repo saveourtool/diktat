@@ -219,9 +219,10 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
                             variableName.parent(CLASS)!!.findChildByType(KDOC)?.kDocTags()
                                 ?.firstOrNull {
                                     it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == variableName.text
-                                }?.run {
-                                (this.node.findAllDescendantsWithSpecificType(IDENTIFIER).single() as LeafPsiElement).rawReplaceWithText(correctVariableName)
-                            }
+                                }
+                                ?.run {
+                                    (this.getSubjectLink()!!.node as LeafPsiElement).rawReplaceWithText(correctVariableName)
+                                }
                         }
                         (variableName as LeafPsiElement).rawReplaceWithText(correctVariableName)
                     }
