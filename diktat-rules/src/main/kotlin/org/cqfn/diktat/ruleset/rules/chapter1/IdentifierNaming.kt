@@ -221,7 +221,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
                                     it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == variableName.text
                                 }
                                 ?.run {
-                                    (this.getSubjectLink()!!.node as LeafPsiElement).rawReplaceWithText(correctVariableName)
+                                    (getSubjectLink()!!.node.findAllDescendantsWithSpecificType(IDENTIFIER).single() as LeafPsiElement).rawReplaceWithText(correctVariableName)
                                 }
                         }
                         (variableName as LeafPsiElement).rawReplaceWithText(correctVariableName)
