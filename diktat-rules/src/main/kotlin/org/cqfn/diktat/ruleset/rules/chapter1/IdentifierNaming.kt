@@ -166,18 +166,19 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress(
         "SAY_NO_TO_VAR",
         "TOO_LONG_FUNCTION",
-        "ComplexMethod"
+        "ComplexMethod",
+        "UnsafeCallOnNullableType",
     )
     private fun checkVariableName(node: ASTNode): List<ASTNode> {
         // special case for Destructuring declarations that can be treated as parameters in lambda:
         var namesOfVariables = extractVariableIdentifiers(node)
         // Only local private properties will be autofix in order not to break code if there are usages in other files.
         // Destructuring declarations are only allowed for local variables/values, so we don't need to calculate `isFix` for every node in `namesOfVariables`
-        val isPrivateOrLocalProperty = if (node.elementType == ElementType.PROPERTY) (node.psi as KtProperty).run { isLocal || isPrivate() } else false
-        val isPrivatePrimaryConstructorParameter = (node.psi as? KtParameter)?.run {
-            getParentOfType<KtPrimaryConstructor>(true)?.valueParameters?.contains(this)
+        val isPublicOrNonLocalProperty = if (node.elementType == ElementType.PROPERTY) (node.psi as KtProperty).run { !isLocal && !isPrivate() } else false
+        val isNonPrivatePrimaryConstructorParameter = (node.psi as? KtParameter)?.run {
+            hasValOrVar() && getParentOfType<KtPrimaryConstructor>(true)?.valueParameters?.contains(this) == true && !isPrivate()
         } ?: false
-        val isFix = isFixMode && (isPrivateOrLocalProperty || isPrivatePrimaryConstructorParameter)
+        val isFix = isFixMode && !(isPublicOrNonLocalProperty || isNonPrivatePrimaryConstructorParameter)
         namesOfVariables
             .forEach { variableName ->
                 // variable should not contain only one letter in it's name. This is a bad example: b512
@@ -213,7 +214,8 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
                             (this is KtProperty && isMember) ||
                                     (this is KtParameter && getParentOfType<KtPrimaryConstructor>(true)?.valueParameters?.contains(this) == true)
                         }) {
-                            // for class members also check `@property` KDoc tag
+                            // For class members also check `@property` KDoc tag.
+                            // If we are here, then `variableName` is definitely a node from a class.
                             variableName.parent(CLASS)!!.findChildByType(KDOC)?.kDocTags()
                                 ?.firstOrNull {
                                     it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == variableName.text

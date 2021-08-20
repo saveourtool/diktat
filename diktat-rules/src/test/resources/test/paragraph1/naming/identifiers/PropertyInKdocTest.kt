@@ -7,7 +7,7 @@ package test.paragraph1.naming.identifiers
  * @property another_def_member
  */
 data class abc(
-    val an_abc_member: String,
+    private val an_abc_member: String,
     val another_abc_member: String,
 ) {
     private val an_def_member: String = ""
