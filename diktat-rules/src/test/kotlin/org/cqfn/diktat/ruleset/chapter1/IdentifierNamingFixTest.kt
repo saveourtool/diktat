@@ -63,4 +63,10 @@ class IdentifierNamingFixTest : FixTestBase(
     fun `typeAlias name incorrect`() {
         fixAndCompare("identifiers/TypeAliasNameExpected.kt", "identifiers/TypeAliasNameTest.kt")
     }
+
+    @Test
+    @Tag(WarningNames.TYPEALIAS_NAME_INCORRECT_CASE)
+    fun `should update property name in KDoc after fixing`() {
+        fixAndCompare("identifiers/PropertyInKdocExpected.kt", "identifiers/PropertyInKdocTest.kt")
+    }
 }

@@ -10,7 +10,6 @@ import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_INITIALIZER
-import com.pinterest.ktlint.core.ast.ElementType.DATA_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.ENUM_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.INNER_KEYWORD
