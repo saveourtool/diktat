@@ -4,11 +4,14 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.COMPACT_OBJECT_INITIALIZATION
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.KotlinParser
+import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.findLeafWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getFunctionName
 
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
+import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
+import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.THIS_KEYWORD
@@ -82,7 +85,10 @@ class CompactInitialization(configRules: List<RulesConfig>) : DiktatRule(
             }
     }
 
-    @Suppress("UnsafeCallOnNullableType", "NestedBlockDepth")
+    @Suppress(
+        "UnsafeCallOnNullableType",
+        "NestedBlockDepth",
+        "TOO_LONG_FUNCTION")
     private fun moveAssignmentIntoApply(property: KtProperty, assignment: KtBinaryExpression) {
         // get apply expression or create empty; convert `apply(::foo)` to `apply { foo(this) }` if necessary
         getOrCreateApplyBlock(property).let(::convertValueParametersToLambdaArgument)
@@ -114,6 +120,14 @@ class CompactInitialization(configRules: List<RulesConfig>) : DiktatRule(
                             }
                             it.treeParent.removeChild(it)
                         }
+                    val receiverName = assignment.text.substringBefore('.')
+                    // looking for usages of receiver in right part
+                    val identifiers = assignment.right!!.node.findAllDescendantsWithSpecificType(IDENTIFIER)
+                    identifiers.forEach {
+                        if (it.text == receiverName && it.treeParent.treeParent.elementType != CALL_EXPRESSION) {
+                            it.treeParent.replaceChild(it, kotlinParser.createNode("this"))
+                        }
+                    }
                     // strip receiver name and move assignment itself into `apply`
                     bodyExpression.addChild(kotlinParser.createNode(assignment.text.substringAfter('.')), null)
                     assignment.node.run { treeParent.removeChild(this) }
