@@ -30,6 +30,7 @@ import org.cqfn.diktat.ruleset.utils.parameterNames
 import org.cqfn.diktat.ruleset.utils.splitPathToDirs
 
 import com.pinterest.ktlint.core.ast.ElementType
+import com.pinterest.ktlint.core.ast.ElementType.ACTUAL_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CATCH
@@ -55,7 +56,7 @@ import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtCatchClause
 import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
-import org.jetbrains.kotlin.psi.KtProperty
+import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.kotlin.psi.KtThrowExpression
 import org.jetbrains.kotlin.psi.psiUtil.collectDescendantsOfType
 import org.jetbrains.kotlin.psi.psiUtil.referenceExpression
@@ -77,7 +78,12 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
      * @param node
      */
     override fun logic(node: ASTNode) {
-        if (node.elementType == FUN && node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside() && !node.isOverridden()) {
+        val isModifierAccessibleOutsideOrActual: Boolean by lazy {
+            node.getFirstChildWithType(MODIFIER_LIST).run {
+                isAccessibleOutside() && this?.hasChildOfType(ACTUAL_KEYWORD) != true
+            }
+        }
+        if (node.elementType == FUN && isModifierAccessibleOutsideOrActual && !node.isOverridden()) {
             val config = configRules.getCommonConfiguration()
             val filePath = node.getFilePath()
             val isTestMethod = node.hasTestAnnotation() || isLocatedInTest(filePath.splitPathToDirs(), config.testAnchors)
@@ -102,7 +108,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
             .minus(kdocTags
                 ?.filter { it.knownTag == KDocKnownTag.THROWS }
                 ?.mapNotNull { it.getSubjectName() }
-                ?.toSet() ?: emptySet()
+                ?.toSet() ?: emptySet(),
             )
 
         val paramCheckFailed = (missingParameters.isNotEmpty() && !node.isSingleLineGetterOrSetter()) || kDocMissingParameters.isNotEmpty()
@@ -113,7 +119,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
         // if no tag failed, we have too little information to suggest KDoc - it would just be empty
         if (kdoc == null && anyTagFailed) {
             addKdocTemplate(node, name, missingParameters, explicitlyThrownExceptions, returnCheckFailed)
-        } else if (kdoc == null) {
+        } else if (kdoc == null && !isReferenceExpressionWithSameName(node, kdocTags)) {
             MISSING_KDOC_ON_FUNCTION.warn(configRules, emitWarn, false, name, node.startOffset, node)
         } else {
             if (paramCheckFailed) {
@@ -141,6 +147,14 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
+    private fun isReferenceExpressionWithSameName(node: ASTNode, kdocTags: Collection<KDocTag>?): Boolean {
+        val lastDotQualifiedExpression = node.findChildByType(DOT_QUALIFIED_EXPRESSION)?.psi
+            ?.let { (it as KtDotQualifiedExpression).selectorExpression?.text?.substringBefore('(') }
+        val funName = (node.psi as KtFunction).name
+        return funName == lastDotQualifiedExpression
+    }
+
+    @Suppress("WRONG_NEWLINES")
     private fun hasReturnCheckFailed(node: ASTNode, kdocTags: Collection<KDocTag>?): Boolean {
         if (node.isSingleLineGetterOrSetter()) {
             return false
@@ -151,8 +165,10 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
         val hasExplicitNotUnitReturnType = explicitReturnType != null && explicitReturnType.text != "Unit"
         val hasExplicitUnitReturnType = explicitReturnType != null && explicitReturnType.text == "Unit"
         val isFunWithExpressionBody = node.hasChildOfType(EQ)
+        val isReferenceExpressionWithSameName = node.findAllDescendantsWithSpecificType(REFERENCE_EXPRESSION).map { it.text }.contains((node.psi as KtFunction).name)
         val hasReturnKdoc = kdocTags != null && kdocTags.hasKnownKdocTag(KDocKnownTag.RETURN)
-        return (hasExplicitNotUnitReturnType || isFunWithExpressionBody && !hasExplicitUnitReturnType && hasNotExpressionBodyTypes) && !hasReturnKdoc
+        return (hasExplicitNotUnitReturnType || isFunWithExpressionBody && !hasExplicitUnitReturnType && hasNotExpressionBodyTypes)
+        && !hasReturnKdoc && !isReferenceExpressionWithSameName
     }
 
     private fun getExplicitlyThrownExceptions(node: ASTNode): Set<String> {
@@ -221,7 +237,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("UnsafeCallOnNullableType")
     private fun handleReturnCheck(node: ASTNode,
                                   kdoc: ASTNode?,
-                                  kdocTags: Collection<KDocTag>?
+                                  kdocTags: Collection<KDocTag>?,
     ) {
         KDOC_WITHOUT_RETURN_TAG.warnAndFix(configRules, emitWarn, isFixMode, node.getIdentifierName()!!.text,
             node.startOffset, node) {
@@ -235,7 +251,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("UnsafeCallOnNullableType")
     private fun handleThrowsCheck(node: ASTNode,
                                   kdoc: ASTNode?,
-                                  missingExceptions: Collection<String>
+                                  missingExceptions: Collection<String>,
     ) {
         KDOC_WITHOUT_THROWS_TAG.warnAndFix(configRules, emitWarn, isFixMode,
             "${node.getIdentifierName()!!.text} (${missingExceptions.joinToString()})", node.startOffset, node) {
@@ -254,7 +270,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
                                 name: String,
                                 missingParameters: Collection<String?>,
                                 explicitlyThrownExceptions: Collection<String>,
-                                returnCheckFailed: Boolean
+                                returnCheckFailed: Boolean,
     ) {
         MISSING_KDOC_ON_FUNCTION.warnAndFix(configRules, emitWarn, isFixMode, name, node.startOffset, node) {
             val kdocTemplate = "/**\n" +
@@ -300,7 +316,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
             ElementType.CALLABLE_REFERENCE_EXPRESSION,
             ElementType.SAFE_ACCESS_EXPRESSION,
             ElementType.WHEN_CONDITION_WITH_EXPRESSION,
-            ElementType.COLLECTION_LITERAL_EXPRESSION
+            ElementType.COLLECTION_LITERAL_EXPRESSION,
         )
         private val uselessKdocRegex = """^([rR]eturn|[gGsS]et)[s]?\s+\w+(\s+\w+)?$""".toRegex()
     }

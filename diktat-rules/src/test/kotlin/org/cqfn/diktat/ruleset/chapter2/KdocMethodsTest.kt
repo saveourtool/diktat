@@ -380,4 +380,27 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
             LintError(2, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} getFirstChild", true)
         )
     }
+
+    @Test
+    @Tag(WarningNames.MISSING_KDOC_ON_FUNCTION)
+    fun `KDoc shouldn't be for function with name as method`() {
+        lintMethod(
+            """
+                    |@GetMapping("/projects")
+                    |fun getProjects() = projectService.getProjects(x.prop())
+                """.trimMargin(),
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.MISSING_KDOC_ON_FUNCTION)
+    fun `KDoc shouldn't trigger on actual methods`() {
+        lintMethod(
+            """
+                    |actual fun writeToConsoleAc(msg: String, outputType: OutputStreamType) {}
+                    |expect fun writeToConsoleEx(msg: String, outputType: OutputStreamType) {}
+                """.trimMargin(),
+            LintError(2, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} writeToConsoleEx", true),
+        )
+    }
 }

@@ -12,7 +12,7 @@ class Example {
      * @param y
      * @return
      */
-    fun bar(x: Int, y: Int) = x + y
+    fun bar(x: Int, y: Int): Int = x + y
 
     /**
      * @param sub
@@ -36,7 +36,7 @@ class Example {
      * @return
      */
     fun foo(x: Int,
-            y: Int) = x +
+            y: Int): Int = x +
             (y +
                     bar(x, y)
             )

@@ -275,4 +275,18 @@ class DataClassesRuleWarnTest : LintTestBase(::DataClassesRule) {
             """.trimMargin()
         )
     }
+
+    @Test
+    @Tag(USE_DATA_CLASS)
+    fun `shouldn't trigger on interface`() {
+        lintMethod(
+            """
+                |interface Credentials {
+                |   val code: String
+                |   val success: Boolean
+                |   val message: String
+                |}
+            """.trimMargin()
+        )
+    }
 }
