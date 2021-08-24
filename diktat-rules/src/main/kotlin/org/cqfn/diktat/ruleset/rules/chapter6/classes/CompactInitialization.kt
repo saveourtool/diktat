@@ -11,9 +11,9 @@ import org.cqfn.diktat.ruleset.utils.getFunctionName
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
-import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
+import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.THIS_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isPartOfComment
@@ -120,11 +120,11 @@ class CompactInitialization(configRules: List<RulesConfig>) : DiktatRule(
                             }
                             it.treeParent.removeChild(it)
                         }
-                    val receiverName = assignment.text.substringBefore('.')
+                    val receiverName = (assignment.left as KtDotQualifiedExpression).receiverExpression
                     // looking for usages of receiver in right part
-                    val identifiers = assignment.right!!.node.findAllDescendantsWithSpecificType(IDENTIFIER)
+                    val identifiers = assignment.right!!.node.findAllDescendantsWithSpecificType(REFERENCE_EXPRESSION)
                     identifiers.forEach {
-                        if (it.text == receiverName && it.treeParent.treeParent.elementType != CALL_EXPRESSION) {
+                        if (it.text == receiverName.text && it.treeParent.elementType != CALL_EXPRESSION) {
                             it.treeParent.replaceChild(it, kotlinParser.createNode("this"))
                         }
                     }
