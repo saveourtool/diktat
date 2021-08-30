@@ -25,9 +25,9 @@ jobs:
       - name: Maven Install
         run: mvn -B clean install
       - name: Code coverage report
-        uses: codecov/codecov-action@v2.0.3
+        uses: codecov/codecov-action@v2
         with:
-          file: ./*/target/site/jacoco/jacoco.xml
+          files: '**/target/site/jacoco/jacoco.xml'
           flags: unittests
           fail_ci_if_error: true # optional (default = false)
       - name: Upload diktat jar
