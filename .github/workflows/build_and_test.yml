@@ -19,9 +19,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-build-${{ hashFiles('**/pom.xml') }}
+          key: maven-build-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ runner.os }}-maven-build-
+            maven-build-
       - name: Maven Install
         run: mvn -B clean install
       - name: Code coverage report
@@ -104,9 +104,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-build-${{ hashFiles('**/pom.xml') }}
+          key: maven-build-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ runner.os }}-maven-build-
+            maven-build-
 
       - name: Maven Install
         if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
