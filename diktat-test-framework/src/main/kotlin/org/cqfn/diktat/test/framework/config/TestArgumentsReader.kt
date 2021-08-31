@@ -16,6 +16,7 @@ import java.io.IOException
 import java.util.stream.Collectors
 
 import kotlin.system.exitProcess
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
@@ -85,6 +86,7 @@ class TestArgumentsReader(
      * @param fileStream a [BufferedReader] representing input JSON
      * @return list of [CliArgument]s
      */
+    @OptIn(ExperimentalSerializationApi::class)
     @Throws(IOException::class)
     override fun parseResource(fileStream: BufferedReader): List<CliArgument> {
         val jsonValue = fileStream.lines().collect(Collectors.joining())

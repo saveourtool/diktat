@@ -6,6 +6,7 @@ import java.io.BufferedReader
 import java.io.IOException
 import java.util.stream.Collectors
 
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
@@ -23,6 +24,7 @@ class TestConfigReader(configFilePath: String, override val classLoader: ClassLo
      * @param fileStream input stream of data from config file
      * @return [TestConfig] read from file
      */
+    @OptIn(ExperimentalSerializationApi::class)
     @Throws(IOException::class)
     override fun parseResource(fileStream: BufferedReader): TestConfig {
         val jsonValue: String = fileStream.lines().collect(Collectors.joining())
