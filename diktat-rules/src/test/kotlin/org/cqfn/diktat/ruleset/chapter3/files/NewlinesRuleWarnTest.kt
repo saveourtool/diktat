@@ -529,6 +529,18 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
 
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
+    fun `should warn for array access expression`() {
+        lintMethod(
+            """
+                    |fun bar(): String {
+                    |    val a = it.responseBody!!.name
+                    |}
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
     fun `long argument list should be split into several lines - positive example`() {
         lintMethod(
             """

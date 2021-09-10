@@ -22,6 +22,7 @@ import org.cqfn.diktat.ruleset.utils.isSingleLineIfElse
 import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
 
 import com.pinterest.ktlint.core.ast.ElementType.ANDAND
+import com.pinterest.ktlint.core.ast.ElementType.ARRAY_ACCESS_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.ARROW
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
@@ -461,7 +462,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
 
         if (psi.children.isNotEmpty() && !psi.isFirstChildElementType(DOT_QUALIFIED_EXPRESSION) &&
                 !psi.isFirstChildElementType(SAFE_ACCESS_EXPRESSION)) {
-            val firstChild = psi.firstChild
+            val firstChild = if (psi.isFirstChildElementType(ARRAY_ACCESS_EXPRESSION)) psi.firstChild.firstChild else psi.firstChild
             if (firstChild.isFirstChildElementType(DOT_QUALIFIED_EXPRESSION) ||
                     firstChild.isFirstChildElementType(SAFE_ACCESS_EXPRESSION)) {
                 getOrderedCallExpressions(firstChild.firstChild, result)
