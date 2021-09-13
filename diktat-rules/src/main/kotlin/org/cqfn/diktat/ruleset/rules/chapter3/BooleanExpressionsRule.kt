@@ -155,15 +155,22 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
         node: ASTNode,
         simplifiedExpr: Expression<String>,
         mapOfExpressionToChar: HashMap<String, Char>) {
+        println("simplifiedExpr ${simplifiedExpr}")
         var correctKotlinBooleanExpression = simplifiedExpr
             .toString()
             .replace("&", "&&")
             .replace("|", "||")
-            .drop(1)  // dropping first (
-            .dropLast(1)  // dropping last )
+
+        if (simplifiedExpr.toString().first() == '(' && simplifiedExpr.toString().last() == ')') {
+            correctKotlinBooleanExpression = correctKotlinBooleanExpression
+                .drop(1)
+                .dropLast(1)
+        }
+
         mapOfExpressionToChar.forEach { (key, value) ->
             correctKotlinBooleanExpression = correctKotlinBooleanExpression.replace(value.toString(), key)
         }
+        println("correct node ${correctKotlinBooleanExpression}")
         node.replaceChild(node.firstChildNode, KotlinParser().createNode(correctKotlinBooleanExpression))
     }
 
