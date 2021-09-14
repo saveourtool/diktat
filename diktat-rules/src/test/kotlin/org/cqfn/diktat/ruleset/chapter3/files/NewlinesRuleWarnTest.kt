@@ -533,9 +533,11 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
         lintMethod(
             """
                     |fun bar(): String {
-                    |    val a = it.responseBody!![0].name
+                    |    val a = list.responseBody!![0].
+                    |    name
                     |}
-            """.trimMargin()
+            """.trimMargin(),
+            LintError(2, 35, ruleId, "$shouldBreakBefore .", true)
         )
     }
 

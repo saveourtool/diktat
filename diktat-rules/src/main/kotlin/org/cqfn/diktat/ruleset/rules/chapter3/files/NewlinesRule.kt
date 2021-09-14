@@ -462,7 +462,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
 
         if (psi.children.isNotEmpty() && !psi.isFirstChildElementType(DOT_QUALIFIED_EXPRESSION) &&
                 !psi.isFirstChildElementType(SAFE_ACCESS_EXPRESSION)) {
-            val firstChild = if (psi.isFirstChildElementType(ARRAY_ACCESS_EXPRESSION)) psi.firstChild.firstChild else psi.firstChild
+            val firstChild = psi.firstChild
             if (firstChild.isFirstChildElementType(DOT_QUALIFIED_EXPRESSION) ||
                     firstChild.isFirstChildElementType(SAFE_ACCESS_EXPRESSION)) {
                 getOrderedCallExpressions(firstChild.firstChild, result)
