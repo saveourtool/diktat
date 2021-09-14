@@ -155,7 +155,6 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
         node: ASTNode,
         simplifiedExpr: Expression<String>,
         mapOfExpressionToChar: HashMap<String, Char>) {
-        println("simplifiedExpr ${simplifiedExpr}")
         var correctKotlinBooleanExpression = simplifiedExpr
             .toString()
             .replace("&", "&&")
@@ -170,7 +169,6 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
         mapOfExpressionToChar.forEach { (key, value) ->
             correctKotlinBooleanExpression = correctKotlinBooleanExpression.replace(value.toString(), key)
         }
-        println("correct node ${correctKotlinBooleanExpression}")
         node.replaceChild(node.firstChildNode, KotlinParser().createNode(correctKotlinBooleanExpression))
     }
 
