@@ -19,4 +19,10 @@ class BooleanExpressionsRuleFixTest : FixTestBase("test/paragraph3/boolean_expre
     fun `check distributive law fixing`() {
         fixAndCompare("DistributiveLawExpected.kt", "DistributiveLawTest.kt")
     }
+
+    @Test
+    @Tag(WarningNames.COMPLEX_BOOLEAN_EXPRESSION)
+    fun `check same expressions`() {
+        fixAndCompare("SameExpressionsInConditionExpected.kt", "SameExpressionsInConditionTest.kt")
+    }
 }
