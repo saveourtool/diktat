@@ -22,7 +22,6 @@ import org.cqfn.diktat.ruleset.utils.isSingleLineIfElse
 import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
 
 import com.pinterest.ktlint.core.ast.ElementType.ANDAND
-import com.pinterest.ktlint.core.ast.ElementType.ARRAY_ACCESS_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.ARROW
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
