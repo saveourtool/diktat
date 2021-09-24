@@ -49,8 +49,7 @@ class TestComparatorUnit(private val resourceFilePath: String,
 
         if (smoke) {
             val actual: MutableList<String> = mutableListOf()
-            actual.addAll(actualResult.split("\n"))
-            actual.removeLast()
+            actual.addAll(actualResult.split("\n").dropLast(1))
             return FileComparator(expectedFile, actual).compareFilesEqual()
         }
 
