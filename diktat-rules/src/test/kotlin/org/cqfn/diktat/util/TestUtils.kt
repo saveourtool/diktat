@@ -18,6 +18,7 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.slf4j.LoggerFactory
 
 import java.util.concurrent.atomic.AtomicInteger
+import java.util.function.Consumer
 
 internal const val TEST_FILE_NAME = "TestFileName.kt"
 
@@ -38,8 +39,8 @@ typealias LintErrorCallback = (LintError, Boolean) -> Unit
 internal fun List<LintError>.assertEquals(vararg expectedLintErrors: LintError) {
     if (size == expectedLintErrors.size) {
         Assertions.assertThat(this)
-            .allSatisfy { actual ->
-                val expected = expectedLintErrors[this.indexOf(actual)]
+            .allSatisfy(Consumer { actual ->
+                val expected = expectedLintErrors[this@assertEquals.indexOf(actual)]
                 SoftAssertions.assertSoftly { sa ->
                     sa
                         .assertThat(actual.line)
@@ -62,7 +63,7 @@ internal fun List<LintError>.assertEquals(vararg expectedLintErrors: LintError) 
                         .`as`("Can be autocorrected")
                         .isEqualTo(expected.canBeAutoCorrected)
                 }
-            }
+            })
     } else {
         Assertions.assertThat(this).containsExactly(*expectedLintErrors)
     }
