@@ -28,6 +28,9 @@ fun goo() {
             .map()
             .filter()
 .hre()
+
+    t.responseBody!![0]
+.name
 }
 
 fun foo() {
