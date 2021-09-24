@@ -18,4 +18,3 @@ class D {
 fun readFile(foo: Foo) {
     var bar: Bar
 }
-
