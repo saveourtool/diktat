@@ -46,8 +46,8 @@
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
         <kotlinx.serialization.version>1.2.2</kotlinx.serialization.version>
         <ktlint.version>0.39.0</ktlint.version>
-        <junit.version>5.8.0</junit.version>
-        <guava.version>30.1.1-jre</guava.version>
+        <junit.version>5.8.1</junit.version>
+        <guava.version>31.0-jre</guava.version>
         <slf4j.version>1.7.31</slf4j.version>
         <commons-cli.version>1.4</commons-cli.version>
         <diktat-check.version>1.0.0-rc.3</diktat-check.version>
@@ -151,7 +151,7 @@
             <dependency>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
-                <version>3.20.2</version>
+                <version>3.21.0</version>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
