@@ -50,4 +50,3 @@ private fun foo(node: ASTNode) {
 
     setOf<Object>(IOException(), Properties(), LoggerFactory())
 }
-

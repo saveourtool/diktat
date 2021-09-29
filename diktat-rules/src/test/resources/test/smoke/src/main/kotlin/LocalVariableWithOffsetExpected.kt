@@ -6,4 +6,3 @@ override fun boo() {
         handleTestFile(chunk.map { it.single() }, warnPluginConfig, generalConfig)
     }.forEach { listTestResult.addAll(it) }
 }
-

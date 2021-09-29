@@ -1,0 +1,11 @@
+[general]
+execCmd="./ktlint -R diktat-1.0.0-rc.2.jar"
+tags = ["smokeTest"]
+description = "SmokeTest"
+suiteName = "SmokeTest"
+
+["fix and warn"]
+    ["fix and warn".fix]
+        execFlags="-F"
+    ["fix and warn".warn]
+        actualWarningsPattern="(\\w+\\..+):(\\d+):(\\d+): (\\[.*\\].*)$"

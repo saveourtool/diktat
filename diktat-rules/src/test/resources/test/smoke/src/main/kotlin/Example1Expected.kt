@@ -41,4 +41,3 @@ class Example {
                     bar(x, y)
             )
 }
-
