@@ -21,14 +21,14 @@ class TestComparatorUnit(private val resourceFilePath: String,
     /**
      * @param expectedResult
      * @param testFileStr
-     * @param smoke
+     * @param trimLastEmptyLine
      * @return true if transformed file equals expected result, false otherwise
      */
     @Suppress("FUNCTION_BOOLEAN_PREFIX")
     fun compareFilesFromResources(
         expectedResult: String,
         testFileStr: String,
-        smoke: Boolean = false): Boolean {
+        trimLastEmptyLine: Boolean = false): Boolean {
         val expectedPath = javaClass.classLoader.getResource("$resourceFilePath/$expectedResult")
         val testPath = javaClass.classLoader.getResource("$resourceFilePath/$testFileStr")
         if (testPath == null || expectedPath == null) {
@@ -47,7 +47,7 @@ class TestComparatorUnit(private val resourceFilePath: String,
             copyTestFile.absolutePath
         )
 
-        if (smoke) {
+        if (trimLastEmptyLine) {
             val actual: MutableList<String> = mutableListOf()
             actual.addAll(actualResult.split("\n").dropLast(1))
             return FileComparator(expectedFile, actual).compareFilesEqual()
