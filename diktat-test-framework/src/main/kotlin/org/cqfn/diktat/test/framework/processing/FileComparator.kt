@@ -51,8 +51,8 @@ class FileComparator {
                 return false
             }
             val regex = (".*// ;warn:(\\d+):(\\d+): (.*)").toRegex()
-            val expectWithoutWarn = expect.filter { line ->
-                !line.contains(regex)
+            val expectWithoutWarn = expect.filterNot { line ->
+                line.contains(regex)
             }
             val patch = diff(expectWithoutWarn, actualResultList)
 
