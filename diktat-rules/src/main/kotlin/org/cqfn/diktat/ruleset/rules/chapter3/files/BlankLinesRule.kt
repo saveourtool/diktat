@@ -3,11 +3,6 @@ package org.cqfn.diktat.ruleset.rules.chapter3.files
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.TOO_MANY_BLANK_LINES
 import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
-import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
-import org.cqfn.diktat.ruleset.utils.leaveExactlyNumNewLines
-import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
-import org.cqfn.diktat.ruleset.utils.numNewLines
 
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
@@ -18,6 +13,7 @@ import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.SCRIPT
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 /**
@@ -66,7 +62,8 @@ class BlankLinesRule(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun handleTooManyBlankLines(node: ASTNode) {
         TOO_MANY_BLANK_LINES.warnAndFix(configRules, emitWarn, isFixMode, "do not use more than two consecutive blank lines", node.startOffset, node) {
-            if (node.treeParent.elementType != FILE && node.treeParent.getFirstChildWithType(WHITE_SPACE) == node) {
+            if (node.treeParent.elementType != FILE &&
+                (node.treeParent.getFirstChildWithType(WHITE_SPACE) == node || node.treeParent.getAllChildrenWithType(WHITE_SPACE).last() == node)) {
                 node.leaveExactlyNumNewLines(1)
             } else {
                 node.leaveExactlyNumNewLines(2)
