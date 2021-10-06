@@ -331,8 +331,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    private fun isTopLevelFunctionStandard(node: ASTNode): Boolean =
-        ((node.elementType == FUN && node.isStandardMethod()) /*|| (node.elementType == ANNOTATION)*/)
+    private fun isTopLevelFunctionStandard(node: ASTNode): Boolean = node.elementType == FUN && node.isStandardMethod()
 
     companion object {
         private val statementsToDocument = TokenSet.create(CLASS, FUN, PROPERTY)
