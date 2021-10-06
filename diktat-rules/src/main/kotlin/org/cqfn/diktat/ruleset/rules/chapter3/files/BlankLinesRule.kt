@@ -62,8 +62,7 @@ class BlankLinesRule(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun handleTooManyBlankLines(node: ASTNode) {
         TOO_MANY_BLANK_LINES.warnAndFix(configRules, emitWarn, isFixMode, "do not use more than two consecutive blank lines", node.startOffset, node) {
-            if (node.treeParent.elementType != FILE &&
-                (node.treeParent.getFirstChildWithType(WHITE_SPACE) == node || node.treeParent.getAllChildrenWithType(WHITE_SPACE).last() == node)) {
+            if (node.treeParent.elementType != FILE && (node.treeParent.getFirstChildWithType(WHITE_SPACE) == node || node.treeParent.getAllChildrenWithType(WHITE_SPACE).last() == node)) {
                 node.leaveExactlyNumNewLines(1)
             } else {
                 node.leaveExactlyNumNewLines(2)
