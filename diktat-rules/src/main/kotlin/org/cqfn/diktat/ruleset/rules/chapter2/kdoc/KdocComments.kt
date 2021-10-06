@@ -13,6 +13,7 @@ import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
 import com.pinterest.ktlint.core.ast.ElementType
+import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
@@ -32,6 +33,8 @@ import com.pinterest.ktlint.core.ast.ElementType.VAL_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.VAR_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.parent
+import com.pinterest.ktlint.core.ast.prevSibling
+import com.squareup.kotlinpoet.ANNOTATION
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -39,6 +42,7 @@ import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
 import org.jetbrains.kotlin.psi.KtParameterList
 import org.jetbrains.kotlin.psi.psiUtil.parents
+import org.jetbrains.kotlin.psi.psiUtil.siblings
 
 /**
  * This rule checks the following features in KDocs:
@@ -310,7 +314,13 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
      */
     @Suppress("UnsafeCallOnNullableType")
     private fun checkDoc(node: ASTNode, warning: Warnings) {
-        val kdoc = node.getFirstChildWithType(KDOC)
+        //if there is an annotation before function, AST is a bit more complex, so we need to check if there is any Kdoc
+        // among children of modifier list
+        val kdoc = if (node.elementType == FUN && node.firstChildNode.hasChildOfType(ANNOTATION_ENTRY)) {
+            node.firstChildNode.getFirstChildWithType(KDOC)
+        } else {
+            node.getFirstChildWithType(KDOC)
+        }
         val name = node.getIdentifierName()
         val isModifierAccessibleOutsideOrActual = node.getFirstChildWithType(MODIFIER_LIST).run {
             isAccessibleOutside() && this?.hasChildOfType(ElementType.ACTUAL_KEYWORD) != true
@@ -321,7 +331,8 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    private fun isTopLevelFunctionStandard(node: ASTNode): Boolean = node.elementType == FUN && node.isStandardMethod()
+    private fun isTopLevelFunctionStandard(node: ASTNode): Boolean =
+        ((node.elementType == FUN && node.isStandardMethod()) /*|| (node.elementType == ANNOTATION)*/)
 
     companion object {
         private val statementsToDocument = TokenSet.create(CLASS, FUN, PROPERTY)
