@@ -314,8 +314,8 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
      */
     @Suppress("UnsafeCallOnNullableType")
     private fun checkDoc(node: ASTNode, warning: Warnings) {
-        //if there is an annotation before function, AST is a bit more complex, so we need to check if there is any Kdoc
-        // among children of modifier list
+        // if there is an annotation before function, AST is a bit more complex, so we need to check if there is any
+        // Kdoc among children of modifier list
         val kdoc = if (node.elementType == FUN && node.firstChildNode.hasChildOfType(ANNOTATION_ENTRY)) {
             node.firstChildNode.getFirstChildWithType(KDOC)
         } else {
