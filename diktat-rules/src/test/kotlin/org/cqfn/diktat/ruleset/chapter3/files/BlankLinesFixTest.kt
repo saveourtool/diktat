@@ -19,4 +19,10 @@ class BlankLinesFixTest : FixTestBase("test/paragraph3/blank_lines", ::BlankLine
     fun `should remove blank lines in the beginning and at the end of code block`() {
         fixAndCompare("CodeBlockWithBlankLinesExpected.kt", "CodeBlockWithBlankLinesTest.kt")
     }
+
+    @Test
+    @Tag(WarningNames.TOO_MANY_BLANK_LINES)
+    fun `should remove empty line before the closing quote`() {
+        fixAndCompare("RedundantBlankLinesAtTheEndOfBlockExpected.kt", "RedundantBlankLinesAtTheEndOfBlockTest.kt")
+    }
 }
