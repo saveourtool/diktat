@@ -562,4 +562,17 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
             """.trimMargin()
         )
     }
+
+    @Test
+    fun `should find Kdoc inside a modifier list`() {
+        lintMethod(
+            """
+                |public
+                |/**
+                | * foo
+                | */
+                |actual fun foo() { }
+            """.trimMargin()
+        )
+    }
 }
