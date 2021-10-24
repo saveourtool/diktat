@@ -4,4 +4,3 @@ import org.gradle.kotlin.dsl.plugins
 plugins {
     kotlin("jvm")
 }
-
