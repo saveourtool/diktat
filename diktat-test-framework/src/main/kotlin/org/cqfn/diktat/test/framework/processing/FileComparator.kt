@@ -40,14 +40,22 @@ class FileComparator {
      * @return true in case files are different
      * false - in case they are equals
      */
-    @Suppress("ReturnCount", "FUNCTION_BOOLEAN_PREFIX")
+    @Suppress(
+        "ReturnCount",
+        "FUNCTION_BOOLEAN_PREFIX",
+        "TOO_LONG_FUNCTION")
     fun compareFilesEqual(): Boolean {
         try {
             val expect = readFile(expectedResultFile.absolutePath)
             if (expect.isEmpty()) {
                 return false
             }
-            val patch = diff(expect, actualResultList)
+            val regex = (".*// ;warn:(\\d+):(\\d+): (.*)").toRegex()
+            val expectWithoutWarn = expect.filterNot { line ->
+                line.contains(regex)
+            }
+            val patch = diff(expectWithoutWarn, actualResultList)
+
             if (patch.deltas.isEmpty()) {
                 return true
             }
