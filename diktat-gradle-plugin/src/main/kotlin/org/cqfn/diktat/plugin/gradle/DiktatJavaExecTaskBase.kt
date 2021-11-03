@@ -159,11 +159,11 @@ open class DiktatJavaExecTaskBase @Inject constructor(
             project.logger.info("Pattern before normalizing: $pattern")
             pattern
                 .relativeTo(project.projectDir)
-                /*.normalize()*/
+            /* .normalize()*/
         } else {
             pattern
         }
-            /*.invariantSeparatorsPath*/.also {
+            /* .invariantSeparatorsPath*/.also {
                 project.logger.info("Pattern after normalizing and changing separators: $it")
             }
         add((if (negate) "!" else "") + path)

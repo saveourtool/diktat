@@ -3,7 +3,7 @@ import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurr
 
 plugins {
     `java-gradle-plugin`
-    kotlin("jvm") version "1.4.20"
+    kotlin("jvm") version "1.5.21"
     jacoco
     id("pl.droidsonroids.jacoco.testkit") version "1.0.7"
     id("org.gradle.test-retry") version "1.2.1"
@@ -27,7 +27,7 @@ repositories {
 }
 
 // default value is needed for correct gradle loading in IDEA; actual value from maven is used during build
-val ktlintVersion = project.properties.getOrDefault("ktlintVersion", "0.39.0") as String
+val ktlintVersion = project.properties.getOrDefault("ktlintVersion", "0.43.0") as String
 val diktatVersion = project.version.takeIf { it.toString() != Project.DEFAULT_VERSION } ?: "0.5.2"
 val junitVersion = project.properties.getOrDefault("junitVersion", "5.7.0") as String
 val jacocoVersion = project.properties.getOrDefault("jacocoVersion", "0.8.7") as String
