@@ -56,7 +56,7 @@ jobs:
 
       - name: Setup environment
         run: |
-          curl -o ktlint -sSL https://oss.sonatype.org/content/repositories/snapshots/com/pinterest/ktlint/0.43.0-SNAPSHOT/ktlint-0.43.0-20210820.212935-21-all.jar && chmod a+x ktlint
+          curl -sSLO https://github.com/pinterest/ktlint/releases/download/${{ env.KTLINT_VERSION }}/ktlint && chmod a+x ktlint
         shell: bash
 
       - name: Download diktat jar
@@ -68,7 +68,7 @@ jobs:
         continue-on-error: true
         if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
         run: |
-          java -jar ktlint -R diktat-${{ env.DIKTAT_VERSION }}.jar --disabled_rules=standard "examples/maven/src/main/kotlin/Test.kt" &> out.txt
+          ./ktlint -R diktat-${{ env.DIKTAT_VERSION }}.jar --disabled_rules=standard "examples/maven/src/main/kotlin/Test.kt" &> out.txt
         shell: bash
 
       - name: Run diKTat from cli on windows
@@ -89,7 +89,7 @@ jobs:
         continue-on-error: true
         if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
         run: |
-          java -jar ktlint -R diktat-${{ env.DIKTAT_VERSION }}.jar --disabled_rules=standard "$PWD/examples/maven/src/main/kotlin/Test.kt" &> out.txt
+          ./ktlint -R diktat-${{ env.DIKTAT_VERSION }}.jar --disabled_rules=standard "$PWD/examples/maven/src/main/kotlin/Test.kt" &> out.txt
         shell: bash
 
       - name: Run diKTat from cli on windows (absolute paths)

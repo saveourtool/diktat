@@ -20,21 +20,6 @@ class DiktatGradlePluginMultiprojectFunctionalTest {
         val buildInitDsl = BuildInitDsl.KOTLIN
         File("../examples/gradle-kotlin-dsl-multiproject").copyRecursively(testProjectDir.root)
         buildFile = testProjectDir.root.resolve(buildInitDsl.fileNameFor("build"))
-        buildFile.appendText(
-            """${System.lineSeparator()}
-            allprojects {
-                repositories {
-                    mavenCentral()
-                    maven("https://oss.sonatype.org/content/repositories/snapshots") {
-                        content {
-                            includeGroup("com.pinterest")
-                            includeGroup("com.pinterest.ktlint")
-                        }
-                    }
-                }
-            }
-        """.trimIndent()
-        )
     }
 
     @AfterEach

@@ -24,11 +24,6 @@ repositories {
             includeGroup("org.cqfn.diktat")
         }
     }
-    maven("https://oss.sonatype.org/content/repositories/snapshots") {
-        content {
-            includeGroup("com.pinterest.ktlint")
-        }
-    }
 }
 
 // default value is needed for correct gradle loading in IDEA; actual value from maven is used during build
