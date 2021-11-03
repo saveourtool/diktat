@@ -31,4 +31,10 @@ class CompactInitializationFixTest : FixTestBase("test/chapter6/compact_initiali
     fun `should not move statements with this keyword into apply block`() {
         fixAndCompare("ApplyOnStatementsWithThisKeywordExpected.kt", "ApplyOnStatementsWithThisKeywordTest.kt")
     }
+
+    @Test
+    @Tag(WarningNames.COMPACT_OBJECT_INITIALIZATION)
+    fun `should rename field in apply block to this keyword`() {
+        fixAndCompare("StatementUseFieldMultipleTimesExpected.kt", "StatementUseFieldMultipleTimesTest.kt")
+    }
 }

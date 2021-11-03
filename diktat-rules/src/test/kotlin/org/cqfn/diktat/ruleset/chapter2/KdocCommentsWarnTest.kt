@@ -528,4 +528,51 @@ class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
             LintError(6, 1, ruleId, "${MISSING_KDOC_TOP_LEVEL.warnText()} B")
         )
     }
+
+    @Test
+    fun `should find Kdoc after annotation of function`() {
+        lintMethod(
+            """
+                |@SomeAnnotation
+                |/**
+                | * Just print a string
+                | *
+                | * @param f string to print
+                | * @return 1
+                | */
+                |internal fun prnt(f: String) {
+                |   println(f)
+                |   return 1
+                |}
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    fun `should find Kdoc after annotation of class`() {
+        lintMethod(
+            """
+                |@SomeAnnotation
+                |/**
+                | * Test class
+                | */
+                |class example(f: String) {
+                |
+                |}
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    fun `should find Kdoc inside a modifier list`() {
+        lintMethod(
+            """
+                |public
+                |/**
+                | * foo
+                | */
+                |actual fun foo() { }
+            """.trimMargin()
+        )
+    }
 }

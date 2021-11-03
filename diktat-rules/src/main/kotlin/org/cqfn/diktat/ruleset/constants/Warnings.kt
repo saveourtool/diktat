@@ -115,7 +115,7 @@ enum class Warnings(
     WRONG_NEWLINES(true, "3.6.2", "incorrect line breaking"),
     TRAILING_COMMA(true, "3.6.2", "use trailing comma"),
     COMPLEX_EXPRESSION(false, "3.6.3", "complex dot qualified expression should be replaced with variable"),
-    COMPLEX_BOOLEAN_EXPRESSION(true, "3.6.4", "too complex boolean expression, that can be simplified"),
+    COMPLEX_BOOLEAN_EXPRESSION(true, "3.6.4", "simplification could be produced for the too complex boolean expression"),
 
     // FixMe: autofixing will be added for this rule
     STRING_CONCATENATION(true, "3.15.1", "strings should not be concatenated using plus operator - use string templates instead if the statement fits one line"),

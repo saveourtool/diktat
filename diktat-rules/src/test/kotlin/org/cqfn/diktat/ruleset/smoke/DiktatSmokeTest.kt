@@ -86,7 +86,7 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     @Test
     @Tag("DiktatRuleSetProvider")
     fun `smoke test with multiplatform project layout`() {
-        fixAndCompare("../../jsMain/kotlin/org/cqfn/diktat/scripts/ScriptExpected.kt",
+        fixAndCompareSmokeTest("../../jsMain/kotlin/org/cqfn/diktat/scripts/ScriptExpected.kt",
             "../../jsMain/kotlin/org/cqfn/diktat/scripts/ScriptTest.kt")
     }
 
@@ -95,19 +95,19 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     fun `regression - should not fail if package is not set`() {
         overrideRulesConfig(listOf(Warnings.PACKAGE_NAME_MISSING, Warnings.PACKAGE_NAME_INCORRECT_PATH,
             Warnings.PACKAGE_NAME_INCORRECT_PREFIX))
-        fixAndCompare("DefaultPackageExpected.kt", "DefaultPackageTest.kt")
+        fixAndCompareSmokeTest("DefaultPackageExpected.kt", "DefaultPackageTest.kt")
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
     fun `smoke test #7`() {
-        fixAndCompare("Example7Expected.kt", "Example7Test.kt")
+        fixAndCompareSmokeTest("Example7Expected.kt", "Example7Test.kt")
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
     fun `smoke test #6`() {
-        fixAndCompare("Example6Expected.kt", "Example6Test.kt")
+        fixAndCompareSmokeTest("Example6Expected.kt", "Example6Test.kt")
     }
 
     @Test
@@ -131,7 +131,7 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
                 )
             )
         )
-        fixAndCompare("Example5Expected.kt", "Example5Test.kt")
+        fixAndCompareSmokeTest("Example5Expected.kt", "Example5Test.kt")
 
         Assertions.assertFalse(
             unfixedLintErrors.contains(LintError(line = 1, col = 1, ruleId = "diktat-ruleset:comments", detail = "${Warnings.COMMENTED_OUT_CODE.warnText()} /*"))
@@ -145,25 +145,25 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     @Test
     @Tag("DiktatRuleSetProvider")
     fun `smoke test #4`() {
-        fixAndCompare("Example4Expected.kt", "Example4Test.kt")
+        fixAndCompareSmokeTest("Example4Expected.kt", "Example4Test.kt")
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
     fun `smoke test #3`() {
-        fixAndCompare("Example3Expected.kt", "Example3Test.kt")
+        fixAndCompareSmokeTest("Example3Expected.kt", "Example3Test.kt")
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
     fun `regression - shouldn't throw exception in cases similar to #371`() {
-        fixAndCompare("Bug1Expected.kt", "Bug1Test.kt")
+        fixAndCompareSmokeTest("Bug1Expected.kt", "Bug1Test.kt")
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
     fun `smoke test #2`() {
-        fixAndCompare("Example2Expected.kt", "Example2Test.kt")
+        fixAndCompareSmokeTest("Example2Expected.kt", "Example2Test.kt")
         unfixedLintErrors.assertEquals(
             LintError(1, 1, "$DIKTAT_RULE_SET_ID:header-comment", "${HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warnText()} there are 2 declared classes and/or objects", false),
             LintError(15, 23, "$DIKTAT_RULE_SET_ID:kdoc-methods",
@@ -176,7 +176,7 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     @Test
     @Tag("DiktatRuleSetProvider")
     fun `smoke test #1`() {
-        fixAndCompare("Example1Expected.kt", "Example1Test.kt")
+        fixAndCompareSmokeTest("Example1Expected.kt", "Example1Test.kt")
         unfixedLintErrors.assertEquals(
             LintError(1, 1, "$DIKTAT_RULE_SET_ID:file-naming", "${FILE_NAME_MATCH_CLASS.warnText()} Example1Test.kt vs Example", true),
             LintError(1, 1, "$DIKTAT_RULE_SET_ID:kdoc-formatting", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
@@ -220,7 +220,7 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     @Test
     @Tag("DiktatRuleSetProvider")
     fun `smoke test with gradle script plugin`() {
-        fixAndCompare("kotlin-library-expected.gradle.kts", "kotlin-library.gradle.kts")
+        fixAndCompareSmokeTest("kotlin-library-expected.gradle.kts", "kotlin-library.gradle.kts")
         Assertions.assertEquals(
             LintError(2, 1, "$DIKTAT_RULE_SET_ID:comments", "[COMMENTED_OUT_CODE] you should not comment out code, " +
                     "use VCS to save it in history and delete this block: import org.jetbrains.kotlin.gradle.dsl.jvm", false),
@@ -231,14 +231,14 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     @Test
     @Tag("DiktatRuleSetProvider")
     fun `smoke test with kts files #2`() {
-        fixAndCompare("script/SimpleRunInScriptExpected.kts", "script/SimpleRunInScriptTest.kts")
+        fixAndCompareSmokeTest("script/SimpleRunInScriptExpected.kts", "script/SimpleRunInScriptTest.kts")
         Assertions.assertEquals(3, unfixedLintErrors.size)
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
     fun `smoke test with kts files with package name`() {
-        fixAndCompare("script/PackageInScriptExpected.kts", "script/PackageInScriptTest.kts")
+        fixAndCompareSmokeTest("script/PackageInScriptExpected.kts", "script/PackageInScriptTest.kts")
         Assertions.assertEquals(3, unfixedLintErrors.size)
     }
 
@@ -254,7 +254,7 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
                 )
             )
         )
-        fixAndCompare("Example1-2Expected.kt", "Example1Test.kt")
+        fixAndCompareSmokeTest("Example1-2Expected.kt", "Example1Test.kt")
         unfixedLintErrors.assertEquals(
             LintError(1, 1, "$DIKTAT_RULE_SET_ID:kdoc-formatting", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
             LintError(3, 1, "$DIKTAT_RULE_SET_ID:kdoc-comments", "${MISSING_KDOC_TOP_LEVEL.warnText()} example", false),
@@ -271,13 +271,13 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     @Test
     @Tag("DiktatRuleSetProvider")
     fun `regression - should correctly handle tags with empty lines`() {
-        fixAndCompare("KdocFormattingMultilineTagsExpected.kt", "KdocFormattingMultilineTagsTest.kt")
+        fixAndCompareSmokeTest("KdocFormattingMultilineTagsExpected.kt", "KdocFormattingMultilineTagsTest.kt")
     }
 
     @Test
     @Tag("DiktatRuleSetProvider")
     fun `regression - FP of local variables rule`() {
-        fixAndCompare("LocalVariableWithOffsetExpected.kt", "LocalVariableWithOffsetTest.kt")
+        fixAndCompareSmokeTest("LocalVariableWithOffsetExpected.kt", "LocalVariableWithOffsetTest.kt")
         org.assertj.core.api.Assertions.assertThat(unfixedLintErrors).noneMatch {
             it.ruleId == "diktat-ruleset:local-variables"
         }

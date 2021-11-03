@@ -466,9 +466,6 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
                     firstChild.isFirstChildElementType(SAFE_ACCESS_EXPRESSION)) {
                 getOrderedCallExpressions(firstChild.firstChild, result)
             }
-            if (firstChild.isFirstChildElementType(POSTFIX_EXPRESSION)) {
-                result.add(firstChild.node)
-            }
             result.add(firstChild.node
                 .siblings(true)
                 .dropWhile { it.elementType in dropChainValues }
