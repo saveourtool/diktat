@@ -54,7 +54,6 @@ import org.jetbrains.kotlin.psi.KtLoopExpression
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
-import org.jetbrains.kotlin.utils.addToStdlib.firstNotNullResult
 import org.slf4j.LoggerFactory
 
 import java.lang.StringBuilder
@@ -185,7 +184,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
 
         val indentError = IndentationError(context.indent(), astNode.text.lastIndent())
 
-        val checkResult = customIndentationCheckers.firstNotNullResult {
+        val checkResult = customIndentationCheckers.firstNotNullOfOrNull {
             it.checkNode(whiteSpace, indentError)
         }
 

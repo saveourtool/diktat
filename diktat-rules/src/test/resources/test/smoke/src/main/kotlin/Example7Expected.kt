@@ -20,4 +20,3 @@ fun foo() {
             doSmth()
         }
 }
-

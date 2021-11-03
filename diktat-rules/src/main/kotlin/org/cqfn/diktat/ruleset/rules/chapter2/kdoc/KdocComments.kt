@@ -310,7 +310,10 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
      */
     @Suppress("UnsafeCallOnNullableType")
     private fun checkDoc(node: ASTNode, warning: Warnings) {
-        val kdoc = node.getFirstChildWithType(KDOC)
+        // if there is an annotation before function, AST is a bit more complex, so we need to look for Kdoc among
+        // children of modifier list
+        val kdoc = node.getFirstChildWithType(KDOC) ?: node.getFirstChildWithType(MODIFIER_LIST)?.getFirstChildWithType(KDOC)
+
         val name = node.getIdentifierName()
         val isModifierAccessibleOutsideOrActual = node.getFirstChildWithType(MODIFIER_LIST).run {
             isAccessibleOutside() && this?.hasChildOfType(ElementType.ACTUAL_KEYWORD) != true

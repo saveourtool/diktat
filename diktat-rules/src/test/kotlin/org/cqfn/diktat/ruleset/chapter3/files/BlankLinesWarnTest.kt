@@ -65,7 +65,7 @@ class BlankLinesWarnTest : LintTestBase(::BlankLinesRule) {
 
     @Test
     @Tag(WarningNames.TOO_MANY_BLANK_LINES)
-    fun `should prohibit blank lines in the beginning or at the end of block`() {
+    fun `should prohibit blank lines in the beginning and at the end of code block`() {
         lintMethod(
             """
                     |class Example {
@@ -80,6 +80,24 @@ class BlankLinesWarnTest : LintTestBase(::BlankLinesRule) {
             LintError(1, 16, ruleId, blankLinesInBlockWarn(true), true),
             LintError(3, 16, ruleId, blankLinesInBlockWarn(true), true),
             LintError(5, 14, ruleId, blankLinesInBlockWarn(false), true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.TOO_MANY_BLANK_LINES)
+    fun `should prohibit empty line before the closing quote`() {
+        lintMethod(
+            """
+                    |class Example {
+                    |    fun foo() {
+                    |        bar()
+                    |        
+                    |    }
+                    |    
+                    |}
+                """.trimMargin(),
+            LintError(3, 14, ruleId, blankLinesInBlockWarn(false), true),
+            LintError(5, 6, ruleId, blankLinesInBlockWarn(false), true)
         )
     }
 }

@@ -144,3 +144,4 @@ jobs:
         with:
           name: gradle-test-report-${{ matrix.os }}
           path: 'diktat-gradle-plugin/build/reports/'
+          retention-days: 1

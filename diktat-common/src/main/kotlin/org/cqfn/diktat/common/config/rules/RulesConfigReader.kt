@@ -17,6 +17,7 @@ import java.io.File
 import java.util.Locale
 import java.util.concurrent.atomic.AtomicInteger
 
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 
@@ -67,6 +68,7 @@ open class RulesConfigReader(override val classLoader: ClassLoader) : JsonResour
      * @param fileStream a [BufferedReader] representing loaded rules config file
      * @return list of [RulesConfig]
      */
+    @OptIn(ExperimentalSerializationApi::class)
     override fun parseResource(fileStream: BufferedReader): List<RulesConfig> = fileStream.use { stream ->
         yamlSerializer.decodeFromString(stream.readLines().joinToString(separator = "\n"))
     }
