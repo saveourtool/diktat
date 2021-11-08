@@ -68,7 +68,7 @@ jobs:
         continue-on-error: true
         if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
         run: |
-          ./ktlint -R diktat-${{ env.DIKTAT_VERSION }}.jar --disabled_rules=standard "examples/maven/src/main/kotlin/Test.kt" &> out.txt
+          java -jar ktlint -R diktat-${{ env.DIKTAT_VERSION }}.jar --disabled_rules=standard "examples/maven/src/main/kotlin/Test.kt" &> out.txt
         shell: bash
 
       - name: Run diKTat from cli on windows
