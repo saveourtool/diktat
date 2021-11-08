@@ -33,7 +33,7 @@ class VariableGenericTypeDeclarationRule(configRules: List<RulesConfig>) : Dikta
         }
     }
 
-    @Suppress("UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType", "AVOID_NULL_CHECKS")
     private fun handleProperty(node: ASTNode) {
         val callExpr = node.findChildByType(CALL_EXPRESSION)
             ?: node

@@ -94,7 +94,6 @@ class VariableGenericTypeDeclarationRuleWarnTest : LintTestBase(::VariableGeneri
         )
     }
 
-
     @Test
     @Tag(GENERIC_VARIABLE_WRONG_DECLARATION)
     fun `property in function as parameter bad`() {
