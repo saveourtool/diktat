@@ -24,6 +24,7 @@ import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtIfExpression
+import org.jetbrains.kotlin.psi.psiUtil.parents
 
 /**
  * This rule check and fixes explicit null checks (explicit comparison with `null`)
@@ -231,10 +232,12 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
     /**
      * checks if condition is a complex expression. For example:
      * (a == 5) - is not a complex condition, but (a == 5 && b != 6) is a complex condition
+     * or expression could be used in lambda, which is also considered as complex expression:
+     * if (a.any { it == null })
      */
     private fun KtBinaryExpression.isComplexCondition(): Boolean {
-        // KtBinaryExpression is complex if it has a parent that is also a binary expression
-        return this.parent is KtBinaryExpression
+        // KtBinaryExpression is complex if it has a parent that is a binary expression or a block expression
+        return this.parent is KtBinaryExpression || this.parent is KtBlockExpression
     }
 
     private fun warnAndFixOnNullCheck(

@@ -189,4 +189,18 @@ class NullChecksRuleWarnTest : LintTestBase(::NullChecksRule) {
                     " use 'requireNotNull' instead of require(myVar != null)", true),
         )
     }
+
+    @Test
+    @Tag(WarningNames.AVOID_NULL_CHECKS)
+    fun `null check in lambda which is in if-statement is ok`() {
+        lintMethod(
+            """
+            |fun foo() {
+            |    if (leftSide?.any { it == null } == true) {
+            |        return
+            |    }
+            |}
+            """.trimMargin()
+        )
+    }
 }
