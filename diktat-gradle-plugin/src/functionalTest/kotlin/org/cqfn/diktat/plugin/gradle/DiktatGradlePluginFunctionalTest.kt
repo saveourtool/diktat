@@ -146,31 +146,6 @@ class DiktatGradlePluginFunctionalTest {
     }
 
     @Test
-    fun `should execute diktatCheck with absolute paths`() {
-        val path = testProjectDir.root
-            .resolve("src")
-            .absolutePath
-            .plus("/**/*.kt")
-            .replace("\\", "\\\\")
-        buildFile.appendText(
-            """${System.lineSeparator()}
-                diktat {
-                    inputs = files("$path")
-                    debug = true
-                }
-            """.trimIndent()
-        )
-        val result = runDiktat(testProjectDir, shouldSucceed = false, arguments = listOf("--info"))
-
-        val diktatCheckBuildResult = result.task(":$DIKTAT_CHECK_TASK")
-        requireNotNull(diktatCheckBuildResult)
-        Assertions.assertEquals(TaskOutcome.FAILED, diktatCheckBuildResult.outcome)
-        Assertions.assertTrue(
-            result.output.contains("[FILE_NAME_MATCH_CLASS]")
-        )
-    }
-
-    @Test
     fun `should execute diktatCheck with gradle older than 6_4`() {
         val result = runDiktat(testProjectDir, shouldSucceed = false, arguments = listOf("--info")) {
             withGradleVersion("5.3")
