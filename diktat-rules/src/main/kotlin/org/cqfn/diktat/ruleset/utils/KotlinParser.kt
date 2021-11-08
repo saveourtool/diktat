@@ -3,6 +3,7 @@ package org.cqfn.diktat.ruleset.utils
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.IMPORT_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
+import com.pinterest.ktlint.core.ast.ElementType.SECONDARY_CONSTRUCTOR
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.environment.setIdeaIoUseFallback
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
@@ -73,6 +74,46 @@ class KotlinParser {
      * @throws KotlinParseException if code is incorrect
      */
     fun createNode(text: String, isPackage: Boolean = false) = makeNode(text, isPackage) ?: throw KotlinParseException("Text is not valid: [$text]")
+
+    /**
+     * @param text kotlin code
+     * @return [ASTNode] which is secondary constructor
+     * @throws KotlinParseException if code is incorrect
+     */
+    fun createNodeForSecondaryConstructor(text: String): ASTNode {
+        var node: ASTNode = ktPsiFactory
+            .createSecondaryConstructor(text)
+            .node
+        if (!node.isCorrect()) {
+            node = ktPsiFactory.createFile(text).node
+            if (!node.isCorrect()) {
+                throw KotlinParseException("Text is not valid: [$text]")
+            }
+        }
+        return node
+    }
+
+    /**
+     * @param text kotlin code
+     * @return [ASTNode] which is init block
+     * @throws KotlinParseException if code is incorrect
+     */
+    fun createNodeForInit(text: String): ASTNode {
+        var node: ASTNode = ktPsiFactory
+            .createBlockCodeFragment(text, null)
+            .node
+            .findChildByType(BLOCK)!!
+        if (node.getChildren(null).size == 1) {
+            node = node.firstChildNode
+        }
+        if (!node.isCorrect()) {
+            node = ktPsiFactory.createFile(text).node
+            if (!node.isCorrect()) {
+                throw KotlinParseException("Text is not valid: [$text]")
+            }
+        }
+        return node
+    }
 
     /**
      * @param text kotlin code

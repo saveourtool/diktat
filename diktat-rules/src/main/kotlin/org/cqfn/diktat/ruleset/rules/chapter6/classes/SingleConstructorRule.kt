@@ -1,20 +1,27 @@
 package org.cqfn.diktat.ruleset.rules.chapter6.classes
 
+import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
+import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY
 import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.ruleset.utils.KotlinParser
+import org.cqfn.diktat.ruleset.utils.findChildrenMatching
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getIdentifierName
-import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.cqfn.diktat.ruleset.utils.isGoingAfter
+import org.cqfn.diktat.ruleset.utils.KotlinParser
+import org.cqfn.diktat.ruleset.utils.hasChildOfType
 
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
+import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
+import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.SECONDARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.nextSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.psi.KtBinaryExpression
@@ -82,7 +89,15 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
             ?.statements
             ?.partition { it is KtBinaryExpression && it.asAssignment() != null }
             ?.run { first.map { it as KtBinaryExpression } to second }
-            ?: emptyList<KtBinaryExpression>() to emptyList()
+            ?: (emptyList<KtBinaryExpression>() to emptyList())
+
+        val comments = (secondaryCtor.psi as KtSecondaryConstructor)
+            .bodyBlockExpression
+            ?.findChildrenMatching { it.elementType == EOL_COMMENT || it.elementType == BLOCK_COMMENT || it.elementType == KDOC }
+            ?.map {
+                it.text to it.nextSibling { sibling -> sibling.elementType == CALL_EXPRESSION || sibling.elementType == BINARY_EXPRESSION }
+            }?.filter { (_, connectedTo) -> connectedTo != null }
+            ?.toMap()
 
         val classProperties = (classNode.psi as KtClass).getProperties()
         val localProperties = secondaryCtor.psi.collectDescendantsOfType<KtProperty> { it.isLocal }
@@ -108,7 +123,7 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
             }
             .distinct()
 
-        classNode.convertSecondaryConstructorToPrimary(secondaryCtor, declarationsAssignedInCtor, nonTrivialAssignments, otherStatements)
+        classNode.convertSecondaryConstructorToPrimary(secondaryCtor, declarationsAssignedInCtor, nonTrivialAssignments, otherStatements, comments)
     }
 
     @Suppress("UnsafeCallOnNullableType")
@@ -140,7 +155,8 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
         secondaryCtor: ASTNode,
         declarationsAssignedInCtor: List<KtProperty>,
         nonTrivialAssignments: Map<KtBinaryExpression, KtNameReferenceExpression>,
-        otherStatements: List<KtExpression>
+        otherStatements: List<KtExpression>,
+        comments: Map<String, ASTNode?>?
     ) {
         require(elementType == CLASS)
 
@@ -157,14 +173,38 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
             }
         }
 
+        val initBody: MutableList<String> = mutableListOf()
+
+        initBody.addAll(otherStatements.map { it.text })
+        initBody.addAll(nonTrivialAssignments.keys.map { it.text })
+
+        val argumentListOfSecondaryCtor: List<KtParameter> = (secondaryCtor.psi as KtSecondaryConstructor)
+            .valueParameters
+            .filter { arg -> arg.name !in nonTrivialSecondaryCtorParameters.map { it.name } }
+            .filter { arg -> arg.name !in declarationsAssignedInCtor.map { it.name } }
+            .filter { arg -> initBody.any { expr -> arg.name.toString() in expr } }
+
+        comments?.forEach { (comment, nextExpression) ->
+            if (initBody.indexOf(nextExpression?.text) != -1) {
+                initBody.add(initBody.indexOf(nextExpression?.text), comment)
+            }
+        }
+
         if (otherStatements.isNotEmpty() || nonTrivialAssignments.isNotEmpty()) {
             findChildByType(CLASS_BODY)?.run {
-                val classInitializer = kotlinParser.createNode(
-                    """|init {
-                       |    ${(otherStatements + nonTrivialAssignments.keys).joinToString("\n") { it.text }}
+                val classInitializer = if (argumentListOfSecondaryCtor.isEmpty()) {
+                    kotlinParser.createNodeForInit(
+                        """|init {
+                           |    ${initBody.joinToString("\n")}
+                           |}
+                        """.trimMargin())
+                } else {
+                    kotlinParser.createNodeForSecondaryConstructor(
+                    """|constructor(${argumentListOfSecondaryCtor.joinToString(", ") { it.text } }) {
+                       |    ${initBody.joinToString("\n")}
                        |}
-                    """.trimMargin()
-                )
+                    """.trimMargin())
+                }
                 addChild(classInitializer, secondaryCtor)
                 addChild(PsiWhiteSpaceImpl("\n"), secondaryCtor)
             }
