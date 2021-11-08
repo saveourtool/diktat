@@ -68,6 +68,35 @@ class VariableGenericTypeDeclarationRuleWarnTest : LintTestBase(::VariableGeneri
 
     @Test
     @Tag(GENERIC_VARIABLE_WRONG_DECLARATION)
+    fun `property in function as parameter with wildcard type good`() {
+        lintMethod(
+            """
+                    |class SomeClass {
+                    |   private fun someFunc(myVariable: List<*> = emptyList<Int>()) {
+                    |       
+                    |   }
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(GENERIC_VARIABLE_WRONG_DECLARATION)
+    fun `property in function as parameter with wildcard type good 2`() {
+        lintMethod(
+            """
+                    |class SomeClass {
+                    |   private fun someFunc(myVariable: Map<*, String> = emptyMap<Int, String>()) {
+                    |       
+                    |   }
+                    |}
+                """.trimMargin()
+        )
+    }
+
+
+    @Test
+    @Tag(GENERIC_VARIABLE_WRONG_DECLARATION)
     fun `property in function as parameter bad`() {
         lintMethod(
             """
@@ -98,6 +127,20 @@ class VariableGenericTypeDeclarationRuleWarnTest : LintTestBase(::VariableGeneri
 
     @Test
     @Tag(GENERIC_VARIABLE_WRONG_DECLARATION)
+    fun `property in function with wildcard type good`() {
+        lintMethod(
+            """
+                    |class SomeClass {
+                    |   private fun someFunc() {
+                    |       val myVariable: List<*> = emptyList<Int>()
+                    |   }
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(GENERIC_VARIABLE_WRONG_DECLARATION)
     fun `property in function bad`() {
         lintMethod(
             """
@@ -118,6 +161,18 @@ class VariableGenericTypeDeclarationRuleWarnTest : LintTestBase(::VariableGeneri
         lintMethod(
             """
                     |class SomeClass(val myVariable: Map<Int, String> = emptyMap()) {
+                    |
+                    |}
+                """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(GENERIC_VARIABLE_WRONG_DECLARATION)
+    fun `property in class with wildcard type good`() {
+        lintMethod(
+            """
+                    |class SomeClass(val myVariable: List<*> = emptyList<Int>()) {
                     |
                     |}
                 """.trimMargin()

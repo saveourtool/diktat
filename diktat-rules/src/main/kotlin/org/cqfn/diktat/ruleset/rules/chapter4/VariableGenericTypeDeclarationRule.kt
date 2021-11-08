@@ -54,6 +54,11 @@ class VariableGenericTypeDeclarationRule(configRules: List<RulesConfig>) : Dikta
                 ?.typeArgumentsAsTypes
         }
 
+        // Allow cases with wild card types; `*` interprets as `null` in list of types
+        if (leftSide?.any { it == null } == true) {
+            return
+        }
+
         if (rightSide != null && leftSide != null &&
                 rightSide.size == leftSide.size &&
                 rightSide.zip(leftSide).all { (first, second) -> first.text == second.text }) {
