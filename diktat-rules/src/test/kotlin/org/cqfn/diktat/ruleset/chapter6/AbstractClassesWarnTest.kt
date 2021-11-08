@@ -86,4 +86,19 @@ class AbstractClassesWarnTest : LintTestBase(::AbstractClassesRule) {
             LintError(1, 58, ruleId, "${Warnings.CLASS_SHOULD_NOT_BE_ABSTRACT.warnText()} CoroutineTest", true)
         )
     }
+
+    @Test
+    @Tag(CLASS_SHOULD_NOT_BE_ABSTRACT)
+    fun `should not remove abstract on class if there are only abstract properties`() {
+        lintMethod(
+            """
+                |abstract class BaseUsesProcessor() {
+                |    // Store uses by file
+                |    abstract val a: String
+                |    
+                |    fun foo() {}
+                |}
+            """.trimMargin()
+        )
+    }
 }

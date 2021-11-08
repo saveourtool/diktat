@@ -14,6 +14,7 @@ import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.OPEN_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 
@@ -40,10 +41,12 @@ class AbstractClassesRule(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("UnsafeCallOnNullableType")
     private fun handleAbstractClass(node: ASTNode, classNode: ASTNode) {
         val functions = node.getAllChildrenWithType(FUN)
+        val properties = node.getAllChildrenWithType(PROPERTY)
+        val members = functions + properties
 
         val identifier = classNode.getFirstChildWithType(IDENTIFIER)!!.text
 
-        if (functions.isNotEmpty() && functions.none { hasAbstractModifier(it) }) {
+        if (members.isNotEmpty() && members.none { hasAbstractModifier(it) }) {
             CLASS_SHOULD_NOT_BE_ABSTRACT.warnAndFix(configRules, emitWarn, isFixMode, identifier, node.startOffset, node) {
                 val modList = classNode.getFirstChildWithType(MODIFIER_LIST)!!
                 val abstractKeyword = modList.getFirstChildWithType(ABSTRACT_KEYWORD)!!
