@@ -5,6 +5,7 @@ import org.cqfn.diktat.ruleset.constants.ListOfPairs
 import org.cqfn.diktat.ruleset.constants.Warnings.COMMENTED_OUT_CODE
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
+import org.cqfn.diktat.ruleset.utils.getFilePath
 
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
@@ -17,6 +18,7 @@ import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.KtPsiFactory
 import org.jetbrains.kotlin.resolve.ImportPath
+import org.slf4j.LoggerFactory
 
 /**
  * This rule performs checks if there is any commented code.
@@ -47,7 +49,11 @@ class CommentsRule(configRules: List<RulesConfig>) : DiktatRule(
      *    with '// ' with whitespace, while automatic commenting in, e.g., IDEA creates slashes in the beginning of the line
      *
      */
-    @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
+    @Suppress(
+        "UnsafeCallOnNullableType",
+        "TOO_LONG_FUNCTION",
+        "AVOID_NULL_CHECKS"
+    )
     private fun checkCommentedCode(node: ASTNode) {
         val errorNodesWithText: ListOfPairs = mutableListOf()
         val eolCommentsOffsetToText = getOffsetsToTextBlocksFromEolComments(node, errorNodesWithText)
@@ -68,10 +74,10 @@ class CommentsRule(configRules: List<RulesConfig>) : DiktatRule(
             .map { (offset, text) -> offset to text.trim() }
             .mapNotNull { (offset, text) ->
                 when {
-                    text.contains(importKeyword) ->
-                        offset to ktPsiFactory.createImportDirective(ImportPath.fromString(text.substringAfter("$importKeyword "))).node
-                    text.contains(packageKeyword) ->
-                        offset to ktPsiFactory.createPackageDirective(FqName(text.substringAfter("$packageKeyword "))).node
+                    text.isPossibleImport() ->
+                        offset to ktPsiFactory.createImportDirective(ImportPath.fromString(text.substringAfter(importKeywordWithSpace, ""))).node
+                    text.trimStart().startsWith(packageKeywordWithSpace) ->
+                        offset to ktPsiFactory.createPackageDirective(FqName(text.substringAfter(packageKeywordWithSpace, ""))).node
                     else -> if (isContainingRequiredPartOfCode(text)) {
                         offset to ktPsiFactory.createBlockCodeFragment(text, null).node
                     } else {
@@ -85,8 +91,23 @@ class CommentsRule(configRules: List<RulesConfig>) : DiktatRule(
                     .isEmpty()
             }
             .forEach { (offset, parsedNode) ->
-                COMMENTED_OUT_CODE.warn(configRules, emitWarn, isFixMode, parsedNode.text.substringBefore("\n").trim(), offset,
-                    errorNodesWithText.find { it.second.trim().contains(parsedNode.text, false) || parsedNode.text.contains(it.second.trim(), false) }?.first!!)
+                val invalidNode = errorNodesWithText.find {
+                    it.second.trim().contains(parsedNode.text, false) ||
+                            parsedNode.text.contains(it.second.trim(), false)
+                }?.first
+                if (invalidNode == null) {
+                    logger.warn("Text [${parsedNode.text}] is a piece of code, created from comment; " +
+                            "but no matching text in comments has been found in the file ${node.getFilePath()}")
+                } else {
+                    COMMENTED_OUT_CODE.warn(
+                        configRules,
+                        emitWarn,
+                        isFixMode,
+                        parsedNode.text.substringBefore("\n").trim(),
+                        offset,
+                        invalidNode
+                    )
+                }
             }
     }
 
@@ -139,11 +160,22 @@ class CommentsRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun isContainingRequiredPartOfCode(text: String): Boolean =
             text.contains("val ", true) || text.contains("var ", true) || text.contains("=", true) || (text.contains("{", true) && text.substringAfter("{").contains("}", true))
 
+    /**
+     * Some weak checks to see if this string can be used as a part of import statement.
+     * Only string surrounded in backticks or a dot-qualified expression (i.e., containing words maybe separated by dots)
+     * are considered for this case.
+     */
+    private fun String.isPossibleImport(): Boolean = trimStart().startsWith(importKeywordWithSpace) &&
+            substringAfter(importKeywordWithSpace, "").run {
+                startsWith('`') && endsWith('`') || !contains(' ')
+            }
+
     @Suppress("MaxLineLength")
     companion object {
-        private val importKeyword = KtTokens.IMPORT_KEYWORD.value
-        private val packageKeyword = KtTokens.PACKAGE_KEYWORD.value
-        private val importOrPackage = """($importKeyword|$packageKeyword) """.toRegex()
+        private val logger = LoggerFactory.getLogger(CommentsRule::class.java)
+        private val importKeywordWithSpace = "${KtTokens.IMPORT_KEYWORD.value} "
+        private val packageKeywordWithSpace = "${KtTokens.PACKAGE_KEYWORD.value} "
+        private val importOrPackage = """($importKeywordWithSpace|$packageKeywordWithSpace)""".toRegex()
         private val classRegex =
                 """^\s*(public|private|protected)*\s*(internal)*\s*(open|data|sealed)*\s*(internal)*\s*(class|object)\s+(\w+)(\(.*\))*(\s*:\s*\w+(\(.*\))*)?\s*\{*$""".toRegex()
         private val importOrPackageRegex = """^(import|package)?\s+([a-zA-Z.])+;*$""".toRegex()
