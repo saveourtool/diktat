@@ -8,6 +8,8 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.condition.DisabledOnOs
+import org.junit.jupiter.api.condition.OS
 import java.io.File
 
 class DiktatGradlePluginFunctionalTest {
@@ -144,32 +146,9 @@ class DiktatGradlePluginFunctionalTest {
     }
 
     @Test
-    fun `should execute diktatCheck with absolute paths`() {
-        val path = testProjectDir.root
-            .resolve("src/**/*.kt")
-            .absolutePath
-            .replace("\\", "\\\\")
-        buildFile.appendText(
-            """${System.lineSeparator()}
-                diktat {
-                    inputs = files("$path")
-                }
-            """.trimIndent()
-        )
-        val result = runDiktat(testProjectDir, shouldSucceed = false)
-
-        val diktatCheckBuildResult = result.task(":$DIKTAT_CHECK_TASK")
-        requireNotNull(diktatCheckBuildResult)
-        Assertions.assertEquals(TaskOutcome.FAILED, diktatCheckBuildResult.outcome)
-        Assertions.assertTrue(
-            result.output.contains("[FILE_NAME_MATCH_CLASS]")
-        )
-    }
-
-    @Test
     fun `should execute diktatCheck with gradle older than 6_4`() {
         val result = runDiktat(testProjectDir, shouldSucceed = false, arguments = listOf("--info")) {
-            withGradleVersion("5.0")
+            withGradleVersion("5.3")
         }
 
         val diktatCheckBuildResult = result.task(":$DIKTAT_CHECK_TASK")
