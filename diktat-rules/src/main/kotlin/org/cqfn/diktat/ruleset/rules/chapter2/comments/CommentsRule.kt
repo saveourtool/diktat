@@ -5,13 +5,13 @@ import org.cqfn.diktat.ruleset.constants.ListOfPairs
 import org.cqfn.diktat.ruleset.constants.Warnings.COMMENTED_OUT_CODE
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
+import org.cqfn.diktat.ruleset.utils.getFilePath
 
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.prevSibling
-import org.cqfn.diktat.ruleset.utils.getFilePath
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.TokenType
 import org.jetbrains.kotlin.lexer.KtTokens
@@ -49,7 +49,11 @@ class CommentsRule(configRules: List<RulesConfig>) : DiktatRule(
      *    with '// ' with whitespace, while automatic commenting in, e.g., IDEA creates slashes in the beginning of the line
      *
      */
-    @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
+    @Suppress(
+        "UnsafeCallOnNullableType",
+        "TOO_LONG_FUNCTION",
+        "AVOID_NULL_CHECKS"
+    )
     private fun checkCommentedCode(node: ASTNode) {
         val errorNodesWithText: ListOfPairs = mutableListOf()
         val eolCommentsOffsetToText = getOffsetsToTextBlocksFromEolComments(node, errorNodesWithText)
@@ -70,7 +74,7 @@ class CommentsRule(configRules: List<RulesConfig>) : DiktatRule(
             .map { (offset, text) -> offset to text.trim() }
             .mapNotNull { (offset, text) ->
                 when {
-                    text.mayBeImport() ->
+                    text.isPossibleImport() ->
                         offset to ktPsiFactory.createImportDirective(ImportPath.fromString(text.substringAfter(importKeywordWithSpace, ""))).node
                     text.trimStart().startsWith(packageKeywordWithSpace) ->
                         offset to ktPsiFactory.createPackageDirective(FqName(text.substringAfter(packageKeywordWithSpace, ""))).node
@@ -161,12 +165,10 @@ class CommentsRule(configRules: List<RulesConfig>) : DiktatRule(
      * Only string surrounded in backticks or a dot-qualified expression (i.e., containing words maybe separated by dots)
      * are considered for this case.
      */
-    private fun String.mayBeImport(): Boolean {
-        return trimStart().startsWith(importKeywordWithSpace) &&
-                substringAfter(importKeywordWithSpace, "").run {
-                    startsWith('`') && endsWith('`') || !contains(' ')
-                }
-    }
+    private fun String.isPossibleImport(): Boolean = trimStart().startsWith(importKeywordWithSpace) &&
+            substringAfter(importKeywordWithSpace, "").run {
+                startsWith('`') && endsWith('`') || !contains(' ')
+            }
 
     @Suppress("MaxLineLength")
     companion object {
