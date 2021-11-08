@@ -50,12 +50,6 @@ open class DiktatJavaExecTaskBase @Inject constructor(
         } else {
             main = "com.pinterest.ktlint.Main"
         }
-        require(diktatExtension.inputs.none { it.isAbsolute }) {
-            "Absolute paths are not supported for inputs in diktat-gradle-plugin"
-        }
-        require(diktatExtension.excludes.none { it.isAbsolute }) {
-            "Absolute paths are not supported for excludes in diktat-gradle-plugin"
-        }
 
         // Plain, checkstyle and json reporter are provided out of the box in ktlint
         if (diktatExtension.reporterType == "html") {
@@ -162,7 +156,12 @@ open class DiktatJavaExecTaskBase @Inject constructor(
             GradleVersion.version(gradleVersionString) >= GradleVersion.version("6.4")
 
     private fun MutableList<String>.addPattern(pattern: File, negate: Boolean = false) {
-        add((if (negate) "!" else "") + pattern)
+        val path = if (pattern.isAbsolute) {
+            pattern.relativeTo(project.projectDir)
+        } else {
+            pattern
+        }
+        add((if (negate) "!" else "") + path)
     }
 
     private fun resolveConfigFile(file: File): String {
