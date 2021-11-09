@@ -111,12 +111,11 @@ class TrailingCommaRule(configRules: List<RulesConfig>) : DiktatRule(
                 // `val b: Int  // comment` --> the whole expression is VALUE_PARAMETER
                 // So, in this case we must insert comma before the comment, in other cases we will insert it after current node
                 val comments = listOf(EOL_COMMENT, BLOCK_COMMENT, KDOC)
-                val firstCommentNodeOrNull = this.children().filter { it.elementType in comments }.firstOrNull()
-                if (firstCommentNodeOrNull != null && this.elementType == VALUE_PARAMETER) {
+                val firstCommentNodeOrNull = if (this.elementType == VALUE_PARAMETER) this.children().firstOrNull { it.elementType in comments } else null
+                firstCommentNodeOrNull?.let {
                     this.addChild(LeafPsiElement(COMMA, ","), firstCommentNodeOrNull)
-                } else {
-                    parent.addChild(LeafPsiElement(COMMA, ","), this.treeNext)
                 }
+                    ?: parent.addChild(LeafPsiElement(COMMA, ","), this.treeNext)
             }
         }
     }
