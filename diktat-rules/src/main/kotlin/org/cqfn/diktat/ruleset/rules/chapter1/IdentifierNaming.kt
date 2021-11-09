@@ -19,31 +19,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_HAS_PREFIX
 import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_NAME_INCORRECT
 import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_NAME_INCORRECT_FORMAT
 import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.ruleset.utils.Style
-import org.cqfn.diktat.ruleset.utils.containsOneLetterOrZero
-import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
-import org.cqfn.diktat.ruleset.utils.findChildAfter
-import org.cqfn.diktat.ruleset.utils.findLeafWithSpecificType
-import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
-import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
-import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
-import org.cqfn.diktat.ruleset.utils.getIdentifierName
-import org.cqfn.diktat.ruleset.utils.getTypeParameterList
-import org.cqfn.diktat.ruleset.utils.hasPrefix
-import org.cqfn.diktat.ruleset.utils.hasTestAnnotation
-import org.cqfn.diktat.ruleset.utils.isConstant
-import org.cqfn.diktat.ruleset.utils.isDigits
-import org.cqfn.diktat.ruleset.utils.isLowerCamelCase
-import org.cqfn.diktat.ruleset.utils.isOverridden
-import org.cqfn.diktat.ruleset.utils.isPascalCase
-import org.cqfn.diktat.ruleset.utils.isTextLengthInRange
-import org.cqfn.diktat.ruleset.utils.isUpperSnakeCase
-import org.cqfn.diktat.ruleset.utils.kDocTags
-import org.cqfn.diktat.ruleset.utils.removePrefix
 import org.cqfn.diktat.ruleset.utils.search.findAllVariablesWithUsages
-import org.cqfn.diktat.ruleset.utils.toLowerCamelCase
-import org.cqfn.diktat.ruleset.utils.toPascalCase
-import org.cqfn.diktat.ruleset.utils.toUpperSnakeCase
 
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.CATCH
@@ -55,6 +31,7 @@ import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_TYPE
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
+import com.pinterest.ktlint.core.ast.ElementType.OBJECT_DECLARATION
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_PARAMETER
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
@@ -74,6 +51,7 @@ import org.jetbrains.kotlin.psi.psiUtil.isPrivate
 import org.jetbrains.kotlin.psi.psiUtil.parents
 
 import java.util.Locale
+import org.cqfn.diktat.ruleset.utils.*
 
 /**
  * This visitor covers rules:  1.2, 1.3, 1.4, 1.5 of Huawei code style. It covers following rules:
@@ -216,7 +194,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
                         }) {
                             // For class members also check `@property` KDoc tag.
                             // If we are here, then `variableName` is definitely a node from a class.
-                            variableName.parent(CLASS)!!.findChildByType(KDOC)?.kDocTags()
+                            variableName.parent(CLASS)?:variableName.parent(OBJECT_DECLARATION)?.findChildByType(KDOC)?.kDocTags()
                                 ?.firstOrNull {
                                     it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == variableName.text
                                 }
