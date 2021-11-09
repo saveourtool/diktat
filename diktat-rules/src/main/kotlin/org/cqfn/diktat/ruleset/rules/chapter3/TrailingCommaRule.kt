@@ -106,10 +106,10 @@ class TrailingCommaRule(configRules: List<RulesConfig>) : DiktatRule(
             TRAILING_COMMA.warnAndFix(configRules, emitWarn, isFixMode, "after ${this.elementType}: ${this.text}", this.startOffset, this) {
                 val parent = this.treeParent
 
-                // In case, when we got VALUE_PARAMETER, it may contain comments, which follows the actual parameter and both of them are actually in the same node
+                // In case, when we got VALUE_PARAMETER, it may contain comments, which follows the actual parameter and all of them are actually in the same node
                 // Ex: `class A(val a: Int, val b: Int  // comment)`
                 // `val b: Int  // comment` --> the whole expression is VALUE_PARAMETER
-                // So in this case we must insert comma before the comment, in other cases we will insert it after VALUE_PARAMETER node
+                // So, in this case we must insert comma before the comment, in other cases we will insert it after current node
                 val comments = listOf(EOL_COMMENT, BLOCK_COMMENT, KDOC)
                 val firstCommentNodeOrNull = this.children().filter { it.elementType in comments }.firstOrNull()
                 if (firstCommentNodeOrNull != null && this.elementType == VALUE_PARAMETER) {
