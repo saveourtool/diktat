@@ -66,15 +66,17 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     "line-length",
     configRules,
     listOf(LONG_LINE)) {
+    private val configuration by lazy {
+        LineLengthConfiguration(
+            configRules.getRuleConfig(LONG_LINE)?.configuration ?: emptyMap()
+        )
+    }
     private lateinit var positionByOffset: (Int) -> Pair<Int, Int>
 
     override fun logic(node: ASTNode) {
-        val configuration = LineLengthConfiguration(
-            configRules.getRuleConfig(LONG_LINE)?.configuration ?: emptyMap())
-
         if (node.elementType == FILE) {
             node.getChildren(null).forEach {
-                if (it.elementType != PACKAGE_DIRECTIVE || it.elementType != IMPORT_LIST) {
+                if (it.elementType != PACKAGE_DIRECTIVE && it.elementType != IMPORT_LIST) {
                     checkLength(it, configuration)
                 }
             }
