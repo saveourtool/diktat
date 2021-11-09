@@ -292,7 +292,7 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
                     |        this.x = x
                     |    }
                     |    
-                    |    fun getX() {
+                    |    fun getX(): Type {
                     |        return x
                     |    }
                     |    
@@ -309,7 +309,6 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
                     |    }
                     |}
                 """.trimMargin(),
-            LintError(10, 5, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} getY", false),
             LintError(12, 5, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} setY", true),
             LintError(17, 5, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} getZ", true)
         )
@@ -366,6 +365,42 @@ class KdocMethodsTest : LintTestBase(::KdocMethods) {
                     |}
                 """.trimMargin(),
             LintError(1, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} foo", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.MISSING_KDOC_ON_FUNCTION)
+    fun `KDoc should be for function with single line body`() {
+        lintMethod(
+            """
+                    |fun hasNoChildren() = children.size == 0
+                    |fun getFirstChild() = children.elementAtOrNull(0)
+                """.trimMargin(),
+            LintError(1, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} hasNoChildren", true),
+            LintError(2, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} getFirstChild", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.MISSING_KDOC_ON_FUNCTION)
+    fun `KDoc shouldn't be for function with name as method`() {
+        lintMethod(
+            """
+                    |@GetMapping("/projects")
+                    |fun getProjects() = projectService.getProjects(x.prop())
+                """.trimMargin(),
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.MISSING_KDOC_ON_FUNCTION)
+    fun `KDoc shouldn't trigger on actual methods`() {
+        lintMethod(
+            """
+                    |actual fun writeToConsoleAc(msg: String, outputType: OutputStreamType) {}
+                    |expect fun writeToConsoleEx(msg: String, outputType: OutputStreamType) {}
+                """.trimMargin(),
+            LintError(2, 1, ruleId, "${MISSING_KDOC_ON_FUNCTION.warnText()} writeToConsoleEx", true),
         )
     }
 }

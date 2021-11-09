@@ -105,7 +105,7 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
             // Checking if comment is inside a code block like fun{}
             // Not checking last comment as well
             if (isFirstComment(node)) {
-                if (node.isBlockOrClassBody()) {
+                if (node.isChildOfBlockOrClassBody()) {
                     // Just check white spaces before comment
                     checkFirstCommentSpaces(node)
                 }
@@ -166,7 +166,7 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun checkCommentsInCodeBlocks(node: ASTNode) {
         if (isFirstComment(node)) {
-            if (node.isBlockOrClassBody()) {
+            if (node.isChildOfBlockOrClassBody()) {
                 // Just check white spaces before comment
                 checkFirstCommentSpaces(node)
             }
@@ -181,7 +181,7 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
         } else {
             if (node.treePrev.numNewLines() == 1 || node.treePrev.numNewLines() > 2) {
                 WRONG_NEWLINES_AROUND_KDOC.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
-                    (node.treePrev as LeafPsiElement).replaceWithText("\n\n")
+                    (node.treePrev as LeafPsiElement).rawReplaceWithText("\n\n")
                 }
             }
         }
@@ -198,7 +198,7 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
                     "There should be 0 space(s) before comment text, but are ${node.treePrev.text.count { it == ' ' }} in ${node.text}",
                     node.startOffset, node) {
                     if (node.treePrev.elementType == WHITE_SPACE) {
-                        (node.treePrev as LeafPsiElement).replaceWithText("\n")
+                        (node.treePrev as LeafPsiElement).rawReplaceWithText("\n")
                     } else {
                         node.treeParent.addChild(PsiWhiteSpaceImpl("\n"), node)
                     }
@@ -214,7 +214,7 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
             // if there are too many spaces before comment
             COMMENT_WHITE_SPACE.warnAndFix(configRules, emitWarn, isFixMode,
                 "There should be ${configuration.maxSpacesBeforeComment} space(s) before comment text, but there are too many in ${node.text}", node.startOffset, node) {
-                (node.treePrev as LeafPsiElement).replaceWithText(" ".repeat(configuration.maxSpacesBeforeComment))
+                (node.treePrev as LeafPsiElement).rawReplaceWithText(" ".repeat(configuration.maxSpacesBeforeComment))
             }
         }
     }
@@ -265,8 +265,8 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
             val commentText = node.text.drop(2).trim()
 
             when (node.elementType) {
-                EOL_COMMENT -> (node as LeafPsiElement).replaceWithText("// $commentText")
-                BLOCK_COMMENT -> (node as LeafPsiElement).replaceWithText("/* $commentText")
+                EOL_COMMENT -> (node as LeafPsiElement).rawReplaceWithText("// $commentText")
+                BLOCK_COMMENT -> (node as LeafPsiElement).rawReplaceWithText("/* $commentText")
                 KDOC -> {
                     node.findAllDescendantsWithSpecificType(KDOC_TEXT).forEach {
                         modifyKdocText(it, configuration)
@@ -283,13 +283,13 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
         if (!node.text.startsWith(" ".repeat(configuration.maxSpacesInComment))) {
             val commentText = node.text.trim()
             val indent = " ".repeat(configuration.maxSpacesInComment)
-            (node as LeafPsiElement).replaceWithText("$indent$commentText")
+            (node as LeafPsiElement).rawReplaceWithText("$indent$commentText")
         }
     }
 
     private fun checkClassComment(node: ASTNode) {
         if (isFirstComment(node)) {
-            if (node.isBlockOrClassBody()) {
+            if (node.isChildOfBlockOrClassBody()) {
                 checkFirstCommentSpaces(node)
             } else {
                 checkFirstCommentSpaces(node.treeParent)
@@ -303,7 +303,7 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
         } else if (node.treeParent.elementType != FILE &&
                 (node.treeParent.treePrev.numNewLines() == 1 || node.treeParent.treePrev.numNewLines() > 2)) {
             WRONG_NEWLINES_AROUND_KDOC.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
-                (node.treeParent.treePrev as LeafPsiElement).replaceWithText("\n\n")
+                (node.treeParent.treePrev as LeafPsiElement).rawReplaceWithText("\n\n")
             }
         }
     }
@@ -312,15 +312,16 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
         if (node.treePrev.isWhiteSpace() &&
                 (node.treePrev.numNewLines() > 1 || node.treePrev.numNewLines() == 0)) {
             FIRST_COMMENT_NO_BLANK_LINE.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
-                (node.treePrev as LeafPsiElement).replaceWithText("\n")
+                (node.treePrev as LeafPsiElement).rawReplaceWithText("\n")
             }
         }
     }
 
-    private fun isFirstComment(node: ASTNode) = if (node.isBlockOrClassBody()) {
+    private fun isFirstComment(node: ASTNode) = if (node.isChildOfBlockOrClassBody()) {
         // In case when comment is inside of a function or class
         if (node.treePrev.isWhiteSpace()) {
-            node.treePrev.treePrev.elementType == LBRACE
+            // in some cases (e.g. kts files) BLOCK doesn't have a leading brace
+            node.treePrev?.treePrev?.elementType == LBRACE
         } else {
             node.treePrev == null || node.treePrev.elementType == LBRACE  // null is handled for functional literal
         }
@@ -335,7 +336,7 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
         node.treeParent.getAllChildrenWithType(node.elementType).first() == node
     }
 
-    private fun ASTNode.isBlockOrClassBody(): Boolean = treeParent.elementType == BLOCK || treeParent.elementType == CLASS_BODY
+    private fun ASTNode.isChildOfBlockOrClassBody(): Boolean = treeParent.elementType == BLOCK || treeParent.elementType == CLASS_BODY
 
     /**
      * [RuleConfiguration] for [CommentsFormatting] rule

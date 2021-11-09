@@ -88,6 +88,8 @@ open class TestCompare : TestBase {
 
     /**
      * Get result of the test execution
+     *
+     * @return list stdOut
      */
     protected open fun getExecutionResult() = testResult.stdOut
 }

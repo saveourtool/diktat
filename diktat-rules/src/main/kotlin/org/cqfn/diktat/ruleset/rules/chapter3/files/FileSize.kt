@@ -5,12 +5,9 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_IS_TOO_LONG
 import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.ruleset.utils.getFilePath
-import org.cqfn.diktat.ruleset.utils.splitPathToDirs
 
 import com.pinterest.ktlint.core.ast.ElementType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import org.slf4j.LoggerFactory
 
 /**
  * Rule that checks number of lines in a file
@@ -27,16 +24,7 @@ class FileSize(configRules: List<RulesConfig>) : DiktatRule(
 
     override fun logic(node: ASTNode) {
         if (node.elementType == ElementType.FILE) {
-            val filePathParts = node.getFilePath().splitPathToDirs()
-            if (SRC_PATH !in filePathParts) {
-                log.error("$SRC_PATH directory is not found in file path")
-            } else {
-                if (configuration.ignoreFolders.none {
-                    filePathParts.containsAll(it.splitPathToDirs())
-                }) {
-                    checkFileSize(node, configuration.maxSize)
-                }
-            }
+            checkFileSize(node, configuration.maxSize)
         }
     }
 
@@ -58,18 +46,9 @@ class FileSize(configRules: List<RulesConfig>) : DiktatRule(
          * Maximum allowed number of lines in a file
          */
         val maxSize = config["maxSize"]?.toLongOrNull() ?: MAX_SIZE
-
-        /**
-         * List of folders, files from which are ignored during the check. For example, for tests.
-         */
-        val ignoreFolders = config["ignoreFolders"]?.replace("\\s+".toRegex(), "")?.split(IGNORE_FOLDERS_SEPARATOR) ?: ignoreFolder
     }
 
     companion object {
-        private val log = LoggerFactory.getLogger(FileSize::class.java)
-        const val IGNORE_FOLDERS_SEPARATOR = ","
         const val MAX_SIZE = 2000L
-        const val SRC_PATH = "src"
-        private val ignoreFolder: List<String> = emptyList()
     }
 }

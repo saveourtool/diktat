@@ -54,7 +54,6 @@ import org.jetbrains.kotlin.psi.KtLoopExpression
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
-import org.jetbrains.kotlin.utils.addToStdlib.firstNotNullResult
 import org.slf4j.LoggerFactory
 
 import java.lang.StringBuilder
@@ -122,7 +121,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
             }
             .forEach {
                 WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "tabs are not allowed for indentation", it.startOffset + it.text.indexOf('\t'), it) {
-                    (it as LeafPsiElement).replaceWithText(it.text.replace("\t", " ".repeat(configuration.indentationSize)))
+                    (it as LeafPsiElement).rawReplaceWithText(it.text.replace("\t", " ".repeat(configuration.indentationSize)))
                 }
             }
         return isFixMode  // true if we changed all tabs to spaces
@@ -138,7 +137,12 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
             if (lastChild.elementType != WHITE_SPACE || numBlankLinesAfter != 1) {
                 val warnText = if (lastChild.elementType != WHITE_SPACE || numBlankLinesAfter == 0) "no newline" else "too many blank lines"
                 val fileName = filePath.substringAfterLast(File.separator)
-                WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "$warnText at the end of file $fileName", node.startOffset + node.textLength, node) {
+                // In case, when last child is newline, visually user will see blank line at the end of file,
+                // however, the text length does not consider it, since it's blank and line appeared only because of `\n`
+                // But ktlint synthetically increase length in aim to have ability to point to this line, so in this case
+                // offset will be `node.textLength`, otherwise we will point to the last symbol, i.e `node.textLength - 1`
+                val offset = if (lastChild.elementType == WHITE_SPACE && lastChild.textContains('\n')) node.textLength else node.textLength - 1
+                WRONG_INDENTATION.warnAndFix(configRules, emitWarn, isFixMode, "$warnText at the end of file $fileName", offset, node) {
                     if (lastChild.elementType != WHITE_SPACE) {
                         node.addChild(PsiWhiteSpaceImpl("\n"), null)
                     } else {
@@ -180,7 +184,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
 
         val indentError = IndentationError(context.indent(), astNode.text.lastIndent())
 
-        val checkResult = customIndentationCheckers.firstNotNullResult {
+        val checkResult = customIndentationCheckers.firstNotNullOfOrNull {
             it.checkNode(whiteSpace, indentError)
         }
 
@@ -303,6 +307,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
 
         /**
          * @param token a token that caused indentation increment, for example an opening brace
+         * @return Unit
          */
         fun storeIncrementingToken(token: IElementType) = token
             .also { require(it in increasingTokens) { "Only tokens that increase indentation should be passed to this method" } }
@@ -342,6 +347,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
          * @param initiator a node that caused exceptional indentation
          * @param indent an additional indent
          * @param includeLastChild whether the last child node should be included in the range affected by exceptional indentation
+         * @return true if add exception in exceptionalIndents
          */
         fun addException(
             initiator: ASTNode,
@@ -351,6 +357,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
 
         /**
          * @param astNode the node which is used to determine whether exceptinoal indents are still active
+         * @return boolean result
          */
         fun checkAndReset(astNode: ASTNode) = exceptionalIndents.retainAll { it.isActive(astNode) }
 

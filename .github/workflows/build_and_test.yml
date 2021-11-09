@@ -6,7 +6,7 @@ on:
 jobs:
   build_and_test_with_code_coverage:
     name: Build, test and upload code coverage
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2.3.4
@@ -47,8 +47,7 @@ jobs:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
 
     steps:
-      - uses: actions/checkout@v2.3.4
-
+      - uses: actions/checkout@v2
       - name: Setup environment variables
         run: |
           cat pom.xml | grep "<version>.*</version>" | head -1 | awk -F'[><]' '{ printf "DIKTAT_VERSION=%s\n",$3 }' >> $GITHUB_ENV
@@ -57,7 +56,7 @@ jobs:
 
       - name: Setup environment
         run: |
-          curl -sSLO https://github.com/pinterest/ktlint/releases/download/${{ env.KTLINT_VERSION }}/ktlint && chmod a+x ktlint
+          curl -o ktlint -sSL https://repo1.maven.org/maven2/com/pinterest/ktlint/${{ env.KTLINT_VERSION }}/ktlint-0.43.0-all.jar && chmod a+x ktlint
         shell: bash
 
       - name: Download diktat jar
@@ -69,22 +68,41 @@ jobs:
         continue-on-error: true
         if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
         run: |
-          ./ktlint -R diktat-${{ env.DIKTAT_VERSION }}.jar "examples/maven/src/main/kotlin/Test.kt" &> out
+          java -jar ktlint -R diktat-${{ env.DIKTAT_VERSION }}.jar --disabled_rules=standard "examples/maven/src/main/kotlin/Test.kt" &> out.txt
         shell: bash
 
       - name: Run diKTat from cli on windows
         continue-on-error: true
         if: runner.os == 'Windows'
         run: |
-          java.exe -jar ktlint -R diktat-${{ env.DIKTAT_VERSION }}.jar "examples/maven/src/main/kotlin/Test.kt" > out.txt 2>&1
+          java.exe -jar ktlint -R diktat-${{ env.DIKTAT_VERSION }}.jar --disabled_rules=standard "examples/maven/src/main/kotlin/Test.kt" > out.txt 2>&1
         shell: cmd
 
       - name: Check output
-        id: cli-check
         run: |
-          if [ -f out.txt ]; then mv out.txt out; fi
-          cat out
-          grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out
+          cat out.txt
+          grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out.txt
+          rm out.txt
+        shell: bash
+
+      - name: Run diKTat from cli (absolute paths)
+        continue-on-error: true
+        if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
+        run: |
+          java -jar ktlint -R diktat-${{ env.DIKTAT_VERSION }}.jar --disabled_rules=standard "$PWD/examples/maven/src/main/kotlin/Test.kt" &> out.txt
+        shell: bash
+
+      - name: Run diKTat from cli on windows (absolute paths)
+        continue-on-error: true
+        if: runner.os == 'Windows'
+        run: |
+          java.exe -jar ktlint -R diktat-${{ env.DIKTAT_VERSION }}.jar --disabled_rules=standard "%cd%/examples/maven/src/main/kotlin/Test.kt" > out.txt 2>&1
+        shell: cmd
+
+      - name: Check output (absolute paths)
+        run: |
+          cat out.txt
+          grep -E "\[VARIABLE_NAME_INCORRECT_FORMAT\]" out.txt
         shell: bash
 
   build_and_test:
@@ -126,3 +144,4 @@ jobs:
         with:
           name: gradle-test-report-${{ matrix.os }}
           path: 'diktat-gradle-plugin/build/reports/'
+          retention-days: 1

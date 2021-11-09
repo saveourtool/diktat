@@ -28,6 +28,8 @@ class LambdaParameterOrderWarnTest : LintTestBase(::LambdaParameterOrder) {
                     |fun foo(a: Int, myLambdab: () -> Unit, myLambda: () -> Unit)
                     |
                     |fun foo(a: Int? = null, myLambdab: () -> Unit, myLambda: () -> Unit)
+                    |
+                    |fun foo(lambda1: () -> Unit, lambda2: (() -> Unit)?) {}
                 """.trimMargin(),
             LintError(1, 17, ruleId, "${LAMBDA_IS_NOT_LAST_PARAMETER.warnText()} foo", false)
         )

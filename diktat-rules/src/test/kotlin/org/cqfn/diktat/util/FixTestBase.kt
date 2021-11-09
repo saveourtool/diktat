@@ -42,6 +42,17 @@ open class FixTestBase(protected val resourceFilePath: String,
     /**
      * @param expectedPath path to file with expected result, relative to [resourceFilePath]
      * @param testPath path to file with code that will be transformed by formatter, relative to [resourceFilePath]
+     */
+    protected fun fixAndCompareSmokeTest(expectedPath: String, testPath: String) {
+        Assertions.assertTrue(
+            testComparatorUnit
+                .compareFilesFromResources(expectedPath, testPath, true)
+        )
+    }
+
+    /**
+     * @param expectedPath path to file with expected result, relative to [resourceFilePath]
+     * @param testPath path to file with code that will be transformed by formatter, relative to [resourceFilePath]
      * @param overrideRulesConfigList optional override to [rulesConfigList]
      */
     protected fun fixAndCompare(expectedPath: String,

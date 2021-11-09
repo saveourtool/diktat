@@ -71,7 +71,7 @@ class EmptyBlock(configRules: List<RulesConfig>) : DiktatRule(
                     EMPTY_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "different style for empty block",
                         node.startOffset, node) {
                         if (space.elementType == WHITE_SPACE) {
-                            (space.treeNext as LeafPsiElement).replaceWithText("\n")
+                            (space.treeNext as LeafPsiElement).rawReplaceWithText("\n")
                         } else {
                             node.addChild(PsiWhiteSpaceImpl("\n"), space.treeNext)
                         }

@@ -72,6 +72,24 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
     }
 
     @Test
+    @Tag(WarningNames.PACKAGE_NAME_MISSING)
+    fun `don't add the package name to the file in buildSrc path`() {
+        lintMethod(
+            """
+                import org.cqfn.diktat.a.b.c
+
+                /**
+                 * testComment
+                 */
+                class TestPackageName {  }
+
+            """.trimIndent(),
+            fileName = "~/diktat/buildSrc/src/main/kotlin/Version.kt",
+            rulesConfigList = rulesConfigList
+        )
+    }
+
+    @Test
     @Tag(WarningNames.PACKAGE_NAME_INCORRECT_CASE)
     fun `package name should be in a lower case (check)`() {
         lintMethod(
@@ -349,6 +367,28 @@ class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
             LintError(1, 9, ruleId, "${PACKAGE_NAME_INCORRECT_PATH.warnText()} org.cqfn.diktat.example", true),
             fileName = "/home/testu/project/src/main/kotlin/org/cqfn/diktat/example/Example.kt",
             rulesConfigList = rulesConfigListEmptyDomainName
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.PACKAGE_NAME_INCORRECT_PATH)
+    fun `shouldn't trigger if path contains dot`() {
+        lintMethod(
+            """
+                |package org.cqfn.diktat.test.utils
+            """.trimMargin(),
+            fileName = "/home/testu/project/src/main/kotlin/org/cqfn/diktat/test.utils/Example.kt",
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.PACKAGE_NAME_INCORRECT_PATH)
+    fun `shouldn't trigger for gradle script`() {
+        lintMethod(
+            """
+                |import org.cqfn.diktat.generation.docs.generateAvailableRules
+            """.trimMargin(),
+            fileName = "/home/testu/project/build.gradle.kts",
         )
     }
 }

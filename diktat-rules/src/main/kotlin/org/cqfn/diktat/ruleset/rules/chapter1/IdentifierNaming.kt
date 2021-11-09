@@ -21,6 +21,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_NAME_INCORRECT_FORMAT
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.Style
 import org.cqfn.diktat.ruleset.utils.containsOneLetterOrZero
+import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.findChildAfter
 import org.cqfn.diktat.ruleset.utils.findLeafWithSpecificType
 import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
@@ -37,6 +38,7 @@ import org.cqfn.diktat.ruleset.utils.isOverridden
 import org.cqfn.diktat.ruleset.utils.isPascalCase
 import org.cqfn.diktat.ruleset.utils.isTextLengthInRange
 import org.cqfn.diktat.ruleset.utils.isUpperSnakeCase
+import org.cqfn.diktat.ruleset.utils.kDocTags
 import org.cqfn.diktat.ruleset.utils.removePrefix
 import org.cqfn.diktat.ruleset.utils.search.findAllVariablesWithUsages
 import org.cqfn.diktat.ruleset.utils.toLowerCamelCase
@@ -46,10 +48,13 @@ import org.cqfn.diktat.ruleset.utils.toUpperSnakeCase
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.CATCH
 import com.pinterest.ktlint.core.ast.ElementType.CATCH_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.DESTRUCTURING_DECLARATION
 import com.pinterest.ktlint.core.ast.ElementType.DESTRUCTURING_DECLARATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_TYPE
+import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
+import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_PARAMETER
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
@@ -60,9 +65,14 @@ import org.jetbrains.kotlin.builtins.PrimitiveType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
+import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
+import org.jetbrains.kotlin.psi.KtParameter
+import org.jetbrains.kotlin.psi.KtPrimaryConstructor
 import org.jetbrains.kotlin.psi.KtProperty
+import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 import org.jetbrains.kotlin.psi.psiUtil.isPrivate
 import org.jetbrains.kotlin.psi.psiUtil.parents
+
 import java.util.Locale
 
 /**
@@ -156,14 +166,19 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress(
         "SAY_NO_TO_VAR",
         "TOO_LONG_FUNCTION",
-        "ComplexMethod"
+        "ComplexMethod",
+        "UnsafeCallOnNullableType",
     )
     private fun checkVariableName(node: ASTNode): List<ASTNode> {
         // special case for Destructuring declarations that can be treated as parameters in lambda:
         var namesOfVariables = extractVariableIdentifiers(node)
         // Only local private properties will be autofix in order not to break code if there are usages in other files.
         // Destructuring declarations are only allowed for local variables/values, so we don't need to calculate `isFix` for every node in `namesOfVariables`
-        val isFix = isFixMode && if (node.elementType == ElementType.PROPERTY) (node.psi as KtProperty).run { isLocal || isPrivate() } else true
+        val isPublicOrNonLocalProperty = if (node.elementType == ElementType.PROPERTY) (node.psi as KtProperty).run { !isLocal && !isPrivate() } else false
+        val isNonPrivatePrimaryConstructorParameter = (node.psi as? KtParameter)?.run {
+            hasValOrVar() && getParentOfType<KtPrimaryConstructor>(true)?.valueParameters?.contains(this) == true && !isPrivate()
+        } ?: false
+        val isFix = isFixMode && !(isPublicOrNonLocalProperty || isNonPrivatePrimaryConstructorParameter)
         namesOfVariables
             .forEach { variableName ->
                 // variable should not contain only one letter in it's name. This is a bad example: b512
@@ -182,7 +197,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
                 if (node.isConstant()) {
                     if (!variableName.text.isUpperSnakeCase() && variableName.text.length > 1) {
                         CONSTANT_UPPERCASE.warnAndFix(configRules, emitWarn, isFix, variableName.text, variableName.startOffset, node) {
-                            (variableName as LeafPsiElement).replaceWithText(variableName.text.toUpperSnakeCase())
+                            (variableName as LeafPsiElement).rawReplaceWithText(variableName.text.toUpperSnakeCase())
                         }
                     }
                 } else if (variableName.text != "_" && !variableName.text.isLowerCamelCase()) {
@@ -194,21 +209,35 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
                             .parent({ it.elementType == FILE })
                             ?.findAllVariablesWithUsages { it.name == variableName.text }
                             ?.flatMap { it.value.toList() }
-                            ?.forEach { (it.node.firstChildNode as LeafPsiElement).replaceWithText(correctVariableName) }
-                        (variableName as LeafPsiElement).replaceWithText(correctVariableName)
+                            ?.forEach { (it.node.firstChildNode as LeafPsiElement).rawReplaceWithText(correctVariableName) }
+                        if (variableName.treeParent.psi.run {
+                            (this is KtProperty && isMember) ||
+                                    (this is KtParameter && getParentOfType<KtPrimaryConstructor>(true)?.valueParameters?.contains(this) == true)
+                        }) {
+                            // For class members also check `@property` KDoc tag.
+                            // If we are here, then `variableName` is definitely a node from a class.
+                            variableName.parent(CLASS)!!.findChildByType(KDOC)?.kDocTags()
+                                ?.firstOrNull {
+                                    it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == variableName.text
+                                }
+                                ?.run {
+                                    (getSubjectLink()!!.node.findAllDescendantsWithSpecificType(IDENTIFIER).single() as LeafPsiElement).rawReplaceWithText(correctVariableName)
+                                }
+                        }
+                        (variableName as LeafPsiElement).rawReplaceWithText(correctVariableName)
                     }
                 }
             }
 
         // need to get new node in case we have already converted the case before (and replaced the child node)
-        // we need to recalculate it twice, because nodes could have been changed by "replaceWithText" function
+        // we need to recalculate it twice, because nodes could have been changed by "rawReplaceWithText" function
         namesOfVariables = extractVariableIdentifiers(node)
         namesOfVariables
             .forEach { variableName ->
                 // generally, variables with prefixes are not allowed (like mVariable, xCode, iValue)
                 if (variableName.text.hasPrefix()) {
                     VARIABLE_HAS_PREFIX.warnAndFix(configRules, emitWarn, isFixMode, variableName.text, variableName.startOffset, node) {
-                        (variableName as LeafPsiElement).replaceWithText(variableName.text.removePrefix())
+                        (variableName as LeafPsiElement).rawReplaceWithText(variableName.text.removePrefix())
                     }
                 }
             }
@@ -273,7 +302,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
         val className: ASTNode = node.getIdentifierName() ?: return emptyList()
         if (!(className.text.isPascalCase())) {
             CLASS_NAME_INCORRECT.warnAndFix(configRules, emitWarn, isFixMode, className.text, className.startOffset, className) {
-                (className as LeafPsiElement).replaceWithText(className.text.toPascalCase())
+                (className as LeafPsiElement).rawReplaceWithText(className.text.toPascalCase())
             }
         }
 
@@ -296,7 +325,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
         if (superClassName != null && hasExceptionSuffix(superClassName) && !hasExceptionSuffix(classNameNode.text)) {
             EXCEPTION_SUFFIX.warnAndFix(configRules, emitWarn, isFixMode, classNameNode.text, classNameNode.startOffset, classNameNode) {
                 // FixMe: need to add tests for this
-                (classNameNode as LeafPsiElement).replaceWithText(classNameNode.text + "Exception")
+                (classNameNode as LeafPsiElement).rawReplaceWithText(classNameNode.text + "Exception")
             }
         }
     }
@@ -312,7 +341,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
         val objectName: ASTNode = node.getIdentifierName() ?: return emptyList()
         if (!objectName.text.isPascalCase()) {
             OBJECT_NAME_INCORRECT.warnAndFix(configRules, emitWarn, isFixMode, objectName.text, objectName.startOffset, objectName) {
-                (objectName as LeafPsiElement).replaceWithText(objectName.text.toPascalCase())
+                (objectName as LeafPsiElement).rawReplaceWithText(objectName.text.toPascalCase())
             }
         }
         return listOf(objectName)
@@ -341,7 +370,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
             if (!validator(value.text)) {
                 ENUM_VALUE.warnAndFix(configRules, emitWarn, isFixMode, value.text, value.startOffset, value) {
                     // FixMe: add tests for this
-                    (value as LeafPsiElement).replaceWithText(autofix(value.text))
+                    (value as LeafPsiElement).rawReplaceWithText(autofix(value.text))
                 }
             }
 
@@ -368,7 +397,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
         if (!functionName.text.isLowerCamelCase()) {
             FUNCTION_NAME_INCORRECT_CASE.warnAndFix(configRules, emitWarn, isFixMode, functionName.text, functionName.startOffset, functionName) {
                 // FixMe: add tests for this
-                (functionName as LeafPsiElement).replaceWithText(functionName.text.toLowerCamelCase())
+                (functionName as LeafPsiElement).rawReplaceWithText(functionName.text.toLowerCamelCase())
             }
         }
 
@@ -398,7 +427,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
 
         if (!aliasName.text.isPascalCase()) {
             TYPEALIAS_NAME_INCORRECT_CASE.warnAndFix(configRules, emitWarn, isFixMode, aliasName.text, aliasName.startOffset, aliasName) {
-                (aliasName as LeafPsiElement).replaceWithText(aliasName.text.toPascalCase())
+                (aliasName as LeafPsiElement).rawReplaceWithText(aliasName.text.toPascalCase())
             }
         }
         return listOf(aliasName)

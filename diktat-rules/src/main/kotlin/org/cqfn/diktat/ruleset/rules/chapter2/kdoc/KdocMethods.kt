@@ -16,7 +16,6 @@ import org.cqfn.diktat.ruleset.utils.getBodyLines
 import org.cqfn.diktat.ruleset.utils.getFilePath
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
 import org.cqfn.diktat.ruleset.utils.getIdentifierName
-import org.cqfn.diktat.ruleset.utils.getRootNode
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.cqfn.diktat.ruleset.utils.hasKnownKdocTag
 import org.cqfn.diktat.ruleset.utils.hasTestAnnotation
@@ -30,31 +29,36 @@ import org.cqfn.diktat.ruleset.utils.kDocTags
 import org.cqfn.diktat.ruleset.utils.parameterNames
 import org.cqfn.diktat.ruleset.utils.splitPathToDirs
 
-import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType
+import com.pinterest.ktlint.core.ast.ElementType.ACTUAL_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
-import com.pinterest.ktlint.core.ast.ElementType.CALLABLE_REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.COLLECTION_LITERAL_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.CATCH
 import com.pinterest.ktlint.core.ast.ElementType.COLON
+import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.EQ
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_SECTION
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_TAG_NAME
 import com.pinterest.ktlint.core.ast.ElementType.KDOC_TEXT
-import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.THIS_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.THROW
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
-import com.pinterest.ktlint.core.ast.ElementType.WHEN_CONDITION_WITH_EXPRESSION
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
 import org.jetbrains.kotlin.kdoc.psi.impl.KDocTag
+import org.jetbrains.kotlin.psi.KtCallExpression
+import org.jetbrains.kotlin.psi.KtCatchClause
+import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
+import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.kotlin.psi.KtThrowExpression
+import org.jetbrains.kotlin.psi.psiUtil.collectDescendantsOfType
 import org.jetbrains.kotlin.psi.psiUtil.referenceExpression
 
 /**
@@ -74,9 +78,14 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
      * @param node
      */
     override fun logic(node: ASTNode) {
-        if (node.elementType == FUN && node.getFirstChildWithType(MODIFIER_LIST).isAccessibleOutside() && !node.isOverridden()) {
+        val isModifierAccessibleOutsideOrActual: Boolean by lazy {
+            node.getFirstChildWithType(MODIFIER_LIST).run {
+                isAccessibleOutside() && this?.hasChildOfType(ACTUAL_KEYWORD) != true
+            }
+        }
+        if (node.elementType == FUN && isModifierAccessibleOutsideOrActual && !node.isOverridden()) {
             val config = configRules.getCommonConfiguration()
-            val filePath = node.getRootNode().getFilePath()
+            val filePath = node.getFilePath()
             val isTestMethod = node.hasTestAnnotation() || isLocatedInTest(filePath.splitPathToDirs(), config.testAnchors)
             if (!isTestMethod && !node.isStandardMethod() && !node.isSingleLineGetterOrSetter()) {
                 checkSignatureDescription(node)
@@ -94,12 +103,12 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
 
         val (missingParameters, kDocMissingParameters) = getMissingParameters(node, kdocTags)
 
-        val explicitlyThrownExceptions = getExplicitlyThrownExceptions(node)
+        val explicitlyThrownExceptions = getExplicitlyThrownExceptions(node) + getRethrownExceptions(node)
         val missingExceptions = explicitlyThrownExceptions
             .minus(kdocTags
                 ?.filter { it.knownTag == KDocKnownTag.THROWS }
                 ?.mapNotNull { it.getSubjectName() }
-                ?.toSet() ?: emptySet()
+                ?.toSet() ?: emptySet(),
             )
 
         val paramCheckFailed = (missingParameters.isNotEmpty() && !node.isSingleLineGetterOrSetter()) || kDocMissingParameters.isNotEmpty()
@@ -110,7 +119,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
         // if no tag failed, we have too little information to suggest KDoc - it would just be empty
         if (kdoc == null && anyTagFailed) {
             addKdocTemplate(node, name, missingParameters, explicitlyThrownExceptions, returnCheckFailed)
-        } else if (kdoc == null) {
+        } else if (kdoc == null && !isReferenceExpressionWithSameName(node, kdocTags)) {
             MISSING_KDOC_ON_FUNCTION.warn(configRules, emitWarn, false, name, node.startOffset, node)
         } else {
             if (paramCheckFailed) {
@@ -138,28 +147,65 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
+    private fun isReferenceExpressionWithSameName(node: ASTNode, kdocTags: Collection<KDocTag>?): Boolean {
+        val lastDotQualifiedExpression = node.findChildByType(DOT_QUALIFIED_EXPRESSION)?.psi
+            ?.let { (it as KtDotQualifiedExpression).selectorExpression?.text?.substringBefore('(') }
+        val funName = (node.psi as KtFunction).name
+        return funName == lastDotQualifiedExpression
+    }
+
+    @Suppress("WRONG_NEWLINES")
     private fun hasReturnCheckFailed(node: ASTNode, kdocTags: Collection<KDocTag>?): Boolean {
         if (node.isSingleLineGetterOrSetter()) {
             return false
         }
 
         val explicitReturnType = node.findChildAfter(COLON, TYPE_REFERENCE)
+        val hasNotExpressionBodyTypes = allExpressionBodyTypes.any { node.hasChildOfType(it) }
         val hasExplicitNotUnitReturnType = explicitReturnType != null && explicitReturnType.text != "Unit"
         val hasExplicitUnitReturnType = explicitReturnType != null && explicitReturnType.text == "Unit"
-        val isFunWithExpressionBody = expressionBodyTypes.any { node.hasChildOfType(it) }
+        val isFunWithExpressionBody = node.hasChildOfType(EQ)
+        val isReferenceExpressionWithSameName = node.findAllDescendantsWithSpecificType(REFERENCE_EXPRESSION).map { it.text }.contains((node.psi as KtFunction).name)
         val hasReturnKdoc = kdocTags != null && kdocTags.hasKnownKdocTag(KDocKnownTag.RETURN)
-        return (hasExplicitNotUnitReturnType || isFunWithExpressionBody && !hasExplicitUnitReturnType) && !hasReturnKdoc
+        return (hasExplicitNotUnitReturnType || isFunWithExpressionBody && !hasExplicitUnitReturnType && hasNotExpressionBodyTypes)
+        && !hasReturnKdoc && !isReferenceExpressionWithSameName
     }
 
     private fun getExplicitlyThrownExceptions(node: ASTNode): Set<String> {
         val codeBlock = node.getFirstChildWithType(BLOCK)
         val throwKeywords = codeBlock?.findAllDescendantsWithSpecificType(THROW)
         return throwKeywords
+            ?.asSequence()
             ?.map { it.psi as KtThrowExpression }
+            ?.filter {
+                // we only take freshly created exceptions here: `throw IAE("stuff")` vs `throw e`
+                it.thrownExpression is KtCallExpression
+            }
             ?.mapNotNull { it.thrownExpression?.referenceExpression()?.text }
             ?.toSet()
             ?: emptySet()
     }
+
+    @Suppress("UnsafeCallOnNullableType")
+    private fun getRethrownExceptions(node: ASTNode) = node.findAllDescendantsWithSpecificType(CATCH).flatMap { catchClauseNode ->
+        // `parameterList` is `@Nullable @IfNotParsed`
+        (catchClauseNode.psi as KtCatchClause).parameterList!!.parameters
+            .filter {
+                // `catch (_: Exception)` - parameter can be anonymous
+                it.name != "_"
+            }
+            .filter { param ->
+                // check whether caught parameter is rethrown in the same catch clause
+                (catchClauseNode.psi as KtCatchClause).catchBody?.collectDescendantsOfType<KtThrowExpression>()?.any {
+                    it.thrownExpression?.referenceExpression()?.text == param.name
+                } == true
+            }
+            .map {
+                // parameter in catch statement `catch (e: Type)` should always have type
+                it.typeReference!!.text
+            }
+    }
+        .toSet()
 
     @Suppress("UnsafeCallOnNullableType")
     private fun handleParamCheck(node: ASTNode,
@@ -191,7 +237,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("UnsafeCallOnNullableType")
     private fun handleReturnCheck(node: ASTNode,
                                   kdoc: ASTNode?,
-                                  kdocTags: Collection<KDocTag>?
+                                  kdocTags: Collection<KDocTag>?,
     ) {
         KDOC_WITHOUT_RETURN_TAG.warnAndFix(configRules, emitWarn, isFixMode, node.getIdentifierName()!!.text,
             node.startOffset, node) {
@@ -205,7 +251,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("UnsafeCallOnNullableType")
     private fun handleThrowsCheck(node: ASTNode,
                                   kdoc: ASTNode?,
-                                  missingExceptions: Collection<String>
+                                  missingExceptions: Collection<String>,
     ) {
         KDOC_WITHOUT_THROWS_TAG.warnAndFix(configRules, emitWarn, isFixMode,
             "${node.getIdentifierName()!!.text} (${missingExceptions.joinToString()})", node.startOffset, node) {
@@ -224,7 +270,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
                                 name: String,
                                 missingParameters: Collection<String?>,
                                 explicitlyThrownExceptions: Collection<String>,
-                                returnCheckFailed: Boolean
+                                returnCheckFailed: Boolean,
     ) {
         MISSING_KDOC_ON_FUNCTION.warnAndFix(configRules, emitWarn, isFixMode, name, node.startOffset, node) {
             val kdocTemplate = "/**\n" +
@@ -252,12 +298,26 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    private fun ASTNode.isSingleLineGetterOrSetter() = isGetterOrSetter() && (expressionBodyTypes.any { hasChildOfType(it) } || getBodyLines().size == 1)
+    private fun ASTNode.isSingleLineGetterOrSetter(): Boolean {
+        val dotQualifiedExp = this.findChildByType(DOT_QUALIFIED_EXPRESSION)?.psi?.let { it as KtDotQualifiedExpression }
+        val isThisExpression = dotQualifiedExp != null && dotQualifiedExp.receiverExpression.node.elementType == THIS_EXPRESSION
+        val isExpressionBodyTypes = expressionBodyTypes.any { hasChildOfType(it) }
+        return isGetterOrSetter() && (isExpressionBodyTypes || getBodyLines().size == 1 || isThisExpression)
+    }
 
     companion object {
-        // expression body of function can have a lot of 'ElementType's, this list might be not full
-        private val expressionBodyTypes = setOf(BINARY_EXPRESSION, CALL_EXPRESSION, LAMBDA_EXPRESSION, REFERENCE_EXPRESSION,
-            CALLABLE_REFERENCE_EXPRESSION, SAFE_ACCESS_EXPRESSION, WHEN_CONDITION_WITH_EXPRESSION, COLLECTION_LITERAL_EXPRESSION)
+        private val expressionBodyTypes = setOf(CALL_EXPRESSION, REFERENCE_EXPRESSION)
+        private val allExpressionBodyTypes = setOf(
+            DOT_QUALIFIED_EXPRESSION,
+            CALL_EXPRESSION,
+            REFERENCE_EXPRESSION,
+            ElementType.BINARY_EXPRESSION,
+            ElementType.LAMBDA_EXPRESSION,
+            ElementType.CALLABLE_REFERENCE_EXPRESSION,
+            ElementType.SAFE_ACCESS_EXPRESSION,
+            ElementType.WHEN_CONDITION_WITH_EXPRESSION,
+            ElementType.COLLECTION_LITERAL_EXPRESSION,
+        )
         private val uselessKdocRegex = """^([rR]eturn|[gGsS]et)[s]?\s+\w+(\s+\w+)?$""".toRegex()
     }
 }

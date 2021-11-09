@@ -72,10 +72,11 @@ class KotlinParser {
      * @return [ASTNode]
      * @throws KotlinParseException if code is incorrect
      */
-    fun createNode(text: String, isPackage: Boolean = false) = makeNode(text, isPackage) ?: throw KotlinParseException("Your text is not valid")
+    fun createNode(text: String, isPackage: Boolean = false) = makeNode(text, isPackage) ?: throw KotlinParseException("Text is not valid: [$text]")
 
     /**
      * @param text kotlin code
+     * @return [KtPrimaryConstructor]
      */
     fun createPrimaryConstructor(text: String) = ktPsiFactory.createPrimaryConstructor(text)
 

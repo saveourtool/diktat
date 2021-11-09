@@ -15,7 +15,6 @@ import org.cqfn.diktat.ruleset.utils.findChildBefore
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getFilePath
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
-import org.cqfn.diktat.ruleset.utils.getRootNode
 import org.cqfn.diktat.ruleset.utils.isGradleScript
 import org.cqfn.diktat.ruleset.utils.moveChildBefore
 
@@ -48,7 +47,7 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
     listOf(HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE, HEADER_MISSING_OR_WRONG_COPYRIGHT, HEADER_NOT_BEFORE_PACKAGE,
         HEADER_NOT_BEFORE_PACKAGE, HEADER_WRONG_FORMAT, WRONG_COPYRIGHT_YEAR)) {
     override fun logic(node: ASTNode) {
-        if (node.elementType == FILE && !node.getRootNode().getFilePath().isGradleScript()) {
+        if (node.elementType == FILE && !node.getFilePath().isGradleScript()) {
             checkCopyright(node)
             if (checkHeaderKdocPosition(node)) {
                 checkHeaderKdoc(node)
@@ -182,7 +181,7 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
         // Triggers when there is a copyright, but its year is not updated.
         if (!isMissingCopyright && copyrightWithCorrectYear.isNotEmpty()) {
             WRONG_COPYRIGHT_YEAR.warnAndFix(configRules, emitWarn, isFixMode, "year should be $curYear", node.startOffset, node) {
-                (headerComment as LeafElement).replaceWithText(headerComment.text.replace(copyrightText, copyrightWithCorrectYear))
+                (headerComment as LeafElement).rawReplaceWithText(headerComment.text.replace(copyrightText, copyrightWithCorrectYear))
             }
         }
     }
@@ -226,6 +225,8 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
 
         /**
          * Whether copyright text is present in the configuration
+         *
+         * @return true if config has "copyrightText"
          */
         internal fun hasCopyrightText() = config.keys.contains("copyrightText")
 

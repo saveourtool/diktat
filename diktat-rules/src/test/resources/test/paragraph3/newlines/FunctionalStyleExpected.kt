@@ -11,7 +11,7 @@ fun foo(list: List<Bar>?) {
             ?:foobar
 }
 
-fun bar(x :Int,y:Int) = x+ y
+fun bar(x :Int,y:Int) :Int = x+ y
 
 fun goo() {
     x.map()
@@ -28,6 +28,9 @@ fun goo() {
             .map()
             .filter()
 .hre()
+
+    t.responseBody!![0]
+.name
 }
 
 fun foo() {

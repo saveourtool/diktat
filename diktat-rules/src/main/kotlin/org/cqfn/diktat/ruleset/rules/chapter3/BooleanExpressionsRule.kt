@@ -19,6 +19,8 @@ import com.pinterest.ktlint.core.ast.ElementType.CONDITION
 import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.PARENTHESIZED
 import com.pinterest.ktlint.core.ast.ElementType.PREFIX_EXPRESSION
+import com.pinterest.ktlint.core.ast.isLeaf
+import com.pinterest.ktlint.core.ast.isPartOfComment
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtParenthesizedExpression
@@ -110,13 +112,13 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
             }
         var characterAsciiCode = 'A'.code  // `A` character in ASCII
         (logicalExpressions + elementaryBooleanExpressions).forEach { expression ->
-            mapOfExpressionToChar.computeIfAbsent(expression.text) {
+            mapOfExpressionToChar.computeIfAbsent(expression.textWithoutComments()) {
                 // Every elementary expression is assigned a single-letter variable.
                 characterAsciiCode++.toChar()
             }
         }
         // Prepare final formatted string
-        var correctedExpression = node.text
+        var correctedExpression = node.textWithoutComments()
         // At first, substitute all elementary expressions with variables
         mapOfExpressionToChar.forEach { (refExpr, char) ->
             correctedExpression = correctedExpression.replace(refExpr, char.toString())
@@ -131,16 +133,23 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
      * Split the complex expression into elementary parts
      */
     private fun ASTNode.collectElementaryExpressions() = this
-        .findAllNodesWithCondition({ astNode ->
+        .findAllNodesWithCondition { astNode ->
             astNode.elementType == BINARY_EXPRESSION &&
                     // filter out boolean conditions in nested lambdas, e.g. `if (foo.filter { a && b })`
                     (astNode == this || astNode.parents().takeWhile { it != this }
                         .all { it.elementType in setOf(BINARY_EXPRESSION, PARENTHESIZED, PREFIX_EXPRESSION) })
-        })
+        }
         .partition {
             val operationReferenceText = (it.psi as KtBinaryExpression).operationReference.text
             operationReferenceText == "&&" || operationReferenceText == "||"
         }
+
+    private fun ASTNode.textWithoutComments() = findAllNodesWithCondition(withSelf = false) {
+        it.isLeaf()
+    }
+        .filterNot { it.isPartOfComment() }
+        .joinToString(separator = "") { it.text }
+        .replace("\n", " ")
 
     private fun fixBooleanExpression(
         node: ASTNode,
@@ -150,8 +159,13 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
             .toString()
             .replace("&", "&&")
             .replace("|", "||")
-            .drop(1)  // dropping first (
-            .dropLast(1)  // dropping last )
+
+        if (simplifiedExpr.toString().first() == '(' && simplifiedExpr.toString().last() == ')') {
+            correctKotlinBooleanExpression = correctKotlinBooleanExpression
+                .drop(1)
+                .dropLast(1)
+        }
+
         mapOfExpressionToChar.forEach { (key, value) ->
             correctKotlinBooleanExpression = correctKotlinBooleanExpression.replace(value.toString(), key)
         }
@@ -217,7 +231,7 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
             getCommonOperand(expression, '|', '&')
         } else {
             // this is done for excluding A || B && A || C without parenthesis.
-            val parenthesizedExpressions = node.findAllNodesWithCondition({ it.elementType == PARENTHESIZED })
+            val parenthesizedExpressions = node.findAllNodesWithCondition { it.elementType == PARENTHESIZED }
             parenthesizedExpressions.forEach {
                 it.findLeafWithSpecificType(OPERATION_REFERENCE) ?: run {
                     return null

@@ -5,7 +5,7 @@
     <parent>
         <artifactId>diktat-parent</artifactId>
         <groupId>org.cqfn.diktat</groupId>
-        <version>0.6.3-SNAPSHOT</version>
+        <version>1.0.0-rc.5-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -13,12 +13,18 @@
     <packaging>maven-plugin</packaging>
 
     <properties>
-        <maven.api.version>3.8.1</maven.api.version>
+        <maven.api.version>3.8.3</maven.api.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.itf.version>0.10.0</maven.itf.version>
+        <maven.itf.version>0.11.0</maven.itf.version>
     </properties>
 
     <dependencies>
+        <!-- FixMe: Use this, when it's released -->
+        <!-- <dependency> -->
+        <!--     <groupId>org.apache.maven</groupId> -->
+        <!--     <artifactId>maven-bom</artifactId> -->
+        <!--     <version>${maven.api.version}</version> -->
+        <!-- </dependency> -->
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-core</artifactId>
@@ -76,6 +82,12 @@
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-cipher</artifactId>
+            <version>2.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

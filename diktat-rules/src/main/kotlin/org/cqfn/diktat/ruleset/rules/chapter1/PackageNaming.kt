@@ -53,7 +53,7 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
         configuration.domainName?.let {
             domainName = it
             if (node.elementType == PACKAGE_DIRECTIVE) {
-                val filePath = node.getRootNode().getFilePath()
+                val filePath = node.getFilePath()
 
                 // getting all identifiers from existing package name into the list like [org, diktat, project]
                 val wordsInPackageName = node.findAllDescendantsWithSpecificType(IDENTIFIER)
@@ -91,12 +91,18 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
         realPackageName: List<String>,
         filePath: String) {
         val fileName = filePath.substringAfterLast(File.separator)
-        PACKAGE_NAME_MISSING.warnAndFix(configRules, emitWarn, isFixMode, fileName,
-            initialPackageDirectiveNode.startOffset, initialPackageDirectiveNode) {
-            if (realPackageName.isNotEmpty()) {
-                // creating node for package directive using Kotlin parser
-                val newPackageDirectiveName = realPackageName.joinToString(PACKAGE_SEPARATOR)
-                insertNewPackageName(initialPackageDirectiveNode, newPackageDirectiveName)
+
+        // if the file path contains "buildSrc" - don't add the package name to the file
+        val isBuildSrcPath = "buildSrc" in filePath
+
+        if (!isBuildSrcPath) {
+            PACKAGE_NAME_MISSING.warnAndFix(configRules, emitWarn, isFixMode, fileName,
+                initialPackageDirectiveNode.startOffset, initialPackageDirectiveNode) {
+                if (realPackageName.isNotEmpty()) {
+                    // creating node for package directive using Kotlin parser
+                    val newPackageDirectiveName = realPackageName.joinToString(PACKAGE_SEPARATOR)
+                    insertNewPackageName(initialPackageDirectiveNode, newPackageDirectiveName)
+                }
             }
         }
     }
@@ -107,19 +113,22 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
      * @return list with words that are parts of package name like [org, diktat, name]
      */
     private fun calculateRealPackageName(fileName: String, configuration: CommonConfiguration): List<String> {
-        val filePathParts = fileName.splitPathToDirs()
+        val filePathParts = fileName
+            .splitPathToDirs()
+            .dropLast(1)  // remove filename
+            .flatMap { it.split(".") }
 
         return if (!filePathParts.contains(PACKAGE_PATH_ANCHOR)) {
-            log.error("Not able to determine a path to a scanned file or src directory cannot be found in it's path." +
-                    " Will not be able to determine correct package name. It can happen due to missing <src> directory in the path")
+            log.error("Not able to determine a path to a scanned file or \"$PACKAGE_PATH_ANCHOR\" directory cannot be found in it's path." +
+                    " Will not be able to determine correct package name. It can happen due to missing <$PACKAGE_PATH_ANCHOR> directory in the path")
             emptyList()
         } else {
             // creating a real package name:
             // 1) getting a path after the base project directory (after "src" directory)
-            // 2) removing src/main/kotlin/java/e.t.c dirs and removing file name
+            // 2) removing src/main/kotlin/java/e.t.c dirs
             // 3) adding company's domain name at the beginning
             val allDirs = languageDirNames + configuration.srcDirectories + configuration.testAnchors
-            val fileSubDir = filePathParts.subList(filePathParts.lastIndexOf(PACKAGE_PATH_ANCHOR), filePathParts.size - 1)
+            val fileSubDir = filePathParts.subList(filePathParts.lastIndexOf(PACKAGE_PATH_ANCHOR), filePathParts.size)
                 .dropWhile { allDirs.contains(it) }
             // no need to add DOMAIN_NAME to the package name if it is already in path
             val domainPrefix = if (!fileSubDir.joinToString(PACKAGE_SEPARATOR).startsWith(domainName)) domainName.split(PACKAGE_SEPARATOR) else emptyList()
@@ -172,7 +181,7 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
     private fun correctPackageWordSeparatorsUsed(word: ASTNode) {
         if (word.text.contains("_") && !isExceptionForUnderscore(word.text)) {
             INCORRECT_PACKAGE_SEPARATOR.warnAndFix(configRules, emitWarn, isFixMode, word.text, word.startOffset, word) {
-                (word as LeafPsiElement).replaceWithText(word.text.replace("_", ""))
+                (word as LeafPsiElement).rawReplaceWithText(word.text.replace("_", ""))
             }
         }
     }
@@ -270,7 +279,7 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
         /**
          * Directory which is considered the start of sources file tree
          */
-        const val PACKAGE_PATH_ANCHOR = "src"
+        const val PACKAGE_PATH_ANCHOR = SRC_DIRECTORY_NAME
 
         /**
          * Symbol that is used to separate parts in package name

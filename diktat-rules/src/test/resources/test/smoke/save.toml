@@ -1,0 +1,8 @@
+[general]
+execCmd="java -jar ktlint-snap.jar -R diktat-1.0.0-rc.2.jar"
+tags = ["smokeTest"]
+description = "SmokeTest"
+suiteName = "SmokeTest"
+
+[fix]
+  execFlags="--disabled_rules 'standard' -F"

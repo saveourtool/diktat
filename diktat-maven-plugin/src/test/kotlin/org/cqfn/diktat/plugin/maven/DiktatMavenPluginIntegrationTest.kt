@@ -25,7 +25,6 @@ class DiktatMavenPluginIntegrationTest {
     @MavenGoal("diktat:check@diktat")
     fun diktatCheck(result: MavenExecutionResult) {
         Assertions.assertEquals(1, result.returnCode)
-        Assertions.assertFalse(result.isError)
         Assertions.assertFalse(result.isSuccessful)
         Assertions.assertTrue(result.isFailure)
 
@@ -43,13 +42,12 @@ class DiktatMavenPluginIntegrationTest {
     @MavenGoal("diktat:fix@diktat")
     fun diktatFix(result: MavenExecutionResult) {
         Assertions.assertEquals(1, result.returnCode)
-        Assertions.assertFalse(result.isError)
         Assertions.assertFalse(result.isSuccessful)
         Assertions.assertTrue(result.isFailure)
 
         val mavenLog = result.mavenLog.stdout.readText()
         Assertions.assertTrue(
-            mavenLog.contains("Original and formatted content differ, writing to Test.kt...")
+            mavenLog.contains(Regex("""Original and formatted content differ, writing to [:\w/\\]+Test\.kt\.\.\."""))
         )
         Assertions.assertTrue(
             mavenLog.contains(Regex("There are \\d+ lint errors"))

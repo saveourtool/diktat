@@ -80,7 +80,6 @@ import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.nextCodeSibling
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevCodeSibling
-import com.pinterest.ktlint.core.ast.prevSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -319,7 +318,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    @Suppress("UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType", "AVOID_NULL_CHECKS")
     private fun handleReturnStatement(node: ASTNode) {
         val blockNode = node.treeParent.takeIf { it.elementType == BLOCK && it.treeParent.elementType == FUN }
         val returnsUnit = node.children().count() == 1  // the only child is RETURN_KEYWORD
@@ -336,19 +335,16 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
                 WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
                     "functions with single return statement should be simplified to expression body", node.startOffset, node) {
                     val funNode = blockNode.treeParent
-                    // if return type is not Unit, then there should be type specification
-                    // otherwise code won't compile and colon being null is correctly invalid
-                    val colon = funNode.findChildByType(COLON)!!
                     val returnType = (funNode.psi as? KtNamedFunction)?.typeReference?.node
-                    val needsExplicitType = returnType != null && (funNode.psi as? KtNamedFunction)?.isRecursive() == true
                     val expression = node.findChildByType(RETURN_KEYWORD)!!.nextCodeSibling()!!
+                    val blockNode = funNode.findChildByType(BLOCK)
                     funNode.apply {
-                        if (needsExplicitType) {
-                            removeRange(returnType!!.treeNext, null)
-                        } else {
-                            removeRange(if (colon.treePrev.elementType == WHITE_SPACE) colon.treePrev else colon, null)
+                        if (returnType != null) {
+                            removeRange(returnType.treeNext, null)
+                            addChild(PsiWhiteSpaceImpl(" "), null)
+                        } else if (blockNode != null) {
+                            removeChild(blockNode)
                         }
-                        addChild(PsiWhiteSpaceImpl(" "), null)
                         addChild(LeafPsiElement(EQ, "="), null)
                         addChild(PsiWhiteSpaceImpl(" "), null)
                         addChild(expression.clone() as ASTNode, null)
@@ -469,9 +465,6 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             if (firstChild.isFirstChildElementType(DOT_QUALIFIED_EXPRESSION) ||
                     firstChild.isFirstChildElementType(SAFE_ACCESS_EXPRESSION)) {
                 getOrderedCallExpressions(firstChild.firstChild, result)
-            }
-            if (firstChild.isFirstChildElementType(POSTFIX_EXPRESSION)) {
-                result.add(firstChild.node)
             }
             result.add(firstChild.node
                 .siblings(true)

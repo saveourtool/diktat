@@ -79,6 +79,7 @@ enum class Warnings(
     KDOC_NO_EMPTY_TAGS(false, "2.2.1", "no empty descriptions in tag blocks are allowed"),
     KDOC_NO_DEPRECATED_TAG(true, "2.1.3", "KDoc doesn't support @deprecated tag, use @Deprecated annotation instead"),
     KDOC_NO_CONSTRUCTOR_PROPERTY(true, "2.1.1", "all properties from the primary constructor should be documented in a @property tag in KDoc"),
+    KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER(true, "2.1.1", "only properties from the primary constructor should be documented in a @property tag in class KDoc"),
     KDOC_EXTRA_PROPERTY(false, "2.1.1", "There is property in KDoc which is not present in the class"),
     KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT(true, "2.1.1", "replace comment before property with @property tag in class KDoc"),
     KDOC_CONTAINS_DATE_OR_AUTHOR(false, "2.1.3", "KDoc should not contain creation date and author name"),
@@ -114,7 +115,7 @@ enum class Warnings(
     WRONG_NEWLINES(true, "3.6.2", "incorrect line breaking"),
     TRAILING_COMMA(true, "3.6.2", "use trailing comma"),
     COMPLEX_EXPRESSION(false, "3.6.3", "complex dot qualified expression should be replaced with variable"),
-    COMPLEX_BOOLEAN_EXPRESSION(true, "3.6.4", "too complex boolean expression, that can be simplified"),
+    COMPLEX_BOOLEAN_EXPRESSION(true, "3.6.4", "simplification could be produced for the too complex boolean expression"),
 
     // FixMe: autofixing will be added for this rule
     STRING_CONCATENATION(true, "3.15.1", "strings should not be concatenated using plus operator - use string templates instead if the statement fits one line"),

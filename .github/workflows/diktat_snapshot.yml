@@ -45,6 +45,6 @@ jobs:
         run: |
           mvn -B versions:set -DnewVersion=${{ env.BASE_VERSION }}-SNAPSHOT
           mvn -B versions:set-property -Dproperty=diktat-check.version -DnewVersion=${{ env.BASE_VERSION }}-pre
-      - name: Run diktat snapshot via ktlint
+      - name: Run diktat snapshot via maven plugin
         run: |
-          mvn -B diktat:check@diktat
+          mvn -B diktat:check@diktat -Ddiktat.debug=true

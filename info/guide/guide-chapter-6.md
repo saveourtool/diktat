@@ -184,7 +184,7 @@ class Square() : Rectangle() {
 
 #### <a name="r6.1.6"></a> 6.1.6 Abstract class should have at least one abstract method
 Abstract classes are used to force a developer to implement some of its parts in their inheritors.
-When the abstract class has no abstract methods, it was set `abstract` incorrectly and can be converted to a regular class.
+When the abstract class has no abstract methods, it was set `abstract` incorrectly and can be converted to open class.
 
 **Invalid example**:
 ```kotlin
@@ -204,9 +204,16 @@ abstract class NotAbstract {
 }
 
 // OR
-class NotAbstract {
+open class NotAbstract {
     fun foo() {}
     
+    fun test() {}
+}
+
+// OR
+class NotAbstract {
+    fun foo() {}
+
     fun test() {}
 }
 ```

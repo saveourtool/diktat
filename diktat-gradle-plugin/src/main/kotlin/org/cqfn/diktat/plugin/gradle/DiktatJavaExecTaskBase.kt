@@ -50,6 +50,7 @@ open class DiktatJavaExecTaskBase @Inject constructor(
         } else {
             main = "com.pinterest.ktlint.Main"
         }
+
         // Plain, checkstyle and json reporter are provided out of the box in ktlint
         if (diktatExtension.reporterType == "html") {
             diktatConfiguration.dependencies.add(project.dependencies.create("com.pinterest.ktlint:ktlint-reporter-html:$KTLINT_VERSION"))
@@ -159,7 +160,7 @@ open class DiktatJavaExecTaskBase @Inject constructor(
             pattern.relativeTo(project.projectDir)
         } else {
             pattern
-        }.path
+        }
         add((if (negate) "!" else "") + path)
     }
 

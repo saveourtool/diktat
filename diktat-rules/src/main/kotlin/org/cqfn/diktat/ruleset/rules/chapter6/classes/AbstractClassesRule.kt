@@ -13,8 +13,10 @@ import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
-import com.pinterest.ktlint.core.ast.isWhiteSpace
+import com.pinterest.ktlint.core.ast.ElementType.OPEN_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 
 /**
  * Checks if abstract class has any abstract method. If not, warns that class should not be abstract
@@ -39,31 +41,17 @@ class AbstractClassesRule(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("UnsafeCallOnNullableType")
     private fun handleAbstractClass(node: ASTNode, classNode: ASTNode) {
         val functions = node.getAllChildrenWithType(FUN)
+        val properties = node.getAllChildrenWithType(PROPERTY)
+        val members = functions + properties
 
         val identifier = classNode.getFirstChildWithType(IDENTIFIER)!!.text
 
-        if (functions.isNotEmpty() && functions.none { hasAbstractModifier(it) }) {
+        if (members.isNotEmpty() && members.none { hasAbstractModifier(it) }) {
             CLASS_SHOULD_NOT_BE_ABSTRACT.warnAndFix(configRules, emitWarn, isFixMode, identifier, node.startOffset, node) {
                 val modList = classNode.getFirstChildWithType(MODIFIER_LIST)!!
-                if (modList.getChildren(null).size > 1) {
-                    val abstractKeyword = modList.getFirstChildWithType(ABSTRACT_KEYWORD)!!
-
-                    // we are deleting one keyword, so we need to delete extra space
-                    val spaceInModifiers = if (abstractKeyword == modList.firstChildNode) {
-                        abstractKeyword.treeNext
-                    } else {
-                        abstractKeyword.treePrev
-                    }
-                    modList.removeChild(abstractKeyword)
-                    if (spaceInModifiers != null && spaceInModifiers.isWhiteSpace()) {
-                        modList.removeChild(spaceInModifiers)
-                    }
-                } else {
-                    if (modList.treeNext.isWhiteSpace()) {
-                        classNode.removeChild(modList.treeNext)
-                    }
-                    classNode.removeChild(modList)
-                }
+                val abstractKeyword = modList.getFirstChildWithType(ABSTRACT_KEYWORD)!!
+                val newOpenKeyword = LeafPsiElement(OPEN_KEYWORD, "open")
+                modList.replaceChild(abstractKeyword, newOpenKeyword)
             }
         }
     }

@@ -15,7 +15,7 @@ class AbstractClassesWarnTest : LintTestBase(::AbstractClassesRule) {
 
     @Test
     @Tag(CLASS_SHOULD_NOT_BE_ABSTRACT)
-    fun `should not remove abstract`() {
+    fun `should not replace abstract with open`() {
         lintMethod(
             """
                 |abstract class Some(val a: Int = 5) {
@@ -29,7 +29,7 @@ class AbstractClassesWarnTest : LintTestBase(::AbstractClassesRule) {
 
     @Test
     @Tag(CLASS_SHOULD_NOT_BE_ABSTRACT)
-    fun `should remove abstract`() {
+    fun `should replace abstract on open`() {
         lintMethod(
             """
                 |abstract class Some(val a: Int = 5) {
@@ -42,7 +42,7 @@ class AbstractClassesWarnTest : LintTestBase(::AbstractClassesRule) {
 
     @Test
     @Tag(CLASS_SHOULD_NOT_BE_ABSTRACT)
-    fun `should remove abstract with inner`() {
+    fun `should replace abstract on open with inner`() {
         lintMethod(
             """
                 |class Some(val a: Int = 5) {
@@ -54,6 +54,51 @@ class AbstractClassesWarnTest : LintTestBase(::AbstractClassesRule) {
                 |}
             """.trimMargin(),
             LintError(4, 32, ruleId, "${Warnings.CLASS_SHOULD_NOT_BE_ABSTRACT.warnText()} Inner", true)
+        )
+    }
+
+    @Test
+    @Tag(CLASS_SHOULD_NOT_BE_ABSTRACT)
+    fun `should replace abstract on open in actual or expect classes`() {
+        lintMethod(
+            """
+                |actual abstract class CoroutineTest actual constructor() {
+                |    /**
+                |     * Test rule
+                |     */
+                |    @get:Rule
+                |    var coroutineTestRule = CoroutineTestRule()
+                |    
+                |    /**
+                |     * Run test
+                |     *
+                |     * @param T
+                |     * @param block
+                |     * @receiver a Coroutine Scope
+                |     */
+                |    actual fun <T> runTest(block: suspend CoroutineScope.() -> T) {
+                |       runBlocking {
+                |       block()
+                |       }
+                |    }
+                |}
+            """.trimMargin(),
+            LintError(1, 58, ruleId, "${Warnings.CLASS_SHOULD_NOT_BE_ABSTRACT.warnText()} CoroutineTest", true)
+        )
+    }
+
+    @Test
+    @Tag(CLASS_SHOULD_NOT_BE_ABSTRACT)
+    fun `should not remove abstract on class if there are only abstract properties`() {
+        lintMethod(
+            """
+                |abstract class BaseUsesProcessor() {
+                |    // Store uses by file
+                |    abstract val a: String
+                |    
+                |    fun foo() {}
+                |}
+            """.trimMargin()
         )
     }
 }
