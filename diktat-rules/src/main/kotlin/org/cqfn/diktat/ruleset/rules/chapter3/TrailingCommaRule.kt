@@ -7,11 +7,14 @@ import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.TRAILING_COMMA
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 
+import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.COLLECTION_LITERAL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.COMMA
 import com.pinterest.ktlint.core.ast.ElementType.DESTRUCTURING_DECLARATION
 import com.pinterest.ktlint.core.ast.ElementType.DESTRUCTURING_DECLARATION_ENTRY
+import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.INDICES
+import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.STRING_TEMPLATE
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_ARGUMENT_LIST
@@ -26,12 +29,9 @@ import com.pinterest.ktlint.core.ast.ElementType.WHEN_CONDITION_IN_RANGE
 import com.pinterest.ktlint.core.ast.ElementType.WHEN_CONDITION_IS_PATTERN
 import com.pinterest.ktlint.core.ast.ElementType.WHEN_CONDITION_WITH_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.WHEN_ENTRY
-import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.children
 import com.pinterest.ktlint.core.ast.isPartOfComment
 import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
-import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
-import org.cqfn.diktat.ruleset.utils.prettyPrint
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.psi.psiUtil.siblings
@@ -105,11 +105,15 @@ class TrailingCommaRule(configRules: List<RulesConfig>) : DiktatRule(
             // we should write type of node in warning, to make it easier for user to find the parameter
             TRAILING_COMMA.warnAndFix(configRules, emitWarn, isFixMode, "after ${this.elementType}: ${this.text}", this.startOffset, this) {
                 val parent = this.treeParent
-                println("NODE ${this.text} | ${this.elementType}\n")
-                println(this.prettyPrint())
-                val temp = this.children().filter { it.elementType == WHITE_SPACE }.lastOrNull()//.firstOrNull()
-                if (temp != null) {
-                    this.addChild(LeafPsiElement(COMMA, ","), temp)
+
+                // In case, when we got VALUE_PARAMETER, it may contain comments, which follows the actual parameter and both of them are actually in the same node
+                // Ex: `class A(val a: Int, val b: Int  // comment)`
+                // `val b: Int  // comment` --> the whole expression is VALUE_PARAMETER
+                // So in this case we must insert comma before the comment, in other cases we will insert it after VALUE_PARAMETER node
+                val comments = listOf(EOL_COMMENT, BLOCK_COMMENT, KDOC)
+                val firstCommentNodeOrNull = this.children().filter { it.elementType in comments }.firstOrNull()
+                if (firstCommentNodeOrNull != null && this.elementType == VALUE_PARAMETER) {
+                    this.addChild(LeafPsiElement(COMMA, ","), firstCommentNodeOrNull)
                 } else {
                     parent.addChild(LeafPsiElement(COMMA, ","), this.treeNext)
                 }
