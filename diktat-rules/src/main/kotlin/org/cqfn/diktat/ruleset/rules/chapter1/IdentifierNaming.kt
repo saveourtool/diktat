@@ -1,3 +1,5 @@
+@file:Suppress("FILE_WILDCARD_IMPORTS")
+
 package org.cqfn.diktat.ruleset.rules.chapter1
 
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
@@ -19,6 +21,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_HAS_PREFIX
 import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_NAME_INCORRECT
 import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_NAME_INCORRECT_FORMAT
 import org.cqfn.diktat.ruleset.rules.DiktatRule
+import org.cqfn.diktat.ruleset.utils.*
 import org.cqfn.diktat.ruleset.utils.search.findAllVariablesWithUsages
 
 import com.pinterest.ktlint.core.ast.ElementType
@@ -51,7 +54,6 @@ import org.jetbrains.kotlin.psi.psiUtil.isPrivate
 import org.jetbrains.kotlin.psi.psiUtil.parents
 
 import java.util.Locale
-import org.cqfn.diktat.ruleset.utils.*
 
 /**
  * This visitor covers rules:  1.2, 1.3, 1.4, 1.5 of Huawei code style. It covers following rules:
@@ -194,7 +196,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
                         }) {
                             // For class members also check `@property` KDoc tag.
                             // If we are here, then `variableName` is definitely a node from a class.
-                            variableName.parent(CLASS)?:variableName.parent(OBJECT_DECLARATION)?.findChildByType(KDOC)?.kDocTags()
+                            variableName.parent(CLASS) ?: variableName.parent(OBJECT_DECLARATION)?.findChildByType(KDOC)?.kDocTags()
                                 ?.firstOrNull {
                                     it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == variableName.text
                                 }
