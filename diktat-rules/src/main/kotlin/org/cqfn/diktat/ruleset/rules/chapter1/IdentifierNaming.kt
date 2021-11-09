@@ -196,7 +196,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
                         }) {
                             // For class members also check `@property` KDoc tag.
                             // If we are here, then `variableName` is definitely a node from a class or an object.
-                            variableName.parent(CLASS) ?: variableName.parent(OBJECT_DECLARATION)?.findChildByType(KDOC)?.kDocTags()
+                            (variableName.parent(CLASS) ?: variableName.parent(OBJECT_DECLARATION))?.findChildByType(KDOC)?.kDocTags()
                                 ?.firstOrNull {
                                     it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == variableName.text
                                 }
