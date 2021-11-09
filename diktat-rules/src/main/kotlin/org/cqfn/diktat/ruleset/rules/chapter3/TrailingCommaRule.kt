@@ -26,9 +26,12 @@ import com.pinterest.ktlint.core.ast.ElementType.WHEN_CONDITION_IN_RANGE
 import com.pinterest.ktlint.core.ast.ElementType.WHEN_CONDITION_IS_PATTERN
 import com.pinterest.ktlint.core.ast.ElementType.WHEN_CONDITION_WITH_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.WHEN_ENTRY
+import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.children
 import com.pinterest.ktlint.core.ast.isPartOfComment
 import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
+import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
+import org.cqfn.diktat.ruleset.utils.prettyPrint
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.psi.psiUtil.siblings
@@ -102,7 +105,14 @@ class TrailingCommaRule(configRules: List<RulesConfig>) : DiktatRule(
             // we should write type of node in warning, to make it easier for user to find the parameter
             TRAILING_COMMA.warnAndFix(configRules, emitWarn, isFixMode, "after ${this.elementType}: ${this.text}", this.startOffset, this) {
                 val parent = this.treeParent
-                parent.addChild(LeafPsiElement(COMMA, ","), this.treeNext)
+                println("NODE ${this.text} | ${this.elementType}\n")
+                println(this.prettyPrint())
+                val temp = this.children().filter { it.elementType == WHITE_SPACE }.lastOrNull()//.firstOrNull()
+                if (temp != null) {
+                    this.addChild(LeafPsiElement(COMMA, ","), temp)
+                } else {
+                    parent.addChild(LeafPsiElement(COMMA, ","), this.treeNext)
+                }
             }
         }
     }

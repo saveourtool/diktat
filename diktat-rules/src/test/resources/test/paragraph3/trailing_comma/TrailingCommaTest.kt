@@ -71,3 +71,7 @@ fun printMeanValue() {
     }
     println(meanValue/cars.size)
 }
+
+enum class SomeEnum(
+    val a: Int, val b: Int  // comment
+)
