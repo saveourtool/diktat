@@ -203,4 +203,16 @@ class NullChecksRuleWarnTest : LintTestBase(::NullChecksRule) {
             """.trimMargin()
         )
     }
+
+    @Test
+    @Tag(WarningNames.AVOID_NULL_CHECKS)
+    fun `null check in lambda which is in require is ok`() {
+        lintMethod(
+            """
+            |fun foo() {
+            |    require(leftSide?.any { it == null })
+            |}
+            """.trimMargin()
+        )
+    }
 }

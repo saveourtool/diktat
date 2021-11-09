@@ -226,17 +226,25 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
                     setOf(ElementType.EQEQ, ElementType.EQEQEQ, ElementType.EXCLEQ, ElementType.EXCLEQEQEQ)
                         .contains(condition.operationToken) &&
                     // no need to raise warning or fix null checks in complex expressions
-                    !condition.isComplexCondition()
+                    !condition.isComplexCondition() &&
+                    !condition.isInLambda()
 
     /**
      * checks if condition is a complex expression. For example:
      * (a == 5) - is not a complex condition, but (a == 5 && b != 6) is a complex condition
-     * or expression could be used in lambda, which is also considered as complex expression:
-     * if (a.any { it == null })
      */
     private fun KtBinaryExpression.isComplexCondition(): Boolean {
-        // KtBinaryExpression is complex if it has a parent that is a binary expression or a block expression
-        return this.parent is KtBinaryExpression || this.parent is KtBlockExpression
+        // KtBinaryExpression is complex if it has a parent that is also a binary expression
+        return this.parent is KtBinaryExpression
+    }
+
+    /**
+     * Expression could be used in lambda:
+     * if (a.any { it == null })
+     */
+    private fun KtBinaryExpression.isInLambda(): Boolean {
+        // KtBinaryExpression is in lambda if it has a parent that is a block expression
+        return this.parent is KtBlockExpression
     }
 
     private fun warnAndFixOnNullCheck(
