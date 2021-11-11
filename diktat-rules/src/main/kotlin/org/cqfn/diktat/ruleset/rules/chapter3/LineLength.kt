@@ -289,14 +289,20 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                 removeChild(wrongNode)
             }
         } else {
-            wrongNode.treeParent.treeParent?.let {
+            if (wrongNode.treePrev.isWhiteSpace()) {
+                wrongNode.treeParent.removeChild(wrongNode.treePrev)
+            }
+
+            var previousNewLineNode = wrongNode.treePrev
+            while (previousNewLineNode != null && (previousNewLineNode.elementType != WHITE_SPACE || !previousNewLineNode.textContains('\n'))) {
+                previousNewLineNode = previousNewLineNode.treePrev ?: previousNewLineNode.treeParent
+            }
+
+            previousNewLineNode?.let {
                 val parent = wrongNode.treeParent
-                if (wrongNode.treePrev.isWhiteSpace()) {
-                    parent.removeChild(wrongNode.treePrev)
-                }
                 parent.removeChild(wrongNode)
-                it.addChild(wrongNode, parent)
-                it.addChild(PsiWhiteSpaceImpl("\n"), parent)
+                previousNewLineNode.treeParent.addChild(wrongNode, previousNewLineNode)
+                previousNewLineNode.treeParent.addChild(PsiWhiteSpaceImpl("\n"), previousNewLineNode.treePrev)
             }
         }
     }
