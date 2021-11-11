@@ -42,6 +42,7 @@ import com.pinterest.ktlint.core.ast.isRoot
 import com.pinterest.ktlint.core.ast.isWhiteSpace
 import com.pinterest.ktlint.core.ast.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.TokenType
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -729,8 +730,17 @@ fun ASTNode.lastLineNumber() = getLineNumber() + text.count { it == '\n' }
  */
 fun ASTNode.calculateLineColByOffset() = buildPositionInTextLocator(text)
 
-fun ASTNode.findChildWithSpecificTypeOnLine() {
-
+fun ASTNode.findChildWithSpecificTypeOnLine(
+    line: Int,
+    condition: (ASTNode) -> Boolean
+): ASTNode {
+    val rootNode = this.getRootNode()
+    val positionByOffset = rootNode.calculateLineColByOffset()
+    var offset = 0
+    while (positionByOffset(offset).first != line) {
+        offset++
+    }
+    return rootNode.psi.findElementAt(offset)!!.node
 }
 
 /**
