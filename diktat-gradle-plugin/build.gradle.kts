@@ -75,7 +75,6 @@ tasks.withType<KotlinCompile> {
         languageVersion = "1.3"
         apiVersion = "1.3"
         jvmTarget = "1.8"
-        useIR = false  // for compatibility with older gradle
     }
 
     dependsOn.add(generateVersionsFile)

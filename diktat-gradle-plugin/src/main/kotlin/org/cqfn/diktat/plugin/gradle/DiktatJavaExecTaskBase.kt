@@ -61,9 +61,7 @@ open class DiktatJavaExecTaskBase @Inject constructor(
     val actualInputs: FileCollection by lazy {
         with(diktatExtension) {
             // validate configuration
-            require(
-                inputs == null && excludes == null
-            ) {
+            require(inputs == null && excludes == null) {
                 "`inputs` and `excludes` for diktat should be changed for inputs(Action)"
             }
         }
@@ -117,6 +115,10 @@ open class DiktatJavaExecTaskBase @Inject constructor(
                 }
             }
                 .files
+                .also { files ->
+                    project.logger.info("Analyzing ${files.size} files with diktat in project ${project.name}")
+                    project.logger.debug("Analyzing $files")
+                }
                 .forEach {
                     addInput(it)
                 }
