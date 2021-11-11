@@ -122,25 +122,6 @@ class DiktatGradlePluginFunctionalTest {
     }
 
     @Test
-    fun `should not run diktat with ktlint's default includes when no files match include patterns - 2`() {
-        buildFile.appendText(
-            """${System.lineSeparator()}
-                diktat {
-                    inputs { include("nonexistent-directory/src/**/*.kt") }
-                }
-            """.trimIndent()
-        )
-        val result = runDiktat(testProjectDir, arguments = listOf("--info"))
-
-        val diktatCheckBuildResult = result.task(":$DIKTAT_CHECK_TASK")
-        requireNotNull(diktatCheckBuildResult)
-        Assertions.assertEquals(TaskOutcome.NO_SOURCE, diktatCheckBuildResult.outcome)
-        Assertions.assertTrue(
-            result.output.contains("Skipping diktat execution")
-        )
-    }
-
-    @Test
     fun `should execute diktatCheck with gradle older than 6_4`() {
         val result = runDiktat(testProjectDir, shouldSucceed = false, arguments = listOf("--info")) {
             withGradleVersion("5.3")
