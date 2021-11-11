@@ -6,6 +6,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.api.attributes.Bundling
+import org.gradle.api.tasks.util.PatternSet
 
 /**
  * Plugin that configures diktat and registers tasks to run diktat
@@ -16,12 +17,13 @@ class DiktatGradlePlugin : Plugin<Project> {
      * @param project a gradle [Project] that the plugin is applied to
      */
     override fun apply(project: Project) {
-        val diktatExtension = project.extensions.create(DIKTAT_EXTENSION, DiktatExtension::class.java).apply {
-            inputs = project.fileTree("src").apply {
-                include("**/*.kt")
-            }
+        val patternSet = PatternSet()
+        val diktatExtension = project.extensions.create(
+            DIKTAT_EXTENSION,
+            DiktatExtension::class.java,
+            patternSet
+        ).apply {
             diktatConfigFile = project.rootProject.file("diktat-analysis.yml")
-            excludes = project.files()
         }
 
         // only gradle 7+ (or maybe 6.8) will embed kotlin 1.4+, kx.serialization is incompatible with kotlin 1.3, so until then we have to use JavaExec wrapper
@@ -43,8 +45,8 @@ class DiktatGradlePlugin : Plugin<Project> {
             configuration.dependencies.add(project.dependencies.create("org.cqfn.diktat:diktat-rules:$DIKTAT_VERSION"))
         }
 
-        project.registerDiktatCheckTask(diktatExtension, diktatConfiguration)
-        project.registerDiktatFixTask(diktatExtension, diktatConfiguration)
+        project.registerDiktatCheckTask(diktatExtension, diktatConfiguration, patternSet)
+        project.registerDiktatFixTask(diktatExtension, diktatConfiguration, patternSet)
     }
 
     companion object {

@@ -40,6 +40,7 @@ dependencies {
         exclude("org.jetbrains.kotlin", "kotlin-stdlib-jdk7")
         exclude("org.jetbrains.kotlin", "kotlin-stdlib")
         exclude("org.jetbrains.kotlin", "kotlin-stdlib-common")
+        exclude("org.slf4j", "slf4j-log4j12")
     }
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")

@@ -28,9 +28,10 @@ class DiktatGradlePluginTest {
     @Test
     fun `check default extension properties`() {
         val diktatExtension = project.extensions.getByName("diktat") as DiktatExtension
+        val actualInputs = project.tasks.named("diktatCheck", DiktatJavaExecTaskBase::class.java).get().actualInputs
         Assertions.assertFalse(diktatExtension.debug)
-        Assertions.assertIterableEquals(project.fileTree("src").files, diktatExtension.inputs.files)
-        Assertions.assertTrue(diktatExtension.inputs.files.isNotEmpty())
+        Assertions.assertIterableEquals(project.fileTree("src").files, actualInputs.files)
+        Assertions.assertTrue(actualInputs.files.isNotEmpty())
     }
 
     @Test

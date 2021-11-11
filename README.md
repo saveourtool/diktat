@@ -133,9 +133,11 @@ apply(plugin = "org.cqfn.diktat.diktat-gradle-plugin")
 You can then configure diktat using `diktat` extension:
 ```kotlin
 diktat {
-    inputs = files("src/**/*.kt")  // file collection that will be checked by diktat
+    inputs {
+        include("src/**/*.kt")  // path matching this pattern (per PatternFilterable) that will be checked by diktat
+        exclude("src/test/kotlin/excluded/**")  // path matching this pattern will not be checked by diktat
+    }
     debug = true  // turn on debug logging
-    excludes = files("src/test/kotlin/excluded")  // these files will not be checked by diktat
 }
 ```
 

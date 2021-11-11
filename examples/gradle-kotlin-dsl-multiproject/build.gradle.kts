@@ -13,7 +13,7 @@ allprojects {
     apply(plugin = "org.cqfn.diktat.diktat-gradle-plugin")
     configure<DiktatExtension> {
         diktatConfigFile = rootProject.file("diktat-analysis.yml")
-        inputs = files("src/**/*.kt")
+        inputs { include("src/**/*.kt") }
         debug = true
     }
 }
