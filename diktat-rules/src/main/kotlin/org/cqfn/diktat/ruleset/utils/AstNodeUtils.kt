@@ -729,6 +729,10 @@ fun ASTNode.lastLineNumber() = getLineNumber() + text.count { it == '\n' }
  */
 fun ASTNode.calculateLineColByOffset() = buildPositionInTextLocator(text)
 
+fun ASTNode.findChildWithSpecificTypeOnLine() {
+
+}
+
 /**
  * Retrieves file name from user data of this node
  *

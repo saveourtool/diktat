@@ -49,7 +49,8 @@ import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.nextSibling
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevSibling
-import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
+import org.cqfn.diktat.ruleset.utils.getLineNumber
+import org.cqfn.diktat.ruleset.utils.getRootNode
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -296,21 +297,24 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                 wrongNode.treeParent.removeChild(wrongNode.treePrev)
             }
 
-            val line = positionByOffset(wrongNode.startOffset).first
-            val previousLine = if (line > 1) line - 1 else null // TODO Process this case
+            val line = wrongNode.getLineNumber()
+            val previousLine = if (line > 1) {
+                line - 1
+            } else {
+                return
+            }
+
             var offset = wrongNode.startOffset
             while (positionByOffset(offset).first != previousLine) {
                 offset--
             }
-            val fileNode = wrongNode.parents().filter { it.elementType == FILE }.single()
+            val fileNode = wrongNode.getRootNode()
             val previousNewLineNode = fileNode.psi.findElementAt(offset)!!.node
             //println("OK? ${previousNewLineNode.elementType == WHITE_SPACE && previousNewLineNode.textContains('\n')}")
 
             //println("BBBB " + fileNode.psi.findElementAt(offset)!!.node.treeParent.text)
 
             //println("\n\n\nWRONG NODE ${wrongNode.text} ${line}")
-
-
 
             //println("FOUND ${previousNewLineNode?.text} | PREV ${previousNewLineNode?.treePrev?.text} | NEXT ${previousNewLineNode?.treeNext?.text}")
             previousNewLineNode?.let {
