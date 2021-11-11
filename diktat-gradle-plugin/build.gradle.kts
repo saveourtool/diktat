@@ -50,6 +50,8 @@ dependencies {
 val generateVersionsFile by tasks.registering {
     val versionsFile = File("$buildDir/generated/src/generated/Versions.kt")
 
+    inputs.property("diktat version", diktatVersion)
+    inputs.property("ktlint version", ktlintVersion)
     outputs.file(versionsFile)
 
     doFirst {
@@ -113,8 +115,8 @@ tasks.getByName<Test>("functionalTest") {
     maxHeapSize = "1024m"
     retry {
         failOnPassedAfterRetry.set(false)
-        maxFailures.set(1)
-        maxRetries.set(1)
+        maxFailures.set(10)
+        maxRetries.set(3)
     }
     doLast {
         if (getCurrentOperatingSystem().isWindows) {
