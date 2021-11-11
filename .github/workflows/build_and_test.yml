@@ -41,7 +41,7 @@ jobs:
         if: ${{ failure() }}
         uses: actions/upload-artifact@v2
         with:
-          name: gradle-test-report-${{ matrix.os }}
+          name: gradle-test-report-${{ runner.os }}
           path: 'diktat-gradle-plugin/build/reports/'
           retention-days: 1
 
