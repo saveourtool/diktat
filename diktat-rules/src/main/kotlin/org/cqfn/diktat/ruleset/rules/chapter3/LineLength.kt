@@ -8,7 +8,9 @@ import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
 import org.cqfn.diktat.ruleset.utils.calculateLineColByOffset
+import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificTypeOnLine
 import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
+import org.cqfn.diktat.ruleset.utils.getLineNumber
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
@@ -41,18 +43,12 @@ import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.RPAR
 import com.pinterest.ktlint.core.ast.ElementType.SHORT_STRING_TEMPLATE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.STRING_TEMPLATE
-import com.pinterest.ktlint.core.ast.ElementType.THEN
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
-import com.pinterest.ktlint.core.ast.children
 import com.pinterest.ktlint.core.ast.isWhiteSpace
 import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.nextSibling
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevSibling
-import org.cqfn.diktat.ruleset.utils.findChildWithSpecificTypeOnLine
-import org.cqfn.diktat.ruleset.utils.getLineNumber
-import org.cqfn.diktat.ruleset.utils.getRootNode
-import org.cqfn.diktat.ruleset.utils.prettyPrint
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -299,31 +295,15 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                 wrongNode.treeParent.removeChild(wrongNode.treePrev)
             }
 
-            val line = wrongNode.getLineNumber()
-            val previousLine = if (line > 1) {
-                line - 1
-            } else {
-                return
-            }
+            val newLineNodeOnPreviousLine = wrongNode.findAllNodesWithSpecificTypeOnLine(wrongNode.getLineNumber() - 1) {
+                it.elementType == WHITE_SPACE && it.textContains('\n')
+            }?.lastOrNull()
 
-            var offset = wrongNode.startOffset
-            while (positionByOffset(offset).first != previousLine) {
-                offset--
-            }
-            val fileNode = wrongNode.getRootNode()
-            val previousNewLineNode = fileNode.psi.findElementAt(offset)!!.node
-
-            val temp = wrongNode.findChildWithSpecificTypeOnLine(36) { true }
-
-            //println("Curr line ${line} FIND: " + temp!!.prettyPrint())
-
-            previousNewLineNode?.let {
+            newLineNodeOnPreviousLine?.let {
                 val parent = wrongNode.treeParent
-                //println("BEFORE\n${wrongNode.treeParent?.treeParent?.treeParent?.text}")
                 parent.removeChild(wrongNode)
-                previousNewLineNode.treeParent.addChild(wrongNode, previousNewLineNode.treeNext)
-                previousNewLineNode.treeParent.addChild(PsiWhiteSpaceImpl("\n"), previousNewLineNode.treeNext.treeNext)
-                //println("\nAFTER\n${wrongNode.treeParent?.text}")
+                newLineNodeOnPreviousLine.treeParent.addChild(wrongNode, newLineNodeOnPreviousLine.treeNext)
+                newLineNodeOnPreviousLine.treeParent.addChild(PsiWhiteSpaceImpl("\n"), newLineNodeOnPreviousLine.treeNext.treeNext)
             }
         }
     }
