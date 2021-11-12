@@ -430,7 +430,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
         .children()
         .filter {
             (it.elementType == COMMA && !it.treeNext.run { elementType == WHITE_SPACE && textContains('\n') }
-            ) || (it.elementType == RPAR && it.treePrev.elementType != COMMA)
+            ) || (it.elementType == RPAR && it.treePrev.elementType != COMMA && !it.treePrev.run { elementType == WHITE_SPACE && textContains('\n') })
         }
         .toList()
         .takeIf { it.isNotEmpty() }
