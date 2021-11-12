@@ -833,6 +833,7 @@ private fun ASTNode.findOffsetByLine(line: Int, positionByOffset: (Int) -> Pair<
     return lineOffset
 }
 
+@Suppress("UnsafeCallOnNullableType")
 private fun ASTNode.getAllNodesOnLine(
     lineOffset: Int,
     line: Int,
