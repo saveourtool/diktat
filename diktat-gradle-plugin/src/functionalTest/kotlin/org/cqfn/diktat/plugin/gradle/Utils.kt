@@ -49,7 +49,10 @@ internal fun runDiktat(testProjectDir: TemporaryFolder,
         if (shouldSucceed) build() else buildAndFail()
     }
     .also {
-        require(it.isSuccess) { "Running gradle returned exception ${it.exceptionOrNull()}" }
+        require(it.isSuccess) {
+            val ex = it.exceptionOrNull()
+            "Running gradle returned exception $ex, cause: ${ex?.cause}"
+        }
     }
     .getOrNull()!!
 

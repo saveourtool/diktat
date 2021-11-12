@@ -47,7 +47,7 @@ class DiktatMavenPluginIntegrationTest {
 
         val mavenLog = result.mavenLog.stdout.readText()
         Assertions.assertTrue(
-            mavenLog.contains("Original and formatted content differ, writing to Test.kt...")
+            mavenLog.contains(Regex("""Original and formatted content differ, writing to [:\w/\\]+Test\.kt\.\.\."""))
         )
         Assertions.assertTrue(
             mavenLog.contains(Regex("There are \\d+ lint errors"))

@@ -14,8 +14,12 @@ import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.OPEN_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
+import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_CALL_ENTRY
+import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_LIST
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
+import org.jetbrains.kotlin.psi.psiUtil.children
 
 /**
  * Checks if abstract class has any abstract method. If not, warns that class should not be abstract
@@ -28,22 +32,30 @@ class AbstractClassesRule(configRules: List<RulesConfig>) : DiktatRule(
         if (node.elementType == CLASS) {
             val classBody = node.getFirstChildWithType(CLASS_BODY) ?: return
 
-            if (hasAbstractModifier(node)) {
+            // If an abstract class extends another class, than that base class can be abstract too.
+            // Then this class must have `abstract` modifier even if it doesn't have any abstract members.
+            if (node.hasAbstractModifier() && node.isNotSubclass()) {
                 handleAbstractClass(classBody, node)
             }
         }
     }
 
-    private fun hasAbstractModifier(node: ASTNode): Boolean =
-            node.getFirstChildWithType(MODIFIER_LIST)?.hasChildOfType(ABSTRACT_KEYWORD) ?: false
+    private fun ASTNode.hasAbstractModifier(): Boolean =
+            getFirstChildWithType(MODIFIER_LIST)?.hasChildOfType(ABSTRACT_KEYWORD) ?: false
+
+    private fun ASTNode.isNotSubclass(): Boolean = findChildByType(SUPER_TYPE_LIST)?.children()?.filter {
+        it.elementType == SUPER_TYPE_CALL_ENTRY
+    }?.none() ?: true
 
     @Suppress("UnsafeCallOnNullableType")
     private fun handleAbstractClass(node: ASTNode, classNode: ASTNode) {
         val functions = node.getAllChildrenWithType(FUN)
+        val properties = node.getAllChildrenWithType(PROPERTY)
+        val members = functions + properties
 
         val identifier = classNode.getFirstChildWithType(IDENTIFIER)!!.text
 
-        if (functions.isNotEmpty() && functions.none { hasAbstractModifier(it) }) {
+        if (members.isNotEmpty() && members.none { it.hasAbstractModifier() }) {
             CLASS_SHOULD_NOT_BE_ABSTRACT.warnAndFix(configRules, emitWarn, isFixMode, identifier, node.startOffset, node) {
                 val modList = classNode.getFirstChildWithType(MODIFIER_LIST)!!
                 val abstractKeyword = modList.getFirstChildWithType(ABSTRACT_KEYWORD)!!
