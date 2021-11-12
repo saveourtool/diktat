@@ -188,14 +188,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
             val newKdoc = KotlinParser().createNode(newKdocText).findChildByType(KDOC)!!
             classNode.addChild(PsiWhiteSpaceImpl("\n"), classNode.firstChildNode)
             classNode.addChild(newKdoc, classNode.firstChildNode)
-            if (prevComment.elementType == KDOC) {
-                if (prevComment.treeNext.elementType == WHITE_SPACE) {
-                    valueParameterNode.removeChild(prevComment.treeNext)
-                }
-                valueParameterNode.removeChild(prevComment)
-            } else {
-                prevComment.treeParent.removeChildMergingSurroundingWhitespace(prevComment)
-            }
+            valueParameterNode.removeWithWhiteSpace(prevComment)
         }
     }
 
@@ -221,14 +214,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
             }
                 ?: insertTextInKdoc(kdocBeforeClass, " * @property ${node.findChildByType(IDENTIFIER)!!.text} ${kdocText.removePrefix("*")}\n")
 
-            if (prevComment.elementType == KDOC) {
-                if (prevComment.treeNext.elementType == WHITE_SPACE) {
-                    node.removeChild(prevComment.treeNext)
-                }
-                node.removeChild(prevComment)
-            } else {
-                node.removeChildMergingSurroundingWhitespace(prevComment)
-            }
+            node.removeWithWhiteSpace(prevComment)
         }
     }
 
@@ -249,7 +235,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
             ?: run {
                 insertTextInKdoc(kdocBeforeClass, "* @property ${node.findChildByType(IDENTIFIER)!!.text} ${prevComment.text.removeRange(0, 2)}\n")
             }
-        node.treeParent.removeChildMergingSurroundingWhitespace(prevComment)
+        node.treeParent.removeChildMergingSurroundingWhitespaces(prevComment)
     }
 
     @Suppress("UnsafeCallOnNullableType")
@@ -340,12 +326,23 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     }
 }
 
+private fun ASTNode.removeWithWhiteSpace(prevComment: ASTNode) {
+    if (prevComment.elementType == KDOC) {
+        if (prevComment.treeNext.elementType == WHITE_SPACE) {
+            removeChild(prevComment.treeNext)
+        }
+        removeChild(prevComment)
+    } else {
+        removeChildMergingSurroundingWhitespaces(prevComment)
+    }
+}
+
 /**
  * If [child] node is surrounded by nodes with type `WHITE_SPACE`, remove [child] and merge surrounding nodes,
  * preserving only a single newline if present (i.e. leaving no empty lines after merging). In any case, [child] is removed
  * from the tree.
  */
-private fun ASTNode.removeChildMergingSurroundingWhitespace(child: ASTNode) {
+private fun ASTNode.removeChildMergingSurroundingWhitespaces(child: ASTNode) {
     with(child) {
         if (treeNext?.elementType == WHITE_SPACE && treePrev?.elementType == WHITE_SPACE) {
             val mergedText = (treePrev.text + treeNext.text)
