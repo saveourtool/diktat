@@ -42,7 +42,6 @@ import com.pinterest.ktlint.core.ast.isRoot
 import com.pinterest.ktlint.core.ast.isWhiteSpace
 import com.pinterest.ktlint.core.ast.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.TokenType
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -733,14 +732,73 @@ fun ASTNode.calculateLineColByOffset() = buildPositionInTextLocator(text)
 fun ASTNode.findChildWithSpecificTypeOnLine(
     line: Int,
     condition: (ASTNode) -> Boolean
-): ASTNode {
+): ASTNode? {
     val rootNode = this.getRootNode()
-    val positionByOffset = rootNode.calculateLineColByOffset()
-    var offset = 0
-    while (positionByOffset(offset).first != line) {
-        offset++
+    val fileLines = rootNode.text.lines()
+    // TODO What if line == current line?
+    if (line <= 0 || line > fileLines.size - 1) {
+        return null
     }
-    return rootNode.psi.findElementAt(offset)!!.node
+
+    val positionByOffset = rootNode.calculateLineColByOffset()
+
+    val lineOffset = findOffsetByLine(line, this.getLineNumber(), this.startOffset, positionByOffset)
+    
+    println("\n\n\nLINE: ${fileLines[line - 1]}")
+
+    val nodesSet = getAllNodesOnLine(rootNode, fileLines, lineOffset, line, positionByOffset)
+
+    nodesSet.forEach {
+        println("Type ${it.elementType} ${it.text}")
+    }
+
+    return rootNode.psi.findElementAt(lineOffset)!!.node
+}
+
+private fun findOffsetByLine(line: Int, currentLine: Int, currentOffset: Int, positionByOffset: (Int) -> Pair<Int, Int>): Int {
+    var forwardDirection = true
+    var lineOffset = if (line < currentLine) {
+        if ((currentLine - line) < line) {
+            forwardDirection = false
+            currentOffset
+        } else {
+            0
+        }
+    } else {
+        currentOffset
+    }
+
+    while (positionByOffset(lineOffset).first != line) {
+        if (forwardDirection) {
+            lineOffset++
+        } else {
+            lineOffset--
+        }
+    }
+    return lineOffset
+}
+
+private fun getAllNodesOnLine(rootNode: ASTNode, fileLines: List<String>, startingFromOffset: Int, line: Int, positionByOffset: (Int) -> Pair<Int, Int>): MutableSet<ASTNode> {
+
+    var beginningOfLine = startingFromOffset
+    var endOfLine = startingFromOffset
+
+    while(positionByOffset(beginningOfLine - 1).first == line) {
+        beginningOfLine--
+    }
+
+    while(positionByOffset(endOfLine + 1).first == line) {
+        endOfLine++
+    }
+
+    val nodesSet: MutableSet<ASTNode> = mutableSetOf()
+    var currentOffset = beginningOfLine
+    while (currentOffset <= endOfLine) {
+        nodesSet.add(rootNode.psi.findElementAt(currentOffset)!!.node)
+        currentOffset++
+    }
+
+    return nodesSet
 }
 
 /**

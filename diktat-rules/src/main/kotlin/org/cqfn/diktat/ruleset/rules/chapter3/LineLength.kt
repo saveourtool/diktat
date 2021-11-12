@@ -313,9 +313,9 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             val fileNode = wrongNode.getRootNode()
             val previousNewLineNode = fileNode.psi.findElementAt(offset)!!.node
 
-            val temp = wrongNode.findChildWithSpecificTypeOnLine(5) { true }
+            val temp = wrongNode.findChildWithSpecificTypeOnLine(36) { true }
 
-            println("FIND: " + temp!!.prettyPrint())
+            //println("Curr line ${line} FIND: " + temp!!.prettyPrint())
 
             previousNewLineNode?.let {
                 val parent = wrongNode.treeParent
