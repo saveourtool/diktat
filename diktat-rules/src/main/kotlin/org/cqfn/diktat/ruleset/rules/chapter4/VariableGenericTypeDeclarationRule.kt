@@ -33,7 +33,7 @@ class VariableGenericTypeDeclarationRule(configRules: List<RulesConfig>) : Dikta
         }
     }
 
-    @Suppress("UnsafeCallOnNullableType")
+    @Suppress("UnsafeCallOnNullableType", "AVOID_NULL_CHECKS")
     private fun handleProperty(node: ASTNode) {
         val callExpr = node.findChildByType(CALL_EXPRESSION)
             ?: node
@@ -52,6 +52,11 @@ class VariableGenericTypeDeclarationRule(configRules: List<RulesConfig>) : Dikta
                 ?.typeReference
                 ?.typeElement
                 ?.typeArgumentsAsTypes
+        }
+
+        // Allow cases with wild card types; `*` interprets as `null` in list of types
+        if (leftSide?.any { it == null } == true) {
+            return
         }
 
         if (rightSide != null && leftSide != null &&

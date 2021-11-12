@@ -38,6 +38,15 @@ fun isReferenceApplicable(myReference: KClass<*>
     else -> false
 }
 
+fun isReferenceApplicable(myReference: KClass<*> // comment
+) = when (myReference) {
+    Comparable::class,
+    Iterable::class,
+    String::class
+    -> true
+    else -> false
+}
+
 @ApplicableFor([
     "serializer",
     "balancer",
@@ -70,4 +79,45 @@ fun printMeanValue() {
         meanValue += year
     }
     println(meanValue/cars.size)
+}
+
+enum class SomeEnum(
+    val a: Int, val b: Int  // comment
+)
+
+enum class SomeEnum(
+    val a: Int, val b: Int// comment
+)
+
+enum class SomeEnum(
+    val a: Int, val b: Int  /* comment */
+)
+
+enum class SomeEnum(
+    val a: Int, val b: Int  /**
+    some comment */
+)
+
+fun foo() {
+    val sum: (Int, Int, Int,) -> Int = fun(
+        x,
+        y,
+        z // trailing comma
+    ): Int {
+        return x + y + x
+    }
+    println(sum(8, 8, 8))
+}
+
+fun shift(x: Int, y: Int) {
+    shift(
+        25,
+        20 // trailing comma
+    )
+
+    val colors = listOf(
+        "red",
+        "green",
+        "blue" // trailing comma
+    )
 }
