@@ -429,8 +429,8 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun handleValueParameterList(node: ASTNode, entryType: String) = node
         .children()
         .filter {
-            it.elementType == COMMA &&
-                    !it.treeNext.run { elementType == WHITE_SPACE && textContains('\n') } || (it.elementType == RPAR && it.treePrev.elementType != COMMA)
+            (it.elementType == COMMA && !it.treeNext.run { elementType == WHITE_SPACE && textContains('\n') }
+            ) || (it.elementType == RPAR && it.treePrev.elementType != COMMA)
         }
         .toList()
         .takeIf { it.isNotEmpty() }
@@ -443,17 +443,11 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
                 warnText, node.startOffset, node) {
                 invalidCommas.forEach { commaOrRpar ->
-                    println("\n\nCOMMA TREE PREV ${commaOrRpar.treePrev.text}")
                     val nextWhiteSpace = commaOrRpar.treeNext?.takeIf { it.elementType == WHITE_SPACE }
-                    println("NEXT WHITESPACE == null ${nextWhiteSpace == null}")
-                    println("COMMA TREE NEXT ${commaOrRpar.treeNext?.text}")
                     if (commaOrRpar.elementType == COMMA) {
                         nextWhiteSpace?.treeNext?.let {
                             commaOrRpar.appendNewlineMergingWhiteSpace(nextWhiteSpace, nextWhiteSpace.treeNext)
-                        } ?: commaOrRpar.treeNext?.treeParent?.appendNewlineMergingWhiteSpace(
-                            nextWhiteSpace,
-                            commaOrRpar.treeNext
-                        )
+                        } ?: commaOrRpar.treeNext?.treeParent?.appendNewlineMergingWhiteSpace(nextWhiteSpace, commaOrRpar.treeNext)
                     } else {
                         commaOrRpar.treeParent.appendNewlineMergingWhiteSpace(nextWhiteSpace, commaOrRpar)
                     }
