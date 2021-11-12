@@ -65,6 +65,7 @@ import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.RETURN
 import com.pinterest.ktlint.core.ast.ElementType.RETURN_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.RPAR
 import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS
 import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.SECONDARY_CONSTRUCTOR
@@ -429,7 +430,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
         .children()
         .filter {
             it.elementType == COMMA &&
-                    !it.treeNext.run { elementType == WHITE_SPACE && textContains('\n') }
+                    !it.treeNext.run { elementType == WHITE_SPACE && textContains('\n') } || (it.elementType == RPAR && it.treePrev.elementType != COMMA)
         }
         .toList()
         .takeIf { it.isNotEmpty() }
@@ -441,9 +442,21 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             }
             WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
                 warnText, node.startOffset, node) {
-                invalidCommas.forEach { comma ->
-                    val nextWhiteSpace = comma.treeNext.takeIf { it.elementType == WHITE_SPACE }
-                    comma.appendNewlineMergingWhiteSpace(nextWhiteSpace, nextWhiteSpace?.treeNext ?: comma.treeNext)
+                invalidCommas.forEach { commaOrRpar ->
+                    println("\n\nCOMMA TREE PREV ${commaOrRpar.treePrev.text}")
+                    val nextWhiteSpace = commaOrRpar.treeNext?.takeIf { it.elementType == WHITE_SPACE }
+                    println("NEXT WHITESPACE == null ${nextWhiteSpace == null}")
+                    println("COMMA TREE NEXT ${commaOrRpar.treeNext?.text}")
+                    if (commaOrRpar.elementType == COMMA) {
+                        nextWhiteSpace?.treeNext?.let {
+                            commaOrRpar.appendNewlineMergingWhiteSpace(nextWhiteSpace, nextWhiteSpace.treeNext)
+                        } ?: commaOrRpar.treeNext?.treeParent?.appendNewlineMergingWhiteSpace(
+                            nextWhiteSpace,
+                            commaOrRpar.treeNext
+                        )
+                    } else {
+                        commaOrRpar.treeParent.appendNewlineMergingWhiteSpace(nextWhiteSpace, commaOrRpar)
+                    }
                 }
             }
         }
