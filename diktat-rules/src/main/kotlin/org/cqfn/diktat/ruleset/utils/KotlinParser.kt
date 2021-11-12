@@ -3,7 +3,6 @@ package org.cqfn.diktat.ruleset.utils
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.IMPORT_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
-import com.pinterest.ktlint.core.ast.ElementType.SECONDARY_CONSTRUCTOR
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.environment.setIdeaIoUseFallback
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
@@ -99,7 +98,10 @@ class KotlinParser {
      * @return [ASTNode] which is init block
      * @throws KotlinParseException if code is incorrect
      */
-    @Suppress("SAY_NO_TO_VAR")
+    @Suppress(
+        "SAY_NO_TO_VAR",
+        "UnsafeCallOnNullableType"
+    )
     fun createNodeForInit(text: String): ASTNode {
         var node: ASTNode = ktPsiFactory
             .createBlockCodeFragment(text, null)
