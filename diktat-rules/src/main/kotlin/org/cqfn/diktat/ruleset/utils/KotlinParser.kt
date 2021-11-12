@@ -80,6 +80,7 @@ class KotlinParser {
      * @return [ASTNode] which is secondary constructor
      * @throws KotlinParseException if code is incorrect
      */
+    @Suppress("SAY_NO_TO_VAR")
     fun createNodeForSecondaryConstructor(text: String): ASTNode {
         var node: ASTNode = ktPsiFactory
             .createSecondaryConstructor(text)
@@ -98,6 +99,7 @@ class KotlinParser {
      * @return [ASTNode] which is init block
      * @throws KotlinParseException if code is incorrect
      */
+    @Suppress("SAY_NO_TO_VAR")
     fun createNodeForInit(text: String): ASTNode {
         var node: ASTNode = ktPsiFactory
             .createBlockCodeFragment(text, null)

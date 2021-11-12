@@ -1,18 +1,18 @@
 package org.cqfn.diktat.ruleset.rules.chapter6.classes
 
-import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
-import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY
 import org.cqfn.diktat.ruleset.rules.DiktatRule
+import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.ruleset.utils.findChildrenMatching
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getIdentifierName
-import org.cqfn.diktat.ruleset.utils.isGoingAfter
-import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
+import org.cqfn.diktat.ruleset.utils.isGoingAfter
 
+import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
+import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
@@ -150,7 +150,10 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
                 }
                 .filterValues { left -> left.getReferencedName() in classProperties.mapNotNull { it.name } }
 
-    @Suppress("NestedBlockDepth", "GENERIC_VARIABLE_WRONG_DECLARATION")
+    @Suppress(
+        "NestedBlockDepth",
+        "GENERIC_VARIABLE_WRONG_DECLARATION",
+        "TOO_LONG_FUNCTION")
     private fun ASTNode.convertSecondaryConstructorToPrimary(
         secondaryCtor: ASTNode,
         declarationsAssignedInCtor: List<KtProperty>,
@@ -200,7 +203,7 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
                         """.trimMargin())
                 } else {
                     kotlinParser.createNodeForSecondaryConstructor(
-                    """|constructor(${argumentListOfSecondaryCtor.joinToString(", ") { it.text } }) {
+                        """|constructor(${argumentListOfSecondaryCtor.joinToString(", ") { it.text } }) {
                        |    ${initBody.joinToString("\n")}
                        |}
                     """.trimMargin())
