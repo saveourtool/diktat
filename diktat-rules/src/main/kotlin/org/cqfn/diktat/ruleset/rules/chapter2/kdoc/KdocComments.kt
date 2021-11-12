@@ -214,7 +214,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         // if property is documented with KDoc, which has a property tag inside, then it can contain some additional more complicated
         // structure, that will be hard to move automatically
         val isFixable = propertyInLocalKdoc == null
-        KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixable, prevComment.text, prevComment.startOffset, node, isFixable) {
+        KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixMode, prevComment.text, prevComment.startOffset, node, isFixable) {
             propertyInClassKdoc?.let {
                 // local docs should be appended to docs in class
                 appendKdocTagContent(propertyInClassKdoc, "\n$kdocText")
