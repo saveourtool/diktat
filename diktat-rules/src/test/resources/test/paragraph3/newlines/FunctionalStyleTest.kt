@@ -33,3 +33,7 @@ fun foo() {
     foo ?: bar.baz()
             .qux()
 }
+
+fun controlFlow(code: CodeBlock, format: String, vararg args: Any?): CodeBlock =
+    CodeBlock.builder().beginControlFlow(format, *args).add(code)
+        .endControlFlow().build()
