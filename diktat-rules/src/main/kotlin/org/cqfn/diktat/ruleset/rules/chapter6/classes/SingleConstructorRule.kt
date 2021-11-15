@@ -21,6 +21,7 @@ import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.SECONDARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.nextCodeSibling
 import com.pinterest.ktlint.core.ast.nextSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -95,7 +96,7 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
             .bodyBlockExpression
             ?.findChildrenMatching { it.elementType == EOL_COMMENT || it.elementType == BLOCK_COMMENT || it.elementType == KDOC }
             ?.associate {
-                it.text to it.nextSibling { sibling -> sibling.elementType == CALL_EXPRESSION || sibling.elementType == BINARY_EXPRESSION }
+                it.text to it.nextCodeSibling()
             }
             ?.filterValues { it != null }
 
@@ -181,11 +182,11 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
         initBody.addAll(otherStatements.map { it.text })
         initBody.addAll(nonTrivialAssignments.keys.map { it.text })
 
-        val argumentListOfSecondaryCtor: List<KtParameter> = (secondaryCtor.psi as KtSecondaryConstructor)
+        val newArgumentListOfSecondaryCtor: List<KtParameter> = (secondaryCtor.psi as KtSecondaryConstructor)
             .valueParameters
-            .filter { arg -> arg.name !in nonTrivialSecondaryCtorParameters.map { it.name } }
-            .filter { arg -> arg.name !in declarationsAssignedInCtor.map { it.name } }
-            .filter { arg -> initBody.any { expr -> arg.name.toString() in expr } }
+            .filter { arg -> arg.name !in nonTrivialSecondaryCtorParameters.map { it.name } }  // get rid of ctor arguments
+            .filter { arg -> arg.name !in declarationsAssignedInCtor.map { it.name } }  // get rid of ctor arguments
+            .filter { arg -> initBody.any { expr -> arg.name.toString() in expr } }  // get rid of parameters that do not appear in text
 
         comments?.forEach { (comment, nextExpression) ->
             if (initBody.indexOf(nextExpression?.text) != -1) {
@@ -195,7 +196,7 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
 
         if (otherStatements.isNotEmpty() || nonTrivialAssignments.isNotEmpty()) {
             findChildByType(CLASS_BODY)?.run {
-                val classInitializer = if (argumentListOfSecondaryCtor.isEmpty()) {
+                val classInitializer = if (newArgumentListOfSecondaryCtor.isEmpty()) {
                     kotlinParser.createNodeForInit(
                         """|init {
                            |    ${initBody.joinToString("\n")}
@@ -203,7 +204,7 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
                         """.trimMargin())
                 } else {
                     kotlinParser.createNodeForSecondaryConstructor(
-                        """|constructor(${argumentListOfSecondaryCtor.joinToString(", ") { it.text } }) {
+                        """|constructor(${newArgumentListOfSecondaryCtor.joinToString(", ") { it.text } }) {
                        |    ${initBody.joinToString("\n")}
                        |}
                     """.trimMargin())
