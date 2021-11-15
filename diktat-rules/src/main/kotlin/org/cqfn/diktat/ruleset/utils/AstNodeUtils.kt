@@ -131,7 +131,7 @@ fun ASTNode.reversedChildren(): Sequence<ASTNode> = sequence {
 }
 
 /**
- * Replaces the [beforeNode] of type [WHITE_SPACE] with the node with specified [text]
+ * Replaces `this` node's child [beforeNode] of type [WHITE_SPACE] with the node with specified [text]
  *
  * @param beforeNode a node to replace
  * @param text a text (white space characters only) for the new node
