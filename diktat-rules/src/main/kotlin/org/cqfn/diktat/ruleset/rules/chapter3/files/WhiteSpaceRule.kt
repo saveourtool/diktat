@@ -407,7 +407,8 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun getDescription(shouldBefore: Boolean,
                                shouldAfter: Boolean,
                                before: Int?,
-                               after: Int?): String =
+                               after: Int?
+    ): String =
             if (shouldBefore && shouldAfter) {
                 " $before space(s) before and $after space(s) after"
             } else if (shouldBefore && !shouldAfter) {

@@ -117,7 +117,8 @@ class SmartCastRule(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("TYPE_ALIAS")
     private fun groupIsAndAsExpr(isExpr: List<KtNameReferenceExpression>,
                                  asExpr: List<KtNameReferenceExpression>,
-                                 prop: KtProperty): Map<KtNameReferenceExpression, List<KtNameReferenceExpression>> {
+                                 prop: KtProperty
+    ): Map<KtNameReferenceExpression, List<KtNameReferenceExpression>> {
         if (isExpr.isEmpty() && asExpr.isNotEmpty()) {
             handleZeroIsCase(asExpr, prop)
             return emptyMap()

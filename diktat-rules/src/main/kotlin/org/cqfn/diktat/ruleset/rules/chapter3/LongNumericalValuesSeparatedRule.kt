@@ -100,7 +100,8 @@ class LongNumericalValuesSeparatedRule(configRules: List<RulesConfig>) : DiktatR
     private fun isValidConstant(
         text: String,
         configuration: LongNumericalValuesConfiguration,
-        node: ASTNode): Boolean {
+        node: ASTNode
+    ): Boolean {
         if (text.contains("_")) {
             checkBlocks(removePrefixSuffix(text), configuration, node)
             return true
