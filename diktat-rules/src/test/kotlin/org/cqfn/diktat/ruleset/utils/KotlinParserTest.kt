@@ -1,5 +1,7 @@
 package org.cqfn.diktat.ruleset.utils
 
+import com.pinterest.ktlint.core.ast.ElementType.BLOCK
+import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import org.cqfn.diktat.util.applyToCode
 
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
@@ -14,6 +16,7 @@ import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
+import com.pinterest.ktlint.core.ast.ElementType.SECONDARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -208,5 +211,34 @@ class KotlinParserTest {
             */
         """.trimIndent()
         Assertions.assertEquals(kdocText, node.findChildByType(FUN)!!.firstChildNode.text)
+    }
+
+    @Test
+    fun `test createNodeForInit`() {
+        val code =
+            """
+            |init {
+            |   println("A")
+            |   // import is a weak keyword
+            |   println("B")
+            |}
+            """.trimMargin()
+        val node = KotlinParser().createNodeForInit(code)
+        Assertions.assertEquals(CALL_EXPRESSION, node.elementType)
+        Assertions.assertEquals(code, node.text)
+    }
+
+    @Test
+    fun `test createNodeForSecondaryConstructor`() {
+        val code =
+            """
+            |constructor(a: Int) {
+            |   // import is a weak keyword
+            |   b = a.toString()
+            |}
+            """.trimMargin()
+        val node = KotlinParser().createNodeForSecondaryConstructor(code)
+        Assertions.assertEquals(SECONDARY_CONSTRUCTOR, node.elementType)
+        Assertions.assertEquals(code, node.text)
     }
 }

@@ -85,10 +85,7 @@ class KotlinParser {
             .createSecondaryConstructor(text)
             .node
         if (!node.isCorrect()) {
-            node = ktPsiFactory.createFile(text).node
-            if (!node.isCorrect()) {
-                throw KotlinParseException("Text is not valid: [$text]")
-            }
+            throw KotlinParseException("Text is not valid: [$text]")
         }
         return node
     }
@@ -107,14 +104,9 @@ class KotlinParser {
             .createBlockCodeFragment(text, null)
             .node
             .findChildByType(BLOCK)!!
-        if (node.getChildren(null).size == 1) {
-            node = node.firstChildNode
-        }
+            .firstChildNode
         if (!node.isCorrect()) {
-            node = ktPsiFactory.createFile(text).node
-            if (!node.isCorrect()) {
-                throw KotlinParseException("Text is not valid: [$text]")
-            }
+            throw KotlinParseException("Text is not valid: [$text]")
         }
         return node
     }

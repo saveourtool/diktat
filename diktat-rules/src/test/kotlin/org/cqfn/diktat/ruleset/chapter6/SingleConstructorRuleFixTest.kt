@@ -40,8 +40,8 @@ class SingleConstructorRuleFixTest : FixTestBase("test/chapter6/classes", ::Sing
 
     @Test
     @Tag(WarningNames.SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY)
-    fun `should not fail if keyword is commented`() {
-        fixAndCompare("KeywordCommentExpected.kt", "KeywordCommentTest.kt")
+    fun `should not remove different comments`() {
+        fixAndCompare("ConstructorWithCommentsExpected.kt", "ConstructorWithCommentsTest.kt")
     }
 
     @Test

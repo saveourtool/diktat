@@ -94,10 +94,10 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
         val comments = (secondaryCtor.psi as KtSecondaryConstructor)
             .bodyBlockExpression
             ?.findChildrenMatching { it.elementType == EOL_COMMENT || it.elementType == BLOCK_COMMENT || it.elementType == KDOC }
-            ?.map {
+            ?.associate {
                 it.text to it.nextSibling { sibling -> sibling.elementType == CALL_EXPRESSION || sibling.elementType == BINARY_EXPRESSION }
-            }?.filter { (_, connectedTo) -> connectedTo != null }
-            ?.toMap()
+            }
+            ?.filterValues { it != null }
 
         val classProperties = (classNode.psi as KtClass).getProperties()
         val localProperties = secondaryCtor.psi.collectDescendantsOfType<KtProperty> { it.isLocal }
