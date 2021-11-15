@@ -19,4 +19,10 @@ class KdocCommentsFixTest : FixTestBase("test/paragraph2/kdoc/", ::KdocComments)
     fun `check fix without class kdoc`() {
         fixAndCompare("ConstructorCommentNoKDocExpected.kt", "ConstructorCommentNoKDocTest.kt")
     }
+
+    @Test
+    @Tag(WarningNames.KDOC_NO_CONSTRUCTOR_PROPERTY)
+    fun `should preserve newlines when moving comments from value parameters`() {
+        fixAndCompare("ConstructorCommentNewlineExpected.kt", "ConstructorCommentNewlineTest.kt")
+    }
 }
