@@ -45,7 +45,8 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
     "package-naming",
     configRules,
     listOf(INCORRECT_PACKAGE_SEPARATOR, PACKAGE_NAME_INCORRECT_CASE, PACKAGE_NAME_MISSING,
-        PACKAGE_NAME_INCORRECT_PATH, PACKAGE_NAME_INCORRECT_PREFIX, PACKAGE_NAME_INCORRECT_SYMBOLS)) {
+        PACKAGE_NAME_INCORRECT_PATH, PACKAGE_NAME_INCORRECT_PREFIX, PACKAGE_NAME_INCORRECT_SYMBOLS)
+) {
     private lateinit var domainName: String
 
     override fun logic(node: ASTNode) {
@@ -89,7 +90,8 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
     private fun warnAndFixMissingPackageName(
         initialPackageDirectiveNode: ASTNode,
         realPackageName: List<String>,
-        filePath: String) {
+        filePath: String
+    ) {
         val fileName = filePath.substringAfterLast(File.separator)
 
         // if the file path contains "buildSrc" - don't add the package name to the file

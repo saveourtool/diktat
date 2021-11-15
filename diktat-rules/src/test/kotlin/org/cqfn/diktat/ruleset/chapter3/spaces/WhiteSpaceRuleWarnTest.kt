@@ -22,8 +22,8 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
                           before: Int?,
                           after: Int?,
                           reqBefore: Int?,
-                          reqAfter: Int?) =
-            "${WRONG_WHITESPACE.warnText()} $token should have" +
+                          reqAfter: Int?
+    ) = "${WRONG_WHITESPACE.warnText()} $token should have" +
                     (reqBefore?.let { " $it space(s) before" } ?: "") +
                     (if (reqBefore != null && reqAfter != null) " and" else "") +
                     (reqAfter?.let { " $it space(s) after" } ?: "") +

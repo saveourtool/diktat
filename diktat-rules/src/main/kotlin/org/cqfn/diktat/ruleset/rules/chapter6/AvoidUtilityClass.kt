@@ -28,7 +28,8 @@ import java.util.Locale
 class AvoidUtilityClass(configRules: List<RulesConfig>) : DiktatRule(
     "avoid-utility-class",
     configRules,
-    listOf(AVOID_USING_UTILITY_CLASS)) {
+    listOf(AVOID_USING_UTILITY_CLASS)
+) {
     override fun logic(node: ASTNode) {
         val config = configRules.getCommonConfiguration()
         val filePath = node.getFilePath()
