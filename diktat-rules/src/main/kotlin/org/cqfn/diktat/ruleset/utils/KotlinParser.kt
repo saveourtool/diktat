@@ -81,7 +81,7 @@ class KotlinParser {
      */
     @Suppress("SAY_NO_TO_VAR")
     fun createNodeForSecondaryConstructor(text: String): ASTNode {
-        var node: ASTNode = ktPsiFactory
+        val node: ASTNode = ktPsiFactory
             .createSecondaryConstructor(text)
             .node
         if (!node.isCorrect()) {
@@ -100,7 +100,7 @@ class KotlinParser {
         "UnsafeCallOnNullableType"
     )
     fun createNodeForInit(text: String): ASTNode {
-        var node: ASTNode = ktPsiFactory
+        val node: ASTNode = ktPsiFactory
             .createBlockCodeFragment(text, null)
             .node
             .findChildByType(BLOCK)!!

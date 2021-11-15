@@ -1,9 +1,8 @@
 package org.cqfn.diktat.ruleset.utils
 
-import com.pinterest.ktlint.core.ast.ElementType.BLOCK
-import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import org.cqfn.diktat.util.applyToCode
 
+import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_KEYWORD
@@ -215,8 +214,7 @@ class KotlinParserTest {
 
     @Test
     fun `test createNodeForInit`() {
-        val code =
-            """
+        val code = """
             |init {
             |   println("A")
             |   // import is a weak keyword
@@ -230,8 +228,7 @@ class KotlinParserTest {
 
     @Test
     fun `test createNodeForSecondaryConstructor`() {
-        val code =
-            """
+        val code = """
             |constructor(a: Int) {
             |   // import is a weak keyword
             |   b = a.toString()
