@@ -71,6 +71,7 @@ import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.SECONDARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.SEMICOLON
 import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_LIST
+import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER
@@ -290,7 +291,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
                 // lambda with explicit arguments
                 val newlinesBeforeArrow = arrowNode
                     .siblings(false)
-                    .filter { it.elementType == WHITE_SPACE && it.textContains('\n') }
+                    .filter { it.isNewLineNode() }
                     .toList()
                 if (newlinesBeforeArrow.isNotEmpty() || !arrowNode.isFollowedByNewline()) {
                     WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
@@ -429,8 +430,12 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun handleValueParameterList(node: ASTNode, entryType: String) = node
         .children()
         .filter {
-            (it.elementType == COMMA && !it.treeNext.run { elementType == WHITE_SPACE && textContains('\n') }
-            ) || (it.elementType == RPAR && it.treePrev.elementType != COMMA && !it.treePrev.run { elementType == WHITE_SPACE && textContains('\n') })
+            (it.elementType == COMMA && !it.treeNext.isNewLineNode()) ||
+                    // Move RPAR to the new line, if there is exist return type == TYPE_REFERENCE
+                    (it.elementType == RPAR &&
+                            it.treePrev.elementType != COMMA &&
+                            !it.treePrev.isNewLineNode() &&
+                            it.treeParent.treeParent.findChildByType(TYPE_REFERENCE) != null)
         }
         .toList()
         .takeIf { it.isNotEmpty() }
@@ -454,6 +459,8 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
                 }
             }
         }
+
+    private fun ASTNode.isNewLineNode(): Boolean = this.run { elementType == WHITE_SPACE && textContains('\n') }
 
     @Suppress("UnsafeCallOnNullableType")
     private fun ASTNode.getParentIdentifier() = when (treeParent.elementType) {
