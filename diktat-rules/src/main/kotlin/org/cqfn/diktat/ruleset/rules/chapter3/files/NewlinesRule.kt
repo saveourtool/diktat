@@ -431,12 +431,8 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
         .children()
         .filter {
             (it.elementType == COMMA && !it.treeNext.isNewLineNode()) ||
-                    // Move RPAR to the new line, if there is exist return type == TYPE_REFERENCE
-                    (it.elementType == RPAR &&
-                            it.treePrev.elementType != COMMA &&
-                            !it.treePrev.isNewLineNode() &&
-                            it.treeParent.treeParent.children().dropWhile { it.elementType != COLON }.filter { it.elementType == TYPE_REFERENCE }
-                                .toList().isNotEmpty())
+                    // Move RPAR to the new line
+                    (it.elementType == RPAR && it.treePrev.elementType != COMMA && !it.treePrev.isNewLineNode())
         }
         .toList()
         .takeIf { it.isNotEmpty() }

@@ -168,7 +168,7 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
             LintError(1, 1, "$DIKTAT_RULE_SET_ID:header-comment", "${HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warnText()} there are 2 declared classes and/or objects", false),
             LintError(15, 23, "$DIKTAT_RULE_SET_ID:kdoc-methods",
                 "${KDOC_WITHOUT_PARAM_TAG.warnText()} createWithFile (containerName)", true),
-            LintError(31, 13, "$DIKTAT_RULE_SET_ID:empty-block-structure",
+            LintError(31, 14, "$DIKTAT_RULE_SET_ID:empty-block-structure",
                 "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} empty blocks are forbidden unless it is function with override keyword", false)
         )
     }
