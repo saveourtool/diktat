@@ -34,7 +34,8 @@ import java.lang.RuntimeException
 class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
     "boolean-expressions-rule",
     configRules,
-    listOf(COMPLEX_BOOLEAN_EXPRESSION)) {
+    listOf(COMPLEX_BOOLEAN_EXPRESSION)
+) {
     override fun logic(node: ASTNode) {
         if (node.elementType == CONDITION) {
             checkBooleanExpression(node)
@@ -154,7 +155,8 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun fixBooleanExpression(
         node: ASTNode,
         simplifiedExpr: Expression<String>,
-        mapOfExpressionToChar: HashMap<String, Char>) {
+        mapOfExpressionToChar: HashMap<String, Char>
+    ) {
         var correctKotlinBooleanExpression = simplifiedExpr
             .toString()
             .replace("&", "&&")

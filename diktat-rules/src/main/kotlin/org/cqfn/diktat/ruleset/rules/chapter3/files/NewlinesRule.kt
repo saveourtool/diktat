@@ -117,7 +117,8 @@ import org.slf4j.LoggerFactory
 class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
     "newlines",
     configRules,
-    listOf(COMPLEX_EXPRESSION, REDUNDANT_SEMICOLON, WRONG_NEWLINES)) {
+    listOf(COMPLEX_EXPRESSION, REDUNDANT_SEMICOLON, WRONG_NEWLINES)
+) {
     private val configuration by lazy {
         NewlinesRuleConfiguration(configRules.getRuleConfig(WRONG_NEWLINES)?.configuration ?: emptyMap())
     }
@@ -402,7 +403,8 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun handleFirstValue(node: ASTNode,
                                  filterType: IElementType,
-                                 warnText: String) = node
+                                 warnText: String
+    ) = node
         .children()
         .takeWhile { !it.textContains('\n') }
         .filter { it.elementType == filterType }

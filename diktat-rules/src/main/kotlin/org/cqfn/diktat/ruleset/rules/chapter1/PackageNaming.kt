@@ -264,7 +264,8 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
      */
     private fun checkFilePathMatchesWithPackageName(packageNameParts: List<ASTNode>,
                                                     realNameParts: List<String>,
-                                                    packageDirective: ASTNode) {
+                                                    packageDirective: ASTNode
+    ) {
         if (realNameParts.isNotEmpty() && packageNameParts.map { node -> node.text } != realNameParts) {
             val realPackageNameStr = realNameParts.joinToString(PACKAGE_SEPARATOR)
             val offset = packageNameParts[0].startOffset

@@ -96,7 +96,8 @@ import org.slf4j.LoggerFactory
 class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
     "horizontal-whitespace",
     configRules,
-    listOf(WRONG_WHITESPACE)) {
+    listOf(WRONG_WHITESPACE)
+) {
     @Suppress("ComplexMethod")
     override fun logic(node: ASTNode) {
         when (node.elementType) {
@@ -201,7 +202,8 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
                                                 isFromLambdaAsArgument: Boolean,
                                                 numWhiteSpace: Int?,
                                                 whitespaceOrPrevNode: ASTNode,
-                                                prevNode: ASTNode) {
+                                                prevNode: ASTNode
+    ) {
         // note: the conditions in the following `if`s cannot be collapsed into simple conjunctions
         if (isFromLambdaAsArgument) {
             val isFirstArgument = node
@@ -281,7 +283,8 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun handleToken(
         node: ASTNode,
         requiredSpacesBefore: Int?,
-        requiredSpacesAfter: Int?) {
+        requiredSpacesAfter: Int?
+    ) {
         require(requiredSpacesBefore != null || requiredSpacesAfter != null) {
             "requiredSpacesBefore=$requiredSpacesBefore and requiredSpacesAfter=$requiredSpacesAfter, but at least one should not be null"
         }

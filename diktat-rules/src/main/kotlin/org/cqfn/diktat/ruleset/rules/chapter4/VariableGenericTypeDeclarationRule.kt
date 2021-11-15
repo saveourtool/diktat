@@ -24,7 +24,8 @@ import org.jetbrains.kotlin.psi.KtProperty
 class VariableGenericTypeDeclarationRule(configRules: List<RulesConfig>) : DiktatRule(
     "variable-generic-type",
     configRules,
-    listOf(GENERIC_VARIABLE_WRONG_DECLARATION)) {
+    listOf(GENERIC_VARIABLE_WRONG_DECLARATION)
+) {
     override fun logic(node: ASTNode) {
         when (node.elementType) {
             PROPERTY, VALUE_PARAMETER -> handleProperty(node)

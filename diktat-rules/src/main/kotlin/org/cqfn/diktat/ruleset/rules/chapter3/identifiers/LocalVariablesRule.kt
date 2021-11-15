@@ -40,7 +40,8 @@ import org.jetbrains.kotlin.psi.psiUtil.startOffset
 class LocalVariablesRule(configRules: List<RulesConfig>) : DiktatRule(
     "local-variables",
     configRules,
-    listOf(LOCAL_VARIABLE_EARLY_DECLARATION)) {
+    listOf(LOCAL_VARIABLE_EARLY_DECLARATION)
+) {
     override fun logic(node: ASTNode) {
         if (node.elementType == FILE) {
             // collect all local properties and associate with corresponding references
@@ -155,7 +156,8 @@ class LocalVariablesRule(configRules: List<RulesConfig>) : DiktatRule(
         property: KtProperty,
         firstUsageStatementLine: Int,
         offset: Int = 0,
-        firstUsageLine: Int? = null) {
+        firstUsageLine: Int? = null
+    ) {
         val numLinesToSkip = property
             .siblings(forward = true, withItself = false)
             .takeWhile { it is PsiWhiteSpace || it.node.isPartOfComment() }
@@ -212,7 +214,8 @@ class LocalVariablesRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun warnMessage(
         name: String,
         declared: Int,
-        used: Int) = "<$name> is declared on line <$declared> and is used for the first time on line <$used>"
+        used: Int
+    ) = "<$name> is declared on line <$declared> and is used for the first time on line <$used>"
 
     companion object {
         private var functionInitializers = listOf(

@@ -45,7 +45,8 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
     "header-comment",
     configRules,
     listOf(HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE, HEADER_MISSING_OR_WRONG_COPYRIGHT, HEADER_NOT_BEFORE_PACKAGE,
-        HEADER_NOT_BEFORE_PACKAGE, HEADER_WRONG_FORMAT, WRONG_COPYRIGHT_YEAR)) {
+        HEADER_NOT_BEFORE_PACKAGE, HEADER_WRONG_FORMAT, WRONG_COPYRIGHT_YEAR)
+) {
     override fun logic(node: ASTNode) {
         if (node.elementType == FILE && !node.getFilePath().isGradleScript()) {
             checkCopyright(node)

@@ -19,7 +19,8 @@ import java.lang.StringBuilder
 class LongNumericalValuesSeparatedRule(configRules: List<RulesConfig>) : DiktatRule(
     "long-numerical-values",
     configRules,
-    listOf(LONG_NUMERICAL_VALUES_SEPARATED)) {
+    listOf(LONG_NUMERICAL_VALUES_SEPARATED)
+) {
     override fun logic(node: ASTNode) {
         val configuration = LongNumericalValuesConfiguration(
             configRules.getRuleConfig(LONG_NUMERICAL_VALUES_SEPARATED)?.configuration ?: emptyMap())
@@ -55,7 +56,8 @@ class LongNumericalValuesSeparatedRule(configRules: List<RulesConfig>) : DiktatR
         realPart: String,
         fractionalPart: String,
         configuration: LongNumericalValuesConfiguration,
-        node: ASTNode) {
+        node: ASTNode
+    ) {
         val resultRealPart = StringBuilder(nodePrefix(realPart))
         val resultFractionalPart = StringBuilder()
 
@@ -116,7 +118,8 @@ class LongNumericalValuesSeparatedRule(configRules: List<RulesConfig>) : DiktatR
     private fun checkBlocks(
         text: String,
         configuration: LongNumericalValuesConfiguration,
-        node: ASTNode) {
+        node: ASTNode
+    ) {
         val blocks = text.split("_", ".")
 
         blocks.forEach {

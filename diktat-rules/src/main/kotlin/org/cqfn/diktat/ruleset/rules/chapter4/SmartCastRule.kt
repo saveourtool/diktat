@@ -42,7 +42,8 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
 class SmartCastRule(configRules: List<RulesConfig>) : DiktatRule(
     "smart-cast-rule",
     configRules,
-    listOf(SMART_CAST_NEEDED)) {
+    listOf(SMART_CAST_NEEDED)
+) {
     override fun logic(node: ASTNode) {
         if (node.elementType == FILE) {
             val usages = collectLocalPropertiesWithUsages(node)
@@ -282,7 +283,8 @@ class SmartCastRule(configRules: List<RulesConfig>) : DiktatRule(
     class AsExpressions(
         val identifier: String,
         val type: String,
-        val node: ASTNode)
+        val node: ASTNode
+    )
 
     /**
      * @property identifier a reference that is checked

@@ -34,7 +34,8 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
 class SortRule(configRules: List<RulesConfig>) : DiktatRule(
     "sort-rule",
     configRules,
-    listOf(WRONG_DECLARATIONS_ORDER)) {
+    listOf(WRONG_DECLARATIONS_ORDER)
+) {
     override fun logic(node: ASTNode) {
         val configuration = SortRuleConfiguration(
             configRules.getRuleConfig(WRONG_DECLARATIONS_ORDER)?.configuration ?: emptyMap()
@@ -79,7 +80,8 @@ class SortRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun swapSortNodes(
         sortList: List<ASTNode>,
         nonSortList: List<ASTNode>,
-        node: ASTNode) {
+        node: ASTNode
+    ) {
         val isEnum = nonSortList.first().elementType == ENUM_ENTRY
         val spaceBefore = if (node.findAllDescendantsWithSpecificType(EOL_COMMENT).isNotEmpty() && isEnum) {
             nonSortList.last().run {

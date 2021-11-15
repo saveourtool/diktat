@@ -46,7 +46,8 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
 class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
     "class-like-structures",
     configRules,
-    listOf(BLANK_LINE_BETWEEN_PROPERTIES, WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES)) {
+    listOf(BLANK_LINE_BETWEEN_PROPERTIES, WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES)
+) {
     override fun logic(node: ASTNode) {
         if (node.elementType == CLASS_BODY) {
             checkDeclarationsOrderInClass(node)
@@ -165,7 +166,8 @@ class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
     private data class AllProperties(val loggers: List<ASTNode>,
                                      val constProperties: List<ASTNode>,
                                      val properties: List<ASTNode>,
-                                     val lateInitProperties: List<ASTNode>) {
+                                     val lateInitProperties: List<ASTNode>
+    ) {
         companion object {
             /**
              * Create [AllProperties] wrapper from node with type [CLASS_BODY]
@@ -206,7 +208,8 @@ class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
                               val methods: List<ASTNode>,
                               val usedClasses: List<ASTNode>,
                               val companion: List<ASTNode>,
-                              val unusedClasses: List<ASTNode>) {
+                              val unusedClasses: List<ASTNode>
+    ) {
         init {
             require(companion.size in 0..1) { "There is more than one companion object in class" }
         }
