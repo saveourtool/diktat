@@ -25,7 +25,8 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
 class CheckInverseMethodRule(configRules: List<RulesConfig>) : DiktatRule(
     "inverse-method",
     configRules,
-    listOf(INVERSE_FUNCTION_PREFERRED)) {
+    listOf(INVERSE_FUNCTION_PREFERRED)
+) {
     override fun logic(node: ASTNode) {
         if (node.elementType == CALL_EXPRESSION && node.text in methodMap.keys) {
             checkCallExpressionName(node)

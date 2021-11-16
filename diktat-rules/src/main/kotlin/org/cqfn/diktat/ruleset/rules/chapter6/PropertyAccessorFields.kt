@@ -25,7 +25,8 @@ import org.jetbrains.kotlin.psi.KtProperty
 class PropertyAccessorFields(configRules: List<RulesConfig>) : DiktatRule(
     "getter-setter-fields",
     configRules,
-    listOf(WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR)) {
+    listOf(WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR)
+) {
     override fun logic(node: ASTNode) {
         if (node.elementType == PROPERTY_ACCESSOR) {
             checkPropertyAccessor(node)

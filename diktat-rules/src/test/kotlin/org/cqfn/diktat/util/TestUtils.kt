@@ -82,17 +82,17 @@ internal fun format(ruleSetProviderRef: (rulesConfigList: List<RulesConfig>?) ->
                     text: String,
                     fileName: String,
                     rulesConfigList: List<RulesConfig>? = null,
-                    cb: LintErrorCallback = defaultCallback) =
-        KtLint.format(
-            KtLint.Params(
-                text = text,
-                ruleSets = listOf(ruleSetProviderRef.invoke(rulesConfigList).get()),
-                fileName = fileName.removeSuffix("_copy"),
-                script = fileName.removeSuffix("_copy").endsWith("kts"),
-                cb = cb,
-                userData = mapOf("file_path" to fileName.removeSuffix("_copy"))
-            )
-        )
+                    cb: LintErrorCallback = defaultCallback
+) = KtLint.format(
+    KtLint.Params(
+        text = text,
+        ruleSets = listOf(ruleSetProviderRef.invoke(rulesConfigList).get()),
+        fileName = fileName.removeSuffix("_copy"),
+        script = fileName.removeSuffix("_copy").endsWith("kts"),
+        cb = cb,
+        userData = mapOf("file_path" to fileName.removeSuffix("_copy"))
+    )
+)
 
 /**
  * This utility function lets you run arbitrary code on every node of given [code].
@@ -106,7 +106,8 @@ internal fun format(ruleSetProviderRef: (rulesConfigList: List<RulesConfig>?) ->
 @Suppress("TYPE_ALIAS")
 internal fun applyToCode(code: String,
                          expectedAsserts: Int,
-                         applyToNode: (node: ASTNode, counter: AtomicInteger) -> Unit) {
+                         applyToNode: (node: ASTNode, counter: AtomicInteger) -> Unit
+) {
     val counter = AtomicInteger(0)
     KtLint.lint(
         KtLint.Params(
@@ -115,7 +116,8 @@ internal fun applyToCode(code: String,
                 RuleSet("test", object : Rule("astnode-utils-test") {
                     override fun visit(node: ASTNode,
                                        autoCorrect: Boolean,
-                                       emit: EmitType) {
+                                       emit: EmitType
+                    ) {
                         applyToNode(node, counter)
                     }
                 })

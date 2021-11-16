@@ -29,7 +29,8 @@ import org.jetbrains.kotlin.psi.KtPropertyAccessor
 class TrivialPropertyAccessors(configRules: List<RulesConfig>) : DiktatRule(
     "trivial-property-accessors",
     configRules,
-    listOf(TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED)) {
+    listOf(TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED)
+) {
     override fun logic(node: ASTNode) {
         if (node.elementType == PROPERTY_ACCESSOR) {
             handlePropertyAccessors(node)

@@ -17,8 +17,8 @@ class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
 
     private fun warnMessage(name: String,
                             declared: Int,
-                            used: Int) =
-            "<$name> is declared on line <$declared> and is used for the first time on line <$used>"
+                            used: Int
+    ) = "<$name> is declared on line <$declared> and is used for the first time on line <$used>"
 
     @Test
     @Tag(LOCAL_VARIABLE_EARLY_DECLARATION)

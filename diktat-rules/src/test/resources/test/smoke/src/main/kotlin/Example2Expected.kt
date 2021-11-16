@@ -30,7 +30,8 @@ private class TestException : Exception()
 internal fun createWithFile(runConfiguration: RunConfiguration,
                             containerName: String,
                             file: File,
-                            resources: Collection<File> = emptySet()) {}
+                            resources: Collection<File> = emptySet()
+) {}
 
 private fun foo(node: ASTNode) {
     when (node.elementType) {
