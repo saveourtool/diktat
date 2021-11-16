@@ -37,7 +37,8 @@ import org.jetbrains.kotlin.psi.psiUtil.astReplace
 class BracesInConditionalsAndLoopsRule(configRules: List<RulesConfig>) : DiktatRule(
     "braces-rule",
     configRules,
-    listOf(NO_BRACES_IN_CONDITIONALS_AND_LOOPS)) {
+    listOf(NO_BRACES_IN_CONDITIONALS_AND_LOOPS)
+) {
     override fun logic(node: ASTNode) {
         when (node.elementType) {
             IF -> checkIfNode(node)
@@ -156,7 +157,8 @@ class BracesInConditionalsAndLoopsRule(configRules: List<RulesConfig>) : DiktatR
     private fun ASTNode.insertEmptyBlockBetweenChildren(
         firstChild: ASTNode,
         secondChild: ASTNode?,
-        indent: Int) {
+        indent: Int
+    ) {
         val emptyBlock = CompositeElement(ElementType.BLOCK_CODE_FRAGMENT)
         addChild(emptyBlock, firstChild)
         addChild(PsiWhiteSpaceImpl(" "), emptyBlock)

@@ -55,7 +55,8 @@ import org.slf4j.LoggerFactory
 class TrailingCommaRule(configRules: List<RulesConfig>) : DiktatRule(
     "trailing-comma",
     configRules,
-    listOf(TRAILING_COMMA)) {
+    listOf(TRAILING_COMMA)
+) {
     private val commonConfig = configRules.getCommonConfiguration()
     private val trailingConfig = this.configRules.getRuleConfig(TRAILING_COMMA)?.configuration ?: emptyMap()
     private val configuration by lazy {
