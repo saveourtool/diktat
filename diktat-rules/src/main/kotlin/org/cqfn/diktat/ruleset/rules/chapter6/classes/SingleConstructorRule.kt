@@ -202,7 +202,9 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
                            |    ${initBody.joinToString("\n")}
                            |}
                         """.trimMargin())
-                } else { return }
+                } else {
+                    return
+                }
                 addChild(classInitializer, secondaryCtor)
                 addChild(PsiWhiteSpaceImpl("\n"), secondaryCtor)
             }
