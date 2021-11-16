@@ -10,9 +10,7 @@ import org.cqfn.diktat.ruleset.utils.getIdentifierName
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.cqfn.diktat.ruleset.utils.isGoingAfter
 
-import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
-import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
@@ -22,7 +20,6 @@ import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.SECONDARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.nextCodeSibling
-import com.pinterest.ktlint.core.ast.nextSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.psi.KtBinaryExpression
@@ -169,16 +166,8 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
         val nonTrivialSecondaryCtorParameters = getNonTrivialParameters(secondaryCtor, nonTrivialAssignments.keys, localProperties)
 
         val primaryCtorNode = createPrimaryCtor(secondaryCtor, declarationsAssignedInCtor, nonTrivialSecondaryCtorParameters)
-        addChild(primaryCtorNode, findChildByType(CLASS_BODY))
-        declarationsAssignedInCtor.forEach { ktProperty ->
-            ktProperty.node.run {
-                treePrev.takeIf { it.elementType == WHITE_SPACE }?.let { treeParent.removeChild(it) }
-                treeParent.removeChild(this)
-            }
-        }
 
         val initBody: MutableList<String> = mutableListOf()
-
         initBody.addAll(otherStatements.map { it.text })
         initBody.addAll(nonTrivialAssignments.keys.map { it.text })
 
@@ -188,6 +177,18 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
             .filter { arg -> arg.name !in declarationsAssignedInCtor.map { it.name } }  // get rid of ctor arguments
             .filter { arg -> initBody.any { expr -> arg.name.toString() in expr } }  // get rid of parameters that do not appear in text
 
+        if (newArgumentListOfSecondaryCtor.isNotEmpty()) {
+            return
+        }
+
+        addChild(primaryCtorNode, findChildByType(CLASS_BODY))
+        declarationsAssignedInCtor.forEach { ktProperty ->
+            ktProperty.node.run {
+                treePrev.takeIf { it.elementType == WHITE_SPACE }?.let { treeParent.removeChild(it) }
+                treeParent.removeChild(this)
+            }
+        }
+
         comments?.forEach { (comment, nextExpression) ->
             if (initBody.indexOf(nextExpression?.text) != -1) {
                 initBody.add(initBody.indexOf(nextExpression?.text), comment)
@@ -196,15 +197,11 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
 
         if (otherStatements.isNotEmpty() || nonTrivialAssignments.isNotEmpty()) {
             findChildByType(CLASS_BODY)?.run {
-                val classInitializer = if (newArgumentListOfSecondaryCtor.isEmpty()) {
-                    kotlinParser.createNodeForInit(
-                        """|init {
-                           |    ${initBody.joinToString("\n")}
-                           |}
-                        """.trimMargin())
-                } else {
-                    return
-                }
+                val classInitializer = kotlinParser.createNodeForInit(
+                    """|init {
+                       |    ${initBody.joinToString("\n")}
+                       |}
+                    """.trimMargin())
                 addChild(classInitializer, secondaryCtor)
                 addChild(PsiWhiteSpaceImpl("\n"), secondaryCtor)
             }

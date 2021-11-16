@@ -1,11 +1,11 @@
 package test.chapter6.classes
 
-class A (){
+class A {
     var b: String = ""
     constructor(a: Int) {
-    // help
-b = a.toString()
-}
+        // help
+        b = a.toString()
+    }
     fun foo1() {
 
     }
