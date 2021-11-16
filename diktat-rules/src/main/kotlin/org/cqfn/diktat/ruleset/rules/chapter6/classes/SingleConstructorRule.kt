@@ -202,13 +202,7 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
                            |    ${initBody.joinToString("\n")}
                            |}
                         """.trimMargin())
-                } else {
-                    kotlinParser.createNodeForSecondaryConstructor(
-                        """|constructor(${newArgumentListOfSecondaryCtor.joinToString(", ") { it.text } }) {
-                       |    ${initBody.joinToString("\n")}
-                       |}
-                    """.trimMargin())
-                }
+                } else { return }
                 addChild(classInitializer, secondaryCtor)
                 addChild(PsiWhiteSpaceImpl("\n"), secondaryCtor)
             }
