@@ -8,7 +8,7 @@ import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
 import org.cqfn.diktat.ruleset.utils.calculateLineColByOffset
-import org.cqfn.diktat.ruleset.utils.findAllNodesWithSpecificTypeOnLine
+import org.cqfn.diktat.ruleset.utils.findAllNodesWithConditionOnLine
 import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
 import org.cqfn.diktat.ruleset.utils.getLineNumber
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
@@ -295,7 +295,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                 wrongNode.treeParent.removeChild(wrongNode.treePrev)
             }
 
-            val newLineNodeOnPreviousLine = wrongNode.findAllNodesWithSpecificTypeOnLine(wrongNode.getLineNumber() - 1) {
+            val newLineNodeOnPreviousLine = wrongNode.findAllNodesWithConditionOnLine(wrongNode.getLineNumber() - 1) {
                 it.elementType == WHITE_SPACE && it.textContains('\n')
             }?.lastOrNull()
 

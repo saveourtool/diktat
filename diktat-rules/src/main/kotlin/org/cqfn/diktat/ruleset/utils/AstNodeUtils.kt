@@ -741,7 +741,7 @@ fun ASTNode.findAllNodesOnLine(
     val rootNode = this.getRootNode()
     val fileLines = rootNode.text.lines()
 
-    if (line <= 0 || line > fileLines.size - 1) {
+    if (line <= 0 || line > fileLines.size) {
         return null
     }
 
@@ -759,7 +759,7 @@ fun ASTNode.findAllNodesOnLine(
  * @param condition
  * @return corresponding list of nodes
  */
-fun ASTNode.findAllNodesWithSpecificTypeOnLine(
+fun ASTNode.findAllNodesWithConditionOnLine(
     line: Int,
     condition: (ASTNode) -> Boolean
 ): List<ASTNode>? = this.findAllNodesOnLine(line)?.filter(condition)
@@ -837,7 +837,8 @@ private fun ASTNode.findOffsetByLine(line: Int, positionByOffset: (Int) -> Pair<
 private fun ASTNode.getAllNodesOnLine(
     lineOffset: Int,
     line: Int,
-    positionByOffset: (Int) -> Pair<Int, Int>): MutableSet<ASTNode> {
+    positionByOffset: (Int) -> Pair<Int, Int>
+): MutableSet<ASTNode> {
     val rootNode = this.getRootNode()
     var beginningOfLineOffset = lineOffset
     var endOfLineOffset = lineOffset
