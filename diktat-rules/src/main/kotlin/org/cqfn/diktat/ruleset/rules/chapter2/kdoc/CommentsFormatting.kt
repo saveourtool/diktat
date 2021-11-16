@@ -53,7 +53,8 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
     "kdoc-comments-codeblocks-formatting",
     configRules,
     listOf(COMMENT_WHITE_SPACE, FIRST_COMMENT_NO_BLANK_LINE,
-        IF_ELSE_COMMENTS, WRONG_NEWLINES_AROUND_KDOC)) {
+        IF_ELSE_COMMENTS, WRONG_NEWLINES_AROUND_KDOC)
+) {
     /**
      * @param node
      */
@@ -143,7 +144,8 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
                                   elseBlock: ASTNode,
                                   elseKeyWord: ASTNode,
                                   comment: ASTNode,
-                                  copyComment: ASTNode?) {
+                                  copyComment: ASTNode?
+    ) {
         if (elseBlock.hasChildOfType(BLOCK)) {
             val elseCodeBlock = elseBlock.getFirstChildWithType(BLOCK)!!
             elseCodeBlock.addChild(copyComment!!,

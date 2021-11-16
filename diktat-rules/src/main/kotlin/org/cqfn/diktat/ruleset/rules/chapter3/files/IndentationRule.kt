@@ -71,7 +71,8 @@ import kotlin.math.abs
 class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
     "indentation",
     configRules,
-    listOf(WRONG_INDENTATION)) {
+    listOf(WRONG_INDENTATION)
+) {
     private val configuration: IndentationConfig by lazy {
         IndentationConfig(configRules.getRuleConfig(WRONG_INDENTATION)?.configuration ?: emptyMap())
     }
@@ -352,8 +353,8 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
         fun addException(
             initiator: ASTNode,
             indent: Int,
-            includeLastChild: Boolean) =
-                exceptionalIndents.add(ExceptionalIndent(initiator, indent, includeLastChild))
+            includeLastChild: Boolean
+        ) = exceptionalIndents.add(ExceptionalIndent(initiator, indent, includeLastChild))
 
         /**
          * @param astNode the node which is used to determine whether exceptinoal indents are still active
@@ -369,7 +370,8 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
         private data class ExceptionalIndent(
             val initiator: ASTNode,
             val indent: Int,
-            val includeLastChild: Boolean = true) {
+            val includeLastChild: Boolean = true
+        ) {
             /**
              * Checks whether this exceptional indent is still active. This is a hypotheses that exceptional indentation will end
              * outside of node where it appeared, e.g. when an expression after assignment operator is over.

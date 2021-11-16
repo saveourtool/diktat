@@ -52,7 +52,8 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     "kdoc-comments",
     configRules,
     listOf(KDOC_EXTRA_PROPERTY, KDOC_NO_CONSTRUCTOR_PROPERTY,
-        KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT, MISSING_KDOC_CLASS_ELEMENTS, MISSING_KDOC_TOP_LEVEL)) {
+        KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT, MISSING_KDOC_CLASS_ELEMENTS, MISSING_KDOC_TOP_LEVEL)
+) {
     private val config by lazy { configRules.getCommonConfiguration() }
 
     /**
@@ -138,7 +139,8 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     private fun checkKdocBeforeClass(
         node: ASTNode,
         kdocBeforeClass: ASTNode,
-        prevComment: ASTNode) {
+        prevComment: ASTNode
+    ) {
         val propertyInClassKdoc = kdocBeforeClass
             .kDocTags()
             .firstOrNull { it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == node.findChildByType(IDENTIFIER)!!.text }
@@ -198,7 +200,8 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         prevComment: ASTNode,
         kdocBeforeClass: ASTNode,
         propertyInClassKdoc: ASTNode?,
-        propertyInLocalKdoc: ASTNode?) {
+        propertyInLocalKdoc: ASTNode?
+    ) {
         val kdocText = if (prevComment.elementType == KDOC) {
             prevComment.text.removePrefix("/**").removeSuffix("*/").trim('\n', ' ')
         } else {
@@ -223,7 +226,8 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         node: ASTNode,
         kdocBeforeClass: ASTNode,
         prevComment: ASTNode,
-        propertyInClassKdoc: ASTNode?) {
+        propertyInClassKdoc: ASTNode?
+    ) {
         propertyInClassKdoc?.let {
             if (propertyInClassKdoc.hasChildOfType(KDOC_TEXT)) {
                 val kdocText = propertyInClassKdoc.findChildByType(KDOC_TEXT)!!

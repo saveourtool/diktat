@@ -123,7 +123,8 @@ class StringConcatenationRule(configRules: List<RulesConfig>) : DiktatRule(
         "TOO_LONG_FUNCTION",
         "NESTED_BLOCK",
         "SAY_NO_TO_VAR",
-        "ComplexMethod")
+        "ComplexMethod"
+    )
     private fun checkKtExpression(binaryExpressionPsi: KtBinaryExpression): String {
         var lvalueText = binaryExpressionPsi.left?.text?.trim('"')
         val rvalueText = binaryExpressionPsi.right?.text

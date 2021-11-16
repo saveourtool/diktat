@@ -107,7 +107,8 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
     @Suppress(
         "LongMethod",
         "TOO_LONG_FUNCTION",
-        "SpreadOperator")
+        "SpreadOperator"
+    )
     override fun get(): RuleSet {
         log.debug("Will run $DIKTAT_RULE_SET_ID with $diktatConfigFile" +
                 " (it can be placed to the run directory or the default file from resources will be used)")

@@ -20,7 +20,8 @@ import org.jetbrains.kotlin.psi.psiUtil.startOffset
 class OverloadingArgumentsFunction(configRules: List<RulesConfig>) : DiktatRule(
     "overloading-default-values",
     configRules,
-    listOf(WRONG_OVERLOADING_FUNCTION_ARGUMENTS)) {
+    listOf(WRONG_OVERLOADING_FUNCTION_ARGUMENTS)
+) {
     override fun logic(node: ASTNode) {
         if (node.elementType == FUN) {
             checkFun(node.psi as KtFunction)
