@@ -152,7 +152,8 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress(
         "NestedBlockDepth",
         "GENERIC_VARIABLE_WRONG_DECLARATION",
-        "TOO_LONG_FUNCTION")
+        "TOO_LONG_FUNCTION"
+    )
     private fun ASTNode.convertSecondaryConstructorToPrimary(
         secondaryCtor: ASTNode,
         declarationsAssignedInCtor: List<KtProperty>,
