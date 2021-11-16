@@ -36,7 +36,8 @@ import org.jetbrains.kotlin.psi.psiUtil.collectDescendantsOfType
 class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
     "single-constructor",
     configRules,
-    listOf(SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY)) {
+    listOf(SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY)
+) {
     private val kotlinParser by lazy { KotlinParser() }
 
     override fun logic(node: ASTNode) {
@@ -180,7 +181,8 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("UnsafeCallOnNullableType")
     private fun getNonTrivialParameters(secondaryCtor: ASTNode,
                                         nonTrivialAssignments: Collection<KtBinaryExpression>,
-                                        localProperties: List<KtProperty>) = (secondaryCtor.psi as KtSecondaryConstructor)
+                                        localProperties: List<KtProperty>
+    ) = (secondaryCtor.psi as KtSecondaryConstructor)
         .valueParameters.run {
             val dependencies = nonTrivialAssignments
                 .flatMap { it.left!!.collectDescendantsOfType<KtNameReferenceExpression>() }
@@ -195,7 +197,8 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun createPrimaryCtor(secondaryCtor: ASTNode,
                                   declarationsAssignedInCtor: List<KtProperty>,
-                                  valueParameters: List<KtParameter>) = kotlinParser.createPrimaryConstructor(
+                                  valueParameters: List<KtParameter>
+    ) = kotlinParser.createPrimaryConstructor(
         (secondaryCtor
             .findChildByType(MODIFIER_LIST)
             ?.text

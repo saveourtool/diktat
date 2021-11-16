@@ -32,7 +32,8 @@ import org.jetbrains.kotlin.psi.KtIfExpression
 class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
     "null-checks",
     configRules,
-    listOf(AVOID_NULL_CHECKS)) {
+    listOf(AVOID_NULL_CHECKS)
+) {
     override fun logic(node: ASTNode) {
         if (node.elementType == CONDITION) {
             node.parent(IF)?.let {
@@ -116,7 +117,8 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
     private fun fixNullInIfCondition(condition: ASTNode,
                                      binaryExpression: KtBinaryExpression,
-                                     isEqualToNull: Boolean) {
+                                     isEqualToNull: Boolean
+    ) {
         val variableName = binaryExpression.left!!.text
         val thenCodeLines = condition.extractLinesFromBlock(THEN)
         val elseCodeLines = condition.extractLinesFromBlock(ELSE)
@@ -251,7 +253,8 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
         condition: KtBinaryExpression,
         canBeAutoFixed: Boolean,
         freeText: String,
-        autofix: () -> Unit) {
+        autofix: () -> Unit
+    ) {
         AVOID_NULL_CHECKS.warnAndFix(
             configRules,
             emitWarn,

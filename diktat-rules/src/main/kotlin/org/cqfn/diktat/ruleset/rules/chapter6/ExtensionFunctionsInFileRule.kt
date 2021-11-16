@@ -23,7 +23,8 @@ import org.jetbrains.kotlin.psi.KtFunction
 class ExtensionFunctionsInFileRule(configRules: List<RulesConfig>) : DiktatRule(
     "extension-functions-class-file",
     configRules,
-    listOf(EXTENSION_FUNCTION_WITH_CLASS)) {
+    listOf(EXTENSION_FUNCTION_WITH_CLASS)
+) {
     override fun logic(node: ASTNode) {
         if (node.elementType == ElementType.FILE) {
             val classNames = collectAllClassNames(node)

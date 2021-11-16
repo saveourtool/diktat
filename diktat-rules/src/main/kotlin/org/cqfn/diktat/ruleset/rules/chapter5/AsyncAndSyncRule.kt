@@ -20,7 +20,8 @@ import org.jetbrains.kotlin.psi.psiUtil.hasSuspendModifier
 class AsyncAndSyncRule(configRules: List<RulesConfig>) : DiktatRule(
     "sync-in-async",
     configRules,
-    listOf(RUN_BLOCKING_INSIDE_ASYNC)) {
+    listOf(RUN_BLOCKING_INSIDE_ASYNC)
+) {
     private val asyncList = listOf("async", "launch")
 
     override fun logic(node: ASTNode) {

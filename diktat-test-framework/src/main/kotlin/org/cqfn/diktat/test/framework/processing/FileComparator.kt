@@ -43,7 +43,8 @@ class FileComparator {
     @Suppress(
         "ReturnCount",
         "FUNCTION_BOOLEAN_PREFIX",
-        "TOO_LONG_FUNCTION")
+        "TOO_LONG_FUNCTION"
+    )
     fun compareFilesEqual(): Boolean {
         try {
             val expect = readFile(expectedResultFile.absolutePath)

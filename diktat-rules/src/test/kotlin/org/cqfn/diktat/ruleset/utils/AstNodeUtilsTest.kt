@@ -735,10 +735,12 @@ class AstNodeUtilsTest {
 private class PrettyPrintingVisitor(private val elementType: IElementType,
                                     private val level: Int,
                                     private val maxLevel: Int,
-                                    private val expected: String) : Rule("print-ast") {
+                                    private val expected: String
+) : Rule("print-ast") {
     override fun visit(node: ASTNode,
                        autoCorrect: Boolean,
-                       emit: EmitType) {
+                       emit: EmitType
+    ) {
         if (node.elementType == elementType) {
             Assertions.assertEquals(
                 expected.replace("\n", System.lineSeparator()),
@@ -753,7 +755,8 @@ private class PrettyPrintingVisitor(private val elementType: IElementType,
             code: String,
             level: Int = 0,
             maxLevel: Int = -1,
-            expected: String) {
+            expected: String
+        ) {
             KtLint.lint(
                 KtLint.Params(
                     text = code,

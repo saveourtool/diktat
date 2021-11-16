@@ -24,7 +24,8 @@ open class LintTestBase(private val ruleSupplier: (rulesConfigList: List<RulesCo
     fun lintMethod(code: String,
                    vararg lintErrors: LintError,
                    rulesConfigList: List<RulesConfig>? = null,
-                   fileName: String? = null) {
+                   fileName: String? = null
+    ) {
         val actualFileName = fileName ?: TEST_FILE_NAME
         val res: MutableList<LintError> = mutableListOf()
         KtLint.lint(

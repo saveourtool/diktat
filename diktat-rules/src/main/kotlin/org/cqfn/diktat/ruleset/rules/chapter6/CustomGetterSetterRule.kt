@@ -18,7 +18,8 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 class CustomGetterSetterRule(configRules: List<RulesConfig>) : DiktatRule(
     "custom-getter-setter",
     configRules,
-    listOf(CUSTOM_GETTERS_SETTERS)) {
+    listOf(CUSTOM_GETTERS_SETTERS)
+) {
     override fun logic(node: ASTNode) {
         if (node.elementType == PROPERTY_ACCESSOR) {
             checkForCustomGetersSetters(node)

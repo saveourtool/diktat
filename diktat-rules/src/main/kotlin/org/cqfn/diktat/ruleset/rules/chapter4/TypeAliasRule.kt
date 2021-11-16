@@ -22,7 +22,8 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
 class TypeAliasRule(configRules: List<RulesConfig>) : DiktatRule(
     "type-alias",
     configRules,
-    listOf(TYPE_ALIAS)) {
+    listOf(TYPE_ALIAS)
+) {
     override fun logic(node: ASTNode) {
         if (node.elementType == TYPE_REFERENCE && node
             .parents()

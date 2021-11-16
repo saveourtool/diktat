@@ -64,3 +64,9 @@ code: CodeBlock,
 .add(code)
         .endControlFlow()
 .build()
+
+fun foo(
+a: Int,
+ b: Int,
+ c: Int
+): Int = 42

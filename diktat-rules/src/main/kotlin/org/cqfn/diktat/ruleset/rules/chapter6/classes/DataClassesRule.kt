@@ -33,7 +33,8 @@ import org.jetbrains.kotlin.psi.KtPrimaryConstructor
 class DataClassesRule(configRules: List<RulesConfig>) : DiktatRule(
     "data-classes",
     configRules,
-    listOf(USE_DATA_CLASS)) {
+    listOf(USE_DATA_CLASS)
+) {
     override fun logic(node: ASTNode) {
         if (node.elementType == CLASS) {
             handleClass(node)

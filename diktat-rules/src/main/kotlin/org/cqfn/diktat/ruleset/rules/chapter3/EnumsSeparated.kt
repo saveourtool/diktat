@@ -29,7 +29,8 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 class EnumsSeparated(configRules: List<RulesConfig>) : DiktatRule(
     "enum-separated",
     configRules,
-    listOf(ENUMS_SEPARATED)) {
+    listOf(ENUMS_SEPARATED)
+) {
     override fun logic(node: ASTNode) {
         if (node.elementType == CLASS && node.hasChildOfType(CLASS_BODY) && node.isClassEnum()) {
             checkEnumEntry(node)
