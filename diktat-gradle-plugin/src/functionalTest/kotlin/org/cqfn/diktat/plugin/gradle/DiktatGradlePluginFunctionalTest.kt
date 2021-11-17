@@ -93,11 +93,11 @@ class DiktatGradlePluginFunctionalTest {
                 }
             """.trimIndent()
         )
-        val result = runDiktat(testProjectDir)
+        val result = runDiktat(testProjectDir, shouldSucceed = false)
 
         val diktatCheckBuildResult = result.task(":$DIKTAT_CHECK_TASK")
         requireNotNull(diktatCheckBuildResult)
-        Assertions.assertEquals(TaskOutcome.NO_SOURCE, diktatCheckBuildResult.outcome)
+        Assertions.assertEquals(TaskOutcome.FAILED, diktatCheckBuildResult.outcome)
     }
 
     @Test
