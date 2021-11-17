@@ -29,7 +29,7 @@ repositories {
 // default value is needed for correct gradle loading in IDEA; actual value from maven is used during build
 val ktlintVersion = project.properties.getOrDefault("ktlintVersion", "0.43.0") as String
 val diktatVersion = project.version.takeIf { it.toString() != Project.DEFAULT_VERSION } ?: "0.5.2"
-val junitVersion = project.properties.getOrDefault("junitVersion", "5.7.0") as String
+val junitVersion = project.properties.getOrDefault("junitVersion", "5.8.1") as String
 val jacocoVersion = project.properties.getOrDefault("jacocoVersion", "0.8.7") as String
 dependencies {
     implementation(kotlin("gradle-plugin-api"))
@@ -40,6 +40,7 @@ dependencies {
         exclude("org.jetbrains.kotlin", "kotlin-stdlib-jdk7")
         exclude("org.jetbrains.kotlin", "kotlin-stdlib")
         exclude("org.jetbrains.kotlin", "kotlin-stdlib-common")
+        exclude("org.slf4j", "slf4j-log4j12")
     }
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
@@ -49,6 +50,8 @@ dependencies {
 val generateVersionsFile by tasks.registering {
     val versionsFile = File("$buildDir/generated/src/generated/Versions.kt")
 
+    inputs.property("diktat version", diktatVersion)
+    inputs.property("ktlint version", ktlintVersion)
     outputs.file(versionsFile)
 
     doFirst {
@@ -72,7 +75,6 @@ tasks.withType<KotlinCompile> {
         languageVersion = "1.3"
         apiVersion = "1.3"
         jvmTarget = "1.8"
-        useIR = false  // for compatibility with older gradle
     }
 
     dependsOn.add(generateVersionsFile)
@@ -93,7 +95,6 @@ java {
 
 // === testing & code coverage, jacoco is run independent from maven
 val functionalTestTask by tasks.register<Test>("functionalTest")
-val jacocoMergeTask by tasks.register<JacocoMerge>("jacocoMerge")
 tasks.withType<Test> {
     useJUnitPlatform()
 }
@@ -102,7 +103,7 @@ jacoco.toolVersion = jacocoVersion
 // === integration testing
 // fixme: should probably use KotlinSourceSet instead
 val functionalTest = sourceSets.create("functionalTest") {
-    compileClasspath += sourceSets.main.get().output + configurations.testRuntimeClasspath
+    compileClasspath += sourceSets.main.get().output + configurations.testRuntimeClasspath.get()
     runtimeClasspath += output + compileClasspath
 }
 tasks.getByName<Test>("functionalTest") {
@@ -123,25 +124,21 @@ tasks.getByName<Test>("functionalTest") {
             Thread.sleep(5_000)
         }
     }
-    finalizedBy(jacocoMergeTask)
+    finalizedBy(tasks.jacocoTestReport)
 }
 tasks.check { dependsOn(tasks.jacocoTestReport) }
 jacocoTestKit {
     applyTo("functionalTestRuntimeOnly", tasks.named("functionalTest"))
 }
-tasks.getByName("jacocoMerge", JacocoMerge::class) {
-    dependsOn(functionalTestTask)
+tasks.jacocoTestReport {
+    dependsOn(tasks.withType<Test>())
     executionData(
         fileTree("$buildDir/jacoco").apply {
             include("*.exec")
         }
     )
-}
-tasks.jacocoTestReport {
-    dependsOn(jacocoMergeTask)
-    executionData("$buildDir/jacoco/jacocoMerge.exec")
     reports {
         // xml report is used by codecov
-        xml.isEnabled = true
+        xml.required.set(true)
     }
 }

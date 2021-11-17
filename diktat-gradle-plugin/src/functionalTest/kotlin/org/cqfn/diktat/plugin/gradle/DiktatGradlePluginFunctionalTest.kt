@@ -8,8 +8,6 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.condition.DisabledOnOs
-import org.junit.jupiter.api.condition.OS
 import java.io.File
 
 class DiktatGradlePluginFunctionalTest {
@@ -46,7 +44,7 @@ class DiktatGradlePluginFunctionalTest {
         buildFile.appendText(
             """${System.lineSeparator()}
                 diktat {
-                    inputs = files("src/**/*.kt")
+                    inputs { include("src/**/*.kt") }
                     reporterType = "json"
                     output = "test.txt"
                 }
@@ -69,7 +67,7 @@ class DiktatGradlePluginFunctionalTest {
         buildFile.appendText(
             """${System.lineSeparator()}
                 diktat {
-                    inputs = files("src/**/*.kt")
+                    inputs { include("src/**/*.kt") }
                 }
             """.trimIndent()
         )
@@ -88,16 +86,18 @@ class DiktatGradlePluginFunctionalTest {
         buildFile.appendText(
             """${System.lineSeparator()}
                 diktat {
-                    inputs = files("src/**/*.kt")
-                    excludes = files("src/**/Test.kt")
+                    inputs {
+                        include("src/**/*.kt")
+                        exclude("src/**/Test.kt")
+                    }
                 }
             """.trimIndent()
         )
-        val result = runDiktat(testProjectDir)
+        val result = runDiktat(testProjectDir, shouldSucceed = false)
 
         val diktatCheckBuildResult = result.task(":$DIKTAT_CHECK_TASK")
         requireNotNull(diktatCheckBuildResult)
-        Assertions.assertEquals(TaskOutcome.SUCCESS, diktatCheckBuildResult.outcome)
+        Assertions.assertEquals(TaskOutcome.FAILED, diktatCheckBuildResult.outcome)
     }
 
     @Test
@@ -105,30 +105,7 @@ class DiktatGradlePluginFunctionalTest {
         buildFile.appendText(
             """${System.lineSeparator()}
                 diktat {
-                    inputs = files("nonexistent-directory/src/**/*.kt")
-                }
-            """.trimIndent()
-        )
-        val result = runDiktat(testProjectDir, arguments = listOf("--info"))
-
-        // if patterns in gradle are not checked for matching, they are passed to ktlint, which does nothing
-        val diktatCheckBuildResult = result.task(":$DIKTAT_CHECK_TASK")
-        requireNotNull(diktatCheckBuildResult)
-        Assertions.assertEquals(TaskOutcome.SUCCESS, diktatCheckBuildResult.outcome)
-        Assertions.assertFalse(
-            result.output.contains("Skipping diktat execution")
-        )
-        Assertions.assertFalse(
-            result.output.contains("Inputs for $DIKTAT_CHECK_TASK do not exist, will not run diktat")
-        )
-    }
-
-    @Test
-    fun `should not run diktat with ktlint's default includes when no files match include patterns - 2`() {
-        buildFile.appendText(
-            """${System.lineSeparator()}
-                diktat {
-                    inputs = fileTree("nonexistent-directory/src").apply { include("**/*.kt") }
+                    inputs { include ("nonexistent-directory/src/**/*.kt") }
                 }
             """.trimIndent()
         )
@@ -136,12 +113,9 @@ class DiktatGradlePluginFunctionalTest {
 
         val diktatCheckBuildResult = result.task(":$DIKTAT_CHECK_TASK")
         requireNotNull(diktatCheckBuildResult)
-        Assertions.assertEquals(TaskOutcome.SUCCESS, diktatCheckBuildResult.outcome)
-        Assertions.assertTrue(
+        Assertions.assertEquals(TaskOutcome.NO_SOURCE, diktatCheckBuildResult.outcome)
+        Assertions.assertFalse(
             result.output.contains("Skipping diktat execution")
-        )
-        Assertions.assertTrue(
-            result.output.contains("Inputs for $DIKTAT_CHECK_TASK do not exist, will not run diktat")
         )
     }
 

@@ -37,6 +37,13 @@ jobs:
           path: diktat-ruleset/target/diktat-*.jar
           # no need to store artifact longer, it is used only by dependant jobs
           retention-days: 1
+      - name: Upload gradle reports
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: gradle-test-report-${{ runner.os }}
+          path: 'diktat-gradle-plugin/build/reports/'
+          retention-days: 1
 
   run_diktat_from_CLI:
     name: Run diktat via CLI
@@ -110,7 +117,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        os: [ windows-latest, macos-latest ]
     steps:
       - uses: actions/checkout@v2.4.0
       - name: Set up JDK 11

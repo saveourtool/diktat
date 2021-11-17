@@ -4,7 +4,7 @@
 ![deteKT static analysis](https://github.com/cqfn/diKTat/workflows/Run%20deteKT/badge.svg)
 ![diKTat code style](https://github.com/cqfn/diKTat/workflows/Run%20diKTat%20from%20release%20version/badge.svg?branch=master)
 [![License](https://img.shields.io/github/license/cqfn/diKtat)](https://github.com/cqfn/diKTat/blob/master/LICENSE)
-[![codecov](https://codecov.io/gh/cqfn/diKTat/branch/master/graph/badge.svg)](https://codecov.io/gh/cqfn/diKTat)
+[![codecov](https://codecov.io/gh/diktat-static-analysis/diKTat/branch/master/graph/badge.svg)](https://codecov.io/gh/diktat-static-analysis/diKTat)
 
 [![Releases](https://img.shields.io/github/v/release/cqfn/diKTat)](https://github.com/cqfn/diKTat/releases)
 [![Maven Central](https://img.shields.io/maven-central/v/org.cqfn.diktat/diktat-rules)](https://mvnrepository.com/artifact/org.cqfn.diktat)
@@ -133,9 +133,11 @@ apply(plugin = "org.cqfn.diktat.diktat-gradle-plugin")
 You can then configure diktat using `diktat` extension:
 ```kotlin
 diktat {
-    inputs = files("src/**/*.kt")  // file collection that will be checked by diktat
+    inputs {
+        include("src/**/*.kt")  // path matching this pattern (per PatternFilterable) that will be checked by diktat
+        exclude("src/test/kotlin/excluded/**")  // path matching this pattern will not be checked by diktat
+    }
     debug = true  // turn on debug logging
-    excludes = files("src/test/kotlin/excluded")  // these files will not be checked by diktat
 }
 ```
 

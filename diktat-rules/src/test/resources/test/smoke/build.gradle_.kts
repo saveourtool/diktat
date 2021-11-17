@@ -28,5 +28,5 @@ val updateDocumentation = tasks.register("updateDocumentation") {
 
 diktat {
     debug = true
-    inputs = files("buildSrc/**/*.kt", "*.kts")
+    inputs { include("buildSrc/**/*.kt", "*.kts") }
 }

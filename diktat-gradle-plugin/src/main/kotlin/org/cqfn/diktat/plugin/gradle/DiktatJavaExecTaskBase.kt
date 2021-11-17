@@ -8,12 +8,20 @@ import generated.DIKTAT_VERSION
 import generated.KTLINT_VERSION
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.file.FileCollection
 import org.gradle.api.provider.Property
+import org.gradle.api.tasks.IgnoreEmptyDirectories
+import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.JavaExec
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
+import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.VerificationTask
+import org.gradle.api.tasks.util.PatternFilterable
+import org.gradle.api.tasks.util.PatternSet
 import org.gradle.util.GradleVersion
 
 import java.io.File
@@ -28,6 +36,7 @@ open class DiktatJavaExecTaskBase @Inject constructor(
     gradleVersionString: String,
     diktatExtension: DiktatExtension,
     diktatConfiguration: Configuration,
+    private val inputs: PatternFilterable,
     additionalFlags: Iterable<String> = emptyList()
 ) : JavaExec(), VerificationTask {
     /**
@@ -41,6 +50,33 @@ open class DiktatJavaExecTaskBase @Inject constructor(
      */
     @get:Internal
     internal var shouldRun = true
+
+    /**
+     * Files that will be analyzed by diktat
+     */
+    @get:IgnoreEmptyDirectories
+    @get:SkipWhenEmpty
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    @get:InputFiles
+    val actualInputs: FileCollection by lazy {
+        with(diktatExtension) {
+            // validate configuration
+            require(inputs == null && excludes == null) {
+                "`inputs` and `excludes` arguments for diktat task are deprecated and now should be changed for `inputs {}` " +
+                        "with configuration for PatternFilterable. Please check https://github.com/diktat-static-analysis/diktat/README.md for more info."
+            }
+        }
+
+        if (inputs.includes.isEmpty() && inputs.excludes.isEmpty()) {
+            inputs.include("src/**/*.kt")
+        }
+        project.objects.fileCollection().from(
+            project.fileTree("${project.projectDir}").apply {
+                exclude("${project.buildDir}")
+            }
+                .matching(inputs)
+        )
+    }
 
     init {
         group = "verification"
@@ -69,25 +105,24 @@ open class DiktatJavaExecTaskBase @Inject constructor(
             if (diktatExtension.debug) {
                 add("--debug")
             }
-            diktatExtension
-                .inputs
-                .also {
-                    if (it.isEmpty) {
-                        /*
-                         If ktlint receives empty patterns, it implicitly uses &#42;&#42;/*.kt, **/*.kts instead.
-                         This can lead to diktat analyzing gradle buildscripts and so on. We want to prevent it.
-                        */
-                        project.logger.warn("Inputs for $name do not exist, will not run diktat")
-                        shouldRun = false
-                    }
+            actualInputs.also {
+                if (it.isEmpty) {
+                    /*
+                     If ktlint receives empty patterns, it implicitly uses &#42;&#42;/*.kt, **/*.kts instead.
+                     This can lead to diktat analyzing gradle buildscripts and so on. We want to prevent it.
+                     */
+                    project.logger.warn("Inputs for $name do not exist, will not run diktat")
+                    shouldRun = false
                 }
-                .files
-                .forEach {
-                    addPattern(it)
-                }
-            diktatExtension.excludes.files.forEach {
-                addPattern(it, negate = true)
             }
+                .files
+                .also { files ->
+                    project.logger.info("Analyzing ${files.size} files with diktat in project ${project.name}")
+                    project.logger.debug("Analyzing $files")
+                }
+                .forEach {
+                    addInput(it)
+                }
 
             add(createReporterFlag(diktatExtension))
         }
@@ -155,13 +190,8 @@ open class DiktatJavaExecTaskBase @Inject constructor(
     private fun isMainClassPropertySupported(gradleVersionString: String) =
             GradleVersion.version(gradleVersionString) >= GradleVersion.version("6.4")
 
-    private fun MutableList<String>.addPattern(pattern: File, negate: Boolean = false) {
-        val path = if (pattern.isAbsolute) {
-            pattern.relativeTo(project.projectDir)
-        } else {
-            pattern
-        }
-        add((if (negate) "!" else "") + path)
+    private fun MutableList<String>.addInput(file: File) {
+        add(file.toRelativeString(project.projectDir))
     }
 
     private fun resolveConfigFile(file: File): String {
@@ -184,21 +214,29 @@ open class DiktatJavaExecTaskBase @Inject constructor(
 /**
  * @param diktatExtension [DiktatExtension] with some values for task configuration
  * @param diktatConfiguration dependencies of diktat run
+ * @param patternSet [PatternSet] to discover files for diktat check
  * @return a [TaskProvider]
  */
-fun Project.registerDiktatCheckTask(diktatExtension: DiktatExtension, diktatConfiguration: Configuration): TaskProvider<DiktatJavaExecTaskBase> =
+fun Project.registerDiktatCheckTask(diktatExtension: DiktatExtension,
+                                    diktatConfiguration: Configuration,
+                                    patternSet: PatternSet
+): TaskProvider<DiktatJavaExecTaskBase> =
         tasks.register(
             DIKTAT_CHECK_TASK, DiktatJavaExecTaskBase::class.java, gradle.gradleVersion,
-            diktatExtension, diktatConfiguration
+            diktatExtension, diktatConfiguration, patternSet
         )
 
 /**
  * @param diktatExtension [DiktatExtension] with some values for task configuration
  * @param diktatConfiguration dependencies of diktat run
+ * @param patternSet [PatternSet] to discover files for diktat fix
  * @return a [TaskProvider]
  */
-fun Project.registerDiktatFixTask(diktatExtension: DiktatExtension, diktatConfiguration: Configuration): TaskProvider<DiktatJavaExecTaskBase> =
+fun Project.registerDiktatFixTask(diktatExtension: DiktatExtension,
+                                  diktatConfiguration: Configuration,
+                                  patternSet: PatternSet
+): TaskProvider<DiktatJavaExecTaskBase> =
         tasks.register(
             DIKTAT_FIX_TASK, DiktatJavaExecTaskBase::class.java, gradle.gradleVersion,
-            diktatExtension, diktatConfiguration, listOf("-F ")
+            diktatExtension, diktatConfiguration, patternSet, listOf("-F ")
         )

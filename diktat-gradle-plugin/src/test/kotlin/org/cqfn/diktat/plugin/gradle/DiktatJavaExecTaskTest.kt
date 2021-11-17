@@ -3,6 +3,7 @@ package org.cqfn.diktat.plugin.gradle
 import org.cqfn.diktat.ruleset.rules.DIKTAT_CONF_PROPERTY
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -18,43 +19,53 @@ class DiktatJavaExecTaskTest {
         project = projectBuilder
             .withName("testProject")
             .build()
+        // mock kotlin sources
+        project.mkdir("src/main/kotlin")
+        project.file("src/main/kotlin/Test.kt").createNewFile()
+    }
+
+    @AfterEach
+    fun tearDown() {
+        project.buildDir.deleteRecursively()
     }
 
     @Test
     fun `check command line for various inputs`() {
         assertCommandLineEquals(
-            listOf(null, combinePathParts("src", "**", "*.kt"), "--reporter=plain")
+            listOf(null, combinePathParts("src", "main", "kotlin", "Test.kt"), "--reporter=plain")
         ) {
-            inputs = project.files("src/**/*.kt")
+            inputs { include("src/**/*.kt") }
         }
     }
 
     @Test
     fun `check command line in debug mode`() {
         assertCommandLineEquals(
-            listOf(null, "--debug", combinePathParts("src", "**", "*.kt"), "--reporter=plain")
+            listOf(null, "--debug", combinePathParts("src", "main", "kotlin", "Test.kt"), "--reporter=plain")
         ) {
-            inputs = project.files("src/**/*.kt")
+            inputs { include("src/**/*.kt") }
             debug = true
         }
     }
 
     @Test
     fun `check command line with excludes`() {
+        project.file("src/main/kotlin/generated").mkdirs()
+        project.file("src/main/kotlin/generated/Generated.kt").createNewFile()
         assertCommandLineEquals(
-            listOf(null, combinePathParts("src", "**", "*.kt"),
-                "!${combinePathParts("src", "main", "kotlin", "generated")}", "--reporter=plain"
-            )
+            listOf(null, combinePathParts("src", "main", "kotlin", "Test.kt"), "--reporter=plain")
         ) {
-            inputs = project.files("src/**/*.kt")
-            excludes = project.files("src/main/kotlin/generated")
+            inputs {
+                include("src/**/*.kt")
+                exclude("src/main/kotlin/generated")
+            }
         }
     }
 
     @Test
     fun `check command line with non-existent inputs`() {
         val task = project.registerDiktatTask {
-            inputs = project.files()
+            inputs { exclude("*") }
         }
         Assertions.assertFalse(task.shouldRun)
     }
@@ -62,7 +73,7 @@ class DiktatJavaExecTaskTest {
     @Test
     fun `check system property with default config`() {
         val task = project.registerDiktatTask {
-            inputs = project.files()
+            inputs { exclude("*") }
         }
         Assertions.assertEquals(File(project.projectDir, "diktat-analysis.yml").absolutePath, task.systemProperties[DIKTAT_CONF_PROPERTY])
     }
@@ -70,7 +81,7 @@ class DiktatJavaExecTaskTest {
     @Test
     fun `check system property with custom config`() {
         val task = project.registerDiktatTask {
-            inputs = project.files()
+            inputs { exclude("*") }
             diktatConfigFile = project.file("../diktat-analysis.yml")
         }
         Assertions.assertEquals(File(project.projectDir.parentFile, "diktat-analysis.yml").absolutePath, task.systemProperties[DIKTAT_CONF_PROPERTY])
@@ -81,7 +92,7 @@ class DiktatJavaExecTaskTest {
         assertCommandLineEquals(
             listOf(null, "--reporter=json,output=some.txt")
         ) {
-            inputs = project.files()
+            inputs { exclude("*") }
             diktatConfigFile = project.file("../diktat-analysis.yml")
             reporterType = "json"
             output = "some.txt"
@@ -93,7 +104,7 @@ class DiktatJavaExecTaskTest {
         assertCommandLineEquals(
             listOf(null, "--reporter=json")
         ) {
-            inputs = project.files()
+            inputs { exclude("*") }
             diktatConfigFile = project.file("../diktat-analysis.yml")
             reporterType = "json"
         }
@@ -104,7 +115,7 @@ class DiktatJavaExecTaskTest {
         assertCommandLineEquals(
             listOf(null, "--reporter=customName,artifact=customPath")
         ) {
-            inputs = project.files()
+            inputs { exclude("*") }
             diktatConfigFile = project.file("../diktat-analysis.yml")
             reporterType = "custom:customName:customPath"
         }
@@ -113,7 +124,7 @@ class DiktatJavaExecTaskTest {
     @Test
     fun `check that project has html dependency`() {
         val task = project.registerDiktatTask {
-            inputs = project.files()
+            inputs { exclude("*") }
             diktatConfigFile = project.file("../diktat-analysis.yml")
             reporterType = "html"
         }
@@ -133,7 +144,7 @@ class DiktatJavaExecTaskTest {
         val subproject = project.subprojects.first()
         project.allprojects {
             it.registerDiktatTask {
-                inputs = it.files()
+                inputs { exclude("*") }
             }
         }
         val task = project.tasks.getByName(DIKTAT_CHECK_TASK) as DiktatJavaExecTaskBase
@@ -148,7 +159,7 @@ class DiktatJavaExecTaskTest {
         val subproject = project.subprojects.first()
         project.allprojects {
             it.registerDiktatTask {
-                inputs = it.files()
+                inputs { exclude("*") }
                 diktatConfigFile = it.rootProject.file("diktat-analysis.yml")
             }
         }
@@ -165,7 +176,7 @@ class DiktatJavaExecTaskTest {
         subproject.file("diktat-analysis.yml").createNewFile()
         project.allprojects {
             it.registerDiktatTask {
-                inputs = it.files()
+                inputs { exclude("*") }
                 diktatConfigFile = it.file("diktat-analysis.yml")
             }
         }
@@ -176,7 +187,7 @@ class DiktatJavaExecTaskTest {
     }
 
     private fun Project.registerDiktatTask(extensionConfiguration: DiktatExtension.() -> Unit): DiktatJavaExecTaskBase {
-        DiktatGradlePlugin().apply(this)
+        pluginManager.apply(DiktatGradlePlugin::class.java)
         extensions.configure("diktat", extensionConfiguration)
         return tasks.getByName(DIKTAT_CHECK_TASK) as DiktatJavaExecTaskBase
     }

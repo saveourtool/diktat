@@ -7,5 +7,5 @@ repositories {
 }
 
 diktat {
-    inputs = files("src/**/*.kt")
+    inputs { include ("src/**/*.kt") }
 }
