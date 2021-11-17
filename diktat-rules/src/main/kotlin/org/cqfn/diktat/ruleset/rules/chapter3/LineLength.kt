@@ -8,7 +8,9 @@ import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
 import org.cqfn.diktat.ruleset.utils.calculateLineColByOffset
+import org.cqfn.diktat.ruleset.utils.findAllNodesWithConditionOnLine
 import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
+import org.cqfn.diktat.ruleset.utils.getLineNumber
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
@@ -290,14 +292,19 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                 removeChild(wrongNode)
             }
         } else {
-            wrongNode.treeParent.treeParent?.let {
+            if (wrongNode.treePrev.isWhiteSpace()) {
+                wrongNode.treeParent.removeChild(wrongNode.treePrev)
+            }
+
+            val newLineNodeOnPreviousLine = wrongNode.findAllNodesWithConditionOnLine(wrongNode.getLineNumber() - 1) {
+                it.elementType == WHITE_SPACE && it.textContains('\n')
+            }?.lastOrNull()
+
+            newLineNodeOnPreviousLine?.let {
                 val parent = wrongNode.treeParent
-                if (wrongNode.treePrev.isWhiteSpace()) {
-                    parent.removeChild(wrongNode.treePrev)
-                }
                 parent.removeChild(wrongNode)
-                it.addChild(wrongNode, parent)
-                it.addChild(PsiWhiteSpaceImpl("\n"), parent)
+                newLineNodeOnPreviousLine.treeParent.addChild(wrongNode, newLineNodeOnPreviousLine.treeNext)
+                newLineNodeOnPreviousLine.treeParent.addChild(PsiWhiteSpaceImpl("\n"), newLineNodeOnPreviousLine.treeNext.treeNext)
             }
         }
     }
