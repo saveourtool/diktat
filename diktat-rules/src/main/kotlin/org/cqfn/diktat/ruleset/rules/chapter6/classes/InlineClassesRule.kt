@@ -28,7 +28,8 @@ import org.jetbrains.kotlin.psi.psiUtil.visibilityModifierType
 class InlineClassesRule(configRules: List<RulesConfig>) : DiktatRule(
     "inline-classes",
     configRules,
-    listOf(INLINE_CLASS_CAN_BE_USED)) {
+    listOf(INLINE_CLASS_CAN_BE_USED)
+) {
     override fun logic(node: ASTNode) {
         val configuration = configRules.getCommonConfiguration()
         if (node.elementType == CLASS &&

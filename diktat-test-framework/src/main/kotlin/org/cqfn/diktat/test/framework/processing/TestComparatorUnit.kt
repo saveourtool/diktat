@@ -28,7 +28,8 @@ class TestComparatorUnit(private val resourceFilePath: String,
     fun compareFilesFromResources(
         expectedResult: String,
         testFileStr: String,
-        trimLastEmptyLine: Boolean = false): Boolean {
+        trimLastEmptyLine: Boolean = false
+    ): Boolean {
         val expectedPath = javaClass.classLoader.getResource("$resourceFilePath/$expectedResult")
         val testPath = javaClass.classLoader.getResource("$resourceFilePath/$testFileStr")
         if (testPath == null || expectedPath == null) {

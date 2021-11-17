@@ -30,7 +30,8 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 class StringTemplateFormatRule(configRules: List<RulesConfig>) : DiktatRule(
     "string-template-format",
     configRules,
-    listOf(STRING_TEMPLATE_CURLY_BRACES, STRING_TEMPLATE_QUOTES)) {
+    listOf(STRING_TEMPLATE_CURLY_BRACES, STRING_TEMPLATE_QUOTES)
+) {
     override fun logic(node: ASTNode) {
         when (node.elementType) {
             LONG_STRING_TEMPLATE_ENTRY -> handleLongStringTemplate(node)

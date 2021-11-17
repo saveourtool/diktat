@@ -28,7 +28,8 @@ import org.slf4j.LoggerFactory
 class CommentsRule(configRules: List<RulesConfig>) : DiktatRule(
     "comments",
     configRules,
-    listOf(COMMENTED_OUT_CODE)) {
+    listOf(COMMENTED_OUT_CODE)
+) {
     private lateinit var ktPsiFactory: KtPsiFactory
 
     override fun logic(node: ASTNode) {

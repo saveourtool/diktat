@@ -38,7 +38,8 @@ import org.slf4j.LoggerFactory
 class CompactInitialization(configRules: List<RulesConfig>) : DiktatRule(
     "class-compact-initialization",
     configRules,
-    listOf(COMPACT_OBJECT_INITIALIZATION)) {
+    listOf(COMPACT_OBJECT_INITIALIZATION)
+) {
     private val kotlinParser by lazy { KotlinParser() }
 
     override fun logic(node: ASTNode) {
@@ -88,7 +89,8 @@ class CompactInitialization(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress(
         "UnsafeCallOnNullableType",
         "NestedBlockDepth",
-        "TOO_LONG_FUNCTION")
+        "TOO_LONG_FUNCTION"
+    )
     private fun moveAssignmentIntoApply(property: KtProperty, assignment: KtBinaryExpression) {
         // get apply expression or create empty; convert `apply(::foo)` to `apply { foo(this) }` if necessary
         getOrCreateApplyBlock(property).let(::convertValueParametersToLambdaArgument)

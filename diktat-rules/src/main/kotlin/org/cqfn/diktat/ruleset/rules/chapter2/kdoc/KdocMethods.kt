@@ -73,7 +73,8 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
     "kdoc-methods",
     configRules,
     listOf(KDOC_TRIVIAL_KDOC_ON_FUNCTION, KDOC_WITHOUT_PARAM_TAG, KDOC_WITHOUT_RETURN_TAG,
-        KDOC_WITHOUT_THROWS_TAG, MISSING_KDOC_ON_FUNCTION)) {
+        KDOC_WITHOUT_THROWS_TAG, MISSING_KDOC_ON_FUNCTION)
+) {
     /**
      * @param node
      */
@@ -212,7 +213,8 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
                                  kdoc: ASTNode?,
                                  missingParameters: Collection<String?>,
                                  kdocMissingParameters: List<KDocTag>,
-                                 kdocTags: Collection<KDocTag>?) {
+                                 kdocTags: Collection<KDocTag>?
+    ) {
         kdocMissingParameters.forEach {
             KDOC_WITHOUT_PARAM_TAG.warn(configRules, emitWarn, false,
                 "${it.getSubjectName()} param isn't present in argument list", it.node.startOffset,

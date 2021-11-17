@@ -17,7 +17,8 @@ data class CliArgument(
     private val helpDescr: String,
     private val longName: String,
     private val hasArgs: Boolean,
-    private val isRequired: Boolean) {
+    private val isRequired: Boolean
+) {
     /**
      * Converts parameters received from json to [Option]
      *

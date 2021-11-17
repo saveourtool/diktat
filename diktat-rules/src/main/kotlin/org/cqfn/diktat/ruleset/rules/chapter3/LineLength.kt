@@ -67,7 +67,8 @@ import java.net.URL
 class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     "line-length",
     configRules,
-    listOf(LONG_LINE)) {
+    listOf(LONG_LINE)
+) {
     private val configuration by lazy {
         LineLengthConfiguration(
             configRules.getRuleConfig(LONG_LINE)?.configuration ?: emptyMap()
@@ -474,7 +475,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
     private fun splitTextAndCreateNode(
         node: ASTNode,
         text: String,
-        index: Int) {
+        index: Int
+    ) {
         val resultText = "\"${text.substring(0, index)}\" +\n\"${text.substring(index)}\""
         val newNode = KotlinParser().createNode(resultText)
         node.removeChild(node.findChildByType(STRING_TEMPLATE)!!)
@@ -507,7 +509,8 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         class Comment(
             val node: ASTNode,
             val hasNewLineBefore: Boolean,
-            val indexLastSpace: Int = 0) : LongLineFixableCases()
+            val indexLastSpace: Int = 0
+        ) : LongLineFixableCases()
 
         /**
          * @property node node
@@ -517,21 +520,24 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         class StringTemplate(
             val node: ASTNode,
             val delimiterIndex: Int,
-            val isOneLineString: Boolean) : LongLineFixableCases()
+            val isOneLineString: Boolean
+        ) : LongLineFixableCases()
 
         class BinaryExpression(val node: ASTNode) : LongLineFixableCases()
 
         class Condition(
             val maximumLineLength: Long,
             val leftOffset: Int,
-            val binList: MutableList<ASTNode>) : LongLineFixableCases()
+            val binList: MutableList<ASTNode>
+        ) : LongLineFixableCases()
 
         class Fun(val node: ASTNode) : LongLineFixableCases()
 
         class Property(
             val node: ASTNode,
             val indexLastSpace: Int,
-            val text: String) : LongLineFixableCases()
+            val text: String
+        ) : LongLineFixableCases()
     }
 
     /**

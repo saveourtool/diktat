@@ -60,7 +60,8 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
     "file-structure",
     configRules,
     listOf(FILE_CONTAINS_ONLY_COMMENTS, FILE_INCORRECT_BLOCKS_ORDER, FILE_NO_BLANK_LINE_BETWEEN_BLOCKS,
-        FILE_UNORDERED_IMPORTS, FILE_WILDCARD_IMPORTS, UNUSED_IMPORT)) {
+        FILE_UNORDERED_IMPORTS, FILE_WILDCARD_IMPORTS, UNUSED_IMPORT)
+) {
     private val domainName by lazy {
         configRules
             .getCommonConfiguration()
@@ -116,7 +117,8 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress(
         "ComplexMethod",
         "TOO_LONG_FUNCTION",
-        "SpreadOperator")
+        "SpreadOperator"
+    )
     private fun checkCodeBlocksOrderAndEmptyLines(node: ASTNode) {
         // From KtFile.kt: 'scripts have no package directive, all other files must have package directives'.
         // Kotlin compiler itself enforces it's position in the file if it is present.
@@ -283,7 +285,8 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun rearrangeImports(
         node: ASTNode,
         imports: List<ASTNode>,
-        sortedImportsGroups: List<List<ASTNode>>) {
+        sortedImportsGroups: List<List<ASTNode>>
+    ) {
         require(node.elementType == IMPORT_LIST)
         // move all commented lines among import before imports block
         node.getChildren(TokenSet.create(EOL_COMMENT))

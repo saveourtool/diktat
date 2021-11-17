@@ -40,7 +40,8 @@ import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 class NullableTypeRule(configRules: List<RulesConfig>) : DiktatRule(
     "nullable-type",
     configRules,
-    listOf(NULLABLE_PROPERTY_TYPE)) {
+    listOf(NULLABLE_PROPERTY_TYPE)
+) {
     override fun logic(node: ASTNode) {
         if (node.elementType == PROPERTY) {
             checkProperty(node)
@@ -135,7 +136,8 @@ class NullableTypeRule(configRules: List<RulesConfig>) : DiktatRule(
         node: ASTNode,
         insertConstantType: IElementType,
         insertType: IElementType,
-        textNode: String) {
+        textNode: String
+    ) {
         val value = CompositeElement(insertConstantType)
         node.addChild(value, node.findChildByType(NULL)!!)
         node.removeChild(node.findChildByType(NULL)!!)
@@ -156,7 +158,8 @@ class NullableTypeRule(configRules: List<RulesConfig>) : DiktatRule(
         val insertConstantType: IElementType?,
         val insertType: IElementType?,
         val textNode: String,
-        val isString: Boolean = false)
+        val isString: Boolean = false
+    )
 
     companion object {
         private val allowExpression = listOf("emptyList", "emptySequence", "emptyArray", "emptyMap", "emptySet",

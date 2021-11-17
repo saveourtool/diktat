@@ -35,7 +35,8 @@ internal typealias SimilarSignatures = List<Pair<ExtensionFunctionsSameNameRule.
 class ExtensionFunctionsSameNameRule(configRules: List<RulesConfig>) : DiktatRule(
     "extension-functions-same-name",
     configRules,
-    listOf(EXTENSION_FUNCTION_SAME_SIGNATURE)) {
+    listOf(EXTENSION_FUNCTION_SAME_SIGNATURE)
+) {
     override fun logic(node: ASTNode) {
         /**
          * 1) Collect all classes that extend other classes (collect related classes)
@@ -116,7 +117,8 @@ class ExtensionFunctionsSameNameRule(configRules: List<RulesConfig>) : DiktatRul
     private fun raiseWarning(
         node: ASTNode,
         firstFunc: ExtensionFunction,
-        secondFunc: ExtensionFunction) {
+        secondFunc: ExtensionFunction
+    ) {
         EXTENSION_FUNCTION_SAME_SIGNATURE.warn(configRules, emitWarn, isFixMode, "$firstFunc and $secondFunc", node.startOffset, node)
     }
 
@@ -129,7 +131,8 @@ class ExtensionFunctionsSameNameRule(configRules: List<RulesConfig>) : DiktatRul
     internal data class FunctionSignature(
         val name: String,
         val parameters: List<String>,
-        val returnType: String?) {
+        val returnType: String?
+    ) {
         override fun toString() = "$name$parameters${returnType?.let { ": $it" } ?: ""}"
     }
 
@@ -142,7 +145,8 @@ class ExtensionFunctionsSameNameRule(configRules: List<RulesConfig>) : DiktatRul
     internal data class ExtensionFunction(
         val className: String,
         val signature: FunctionSignature,
-        val node: ASTNode) {
+        val node: ASTNode
+    ) {
         override fun toString() = "fun $className.$signature"
     }
 }

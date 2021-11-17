@@ -29,7 +29,8 @@ import java.io.File
 class FileNaming(configRules: List<RulesConfig>) : DiktatRule(
     "file-naming",
     configRules,
-    listOf(FILE_NAME_INCORRECT, FILE_NAME_MATCH_CLASS)) {
+    listOf(FILE_NAME_INCORRECT, FILE_NAME_MATCH_CLASS)
+) {
     private lateinit var filePath: String
 
     override fun logic(node: ASTNode) {

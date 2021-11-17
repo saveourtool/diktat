@@ -27,7 +27,8 @@ import org.jetbrains.kotlin.psi.psiUtil.children
 class AbstractClassesRule(configRules: List<RulesConfig>) : DiktatRule(
     "abstract-classes",
     configRules,
-    listOf(CLASS_SHOULD_NOT_BE_ABSTRACT)) {
+    listOf(CLASS_SHOULD_NOT_BE_ABSTRACT)
+) {
     override fun logic(node: ASTNode) {
         if (node.elementType == CLASS) {
             val classBody = node.getFirstChildWithType(CLASS_BODY) ?: return
