@@ -213,19 +213,4 @@ class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresO
             """.trimMargin()
         )
     }
-
-    @Test
-    @Tag(WarningNames.BLANK_LINE_BETWEEN_PROPERTIES)
-    fun `misleading error message test`() {
-        lintMethod(
-            """
-                |class A {
-                |    val bar: Bar
-                |    @Autowried
-                |    val fileSystemRepository: Foo
-                }
-            """.trimMargin(),
-            LintError(3, 5, ruleId, "${BLANK_LINE_BETWEEN_PROPERTIES.warnText()} @Autowried", true)
-        )
-    }
 }
