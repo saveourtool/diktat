@@ -1,5 +1,7 @@
 package org.cqfn.diktat.ruleset.rules.chapter3
 
+import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION
+import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.BLANK_LINE_BETWEEN_PROPERTIES
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES
@@ -19,6 +21,7 @@ import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.LATEINIT_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
+import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.OBJECT_DECLARATION
 import com.pinterest.ktlint.core.ast.ElementType.PRIVATE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
@@ -106,7 +109,14 @@ class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
         // for some cases (now - if this or previous property has custom accessors), blank line is allowed before it
         if (!hasCustomAccessors && actualNewLines != numRequiredNewLines ||
                 hasCustomAccessors && actualNewLines > numRequiredNewLines) {
-            BLANK_LINE_BETWEEN_PROPERTIES.warnAndFix(configRules, emitWarn, isFixMode, node.getIdentifierName()?.text ?: node.text, node.startOffset, node) {
+            BLANK_LINE_BETWEEN_PROPERTIES.warnAndFix(
+                configRules,
+                emitWarn,
+                isFixMode,
+                node.getFirstChildWithType(MODIFIER_LIST)?.getFirstChildWithType(ANNOTATION_ENTRY)?.text ?: node.getIdentifierName()?.text ?: node.text,
+                node.startOffset,
+                node
+            ) {
                 whiteSpaceBefore.leaveExactlyNumNewLines(numRequiredNewLines)
             }
         }
