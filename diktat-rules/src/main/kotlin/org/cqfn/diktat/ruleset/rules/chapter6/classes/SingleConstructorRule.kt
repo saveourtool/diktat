@@ -202,11 +202,10 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
         }
 
         // adding comments to init body
-        with(initBody.toMutableList()) {
-            comments?.forEach { (comment, nextExpression) ->
-                if (this.indexOf(nextExpression?.text) != -1) {
-                    this.add(initBody.indexOf(nextExpression?.text), comment)
-                }
+        val initBodyWithComments = initBody.toMutableList()
+        comments?.forEach { (comment, nextExpression) ->
+            if (initBodyWithComments.indexOf(nextExpression?.text) != -1) {
+                initBodyWithComments.add(initBodyWithComments.indexOf(nextExpression?.text), comment)
             }
         }
 
@@ -214,7 +213,7 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
             findChildByType(CLASS_BODY)?.run {
                 val classInitializer = kotlinParser.createNodeForInit(
                     """|init {
-                       |    ${initBody.joinToString("\n")}
+                       |    ${initBodyWithComments.joinToString("\n")}
                        |}
                     """.trimMargin())
                 addChild(classInitializer, secondaryCtor)
