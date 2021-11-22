@@ -164,7 +164,8 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
         "NestedBlockDepth",
         "GENERIC_VARIABLE_WRONG_DECLARATION",
         "TOO_LONG_FUNCTION",
-        "TOO_MANY_PARAMETERS"
+        "TOO_MANY_PARAMETERS",
+        "LongParameterList",
     )
     private fun ASTNode.convertSecondaryConstructorToPrimary(
         secondaryCtor: ASTNode,
@@ -201,7 +202,7 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
         }
 
         // adding comments to init body
-        with(initBody as MutableList) {
+        with(initBody as MutableList<String>) {
             comments?.forEach { (comment, nextExpression) ->
                 if (this.indexOf(nextExpression?.text) != -1) {
                     this.add(initBody.indexOf(nextExpression?.text), comment)
