@@ -202,7 +202,7 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
         }
 
         // adding comments to init body
-        with(initBody as MutableList<String>) {
+        with(initBody.toMutableList()) {
             comments?.forEach { (comment, nextExpression) ->
                 if (this.indexOf(nextExpression?.text) != -1) {
                     this.add(initBody.indexOf(nextExpression?.text), comment)
