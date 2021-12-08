@@ -63,7 +63,7 @@ jobs:
 
       - name: Setup environment
         run: |
-          curl -o ktlint -sSL https://repo1.maven.org/maven2/com/pinterest/ktlint/${{ env.KTLINT_VERSION }}/ktlint-0.43.0-all.jar && chmod a+x ktlint
+          curl -o ktlint -sSL https://repo1.maven.org/maven2/com/pinterest/ktlint/${{ env.KTLINT_VERSION }}/ktlint-${{ env.KTLINT_VERSION }}-all.jar && chmod a+x ktlint
         shell: bash
 
       - name: Download diktat jar
