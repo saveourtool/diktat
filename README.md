@@ -51,15 +51,15 @@ Main features of diktat are the following:
 
    **OR** use curl:
     ```bash
-    curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.39.0/ktlint && chmod a+x ktlint
+    curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.43.2/ktlint && chmod a+x ktlint
     # another option is "brew install ktlint"
     ```
    
-2. Load diKTat manually: [here](https://github.com/cqfn/diKTat/releases/download/v1.0.0-rc.4/diktat-1.0.0-rc.4.jar)
+2. Load diKTat manually: [here](https://github.com/cqfn/diKTat/releases/download/v1.0.0/diktat-1.0.0.jar)
 
    **OR** use curl:
    ```bash
-   $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v1.0.0-rc.4/diktat-1.0.0-rc.4.jar
+   $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v1.0.0/diktat-1.0.0.jar
    ```
    
 3. Finally, run KTlint (with diKTat injected) to check your `*.kt` files in `dir/your/dir`:
