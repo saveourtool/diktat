@@ -78,7 +78,10 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
      * - Create init block with other statements from the secondary constructor, including initialization of properties that require local variables or complex calls.
      * - Finally, remove the secondary constructor.
      */
-    @Suppress("GENERIC_VARIABLE_WRONG_DECLARATION")
+    @Suppress(
+        "GENERIC_VARIABLE_WRONG_DECLARATION",
+        "TOO_LONG_FUNCTION"
+    )
     private fun convertConstructorToPrimary(classNode: ASTNode, secondaryCtor: ASTNode) {
         val secondaryCtorArguments = (secondaryCtor.psi as KtSecondaryConstructor).valueParameters
 
@@ -122,7 +125,15 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
             }
             .distinct()
 
-        classNode.convertSecondaryConstructorToPrimary(secondaryCtor, declarationsAssignedInCtor, nonTrivialAssignments, otherStatements, comments)
+        // future init body
+        val expressions = (secondaryCtor.psi as KtSecondaryConstructor)
+            .bodyBlockExpression
+            ?.statements
+            ?.map { it.text }
+            ?.filter { expr -> expr in otherStatements.map { it.text } || expr in nonTrivialAssignments.keys.map { it.text } }
+            ?: emptyList()
+
+        classNode.convertSecondaryConstructorToPrimary(secondaryCtor, declarationsAssignedInCtor, nonTrivialAssignments, otherStatements, comments, expressions)
     }
 
     @Suppress("UnsafeCallOnNullableType")
@@ -152,14 +163,17 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress(
         "NestedBlockDepth",
         "GENERIC_VARIABLE_WRONG_DECLARATION",
-        "TOO_LONG_FUNCTION"
+        "TOO_LONG_FUNCTION",
+        "TOO_MANY_PARAMETERS",
+        "LongParameterList",
     )
     private fun ASTNode.convertSecondaryConstructorToPrimary(
         secondaryCtor: ASTNode,
         declarationsAssignedInCtor: List<KtProperty>,
         nonTrivialAssignments: Map<KtBinaryExpression, KtNameReferenceExpression>,
         otherStatements: List<KtExpression>,
-        comments: Map<String, ASTNode?>?
+        comments: Map<String, ASTNode?>?,
+        initBody: List<String>
     ) {
         require(elementType == CLASS)
 
@@ -168,10 +182,6 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
         val nonTrivialSecondaryCtorParameters = getNonTrivialParameters(secondaryCtor, nonTrivialAssignments.keys, localProperties)
 
         val primaryCtorNode = createPrimaryCtor(secondaryCtor, declarationsAssignedInCtor, nonTrivialSecondaryCtorParameters)
-
-        val initBody: MutableList<String> = mutableListOf()
-        initBody.addAll(otherStatements.map { it.text })
-        initBody.addAll(nonTrivialAssignments.keys.map { it.text })
 
         val newArgumentListOfSecondaryCtor: List<KtParameter> = (secondaryCtor.psi as KtSecondaryConstructor)
             .valueParameters
@@ -191,9 +201,11 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
             }
         }
 
+        // adding comments to init body
+        val initBodyWithComments = initBody.toMutableList()
         comments?.forEach { (comment, nextExpression) ->
-            if (initBody.indexOf(nextExpression?.text) != -1) {
-                initBody.add(initBody.indexOf(nextExpression?.text), comment)
+            if (initBodyWithComments.indexOf(nextExpression?.text) != -1) {
+                initBodyWithComments.add(initBodyWithComments.indexOf(nextExpression?.text), comment)
             }
         }
 
@@ -201,7 +213,7 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
             findChildByType(CLASS_BODY)?.run {
                 val classInitializer = kotlinParser.createNodeForInit(
                     """|init {
-                       |    ${initBody.joinToString("\n")}
+                       |    ${initBodyWithComments.joinToString("\n")}
                        |}
                     """.trimMargin())
                 addChild(classInitializer, secondaryCtor)

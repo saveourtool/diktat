@@ -49,4 +49,10 @@ class SingleConstructorRuleFixTest : FixTestBase("test/chapter6/classes", ::Sing
     fun `should not replace constructor with init block`() {
         fixAndCompare("ConstructorWithComplexAssignmentsExpected.kt", "ConstructorWithComplexAssignmentsTest.kt")
     }
+
+    @Test
+    @Tag(WarningNames.SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY)
+    fun `should keep expression order`() {
+        fixAndCompare("ConstructorShouldKeepExpressionsOrderExpected.kt", "ConstructorShouldKeepExpressionsOrderTest.kt")
+    }
 }
