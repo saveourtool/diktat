@@ -19,15 +19,15 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-build-${{ hashFiles('**/pom.xml') }}
+          key: maven-build-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ runner.os }}-maven-build-
+            maven-build-
       - name: Maven Install
         run: mvn -B clean install
       - name: Code coverage report
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v2
         with:
-          file: ./*/target/site/jacoco/jacoco.xml
+          files: '**/target/site/jacoco*/jacoco.xml,**/reports/jacoco/**/*.xml'
           flags: unittests
           fail_ci_if_error: true # optional (default = false)
       - name: Upload diktat jar
@@ -130,9 +130,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-build-${{ hashFiles('**/pom.xml') }}
+          key: maven-build-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ runner.os }}-maven-build-
+            maven-build-
 
       - name: Maven Install
         if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}

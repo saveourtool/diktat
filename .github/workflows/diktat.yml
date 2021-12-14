@@ -24,9 +24,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-diktat-${{ hashFiles('**/pom.xml') }}
+          key: maven-diktat-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ runner.os }}-maven-diktat-
+            maven-diktat-
       - name: Substitute diktat config with the one from the latest release
         # fixme: can be done from the fetched repo without additional network request
         run: |

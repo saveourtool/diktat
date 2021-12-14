@@ -21,9 +21,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-detekt-${{ hashFiles('**/pom.xml') }}
+          key: maven-detekt-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ runner.os }}-maven-detekt-
+            maven-detekt-
       # when running detekt with type resolution, we need to have all project modules compiled too
       - name: running deteKT
         run: mvn -B compile dependency:build-classpath@detekt detekt:check@detekt -DskipPluginMarker
