@@ -21,7 +21,8 @@ import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 class SingleLineStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
     "statement",
     configRules,
-    listOf(MORE_THAN_ONE_STATEMENT_PER_LINE)) {
+    listOf(MORE_THAN_ONE_STATEMENT_PER_LINE)
+) {
     override fun logic(node: ASTNode) {
         checkSemicolon(node)
     }

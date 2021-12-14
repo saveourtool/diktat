@@ -15,7 +15,8 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 class FileSize(configRules: List<RulesConfig>) : DiktatRule(
     "file-size",
     configRules,
-    listOf(FILE_IS_TOO_LONG)) {
+    listOf(FILE_IS_TOO_LONG)
+) {
     private val configuration by lazy {
         FileSizeConfiguration(
             this.configRules.getRuleConfig(FILE_IS_TOO_LONG)?.configuration ?: emptyMap()

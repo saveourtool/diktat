@@ -27,7 +27,8 @@ import org.jetbrains.kotlin.psi.KtProperty
 class ImplicitBackingPropertyRule(configRules: List<RulesConfig>) : DiktatRule(
     "implicit-backing-property",
     configRules,
-    listOf(NO_CORRESPONDING_PROPERTY)) {
+    listOf(NO_CORRESPONDING_PROPERTY)
+) {
     override fun logic(node: ASTNode) {
         if (node.elementType == CLASS_BODY) {
             findAllProperties(node)
@@ -60,7 +61,8 @@ class ImplicitBackingPropertyRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun handleGetAccessors(
         accessor: ASTNode,
         node: ASTNode,
-        propsWithBackSymbol: List<String>) {
+        propsWithBackSymbol: List<String>
+    ) {
         val refExprs = accessor
             .findAllDescendantsWithSpecificType(RETURN)
             .filterNot { it.hasChildOfType(DOT_QUALIFIED_EXPRESSION) }
@@ -79,7 +81,8 @@ class ImplicitBackingPropertyRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun handleSetAccessors(
         accessor: ASTNode,
         node: ASTNode,
-        propsWithBackSymbol: List<String>) {
+        propsWithBackSymbol: List<String>
+    ) {
         val refExprs = accessor.findAllDescendantsWithSpecificType(REFERENCE_EXPRESSION)
 
         // In set we don't check for local properties. At least one reference expression should contain field or _prop
@@ -92,7 +95,8 @@ class ImplicitBackingPropertyRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun handleReferenceExpressions(node: ASTNode,
                                            expressions: List<ASTNode>,
                                            backingPropertiesNames: List<String>,
-                                           localProperties: List<String>?) {
+                                           localProperties: List<String>?
+    ) {
         if (expressions.none {
             backingPropertiesNames.contains(it.text) || it.text == "field" || localProperties?.contains(it.text) == true
         }) {

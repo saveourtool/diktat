@@ -29,7 +29,8 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
 class TopLevelOrderRule(configRules: List<RulesConfig>) : DiktatRule(
     "top-level-order",
     configRules,
-    listOf(TOP_LEVEL_ORDER)) {
+    listOf(TOP_LEVEL_ORDER)
+) {
     override fun logic(node: ASTNode) {
         if (node.elementType == FILE) {
             checkNode(node)
@@ -98,7 +99,8 @@ class TopLevelOrderRule(configRules: List<RulesConfig>) : DiktatRule(
         private val properties: List<ASTNode>,
         private val typealiases: List<ASTNode>,
         private val functions: List<ASTNode>,
-        private val classes: List<ASTNode>) : Elements {
+        private val classes: List<ASTNode>
+    ) : Elements {
         override fun sortElements(): MutableList<ASTNode> {
             val (extensionFun, nonExtensionFun) = functions.partition { (it.psi as KtFunction).isExtensionDeclaration() }
             return (properties + listOf(typealiases, classes, extensionFun, nonExtensionFun).flatMap { nodes ->

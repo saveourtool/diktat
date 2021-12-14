@@ -27,7 +27,8 @@ import org.jetbrains.kotlin.psi.psiUtil.startOffset
 class AccurateCalculationsRule(configRules: List<RulesConfig>) : DiktatRule(
     "accurate-calculations",
     configRules,
-    listOf(FLOAT_IN_ACCURATE_CALCULATIONS)) {
+    listOf(FLOAT_IN_ACCURATE_CALCULATIONS)
+) {
     private fun KtCallExpression?.isAbsOfFloat() = this
         ?.run {
             (calleeExpression as? KtNameReferenceExpression)

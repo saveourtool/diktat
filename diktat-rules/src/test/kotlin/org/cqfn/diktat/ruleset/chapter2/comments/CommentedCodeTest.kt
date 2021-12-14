@@ -453,4 +453,21 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
             """.trimMargin()
         )
     }
+
+    @Test
+    @Tag(WarningNames.COMMENTED_OUT_CODE)
+    fun `should not trigger on 'imports'`() {
+        lintMethod(
+            """
+            /* Checks if specified imports can be found in classpath. */
+            class Example
+            
+            /* Checks if specified import can be found in classpath. */
+            class Example2
+            
+            /* import this and you died. */
+            class Example3
+            """.trimMargin()
+        )
+    }
 }

@@ -32,7 +32,8 @@ internal data class CheckResult(
     val isCorrect: Boolean,
     val expectedIndent: Int,
     val adjustNext: Boolean,
-    val includeLastChild: Boolean = true) {
+    val includeLastChild: Boolean = true
+) {
     companion object {
         /**
          * @param actual actual indentation
@@ -44,7 +45,7 @@ internal data class CheckResult(
         fun from(actual: Int,
                  expected: Int,
                  adjustNext: Boolean = false,
-                 includeLastChild: Boolean = true) =
-                CheckResult(actual == expected, expected, adjustNext, includeLastChild)
+                 includeLastChild: Boolean = true
+        ) = CheckResult(actual == expected, expected, adjustNext, includeLastChild)
     }
 }

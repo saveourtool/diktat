@@ -32,6 +32,7 @@ import com.pinterest.ktlint.core.ast.ElementType.VAL_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.VAR_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.parent
+import com.pinterest.ktlint.core.ast.prevSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -39,6 +40,7 @@ import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.kdoc.parser.KDocKnownTag
 import org.jetbrains.kotlin.psi.KtParameterList
 import org.jetbrains.kotlin.psi.psiUtil.parents
+import org.jetbrains.kotlin.psi.psiUtil.siblings
 
 /**
  * This rule checks the following features in KDocs:
@@ -50,12 +52,14 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     "kdoc-comments",
     configRules,
     listOf(KDOC_EXTRA_PROPERTY, KDOC_NO_CONSTRUCTOR_PROPERTY,
-        KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT, MISSING_KDOC_CLASS_ELEMENTS, MISSING_KDOC_TOP_LEVEL)) {
+        KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT, MISSING_KDOC_CLASS_ELEMENTS, MISSING_KDOC_TOP_LEVEL)
+) {
+    private val config by lazy { configRules.getCommonConfiguration() }
+
     /**
      * @param node
      */
     override fun logic(node: ASTNode) {
-        val config = configRules.getCommonConfiguration()
         val filePath = node.getFilePath()
         if (!node.hasTestAnnotation() && !isLocatedInTest(filePath.splitPathToDirs(), config.testAnchors)) {
             when (node.elementType) {
@@ -86,34 +90,36 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     @Suppress("UnsafeCallOnNullableType", "ComplexMethod")
-    private fun checkValueParameter(node: ASTNode) {
-        if (node.parents().none { it.elementType == PRIMARY_CONSTRUCTOR } ||
-                !node.hasChildOfType(VAL_KEYWORD) && !node.hasChildOfType(VAR_KEYWORD)) {
+    private fun checkValueParameter(valueParameterNode: ASTNode) {
+        if (valueParameterNode.parents().none { it.elementType == PRIMARY_CONSTRUCTOR } ||
+                !valueParameterNode.hasChildOfType(VAL_KEYWORD) &&
+                        !valueParameterNode.hasChildOfType(VAR_KEYWORD)
+        ) {
             return
         }
-        val prevComment = if (node.treePrev.elementType == WHITE_SPACE &&
-                (node.treePrev.treePrev.elementType == EOL_COMMENT ||
-                        node.treePrev.treePrev.elementType == BLOCK_COMMENT)) {
-            node.treePrev.treePrev
-        } else if (node.hasChildOfType(KDOC)) {
-            node.findChildByType(KDOC)!!
-        } else if (node.treePrev.elementType == BLOCK_COMMENT) {
-            node.treePrev
+        val prevComment = if (valueParameterNode.siblings(forward = false)
+            .takeWhile { it.elementType != EOL_COMMENT && it.elementType != BLOCK_COMMENT }
+            .all { it.elementType == WHITE_SPACE }
+        ) {
+            // take previous comment, if it's immediately before `valueParameterNode` or separated only with white space
+            valueParameterNode.prevSibling { it.elementType == EOL_COMMENT || it.elementType == BLOCK_COMMENT }
+        } else if (valueParameterNode.hasChildOfType(KDOC)) {
+            valueParameterNode.findChildByType(KDOC)!!
         } else {
             null
         }
-        val kdocBeforeClass = node.parent({ it.elementType == CLASS })!!.findChildByType(KDOC)
+        val kdocBeforeClass = valueParameterNode.parent({ it.elementType == CLASS })!!.findChildByType(KDOC)
 
         prevComment?.let {
             kdocBeforeClass?.let {
-                checkKdocBeforeClass(node, kdocBeforeClass, prevComment)
+                checkKdocBeforeClass(valueParameterNode, kdocBeforeClass, prevComment)
             }
-                ?: createKdocWithProperty(node, prevComment)
+                ?: createKdocWithProperty(valueParameterNode, prevComment)
         }
             ?: kdocBeforeClass?.let {
-                checkBasicKdocBeforeClass(node, kdocBeforeClass)
+                checkBasicKdocBeforeClass(valueParameterNode, kdocBeforeClass)
             }
-            ?: createKdocBasicKdoc(node)
+            ?: createKdocBasicKdoc(valueParameterNode)
     }
 
     @Suppress("UnsafeCallOnNullableType")
@@ -133,7 +139,8 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     private fun checkKdocBeforeClass(
         node: ASTNode,
         kdocBeforeClass: ASTNode,
-        prevComment: ASTNode) {
+        prevComment: ASTNode
+    ) {
         val propertyInClassKdoc = kdocBeforeClass
             .kDocTags()
             .firstOrNull { it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == node.findChildByType(IDENTIFIER)!!.text }
@@ -170,27 +177,20 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     @Suppress("UnsafeCallOnNullableType")
-    private fun createKdocWithProperty(node: ASTNode, prevComment: ASTNode) {
-        KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnAndFix(configRules, emitWarn, isFixMode, prevComment.text, prevComment.startOffset, node) {
-            val classNode = node.parent({ it.elementType == CLASS })!!
+    private fun createKdocWithProperty(valueParameterNode: ASTNode, prevComment: ASTNode) {
+        KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT.warnAndFix(configRules, emitWarn, isFixMode, prevComment.text, prevComment.startOffset, valueParameterNode) {
+            val classNode = valueParameterNode.parent({ it.elementType == CLASS })!!
             val newKdocText = if (prevComment.elementType == KDOC) {
                 prevComment.text
             } else if (prevComment.elementType == EOL_COMMENT) {
-                "/**\n * @property ${node.findChildByType(IDENTIFIER)!!.text} ${prevComment.text.removePrefix("//")}\n */"
+                "/**\n * @property ${valueParameterNode.findChildByType(IDENTIFIER)!!.text} ${prevComment.text.removePrefix("//")}\n */"
             } else {
-                "/**\n * @property ${node.findChildByType(IDENTIFIER)!!.text}${prevComment.text.removePrefix("/*").removeSuffix("*/")} */"
+                "/**\n * @property ${valueParameterNode.findChildByType(IDENTIFIER)!!.text}${prevComment.text.removePrefix("/*").removeSuffix("*/")} */"
             }
             val newKdoc = KotlinParser().createNode(newKdocText).findChildByType(KDOC)!!
             classNode.addChild(PsiWhiteSpaceImpl("\n"), classNode.firstChildNode)
             classNode.addChild(newKdoc, classNode.firstChildNode)
-            if (prevComment.elementType == EOL_COMMENT) {
-                node.treeParent.removeRange(prevComment, node)
-            } else {
-                if (prevComment.treeNext.elementType == WHITE_SPACE) {
-                    node.removeChild(prevComment.treeNext)
-                }
-                node.removeChild(prevComment)
-            }
+            valueParameterNode.removeWithWhiteSpace(prevComment)
         }
     }
 
@@ -200,7 +200,8 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         prevComment: ASTNode,
         kdocBeforeClass: ASTNode,
         propertyInClassKdoc: ASTNode?,
-        propertyInLocalKdoc: ASTNode?) {
+        propertyInLocalKdoc: ASTNode?
+    ) {
         val kdocText = if (prevComment.elementType == KDOC) {
             prevComment.text.removePrefix("/**").removeSuffix("*/").trim('\n', ' ')
         } else {
@@ -209,17 +210,14 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         // if property is documented with KDoc, which has a property tag inside, then it can contain some additional more complicated
         // structure, that will be hard to move automatically
         val isFixable = propertyInLocalKdoc == null
-        KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixable, prevComment.text, prevComment.startOffset, node, isFixable) {
+        KDOC_NO_CONSTRUCTOR_PROPERTY.warnAndFix(configRules, emitWarn, isFixMode, prevComment.text, prevComment.startOffset, node, isFixable) {
             propertyInClassKdoc?.let {
                 // local docs should be appended to docs in class
                 appendKdocTagContent(propertyInClassKdoc, "\n$kdocText")
             }
                 ?: insertTextInKdoc(kdocBeforeClass, " * @property ${node.findChildByType(IDENTIFIER)!!.text} ${kdocText.removePrefix("*")}\n")
 
-            if (prevComment.treeNext.elementType == WHITE_SPACE) {
-                node.removeChild(prevComment.treeNext)
-            }
-            node.removeChild(prevComment)
+            node.removeWithWhiteSpace(prevComment)
         }
     }
 
@@ -228,7 +226,8 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
         node: ASTNode,
         kdocBeforeClass: ASTNode,
         prevComment: ASTNode,
-        propertyInClassKdoc: ASTNode?) {
+        propertyInClassKdoc: ASTNode?
+    ) {
         propertyInClassKdoc?.let {
             if (propertyInClassKdoc.hasChildOfType(KDOC_TEXT)) {
                 val kdocText = propertyInClassKdoc.findChildByType(KDOC_TEXT)!!
@@ -240,7 +239,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
             ?: run {
                 insertTextInKdoc(kdocBeforeClass, "* @property ${node.findChildByType(IDENTIFIER)!!.text} ${prevComment.text.removeRange(0, 2)}\n")
             }
-        node.treeParent.removeRange(prevComment, node)
+        node.treeParent.removeChildMergingSurroundingWhitespaces(prevComment)
     }
 
     @Suppress("UnsafeCallOnNullableType")
@@ -329,4 +328,36 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     companion object {
         private val statementsToDocument = TokenSet.create(CLASS, FUN, PROPERTY)
     }
+}
+
+private fun ASTNode.removeWithWhiteSpace(prevComment: ASTNode) {
+    if (prevComment.elementType == KDOC) {
+        if (prevComment.treeNext.elementType == WHITE_SPACE) {
+            removeChild(prevComment.treeNext)
+        }
+        removeChild(prevComment)
+    } else {
+        removeChildMergingSurroundingWhitespaces(prevComment)
+    }
+}
+
+/**
+ * If [child] node is surrounded by nodes with type `WHITE_SPACE`, remove [child] and merge surrounding nodes,
+ * preserving only a single newline if present (i.e. leaving no empty lines after merging). In any case, [child] is removed
+ * from the tree.
+ */
+private fun ASTNode.removeChildMergingSurroundingWhitespaces(child: ASTNode) {
+    with(child) {
+        if (treeNext?.elementType == WHITE_SPACE && treePrev?.elementType == WHITE_SPACE) {
+            val mergedText = (treePrev.text + treeNext.text)
+            val mergedSpace = if (mergedText.contains('\n')) {
+                '\n' + mergedText.substringAfterLast('\n')
+            } else {
+                mergedText
+            }
+            treeParent.replaceWhiteSpaceText(treePrev, mergedSpace)
+        }
+        treeParent.removeChild(treeNext)
+    }
+    removeChild(child)
 }

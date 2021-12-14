@@ -13,7 +13,8 @@ import org.junit.jupiter.api.Assertions
 open class FixTestBase(protected val resourceFilePath: String,
                        private val ruleSetProviderRef: (rulesConfigList: List<RulesConfig>?) -> RuleSetProvider,
                        private val cb: LintErrorCallback = defaultCallback,
-                       private val rulesConfigList: List<RulesConfig>? = null) {
+                       private val rulesConfigList: List<RulesConfig>? = null
+) {
     private val testComparatorUnit = TestComparatorUnit(resourceFilePath) { text, fileName ->
         format(ruleSetProviderRef, text, fileName, rulesConfigList, cb = cb)
     }
@@ -21,7 +22,8 @@ open class FixTestBase(protected val resourceFilePath: String,
     constructor(resourceFilePath: String,
                 ruleSupplier: (rulesConfigList: List<RulesConfig>) -> Rule,
                 rulesConfigList: List<RulesConfig>? = null,
-                cb: LintErrorCallback = defaultCallback) : this(
+                cb: LintErrorCallback = defaultCallback
+    ) : this(
         resourceFilePath,
         { overrideRulesConfigList -> DiktatRuleSetProvider4Test(ruleSupplier, overrideRulesConfigList) },
         cb,
@@ -57,7 +59,8 @@ open class FixTestBase(protected val resourceFilePath: String,
      */
     protected fun fixAndCompare(expectedPath: String,
                                 testPath: String,
-                                overrideRulesConfigList: List<RulesConfig>) {
+                                overrideRulesConfigList: List<RulesConfig>
+    ) {
         val testComparatorUnit = TestComparatorUnit(resourceFilePath) { text, fileName ->
             format(ruleSetProviderRef, text, fileName, overrideRulesConfigList)
         }

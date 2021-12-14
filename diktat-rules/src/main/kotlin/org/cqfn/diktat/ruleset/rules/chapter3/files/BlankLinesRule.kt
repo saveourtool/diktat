@@ -24,7 +24,8 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 class BlankLinesRule(configRules: List<RulesConfig>) : DiktatRule(
     "blank-lines",
     configRules,
-    listOf(TOO_MANY_BLANK_LINES)) {
+    listOf(TOO_MANY_BLANK_LINES)
+) {
     override fun logic(node: ASTNode) {
         if (node.elementType == WHITE_SPACE) {
             // note that no blank lines counts as one newline

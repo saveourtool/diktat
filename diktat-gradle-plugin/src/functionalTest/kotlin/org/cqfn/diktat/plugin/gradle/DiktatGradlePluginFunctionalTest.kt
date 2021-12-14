@@ -44,7 +44,7 @@ class DiktatGradlePluginFunctionalTest {
         buildFile.appendText(
             """${System.lineSeparator()}
                 diktat {
-                    inputs = files("src/**/*.kt")
+                    inputs { include("src/**/*.kt") }
                     reporterType = "json"
                     output = "test.txt"
                 }
@@ -67,7 +67,7 @@ class DiktatGradlePluginFunctionalTest {
         buildFile.appendText(
             """${System.lineSeparator()}
                 diktat {
-                    inputs = files("src/**/*.kt")
+                    inputs { include("src/**/*.kt") }
                 }
             """.trimIndent()
         )
@@ -86,73 +86,10 @@ class DiktatGradlePluginFunctionalTest {
         buildFile.appendText(
             """${System.lineSeparator()}
                 diktat {
-                    inputs = files("src/**/*.kt")
-                    excludes = files("src/**/Test.kt")
-                }
-            """.trimIndent()
-        )
-        val result = runDiktat(testProjectDir)
-
-        val diktatCheckBuildResult = result.task(":$DIKTAT_CHECK_TASK")
-        requireNotNull(diktatCheckBuildResult)
-        Assertions.assertEquals(TaskOutcome.SUCCESS, diktatCheckBuildResult.outcome)
-    }
-
-    @Test
-    fun `should not run diktat with ktlint's default includes when no files match include patterns`() {
-        buildFile.appendText(
-            """${System.lineSeparator()}
-                diktat {
-                    inputs = files("nonexistent-directory/src/**/*.kt")
-                }
-            """.trimIndent()
-        )
-        val result = runDiktat(testProjectDir, arguments = listOf("--info"))
-
-        // if patterns in gradle are not checked for matching, they are passed to ktlint, which does nothing
-        val diktatCheckBuildResult = result.task(":$DIKTAT_CHECK_TASK")
-        requireNotNull(diktatCheckBuildResult)
-        Assertions.assertEquals(TaskOutcome.SUCCESS, diktatCheckBuildResult.outcome)
-        Assertions.assertFalse(
-            result.output.contains("Skipping diktat execution")
-        )
-        Assertions.assertFalse(
-            result.output.contains("Inputs for $DIKTAT_CHECK_TASK do not exist, will not run diktat")
-        )
-    }
-
-    @Test
-    fun `should not run diktat with ktlint's default includes when no files match include patterns - 2`() {
-        buildFile.appendText(
-            """${System.lineSeparator()}
-                diktat {
-                    inputs = fileTree("nonexistent-directory/src").apply { include("**/*.kt") }
-                }
-            """.trimIndent()
-        )
-        val result = runDiktat(testProjectDir, arguments = listOf("--info"))
-
-        val diktatCheckBuildResult = result.task(":$DIKTAT_CHECK_TASK")
-        requireNotNull(diktatCheckBuildResult)
-        Assertions.assertEquals(TaskOutcome.SUCCESS, diktatCheckBuildResult.outcome)
-        Assertions.assertTrue(
-            result.output.contains("Skipping diktat execution")
-        )
-        Assertions.assertTrue(
-            result.output.contains("Inputs for $DIKTAT_CHECK_TASK do not exist, will not run diktat")
-        )
-    }
-
-    @Test
-    fun `should execute diktatCheck with absolute paths`() {
-        val path = testProjectDir.root
-            .resolve("src/**/*.kt")
-            .absolutePath
-            .replace("\\", "\\\\")
-        buildFile.appendText(
-            """${System.lineSeparator()}
-                diktat {
-                    inputs = files("$path")
+                    inputs {
+                        include("src/**/*.kt")
+                        exclude("src/**/Test.kt")
+                    }
                 }
             """.trimIndent()
         )
@@ -161,15 +98,31 @@ class DiktatGradlePluginFunctionalTest {
         val diktatCheckBuildResult = result.task(":$DIKTAT_CHECK_TASK")
         requireNotNull(diktatCheckBuildResult)
         Assertions.assertEquals(TaskOutcome.FAILED, diktatCheckBuildResult.outcome)
-        Assertions.assertTrue(
-            result.output.contains("[FILE_NAME_MATCH_CLASS]")
+    }
+
+    @Test
+    fun `should not run diktat with ktlint's default includes when no files match include patterns`() {
+        buildFile.appendText(
+            """${System.lineSeparator()}
+                diktat {
+                    inputs { include ("nonexistent-directory/src/**/*.kt") }
+                }
+            """.trimIndent()
+        )
+        val result = runDiktat(testProjectDir, arguments = listOf("--info"))
+
+        val diktatCheckBuildResult = result.task(":$DIKTAT_CHECK_TASK")
+        requireNotNull(diktatCheckBuildResult)
+        Assertions.assertEquals(TaskOutcome.NO_SOURCE, diktatCheckBuildResult.outcome)
+        Assertions.assertFalse(
+            result.output.contains("Skipping diktat execution")
         )
     }
 
     @Test
     fun `should execute diktatCheck with gradle older than 6_4`() {
         val result = runDiktat(testProjectDir, shouldSucceed = false, arguments = listOf("--info")) {
-            withGradleVersion("5.0")
+            withGradleVersion("5.3")
         }
 
         val diktatCheckBuildResult = result.task(":$DIKTAT_CHECK_TASK")

@@ -1,3 +1,5 @@
+@file:Suppress("FILE_WILDCARD_IMPORTS")
+
 package org.cqfn.diktat.ruleset.rules.chapter1
 
 import org.cqfn.diktat.common.config.rules.RuleConfiguration
@@ -19,31 +21,8 @@ import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_HAS_PREFIX
 import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_NAME_INCORRECT
 import org.cqfn.diktat.ruleset.constants.Warnings.VARIABLE_NAME_INCORRECT_FORMAT
 import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.ruleset.utils.Style
-import org.cqfn.diktat.ruleset.utils.containsOneLetterOrZero
-import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
-import org.cqfn.diktat.ruleset.utils.findChildAfter
-import org.cqfn.diktat.ruleset.utils.findLeafWithSpecificType
-import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
-import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
-import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
-import org.cqfn.diktat.ruleset.utils.getIdentifierName
-import org.cqfn.diktat.ruleset.utils.getTypeParameterList
-import org.cqfn.diktat.ruleset.utils.hasPrefix
-import org.cqfn.diktat.ruleset.utils.hasTestAnnotation
-import org.cqfn.diktat.ruleset.utils.isConstant
-import org.cqfn.diktat.ruleset.utils.isDigits
-import org.cqfn.diktat.ruleset.utils.isLowerCamelCase
-import org.cqfn.diktat.ruleset.utils.isOverridden
-import org.cqfn.diktat.ruleset.utils.isPascalCase
-import org.cqfn.diktat.ruleset.utils.isTextLengthInRange
-import org.cqfn.diktat.ruleset.utils.isUpperSnakeCase
-import org.cqfn.diktat.ruleset.utils.kDocTags
-import org.cqfn.diktat.ruleset.utils.removePrefix
+import org.cqfn.diktat.ruleset.utils.*
 import org.cqfn.diktat.ruleset.utils.search.findAllVariablesWithUsages
-import org.cqfn.diktat.ruleset.utils.toLowerCamelCase
-import org.cqfn.diktat.ruleset.utils.toPascalCase
-import org.cqfn.diktat.ruleset.utils.toUpperSnakeCase
 
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.CATCH
@@ -55,6 +34,7 @@ import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FUNCTION_TYPE
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
+import com.pinterest.ktlint.core.ast.ElementType.OBJECT_DECLARATION
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_PARAMETER
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
@@ -96,7 +76,8 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
     listOf(BACKTICKS_PROHIBITED, VARIABLE_NAME_INCORRECT, VARIABLE_NAME_INCORRECT_FORMAT, CONSTANT_UPPERCASE,
         VARIABLE_HAS_PREFIX, CONFUSING_IDENTIFIER_NAMING, GENERIC_NAME, CLASS_NAME_INCORRECT,
         ENUM_VALUE, EXCEPTION_SUFFIX, FUNCTION_BOOLEAN_PREFIX, FUNCTION_NAME_INCORRECT_CASE,
-        IDENTIFIER_LENGTH, OBJECT_NAME_INCORRECT, TYPEALIAS_NAME_INCORRECT_CASE)) {
+        IDENTIFIER_LENGTH, OBJECT_NAME_INCORRECT, TYPEALIAS_NAME_INCORRECT_CASE)
+) {
     private val allMethodPrefixes by lazy {
         if (configuration.allowedBooleanPrefixes.isEmpty()) {
             booleanMethodPrefixes
@@ -215,8 +196,8 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
                                     (this is KtParameter && getParentOfType<KtPrimaryConstructor>(true)?.valueParameters?.contains(this) == true)
                         }) {
                             // For class members also check `@property` KDoc tag.
-                            // If we are here, then `variableName` is definitely a node from a class.
-                            variableName.parent(CLASS)!!.findChildByType(KDOC)?.kDocTags()
+                            // If we are here, then `variableName` is definitely a node from a class or an object.
+                            (variableName.parent(CLASS) ?: variableName.parent(OBJECT_DECLARATION))?.findChildByType(KDOC)?.kDocTags()
                                 ?.firstOrNull {
                                     it.knownTag == KDocKnownTag.PROPERTY && it.getSubjectName() == variableName.text
                                 }

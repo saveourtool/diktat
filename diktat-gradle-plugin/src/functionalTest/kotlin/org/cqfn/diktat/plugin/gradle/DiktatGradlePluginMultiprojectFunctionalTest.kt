@@ -33,7 +33,7 @@ class DiktatGradlePluginMultiprojectFunctionalTest {
 
         val diktatCheckRootResult = result.task(":$DIKTAT_CHECK_TASK")
         requireNotNull(diktatCheckRootResult)
-        Assertions.assertEquals(TaskOutcome.SUCCESS, diktatCheckRootResult.outcome) {
+        Assertions.assertEquals(TaskOutcome.NO_SOURCE, diktatCheckRootResult.outcome) {
             "Task for root project with empty sources should succeed"
         }
 

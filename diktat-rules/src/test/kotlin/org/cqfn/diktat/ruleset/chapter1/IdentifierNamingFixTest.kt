@@ -18,6 +18,12 @@ class IdentifierNamingFixTest : FixTestBase(
 ) {
     @Test
     @Tag(WarningNames.CLASS_NAME_INCORRECT)
+    fun `regression in VARIABLE_NAME_INCORRECT_FORMAT`() {
+        fixAndCompare("identifiers/IdentifierNameRegressionExpected.kt", "identifiers/IdentifierNameRegressionTest.kt")
+    }
+
+    @Test
+    @Tag(WarningNames.CLASS_NAME_INCORRECT)
     fun `incorrect class name fix`() {
         fixAndCompare("class_/IncorrectClassNameExpected.kt", "class_/IncorrectClassNameTest.kt")
     }

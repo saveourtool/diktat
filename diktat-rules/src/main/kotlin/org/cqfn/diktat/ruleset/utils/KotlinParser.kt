@@ -76,6 +76,43 @@ class KotlinParser {
 
     /**
      * @param text kotlin code
+     * @return [ASTNode] which is secondary constructor
+     * @throws KotlinParseException if code is incorrect
+     */
+    @Suppress("SAY_NO_TO_VAR")
+    fun createNodeForSecondaryConstructor(text: String): ASTNode {
+        val node: ASTNode = ktPsiFactory
+            .createSecondaryConstructor(text)
+            .node
+        if (!node.isCorrect()) {
+            throw KotlinParseException("Text is not valid: [$text]")
+        }
+        return node
+    }
+
+    /**
+     * @param text kotlin code
+     * @return [ASTNode] which is init block
+     * @throws KotlinParseException if code is incorrect
+     */
+    @Suppress(
+        "SAY_NO_TO_VAR",
+        "UnsafeCallOnNullableType"
+    )
+    fun createNodeForInit(text: String): ASTNode {
+        val node: ASTNode = ktPsiFactory
+            .createBlockCodeFragment(text, null)
+            .node
+            .findChildByType(BLOCK)!!
+            .firstChildNode
+        if (!node.isCorrect()) {
+            throw KotlinParseException("Text is not valid: [$text]")
+        }
+        return node
+    }
+
+    /**
+     * @param text kotlin code
      * @return [KtPrimaryConstructor]
      */
     fun createPrimaryConstructor(text: String) = ktPsiFactory.createPrimaryConstructor(text)

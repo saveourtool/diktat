@@ -4,7 +4,7 @@
 ![deteKT static analysis](https://github.com/cqfn/diKTat/workflows/Run%20deteKT/badge.svg)
 ![diKTat code style](https://github.com/cqfn/diKTat/workflows/Run%20diKTat%20from%20release%20version/badge.svg?branch=master)
 [![License](https://img.shields.io/github/license/cqfn/diKtat)](https://github.com/cqfn/diKTat/blob/master/LICENSE)
-[![codecov](https://codecov.io/gh/cqfn/diKTat/branch/master/graph/badge.svg)](https://codecov.io/gh/cqfn/diKTat)
+[![codecov](https://codecov.io/gh/diktat-static-analysis/diKTat/branch/master/graph/badge.svg)](https://codecov.io/gh/diktat-static-analysis/diKTat)
 
 [![Releases](https://img.shields.io/github/v/release/cqfn/diKTat)](https://github.com/cqfn/diKTat/releases)
 [![Maven Central](https://img.shields.io/maven-central/v/org.cqfn.diktat/diktat-rules)](https://mvnrepository.com/artifact/org.cqfn.diktat)
@@ -22,7 +22,7 @@ DiKTat is a strict [coding standard ](info/guide/diktat-coding-convention.md) fo
 as AST visitors on the top of [KTlint](https://ktlint.github.io/). It can be used for detecting and autofixing code smells in CI/CD process. 
 The full list of available supported rules and inspections can be found [here](info/available-rules.md).
 
-Now diKTat was already added to the lists of [static analysis tools](https://github.com/analysis-tools-dev/static-analysis), to [kotlin-awesome](https://github.com/KotlinBy/awesome-kotlin) and to [kompar](https://catalog.kompar.tools/Analyzer/diKTat/1.0.0-rc.3). Thanks to the community for this support! 
+Now diKTat was already added to the lists of [static analysis tools](https://github.com/analysis-tools-dev/static-analysis), to [kotlin-awesome](https://github.com/KotlinBy/awesome-kotlin) and to [kompar](https://catalog.kompar.tools/Analyzer/diKTat/1.0.0). Thanks to the community for this support! 
 
 ## See first
 
@@ -51,15 +51,15 @@ Main features of diktat are the following:
 
    **OR** use curl:
     ```bash
-    curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.39.0/ktlint && chmod a+x ktlint
+    curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.43.2/ktlint && chmod a+x ktlint
     # another option is "brew install ktlint"
     ```
    
-2. Load diKTat manually: [here](https://github.com/cqfn/diKTat/releases/download/v1.0.0-rc.3/diktat-1.0.0-rc.3.jar)
+2. Load diKTat manually: [here](https://github.com/cqfn/diKTat/releases/download/v1.0.0/diktat-1.0.0.jar)
 
    **OR** use curl:
    ```bash
-   $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v1.0.0-rc.3/diktat-1.0.0-rc.3.jar
+   $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v1.0.0/diktat-1.0.0.jar
    ```
    
 3. Finally, run KTlint (with diKTat injected) to check your `*.kt` files in `dir/your/dir`:
@@ -106,11 +106,13 @@ To run diktat in **only-check** mode use command `$ mvn diktat:check@diktat`.
 To run diktat in **autocorrect** mode use command `$ mvn diktat:fix@diktat`.
 
 ## Run with Gradle using diktat-gradle-plugin
+Requires a gradle version no lower than 5.3.
+
 This plugin is available since version 0.1.5. You can see how the plugin is configured in our examples: [build.gradle.kts](examples/gradle-kotlin-dsl/build.gradle.kts).
 Add this plugin to your `build.gradle.kts`:
 ```kotlin
 plugins {
-    id("org.cqfn.diktat.diktat-gradle-plugin") version "1.0.0-rc.3"
+    id("org.cqfn.diktat.diktat-gradle-plugin") version "1.0.0"
 }
 ```
 
@@ -121,7 +123,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.cqfn.diktat:diktat-gradle-plugin:1.0.0-rc.3")
+        classpath("org.cqfn.diktat:diktat-gradle-plugin:1.0.0")
     }
 }
 
@@ -131,9 +133,11 @@ apply(plugin = "org.cqfn.diktat.diktat-gradle-plugin")
 You can then configure diktat using `diktat` extension:
 ```kotlin
 diktat {
-    inputs = files("src/**/*.kt")  // file collection that will be checked by diktat
+    inputs {
+        include("src/**/*.kt")  // path matching this pattern (per PatternFilterable) that will be checked by diktat
+        exclude("src/test/kotlin/excluded/**")  // path matching this pattern will not be checked by diktat
+    }
     debug = true  // turn on debug logging
-    excludes = files("src/test/kotlin/excluded")  // these files will not be checked by diktat
 }
 ```
 
@@ -194,7 +198,7 @@ spotless {
 ```kotlin
 spotless {
    kotlin {
-      diktat("1.0.0-rc.3").configFile("full/path/to/diktat-analysis.yml")
+      diktat("1.0.0").configFile("full/path/to/diktat-analysis.yml")
    }
 }
 ```
@@ -225,7 +229,7 @@ Diktat can be run via spotless-maven-plugin since version 2.8.0
 
 ```xml
 <diktat>
-  <version>1.0.0-rc.3</version> <!-- optional -->
+  <version>1.0.0</version> <!-- optional -->
   <configFile>full/path/to/diktat-analysis.yml</configFile> <!-- optional, configuration file path -->
 </diktat>
 ```

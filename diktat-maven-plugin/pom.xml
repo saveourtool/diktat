@@ -5,7 +5,7 @@
     <parent>
         <artifactId>diktat-parent</artifactId>
         <groupId>org.cqfn.diktat</groupId>
-        <version>1.0.0-rc.4-SNAPSHOT</version>
+        <version>1.0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -13,7 +13,7 @@
     <packaging>maven-plugin</packaging>
 
     <properties>
-        <maven.api.version>3.8.3</maven.api.version>
+        <maven.api.version>3.8.4</maven.api.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.itf.version>0.11.0</maven.itf.version>
     </properties>

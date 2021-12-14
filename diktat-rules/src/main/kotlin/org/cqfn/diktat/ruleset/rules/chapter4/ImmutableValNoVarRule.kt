@@ -22,7 +22,8 @@ import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 class ImmutableValNoVarRule(configRules: List<RulesConfig>) : DiktatRule(
     "no-var-rule",
     configRules,
-    listOf(SAY_NO_TO_VAR)) {
+    listOf(SAY_NO_TO_VAR)
+) {
     override fun logic(node: ASTNode) {
         if (node.elementType == ElementType.FILE) {
             // we will raise warning for cases when var property has no assignments
