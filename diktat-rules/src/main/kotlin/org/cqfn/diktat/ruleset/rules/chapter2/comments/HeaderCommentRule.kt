@@ -135,12 +135,12 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
             return
         }
 
-        if (makeCopyrightCorrectYear(configuration.getCopyrightText()).isNotEmpty()) {
-            log.warn("Copyright year is not up do date.")
-        }
-
         // need to make sure that copyright year is consistent with current year
         val copyrightText = configuration.getCopyrightText()
+
+        if (makeCopyrightCorrectYear(copyrightText).isNotEmpty()) {
+            log.warn("Copyright year is not up do date.")
+        }
 
         val headerComment = node.findChildBefore(PACKAGE_DIRECTIVE, BLOCK_COMMENT)
         // Depends only on content and doesn't consider years
@@ -234,7 +234,8 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
         /**
          * @return text of copyright as configured in the configuration file
          */
-        fun getCopyrightText() = config["copyrightText"] ?: error("Copyright is not set in configuration")
+        fun getCopyrightText() = config["copyrightText"]?.replace(currYearPattern, curYear.toString())
+            ?: error("Copyright is not set in configuration")
     }
 
     companion object {
@@ -242,5 +243,6 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
         val hyphenRegex = Regex("""\d+-\d+""")
         val afterCopyrightRegex = Regex("""((©|\([cC]\))+ *\d+)""")
         val curYear = LocalDate.now().year
+        val currYearPattern = ";@currYear;"
     }
 }

@@ -37,6 +37,18 @@ class HeaderCommentRuleFixTest : FixTestBase(
         fixAndCompare("AutoCopyrightExpected.kt", "AutoCopyrightTest.kt")
     }
 
+    @Test
+    @Tag(WarningNames.HEADER_MISSING_OR_WRONG_COPYRIGHT)
+    fun `if no copyright is present, added it and apply pattern for current year`() {
+        fixAndCompare("AutoCopyrightApplyPatternExpected.kt", "AutoCopyrightApplyPatternTest.kt",
+            listOf(RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true,
+                mapOf(
+                    "isCopyrightMandatory" to "true",
+                    "copyrightText" to "Copyright (c) Huawei Technologies Co., Ltd. 2020-;@currYear;. All rights reserved.")
+            ),
+                RulesConfig(HEADER_WRONG_FORMAT.name, true, emptyMap())))
+    }
+
     /**
      * Fixme there shouldn't be an additional blank line after copyright
      */
