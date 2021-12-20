@@ -234,15 +234,15 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
         /**
          * @return text of copyright as configured in the configuration file
          */
-        fun getCopyrightText() = config["copyrightText"]?.replace(currYearPattern, curYear.toString())
+        fun getCopyrightText() = config["copyrightText"]?.replace(CURR_YEAR_PATTERN, curYear.toString())
             ?: error("Copyright is not set in configuration")
     }
 
     companion object {
         private val log = LoggerFactory.getLogger(HeaderCommentRule::class.java)
+        const val CURR_YEAR_PATTERN = ";@currYear;"
         val hyphenRegex = Regex("""\d+-\d+""")
         val afterCopyrightRegex = Regex("""((©|\([cC]\))+ *\d+)""")
         val curYear = LocalDate.now().year
-        val currYearPattern = ";@currYear;"
     }
 }
