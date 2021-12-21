@@ -146,17 +146,15 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
 
         val headerComment = node.findChildBefore(PACKAGE_DIRECTIVE, BLOCK_COMMENT)
         // Depends only on content and doesn't consider years
-        val isWrongCopyright = headerComment != null &&
-                !headerComment.text.flatten().contains(copyrightText.flatten()) &&
-                if (copyrightWithCorrectYear.isNotEmpty()) !headerComment.text.flatten().contains(copyrightWithCorrectYear.flatten()) else true
+        val isWrongCopyright = headerComment != null && !isHeaderCommentContainText(headerComment, copyrightText)
+                && !isHeaderCommentContainText(headerComment, copyrightWithCorrectYear)
+
         val isMissingCopyright = headerComment == null && configuration.isCopyrightMandatory()
         val isCopyrightInsideKdoc = (node.getAllChildrenWithType(KDOC) + node.getAllChildrenWithType(ElementType.EOL_COMMENT))
             .any { commentNode ->
                 copyrightWords.any { commentNode.text.contains(it, ignoreCase = true) }
             }
-        //println("${headerComment != null} ${!headerComment!!.text.flatten().contains(copyrightText.flatten())} ${!headerComment.text.flatten().contains(copyrightWithCorrectYear.flatten())}")
-        println("${headerComment!!.text.flatten()} FFFF ${copyrightWithCorrectYear.flatten()} FFFF ${!headerComment.text.flatten().contains(copyrightWithCorrectYear.flatten())}")
-        println("isWrongCopyright || isMissingCopyright || isCopyrightInsideKdoc ${isWrongCopyright} || ${isMissingCopyright} || ${isCopyrightInsideKdoc}")
+
         if (isWrongCopyright || isMissingCopyright || isCopyrightInsideKdoc) {
             val freeText = when {
                 // If `isCopyrightInsideKdoc` then `isMissingCopyright` is true too, but warning text from `isCopyrightInsideKdoc` is preferable.
@@ -188,17 +186,16 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
             }
         }
 
-        //println("copyrightText ${copyrightText}")
-        //println("copyrightWithCorrectYear ${copyrightWithCorrectYear}")
-        //println("\nheaderComment.text\n${headerComment?.text}")
-
         // Triggers when there is a copyright, but its year is not updated.
-        if (!isMissingCopyright && copyrightWithCorrectYear.isNotEmpty()) {
+        if (!isMissingCopyright &&!isWrongCopyright && copyrightWithCorrectYear.isNotEmpty()) {
             WRONG_COPYRIGHT_YEAR.warnAndFix(configRules, emitWarn, isFixMode, "year should be $curYear", node.startOffset, node) {
                 (headerComment as LeafElement).rawReplaceWithText(headerComment.text.replace(copyrightText, copyrightWithCorrectYear))
             }
         }
-        //println("-------after\n${node.text}\n\n--------------------\n")
+    }
+
+    private fun isHeaderCommentContainText(headerComment: ASTNode, text: String): Boolean {
+        return if (text.isNotEmpty()) headerComment.text.flatten().contains(text.flatten()) else false
     }
 
     /**

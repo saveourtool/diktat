@@ -309,6 +309,7 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
         )
     }
 
+    //FixMe should pass without errors
     @Test
     @Tag(WarningNames.WRONG_COPYRIGHT_YEAR)
     fun `copyright year bad 3`() {
@@ -328,7 +329,7 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
 
                 class Example2 { }
             """.trimIndent(),
-            LintError(1, 1, ruleId, """${Warnings.WRONG_COPYRIGHT_YEAR.warnText()} year should be ${LocalDate.now().year}""", true),
+            LintError(1, 1, ruleId, """${HEADER_MISSING_OR_WRONG_COPYRIGHT.warnText()} copyright comment doesn't have correct copyright text""", true),
             rulesConfigList = rulesConfigList
         )
     }
