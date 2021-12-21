@@ -110,7 +110,6 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun makeCopyrightCorrectYear(copyrightText: String): String {
         val hyphenYear = hyphenRegex.find(copyrightText)
-
         hyphenYear?.let {
             val copyrightYears = hyphenYear.value.split("-")
             if (copyrightYears[1].toInt() != curYear) {

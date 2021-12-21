@@ -107,6 +107,17 @@ class HeaderCommentRuleFixTest : FixTestBase(
 
     @Test
     @Tag(WRONG_COPYRIGHT_YEAR)
+    fun `copyright invalid year should be auto-corrected 4`() {
+        fixAndCompare("CopyrightDifferentYearExpected4.kt", "CopyrightDifferentYearTest4.kt",
+            listOf(RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true, mapOf(
+                "isCopyrightMandatory" to "true",
+                "copyrightText" to "Copyright (c) My Company., Ltd. 2021. All rights reserved."
+            )))
+        )
+    }
+
+    @Test
+    @Tag(WRONG_COPYRIGHT_YEAR)
     fun `should not raise npe`() {
         fixAndCompare("CopyrightShouldNotTriggerNPEExpected.kt", "CopyrightShouldNotTriggerNPETest.kt",
             listOf(RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true, mapOf(
