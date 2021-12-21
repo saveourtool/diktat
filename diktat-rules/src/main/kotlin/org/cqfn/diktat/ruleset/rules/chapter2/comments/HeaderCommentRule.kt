@@ -25,6 +25,8 @@ import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.isWhiteSpace
+import org.cqfn.diktat.ruleset.utils.prettyPrint
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -49,7 +51,6 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
 ) {
     override fun logic(node: ASTNode) {
         if (node.elementType == FILE && !node.getFilePath().isGradleScript()) {
-            println("\n\n\n========================= ${isFixMode}")
             checkCopyright(node)
             if (checkHeaderKdocPosition(node)) {
                 checkHeaderKdoc(node)
@@ -144,10 +145,6 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
             log.warn("Copyright year in your configuration file is not up do date.")
         }
 
-        if (makeCopyrightCorrectYear(copyrightText).isNotEmpty()) {
-            log.warn("Copyright year is not up do date.")
-        }
-
         val headerComment = node.findChildBefore(PACKAGE_DIRECTIVE, BLOCK_COMMENT)
         // Depends only on content and doesn't consider years
         val isWrongCopyright = headerComment != null && !isHeaderCommentContainText(headerComment, copyrightText)
@@ -169,15 +166,14 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
             }
             HEADER_MISSING_OR_WRONG_COPYRIGHT.warnAndFix(configRules, emitWarn, isFixMode, freeText, node.startOffset, node) {
                 headerComment?.let { copyrightNode ->
-                    val nextNode = copyrightNode.treeNext
-                    if (nextNode.elementType == WHITE_SPACE && nextNode.textContains('\n')) {
-                        node.removeChild(nextNode)
+                    // remove node clearly, with trailing whitespace
+                    if (copyrightNode.treeNext.isWhiteSpace()) {
+                        node.removeChild(copyrightNode.treeNext)
                     }
                     node.removeChild(copyrightNode)
                 }
                 // do not insert empty line before header kdoc
                 val newLines = node.findChildBefore(PACKAGE_DIRECTIVE, KDOC)?.let { "\n" } ?: "\n\n"
-                //println("-------beforre\n${node.text}\n\n--------------------\n")
                 node.addChild(PsiWhiteSpaceImpl(newLines), node.firstChildNode)
                 node.addChild(LeafPsiElement(BLOCK_COMMENT,
                     """
