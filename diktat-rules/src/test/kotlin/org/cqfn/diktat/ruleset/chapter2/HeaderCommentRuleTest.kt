@@ -310,6 +310,30 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
     }
 
     @Test
+    @Tag(WarningNames.WRONG_COPYRIGHT_YEAR)
+    fun `copyright year bad 3`() {
+        lintMethod(
+            """
+                /*
+                 * Copyright (c) 2021-2021 My Company, Ltd. All rights reserved.
+                 */
+                /**
+                 * Very useful description, why this file has two classes
+                 * foo bar baz
+                 */
+
+                package org.cqfn.diktat.example
+
+                class Example1 { }
+
+                class Example2 { }
+            """.trimIndent(),
+            LintError(1, 1, ruleId, """${Warnings.WRONG_COPYRIGHT_YEAR.warnText()} year should be ${LocalDate.now().year}""", true),
+            rulesConfigList = rulesConfigList
+        )
+    }
+
+    @Test
     @Tag(WarningNames.HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE)
     fun `file with zero classes should have header KDoc`() {
         lintMethod(
