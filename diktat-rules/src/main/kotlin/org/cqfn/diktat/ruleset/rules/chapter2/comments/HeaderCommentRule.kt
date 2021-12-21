@@ -144,6 +144,10 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
             log.warn("Copyright year in your configuration file is not up do date.")
         }
 
+        if (makeCopyrightCorrectYear(copyrightText).isNotEmpty()) {
+            log.warn("Copyright year is not up do date.")
+        }
+
         val headerComment = node.findChildBefore(PACKAGE_DIRECTIVE, BLOCK_COMMENT)
         // Depends only on content and doesn't consider years
         val isWrongCopyright = headerComment != null && !isHeaderCommentContainText(headerComment, copyrightText)
