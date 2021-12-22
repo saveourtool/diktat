@@ -83,7 +83,7 @@
   enabled: true
   configuration:
     isCopyrightMandatory: true
-    copyrightText: 'Copyright (c) Your Company Name Here. 2010-2021'
+    copyrightText: 'Copyright (c) Your Company Name Here. 2010-;@currYear;'
 - name: HEADER_NOT_BEFORE_PACKAGE
   enabled: true
 - name: FILE_IS_TOO_LONG
