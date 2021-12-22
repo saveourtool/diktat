@@ -309,14 +309,13 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
         )
     }
 
-    //FixMe should pass without errors
     @Test
     @Tag(WarningNames.WRONG_COPYRIGHT_YEAR)
     fun `copyright year bad 3`() {
         lintMethod(
             """
                 /*
-                 * Copyright (c) 2021-2021 My Company, Ltd. All rights reserved.
+                   Copyright (c) My Company, Ltd. 2021-2021. All rights reserved.
                  */
                 /**
                  * Very useful description, why this file has two classes
@@ -329,7 +328,6 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
 
                 class Example2 { }
             """.trimIndent(),
-            LintError(1, 1, ruleId, """${HEADER_MISSING_OR_WRONG_COPYRIGHT.warnText()} copyright comment doesn't have correct copyright text""", true),
             rulesConfigList = rulesConfigList
         )
     }

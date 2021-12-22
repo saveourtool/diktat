@@ -26,7 +26,6 @@ import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isWhiteSpace
-import org.cqfn.diktat.ruleset.utils.prettyPrint
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -146,8 +145,8 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
 
         val headerComment = node.findChildBefore(PACKAGE_DIRECTIVE, BLOCK_COMMENT)
         // Depends only on content and doesn't consider years
-        val isWrongCopyright = headerComment != null && !isHeaderCommentContainText(headerComment, copyrightText)
-                && !isHeaderCommentContainText(headerComment, copyrightWithCorrectYear)
+        val isWrongCopyright = headerComment != null && !isCopyRightTextMatchesPattern(headerComment, copyrightText)
+                && !isCopyRightTextMatchesPattern(headerComment, copyrightWithCorrectYear)
 
         val isMissingCopyright = headerComment == null && configuration.isCopyrightMandatory()
         val isCopyrightInsideKdoc = (node.getAllChildrenWithType(KDOC) + node.getAllChildrenWithType(ElementType.EOL_COMMENT))
@@ -193,8 +192,22 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    private fun isHeaderCommentContainText(headerComment: ASTNode, text: String): Boolean {
-        return if (text.isNotEmpty()) headerComment.text.flatten().contains(text.flatten()) else false
+    // Check if provided copyright node differs only in the first date from pattern
+    private fun isCopyRightTextMatchesPattern(copyrightNode: ASTNode?, copyrightPattern: String): Boolean {
+        val copyrightText = copyrightNode?.text?.replace("/*", "")?.replace("*/", "")
+
+        val datesInPattern = hyphenRegex.find(copyrightPattern)?.value
+        val datesInCode = copyrightText?.let { hyphenRegex.find(it)?.value }
+
+        if (datesInPattern == null || datesInCode == null) {
+            return false
+        }
+
+        val patternWithoutDates = copyrightPattern.replace(datesInPattern, "").flatten()
+        val textWithoutDates = copyrightText.replace(datesInCode, "").flatten()
+
+        // Text should be equal, first date could be different, second date should be equal to current year
+        return (patternWithoutDates == textWithoutDates) && (datesInCode.substringAfter("-") == curYear.toString())
     }
 
     /**
