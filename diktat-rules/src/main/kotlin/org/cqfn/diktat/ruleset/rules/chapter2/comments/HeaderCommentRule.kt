@@ -109,6 +109,7 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun makeCopyrightCorrectYear(copyrightText: String): String {
         val hyphenYear = hyphenRegex.find(copyrightText)
+
         hyphenYear?.let {
             val copyrightYears = hyphenYear.value.split("-")
             if (copyrightYears[1].toInt() != curYear) {
@@ -140,13 +141,18 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
         val copyrightWithCorrectYear = makeCopyrightCorrectYear(copyrightText)
 
         if (copyrightWithCorrectYear.isNotEmpty()) {
-            log.warn("Copyright year in your configuration file is not up do date.")
+            log.warn("Copyright year in your configuration file is not up to date.")
         }
 
         val headerComment = node.findChildBefore(PACKAGE_DIRECTIVE, BLOCK_COMMENT)
         // Depends only on content and doesn't consider years
-        val isWrongCopyright = headerComment != null && !isCopyRightTextMatchesPattern(headerComment, copyrightText)
-                && !isCopyRightTextMatchesPattern(headerComment, copyrightWithCorrectYear)
+        val isCopyrightMatchesPatternExceptFirstYear = isCopyRightTextMatchesPattern(headerComment, copyrightText) ||
+                isCopyRightTextMatchesPattern(headerComment, copyrightWithCorrectYear)
+
+        val isWrongCopyright = headerComment != null &&
+                !isCopyrightMatchesPatternExceptFirstYear &&
+                !isHeaderCommentContainText(headerComment, copyrightText) &&
+                !isHeaderCommentContainText(headerComment, copyrightWithCorrectYear)
 
         val isMissingCopyright = headerComment == null && configuration.isCopyrightMandatory()
         val isCopyrightInsideKdoc = (node.getAllChildrenWithType(KDOC) + node.getAllChildrenWithType(ElementType.EOL_COMMENT))
@@ -185,16 +191,18 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
         }
 
         // Triggers when there is a copyright, but its year is not updated.
-        if (!isMissingCopyright &&!isWrongCopyright && copyrightWithCorrectYear.isNotEmpty()) {
+        if (!isMissingCopyright && !isWrongCopyright && copyrightWithCorrectYear.isNotEmpty()) {
             WRONG_COPYRIGHT_YEAR.warnAndFix(configRules, emitWarn, isFixMode, "year should be $curYear", node.startOffset, node) {
                 (headerComment as LeafElement).rawReplaceWithText(headerComment.text.replace(copyrightText, copyrightWithCorrectYear))
             }
         }
     }
 
+    private fun isHeaderCommentContainText(headerComment: ASTNode, text: String): Boolean = if (text.isNotEmpty()) headerComment.text.flatten().contains(text.flatten()) else false
+
     // Check if provided copyright node differs only in the first date from pattern
     private fun isCopyRightTextMatchesPattern(copyrightNode: ASTNode?, copyrightPattern: String): Boolean {
-        val copyrightText = copyrightNode?.text?.replace("/*", "")?.replace("*/", "")
+        val copyrightText = copyrightNode?.text?.replace("/*", "")?.replace("*/", "")?.replace("*", "")
 
         val datesInPattern = hyphenRegex.find(copyrightPattern)?.value
         val datesInCode = copyrightText?.let { hyphenRegex.find(it)?.value }
