@@ -263,6 +263,52 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
 
     @Test
     @Tag(WarningNames.WRONG_COPYRIGHT_YEAR)
+    fun `copyright year good 5`() {
+        lintMethod(
+            """
+                /*
+                   Copyright (c) My Company, Ltd. 2021-2021. All rights reserved.
+                 */
+                /**
+                 * Very useful description, why this file has two classes
+                 * foo bar baz
+                 */
+
+                package org.cqfn.diktat.example
+
+                class Example1 { }
+
+                class Example2 { }
+            """.trimIndent(),
+            rulesConfigList = rulesConfigList
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_COPYRIGHT_YEAR)
+    fun `copyright year good 6`() {
+        lintMethod(
+            """
+                /*
+                 *  Copyright (c) My Company, Ltd. 2002-2021. All rights reserved.
+                 */
+                /**
+                 * Very useful description, why this file has two classes
+                 * foo bar baz
+                 */
+
+                package org.cqfn.diktat.example
+
+                class Example1 { }
+
+                class Example2 { }
+            """.trimIndent(),
+            rulesConfigList = rulesConfigList
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_COPYRIGHT_YEAR)
     fun `copyright year bad`() {
         lintMethod(
             """

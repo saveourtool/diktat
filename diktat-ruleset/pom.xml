@@ -60,6 +60,11 @@
                     </descriptorRefs>
                     <finalName>diktat-${project.version}</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
+                    <archive>
+                        <manifestEntries>
+                            <Multi-Release>true</Multi-Release>
+                        </manifestEntries>
+                    </archive>
                 </configuration>
                 <executions>
                     <execution>
