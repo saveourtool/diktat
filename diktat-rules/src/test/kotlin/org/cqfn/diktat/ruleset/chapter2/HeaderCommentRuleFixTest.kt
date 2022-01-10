@@ -89,7 +89,7 @@ class HeaderCommentRuleFixTest : FixTestBase(
         fixAndCompare("CopyrightDifferentYearExpected2.kt", "CopyrightDifferentYearTest2.kt",
             listOf(RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true, mapOf(
                 "isCopyrightMandatory" to "true",
-                "copyrightText" to "Copyright (c) My Company., Ltd. 2021. All rights reserved."
+                "copyrightText" to "Copyright (c) My Company., Ltd. 2022. All rights reserved."
             )))
         )
     }
@@ -122,7 +122,7 @@ class HeaderCommentRuleFixTest : FixTestBase(
         fixAndCompare("CopyrightShouldNotTriggerNPEExpected.kt", "CopyrightShouldNotTriggerNPETest.kt",
             listOf(RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true, mapOf(
                 "isCopyrightMandatory" to "true",
-                "copyrightText" to "Copyright (c) My Company., Ltd. 2012-2021. All rights reserved."
+                "copyrightText" to "Copyright (c) My Company., Ltd. 2012-2022. All rights reserved."
             )))
         )
     }

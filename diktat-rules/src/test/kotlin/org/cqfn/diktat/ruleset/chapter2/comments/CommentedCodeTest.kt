@@ -407,7 +407,7 @@ class CommentedCodeTest : LintTestBase(::CommentsRule) {
         lintMethod(
             """
             /*
-                Copyright (c) Your Company Name Here. 2010-2021
+                Copyright (c) Your Company Name Here. 2010-2022
             */
             
             package org.cqfn.diktat
