@@ -25,7 +25,7 @@
         <dependency>
             <groupId>com.charleskorn.kaml</groupId>
             <artifactId>kaml-jvm</artifactId>
-            <version>0.36.0</version>
+            <version>0.39.0</version>
         </dependency>
         <dependency>
             <groupId>commons-cli</groupId>
