@@ -129,7 +129,7 @@ enum class Warnings(
     LONG_NUMERICAL_VALUES_SEPARATED(true, "3.14.2", "long numerical values should be separated with underscore"),
     MAGIC_NUMBER(false, "3.14.3", "avoid using magic numbers, instead define constants with clear names describing what the magic number means"),
     WRONG_DECLARATIONS_ORDER(true, "3.1.4", "declarations of constants and enum members should be sorted alphabetically"),
-    WRONG_MULTIPLE_MODIFIERS_ORDER(true, "3.14.1", "sequence of modifier-keywords is incorrect. Value identifier supported in Kotlin 1.6"),
+    WRONG_MULTIPLE_MODIFIERS_ORDER(true, "3.14.1", "sequence of modifier-keywords is incorrect. Value identifier supported in Kotlin 1.5"),
     LOCAL_VARIABLE_EARLY_DECLARATION(false, "3.10.2", "local variables should be declared close to the line where they are first used"),
     STRING_TEMPLATE_CURLY_BRACES(true, "3.15.2", "string template has redundant curly braces"),
     STRING_TEMPLATE_QUOTES(true, "3.15.2", "string template has redundant quotes"),

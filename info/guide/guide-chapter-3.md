@@ -873,7 +873,7 @@ class SomeClass {
 This section contains recommendations regarding modifiers and constant values.
 #### <a name="r3.14.1"></a> 3.14.1 Declaration with multiple modifiers
 If a declaration has multiple modifiers, always follow the proper sequence.
-`Value` identifier supported in Kotlin 1.6
+`Value` identifier supported in Kotlin 1.5
 **Valid sequence:**
 
 ```kotlin
