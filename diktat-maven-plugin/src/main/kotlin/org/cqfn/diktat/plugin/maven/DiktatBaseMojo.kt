@@ -115,7 +115,8 @@ abstract class DiktatBaseMojo : AbstractMojo() {
     private fun checkDirectory(
         directory: File,
         lintErrors: MutableList<LintError>,
-        ruleSets: Iterable<RuleSet>) {
+        ruleSets: Iterable<RuleSet>
+    ) {
         val (excludedDirs, excludedFiles) = excludes.map(::File).partition { it.isDirectory }
         directory
             .walk()
@@ -139,11 +140,12 @@ abstract class DiktatBaseMojo : AbstractMojo() {
 
     private fun checkFile(file: File,
                           lintErrors: MutableList<LintError>,
-                          ruleSets: Iterable<RuleSet>) {
+                          ruleSets: Iterable<RuleSet>
+    ) {
         val text = file.readText()
         val params =
                 KtLint.Params(
-                    fileName = file.name,
+                    fileName = file.relativeTo(mavenProject.basedir).path,
                     text = text,
                     ruleSets = ruleSets,
                     userData = mapOf("file_path" to file.path),

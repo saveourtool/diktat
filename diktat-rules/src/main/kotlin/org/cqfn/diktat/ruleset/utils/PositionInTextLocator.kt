@@ -34,7 +34,8 @@ private class SegmentTree(sortedArray: IntArray) {
     private fun binarySearch(
         compareElement: Int,
         left: Int,
-        right: Int): Int = when {
+        right: Int
+    ): Int = when {
         left > right -> -1
         else -> {
             val index = left + (right - left) / 2

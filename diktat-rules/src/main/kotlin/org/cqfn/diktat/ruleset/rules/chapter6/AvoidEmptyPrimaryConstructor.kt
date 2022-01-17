@@ -14,7 +14,8 @@ import org.jetbrains.kotlin.psi.KtClass
 class AvoidEmptyPrimaryConstructor(configRules: List<RulesConfig>) : DiktatRule(
     "avoid-empty-primary-constructor",
     configRules,
-    listOf(EMPTY_PRIMARY_CONSTRUCTOR)) {
+    listOf(EMPTY_PRIMARY_CONSTRUCTOR)
+) {
     override fun logic(node: ASTNode) {
         if (node.elementType == CLASS) {
             checkClass(node.psi as KtClass)

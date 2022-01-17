@@ -4,17 +4,22 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.KotlinParser
+import org.cqfn.diktat.ruleset.utils.findChildrenMatching
 import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getIdentifierName
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.cqfn.diktat.ruleset.utils.isGoingAfter
 
+import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
+import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
+import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.SECONDARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.nextCodeSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.jetbrains.kotlin.psi.KtBinaryExpression
@@ -36,7 +41,8 @@ import org.jetbrains.kotlin.psi.psiUtil.collectDescendantsOfType
 class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
     "single-constructor",
     configRules,
-    listOf(SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY)) {
+    listOf(SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY)
+) {
     private val kotlinParser by lazy { KotlinParser() }
 
     override fun logic(node: ASTNode) {
@@ -72,7 +78,10 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
      * - Create init block with other statements from the secondary constructor, including initialization of properties that require local variables or complex calls.
      * - Finally, remove the secondary constructor.
      */
-    @Suppress("GENERIC_VARIABLE_WRONG_DECLARATION")
+    @Suppress(
+        "GENERIC_VARIABLE_WRONG_DECLARATION",
+        "TOO_LONG_FUNCTION"
+    )
     private fun convertConstructorToPrimary(classNode: ASTNode, secondaryCtor: ASTNode) {
         val secondaryCtorArguments = (secondaryCtor.psi as KtSecondaryConstructor).valueParameters
 
@@ -82,7 +91,15 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
             ?.statements
             ?.partition { it is KtBinaryExpression && it.asAssignment() != null }
             ?.run { first.map { it as KtBinaryExpression } to second }
-            ?: emptyList<KtBinaryExpression>() to emptyList()
+            ?: (emptyList<KtBinaryExpression>() to emptyList())
+
+        val comments = (secondaryCtor.psi as KtSecondaryConstructor)
+            .bodyBlockExpression
+            ?.findChildrenMatching { it.elementType == EOL_COMMENT || it.elementType == BLOCK_COMMENT || it.elementType == KDOC }
+            ?.associate {
+                it.text to it.nextCodeSibling()
+            }
+            ?.filterValues { it != null }
 
         val classProperties = (classNode.psi as KtClass).getProperties()
         val localProperties = secondaryCtor.psi.collectDescendantsOfType<KtProperty> { it.isLocal }
@@ -108,7 +125,15 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
             }
             .distinct()
 
-        classNode.convertSecondaryConstructorToPrimary(secondaryCtor, declarationsAssignedInCtor, nonTrivialAssignments, otherStatements)
+        // future init body
+        val expressions = (secondaryCtor.psi as KtSecondaryConstructor)
+            .bodyBlockExpression
+            ?.statements
+            ?.map { it.text }
+            ?.filter { expr -> expr in otherStatements.map { it.text } || expr in nonTrivialAssignments.keys.map { it.text } }
+            ?: emptyList()
+
+        classNode.convertSecondaryConstructorToPrimary(secondaryCtor, declarationsAssignedInCtor, nonTrivialAssignments, otherStatements, comments, expressions)
     }
 
     @Suppress("UnsafeCallOnNullableType")
@@ -135,12 +160,20 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
                 }
                 .filterValues { left -> left.getReferencedName() in classProperties.mapNotNull { it.name } }
 
-    @Suppress("NestedBlockDepth", "GENERIC_VARIABLE_WRONG_DECLARATION")
+    @Suppress(
+        "NestedBlockDepth",
+        "GENERIC_VARIABLE_WRONG_DECLARATION",
+        "TOO_LONG_FUNCTION",
+        "TOO_MANY_PARAMETERS",
+        "LongParameterList",
+    )
     private fun ASTNode.convertSecondaryConstructorToPrimary(
         secondaryCtor: ASTNode,
         declarationsAssignedInCtor: List<KtProperty>,
         nonTrivialAssignments: Map<KtBinaryExpression, KtNameReferenceExpression>,
-        otherStatements: List<KtExpression>
+        otherStatements: List<KtExpression>,
+        comments: Map<String, ASTNode?>?,
+        initBody: List<String>
     ) {
         require(elementType == CLASS)
 
@@ -149,6 +182,17 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
         val nonTrivialSecondaryCtorParameters = getNonTrivialParameters(secondaryCtor, nonTrivialAssignments.keys, localProperties)
 
         val primaryCtorNode = createPrimaryCtor(secondaryCtor, declarationsAssignedInCtor, nonTrivialSecondaryCtorParameters)
+
+        val newArgumentListOfSecondaryCtor: List<KtParameter> = (secondaryCtor.psi as KtSecondaryConstructor)
+            .valueParameters
+            .filter { arg -> arg.name !in nonTrivialSecondaryCtorParameters.map { it.name } }  // get rid of ctor arguments
+            .filter { arg -> arg.name !in declarationsAssignedInCtor.map { it.name } }  // get rid of ctor arguments
+            .filter { arg -> initBody.any { expr -> arg.name.toString() in expr } }  // get rid of parameters that do not appear in text
+
+        if (newArgumentListOfSecondaryCtor.isNotEmpty()) {
+            return
+        }
+
         addChild(primaryCtorNode, findChildByType(CLASS_BODY))
         declarationsAssignedInCtor.forEach { ktProperty ->
             ktProperty.node.run {
@@ -157,14 +201,21 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
             }
         }
 
+        // adding comments to init body
+        val initBodyWithComments = initBody.toMutableList()
+        comments?.forEach { (comment, nextExpression) ->
+            if (initBodyWithComments.indexOf(nextExpression?.text) != -1) {
+                initBodyWithComments.add(initBodyWithComments.indexOf(nextExpression?.text), comment)
+            }
+        }
+
         if (otherStatements.isNotEmpty() || nonTrivialAssignments.isNotEmpty()) {
             findChildByType(CLASS_BODY)?.run {
-                val classInitializer = kotlinParser.createNode(
+                val classInitializer = kotlinParser.createNodeForInit(
                     """|init {
-                       |    ${(otherStatements + nonTrivialAssignments.keys).joinToString("\n") { it.text }}
+                       |    ${initBodyWithComments.joinToString("\n")}
                        |}
-                    """.trimMargin()
-                )
+                    """.trimMargin())
                 addChild(classInitializer, secondaryCtor)
                 addChild(PsiWhiteSpaceImpl("\n"), secondaryCtor)
             }
@@ -180,7 +231,8 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("UnsafeCallOnNullableType")
     private fun getNonTrivialParameters(secondaryCtor: ASTNode,
                                         nonTrivialAssignments: Collection<KtBinaryExpression>,
-                                        localProperties: List<KtProperty>) = (secondaryCtor.psi as KtSecondaryConstructor)
+                                        localProperties: List<KtProperty>
+    ) = (secondaryCtor.psi as KtSecondaryConstructor)
         .valueParameters.run {
             val dependencies = nonTrivialAssignments
                 .flatMap { it.left!!.collectDescendantsOfType<KtNameReferenceExpression>() }
@@ -195,7 +247,8 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun createPrimaryCtor(secondaryCtor: ASTNode,
                                   declarationsAssignedInCtor: List<KtProperty>,
-                                  valueParameters: List<KtParameter>) = kotlinParser.createPrimaryConstructor(
+                                  valueParameters: List<KtParameter>
+    ) = kotlinParser.createPrimaryConstructor(
         (secondaryCtor
             .findChildByType(MODIFIER_LIST)
             ?.text

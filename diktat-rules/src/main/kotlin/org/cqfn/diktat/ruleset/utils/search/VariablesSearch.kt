@@ -3,7 +3,8 @@
     "MISSING_KDOC_CLASS_ELEMENTS",
     "MISSING_KDOC_ON_FUNCTION",
     "KDOC_WITHOUT_PARAM_TAG",
-    "KDOC_WITHOUT_RETURN_TAG")
+    "KDOC_WITHOUT_RETURN_TAG"
+)
 
 package org.cqfn.diktat.ruleset.utils.search
 
@@ -88,7 +89,8 @@ abstract class VariablesSearch(val node: ASTNode,
      */
     protected fun isReferenceToOtherVariableWithSameName(expression: KtNameReferenceExpression,
                                                          codeBlock: KtElement,
-                                                         property: KtProperty) = expression.parents
+                                                         property: KtProperty
+    ) = expression.parents
         // getting all block expressions/class bodies/file node from bottom to the top
         // FixMe: Object companion is not resolved properly yet
         .filter { it is KtBlockExpression || it is KtClassBody || it is KtFile }

@@ -34,7 +34,8 @@ import java.lang.RuntimeException
 class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
     "boolean-expressions-rule",
     configRules,
-    listOf(COMPLEX_BOOLEAN_EXPRESSION)) {
+    listOf(COMPLEX_BOOLEAN_EXPRESSION)
+) {
     override fun logic(node: ASTNode) {
         if (node.elementType == CONDITION) {
             checkBooleanExpression(node)
@@ -154,13 +155,19 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun fixBooleanExpression(
         node: ASTNode,
         simplifiedExpr: Expression<String>,
-        mapOfExpressionToChar: HashMap<String, Char>) {
+        mapOfExpressionToChar: HashMap<String, Char>
+    ) {
         var correctKotlinBooleanExpression = simplifiedExpr
             .toString()
             .replace("&", "&&")
             .replace("|", "||")
-            .drop(1)  // dropping first (
-            .dropLast(1)  // dropping last )
+
+        if (simplifiedExpr.toString().first() == '(' && simplifiedExpr.toString().last() == ')') {
+            correctKotlinBooleanExpression = correctKotlinBooleanExpression
+                .drop(1)
+                .dropLast(1)
+        }
+
         mapOfExpressionToChar.forEach { (key, value) ->
             correctKotlinBooleanExpression = correctKotlinBooleanExpression.replace(value.toString(), key)
         }
@@ -175,7 +182,8 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun checkDistributiveLaw(
         expr: Expression<String>,
         mapOfExpressionToChar: HashMap<String, Char>,
-        node: ASTNode): String? {
+        node: ASTNode
+    ): String? {
         // checking that expression can be considered as distributive law
         val commonDistributiveOperand = getCommonDistributiveOperand(node, expr.toString(), mapOfExpressionToChar) ?: return null
         val correctSymbolsSequence = mapOfExpressionToChar.values.toMutableList()
@@ -212,7 +220,8 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun getCommonDistributiveOperand(
         node: ASTNode,
         expression: String,
-        mapOfExpressionToChar: HashMap<String, Char>): Char? {
+        mapOfExpressionToChar: HashMap<String, Char>
+    ): Char? {
         val operationSequence = expression.filter { it == '&' || it == '|' }
         val numberOfOperationReferences = operationSequence.length
         // There should be three operands and three operation references in order to consider the expression
@@ -246,7 +255,8 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun getCommonOperand(
         expression: String,
         firstSplitDelimiter: Char,
-        secondSplitDelimiter: Char): Char? {
+        secondSplitDelimiter: Char
+    ): Char? {
         val expressions = expression.split(firstSplitDelimiter)
         val listOfPairs: MutableList<List<String>> = mutableListOf()
         expressions.forEach { expr ->

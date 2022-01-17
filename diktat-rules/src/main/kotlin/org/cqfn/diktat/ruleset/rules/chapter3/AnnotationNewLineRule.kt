@@ -22,7 +22,8 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 class AnnotationNewLineRule(configRules: List<RulesConfig>) : DiktatRule(
     "annotation-new-line",
     configRules,
-    listOf(ANNOTATION_NEW_LINE)) {
+    listOf(ANNOTATION_NEW_LINE)
+) {
     override fun logic(node: ASTNode) {
         when (node.elementType) {
             CLASS, FUN, PRIMARY_CONSTRUCTOR, SECONDARY_CONSTRUCTOR -> checkAnnotation(node)

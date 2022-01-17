@@ -32,7 +32,8 @@ import org.jetbrains.kotlin.psi.KtIfExpression
 class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
     "null-checks",
     configRules,
-    listOf(AVOID_NULL_CHECKS)) {
+    listOf(AVOID_NULL_CHECKS)
+) {
     override fun logic(node: ASTNode) {
         if (node.elementType == CONDITION) {
             node.parent(IF)?.let {
@@ -116,7 +117,8 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
     private fun fixNullInIfCondition(condition: ASTNode,
                                      binaryExpression: KtBinaryExpression,
-                                     isEqualToNull: Boolean) {
+                                     isEqualToNull: Boolean
+    ) {
         val variableName = binaryExpression.left!!.text
         val thenCodeLines = condition.extractLinesFromBlock(THEN)
         val elseCodeLines = condition.extractLinesFromBlock(ELSE)
@@ -226,7 +228,8 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
                     setOf(ElementType.EQEQ, ElementType.EQEQEQ, ElementType.EXCLEQ, ElementType.EXCLEQEQEQ)
                         .contains(condition.operationToken) &&
                     // no need to raise warning or fix null checks in complex expressions
-                    !condition.isComplexCondition()
+                    !condition.isComplexCondition() &&
+                    !condition.isInLambda()
 
     /**
      * checks if condition is a complex expression. For example:
@@ -237,11 +240,21 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
         return this.parent is KtBinaryExpression
     }
 
+    /**
+     * Expression could be used in lambda:
+     * if (a.any { it == null })
+     */
+    private fun KtBinaryExpression.isInLambda(): Boolean {
+        // KtBinaryExpression is in lambda if it has a parent that is a block expression
+        return this.parent is KtBlockExpression
+    }
+
     private fun warnAndFixOnNullCheck(
         condition: KtBinaryExpression,
         canBeAutoFixed: Boolean,
         freeText: String,
-        autofix: () -> Unit) {
+        autofix: () -> Unit
+    ) {
         AVOID_NULL_CHECKS.warnAndFix(
             configRules,
             emitWarn,

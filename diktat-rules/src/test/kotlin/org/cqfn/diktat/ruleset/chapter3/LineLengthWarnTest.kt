@@ -53,7 +53,8 @@ class LineLengthWarnTest : LintTestBase(::LineLength) {
                     |   fun foo() {
                     |   }
                     |}
-                """.trimMargin()
+                """.trimMargin(),
+            rulesConfigList = shortLineLength
         )
     }
 

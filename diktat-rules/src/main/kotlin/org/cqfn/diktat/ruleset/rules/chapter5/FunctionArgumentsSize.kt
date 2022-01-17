@@ -17,7 +17,8 @@ import org.jetbrains.kotlin.psi.KtFunction
 class FunctionArgumentsSize(configRules: List<RulesConfig>) : DiktatRule(
     "argument-size",
     configRules,
-    listOf(TOO_MANY_PARAMETERS)) {
+    listOf(TOO_MANY_PARAMETERS)
+) {
     private val configuration: FunctionArgumentsSizeConfiguration by lazy {
         FunctionArgumentsSizeConfiguration(configRules.getRuleConfig(TOO_MANY_PARAMETERS)?.configuration ?: emptyMap())
     }

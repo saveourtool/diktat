@@ -34,7 +34,8 @@ import java.util.HashMap
 class UselessSupertype(configRules: List<RulesConfig>) : DiktatRule(
     "useless-override",
     configRules,
-    listOf(USELESS_SUPERTYPE)) {
+    listOf(USELESS_SUPERTYPE)
+) {
     override fun logic(node: ASTNode) {
         if (node.elementType == CLASS) {
             checkClass(node)

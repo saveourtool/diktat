@@ -19,4 +19,3 @@ fun foo1(bar: Bar): Baz {
 fun foo2(bar: Bar): Baz {
     // placeholder
 }
-

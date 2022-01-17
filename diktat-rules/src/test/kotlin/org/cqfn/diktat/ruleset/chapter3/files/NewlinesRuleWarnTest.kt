@@ -529,6 +529,20 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
 
     @Test
     @Tag(WarningNames.WRONG_NEWLINES)
+    fun `should warn for array access expression`() {
+        lintMethod(
+            """
+                    |fun bar(): String {
+                    |    val a = list.responseBody!![0].
+                    |    name
+                    |}
+            """.trimMargin(),
+            LintError(2, 35, ruleId, "$shouldBreakBefore .", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_NEWLINES)
     fun `long argument list should be split into several lines - positive example`() {
         lintMethod(
             """
@@ -670,7 +684,8 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |
                 |class Foo(val arg1: Int,
                 |          var arg2: Int,
-                |          arg3: Int) { }
+                |          arg3: Int
+                |) { }
             """.trimMargin(),
             LintError(3, 10, ruleId, "${WRONG_NEWLINES.warnText()} first parameter should be placed on a separate line or all other parameters " +
                     "should be aligned with it in declaration of <Foo>", true),
@@ -701,7 +716,8 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
                 |
                 |fun baz(arg1: Int,
                 |        arg2: Int,
-                |        arg3: Int) { }
+                |        arg3: Int
+                |) { }
             """.trimMargin(),
             LintError(3, 8, ruleId, "${WRONG_NEWLINES.warnText()} first parameter should be placed on a separate line or all other parameters " +
                     "should be aligned with it in declaration of <bar>", true),
@@ -716,7 +732,8 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
             """
                 |class SomeRule(configRules: List<Int>) : Rule("id", 
                 |configRules, 
-                |listOf("foo", "baz")) {
+                |listOf("foo", "baz")
+                |) {
                 |
                 |}
             """.trimMargin()
@@ -730,7 +747,8 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
             """
                 |class SomeRule(configRules: List<Int>) : Rule("id", 
                 |configRules, 
-                |listOf("foo", "baz", "triple", "bar")) {
+                |listOf("foo", "baz", "triple", "bar")
+                |) {
                 |
                 |}
             """.trimMargin()

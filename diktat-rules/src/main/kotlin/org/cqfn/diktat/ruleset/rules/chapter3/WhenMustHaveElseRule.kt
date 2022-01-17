@@ -39,7 +39,8 @@ import org.jetbrains.kotlin.psi.KtWhenExpression
 class WhenMustHaveElseRule(configRules: List<RulesConfig>) : DiktatRule(
     "no-else-in-when",
     configRules,
-    listOf(WHEN_WITHOUT_ELSE)) {
+    listOf(WHEN_WITHOUT_ELSE)
+) {
     override fun logic(node: ASTNode) {
         if (node.elementType == ElementType.WHEN && isStatement(node)) {
             checkEntries(node)

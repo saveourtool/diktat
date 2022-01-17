@@ -53,7 +53,8 @@ import org.jetbrains.kotlin.psi.KtTryExpression
 class BlockStructureBraces(configRules: List<RulesConfig>) : DiktatRule(
     "block-structure",
     configRules,
-    listOf(BRACES_BLOCK_STRUCTURE_ERROR)) {
+    listOf(BRACES_BLOCK_STRUCTURE_ERROR)
+) {
     override fun logic(node: ASTNode) {
         val configuration = BlockStructureBracesConfiguration(
             configRules.getRuleConfig(BRACES_BLOCK_STRUCTURE_ERROR)?.configuration ?: emptyMap()
@@ -165,7 +166,8 @@ class BlockStructureBraces(configRules: List<RulesConfig>) : DiktatRule(
     private fun checkOpenBraceOnSameLine(
         node: ASTNode,
         beforeType: IElementType,
-        configuration: BlockStructureBracesConfiguration) {
+        configuration: BlockStructureBracesConfiguration
+    ) {
         if (!configuration.openBrace) {
             return
         }
@@ -213,7 +215,8 @@ class BlockStructureBraces(configRules: List<RulesConfig>) : DiktatRule(
     private fun checkMidBrace(
         allMiddleSpace: List<ASTNode>,
         node: ASTNode,
-        keyword: IElementType) {
+        keyword: IElementType
+    ) {
         allMiddleSpace.forEach { space ->
             if (checkBraceNode(space, true)) {
                 BRACES_BLOCK_STRUCTURE_ERROR.warnAndFix(configRules, emitWarn, isFixMode, "incorrect new line after closing brace",

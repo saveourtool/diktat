@@ -132,7 +132,7 @@ fun ASTNode.reversedChildren(): Sequence<ASTNode> = sequence {
 }
 
 /**
- * Replaces the [beforeNode] of type [WHITE_SPACE] with the node with specified [text]
+ * Replaces `this` node's child [beforeNode] of type [WHITE_SPACE] with the node with specified [text]
  *
  * @param beforeNode a node to replace
  * @param text a text (white space characters only) for the new node
@@ -731,6 +731,41 @@ fun ASTNode.lastLineNumber() = getLineNumber() + text.count { it == '\n' }
 fun ASTNode.calculateLineColByOffset() = buildPositionInTextLocator(text)
 
 /**
+ * Return all nodes located at the specific line
+ *
+ * @param line
+ * @return corresponding list of nodes
+ */
+fun ASTNode.findAllNodesOnLine(
+    line: Int
+): List<ASTNode>? {
+    val rootNode = this.getRootNode()
+    val fileLines = rootNode.text.lines()
+
+    if (line <= 0 || line > fileLines.size) {
+        return null
+    }
+
+    val positionByOffset = rootNode.calculateLineColByOffset()
+
+    val lineOffset = this.findOffsetByLine(line, positionByOffset)
+
+    return this.getAllNodesOnLine(lineOffset, line, positionByOffset).toList()
+}
+
+/**
+ * Return all nodes located at the specific line satisfying [condition]
+ *
+ * @param line
+ * @param condition
+ * @return corresponding list of nodes
+ */
+fun ASTNode.findAllNodesWithConditionOnLine(
+    line: Int,
+    condition: (ASTNode) -> Boolean
+): List<ASTNode>? = this.findAllNodesOnLine(line)?.filter(condition)
+
+/**
  * Retrieves file name from user data of this node
  *
  * @return name of the file [this] node belongs to
@@ -767,6 +802,66 @@ fun ASTNode.hasEqBinaryExpression(): Boolean =
  */
 fun ASTNode.getLineNumber(): Int =
         calculateLineNumber()
+
+private fun ASTNode.findOffsetByLine(line: Int, positionByOffset: (Int) -> Pair<Int, Int>): Int {
+    val currentLine = this.getLineNumber()
+    val currentOffset = this.startOffset
+
+    var forwardDirection = true
+    // We additionaly consider the offset and line for current node in aim to speed up the search
+    // and not start any time from beginning of file, if possible
+    // 
+    // If current line is closer to the requested line, start search from it
+    // otherwise search from the beginning of file
+    var lineOffset = if (line < currentLine) {
+        if ((currentLine - line) < line) {
+            forwardDirection = false
+            currentOffset
+        } else {
+            0
+        }
+    } else {
+        currentOffset
+    }
+
+    while (positionByOffset(lineOffset).first != line) {
+        if (forwardDirection) {
+            lineOffset++
+        } else {
+            lineOffset--
+        }
+    }
+    return lineOffset
+}
+
+@Suppress("UnsafeCallOnNullableType")
+private fun ASTNode.getAllNodesOnLine(
+    lineOffset: Int,
+    line: Int,
+    positionByOffset: (Int) -> Pair<Int, Int>
+): MutableSet<ASTNode> {
+    val rootNode = this.getRootNode()
+    var beginningOfLineOffset = lineOffset
+    var endOfLineOffset = lineOffset
+
+    while (beginningOfLineOffset > 0 && positionByOffset(beginningOfLineOffset - 1).first == line) {
+        beginningOfLineOffset--
+    }
+
+    while (endOfLineOffset < rootNode.text.length && positionByOffset(endOfLineOffset + 1).first == line) {
+        endOfLineOffset++
+    }
+
+    val nodesSet: MutableSet<ASTNode> = mutableSetOf()
+
+    var currentOffset = beginningOfLineOffset
+    while (currentOffset <= endOfLineOffset) {
+        nodesSet.add(rootNode.psi.findElementAt(currentOffset)!!.node)
+        currentOffset++
+    }
+
+    return nodesSet
+}
 
 /**
  * Get node by taking children by types and ignore `PARENTHESIZED`

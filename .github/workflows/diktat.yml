@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-      - uses: actions/checkout@v2.3.4
+      - uses: actions/checkout@v2.4.0
         with:
           # set this to 0 to fetch all tags too and be able to use them later
           fetch-depth: 0
@@ -24,9 +24,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-diktat-${{ hashFiles('**/pom.xml') }}
+          key: maven-diktat-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ runner.os }}-maven-diktat-
+            maven-diktat-
       - name: Substitute diktat config with the one from the latest release
         # fixme: can be done from the fetched repo without additional network request
         run: |

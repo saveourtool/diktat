@@ -65,11 +65,13 @@ import com.pinterest.ktlint.core.ast.ElementType.PRIMARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.RETURN
 import com.pinterest.ktlint.core.ast.ElementType.RETURN_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.RPAR
 import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS
 import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.SECONDARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.SEMICOLON
 import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_LIST
+import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER
@@ -115,7 +117,8 @@ import org.slf4j.LoggerFactory
 class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
     "newlines",
     configRules,
-    listOf(COMPLEX_EXPRESSION, REDUNDANT_SEMICOLON, WRONG_NEWLINES)) {
+    listOf(COMPLEX_EXPRESSION, REDUNDANT_SEMICOLON, WRONG_NEWLINES)
+) {
     private val configuration by lazy {
         NewlinesRuleConfiguration(configRules.getRuleConfig(WRONG_NEWLINES)?.configuration ?: emptyMap())
     }
@@ -289,7 +292,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
                 // lambda with explicit arguments
                 val newlinesBeforeArrow = arrowNode
                     .siblings(false)
-                    .filter { it.elementType == WHITE_SPACE && it.textContains('\n') }
+                    .filter { it.isNewLineNode() }
                     .toList()
                 if (newlinesBeforeArrow.isNotEmpty() || !arrowNode.isFollowedByNewline()) {
                     WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
@@ -400,7 +403,8 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun handleFirstValue(node: ASTNode,
                                  filterType: IElementType,
-                                 warnText: String) = node
+                                 warnText: String
+    ) = node
         .children()
         .takeWhile { !it.textContains('\n') }
         .filter { it.elementType == filterType }
@@ -428,8 +432,9 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun handleValueParameterList(node: ASTNode, entryType: String) = node
         .children()
         .filter {
-            it.elementType == COMMA &&
-                    !it.treeNext.run { elementType == WHITE_SPACE && textContains('\n') }
+            (it.elementType == COMMA && !it.treeNext.isNewLineNode()) ||
+                    // Move RPAR to the new line
+                    (it.elementType == RPAR && it.treePrev.elementType != COMMA && !it.treePrev.isNewLineNode())
         }
         .toList()
         .takeIf { it.isNotEmpty() }
@@ -441,12 +446,20 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             }
             WRONG_NEWLINES.warnAndFix(configRules, emitWarn, isFixMode,
                 warnText, node.startOffset, node) {
-                invalidCommas.forEach { comma ->
-                    val nextWhiteSpace = comma.treeNext.takeIf { it.elementType == WHITE_SPACE }
-                    comma.appendNewlineMergingWhiteSpace(nextWhiteSpace, nextWhiteSpace?.treeNext ?: comma.treeNext)
+                invalidCommas.forEach { commaOrRpar ->
+                    val nextWhiteSpace = commaOrRpar.treeNext?.takeIf { it.elementType == WHITE_SPACE }
+                    if (commaOrRpar.elementType == COMMA) {
+                        nextWhiteSpace?.treeNext?.let {
+                            commaOrRpar.appendNewlineMergingWhiteSpace(nextWhiteSpace, nextWhiteSpace.treeNext)
+                        } ?: commaOrRpar.treeNext?.treeParent?.appendNewlineMergingWhiteSpace(nextWhiteSpace, commaOrRpar.treeNext)
+                    } else {
+                        commaOrRpar.treeParent.appendNewlineMergingWhiteSpace(nextWhiteSpace, commaOrRpar)
+                    }
                 }
             }
         }
+
+    private fun ASTNode.isNewLineNode(): Boolean = this.run { elementType == WHITE_SPACE && textContains('\n') }
 
     @Suppress("UnsafeCallOnNullableType")
     private fun ASTNode.getParentIdentifier() = when (treeParent.elementType) {
@@ -465,9 +478,6 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             if (firstChild.isFirstChildElementType(DOT_QUALIFIED_EXPRESSION) ||
                     firstChild.isFirstChildElementType(SAFE_ACCESS_EXPRESSION)) {
                 getOrderedCallExpressions(firstChild.firstChild, result)
-            }
-            if (firstChild.isFirstChildElementType(POSTFIX_EXPRESSION)) {
-                result.add(firstChild.node)
             }
             result.add(firstChild.node
                 .siblings(true)

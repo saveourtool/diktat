@@ -22,6 +22,9 @@ fun goo() {
     x
             .map()
             .filter().hre()
+
+    t.responseBody!![0].
+    name
 }
 
 fun foo() {
@@ -30,3 +33,13 @@ fun foo() {
     foo ?: bar.baz()
             .qux()
 }
+
+fun controlFlow(code: CodeBlock, format: String, vararg args: Any?): CodeBlock =
+    CodeBlock.builder().beginControlFlow(format, *args).add(code)
+        .endControlFlow().build()
+
+fun controlFlow(code: CodeBlock, format: String, vararg args: Any?,): CodeBlock =
+    CodeBlock.builder().beginControlFlow(format, *args).add(code)
+        .endControlFlow().build()
+
+fun foo(a: Int, b: Int, c: Int): Int = 42

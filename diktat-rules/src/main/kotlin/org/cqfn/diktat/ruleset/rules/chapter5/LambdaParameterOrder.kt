@@ -19,7 +19,8 @@ import org.jetbrains.kotlin.utils.addToStdlib.ifNotEmpty
 class LambdaParameterOrder(configRules: List<RulesConfig>) : DiktatRule(
     "lambda-parameter-order",
     configRules,
-    listOf(LAMBDA_IS_NOT_LAST_PARAMETER)) {
+    listOf(LAMBDA_IS_NOT_LAST_PARAMETER)
+) {
     override fun logic(node: ASTNode) {
         if (node.elementType == ElementType.FUN) {
             checkArguments(node)

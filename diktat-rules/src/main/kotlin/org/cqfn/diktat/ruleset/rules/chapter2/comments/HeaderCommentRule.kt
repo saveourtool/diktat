@@ -25,6 +25,7 @@ import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import com.pinterest.ktlint.core.ast.isWhiteSpace
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -45,7 +46,8 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
     "header-comment",
     configRules,
     listOf(HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE, HEADER_MISSING_OR_WRONG_COPYRIGHT, HEADER_NOT_BEFORE_PACKAGE,
-        HEADER_NOT_BEFORE_PACKAGE, HEADER_WRONG_FORMAT, WRONG_COPYRIGHT_YEAR)) {
+        HEADER_NOT_BEFORE_PACKAGE, HEADER_WRONG_FORMAT, WRONG_COPYRIGHT_YEAR)
+) {
     override fun logic(node: ASTNode) {
         if (node.elementType == FILE && !node.getFilePath().isGradleScript()) {
             checkCopyright(node)
@@ -134,18 +136,24 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
             return
         }
 
-        if (makeCopyrightCorrectYear(configuration.getCopyrightText()).isNotEmpty()) {
-            log.warn("Copyright year is not up do date.")
-        }
-
         // need to make sure that copyright year is consistent with current year
         val copyrightText = configuration.getCopyrightText()
+        val copyrightWithCorrectYear = makeCopyrightCorrectYear(copyrightText)
+
+        if (copyrightWithCorrectYear.isNotEmpty()) {
+            log.warn("Copyright year in your configuration file is not up to date.")
+        }
 
         val headerComment = node.findChildBefore(PACKAGE_DIRECTIVE, BLOCK_COMMENT)
         // Depends only on content and doesn't consider years
+        val isCopyrightMatchesPatternExceptFirstYear = isCopyRightTextMatchesPattern(headerComment, copyrightText) ||
+                isCopyRightTextMatchesPattern(headerComment, copyrightWithCorrectYear)
+
         val isWrongCopyright = headerComment != null &&
-                !headerComment.text.flatten().contains(copyrightText.flatten()) &&
-                !headerComment.text.flatten().contains(makeCopyrightCorrectYear(copyrightText).flatten())
+                !isCopyrightMatchesPatternExceptFirstYear &&
+                !isHeaderCommentContainText(headerComment, copyrightText) &&
+                !isHeaderCommentContainText(headerComment, copyrightWithCorrectYear)
+
         val isMissingCopyright = headerComment == null && configuration.isCopyrightMandatory()
         val isCopyrightInsideKdoc = (node.getAllChildrenWithType(KDOC) + node.getAllChildrenWithType(ElementType.EOL_COMMENT))
             .any { commentNode ->
@@ -161,14 +169,20 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
                 else -> error("Should never get to this point")
             }
             HEADER_MISSING_OR_WRONG_COPYRIGHT.warnAndFix(configRules, emitWarn, isFixMode, freeText, node.startOffset, node) {
-                headerComment?.let { node.removeChild(it) }
+                headerComment?.let { copyrightNode ->
+                    // remove node clearly, with trailing whitespace
+                    if (copyrightNode.treeNext.isWhiteSpace()) {
+                        node.removeChild(copyrightNode.treeNext)
+                    }
+                    node.removeChild(copyrightNode)
+                }
                 // do not insert empty line before header kdoc
                 val newLines = node.findChildBefore(PACKAGE_DIRECTIVE, KDOC)?.let { "\n" } ?: "\n\n"
                 node.addChild(PsiWhiteSpaceImpl(newLines), node.firstChildNode)
                 node.addChild(LeafPsiElement(BLOCK_COMMENT,
                     """
                         |/*
-                        |${handleMultilineCopyright(copyrightText)}
+                        |${handleMultilineCopyright(copyrightWithCorrectYear.ifEmpty { copyrightText })}
                         |*/
                     """.trimMargin()),
                     node.firstChildNode
@@ -176,14 +190,32 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
             }
         }
 
-        val copyrightWithCorrectYear = makeCopyrightCorrectYear(copyrightText)
-
         // Triggers when there is a copyright, but its year is not updated.
-        if (!isMissingCopyright && copyrightWithCorrectYear.isNotEmpty()) {
+        if (!isMissingCopyright && !isWrongCopyright && copyrightWithCorrectYear.isNotEmpty()) {
             WRONG_COPYRIGHT_YEAR.warnAndFix(configRules, emitWarn, isFixMode, "year should be $curYear", node.startOffset, node) {
                 (headerComment as LeafElement).rawReplaceWithText(headerComment.text.replace(copyrightText, copyrightWithCorrectYear))
             }
         }
+    }
+
+    private fun isHeaderCommentContainText(headerComment: ASTNode, text: String): Boolean = if (text.isNotEmpty()) headerComment.text.flatten().contains(text.flatten()) else false
+
+    // Check if provided copyright node differs only in the first date from pattern
+    private fun isCopyRightTextMatchesPattern(copyrightNode: ASTNode?, copyrightPattern: String): Boolean {
+        val copyrightText = copyrightNode?.text?.replace("/*", "")?.replace("*/", "")?.replace("*", "")
+
+        val datesInPattern = hyphenRegex.find(copyrightPattern)?.value
+        val datesInCode = copyrightText?.let { hyphenRegex.find(it)?.value }
+
+        if (datesInPattern == null || datesInCode == null) {
+            return false
+        }
+
+        val patternWithoutDates = copyrightPattern.replace(datesInPattern, "").flatten()
+        val textWithoutDates = copyrightText.replace(datesInCode, "").flatten()
+
+        // Text should be equal, first date could be different, second date should be equal to current year
+        return (patternWithoutDates == textWithoutDates) && (datesInCode.substringAfter("-") == curYear.toString())
     }
 
     /**
@@ -233,11 +265,13 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
         /**
          * @return text of copyright as configured in the configuration file
          */
-        fun getCopyrightText() = config["copyrightText"] ?: error("Copyright is not set in configuration")
+        fun getCopyrightText() = config["copyrightText"]?.replace(CURR_YEAR_PATTERN, curYear.toString())
+            ?: error("Copyright is not set in configuration")
     }
 
     companion object {
         private val log = LoggerFactory.getLogger(HeaderCommentRule::class.java)
+        const val CURR_YEAR_PATTERN = ";@currYear;"
         val hyphenRegex = Regex("""\d+-\d+""")
         val afterCopyrightRegex = Regex("""((©|\([cC]\))+ *\d+)""")
         val curYear = LocalDate.now().year

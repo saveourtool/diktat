@@ -34,7 +34,8 @@ import org.jetbrains.kotlin.psi.psiUtil.children
 class SingleInitRule(configRules: List<RulesConfig>) : DiktatRule(
     "multiple-init-block",
     configRules,
-    listOf(MULTIPLE_INIT_BLOCKS)) {
+    listOf(MULTIPLE_INIT_BLOCKS)
+) {
     override fun logic(node: ASTNode) {
         when (node.elementType) {
             CLASS_BODY -> handleInitBlocks(node)
@@ -98,7 +99,8 @@ class SingleInitRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun moveAssignmentsToProperties(
         propertiesFromClassBody: List<ASTNode>,
         propertiesFromPrimaryConstructor: List<String?>?,
-        initBlock: ASTNode) {
+        initBlock: ASTNode
+    ) {
         initBlock
             .findChildByType(BLOCK)
             ?.run {

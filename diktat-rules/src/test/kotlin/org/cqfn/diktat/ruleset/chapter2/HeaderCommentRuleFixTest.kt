@@ -37,6 +37,18 @@ class HeaderCommentRuleFixTest : FixTestBase(
         fixAndCompare("AutoCopyrightExpected.kt", "AutoCopyrightTest.kt")
     }
 
+    @Test
+    @Tag(WarningNames.HEADER_MISSING_OR_WRONG_COPYRIGHT)
+    fun `if no copyright is present, added it and apply pattern for current year`() {
+        fixAndCompare("AutoCopyrightApplyPatternExpected.kt", "AutoCopyrightApplyPatternTest.kt",
+            listOf(RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true,
+                mapOf(
+                    "isCopyrightMandatory" to "true",
+                    "copyrightText" to "Copyright (c) Huawei Technologies Co., Ltd. 2020-;@currYear;. All rights reserved.")
+            ),
+                RulesConfig(HEADER_WRONG_FORMAT.name, true, emptyMap())))
+    }
+
     /**
      * Fixme there shouldn't be an additional blank line after copyright
      */
@@ -64,6 +76,39 @@ class HeaderCommentRuleFixTest : FixTestBase(
     @Tag(WRONG_COPYRIGHT_YEAR)
     fun `copyright invalid year should be auto-corrected`() {
         fixAndCompare("CopyrightDifferentYearExpected.kt", "CopyrightDifferentYearTest.kt",
+            listOf(RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true, mapOf(
+                "isCopyrightMandatory" to "true",
+                "copyrightText" to "Copyright (c) My Company., Ltd. 2012-2019. All rights reserved."
+            )))
+        )
+    }
+
+    @Test
+    @Tag(WRONG_COPYRIGHT_YEAR)
+    fun `copyright invalid year should be auto-corrected 2`() {
+        fixAndCompare("CopyrightDifferentYearExpected2.kt", "CopyrightDifferentYearTest2.kt",
+            listOf(RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true, mapOf(
+                "isCopyrightMandatory" to "true",
+                "copyrightText" to "Copyright (c) My Company., Ltd. 2021. All rights reserved."
+            )))
+        )
+    }
+
+    @Test
+    @Tag(WRONG_COPYRIGHT_YEAR)
+    fun `copyright invalid pattern, but valid in code`() {
+        fixAndCompare("CopyrightInvalidPatternValidCodeExpected.kt", "CopyrightInvalidPatternValidCodeTest.kt",
+            listOf(RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true, mapOf(
+                "isCopyrightMandatory" to "true",
+                "copyrightText" to "Copyright (c) My Company., Ltd. 2012-2019. All rights reserved."
+            )))
+        )
+    }
+
+    @Test
+    @Tag(WRONG_COPYRIGHT_YEAR)
+    fun `copyright invalid pattern, update actual year in it and auto-correct`() {
+        fixAndCompare("CopyrightAbsentInvalidPatternExpected.kt", "CopyrightAbsentInvalidPatternTest.kt",
             listOf(RulesConfig(HEADER_MISSING_OR_WRONG_COPYRIGHT.name, true, mapOf(
                 "isCopyrightMandatory" to "true",
                 "copyrightText" to "Copyright (c) My Company., Ltd. 2012-2019. All rights reserved."

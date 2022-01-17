@@ -26,6 +26,11 @@ class LineLengthFixTest : FixTestBase("test/paragraph3/long_line", ::LineLength)
     }
 
     @Test
+    fun `should fix long inline comments`() {
+        fixAndCompare("LongInlineCommentsExpected.kt", "LongInlineCommentsTest.kt", rulesConfigListLineLength)
+    }
+
+    @Test
     fun `should not fix long comment which located on the line length limit`() {
         fixAndCompare("LongLineCommentExpected2.kt", "LongLineCommentTest2.kt", rulesConfigListDefaultLineLength)
     }

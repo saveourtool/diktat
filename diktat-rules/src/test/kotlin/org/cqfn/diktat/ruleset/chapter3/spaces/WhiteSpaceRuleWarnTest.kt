@@ -22,15 +22,15 @@ class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
                           before: Int?,
                           after: Int?,
                           reqBefore: Int?,
-                          reqAfter: Int?) =
-            "${WRONG_WHITESPACE.warnText()} $token should have" +
-                    (reqBefore?.let { " $it space(s) before" } ?: "") +
-                    (if (reqBefore != null && reqAfter != null) " and" else "") +
-                    (reqAfter?.let { " $it space(s) after" } ?: "") +
-                    ", but has" +
-                    (before?.let { " $it space(s) before" } ?: "") +
-                    (if (before != null && after != null) " and" else "") +
-                    (after?.let { " $it space(s) after" } ?: "")
+                          reqAfter: Int?
+    ) = "${WRONG_WHITESPACE.warnText()} $token should have" +
+            (reqBefore?.let { " $it space(s) before" } ?: "") +
+            (if (reqBefore != null && reqAfter != null) " and" else "") +
+            (reqAfter?.let { " $it space(s) after" } ?: "") +
+            ", but has" +
+            (before?.let { " $it space(s) before" } ?: "") +
+            (if (before != null && after != null) " and" else "") +
+            (after?.let { " $it space(s) after" } ?: "")
 
     @Test
     @Tag(WarningNames.WRONG_WHITESPACE)
