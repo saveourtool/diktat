@@ -48,12 +48,12 @@
         <ktlint.version>0.43.2</ktlint.version>
         <junit.version>5.8.2</junit.version>
         <guava.version>31.0.1-jre</guava.version>
-        <slf4j.version>1.7.31</slf4j.version>
+        <slf4j.version>1.7.33</slf4j.version>
         <commons-cli.version>1.5.0</commons-cli.version>
         <diktat-check.version>1.0.1</diktat-check.version>
         <kotlinpoet.version>1.10.0</kotlinpoet.version>
         <detekt.version>1.19.1</detekt.version>
-        <dokka.version>1.6.0</dokka.version>
+        <dokka.version>1.6.10</dokka.version>
         <jacoco.version>0.8.7</jacoco.version>
         <maven-plugin-tools.version>3.6.1</maven-plugin-tools.version>
         <jbool.version>1.23</jbool.version>
