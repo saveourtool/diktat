@@ -97,4 +97,15 @@ class MultipleModifiersSequenceWarnTest : LintTestBase(::MultipleModifiersSequen
             LintError(1, 8, ruleId, "${WRONG_MULTIPLE_MODIFIERS_ORDER.warnText()} @Annotation annotation should be before all modifiers", true)
         )
     }
+
+    @Test
+    @Tag(WarningNames.WRONG_MULTIPLE_MODIFIERS_ORDER)
+    fun `check correct order modifier for value`() {
+        lintMethod(
+            """
+                    |public value class Foo() {
+                    |}
+                """.trimMargin(),
+        )
+    }
 }
