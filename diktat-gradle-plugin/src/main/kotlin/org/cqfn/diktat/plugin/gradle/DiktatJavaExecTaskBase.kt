@@ -87,10 +87,6 @@ open class DiktatJavaExecTaskBase @Inject constructor(
             main = "com.pinterest.ktlint.Main"
         }
 
-        // Plain, checkstyle and json reporter are provided out of the box in ktlint
-        if (diktatExtension.reporterType == "html") {
-            diktatConfiguration.dependencies.add(project.dependencies.create("com.pinterest.ktlint:ktlint-reporter-html:$KTLINT_VERSION"))
-        }
         classpath = diktatConfiguration
         project.logger.debug("Setting diktatCheck classpath to ${diktatConfiguration.dependencies.toSet()}")
         if (diktatExtension.debug) {
@@ -156,12 +152,7 @@ open class DiktatJavaExecTaskBase @Inject constructor(
         val flag: StringBuilder = StringBuilder()
 
         // Plain, checkstyle and json reporter are provided out of the box in ktlint
-        when (diktatExtension.reporterType) {
-            "json" -> flag.append("--reporter=json")
-            "html" -> flag.append("--reporter=html")
-            "checkstyle" -> flag.append("--reporter=checkstyle")
-            else -> customReporter(diktatExtension, flag)
-        }
+         reporter(diktatExtension, flag)
 
         if (diktatExtension.output.isNotEmpty()) {
             flag.append(",output=${diktatExtension.output}")
@@ -171,18 +162,13 @@ open class DiktatJavaExecTaskBase @Inject constructor(
     }
 
     private fun customReporter(diktatExtension: DiktatExtension, flag: java.lang.StringBuilder) {
-        if (diktatExtension.reporterType.startsWith("custom")) {
-            val name = diktatExtension.reporterType.split(":")[1]
-            val jarPath = diktatExtension.reporterType.split(":")[2]
-            if (name.isEmpty() || jarPath.isEmpty()) {
-                project.logger.warn("Either name or path to jar is not specified. Falling to plain reporter")
-                flag.append("--reporter=plain")
-            } else {
-                flag.append("--reporter=$name,artifact=$jarPath")
-            }
-        } else {
+        val name = diktatExtension.reporterType
+        val validReporterTypes = listOf()
+        if (name.isEmpty()) {
+            project.logger.warn("Reporter name was not specified. Falling to 'plain' reporter")
             flag.append("--reporter=plain")
-            project.logger.debug("Unknown reporter was specified. Falling back to plain reporter.")
+        } else {
+            flag.append("--reporter=$name")
         }
     }
 
