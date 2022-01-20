@@ -24,6 +24,10 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
         RulesConfig("HEADER_MISSING_OR_WRONG_COPYRIGHT", true,
             mapOf("copyrightText" to "Copyright (c) My Company, Ltd. 2012-$curYear. All rights reserved."))
     )
+    private val rulesConfigListWithPattern: List<RulesConfig> = listOf(
+        RulesConfig("HEADER_MISSING_OR_WRONG_COPYRIGHT", true,
+            mapOf("copyrightText" to "Copyright (c) My Company, Ltd. 2012-;@currYear;. All rights reserved."))
+    )
     private val rulesConfigListInvalidYear: List<RulesConfig> = listOf(
         RulesConfig("HEADER_MISSING_OR_WRONG_COPYRIGHT", true,
             mapOf("copyrightText" to "Copyright (c) My Company, Ltd. 2012-2019. All rights reserved."))
@@ -35,6 +39,10 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
     private val rulesConfigListYear: List<RulesConfig> = listOf(
         RulesConfig("HEADER_MISSING_OR_WRONG_COPYRIGHT", true,
             mapOf("copyrightText" to "Copyright (c) $curYear My Company, Ltd. All rights reserved."))
+    )
+    private val rulesConfigListYearWithPattern: List<RulesConfig> = listOf(
+        RulesConfig("HEADER_MISSING_OR_WRONG_COPYRIGHT", true,
+            mapOf("copyrightText" to "Copyright (c) ;@currYear; My Company, Ltd. All rights reserved."))
     )
     private val rulesConfigListCn: List<RulesConfig> = listOf(
         RulesConfig("HEADER_MISSING_OR_WRONG_COPYRIGHT", true,
@@ -204,6 +212,98 @@ class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
                 class Example2 { }
             """.trimIndent(),
             rulesConfigList = rulesConfigListYear
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_COPYRIGHT_YEAR)
+    fun `copyright year good 3 - apply pattern`() {
+        lintMethod(
+            """
+                /*
+                 * Copyright (c) 2022 My Company, Ltd. All rights reserved.
+                 */
+                /**
+                 * Very useful description, why this file has two classes
+                 * foo bar baz
+                 */
+
+                package org.cqfn.diktat.example
+
+                class Example1 { }
+
+                class Example2 { }
+            """.trimIndent(),
+            rulesConfigList = rulesConfigListYearWithPattern
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_COPYRIGHT_YEAR)
+    fun `copyright year good 4 - apply pattern`() {
+        lintMethod(
+            """
+                /*
+                 * Copyright (c) My Company, Ltd. 2012-2022. All rights reserved.
+                 */
+                /**
+                 * Very useful description, why this file has two classes
+                 * foo bar baz
+                 */
+
+                package org.cqfn.diktat.example
+
+                class Example1 { }
+
+                class Example2 { }
+            """.trimIndent(),
+            rulesConfigList = rulesConfigListWithPattern
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_COPYRIGHT_YEAR)
+    fun `copyright year good 5`() {
+        lintMethod(
+            """
+                /*
+                   Copyright (c) My Company, Ltd. 2021-2022. All rights reserved.
+                 */
+                /**
+                 * Very useful description, why this file has two classes
+                 * foo bar baz
+                 */
+
+                package org.cqfn.diktat.example
+
+                class Example1 { }
+
+                class Example2 { }
+            """.trimIndent(),
+            rulesConfigList = rulesConfigList
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WRONG_COPYRIGHT_YEAR)
+    fun `copyright year good 6`() {
+        lintMethod(
+            """
+                /*
+                 *  Copyright (c) My Company, Ltd. 2002-2022. All rights reserved.
+                 */
+                /**
+                 * Very useful description, why this file has two classes
+                 * foo bar baz
+                 */
+
+                package org.cqfn.diktat.example
+
+                class Example1 { }
+
+                class Example2 { }
+            """.trimIndent(),
+            rulesConfigList = rulesConfigList
         )
     }
 

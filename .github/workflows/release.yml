@@ -22,9 +22,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-master-${{ hashFiles('**/pom.xml') }}
+          key: maven-build-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ runner.os }}-maven-master-
+            maven-build-
       - name: Setup environment
         env:
           DIKTAT_GPG_PUB: ${{ secrets.DIKTAT_PGP_PUB }}

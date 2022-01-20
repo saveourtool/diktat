@@ -25,15 +25,15 @@ jobs:
         # keys are the same as in build_and_test workflow to make cache available for PRs
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-build-${{ hashFiles('**/pom.xml') }}
+          key: maven-build-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ runner.os }}-maven-build-
+            maven-build-
       - name: Run tests
         # we need to run `install` goal here so that gradle will be able to resolve dependencies and run tests on diktat-gradle-plugin
         run: mvn -B install -DskipPluginMarker
       - name: Generate code coverage report
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v2
         with:
-          file: ./*/target/site/jacoco/jacoco.xml
+          files: '**/target/site/jacoco*/jacoco.xml,**/reports/jacoco/**/*.xml'
           flags: unittests
           fail_ci_if_error: true # optional (default = false)
