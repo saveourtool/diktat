@@ -803,6 +803,24 @@ fun ASTNode.hasEqBinaryExpression(): Boolean =
 fun ASTNode.getLineNumber(): Int =
         calculateLineNumber()
 
+/**
+ * Get node by taking children by types and ignore `PARENTHESIZED`
+ *
+ * @return child of type
+ */
+fun ASTNode.takeByChainOfTypes(vararg types: IElementType): ASTNode? {
+    var node: ASTNode? = this
+    types.forEach {
+        node = node?.findChildByType(it) ?: run {
+            while (node?.hasChildOfType(PARENTHESIZED) == true) {
+                node = node?.findChildByType(PARENTHESIZED)
+            }
+            node?.findChildByType(it)
+        }
+    }
+    return node
+}
+
 private fun ASTNode.findOffsetByLine(line: Int, positionByOffset: (Int) -> Pair<Int, Int>): Int {
     val currentLine = this.getLineNumber()
     val currentOffset = this.startOffset
@@ -861,24 +879,6 @@ private fun ASTNode.getAllNodesOnLine(
     }
 
     return nodesSet
-}
-
-/**
- * Get node by taking children by types and ignore `PARENTHESIZED`
- *
- * @return child of type
- */
-fun ASTNode.takeByChainOfTypes(vararg types: IElementType): ASTNode? {
-    var node: ASTNode? = this
-    types.forEach {
-        node = node?.findChildByType(it) ?: run {
-            while (node?.hasChildOfType(PARENTHESIZED) == true) {
-                node = node?.findChildByType(PARENTHESIZED)
-            }
-            node?.findChildByType(it)
-        }
-    }
-    return node
 }
 
 /**

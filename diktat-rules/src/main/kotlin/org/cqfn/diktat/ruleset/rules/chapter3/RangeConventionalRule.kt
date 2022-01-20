@@ -34,7 +34,8 @@ import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
 class RangeConventionalRule(configRules: List<RulesConfig>) : DiktatRule(
     "range",
     configRules,
-    listOf(CONVENTIONAL_RANGE)) {
+    listOf(CONVENTIONAL_RANGE)
+) {
     private val configuration by lazy {
         RangeConventionalConfiguration(
             this.configRules.getRuleConfig(CONVENTIONAL_RANGE)?.configuration ?: emptyMap(),
