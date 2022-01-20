@@ -111,34 +111,6 @@ class DiktatJavaExecTaskTest {
     }
 
     @Test
-    fun `check command line has custom reporter type with output`() {
-        assertCommandLineEquals(
-            listOf(null, "--reporter=customName,artifact=customPath")
-        ) {
-            inputs { exclude("*") }
-            diktatConfigFile = project.file("../diktat-analysis.yml")
-            reporterType = "custom:customName:customPath"
-        }
-    }
-
-    @Test
-    fun `check that project has html dependency`() {
-        val task = project.registerDiktatTask {
-            inputs { exclude("*") }
-            diktatConfigFile = project.file("../diktat-analysis.yml")
-            reporterType = "html"
-        }
-
-        Assertions.assertTrue(
-            project
-                .configurations
-                .getByName("diktat")
-                .dependencies
-                .any { it.name == "ktlint-reporter-html" })
-        Assertions.assertEquals(File(project.projectDir.parentFile, "diktat-analysis.yml").absolutePath, task.systemProperties[DIKTAT_CONF_PROPERTY])
-    }
-
-    @Test
     fun `check system property with multiproject build with default config`() {
         setupMultiProject()
         val subproject = project.subprojects.first()

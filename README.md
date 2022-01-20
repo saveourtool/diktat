@@ -22,7 +22,7 @@ DiKTat is a strict [coding standard ](info/guide/diktat-coding-convention.md) fo
 as AST visitors on the top of [KTlint](https://ktlint.github.io/). It can be used for detecting and autofixing code smells in CI/CD process. 
 The full list of available supported rules and inspections can be found [here](info/available-rules.md).
 
-Now diKTat was already added to the lists of [static analysis tools](https://github.com/analysis-tools-dev/static-analysis), to [kotlin-awesome](https://github.com/KotlinBy/awesome-kotlin) and to [kompar](https://catalog.kompar.tools/Analyzer/diKTat/1.0.0-rc.4). Thanks to the community for this support! 
+Now diKTat was already added to the lists of [static analysis tools](https://github.com/analysis-tools-dev/static-analysis), to [kotlin-awesome](https://github.com/KotlinBy/awesome-kotlin) and to [kompar](https://catalog.kompar.tools/Analyzer/diKTat/1.0.2). Thanks to the community for this support! 
 
 ## See first
 
@@ -47,19 +47,21 @@ Main features of diktat are the following:
 4) **Strict detailed coding convention** that you can use in your project.
 
 ## Run as CLI-application
+<details>
+<summary>Download and install binaries:</summary>
 1. Install KTlint manually: [here](https://github.com/pinterest/ktlint/releases)
 
    **OR** use curl:
     ```bash
-    curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.39.0/ktlint && chmod a+x ktlint
+    curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.43.2/ktlint && chmod a+x ktlint
     # another option is "brew install ktlint"
     ```
    
-2. Load diKTat manually: [here](https://github.com/cqfn/diKTat/releases/download/v1.0.0-rc.4/diktat-1.0.0-rc.4.jar)
+2. Load diKTat manually: [here](https://github.com/cqfn/diKTat/releases/download/v1.0.2/diktat-1.0.2.jar)
 
    **OR** use curl:
    ```bash
-   $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v1.0.0-rc.4/diktat-1.0.0-rc.4.jar
+   $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v1.0.2/diktat-1.0.2.jar
    ```
    
 3. Finally, run KTlint (with diKTat injected) to check your `*.kt` files in `dir/your/dir`:
@@ -68,12 +70,34 @@ Main features of diktat are the following:
    ```
 
 To **autofix** all code style violations use `-F` option.
+</details>
+
+## GitHub Native Integration
+We suggest everyone to use common ["sarif"](https://docs.oasis-open.org/sarif/sarif/v2.0/sarif-v2.0.html) format as a `reporterType` in CI/CD.
+GitHub has an [integration](https://docs.github.com/en/code-security/code-scanning/integrating-with-code-scanning/sarif-support-for-code-scanning) 
+with SARIF format and provides you a native reporting of diktat issues in Pull Requests. 
+
+```text
+    reporterType = "sarif"
+    output = "diktat-report.sarif"
+```
+
+Add the following code to your GitHub Action to upload diktat sarif report (after it was generated).
+
+```yml
+      - name: Upload SARIF to Github using the upload-sarif action
+        uses: github/codeql-action/upload-sarif@v1
+        if: ${{ always() }}
+        with:
+          sarif_file: build/diktat-report.sarif
+```
 
 ## Run with Maven using diktat-maven-plugin
 This plugin is available since version 0.1.3. You can see how it is configured in our project for self-checks: [pom.xml](pom.xml).
 If you use it and encounter any problems, feel free to open issues on [github](https://github.com/cqfn/diktat/issues).
 
-Add this plugin to your pom.xml:
+<details>
+<summary>Add this plugin to your pom.xml:</summary>
 ```xml
             <plugin>
                 <groupId>org.cqfn.diktat</groupId>
@@ -101,6 +125,7 @@ Add this plugin to your pom.xml:
                 </executions>
             </plugin>
 ```
+</details>
 
 To run diktat in **only-check** mode use command `$ mvn diktat:check@diktat`.
 To run diktat in **autocorrect** mode use command `$ mvn diktat:fix@diktat`.
@@ -109,10 +134,12 @@ To run diktat in **autocorrect** mode use command `$ mvn diktat:fix@diktat`.
 Requires a gradle version no lower than 5.3.
 
 This plugin is available since version 0.1.5. You can see how the plugin is configured in our examples: [build.gradle.kts](examples/gradle-kotlin-dsl/build.gradle.kts).
-Add this plugin to your `build.gradle.kts`:
+
+<details>
+<summary>Add this plugin to your `build.gradle.kts`:</summary>
 ```kotlin
 plugins {
-    id("org.cqfn.diktat.diktat-gradle-plugin") version "1.0.0-rc.4"
+    id("org.cqfn.diktat.diktat-gradle-plugin") version "1.0.2"
 }
 ```
 
@@ -123,7 +150,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.cqfn.diktat:diktat-gradle-plugin:1.0.0-rc.4")
+        classpath("org.cqfn.diktat:diktat-gradle-plugin:1.0.2")
     }
 }
 
@@ -141,29 +168,21 @@ diktat {
 }
 ```
 
-Also `diktat` extension has different reporters. You can specify `json`, `html`, `checkstyle`, `plain` (default) or your own custom reporter:
+Also `diktat` extension has different reporters. You can specify `json`, `html`, `sarif`, `plain` (default) or your own custom reporter:
 ```kotlin
 diktat {
-    reporter = "json" // "html", "checkstyle", "plain"
+   reporterType = "json" // "html", "json", "plain" (default), "sarif"
 }
 ```
-
-Example of your custom reporter:
-```kotlin
-diktat {
-    reporter = "custom:name:pathToJar"
-}
-```
-Name parameter is the name of your reporter and as the last parameter you should specify path to jar, which contains your reporter.
-[Example of the junit custom reporter.](https://github.com/kryanod/ktlint-junit-reporter)
 
 You can also specify an output. 
 ```kotlin
 diktat {
-    reporter = "json"
+    reporterType = "json"
     output = "someFile.json"
 }
 ```
+</details>
 
 You can run diktat checks using task `diktatCheck` and automatically fix errors with tasks `diktatFix`.
 
@@ -198,7 +217,7 @@ spotless {
 ```kotlin
 spotless {
    kotlin {
-      diktat("1.0.0-rc.4").configFile("full/path/to/diktat-analysis.yml")
+      diktat("1.0.2").configFile("full/path/to/diktat-analysis.yml")
    }
 }
 ```
@@ -229,7 +248,7 @@ Diktat can be run via spotless-maven-plugin since version 2.8.0
 
 ```xml
 <diktat>
-  <version>1.0.0-rc.4</version> <!-- optional -->
+  <version>1.0.2</version> <!-- optional -->
   <configFile>full/path/to/diktat-analysis.yml</configFile> <!-- optional, configuration file path -->
 </diktat>
 ```

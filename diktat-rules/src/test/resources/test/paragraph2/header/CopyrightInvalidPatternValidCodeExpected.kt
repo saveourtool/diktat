@@ -1,16 +1,15 @@
 /*
-    Copyright (c) Huawei Technologies Co., Ltd. 2020-2022. All rights reserved.
+    Copyright (c) My Company., Ltd. 2021-2022. All rights reserved.
 */
+/**
+ * Lorem ipsum
+ * dolor sit amet
+ */
 
 package test.paragraph2.header
 
 import org.cqfn.diktat.example.A
 import org.cqfn.diktat.example.B
-
-/**
- * Lorem ipsum
- * dolor sit amet
- */
 
 /**
  * Example class

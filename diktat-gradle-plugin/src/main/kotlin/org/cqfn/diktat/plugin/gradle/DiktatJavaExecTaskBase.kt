@@ -151,8 +151,8 @@ open class DiktatJavaExecTaskBase @Inject constructor(
     private fun createReporterFlag(diktatExtension: DiktatExtension): String {
         val flag: StringBuilder = StringBuilder()
 
-        // Plain, checkstyle and json reporter are provided out of the box in ktlint
-         reporter(diktatExtension, flag)
+        // appending the flag with the reporter
+        setReporterType(diktatExtension, flag)
 
         if (diktatExtension.output.isNotEmpty()) {
             flag.append(",output=${diktatExtension.output}")
@@ -161,11 +161,11 @@ open class DiktatJavaExecTaskBase @Inject constructor(
         return flag.toString()
     }
 
-    private fun customReporter(diktatExtension: DiktatExtension, flag: java.lang.StringBuilder) {
+    private fun setReporterType(diktatExtension: DiktatExtension, flag: java.lang.StringBuilder) {
         val name = diktatExtension.reporterType
-        val validReporterTypes = listOf()
-        if (name.isEmpty()) {
-            project.logger.warn("Reporter name was not specified. Falling to 'plain' reporter")
+        val validReporterTypes = listOf("sarif", "plain", "json", "html")
+        if (name.isEmpty() || !validReporterTypes.contains(name.trim())) {
+            project.logger.warn("Reporter name $name was not specified or is invalid. Falling to 'plain' reporter")
             flag.append("--reporter=plain")
         } else {
             flag.append("--reporter=$name")
