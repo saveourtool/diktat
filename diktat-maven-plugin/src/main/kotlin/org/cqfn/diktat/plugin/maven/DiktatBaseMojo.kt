@@ -1,6 +1,10 @@
 package org.cqfn.diktat.plugin.maven
 
-import com.pinterest.ktlint.core.*
+import com.pinterest.ktlint.core.KtLint
+import com.pinterest.ktlint.core.LintError
+import com.pinterest.ktlint.core.RuleExecutionException
+import com.pinterest.ktlint.core.RuleSet
+import com.pinterest.ktlint.core.Reporter
 import com.pinterest.ktlint.reporter.html.HtmlReporter
 import com.pinterest.ktlint.reporter.json.JsonReporter
 import com.pinterest.ktlint.reporter.plain.PlainReporter
@@ -27,13 +31,14 @@ abstract class DiktatBaseMojo : AbstractMojo() {
     var debug = false
 
     /**
-     *
+     * Type of the reporter to use
      */
     @Parameter(property = "diktat.reporter")
     var reporter = "plain"
 
     /**
-     *
+     * Type of output
+     * Default: System.out
      */
     @Parameter(property = "diktat.output")
     var output = ""

@@ -168,9 +168,6 @@ open class DiktatJavaExecTaskBase @Inject constructor(
             project.logger.warn("Reporter name $name was not specified or is invalid. Falling to 'plain' reporter")
             flag.append("--reporter=plain")
         } else {
-            diktatConfiguration
-                .dependencies
-                .add(project.dependencies.create("com.pinterest.ktlint:ktlint-reporter-$name:$KTLINT_VERSION"))
             flag.append("--reporter=$name")
         }
     }

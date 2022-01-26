@@ -27,7 +27,7 @@ open class DiktatExtension(
     /**
      * Type of the reporter to use
      */
-    var reporterType: String = "plain"
+    var reporter: String = "plain"
 
     /**
      * Type of output

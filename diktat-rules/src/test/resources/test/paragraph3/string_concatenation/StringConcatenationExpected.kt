@@ -32,3 +32,4 @@ val myTest21 = "${x} string"
 val myTest22 = "string${foo()}"
 val myTest23 = x.toString() + foo()
 val myTest24 = foo() + "string"
+val myTest25 = "String ${valueStr?.value}"
