@@ -3,6 +3,7 @@ package org.cqfn.diktat.ruleset.rules.chapter3
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.NO_BRACES_IN_CONDITIONALS_AND_LOOPS
 import org.cqfn.diktat.ruleset.rules.DiktatRule
+import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.findChildrenMatching
 import org.cqfn.diktat.ruleset.utils.isSingleLineIfElse
 import org.cqfn.diktat.ruleset.utils.loopType
@@ -21,7 +22,6 @@ import com.pinterest.ktlint.core.ast.ElementType.WHILE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isPartOfComment
 import com.pinterest.ktlint.core.ast.prevSibling
-import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -180,7 +180,6 @@ class BracesInConditionalsAndLoopsRule(configRules: List<RulesConfig>) : DiktatR
     }
     companion object {
         private const val INDENT_STEP = 4
-
         private val scopeFunctions = listOf("let", "run", "apply", "also")
     }
 }
