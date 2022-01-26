@@ -1,10 +1,12 @@
 package org.cqfn.diktat.plugin.maven
 
+import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
+
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.LintError
+import com.pinterest.ktlint.core.Reporter
 import com.pinterest.ktlint.core.RuleExecutionException
 import com.pinterest.ktlint.core.RuleSet
-import com.pinterest.ktlint.core.Reporter
 import com.pinterest.ktlint.reporter.html.HtmlReporter
 import com.pinterest.ktlint.reporter.json.JsonReporter
 import com.pinterest.ktlint.reporter.plain.PlainReporter
@@ -14,11 +16,10 @@ import org.apache.maven.plugin.MojoExecutionException
 import org.apache.maven.plugin.MojoFailureException
 import org.apache.maven.plugins.annotations.Parameter
 import org.apache.maven.project.MavenProject
-import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
+
 import java.io.File
 import java.io.FileOutputStream
 import java.io.PrintStream
-
 
 /**
  * Base [Mojo] for checking and fixing code using diktat
@@ -42,7 +43,6 @@ abstract class DiktatBaseMojo : AbstractMojo() {
      */
     @Parameter(property = "diktat.output")
     var output = ""
-
     private lateinit var reporterImpl: Reporter
 
     /**
@@ -109,7 +109,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
 
     private fun resolveReporter(): Reporter {
         val output = if (this.output.isBlank()) System.`out` else PrintStream(FileOutputStream(this.output, true))
-        return when(this.reporter) {
+        return when (this.reporter) {
             "sarif" -> SarifReporter(output)
             "plain" -> PlainReporter(output)
             "json" -> JsonReporter(output)
