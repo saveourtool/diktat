@@ -94,7 +94,7 @@ class DiktatJavaExecTaskTest {
         ) {
             inputs { exclude("*") }
             diktatConfigFile = project.file("../diktat-analysis.yml")
-            reporterType = "json"
+            reporter = "json"
             output = "some.txt"
         }
     }
@@ -106,7 +106,7 @@ class DiktatJavaExecTaskTest {
         ) {
             inputs { exclude("*") }
             diktatConfigFile = project.file("../diktat-analysis.yml")
-            reporterType = "json"
+            reporter = "json"
         }
     }
 
