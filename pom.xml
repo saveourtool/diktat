@@ -55,7 +55,7 @@
         <detekt.version>1.19.1</detekt.version>
         <dokka.version>1.6.10</dokka.version>
         <jacoco.version>0.8.7</jacoco.version>
-        <maven-plugin-tools.version>3.6.1</maven-plugin-tools.version>
+        <maven-plugin-tools.version>3.6.4</maven-plugin-tools.version>
         <jbool.version>1.23</jbool.version>
         <log4j.version>2.17.1</log4j.version>
     </properties>
