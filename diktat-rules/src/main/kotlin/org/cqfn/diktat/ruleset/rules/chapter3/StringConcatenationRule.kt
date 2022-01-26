@@ -18,6 +18,7 @@ import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
 import org.jetbrains.kotlin.psi.KtOperationExpression
 import org.jetbrains.kotlin.psi.KtParenthesizedExpression
 import org.jetbrains.kotlin.psi.KtReferenceExpression
+import org.jetbrains.kotlin.psi.KtSafeQualifiedExpression
 import org.jetbrains.kotlin.psi.KtStringTemplateExpression
 
 /**
@@ -153,7 +154,8 @@ class StringConcatenationRule(configRules: List<RulesConfig>) : DiktatRule(
             // =========== "a " + "b" -> "a b"
             val rvalueTextNew = rvalueText?.trim('"')
             return "$lvalueText$rvalueTextNew"
-        } else if (binaryExpressionPsi.isRvalueCallExpression() || binaryExpressionPsi.isRvalueDotQualifiedExpression() || binaryExpressionPsi.isRvalueOperation()) {
+        } else if (binaryExpressionPsi.isRvalueCallExpression() || binaryExpressionPsi.isRvalueDotQualifiedExpression() ||
+                binaryExpressionPsi.isRvalueOperation() || binaryExpressionPsi.isRvalueSafeQualifiedExpression()) {
             // ===========  "a " + foo() -> "a ${foo()}}"
             return "$lvalueText\${$rvalueText}"
         } else if (binaryExpressionPsi.isRvalueReferenceExpression()) {
@@ -216,4 +218,7 @@ class StringConcatenationRule(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun KtBinaryExpression.isLvalueConstantExpression() =
             this.left is KtConstantExpression
+
+    private fun KtBinaryExpression.isRvalueSafeQualifiedExpression() =
+            this.right is KtSafeQualifiedExpression
 }

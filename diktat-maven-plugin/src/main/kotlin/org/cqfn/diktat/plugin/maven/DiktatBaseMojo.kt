@@ -1,19 +1,24 @@
 package org.cqfn.diktat.plugin.maven
 
-import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
-
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.RuleExecutionException
 import com.pinterest.ktlint.core.RuleSet
+import com.pinterest.ktlint.core.Reporter
+import com.pinterest.ktlint.reporter.html.HtmlReporter
+import com.pinterest.ktlint.reporter.json.JsonReporter
 import com.pinterest.ktlint.reporter.plain.PlainReporter
+import com.pinterest.ktlint.reporter.sarif.SarifReporter
 import org.apache.maven.plugin.AbstractMojo
 import org.apache.maven.plugin.MojoExecutionException
 import org.apache.maven.plugin.MojoFailureException
 import org.apache.maven.plugins.annotations.Parameter
 import org.apache.maven.project.MavenProject
-
+import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
 import java.io.File
+import java.io.FileOutputStream
+import java.io.PrintStream
+
 
 /**
  * Base [Mojo] for checking and fixing code using diktat
@@ -25,8 +30,20 @@ abstract class DiktatBaseMojo : AbstractMojo() {
     @Parameter(property = "diktat.debug")
     var debug = false
 
-    // FixMe: Reporter should be chosen via plugin configuration
-    private val reporter = PlainReporter(System.out)
+    /**
+     * Type of the reporter to use
+     */
+    @Parameter(property = "diktat.reporter")
+    var reporter = "plain"
+
+    /**
+     * Type of output
+     * Default: System.out
+     */
+    @Parameter(property = "diktat.output")
+    var output = ""
+
+    private lateinit var reporterImpl: Reporter
 
     /**
      * Path to diktat yml config file. Can be either absolute or relative to project's root directory.
@@ -64,6 +81,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
      * @throws MojoExecutionException if [RuleExecutionException] has been thrown
      */
     override fun execute() {
+        reporterImpl = resolveReporter()
         val configFile = resolveConfig()
         if (!File(configFile).exists()) {
             throw MojoExecutionException("Configuration file $diktatConfigFile doesn't exist")
@@ -83,9 +101,23 @@ abstract class DiktatBaseMojo : AbstractMojo() {
                 checkDirectory(it, lintErrors, ruleSets)
             }
 
-        reporter.afterAll()
+        reporterImpl.afterAll()
         if (lintErrors.isNotEmpty()) {
             throw MojoFailureException("There are ${lintErrors.size} lint errors")
+        }
+    }
+
+    private fun resolveReporter(): Reporter {
+        val output = if (this.output.isBlank()) System.`out` else PrintStream(FileOutputStream(this.output, true))
+        return when(this.reporter) {
+            "sarif" -> SarifReporter(output)
+            "plain" -> PlainReporter(output)
+            "json" -> JsonReporter(output)
+            "html" -> HtmlReporter(output)
+            else -> {
+                log.warn("Reporter name ${this.reporter} was not specified or is invalid. Falling to 'plain' reporter")
+                PlainReporter(output)
+            }
         }
     }
 
@@ -128,9 +160,9 @@ abstract class DiktatBaseMojo : AbstractMojo() {
             .forEach { file ->
                 log.debug("Checking file $file")
                 try {
-                    reporter.before(file.path)
+                    reporterImpl.before(file.path)
                     checkFile(file, lintErrors, ruleSets)
-                    reporter.after(file.path)
+                    reporterImpl.after(file.path)
                 } catch (e: RuleExecutionException) {
                     log.error("Unhandled exception during rule execution: ", e)
                     throw MojoExecutionException("Unhandled exception during rule execution", e)
@@ -151,7 +183,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
                     userData = mapOf("file_path" to file.path),
                     script = file.extension.equals("kts", ignoreCase = true),
                     cb = { lintError, isCorrected ->
-                        reporter.onLintError(file.path, lintError, isCorrected)
+                        reporterImpl.onLintError(file.path, lintError, isCorrected)
                         lintErrors.add(lintError)
                     },
                     debug = debug

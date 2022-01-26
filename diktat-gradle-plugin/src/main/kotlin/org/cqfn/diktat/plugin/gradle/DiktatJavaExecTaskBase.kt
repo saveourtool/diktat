@@ -152,7 +152,7 @@ open class DiktatJavaExecTaskBase @Inject constructor(
         val flag: StringBuilder = StringBuilder()
 
         // appending the flag with the reporter
-        setReporterType(diktatExtension, flag)
+        setReporter(diktatExtension, flag)
 
         if (diktatExtension.output.isNotEmpty()) {
             flag.append(",output=${diktatExtension.output}")
@@ -161,10 +161,10 @@ open class DiktatJavaExecTaskBase @Inject constructor(
         return flag.toString()
     }
 
-    private fun setReporterType(diktatExtension: DiktatExtension, flag: java.lang.StringBuilder) {
-        val name = diktatExtension.reporterType
-        val validReporterTypes = listOf("sarif", "plain", "json", "html")
-        if (name.isEmpty() || !validReporterTypes.contains(name.trim())) {
+    private fun setReporter(diktatExtension: DiktatExtension, flag: java.lang.StringBuilder) {
+        val name = diktatExtension.reporter.trim()
+        val validReporters = listOf("sarif", "plain", "json", "html")
+        if (name.isEmpty() || !validReporters.contains(name)) {
             project.logger.warn("Reporter name $name was not specified or is invalid. Falling to 'plain' reporter")
             flag.append("--reporter=plain")
         } else {

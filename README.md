@@ -168,7 +168,7 @@ diktat {
 }
 ```
 
-Also `diktat` extension has different reporters. You can specify `json`, `html`, `sarif`, `plain` (default) or your own custom reporter:
+Also `diktat` extension has different reporters. You can specify `json`, `html`, `sarif`, `plain` (default) or your own custom reporter (it should be added as a dependency into `diktat` configuration):
 ```kotlin
 diktat {
    reporterType = "json" // "html", "json", "plain" (default), "sarif"
