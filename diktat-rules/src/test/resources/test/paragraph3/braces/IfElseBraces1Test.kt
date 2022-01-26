@@ -24,3 +24,14 @@ fun foo4() {
     if (x > 0)
     else ;
 }
+
+fun foo() {
+    if (a) {
+        bar()
+    } else b?.let {
+        baz()
+    }
+        ?: run {
+            qux()
+        }
+}

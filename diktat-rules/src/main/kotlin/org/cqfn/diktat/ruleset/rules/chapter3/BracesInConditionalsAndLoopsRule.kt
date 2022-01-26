@@ -15,11 +15,13 @@ import com.pinterest.ktlint.core.ast.ElementType.IF
 import com.pinterest.ktlint.core.ast.ElementType.IF_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
+import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.WHEN
 import com.pinterest.ktlint.core.ast.ElementType.WHILE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isPartOfComment
 import com.pinterest.ktlint.core.ast.prevSibling
+import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -90,6 +92,13 @@ class BracesInConditionalsAndLoopsRule(configRules: List<RulesConfig>) : DiktatR
         }
 
         if (elseKeyword != null && elseNode?.elementType != IF && elseNode?.elementType != BLOCK) {
+            val referenceExpressionChildren = elseNode?.findAllDescendantsWithSpecificType(REFERENCE_EXPRESSION)
+            val isNodeHaveScopeFunctionChildren = referenceExpressionChildren?.any {
+                it.text in scopeFunctions
+            }
+            if (isNodeHaveScopeFunctionChildren == true) {
+                return
+            }
             NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnAndFix(configRules, emitWarn, isFixMode, "ELSE",
                 (elseNode?.treeParent?.prevSibling { it.elementType == ELSE_KEYWORD } ?: node).startOffset, node) {
                 elseNode?.run {
@@ -171,5 +180,7 @@ class BracesInConditionalsAndLoopsRule(configRules: List<RulesConfig>) : DiktatR
     }
     companion object {
         private const val INDENT_STEP = 4
+
+        private val scopeFunctions = listOf("let", "run", "apply", "also")
     }
 }
