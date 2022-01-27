@@ -129,7 +129,6 @@ class BracesRuleWarnTest : LintTestBase(::BracesInConditionalsAndLoopsRule) {
         )
     }
 
-
     @Test
     @Tag(WarningNames.NO_BRACES_IN_CONDITIONALS_AND_LOOPS)
     fun `should check braces in if statements - exception for run`() {
