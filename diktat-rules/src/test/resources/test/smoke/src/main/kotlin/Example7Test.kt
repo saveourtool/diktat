@@ -20,3 +20,14 @@ fun foo() {
     }
 }
 
+fun fooo() {
+    if (a) {
+        bar()
+    } else b?.let {
+        baz()
+    }
+        ?: run {
+            qux()
+        }
+}
+
