@@ -28,6 +28,7 @@ import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.WHEN
 import com.pinterest.ktlint.core.ast.ElementType.WHEN_CONDITION_IS_PATTERN
 import com.pinterest.ktlint.core.ast.ElementType.WHEN_ENTRY
+import org.cqfn.diktat.ruleset.utils.prettyPrint
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.KtBlockExpression
@@ -224,6 +225,8 @@ class SmartCastRule(configRules: List<RulesConfig>) : DiktatRule(
             or call expression if it doesn't have block
          */
 
+        println(node.prettyPrint())
+
         val identifier = node.getFirstChildWithType(REFERENCE_EXPRESSION)?.text
 
         node.getAllChildrenWithType(WHEN_ENTRY).forEach { entry ->
@@ -235,6 +238,7 @@ class SmartCastRule(configRules: List<RulesConfig>) : DiktatRule(
                 val blocks = listOf(IsExpressions(identifier, type ?: ""))
 
                 callExpr?.let {
+                    println(it.text)
                     handleThenBlock(callExpr, blocks)
                 }
             }
