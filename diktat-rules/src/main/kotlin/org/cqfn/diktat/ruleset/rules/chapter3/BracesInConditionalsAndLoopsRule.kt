@@ -3,13 +3,13 @@ package org.cqfn.diktat.ruleset.rules.chapter3
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.NO_BRACES_IN_CONDITIONALS_AND_LOOPS
 import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.findChildrenMatching
 import org.cqfn.diktat.ruleset.utils.isSingleLineIfElse
 import org.cqfn.diktat.ruleset.utils.loopType
 
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
+import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.DO_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.ELSE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.IF
@@ -17,6 +17,7 @@ import com.pinterest.ktlint.core.ast.ElementType.IF_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
+import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.WHEN
 import com.pinterest.ktlint.core.ast.ElementType.WHILE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
@@ -32,6 +33,7 @@ import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.KtLoopExpression
 import org.jetbrains.kotlin.psi.KtWhenExpression
 import org.jetbrains.kotlin.psi.psiUtil.astReplace
+import org.jetbrains.kotlin.psi.psiUtil.children
 
 /**
  * Rule that checks that all conditionals and loops have braces.
@@ -92,13 +94,24 @@ class BracesInConditionalsAndLoopsRule(configRules: List<RulesConfig>) : DiktatR
         }
 
         if (elseKeyword != null && elseNode?.elementType != IF && elseNode?.elementType != BLOCK) {
-            val referenceExpressionChildren = elseNode?.findAllDescendantsWithSpecificType(REFERENCE_EXPRESSION)
-            val isNodeHaveScopeFunctionChildren = referenceExpressionChildren?.any {
+            // Looking for scope functions, for which we won't trigger
+            val callAndSafeAccessExpressionChildren = elseNode?.findChildrenMatching {
+                it.elementType == CALL_EXPRESSION || it.elementType == SAFE_ACCESS_EXPRESSION
+            }
+
+            val scopeFunctionChildren = callAndSafeAccessExpressionChildren?.flatMap {
+                it.children()
+            }?.filter {
+                it.elementType == REFERENCE_EXPRESSION
+            }
+
+            val isNodeHaveScopeFunctionChildren = scopeFunctionChildren?.any {
                 it.text in scopeFunctions
             }
             if (isNodeHaveScopeFunctionChildren == true) {
                 return
             }
+
             NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnAndFix(configRules, emitWarn, isFixMode, "ELSE",
                 (elseNode?.treeParent?.prevSibling { it.elementType == ELSE_KEYWORD } ?: node).startOffset, node) {
                 elseNode?.run {

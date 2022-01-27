@@ -115,6 +115,39 @@ class BracesRuleWarnTest : LintTestBase(::BracesInConditionalsAndLoopsRule) {
 
     @Test
     @Tag(WarningNames.NO_BRACES_IN_CONDITIONALS_AND_LOOPS)
+    fun `should check braces in if statements - exception for let 2`() {
+        lintMethod(
+            """
+            |fun foo() {
+            |    if (a) {
+            |        bar()
+            |    } else b?.let {
+            |        baz()
+            |    }
+            |}
+            """.trimMargin()
+        )
+    }
+
+
+    @Test
+    @Tag(WarningNames.NO_BRACES_IN_CONDITIONALS_AND_LOOPS)
+    fun `should check braces in if statements - exception for run`() {
+        lintMethod(
+            """
+            |fun foo() {
+            |    if (a) {
+            |        bar()
+            |    } else b!!.run {
+            |        baz()
+            |    }
+            |}
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.NO_BRACES_IN_CONDITIONALS_AND_LOOPS)
     fun `should check braces in if statements - exception for apply`() {
         lintMethod(
             """
@@ -126,6 +159,37 @@ class BracesRuleWarnTest : LintTestBase(::BracesInConditionalsAndLoopsRule) {
             |    }
             |}
             """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.NO_BRACES_IN_CONDITIONALS_AND_LOOPS)
+    fun `should check braces in if statements, apply exists, but braces are needed`() {
+        lintMethod(
+            """
+            |fun foo() {
+            |    if (a) {
+            |        bar()
+            |    } else baz(b.apply { id = 5 })
+            |}
+            """.trimMargin(),
+            LintError(4, 7, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} ELSE", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.NO_BRACES_IN_CONDITIONALS_AND_LOOPS)
+    fun `should check braces in if statements, apply exists, but braces are needed 2`() {
+        lintMethod(
+            """
+            |fun foo() {
+            |    if (a) {
+            |        bar()
+            |    } else 
+            |        c.baz(b.apply {id = 5})
+            |}
+            """.trimMargin(),
+            LintError(4, 7, ruleId, "${NO_BRACES_IN_CONDITIONALS_AND_LOOPS.warnText()} ELSE", true)
         )
     }
 

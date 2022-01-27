@@ -40,3 +40,19 @@ fun foo() {
             qux()
         }
 }
+
+fun foo() {
+    if (a) {
+        bar()
+    } else b.apply {
+        baz()
+    }
+}
+
+fun foo() {
+    if (a) {
+        bar()
+    } else {
+        baz(b.apply { id = 5 })
+    }
+}
