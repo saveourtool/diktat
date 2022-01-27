@@ -155,9 +155,13 @@ class CompactInitialization(configRules: List<RulesConfig>) : DiktatRule(
                             it is KtCallExpression || it is KtReferenceExpression
                 }
                 val newInitializerNodeText = buildString {
-                    if (!isNotRequiresParentheses) append("(")
+                    if (!isNotRequiresParentheses) {
+                        append("(")
+                    }
                     append(property.initializer!!.text)
-                    if (!isNotRequiresParentheses) append(")")
+                    if (!isNotRequiresParentheses) {
+                        append(")")
+                    }
                     append(".apply {}")
                 }
                 val newInitializerNode = kotlinParser.createNode(newInitializerNodeText)
