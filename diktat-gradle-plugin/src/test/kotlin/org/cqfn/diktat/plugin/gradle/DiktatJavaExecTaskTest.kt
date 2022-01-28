@@ -94,7 +94,7 @@ class DiktatJavaExecTaskTest {
         ) {
             inputs { exclude("*") }
             diktatConfigFile = project.file("../diktat-analysis.yml")
-            reporterType = "json"
+            reporter = "json"
             output = "some.txt"
         }
     }
@@ -106,36 +106,8 @@ class DiktatJavaExecTaskTest {
         ) {
             inputs { exclude("*") }
             diktatConfigFile = project.file("../diktat-analysis.yml")
-            reporterType = "json"
+            reporter = "json"
         }
-    }
-
-    @Test
-    fun `check command line has custom reporter type with output`() {
-        assertCommandLineEquals(
-            listOf(null, "--reporter=customName,artifact=customPath")
-        ) {
-            inputs { exclude("*") }
-            diktatConfigFile = project.file("../diktat-analysis.yml")
-            reporterType = "custom:customName:customPath"
-        }
-    }
-
-    @Test
-    fun `check that project has html dependency`() {
-        val task = project.registerDiktatTask {
-            inputs { exclude("*") }
-            diktatConfigFile = project.file("../diktat-analysis.yml")
-            reporterType = "html"
-        }
-
-        Assertions.assertTrue(
-            project
-                .configurations
-                .getByName("diktat")
-                .dependencies
-                .any { it.name == "ktlint-reporter-html" })
-        Assertions.assertEquals(File(project.projectDir.parentFile, "diktat-analysis.yml").absolutePath, task.systemProperties[DIKTAT_CONF_PROPERTY])
     }
 
     @Test

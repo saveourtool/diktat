@@ -29,3 +29,30 @@ fun foo4() {
     } else {
     } ;
 }
+
+fun foo() {
+    if (a) {
+        bar()
+    } else b?.let {
+        baz()
+    }
+        ?: run {
+            qux()
+        }
+}
+
+fun foo() {
+    if (a) {
+        bar()
+    } else b.apply {
+        baz()
+    }
+}
+
+fun foo() {
+    if (a) {
+        bar()
+    } else {
+        baz(b.apply { id = 5 })
+    }
+}

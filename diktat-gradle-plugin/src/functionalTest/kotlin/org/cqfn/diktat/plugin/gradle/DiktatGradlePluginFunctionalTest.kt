@@ -45,7 +45,7 @@ class DiktatGradlePluginFunctionalTest {
             """${System.lineSeparator()}
                 diktat {
                     inputs { include("src/**/*.kt") }
-                    reporterType = "json"
+                    reporter = "json"
                     output = "test.txt"
                 }
             """.trimIndent()
