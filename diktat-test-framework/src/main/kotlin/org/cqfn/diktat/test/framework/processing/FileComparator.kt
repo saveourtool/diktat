@@ -18,13 +18,13 @@ import java.util.stream.Collectors
 class FileComparator {
     private val expectedResultFile: File
     private val actualResultList: List<String>
-    private val diffGenerator = DiffRowGenerator.create()
-        .showInlineDiffs(true)
-        .mergeOriginalRevised(false)
-        .inlineDiffByWord(false)
-        .oldTag { start -> if (start) "[" else "]" }
-        .newTag { start -> if (start) "<" else ">" }
-        .build()
+    private val diffGenerator = DiffRowGenerator(
+        showInlineDiffs = true,
+        mergeOriginalRevised = false,
+        inlineDiffByWord = false,
+        oldTag = { _, start -> if (start) "[" else "]" },
+        newTag = { _, start -> if (start) "<" else ">" },
+    )
 
     constructor(expectedResultFile: File, actualResultList: List<String>) {
         this.expectedResultFile = expectedResultFile
