@@ -305,6 +305,16 @@ To disable chapters, you will need to add the following configuration to common 
 
 Mapping of inspections to chapters can be found in [Groups of Inspections](info/rules-mapping.md) .
 
+## Running against the baseline
+When setting up code style analysis on a large existing project, one often doesn't have an ability to fix all findings at once.
+To allow gradual adoption, diktat and ktlint support baseline mode. When running ktlint for the first time with active baseline,
+the baseline file will be generated. It is a xml file with a complete list of findings by the tool. On later invocations,
+only the findings that are not in the baseline file will be reported. Baseline can be activated with CLI flag:
+```bash
+java -jar ktlint -R dikat.jar --baseline=diktat-baseline.xml **/*.kt
+```
+or with corresponding configuration options in maven or gradle plugins.
+
 ## How to contribute?
 
 Main components are:

@@ -55,6 +55,8 @@ open class DiktatExtension(
     @get:PathSensitive(PathSensitivity.RELATIVE)
     lateinit var diktatConfigFile: File
 
+    var baseline: String? = null
+
     /**
      * Configure input files for diktat task
      *

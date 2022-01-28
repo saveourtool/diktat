@@ -101,6 +101,9 @@ open class DiktatJavaExecTaskBase @Inject constructor(
             if (diktatExtension.debug) {
                 add("--debug")
             }
+            if (diktatExtension.baseline != null) {
+                add("--baseline=${diktatExtension.baseline}")
+            }
             actualInputs.also {
                 if (it.isEmpty) {
                     /*
