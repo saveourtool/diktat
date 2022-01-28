@@ -24,7 +24,10 @@ import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtCallableReferenceExpression
 import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
 import org.jetbrains.kotlin.psi.KtNameReferenceExpression
+import org.jetbrains.kotlin.psi.KtParenthesizedExpression
 import org.jetbrains.kotlin.psi.KtProperty
+import org.jetbrains.kotlin.psi.KtQualifiedExpression
+import org.jetbrains.kotlin.psi.KtReferenceExpression
 import org.jetbrains.kotlin.psi.psiUtil.siblings
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
 import org.slf4j.LoggerFactory
@@ -145,11 +148,32 @@ class CompactInitialization(configRules: List<RulesConfig>) : DiktatRule(
         ?: run {
             // add apply block
             property.node.run {
-                val newInitializerNode = kotlinParser.createNode("${property.initializer!!.text}.apply {}")
+                val newInitializerNodeText = buildInitializerNodeText(property)
+                val newInitializerNode = kotlinParser.createNode(newInitializerNodeText)
                 replaceChild(property.initializer!!.node, newInitializerNode)
             }
             (property.initializer as KtDotQualifiedExpression).selectorExpression!! as KtCallExpression
         }
+
+    @Suppress("UnsafeCallOnNullableType")
+    private fun buildInitializerNodeText(property: KtProperty): String {
+        val isRequiresParentheses = property.initializer.let {
+            // list of expression types, that can be directly followed by a dot-qualified call
+            // e.g. val x = foo()  ->  val x = foo().apply {}
+            // e.g. val x = foo + bar  ->  val x = (foo + bar).apply {}
+            it is KtParenthesizedExpression || it is KtQualifiedExpression || it is KtReferenceExpression
+        }.not()
+        return buildString {
+            if (isRequiresParentheses) {
+                append("(")
+            }
+            append(property.initializer!!.text)
+            if (isRequiresParentheses) {
+                append(")")
+            }
+            append(".apply {}")
+        }
+    }
 
     /**
      * convert `apply(::foo)` to `apply { foo(this) }` if necessary
