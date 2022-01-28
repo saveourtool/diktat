@@ -147,7 +147,7 @@
             <dependency>
                 <groupId>io.github.petertrr</groupId>
                 <artifactId>kotlin-multiplatform-diff-jvm</artifactId>
-                <version>0.3.0</version>
+                <version>0.4.0</version>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
