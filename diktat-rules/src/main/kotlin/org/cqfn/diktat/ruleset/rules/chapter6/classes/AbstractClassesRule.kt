@@ -36,7 +36,7 @@ class AbstractClassesRule(configRules: List<RulesConfig>) : DiktatRule(
 
             // If an abstract class extends another class, than that base class can be abstract too.
             // Then this class must have `abstract` modifier even if it doesn't have any abstract members.
-            // Class also must have `abstract` modifier if it implements interface
+            // Class also can have `abstract` modifier if it implements interface
             if (node.hasAbstractModifier() && node.isNotSubclass()) {
                 handleAbstractClass(classBody, node)
             }
