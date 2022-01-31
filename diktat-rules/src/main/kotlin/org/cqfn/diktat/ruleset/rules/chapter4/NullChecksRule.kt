@@ -156,7 +156,11 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
         condition.treeParent.treeParent.removeChild(condition.treeParent)
     }
 
-    private fun getDefaultCaseNullCheck(variableName: String, thenCodeLines: List<String>?, elseCodeLines: List<String>?): String {
+    private fun getDefaultCaseNullCheck(
+        variableName: String,
+        thenCodeLines: List<String>?,
+        elseCodeLines: List<String>?
+    ): String {
         val editedThenPart = if (variableName == thenCodeLines?.singleOrNull()) {
             variableName
         } else {
