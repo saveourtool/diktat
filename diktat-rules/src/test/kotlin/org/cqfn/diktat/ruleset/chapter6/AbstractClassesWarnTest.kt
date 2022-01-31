@@ -116,14 +116,13 @@ class AbstractClassesWarnTest : LintTestBase(::AbstractClassesRule) {
 
     @Test
     @Tag(CLASS_SHOULD_NOT_BE_ABSTRACT)
-    fun `should trigger on classes that implement interfaces`() {
+    fun `should not trigger on classes that implement interfaces`() {
         lintMethod(
             """
                 |abstract class Example: Base {
                 |    fun foo() {}
                 |}
             """.trimMargin(),
-            LintError(1, 30, ruleId, "[CLASS_SHOULD_NOT_BE_ABSTRACT] class should not be abstract, because it has no abstract functions: Example", true)
         )
     }
 }
