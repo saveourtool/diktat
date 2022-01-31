@@ -140,23 +140,7 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
                         |${elseCodeLines.joinToString(separator = "\n")}
                         |} ?: break
                         """.trimMargin()
-                else -> {
-                    if (variableName == elseCodeLines.singleOrNull()) {
-                        variableName
-                    } else {
-                        """
-                            |$variableName?.let {
-                            |${elseCodeLines.joinToString(separator = "\n")}
-                            |}
-                            |
-                        """.trimMargin()
-                    } + " ?: " + (thenCodeLines.singleOrNull() ?:
-                    """
-                            |run {
-                            |${thenCodeLines.joinToString(separator = "\n")}
-                            |}
-                        """.trimMargin())
-                }
+                else -> getDefaultCaseNullCheck(variableName, elseCodeLines, thenCodeLines)
             }
         } else {
             when {
@@ -164,28 +148,31 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
                     "$variableName?.let {${thenCodeLines?.joinToString(prefix = "\n", postfix = "\n", separator = "\n")}}"
                 elseCodeLines.singleOrNull() == "break" ->
                     "$variableName?.let {${thenCodeLines?.joinToString(prefix = "\n", postfix = "\n", separator = "\n")}} ?: break"
-                else -> {
-                    if (variableName == thenCodeLines?.singleOrNull()) {
-                        variableName
-                    } else {
-                        """
-                            |$variableName?.let {
-                            |${thenCodeLines?.joinToString(separator = "\n")}
-                            |}
-                            |
-                        """.trimMargin()
-                    } + " ?: " + (elseCodeLines.singleOrNull() ?:
-                        """
-                            |run {
-                            |${elseCodeLines.joinToString(separator = "\n")}
-                            |}
-                        """.trimMargin())
-                }
+                else -> getDefaultCaseNullCheck(variableName, thenCodeLines, elseCodeLines)
             }
         }
         val tree = KotlinParser().createNode(text)
         condition.treeParent.treeParent.addChild(tree, condition.treeParent)
         condition.treeParent.treeParent.removeChild(condition.treeParent)
+    }
+
+    private fun getDefaultCaseNullCheck(variableName: String, thenCodeLines: List<String>?, elseCodeLines: List<String>?): String {
+        val editedThenPart = if (variableName == thenCodeLines?.singleOrNull()) {
+            variableName
+        } else {
+            """
+            |$variableName?.let {
+            |${thenCodeLines?.joinToString(separator = "\n")}
+            |}
+            |""".trimMargin()
+        }
+
+        val editedElsePart = elseCodeLines?.singleOrNull()
+            ?: """
+            |run {
+            |${elseCodeLines?.joinToString(separator = "\n")}
+            |}""".trimMargin()
+        return "$editedThenPart ?: $editedElsePart"
     }
 
     @Suppress("COMMENT_WHITE_SPACE", "UnsafeCallOnNullableType")
