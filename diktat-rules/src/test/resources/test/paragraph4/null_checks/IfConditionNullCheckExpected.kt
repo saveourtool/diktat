@@ -19,9 +19,7 @@ bar()
     some?.let {
 print("qwe")
 }
-?: run {
-print("asd")
-}
+ ?: print("asd")
 
     some?.let {
 print("qweqwe")
@@ -30,9 +28,7 @@ print("qweqwe")
     some?.let {
 print("qqq")
 }
-?: run {
-print("www")
-}
+ ?: print("www")
 
     some?.let {
 print("ttt")
@@ -41,7 +37,7 @@ print("ttt")
     some?.let {
 print("ttt")
 }
-?: run {
+ ?: run {
 null
 value
 }
@@ -53,7 +49,7 @@ fun foo() {
         result?.let {
 goo()
 }
-?: run {
+ ?: run {
 for(i in 1..10)
 break
 }

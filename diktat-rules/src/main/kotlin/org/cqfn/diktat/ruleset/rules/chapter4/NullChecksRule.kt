@@ -140,14 +140,23 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
                         |${elseCodeLines.joinToString(separator = "\n")}
                         |} ?: break
                         """.trimMargin()
-                else -> """
-                        |$variableName?.let {
-                        |${elseCodeLines.joinToString(separator = "\n")}
-                        |}
-                        |?: run {
-                        |${thenCodeLines.joinToString(separator = "\n")}
-                        |}
-                    """.trimMargin()
+                else -> {
+                    if (variableName == elseCodeLines.singleOrNull()) {
+                        variableName
+                    } else {
+                        """
+                            |$variableName?.let {
+                            |${elseCodeLines.joinToString(separator = "\n")}
+                            |}
+                            |
+                        """.trimMargin()
+                    } + " ?: " + (thenCodeLines.singleOrNull() ?:
+                    """
+                            |run {
+                            |${thenCodeLines.joinToString(separator = "\n")}
+                            |}
+                        """.trimMargin())
+                }
             }
         } else {
             when {
@@ -155,14 +164,23 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
                     "$variableName?.let {${thenCodeLines?.joinToString(prefix = "\n", postfix = "\n", separator = "\n")}}"
                 elseCodeLines.singleOrNull() == "break" ->
                     "$variableName?.let {${thenCodeLines?.joinToString(prefix = "\n", postfix = "\n", separator = "\n")}} ?: break"
-                else -> """
-                        |$variableName?.let {
-                        |${thenCodeLines?.joinToString(separator = "\n")}
-                        |}
-                        |?: run {
-                        |${elseCodeLines.joinToString(separator = "\n")}
-                        |}
-                    """.trimMargin()
+                else -> {
+                    if (variableName == thenCodeLines?.singleOrNull()) {
+                        variableName
+                    } else {
+                        """
+                            |$variableName?.let {
+                            |${thenCodeLines?.joinToString(separator = "\n")}
+                            |}
+                            |
+                        """.trimMargin()
+                    } + " ?: " + (elseCodeLines.singleOrNull() ?:
+                        """
+                            |run {
+                            |${elseCodeLines.joinToString(separator = "\n")}
+                            |}
+                        """.trimMargin())
+                }
             }
         }
         val tree = KotlinParser().createNode(text)
