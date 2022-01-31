@@ -6,9 +6,7 @@ import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.KotlinParser
 import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
-import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
 import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
-import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.cqfn.diktat.ruleset.utils.hasParent
 import org.cqfn.diktat.ruleset.utils.search.findAllVariablesWithUsages
 
@@ -24,10 +22,7 @@ import com.pinterest.ktlint.core.ast.ElementType.IS_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.STRING_TEMPLATE
 import com.pinterest.ktlint.core.ast.ElementType.THEN
-import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.WHEN
-import com.pinterest.ktlint.core.ast.ElementType.WHEN_CONDITION_IS_PATTERN
-import com.pinterest.ktlint.core.ast.ElementType.WHEN_ENTRY
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.KtBlockExpression
@@ -52,7 +47,8 @@ class SmartCastRule(configRules: List<RulesConfig>) : DiktatRule(
         }
 
         if (node.elementType == WHEN) {
-            handleWhenCondition(node)
+            // Rule is simplified after https://github.com/analysis-dev/diktat/issues/1168
+            return
         }
     }
 
@@ -212,30 +208,6 @@ class SmartCastRule(configRules: List<RulesConfig>) : DiktatRule(
                     val text = "${it.identifier}.$afterDotPart"
                     dotExpr.treeParent.addChild(KotlinParser().createNode(text), dotExpr)
                     dotExpr.treeParent.removeChild(dotExpr)
-                }
-            }
-        }
-    }
-
-    @Suppress("UnsafeCallOnNullableType")
-    private fun handleWhenCondition(node: ASTNode) {
-        /*
-            Check if there is WHEN_CONDITION_IS_PATTERN. If so delete 'as' in it's block
-            or call expression if it doesn't have block
-         */
-
-        val identifier = node.getFirstChildWithType(REFERENCE_EXPRESSION)?.text
-
-        node.getAllChildrenWithType(WHEN_ENTRY).forEach { entry ->
-            if (entry.hasChildOfType(WHEN_CONDITION_IS_PATTERN) && identifier != null) {
-                val type = entry.getFirstChildWithType(WHEN_CONDITION_IS_PATTERN)!!
-                    .getFirstChildWithType(TYPE_REFERENCE)?.text
-
-                val callExpr = entry.findAllDescendantsWithSpecificType(BINARY_WITH_TYPE).firstOrNull()
-                val blocks = listOf(IsExpressions(identifier, type ?: ""))
-
-                callExpr?.let {
-                    handleThenBlock(callExpr, blocks)
                 }
             }
         }
