@@ -4,13 +4,13 @@
 ![deteKT static analysis](https://github.com/cqfn/diKTat/workflows/Run%20deteKT/badge.svg)
 ![diKTat code style](https://github.com/cqfn/diKTat/workflows/Run%20diKTat%20from%20release%20version/badge.svg?branch=master)
 [![License](https://img.shields.io/github/license/cqfn/diKtat)](https://github.com/cqfn/diKTat/blob/master/LICENSE)
-[![codecov](https://codecov.io/gh/diktat-static-analysis/diKTat/branch/master/graph/badge.svg)](https://codecov.io/gh/diktat-static-analysis/diKTat)
+[![codecov](https://codecov.io/gh/analysis-dev/diKTat/branch/master/graph/badge.svg)](https://codecov.io/gh/analysis-dev/diKTat)
 
 [![Releases](https://img.shields.io/github/v/release/cqfn/diKTat)](https://github.com/cqfn/diKTat/releases)
 [![Maven Central](https://img.shields.io/maven-central/v/org.cqfn.diktat/diktat-rules)](https://mvnrepository.com/artifact/org.cqfn.diktat)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fcqfn%2FdiKTat.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fcqfn%2FdiKTat?ref=badge_shield)
 [![ktlint](https://img.shields.io/badge/code%20style-%E2%9D%A4-FF4081.svg)](https://ktlint.github.io/)
-[![Chat on Telegram](https://img.shields.io/badge/Chat%20on-Telegram-brightgreen.svg)](https://t.me/joinchat/AAAAAFDg-ipuZFGyBGPPeg)
+[![Chat on Telegram](https://img.shields.io/badge/Chat%20on-Telegram-brightgreen.svg)](https://t.me/diktat_help)
 
 [![Hits-of-Code](https://hitsofcode.com/github/cqfn/diktat)](https://hitsofcode.com/view/github/cqfn/diktat)
 ![Lines of code](https://img.shields.io/tokei/lines/github/cqfn/diktat)
@@ -98,6 +98,7 @@ If you use it and encounter any problems, feel free to open issues on [github](h
 
 <details>
 <summary>Add this plugin to your pom.xml:</summary>
+  
 ```xml
             <plugin>
                 <groupId>org.cqfn.diktat</groupId>
@@ -137,6 +138,7 @@ This plugin is available since version 0.1.5. You can see how the plugin is conf
 
 <details>
 <summary>Add this plugin to your `build.gradle.kts`:</summary>
+
 ```kotlin
 plugins {
     id("org.cqfn.diktat.diktat-gradle-plugin") version "1.0.2"
@@ -304,6 +306,17 @@ To disable chapters, you will need to add the following configuration to common 
 ```  
 
 Mapping of inspections to chapters can be found in [Groups of Inspections](info/rules-mapping.md) .
+
+## Running against the baseline
+When setting up code style analysis on a large existing project, one often doesn't have an ability to fix all findings at once.
+To allow gradual adoption, diktat and ktlint support baseline mode. When running ktlint for the first time with active baseline,
+the baseline file will be generated. It is a xml file with a complete list of findings by the tool. On later invocations,
+only the findings that are not in the baseline file will be reported. Baseline can be activated with CLI flag:
+```bash
+java -jar ktlint -R dikat.jar --baseline=diktat-baseline.xml **/*.kt
+```
+or with corresponding configuration options in maven or gradle plugins. Baseline report is intended to be added into the VCS,
+but it can be removed and re-generated later, if needed.
 
 ## How to contribute?
 
