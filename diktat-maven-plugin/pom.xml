@@ -19,7 +19,7 @@
     </properties>
 
     <dependencies>
-        <!-- FixMe: Use this, when it's released -->
+        <!-- FixMe: Use this, when it's released: https://maven.apache.org/ref/4-LATEST/maven-bom/ -->
         <!-- <dependency> -->
         <!--     <groupId>org.apache.maven</groupId> -->
         <!--     <artifactId>maven-bom</artifactId> -->
@@ -67,6 +67,11 @@
         <dependency>
             <groupId>com.pinterest.ktlint</groupId>
             <artifactId>ktlint-reporter-html</artifactId>
+            <version>${ktlint.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.pinterest.ktlint</groupId>
+            <artifactId>ktlint-reporter-baseline</artifactId>
             <version>${ktlint.version}</version>
         </dependency>
         <dependency>
