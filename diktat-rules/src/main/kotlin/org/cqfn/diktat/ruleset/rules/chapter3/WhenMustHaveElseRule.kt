@@ -61,6 +61,28 @@ class WhenMustHaveElseRule(configRules: List<RulesConfig>) : DiktatRule(
                 }
             }
         }
+        /*else if(isEnumCovered()) {
+            WHEN_WITHOUT_ELSE.warnAndFix(configRules, emitWarn, isFixMode, "else is redundant", node.startOffset, node) {
+                val whenEntryElse = CompositeElement(WHEN_ENTRY)
+                if (!node.lastChildNode.isBeginByNewline()) {
+                    node.appendNewlineMergingWhiteSpace(node.lastChildNode.treePrev, node.lastChildNode)
+                }
+                node.addChild(whenEntryElse, node.lastChildNode)
+                addChildren(whenEntryElse)
+                if (!whenEntryElse.isBeginByNewline()) {
+                    node.addChild(PsiWhiteSpaceImpl("\n"), whenEntryElse)
+                }
+            }
+        }
+       */
+    }
+
+    private fun isEnum(node: ASTNode) {
+
+    }
+
+    private fun isEnumCovered(): Boolean {
+        return true
     }
 
     private fun isStatement(node: ASTNode): Boolean {

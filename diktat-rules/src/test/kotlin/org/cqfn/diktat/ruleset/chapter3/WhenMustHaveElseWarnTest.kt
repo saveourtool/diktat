@@ -90,4 +90,25 @@ class WhenMustHaveElseWarnTest : LintTestBase(::WhenMustHaveElseRule) {
                 """.trimMargin()
         )
     }
+
+    @Test
+    @Tag(WarningNames.WHEN_WITHOUT_ELSE)
+    fun `when in func covers all the enum`() {
+        lintMethod(
+            """
+                |enum class ConfirmationType {
+                |   NO_BINARY_CONFIRM, NO_CONFIRM, DELETE_CONFIRM
+                |}
+                |
+                |fun foo() {
+                |    val confirmationType = ConfirmationType.NO_CONFIRM
+                |    when (confirmationType) {
+                |        ConfirmationType.NO_BINARY_CONFIRM, ConfirmationType.NO_CONFIRM -> println("NO")
+                |        ConfirmationType.DELETE_CONFIRM -> println("YES")
+                |        else -> println("REDUNDANT")
+                |    }
+                |}
+            """.trimMargin()
+        )
+    }
 }
