@@ -16,6 +16,7 @@ import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.OPEN_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_CALL_ENTRY
+import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_LIST
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -35,6 +36,7 @@ class AbstractClassesRule(configRules: List<RulesConfig>) : DiktatRule(
 
             // If an abstract class extends another class, than that base class can be abstract too.
             // Then this class must have `abstract` modifier even if it doesn't have any abstract members.
+            // Class also must have `abstract` modifier if it implements interface
             if (node.hasAbstractModifier() && node.isNotSubclass()) {
                 handleAbstractClass(classBody, node)
             }
@@ -45,7 +47,7 @@ class AbstractClassesRule(configRules: List<RulesConfig>) : DiktatRule(
             getFirstChildWithType(MODIFIER_LIST)?.hasChildOfType(ABSTRACT_KEYWORD) ?: false
 
     private fun ASTNode.isNotSubclass(): Boolean = findChildByType(SUPER_TYPE_LIST)?.children()?.filter {
-        it.elementType == SUPER_TYPE_CALL_ENTRY
+        it.elementType == SUPER_TYPE_CALL_ENTRY || it.elementType == SUPER_TYPE_ENTRY
     }?.none() ?: true
 
     @Suppress("UnsafeCallOnNullableType")
