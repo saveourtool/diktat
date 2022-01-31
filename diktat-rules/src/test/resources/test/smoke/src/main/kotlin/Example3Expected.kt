@@ -52,6 +52,14 @@ enum class IssueType2 {
     companion object
 }
 
+enum class IssueType3 {
+    A,
+    B,
+    C,
+    D,
+    ;
+}
+
 class Foo {
     /**
      * @implNote lorem ipsum

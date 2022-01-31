@@ -7,6 +7,7 @@ import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames.SMART_CAST_NEEDED
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
@@ -191,6 +192,7 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
     }
 
     @Test
+    @Disabled("Rule is simplified after https://github.com/analysis-dev/diktat/issues/1168")
     @Tag(SMART_CAST_NEEDED)
     fun `smart cast in when bad`() {
         lintMethod(
@@ -225,6 +227,19 @@ class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
                     |   }
                     |}
                 """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(SMART_CAST_NEEDED)
+    fun `smart cast in when good 2`() {
+        lintMethod(
+            """
+            |fun SomeClass.foo() = when (mutableProperty) {
+            |    is Foo -> (mutableProperty as Foo).fooFoo()  // smart cast is required 'because 'mutableProperty' is a property that has open or custom getter'
+            |    else -> println("ok")
+            |}
+            """.trimMargin()
         )
     }
 

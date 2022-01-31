@@ -52,6 +52,14 @@ enum class IssueType2 {
     fun foo(bar: Int) = bar
 }
 
+enum class IssueType3 {
+    A,
+    C,
+    B,
+    D,
+    ;
+}
+
 class Foo {
     /**
      * @implNote lorem ipsum

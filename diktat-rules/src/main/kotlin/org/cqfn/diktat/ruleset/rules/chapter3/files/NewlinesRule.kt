@@ -13,11 +13,14 @@ import org.cqfn.diktat.ruleset.utils.emptyBlockList
 import org.cqfn.diktat.ruleset.utils.extractLineOfText
 import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.findParentNodeWithSpecificType
+import org.cqfn.diktat.ruleset.utils.getFilePath
 import org.cqfn.diktat.ruleset.utils.getIdentifierName
+import org.cqfn.diktat.ruleset.utils.getRootNode
 import org.cqfn.diktat.ruleset.utils.hasParent
 import org.cqfn.diktat.ruleset.utils.isBeginByNewline
 import org.cqfn.diktat.ruleset.utils.isEol
 import org.cqfn.diktat.ruleset.utils.isFollowedByNewline
+import org.cqfn.diktat.ruleset.utils.isGradleScript
 import org.cqfn.diktat.ruleset.utils.isSingleLineIfElse
 import org.cqfn.diktat.ruleset.utils.leaveOnlyOneNewLine
 
@@ -71,7 +74,6 @@ import com.pinterest.ktlint.core.ast.ElementType.SAFE_ACCESS_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.SECONDARY_CONSTRUCTOR
 import com.pinterest.ktlint.core.ast.ElementType.SEMICOLON
 import com.pinterest.ktlint.core.ast.ElementType.SUPER_TYPE_LIST
-import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER
@@ -177,24 +179,24 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             return
         }
         val isIncorrect = (if (node.elementType == ELVIS) node.treeParent else node).run {
-            if (isCallsChain()) {
+            if (isInvalidCallsChain(dropLeadingProperties = true)) {
                 if (node.isInParentheses()) {
-                    COMPLEX_EXPRESSION.warn(configRules, emitWarn, isFixMode, node.text, node.startOffset, node)
+                    checkForComplexExpression(node)
                 }
                 val isSingleLineIfElse = parent({ it.elementType == IF }, true)?.isSingleLineIfElse() ?: false
                 // to follow functional style these operators should be started by newline
                 (isFollowedByNewline() || !isBeginByNewline()) && !isSingleLineIfElse &&
                         (!isFirstCall() || !isMultilineLambda(treeParent))
             } else {
-                if (isCallsChain(false) && node.isInParentheses()) {
-                    COMPLEX_EXPRESSION.warn(configRules, emitWarn, isFixMode, node.text, node.startOffset, node)
+                if (isInvalidCallsChain(dropLeadingProperties = false) && node.isInParentheses()) {
+                    checkForComplexExpression(node)
                 }
                 // unless statement is simple and on single line, these operators cannot have newline after
                 isFollowedByNewline() && !isSingleDotStatementOnSingleLine()
             }
         }
         if (isIncorrect || node.isElvisCorrect()) {
-            val freeText = if (node.isCallsChain() || node.isElvisCorrect()) {
+            val freeText = if (node.isInvalidCallsChain() || node.isElvisCorrect()) {
                 "should follow functional style at ${node.text}"
             } else {
                 "should break a line before and not after ${node.text}"
@@ -214,6 +216,14 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
                 }
             }
         }
+    }
+
+    private fun checkForComplexExpression(node: ASTNode) {
+        if (node.getRootNode().getFilePath().isGradleScript()) {
+            // this inspection is softened for gradle scripts, see https://github.com/analysis-dev/diktat/issues/1148
+            return
+        }
+        COMPLEX_EXPRESSION.warn(configRules, emitWarn, isFixMode, node.text, node.startOffset, node)
     }
 
     private fun handleOpeningParentheses(node: ASTNode) {
@@ -536,7 +546,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
      *
      * @return true - if there is error, and false if there is no error
      */
-    private fun ASTNode.isCallsChain(dropLeadingProperties: Boolean = true) = getCallChain(dropLeadingProperties)?.isNotValidCalls(this) ?: false
+    private fun ASTNode.isInvalidCallsChain(dropLeadingProperties: Boolean = true) = getCallChain(dropLeadingProperties)?.isNotValidCalls(this) ?: false
 
     private fun ASTNode.getCallChain(dropLeadingProperties: Boolean = true): List<ASTNode>? {
         val parentExpressionList = getParentExpressions()
@@ -573,7 +583,8 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             }
         }
         callsByNewLine.add(callsInOneNewLine)
-        return (callsByNewLine.find { it.contains(node) } ?: return false).indexOf(node) + 1 > configuration.maxCallsInOneLine
+        return (callsByNewLine.find { it.contains(node) } ?: return false)
+            .indexOf(node) + 1 > configuration.maxCallsInOneLine
     }
 
     /**
@@ -583,10 +594,10 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
             parents().takeWhile { it.elementType in chainExpressionTypes && it.elementType != LAMBDA_ARGUMENT }
 
     private fun isMultilineLambda(node: ASTNode): Boolean =
-            node.findAllDescendantsWithSpecificType(LAMBDA_ARGUMENT)
+            (node.findAllDescendantsWithSpecificType(LAMBDA_ARGUMENT)
                 .firstOrNull()
                 ?.text
-                ?.count { it == '\n' } ?: -1 > 0
+                ?.count { it == '\n' } ?: -1) > 0
 
     /**
      * Getting the first call expression in call chain
