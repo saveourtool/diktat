@@ -313,7 +313,8 @@ only the findings that are not in the baseline file will be reported. Baseline c
 ```bash
 java -jar ktlint -R dikat.jar --baseline=diktat-baseline.xml **/*.kt
 ```
-or with corresponding configuration options in maven or gradle plugins.
+or with corresponding configuration options in maven or gradle plugins. Baseline report is intended to be added into the VCS,
+but it can be removed and re-generated later, if needed.
 
 ## How to contribute?
 

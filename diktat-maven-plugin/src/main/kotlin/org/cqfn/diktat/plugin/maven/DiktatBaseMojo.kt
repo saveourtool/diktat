@@ -46,6 +46,14 @@ abstract class DiktatBaseMojo : AbstractMojo() {
      */
     @Parameter(property = "diktat.output")
     var output = ""
+
+    /**
+     * Baseline file, containing a list of errors that will be ignored.
+     * If this file doesn't exist, it will be created on the first invocation.
+     * Default: no baseline.
+     */
+    @Parameter(property = "diktat.baseline")
+    var baseline: File? = null
     private lateinit var reporterImpl: Reporter
 
     /**
@@ -73,11 +81,6 @@ abstract class DiktatBaseMojo : AbstractMojo() {
     lateinit var excludes: List<String>
 
     /**
-     */
-    @Parameter(property = "diktat.baseline", defaultValue = "null")
-    var baseline: File? = null
-
-    /**
      * @param params instance of [KtLint.Params] used in analysis
      */
     abstract fun runAction(params: KtLint.Params)
@@ -100,10 +103,10 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         val ruleSets by lazy {
             listOf(DiktatRuleSetProvider(configFile).get())
         }
-        val lintErrors: MutableList<LintError> = mutableListOf()
         val baselineResults = baseline?.let { loadBaseline(it.absolutePath) }
             ?: CurrentBaseline(emptyMap(), false)
         reporterImpl = resolveReporter(baselineResults)
+        val lintErrors: MutableList<LintError> = mutableListOf()
 
         inputs
             .map(::File)
@@ -162,6 +165,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
     /**
      * @throws MojoExecutionException if [RuleExecutionException] has been thrown by ktlint
      */
+    @Suppress("TYPE_ALIAS")
     private fun checkDirectory(
         directory: File,
         lintErrors: MutableList<LintError>,
@@ -212,10 +216,10 @@ abstract class DiktatBaseMojo : AbstractMojo() {
                     script = file.extension.equals("kts", ignoreCase = true),
                     cb = { lintError, isCorrected ->
                         if (baselineErrors.none {
-                                // ktlint's BaselineReporter stores only these fields
+                            // ktlint's BaselineReporter stores only these fields
                             it.line == lintError.line && it.col == lintError.col &&
                                     it.ruleId == lintError.ruleId
-                            }) {
+                        }) {
                             reporterImpl.onLintError(file.path, lintError, isCorrected)
                             lintErrors.add(lintError)
                         }
