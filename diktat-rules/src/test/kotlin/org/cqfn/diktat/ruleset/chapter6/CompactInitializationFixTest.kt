@@ -37,4 +37,10 @@ class CompactInitializationFixTest : FixTestBase("test/chapter6/compact_initiali
     fun `should rename field in apply block to this keyword`() {
         fixAndCompare("StatementUseFieldMultipleTimesExpected.kt", "StatementUseFieldMultipleTimesTest.kt")
     }
+
+    @Test
+    @Tag(WarningNames.COMPACT_OBJECT_INITIALIZATION)
+    fun `should wrap receiver in parentheses if required`() {
+        fixAndCompare("ParenthesizedReceiverExpected.kt", "ParenthesizedReceiverTest.kt")
+    }
 }
