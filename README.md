@@ -4,13 +4,13 @@
 ![deteKT static analysis](https://github.com/cqfn/diKTat/workflows/Run%20deteKT/badge.svg)
 ![diKTat code style](https://github.com/cqfn/diKTat/workflows/Run%20diKTat%20from%20release%20version/badge.svg?branch=master)
 [![License](https://img.shields.io/github/license/cqfn/diKtat)](https://github.com/cqfn/diKTat/blob/master/LICENSE)
-[![codecov](https://codecov.io/gh/diktat-static-analysis/diKTat/branch/master/graph/badge.svg)](https://codecov.io/gh/diktat-static-analysis/diKTat)
+[![codecov](https://codecov.io/gh/analysis-dev/diKTat/branch/master/graph/badge.svg)](https://codecov.io/gh/analysis-dev/diKTat)
 
 [![Releases](https://img.shields.io/github/v/release/cqfn/diKTat)](https://github.com/cqfn/diKTat/releases)
 [![Maven Central](https://img.shields.io/maven-central/v/org.cqfn.diktat/diktat-rules)](https://mvnrepository.com/artifact/org.cqfn.diktat)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fcqfn%2FdiKTat.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fcqfn%2FdiKTat?ref=badge_shield)
 [![ktlint](https://img.shields.io/badge/code%20style-%E2%9D%A4-FF4081.svg)](https://ktlint.github.io/)
-[![Chat on Telegram](https://img.shields.io/badge/Chat%20on-Telegram-brightgreen.svg)](https://t.me/joinchat/AAAAAFDg-ipuZFGyBGPPeg)
+[![Chat on Telegram](https://img.shields.io/badge/Chat%20on-Telegram-brightgreen.svg)](https://t.me/diktat_help)
 
 [![Hits-of-Code](https://hitsofcode.com/github/cqfn/diktat)](https://hitsofcode.com/view/github/cqfn/diktat)
 ![Lines of code](https://img.shields.io/tokei/lines/github/cqfn/diktat)
@@ -98,6 +98,7 @@ If you use it and encounter any problems, feel free to open issues on [github](h
 
 <details>
 <summary>Add this plugin to your pom.xml:</summary>
+  
 ```xml
             <plugin>
                 <groupId>org.cqfn.diktat</groupId>
@@ -137,6 +138,7 @@ This plugin is available since version 0.1.5. You can see how the plugin is conf
 
 <details>
 <summary>Add this plugin to your `build.gradle.kts`:</summary>
+
 ```kotlin
 plugins {
     id("org.cqfn.diktat.diktat-gradle-plugin") version "1.0.2"
