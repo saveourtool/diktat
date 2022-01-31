@@ -7,6 +7,9 @@ import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.Reporter
 import com.pinterest.ktlint.core.RuleExecutionException
 import com.pinterest.ktlint.core.RuleSet
+import com.pinterest.ktlint.core.internal.CurrentBaseline
+import com.pinterest.ktlint.core.internal.loadBaseline
+import com.pinterest.ktlint.reporter.baseline.BaselineReporter
 import com.pinterest.ktlint.reporter.html.HtmlReporter
 import com.pinterest.ktlint.reporter.json.JsonReporter
 import com.pinterest.ktlint.reporter.plain.PlainReporter
@@ -70,6 +73,11 @@ abstract class DiktatBaseMojo : AbstractMojo() {
     lateinit var excludes: List<String>
 
     /**
+     */
+    @Parameter(property = "diktat.baseline", defaultValue = "null")
+    var baseline: File? = null
+
+    /**
      * @param params instance of [KtLint.Params] used in analysis
      */
     abstract fun runAction(params: KtLint.Params)
@@ -81,7 +89,6 @@ abstract class DiktatBaseMojo : AbstractMojo() {
      * @throws MojoExecutionException if [RuleExecutionException] has been thrown
      */
     override fun execute() {
-        reporterImpl = resolveReporter()
         val configFile = resolveConfig()
         if (!File(configFile).exists()) {
             throw MojoExecutionException("Configuration file $diktatConfigFile doesn't exist")
@@ -94,11 +101,14 @@ abstract class DiktatBaseMojo : AbstractMojo() {
             listOf(DiktatRuleSetProvider(configFile).get())
         }
         val lintErrors: MutableList<LintError> = mutableListOf()
+        val baselineResults = baseline?.let { loadBaseline(it.absolutePath) }
+            ?: CurrentBaseline(emptyMap(), false)
+        reporterImpl = resolveReporter(baselineResults)
 
         inputs
             .map(::File)
             .forEach {
-                checkDirectory(it, lintErrors, ruleSets)
+                checkDirectory(it, lintErrors, baselineResults.baselineRules ?: emptyMap(), ruleSets)
             }
 
         reporterImpl.afterAll()
@@ -107,9 +117,10 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         }
     }
 
-    private fun resolveReporter(): Reporter {
+    private fun resolveReporter(baselineResults: CurrentBaseline): Reporter {
         val output = if (this.output.isBlank()) System.`out` else PrintStream(FileOutputStream(this.output, true))
-        return when (this.reporter) {
+
+        val actualReporter = when (this.reporter) {
             "sarif" -> SarifReporter(output)
             "plain" -> PlainReporter(output)
             "json" -> JsonReporter(output)
@@ -118,6 +129,13 @@ abstract class DiktatBaseMojo : AbstractMojo() {
                 log.warn("Reporter name ${this.reporter} was not specified or is invalid. Falling to 'plain' reporter")
                 PlainReporter(output)
             }
+        }
+
+        return if (baselineResults.baselineGenerationNeeded) {
+            val baselineReporter = BaselineReporter(PrintStream(FileOutputStream(baseline, true)))
+            return Reporter.from(actualReporter, baselineReporter)
+        } else {
+            actualReporter
         }
     }
 
@@ -147,6 +165,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
     private fun checkDirectory(
         directory: File,
         lintErrors: MutableList<LintError>,
+        baselineRules: Map<String, List<LintError>>,
         ruleSets: Iterable<RuleSet>
     ) {
         val (excludedDirs, excludedFiles) = excludes.map(::File).partition { it.isDirectory }
@@ -161,7 +180,15 @@ abstract class DiktatBaseMojo : AbstractMojo() {
                 log.debug("Checking file $file")
                 try {
                     reporterImpl.before(file.path)
-                    checkFile(file, lintErrors, ruleSets)
+                    checkFile(
+                        file,
+                        lintErrors,
+                        baselineRules.getOrDefault(
+                            file.relativeTo(mavenProject.basedir.parentFile).invariantSeparatorsPath,
+                            emptyList()
+                        ),
+                        ruleSets
+                    )
                     reporterImpl.after(file.path)
                 } catch (e: RuleExecutionException) {
                     log.error("Unhandled exception during rule execution: ", e)
@@ -172,6 +199,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
 
     private fun checkFile(file: File,
                           lintErrors: MutableList<LintError>,
+                          baselineErrors: List<LintError>,
                           ruleSets: Iterable<RuleSet>
     ) {
         val text = file.readText()
@@ -183,8 +211,14 @@ abstract class DiktatBaseMojo : AbstractMojo() {
                     userData = mapOf("file_path" to file.path),
                     script = file.extension.equals("kts", ignoreCase = true),
                     cb = { lintError, isCorrected ->
-                        reporterImpl.onLintError(file.path, lintError, isCorrected)
-                        lintErrors.add(lintError)
+                        if (baselineErrors.none {
+                                // ktlint's BaselineReporter stores only these fields
+                            it.line == lintError.line && it.col == lintError.col &&
+                                    it.ruleId == lintError.ruleId
+                            }) {
+                            reporterImpl.onLintError(file.path, lintError, isCorrected)
+                            lintErrors.add(lintError)
+                        }
                     },
                     debug = debug
                 )
