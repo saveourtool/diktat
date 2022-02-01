@@ -35,6 +35,12 @@ abstract class DiktatBaseMojo : AbstractMojo() {
     var debug = false
 
     /**
+     * Property that will be used to report to GitHub
+     */
+    @Parameter(property = "diktat.githubActions")
+    var githubActions = false
+
+    /**
      * Type of the reporter to use
      */
     @Parameter(property = "diktat.reporter")
@@ -106,6 +112,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         val baselineResults = baseline?.let { loadBaseline(it.absolutePath) }
             ?: CurrentBaseline(emptyMap(), false)
         reporterImpl = resolveReporter(baselineResults)
+        reporterImpl.beforeAll()
         val lintErrors: MutableList<LintError> = mutableListOf()
 
         inputs
@@ -121,9 +128,18 @@ abstract class DiktatBaseMojo : AbstractMojo() {
     }
 
     private fun resolveReporter(baselineResults: CurrentBaseline): Reporter {
-        val output = if (this.output.isBlank()) System.`out` else PrintStream(FileOutputStream(this.output, true))
+        val output = if (this.output.isBlank()) {
+            if (this.githubActions) {
+                System.setProperty("user.home", "/home/runner/work/diktat/diktat")
+                PrintStream(FileOutputStream("${mavenProject.basedir}/report-${mavenProject.name}.sarif", false))
+            } else {
+                System.`out`
+            }
+        } else {
+                PrintStream(FileOutputStream(this.output, false))
+        }
 
-        val actualReporter = when (this.reporter) {
+        var actualReporter = when (this.reporter) {
             "sarif" -> SarifReporter(output)
             "plain" -> PlainReporter(output)
             "json" -> JsonReporter(output)
@@ -132,6 +148,10 @@ abstract class DiktatBaseMojo : AbstractMojo() {
                 log.warn("Reporter name ${this.reporter} was not specified or is invalid. Falling to 'plain' reporter")
                 PlainReporter(output)
             }
+        }
+
+        if(this.githubActions) {
+            actualReporter = SarifReporter(output)
         }
 
         return if (baselineResults.baselineGenerationNeeded) {

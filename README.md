@@ -77,9 +77,18 @@ We suggest everyone to use common ["sarif"](https://docs.oasis-open.org/sarif/sa
 GitHub has an [integration](https://docs.github.com/en/code-security/code-scanning/integrating-with-code-scanning/sarif-support-for-code-scanning) 
 with SARIF format and provides you a native reporting of diktat issues in Pull Requests. 
 
+Gradle Plugin:
 ```text
     reporterType = "sarif"
     output = "diktat-report.sarif"
+```
+
+Maven Plugin (pom.xml):
+```text
+```
+
+Maven Plugin (cli options):
+```text
 ```
 
 Add the following code to your GitHub Action to upload diktat sarif report (after it was generated).
