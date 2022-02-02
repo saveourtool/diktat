@@ -23,11 +23,11 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.PrintStream
 
-
 /**
  * Base [Mojo] for checking and fixing code using diktat
  */
 abstract class DiktatBaseMojo : AbstractMojo() {
+
     /**
      * Flag that indicates whether to turn debug logging on
      */
@@ -87,7 +87,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
     lateinit var excludes: List<String>
 
     @Parameter(defaultValue = "\${session}", readonly = true)
-    private lateinit var  mavenSession: MavenSession
+    private lateinit var mavenSession: MavenSession
 
     /**
      * @param params instance of [KtLint.Params] used in analysis
@@ -140,22 +140,22 @@ abstract class DiktatBaseMojo : AbstractMojo() {
                 System.`out`
             }
         } else {
-                PrintStream(FileOutputStream(this.output, false))
+            PrintStream(FileOutputStream(this.output, false))
         }
 
-        var actualReporter = when (this.reporter) {
-            "sarif" -> SarifReporter(output)
-            "plain" -> PlainReporter(output)
-            "json" -> JsonReporter(output)
-            "html" -> HtmlReporter(output)
-            else -> {
-                log.warn("Reporter name ${this.reporter} was not specified or is invalid. Falling to 'plain' reporter")
-                PlainReporter(output)
+        val actualReporter = if (this.githubActions) {
+            SarifReporter(output)
+        } else {
+            when (this.reporter) {
+                "sarif" -> SarifReporter(output)
+                "plain" -> PlainReporter(output)
+                "json" -> JsonReporter(output)
+                "html" -> HtmlReporter(output)
+                else -> {
+                    log.warn("Reporter name ${this.reporter} was not specified or is invalid. Falling to 'plain' reporter")
+                    PlainReporter(output)
+                }
             }
-        }
-
-        if(this.githubActions) {
-            actualReporter = SarifReporter(output)
         }
 
         return if (baselineResults.baselineGenerationNeeded) {
