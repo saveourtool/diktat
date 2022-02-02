@@ -1,6 +1,10 @@
 package org.cqfn.diktat.plugin.maven
 
-import com.pinterest.ktlint.core.*
+import com.pinterest.ktlint.core.KtLint
+import com.pinterest.ktlint.core.LintError
+import com.pinterest.ktlint.core.Reporter
+import com.pinterest.ktlint.core.RuleExecutionException
+import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.internal.CurrentBaseline
 import com.pinterest.ktlint.core.internal.loadBaseline
 import com.pinterest.ktlint.reporter.baseline.BaselineReporter
@@ -31,7 +35,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
     var debug = false
 
     /**
-     * Property that will be used to report to GitHub
+     * Property that will be used if you need to publish the report to GitHub
      */
     @Parameter(property = "diktat.githubActions")
     var githubActions = false
@@ -129,7 +133,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
     private fun resolveReporter(baselineResults: CurrentBaseline): Reporter {
         val output = if (this.output.isBlank()) {
             if (this.githubActions) {
-                println(mavenSession.executionRootDirectory)
+                // need to set user.home specially for ktlint, so it will be able to put a relative path URI in SARIF
                 System.setProperty("user.home", mavenSession.executionRootDirectory)
                 PrintStream(FileOutputStream("${mavenProject.basedir}/${mavenProject.name}.sarif", false))
             } else {
