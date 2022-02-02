@@ -1,12 +1,6 @@
 package org.cqfn.diktat.plugin.maven
 
-import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
-
-import com.pinterest.ktlint.core.KtLint
-import com.pinterest.ktlint.core.LintError
-import com.pinterest.ktlint.core.Reporter
-import com.pinterest.ktlint.core.RuleExecutionException
-import com.pinterest.ktlint.core.RuleSet
+import com.pinterest.ktlint.core.*
 import com.pinterest.ktlint.core.internal.CurrentBaseline
 import com.pinterest.ktlint.core.internal.loadBaseline
 import com.pinterest.ktlint.reporter.baseline.BaselineReporter
@@ -14,15 +8,17 @@ import com.pinterest.ktlint.reporter.html.HtmlReporter
 import com.pinterest.ktlint.reporter.json.JsonReporter
 import com.pinterest.ktlint.reporter.plain.PlainReporter
 import com.pinterest.ktlint.reporter.sarif.SarifReporter
+import org.apache.maven.execution.MavenSession
 import org.apache.maven.plugin.AbstractMojo
 import org.apache.maven.plugin.MojoExecutionException
 import org.apache.maven.plugin.MojoFailureException
 import org.apache.maven.plugins.annotations.Parameter
 import org.apache.maven.project.MavenProject
-
+import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
 import java.io.File
 import java.io.FileOutputStream
 import java.io.PrintStream
+
 
 /**
  * Base [Mojo] for checking and fixing code using diktat
@@ -86,6 +82,9 @@ abstract class DiktatBaseMojo : AbstractMojo() {
     @Parameter(property = "diktat.excludes", defaultValue = "")
     lateinit var excludes: List<String>
 
+    @Parameter(defaultValue = "\${session}", readonly = true)
+    private lateinit var  mavenSession: MavenSession
+
     /**
      * @param params instance of [KtLint.Params] used in analysis
      */
@@ -130,8 +129,9 @@ abstract class DiktatBaseMojo : AbstractMojo() {
     private fun resolveReporter(baselineResults: CurrentBaseline): Reporter {
         val output = if (this.output.isBlank()) {
             if (this.githubActions) {
-                System.setProperty("user.home", "/home/runner/work/diktat/diktat")
-                PrintStream(FileOutputStream("${mavenProject.basedir}/report-${mavenProject.name}.sarif", false))
+                println(mavenSession.executionRootDirectory)
+                System.setProperty("user.home", mavenSession.executionRootDirectory)
+                PrintStream(FileOutputStream("${mavenProject.basedir}/${mavenProject.name}.sarif", false))
             } else {
                 System.`out`
             }
