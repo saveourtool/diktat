@@ -14,6 +14,7 @@ import com.pinterest.ktlint.reporter.html.HtmlReporter
 import com.pinterest.ktlint.reporter.json.JsonReporter
 import com.pinterest.ktlint.reporter.plain.PlainReporter
 import com.pinterest.ktlint.reporter.sarif.SarifReporter
+import org.apache.maven.execution.MavenSession
 import org.apache.maven.plugin.AbstractMojo
 import org.apache.maven.plugin.MojoExecutionException
 import org.apache.maven.plugin.MojoFailureException
@@ -33,6 +34,12 @@ abstract class DiktatBaseMojo : AbstractMojo() {
      */
     @Parameter(property = "diktat.debug")
     var debug = false
+
+    /**
+     * Property that will be used if you need to publish the report to GitHub
+     */
+    @Parameter(property = "diktat.githubActions")
+    var githubActions = false
 
     /**
      * Type of the reporter to use
@@ -80,6 +87,9 @@ abstract class DiktatBaseMojo : AbstractMojo() {
     @Parameter(property = "diktat.excludes", defaultValue = "")
     lateinit var excludes: List<String>
 
+    @Parameter(defaultValue = "\${session}", readonly = true)
+    private lateinit var mavenSession: MavenSession
+
     /**
      * @param params instance of [KtLint.Params] used in analysis
      */
@@ -106,6 +116,7 @@ abstract class DiktatBaseMojo : AbstractMojo() {
         val baselineResults = baseline?.let { loadBaseline(it.absolutePath) }
             ?: CurrentBaseline(emptyMap(), false)
         reporterImpl = resolveReporter(baselineResults)
+        reporterImpl.beforeAll()
         val lintErrors: MutableList<LintError> = mutableListOf()
 
         inputs
@@ -121,16 +132,30 @@ abstract class DiktatBaseMojo : AbstractMojo() {
     }
 
     private fun resolveReporter(baselineResults: CurrentBaseline): Reporter {
-        val output = if (this.output.isBlank()) System.`out` else PrintStream(FileOutputStream(this.output, true))
+        val output = if (this.output.isBlank()) {
+            if (this.githubActions) {
+                // need to set user.home specially for ktlint, so it will be able to put a relative path URI in SARIF
+                System.setProperty("user.home", mavenSession.executionRootDirectory)
+                PrintStream(FileOutputStream("${mavenProject.basedir}/${mavenProject.name}.sarif", false))
+            } else {
+                System.`out`
+            }
+        } else {
+            PrintStream(FileOutputStream(this.output, false))
+        }
 
-        val actualReporter = when (this.reporter) {
-            "sarif" -> SarifReporter(output)
-            "plain" -> PlainReporter(output)
-            "json" -> JsonReporter(output)
-            "html" -> HtmlReporter(output)
-            else -> {
-                log.warn("Reporter name ${this.reporter} was not specified or is invalid. Falling to 'plain' reporter")
-                PlainReporter(output)
+        val actualReporter = if (this.githubActions) {
+            SarifReporter(output)
+        } else {
+            when (this.reporter) {
+                "sarif" -> SarifReporter(output)
+                "plain" -> PlainReporter(output)
+                "json" -> JsonReporter(output)
+                "html" -> HtmlReporter(output)
+                else -> {
+                    log.warn("Reporter name ${this.reporter} was not specified or is invalid. Falling to 'plain' reporter")
+                    PlainReporter(output)
+                }
             }
         }
 
