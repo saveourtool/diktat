@@ -93,22 +93,35 @@ class WhenMustHaveElseWarnTest : LintTestBase(::WhenMustHaveElseRule) {
 
     @Test
     @Tag(WarningNames.WHEN_WITHOUT_ELSE)
-    fun `when in func covers all the enum`() {
+    fun `when in func only enum entries`() {
         lintMethod(
             """
-                |enum class ConfirmationType {
-                |   NO_BINARY_CONFIRM, NO_CONFIRM, DELETE_CONFIRM
-                |}
-                |
                 |fun foo() {
-                |    val confirmationType = ConfirmationType.NO_CONFIRM
-                |    when (confirmationType) {
-                |        ConfirmationType.NO_BINARY_CONFIRM, ConfirmationType.NO_CONFIRM -> println("NO")
-                |        ConfirmationType.DELETE_CONFIRM -> println("YES")
-                |        else -> println("REDUNDANT")
+                |    val v: Enum
+                |    when (v) {
+                |        Enum.ONE, Enum.TWO -> foo()
+                |        Enum.THREE -> bar()
+                |        in Enum.FOUR..Enum.TEN -> boo()
                 |    }
                 |}
             """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WHEN_WITHOUT_ELSE)
+    fun `when in func not only enum entries`() {
+        lintMethod(
+            """
+                |fun foo() {
+                |    val v: Enum
+                |    when (v) {
+                |        Enum.ONE -> foo()
+                |        f(Enum.TWO) -> bar()
+                |    }
+                |}
+            """.trimMargin(),
+            LintError(3, 5, ruleId, "${Warnings.WHEN_WITHOUT_ELSE.warnText()} else was not found", true)
         )
     }
 }

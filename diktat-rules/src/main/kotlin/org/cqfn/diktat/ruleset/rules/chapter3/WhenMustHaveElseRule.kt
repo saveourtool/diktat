@@ -4,6 +4,9 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.WHEN_WITHOUT_ELSE
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
+import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
+import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
+import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.cqfn.diktat.ruleset.utils.hasParent
 import org.cqfn.diktat.ruleset.utils.isBeginByNewline
 
@@ -48,7 +51,7 @@ class WhenMustHaveElseRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun checkEntries(node: ASTNode) {
-        if (!hasElse(node)) {
+        if (!hasElse(node) && !isOnlyEnumEntries(node)) {
             WHEN_WITHOUT_ELSE.warnAndFix(configRules, emitWarn, isFixMode, "else was not found", node.startOffset, node) {
                 val whenEntryElse = CompositeElement(WHEN_ENTRY)
                 if (!node.lastChildNode.isBeginByNewline()) {
@@ -61,27 +64,39 @@ class WhenMustHaveElseRule(configRules: List<RulesConfig>) : DiktatRule(
                 }
             }
         }
-        /*else if(isEnumCovered()) {
-            WHEN_WITHOUT_ELSE.warnAndFix(configRules, emitWarn, isFixMode, "else is redundant", node.startOffset, node) {
-                val whenEntryElse = CompositeElement(WHEN_ENTRY)
-                if (!node.lastChildNode.isBeginByNewline()) {
-                    node.appendNewlineMergingWhiteSpace(node.lastChildNode.treePrev, node.lastChildNode)
-                }
-                node.addChild(whenEntryElse, node.lastChildNode)
-                addChildren(whenEntryElse)
-                if (!whenEntryElse.isBeginByNewline()) {
-                    node.addChild(PsiWhiteSpaceImpl("\n"), whenEntryElse)
-                }
-            }
+    }
+
+    private fun isOnlyEnumEntries(node: ASTNode): Boolean {
+        val whenEntries = node.getAllChildrenWithType(WHEN_ENTRY)
+        val hasConditionsIsPattern = whenEntries.any { it.hasChildOfType(ElementType.WHEN_CONDITION_IS_PATTERN) }
+        if (hasConditionsIsPattern) {
+            return false
         }
-       */
-    }
 
-    private fun isEnum(node: ASTNode) {
+        val conditionsInRange = whenEntries.map {
+            it.getAllChildrenWithType(ElementType.WHEN_CONDITION_IN_RANGE)
+        }.flatten()
 
-    }
+        val conditionsWithExpression = whenEntries.map {
+            it.getAllChildrenWithType(ElementType.WHEN_CONDITION_WITH_EXPRESSION)
+        }.flatten()
 
-    private fun isEnumCovered(): Boolean {
+        val hasCallExpressions = (conditionsWithExpression + conditionsInRange).any { it.hasChildOfType(ElementType.CALL_EXPRESSION) }
+        if (hasCallExpressions) {
+            return false
+        }
+
+        val dotQualifierExpressions = conditionsWithExpression.map {
+            it.getAllChildrenWithType(ElementType.DOT_QUALIFIED_EXPRESSION)
+        }.flatten()
+
+        val amountOfDifferentEnums = dotQualifierExpressions.map { it.getFirstChildWithType(ElementType.REFERENCE_EXPRESSION)?.text }
+            .distinct()
+            .count()
+
+        if(amountOfDifferentEnums != 1) {
+            return false
+        }
         return true
     }
 
