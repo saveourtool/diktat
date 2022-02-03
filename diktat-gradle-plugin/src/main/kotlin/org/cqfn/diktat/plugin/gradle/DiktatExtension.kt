@@ -25,6 +25,11 @@ open class DiktatExtension(
     var debug = false
 
     /**
+     * Property that will be used if you need to publish the report to GitHub
+     */
+    var githubActions = false
+
+    /**
      * Type of the reporter to use
      */
     var reporter: String = "plain"

@@ -3,13 +3,11 @@
 ![Build and test](https://github.com/cqfn/diKTat/workflows/Build%20and%20test/badge.svg)
 ![deteKT static analysis](https://github.com/cqfn/diKTat/workflows/Run%20deteKT/badge.svg)
 ![diKTat code style](https://github.com/cqfn/diKTat/workflows/Run%20diKTat%20from%20release%20version/badge.svg?branch=master)
-[![License](https://img.shields.io/github/license/cqfn/diKtat)](https://github.com/cqfn/diKTat/blob/master/LICENSE)
 [![codecov](https://codecov.io/gh/analysis-dev/diKTat/branch/master/graph/badge.svg)](https://codecov.io/gh/analysis-dev/diKTat)
 
 [![Releases](https://img.shields.io/github/v/release/cqfn/diKTat)](https://github.com/cqfn/diKTat/releases)
 [![Maven Central](https://img.shields.io/maven-central/v/org.cqfn.diktat/diktat-rules)](https://mvnrepository.com/artifact/org.cqfn.diktat)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fcqfn%2FdiKTat.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fcqfn%2FdiKTat?ref=badge_shield)
-[![ktlint](https://img.shields.io/badge/code%20style-%E2%9D%A4-FF4081.svg)](https://ktlint.github.io/)
 [![Chat on Telegram](https://img.shields.io/badge/Chat%20on-Telegram-brightgreen.svg)](https://t.me/diktat_help)
 
 [![Hits-of-Code](https://hitsofcode.com/github/cqfn/diktat)](https://hitsofcode.com/view/github/cqfn/diktat)
@@ -35,16 +33,15 @@ Now diKTat was already added to the lists of [static analysis tools](https://git
 There are several tools like `detekt` and `ktlint` that are doing static analysis. Why do I need diktat?
 
 First of all - actually you can combine diktat with any other static analyzers. And diKTat is even using ktlint framework for parsing the code into the AST.
-And we are trying to contribute to those projects. 
 Main features of diktat are the following:
 
-1) **More inspections.** It has 100+ inspections that are tightly coupled with it's codestyle.
+1) **More inspections.** It has 100+ inspections that are tightly coupled with it's [Codestyle](info/guide/diktat-coding-convention.md).
+   
+2) **Unique [Inspections](info/available-rules.md)** that are missing in other linters.
 
-2) **Unique inspections** that are missing in other linters.
+3) **Highly configurable**. Each and every inspection can be [configured](#config) or [suppressed](#suppress).
 
-3) **Highly configurable**. Each and every inspection can be configured and suppressed both from the code or from the configuration file.
-
-4) **Strict detailed coding convention** that you can use in your project.
+4) **Strict detailed [Codestyle](info/guide/diktat-coding-convention.md)** that you can adopt and use in your project.
 
 ## Run as CLI-application
 <details>
@@ -63,7 +60,10 @@ Main features of diktat are the following:
    ```bash
    $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v1.0.2/diktat-1.0.2.jar
    ```
-   
+</details>
+
+<details>
+<summary>Run diktat:</summary>
 3. Finally, run KTlint (with diKTat injected) to check your `*.kt` files in `dir/your/dir`:
    ```bash
    $ ./ktlint -R diktat.jar --disabled_rules=standard "dir/your/dir/**/*.kt"
@@ -72,25 +72,6 @@ Main features of diktat are the following:
 To **autofix** all code style violations use `-F` option.
 </details>
 
-## GitHub Native Integration
-We suggest everyone to use common ["sarif"](https://docs.oasis-open.org/sarif/sarif/v2.0/sarif-v2.0.html) format as a `reporterType` in CI/CD.
-GitHub has an [integration](https://docs.github.com/en/code-security/code-scanning/integrating-with-code-scanning/sarif-support-for-code-scanning) 
-with SARIF format and provides you a native reporting of diktat issues in Pull Requests. 
-
-```text
-    reporterType = "sarif"
-    output = "diktat-report.sarif"
-```
-
-Add the following code to your GitHub Action to upload diktat sarif report (after it was generated).
-
-```yml
-      - name: Upload SARIF to Github using the upload-sarif action
-        uses: github/codeql-action/upload-sarif@v1
-        if: ${{ always() }}
-        with:
-          sarif_file: build/diktat-report.sarif
-```
 
 ## Run with Maven using diktat-maven-plugin
 This plugin is available since version 0.1.3. You can see how it is configured in our project for self-checks: [pom.xml](pom.xml).
@@ -256,7 +237,44 @@ Diktat can be run via spotless-maven-plugin since version 2.8.0
 ```
 </details>
 
-## Customizations via `diktat-analysis.yml`
+## GitHub Native Integration
+We suggest everyone to use common ["sarif"](https://docs.oasis-open.org/sarif/sarif/v2.0/sarif-v2.0.html) format as a `reporterType` in CI/CD.
+GitHub has an [integration](https://docs.github.com/en/code-security/code-scanning/integrating-with-code-scanning/sarif-support-for-code-scanning)
+with SARIF format and provides you a native reporting of diktat issues in Pull Requests.
+
+![img.png](example.png)
+
+<details>
+<summary> Github Integration</summary>
+1) Add the following configuration to your project's setup for GitHub Actions:
+
+Gradle Plugin:
+```text
+    githubActions = true
+```
+
+Maven Plugin (pom.xml):
+```xml
+    <githubActions>true</githubActions>
+```
+
+Maven Plugin (cli options):
+```text
+mvn -B diktat:check@diktat -Ddiktat.githubActions=true
+```
+
+2) Add the following code to your GitHub Action to upload diktat SARIF report (after it was generated):
+
+```yml
+      - name: Upload SARIF to Github using the upload-sarif action
+        uses: github/codeql-action/upload-sarif@v1
+        if: ${{ always() }}
+        with:
+          sarif_file: ${{ github.workspace }}
+```
+</details>
+
+## <a name="config"></a> Customizations via `diktat-analysis.yml`
 
 In KTlint, rules can be configured via `.editorconfig`, but
 this does not give a chance to customize or enable/disable
@@ -281,7 +299,11 @@ Note, that you can specify and put `diktat-analysis.yml` that contains configura
 See default configuration in [diktat-analysis.yml](diktat-rules/src/main/resources/diktat-analysis.yml) \
 Also see [the list of all rules supported by diKTat](info/available-rules.md).
 
-## Suppress warnings on individual code blocks
+
+## <a name="suppress"></a> Suppress warnings/inspections
+
+<details>
+<summary>Suppress warnings on individual code blocks</summary>
 In addition to enabling/disabling warning globally via config file (`enable = false`), you can suppress warnings by adding `@Suppress` annotation on individual code blocks
 
 For example:
@@ -293,9 +315,11 @@ class SomeClass {
 
     }
 }
-``` 
+```
+</details>
 
-## Suppress groups of inspections
+<details>
+<summary>Suppress groups of inspections</summary>
 It is easy to suppress even groups of inspections in diKTat.
 
 These groups are linked to chapters of [Codestyle](info/guide/diktat-coding-convention.md). 
@@ -305,7 +329,8 @@ To disable chapters, you will need to add the following configuration to common 
     disabledChapters: "1, 2, 3"
 ```  
 
-Mapping of inspections to chapters can be found in [Groups of Inspections](info/rules-mapping.md) .
+Mapping of inspections to chapters can be found in [Groups of Inspections](info/rules-mapping.md).
+</details>
 
 ## Running against the baseline
 When setting up code style analysis on a large existing project, one often doesn't have an ability to fix all findings at once.
@@ -318,27 +343,5 @@ java -jar ktlint -R dikat.jar --baseline=diktat-baseline.xml **/*.kt
 or with corresponding configuration options in maven or gradle plugins. Baseline report is intended to be added into the VCS,
 but it can be removed and re-generated later, if needed.
 
-## How to contribute?
-
-Main components are:
-1) diktat-rules — number of rules that are supported by diKTat;
-2) diktat-test-framework — functional/unit test framework that can be used for running your code fixer on the initial code and compare it with the expected result;
-3) also see our demo: diktat-demo in a separate repository.
-
-Mainly we wanted to create a common configurable mechanism that
-will give us a chance to enable/disable and customize all rules.
-That's why we added logic for:
-1) Parsing `.yml` file with configurations of rules and passing it to visitors;
-2) Passing information about properties to visitors.
-This information is very useful, when you are trying to get,
-for example, a filename of file where the code is stored;
-3) We added a bunch of visitors, checkers and fixers that will extended KTlint functionaliity with code style rules;
-4) We have proposed a code style for Kotlin language. 
-
-Before you make a pull request, make sure the build is clean as we have lot of tests and other prechecks:
-
-```bash
-$ mvn clean install
-```
-
-Also see our [Contributing Policy](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md)
+## Contribution 
+See our [Contributing Policy](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md)
