@@ -169,10 +169,11 @@ open class DiktatJavaExecTaskBase @Inject constructor(
         return flag.toString()
     }
 
+    @Suppress("SAY_NO_TO_VAR")
     private fun setReporter(diktatExtension: DiktatExtension, flag: java.lang.StringBuilder) {
         val name = diktatExtension.reporter.trim()
         val validReporters = listOf("sarif", "plain", "json", "html")
-        var reporterFlag  = if (name.isEmpty() || !validReporters.contains(name)) {
+        var reporterFlag = if (name.isEmpty() || !validReporters.contains(name)) {
             project.logger.warn("Reporter name $name was not specified or is invalid. Falling to 'plain' reporter")
             "--reporter=plain"
         } else {

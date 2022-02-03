@@ -1,5 +1,7 @@
 package org.cqfn.diktat.plugin.maven
 
+import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
+
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.Reporter
@@ -18,7 +20,7 @@ import org.apache.maven.plugin.MojoExecutionException
 import org.apache.maven.plugin.MojoFailureException
 import org.apache.maven.plugins.annotations.Parameter
 import org.apache.maven.project.MavenProject
-import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
+
 import java.io.File
 import java.io.FileOutputStream
 import java.io.PrintStream
@@ -27,7 +29,6 @@ import java.io.PrintStream
  * Base [Mojo] for checking and fixing code using diktat
  */
 abstract class DiktatBaseMojo : AbstractMojo() {
-
     /**
      * Flag that indicates whether to turn debug logging on
      */
