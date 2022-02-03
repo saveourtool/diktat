@@ -1145,4 +1145,17 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
             """.trimMargin(),
         )
     }
+
+    @Test
+    @Tag(WarningNames.COMPLEX_EXPRESSION)
+    fun `COMPLEX_EXPRESSION shouldn't trigger for declarations in kts`() {
+        lintMethod(
+            """
+                |dependencies {
+                |    implementation(libs.spring.cloud.starter.gateway)
+                |}
+            """.trimMargin(),
+            fileName = "build.gradle.kts"
+        )
+    }
 }

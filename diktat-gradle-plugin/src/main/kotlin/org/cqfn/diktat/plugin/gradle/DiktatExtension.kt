@@ -48,6 +48,12 @@ open class DiktatExtension(
     var inputs: FileCollection? = null
 
     /**
+     * Baseline file, containing a list of errors that will be ignored.
+     * If this file doesn't exist, it will be created on the first invocation.
+     */
+    var baseline: String? = null
+
+    /**
      * Path to diktat yml config file. Can be either absolute or relative to project's root directory.
      * Default value: `diktat-analysis.yml` in rootDir.
      */
