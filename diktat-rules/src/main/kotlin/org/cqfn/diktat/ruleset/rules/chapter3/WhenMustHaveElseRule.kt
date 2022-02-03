@@ -94,7 +94,7 @@ class WhenMustHaveElseRule(configRules: List<RulesConfig>) : DiktatRule(
             .distinct()
             .count()
 
-        if(amountOfDifferentEnums != 1) {
+        if (amountOfDifferentEnums != 1) {
             return false
         }
         return true
