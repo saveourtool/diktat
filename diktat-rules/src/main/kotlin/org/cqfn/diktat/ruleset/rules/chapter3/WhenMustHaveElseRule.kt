@@ -3,6 +3,12 @@ package org.cqfn.diktat.ruleset.rules.chapter3
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.WHEN_WITHOUT_ELSE
 import org.cqfn.diktat.ruleset.rules.DiktatRule
+import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
+import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
+import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
+import org.cqfn.diktat.ruleset.utils.hasChildOfType
+import org.cqfn.diktat.ruleset.utils.hasParent
+import org.cqfn.diktat.ruleset.utils.isBeginByNewline
 
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.ARROW
@@ -24,7 +30,6 @@ import com.pinterest.ktlint.core.ast.ElementType.WHEN_CONDITION_IS_PATTERN
 import com.pinterest.ktlint.core.ast.ElementType.WHEN_CONDITION_WITH_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.WHEN_ENTRY
 import com.pinterest.ktlint.core.ast.prevSibling
-import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -82,7 +87,7 @@ class WhenMustHaveElseRule(configRules: List<RulesConfig>) : DiktatRule(
             it.getAllChildrenWithType(WHEN_CONDITION_WITH_EXPRESSION)
         }.flatten()
 
-        val areOnlyEnumEntriesWithExpressions = if(conditionsWithExpression.isNotEmpty()) {
+        val areOnlyEnumEntriesWithExpressions = if (conditionsWithExpression.isNotEmpty()) {
             conditionsWithExpression.all {
                 it.hasChildOfType(DOT_QUALIFIED_EXPRESSION) || it.hasChildOfType(REFERENCE_EXPRESSION)
             }
