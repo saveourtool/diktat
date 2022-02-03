@@ -69,7 +69,6 @@ class WhenMustHaveElseRule(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun isOnlyEnumEntries(node: ASTNode): Boolean {
         val whenEntries = node.getAllChildrenWithType(WHEN_ENTRY)
-        println(node.prettyPrint())
         val hasConditionsIsPattern = whenEntries.any { it.hasChildOfType(WHEN_CONDITION_IS_PATTERN) }
         if (hasConditionsIsPattern) {
             return false
