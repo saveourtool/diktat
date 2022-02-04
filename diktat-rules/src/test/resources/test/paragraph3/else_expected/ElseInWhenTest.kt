@@ -9,11 +9,18 @@ fun testWhenExpression() {
 
     when (directoryType) {
         TestEnum.ONE -> "d"
-        TestEnum.TWO -> "-" }
+        TestEnum.TWO -> "-"
+    }
 
     val noElse = when (directoryType) {
         TestEnum.ONE -> "d"
         TestEnum.TWO -> "a"
+    }
+
+    val v = 1
+    when (v) {
+        f(TestEnum.ONE) -> print("1")
+        f(TestEnum.TWO) -> print("2")
     }
 
     val inLambda = {x: Int -> when(x) {

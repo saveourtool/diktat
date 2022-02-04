@@ -90,4 +90,57 @@ class WhenMustHaveElseWarnTest : LintTestBase(::WhenMustHaveElseRule) {
                 """.trimMargin()
         )
     }
+
+    @Test
+    @Tag(WarningNames.WHEN_WITHOUT_ELSE)
+    fun `when in func only enum entries`() {
+        lintMethod(
+            """
+                |fun foo() {
+                |    val v: Enum
+                |    when (v) {
+                |        Enum.ONE, Enum.TWO -> foo()
+                |        Enum.THREE -> bar()
+                |        in Enum.FOUR..Enum.TEN -> boo()
+                |        ELEVEN -> anotherFoo()
+                |        in TWELVE..Enum.TWENTY -> anotherBar()
+                |    }
+                |}
+            """.trimMargin()
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WHEN_WITHOUT_ELSE)
+    fun `when in func not only enum entries`() {
+        lintMethod(
+            """
+                |fun foo() {
+                |    val v: Enum
+                |    when (v) {
+                |        Enum.ONE -> foo()
+                |        f(Enum.TWO) -> bar()
+                |    }
+                |}
+            """.trimMargin(),
+            LintError(3, 5, ruleId, "${Warnings.WHEN_WITHOUT_ELSE.warnText()} else was not found", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.WHEN_WITHOUT_ELSE)
+    fun `when in func not only enum entries but in ranges`() {
+        lintMethod(
+            """
+                |fun foo() {
+                |    val v: Enum
+                |    when (v) {
+                |        Enum.ONE -> foo()
+                |        in 1..5 -> bar()
+                |    }
+                |}
+            """.trimMargin(),
+            LintError(3, 5, ruleId, "${Warnings.WHEN_WITHOUT_ELSE.warnText()} else was not found", true)
+        )
+    }
 }
