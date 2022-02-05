@@ -157,22 +157,37 @@ open class DiktatJavaExecTaskBase @Inject constructor(
         // appending the flag with the reporter
         setReporter(diktatExtension, flag)
 
-        if (diktatExtension.output.isNotEmpty()) {
-            flag.append(",output=${diktatExtension.output}")
+        val outFlag = when {
+            // githubActions should have higher priority than a custom input
+            diktatExtension.githubActions -> ",output=${project.projectDir}/${project.name}"
+            diktatExtension.output.isNotEmpty() -> ",output=${diktatExtension.output}"
+            else -> ""
         }
+
+        flag.append(outFlag)
 
         return flag.toString()
     }
 
+    @Suppress("SAY_NO_TO_VAR")
     private fun setReporter(diktatExtension: DiktatExtension, flag: java.lang.StringBuilder) {
         val name = diktatExtension.reporter.trim()
         val validReporters = listOf("sarif", "plain", "json", "html")
-        if (name.isEmpty() || !validReporters.contains(name)) {
+        var reporterFlag = if (name.isEmpty() || !validReporters.contains(name)) {
             project.logger.warn("Reporter name $name was not specified or is invalid. Falling to 'plain' reporter")
-            flag.append("--reporter=plain")
+            "--reporter=plain"
         } else {
-            flag.append("--reporter=$name")
+            "--reporter=$name"
         }
+
+        // githubActions should have higher priority than a custom input
+        if (diktatExtension.githubActions) {
+            // need to set user.home specially for ktlint, so it will be able to put a relative path URI in SARIF
+            System.setProperty("user.home", project.projectDir.toString())
+            reporterFlag = "--reporter=sarif"
+        }
+
+        flag.append(reporterFlag)
     }
 
     @Suppress("MagicNumber")

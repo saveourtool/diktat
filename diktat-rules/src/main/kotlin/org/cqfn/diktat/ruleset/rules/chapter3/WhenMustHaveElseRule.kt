@@ -4,12 +4,17 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.WHEN_WITHOUT_ELSE
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
+import org.cqfn.diktat.ruleset.utils.getAllChildrenWithType
+import org.cqfn.diktat.ruleset.utils.getFirstChildWithType
+import org.cqfn.diktat.ruleset.utils.hasChildOfType
 import org.cqfn.diktat.ruleset.utils.hasParent
 import org.cqfn.diktat.ruleset.utils.isBeginByNewline
 
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.ARROW
+import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
+import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.ELSE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.EQ
@@ -18,7 +23,11 @@ import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
+import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.RETURN
+import com.pinterest.ktlint.core.ast.ElementType.WHEN_CONDITION_IN_RANGE
+import com.pinterest.ktlint.core.ast.ElementType.WHEN_CONDITION_IS_PATTERN
+import com.pinterest.ktlint.core.ast.ElementType.WHEN_CONDITION_WITH_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.WHEN_ENTRY
 import com.pinterest.ktlint.core.ast.prevSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -48,7 +57,7 @@ class WhenMustHaveElseRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun checkEntries(node: ASTNode) {
-        if (!hasElse(node)) {
+        if (!hasElse(node) && !isOnlyEnumEntries(node)) {
             WHEN_WITHOUT_ELSE.warnAndFix(configRules, emitWarn, isFixMode, "else was not found", node.startOffset, node) {
                 val whenEntryElse = CompositeElement(WHEN_ENTRY)
                 if (!node.lastChildNode.isBeginByNewline()) {
@@ -61,6 +70,46 @@ class WhenMustHaveElseRule(configRules: List<RulesConfig>) : DiktatRule(
                 }
             }
         }
+    }
+
+    private fun isOnlyEnumEntries(node: ASTNode): Boolean {
+        val whenEntries = node.getAllChildrenWithType(WHEN_ENTRY)
+        val hasConditionsIsPattern = whenEntries.any { it.hasChildOfType(WHEN_CONDITION_IS_PATTERN) }
+        if (hasConditionsIsPattern) {
+            return false
+        }
+
+        val conditionsInRange = whenEntries.map {
+            it.getAllChildrenWithType(WHEN_CONDITION_IN_RANGE)
+        }.flatten()
+
+        val conditionsWithExpression = whenEntries.map {
+            it.getAllChildrenWithType(WHEN_CONDITION_WITH_EXPRESSION)
+        }.flatten()
+
+        val areOnlyEnumEntriesWithExpressions = if (conditionsWithExpression.isNotEmpty()) {
+            conditionsWithExpression.all {
+                it.hasChildOfType(DOT_QUALIFIED_EXPRESSION) || it.hasChildOfType(REFERENCE_EXPRESSION)
+            }
+        } else {
+            true
+        }
+
+        val areOnlyEnumEntriesInRanges = if (conditionsInRange.isNotEmpty()) {
+            conditionsInRange.map { it.getFirstChildWithType(BINARY_EXPRESSION) }
+                .all {
+                    val dotExpressionsCount = it?.getAllChildrenWithType(DOT_QUALIFIED_EXPRESSION)?.size ?: 0
+                    val referenceExpressionsCount = it?.getAllChildrenWithType(REFERENCE_EXPRESSION)?.size ?: 0
+                    dotExpressionsCount + referenceExpressionsCount == 2
+                }
+        } else {
+            true
+        }
+
+        if (areOnlyEnumEntriesWithExpressions && areOnlyEnumEntriesInRanges) {
+            return true
+        }
+        return false
     }
 
     private fun isStatement(node: ASTNode): Boolean {
