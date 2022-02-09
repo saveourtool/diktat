@@ -36,9 +36,6 @@ internal fun createWithFile(runConfiguration: RunConfiguration,
 private fun foo(node: ASTNode) {
     when (node.elementType) {
         CLASS, FUN, PRIMARY_CONSTRUCTOR, SECONDARY_CONSTRUCTOR -> checkAnnotation(node)
-        else -> {
-            // this is a generated else block
-        }
     }
     val qwe = a && b
     val qwe = a &&
