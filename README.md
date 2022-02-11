@@ -20,7 +20,7 @@ DiKTat is a strict [coding standard ](info/guide/diktat-coding-convention.md) fo
 as AST visitors on the top of [KTlint](https://ktlint.github.io/). It can be used for detecting and autofixing code smells in CI/CD process. 
 The full list of available supported rules and inspections can be found [here](info/available-rules.md).
 
-Now diKTat was already added to the lists of [static analysis tools](https://github.com/analysis-tools-dev/static-analysis), to [kotlin-awesome](https://github.com/KotlinBy/awesome-kotlin) and to [kompar](https://catalog.kompar.tools/Analyzer/diKTat/1.0.2). Thanks to the community for this support! 
+Now diKTat was already added to the lists of [static analysis tools](https://github.com/analysis-tools-dev/static-analysis), to [kotlin-awesome](https://github.com/KotlinBy/awesome-kotlin) and to [kompar](https://catalog.kompar.tools/Analyzer/diKTat/1.0.3). Thanks to the community for this support! 
 
 ## See first
 
@@ -54,11 +54,11 @@ Main features of diktat are the following:
     # another option is "brew install ktlint"
     ```
    
-2. Load diKTat manually: [here](https://github.com/cqfn/diKTat/releases/download/v1.0.2/diktat-1.0.2.jar)
+2. Load diKTat manually: [here](https://github.com/cqfn/diKTat/releases/download/v1.0.3/diktat-1.0.3.jar)
 
    **OR** use curl:
    ```bash
-   $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v1.0.2/diktat-1.0.2.jar
+   $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v1.0.3/diktat-1.0.3.jar
    ```
 </details>
 
@@ -122,7 +122,7 @@ This plugin is available since version 0.1.5. You can see how the plugin is conf
 
 ```kotlin
 plugins {
-    id("org.cqfn.diktat.diktat-gradle-plugin") version "1.0.2"
+    id("org.cqfn.diktat.diktat-gradle-plugin") version "1.0.3"
 }
 ```
 
@@ -133,7 +133,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.cqfn.diktat:diktat-gradle-plugin:1.0.2")
+        classpath("org.cqfn.diktat:diktat-gradle-plugin:1.0.3")
     }
 }
 
@@ -200,7 +200,7 @@ spotless {
 ```kotlin
 spotless {
    kotlin {
-      diktat("1.0.2").configFile("full/path/to/diktat-analysis.yml")
+      diktat("1.0.3").configFile("full/path/to/diktat-analysis.yml")
    }
 }
 ```
@@ -231,7 +231,7 @@ Diktat can be run via spotless-maven-plugin since version 2.8.0
 
 ```xml
 <diktat>
-  <version>1.0.2</version> <!-- optional -->
+  <version>1.0.3</version> <!-- optional -->
   <configFile>full/path/to/diktat-analysis.yml</configFile> <!-- optional, configuration file path -->
 </diktat>
 ```
