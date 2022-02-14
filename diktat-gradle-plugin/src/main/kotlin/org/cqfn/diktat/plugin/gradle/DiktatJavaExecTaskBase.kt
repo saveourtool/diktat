@@ -2,6 +2,7 @@ package org.cqfn.diktat.plugin.gradle
 
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.DIKTAT_CHECK_TASK
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.DIKTAT_FIX_TASK
+import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.MIN_JVM_REQUIRES_ADD_OPENS
 import org.cqfn.diktat.ruleset.rules.DIKTAT_CONF_PROPERTY
 
 import generated.DIKTAT_VERSION
@@ -219,9 +220,9 @@ open class DiktatJavaExecTaskBase @Inject constructor(
     private fun fixForNewJpms() {
         val javaVersion = getJavaExecJvmVersion()
         project.logger.debug("For diktat execution jvm version $javaVersion will be used")
-        if (javaVersion.majorVersion.toInt() >= 16) {
+        if (javaVersion.majorVersion.toInt() >= MIN_JVM_REQUIRES_ADD_OPENS) {
             // https://github.com/analysis-dev/diktat/issues/1182#issuecomment-1023099713
-            project.logger.debug("Adding `--add-opens` flag for JVM version >=16 compatibility")
+            project.logger.debug("Adding `--add-opens` flag for JVM version >=$MIN_JVM_REQUIRES_ADD_OPENS compatibility")
             jvmArgs("--add-opens", "java.base/java.lang=ALL-UNNAMED")
         }
     }
