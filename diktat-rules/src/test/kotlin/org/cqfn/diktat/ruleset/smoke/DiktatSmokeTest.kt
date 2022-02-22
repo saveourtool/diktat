@@ -20,7 +20,6 @@ import org.cqfn.diktat.util.assertEquals
 import com.charleskorn.kaml.Yaml
 import com.charleskorn.kaml.YamlConfiguration
 import com.pinterest.ktlint.core.LintError
-import kotlinx.serialization.builtins.ListSerializer
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
@@ -32,6 +31,7 @@ import java.time.LocalDate
 
 import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.createTempFile
+import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.encodeToString
 
 typealias RuleToConfig = Map<String, Map<String, String>>
