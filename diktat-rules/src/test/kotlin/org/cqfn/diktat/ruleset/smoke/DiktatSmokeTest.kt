@@ -20,6 +20,7 @@ import org.cqfn.diktat.util.assertEquals
 import com.charleskorn.kaml.Yaml
 import com.charleskorn.kaml.YamlConfiguration
 import com.pinterest.ktlint.core.LintError
+import kotlinx.serialization.builtins.ListSerializer
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
@@ -69,7 +70,7 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
             }
             .writeText(
                 Yaml(configuration = YamlConfiguration(strictMode = true))
-                    .encodeToString(rulesConfig)
+                    .encodeToString(ListSerializer(RulesConfig.serializer()), rulesConfig)
             )
     }
 
