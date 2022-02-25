@@ -9,7 +9,6 @@ import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.BREAK
-import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CONDITION
 import com.pinterest.ktlint.core.ast.ElementType.ELSE
 import com.pinterest.ktlint.core.ast.ElementType.IF
@@ -19,7 +18,6 @@ import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.THEN
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
-import com.pinterest.ktlint.core.ast.children
 import com.pinterest.ktlint.core.ast.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
@@ -137,11 +135,6 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
         } else {
             elseFromExistingCode
         }
-        val numberOfStatementsInThenBlock = if (isEqualToNull) {
-            (condition.treeParent.psi as KtIfExpression).`else`?.blockExpressionsOrSingle()?.count() ?: 0
-        } else {
-            (condition.treeParent.psi as KtIfExpression).then?.blockExpressionsOrSingle()?.count() ?: 0
-        }
         val numberOfStatementsInElseBlock = if (isEqualToNull) {
             (condition.treeParent.psi as KtIfExpression).then?.blockExpressionsOrSingle()?.count() ?: 0
         } else {
@@ -166,6 +159,7 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
         else -> getDefaultCaseElseCodeLines(elseCodeLines)
     }
 
+    @Suppress("UnsafeCallOnNullableType ")
     private fun getEditedThenCodeLines(
         variableName: String,
         thenCodeLines: List<String>?,
