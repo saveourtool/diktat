@@ -2,10 +2,12 @@ package org.cqfn.diktat.plugin.gradle
 
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.DIKTAT_CHECK_TASK
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.DIKTAT_FIX_TASK
+import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.MIN_JVM_REQUIRES_ADD_OPENS
 import org.cqfn.diktat.ruleset.rules.DIKTAT_CONF_PROPERTY
 
 import generated.DIKTAT_VERSION
 import generated.KTLINT_VERSION
+import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.file.FileCollection
@@ -33,7 +35,7 @@ import javax.inject.Inject
  * Note: class being `open` is required for gradle to create a task.
  */
 open class DiktatJavaExecTaskBase @Inject constructor(
-    gradleVersionString: String,
+    private val gradleVersionString: String,
     diktatExtension: DiktatExtension,
     diktatConfiguration: Configuration,
     private val inputs: PatternFilterable,
@@ -133,6 +135,7 @@ open class DiktatJavaExecTaskBase @Inject constructor(
      */
     @TaskAction
     override fun exec() {
+        fixForNewJpms()
         if (shouldRun) {
             super.exec()
         } else {
@@ -212,6 +215,27 @@ open class DiktatJavaExecTaskBase @Inject constructor(
                 firstOrNull { it.exists() } ?: first()
             }
             .absolutePath
+    }
+
+    private fun fixForNewJpms() {
+        val javaVersion = getJavaExecJvmVersion()
+        project.logger.debug("For diktat execution jvm version $javaVersion will be used")
+        if (javaVersion.majorVersion.toInt() >= MIN_JVM_REQUIRES_ADD_OPENS) {
+            // https://github.com/analysis-dev/diktat/issues/1182#issuecomment-1023099713
+            project.logger.debug("Adding `--add-opens` flag for JVM version >=$MIN_JVM_REQUIRES_ADD_OPENS compatibility")
+            jvmArgs("--add-opens", "java.base/java.lang=ALL-UNNAMED")
+        }
+    }
+
+    private fun getJavaExecJvmVersion(): JavaVersion = if (GradleVersion.version(gradleVersionString) >= GradleVersion.version("6.7") &&
+            javaLauncher.isPresent
+    ) {
+        // Java Launchers are available since 6.7, but may not always be configured
+        javaLauncher.map { it.metadata.jvmVersion }.map(JavaVersion::toVersion).get()
+    } else {
+        // `javaVersion` property is available since 5.2 and is simply derived from path to JVM executable,
+        // which may be explicitly set or be the same as current Gradle JVM.
+        javaVersion
     }
 }
 

@@ -69,5 +69,10 @@ class DiktatGradlePlugin : Plugin<Project> {
          * Task to run diKTat with fix
          */
         const val DIKTAT_FIX_TASK = "diktatFix"
+
+        /**
+         * Version of JVM with more strict module system, which requires `add-opens` for kotlin compiler
+         */
+        const val MIN_JVM_REQUIRES_ADD_OPENS = 16
     }
 }
