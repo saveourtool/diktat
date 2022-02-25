@@ -3,8 +3,7 @@ package test.paragraph4.null_checks
 fun foo() {
     val x = a?.let {
 f(a)
-}
- ?: g(a)
+} ?: g(a)
 
     val y = a ?: 0
 
@@ -17,8 +16,7 @@ println("NULL")
 
     x?.let {
 f(x)
-}
- ?: run {
+} ?: run {
 println("NULL")
 g(x)
 }
@@ -27,8 +25,7 @@ g(x)
 fun bar() {
     val x = a?.let {
 f(a)
-}
- ?: g(a)
+} ?: g(a)
 
     val y = a ?: 0
 
@@ -41,8 +38,7 @@ println("NULL")
 
     x?.let {
 f(x)
-}
- ?: run {
+} ?: run {
 println("NULL")
 g(x)
 }

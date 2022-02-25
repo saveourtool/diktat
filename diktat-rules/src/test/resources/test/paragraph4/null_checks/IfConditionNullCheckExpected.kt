@@ -18,8 +18,7 @@ bar()
 
     some?.let {
 print("qwe")
-}
- ?: print("asd")
+} ?: print("asd")
 
     some?.let {
 print("qweqwe")
@@ -27,8 +26,7 @@ print("qweqwe")
 
     some?.let {
 print("qqq")
-}
- ?: print("www")
+} ?: print("www")
 
     some?.let {
 print("ttt")
@@ -36,8 +34,7 @@ print("ttt")
 
     some?.let {
 print("ttt")
-}
- ?: run {
+} ?: run {
 null
 value
 }
@@ -48,8 +45,7 @@ fun foo() {
     while (result != 0 ) {
         result?.let {
 goo()
-}
- ?: run {
+} ?: run {
 for(i in 1..10)
 break
 }
@@ -63,5 +59,25 @@ break
             break
         }
     }
+}
+
+fun checkSmartCases() {
+    val x = a?.toString() ?: "Null"
+    val y = a.b.c?.toString() ?: a.b.toString()
+    a?.let {
+print()
+}
+    a?.let {
+foo()
+} ?: boo()
+}
+
+fun reversedCheckSmartCases() {
+    val x = a?.toString() ?: "Null"
+    val y = a.b.c?.toString() ?: a.b.toString()
+    a ?: print()
+    a?.let {
+foo()
+} ?: boo()
 }
 

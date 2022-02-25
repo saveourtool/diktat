@@ -9,6 +9,7 @@ import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.BREAK
+import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CONDITION
 import com.pinterest.ktlint.core.ast.ElementType.ELSE
 import com.pinterest.ktlint.core.ast.ElementType.IF
@@ -18,6 +19,7 @@ import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.THEN
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT
 import com.pinterest.ktlint.core.ast.ElementType.VALUE_ARGUMENT_LIST
+import com.pinterest.ktlint.core.ast.children
 import com.pinterest.ktlint.core.ast.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
@@ -120,64 +122,59 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
                                      isEqualToNull: Boolean
     ) {
         val variableName = binaryExpression.left!!.text
-        val thenCodeLines = condition.extractLinesFromBlock(THEN)
-        val elseCodeLines = condition.extractLinesFromBlock(ELSE)
-        val text = if (isEqualToNull) {
-            when {
-                elseCodeLines.isNullOrEmpty() ->
-                    if (condition.getBreakNodeFromIf(THEN)) {
-                        "$variableName ?: break"
-                    } else {
-                        "$variableName ?: run {${thenCodeLines?.joinToString(prefix = "\n", postfix = "\n", separator = "\n")}}"
-                    }
-                thenCodeLines!!.singleOrNull() == "null" -> """
-                        |$variableName?.let {
-                        |${elseCodeLines.joinToString(separator = "\n")}
-                        |}
-                    """.trimMargin()
-                thenCodeLines.singleOrNull() == "break" -> """
-                        |$variableName?.let {
-                        |${elseCodeLines.joinToString(separator = "\n")}
-                        |} ?: break
-                        """.trimMargin()
-                else -> getDefaultCaseNullCheck(variableName, elseCodeLines, thenCodeLines)
-            }
+        val thenFromExistingCode = condition.extractLinesFromBlock(THEN)
+        val elseFromExistingCode = condition.extractLinesFromBlock(ELSE)
+
+        // if (a == null) { foo() } else { bar() } -> if (a != null) { bar() } else { foo() }
+        val thenCodeLines = if (isEqualToNull) {
+            elseFromExistingCode
         } else {
-            when {
-                elseCodeLines.isNullOrEmpty() || (elseCodeLines.singleOrNull() == "null") ->
-                    "$variableName?.let {${thenCodeLines?.joinToString(prefix = "\n", postfix = "\n", separator = "\n")}}"
-                elseCodeLines.singleOrNull() == "break" ->
-                    "$variableName?.let {${thenCodeLines?.joinToString(prefix = "\n", postfix = "\n", separator = "\n")}} ?: break"
-                else -> getDefaultCaseNullCheck(variableName, thenCodeLines, elseCodeLines)
-            }
+            thenFromExistingCode
         }
+        val elseCodeLines = if (isEqualToNull) {
+            thenFromExistingCode
+        } else {
+            elseFromExistingCode
+        }
+
+        val elseEditedCodeLines = getEditedElseCodeLines(elseCodeLines)
+        val thenEditedCodeLines = getEditedThenCodeLines(variableName, thenCodeLines, elseEditedCodeLines)
+
+        val text = "$thenEditedCodeLines $elseEditedCodeLines"
         val tree = KotlinParser().createNode(text)
         condition.treeParent.treeParent.addChild(tree, condition.treeParent)
         condition.treeParent.treeParent.removeChild(condition.treeParent)
     }
 
-    private fun getDefaultCaseNullCheck(
+    private fun getEditedElseCodeLines(elseCodeLines: List<String>?): String = when {
+        // else { "null"/empty } -> ""
+        elseCodeLines == null || elseCodeLines.singleOrNull() == "null" -> ""
+        // else { bar() } -> ?: bar()
+        elseCodeLines.singleOrNull() != null -> "?: ${elseCodeLines.first()}"
+        // else { ... } -> ?: run { ... }
+        else -> getDefaultCaseElseCodeLines(elseCodeLines)
+    }
+
+    private fun getEditedThenCodeLines(
         variableName: String,
         thenCodeLines: List<String>?,
-        elseCodeLines: List<String>?
-    ): String {
-        val editedThenPart = if (variableName == thenCodeLines?.singleOrNull()) {
-            variableName
-        } else {
-            """
-            |$variableName?.let {
-            |${thenCodeLines?.joinToString(separator = "\n")}
-            |}
-            |""".trimMargin()
-        }
-
-        val editedElsePart = elseCodeLines?.singleOrNull()
-            ?: """
-            |run {
-            |${elseCodeLines?.joinToString(separator = "\n")}
-            |}""".trimMargin()
-        return "$editedThenPart ?: $editedElsePart"
+        elseEditedCodeLines: String
+    ): String = when {
+        // if (a != null) {  } -> a ?: editedElse
+        (thenCodeLines.isNullOrEmpty() && elseEditedCodeLines.isNotEmpty()) ||
+                // if (a != null) { a } else { ... } -> a ?: editedElse
+                (thenCodeLines?.singleOrNull() == variableName && elseEditedCodeLines.isNotEmpty()) -> variableName
+        // if (a != null) { a.foo() } -> a?.foo()
+        thenCodeLines?.singleOrNull()?.startsWith("$variableName.") ?: false -> "$variableName?${thenCodeLines?.firstOrNull()!!.removePrefix(variableName)}"
+        // if (a != null) { break } -> a?.let { ... }
+        // if (a != null) { foo() } -> a?.let { ... }
+        else -> getDefaultCaseThenCodeLines(variableName, thenCodeLines)
     }
+
+    private fun getDefaultCaseThenCodeLines(variableName: String, thenCodeLines: List<String>?): String =
+            "$variableName?.let {${thenCodeLines?.joinToString(prefix = "\n", postfix = "\n", separator = "\n")}}"
+
+    private fun getDefaultCaseElseCodeLines(elseCodeLines: List<String>): String = "?: run {${elseCodeLines.joinToString(prefix = "\n", postfix = "\n", separator = "\n")}}"
 
     @Suppress("COMMENT_WHITE_SPACE", "UnsafeCallOnNullableType")
     private fun nullCheckInOtherStatements(binaryExprNode: ASTNode) {

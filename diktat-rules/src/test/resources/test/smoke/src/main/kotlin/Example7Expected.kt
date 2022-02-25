@@ -15,8 +15,7 @@ fun foo() {
 
     prop?.let {
         doAnotherSmth()
-    }
-        ?: doSmth()
+    } ?: doSmth()
 }
 
 fun fooo() {
