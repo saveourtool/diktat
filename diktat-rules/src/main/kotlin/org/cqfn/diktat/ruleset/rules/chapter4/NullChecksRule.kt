@@ -159,7 +159,7 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
         else -> getDefaultCaseElseCodeLines(elseCodeLines)
     }
 
-    @Suppress("UnsafeCallOnNullableType ")
+    @Suppress("UnsafeCallOnNullableType")
     private fun getEditedThenCodeLines(
         variableName: String,
         thenCodeLines: List<String>?,
