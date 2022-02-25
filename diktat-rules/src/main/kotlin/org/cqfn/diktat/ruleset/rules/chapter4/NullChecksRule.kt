@@ -26,6 +26,7 @@ import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtIfExpression
+import org.jetbrains.kotlin.psi.psiUtil.blockExpressionsOrSingle
 
 /**
  * This rule check and fixes explicit null checks (explicit comparison with `null`)
@@ -136,8 +137,18 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
         } else {
             elseFromExistingCode
         }
+        val numberOfStatementsInThenBlock = if (isEqualToNull) {
+            (condition.treeParent.psi as KtIfExpression).`else`?.blockExpressionsOrSingle()?.count() ?: 0
+        } else {
+            (condition.treeParent.psi as KtIfExpression).then?.blockExpressionsOrSingle()?.count() ?: 0
+        }
+        val numberOfStatementsInElseBlock = if (isEqualToNull) {
+            (condition.treeParent.psi as KtIfExpression).then?.blockExpressionsOrSingle()?.count() ?: 0
+        } else {
+            (condition.treeParent.psi as KtIfExpression).`else`?.blockExpressionsOrSingle()?.count() ?: 0
+        }
 
-        val elseEditedCodeLines = getEditedElseCodeLines(elseCodeLines)
+        val elseEditedCodeLines = getEditedElseCodeLines(elseCodeLines, numberOfStatementsInElseBlock)
         val thenEditedCodeLines = getEditedThenCodeLines(variableName, thenCodeLines, elseEditedCodeLines)
 
         val text = "$thenEditedCodeLines $elseEditedCodeLines"
@@ -146,11 +157,11 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
         condition.treeParent.treeParent.removeChild(condition.treeParent)
     }
 
-    private fun getEditedElseCodeLines(elseCodeLines: List<String>?): String = when {
+    private fun getEditedElseCodeLines(elseCodeLines: List<String>?, numberOfStatementsInElseBlock: Int): String = when {
         // else { "null"/empty } -> ""
         elseCodeLines == null || elseCodeLines.singleOrNull() == "null" -> ""
         // else { bar() } -> ?: bar()
-        elseCodeLines.singleOrNull() != null -> "?: ${elseCodeLines.first()}"
+        numberOfStatementsInElseBlock == 1 -> "?: ${elseCodeLines.joinToString(postfix = "\n", separator = "\n")}"
         // else { ... } -> ?: run { ... }
         else -> getDefaultCaseElseCodeLines(elseCodeLines)
     }
