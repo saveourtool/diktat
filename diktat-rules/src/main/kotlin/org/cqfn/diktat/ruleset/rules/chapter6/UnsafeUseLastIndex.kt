@@ -27,7 +27,6 @@ class UnsafeUseLastIndex(configRules: List<RulesConfig>) : DiktatRule(
 ) {
 
     override fun logic(node: ASTNode) {
-        //println(node.prettyPrint())
         if (node.elementType == ElementType.BINARY_EXPRESSION) {
             changeRight(node)
         }
@@ -45,7 +44,6 @@ class UnsafeUseLastIndex(configRules: List<RulesConfig>) : DiktatRule(
     private fun fixup(node: ASTNode) {
         println("NODE: ${node.text}: ${node.elementType}")
         val text = node.firstChildNode.text.removeSuffix("length") + "lastIndex"
-        val newNode = KotlinParser().createNode(text)
         var parent = node.treeParent
         var textParent = ""
         parent.children().forEach { elem->
@@ -54,21 +52,11 @@ class UnsafeUseLastIndex(configRules: List<RulesConfig>) : DiktatRule(
             else
                 textParent += elem.text
         }
-
         val newParent = KotlinParser().createNode(textParent)
-
-        //parent.treeParent.addChild(newParent, null)
-        //parent.treeParent.removeChild(parent)
-        val grand = parent.treeParent
-        println(parent.prettyPrint())
-        println(newParent.prettyPrint())
-        parent.replaceChild(node, newNode)
-        grand.replaceChild(newParent, parent)
-        //parent.replaceChild(node, newNode)
+        parent.treeParent.replaceChild(parent, newParent)
     }
 
     private fun changeRight(node: ASTNode) {
-        //println(node.prettyPrint())
         val listWithRightLength = node.children()
             .filter { it.elementType == DOT_QUALIFIED_EXPRESSION && checkSymbol(it.lastChildNode, "length") }
             .filter { (checkSymbol(it.treeNext, "-") && checkSymbol(it.treeNext.treeNext, "1")) ||
