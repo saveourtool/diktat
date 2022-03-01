@@ -64,16 +64,14 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
                     rulesConfig.add(RulesConfig(warning, enabled = true, configuration = configuration))
                 }
             }
+            .toList()
         createTempFile().toFile()
             .also {
                 configFilePath = it.absolutePath
-                println("Will use temporary config file $configFilePath")
             }
             .writeText(
                 Yaml(configuration = YamlConfiguration(strictMode = true))
-                    .encodeToString(ListSerializer(RulesConfig.serializer()), rulesConfig.toList()).also {
-                        println("Will write the following into temporary config file: $it")
-                    }
+                    .encodeToString(ListSerializer(RulesConfig.serializer()), rulesConfig)
             )
     }
 
