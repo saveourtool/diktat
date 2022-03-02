@@ -16,7 +16,6 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 /**
  * This rule checks if there use property length with operation - 1 and fix this on lastIndex
  */
-
 class UnsafeUseLastIndex(configRules: List<RulesConfig>) : DiktatRule(
     "last-index",
     configRules,
@@ -48,7 +47,8 @@ class UnsafeUseLastIndex(configRules: List<RulesConfig>) : DiktatRule(
         val listWithRightLength = node.children().filter {
             val minus = node.getFirstChildWithType(OPERATION_REFERENCE)
             val one = node.getFirstChildWithType(INTEGER_CONSTANT)
-            it.elementType == DOT_QUALIFIED_EXPRESSION && it.lastChildNode.text == "length" && it.lastChildNode.elementType == REFERENCE_EXPRESSION && minus?.text == "-" && one?.text == "1"
+            it.elementType == DOT_QUALIFIED_EXPRESSION && it.lastChildNode.text == "length" && it.lastChildNode.elementType == REFERENCE_EXPRESSION &&
+                    minus?.text == "-" && one?.text == "1"
         }
         if (listWithRightLength.toList().isNotEmpty()) {
             Warnings.UNSAFE_USE_LAST_INDEX.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
