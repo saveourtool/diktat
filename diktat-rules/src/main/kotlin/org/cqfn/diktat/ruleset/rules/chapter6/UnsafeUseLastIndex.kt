@@ -30,14 +30,7 @@ class UnsafeUseLastIndex(configRules: List<RulesConfig>) : DiktatRule(
     private fun fixup(node: ASTNode) {
         val text = node.firstChildNode.text.removeSuffix("length") + "lastIndex"
         val parent = node.treeParent
-        var textParent = ""
-        parent.children().forEach { elem ->
-            if (elem.text == node.text) {
-                textParent += text
-            } else {
-                textParent += elem.text
-            }
-        }
+        val textParent = parent.text.replace(node.text, text)
         val newParent = KotlinParser().createNode(textParent)
         val grand = parent.treeParent
         grand.replaceChild(parent, newParent)
@@ -45,10 +38,10 @@ class UnsafeUseLastIndex(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun changeRight(node: ASTNode) {
         val listWithRightLength = node.children().filter {
-            val minus = node.getFirstChildWithType(OPERATION_REFERENCE)
-            val one = node.getFirstChildWithType(INTEGER_CONSTANT)
+            val operation = node.getFirstChildWithType(OPERATION_REFERENCE)
+            val number = node.getFirstChildWithType(INTEGER_CONSTANT)
             it.elementType == DOT_QUALIFIED_EXPRESSION && it.lastChildNode.text == "length" && it.lastChildNode.elementType == REFERENCE_EXPRESSION &&
-                    minus?.text == "-" && one?.text == "1"
+                    operation?.text == "-" && number?.text == "1"
         }
         if (listWithRightLength.toList().isNotEmpty()) {
             Warnings.UNSAFE_USE_LAST_INDEX.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {

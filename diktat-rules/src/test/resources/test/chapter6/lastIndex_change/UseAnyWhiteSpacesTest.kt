@@ -7,4 +7,6 @@ fun main(args: Array<String>) {
     val C = str.length    -1
     val D = str.length-     1
     val F = str.length - 1
+    val E = str[str.length - 1]
+    val G = str[str.length  -  1 ]
 }

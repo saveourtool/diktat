@@ -178,7 +178,7 @@ enum class Warnings(
     INLINE_CLASS_CAN_BE_USED(true, "6.1.12", "inline class can be used"),
     EXTENSION_FUNCTION_WITH_CLASS(false, "6.2.3", "do not use extension functions for the class defined in the same file"),
     RUN_IN_SCRIPT(true, "6.5.1", "wrap blocks of code in top-level scope functions like `run`"),
-    UNSAFE_USE_LAST_INDEX(true, "6.2.4", "length - 1 can be changed to lastIndex"),
+    UNSAFE_USE_LAST_INDEX(true, "6.2.4", "length - 1 should be changed to lastIndex"),
     ;
 
     /**

@@ -7,4 +7,6 @@ fun main(args: Array<String>) {
     val C = str.lastIndex
     val D = str.lastIndex
     val F = str.lastIndex
+    val E = str[str.lastIndex]
+    val G = str[str.lastIndex ]
 }

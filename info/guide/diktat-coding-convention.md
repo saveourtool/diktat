@@ -2722,6 +2722,13 @@ val A = "name"
 val B = A.length - 1
 ```
 
+**Valid example**:
+```kotlin
+val A = "name"
+val B = A.lastIndex
+```
+
+
 
 <!-- =============================================================================== -->
 ### <a name="c6.3"></a> 6.3 Interfaces

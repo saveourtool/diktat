@@ -428,6 +428,22 @@ fun SomeClass.deleteAllSpaces() {
 }
 ```
 
+#### <a name="r6.2.4"></a> 6.2.4 Don't use property length with operation - 1
+You should not use property length with operation - 1, you can change this to lastIndex
+
+**Invalid example**:
+```kotlin
+val A = "name"
+val B = A.length - 1
+```
+
+**Valid example**:
+```kotlin
+val A = "name"
+val B = A.lastIndex
+```
+
+
 <!-- =============================================================================== -->
 ### <a name="c6.3"></a> 6.3 Interfaces
 An `Interface` in Kotlin can contain declarations of abstract methods, as well as method implementations. What makes them different from abstract classes is that interfaces cannot store state.
