@@ -31,6 +31,7 @@ import java.time.LocalDate
 
 import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.createTempFile
+import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.encodeToString
 
 typealias RuleToConfig = Map<String, Map<String, String>>
@@ -63,13 +64,14 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
                     rulesConfig.add(RulesConfig(warning, enabled = true, configuration = configuration))
                 }
             }
+            .toList()
         createTempFile().toFile()
             .also {
                 configFilePath = it.absolutePath
             }
             .writeText(
                 Yaml(configuration = YamlConfiguration(strictMode = true))
-                    .encodeToString(rulesConfig)
+                    .encodeToString(ListSerializer(RulesConfig.serializer()), rulesConfig)
             )
     }
 
