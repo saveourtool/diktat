@@ -2,10 +2,12 @@ package org.cqfn.diktat.plugin.gradle
 
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.DIKTAT_CHECK_TASK
 import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.DIKTAT_FIX_TASK
+import org.cqfn.diktat.plugin.gradle.DiktatGradlePlugin.Companion.MIN_JVM_REQUIRES_ADD_OPENS
 import org.cqfn.diktat.ruleset.rules.DIKTAT_CONF_PROPERTY
 
 import generated.DIKTAT_VERSION
 import generated.KTLINT_VERSION
+import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.file.FileCollection
@@ -33,7 +35,7 @@ import javax.inject.Inject
  * Note: class being `open` is required for gradle to create a task.
  */
 open class DiktatJavaExecTaskBase @Inject constructor(
-    gradleVersionString: String,
+    private val gradleVersionString: String,
     diktatExtension: DiktatExtension,
     diktatConfiguration: Configuration,
     private val inputs: PatternFilterable,
@@ -87,10 +89,6 @@ open class DiktatJavaExecTaskBase @Inject constructor(
             main = "com.pinterest.ktlint.Main"
         }
 
-        // Plain, checkstyle and json reporter are provided out of the box in ktlint
-        if (diktatExtension.reporterType == "html") {
-            diktatConfiguration.dependencies.add(project.dependencies.create("com.pinterest.ktlint:ktlint-reporter-html:$KTLINT_VERSION"))
-        }
         classpath = diktatConfiguration
         project.logger.debug("Setting diktatCheck classpath to ${diktatConfiguration.dependencies.toSet()}")
         if (diktatExtension.debug) {
@@ -104,6 +102,9 @@ open class DiktatJavaExecTaskBase @Inject constructor(
         args = additionalFlags.toMutableList().apply {
             if (diktatExtension.debug) {
                 add("--debug")
+            }
+            diktatExtension.baseline?.let {
+                add("--baseline=${diktatExtension.baseline}")
             }
             actualInputs.also {
                 if (it.isEmpty) {
@@ -134,6 +135,7 @@ open class DiktatJavaExecTaskBase @Inject constructor(
      */
     @TaskAction
     override fun exec() {
+        fixForNewJpms()
         if (shouldRun) {
             super.exec()
         } else {
@@ -155,35 +157,40 @@ open class DiktatJavaExecTaskBase @Inject constructor(
     private fun createReporterFlag(diktatExtension: DiktatExtension): String {
         val flag: StringBuilder = StringBuilder()
 
-        // Plain, checkstyle and json reporter are provided out of the box in ktlint
-        when (diktatExtension.reporterType) {
-            "json" -> flag.append("--reporter=json")
-            "html" -> flag.append("--reporter=html")
-            "checkstyle" -> flag.append("--reporter=checkstyle")
-            else -> customReporter(diktatExtension, flag)
+        // appending the flag with the reporter
+        setReporter(diktatExtension, flag)
+
+        val outFlag = when {
+            // githubActions should have higher priority than a custom input
+            diktatExtension.githubActions -> ",output=${project.projectDir}/${project.name}"
+            diktatExtension.output.isNotEmpty() -> ",output=${diktatExtension.output}"
+            else -> ""
         }
 
-        if (diktatExtension.output.isNotEmpty()) {
-            flag.append(",output=${diktatExtension.output}")
-        }
+        flag.append(outFlag)
 
         return flag.toString()
     }
 
-    private fun customReporter(diktatExtension: DiktatExtension, flag: java.lang.StringBuilder) {
-        if (diktatExtension.reporterType.startsWith("custom")) {
-            val name = diktatExtension.reporterType.split(":")[1]
-            val jarPath = diktatExtension.reporterType.split(":")[2]
-            if (name.isEmpty() || jarPath.isEmpty()) {
-                project.logger.warn("Either name or path to jar is not specified. Falling to plain reporter")
-                flag.append("--reporter=plain")
-            } else {
-                flag.append("--reporter=$name,artifact=$jarPath")
-            }
+    @Suppress("SAY_NO_TO_VAR")
+    private fun setReporter(diktatExtension: DiktatExtension, flag: java.lang.StringBuilder) {
+        val name = diktatExtension.reporter.trim()
+        val validReporters = listOf("sarif", "plain", "json", "html")
+        var reporterFlag = if (name.isEmpty() || !validReporters.contains(name)) {
+            project.logger.warn("Reporter name $name was not specified or is invalid. Falling to 'plain' reporter")
+            "--reporter=plain"
         } else {
-            flag.append("--reporter=plain")
-            project.logger.debug("Unknown reporter was specified. Falling back to plain reporter.")
+            "--reporter=$name"
         }
+
+        // githubActions should have higher priority than a custom input
+        if (diktatExtension.githubActions) {
+            // need to set user.home specially for ktlint, so it will be able to put a relative path URI in SARIF
+            System.setProperty("user.home", project.projectDir.toString())
+            reporterFlag = "--reporter=sarif"
+        }
+
+        flag.append(reporterFlag)
     }
 
     @Suppress("MagicNumber")
@@ -208,6 +215,27 @@ open class DiktatJavaExecTaskBase @Inject constructor(
                 firstOrNull { it.exists() } ?: first()
             }
             .absolutePath
+    }
+
+    private fun fixForNewJpms() {
+        val javaVersion = getJavaExecJvmVersion()
+        project.logger.debug("For diktat execution jvm version $javaVersion will be used")
+        if (javaVersion.majorVersion.toInt() >= MIN_JVM_REQUIRES_ADD_OPENS) {
+            // https://github.com/analysis-dev/diktat/issues/1182#issuecomment-1023099713
+            project.logger.debug("Adding `--add-opens` flag for JVM version >=$MIN_JVM_REQUIRES_ADD_OPENS compatibility")
+            jvmArgs("--add-opens", "java.base/java.lang=ALL-UNNAMED")
+        }
+    }
+
+    private fun getJavaExecJvmVersion(): JavaVersion = if (GradleVersion.version(gradleVersionString) >= GradleVersion.version("6.7") &&
+            javaLauncher.isPresent
+    ) {
+        // Java Launchers are available since 6.7, but may not always be configured
+        javaLauncher.map { it.metadata.jvmVersion }.map(JavaVersion::toVersion).get()
+    } else {
+        // `javaVersion` property is available since 5.2 and is simply derived from path to JVM executable,
+        // which may be explicitly set or be the same as current Gradle JVM.
+        javaVersion
     }
 }
 

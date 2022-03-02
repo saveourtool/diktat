@@ -10,14 +10,20 @@ fun testWhenExpression() {
     when (directoryType) {
         TestEnum.ONE -> "d"
         TestEnum.TWO -> "-"
- else -> {
-// this is a generated else block
-}}
+    }
 
     val noElse = when (directoryType) {
         TestEnum.ONE -> "d"
         TestEnum.TWO -> "a"
     }
+
+    val v = 1
+    when (v) {
+        f(TestEnum.ONE) -> print("1")
+        f(TestEnum.TWO) -> print("2")
+    else -> {
+// this is a generated else block
+}}
 
     val inLambda = {x: Int -> when(x) {
         1 -> print(5)

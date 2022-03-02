@@ -15,7 +15,7 @@ import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtConstantExpression
 import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
-import org.jetbrains.kotlin.psi.KtOperationExpression
+import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.KtParenthesizedExpression
 import org.jetbrains.kotlin.psi.KtReferenceExpression
 import org.jetbrains.kotlin.psi.KtStringTemplateExpression
@@ -153,12 +153,14 @@ class StringConcatenationRule(configRules: List<RulesConfig>) : DiktatRule(
             // =========== "a " + "b" -> "a b"
             val rvalueTextNew = rvalueText?.trim('"')
             return "$lvalueText$rvalueTextNew"
-        } else if (binaryExpressionPsi.isRvalueCallExpression() || binaryExpressionPsi.isRvalueDotQualifiedExpression() || binaryExpressionPsi.isRvalueOperation()) {
+        } else if (binaryExpressionPsi.isRvalueCallExpression()) {
             // ===========  "a " + foo() -> "a ${foo()}}"
             return "$lvalueText\${$rvalueText}"
         } else if (binaryExpressionPsi.isRvalueReferenceExpression()) {
             // ===========  "a " + b -> "a $b"
             return "$lvalueText$$rvalueText"
+        } else if (!binaryExpressionPsi.isRvalueParenthesized() && binaryExpressionPsi.isRvalueExpression()) {
+            return "$lvalueText\${$rvalueText}"
         } else if (binaryExpressionPsi.isRvalueParenthesized()) {
             val binExpression = binaryExpressionPsi.right?.children?.first()
             if (binExpression is KtBinaryExpression) {
@@ -196,14 +198,8 @@ class StringConcatenationRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun KtBinaryExpression.isRvalueReferenceExpression() =
             this.right is KtReferenceExpression
 
-    private fun KtBinaryExpression.isRvalueDotQualifiedExpression() =
-            this.right is KtDotQualifiedExpression
-
     private fun KtBinaryExpression.isRvalueParenthesized() =
             this.right is KtParenthesizedExpression
-
-    private fun KtBinaryExpression.isRvalueOperation() =
-            this.right is KtOperationExpression
 
     private fun KtBinaryExpression.isLvalueDotQualifiedExpression() =
             this.left is KtDotQualifiedExpression
@@ -216,4 +212,7 @@ class StringConcatenationRule(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun KtBinaryExpression.isLvalueConstantExpression() =
             this.left is KtConstantExpression
+
+    private fun KtBinaryExpression.isRvalueExpression() =
+            this.right is KtExpression
 }

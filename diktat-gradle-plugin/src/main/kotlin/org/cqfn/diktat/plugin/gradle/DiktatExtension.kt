@@ -25,9 +25,14 @@ open class DiktatExtension(
     var debug = false
 
     /**
+     * Property that will be used if you need to publish the report to GitHub
+     */
+    var githubActions = false
+
+    /**
      * Type of the reporter to use
      */
-    var reporterType: String = "plain"
+    var reporter: String = "plain"
 
     /**
      * Type of output
@@ -46,6 +51,12 @@ open class DiktatExtension(
      */
     @Deprecated("Configuration via inputs/excludes is unsupported, use inputs(Action)")
     var inputs: FileCollection? = null
+
+    /**
+     * Baseline file, containing a list of errors that will be ignored.
+     * If this file doesn't exist, it will be created on the first invocation.
+     */
+    var baseline: String? = null
 
     /**
      * Path to diktat yml config file. Can be either absolute or relative to project's root directory.

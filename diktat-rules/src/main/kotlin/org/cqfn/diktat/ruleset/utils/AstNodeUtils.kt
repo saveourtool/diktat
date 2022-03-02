@@ -32,6 +32,7 @@ import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.OVERRIDE_KEYWORD
+import com.pinterest.ktlint.core.ast.ElementType.PARENTHESIZED
 import com.pinterest.ktlint.core.ast.ElementType.PRIVATE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PROTECTED_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.PUBLIC_KEYWORD
@@ -801,6 +802,24 @@ fun ASTNode.hasEqBinaryExpression(): Boolean =
  */
 fun ASTNode.getLineNumber(): Int =
         calculateLineNumber()
+
+/**
+ * Get node by taking children by types and ignore `PARENTHESIZED`
+ *
+ * @return child of type
+ */
+fun ASTNode.takeByChainOfTypes(vararg types: IElementType): ASTNode? {
+    var node: ASTNode? = this
+    types.forEach {
+        node = node?.findChildByType(it) ?: run {
+            while (node?.hasChildOfType(PARENTHESIZED) == true) {
+                node = node?.findChildByType(PARENTHESIZED)
+            }
+            node?.findChildByType(it)
+        }
+    }
+    return node
+}
 
 private fun ASTNode.findOffsetByLine(line: Int, positionByOffset: (Int) -> Pair<Int, Int>): Int {
     val currentLine = this.getLineNumber()

@@ -5,7 +5,7 @@
     <parent>
         <artifactId>diktat-parent</artifactId>
         <groupId>org.cqfn.diktat</groupId>
-        <version>1.0.2-SNAPSHOT</version>
+        <version>1.0.4-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -19,7 +19,7 @@
     </properties>
 
     <dependencies>
-        <!-- FixMe: Use this, when it's released -->
+        <!-- FixMe: Use this, when it's released: https://maven.apache.org/ref/4-LATEST/maven-bom/ -->
         <!-- <dependency> -->
         <!--     <groupId>org.apache.maven</groupId> -->
         <!--     <artifactId>maven-bom</artifactId> -->
@@ -52,6 +52,26 @@
         <dependency>
             <groupId>com.pinterest.ktlint</groupId>
             <artifactId>ktlint-reporter-plain</artifactId>
+            <version>${ktlint.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.pinterest.ktlint</groupId>
+            <artifactId>ktlint-reporter-sarif</artifactId>
+            <version>${ktlint.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.pinterest.ktlint</groupId>
+            <artifactId>ktlint-reporter-json</artifactId>
+            <version>${ktlint.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.pinterest.ktlint</groupId>
+            <artifactId>ktlint-reporter-html</artifactId>
+            <version>${ktlint.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.pinterest.ktlint</groupId>
+            <artifactId>ktlint-reporter-baseline</artifactId>
             <version>${ktlint.version}</version>
         </dependency>
         <dependency>

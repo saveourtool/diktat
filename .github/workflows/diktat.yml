@@ -1,4 +1,4 @@
-name: Run diKTat from release version
+name: Run diKTat (release)
 
 on:
   push:
