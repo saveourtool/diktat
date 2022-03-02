@@ -4,6 +4,7 @@ import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.BRACES_BLOCK_STRUCTURE_ERROR
+import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
@@ -53,7 +54,8 @@ import org.jetbrains.kotlin.psi.KtTryExpression
 class BlockStructureBraces(configRules: List<RulesConfig>) : DiktatRule(
     "block-structure",
     configRules,
-    listOf(BRACES_BLOCK_STRUCTURE_ERROR)
+    listOf(BRACES_BLOCK_STRUCTURE_ERROR),
+    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:blank-lines"))
 ) {
     override fun logic(node: ASTNode) {
         val configuration = BlockStructureBracesConfiguration(

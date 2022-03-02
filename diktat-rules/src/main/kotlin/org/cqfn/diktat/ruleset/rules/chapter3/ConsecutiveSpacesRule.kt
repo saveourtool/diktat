@@ -4,6 +4,7 @@ import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.TOO_MANY_CONSECUTIVE_SPACES
+import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 
 import com.pinterest.ktlint.core.ast.ElementType.ENUM_ENTRY
@@ -23,7 +24,8 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
 class ConsecutiveSpacesRule(configRules: List<RulesConfig>) : DiktatRule(
     "too-many-spaces",
     configRules,
-    listOf(TOO_MANY_CONSECUTIVE_SPACES)
+    listOf(TOO_MANY_CONSECUTIVE_SPACES),
+    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:block-structure"))
 ) {
     override fun logic(node: ASTNode) {
         val configuration = TooManySpacesRuleConfiguration(

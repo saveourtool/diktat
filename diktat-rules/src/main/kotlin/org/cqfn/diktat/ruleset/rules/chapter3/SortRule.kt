@@ -4,6 +4,7 @@ import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_DECLARATIONS_ORDER
+import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
@@ -34,7 +35,8 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
 class SortRule(configRules: List<RulesConfig>) : DiktatRule(
     "sort-rule",
     configRules,
-    listOf(WRONG_DECLARATIONS_ORDER)
+    listOf(WRONG_DECLARATIONS_ORDER),
+    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:top-level-order"))
 ) {
     override fun logic(node: ASTNode) {
         val configuration = SortRuleConfiguration(

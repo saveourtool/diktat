@@ -2,6 +2,7 @@ package org.cqfn.diktat.ruleset.rules.chapter3.files
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_WHITESPACE
+import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.CompactInitialization
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
@@ -96,7 +97,8 @@ import org.slf4j.LoggerFactory
 class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
     "horizontal-whitespace",
     configRules,
-    listOf(WRONG_WHITESPACE)
+    listOf(WRONG_WHITESPACE),
+    setOf(VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:newlines"))
 ) {
     @Suppress("ComplexMethod")
     override fun logic(node: ASTNode) {

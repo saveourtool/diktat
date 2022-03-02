@@ -9,6 +9,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_PATH
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_PREFIX
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_SYMBOLS
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_MISSING
+import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
@@ -45,7 +46,8 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
     "package-naming",
     configRules,
     listOf(INCORRECT_PACKAGE_SEPARATOR, PACKAGE_NAME_INCORRECT_CASE, PACKAGE_NAME_MISSING,
-        PACKAGE_NAME_INCORRECT_PATH, PACKAGE_NAME_INCORRECT_PREFIX, PACKAGE_NAME_INCORRECT_SYMBOLS)
+        PACKAGE_NAME_INCORRECT_PATH, PACKAGE_NAME_INCORRECT_PREFIX, PACKAGE_NAME_INCORRECT_SYMBOLS),
+    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:kdoc-comments-codeblocks-formatting"))
 ) {
     private lateinit var domainName: String
 

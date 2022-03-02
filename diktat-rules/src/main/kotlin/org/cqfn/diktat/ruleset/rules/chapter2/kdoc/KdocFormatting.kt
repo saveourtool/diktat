@@ -12,6 +12,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_NEWLINES_BETWEEN_BASIC
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WRONG_SPACES_AFTER_TAG
 import org.cqfn.diktat.ruleset.constants.Warnings.KDOC_WRONG_TAGS_ORDER
+import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.allSiblings
 import org.cqfn.diktat.ruleset.utils.findChildAfter
@@ -65,7 +66,8 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
     configRules,
     listOf(KDOC_CONTAINS_DATE_OR_AUTHOR, KDOC_EMPTY_KDOC, KDOC_NEWLINES_BEFORE_BASIC_TAGS, KDOC_NO_DEPRECATED_TAG,
         KDOC_NO_EMPTY_TAGS, KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS, KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS,
-        KDOC_WRONG_SPACES_AFTER_TAG, KDOC_WRONG_TAGS_ORDER)
+        KDOC_WRONG_SPACES_AFTER_TAG, KDOC_WRONG_TAGS_ORDER),
+    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:kdoc-methods"))
 ) {
     private val basicTagsList = listOf(KDocKnownTag.PARAM, KDocKnownTag.RETURN, KDocKnownTag.THROWS)
     private val specialTagNames = setOf("implSpec", "implNote", "apiNote")

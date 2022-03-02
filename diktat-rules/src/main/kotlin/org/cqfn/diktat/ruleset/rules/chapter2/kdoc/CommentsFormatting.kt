@@ -7,6 +7,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.COMMENT_WHITE_SPACE
 import org.cqfn.diktat.ruleset.constants.Warnings.FIRST_COMMENT_NO_BLANK_LINE
 import org.cqfn.diktat.ruleset.constants.Warnings.IF_ELSE_COMMENTS
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_NEWLINES_AROUND_KDOC
+import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
@@ -53,7 +54,8 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
     "kdoc-comments-codeblocks-formatting",
     configRules,
     listOf(COMMENT_WHITE_SPACE, FIRST_COMMENT_NO_BLANK_LINE,
-        IF_ELSE_COMMENTS, WRONG_NEWLINES_AROUND_KDOC)
+        IF_ELSE_COMMENTS, WRONG_NEWLINES_AROUND_KDOC),
+    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:kdoc-formatting"))
 ) {
     /**
      * @param node

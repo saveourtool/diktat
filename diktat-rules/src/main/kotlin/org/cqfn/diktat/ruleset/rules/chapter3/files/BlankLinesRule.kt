@@ -2,6 +2,7 @@ package org.cqfn.diktat.ruleset.rules.chapter3.files
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.TOO_MANY_BLANK_LINES
+import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
@@ -24,7 +25,8 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 class BlankLinesRule(configRules: List<RulesConfig>) : DiktatRule(
     "blank-lines",
     configRules,
-    listOf(TOO_MANY_BLANK_LINES)
+    listOf(TOO_MANY_BLANK_LINES),
+    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:enum-separated"))
 ) {
     override fun logic(node: ASTNode) {
         if (node.elementType == WHITE_SPACE) {

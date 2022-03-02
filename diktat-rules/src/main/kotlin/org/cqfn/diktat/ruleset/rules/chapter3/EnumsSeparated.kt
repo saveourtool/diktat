@@ -2,6 +2,7 @@ package org.cqfn.diktat.ruleset.rules.chapter3
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.ENUMS_SEPARATED
+import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.allSiblings
 import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
@@ -29,7 +30,8 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 class EnumsSeparated(configRules: List<RulesConfig>) : DiktatRule(
     "enum-separated",
     configRules,
-    listOf(ENUMS_SEPARATED)
+    listOf(ENUMS_SEPARATED),
+    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:sort-rule"))
 ) {
     override fun logic(node: ASTNode) {
         if (node.elementType == CLASS && node.hasChildOfType(CLASS_BODY) && node.isClassEnum()) {
