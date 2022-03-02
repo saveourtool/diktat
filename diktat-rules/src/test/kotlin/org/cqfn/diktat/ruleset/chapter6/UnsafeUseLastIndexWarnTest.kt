@@ -1,24 +1,20 @@
 package org.cqfn.diktat.ruleset.chapter6
 
-import com.pinterest.ktlint.core.LintError
-import generated.WarningNames
 import org.cqfn.diktat.ruleset.constants.Warnings
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
-import org.cqfn.diktat.ruleset.rules.chapter6.RunInScript
 import org.cqfn.diktat.ruleset.rules.chapter6.UnsafeUseLastIndex
-import org.cqfn.diktat.ruleset.utils.prettyPrint
 import org.cqfn.diktat.util.LintTestBase
-import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+
+import com.pinterest.ktlint.core.LintError
+import generated.WarningNames
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-
-class UnsafeUseLastIndexWarnTest : LintTestBase(::UnsafeUseLastIndex){
-
+class UnsafeUseLastIndexWarnTest : LintTestBase(::UnsafeUseLastIndex) {
     private val ruleId = "$DIKTAT_RULE_SET_ID:last-index"
 
     @Test
-//    @Tag(WarningsNames.UNSAFE_USE_LAST_INDEX)
+    @Tag(WarningNames.UNSAFE_USE_LAST_INDEX)
     fun `find method Length - 1 with many dot expressions`() {
         lintMethod(
             """
@@ -26,13 +22,12 @@ class UnsafeUseLastIndexWarnTest : LintTestBase(::UnsafeUseLastIndex){
                     |val D = A.B.C.length - 1
                     |
                 """.trimMargin(),
-            LintError(2, 9, ruleId, "${Warnings.UNSAFE_USE_LAST_INDEX.warnText()} A.B.C.length - 1")
-        )//OK
+            LintError(2, 9, ruleId, "${Warnings.UNSAFE_USE_LAST_INDEX.warnText()} A.B.C.length - 1", true)
+        )
     }
 
-
     @Test
-//    @Tag(WarningNames.UNSAFE_USE_LAST_INDEX)
+    @Tag(WarningNames.UNSAFE_USE_LAST_INDEX)
     fun `find method Length - 1 for mane line`() {
         lintMethod(
             """
@@ -43,11 +38,11 @@ class UnsafeUseLastIndexWarnTest : LintTestBase(::UnsafeUseLastIndex){
                     |   1
                     |}
                 """.trimMargin()
-        )//OK
+        )
     }
 
     @Test
-//    @Tag(WarningNames.UNSAFE_USE_LAST_INDEX)
+    @Tag(WarningNames.UNSAFE_USE_LAST_INDEX)
     fun `find method Length - 1 with many spaces and tabulation`() {
         lintMethod(
             """
@@ -56,13 +51,12 @@ class UnsafeUseLastIndexWarnTest : LintTestBase(::UnsafeUseLastIndex){
                     |var C = A.length - 19
                     |
                 """.trimMargin(),
-            LintError(2, 12, ruleId, "${Warnings.UNSAFE_USE_LAST_INDEX.warnText() } A.length   -       1")
+            LintError(2, 12, ruleId, "${Warnings.UNSAFE_USE_LAST_INDEX.warnText() } A.length   -       1", true)
         )
-    }//OK
-
+    }
 
     @Test
-//    @Tag(WarningNames.UNSAFE_USE_LAST_INDEX)
+    @Tag(WarningNames.UNSAFE_USE_LAST_INDEX)
     fun `find method Length - 1 without spaces`() {
         lintMethod(
             """
@@ -70,12 +64,12 @@ class UnsafeUseLastIndexWarnTest : LintTestBase(::UnsafeUseLastIndex){
                     |var B = A.length-1
                     |
                 """.trimMargin(),
-            LintError(2, 9, ruleId, "${Warnings.UNSAFE_USE_LAST_INDEX.warnText()} A.length-1")
+            LintError(2, 9, ruleId, "${Warnings.UNSAFE_USE_LAST_INDEX.warnText()} A.length-1", true)
         )
-    }//OK
-
+    }
 
     @Test
+    @Tag(WarningNames.UNSAFE_USE_LAST_INDEX)
     fun `find method Length - 1 without length`() {
         lintMethod(
             """
@@ -85,11 +79,11 @@ class UnsafeUseLastIndexWarnTest : LintTestBase(::UnsafeUseLastIndex){
                     |var D = B + C
                     |
                 """.trimMargin()
-        )//OK
+        )
     }
 
-
     @Test
+    @Tag(WarningNames.UNSAFE_USE_LAST_INDEX)
     fun `find method Length - 1 without -1`() {
         lintMethod(
             """
@@ -101,7 +95,7 @@ class UnsafeUseLastIndexWarnTest : LintTestBase(::UnsafeUseLastIndex){
                     |val M = "ASDFG".length
                     |
                 """.trimMargin(),
-            LintError(4, 9, ruleId, "${Warnings.UNSAFE_USE_LAST_INDEX.warnText()} \"AAAA\".length - 1")
-        )//OK
+            LintError(4, 9, ruleId, "${Warnings.UNSAFE_USE_LAST_INDEX.warnText()} \"AAAA\".length - 1", true)
+        )
     }
 }

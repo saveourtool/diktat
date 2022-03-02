@@ -266,4 +266,6 @@ public object WarningNames {
     public const val EXTENSION_FUNCTION_WITH_CLASS: String = "EXTENSION_FUNCTION_WITH_CLASS"
 
     public const val RUN_IN_SCRIPT: String = "RUN_IN_SCRIPT"
+
+    public const val UNSAFE_USE_LAST_INDEX: String = "UNSAFE_USE_LAST_INDEX"
 }

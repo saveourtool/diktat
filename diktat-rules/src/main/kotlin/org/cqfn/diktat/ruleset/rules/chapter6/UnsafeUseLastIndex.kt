@@ -1,92 +1,59 @@
 package org.cqfn.diktat.ruleset.rules.chapter6
 
-import com.pinterest.ktlint.core.ast.ElementType
+import org.cqfn.diktat.common.config.rules.RulesConfig
+import org.cqfn.diktat.ruleset.constants.Warnings
+import org.cqfn.diktat.ruleset.rules.DiktatRule
+import org.cqfn.diktat.ruleset.utils.*
+
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.DOT_QUALIFIED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.INTEGER_CONSTANT
 import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
-import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.children
-import com.pinterest.ktlint.core.ast.lineNumber
-import com.pinterest.ktlint.core.ast.parent
-import org.cqfn.diktat.common.config.rules.RulesConfig
-import org.cqfn.diktat.ruleset.constants.Warnings
-import org.cqfn.diktat.ruleset.rules.DiktatRule
-import org.cqfn.diktat.ruleset.utils.*
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import org.jetbrains.kotlin.psi.KtBinaryExpression
-import org.jetbrains.kotlin.psi.prefixExpressionRecursiveVisitor
-import org.jetbrains.kotlin.psi.typeReferenceRecursiveVisitor
-import org.jetbrains.kotlin.psi2ir.generators.getTypeArguments
+
+/**
+ * This rule checks if there use property length with operation - 1 and fix this on lastIndex
+ */
 
 class UnsafeUseLastIndex(configRules: List<RulesConfig>) : DiktatRule(
     "last-index",
     configRules,
     listOf(Warnings.UNSAFE_USE_LAST_INDEX)
 ) {
-
     override fun logic(node: ASTNode) {
-        //println(node.prettyPrint())
-        if (node.elementType == ElementType.BINARY_EXPRESSION) {
+        if (node.elementType == BINARY_EXPRESSION) {
             changeRight(node)
         }
     }
 
-    private fun checkSymbol(node: ASTNode, str: String): Boolean =
-        when {
-            str == " " && node.elementType == WHITE_SPACE -> true
-            str == "1" && node.elementType == INTEGER_CONSTANT && node.text == "1" -> true
-            str == "length" && node.elementType == REFERENCE_EXPRESSION && node.text == "length" -> true
-            str == "-" && node.elementType == OPERATION_REFERENCE && node.text == "-" ->  true
-            else -> false
-        }
-
     private fun fixup(node: ASTNode) {
-        println("NODE: ${node.text}: ${node.elementType}")
         val text = node.firstChildNode.text.removeSuffix("length") + "lastIndex"
-        val newNode = KotlinParser().createNode(text)
-        var parent = node.treeParent
+        val parent = node.treeParent
         var textParent = ""
-        parent.children().forEach { elem->
-            if (elem.text == node.text)
+        parent.children().forEach { elem ->
+            if (elem.text == node.text) {
                 textParent += text
-            else
+            } else {
                 textParent += elem.text
+            }
         }
-
         val newParent = KotlinParser().createNode(textParent)
-
-        //parent.treeParent.addChild(newParent, null)
-        //parent.treeParent.removeChild(parent)
         val grand = parent.treeParent
-        println(parent.prettyPrint())
-        println(newParent.prettyPrint())
-        parent.replaceChild(node, newNode)
-        grand.replaceChild(newParent, parent)
-        //parent.replaceChild(node, newNode)
+        grand.replaceChild(parent, newParent)
     }
 
     private fun changeRight(node: ASTNode) {
-        //println(node.prettyPrint())
-        val listWithRightLength = node.children()
-            .filter { it.elementType == DOT_QUALIFIED_EXPRESSION && checkSymbol(it.lastChildNode, "length") }
-            .filter { (checkSymbol(it.treeNext, "-") && checkSymbol(it.treeNext.treeNext, "1")) ||
-                    (checkSymbol(it.treeNext, "-") && checkSymbol( it.treeNext.treeNext, " " )  && checkSymbol(it.treeNext.treeNext.treeNext, "1")) ||
-                    (checkSymbol(it.treeNext, " ") && checkSymbol( it.treeNext.treeNext,"-") && checkSymbol(it.treeNext.treeNext.treeNext, "1")) ||
-                    (checkSymbol(it.treeNext, " ") && checkSymbol(it.treeNext.treeNext, "-") && checkSymbol(it.treeNext.treeNext.treeNext, " ") && checkSymbol(it.treeNext.treeNext.treeNext.treeNext, "1"))
+        val listWithRightLength = node.children().filter {
+            val minus = node.getFirstChildWithType(OPERATION_REFERENCE)
+            val one = node.getFirstChildWithType(INTEGER_CONSTANT)
+            it.elementType == DOT_QUALIFIED_EXPRESSION && it.lastChildNode.text == "length" && it.lastChildNode.elementType == REFERENCE_EXPRESSION && minus?.text == "-" && one?.text == "1"
         }
-
-        listWithRightLength.forEach { elem ->
-            println("${node.text}")
-        }
-
-        listWithRightLength.forEach { elem ->
+        if (listWithRightLength.toList().isNotEmpty()) {
             Warnings.UNSAFE_USE_LAST_INDEX.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
                 fixup(node)
             }
         }
-
     }
-
 }
