@@ -12,6 +12,8 @@ import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.RuleSetProvider
+import com.pinterest.ktlint.core.VisitorProvider
+import com.pinterest.ktlint.core.api.FeatureInAlphaState
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.SoftAssertions
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
@@ -77,22 +79,33 @@ internal fun List<LintError>.assertEquals(vararg expectedLintErrors: LintError) 
  * @param cb callback to be called on unhandled [LintError]s
  * @return formatted code
  */
+@OptIn(FeatureInAlphaState::class)
 @Suppress("LAMBDA_IS_NOT_LAST_PARAMETER")
 internal fun format(ruleSetProviderRef: (rulesConfigList: List<RulesConfig>?) -> RuleSetProvider,
                     text: String,
                     fileName: String,
                     rulesConfigList: List<RulesConfig>? = null,
                     cb: LintErrorCallback = defaultCallback
-) = KtLint.format(
-    KtLint.Params(
-        text = text,
-        ruleSets = listOf(ruleSetProviderRef.invoke(rulesConfigList).get()),
-        fileName = fileName.removeSuffix("_copy"),
-        script = fileName.removeSuffix("_copy").endsWith("kts"),
-        cb = cb,
-        userData = mapOf("file_path" to fileName.removeSuffix("_copy"))
+): String {
+    val ruleSets = listOf(ruleSetProviderRef.invoke(rulesConfigList).get())
+    return KtLint.format(
+        KtLint.ExperimentalParams(
+            text = text,
+            ruleSets = ruleSets,
+            fileName = fileName.removeSuffix("_copy"),
+            script = fileName.removeSuffix("_copy").endsWith("kts"),
+            cb = cb,
+            userData = mapOf("file_path" to fileName.removeSuffix("_copy"))
+        ),
+        ruleSets = ruleSets,
+        VisitorProvider(
+            ruleSets = ruleSets,
+            debug = true,
+            // setting this to `true` breaks smoke test
+            isUnitTestContext = false,
+        )
     )
-)
+}
 
 /**
  * This utility function lets you run arbitrary code on every node of given [code].
