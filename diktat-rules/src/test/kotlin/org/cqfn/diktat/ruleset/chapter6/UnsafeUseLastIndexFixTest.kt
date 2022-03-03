@@ -16,8 +16,4 @@ class UnsafeUseLastIndexFixTest : FixTestBase("test/chapter6/lastIndex_change", 
         fixAndCompare("IncorrectUseLengthMinusOneExpected.kt", "IncorrectUseLengthMinusOneTest.kt")
     }
 
-    @Test
-    fun `fix example with right use length`() {
-        fixAndCompare("CorrectUseLengthExpected.kt", "CorrectUseLengthTest.kt")
-    }
 }

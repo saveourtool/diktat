@@ -435,12 +435,14 @@ You should not use property length with operation - 1, you can change this to la
 ```kotlin
 val A = "name"
 val B = A.length - 1
+val C = A[A.length - 1]
 ```
 
 **Valid example**:
 ```kotlin
 val A = "name"
 val B = A.lastIndex
+val C = A[A.lastIndex]
 ```
 
 
