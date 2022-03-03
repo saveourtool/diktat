@@ -68,7 +68,7 @@ import org.cqfn.diktat.ruleset.rules.chapter6.ImplicitBackingPropertyRule
 import org.cqfn.diktat.ruleset.rules.chapter6.PropertyAccessorFields
 import org.cqfn.diktat.ruleset.rules.chapter6.RunInScript
 import org.cqfn.diktat.ruleset.rules.chapter6.TrivialPropertyAccessors
-import org.cqfn.diktat.ruleset.rules.chapter6.UnsafeUseLastIndex
+import org.cqfn.diktat.ruleset.rules.chapter6.UseLastIndex
 import org.cqfn.diktat.ruleset.rules.chapter6.UselessSupertype
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.AbstractClassesRule
 import org.cqfn.diktat.ruleset.rules.chapter6.classes.CompactInitialization
@@ -167,7 +167,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
             ::CustomGetterSetterRule,
             ::CompactInitialization,
             // other rules
-            ::UnsafeUseLastIndex,
+            ::UseLastIndex,
             ::InlineClassesRule,
             ::ExtensionFunctionsInFileRule,
             ::CheckInverseMethodRule,

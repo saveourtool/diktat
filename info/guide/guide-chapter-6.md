@@ -428,7 +428,7 @@ fun SomeClass.deleteAllSpaces() {
 }
 ```
 
-#### <a name="r6.2.4"></a> 6.2.4 Don't use property length with operation - 1
+#### <a name="r6.2.4"></a> 6.2.4 You should not use property length with operation - 1, you can change this to lastIndex
 You should not use property length with operation - 1, you can change this to lastIndex
 
 **Invalid example**:

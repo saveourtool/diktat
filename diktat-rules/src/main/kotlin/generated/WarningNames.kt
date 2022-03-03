@@ -267,5 +267,5 @@ public object WarningNames {
 
     public const val RUN_IN_SCRIPT: String = "RUN_IN_SCRIPT"
 
-    public const val UNSAFE_USE_LAST_INDEX: String = "UNSAFE_USE_LAST_INDEX"
+    public const val USE_LAST_INDEX: String = "USE_LAST_INDEX"
 }

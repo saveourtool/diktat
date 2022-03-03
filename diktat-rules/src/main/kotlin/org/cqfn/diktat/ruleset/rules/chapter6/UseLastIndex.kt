@@ -16,24 +16,15 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 /**
  * This rule checks if there use property length with operation - 1 and fix this on lastIndex
  */
-class UnsafeUseLastIndex(configRules: List<RulesConfig>) : DiktatRule(
+class UseLastIndex(configRules: List<RulesConfig>) : DiktatRule(
     "last-index",
     configRules,
-    listOf(Warnings.UNSAFE_USE_LAST_INDEX)
+    listOf(Warnings.USE_LAST_INDEX)
 ) {
     override fun logic(node: ASTNode) {
         if (node.elementType == BINARY_EXPRESSION) {
             changeRight(node)
         }
-    }
-
-    private fun fixup(node: ASTNode) {
-        val text = node.firstChildNode.text.removeSuffix("length") + "lastIndex"
-        val parent = node.treeParent
-        val textParent = parent.text.replace(node.text, text)
-        val newParent = KotlinParser().createNode(textParent)
-        val grand = parent.treeParent
-        grand.replaceChild(parent, newParent)
     }
 
     private fun changeRight(node: ASTNode) {
@@ -44,9 +35,18 @@ class UnsafeUseLastIndex(configRules: List<RulesConfig>) : DiktatRule(
                     operation?.text == "-" && number?.text == "1"
         }
         if (listWithRightLength.toList().isNotEmpty()) {
-            Warnings.UNSAFE_USE_LAST_INDEX.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
-                fixup(node)
+            Warnings.USE_LAST_INDEX.warnAndFix(configRules, emitWarn, isFixMode, node.text, node.startOffset, node) {
+                fix(node)
             }
         }
+    }
+
+    private fun fix(node: ASTNode) {
+        // A.B.length - 1 -> A.B
+        val text = node.firstChildNode.text.replace("length", "lastIndex")
+        val parent = node.treeParent
+        val textParent = parent.text.replace(node.text, text)
+        val newParent = KotlinParser().createNode(textParent)
+        parent.treeParent.replaceChild(parent, newParent)
     }
 }

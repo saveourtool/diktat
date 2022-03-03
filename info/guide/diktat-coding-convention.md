@@ -2713,7 +2713,7 @@ fun SomeClass.deleteAllSpaces() {
 }
 ```
 
-#### <a name="r6.2.4"></a> 6.2.4 Don't use property length with operation - 1
+#### <a name="r6.2.4"></a> 6.2.4 Use 'lastIndex' in case you need to get latest element of a collection
 You should not use property length with operation - 1, you can change this to lastIndex
 
 **Invalid example**:
