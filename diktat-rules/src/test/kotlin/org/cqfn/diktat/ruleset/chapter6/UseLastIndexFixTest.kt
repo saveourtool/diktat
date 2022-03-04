@@ -1,6 +1,5 @@
 package org.cqfn.diktat.ruleset.chapter6
 
-
 import org.cqfn.diktat.ruleset.rules.chapter6.UseLastIndex
 import org.cqfn.diktat.util.FixTestBase
 
@@ -16,5 +15,4 @@ class UseLastIndexFixTest : FixTestBase("test/chapter6/lastIndex_change", ::UseL
     fun `fix example with incorrect use length`() {
         fixAndCompare("IncorrectUseLengthMinusOneExpected.kt", "IncorrectUseLengthMinusOneTest.kt")
     }
-
 }
