@@ -70,7 +70,7 @@ open class RulesConfigReader(override val classLoader: ClassLoader) : JsonResour
      */
     @OptIn(ExperimentalSerializationApi::class)
     override fun parseResource(fileStream: BufferedReader): List<RulesConfig> = fileStream.use { stream ->
-        yamlSerializer.decodeFromString<List<RulesConfig>>(stream.readLines().joinToString(separator = "\n")).reversed().distinctBy{it.name}
+        yamlSerializer.decodeFromString<List<RulesConfig>>(stream.readLines().joinToString(separator = "\n")).reversed().distinctBy { it.name }
     }
 
     /**
