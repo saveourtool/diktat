@@ -152,7 +152,7 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
         }
         srcDirs
     }
-    
+
     companion object {
         /**
          * Counter that helps not to raise multiple warnings about kotlin version
