@@ -1,2 +1,6 @@
+info/rules-mapping.md eol=crlf
+info/available-rules.md eol=crlf
+
 * text=auto
 *.bat eol=crlf
+
