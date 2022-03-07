@@ -172,3 +172,23 @@ lab@ for(i: Int in q) {
     }
 }
 ```
+
+#### <a name="r5.2.7"></a> 5.2.7 Outer lambdas should have explicit parameters.
+The lambda without parameters shouldn't have inner lambdas.
+If a lambda has an inner lambda, `it` can confuse the user. Lambda without parameters should be latest.
+
+**Invalid example**:
+```kotlin
+arrays.map {
+    it.map { element ->
+        element.foo()
+    }
+}
+```
+
+**Valid example**:
+```kotlin
+arrays.map { array ->
+    array.map { it.foo() }
+}
+```

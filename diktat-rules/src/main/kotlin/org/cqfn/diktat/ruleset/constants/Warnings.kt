@@ -158,6 +158,7 @@ enum class Warnings(
     RUN_BLOCKING_INSIDE_ASYNC(false, "5.2.4", "avoid using runBlocking in asynchronous code"),
     TOO_MANY_LINES_IN_LAMBDA(false, "5.2.5", "long lambdas should have a parameter name instead of it"),
     CUSTOM_LABEL(false, "5.2.6", "avoid using expression with custom label"),
+    PARAMETER_NAME_IN_OUTER_LAMBDA(false, "5.2.7", "outer lambdas should have a parameter name instead of it"),
     INVERSE_FUNCTION_PREFERRED(true, "5.1.4", "it is better to use inverse function"),
 
     // ======== chapter 6 ========
