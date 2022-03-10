@@ -69,3 +69,45 @@ fun foo() {
     }
 }
 
+fun checkSmartCases() {
+    val x = if (a != null) {
+        a.toString()
+    } else {
+        "Null"
+    }
+    val y = if (a.b.c != null) {
+        a.b.c.toString()
+    } else {
+        a.b.toString()
+    }
+    if (a != null) {
+        print()
+    }
+    if (a != null) {
+        foo()
+    } else {
+        boo()
+    }
+}
+
+fun reversedCheckSmartCases() {
+    val x = if (a == null) {
+        "Null"
+    } else {
+        a.toString()
+    }
+    val y = if (a.b.c == null) {
+        a.b.toString()
+    } else {
+        a.b.c.toString()
+    }
+    if (a == null) {
+        print()
+    }
+    if (a == null) {
+        boo()
+    } else {
+        foo()
+    }
+}
+
