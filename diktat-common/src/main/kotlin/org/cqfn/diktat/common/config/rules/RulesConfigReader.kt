@@ -70,7 +70,7 @@ open class RulesConfigReader(override val classLoader: ClassLoader) : JsonResour
      */
     @OptIn(ExperimentalSerializationApi::class)
     override fun parseResource(fileStream: BufferedReader): List<RulesConfig> = fileStream.use { stream ->
-        yamlSerializer.decodeFromString(stream.readLines().joinToString(separator = "\n"))
+        yamlSerializer.decodeFromString<List<RulesConfig>>(stream.readLines().joinToString(separator = "\n")).reversed().distinctBy { it.name }
     }
 
     /**
@@ -152,11 +152,6 @@ data class CommonConfiguration(private val configuration: Map<String, String>?) 
         }
         srcDirs
     }
-
-    /**
-     * False if configuration has been read from config file, true if defaults are used
-     */
-    val isDefault = configuration == null
 
     companion object {
         /**
