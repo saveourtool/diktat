@@ -49,6 +49,17 @@ import org.cqfn.diktat.ruleset.rules.chapter4.SmartCastRule
 import org.cqfn.diktat.ruleset.rules.chapter4.TypeAliasRule
 import org.cqfn.diktat.ruleset.rules.chapter4.VariableGenericTypeDeclarationRule
 import org.cqfn.diktat.ruleset.rules.chapter4.calculations.AccurateCalculationsRule
+import org.cqfn.diktat.ruleset.rules.chapter5.AsyncAndSyncRule
+import org.cqfn.diktat.ruleset.rules.chapter5.AvoidNestedFunctionsRule
+import org.cqfn.diktat.ruleset.rules.chapter5.CheckInverseMethodRule
+import org.cqfn.diktat.ruleset.rules.chapter5.CustomLabel
+import org.cqfn.diktat.ruleset.rules.chapter5.FunctionArgumentsSize
+import org.cqfn.diktat.ruleset.rules.chapter5.FunctionLength
+import org.cqfn.diktat.ruleset.rules.chapter5.LambdaLengthRule
+import org.cqfn.diktat.ruleset.rules.chapter5.LambdaParameterOrder
+import org.cqfn.diktat.ruleset.rules.chapter5.NestedFunctionBlock
+import org.cqfn.diktat.ruleset.rules.chapter5.OverloadingArgumentsFunction
+import org.cqfn.diktat.ruleset.rules.chapter5.ParameterNameInOuterLambdaRule
 import org.cqfn.diktat.ruleset.rules.chapter6.AvoidEmptyPrimaryConstructor
 import org.cqfn.diktat.ruleset.rules.chapter6.AvoidUtilityClass
 import org.cqfn.diktat.ruleset.rules.chapter6.CustomGetterSetterRule
@@ -70,7 +81,6 @@ import org.cqfn.diktat.ruleset.rules.chapter6.classes.StatelessClassesRule
 
 import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.RuleSetProvider
-import org.cqfn.diktat.ruleset.rules.chapter5.*
 import org.jetbrains.kotlin.org.jline.utils.Levenshtein
 import org.slf4j.LoggerFactory
 
