@@ -24,6 +24,7 @@ import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtIfExpression
+import org.jetbrains.kotlin.psi.psiUtil.blockExpressionsOrSingle
 
 /**
  * This rule check and fixes explicit null checks (explicit comparison with `null`)
@@ -120,55 +121,65 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
                                      isEqualToNull: Boolean
     ) {
         val variableName = binaryExpression.left!!.text
-        val thenCodeLines = condition.extractLinesFromBlock(THEN)
-        val elseCodeLines = condition.extractLinesFromBlock(ELSE)
-        val text = if (isEqualToNull) {
-            when {
-                elseCodeLines.isNullOrEmpty() ->
-                    if (condition.getBreakNodeFromIf(THEN)) {
-                        "$variableName ?: break"
-                    } else {
-                        "$variableName ?: run {${thenCodeLines?.joinToString(prefix = "\n", postfix = "\n", separator = "\n")}}"
-                    }
-                thenCodeLines!!.singleOrNull() == "null" -> """
-                        |$variableName?.let {
-                        |${elseCodeLines.joinToString(separator = "\n")}
-                        |}
-                    """.trimMargin()
-                thenCodeLines.singleOrNull() == "break" -> """
-                        |$variableName?.let {
-                        |${elseCodeLines.joinToString(separator = "\n")}
-                        |} ?: break
-                        """.trimMargin()
-                else -> """
-                        |$variableName?.let {
-                        |${elseCodeLines.joinToString(separator = "\n")}
-                        |}
-                        |?: run {
-                        |${thenCodeLines.joinToString(separator = "\n")}
-                        |}
-                    """.trimMargin()
-            }
+        val thenFromExistingCode = condition.extractLinesFromBlock(THEN)
+        val elseFromExistingCode = condition.extractLinesFromBlock(ELSE)
+
+        // if (a == null) { foo() } else { bar() } -> if (a != null) { bar() } else { foo() }
+        val thenCodeLines = if (isEqualToNull) {
+            elseFromExistingCode
         } else {
-            when {
-                elseCodeLines.isNullOrEmpty() || (elseCodeLines.singleOrNull() == "null") ->
-                    "$variableName?.let {${thenCodeLines?.joinToString(prefix = "\n", postfix = "\n", separator = "\n")}}"
-                elseCodeLines.singleOrNull() == "break" ->
-                    "$variableName?.let {${thenCodeLines?.joinToString(prefix = "\n", postfix = "\n", separator = "\n")}} ?: break"
-                else -> """
-                        |$variableName?.let {
-                        |${thenCodeLines?.joinToString(separator = "\n")}
-                        |}
-                        |?: run {
-                        |${elseCodeLines.joinToString(separator = "\n")}
-                        |}
-                    """.trimMargin()
-            }
+            thenFromExistingCode
         }
+        val elseCodeLines = if (isEqualToNull) {
+            thenFromExistingCode
+        } else {
+            elseFromExistingCode
+        }
+        val numberOfStatementsInElseBlock = if (isEqualToNull) {
+            (condition.treeParent.psi as KtIfExpression).then?.blockExpressionsOrSingle()?.count() ?: 0
+        } else {
+            (condition.treeParent.psi as KtIfExpression).`else`?.blockExpressionsOrSingle()?.count() ?: 0
+        }
+
+        val elseEditedCodeLines = getEditedElseCodeLines(elseCodeLines, numberOfStatementsInElseBlock)
+        val thenEditedCodeLines = getEditedThenCodeLines(variableName, thenCodeLines, elseEditedCodeLines)
+
+        val text = "$thenEditedCodeLines $elseEditedCodeLines"
         val tree = KotlinParser().createNode(text)
         condition.treeParent.treeParent.addChild(tree, condition.treeParent)
         condition.treeParent.treeParent.removeChild(condition.treeParent)
     }
+
+    private fun getEditedElseCodeLines(elseCodeLines: List<String>?, numberOfStatementsInElseBlock: Int): String = when {
+        // else { "null"/empty } -> ""
+        elseCodeLines == null || elseCodeLines.singleOrNull() == "null" -> ""
+        // else { bar() } -> ?: bar()
+        numberOfStatementsInElseBlock == 1 -> "?: ${elseCodeLines.joinToString(postfix = "\n", separator = "\n")}"
+        // else { ... } -> ?: run { ... }
+        else -> getDefaultCaseElseCodeLines(elseCodeLines)
+    }
+
+    @Suppress("UnsafeCallOnNullableType")
+    private fun getEditedThenCodeLines(
+        variableName: String,
+        thenCodeLines: List<String>?,
+        elseEditedCodeLines: String
+    ): String = when {
+        // if (a != null) {  } -> a ?: editedElse
+        (thenCodeLines.isNullOrEmpty() && elseEditedCodeLines.isNotEmpty()) ||
+                // if (a != null) { a } else { ... } -> a ?: editedElse
+                (thenCodeLines?.singleOrNull() == variableName && elseEditedCodeLines.isNotEmpty()) -> variableName
+        // if (a != null) { a.foo() } -> a?.foo()
+        thenCodeLines?.singleOrNull()?.startsWith("$variableName.") ?: false -> "$variableName?${thenCodeLines?.firstOrNull()!!.removePrefix(variableName)}"
+        // if (a != null) { break } -> a?.let { ... }
+        // if (a != null) { foo() } -> a?.let { ... }
+        else -> getDefaultCaseThenCodeLines(variableName, thenCodeLines)
+    }
+
+    private fun getDefaultCaseThenCodeLines(variableName: String, thenCodeLines: List<String>?): String =
+            "$variableName?.let {${thenCodeLines?.joinToString(prefix = "\n", postfix = "\n", separator = "\n")}}"
+
+    private fun getDefaultCaseElseCodeLines(elseCodeLines: List<String>): String = "?: run {${elseCodeLines.joinToString(prefix = "\n", postfix = "\n", separator = "\n")}}"
 
     @Suppress("COMMENT_WHITE_SPACE", "UnsafeCallOnNullableType")
     private fun nullCheckInOtherStatements(binaryExprNode: ASTNode) {

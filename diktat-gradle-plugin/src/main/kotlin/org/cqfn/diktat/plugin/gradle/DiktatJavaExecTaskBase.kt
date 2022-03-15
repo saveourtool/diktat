@@ -65,7 +65,7 @@ open class DiktatJavaExecTaskBase @Inject constructor(
             // validate configuration
             require(inputs == null && excludes == null) {
                 "`inputs` and `excludes` arguments for diktat task are deprecated and now should be changed for `inputs {}` " +
-                        "with configuration for PatternFilterable. Please check https://github.com/diktat-static-analysis/diktat/README.md for more info."
+                        "with configuration for PatternFilterable. Please check https://github.com/analysis-dev/diktat/README.md for more info."
             }
         }
 

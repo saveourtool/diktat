@@ -25,4 +25,10 @@ class NullChecksRuleFixTest : FixTestBase("test/paragraph4/null_checks", ::NullC
     fun `should fix require function`() {
         fixAndCompare("RequireFunctionExpected.kt", "RequireFunctionTest.kt")
     }
+
+    @Test
+    @Tag(WarningNames.AVOID_NULL_CHECKS)
+    fun `should fix if conditions when assigned`() {
+        fixAndCompare("IfConditionAssignCheckExpected.kt", "IfConditionAssignCheckTest.kt")
+    }
 }
