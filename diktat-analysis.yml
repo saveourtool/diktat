@@ -513,3 +513,12 @@
   enabled: true
   configuration:
     isRangeToIgnore: false
+# Check that typealias name is in PascalCase
+- name: TYPEALIAS_NAME_INCORRECT_CASE
+  enabled: true
+# Should change property length - 1 to property lastIndex
+- name: USE_LAST_INDEX
+  enabled: true
+# Only properties from the primary constructor should be documented in a @property tag in class KDoc
+- name: KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER
+  enabled: true

@@ -19,12 +19,13 @@ import kotlinx.serialization.encodeToString
  * Special test that checks that developer has not forgotten to add his warning to a diktat-analysis.yml
  * This file is needed to be in tact with latest changes in Warnings.kt
  */
-@JvmInline
 @Suppress("UNUSED")
-value class RulesConfigYamlTest(private val pathMap: Map<String, String> =
-        mapOf("diktat-analysis.yml" to "diKTat/diktat-rules/src/main/resources/diktat-analysis.yml",
-            "diktat-analysis-huawei.yml" to "diKTat/diktat-rules/src/main/resources/diktat-analysis-huawei.yml",
-            "parent/diktat-analysis.yml" to "diKTat/diktat-analysis.yml")) {
+class RulesConfigYamlTest {
+    private val pathMap: Map<String, String> =
+            mapOf("diktat-analysis.yml" to "diKTat/diktat-rules/src/main/resources/diktat-analysis.yml",
+                "diktat-analysis-huawei.yml" to "diKTat/diktat-rules/src/main/resources/diktat-analysis-huawei.yml",
+                "../diktat-analysis.yml" to "../diktat-analysis.yml")
+
     @Test
     fun `read rules config yml`() {
         compareRulesAndConfig("diktat-analysis.yml")
@@ -43,14 +44,15 @@ value class RulesConfigYamlTest(private val pathMap: Map<String, String> =
     @Test
     @Suppress("UNUSED")
     fun `check kotlin version`() {
-        val currentKotlinVersion = KotlinVersion.CURRENT
+        val currentKotlinVersion = "${KotlinVersion.CURRENT.major}.${KotlinVersion.CURRENT.minor}"
         pathMap.keys.forEach { path ->
             val config = readAllRulesFromConfig(path)
             val ktVersion = config.find { it.name == DIKTAT_COMMON }
                 ?.configuration
                 ?.get("kotlinVersion")
                 ?.kotlinVersion()
-            Assertions.assertEquals(ktVersion, currentKotlinVersion)
+            val ktVersionNew = "${ktVersion?.major}.${ktVersion?.minor}"
+            Assertions.assertEquals(ktVersionNew, currentKotlinVersion)
         }
     }
 
@@ -78,6 +80,9 @@ value class RulesConfigYamlTest(private val pathMap: Map<String, String> =
         val allRulesFromCode = readAllRulesFromCode()
 
         allRulesFromCode.forEach { rule ->
+            if (rule == Warnings.DUMMY_TEST_WARNING) {
+                return@forEach
+            }
             val foundRule = allRulesFromConfig.getRuleConfig(rule)
             val ymlCodeSnippet = RulesConfig(rule.ruleName(), true, emptyMap())
 
