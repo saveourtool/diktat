@@ -21,17 +21,17 @@ import kotlinx.serialization.encodeToString
  */
 @Suppress("UNUSED")
 class RulesConfigYamlTest {
+    private val parentDiktatAnalysis = "${System.getProperty("user.dir")}${File.separator}..${File.separator}diktat-analysis.yml${File.separator}"
     private val pathMap: Map<String, String> =
             mapOf("diktat-analysis.yml" to "diKTat/diktat-rules/src/main/resources/diktat-analysis.yml",
                 "diktat-analysis-huawei.yml" to "diKTat/diktat-rules/src/main/resources/diktat-analysis-huawei.yml",
-                "../diktat-analysis.yml" to "../diktat-analysis.yml")
+                parentDiktatAnalysis to "diKTat/diktat-analysis.yml")
 
     @Test
     fun `read rules config yml`() {
         compareRulesAndConfig("diktat-analysis.yml")
         compareRulesAndConfig("diktat-analysis-huawei.yml")
-        val thirdConfig = "${System.getProperty("user.dir")}${File.separator}..${File.separator}diktat-analysis.yml${File.separator}"
-        compareRulesAndConfig(thirdConfig, "../diktat-analysis.yml")
+        compareRulesAndConfig(parentDiktatAnalysis, "diKTat/diktat-analysis.yml")
     }
 
     @Test
