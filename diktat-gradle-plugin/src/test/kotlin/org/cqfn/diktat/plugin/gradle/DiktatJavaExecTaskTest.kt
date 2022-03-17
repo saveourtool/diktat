@@ -111,6 +111,32 @@ class DiktatJavaExecTaskTest {
     }
 
     @Test
+    fun `check command line in githubActions mode`() {
+        val path = project.file("${project.buildDir}/reports/diktat/diktat.sarif")
+        assertCommandLineEquals(
+            listOf(null, "--reporter=sarif,output=$path")
+        ) {
+            inputs { exclude("*") }
+            diktatConfigFile = project.file("../diktat-analysis.yml")
+            githubActions = true
+        }
+    }
+
+    @Test
+    fun `githubActions mode should have higher precedence over explicit reporter`() {
+        val path = project.file("${project.buildDir}/reports/diktat/diktat.sarif")
+        assertCommandLineEquals(
+            listOf(null, "--reporter=sarif,output=$path")
+        ) {
+            inputs { exclude("*") }
+            diktatConfigFile = project.file("../diktat-analysis.yml")
+            githubActions = true
+            reporter = "json"
+            output = "report.json"
+        }
+    }
+
+    @Test
     fun `check system property with multiproject build with default config`() {
         setupMultiProject()
         val subproject = project.subprojects.first()

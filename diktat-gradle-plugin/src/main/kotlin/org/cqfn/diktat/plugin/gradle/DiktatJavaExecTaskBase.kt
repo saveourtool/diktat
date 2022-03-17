@@ -27,6 +27,8 @@ import org.gradle.api.tasks.util.PatternSet
 import org.gradle.util.GradleVersion
 
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.Paths
 import javax.inject.Inject
 
 /**
@@ -162,7 +164,11 @@ open class DiktatJavaExecTaskBase @Inject constructor(
 
         val outFlag = when {
             // githubActions should have higher priority than a custom input
-            diktatExtension.githubActions -> ",output=${project.projectDir}/${project.name}"
+            diktatExtension.githubActions -> {
+                val reportDir = Files.createDirectories(Paths.get("${project.buildDir}/reports/diktat"))
+                outputs.dir(reportDir)
+                ",output=${reportDir.resolve("diktat.sarif")}"
+            }
             diktatExtension.output.isNotEmpty() -> ",output=${diktatExtension.output}"
             else -> ""
         }
@@ -186,7 +192,7 @@ open class DiktatJavaExecTaskBase @Inject constructor(
         // githubActions should have higher priority than a custom input
         if (diktatExtension.githubActions) {
             // need to set user.home specially for ktlint, so it will be able to put a relative path URI in SARIF
-            System.setProperty("user.home", project.projectDir.toString())
+            systemProperty("user.home", project.projectDir.toString())
             reporterFlag = "--reporter=sarif"
         }
 
