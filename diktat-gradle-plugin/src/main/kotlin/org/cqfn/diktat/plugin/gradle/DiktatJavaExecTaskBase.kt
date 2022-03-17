@@ -167,7 +167,7 @@ open class DiktatJavaExecTaskBase @Inject constructor(
             diktatExtension.githubActions -> {
                 val reportDir = Files.createDirectories(Paths.get("${project.buildDir}/reports/diktat"))
                 outputs.dir(reportDir)
-                ",output=$reportDir/diktat.sarif"
+                ",output=${reportDir.resolve("diktat.sarif")}"
             }
             diktatExtension.output.isNotEmpty() -> ",output=${diktatExtension.output}"
             else -> ""
