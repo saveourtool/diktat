@@ -166,6 +166,7 @@ open class DiktatJavaExecTaskBase @Inject constructor(
             // githubActions should have higher priority than a custom input
             diktatExtension.githubActions -> {
                 val reportDir = Files.createDirectories(Paths.get("${project.buildDir}/reports/diktat"))
+                outputs.dir(reportDir)
                 ",output=$reportDir/diktat.sarif"
             }
             diktatExtension.output.isNotEmpty() -> ",output=${diktatExtension.output}"
