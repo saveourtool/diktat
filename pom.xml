@@ -57,7 +57,7 @@
         <jacoco.version>0.8.7</jacoco.version>
         <maven-plugin-tools.version>3.6.4</maven-plugin-tools.version>
         <jbool.version>1.23</jbool.version>
-        <log4j.version>2.17.1</log4j.version>
+        <log4j.version>2.17.2</log4j.version>
     </properties>
 
     <modules>
