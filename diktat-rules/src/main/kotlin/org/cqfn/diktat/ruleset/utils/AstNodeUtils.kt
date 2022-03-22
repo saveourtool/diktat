@@ -11,10 +11,7 @@
 
 package org.cqfn.diktat.ruleset.utils
 
-import org.cqfn.diktat.ruleset.rules.chapter1.PackageNaming
-
 import com.pinterest.ktlint.core.KtLint
-import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
@@ -43,6 +40,7 @@ import com.pinterest.ktlint.core.ast.isPartOfComment
 import com.pinterest.ktlint.core.ast.isRoot
 import com.pinterest.ktlint.core.ast.isWhiteSpace
 import com.pinterest.ktlint.core.ast.parent
+import org.cqfn.diktat.ruleset.rules.chapter1.PackageNaming
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.TokenType
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -433,12 +431,9 @@ fun ASTNode.findAllNodesWithCondition(withSelf: Boolean = true,
                                       excludeChildrenCondition: ((ASTNode) -> Boolean) = { false },
                                       condition: (ASTNode) -> Boolean): List<ASTNode> {
     val result = if (condition(this) && withSelf) mutableListOf(this) else mutableListOf()
-    if (excludeChildrenCondition(this)) {
-        return result
-    }
-    return result + this.getChildren(null).flatMap {
-        it.findAllNodesWithCondition(withSelf = true, excludeChildrenCondition, condition)
-    }
+    return result + this.getChildren(null)
+        .filterNot { excludeChildrenCondition(it) }
+        .flatMap { it.findAllNodesWithCondition(withSelf = true, excludeChildrenCondition, condition) }
 }
 
 /**
@@ -932,16 +927,24 @@ fun countCodeLines(copyNode: ASTNode): Int {
 }
 
 private fun hasNoParameters(lambdaNode: ASTNode): Boolean {
+    require(lambdaNode.elementType == LAMBDA_EXPRESSION) { "Method can be called only for lambda" }
     return null == lambdaNode
         .findChildByType(ElementType.FUNCTION_LITERAL)
         ?.findChildByType(ElementType.VALUE_PARAMETER_LIST)
 }
 
+/**
+ * Check that lambda contains `it`.
+ *
+ * Note: it checks only provided lambda and inner lambda with explicit parameters
+ *
+ * Note: this method can be called only for lambda
+ */
 fun doesLambdaContainIt(lambdaNode: ASTNode): Boolean {
     require(lambdaNode.elementType == LAMBDA_EXPRESSION) { "Method can be called only for lambda" }
 
     val excludeChildrenCondition = { node: ASTNode ->
-        lambdaNode != node && node.elementType == ElementType.LAMBDA_EXPRESSION && hasNoParameters(node)
+        node.elementType == ElementType.LAMBDA_EXPRESSION && hasNoParameters(node)
     }
     val hasIt = lambdaNode
         .findAllNodesWithCondition(excludeChildrenCondition = excludeChildrenCondition) {

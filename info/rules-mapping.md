@@ -1,5 +1,5 @@
 | Diktat Rule                               | Code Style                                          | Auto-fixed? | Chapter |
-|-------------------------------------------|-----------------------------------------------------| --- | --------- |
+| ----------------------------------------- | ------ | --- | --------- |
 | VARIABLE_NAME_INCORRECT                   | [1.1.1](guide/diktat-coding-convention.md#r1.1.1)   | no | Naming |
 | VARIABLE_HAS_PREFIX                       | [1.1.1](guide/diktat-coding-convention.md#r1.1.1)   | yes | Naming |
 | IDENTIFIER_LENGTH                         | [1.1.1](guide/diktat-coding-convention.md#r1.1.1)   | no | Naming |
