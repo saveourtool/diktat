@@ -12,6 +12,7 @@
 package org.cqfn.diktat.ruleset.utils
 
 import com.pinterest.ktlint.core.KtLint
+import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
