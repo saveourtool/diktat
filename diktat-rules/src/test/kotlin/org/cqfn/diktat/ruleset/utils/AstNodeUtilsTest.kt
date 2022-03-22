@@ -13,13 +13,16 @@ import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.ast.ElementType
+import com.pinterest.ktlint.core.ast.ElementType.BLOCK
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
 import com.pinterest.ktlint.core.ast.ElementType.CLASS_BODY
+import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.EQ
 import com.pinterest.ktlint.core.ast.ElementType.FILE
 import com.pinterest.ktlint.core.ast.ElementType.FUN
 import com.pinterest.ktlint.core.ast.ElementType.IDENTIFIER
 import com.pinterest.ktlint.core.ast.ElementType.INTEGER_CONSTANT
+import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.PROPERTY
 import com.pinterest.ktlint.core.ast.ElementType.TYPE_REFERENCE
@@ -27,6 +30,7 @@ import com.pinterest.ktlint.core.ast.ElementType.VALUE_PARAMETER_LIST
 import com.pinterest.ktlint.core.ast.ElementType.VAL_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isLeaf
+import com.pinterest.ktlint.core.ast.nextCodeSibling
 import com.pinterest.ktlint.core.ast.nextSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -727,6 +731,54 @@ class AstNodeUtilsTest {
             if (node.elementType == IDENTIFIER && node.text == "foo") {
                 Assertions.assertEquals("foo() { }", node.extractLineOfText())
                 counter.incrementAndGet()
+            }
+        }
+    }
+
+    @Test
+    fun `test lambda contains it`() {
+        applyToCode("""
+            |fun bar(lambda: (s: String) -> Unit) {
+            |   lambda("bar")
+            |}
+            |
+            |fun foo(lambda: (s: String) -> Unit) {
+            |   lambda("foo")
+            |}
+            |
+            |fun test() {
+            |   // test1
+            |   foo { f1 ->
+            |       bar { b1 ->
+            |           println(f1 + " -> " + b1)
+            |       }
+            |   }
+            |   // test2
+            |   foo {
+            |       bar { b2 ->
+            |           println(it + " -> " + b2)
+            |       }
+            |   }
+            |   // test3
+            |   foo { f3 ->
+            |       bar {
+            |           println(f3 + " -> " + it)
+            |       }
+            |   }
+            |}
+        """.trimMargin(), 3) { node, counter ->
+            if (node.elementType == EOL_COMMENT) {
+                node.nextCodeSibling()
+                    ?.lastChildNode
+                    ?.firstChildNode
+                    ?.let {
+                        when (node.text) {
+                            "// test1" -> Assertions.assertFalse(doesLambdaContainIt(it))
+                            "// test2" -> Assertions.assertTrue(doesLambdaContainIt(it))
+                            "// test3" -> Assertions.assertFalse(doesLambdaContainIt(it))
+                        }
+                        counter.incrementAndGet()
+                    }
             }
         }
     }
