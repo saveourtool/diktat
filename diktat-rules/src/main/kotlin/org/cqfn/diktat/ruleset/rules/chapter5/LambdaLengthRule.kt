@@ -31,17 +31,9 @@ class LambdaLengthRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     private fun checkLambda(node: ASTNode, configuration: LambdaLengthConfiguration) {
-        val copyNode = node.clone() as ASTNode
-        val sizeLambda = countCodeLines(copyNode)
+        val sizeLambda = countCodeLines(node)
         if (sizeLambda > configuration.maxLambdaLength) {
-            copyNode.findAllNodesWithCondition { it.elementType == ElementType.LAMBDA_EXPRESSION }.forEachIndexed { index, astNode ->
-                if (index > 0) {
-                    astNode.treeParent.removeChild(astNode)
-                }
-            }
-            val isIt = copyNode.findAllDescendantsWithSpecificType(ElementType.REFERENCE_EXPRESSION).map { re -> re.text }.contains("it")
-            val parameters = node.findChildByType(ElementType.FUNCTION_LITERAL)?.findChildByType(ElementType.VALUE_PARAMETER_LIST)
-            if (parameters == null && isIt) {
+            if (doesLambdaContainIt(node)) {
                 TOO_MANY_LINES_IN_LAMBDA.warn(configRules, emitWarn, isFixMode,
                     "max length lambda without arguments is ${configuration.maxLambdaLength}, but you have $sizeLambda",
                     node.startOffset, node)

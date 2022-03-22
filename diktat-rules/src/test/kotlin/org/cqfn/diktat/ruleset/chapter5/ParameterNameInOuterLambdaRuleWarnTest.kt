@@ -18,117 +18,165 @@ class ParameterNameInOuterLambdaRuleWarnTest : LintTestBase(::ParameterNameInOut
 
     @Test
     @Tag(WarningNames.PARAMETER_NAME_IN_OUTER_LAMBDA)
-    fun `lambda without parameters`() {
+    fun `lambda has specific parameter`() {
         lintMethod(
-                """
-                    |fun foo() {
-                    |   val x = 10
-                    |   val list = listOf(1, 2, 3, 4, 5)
-                    |       .map { it + x }
+            """
+                    |fun foo(lambda: (s: String) -> Unit) {
+                    |   lambda("foo")
                     |}
-                """.trimMargin(),
-                rulesConfigList = rulesConfigList
-        )
-    }
-
-    @Test
-    @Tag(WarningNames.PARAMETER_NAME_IN_OUTER_LAMBDA)
-    fun `lambda without parameters in lazy initialization`() {
-        lintMethod(
-                """
-                    |fun foo() {
-                    |   private val allTestsFromResources: List<String> by lazy {
-                    |       val fileUrl: URL? = javaClass.getResource("123")
-                    |       val resource = fileUrl
-                    |              ?.let { File(it.file) }
-                    |       resource?.readLines() ?: Collections.emptyList()
+                    |
+                    |fun test() {
+                    |   foo { s ->
+                    |       println(s)
                     |   }
                     |}
                 """.trimMargin(),
-                rulesConfigList = rulesConfigList
+            rulesConfigList = rulesConfigList
         )
     }
 
     @Test
     @Tag(WarningNames.PARAMETER_NAME_IN_OUTER_LAMBDA)
-    fun `lambda doesn't expect parameters`() {
+    fun `lambda has implicit parameter`() {
         lintMethod(
-                """
-                    |fun foo() {
-                    |   private val allTestsFromResources: List<String> by lazy {
-                    |     val fileUrl: URL? = javaClass.getResource("123")
-                    |     listOf("1", "2", "3", "4", "5").removeAt(1)
+            """
+                    |fun foo(lambda: (s: String) -> Unit) {
+                    |   lambda("foo")
+                    |}
+                    |
+                    |fun test() {
+                    |   foo {
+                    |       println(it)
                     |   }
                     |}
                 """.trimMargin(),
-                rulesConfigList = rulesConfigList
+            rulesConfigList = rulesConfigList
         )
     }
 
     @Test
     @Tag(WarningNames.PARAMETER_NAME_IN_OUTER_LAMBDA)
-    fun `lambda in lambda (right case)`() {
+    fun `outer lambda and inner lambda have specific parameter`() {
         lintMethod(
-                """
-                    |fun foo() {
-                    |   val list = listOf(listOf(1,2,3), listOf(4,5,6))
-                    |       .map {l -> l.map {
-                    |           val x = 0
-                    |           val y = x + 1
-                    |           val z = y + 1
-                    |           println(it)
-                    |           }
-                    |       }
-                    |   }
-                """.trimMargin(),
-                rulesConfigList = rulesConfigList
-        )
-    }
-
-    @Test
-    @Tag(WarningNames.PARAMETER_NAME_IN_OUTER_LAMBDA)
-    fun `lambda in lambda (invalid case)`() {
-        lintMethod(
-                """
-                    |fun foo() {
-                    |   val list = listOf(listOf(1,2,3), listOf(4,5,6)).map {
-                    |       it.map { k ->
-                    |           val x = 0
-                    |           val y = x + 1
-                    |           val z = y + 1
-                    |           println(k)
+            """
+                    |fun bar(lambda: (s: String) -> Unit) {
+                    |   lambda("bar")
+                    |}
+                    |
+                    |fun foo(lambda: (s: String) -> Unit) {
+                    |   lambda("foo")
+                    |}
+                    |
+                    |fun test() {
+                    |   foo { f ->
+                    |       bar { b ->
+                    |           println(f + " -> " + b)
                     |       }
                     |   }
                     |}
                 """.trimMargin(),
-                LintError(2, 56, ruleId, "${Warnings.PARAMETER_NAME_IN_OUTER_LAMBDA.warnText()} lambda without arguments has inner lambda", false),
-                rulesConfigList = rulesConfigList
+            rulesConfigList = rulesConfigList
         )
     }
 
     @Test
     @Tag(WarningNames.PARAMETER_NAME_IN_OUTER_LAMBDA)
-    fun `lambda in lambda (invalid case #2)`() {
+    fun `outer lambda has specific parameter but inner lambda has implicit parameter`() {
         lintMethod(
-                """
-                    |fun foo() {
-                    |   val list = listOf(listOf("1","2","3"), listOf("4","5","6")).map { l ->
-                    |       l.map { k ->
-                    |           val x = 0
-                    |           val y = x + 1
-                    |           val z = y + 1
-                    |           println(k)
-                    |       }
-                    |       l.map {
-                    |           it.map { c ->
-                    |               println(c)
-                    |           }
+            """
+                    |fun bar(lambda: (s: String) -> Unit) {
+                    |   lambda("bar")
+                    |}
+                    |
+                    |fun foo(lambda: (s: String) -> Unit) {
+                    |   lambda("foo")
+                    |}
+                    |
+                    |fun test() {
+                    |   foo { f ->
+                    |       bar {
+                    |           println(f + " -> " + it)
                     |       }
                     |   }
                     |}
                 """.trimMargin(),
-                LintError(9, 14, ruleId, "${Warnings.PARAMETER_NAME_IN_OUTER_LAMBDA.warnText()} lambda without arguments has inner lambda", false),
-                rulesConfigList = rulesConfigList
+            rulesConfigList = rulesConfigList
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.PARAMETER_NAME_IN_OUTER_LAMBDA)
+    fun `outer lambda has implicit parameter but inner lambda has specific parameter`() {
+        lintMethod(
+            """
+                    |fun bar(lambda: (s: String) -> Unit) {
+                    |   lambda("bar")
+                    |}
+                    |
+                    |fun foo(lambda: (s: String) -> Unit) {
+                    |   lambda("foo")
+                    |}
+                    |
+                    |fun test() {
+                    |   foo {
+                    |       bar { b ->
+                    |           println(it + " -> " + b)
+                    |       }
+                    |   }
+                    |}
+                """.trimMargin(),
+            LintError(10, 8, ruleId, "${Warnings.PARAMETER_NAME_IN_OUTER_LAMBDA.warnText()} lambda without arguments has inner lambda", false),
+            rulesConfigList = rulesConfigList
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.PARAMETER_NAME_IN_OUTER_LAMBDA)
+    fun `outer lambda has implicit parameter but inner lambda has no parameter`() {
+        lintMethod(
+            """
+                    |fun bar(lambda: () -> Unit) {
+                    |   lambda()
+                    |}
+                    |
+                    |fun foo(lambda: (s: String) -> Unit) {
+                    |   lambda("foo")
+                    |}
+                    |
+                    |fun test() {
+                    |   foo {
+                    |       bar {
+                    |           println(it + " -> bar")
+                    |       }
+                    |   }
+                    |}
+                """.trimMargin(),
+            rulesConfigList = rulesConfigList
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.PARAMETER_NAME_IN_OUTER_LAMBDA)
+    fun `outer lambda has no parameter but inner lambda has implicit parameter`() {
+        lintMethod(
+            """
+                    |fun bar(lambda: (s: String) -> Unit) {
+                    |   lambda("bar")
+                    |}
+                    |
+                    |fun foo(lambda: () -> Unit) {
+                    |   lambda()
+                    |}
+                    |
+                    |fun test() {
+                    |   foo {
+                    |       bar {
+                    |           println("foo -> " + it)
+                    |       }
+                    |   }
+                    |}
+                """.trimMargin(),
+            rulesConfigList = rulesConfigList
         )
     }
 }
