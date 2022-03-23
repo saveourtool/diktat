@@ -1,11 +1,12 @@
 package org.cqfn.diktat.ruleset.rules.chapter5
 
-import com.pinterest.ktlint.core.ast.ElementType
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.PARAMETER_NAME_IN_OUTER_LAMBDA
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.doesLambdaContainIt
 import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
+
+import com.pinterest.ktlint.core.ast.ElementType
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 /**
@@ -16,7 +17,6 @@ class ParameterNameInOuterLambdaRule(configRules: List<RulesConfig>) : DiktatRul
     configRules,
     listOf(PARAMETER_NAME_IN_OUTER_LAMBDA)
 ) {
-
     override fun logic(node: ASTNode) {
         if (node.elementType == ElementType.LAMBDA_EXPRESSION) {
             checkLambda(node)
@@ -27,14 +27,12 @@ class ParameterNameInOuterLambdaRule(configRules: List<RulesConfig>) : DiktatRul
         val hasInnerLambda = node
             .findAllDescendantsWithSpecificType(ElementType.LAMBDA_EXPRESSION, false)
             .isNotEmpty()
-        if (hasInnerLambda) {
-            if (doesLambdaContainIt(node)) {
-                PARAMETER_NAME_IN_OUTER_LAMBDA.warn(
-                    configRules, emitWarn, isFixMode,
-                    "lambda without arguments has inner lambda",
-                    node.startOffset, node
-                )
-            }
+        if (hasInnerLambda && doesLambdaContainIt(node)) {
+            PARAMETER_NAME_IN_OUTER_LAMBDA.warn(
+                configRules, emitWarn, isFixMode,
+                "lambda without arguments has inner lambda",
+                node.startOffset, node,
+            )
         }
     }
 }

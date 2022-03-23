@@ -32,12 +32,10 @@ class LambdaLengthRule(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun checkLambda(node: ASTNode, configuration: LambdaLengthConfiguration) {
         val sizeLambda = countCodeLines(node)
-        if (sizeLambda > configuration.maxLambdaLength) {
-            if (doesLambdaContainIt(node)) {
-                TOO_MANY_LINES_IN_LAMBDA.warn(configRules, emitWarn, isFixMode,
-                    "max length lambda without arguments is ${configuration.maxLambdaLength}, but you have $sizeLambda",
-                    node.startOffset, node)
-            }
+        if (sizeLambda > configuration.maxLambdaLength && doesLambdaContainIt(node)) {
+            TOO_MANY_LINES_IN_LAMBDA.warn(configRules, emitWarn, isFixMode,
+                "max length lambda without arguments is ${configuration.maxLambdaLength}, but you have $sizeLambda",
+                node.startOffset, node)
         }
     }
 

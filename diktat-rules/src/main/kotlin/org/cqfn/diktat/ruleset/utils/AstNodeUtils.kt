@@ -11,13 +11,14 @@
 
 package org.cqfn.diktat.ruleset.utils
 
+import org.cqfn.diktat.ruleset.rules.chapter1.PackageNaming
+
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATED_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.ANNOTATION_ENTRY
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
-import com.pinterest.ktlint.core.ast.ElementType.CONST_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.EQ
 import com.pinterest.ktlint.core.ast.ElementType.FILE
@@ -41,7 +42,6 @@ import com.pinterest.ktlint.core.ast.isPartOfComment
 import com.pinterest.ktlint.core.ast.isRoot
 import com.pinterest.ktlint.core.ast.isWhiteSpace
 import com.pinterest.ktlint.core.ast.parent
-import org.cqfn.diktat.ruleset.rules.chapter1.PackageNaming
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.TokenType
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
@@ -56,6 +56,7 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.siblings
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+
 import java.util.Locale
 
 /**
@@ -927,13 +928,6 @@ fun countCodeLines(copyNode: ASTNode): Int {
     return text.size
 }
 
-private fun hasNoParameters(lambdaNode: ASTNode): Boolean {
-    require(lambdaNode.elementType == LAMBDA_EXPRESSION) { "Method can be called only for lambda" }
-    return null == lambdaNode
-        .findChildByType(ElementType.FUNCTION_LITERAL)
-        ?.findChildByType(ElementType.VALUE_PARAMETER_LIST)
-}
-
 /**
  * Check that lambda contains `it`.
  *
@@ -955,4 +949,11 @@ fun doesLambdaContainIt(lambdaNode: ASTNode): Boolean {
         .contains("it")
 
     return hasNoParameters(lambdaNode) && hasIt
+}
+
+private fun hasNoParameters(lambdaNode: ASTNode): Boolean {
+    require(lambdaNode.elementType == LAMBDA_EXPRESSION) { "Method can be called only for lambda" }
+    return null == lambdaNode
+        .findChildByType(ElementType.FUNCTION_LITERAL)
+        ?.findChildByType(ElementType.VALUE_PARAMETER_LIST)
 }
