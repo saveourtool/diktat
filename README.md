@@ -79,7 +79,7 @@ To **autofix** all code style violations use `-F` option.
 
 
 ## Run with Maven using diktat-maven-plugin
-:heavy_exclamation_mark: If you are using **Java 16+**, you need to add `--add-opens java.base/java.util=ALL-UNNAMED` flag to the java.
+:heavy_exclamation_mark: If you are using **Java 16+**, you need to add `--add-opens java.base/java.util=ALL-UNNAMED` flag to the JVM. For more information, see: https://github.com/pinterest/ktlint/issues/1195
 This can be done by setting `MAVEN_OPTS` variable:
 
 ```
