@@ -46,34 +46,46 @@ Main features of diktat are the following:
 ## Run as CLI-application
 <details>
 <summary>Download and install binaries:</summary>
+
 1. Install KTlint manually: [here](https://github.com/pinterest/ktlint/releases)
 
-   **OR** use curl:
-    ```bash
-    curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.43.2/ktlint && chmod a+x ktlint
-    # another option is "brew install ktlint"
-    ```
+**OR** use curl:
+```bash
+# another option is "brew install ktlint"
+
+curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.43.2/ktlint && chmod a+x ktlint
+```
    
 2. Load diKTat manually: [here](https://github.com/cqfn/diKTat/releases/download/v1.0.3/diktat-1.0.3.jar)
 
-   **OR** use curl:
-   ```bash
-   $ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v1.0.3/diktat-1.0.3.jar
-   ```
+**OR** use curl:
+```bash
+$ curl -sSLO https://github.com/cqfn/diKTat/releases/download/v1.0.3/diktat-1.0.3.jar
+```
 </details>
 
 <details>
+   
 <summary>Run diktat:</summary>
-3. Finally, run KTlint (with diKTat injected) to check your `*.kt` files in `dir/your/dir`:
-   ```bash
-   $ ./ktlint -R diktat.jar --disabled_rules=standard "dir/your/dir/**/*.kt"
-   ```
+   
+3. Finally, run KTlint (with diKTat injected) to check your '*.kt' files in 'dir/your/dir':
+   
+```bash
+$ ./ktlint -R diktat.jar --disabled_rules=standard "dir/your/dir/**/*.kt"
+```
 
 To **autofix** all code style violations use `-F` option.
 </details>
 
 
 ## Run with Maven using diktat-maven-plugin
+:heavy_exclamation_mark: If you are using **Java 16+**, you need to add `--add-opens java.base/java.util=ALL-UNNAMED` flag to the java.
+This can be done by setting `MAVEN_OPTS` variable:
+
+```
+export MAVEN_OPTS="--add-opens java.base/java.util=ALL-UNNAMED"
+```
+
 This plugin is available since version 0.1.3. You can see how it is configured in our project for self-checks: [pom.xml](pom.xml).
 If you use it and encounter any problems, feel free to open issues on [github](https://github.com/cqfn/diktat/issues).
 
