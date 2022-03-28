@@ -920,11 +920,12 @@ fun isLocatedInTest(filePathParts: List<String>, testAnchors: List<String>) = fi
     ?: false
 
 /**
- * Count number of lines in code block. Note: only *copy* of a node should be passed to this method, because the method changes the node.
+ * Count number of lines in code block.
  *
  * @return the number of lines in a block of code.
  */
-fun countCodeLines(copyNode: ASTNode): Int {
+fun countCodeLines(node: ASTNode): Int {
+    val copyNode = node.clone() as ASTNode
     copyNode.findAllNodesWithCondition { it.isPartOfComment() }.forEach { it.treeParent.removeChild(it) }
     val text = copyNode.text.lines().filter { it.isNotBlank() }
     return text.size
