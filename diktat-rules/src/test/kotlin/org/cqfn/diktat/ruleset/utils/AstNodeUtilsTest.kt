@@ -736,6 +736,7 @@ class AstNodeUtilsTest {
     }
 
     @Test
+    @Suppress("TOO_LONG_FUNCTION", "TOO_MANY_LINES_IN_LAMBDA")
     fun `test lambda contains it`() {
         applyToCode("""
             |fun bar(lambda: (s: String) -> Unit) {
@@ -776,6 +777,9 @@ class AstNodeUtilsTest {
                             "// test1" -> Assertions.assertFalse(doesLambdaContainIt(it))
                             "// test2" -> Assertions.assertTrue(doesLambdaContainIt(it))
                             "// test3" -> Assertions.assertFalse(doesLambdaContainIt(it))
+                            else -> {
+                                // this is a generated else block
+                            }
                         }
                         counter.incrementAndGet()
                     }

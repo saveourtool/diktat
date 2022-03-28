@@ -432,7 +432,8 @@ fun ASTNode.findAllDescendantsWithSpecificType(elementType: IElementType, withSe
  */
 fun ASTNode.findAllNodesWithCondition(withSelf: Boolean = true,
                                       excludeChildrenCondition: ((ASTNode) -> Boolean) = { false },
-                                      condition: (ASTNode) -> Boolean): List<ASTNode> {
+                                      condition: (ASTNode) -> Boolean,
+): List<ASTNode> {
     val result = if (condition(this) && withSelf) mutableListOf(this) else mutableListOf()
     return result + this.getChildren(null)
         .filterNot { excludeChildrenCondition(it) }
@@ -936,6 +937,7 @@ fun countCodeLines(copyNode: ASTNode): Int {
  *
  * Note: this method can be called only for lambda
  */
+@Suppress("FUNCTION_BOOLEAN_PREFIX")
 fun doesLambdaContainIt(lambdaNode: ASTNode): Boolean {
     require(lambdaNode.elementType == LAMBDA_EXPRESSION) { "Method can be called only for lambda" }
 
