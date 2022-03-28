@@ -59,6 +59,7 @@ import org.cqfn.diktat.ruleset.rules.chapter5.LambdaLengthRule
 import org.cqfn.diktat.ruleset.rules.chapter5.LambdaParameterOrder
 import org.cqfn.diktat.ruleset.rules.chapter5.NestedFunctionBlock
 import org.cqfn.diktat.ruleset.rules.chapter5.OverloadingArgumentsFunction
+import org.cqfn.diktat.ruleset.rules.chapter5.ParameterNameInOuterLambdaRule
 import org.cqfn.diktat.ruleset.rules.chapter6.AvoidEmptyPrimaryConstructor
 import org.cqfn.diktat.ruleset.rules.chapter6.AvoidUtilityClass
 import org.cqfn.diktat.ruleset.rules.chapter6.CustomGetterSetterRule
@@ -183,6 +184,7 @@ class DiktatRuleSetProvider(private var diktatConfigFile: String = DIKTAT_ANALYS
             ::SingleInitRule,
             ::RangeConventionalRule,
             ::CustomLabel,
+            ::ParameterNameInOuterLambdaRule,
             ::VariableGenericTypeDeclarationRule,
             ::LongNumericalValuesSeparatedRule,
             ::NestedFunctionBlock,
