@@ -180,4 +180,21 @@ class ParameterNameInOuterLambdaRuleWarnTest : LintTestBase(::ParameterNameInOut
             rulesConfigList = rulesConfigList
         )
     }
+
+    @Test
+    @Tag(WarningNames.PARAMETER_NAME_IN_OUTER_LAMBDA)
+    fun `shouldn't warn if nested lambda has explicit it`() {
+        lintMethod(
+            """
+                |fun test() {
+                |    run {
+                |        l.map { it ->
+                |            println(it)
+                |        }
+                |    }
+                |}
+            """.trimMargin(),
+            rulesConfigList = rulesConfigList
+        )
+    }
 }

@@ -52,9 +52,13 @@ import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.psi.KtAnnotationEntry
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtIfExpression
+import org.jetbrains.kotlin.psi.KtParameterList
+import org.jetbrains.kotlin.psi.KtValueArgumentList
 import org.jetbrains.kotlin.psi.psiUtil.children
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.siblings
+import org.jetbrains.kotlin.utils.addToStdlib.cast
+import org.jetbrains.kotlin.utils.addToStdlib.safeAs
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -943,7 +947,7 @@ fun doesLambdaContainIt(lambdaNode: ASTNode): Boolean {
     require(lambdaNode.elementType == LAMBDA_EXPRESSION) { "Method can be called only for lambda" }
 
     val excludeChildrenCondition = { node: ASTNode ->
-        node.elementType == ElementType.LAMBDA_EXPRESSION && hasNoParameters(node)
+        node.elementType == LAMBDA_EXPRESSION && (hasNoParameters(node) || node.hasExplicitIt())
     }
     val hasIt = lambdaNode
         .findAllNodesWithCondition(excludeChildrenCondition = excludeChildrenCondition) {
@@ -960,4 +964,15 @@ private fun hasNoParameters(lambdaNode: ASTNode): Boolean {
     return null == lambdaNode
         .findChildByType(ElementType.FUNCTION_LITERAL)
         ?.findChildByType(ElementType.VALUE_PARAMETER_LIST)
+}
+
+private fun ASTNode.hasExplicitIt(): Boolean {
+    require(elementType == LAMBDA_EXPRESSION) { "Method can be called only for lambda" }
+    val parameterList = findChildByType(ElementType.FUNCTION_LITERAL)
+        ?.findChildByType(ElementType.VALUE_PARAMETER_LIST)
+        ?.psi
+        as KtParameterList?
+    return parameterList?.parameters
+        ?.any { it.name == "it" }
+        ?: false
 }
