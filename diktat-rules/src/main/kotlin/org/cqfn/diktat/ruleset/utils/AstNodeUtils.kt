@@ -57,8 +57,6 @@ import org.jetbrains.kotlin.psi.KtValueArgumentList
 import org.jetbrains.kotlin.psi.psiUtil.children
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.siblings
-import org.jetbrains.kotlin.utils.addToStdlib.cast
-import org.jetbrains.kotlin.utils.addToStdlib.safeAs
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -909,6 +907,17 @@ private fun ASTNode.calculateLineNumber() = getRootNode()
         it + 1
     }
 
+private fun ASTNode.hasExplicitIt(): Boolean {
+    require(elementType == LAMBDA_EXPRESSION) { "Method can be called only for lambda" }
+    val parameterList = findChildByType(ElementType.FUNCTION_LITERAL)
+        ?.findChildByType(ElementType.VALUE_PARAMETER_LIST)
+        ?.psi
+        as KtParameterList?
+    return parameterList?.parameters
+        ?.any { it.name == "it" }
+        ?: false
+}
+
 /**
  * Checks node is located in file src/test/**/*Test.kt
  *
@@ -964,15 +973,4 @@ private fun hasNoParameters(lambdaNode: ASTNode): Boolean {
     return null == lambdaNode
         .findChildByType(ElementType.FUNCTION_LITERAL)
         ?.findChildByType(ElementType.VALUE_PARAMETER_LIST)
-}
-
-private fun ASTNode.hasExplicitIt(): Boolean {
-    require(elementType == LAMBDA_EXPRESSION) { "Method can be called only for lambda" }
-    val parameterList = findChildByType(ElementType.FUNCTION_LITERAL)
-        ?.findChildByType(ElementType.VALUE_PARAMETER_LIST)
-        ?.psi
-        as KtParameterList?
-    return parameterList?.parameters
-        ?.any { it.name == "it" }
-        ?: false
 }
