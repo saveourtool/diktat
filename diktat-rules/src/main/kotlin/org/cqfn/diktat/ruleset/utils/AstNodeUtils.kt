@@ -27,6 +27,7 @@ import com.pinterest.ktlint.core.ast.ElementType.FILE_ANNOTATION_LIST
 import com.pinterest.ktlint.core.ast.ElementType.IMPORT_LIST
 import com.pinterest.ktlint.core.ast.ElementType.INTERNAL_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
+import com.pinterest.ktlint.core.ast.ElementType.LAMBDA_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.LATEINIT_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.MODIFIER_LIST
@@ -51,11 +52,14 @@ import org.jetbrains.kotlin.com.intellij.psi.tree.TokenSet
 import org.jetbrains.kotlin.psi.KtAnnotationEntry
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtIfExpression
+import org.jetbrains.kotlin.psi.KtParameterList
+import org.jetbrains.kotlin.psi.KtValueArgumentList
 import org.jetbrains.kotlin.psi.psiUtil.children
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.siblings
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+
 import java.util.Locale
 
 /**
@@ -429,15 +433,17 @@ fun ASTNode.findAllDescendantsWithSpecificType(elementType: IElementType, withSe
  * This method performs tree traversal and returns all nodes which satisfy the condition
  */
 fun ASTNode.findAllNodesWithCondition(withSelf: Boolean = true,
-                                      condition: (ASTNode) -> Boolean): List<ASTNode> {
+                                      excludeChildrenCondition: ((ASTNode) -> Boolean) = { false },
+                                      condition: (ASTNode) -> Boolean,
+): List<ASTNode> {
     val result = if (condition(this) && withSelf) mutableListOf(this) else mutableListOf()
-    return result + this.getChildren(null).flatMap {
-        it.findAllNodesWithCondition(withSelf = true, condition)
-    }
+    return result + this.getChildren(null)
+        .filterNot { excludeChildrenCondition(it) }
+        .flatMap { it.findAllNodesWithCondition(withSelf = true, excludeChildrenCondition, condition) }
 }
 
 /**
- * Check a node of type CLASS if it is a enum class
+ * Check a node of type CLASS if it is an enum class
  */
 fun ASTNode.isClassEnum(): Boolean = (psi as? KtClass)?.isEnum() ?: false
 
@@ -901,6 +907,17 @@ private fun ASTNode.calculateLineNumber() = getRootNode()
         it + 1
     }
 
+private fun ASTNode.hasExplicitIt(): Boolean {
+    require(elementType == LAMBDA_EXPRESSION) { "Method can be called only for lambda" }
+    val parameterList = findChildByType(ElementType.FUNCTION_LITERAL)
+        ?.findChildByType(ElementType.VALUE_PARAMETER_LIST)
+        ?.psi
+        as KtParameterList?
+    return parameterList?.parameters
+        ?.any { it.name == "it" }
+        ?: false
+}
+
 /**
  * Checks node is located in file src/test/**/*Test.kt
  *
@@ -916,12 +933,44 @@ fun isLocatedInTest(filePathParts: List<String>, testAnchors: List<String>) = fi
     ?: false
 
 /**
- * Count number of lines in code block. Note: only *copy* of a node should be passed to this method, because the method changes the node.
+ * Count number of lines in code block.
  *
  * @return the number of lines in a block of code.
  */
-fun countCodeLines(copyNode: ASTNode): Int {
+fun countCodeLines(node: ASTNode): Int {
+    val copyNode = node.clone() as ASTNode
     copyNode.findAllNodesWithCondition { it.isPartOfComment() }.forEach { it.treeParent.removeChild(it) }
     val text = copyNode.text.lines().filter { it.isNotBlank() }
     return text.size
+}
+
+/**
+ * Check that lambda contains `it`.
+ *
+ * Note: it checks only provided lambda and inner lambda with explicit parameters
+ *
+ * Note: this method can be called only for lambda
+ */
+@Suppress("FUNCTION_BOOLEAN_PREFIX")
+fun doesLambdaContainIt(lambdaNode: ASTNode): Boolean {
+    require(lambdaNode.elementType == LAMBDA_EXPRESSION) { "Method can be called only for lambda" }
+
+    val excludeChildrenCondition = { node: ASTNode ->
+        node.elementType == LAMBDA_EXPRESSION && (hasNoParameters(node) || node.hasExplicitIt())
+    }
+    val hasIt = lambdaNode
+        .findAllNodesWithCondition(excludeChildrenCondition = excludeChildrenCondition) {
+            it.elementType == ElementType.REFERENCE_EXPRESSION
+        }
+        .map { it.text }
+        .contains("it")
+
+    return hasNoParameters(lambdaNode) && hasIt
+}
+
+private fun hasNoParameters(lambdaNode: ASTNode): Boolean {
+    require(lambdaNode.elementType == LAMBDA_EXPRESSION) { "Method can be called only for lambda" }
+    return null == lambdaNode
+        .findChildByType(ElementType.FUNCTION_LITERAL)
+        ?.findChildByType(ElementType.VALUE_PARAMETER_LIST)
 }

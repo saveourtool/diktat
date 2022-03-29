@@ -429,7 +429,10 @@
 # Checks that using unnecessary, custom label
 - name: CUSTOM_LABEL
   enabled: true
-# Checks that property in constructor doesn't contains comment
+# Checks that outer lambda has explicit parameter name
+- name: PARAMETER_NAME_IN_OUTER_LAMBDA
+  enabled: false
+# Checks that property in constructor doesn't contain comment
 - name: KDOC_NO_CONSTRUCTOR_PROPERTY
   enabled: true
 # Checks that property in KDoc present in class

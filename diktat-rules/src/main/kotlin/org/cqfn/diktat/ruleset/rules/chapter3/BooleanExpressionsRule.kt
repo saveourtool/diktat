@@ -4,7 +4,6 @@ import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.COMPLEX_BOOLEAN_EXPRESSION
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.KotlinParser
-import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.findAllNodesWithCondition
 import org.cqfn.diktat.ruleset.utils.findLeafWithSpecificType
 import org.cqfn.diktat.ruleset.utils.logicalInfixMethods
@@ -13,7 +12,6 @@ import com.bpodgursky.jbool_expressions.Expression
 import com.bpodgursky.jbool_expressions.options.ExprOptions
 import com.bpodgursky.jbool_expressions.parsers.ExprParser
 import com.bpodgursky.jbool_expressions.rules.RulesHelper
-import com.pinterest.ktlint.core.ast.ElementType
 import com.pinterest.ktlint.core.ast.ElementType.BINARY_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.CONDITION
 import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE

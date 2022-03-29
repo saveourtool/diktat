@@ -228,6 +228,8 @@ public object WarningNames {
 
     public const val CUSTOM_LABEL: String = "CUSTOM_LABEL"
 
+    public const val PARAMETER_NAME_IN_OUTER_LAMBDA: String = "PARAMETER_NAME_IN_OUTER_LAMBDA"
+
     public const val INVERSE_FUNCTION_PREFERRED: String = "INVERSE_FUNCTION_PREFERRED"
 
     public const val SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY: String =

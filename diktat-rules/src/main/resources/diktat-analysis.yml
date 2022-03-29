@@ -428,6 +428,9 @@
 # Checks that using unnecessary, custom label
 - name: CUSTOM_LABEL
   enabled: true
+# Check that lambda with inner lambda doesn't use implicit parameter
+- name: PARAMETER_NAME_IN_OUTER_LAMBDA
+  enabled: true
 # Checks that property in KDoc present in class
 - name: KDOC_EXTRA_PROPERTY
   enabled: true
