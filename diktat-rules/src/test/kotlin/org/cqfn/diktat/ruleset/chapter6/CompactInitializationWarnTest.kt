@@ -92,24 +92,10 @@ class CompactInitializationWarnTest : LintTestBase(::CompactInitialization) {
         )
     }
 
+    // Creating the `apply` block here breaks the compilation
     @Test
     @Tag(WarningNames.COMPACT_OBJECT_INITIALIZATION)
-    fun `should not trigger`() {
-        lintMethod(
-            """
-                |fun foo(line: String) {
-                |    val pair = line.split("=", limit = 2).map {
-                |        it.replace("\\=", "=")
-                |    }
-                |    pair.first() to pair.last()
-                |}
-            """.trimMargin(),
-        )
-    }
-
-    @Test
-    @Tag(WarningNames.COMPACT_OBJECT_INITIALIZATION)
-    fun `should not trigger 2`() {
+    fun `should not trigger to infix function 1`() {
         lintMethod(
             """
                 |fun foo(line: String) = line
@@ -124,9 +110,26 @@ class CompactInitializationWarnTest : LintTestBase(::CompactInitialization) {
         )
     }
 
+    // Apply block doesn't break the compilation, however such changes can break the user logic
     @Test
     @Tag(WarningNames.COMPACT_OBJECT_INITIALIZATION)
-    fun `should not trigger 3`() {
+    fun `should not trigger to infix function 2`() {
+        lintMethod(
+            """
+                |fun foo(line: String) {
+                |    val pair = line.split("=", limit = 2).map {
+                |        it.replace("\\=", "=")
+                |    }
+                |    pair.first() to pair.last()
+                |}
+            """.trimMargin(),
+        )
+    }
+
+    // For generality don't trigger on any infix function, despite the fact, that with apply block all will be okay
+    @Test
+    @Tag(WarningNames.COMPACT_OBJECT_INITIALIZATION)
+    fun `should not trigger to infix function 3`() {
         lintMethod(
             """
                 |fun `translate text`() {
