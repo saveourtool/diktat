@@ -94,7 +94,7 @@ class CompactInitializationWarnTest : LintTestBase(::CompactInitialization) {
 
     @Test
     @Tag(WarningNames.COMPACT_OBJECT_INITIALIZATION)
-    fun `should trigger`() {
+    fun `should not trigger`() {
         lintMethod(
             """
                 |fun foo(line: String) {
@@ -104,13 +104,12 @@ class CompactInitializationWarnTest : LintTestBase(::CompactInitialization) {
                 |    pair.first() to pair.last()
                 |}
             """.trimMargin(),
-            LintError(5, 5, ruleId, "${COMPACT_OBJECT_INITIALIZATION.warnText()} first()", true)
         )
     }
 
     @Test
     @Tag(WarningNames.COMPACT_OBJECT_INITIALIZATION)
-    fun `should not trigger`() {
+    fun `should not trigger 2`() {
         lintMethod(
             """
                 |fun foo(line: String) = line
@@ -121,6 +120,21 @@ class CompactInitializationWarnTest : LintTestBase(::CompactInitialization) {
                 |        }
                 |        pair.first() to pair.last()
                 |    }
+            """.trimMargin(),
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.COMPACT_OBJECT_INITIALIZATION)
+    fun `should not trigger 3`() {
+        lintMethod(
+            """
+                |fun `translate text`() {
+                |    val res = translateText(text = "dummy")
+                |    (res is TranslationsSuccess) shouldBe true
+                |    val translationsSuccess = res as TranslationsSuccess
+                |    translationsSuccess.translations shouldHaveSize 1
+                |}
             """.trimMargin(),
         )
     }

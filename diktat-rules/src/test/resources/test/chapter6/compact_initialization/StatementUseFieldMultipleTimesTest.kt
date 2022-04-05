@@ -12,11 +12,3 @@ fun foo() {
     execution.name = execution.execution(execution)
     return execution.id!!
 }
-
-fun foo(line: String) {
-    val pair = line.split("=", limit = 2).map {
-        it.replace("\\=", "=")
-    }
-    pair.first() to pair.last()
-}
-
