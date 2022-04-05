@@ -91,4 +91,37 @@ class CompactInitializationWarnTest : LintTestBase(::CompactInitialization) {
             LintError(7, 5, ruleId, "${COMPACT_OBJECT_INITIALIZATION.warnText()} timeout", true)
         )
     }
+
+    @Test
+    @Tag(WarningNames.COMPACT_OBJECT_INITIALIZATION)
+    fun `should trigger`() {
+        lintMethod(
+            """
+                |fun foo(line: String) {
+                |    val pair = line.split("=", limit = 2).map {
+                |        it.replace("\\=", "=")
+                |    }
+                |    pair.first() to pair.last()
+                |}
+            """.trimMargin(),
+            LintError(5, 5, ruleId, "${COMPACT_OBJECT_INITIALIZATION.warnText()} first()", true)
+        )
+    }
+
+    @Test
+    @Tag(WarningNames.COMPACT_OBJECT_INITIALIZATION)
+    fun `should not trigger`() {
+        lintMethod(
+            """
+                |fun foo(line: String) = line
+                |    .split(",", ", ")
+                |    .associate {
+                |        val pair = it.split("=", limit = 2).map {
+                |            it.replace("\\=", "=")
+                |        }
+                |        pair.first() to pair.last()
+                |    }
+            """.trimMargin(),
+        )
+    }
 }

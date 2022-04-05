@@ -128,6 +128,7 @@ class CompactInitialization(configRules: List<RulesConfig>) : DiktatRule(
                     val receiverName = (assignment.left as KtDotQualifiedExpression).receiverExpression
                     // looking for usages of receiver in right part
                     val identifiers = assignment.right!!.node.findAllDescendantsWithSpecificType(REFERENCE_EXPRESSION)
+                    //println("\n\n\nidentifiers ${identifiers.map { it.text }}")
                     identifiers.forEach {
                         if (it.text == receiverName.text && it.treeParent.elementType != CALL_EXPRESSION) {
                             it.treeParent.replaceChild(it, kotlinParser.createNode("this"))
