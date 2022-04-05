@@ -27,7 +27,7 @@ import java.io.File
  */
 @Suppress("ForbiddenComment")
 class FileNaming(configRules: List<RulesConfig>) : DiktatRule(
-    "007-file-naming",
+    "aag-file-naming",
     configRules,
     listOf(FILE_NAME_INCORRECT, FILE_NAME_MATCH_CLASS)
 ) {

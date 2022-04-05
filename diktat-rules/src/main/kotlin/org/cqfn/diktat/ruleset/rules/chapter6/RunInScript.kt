@@ -22,7 +22,7 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.CompositeElement
  * In .kts files allow use only property declaration, function, classes, and code inside `run` block
  * In gradle.kts files allow to call binary expression with EQ, expression and dot qualified expression in addition to everything used in .kts files
  */
-class RunInScript(private val configRules: List<RulesConfig>) : Rule("049-run-script") {
+class RunInScript(private val configRules: List<RulesConfig>) : Rule("abw-run-script") {
     private var isFixMode: Boolean = false
     private lateinit var emitWarn: EmitType
 

@@ -70,7 +70,7 @@ import kotlin.math.abs
  */
 @Suppress("LargeClass")
 class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
-    "072-indentation",
+    "act-indentation",
     configRules,
     listOf(WRONG_INDENTATION),
     setOf(VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:horizontal-whitespace"))

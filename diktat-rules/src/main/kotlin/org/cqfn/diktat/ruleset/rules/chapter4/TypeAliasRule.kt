@@ -20,7 +20,7 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  * Length type reference can be configured
  */
 class TypeAliasRule(configRules: List<RulesConfig>) : DiktatRule(
-    "050-type-alias",
+    "abx-type-alias",
     configRules,
     listOf(TYPE_ALIAS)
 ) {

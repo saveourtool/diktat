@@ -71,7 +71,7 @@ import org.jetbrains.kotlin.psi.psiUtil.referenceExpression
  */
 @Suppress("ForbiddenComment")
 class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
-    "004-kdoc-methods",
+    "aad-kdoc-methods",
     configRules,
     listOf(KDOC_TRIVIAL_KDOC_ON_FUNCTION, KDOC_WITHOUT_PARAM_TAG, KDOC_WITHOUT_RETURN_TAG,
         KDOC_WITHOUT_THROWS_TAG, MISSING_KDOC_ON_FUNCTION),

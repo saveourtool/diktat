@@ -118,7 +118,7 @@ import org.slf4j.LoggerFactory
  */
 @Suppress("ForbiddenComment")
 class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
-    "070-newlines",
+    "acr-newlines",
     configRules,
     listOf(COMPLEX_EXPRESSION, REDUNDANT_SEMICOLON, WRONG_NEWLINES),
     setOf(VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:file-structure"))

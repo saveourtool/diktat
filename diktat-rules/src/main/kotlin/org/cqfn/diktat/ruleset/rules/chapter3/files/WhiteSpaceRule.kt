@@ -95,7 +95,7 @@ import org.slf4j.LoggerFactory
  */
 @Suppress("ForbiddenComment")
 class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
-    "071-horizontal-whitespace",
+    "acs-horizontal-whitespace",
     configRules,
     listOf(WRONG_WHITESPACE),
     setOf(VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:newlines"))

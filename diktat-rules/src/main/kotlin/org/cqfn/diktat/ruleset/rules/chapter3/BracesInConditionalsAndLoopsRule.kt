@@ -39,7 +39,7 @@ import org.jetbrains.kotlin.psi.psiUtil.children
  * Rule that checks that all conditionals and loops have braces.
  */
 class BracesInConditionalsAndLoopsRule(configRules: List<RulesConfig>) : DiktatRule(
-    "013-races-rule",
+    "aam-races-rule",
     configRules,
     listOf(NO_BRACES_IN_CONDITIONALS_AND_LOOPS)
 ) {

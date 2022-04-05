@@ -31,7 +31,7 @@ typealias PlaceOfWarningForCurrentNode = Pair<Int, ASTNode>
  * Rule for redundant nested if-statements, which could be collapsed into a single one
  */
 class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
-    "047-collapse-if",
+    "abu-collapse-if",
     configRules,
     listOf(
         Warnings.COLLAPSE_IF_STATEMENTS

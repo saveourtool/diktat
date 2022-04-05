@@ -25,7 +25,7 @@ import org.jetbrains.kotlin.psi.KtProperty
  * This rule checks if there is a backing property for field with property accessors, in case they don't use field keyword
  */
 class ImplicitBackingPropertyRule(configRules: List<RulesConfig>) : DiktatRule(
-    "027-implicit-backing-property",
+    "aba-implicit-backing-property",
     configRules,
     listOf(NO_CORRESPONDING_PROPERTY)
 ) {

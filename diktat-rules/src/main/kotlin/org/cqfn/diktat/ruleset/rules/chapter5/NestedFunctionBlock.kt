@@ -21,7 +21,7 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  * Rule 5.1.2 Nested blokcs
  */
 class NestedFunctionBlock(configRules: List<RulesConfig>) : DiktatRule(
-    "040-nested-block",
+    "abn-nested-block",
     configRules,
     listOf(NESTED_BLOCK)
 ) {

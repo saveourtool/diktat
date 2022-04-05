@@ -32,7 +32,7 @@ import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
  */
 @Suppress("UnsafeCallOnNullableType")
 class RangeConventionalRule(configRules: List<RulesConfig>) : DiktatRule(
-    "036-range",
+    "abj-range",
     configRules,
     listOf(CONVENTIONAL_RANGE)
 ) {

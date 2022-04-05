@@ -29,7 +29,7 @@ import org.jetbrains.kotlin.psi.KtStringTemplateExpression
  * "string one " + "string two "
  */
 class StringConcatenationRule(configRules: List<RulesConfig>) : DiktatRule(
-    "044-string-concatenation",
+    "abr-string-concatenation",
     configRules,
     listOf(
         STRING_CONCATENATION

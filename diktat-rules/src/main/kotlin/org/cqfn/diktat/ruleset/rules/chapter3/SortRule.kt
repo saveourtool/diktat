@@ -33,7 +33,7 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
  * Rule that sorts class properties and enum members alphabetically
  */
 class SortRule(configRules: List<RulesConfig>) : DiktatRule(
-    "042-sort-rule",
+    "abp-sort-rule",
     configRules,
     listOf(WRONG_DECLARATIONS_ORDER),
     setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:top-level-order"))

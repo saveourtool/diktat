@@ -13,7 +13,7 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
  * Rule that checks number of lines in a file
  */
 class FileSize(configRules: List<RulesConfig>) : DiktatRule(
-    "057-file-size",
+    "ace-file-size",
     configRules,
     listOf(FILE_IS_TOO_LONG)
 ) {

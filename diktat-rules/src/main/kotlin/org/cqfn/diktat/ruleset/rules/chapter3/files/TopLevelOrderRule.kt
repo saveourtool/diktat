@@ -28,7 +28,7 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
  * Rule that checks order in top level
  */
 class TopLevelOrderRule(configRules: List<RulesConfig>) : DiktatRule(
-    "016-top-level-order",
+    "aap-top-level-order",
     configRules,
     listOf(TOP_LEVEL_ORDER),
     setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:package-naming"))

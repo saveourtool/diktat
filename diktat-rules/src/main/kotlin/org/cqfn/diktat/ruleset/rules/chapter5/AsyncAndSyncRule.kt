@@ -18,7 +18,7 @@ import org.jetbrains.kotlin.psi.psiUtil.hasSuspendModifier
  * This rule finds if using runBlocking in asynchronous code
  */
 class AsyncAndSyncRule(configRules: List<RulesConfig>) : DiktatRule(
-    "058-sync-in-async",
+    "acf-sync-in-async",
     configRules,
     listOf(RUN_BLOCKING_INSIDE_ASYNC)
 ) {

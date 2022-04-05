@@ -38,7 +38,7 @@ import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
  * Rule that checks if nullable types are used and suggest to substitute them with non-nullable
  */
 class NullableTypeRule(configRules: List<RulesConfig>) : DiktatRule(
-    "059-nullable-type",
+    "acg-nullable-type",
     configRules,
     listOf(NULLABLE_PROPERTY_TYPE)
 ) {

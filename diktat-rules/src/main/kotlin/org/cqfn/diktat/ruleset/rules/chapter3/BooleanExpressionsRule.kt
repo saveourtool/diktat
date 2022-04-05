@@ -32,7 +32,7 @@ import java.lang.RuntimeException
  * Rule that checks if the boolean expression can be simplified.
  */
 class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
-    "065-boolean-expressions-rule",
+    "acm-boolean-expressions-rule",
     configRules,
     listOf(COMPLEX_BOOLEAN_EXPRESSION)
 ) {
