@@ -16,7 +16,7 @@ import org.jetbrains.kotlin.psi.psiUtil.children
  * @property configRules
  */
 class MultipleModifiersSequence(configRules: List<RulesConfig>) : DiktatRule(
-    "multiple-modifiers",
+    "018-multiple-modifiers",
     configRules,
     listOf(WRONG_MULTIPLE_MODIFIERS_ORDER)
 ) {

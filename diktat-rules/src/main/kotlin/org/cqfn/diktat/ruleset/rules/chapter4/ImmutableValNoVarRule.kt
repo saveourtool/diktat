@@ -20,7 +20,7 @@ import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
  * FixMe: here we should also raise warnings for a reassignment of a var (if var has no assignments except in declaration - it can be final)
  */
 class ImmutableValNoVarRule(configRules: List<RulesConfig>) : DiktatRule(
-    "no-var-rule",
+    "061-no-var-rule",
     configRules,
     listOf(SAY_NO_TO_VAR)
 ) {

@@ -31,7 +31,7 @@ import org.jetbrains.kotlin.psi.KtPrimaryConstructor
  * This rule checks if class can be made as data class
  */
 class DataClassesRule(configRules: List<RulesConfig>) : DiktatRule(
-    "data-classes",
+    "028-data-classes",
     configRules,
     listOf(USE_DATA_CLASS)
 ) {

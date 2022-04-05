@@ -20,7 +20,7 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
  * This rule makes each annotation applied to a class, method or constructor is on its own line. Except: if first annotation of constructor, class or method
  */
 class AnnotationNewLineRule(configRules: List<RulesConfig>) : DiktatRule(
-    "annotation-new-line",
+    "041-annotation-new-line",
     configRules,
     listOf(ANNOTATION_NEW_LINE)
 ) {

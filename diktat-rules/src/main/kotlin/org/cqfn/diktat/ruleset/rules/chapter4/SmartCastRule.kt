@@ -35,7 +35,7 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  * Rule that detects redundant explicit casts
  */
 class SmartCastRule(configRules: List<RulesConfig>) : DiktatRule(
-    "smart-cast-rule",
+    "030-smart-cast-rule",
     configRules,
     listOf(SMART_CAST_NEEDED)
 ) {

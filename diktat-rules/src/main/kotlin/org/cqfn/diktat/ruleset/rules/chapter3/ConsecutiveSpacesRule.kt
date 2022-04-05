@@ -22,7 +22,7 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
  *
  */
 class ConsecutiveSpacesRule(configRules: List<RulesConfig>) : DiktatRule(
-    "too-many-spaces",
+    "067-too-many-spaces",
     configRules,
     listOf(TOO_MANY_CONSECUTIVE_SPACES),
     setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:block-structure"))

@@ -27,7 +27,7 @@ import org.jetbrains.kotlin.psi.KtPropertyAccessor
  * This rule checks if there are any trivial getters and setters and, if so, deletes them
  */
 class TrivialPropertyAccessors(configRules: List<RulesConfig>) : DiktatRule(
-    "trivial-property-accessors",
+    "019-trivial-property-accessors",
     configRules,
     listOf(TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED)
 ) {

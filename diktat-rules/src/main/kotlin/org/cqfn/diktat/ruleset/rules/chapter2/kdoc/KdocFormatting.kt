@@ -62,7 +62,7 @@ import java.time.temporal.ChronoField
  */
 @Suppress("ForbiddenComment")
 class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
-    "kdoc-formatting",
+    "005-kdoc-formatting",
     configRules,
     listOf(KDOC_CONTAINS_DATE_OR_AUTHOR, KDOC_EMPTY_KDOC, KDOC_NEWLINES_BEFORE_BASIC_TAGS, KDOC_NO_DEPRECATED_TAG,
         KDOC_NO_EMPTY_TAGS, KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS, KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS,

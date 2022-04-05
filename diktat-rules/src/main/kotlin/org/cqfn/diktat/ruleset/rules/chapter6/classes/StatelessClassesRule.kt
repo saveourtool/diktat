@@ -28,7 +28,7 @@ import org.jetbrains.kotlin.psi.KtClass
  * This rule checks if class is stateless and if so changes it to object.
  */
 class StatelessClassesRule(configRules: List<RulesConfig>) : DiktatRule(
-    "stateless-class",
+    "026-stateless-class",
     configRules,
     listOf(OBJECT_IS_PREFERRED)
 ) {

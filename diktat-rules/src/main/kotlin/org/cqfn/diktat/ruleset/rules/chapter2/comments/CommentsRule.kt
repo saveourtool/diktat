@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory
  */
 @Suppress("ForbiddenComment")
 class CommentsRule(configRules: List<RulesConfig>) : DiktatRule(
-    "comments",
+    "001-comments",
     configRules,
     listOf(COMMENTED_OUT_CODE)
 ) {

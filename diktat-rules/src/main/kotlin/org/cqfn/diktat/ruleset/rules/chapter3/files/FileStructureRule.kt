@@ -58,7 +58,7 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
  * 5. Ensures there are no wildcard imports
  */
 class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
-    "file-structure",
+    "069-file-structure",
     configRules,
     listOf(FILE_CONTAINS_ONLY_COMMENTS, FILE_INCORRECT_BLOCKS_ORDER, FILE_NO_BLANK_LINE_BETWEEN_BLOCKS,
         FILE_UNORDERED_IMPORTS, FILE_WILDCARD_IMPORTS, UNUSED_IMPORT),

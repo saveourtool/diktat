@@ -71,7 +71,7 @@ import java.util.Locale
  */
 @Suppress("ForbiddenComment", "MISSING_KDOC_CLASS_ELEMENTS")
 class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
-    "identifier-naming",
+    "009-identifier-naming",
     configRules,
     listOf(BACKTICKS_PROHIBITED, VARIABLE_NAME_INCORRECT, VARIABLE_NAME_INCORRECT_FORMAT, CONSTANT_UPPERCASE,
         VARIABLE_HAS_PREFIX, CONFUSING_IDENTIFIER_NAMING, GENERIC_NAME, CLASS_NAME_INCORRECT,

@@ -23,7 +23,7 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
  * For example if there is !isEmpty() on collection call that it changes it to isNotEmpty()
  */
 class CheckInverseMethodRule(configRules: List<RulesConfig>) : DiktatRule(
-    "inverse-method",
+    "025-inverse-method",
     configRules,
     listOf(INVERSE_FUNCTION_PREFERRED)
 ) {

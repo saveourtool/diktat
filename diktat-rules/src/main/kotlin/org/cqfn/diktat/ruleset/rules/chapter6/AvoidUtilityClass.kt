@@ -26,7 +26,7 @@ import java.util.Locale
  * Rule 6.4.1 checks that class/object, with a word "util" in its name, has only functions.
  */
 class AvoidUtilityClass(configRules: List<RulesConfig>) : DiktatRule(
-    "avoid-utility-class",
+    "031-avoid-utility-class",
     configRules,
     listOf(AVOID_USING_UTILITY_CLASS)
 ) {

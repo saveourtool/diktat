@@ -32,7 +32,7 @@ import java.util.HashMap
  * fixme can't fix supertypes that are defined in other files.
  */
 class UselessSupertype(configRules: List<RulesConfig>) : DiktatRule(
-    "useless-override",
+    "010-useless-override",
     configRules,
     listOf(USELESS_SUPERTYPE)
 ) {

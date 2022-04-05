@@ -25,7 +25,7 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  * This rule checks for nested functions and warns if it finds any.
  */
 class AvoidNestedFunctionsRule(configRules: List<RulesConfig>) : DiktatRule(
-    "avoid-nested-functions",
+    "062-avoid-nested-functions",
     configRules,
     listOf(AVOID_NESTED_FUNCTIONS)
 ) {

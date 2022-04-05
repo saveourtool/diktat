@@ -15,7 +15,7 @@ import org.jetbrains.kotlin.psi.KtFunction
  * Rule 5.1.1 check function length
  */
 class FunctionLength(configRules: List<RulesConfig>) : DiktatRule(
-    "function-length",
+    "052-function-length",
     configRules,
     listOf(TOO_LONG_FUNCTION)
 ) {

@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory
  */
 @Suppress("TOO_LONG_FUNCTION")
 class TrailingCommaRule(configRules: List<RulesConfig>) : DiktatRule(
-    "trailing-comma",
+    "034-trailing-comma",
     configRules,
     listOf(TRAILING_COMMA)
 ) {
