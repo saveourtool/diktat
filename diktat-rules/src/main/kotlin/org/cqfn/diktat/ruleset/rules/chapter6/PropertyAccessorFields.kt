@@ -23,7 +23,7 @@ import org.jetbrains.kotlin.psi.KtProperty
  * Rule check that never use the name of a variable in the custom getter or setter
  */
 class PropertyAccessorFields(configRules: List<RulesConfig>) : DiktatRule(
-    "abf-getter-setter-fields",
+    nameId,
     configRules,
     listOf(WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR)
 ) {
@@ -55,4 +55,9 @@ class PropertyAccessorFields(configRules: List<RulesConfig>) : DiktatRule(
             WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR.warn(configRules, emitWarn, isFixMode, node.text, node.startOffset, node)
         }
     }
+
+    companion object{
+        val nameId = "abf-getter-setter-fields"
+    }
+
 }
