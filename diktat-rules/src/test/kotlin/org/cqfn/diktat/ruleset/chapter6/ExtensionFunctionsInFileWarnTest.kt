@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class ExtensionFunctionsInFileWarnTest : LintTestBase(::ExtensionFunctionsInFileRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:extension-functions-class-file"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${ExtensionFunctionsInFileRule.nameId}"
 
     @Test
     @Tag(EXTENSION_FUNCTION_WITH_CLASS)

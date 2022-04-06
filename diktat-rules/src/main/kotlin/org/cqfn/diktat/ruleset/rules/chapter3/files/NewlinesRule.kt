@@ -121,7 +121,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
     nameId,
     configRules,
     listOf(COMPLEX_EXPRESSION, REDUNDANT_SEMICOLON, WRONG_NEWLINES),
-    setOf(VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:file-structure"))
+    setOf(VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${FileStructureRule.nameId}"))
 ) {
     private val configuration by lazy {
         NewlinesRuleConfiguration(configRules.getRuleConfig(WRONG_NEWLINES)?.configuration ?: emptyMap())

@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class BlockStructureBracesWarnTest : LintTestBase(::BlockStructureBraces) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:block-structure"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${BlockStructureBraces.nameId}"
     private val rulesConfigList: List<RulesConfig> = listOf(
         RulesConfig(BRACES_BLOCK_STRUCTURE_ERROR.name, true,
             mapOf("openBraceNewline" to "False", "closeBraceNewline" to "False"))

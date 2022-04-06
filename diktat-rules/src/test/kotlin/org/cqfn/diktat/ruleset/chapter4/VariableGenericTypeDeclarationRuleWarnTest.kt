@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class VariableGenericTypeDeclarationRuleWarnTest : LintTestBase(::VariableGenericTypeDeclarationRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:variable-generic-type"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${VariableGenericTypeDeclarationRule.nameId}"
 
     @Test
     @Tag(GENERIC_VARIABLE_WRONG_DECLARATION)

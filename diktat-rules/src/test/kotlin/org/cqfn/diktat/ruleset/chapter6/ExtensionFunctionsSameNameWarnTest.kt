@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class ExtensionFunctionsSameNameWarnTest : LintTestBase(::ExtensionFunctionsSameNameRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:extension-functions-same-name"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${ExtensionFunctionsSameNameRule.nameId}"
 
     @Test
     @Tag(EXTENSION_FUNCTION_SAME_SIGNATURE)

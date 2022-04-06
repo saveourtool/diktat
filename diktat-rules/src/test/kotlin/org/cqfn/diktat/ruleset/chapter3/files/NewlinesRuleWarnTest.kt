@@ -25,7 +25,7 @@ class NewlinesRuleWarnTest : LintTestBase(::NewlinesRule) {
         RulesConfig(WRONG_NEWLINES.name, true,
             mapOf("maxCallsInOneLine" to "1"))
     )
-    private val ruleId = "$DIKTAT_RULE_SET_ID:newlines"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${NewlinesRule.nameId}"
     private val shouldBreakAfter = "${WRONG_NEWLINES.warnText()} should break a line after and not before"
     private val shouldBreakBefore = "${WRONG_NEWLINES.warnText()} should break a line before and not after"
     private val functionalStyleWarn = "${WRONG_NEWLINES.warnText()} should follow functional style at"

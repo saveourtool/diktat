@@ -98,7 +98,7 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
     nameId,
     configRules,
     listOf(WRONG_WHITESPACE),
-    setOf(VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:newlines"))
+    setOf(VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${NewlinesRule.nameId}"))
 ) {
     @Suppress("ComplexMethod")
     override fun logic(node: ASTNode) {

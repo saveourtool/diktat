@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class CustomGetterSetterWarnTest : LintTestBase(::CustomGetterSetterRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:custom-getter-setter"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${CustomGetterSetterRule.nameId}"
 
     @Test
     @Tag(CUSTOM_GETTERS_SETTERS)

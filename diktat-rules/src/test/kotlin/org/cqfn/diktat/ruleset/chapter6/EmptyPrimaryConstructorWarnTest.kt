@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class EmptyPrimaryConstructorWarnTest : LintTestBase(::AvoidEmptyPrimaryConstructor) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:avoid-empty-primary-constructor"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${AvoidEmptyPrimaryConstructor.nameId}"
 
     @Test
     @Tag(WarningNames.EMPTY_PRIMARY_CONSTRUCTOR)

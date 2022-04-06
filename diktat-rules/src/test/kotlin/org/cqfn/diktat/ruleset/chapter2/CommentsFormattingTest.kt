@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class CommentsFormattingTest : LintTestBase(::CommentsFormatting) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:kdoc-comments-codeblocks-formatting"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${CommentsFormatting.nameId}"
 
     @Test
     @Tag(WarningNames.COMMENT_WHITE_SPACE)

@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class FunctionArgumentsSizeWarnTest : LintTestBase(::FunctionArgumentsSize) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:argument-size"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${FunctionArgumentsSize.nameId}"
     private val rulesConfigList: List<RulesConfig> = listOf(
         RulesConfig(TOO_MANY_PARAMETERS.name, true,
             mapOf("maxParameterListSize" to "1"))

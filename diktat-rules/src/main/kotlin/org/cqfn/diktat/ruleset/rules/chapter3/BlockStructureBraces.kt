@@ -34,6 +34,7 @@ import com.pinterest.ktlint.core.ast.ElementType.WHEN
 import com.pinterest.ktlint.core.ast.ElementType.WHILE_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
+import org.cqfn.diktat.ruleset.rules.chapter3.files.BlankLinesRule
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -55,7 +56,7 @@ class BlockStructureBraces(configRules: List<RulesConfig>) : DiktatRule(
     nameId,
     configRules,
     listOf(BRACES_BLOCK_STRUCTURE_ERROR),
-    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:blank-lines"))
+    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${BlankLinesRule.nameId}"))
 ) {
     override fun logic(node: ASTNode) {
         val configuration = BlockStructureBracesConfiguration(

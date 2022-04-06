@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class ClassLikeStructuresOrderRuleWarnTest : LintTestBase(::ClassLikeStructuresOrderRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:class-like-structures"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${ClassLikeStructuresOrderRule.nameId}"
 
     // ===== order of declarations =====
 

@@ -34,6 +34,7 @@ import com.pinterest.ktlint.core.ast.ElementType.VAR_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.parent
 import com.pinterest.ktlint.core.ast.prevSibling
+import org.cqfn.diktat.ruleset.rules.chapter6.classes.SingleConstructorRule
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -54,7 +55,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     configRules,
     listOf(KDOC_EXTRA_PROPERTY, KDOC_NO_CONSTRUCTOR_PROPERTY,
         KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT, MISSING_KDOC_CLASS_ELEMENTS, MISSING_KDOC_TOP_LEVEL),
-    setOf(VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:single-constructor"))
+    setOf(VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${SingleConstructorRule.nameId}"))
 ) {
     private val config by lazy { configRules.getCommonConfiguration() }
 

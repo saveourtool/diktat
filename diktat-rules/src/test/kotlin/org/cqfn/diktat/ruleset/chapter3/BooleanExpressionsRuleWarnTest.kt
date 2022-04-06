@@ -15,7 +15,7 @@ import java.io.ByteArrayOutputStream
 import java.io.PrintStream
 
 class BooleanExpressionsRuleWarnTest : LintTestBase(::BooleanExpressionsRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:boolean-expressions-rule"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${BooleanExpressionsRule.nameId}"
 
     @Test
     @Tag(WarningNames.COMPLEX_BOOLEAN_EXPRESSION)

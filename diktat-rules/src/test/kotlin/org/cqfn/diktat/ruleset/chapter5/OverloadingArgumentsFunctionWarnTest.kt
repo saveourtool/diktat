@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class OverloadingArgumentsFunctionWarnTest : LintTestBase(::OverloadingArgumentsFunction) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:overloading-default-values"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${OverloadingArgumentsFunction.nameId}"
 
     @Test
     @Tag(WarningNames.WRONG_OVERLOADING_FUNCTION_ARGUMENTS)

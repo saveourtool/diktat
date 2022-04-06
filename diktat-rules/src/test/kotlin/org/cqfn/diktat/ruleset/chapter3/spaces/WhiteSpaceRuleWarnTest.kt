@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 
 @Suppress("LargeClass")
 class WhiteSpaceRuleWarnTest : LintTestBase(::WhiteSpaceRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:horizontal-whitespace"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${WhiteSpaceRule.nameId}"
     private val eolSpaceWarn = "${WRONG_WHITESPACE.warnText()} there should be no spaces in the end of line"
     private val lbraceWarn = "${WRONG_WHITESPACE.warnText()} there should be a whitespace before '{'"
     private fun keywordWarn(keyword: String, sep: String) =

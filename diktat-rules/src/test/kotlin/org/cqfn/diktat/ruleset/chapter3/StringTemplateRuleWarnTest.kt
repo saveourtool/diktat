@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class StringTemplateRuleWarnTest : LintTestBase(::StringTemplateFormatRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:string-template-format"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${StringTemplateFormatRule.nameId}"
 
     @Test
     @Tag(STRING_TEMPLATE_CURLY_BRACES)

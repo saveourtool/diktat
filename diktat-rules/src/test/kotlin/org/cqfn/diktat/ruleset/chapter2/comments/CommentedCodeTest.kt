@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class CommentedCodeTest : LintTestBase(::CommentsRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:comments"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${CommentsRule.nameId}"
 
     @Test
     @Tag(WarningNames.COMMENTED_OUT_CODE)

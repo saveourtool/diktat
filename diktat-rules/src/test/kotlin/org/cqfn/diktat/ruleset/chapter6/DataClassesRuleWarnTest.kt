@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class DataClassesRuleWarnTest : LintTestBase(::DataClassesRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:data-classes"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${DataClassesRule.nameId}"
 
     @Test
     @Tag(USE_DATA_CLASS)

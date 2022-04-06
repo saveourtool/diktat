@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class NoVarRuleWarnTest : LintTestBase(::ImmutableValNoVarRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:no-var-rule"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${ImmutableValNoVarRule.nameId}"
 
     @Test
     @Tag(SAY_NO_TO_VAR)

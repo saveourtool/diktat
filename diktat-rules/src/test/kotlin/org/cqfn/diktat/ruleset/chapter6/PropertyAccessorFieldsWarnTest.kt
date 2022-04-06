@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class PropertyAccessorFieldsWarnTest : LintTestBase(::PropertyAccessorFields) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:getter-setter-fields"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${PropertyAccessorFields.nameId}"
 
     @Test
     @Tag(WarningNames.WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR)

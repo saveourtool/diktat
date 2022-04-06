@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class AsyncAndSyncRuleTest : LintTestBase(::AsyncAndSyncRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:sync-in-async"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${AsyncAndSyncRule.nameId}"
 
     @Test
     @Tag(WarningNames.RUN_BLOCKING_INSIDE_ASYNC)

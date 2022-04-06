@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Tags
 import org.junit.jupiter.api.Test
 
 class KdocMethodsTest : LintTestBase(::KdocMethods) {
-    private val ruleId: String = "$DIKTAT_RULE_SET_ID:kdoc-methods"
+    private val ruleId: String = "$DIKTAT_RULE_SET_ID:${KdocMethods.nameId}"
     private val funCode = """
         fun doubleInt(a: Int): Int {
             if (Config.condition) throw IllegalStateException()

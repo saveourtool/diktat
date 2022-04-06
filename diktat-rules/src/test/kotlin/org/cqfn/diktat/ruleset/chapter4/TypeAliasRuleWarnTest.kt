@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class TypeAliasRuleWarnTest : LintTestBase(::TypeAliasRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:type-alias"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${TypeAliasRule.nameId}"
     private val rulesConfigListShortType: List<RulesConfig> = listOf(
         RulesConfig(TYPE_ALIAS.name, true,
             mapOf("typeReferenceLength" to "4"))

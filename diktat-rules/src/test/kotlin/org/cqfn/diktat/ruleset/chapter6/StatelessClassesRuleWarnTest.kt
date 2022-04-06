@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class StatelessClassesRuleWarnTest : LintTestBase(::StatelessClassesRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:stateless-class"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${StatelessClassesRule.nameId}"
 
     @Test
     @Tag(OBJECT_IS_PREFERRED)

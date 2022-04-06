@@ -19,6 +19,7 @@ import com.pinterest.ktlint.core.ast.ElementType.PROTECTED_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.TYPEALIAS
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isPartOfComment
+import org.cqfn.diktat.ruleset.rules.chapter1.PackageNaming
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.kotlin.psi.psiUtil.isExtensionDeclaration
@@ -31,7 +32,7 @@ class TopLevelOrderRule(configRules: List<RulesConfig>) : DiktatRule(
     nameId,
     configRules,
     listOf(TOP_LEVEL_ORDER),
-    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:package-naming"))
+    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${PackageNaming.nameId}"))
 ) {
     override fun logic(node: ASTNode) {
         if (node.elementType == FILE) {

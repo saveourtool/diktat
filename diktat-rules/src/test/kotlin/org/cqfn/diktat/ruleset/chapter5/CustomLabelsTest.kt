@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class CustomLabelsTest : LintTestBase(::CustomLabel) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:custom-label"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${CustomLabel.nameId}"
 
     @Test
     @Tag(WarningNames.CUSTOM_LABEL)

@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class EmptyBlockWarnTest : LintTestBase(::EmptyBlock) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:empty-block-structure"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${EmptyBlock.nameId}"
     private val rulesConfigListIgnoreEmptyBlock: List<RulesConfig> = listOf(
         RulesConfig(EMPTY_BLOCK_STRUCTURE_ERROR.name, true,
             mapOf("styleEmptyBlockWithNewline" to "False"))

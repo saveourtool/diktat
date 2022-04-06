@@ -23,6 +23,7 @@ import com.pinterest.ktlint.core.ast.isPartOfComment
 import com.pinterest.ktlint.core.ast.isWhiteSpace
 import com.pinterest.ktlint.core.ast.isWhiteSpaceWithNewline
 import com.pinterest.ktlint.core.ast.nextSibling
+import org.cqfn.diktat.ruleset.rules.chapter3.files.TopLevelOrderRule
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -36,7 +37,7 @@ class SortRule(configRules: List<RulesConfig>) : DiktatRule(
     nameId,
     configRules,
     listOf(WRONG_DECLARATIONS_ORDER),
-    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:top-level-order"))
+    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${TopLevelOrderRule.nameId}"))
 ) {
     override fun logic(node: ASTNode) {
         val configuration = SortRuleConfiguration(

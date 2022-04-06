@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class PackageNamingWarnTest : LintTestBase(::PackageNaming) {
-    private val ruleId: String = "$DIKTAT_RULE_SET_ID:package-naming"
+    private val ruleId: String = "$DIKTAT_RULE_SET_ID:${PackageNaming.nameId}"
     private val rulesConfigList: List<RulesConfig> = listOf(
         RulesConfig("DIKTAT_COMMON", true, mapOf("domainName" to "org.cqfn.diktat"))
     )

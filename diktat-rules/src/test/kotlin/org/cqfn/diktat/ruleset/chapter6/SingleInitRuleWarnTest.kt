@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class SingleInitRuleWarnTest : LintTestBase(::SingleInitRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:multiple-init-block"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${SingleInitRule.nameId}"
 
     @Test
     @Tag(WarningNames.MULTIPLE_INIT_BLOCKS)

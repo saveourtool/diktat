@@ -9,7 +9,7 @@ import com.pinterest.ktlint.core.LintError
 import org.junit.jupiter.api.Test
 
 class SuppressTest : LintTestBase(::IdentifierNaming) {
-    private val ruleId: String = "$DIKTAT_RULE_SET_ID:identifier-naming"
+    private val ruleId: String = "$DIKTAT_RULE_SET_ID:${IdentifierNaming.nameId}"
 
     @Test
     fun `test suppress on class`() {

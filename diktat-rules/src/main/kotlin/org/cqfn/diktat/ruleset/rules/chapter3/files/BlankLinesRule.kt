@@ -15,6 +15,7 @@ import com.pinterest.ktlint.core.ast.ElementType.LBRACE
 import com.pinterest.ktlint.core.ast.ElementType.RBRACE
 import com.pinterest.ktlint.core.ast.ElementType.SCRIPT
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
+import org.cqfn.diktat.ruleset.rules.chapter3.EnumsSeparated
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
 /**
@@ -26,7 +27,7 @@ class BlankLinesRule(configRules: List<RulesConfig>) : DiktatRule(
     nameId,
     configRules,
     listOf(TOO_MANY_BLANK_LINES),
-    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:enum-separated"))
+    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${EnumsSeparated.nameId}"))
 ) {
     override fun logic(node: ASTNode) {
         if (node.elementType == WHITE_SPACE) {

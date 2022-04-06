@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class UseLastIndexWarnTest : LintTestBase(::UseLastIndex) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:last-index"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${UseLastIndex.nameId}"
 
     @Test
     @Tag(WarningNames.USE_LAST_INDEX)

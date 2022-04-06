@@ -31,7 +31,7 @@ class EnumsSeparated(configRules: List<RulesConfig>) : DiktatRule(
     nameId,
     configRules,
     listOf(ENUMS_SEPARATED),
-    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:sort-rule"))
+    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${SortRule.nameId}"))
 ) {
     override fun logic(node: ASTNode) {
         if (node.elementType == CLASS && node.hasChildOfType(CLASS_BODY) && node.isClassEnum()) {

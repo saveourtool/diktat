@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class NullChecksRuleWarnTest : LintTestBase(::NullChecksRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:null-checks"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${NullChecksRule.nameId}"
 
     @Test
     @Tag(WarningNames.AVOID_NULL_CHECKS)

@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class MethodNamingWarnTest : LintTestBase(::IdentifierNaming) {
-    private val ruleId: String = "$DIKTAT_RULE_SET_ID:identifier-naming"
+    private val ruleId: String = "$DIKTAT_RULE_SET_ID:${IdentifierNaming.nameId}"
 
     @Test
     @Tag(WarningNames.FUNCTION_NAME_INCORRECT_CASE)
