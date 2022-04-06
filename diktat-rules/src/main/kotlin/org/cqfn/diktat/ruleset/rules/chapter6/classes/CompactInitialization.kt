@@ -11,8 +11,10 @@ import org.cqfn.diktat.ruleset.utils.getFunctionName
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
 import com.pinterest.ktlint.core.ast.ElementType.CALL_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.EOL_COMMENT
+import com.pinterest.ktlint.core.ast.ElementType.EQ
 import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.LBRACE
+import com.pinterest.ktlint.core.ast.ElementType.OPERATION_REFERENCE
 import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.THIS_KEYWORD
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
@@ -65,10 +67,11 @@ class CompactInitialization(configRules: List<RulesConfig>) : DiktatRule(
                 .filterNot { it.node.isPartOfComment() || it is PsiWhiteSpace }
                 .takeWhile {
                     // statements like `name.field = value` where name == propertyName
-                    it is KtBinaryExpression && (it.left as? KtDotQualifiedExpression)?.run {
-                        (receiverExpression as? KtNameReferenceExpression)?.getReferencedName() == propertyName
-                    }
-                        ?: false
+                    it is KtBinaryExpression && it.node.findChildByType(OPERATION_REFERENCE)?.findChildByType(EQ) != null &&
+                            (it.left as? KtDotQualifiedExpression)?.run {
+                                (receiverExpression as? KtNameReferenceExpression)?.getReferencedName() == propertyName
+                            }
+                                ?: false
                 }
                 .map {
                     // collect as an assignment associated with assigned field name

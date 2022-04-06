@@ -91,4 +91,54 @@ class CompactInitializationWarnTest : LintTestBase(::CompactInitialization) {
             LintError(7, 5, ruleId, "${COMPACT_OBJECT_INITIALIZATION.warnText()} timeout", true)
         )
     }
+
+    // Creating the `apply` block here breaks the compilation
+    @Test
+    @Tag(WarningNames.COMPACT_OBJECT_INITIALIZATION)
+    fun `should not trigger to infix function 1`() {
+        lintMethod(
+            """
+                |fun foo(line: String) = line
+                |    .split(",", ", ")
+                |    .associate {
+                |        val pair = it.split("=", limit = 2).map {
+                |            it.replace("\\=", "=")
+                |        }
+                |        pair.first() to pair.last()
+                |    }
+            """.trimMargin(),
+        )
+    }
+
+    // Apply block doesn't break the compilation, however such changes can break the user logic
+    @Test
+    @Tag(WarningNames.COMPACT_OBJECT_INITIALIZATION)
+    fun `should not trigger to infix function 2`() {
+        lintMethod(
+            """
+                |fun foo(line: String) {
+                |    val pair = line.split("=", limit = 2).map {
+                |        it.replace("\\=", "=")
+                |    }
+                |    pair.first() to pair.last()
+                |}
+            """.trimMargin(),
+        )
+    }
+
+    // For generality don't trigger on any infix function, despite the fact, that with apply block all will be okay
+    @Test
+    @Tag(WarningNames.COMPACT_OBJECT_INITIALIZATION)
+    fun `should not trigger to infix function 3`() {
+        lintMethod(
+            """
+                |fun `translate text`() {
+                |    val res = translateText(text = "dummy")
+                |    (res is TranslationsSuccess) shouldBe true
+                |    val translationsSuccess = res as TranslationsSuccess
+                |    translationsSuccess.translations shouldHaveSize 1
+                |}
+            """.trimMargin(),
+        )
+    }
 }
