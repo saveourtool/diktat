@@ -32,7 +32,7 @@ import java.lang.RuntimeException
  * Rule that checks if the boolean expression can be simplified.
  */
 class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
-    "acm-boolean-expressions-rule",
+    nameId,
     configRules,
     listOf(COMPLEX_BOOLEAN_EXPRESSION)
 ) {
@@ -274,6 +274,7 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun KtBinaryExpression.isXorExpression() = operationReference.text == "xor"
 
     companion object {
+        val nameId = "acm-boolean-expressions-rule"
         const val DISTRIBUTIVE_LAW_MIN_EXPRESSIONS = 3
         const val DISTRIBUTIVE_LAW_MIN_OPERATIONS = 3
     }

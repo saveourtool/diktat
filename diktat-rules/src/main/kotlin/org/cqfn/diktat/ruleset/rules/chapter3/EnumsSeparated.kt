@@ -28,7 +28,7 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
  * Rule that checks enum classes formatting
  */
 class EnumsSeparated(configRules: List<RulesConfig>) : DiktatRule(
-    "abq-enum-separated",
+    nameId,
     configRules,
     listOf(ENUMS_SEPARATED),
     setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:sort-rule"))
@@ -94,6 +94,7 @@ class EnumsSeparated(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
     companion object {
+        val nameId = "abq-enum-separated"
         private val simpleValue = listOf(IDENTIFIER, WHITE_SPACE, COMMA, SEMICOLON)
         private val simpleEnum = listOf(ENUM_ENTRY, WHITE_SPACE, LBRACE, RBRACE)
     }

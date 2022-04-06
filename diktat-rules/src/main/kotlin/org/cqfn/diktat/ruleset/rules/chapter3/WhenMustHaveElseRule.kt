@@ -46,7 +46,7 @@ import org.jetbrains.kotlin.psi.KtWhenExpression
  */
 @Suppress("ForbiddenComment")
 class WhenMustHaveElseRule(configRules: List<RulesConfig>) : DiktatRule(
-    "aal-no-else-in-when",
+    nameId,
     configRules,
     listOf(WHEN_WITHOUT_ELSE)
 ) {
@@ -162,4 +162,9 @@ class WhenMustHaveElseRule(configRules: List<RulesConfig>) : DiktatRule(
             addChild(LeafPsiElement(RBRACE, "}"), null)
         }
     }
+
+    companion object{
+        val nameId = "aal-no-else-in-when"
+    }
+
 }

@@ -548,6 +548,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      * white space + close quote (open quote removed by trim) + white space + plus sign
      */
     companion object {
+        val nameId = "abv-line-length"
         private const val MAX_LENGTH = 120L
         private const val STRING_PART_OFFSET = 4
         private val propertyList = listOf(INTEGER_CONSTANT, LITERAL_STRING_TEMPLATE_ENTRY, FLOAT_CONSTANT,

@@ -140,7 +140,7 @@ class SuppressTest : LintTestBase(::IdentifierNaming) {
                   }
                 """.trimIndent()
         lintMethod(code,
-            LintError(3, 13, "$DIKTAT_RULE_SET_ID:identifier-naming",
+            LintError(3, 13, "$DIKTAT_RULE_SET_ID:aai-identifier-naming",
                 "${Warnings.FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREE", true))
     }
 }

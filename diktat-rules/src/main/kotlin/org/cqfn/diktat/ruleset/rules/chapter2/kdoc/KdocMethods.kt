@@ -310,6 +310,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
+        val nameId = "aad-kdoc-methods"
         private val expressionBodyTypes = setOf(CALL_EXPRESSION, REFERENCE_EXPRESSION)
         private val allExpressionBodyTypes = setOf(
             DOT_QUALIFIED_EXPRESSION,

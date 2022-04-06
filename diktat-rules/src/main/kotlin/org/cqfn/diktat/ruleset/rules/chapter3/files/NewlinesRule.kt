@@ -118,7 +118,7 @@ import org.slf4j.LoggerFactory
  */
 @Suppress("ForbiddenComment")
 class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
-    "acr-newlines",
+    nameId,
     configRules,
     listOf(COMPLEX_EXPRESSION, REDUNDANT_SEMICOLON, WRONG_NEWLINES),
     setOf(VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:file-structure"))
@@ -641,6 +641,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
+        val nameId = "acr-newlines"
         private val log = LoggerFactory.getLogger(NewlinesRule::class.java)
         const val MAX_CALLS_IN_ONE_LINE = 3
 

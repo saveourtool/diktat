@@ -357,6 +357,7 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
         val maxSpacesInComment = config["maxSpacesInComment"]?.toIntOrNull() ?: APPROPRIATE_COMMENT_SPACES
     }
     companion object {
+        val nameId = "aaf-kdoc-comments-codeblocks-formatting"
         private const val APPROPRIATE_COMMENT_SPACES = 1
         private const val MAX_SPACES = 1
     }

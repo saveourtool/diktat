@@ -70,7 +70,7 @@ import kotlin.math.abs
  */
 @Suppress("LargeClass")
 class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
-    "act-indentation",
+    nameId,
     configRules,
     listOf(WRONG_INDENTATION),
     setOf(VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:horizontal-whitespace"))
@@ -387,6 +387,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
+        val nameId = "act-indentation"
         private val log = LoggerFactory.getLogger(IndentationRule::class.java)
         const val INDENT_SIZE = 4
         private val increasingTokens = listOf(LPAR, LBRACE, LBRACKET, LONG_TEMPLATE_ENTRY_START)

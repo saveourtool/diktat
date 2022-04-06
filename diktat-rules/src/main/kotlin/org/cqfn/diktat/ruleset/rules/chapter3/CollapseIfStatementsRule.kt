@@ -31,7 +31,7 @@ typealias PlaceOfWarningForCurrentNode = Pair<Int, ASTNode>
  * Rule for redundant nested if-statements, which could be collapsed into a single one
  */
 class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
-    "abu-collapse-if",
+    nameId,
     configRules,
     listOf(
         Warnings.COLLAPSE_IF_STATEMENTS
@@ -211,6 +211,7 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
+        val nameId = "abu-collapse-if"
         private const val DEFAULT_NESTED_LEVEL = 2
     }
 }

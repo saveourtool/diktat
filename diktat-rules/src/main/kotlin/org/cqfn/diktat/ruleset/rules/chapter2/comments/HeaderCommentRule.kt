@@ -44,7 +44,7 @@ import java.time.LocalDate
  */
 @Suppress("ForbiddenComment")
 class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
-    "acp-header-comment",
+    nameId,
     configRules,
     listOf(HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE, HEADER_MISSING_OR_WRONG_COPYRIGHT, HEADER_NOT_BEFORE_PACKAGE,
         HEADER_NOT_BEFORE_PACKAGE, HEADER_WRONG_FORMAT, WRONG_COPYRIGHT_YEAR),
@@ -272,6 +272,7 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
+        val nameId = "acp-header-comment"
         private val log = LoggerFactory.getLogger(HeaderCommentRule::class.java)
         const val CURR_YEAR_PATTERN = ";@currYear;"
         val hyphenRegex = Regex("""\d+-\d+""")

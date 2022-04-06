@@ -52,7 +52,7 @@ import org.jetbrains.kotlin.psi.KtTryExpression
  * - braces around `else`/`catch`/`finally`/`while` (in `do-while` loop)
  */
 class BlockStructureBraces(configRules: List<RulesConfig>) : DiktatRule(
-    "acn-block-structure",
+    nameId,
     configRules,
     listOf(BRACES_BLOCK_STRUCTURE_ERROR),
     setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:blank-lines"))
@@ -273,4 +273,9 @@ class BlockStructureBraces(configRules: List<RulesConfig>) : DiktatRule(
          */
         val closeBrace = config["closeBraceNewline"]?.toBoolean() ?: true
     }
+
+    companion object{
+        val nameId = "acn-block-structure"
+    }
+
 }

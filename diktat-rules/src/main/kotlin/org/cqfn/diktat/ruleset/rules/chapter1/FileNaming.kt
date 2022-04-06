@@ -27,7 +27,7 @@ import java.io.File
  */
 @Suppress("ForbiddenComment")
 class FileNaming(configRules: List<RulesConfig>) : DiktatRule(
-    "aag-file-naming",
+    nameId,
     configRules,
     listOf(FILE_NAME_INCORRECT, FILE_NAME_MATCH_CLASS)
 ) {
@@ -77,6 +77,7 @@ class FileNaming(configRules: List<RulesConfig>) : DiktatRule(
 
     companion object {
         // FixMe: should be moved to properties
+        val nameId = "aag-file-naming"
         val validExtensions = listOf(".kt", ".kts")
     }
 }

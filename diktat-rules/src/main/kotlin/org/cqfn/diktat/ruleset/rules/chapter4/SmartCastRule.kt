@@ -35,7 +35,7 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  * Rule that detects redundant explicit casts
  */
 class SmartCastRule(configRules: List<RulesConfig>) : DiktatRule(
-    "abd-smart-cast-rule",
+    nameId,
     configRules,
     listOf(SMART_CAST_NEEDED)
 ) {
@@ -263,4 +263,9 @@ class SmartCastRule(configRules: List<RulesConfig>) : DiktatRule(
      * @property type a type with which the reference is being compared
      */
     class IsExpressions(val identifier: String, val type: String)
+
+
+    companion object{
+        val nameId = "abd-smart-cast-rule"
+    }
 }

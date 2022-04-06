@@ -13,7 +13,7 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
  * Rule that checks number of lines in a file
  */
 class FileSize(configRules: List<RulesConfig>) : DiktatRule(
-    "ace-file-size",
+    nameId,
     configRules,
     listOf(FILE_IS_TOO_LONG)
 ) {
@@ -50,6 +50,7 @@ class FileSize(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
+        val nameId = "ace-file-size"
         const val MAX_SIZE = 2000L
     }
 }

@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory
  */
 @Suppress("TOO_LONG_FUNCTION")
 class TrailingCommaRule(configRules: List<RulesConfig>) : DiktatRule(
-    "abh-trailing-comma",
+    nameId,
     configRules,
     listOf(TRAILING_COMMA)
 ) {
@@ -133,6 +133,7 @@ class TrailingCommaRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
+        val nameId = "abh-trailing-comma"
         private val log = LoggerFactory.getLogger(TrailingCommaRule::class.java)
         val ktVersion = KotlinVersion(1, 4)
         val whenChildrenTypes = listOf(WHEN_CONDITION_WITH_EXPRESSION, WHEN_CONDITION_IS_PATTERN, WHEN_CONDITION_IN_RANGE)

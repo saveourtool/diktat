@@ -22,7 +22,7 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
  *
  */
 class ConsecutiveSpacesRule(configRules: List<RulesConfig>) : DiktatRule(
-    "aco-too-many-spaces",
+    nameId,
     configRules,
     listOf(TOO_MANY_CONSECUTIVE_SPACES),
     setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:block-structure"))
@@ -85,6 +85,7 @@ class ConsecutiveSpacesRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
+        val nameId = "aco-too-many-spaces"
         private const val MAX_SPACES = 1
     }
 }

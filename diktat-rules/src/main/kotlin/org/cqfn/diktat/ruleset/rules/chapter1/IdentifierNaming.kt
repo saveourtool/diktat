@@ -71,7 +71,7 @@ import java.util.Locale
  */
 @Suppress("ForbiddenComment", "MISSING_KDOC_CLASS_ELEMENTS")
 class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
-    "aai-identifier-naming",
+    nameId,
     configRules,
     listOf(BACKTICKS_PROHIBITED, VARIABLE_NAME_INCORRECT, VARIABLE_NAME_INCORRECT_FORMAT, CONSTANT_UPPERCASE,
         VARIABLE_HAS_PREFIX, CONFUSING_IDENTIFIER_NAMING, GENERIC_NAME, CLASS_NAME_INCORRECT,
@@ -481,6 +481,7 @@ class IdentifierNaming(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
+        val nameId = "aai-identifier-naming"
         const val MAX_IDENTIFIER_LENGTH = 64
         const val MIN_IDENTIFIER_LENGTH = 2
 

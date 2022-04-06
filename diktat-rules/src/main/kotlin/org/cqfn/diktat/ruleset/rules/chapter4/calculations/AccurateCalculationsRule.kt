@@ -25,7 +25,7 @@ import org.jetbrains.kotlin.psi.psiUtil.startOffset
  * Fixme: detect variables by type, not only floating-point literals
  */
 class AccurateCalculationsRule(configRules: List<RulesConfig>) : DiktatRule(
-    "abt-accurate-calculations",
+    nameId,
     configRules,
     listOf(FLOAT_IN_ACCURATE_CALCULATIONS)
 ) {
@@ -120,6 +120,7 @@ class AccurateCalculationsRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
+        val nameId = "abt-accurate-calculations"
         private val arithmeticOperationTokens = listOf(KtTokens.PLUS, KtTokens.PLUSEQ, KtTokens.PLUSPLUS,
             KtTokens.MINUS, KtTokens.MINUSEQ, KtTokens.MINUSMINUS,
             KtTokens.MUL, KtTokens.MULTEQ, KtTokens.DIV, KtTokens.DIVEQ,

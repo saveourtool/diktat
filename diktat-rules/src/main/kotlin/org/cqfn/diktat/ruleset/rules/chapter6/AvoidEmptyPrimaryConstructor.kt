@@ -12,7 +12,7 @@ import org.jetbrains.kotlin.psi.KtClass
  * This rule checks if a class has an empty primary constructor.
  */
 class AvoidEmptyPrimaryConstructor(configRules: List<RulesConfig>) : DiktatRule(
-    "aao-avoid-empty-primary-constructor",
+    nameId,
     configRules,
     listOf(EMPTY_PRIMARY_CONSTRUCTOR)
 ) {
@@ -32,4 +32,9 @@ class AvoidEmptyPrimaryConstructor(configRules: List<RulesConfig>) : DiktatRule(
             ktClass.node.removeChild(ktClass.primaryConstructor!!.node)
         }
     }
+
+    companion object{
+        val nameId = "aao-avoid-empty-primary-constructor"
+    }
+
 }

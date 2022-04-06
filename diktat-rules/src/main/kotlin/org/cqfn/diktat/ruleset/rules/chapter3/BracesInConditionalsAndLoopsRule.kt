@@ -39,7 +39,7 @@ import org.jetbrains.kotlin.psi.psiUtil.children
  * Rule that checks that all conditionals and loops have braces.
  */
 class BracesInConditionalsAndLoopsRule(configRules: List<RulesConfig>) : DiktatRule(
-    "aam-races-rule",
+    nameId,
     configRules,
     listOf(NO_BRACES_IN_CONDITIONALS_AND_LOOPS)
 ) {
@@ -192,6 +192,7 @@ class BracesInConditionalsAndLoopsRule(configRules: List<RulesConfig>) : DiktatR
         }
     }
     companion object {
+        val nameId = "aam-races-rule"
         private const val INDENT_STEP = 4
         private val scopeFunctions = listOf("let", "run", "apply", "also")
     }

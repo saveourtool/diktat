@@ -31,7 +31,7 @@ import org.jetbrains.kotlin.psi.psiUtil.blockExpressionsOrSingle
  * There are several code-structures that can be used in Kotlin to avoid null-checks. For example: `?:`,  `.let {}`, `.also {}`, e.t.c
  */
 class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
-    "ach-null-checks",
+    nameId,
     configRules,
     listOf(AVOID_NULL_CHECKS)
 ) {
@@ -281,4 +281,9 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun isRequireFun(referenceExpression: ASTNode) =
             referenceExpression.elementType == REFERENCE_EXPRESSION && referenceExpression.firstChildNode.text == "require"
+
+    companion object{
+        val nameId = "ach-null-checks"
+    }
+
 }

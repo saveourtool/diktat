@@ -18,7 +18,7 @@ import org.jetbrains.kotlin.psi.psiUtil.startOffset
  * Rule that suggests to use functions with default parameters instead of multiple overloads
  */
 class OverloadingArgumentsFunction(configRules: List<RulesConfig>) : DiktatRule(
-    "aby-overloading-default-values",
+    nameId,
     configRules,
     listOf(WRONG_OVERLOADING_FUNCTION_ARGUMENTS)
 ) {
@@ -44,4 +44,9 @@ class OverloadingArgumentsFunction(configRules: List<RulesConfig>) : DiktatRule(
             WRONG_OVERLOADING_FUNCTION_ARGUMENTS.warn(configRules, emitWarn, isFixMode, funPsi.node.findChildByType(IDENTIFIER)!!.text, funPsi.startOffset, funPsi.node)
         }
     }
+
+    companion object{
+        val nameId = "aby-overloading-default-values"
+    }
+
 }

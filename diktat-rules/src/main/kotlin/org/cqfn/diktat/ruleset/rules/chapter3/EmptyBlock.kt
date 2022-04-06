@@ -25,7 +25,7 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  * Rule that checks if empty code blocks (`{  }`) are used and checks their formatting.
  */
 class EmptyBlock(configRules: List<RulesConfig>) : DiktatRule(
-    "aan-empty-block-structure",
+    nameId,
     configRules,
     listOf(EMPTY_BLOCK_STRUCTURE_ERROR)
 ) {
@@ -132,4 +132,9 @@ class EmptyBlock(configRules: List<RulesConfig>) : DiktatRule(
          */
         val emptyBlockNewline = config["styleEmptyBlockWithNewline"]?.toBoolean() ?: true
     }
+
+    companion object{
+        val nameId ="aan-empty-block-structure"
+    }
+
 }

@@ -14,7 +14,7 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
  * Rule 5.2.5 check lambda length without parameters
  */
 class LambdaLengthRule(configRules: List<RulesConfig>) : DiktatRule(
-    "acl-lambda-length",
+    nameId,
     configRules,
     listOf(TOO_MANY_LINES_IN_LAMBDA)
 ) {
@@ -60,6 +60,7 @@ class LambdaLengthRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
+        val nameId = "acl-lambda-length"
         private const val MAX_LINES_IN_LAMBDA = 10L
     }
 }

@@ -58,7 +58,7 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
  * 5. Ensures there are no wildcard imports
  */
 class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
-    "acq-file-structure",
+    nameId,
     configRules,
     listOf(FILE_CONTAINS_ONLY_COMMENTS, FILE_INCORRECT_BLOCKS_ORDER, FILE_NO_BLANK_LINE_BETWEEN_BLOCKS,
         FILE_UNORDERED_IMPORTS, FILE_WILDCARD_IMPORTS, UNUSED_IMPORT),
@@ -394,5 +394,9 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
          * Use imports grouping according to recommendation 3.1
          */
         val useRecommendedImportsOrder = config["useRecommendedImportsOrder"]?.toBoolean() ?: true
+    }
+
+    companion object{
+        val nameId = "acq-file-structure"
     }
 }
