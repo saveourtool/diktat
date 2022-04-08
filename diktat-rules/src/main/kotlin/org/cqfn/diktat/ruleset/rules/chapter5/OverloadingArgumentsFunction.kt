@@ -45,8 +45,7 @@ class OverloadingArgumentsFunction(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    companion object{
+    companion object {
         val nameId = "aby-overloading-default-values"
     }
-
 }

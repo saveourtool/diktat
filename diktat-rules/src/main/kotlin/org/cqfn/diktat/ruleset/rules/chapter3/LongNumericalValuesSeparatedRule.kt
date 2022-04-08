@@ -156,8 +156,8 @@ class LongNumericalValuesSeparatedRule(configRules: List<RulesConfig>) : DiktatR
     }
 
     companion object {
-        val nameId = "abm-long-numerical-values"
         private const val DELIMITER_LENGTH: Int = 3
         private const val MAX_NUMBER_LENGTH: Int = 3
+        val nameId = "abm-long-numerical-values"
     }
 }

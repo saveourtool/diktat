@@ -282,8 +282,7 @@ class NullChecksRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun isRequireFun(referenceExpression: ASTNode) =
             referenceExpression.elementType == REFERENCE_EXPRESSION && referenceExpression.firstChildNode.text == "require"
 
-    companion object{
+    companion object {
         val nameId = "ach-null-checks"
     }
-
 }

@@ -211,7 +211,7 @@ class CollapseIfStatementsRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        val nameId = "abu-collapse-if"
         private const val DEFAULT_NESTED_LEVEL = 2
+        val nameId = "abu-collapse-if"
     }
 }

@@ -49,7 +49,7 @@ class FunctionArgumentsSize(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        val nameId = "acc-argument-size"
         const val MAX_DEFAULT_PARAMETER_SIZE = 5L
+        val nameId = "acc-argument-size"
     }
 }

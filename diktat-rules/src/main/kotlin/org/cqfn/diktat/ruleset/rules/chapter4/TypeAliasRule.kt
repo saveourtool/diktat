@@ -56,7 +56,7 @@ class TypeAliasRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        val nameId = "abx-type-alias"
         const val TYPE_REFERENCE_MAX_LENGTH = 25
+        val nameId = "abx-type-alias"
     }
 }

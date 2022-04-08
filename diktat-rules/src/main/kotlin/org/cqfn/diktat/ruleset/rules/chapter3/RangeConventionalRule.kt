@@ -114,8 +114,7 @@ class RangeConventionalRule(configRules: List<RulesConfig>) : DiktatRule(
         val isRangeToIgnore = config["isRangeToIgnore"]?.toBoolean() ?: false
     }
 
-    companion object{
+    companion object {
         val nameId = "abj-range"
     }
-
 }

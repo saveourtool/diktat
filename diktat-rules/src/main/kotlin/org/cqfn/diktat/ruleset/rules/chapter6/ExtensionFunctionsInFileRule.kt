@@ -53,8 +53,7 @@ class ExtensionFunctionsInFileRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun isExtensionFunctionWithClassName(node: ASTNode, classNames: List<String>): Boolean =
             node.getFirstChildWithType(IDENTIFIER)!!.prevSibling { it.elementType == TYPE_REFERENCE }?.text in classNames
 
-    companion object{
+    companion object {
         val nameId = "aax-extension-functions-class-file"
     }
-
 }

@@ -60,7 +60,7 @@ class LambdaLengthRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        val nameId = "acl-lambda-length"
         private const val MAX_LINES_IN_LAMBDA = 10L
+        val nameId = "acl-lambda-length"
     }
 }

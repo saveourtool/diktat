@@ -91,8 +91,7 @@ class StatelessClassesRule(configRules: List<RulesConfig>) : DiktatRule(
         return foundInterfaces.any { (it.psi as KtClass).getProperties().isEmpty() }
     }
 
-    companion object{
+    companion object {
         val nameId = "abi-multiple-init-block"
     }
-
 }

@@ -192,8 +192,8 @@ class BracesInConditionalsAndLoopsRule(configRules: List<RulesConfig>) : DiktatR
         }
     }
     companion object {
-        val nameId = "aam-races-rule"
         private const val INDENT_STEP = 4
+        val nameId = "aam-races-rule"
         private val scopeFunctions = listOf("let", "run", "apply", "also")
     }
 }

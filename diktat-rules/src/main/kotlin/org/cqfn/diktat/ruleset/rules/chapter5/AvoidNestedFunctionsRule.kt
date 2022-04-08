@@ -98,8 +98,7 @@ class AvoidNestedFunctionsRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun getParameterNames(node: ASTNode): List<String> =
             (node.psi as KtFunction).valueParameters.map { it.name!! }
 
-    companion object{
+    companion object {
         val nameId = "acj-avoid-nested-functions"
     }
-
 }

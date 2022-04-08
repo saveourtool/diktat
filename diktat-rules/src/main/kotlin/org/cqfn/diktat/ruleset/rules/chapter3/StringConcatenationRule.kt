@@ -216,8 +216,7 @@ class StringConcatenationRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun KtBinaryExpression.isRvalueExpression() =
             this.right is KtExpression
 
-
-    companion object{
+    companion object {
         val nameId = "abr-string-concatenation"
     }
 }

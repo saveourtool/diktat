@@ -43,8 +43,7 @@ class CustomGetterSetterRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    companion object{
+    companion object {
         val nameId = "aat-custom-getter-setter"
     }
-
 }

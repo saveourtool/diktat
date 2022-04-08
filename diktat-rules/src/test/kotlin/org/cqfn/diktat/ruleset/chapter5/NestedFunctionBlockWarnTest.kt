@@ -8,7 +8,6 @@ import org.cqfn.diktat.util.LintTestBase
 
 import com.pinterest.ktlint.core.LintError
 import generated.WarningNames
-import org.jetbrains.kotlin.utils.newHashSetWithExpectedSize
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 

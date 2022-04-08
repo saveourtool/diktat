@@ -208,7 +208,7 @@ class CompactInitialization(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        val nameId = "aau-class-compact-initialization"
         private val log = LoggerFactory.getLogger(CompactInitialization::class.java)
+        val nameId = "aau-class-compact-initialization"
     }
 }

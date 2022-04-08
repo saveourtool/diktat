@@ -50,7 +50,7 @@ class UseLastIndex(configRules: List<RulesConfig>) : DiktatRule(
         parent.treeParent.replaceChild(parent, newParent)
     }
 
-    companion object{
+    companion object {
         val nameId = "aav-last-index"
     }
 }

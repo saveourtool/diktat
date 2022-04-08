@@ -14,6 +14,14 @@ import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_ON_FUNCTION
 import org.cqfn.diktat.ruleset.constants.Warnings.MISSING_KDOC_TOP_LEVEL
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider
+import org.cqfn.diktat.ruleset.rules.chapter1.FileNaming
+import org.cqfn.diktat.ruleset.rules.chapter2.comments.CommentsRule
+import org.cqfn.diktat.ruleset.rules.chapter2.comments.HeaderCommentRule
+import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocComments
+import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocFormatting
+import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocMethods
+import org.cqfn.diktat.ruleset.rules.chapter3.EmptyBlock
+import org.cqfn.diktat.ruleset.rules.chapter6.classes.InlineClassesRule
 import org.cqfn.diktat.util.FixTestBase
 import org.cqfn.diktat.util.assertEquals
 
@@ -33,14 +41,6 @@ import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.createTempFile
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.encodeToString
-import org.cqfn.diktat.ruleset.rules.chapter1.FileNaming
-import org.cqfn.diktat.ruleset.rules.chapter2.comments.CommentsRule
-import org.cqfn.diktat.ruleset.rules.chapter2.comments.HeaderCommentRule
-import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocComments
-import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocFormatting
-import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocMethods
-import org.cqfn.diktat.ruleset.rules.chapter3.EmptyBlock
-import org.cqfn.diktat.ruleset.rules.chapter6.classes.InlineClassesRule
 
 typealias RuleToConfig = Map<String, Map<String, String>>
 
@@ -175,7 +175,8 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     fun `smoke test #2`() {
         fixAndCompareSmokeTest("Example2Expected.kt", "Example2Test.kt")
         unfixedLintErrors.assertEquals(
-            LintError(1, 1, "$DIKTAT_RULE_SET_ID:${HeaderCommentRule.nameId}", "${HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warnText()} there are 2 declared classes and/or objects", false),
+            LintError(1, 1, "$DIKTAT_RULE_SET_ID:${HeaderCommentRule.nameId}",
+                "${HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warnText()} there are 2 declared classes and/or objects", false),
             LintError(15, 23, "$DIKTAT_RULE_SET_ID:${KdocMethods.nameId}",
                 "${KDOC_WITHOUT_PARAM_TAG.warnText()} createWithFile (containerName)", true),
             LintError(31, 14, "$DIKTAT_RULE_SET_ID:${EmptyBlock.nameId}",

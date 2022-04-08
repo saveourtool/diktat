@@ -74,8 +74,7 @@ class VariableGenericTypeDeclarationRule(configRules: List<RulesConfig>) : Dikta
         }
     }
 
-    companion object{
+    companion object {
         val nameId = "abl-variable-generic-type"
     }
-
 }

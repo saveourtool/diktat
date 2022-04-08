@@ -54,7 +54,7 @@ class ImmutableValNoVarRule(configRules: List<RulesConfig>) : DiktatRule(
             return
         }
     }
-    companion object{
+    companion object {
         val nameId = "abt-accurate-calculations"
     }
 }

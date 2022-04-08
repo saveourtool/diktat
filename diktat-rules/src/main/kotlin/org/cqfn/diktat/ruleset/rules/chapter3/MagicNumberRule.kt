@@ -106,8 +106,8 @@ class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        val nameId = "aca-magic-number"
         const val IGNORE_TEST = true
+        val nameId = "aca-magic-number"
         val ignoreNumbersList = listOf("-1", "1", "0", "2")
         val mapConfiguration = mapOf(
             "ignoreHashCodeFunction" to true,

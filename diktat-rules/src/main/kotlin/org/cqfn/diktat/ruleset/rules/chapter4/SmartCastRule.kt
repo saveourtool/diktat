@@ -264,8 +264,7 @@ class SmartCastRule(configRules: List<RulesConfig>) : DiktatRule(
      */
     class IsExpressions(val identifier: String, val type: String)
 
-
-    companion object{
+    companion object {
         val nameId = "abd-smart-cast-rule"
     }
 }

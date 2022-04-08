@@ -133,8 +133,7 @@ class EmptyBlock(configRules: List<RulesConfig>) : DiktatRule(
         val emptyBlockNewline = config["styleEmptyBlockWithNewline"]?.toBoolean() ?: true
     }
 
-    companion object{
-        val nameId ="aan-empty-block-structure"
+    companion object {
+        val nameId = "aan-empty-block-structure"
     }
-
 }

@@ -48,7 +48,6 @@ class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
     configRules,
     listOf(BLANK_LINE_BETWEEN_PROPERTIES, WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES)
 ) {
-
     override fun logic(node: ASTNode) {
         if (node.elementType == CLASS_BODY) {
             checkDeclarationsOrderInClass(node)

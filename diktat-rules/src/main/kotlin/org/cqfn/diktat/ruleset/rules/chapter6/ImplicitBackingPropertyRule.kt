@@ -109,7 +109,7 @@ class ImplicitBackingPropertyRule(configRules: List<RulesConfig>) : DiktatRule(
             "$propName has no corresponding property with name _$propName", node.startOffset, node)
     }
 
-    companion object{
+    companion object {
         val nameId = "aba-implicit-backing-property"
     }
 }

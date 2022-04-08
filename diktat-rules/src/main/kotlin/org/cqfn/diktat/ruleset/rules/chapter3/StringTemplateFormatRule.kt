@@ -105,8 +105,7 @@ class StringTemplateFormatRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    companion object{
+    companion object {
         val nameId = "abs-string-template-format"
     }
-
 }

@@ -279,8 +279,6 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        val nameId = "aah-package-naming"
-
         private val log = LoggerFactory.getLogger(PackageNaming::class.java)
 
         /**
@@ -292,6 +290,7 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
          * Symbol that is used to separate parts in package name
          */
         const val PACKAGE_SEPARATOR = "."
+        val nameId = "aah-package-naming"
 
         /**
          * tricky hack (counter) that helps not to raise multiple warnings about the package name if config is missing

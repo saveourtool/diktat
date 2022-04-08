@@ -274,8 +274,8 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
     private fun KtBinaryExpression.isXorExpression() = operationReference.text == "xor"
 
     companion object {
-        val nameId = "acm-boolean-expressions-rule"
         const val DISTRIBUTIVE_LAW_MIN_EXPRESSIONS = 3
         const val DISTRIBUTIVE_LAW_MIN_OPERATIONS = 3
+        val nameId = "acm-boolean-expressions-rule"
     }
 }

@@ -75,8 +75,7 @@ class AnnotationNewLineRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    companion object{
+    companion object {
         val nameId = "abo-annotation-new-line"
     }
-
 }

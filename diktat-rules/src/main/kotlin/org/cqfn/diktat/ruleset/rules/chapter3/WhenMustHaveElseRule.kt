@@ -163,8 +163,7 @@ class WhenMustHaveElseRule(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    companion object{
+    companion object {
         val nameId = "aal-no-else-in-when"
     }
-
 }

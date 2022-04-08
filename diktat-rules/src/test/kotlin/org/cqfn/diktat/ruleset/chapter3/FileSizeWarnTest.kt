@@ -15,7 +15,6 @@ import java.io.File
 
 class FileSizeWarnTest : LintTestBase(::FileSize) {
     val rulied = "$DIKTAT_RULE_SET_ID:${FileSize.nameId}"
-
     private val rulesConfigListLarge: List<RulesConfig> = listOf(
         RulesConfig(Warnings.FILE_IS_TOO_LONG.name, true,
             mapOf("maxSize" to "5"))

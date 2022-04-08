@@ -13,6 +13,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.UNUSED_IMPORT
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.rules.chapter1.PackageNaming.Companion.PACKAGE_SEPARATOR
+import org.cqfn.diktat.ruleset.rules.chapter2.comments.HeaderCommentRule
 import org.cqfn.diktat.ruleset.utils.StandardPlatforms
 import org.cqfn.diktat.ruleset.utils.copyrightWords
 import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
@@ -38,7 +39,6 @@ import com.pinterest.ktlint.core.ast.isPartOfComment
 import com.pinterest.ktlint.core.ast.isWhiteSpace
 import com.pinterest.ktlint.core.ast.nextSibling
 import com.pinterest.ktlint.core.ast.prevSibling
-import org.cqfn.diktat.ruleset.rules.chapter2.comments.HeaderCommentRule
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
@@ -397,7 +397,7 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
         val useRecommendedImportsOrder = config["useRecommendedImportsOrder"]?.toBoolean() ?: true
     }
 
-    companion object{
+    companion object {
         val nameId = "acq-file-structure"
     }
 }

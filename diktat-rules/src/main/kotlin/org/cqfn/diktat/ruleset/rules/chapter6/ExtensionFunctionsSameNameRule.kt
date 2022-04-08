@@ -150,8 +150,7 @@ class ExtensionFunctionsSameNameRule(configRules: List<RulesConfig>) : DiktatRul
         override fun toString() = "fun $className.$signature"
     }
 
-    companion object{
+    companion object {
         val nameId = "ack-extension-functions-same-name"
     }
-
 }

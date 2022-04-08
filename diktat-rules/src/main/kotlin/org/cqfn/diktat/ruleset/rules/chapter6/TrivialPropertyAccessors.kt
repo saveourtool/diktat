@@ -90,8 +90,8 @@ class TrivialPropertyAccessors(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        val nameId = "aas-trivial-property-accessors"
         private const val ONE_CHILD_IN_ARRAY = 1
+        val nameId = "aas-trivial-property-accessors"
         private val excessChildrenTypes = listOf(LBRACE, RBRACE, WHITE_SPACE, EOL_COMMENT, BLOCK_COMMENT)
     }
 }

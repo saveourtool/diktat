@@ -44,8 +44,7 @@ class LambdaParameterOrder(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
 
-    companion object{
+    companion object {
         val nameId = "acb-lambda-parameter-order"
     }
-
 }
