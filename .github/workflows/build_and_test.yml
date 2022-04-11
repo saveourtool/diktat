@@ -31,7 +31,7 @@ jobs:
           flags: unittests
           fail_ci_if_error: true # optional (default = false)
       - name: Upload diktat jar
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: diktat-ruleset
           path: diktat-ruleset/target/diktat-*.jar
@@ -39,7 +39,7 @@ jobs:
           retention-days: 1
       - name: Upload gradle reports
         if: ${{ failure() }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: gradle-test-report-${{ runner.os }}
           path: 'diktat-gradle-plugin/build/reports/'
@@ -149,7 +149,7 @@ jobs:
 
       - name: Upload gradle reports
         if: ${{ failure() }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: gradle-test-report-${{ matrix.os }}
           path: 'diktat-gradle-plugin/build/reports/'
