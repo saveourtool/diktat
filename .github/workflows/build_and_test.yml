@@ -25,7 +25,7 @@ jobs:
       - name: Maven Install
         run: mvn -B clean install
       - name: Code coverage report
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
           files: '**/target/site/jacoco*/jacoco.xml,**/reports/jacoco/**/*.xml'
           flags: unittests
