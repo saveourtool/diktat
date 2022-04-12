@@ -37,7 +37,6 @@ class SortRule(configRules: List<RulesConfig>) : DiktatRule(
     NAME_ID,
     configRules,
     listOf(WRONG_DECLARATIONS_ORDER),
-    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${TopLevelOrderRule.NAME_ID}"))
 ) {
     override fun logic(node: ASTNode) {
         val configuration = SortRuleConfiguration(

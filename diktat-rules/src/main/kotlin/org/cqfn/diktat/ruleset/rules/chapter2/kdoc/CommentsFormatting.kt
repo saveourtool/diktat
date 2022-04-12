@@ -55,7 +55,6 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
     configRules,
     listOf(COMMENT_WHITE_SPACE, FIRST_COMMENT_NO_BLANK_LINE,
         IF_ELSE_COMMENTS, WRONG_NEWLINES_AROUND_KDOC),
-    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}"))
 ) {
     /**
      * @param node

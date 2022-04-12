@@ -32,7 +32,6 @@ class TopLevelOrderRule(configRules: List<RulesConfig>) : DiktatRule(
     NAME_ID,
     configRules,
     listOf(TOP_LEVEL_ORDER),
-    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${PackageNaming.NAME_ID}"))
 ) {
     override fun logic(node: ASTNode) {
         if (node.elementType == FILE) {

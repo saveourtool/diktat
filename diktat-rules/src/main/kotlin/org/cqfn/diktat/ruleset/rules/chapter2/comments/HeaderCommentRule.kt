@@ -49,7 +49,6 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
     configRules,
     listOf(HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE, HEADER_MISSING_OR_WRONG_COPYRIGHT, HEADER_NOT_BEFORE_PACKAGE,
         HEADER_NOT_BEFORE_PACKAGE, HEADER_WRONG_FORMAT, WRONG_COPYRIGHT_YEAR),
-    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${ConsecutiveSpacesRule.NAME_ID}"))
 ) {
     override fun logic(node: ASTNode) {
         if (node.elementType == FILE && !node.getFilePath().isGradleScript()) {

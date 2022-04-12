@@ -27,7 +27,6 @@ class BlankLinesRule(configRules: List<RulesConfig>) : DiktatRule(
     NAME_ID,
     configRules,
     listOf(TOO_MANY_BLANK_LINES),
-    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${EnumsSeparated.NAME_ID}"))
 ) {
     override fun logic(node: ASTNode) {
         if (node.elementType == WHITE_SPACE) {

@@ -10,7 +10,7 @@ import com.pinterest.ktlint.core.LintError
 import org.junit.jupiter.api.Test
 
 class DiktatRuleTest : LintTestBase(::ClassLikeStructuresOrderRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:${ClassLikeStructuresOrderRule.NAME_ID}"  // class-like-structures
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${ClassLikeStructuresOrderRule.NAME_ID}"
     private val codeTemplate = """
         |class Example {
         |   private val FOO = 42

@@ -49,7 +49,6 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
     configRules,
     listOf(INCORRECT_PACKAGE_SEPARATOR, PACKAGE_NAME_INCORRECT_CASE, PACKAGE_NAME_MISSING,
         PACKAGE_NAME_INCORRECT_PATH, PACKAGE_NAME_INCORRECT_PREFIX, PACKAGE_NAME_INCORRECT_SYMBOLS),
-    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${CommentsFormatting.NAME_ID}"))
 ) {
     private lateinit var domainName: String
 

@@ -67,7 +67,6 @@ class KdocFormatting(configRules: List<RulesConfig>) : DiktatRule(
     listOf(KDOC_CONTAINS_DATE_OR_AUTHOR, KDOC_EMPTY_KDOC, KDOC_NEWLINES_BEFORE_BASIC_TAGS, KDOC_NO_DEPRECATED_TAG,
         KDOC_NO_EMPTY_TAGS, KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS, KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS,
         KDOC_WRONG_SPACES_AFTER_TAG, KDOC_WRONG_TAGS_ORDER),
-    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${KdocMethods.NAME_ID}"))
 ) {
     private val basicTagsList = listOf(KDocKnownTag.PARAM, KDocKnownTag.RETURN, KDocKnownTag.THROWS)
     private val specialTagNames = setOf("implSpec", "implNote", "apiNote")

@@ -56,7 +56,6 @@ class BlockStructureBraces(configRules: List<RulesConfig>) : DiktatRule(
     NAME_ID,
     configRules,
     listOf(BRACES_BLOCK_STRUCTURE_ERROR),
-    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${BlankLinesRule.NAME_ID}"))
 ) {
     override fun logic(node: ASTNode) {
         val configuration = BlockStructureBracesConfiguration(
