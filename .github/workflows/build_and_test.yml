@@ -16,7 +16,7 @@ jobs:
           distribution: zulu
           java-version: 11
       - name: Cache local Maven repository
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.m2/repository
           key: maven-build-${{ hashFiles('**/pom.xml') }}
@@ -128,7 +128,7 @@ jobs:
           distribution: zulu
           java-version: 11
       - name: Cache local Maven repository
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.m2/repository
           key: maven-build-${{ hashFiles('**/pom.xml') }}

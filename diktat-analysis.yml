@@ -429,7 +429,10 @@
 # Checks that using unnecessary, custom label
 - name: CUSTOM_LABEL
   enabled: true
-# Checks that property in constructor doesn't contains comment
+# Checks that outer lambda has explicit parameter name
+- name: PARAMETER_NAME_IN_OUTER_LAMBDA
+  enabled: false
+# Checks that property in constructor doesn't contain comment
 - name: KDOC_NO_CONSTRUCTOR_PROPERTY
   enabled: true
 # Checks that property in KDoc present in class
@@ -513,3 +516,12 @@
   enabled: true
   configuration:
     isRangeToIgnore: false
+# Check that typealias name is in PascalCase
+- name: TYPEALIAS_NAME_INCORRECT_CASE
+  enabled: true
+# Should change property length - 1 to property lastIndex
+- name: USE_LAST_INDEX
+  enabled: true
+# Only properties from the primary constructor should be documented in a @property tag in class KDoc
+- name: KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER
+  enabled: true

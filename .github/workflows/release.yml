@@ -19,7 +19,7 @@ jobs:
           distribution: zulu
           java-version: 11
       - name: Cache local Maven repository
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.m2/repository
           key: maven-build-${{ hashFiles('**/pom.xml') }}
@@ -87,7 +87,7 @@ jobs:
           next_snapshot_version=$(printf 'VERSION=${project.version}\n0\n' | mvn help:evaluate | grep '^VERSION' | cut -d= -f2)
           echo "version=$next_snapshot_version" > info/buildSrc/gradle.properties
       - name: Create pull request
-        uses: peter-evans/create-pull-request@v3
+        uses: peter-evans/create-pull-request@v4
         with:
           author: GitHub <noreply@github.com>
           commit-message: Prepare next development iteration after release ${{ env.RELEASE_VERSION }}

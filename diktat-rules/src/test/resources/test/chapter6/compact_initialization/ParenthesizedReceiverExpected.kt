@@ -2,5 +2,5 @@ fun `translate text`() {
     val res = translateText(text = "dummy")
     (res is TranslationsSuccess) shouldBe true
     val translationsSuccess = (res as TranslationsSuccess).apply {
-    translations shouldHaveSize 1}
+    translations = 1}
 }

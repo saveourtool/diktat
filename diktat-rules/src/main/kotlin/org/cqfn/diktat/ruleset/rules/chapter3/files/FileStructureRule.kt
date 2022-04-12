@@ -351,13 +351,13 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
             it.isStandard(StandardPlatforms.ANDROID)
         }
 
-        val (ownDomain, tmp) = domainName?.let {
+        val (ownDomain, tmp) = domainName?.let { domainName ->
             notAndroid.partition { import ->
                 import
                     .importPath
                     ?.fqName
                     ?.pathSegments()
-                    ?.zip(it.split(PACKAGE_SEPARATOR).map(Name::identifier))
+                    ?.zip(domainName.split(PACKAGE_SEPARATOR).map(Name::identifier))
                     ?.all { it.first == it.second }
                     ?: false
             }
