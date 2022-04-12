@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class AvoidUtilityClassWarnTest : LintTestBase(::AvoidUtilityClass) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:${AvoidUtilityClass.nameId}"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${AvoidUtilityClass.NAME_ID}"
 
     @Test
     @Tag(WarningNames.AVOID_USING_UTILITY_CLASS)

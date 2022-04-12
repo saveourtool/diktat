@@ -38,7 +38,7 @@ import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
  * Rule that checks if nullable types are used and suggest to substitute them with non-nullable
  */
 class NullableTypeRule(configRules: List<RulesConfig>) : DiktatRule(
-    nameId,
+    NAME_ID,
     configRules,
     listOf(NULLABLE_PROPERTY_TYPE)
 ) {
@@ -162,7 +162,7 @@ class NullableTypeRule(configRules: List<RulesConfig>) : DiktatRule(
     )
 
     companion object {
-        val nameId = "acg-nullable-type"
+        const val NAME_ID = "acg-nullable-type"
         private val allowExpression = listOf("emptyList", "emptySequence", "emptyArray", "emptyMap", "emptySet",
             "listOf", "mapOf", "arrayOf", "sequenceOf", "setOf")
     }

@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class FunctionLengthWarnTest : LintTestBase(::FunctionLength) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:${FunctionLength.nameId}"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${FunctionLength.NAME_ID}"
     private val rulesConfigList: List<RulesConfig> = listOf(
         RulesConfig(TOO_LONG_FUNCTION.name, true,
             mapOf("maxFunctionLength" to "5"))

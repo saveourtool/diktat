@@ -51,11 +51,11 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
  * 3) All properties declared in the primary constructor are documented using `@property` tag in class KDoc
  */
 class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
-    nameId,
+    NAME_ID,
     configRules,
     listOf(KDOC_EXTRA_PROPERTY, KDOC_NO_CONSTRUCTOR_PROPERTY,
         KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT, MISSING_KDOC_CLASS_ELEMENTS, MISSING_KDOC_TOP_LEVEL),
-    setOf(VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${SingleConstructorRule.nameId}"))
+    setOf(VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${SingleConstructorRule.NAME_ID}"))
 ) {
     private val config by lazy { configRules.getCommonConfiguration() }
 
@@ -329,7 +329,7 @@ class KdocComments(configRules: List<RulesConfig>) : DiktatRule(
     private fun isTopLevelFunctionStandard(node: ASTNode): Boolean = node.elementType == FUN && node.isStandardMethod()
 
     companion object {
-        val nameId = "aac-kdoc-comments"
+        const val NAME_ID = "aac-kdoc-comments"
         private val statementsToDocument = TokenSet.create(CLASS, FUN, PROPERTY)
     }
 }

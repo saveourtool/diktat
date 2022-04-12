@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test
 
 @Suppress("LargeClass")
 class LocalVariablesWarnTest : LintTestBase(::LocalVariablesRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:${LocalVariablesRule.nameId}"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${LocalVariablesRule.NAME_ID}"
 
     private fun warnMessage(name: String,
                             declared: Int,

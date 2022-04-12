@@ -22,10 +22,10 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
  *
  */
 class ConsecutiveSpacesRule(configRules: List<RulesConfig>) : DiktatRule(
-    nameId,
+    NAME_ID,
     configRules,
     listOf(TOO_MANY_CONSECUTIVE_SPACES),
-    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${BlockStructureBraces.nameId}"))
+    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${BlockStructureBraces.NAME_ID}"))
 ) {
     override fun logic(node: ASTNode) {
         val configuration = TooManySpacesRuleConfiguration(
@@ -86,6 +86,6 @@ class ConsecutiveSpacesRule(configRules: List<RulesConfig>) : DiktatRule(
 
     companion object {
         private const val MAX_SPACES = 1
-        val nameId = "aco-too-many-spaces"
+        const val NAME_ID = "aco-too-many-spaces"
     }
 }

@@ -71,11 +71,11 @@ import org.jetbrains.kotlin.psi.psiUtil.referenceExpression
  */
 @Suppress("ForbiddenComment")
 class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
-    "aad-kdoc-methods",
+    NAME_ID,
     configRules,
     listOf(KDOC_TRIVIAL_KDOC_ON_FUNCTION, KDOC_WITHOUT_PARAM_TAG, KDOC_WITHOUT_RETURN_TAG,
         KDOC_WITHOUT_THROWS_TAG, MISSING_KDOC_ON_FUNCTION),
-    setOf(VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${KdocComments.nameId}"))
+    setOf(VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}"))
 ) {
     /**
      * @param node
@@ -310,7 +310,7 @@ class KdocMethods(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        val nameId = "aad-kdoc-methods"
+        const val NAME_ID = "aad-kdoc-methods"
         private val expressionBodyTypes = setOf(CALL_EXPRESSION, REFERENCE_EXPRESSION)
         private val allExpressionBodyTypes = setOf(
             DOT_QUALIFIED_EXPRESSION,

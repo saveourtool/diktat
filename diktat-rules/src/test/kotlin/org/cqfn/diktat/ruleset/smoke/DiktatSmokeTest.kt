@@ -144,11 +144,11 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
         fixAndCompareSmokeTest("Example5Expected.kt", "Example5Test.kt")
 
         Assertions.assertFalse(
-            unfixedLintErrors.contains(LintError(line = 1, col = 1, ruleId = "diktat-ruleset:${CommentsRule.nameId}", detail = "${Warnings.COMMENTED_OUT_CODE.warnText()} /*"))
+            unfixedLintErrors.contains(LintError(line = 1, col = 1, ruleId = "diktat-ruleset:${CommentsRule.NAME_ID}", detail = "${Warnings.COMMENTED_OUT_CODE.warnText()} /*"))
         )
 
         Assertions.assertTrue(
-            unfixedLintErrors.contains(LintError(1, 1, "diktat-ruleset:${InlineClassesRule.nameId}", "${Warnings.INLINE_CLASS_CAN_BE_USED.warnText()} class Some"))
+            unfixedLintErrors.contains(LintError(1, 1, "diktat-ruleset:${InlineClassesRule.NAME_ID}", "${Warnings.INLINE_CLASS_CAN_BE_USED.warnText()} class Some"))
         )
     }
 
@@ -175,11 +175,11 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     fun `smoke test #2`() {
         fixAndCompareSmokeTest("Example2Expected.kt", "Example2Test.kt")
         unfixedLintErrors.assertEquals(
-            LintError(1, 1, "$DIKTAT_RULE_SET_ID:${HeaderCommentRule.nameId}",
+            LintError(1, 1, "$DIKTAT_RULE_SET_ID:${HeaderCommentRule.NAME_ID}",
                 "${HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE.warnText()} there are 2 declared classes and/or objects", false),
-            LintError(15, 23, "$DIKTAT_RULE_SET_ID:${KdocMethods.nameId}",
+            LintError(15, 23, "$DIKTAT_RULE_SET_ID:${KdocMethods.NAME_ID}",
                 "${KDOC_WITHOUT_PARAM_TAG.warnText()} createWithFile (containerName)", true),
-            LintError(31, 14, "$DIKTAT_RULE_SET_ID:${EmptyBlock.nameId}",
+            LintError(31, 14, "$DIKTAT_RULE_SET_ID:${EmptyBlock.NAME_ID}",
                 "${EMPTY_BLOCK_STRUCTURE_ERROR.warnText()} empty blocks are forbidden unless it is function with override keyword", false)
         )
     }
@@ -189,18 +189,18 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     fun `smoke test #1`() {
         fixAndCompareSmokeTest("Example1Expected.kt", "Example1Test.kt")
         unfixedLintErrors.assertEquals(
-            LintError(1, 1, "$DIKTAT_RULE_SET_ID:${FileNaming.nameId}", "${FILE_NAME_MATCH_CLASS.warnText()} Example1Test.kt vs Example", true),
-            LintError(1, 1, "$DIKTAT_RULE_SET_ID:${KdocFormatting.nameId}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
-            LintError(3, 6, "$DIKTAT_RULE_SET_ID:${KdocComments.nameId}", "${MISSING_KDOC_TOP_LEVEL.warnText()} Example", false),
-            LintError(3, 26, "$DIKTAT_RULE_SET_ID:${KdocComments.nameId}", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} isValid", false),
-            LintError(6, 9, "$DIKTAT_RULE_SET_ID:${KdocComments.nameId}", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} foo", false),
-            LintError(8, 8, "$DIKTAT_RULE_SET_ID:${KdocComments.nameId}", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} foo", false),
-            LintError(8, 8, "$DIKTAT_RULE_SET_ID:${KdocMethods.nameId}", "${MISSING_KDOC_ON_FUNCTION.warnText()} foo", false),
-            LintError(9, 3, "$DIKTAT_RULE_SET_ID:${EmptyBlock.nameId}", EMPTY_BLOCK_STRUCTURE_ERROR.warnText() +
+            LintError(1, 1, "$DIKTAT_RULE_SET_ID:${FileNaming.NAME_ID}", "${FILE_NAME_MATCH_CLASS.warnText()} Example1Test.kt vs Example", true),
+            LintError(1, 1, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
+            LintError(3, 6, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_TOP_LEVEL.warnText()} Example", false),
+            LintError(3, 26, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} isValid", false),
+            LintError(6, 9, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} foo", false),
+            LintError(8, 8, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} foo", false),
+            LintError(8, 8, "$DIKTAT_RULE_SET_ID:${KdocMethods.NAME_ID}", "${MISSING_KDOC_ON_FUNCTION.warnText()} foo", false),
+            LintError(9, 3, "$DIKTAT_RULE_SET_ID:${EmptyBlock.NAME_ID}", EMPTY_BLOCK_STRUCTURE_ERROR.warnText() +
                     " empty blocks are forbidden unless it is function with override keyword", false),
-            LintError(12, 10, "$DIKTAT_RULE_SET_ID:${KdocFormatting.nameId}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
-            LintError(14, 8, "$DIKTAT_RULE_SET_ID:${KdocFormatting.nameId}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
-            LintError(19, 20, "$DIKTAT_RULE_SET_ID:${KdocFormatting.nameId}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false)
+            LintError(12, 10, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
+            LintError(14, 8, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
+            LintError(19, 20, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false)
         )
     }
 
@@ -233,7 +233,7 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
     fun `smoke test with gradle script plugin`() {
         fixAndCompareSmokeTest("kotlin-library-expected.gradle.kts", "kotlin-library.gradle.kts")
         Assertions.assertEquals(
-            LintError(2, 1, "$DIKTAT_RULE_SET_ID:${CommentsRule.nameId}", "[COMMENTED_OUT_CODE] you should not comment out code, " +
+            LintError(2, 1, "$DIKTAT_RULE_SET_ID:${CommentsRule.NAME_ID}", "[COMMENTED_OUT_CODE] you should not comment out code, " +
                     "use VCS to save it in history and delete this block: import org.jetbrains.kotlin.gradle.dsl.jvm", false),
             unfixedLintErrors.single()
         )
@@ -267,15 +267,15 @@ class DiktatSmokeTest : FixTestBase("test/smoke/src/main/kotlin",
         )
         fixAndCompareSmokeTest("Example1-2Expected.kt", "Example1Test.kt")
         unfixedLintErrors.assertEquals(
-            LintError(1, 1, "$DIKTAT_RULE_SET_ID:${KdocFormatting.nameId}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
-            LintError(3, 1, "$DIKTAT_RULE_SET_ID:${KdocComments.nameId}", "${MISSING_KDOC_TOP_LEVEL.warnText()} example", false),
-            LintError(3, 16, "$DIKTAT_RULE_SET_ID:${KdocComments.nameId}", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} isValid", false),
-            LintError(6, 5, "$DIKTAT_RULE_SET_ID:${KdocComments.nameId}", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} foo", false),
-            LintError(6, 5, "$DIKTAT_RULE_SET_ID:${KdocMethods.nameId}", "${MISSING_KDOC_ON_FUNCTION.warnText()} foo", false),
-            LintError(8, 5, "$DIKTAT_RULE_SET_ID:${KdocComments.nameId}", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} foo", false),
-            LintError(10, 4, "$DIKTAT_RULE_SET_ID:${KdocFormatting.nameId}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
-            LintError(13, 9, "$DIKTAT_RULE_SET_ID:${KdocFormatting.nameId}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
-            LintError(18, 40, "$DIKTAT_RULE_SET_ID:${KdocFormatting.nameId}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false)
+            LintError(1, 1, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
+            LintError(3, 1, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_TOP_LEVEL.warnText()} example", false),
+            LintError(3, 16, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} isValid", false),
+            LintError(6, 5, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} foo", false),
+            LintError(6, 5, "$DIKTAT_RULE_SET_ID:${KdocMethods.NAME_ID}", "${MISSING_KDOC_ON_FUNCTION.warnText()} foo", false),
+            LintError(8, 5, "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}", "${MISSING_KDOC_CLASS_ELEMENTS.warnText()} foo", false),
+            LintError(10, 4, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
+            LintError(13, 9, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false),
+            LintError(18, 40, "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}", "${KDOC_NO_EMPTY_TAGS.warnText()} @return", false)
         )
     }
 

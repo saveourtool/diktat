@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class NullableTypeRuleWarnTest : LintTestBase(::NullableTypeRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:${NullableTypeRule.nameId}"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${NullableTypeRule.NAME_ID}"
 
     @Test
     @Tag(WarningNames.NULLABLE_PROPERTY_TYPE)

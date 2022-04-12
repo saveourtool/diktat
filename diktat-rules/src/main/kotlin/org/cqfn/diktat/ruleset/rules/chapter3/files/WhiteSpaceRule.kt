@@ -95,10 +95,10 @@ import org.slf4j.LoggerFactory
  */
 @Suppress("ForbiddenComment")
 class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
-    nameId,
+    NAME_ID,
     configRules,
     listOf(WRONG_WHITESPACE),
-    setOf(VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${NewlinesRule.nameId}"))
+    setOf(VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${NewlinesRule.NAME_ID}"))
 ) {
     @Suppress("ComplexMethod")
     override fun logic(node: ASTNode) {
@@ -426,9 +426,9 @@ class WhiteSpaceRule(configRules: List<RulesConfig>) : DiktatRule(
 
     companion object {
         private val log = LoggerFactory.getLogger(CompactInitialization::class.java)
+        const val NAME_ID = "acs-horizontal-whitespace"
 
         private const val NUM_PARENTS_FOR_LAMBDA = 3  // this is the number of parent nodes needed to check if this node is lambda from argument list
-        val nameId = "acs-horizontal-whitespace"
         private val keywordsWithSpaceAfter = TokenSet.create(
             // these keywords are followed by {
             ELSE_KEYWORD, TRY_KEYWORD, DO_KEYWORD, FINALLY_KEYWORD, INIT_KEYWORD,

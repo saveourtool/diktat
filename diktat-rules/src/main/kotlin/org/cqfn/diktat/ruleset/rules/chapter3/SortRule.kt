@@ -34,10 +34,10 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
  * Rule that sorts class properties and enum members alphabetically
  */
 class SortRule(configRules: List<RulesConfig>) : DiktatRule(
-    nameId,
+    NAME_ID,
     configRules,
     listOf(WRONG_DECLARATIONS_ORDER),
-    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${TopLevelOrderRule.nameId}"))
+    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${TopLevelOrderRule.NAME_ID}"))
 ) {
     override fun logic(node: ASTNode) {
         val configuration = SortRuleConfiguration(
@@ -189,6 +189,6 @@ class SortRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        val nameId = "abp-sort-rule"
+        const val NAME_ID = "abp-sort-rule"
     }
 }

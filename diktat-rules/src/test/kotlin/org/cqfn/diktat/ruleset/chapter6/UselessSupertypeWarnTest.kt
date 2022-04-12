@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class UselessSupertypeWarnTest : LintTestBase(::UselessSupertype) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:${UselessSupertype.nameId}"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${UselessSupertype.NAME_ID}"
 
     @Test
     @Tag(WarningNames.USELESS_SUPERTYPE)

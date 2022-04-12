@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class AnnotationNewLineRuleWarnTest : LintTestBase(::AnnotationNewLineRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:${AnnotationNewLineRule.nameId}"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${AnnotationNewLineRule.NAME_ID}"
 
     @Test
     @Tag(WarningNames.ANNOTATION_NEW_LINE)

@@ -17,7 +17,7 @@ import org.jetbrains.kotlin.utils.addToStdlib.ifNotEmpty
  * Rule that checks if parameter with function type is the last in parameter list
  */
 class LambdaParameterOrder(configRules: List<RulesConfig>) : DiktatRule(
-    nameId,
+    NAME_ID,
     configRules,
     listOf(LAMBDA_IS_NOT_LAST_PARAMETER)
 ) {
@@ -45,6 +45,6 @@ class LambdaParameterOrder(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        val nameId = "acb-lambda-parameter-order"
+        const val NAME_ID = "acb-lambda-parameter-order"
     }
 }

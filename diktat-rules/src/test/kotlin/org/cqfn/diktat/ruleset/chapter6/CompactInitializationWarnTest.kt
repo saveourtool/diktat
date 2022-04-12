@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class CompactInitializationWarnTest : LintTestBase(::CompactInitialization) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:${CompactInitialization.nameId}"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${CompactInitialization.NAME_ID}"
 
     @Test
     @Tag(WarningNames.COMPACT_OBJECT_INITIALIZATION)

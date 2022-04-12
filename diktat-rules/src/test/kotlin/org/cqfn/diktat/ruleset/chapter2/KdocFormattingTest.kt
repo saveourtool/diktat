@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class KdocFormattingTest : LintTestBase(::KdocFormatting) {
-    private val ruleId: String = "$DIKTAT_RULE_SET_ID:${KdocFormatting.nameId}"
+    private val ruleId: String = "$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}"
     private val funCode = """
          fun foo(a: Int): Int {
              if (false) throw IllegalStateException()

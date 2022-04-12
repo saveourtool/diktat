@@ -26,7 +26,7 @@ import org.jetbrains.kotlin.psi.psiUtil.visibilityModifierType
  * This rule checks if inline class can be used.
  */
 class InlineClassesRule(configRules: List<RulesConfig>) : DiktatRule(
-    nameId,
+    NAME_ID,
     configRules,
     listOf(INLINE_CLASS_CAN_BE_USED)
 ) {
@@ -70,7 +70,7 @@ class InlineClassesRule(configRules: List<RulesConfig>) : DiktatRule(
                 ?: false
 
     companion object {
-        val nameId = "aaw-inline-classes"
+        const val NAME_ID = "aaw-inline-classes"
         val minKtVersion = KotlinVersion(1, 3)
         val maxKtVersion = KotlinVersion(1, 5, 0)
         val goodModifiers = listOf(PUBLIC_KEYWORD, PRIVATE_KEYWORD, FINAL_KEYWORD, PROTECTED_KEYWORD, INTERNAL_KEYWORD)

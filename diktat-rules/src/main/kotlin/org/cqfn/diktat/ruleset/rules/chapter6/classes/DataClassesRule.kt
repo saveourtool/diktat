@@ -31,7 +31,7 @@ import org.jetbrains.kotlin.psi.KtPrimaryConstructor
  * This rule checks if class can be made as data class
  */
 class DataClassesRule(configRules: List<RulesConfig>) : DiktatRule(
-    nameId,
+    NAME_ID,
     configRules,
     listOf(USE_DATA_CLASS)
 ) {
@@ -145,7 +145,7 @@ class DataClassesRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        val nameId = "abb-data-classes"
+        const val NAME_ID = "abb-data-classes"
         private val badModifiers = listOf(OPEN_KEYWORD, ABSTRACT_KEYWORD, INNER_KEYWORD, SEALED_KEYWORD, ENUM_KEYWORD)
     }
 }

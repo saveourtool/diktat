@@ -28,10 +28,10 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
  * Rule that checks enum classes formatting
  */
 class EnumsSeparated(configRules: List<RulesConfig>) : DiktatRule(
-    nameId,
+    NAME_ID,
     configRules,
     listOf(ENUMS_SEPARATED),
-    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${SortRule.nameId}"))
+    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${SortRule.NAME_ID}"))
 ) {
     override fun logic(node: ASTNode) {
         if (node.elementType == CLASS && node.hasChildOfType(CLASS_BODY) && node.isClassEnum()) {
@@ -94,7 +94,7 @@ class EnumsSeparated(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
     companion object {
-        val nameId = "abq-enum-separated"
+        const val NAME_ID = "abq-enum-separated"
         private val simpleValue = listOf(IDENTIFIER, WHITE_SPACE, COMMA, SEMICOLON)
         private val simpleEnum = listOf(ENUM_ENTRY, WHITE_SPACE, LBRACE, RBRACE)
     }

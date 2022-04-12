@@ -45,11 +45,11 @@ import java.time.LocalDate
  */
 @Suppress("ForbiddenComment")
 class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
-    nameId,
+    NAME_ID,
     configRules,
     listOf(HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE, HEADER_MISSING_OR_WRONG_COPYRIGHT, HEADER_NOT_BEFORE_PACKAGE,
         HEADER_NOT_BEFORE_PACKAGE, HEADER_WRONG_FORMAT, WRONG_COPYRIGHT_YEAR),
-    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${ConsecutiveSpacesRule.nameId}"))
+    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${ConsecutiveSpacesRule.NAME_ID}"))
 ) {
     override fun logic(node: ASTNode) {
         if (node.elementType == FILE && !node.getFilePath().isGradleScript()) {
@@ -275,7 +275,7 @@ class HeaderCommentRule(configRules: List<RulesConfig>) : DiktatRule(
     companion object {
         private val log = LoggerFactory.getLogger(HeaderCommentRule::class.java)
         const val CURR_YEAR_PATTERN = ";@currYear;"
-        val nameId = "acp-header-comment"
+        const val NAME_ID = "acp-header-comment"
         val hyphenRegex = Regex("""\d+-\d+""")
         val afterCopyrightRegex = Regex("""((©|\([cC]\))+ *\d+)""")
         val curYear = LocalDate.now().year

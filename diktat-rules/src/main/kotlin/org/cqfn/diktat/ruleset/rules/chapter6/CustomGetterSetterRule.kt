@@ -16,7 +16,7 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
  * Inspection that checks that no custom getters and setters are used for properties.
  */
 class CustomGetterSetterRule(configRules: List<RulesConfig>) : DiktatRule(
-    nameId,
+    NAME_ID,
     configRules,
     listOf(CUSTOM_GETTERS_SETTERS)
 ) {
@@ -44,6 +44,6 @@ class CustomGetterSetterRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        val nameId = "aat-custom-getter-setter"
+        const val NAME_ID = "aat-custom-getter-setter"
     }
 }

@@ -32,7 +32,7 @@ import java.lang.RuntimeException
  * Rule that checks if the boolean expression can be simplified.
  */
 class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
-    nameId,
+    NAME_ID,
     configRules,
     listOf(COMPLEX_BOOLEAN_EXPRESSION)
 ) {
@@ -276,6 +276,6 @@ class BooleanExpressionsRule(configRules: List<RulesConfig>) : DiktatRule(
     companion object {
         const val DISTRIBUTIVE_LAW_MIN_EXPRESSIONS = 3
         const val DISTRIBUTIVE_LAW_MIN_OPERATIONS = 3
-        val nameId = "acm-boolean-expressions-rule"
+        const val NAME_ID = "acm-boolean-expressions-rule"
     }
 }

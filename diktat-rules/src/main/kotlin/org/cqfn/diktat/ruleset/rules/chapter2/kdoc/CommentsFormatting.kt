@@ -51,11 +51,11 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
  * * Comments in if else should be inside code blocks. Exception: General if comment
  */
 class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
-    nameId,
+    NAME_ID,
     configRules,
     listOf(COMMENT_WHITE_SPACE, FIRST_COMMENT_NO_BLANK_LINE,
         IF_ELSE_COMMENTS, WRONG_NEWLINES_AROUND_KDOC),
-    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${KdocFormatting.nameId}"))
+    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${KdocFormatting.NAME_ID}"))
 ) {
     /**
      * @param node
@@ -359,6 +359,6 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
     companion object {
         private const val APPROPRIATE_COMMENT_SPACES = 1
         private const val MAX_SPACES = 1
-        val nameId = "aaf-kdoc-comments-codeblocks-formatting"
+        const val NAME_ID = "aaf-kdoc-comments-codeblocks-formatting"
     }
 }

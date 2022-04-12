@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class RunInScriptWarnTest : LintTestBase(::RunInScript) {
-    private val ruleId: String = "$DIKTAT_RULE_SET_ID:${RunInScript.nameId}"
+    private val ruleId: String = "$DIKTAT_RULE_SET_ID:${RunInScript.NAME_ID}"
 
     @Test
     @Tag(WarningNames.RUN_IN_SCRIPT)

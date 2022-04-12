@@ -45,11 +45,11 @@ import java.util.concurrent.atomic.AtomicInteger
  */
 @Suppress("ForbiddenComment", "TOO_MANY_LINES_IN_LAMBDA")
 class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
-    nameId,
+    NAME_ID,
     configRules,
     listOf(INCORRECT_PACKAGE_SEPARATOR, PACKAGE_NAME_INCORRECT_CASE, PACKAGE_NAME_MISSING,
         PACKAGE_NAME_INCORRECT_PATH, PACKAGE_NAME_INCORRECT_PREFIX, PACKAGE_NAME_INCORRECT_SYMBOLS),
-    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${CommentsFormatting.nameId}"))
+    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${CommentsFormatting.NAME_ID}"))
 ) {
     private lateinit var domainName: String
 
@@ -282,6 +282,7 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
 
     companion object {
         private val log = LoggerFactory.getLogger(PackageNaming::class.java)
+        const val NAME_ID = "aah-package-naming"
 
         /**
          * Directory which is considered the start of sources file tree
@@ -292,7 +293,6 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
          * Symbol that is used to separate parts in package name
          */
         const val PACKAGE_SEPARATOR = "."
-        val nameId = "aah-package-naming"
 
         /**
          * tricky hack (counter) that helps not to raise multiple warnings about the package name if config is missing

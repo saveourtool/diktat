@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Tags
 import org.junit.jupiter.api.Test
 
 class KdocCommentsWarnTest : LintTestBase(::KdocComments) {
-    private val ruleId: String = "$DIKTAT_RULE_SET_ID:${KdocComments.nameId}"
+    private val ruleId: String = "$DIKTAT_RULE_SET_ID:${KdocComments.NAME_ID}"
 
     @Test
     @Tag(WarningNames.MISSING_KDOC_TOP_LEVEL)

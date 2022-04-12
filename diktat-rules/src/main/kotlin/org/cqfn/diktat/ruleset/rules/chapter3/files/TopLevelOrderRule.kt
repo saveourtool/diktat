@@ -29,10 +29,10 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
  * Rule that checks order in top level
  */
 class TopLevelOrderRule(configRules: List<RulesConfig>) : DiktatRule(
-    nameId,
+    NAME_ID,
     configRules,
     listOf(TOP_LEVEL_ORDER),
-    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${PackageNaming.nameId}"))
+    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${PackageNaming.NAME_ID}"))
 ) {
     override fun logic(node: ASTNode) {
         if (node.elementType == FILE) {
@@ -116,7 +116,7 @@ class TopLevelOrderRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        val nameId = "aap-top-level-order"
+        const val NAME_ID = "aap-top-level-order"
 
         /**
          * List of children that should be sort

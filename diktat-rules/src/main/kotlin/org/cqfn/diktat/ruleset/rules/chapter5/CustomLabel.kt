@@ -18,7 +18,7 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  * Rule that checks using custom label
  */
 class CustomLabel(configRules: List<RulesConfig>) : DiktatRule(
-    nameId,
+    NAME_ID,
     configRules,
     listOf(CUSTOM_LABEL)
 ) {
@@ -39,6 +39,6 @@ class CustomLabel(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        val nameId = "abk-custom-label"
+        const val NAME_ID = "abk-custom-label"
     }
 }

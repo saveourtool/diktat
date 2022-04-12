@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class ConsecutiveSpacesRuleWarnTest : LintTestBase(::ConsecutiveSpacesRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:${ConsecutiveSpacesRule.nameId}"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${ConsecutiveSpacesRule.NAME_ID}"
     private val rulesConfigListNoSpaces: List<RulesConfig> = listOf(
         RulesConfig(TOO_MANY_CONSECUTIVE_SPACES.name, true,
             mapOf("maxSpaces" to "2"))

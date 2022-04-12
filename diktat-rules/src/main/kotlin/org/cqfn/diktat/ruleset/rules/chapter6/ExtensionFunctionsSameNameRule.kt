@@ -33,7 +33,7 @@ internal typealias SimilarSignatures = List<Pair<ExtensionFunctionsSameNameRule.
  * This rule checks if extension functions with the same signature don't have related classes
  */
 class ExtensionFunctionsSameNameRule(configRules: List<RulesConfig>) : DiktatRule(
-    nameId,
+    NAME_ID,
     configRules,
     listOf(EXTENSION_FUNCTION_SAME_SIGNATURE)
 ) {
@@ -151,6 +151,6 @@ class ExtensionFunctionsSameNameRule(configRules: List<RulesConfig>) : DiktatRul
     }
 
     companion object {
-        val nameId = "ack-extension-functions-same-name"
+        const val NAME_ID = "ack-extension-functions-same-name"
     }
 }

@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class MagicNumberRuleWarnTest : LintTestBase(::MagicNumberRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:${MagicNumberRule.nameId}"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${MagicNumberRule.NAME_ID}"
     private val rulesConfigMagicNumber: List<RulesConfig> = listOf(
         RulesConfig(
             MAGIC_NUMBER.name, true,

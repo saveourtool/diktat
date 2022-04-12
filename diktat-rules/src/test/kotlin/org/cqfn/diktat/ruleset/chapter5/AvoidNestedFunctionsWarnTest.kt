@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class AvoidNestedFunctionsWarnTest : LintTestBase(::AvoidNestedFunctionsRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:${AvoidNestedFunctionsRule.nameId}"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${AvoidNestedFunctionsRule.NAME_ID}"
 
     @Test
     @Tag(AVOID_NESTED_FUNCTIONS)

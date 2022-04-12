@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class InlineClassesWarnTest : LintTestBase(::InlineClassesRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:${InlineClassesRule.nameId}"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${InlineClassesRule.NAME_ID}"
     private val rulesConfigListEarlierVersion: List<RulesConfig> = listOf(
         RulesConfig(
             DIKTAT_COMMON, true,

@@ -59,11 +59,11 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
  * 5. Ensures there are no wildcard imports
  */
 class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
-    nameId,
+    NAME_ID,
     configRules,
     listOf(FILE_CONTAINS_ONLY_COMMENTS, FILE_INCORRECT_BLOCKS_ORDER, FILE_NO_BLANK_LINE_BETWEEN_BLOCKS,
         FILE_UNORDERED_IMPORTS, FILE_WILDCARD_IMPORTS, UNUSED_IMPORT),
-    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${HeaderCommentRule.nameId}"))
+    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${HeaderCommentRule.NAME_ID}"))
 ) {
     private val domainName by lazy {
         configRules
@@ -398,6 +398,6 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        val nameId = "acq-file-structure"
+        const val NAME_ID = "acq-file-structure"
     }
 }

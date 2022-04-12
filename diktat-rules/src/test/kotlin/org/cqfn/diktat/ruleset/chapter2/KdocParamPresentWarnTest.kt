@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Tags
 import org.junit.jupiter.api.Test
 
 class KdocParamPresentWarnTest : LintTestBase(::KdocMethods) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:${KdocMethods.nameId}"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${KdocMethods.NAME_ID}"
 
     @Test
     @Tag(WarningNames.KDOC_WITHOUT_PARAM_TAG)

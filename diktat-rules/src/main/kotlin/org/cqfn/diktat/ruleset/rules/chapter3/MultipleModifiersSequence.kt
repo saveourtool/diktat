@@ -16,7 +16,7 @@ import org.jetbrains.kotlin.psi.psiUtil.children
  * @property configRules
  */
 class MultipleModifiersSequence(configRules: List<RulesConfig>) : DiktatRule(
-    nameId,
+    NAME_ID,
     configRules,
     listOf(WRONG_MULTIPLE_MODIFIERS_ORDER)
 ) {
@@ -73,7 +73,7 @@ class MultipleModifiersSequence(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        val nameId = "aar-multiple-modifiers"
+        const val NAME_ID = "aar-multiple-modifiers"
         private val modifierOrder = listOf(KtTokens.PUBLIC_KEYWORD, KtTokens.INTERNAL_KEYWORD, KtTokens.PROTECTED_KEYWORD,
             KtTokens.PRIVATE_KEYWORD, KtTokens.EXPECT_KEYWORD, KtTokens.ACTUAL_KEYWORD, KtTokens.FINAL_KEYWORD,
             KtTokens.OPEN_KEYWORD, KtTokens.ABSTRACT_KEYWORD, KtTokens.SEALED_KEYWORD, KtTokens.CONST_KEYWORD,

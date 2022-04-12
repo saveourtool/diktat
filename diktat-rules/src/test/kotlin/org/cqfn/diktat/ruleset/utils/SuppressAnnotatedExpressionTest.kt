@@ -9,7 +9,7 @@ import com.pinterest.ktlint.core.LintError
 import org.junit.jupiter.api.Test
 
 class SuppressAnnotatedExpressionTest : LintTestBase(::CollapseIfStatementsRule) {
-    private val ruleId: String = "$DIKTAT_RULE_SET_ID:${CollapseIfStatementsRule.nameId}"
+    private val ruleId: String = "$DIKTAT_RULE_SET_ID:${CollapseIfStatementsRule.NAME_ID}"
 
     @Test
     fun `should lint errors without suppress`() {

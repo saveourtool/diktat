@@ -27,7 +27,7 @@ import org.jetbrains.kotlin.psi.KtPropertyAccessor
  * This rule checks if there are any trivial getters and setters and, if so, deletes them
  */
 class TrivialPropertyAccessors(configRules: List<RulesConfig>) : DiktatRule(
-    nameId,
+    NAME_ID,
     configRules,
     listOf(TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED)
 ) {
@@ -90,8 +90,8 @@ class TrivialPropertyAccessors(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
+        const val NAME_ID = "aas-trivial-property-accessors"
         private const val ONE_CHILD_IN_ARRAY = 1
-        val nameId = "aas-trivial-property-accessors"
         private val excessChildrenTypes = listOf(LBRACE, RBRACE, WHITE_SPACE, EOL_COMMENT, BLOCK_COMMENT)
     }
 }

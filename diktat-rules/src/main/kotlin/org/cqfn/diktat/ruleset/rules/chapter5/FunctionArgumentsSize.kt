@@ -15,7 +15,7 @@ import org.jetbrains.kotlin.psi.KtFunction
  * Rule that checks that function doesn't contains too many parameters
  */
 class FunctionArgumentsSize(configRules: List<RulesConfig>) : DiktatRule(
-    nameId,
+    NAME_ID,
     configRules,
     listOf(TOO_MANY_PARAMETERS)
 ) {
@@ -50,6 +50,6 @@ class FunctionArgumentsSize(configRules: List<RulesConfig>) : DiktatRule(
 
     companion object {
         const val MAX_DEFAULT_PARAMETER_SIZE = 5L
-        val nameId = "acc-argument-size"
+        const val NAME_ID = "acc-argument-size"
     }
 }

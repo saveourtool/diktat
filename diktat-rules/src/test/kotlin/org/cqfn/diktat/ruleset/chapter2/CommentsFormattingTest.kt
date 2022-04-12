@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class CommentsFormattingTest : LintTestBase(::CommentsFormatting) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:${CommentsFormatting.nameId}"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${CommentsFormatting.NAME_ID}"
 
     @Test
     @Tag(WarningNames.COMMENT_WHITE_SPACE)

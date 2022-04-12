@@ -29,7 +29,7 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  * Rule for magic number
  */
 class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule(
-    nameId,
+    NAME_ID,
     configRules,
     listOf(MAGIC_NUMBER)
 ) {
@@ -107,7 +107,7 @@ class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule(
 
     companion object {
         const val IGNORE_TEST = true
-        val nameId = "aca-magic-number"
+        const val NAME_ID = "aca-magic-number"
         val ignoreNumbersList = listOf("-1", "1", "0", "2")
         val mapConfiguration = mapOf(
             "ignoreHashCodeFunction" to true,

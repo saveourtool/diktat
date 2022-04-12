@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class MultipleModifiersSequenceWarnTest : LintTestBase(::MultipleModifiersSequence) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:${MultipleModifiersSequence.nameId}"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${MultipleModifiersSequence.NAME_ID}"
 
     @Test
     @Tag(WarningNames.WRONG_MULTIPLE_MODIFIERS_ORDER)

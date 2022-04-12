@@ -53,10 +53,10 @@ import org.jetbrains.kotlin.psi.KtTryExpression
  * - braces around `else`/`catch`/`finally`/`while` (in `do-while` loop)
  */
 class BlockStructureBraces(configRules: List<RulesConfig>) : DiktatRule(
-    nameId,
+    NAME_ID,
     configRules,
     listOf(BRACES_BLOCK_STRUCTURE_ERROR),
-    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${BlankLinesRule.nameId}"))
+    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${BlankLinesRule.NAME_ID}"))
 ) {
     override fun logic(node: ASTNode) {
         val configuration = BlockStructureBracesConfiguration(
@@ -276,6 +276,6 @@ class BlockStructureBraces(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        val nameId = "acn-block-structure"
+        const val NAME_ID = "acn-block-structure"
     }
 }

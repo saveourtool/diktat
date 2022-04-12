@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class SortRuleWarnTest : LintTestBase(::SortRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:${SortRule.nameId}"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${SortRule.NAME_ID}"
     private val rulesConfigNotSortEnum: List<RulesConfig> = listOf(
         RulesConfig(WRONG_DECLARATIONS_ORDER.name, true,
             mapOf("sortEnum" to "false"))

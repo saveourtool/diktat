@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class SmartCastRuleWarnTest : LintTestBase(::SmartCastRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:${SmartCastRule.nameId}"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${SmartCastRule.NAME_ID}"
 
     @Test
     @Tag(SMART_CAST_NEEDED)

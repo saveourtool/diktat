@@ -24,10 +24,10 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
  * 2. Checks that blank lines are not put in the beginning or at the end of code blocks with curly braces
  */
 class BlankLinesRule(configRules: List<RulesConfig>) : DiktatRule(
-    nameId,
+    NAME_ID,
     configRules,
     listOf(TOO_MANY_BLANK_LINES),
-    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${EnumsSeparated.nameId}"))
+    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${EnumsSeparated.NAME_ID}"))
 ) {
     override fun logic(node: ASTNode) {
         if (node.elementType == WHITE_SPACE) {
@@ -76,6 +76,6 @@ class BlankLinesRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        val nameId = "acd-blank-lines"
+        const val NAME_ID = "acd-blank-lines"
     }
 }

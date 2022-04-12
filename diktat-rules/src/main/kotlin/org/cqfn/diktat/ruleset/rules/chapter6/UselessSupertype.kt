@@ -32,7 +32,7 @@ import java.util.HashMap
  * fixme can't fix supertypes that are defined in other files.
  */
 class UselessSupertype(configRules: List<RulesConfig>) : DiktatRule(
-    nameId,
+    NAME_ID,
     configRules,
     listOf(USELESS_SUPERTYPE)
 ) {
@@ -141,7 +141,7 @@ class UselessSupertype(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
-        val nameId = "aaj-useless-override"
+        const val NAME_ID = "aaj-useless-override"
         private val superType = listOf(SUPER_TYPE_CALL_ENTRY, SUPER_TYPE_ENTRY)
     }
 }

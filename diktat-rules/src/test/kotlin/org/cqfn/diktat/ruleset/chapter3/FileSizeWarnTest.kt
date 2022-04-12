@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test
 import java.io.File
 
 class FileSizeWarnTest : LintTestBase(::FileSize) {
-    val rulied = "$DIKTAT_RULE_SET_ID:${FileSize.nameId}"
+    val rulied = "$DIKTAT_RULE_SET_ID:${FileSize.NAME_ID}"
     private val rulesConfigListLarge: List<RulesConfig> = listOf(
         RulesConfig(Warnings.FILE_IS_TOO_LONG.name, true,
             mapOf("maxSize" to "5"))

@@ -15,7 +15,7 @@ import org.jetbrains.kotlin.psi.KtFunction
  * Rule 5.1.1 check function length
  */
 class FunctionLength(configRules: List<RulesConfig>) : DiktatRule(
-    nameId,
+    NAME_ID,
     configRules,
     listOf(TOO_LONG_FUNCTION)
 ) {
@@ -63,6 +63,6 @@ class FunctionLength(configRules: List<RulesConfig>) : DiktatRule(
 
     companion object {
         private const val MAX_FUNCTION_LENGTH = 30L
-        val nameId = "abz-function-length"
+        const val NAME_ID = "abz-function-length"
     }
 }

@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class LineLengthWarnTest : LintTestBase(::LineLength) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:${LineLength.nameId}"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${LineLength.NAME_ID}"
     private val rulesConfigListLineLength: List<RulesConfig> = listOf(
         RulesConfig(LONG_LINE.name, true,
             mapOf("lineLength" to "163"))
