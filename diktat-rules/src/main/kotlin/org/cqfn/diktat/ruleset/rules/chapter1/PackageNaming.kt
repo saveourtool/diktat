@@ -11,6 +11,8 @@ import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_SYMBOLS
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_MISSING
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.DiktatRule
+import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.CommentsFormatting
+import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocComments
 import org.cqfn.diktat.ruleset.utils.*
 
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
@@ -24,8 +26,6 @@ import com.pinterest.ktlint.core.ast.ElementType.REFERENCE_EXPRESSION
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.children
 import com.pinterest.ktlint.core.ast.isLeaf
-import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.CommentsFormatting
-import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocComments
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl

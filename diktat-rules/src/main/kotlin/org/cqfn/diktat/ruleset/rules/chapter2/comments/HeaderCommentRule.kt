@@ -10,6 +10,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.HEADER_WRONG_FORMAT
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_COPYRIGHT_YEAR
 import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.DiktatRule
+import org.cqfn.diktat.ruleset.rules.chapter3.ConsecutiveSpacesRule
 import org.cqfn.diktat.ruleset.utils.copyrightWords
 import org.cqfn.diktat.ruleset.utils.findChildAfter
 import org.cqfn.diktat.ruleset.utils.findChildBefore
@@ -27,7 +28,6 @@ import com.pinterest.ktlint.core.ast.ElementType.KDOC
 import com.pinterest.ktlint.core.ast.ElementType.PACKAGE_DIRECTIVE
 import com.pinterest.ktlint.core.ast.ElementType.WHITE_SPACE
 import com.pinterest.ktlint.core.ast.isWhiteSpace
-import org.cqfn.diktat.ruleset.rules.chapter3.ConsecutiveSpacesRule
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
