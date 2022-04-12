@@ -65,7 +65,7 @@ import java.net.URL
  */
 @Suppress("ForbiddenComment")
 class LineLength(configRules: List<RulesConfig>) : DiktatRule(
-    "abv-line-length",
+    nameId,
     configRules,
     listOf(LONG_LINE)
 ) {

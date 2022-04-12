@@ -73,7 +73,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
     nameId,
     configRules,
     listOf(WRONG_INDENTATION),
-    setOf(VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:horizontal-whitespace"))
+    setOf(VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${WhiteSpaceRule.nameId}"))
 ) {
     private val configuration: IndentationConfig by lazy {
         IndentationConfig(configRules.getRuleConfig(WRONG_INDENTATION)?.configuration ?: emptyMap())

@@ -29,7 +29,7 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  * Rule for magic number
  */
 class MagicNumberRule(configRules: List<RulesConfig>) : DiktatRule(
-    "aca-magic-number",
+   nameId,
     configRules,
     listOf(MAGIC_NUMBER)
 ) {

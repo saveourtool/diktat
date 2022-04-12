@@ -38,7 +38,7 @@ import org.jetbrains.kotlin.psi.psiUtil.startOffset
  * * Properties initialized with constructor calls cannot be distinguished from method call and are no supported.
  */
 class LocalVariablesRule(configRules: List<RulesConfig>) : DiktatRule(
-    "abc-local-variables",
+    nameId,
     configRules,
     listOf(LOCAL_VARIABLE_EARLY_DECLARATION)
 ) {

@@ -17,7 +17,7 @@ import java.lang.StringBuilder
  * Rule that checks if numerical separators (`_`) are used for long numerical literals
  */
 class LongNumericalValuesSeparatedRule(configRules: List<RulesConfig>) : DiktatRule(
-    "abm-long-numerical-values",
+    nameId,
     configRules,
     listOf(LONG_NUMERICAL_VALUES_SEPARATED)
 ) {

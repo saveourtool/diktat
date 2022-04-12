@@ -25,7 +25,7 @@ class ConsecutiveSpacesRule(configRules: List<RulesConfig>) : DiktatRule(
     nameId,
     configRules,
     listOf(TOO_MANY_CONSECUTIVE_SPACES),
-    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:block-structure"))
+    setOf(VisitorModifier.RunAsLateAsPossible, VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${BlockStructureBraces.nameId}"))
 ) {
     override fun logic(node: ASTNode) {
         val configuration = TooManySpacesRuleConfiguration(
