@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class AccurateCalculationsWarnTest : LintTestBase(::AccurateCalculationsRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:accurate-calculations"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${AccurateCalculationsRule.NAME_ID}"
 
     private fun warnText(ref: String, expr: String) = "${FLOAT_IN_ACCURATE_CALCULATIONS.warnText()} float value of <$ref> used in arithmetic expression in $expr"
 

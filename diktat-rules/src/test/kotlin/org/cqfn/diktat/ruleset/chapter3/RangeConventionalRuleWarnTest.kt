@@ -10,7 +10,7 @@ import com.pinterest.ktlint.core.LintError
 import org.junit.jupiter.api.Test
 
 class RangeConventionalRuleWarnTest : LintTestBase(::RangeConventionalRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:range"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${RangeConventionalRule.NAME_ID}"
     private val rulesConfigRangeRule: List<RulesConfig> = listOf(
         RulesConfig(
             Warnings.CONVENTIONAL_RANGE.name, true,

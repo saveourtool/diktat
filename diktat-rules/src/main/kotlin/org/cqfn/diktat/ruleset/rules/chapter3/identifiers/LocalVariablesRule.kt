@@ -38,7 +38,7 @@ import org.jetbrains.kotlin.psi.psiUtil.startOffset
  * * Properties initialized with constructor calls cannot be distinguished from method call and are no supported.
  */
 class LocalVariablesRule(configRules: List<RulesConfig>) : DiktatRule(
-    "local-variables",
+    NAME_ID,
     configRules,
     listOf(LOCAL_VARIABLE_EARLY_DECLARATION)
 ) {
@@ -218,6 +218,7 @@ class LocalVariablesRule(configRules: List<RulesConfig>) : DiktatRule(
     ) = "<$name> is declared on line <$declared> and is used for the first time on line <$used>"
 
     companion object {
+        const val NAME_ID = "abc-local-variables"
         private var functionInitializers = listOf(
             "emptyList", "emptySet", "emptyMap", "emptyArray", "emptySequence",
             "listOf", "setOf", "mapOf", "arrayOf", "arrayListOf",

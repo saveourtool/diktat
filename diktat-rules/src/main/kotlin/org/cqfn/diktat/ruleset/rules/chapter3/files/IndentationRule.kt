@@ -7,6 +7,7 @@ package org.cqfn.diktat.ruleset.rules.chapter3.files
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_INDENTATION
+import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 import org.cqfn.diktat.ruleset.utils.indentation.ArrowInWhenChecker
@@ -69,9 +70,10 @@ import kotlin.math.abs
  */
 @Suppress("LargeClass")
 class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
-    "indentation",
+    NAME_ID,
     configRules,
-    listOf(WRONG_INDENTATION)
+    listOf(WRONG_INDENTATION),
+    setOf(VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${WhiteSpaceRule.NAME_ID}"))
 ) {
     private val configuration: IndentationConfig by lazy {
         IndentationConfig(configRules.getRuleConfig(WRONG_INDENTATION)?.configuration ?: emptyMap())
@@ -387,6 +389,7 @@ class IndentationRule(configRules: List<RulesConfig>) : DiktatRule(
     companion object {
         private val log = LoggerFactory.getLogger(IndentationRule::class.java)
         const val INDENT_SIZE = 4
+        const val NAME_ID = "act-indentation"
         private val increasingTokens = listOf(LPAR, LBRACE, LBRACKET, LONG_TEMPLATE_ENTRY_START)
         private val decreasingTokens = listOf(RPAR, RBRACE, RBRACKET, LONG_TEMPLATE_ENTRY_END)
         private val matchingTokens = increasingTokens.zip(decreasingTokens)

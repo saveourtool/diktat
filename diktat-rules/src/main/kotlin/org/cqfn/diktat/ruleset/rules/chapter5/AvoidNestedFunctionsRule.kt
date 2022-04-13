@@ -25,7 +25,7 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  * This rule checks for nested functions and warns if it finds any.
  */
 class AvoidNestedFunctionsRule(configRules: List<RulesConfig>) : DiktatRule(
-    "avoid-nested-functions",
+    NAME_ID,
     configRules,
     listOf(AVOID_NESTED_FUNCTIONS)
 ) {
@@ -97,4 +97,8 @@ class AvoidNestedFunctionsRule(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("UnsafeCallOnNullableType")
     private fun getParameterNames(node: ASTNode): List<String> =
             (node.psi as KtFunction).valueParameters.map { it.name!! }
+
+    companion object {
+        const val NAME_ID = "acj-avoid-nested-functions"
+    }
 }

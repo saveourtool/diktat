@@ -28,7 +28,7 @@ import org.jetbrains.kotlin.psi.KtClass
  * This rule checks if class is stateless and if so changes it to object.
  */
 class StatelessClassesRule(configRules: List<RulesConfig>) : DiktatRule(
-    "stateless-class",
+    NAME_ID,
     configRules,
     listOf(OBJECT_IS_PREFERRED)
 ) {
@@ -89,5 +89,9 @@ class StatelessClassesRule(configRules: List<RulesConfig>) : DiktatRule(
         }
 
         return foundInterfaces.any { (it.psi as KtClass).getProperties().isEmpty() }
+    }
+
+    companion object {
+        const val NAME_ID = "abi-multiple-init-block"
     }
 }

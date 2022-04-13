@@ -26,7 +26,7 @@ import org.jetbrains.kotlin.psi.psiUtil.children
  * Checks if abstract class has any abstract method. If not, warns that class should not be abstract
  */
 class AbstractClassesRule(configRules: List<RulesConfig>) : DiktatRule(
-    "abstract-classes",
+    NAME_ID,
     configRules,
     listOf(CLASS_SHOULD_NOT_BE_ABSTRACT)
 ) {
@@ -66,5 +66,9 @@ class AbstractClassesRule(configRules: List<RulesConfig>) : DiktatRule(
                 modList.replaceChild(abstractKeyword, newOpenKeyword)
             }
         }
+    }
+
+    companion object {
+        const val NAME_ID = "abg-abstract-classes"
     }
 }

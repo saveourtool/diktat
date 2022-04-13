@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class CollapseIfStatementsRuleWarnTest : LintTestBase(::CollapseIfStatementsRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:collapse-if"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${CollapseIfStatementsRule.NAME_ID}"
 
     @Test
     @Tag(WarningNames.COLLAPSE_IF_STATEMENTS)

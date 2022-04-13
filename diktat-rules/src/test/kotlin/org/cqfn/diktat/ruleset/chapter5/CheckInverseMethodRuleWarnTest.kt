@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class CheckInverseMethodRuleWarnTest : LintTestBase(::CheckInverseMethodRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:inverse-method"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${CheckInverseMethodRule.NAME_ID}"
 
     @Test
     @Tag(INVERSE_FUNCTION_PREFERRED)

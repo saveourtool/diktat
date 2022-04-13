@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class SingleLineStatementsRuleWarnTest : LintTestBase(::SingleLineStatementsRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:statement"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${SingleLineStatementsRule.NAME_ID}"
 
     @Test
     @Tag(WarningNames.MORE_THAN_ONE_STATEMENT_PER_LINE)

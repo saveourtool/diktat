@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test
 
 @Suppress("LargeClass")
 class IndentationRuleWarnTest : LintTestBase(::IndentationRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:indentation"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${IndentationRule.NAME_ID}"
     private val rulesConfigList = listOf(
         RulesConfig(WRONG_INDENTATION.name, true,
             mapOf(

@@ -9,7 +9,10 @@ import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_PATH
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_PREFIX
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_INCORRECT_SYMBOLS
 import org.cqfn.diktat.ruleset.constants.Warnings.PACKAGE_NAME_MISSING
+import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.DiktatRule
+import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.CommentsFormatting
+import org.cqfn.diktat.ruleset.rules.chapter2.kdoc.KdocComments
 import org.cqfn.diktat.ruleset.utils.*
 
 import com.pinterest.ktlint.core.ast.ElementType.BLOCK_COMMENT
@@ -42,10 +45,10 @@ import java.util.concurrent.atomic.AtomicInteger
  */
 @Suppress("ForbiddenComment", "TOO_MANY_LINES_IN_LAMBDA")
 class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
-    "package-naming",
+    NAME_ID,
     configRules,
     listOf(INCORRECT_PACKAGE_SEPARATOR, PACKAGE_NAME_INCORRECT_CASE, PACKAGE_NAME_MISSING,
-        PACKAGE_NAME_INCORRECT_PATH, PACKAGE_NAME_INCORRECT_PREFIX, PACKAGE_NAME_INCORRECT_SYMBOLS)
+        PACKAGE_NAME_INCORRECT_PATH, PACKAGE_NAME_INCORRECT_PREFIX, PACKAGE_NAME_INCORRECT_SYMBOLS),
 ) {
     private lateinit var domainName: String
 
@@ -278,6 +281,7 @@ class PackageNaming(configRules: List<RulesConfig>) : DiktatRule(
 
     companion object {
         private val log = LoggerFactory.getLogger(PackageNaming::class.java)
+        const val NAME_ID = "aah-package-naming"
 
         /**
          * Directory which is considered the start of sources file tree

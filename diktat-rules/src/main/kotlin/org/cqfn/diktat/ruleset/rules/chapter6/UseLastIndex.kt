@@ -17,7 +17,7 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
  * This rule checks if there use property length with operation - 1 and fix this on lastIndex
  */
 class UseLastIndex(configRules: List<RulesConfig>) : DiktatRule(
-    "last-index",
+    NAME_ID,
     configRules,
     listOf(Warnings.USE_LAST_INDEX)
 ) {
@@ -48,5 +48,9 @@ class UseLastIndex(configRules: List<RulesConfig>) : DiktatRule(
         val textParent = parent.text.replace(node.text, text)
         val newParent = KotlinParser().createNode(textParent)
         parent.treeParent.replaceChild(parent, newParent)
+    }
+
+    companion object {
+        const val NAME_ID = "aav-last-index"
     }
 }

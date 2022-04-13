@@ -44,7 +44,7 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
  * Rule that checks order of declarations inside classes, interfaces and objects.
  */
 class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
-    "class-like-structures",
+    NAME_ID,
     configRules,
     listOf(BLANK_LINE_BETWEEN_PROPERTIES, WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES)
 ) {
@@ -229,6 +229,7 @@ class ClassLikeStructuresOrderRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
+        const val NAME_ID = "aak-class-like-structures"
         private val childrenTypes = listOf(PROPERTY, CLASS, CLASS_INITIALIZER, SECONDARY_CONSTRUCTOR, FUN, OBJECT_DECLARATION, ENUM_ENTRY)
     }
 }

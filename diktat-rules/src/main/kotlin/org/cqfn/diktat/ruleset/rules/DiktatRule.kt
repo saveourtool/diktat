@@ -22,8 +22,9 @@ private typealias DiktatConfigRule = org.cqfn.diktat.common.config.rules.Rule
 abstract class DiktatRule(
     id: String,
     val configRules: List<RulesConfig>,
-    private val inspections: List<DiktatConfigRule>
-) : Rule(id) {
+    private val inspections: List<DiktatConfigRule>,
+    visitorModifiers: Set<VisitorModifier> = emptySet(),
+) : Rule(id, visitorModifiers) {
     /**
      * Default value is false
      */

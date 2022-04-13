@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class NestedFunctionBlockWarnTest : LintTestBase(::NestedFunctionBlock) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:nested-block"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${NestedFunctionBlock.NAME_ID}"
     private val rulesConfigList = listOf(
         RulesConfig(NESTED_BLOCK.name, true, mapOf("maxNestedBlockQuantity" to "2"))
     )

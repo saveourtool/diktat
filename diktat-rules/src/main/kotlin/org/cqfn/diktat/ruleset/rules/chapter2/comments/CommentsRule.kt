@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory
  */
 @Suppress("ForbiddenComment")
 class CommentsRule(configRules: List<RulesConfig>) : DiktatRule(
-    "comments",
+    NAME_ID,
     configRules,
     listOf(COMMENTED_OUT_CODE)
 ) {
@@ -174,6 +174,7 @@ class CommentsRule(configRules: List<RulesConfig>) : DiktatRule(
     @Suppress("MaxLineLength")
     companion object {
         private val logger = LoggerFactory.getLogger(CommentsRule::class.java)
+        const val NAME_ID = "aaa-comments"
         private val importKeywordWithSpace = "${KtTokens.IMPORT_KEYWORD.value} "
         private val packageKeywordWithSpace = "${KtTokens.PACKAGE_KEYWORD.value} "
         private val importOrPackage = """($importKeywordWithSpace|$packageKeywordWithSpace)""".toRegex()

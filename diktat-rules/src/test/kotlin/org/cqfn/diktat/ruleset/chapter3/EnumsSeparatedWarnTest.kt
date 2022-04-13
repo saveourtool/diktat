@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class EnumsSeparatedWarnTest : LintTestBase(::EnumsSeparated) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:enum-separated"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${EnumsSeparated.NAME_ID}"
 
     @Test
     @Tag(WarningNames.ENUMS_SEPARATED)

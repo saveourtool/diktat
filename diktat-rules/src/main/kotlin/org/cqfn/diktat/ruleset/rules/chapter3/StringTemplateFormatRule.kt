@@ -28,7 +28,7 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
  * FixMe: The important caveat here: in "$foo" kotlin compiler adds implicit call to foo.toString() in case foo type is not string.
  */
 class StringTemplateFormatRule(configRules: List<RulesConfig>) : DiktatRule(
-    "string-template-format",
+    NAME_ID,
     configRules,
     listOf(STRING_TEMPLATE_CURLY_BRACES, STRING_TEMPLATE_QUOTES)
 ) {
@@ -103,5 +103,9 @@ class StringTemplateFormatRule(configRules: List<RulesConfig>) : DiktatRule(
         } else {
             false
         }
+    }
+
+    companion object {
+        const val NAME_ID = "abs-string-template-format"
     }
 }
