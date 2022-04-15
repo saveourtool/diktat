@@ -83,6 +83,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                     checkLength(it, configuration)
                 }
             }
+            println(node.text)
         }
     }
 
@@ -116,6 +117,15 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         var parent = wrongNode
         do {
             when (parent.elementType) {
+                BINARY_EXPRESSION, PARENTHESIZED -> {
+                    if (parent.treeParent.elementType == BINARY_EXPRESSION || parent.treeParent.elementType == PARENTHESIZED)
+                        parent = parent.treeParent
+                    else
+                        when (parent.elementType) {
+                            BINARY_EXPRESSION -> return LongLineFixableCases.BinaryExpression(parent)
+                            PARENTHESIZED -> return LongLineFixableCases.Parenthesized(parent)
+                        }
+                }
                 FUN -> return checkFun(parent)
                 CONDITION -> return checkCondition(parent, configuration)
                 PROPERTY -> return checkProperty(parent, configuration)
@@ -219,7 +229,27 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
         if (binList.size == 1) {
             return LongLineFixableCases.None
         }
-        return LongLineFixableCases.Condition(configuration.lineLength, leftOffset, binList)
+        return LongLineFixableCases.Condition(wrongNode, configuration.lineLength, leftOffset, binList)
+    }
+
+    private fun checkBinaryExpression(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
+        val leftOffset = positionByOffset(wrongNode.startOffset).second
+        val binList: MutableList<ASTNode> = mutableListOf()
+        searchBinaryExpression(wrongNode.treeParent, binList)
+        if (binList.size == 1) {
+            return LongLineFixableCases.None
+        }
+        return LongLineFixableCases.BinaryExpression(wrongNode)
+    }
+
+    private fun checkParenthesized(wrongNode: ASTNode, configuration: LineLengthConfiguration): LongLineFixableCases {
+        val leftOffset = positionByOffset(wrongNode.startOffset).second
+        val binList: MutableList<ASTNode> = mutableListOf()
+        searchBinaryExpression(wrongNode.treeParent, binList)
+        if (binList.size == 1) {
+            return LongLineFixableCases.None
+        }
+        return LongLineFixableCases.Parenthesized(wrongNode)
     }
 
     @Suppress("UnsafeCallOnNullableType", "TOO_LONG_FUNCTION")
@@ -236,7 +266,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
                 if (binList.size == 1) {
                     return LongLineFixableCases.None
                 }
-                return LongLineFixableCases.Condition(configuration.lineLength, leftOffset, binList)
+                return LongLineFixableCases.Condition(wrongNode, configuration.lineLength, leftOffset, binList)
             } else {
                 return LongLineFixableCases.None
             }
@@ -276,6 +306,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
             is LongLineFixableCases.Property -> createSplitProperty(fixableType)
             is LongLineFixableCases.StringTemplate -> fixStringTemplate(fixableType)
             is LongLineFixableCases.BinaryExpression -> fixBinaryExpression(fixableType.node)
+            is LongLineFixableCases.Parenthesized -> fixParenthesized(fixableType.node)
             is LongLineFixableCases.None -> return
         }
     }
@@ -311,6 +342,11 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
 
     @Suppress("UnsafeCallOnNullableType")
     private fun fixBinaryExpression(node: ASTNode) {
+        val whiteSpaceAfterPlus = node.findChildByType(OPERATION_REFERENCE)!!.treeNext
+        node.replaceChild(whiteSpaceAfterPlus, PsiWhiteSpaceImpl("\n"))
+    }
+
+    private fun fixParenthesized(node: ASTNode){
         val whiteSpaceAfterPlus = node.findChildByType(OPERATION_REFERENCE)!!.treeNext
         node.replaceChild(whiteSpaceAfterPlus, PsiWhiteSpaceImpl("\n"))
     }
@@ -525,7 +561,10 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
 
         class BinaryExpression(val node: ASTNode) : LongLineFixableCases()
 
+        class Parenthesized(val node: ASTNode) : LongLineFixableCases()
+
         class Condition(
+            val node: ASTNode,
             val maximumLineLength: Long,
             val leftOffset: Int,
             val binList: MutableList<ASTNode>
