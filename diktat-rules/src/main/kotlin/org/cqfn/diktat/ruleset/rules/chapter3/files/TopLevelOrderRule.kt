@@ -2,7 +2,9 @@ package org.cqfn.diktat.ruleset.rules.chapter3.files
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.TOP_LEVEL_ORDER
+import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.DiktatRule
+import org.cqfn.diktat.ruleset.rules.chapter1.PackageNaming
 import org.cqfn.diktat.ruleset.utils.*
 
 import com.pinterest.ktlint.core.ast.ElementType.CLASS
@@ -27,9 +29,9 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
  * Rule that checks order in top level
  */
 class TopLevelOrderRule(configRules: List<RulesConfig>) : DiktatRule(
-    "top-level-order",
+    NAME_ID,
     configRules,
-    listOf(TOP_LEVEL_ORDER)
+    listOf(TOP_LEVEL_ORDER),
 ) {
     override fun logic(node: ASTNode) {
         if (node.elementType == FILE) {
@@ -113,6 +115,8 @@ class TopLevelOrderRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
+        const val NAME_ID = "aap-top-level-order"
+
         /**
          * List of children that should be sort
          */

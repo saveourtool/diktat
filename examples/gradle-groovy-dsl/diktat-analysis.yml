@@ -7,7 +7,7 @@
     # expected values:  disabledChapters: "Naming, Comments, General, Variables, Functions, Classes"
     # or: "1, 2, 3, 4, 5, 6"
     disabledChapters: ""
-    kotlinVersion: 1.5
+    kotlinVersion: 1.6
     srcDirectories: "main"
 # Checks that the Class/Enum/Interface name does not match Pascal case
 - name: CLASS_NAME_INCORRECT
@@ -428,6 +428,9 @@
 # Checks that using unnecessary, custom label
 - name: CUSTOM_LABEL
   enabled: true
+# Check that lambda with inner lambda doesn't use implicit parameter
+- name: PARAMETER_NAME_IN_OUTER_LAMBDA
+  enabled: true
 # Checks that property in KDoc present in class
 - name: KDOC_EXTRA_PROPERTY
   enabled: true
@@ -509,3 +512,12 @@
   enabled: true
   configuration:
     isRangeToIgnore: false
+# Check that typealias name is in PascalCase
+- name: TYPEALIAS_NAME_INCORRECT_CASE
+  enabled: true
+# Should change property length - 1 to property lastIndex
+- name: USE_LAST_INDEX
+  enabled: true
+# Only properties from the primary constructor should be documented in a @property tag in class KDoc
+- name: KDOC_NO_CLASS_BODY_PROPERTIES_IN_HEADER
+  enabled: true

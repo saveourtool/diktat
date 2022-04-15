@@ -2,6 +2,7 @@ package org.cqfn.diktat.ruleset.rules.chapter3
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.ENUMS_SEPARATED
+import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.allSiblings
 import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
@@ -27,9 +28,9 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
  * Rule that checks enum classes formatting
  */
 class EnumsSeparated(configRules: List<RulesConfig>) : DiktatRule(
-    "enum-separated",
+    NAME_ID,
     configRules,
-    listOf(ENUMS_SEPARATED)
+    listOf(ENUMS_SEPARATED),
 ) {
     override fun logic(node: ASTNode) {
         if (node.elementType == CLASS && node.hasChildOfType(CLASS_BODY) && node.isClassEnum()) {
@@ -92,6 +93,7 @@ class EnumsSeparated(configRules: List<RulesConfig>) : DiktatRule(
         }
     }
     companion object {
+        const val NAME_ID = "abq-enum-separated"
         private val simpleValue = listOf(IDENTIFIER, WHITE_SPACE, COMMA, SEMICOLON)
         private val simpleEnum = listOf(ENUM_ENTRY, WHITE_SPACE, LBRACE, RBRACE)
     }

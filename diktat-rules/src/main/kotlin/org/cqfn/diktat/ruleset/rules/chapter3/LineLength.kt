@@ -65,7 +65,7 @@ import java.net.URL
  */
 @Suppress("ForbiddenComment")
 class LineLength(configRules: List<RulesConfig>) : DiktatRule(
-    "line-length",
+    NAME_ID,
     configRules,
     listOf(LONG_LINE)
 ) {
@@ -588,6 +588,7 @@ class LineLength(configRules: List<RulesConfig>) : DiktatRule(
      */
     companion object {
         private const val MAX_LENGTH = 120L
+        const val NAME_ID = "abv-line-length"
         private const val STRING_PART_OFFSET = 4
         private val propertyList = listOf(INTEGER_CONSTANT, LITERAL_STRING_TEMPLATE_ENTRY, FLOAT_CONSTANT,
             CHARACTER_CONSTANT, REFERENCE_EXPRESSION, BOOLEAN_CONSTANT, LONG_STRING_TEMPLATE_ENTRY,

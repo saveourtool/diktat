@@ -7,6 +7,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.COMMENT_WHITE_SPACE
 import org.cqfn.diktat.ruleset.constants.Warnings.FIRST_COMMENT_NO_BLANK_LINE
 import org.cqfn.diktat.ruleset.constants.Warnings.IF_ELSE_COMMENTS
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_NEWLINES_AROUND_KDOC
+import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
@@ -50,10 +51,10 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
  * * Comments in if else should be inside code blocks. Exception: General if comment
  */
 class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
-    "kdoc-comments-codeblocks-formatting",
+    NAME_ID,
     configRules,
     listOf(COMMENT_WHITE_SPACE, FIRST_COMMENT_NO_BLANK_LINE,
-        IF_ELSE_COMMENTS, WRONG_NEWLINES_AROUND_KDOC)
+        IF_ELSE_COMMENTS, WRONG_NEWLINES_AROUND_KDOC),
 ) {
     /**
      * @param node
@@ -357,5 +358,6 @@ class CommentsFormatting(configRules: List<RulesConfig>) : DiktatRule(
     companion object {
         private const val APPROPRIATE_COMMENT_SPACES = 1
         private const val MAX_SPACES = 1
+        const val NAME_ID = "aaf-kdoc-comments-codeblocks-formatting"
     }
 }

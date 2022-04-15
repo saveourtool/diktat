@@ -23,7 +23,7 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
  * For example if there is !isEmpty() on collection call that it changes it to isNotEmpty()
  */
 class CheckInverseMethodRule(configRules: List<RulesConfig>) : DiktatRule(
-    "inverse-method",
+    NAME_ID,
     configRules,
     listOf(INVERSE_FUNCTION_PREFERRED)
 ) {
@@ -57,6 +57,7 @@ class CheckInverseMethodRule(configRules: List<RulesConfig>) : DiktatRule(
     }
 
     companion object {
+        const val NAME_ID = "aay-inverse-method"
         val methodMap = mapOf(
             "isEmpty()" to "isNotEmpty()",
             "isBlank()" to "isNotBlank()",

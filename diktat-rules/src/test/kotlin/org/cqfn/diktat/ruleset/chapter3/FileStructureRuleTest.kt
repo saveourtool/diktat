@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class FileStructureRuleTest : LintTestBase(::FileStructureRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:file-structure"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${FileStructureRule.NAME_ID}"
     private val rulesConfigListWildCardImport: List<RulesConfig> = listOf(
         RulesConfig(FILE_WILDCARD_IMPORTS.name, true,
             mapOf("allowedWildcards" to "org.cqfn.diktat.*"))

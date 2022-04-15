@@ -29,7 +29,7 @@ import org.jetbrains.kotlin.psi.KtStringTemplateExpression
  * "string one " + "string two "
  */
 class StringConcatenationRule(configRules: List<RulesConfig>) : DiktatRule(
-    "string-concatenation",
+    NAME_ID,
     configRules,
     listOf(
         STRING_CONCATENATION
@@ -215,4 +215,8 @@ class StringConcatenationRule(configRules: List<RulesConfig>) : DiktatRule(
 
     private fun KtBinaryExpression.isRvalueExpression() =
             this.right is KtExpression
+
+    companion object {
+        const val NAME_ID = "abr-string-concatenation"
+    }
 }

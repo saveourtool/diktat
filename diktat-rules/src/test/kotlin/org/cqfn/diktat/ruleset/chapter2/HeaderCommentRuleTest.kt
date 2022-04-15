@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
 class HeaderCommentRuleTest : LintTestBase(::HeaderCommentRule) {
-    private val ruleId: String = "$DIKTAT_RULE_SET_ID:header-comment"
+    private val ruleId: String = "$DIKTAT_RULE_SET_ID:${HeaderCommentRule.NAME_ID}"
     private val curYear = LocalDate.now().year
     private val rulesConfigList: List<RulesConfig> = listOf(
         RulesConfig("HEADER_MISSING_OR_WRONG_COPYRIGHT", true,

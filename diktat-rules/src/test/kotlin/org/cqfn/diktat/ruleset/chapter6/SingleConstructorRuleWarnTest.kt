@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class SingleConstructorRuleWarnTest : LintTestBase(::SingleConstructorRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:single-constructor"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${SingleConstructorRule.NAME_ID}"
 
     @Test
     @Tag(WarningNames.SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY)

@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class WhenMustHaveElseWarnTest : LintTestBase(::WhenMustHaveElseRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:no-else-in-when"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${WhenMustHaveElseRule.NAME_ID}"
 
     @Test
     @Tag(WarningNames.WHEN_WITHOUT_ELSE)

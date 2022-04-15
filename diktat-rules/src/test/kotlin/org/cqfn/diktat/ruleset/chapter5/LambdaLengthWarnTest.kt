@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class LambdaLengthWarnTest : LintTestBase(::LambdaLengthRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:lambda-length"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${LambdaLengthRule.NAME_ID}"
     private val rulesConfigList: List<RulesConfig> = listOf(
         RulesConfig(
             Warnings.TOO_MANY_LINES_IN_LAMBDA.name, true,

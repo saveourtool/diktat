@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class BlankLinesWarnTest : LintTestBase(::BlankLinesRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:blank-lines"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${BlankLinesRule.NAME_ID}"
     private val consecutiveLinesWarn = "${TOO_MANY_BLANK_LINES.warnText()} do not use more than two consecutive blank lines"
     private fun blankLinesInBlockWarn(isBeginning: Boolean) =
             "${TOO_MANY_BLANK_LINES.warnText()} do not put newlines ${if (isBeginning) "in the beginning" else "at the end"} of code blocks"

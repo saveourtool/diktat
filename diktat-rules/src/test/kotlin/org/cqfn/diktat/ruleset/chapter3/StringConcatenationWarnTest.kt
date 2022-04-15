@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class StringConcatenationWarnTest : LintTestBase(::StringConcatenationRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:string-concatenation"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${StringConcatenationRule.NAME_ID}"
     private val canBeAutoCorrected = true
 
     @Test

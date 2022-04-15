@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class LongNumericalValuesSeparatedWarnTest : LintTestBase(::LongNumericalValuesSeparatedRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:long-numerical-values"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${LongNumericalValuesSeparatedRule.NAME_ID}"
     private val rulesConfig: List<RulesConfig> = listOf(
         RulesConfig(Warnings.LONG_NUMERICAL_VALUES_SEPARATED.name, true,
             mapOf("maxNumberLength" to "2"))

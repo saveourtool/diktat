@@ -21,7 +21,7 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  * Rule 5.1.2 Nested blokcs
  */
 class NestedFunctionBlock(configRules: List<RulesConfig>) : DiktatRule(
-    "nested-block",
+    NAME_ID,
     configRules,
     listOf(NESTED_BLOCK)
 ) {
@@ -65,6 +65,7 @@ class NestedFunctionBlock(configRules: List<RulesConfig>) : DiktatRule(
 
     companion object {
         private const val MAX_NESTED_BLOCK_COUNT = 4L
+        const val NAME_ID = "abn-nested-block"
 
         /**
          * Nodes of these types reset counter of nested blocks

@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class TrivialPropertyAccessorsWarnTest : LintTestBase(::TrivialPropertyAccessors) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:trivial-property-accessors"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${TrivialPropertyAccessors.NAME_ID}"
 
     @Test
     @Tag(TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED)

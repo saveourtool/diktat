@@ -4,6 +4,7 @@ import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.BRACES_BLOCK_STRUCTURE_ERROR
+import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
@@ -51,9 +52,9 @@ import org.jetbrains.kotlin.psi.KtTryExpression
  * - braces around `else`/`catch`/`finally`/`while` (in `do-while` loop)
  */
 class BlockStructureBraces(configRules: List<RulesConfig>) : DiktatRule(
-    "block-structure",
+    NAME_ID,
     configRules,
-    listOf(BRACES_BLOCK_STRUCTURE_ERROR)
+    listOf(BRACES_BLOCK_STRUCTURE_ERROR),
 ) {
     override fun logic(node: ASTNode) {
         val configuration = BlockStructureBracesConfiguration(
@@ -270,5 +271,9 @@ class BlockStructureBraces(configRules: List<RulesConfig>) : DiktatRule(
          * Whether a closing brace should be placed on a new line
          */
         val closeBrace = config["closeBraceNewline"]?.toBoolean() ?: true
+    }
+
+    companion object {
+        const val NAME_ID = "acn-block-structure"
     }
 }

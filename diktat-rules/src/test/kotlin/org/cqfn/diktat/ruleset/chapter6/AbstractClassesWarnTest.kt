@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class AbstractClassesWarnTest : LintTestBase(::AbstractClassesRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:abstract-classes"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${AbstractClassesRule.NAME_ID}"
 
     @Test
     @Tag(CLASS_SHOULD_NOT_BE_ABSTRACT)

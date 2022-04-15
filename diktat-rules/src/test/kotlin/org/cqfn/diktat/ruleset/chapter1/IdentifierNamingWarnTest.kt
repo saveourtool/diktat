@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Tags
 import org.junit.jupiter.api.Test
 
 class IdentifierNamingWarnTest : LintTestBase(::IdentifierNaming) {
-    private val ruleId: String = "$DIKTAT_RULE_SET_ID:identifier-naming"
+    private val ruleId: String = "$DIKTAT_RULE_SET_ID:${IdentifierNaming.NAME_ID}"
     private val rulesConfigBooleanFunctions: List<RulesConfig> = listOf(
         RulesConfig(FUNCTION_BOOLEAN_PREFIX.name, true,
             mapOf("allowedPrefixes" to "equals, equivalent, foo"))

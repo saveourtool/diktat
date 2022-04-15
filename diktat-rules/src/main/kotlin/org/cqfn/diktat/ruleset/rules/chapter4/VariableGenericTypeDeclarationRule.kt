@@ -22,7 +22,7 @@ import org.jetbrains.kotlin.psi.KtProperty
  */
 // FIXME: we now don't have access to return types, so we can perform this check only if explicit type is present, but should be able also if it's not.
 class VariableGenericTypeDeclarationRule(configRules: List<RulesConfig>) : DiktatRule(
-    "variable-generic-type",
+    NAME_ID,
     configRules,
     listOf(GENERIC_VARIABLE_WRONG_DECLARATION)
 ) {
@@ -72,5 +72,9 @@ class VariableGenericTypeDeclarationRule(configRules: List<RulesConfig>) : Dikta
         if (leftSide == null && rightSide != null) {
             GENERIC_VARIABLE_WRONG_DECLARATION.warn(configRules, emitWarn, isFixMode, node.text, node.startOffset, node)
         }
+    }
+
+    companion object {
+        const val NAME_ID = "abl-variable-generic-type"
     }
 }

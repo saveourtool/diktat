@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class BracesRuleWarnTest : LintTestBase(::BracesInConditionalsAndLoopsRule) {
-    private val ruleId = "$DIKTAT_RULE_SET_ID:braces-rule"
+    private val ruleId = "$DIKTAT_RULE_SET_ID:${BracesInConditionalsAndLoopsRule.NAME_ID}"
 
     @Test
     @Tag(WarningNames.NO_BRACES_IN_CONDITIONALS_AND_LOOPS)

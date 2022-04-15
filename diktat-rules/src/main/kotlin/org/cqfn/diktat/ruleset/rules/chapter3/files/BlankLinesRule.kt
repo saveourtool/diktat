@@ -2,6 +2,7 @@ package org.cqfn.diktat.ruleset.rules.chapter3.files
 
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.TOO_MANY_BLANK_LINES
+import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.*
 
@@ -22,9 +23,9 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
  * 2. Checks that blank lines are not put in the beginning or at the end of code blocks with curly braces
  */
 class BlankLinesRule(configRules: List<RulesConfig>) : DiktatRule(
-    "blank-lines",
+    NAME_ID,
     configRules,
-    listOf(TOO_MANY_BLANK_LINES)
+    listOf(TOO_MANY_BLANK_LINES),
 ) {
     override fun logic(node: ASTNode) {
         if (node.elementType == WHITE_SPACE) {
@@ -70,5 +71,9 @@ class BlankLinesRule(configRules: List<RulesConfig>) : DiktatRule(
                 node.leaveExactlyNumNewLines(2)
             }
         }
+    }
+
+    companion object {
+        const val NAME_ID = "acd-blank-lines"
     }
 }

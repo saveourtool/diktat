@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory
  *  e.g `this@Foo`. But for this we need a mechanism to determine declaration scope and it's label.
  */
 class CompactInitialization(configRules: List<RulesConfig>) : DiktatRule(
-    "class-compact-initialization",
+    NAME_ID,
     configRules,
     listOf(COMPACT_OBJECT_INITIALIZATION)
 ) {
@@ -212,5 +212,6 @@ class CompactInitialization(configRules: List<RulesConfig>) : DiktatRule(
 
     companion object {
         private val log = LoggerFactory.getLogger(CompactInitialization::class.java)
+        const val NAME_ID = "aau-class-compact-initialization"
     }
 }

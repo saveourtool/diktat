@@ -39,7 +39,7 @@ import org.jetbrains.kotlin.psi.psiUtil.collectDescendantsOfType
  * Secondary constructor is converted into primary, statements that are not assignments are moved into an `init` block.
  */
 class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
-    "single-constructor",
+    NAME_ID,
     configRules,
     listOf(SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY)
 ) {
@@ -265,4 +265,8 @@ class SingleConstructorRule(configRules: List<RulesConfig>) : DiktatRule(
                 ")"
     )
         .node
+
+    companion object {
+        const val NAME_ID = "aab-single-constructor"
+    }
 }

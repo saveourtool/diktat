@@ -4,6 +4,7 @@ import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.TOO_MANY_CONSECUTIVE_SPACES
+import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 
 import com.pinterest.ktlint.core.ast.ElementType.ENUM_ENTRY
@@ -21,9 +22,9 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafElement
  *
  */
 class ConsecutiveSpacesRule(configRules: List<RulesConfig>) : DiktatRule(
-    "too-many-spaces",
+    NAME_ID,
     configRules,
-    listOf(TOO_MANY_CONSECUTIVE_SPACES)
+    listOf(TOO_MANY_CONSECUTIVE_SPACES),
 ) {
     override fun logic(node: ASTNode) {
         val configuration = TooManySpacesRuleConfiguration(
@@ -84,5 +85,6 @@ class ConsecutiveSpacesRule(configRules: List<RulesConfig>) : DiktatRule(
 
     companion object {
         private const val MAX_SPACES = 1
+        const val NAME_ID = "aco-too-many-spaces"
     }
 }

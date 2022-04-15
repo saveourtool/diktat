@@ -9,7 +9,7 @@ import com.pinterest.ktlint.core.LintError
 import org.junit.jupiter.api.Test
 
 class SuppressTest : LintTestBase(::IdentifierNaming) {
-    private val ruleId: String = "$DIKTAT_RULE_SET_ID:identifier-naming"
+    private val ruleId: String = "$DIKTAT_RULE_SET_ID:${IdentifierNaming.NAME_ID}"
 
     @Test
     fun `test suppress on class`() {
@@ -140,7 +140,7 @@ class SuppressTest : LintTestBase(::IdentifierNaming) {
                   }
                 """.trimIndent()
         lintMethod(code,
-            LintError(3, 13, "$DIKTAT_RULE_SET_ID:identifier-naming",
+            LintError(3, 13, "$DIKTAT_RULE_SET_ID:aai-identifier-naming",
                 "${Warnings.FUNCTION_NAME_INCORRECT_CASE.warnText()} methODTREE", true))
     }
 }

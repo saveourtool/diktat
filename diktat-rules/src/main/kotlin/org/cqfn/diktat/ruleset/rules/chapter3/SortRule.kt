@@ -4,6 +4,7 @@ import org.cqfn.diktat.common.config.rules.RuleConfiguration
 import org.cqfn.diktat.common.config.rules.RulesConfig
 import org.cqfn.diktat.common.config.rules.getRuleConfig
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_DECLARATIONS_ORDER
+import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.findAllDescendantsWithSpecificType
 import org.cqfn.diktat.ruleset.utils.hasChildOfType
@@ -32,9 +33,9 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
  * Rule that sorts class properties and enum members alphabetically
  */
 class SortRule(configRules: List<RulesConfig>) : DiktatRule(
-    "sort-rule",
+    NAME_ID,
     configRules,
-    listOf(WRONG_DECLARATIONS_ORDER)
+    listOf(WRONG_DECLARATIONS_ORDER),
 ) {
     override fun logic(node: ASTNode) {
         val configuration = SortRuleConfiguration(
@@ -183,5 +184,9 @@ class SortRule(configRules: List<RulesConfig>) : DiktatRule(
          * Whether class properties should be sorted alphabetically
          */
         val sortProperty = config["sortProperty"]?.toBoolean() ?: false
+    }
+
+    companion object {
+        const val NAME_ID = "abp-sort-rule"
     }
 }

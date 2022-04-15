@@ -10,6 +10,7 @@ import org.cqfn.diktat.ruleset.constants.Warnings.FILE_NO_BLANK_LINE_BETWEEN_BLO
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_UNORDERED_IMPORTS
 import org.cqfn.diktat.ruleset.constants.Warnings.FILE_WILDCARD_IMPORTS
 import org.cqfn.diktat.ruleset.constants.Warnings.UNUSED_IMPORT
+import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.rules.chapter1.PackageNaming.Companion.PACKAGE_SEPARATOR
 import org.cqfn.diktat.ruleset.utils.StandardPlatforms
@@ -57,10 +58,10 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
  * 5. Ensures there are no wildcard imports
  */
 class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
-    "file-structure",
+    NAME_ID,
     configRules,
     listOf(FILE_CONTAINS_ONLY_COMMENTS, FILE_INCORRECT_BLOCKS_ORDER, FILE_NO_BLANK_LINE_BETWEEN_BLOCKS,
-        FILE_UNORDERED_IMPORTS, FILE_WILDCARD_IMPORTS, UNUSED_IMPORT)
+        FILE_UNORDERED_IMPORTS, FILE_WILDCARD_IMPORTS, UNUSED_IMPORT),
 ) {
     private val domainName by lazy {
         configRules
@@ -392,5 +393,9 @@ class FileStructureRule(configRules: List<RulesConfig>) : DiktatRule(
          * Use imports grouping according to recommendation 3.1
          */
         val useRecommendedImportsOrder = config["useRecommendedImportsOrder"]?.toBoolean() ?: true
+    }
+
+    companion object {
+        const val NAME_ID = "acq-file-structure"
     }
 }

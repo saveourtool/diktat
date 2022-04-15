@@ -7,6 +7,7 @@ import org.cqfn.diktat.ruleset.constants.ListOfList
 import org.cqfn.diktat.ruleset.constants.Warnings.COMPLEX_EXPRESSION
 import org.cqfn.diktat.ruleset.constants.Warnings.REDUNDANT_SEMICOLON
 import org.cqfn.diktat.ruleset.constants.Warnings.WRONG_NEWLINES
+import org.cqfn.diktat.ruleset.rules.DIKTAT_RULE_SET_ID
 import org.cqfn.diktat.ruleset.rules.DiktatRule
 import org.cqfn.diktat.ruleset.utils.appendNewlineMergingWhiteSpace
 import org.cqfn.diktat.ruleset.utils.emptyBlockList
@@ -117,9 +118,10 @@ import org.slf4j.LoggerFactory
  */
 @Suppress("ForbiddenComment")
 class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
-    "newlines",
+    NAME_ID,
     configRules,
-    listOf(COMPLEX_EXPRESSION, REDUNDANT_SEMICOLON, WRONG_NEWLINES)
+    listOf(COMPLEX_EXPRESSION, REDUNDANT_SEMICOLON, WRONG_NEWLINES),
+    setOf(VisitorModifier.RunAfterRule("$DIKTAT_RULE_SET_ID:${FileStructureRule.NAME_ID}"))
 ) {
     private val configuration by lazy {
         NewlinesRuleConfiguration(configRules.getRuleConfig(WRONG_NEWLINES)?.configuration ?: emptyMap())
@@ -641,6 +643,7 @@ class NewlinesRule(configRules: List<RulesConfig>) : DiktatRule(
     companion object {
         private val log = LoggerFactory.getLogger(NewlinesRule::class.java)
         const val MAX_CALLS_IN_ONE_LINE = 3
+        const val NAME_ID = "acr-newlines"
 
         // fixme: these token sets can be not full, need to add new once as corresponding cases are discovered.
         // error is raised if these operators are prepended by newline
